@@ -15,7 +15,11 @@ final class MessageBackupIncomingMessageWithEditsTest: MessageBackupIntegrationT
         let hanAci = Aci.constantForTesting("5F8C568D-0119-47BD-81AA-BB87C9B71995")
         let chewieAci = Aci.constantForTesting("0AE8C6C8-2707-4EA7-B224-7417227D3890")
 
-        try await runTest(backupName: "incoming-message-with-edits") { sdsTx, tx in
+        try await runTest(
+            backupName: "incoming-message-with-edits",
+            // TODO: [Backups] Enable comparator.
+            enableLibsignalComparator: false
+        ) { sdsTx, tx in
             let allGroupThreads = try deps.threadStore.fetchAllGroupThreads(tx: tx)
             XCTAssertEqual(allGroupThreads.count, 1)
             let groupThread = allGroupThreads.first!

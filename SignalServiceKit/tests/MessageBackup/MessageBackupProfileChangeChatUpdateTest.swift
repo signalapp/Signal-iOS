@@ -12,7 +12,11 @@ final class MessageBackupProfileChangeChatUpdateTest: MessageBackupIntegrationTe
     func testProfileChange() async throws {
         let expectedAci = Aci.parseFrom(aciString: "5F8C568D-0119-47BD-81AA-BB87C9B71995")!
 
-        try await runTest(backupName: "profile-change-chat-update-message") { sdsTx, tx in
+        try await runTest(
+            backupName: "profile-change-chat-update-message",
+            // TODO: [Backups] Enable comparator.
+            enableLibsignalComparator: false
+        ) { sdsTx, tx in
             let allInteractions = try deps.interactionStore.fetchAllInteractions(tx: tx)
             XCTAssertEqual(allInteractions.count, 1)
 

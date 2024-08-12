@@ -12,7 +12,11 @@ final class MessageBackupExpirationTimerChatUpdateTest: MessageBackupIntegration
     func testExpirationTimerChatUpdates() async throws {
         let contactAci = Aci.constantForTesting("5F8C568D-0119-47BD-81AA-BB87C9B71995")
 
-        try await runTest(backupName: "expiration-timer-chat-update-message") { sdsTx, tx in
+        try await runTest(
+            backupName: "expiration-timer-chat-update-message",
+            // TODO: [Backups] Enable comparator.
+            enableLibsignalComparator: false
+        ) { sdsTx, tx in
             let fetchedContactThreads = deps.threadStore.fetchContactThreads(serviceId: contactAci, tx: tx)
             XCTAssertEqual(fetchedContactThreads.count, 1)
             let expectedContactThread = fetchedContactThreads.first!

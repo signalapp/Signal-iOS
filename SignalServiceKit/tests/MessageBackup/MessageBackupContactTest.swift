@@ -50,7 +50,11 @@ final class MessageBackupContactTest: MessageBackupIntegrationTestCase {
     }
 
     func testRegisteredBlockedContact() async throws {
-        try await runTest(backupName: "registered-blocked-contact") { sdsTx, tx in
+        try await runTest(
+            backupName: "registered-blocked-contact",
+            // TODO: [Backups] Enable comparator.
+            enableLibsignalComparator: false
+        ) { sdsTx, tx in
             let allRecipients = allRecipients(tx: tx)
             XCTAssertEqual(allRecipients.count, 1)
 
@@ -68,7 +72,11 @@ final class MessageBackupContactTest: MessageBackupIntegrationTestCase {
     }
 
     func testUnregisteredContact() async throws {
-        try await runTest(backupName: "unregistered-contact") { sdsTx, tx in
+        try await runTest(
+            backupName: "unregistered-contact",
+            // TODO: [Backups] Enable comparator.
+            enableLibsignalComparator: false
+        ) { sdsTx, tx in
             let allRecipients = allRecipients(tx: tx)
             XCTAssertEqual(allRecipients.count, 1)
 

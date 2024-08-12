@@ -35,10 +35,12 @@ class MessageBackupIntegrationTestCase: XCTestCase {
     func runTest(
         backupName: String,
         dateProvider: DateProvider? = nil,
+        enableLibsignalComparator: Bool = true,
         assertionsBlock: (SDSAnyReadTransaction, DBReadTransaction) throws -> Void
     ) async throws {
+        let testCaseBackupUrl = backupFileUrl(named: backupName)
         try await importAndAssert(
-            backupUrl: backupFileUrl(named: backupName),
+            backupUrl: testCaseBackupUrl,
             dateProvider: dateProvider,
             localIdentifiers: localIdentifiers,
             assertionsBlock: assertionsBlock
@@ -53,6 +55,13 @@ class MessageBackupIntegrationTestCase: XCTestCase {
             localIdentifiers: localIdentifiers,
             assertionsBlock: assertionsBlock
         )
+
+        if enableLibsignalComparator {
+            try compareViaLibsignal(
+                sharedTestCaseBackupUrl: testCaseBackupUrl,
+                exportedBackupUrl: exportedBackupUrl
+            )
+        }
     }
 
     private func backupFileUrl(named backupName: String) -> URL {
@@ -75,6 +84,41 @@ class MessageBackupIntegrationTestCase: XCTestCase {
 
         try NSObject.databaseStorage.read { tx in
             try assertionsBlock(tx, tx.asV2Read)
+        }
+    }
+
+    /// Compare the canonical representation of the Backups at the two given
+    /// file URLs, via `LibSignal`.
+    ///
+    /// - Throws
+    /// If there are errors reading or validating either Backup, or if the
+    /// Backups' canonical representations are not equal.
+    private func compareViaLibsignal(
+        sharedTestCaseBackupUrl: URL,
+        exportedBackupUrl: URL
+    ) throws {
+        let sharedTestCaseBackup = try ComparableBackup(url: sharedTestCaseBackupUrl)
+        let exportedBackup = try ComparableBackup(url: exportedBackupUrl)
+
+        guard sharedTestCaseBackup.unknownFields.fields.isEmpty else {
+            XCTFail("Shared test case Backup had unknown fields: \(sharedTestCaseBackup.unknownFields)")
+            return
+        }
+
+        let sharedTestCaseBackupString = sharedTestCaseBackup.comparableString()
+        let exportedBackupString = exportedBackup.comparableString()
+
+        if sharedTestCaseBackupString != exportedBackupString {
+            XCTFail("""
+            ------------
+
+            Test failed: Backups were different when compared via LibSignal! Copy the JSON lines below and run `pbpaste | parse-libsignal-comparator-failure.py`.
+
+            \(sharedTestCaseBackupString.removeCharacters(characterSet: .whitespacesAndNewlines))
+            \(exportedBackupString.removeCharacters(characterSet: .whitespacesAndNewlines))
+
+            ------------
+            """)
         }
     }
 
@@ -115,6 +159,20 @@ class MessageBackupIntegrationTestCase: XCTestCase {
                 webSocketFactory: CrashyMocks.MockWebSocketFactory()
             )
         ).prepareDatabase().awaitable()
+    }
+}
+
+private extension LibSignalClient.ComparableBackup {
+    convenience init(url: URL) throws {
+        let fileHandle = try FileHandle(forReadingFrom: url)
+        let fileLength = try fileHandle.seekToEnd()
+        try fileHandle.seek(toOffset: 0)
+
+        try self.init(
+            purpose: .remoteBackup,
+            length: fileLength,
+            stream: fileHandle
+        )
     }
 }
 

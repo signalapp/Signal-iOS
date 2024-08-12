@@ -12,7 +12,7 @@ public class MessageBackupReleaseNotesRecipientArchiver: MessageBackupProtoArchi
     typealias RecipientId = MessageBackup.RecipientId
     typealias RecipientAppId = MessageBackup.RecipientArchivingContext.Address
 
-    typealias ArchiveMultiFrameResult = MessageBackup.ArchiveMultiFrameResult<RecipientAppId>
+    typealias ArchiveFrameResult = MessageBackup.ArchiveSingleFrameResult<Void, RecipientAppId>
     typealias RestoreFrameResult = MessageBackup.RestoreFrameResult<RecipientId>
 
     private let logger: MessageBackupLogger = .shared
@@ -25,10 +25,29 @@ public class MessageBackupReleaseNotesRecipientArchiver: MessageBackupProtoArchi
         stream: any MessageBackupProtoOutputStream,
         context: MessageBackup.RecipientArchivingContext,
         tx: any DBReadTransaction
-    ) -> ArchiveMultiFrameResult {
-        // TODO: [Backups] Implement archiving the Release Notes channel.
-        logger.warn("No-op archive of a Release Notes recipient!")
-        return .success
+    ) -> ArchiveFrameResult {
+        let releaseNotesAppId: RecipientAppId = .releaseNotesChannel
+        let recipientId = context.assignRecipientId(to: releaseNotesAppId)
+
+        let maybeError = Self.writeFrameToStream(
+            stream,
+            objectId: releaseNotesAppId,
+            frameBuilder: {
+                var recipient = BackupProto_Recipient()
+                recipient.id = recipientId.value
+                recipient.destination = .releaseNotes(BackupProto_ReleaseNotes())
+
+                var frame = BackupProto_Frame()
+                frame.item = .recipient(recipient)
+                return frame
+            }
+        )
+
+        if let maybeError {
+            return .failure(maybeError)
+        } else {
+            return .success(())
+        }
     }
 
     // MARK: -

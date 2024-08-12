@@ -54,24 +54,24 @@ extension MessageBackup {
      */
     public class RecipientArchivingContext {
         public enum Address {
-
+            case releaseNotesChannel
             case contact(ContactAddress)
             case group(GroupId)
             case distributionList(DistributionId)
         }
 
-        public let localRecipientId: RecipientId
-
-        internal let localIdentifiers: LocalIdentifiers
+        let localRecipientId: RecipientId
+        let localIdentifiers: LocalIdentifiers
 
         private var currentRecipientId: RecipientId
+        private var releaseNotesChannelRecipientId: RecipientId?
         private let groupIdMap = SharedMap<GroupId, RecipientId>()
         private let distributionIdMap = SharedMap<DistributionId, RecipientId>()
         private let contactAciMap = SharedMap<Aci, RecipientId>()
         private let contactPniMap = SharedMap<Pni, RecipientId>()
         private let contactE164ap = SharedMap<E164, RecipientId>()
 
-        internal init(
+        init(
             localIdentifiers: LocalIdentifiers,
             localRecipientId: RecipientId
         ) {
@@ -92,11 +92,13 @@ extension MessageBackup {
             }
         }
 
-        internal func assignRecipientId(to address: Address) -> RecipientId {
+        func assignRecipientId(to address: Address) -> RecipientId {
             defer {
                 currentRecipientId = RecipientId(value: currentRecipientId.value + 1)
             }
             switch address {
+            case .releaseNotesChannel:
+                releaseNotesChannelRecipientId = currentRecipientId
             case .group(let groupId):
                 groupIdMap[groupId] = currentRecipientId
             case .distributionList(let distributionId):
@@ -116,10 +118,12 @@ extension MessageBackup {
             return currentRecipientId
         }
 
-        internal subscript(_ address: Address) -> RecipientId? {
+        subscript(_ address: Address) -> RecipientId? {
             // swiftlint:disable:next implicit_getter
             get {
                 switch address {
+                case .releaseNotesChannel:
+                    return releaseNotesChannelRecipientId
                 case .group(let groupId):
                     return groupIdMap[groupId]
                 case .distributionList(let distributionId):
@@ -149,15 +153,15 @@ extension MessageBackup {
             case distributionList(DistributionId)
         }
 
-        internal let localIdentifiers: LocalIdentifiers
+        let localIdentifiers: LocalIdentifiers
 
         private let map = SharedMap<RecipientId, Address>()
 
-        internal init(localIdentifiers: LocalIdentifiers) {
+        init(localIdentifiers: LocalIdentifiers) {
             self.localIdentifiers = localIdentifiers
         }
 
-        internal subscript(_ id: RecipientId) -> Address? {
+        subscript(_ id: RecipientId) -> Address? {
             get { map[id] }
             set(newValue) { map[id] = newValue }
         }
@@ -173,6 +177,8 @@ extension MessageBackup.RecipientId: MessageBackupLoggableId {
 extension MessageBackup.RecipientArchivingContext.Address: MessageBackupLoggableId {
     public var typeLogString: String {
         switch self {
+        case .releaseNotesChannel:
+            return "ReleaseNotesChannel_Type"
         case .contact(let address):
             return address.typeLogString
         case .group:
@@ -184,6 +190,8 @@ extension MessageBackup.RecipientArchivingContext.Address: MessageBackupLoggable
 
     public var idLogString: String {
         switch self {
+        case .releaseNotesChannel:
+            return "ReleaseNotesChannel_ID"
         case .contact(let contactAddress):
             return contactAddress.idLogString
         case .group(let groupId):
@@ -231,6 +239,7 @@ extension BackupProto_Quote {
 }
 
 extension BackupProto_SendStatus {
+
     public var destinationRecipientId: MessageBackup.RecipientId {
         return MessageBackup.RecipientId(sendStatus: self)
     }

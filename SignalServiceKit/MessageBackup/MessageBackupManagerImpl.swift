@@ -237,6 +237,18 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             localRecipientId: localRecipientId
         )
 
+        switch releaseNotesRecipientArchiver.archiveReleaseNotesRecipient(
+            stream: stream,
+            context: recipientArchivingContext,
+            tx: tx
+        ) {
+        case .success:
+            break
+        case .failure(let error):
+            MessageBackup.log([error])
+            throw OWSAssertionError("Failed to archive release notes channel!")
+        }
+
         switch contactRecipientArchiver.archiveAllContactRecipients(
             stream: stream,
             context: recipientArchivingContext,
@@ -264,19 +276,6 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         }
 
         switch distributionListRecipientArchiver.archiveAllDistributionListRecipients(
-            stream: stream,
-            context: recipientArchivingContext,
-            tx: tx
-        ) {
-        case .success:
-            break
-        case .partialSuccess(let partialFailures):
-            try processArchiveFrameErrors(errors: partialFailures)
-        case .completeFailure(let error):
-            try processFatalArchivingError(error: error)
-        }
-
-        switch releaseNotesRecipientArchiver.archiveReleaseNotesRecipient(
             stream: stream,
             context: recipientArchivingContext,
             tx: tx
