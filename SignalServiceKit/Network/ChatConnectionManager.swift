@@ -91,17 +91,10 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
         }
         // After 30 seconds, we try anyways. We'll probably fail.
         let maxWaitInterval = 30 * kSecondInterval
-        return await withTaskGroup(of: Void.self) { group in
-            defer { group.cancelAll() }
-            // For both tasks, treat cancellation as success (or at least "go ahead").
-            group.addTask {
-                _ = try? await connection.waitForOpen()
-            }
-            group.addTask {
-                _ = try? await Task.sleep(nanoseconds: UInt64(maxWaitInterval) * NSEC_PER_SEC)
-            }
-            await group.next()!
-        }
+        _ = try? await withCooperativeTimeout(
+            seconds: maxWaitInterval,
+            operation: { try await connection.waitForOpen() }
+        )
     }
 
     // This method can be called from any thread.

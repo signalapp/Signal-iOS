@@ -248,7 +248,7 @@ public class OWSChatConnection: NSObject {
 
     private struct StateObservation {
         var currentState: OWSChatConnectionState
-        var onOpen: [NSObject: CheckedContinuation<Void, Error>]
+        var onOpen: [NSObject: CancellableContinuation<Void>]
     }
 
     /// This lock is sometimes waited on within an async context; make sure *all* uses release the lock quickly.
@@ -263,7 +263,7 @@ public class OWSChatConnection: NSObject {
         // for a caller to check a condition that's immediately out of date (a race).
         assertOnQueue(serialQueue)
 
-        let (oldState, continuationsToResolve): (OWSChatConnectionState, [NSObject: CheckedContinuation<Void, Error>])
+        let (oldState, continuationsToResolve): (OWSChatConnectionState, [NSObject: CancellableContinuation<Void>])
         (oldState, continuationsToResolve) = stateObservation.update {
             let oldState = $0.currentState
             if newState == oldState {
@@ -271,7 +271,7 @@ public class OWSChatConnection: NSObject {
             }
             $0.currentState = newState
 
-            var continuationsToResolve: [NSObject: CheckedContinuation<Void, Error>] = [:]
+            var continuationsToResolve: [NSObject: CancellableContinuation<Void>] = [:]
             if case .open = newState {
                 continuationsToResolve = $0.onOpen
                 $0.onOpen = [:]
@@ -283,7 +283,7 @@ public class OWSChatConnection: NSObject {
             Logger.info("\(logPrefix): \(oldState) -> \(newState)")
         }
         for (_, waiter) in continuationsToResolve {
-            waiter.resume()
+            waiter.resume(with: .success(()))
         }
         NotificationCenter.default.postNotificationNameAsync(Self.chatConnectionStateDidChange, object: nil)
     }
@@ -294,41 +294,23 @@ public class OWSChatConnection: NSObject {
 
     /// Only throws on cancellation.
     func waitForOpen() async throws {
-        // There are three events that are relevant here:
-        // A) The socket becomes open (or is already open)
-        // B) The continuation is registered in the onOpen list
-        // C) This task is cancelled.
-        //
-        // Let's exhaustively make sure all three are handled no matter the ordering:
-        // - ABC: The continuation is resumed immediately at (1).
-        // - ACB: The cancellation is ignored, and the continuation is resumed at (1). (This is fine.)
-        // - BAC: The continuation is resumed within notifyStatusChange.
-        // - BCA: The continuation is removed from the list and cancelled at (3).
-        // - CAB: The cancellation is ignored, and the continuation is resumed at (1). (This is fine.)
-        // - CBA: The cancellation is checked and propagated at (2).
         let cancellationToken = NSObject()
-        try await withTaskCancellationHandler(operation: {
-            try await withCheckedThrowingContinuation { continuation in
-                // We are locking during an async task! *gasp*
-                // This is only okay because *every* use of this lock does a short and finite amount of work.
-                stateObservation.update {
-                    if $0.currentState == .open {
-                        continuation.resume() // (1)
-                        return
-                    }
-                    if Task.isCancelled {
-                        continuation.resume(throwing: CancellationError()) // (2)
-                        return
-                    }
-                    $0.onOpen[cancellationToken] = continuation
-                }
+        let cancellableContinuation = CancellableContinuation<Void>()
+        stateObservation.update {
+            if $0.currentState == .open {
+                cancellableContinuation.resume(with: .success(()))
+            } else {
+                $0.onOpen[cancellationToken] = cancellableContinuation
             }
-        }, onCancel: {
-            stateObservation.update {
-                let continuation = $0.onOpen.removeValue(forKey: cancellationToken)
-                continuation?.resume(throwing: CancellationError()) // (3)
+        }
+        try await withTaskCancellationHandler(
+            operation: cancellableContinuation.wait,
+            onCancel: {
+                // Don't cancel because CancellableContinuation does that.
+                // We just clean up the state so that we don't leak memory.
+                stateObservation.update { _ = $0.onOpen.removeValue(forKey: cancellationToken) }
             }
-        })
+        )
     }
 
     // MARK: - Socket LifeCycle

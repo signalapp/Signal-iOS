@@ -550,6 +550,10 @@
 		500AEE052A4B68E200371F05 /* WallpaperStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500AEE042A4B68E200371F05 /* WallpaperStore.swift */; };
 		500AEE072A4DF48700371F05 /* ChatColorSettingStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500AEE062A4DF48700371F05 /* ChatColorSettingStore.swift */; };
 		500AEE092A4E09AD00371F05 /* AuthorMergeObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500AEE082A4E09AD00371F05 /* AuthorMergeObserver.swift */; };
+		500AF3AB2C58347C00CB9F4F /* CancellableContinuation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500AF3AA2C58347C00CB9F4F /* CancellableContinuation.swift */; };
+		500AF3AD2C5834A400CB9F4F /* CancellableContinuationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500AF3AC2C5834A400CB9F4F /* CancellableContinuationTest.swift */; };
+		500AF3AF2C58366700CB9F4F /* CooperativeTimeout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500AF3AE2C58366700CB9F4F /* CooperativeTimeout.swift */; };
+		500AF3B12C58385600CB9F4F /* CooperativeTimeoutTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500AF3B02C58385600CB9F4F /* CooperativeTimeoutTest.swift */; };
 		500BAD802C519F2D00B4CD7F /* MessageTimestampGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500BAD7E2C519F2D00B4CD7F /* MessageTimestampGenerator.swift */; };
 		500BAD822C519F3600B4CD7F /* MessageTimestampGeneratorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500BAD7F2C519F2D00B4CD7F /* MessageTimestampGeneratorTest.swift */; };
 		500FB6182915B86D00257951 /* UITableView+ReusableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500FB6172915B86D00257951 /* UITableView+ReusableCell.swift */; };
@@ -3607,6 +3611,10 @@
 		500AEE042A4B68E200371F05 /* WallpaperStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WallpaperStore.swift; sourceTree = "<group>"; };
 		500AEE062A4DF48700371F05 /* ChatColorSettingStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatColorSettingStore.swift; sourceTree = "<group>"; };
 		500AEE082A4E09AD00371F05 /* AuthorMergeObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorMergeObserver.swift; sourceTree = "<group>"; };
+		500AF3AA2C58347C00CB9F4F /* CancellableContinuation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CancellableContinuation.swift; sourceTree = "<group>"; };
+		500AF3AC2C5834A400CB9F4F /* CancellableContinuationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CancellableContinuationTest.swift; sourceTree = "<group>"; };
+		500AF3AE2C58366700CB9F4F /* CooperativeTimeout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CooperativeTimeout.swift; sourceTree = "<group>"; };
+		500AF3B02C58385600CB9F4F /* CooperativeTimeoutTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CooperativeTimeoutTest.swift; sourceTree = "<group>"; };
 		500BAD7E2C519F2D00B4CD7F /* MessageTimestampGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageTimestampGenerator.swift; sourceTree = "<group>"; };
 		500BAD7F2C519F2D00B4CD7F /* MessageTimestampGeneratorTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageTimestampGeneratorTest.swift; sourceTree = "<group>"; };
 		500FB6172915B86D00257951 /* UITableView+ReusableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+ReusableCell.swift"; sourceTree = "<group>"; };
@@ -7127,6 +7135,17 @@
 				500AEE042A4B68E200371F05 /* WallpaperStore.swift */,
 			);
 			path = UISupport;
+			sourceTree = "<group>";
+		};
+		500AF3A92C58346500CB9F4F /* Concurrency */ = {
+			isa = PBXGroup;
+			children = (
+				500AF3AA2C58347C00CB9F4F /* CancellableContinuation.swift */,
+				500AF3AC2C5834A400CB9F4F /* CancellableContinuationTest.swift */,
+				500AF3AE2C58366700CB9F4F /* CooperativeTimeout.swift */,
+				500AF3B02C58385600CB9F4F /* CooperativeTimeoutTest.swift */,
+			);
+			path = Concurrency;
 			sourceTree = "<group>";
 		};
 		5011D9712A0471E8000FE8E5 /* OrphanData */ = {
@@ -10888,6 +10907,7 @@
 				D979DA142B8D1FCF000EEAB8 /* Badge */,
 				F945FE482984795A00C835C7 /* Calls */,
 				D9C2D78529A80BE700D79715 /* ChangePhoneNumber */,
+				500AF3A92C58346500CB9F4F /* Concurrency */,
 				F9C5C9CC289453B100548EEE /* Contacts */,
 				668A00CC2C2B5E1A007B8808 /* Cryptography */,
 				503B471C2AF0566B00978266 /* Curve25519 */,
@@ -14249,6 +14269,7 @@
 				D91AC9302B5F31BB00814975 /* CallRecordStoreNotification.swift in Sources */,
 				D9A81C6B2BAA54FC00C07D2B /* CallRecordSyncMessageConversationIdAdapter.swift in Sources */,
 				D958C67F2BA394A3002F6888 /* CallSyncMessageConversationId.swift in Sources */,
+				500AF3AB2C58347C00CB9F4F /* CancellableContinuation.swift in Sources */,
 				17EC850C29133CDB00319C82 /* CancelledGroupRing.swift in Sources */,
 				5020EFA22BA8A5390038C2D5 /* CanonicalPhoneNumber.swift in Sources */,
 				F9C5CD8D289453B300548EEE /* CaptchaChallenge.swift in Sources */,
@@ -14291,6 +14312,7 @@
 				7254655C2BA0293900EABFD2 /* ContactSyncAttachmentBuilder.swift in Sources */,
 				F9C5CCE1289453B300548EEE /* ContactThreadFinder.swift in Sources */,
 				F9C5CDCA289453B400548EEE /* ContentProxy.swift in Sources */,
+				500AF3AF2C58366700CB9F4F /* CooperativeTimeout.swift in Sources */,
 				F962B38A293F9F1F00765BD8 /* CRC32.swift in Sources */,
 				668A00D02C2B5E32007B8808 /* Cryptography.swift in Sources */,
 				F9C5CDF4289453B400548EEE /* Currency.swift in Sources */,
@@ -15377,6 +15399,7 @@
 				D979CC4E2AD4DECB006AAC49 /* CallRecordStatusTransitionManagerTest.swift in Sources */,
 				D979CC4D2AD4DECB006AAC49 /* CallRecordStoreTest.swift in Sources */,
 				D979CC572AD5E240006AAC49 /* CallRecordTest.swift in Sources */,
+				500AF3AD2C5834A400CB9F4F /* CancellableContinuationTest.swift in Sources */,
 				725464F62B9FAC7600EABFD2 /* CGPointExtensionsTest.swift in Sources */,
 				661396AF28BE881E00E0C4DF /* ChainedPromiseTest.swift in Sources */,
 				D985D86829B94EC60087C90C /* ChangePhoneNumberPniManagerTest.swift in Sources */,
@@ -15385,6 +15408,7 @@
 				50169695291B0627007AD709 /* ContactDiscoveryManagerTest.swift in Sources */,
 				500824D0292741D5005A5DC0 /* ContactDiscoveryV2OperationTest.swift in Sources */,
 				5077B5B82BBC7FE600EF399E /* ContactTest.swift in Sources */,
+				500AF3B12C58385600CB9F4F /* CooperativeTimeoutTest.swift in Sources */,
 				F962B38C293F9F9F00765BD8 /* CRC32Test.swift in Sources */,
 				668A28AF2BF703E100BB29B3 /* CreateV2AttachmentTablesMigrationTest.swift in Sources */,
 				668A00DB2C2B5E72007B8808 /* CryptographyTests.swift in Sources */,
