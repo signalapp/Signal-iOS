@@ -240,24 +240,28 @@ public class ThreadFinder: Dependencies {
         transaction: SDSAnyReadTransaction
     ) -> Bool {
         // TODO: Should we consult isRequestingMember() here?
-        if let groupThread = thread as? TSGroupThread,
-           groupThread.isGroupV2Thread,
-           groupThread.isLocalUserInvitedMember {
+        if let groupThread = thread as? TSGroupThread, groupThread.isGroupV2Thread, groupThread.isLocalUserInvitedMember {
             return true
         }
 
         // If we're creating the thread, don't show the message request view
-        guard thread.shouldThreadBeVisible else { return false }
+        if !thread.shouldThreadBeVisible {
+            return false
+        }
 
         // If this thread is blocked AND we're still in the thread, show the message
         // request view regardless of if we have sent messages or not.
-        if blockingManager.isThreadBlocked(thread, transaction: transaction) { return true }
+        if blockingManager.isThreadBlocked(thread, transaction: transaction) {
+            return true
+        }
 
         let isGroupThread = thread is TSGroupThread
         let isLocalUserInGroup = (thread as? TSGroupThread)?.isLocalUserFullOrInvitedMember == true
 
         // If this is a group thread and we're not a member, never show the message request.
-        if isGroupThread, !isLocalUserInGroup { return false }
+        if isGroupThread, !isLocalUserInGroup {
+            return false
+        }
 
         let interactionFinder = InteractionFinder(threadUniqueId: thread.uniqueId)
 
@@ -286,30 +290,23 @@ public class ThreadFinder: Dependencies {
 
         // If the thread is already whitelisted, do nothing. The user has already
         // accepted the request for this thread.
-        guard !Self.profileManager.isThread(
-            inProfileWhitelist: thread,
-            transaction: transaction
-        ) else { return false }
+        if Self.profileManager.isThread(inProfileWhitelist: thread, transaction: transaction) {
+            return false
+        }
 
-        if isGroupThread {
-            // At this point, we know this is an un-whitelisted group thread.
-            // If someone added us to the group, there will be a group update info message
-            // in which case we want to show a pending message request. If the thread
-            // is otherwise empty, we don't want to show the message request.
-            if interactionFinder.hasGroupUpdateInfoMessage(
-                transaction: transaction
-            ) { return true }
+        // At this point, we know this is an un-whitelisted group thread.
+        // If someone added us to the group, there will be a group update info message
+        // in which case we want to show a pending message request. If the thread
+        // is otherwise empty, we don't want to show the message request.
+        if isGroupThread, interactionFinder.hasGroupUpdateInfoMessage(transaction: transaction) {
+            return true
         }
 
         // This thread is likely only visible because of system messages like so-and-so
         // is on signal or sync status. Some of the "possibly" incoming messages might
         // actually have been triggered by us, but if we sent one of these then the thread
         // should be in our profile white list and not make it to this check.
-        guard interactionFinder.possiblyHasIncomingMessages(
-            transaction: transaction
-        ) else { return false }
-
-        return true
+        return interactionFinder.possiblyHasIncomingMessages(transaction: transaction)
     }
 
     /// Whether we should set the default timer for the given contact thread.

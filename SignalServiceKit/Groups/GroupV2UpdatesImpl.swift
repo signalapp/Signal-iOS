@@ -1049,14 +1049,15 @@ private extension GroupV2UpdatesImpl {
             }
             let localAci = localIdentifiers.aci
 
-            var builder = try TSGroupModelBuilder.builderForSnapshot(groupV2Snapshot: groupV2Snapshot,
-                                                                     transaction: transaction)
+            var builder = try TSGroupModelBuilder.builderForSnapshot(groupV2Snapshot: groupV2Snapshot, transaction: transaction)
             builder.apply(options: groupModelOptions)
 
-            if let groupId = builder.groupId,
-               let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction),
-               let oldGroupModel = groupThread.groupModel as? TSGroupModelV2,
-               oldGroupModel.revision == builder.groupV2Revision {
+            if
+                let groupId = builder.groupId,
+                let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction),
+                let oldGroupModel = groupThread.groupModel as? TSGroupModelV2,
+                oldGroupModel.revision == builder.groupV2Revision
+            {
                 // Preserve certain transient properties if overwriting a model
                 // at the same revision.
                 if oldGroupModel.didJustAddSelfViaGroupLink {

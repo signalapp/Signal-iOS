@@ -391,10 +391,12 @@ public extension OWSReceiptManager {
 
     // MARK: - Mark as read
 
-    func markAsReadLocally(beforeSortId sortId: UInt64,
-                           thread: TSThread,
-                           hasPendingMessageRequest: Bool,
-                           completion: @escaping () -> Void) {
+    func markAsReadLocally(
+        beforeSortId sortId: UInt64,
+        thread: TSThread,
+        hasPendingMessageRequest: Bool,
+        completion: @escaping () -> Void
+    ) {
         DispatchQueue.global().async {
             let interactionFinder = InteractionFinder(threadUniqueId: thread.uniqueId)
 

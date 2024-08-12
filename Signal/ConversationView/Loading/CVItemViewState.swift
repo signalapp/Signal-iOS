@@ -265,11 +265,13 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
             itemViewState.dateHeaderState = CVComponentDateHeader.buildState(interaction: interaction)
         }
         if let bodyText = item.componentState.bodyText {
-            itemViewState.bodyTextState = CVComponentBodyText.buildState(interaction: interaction,
-                                                                         bodyText: bodyText,
-                                                                         viewStateSnapshot: viewStateSnapshot,
-                                                                         hasTapForMore: hasTapForMore,
-                                                                         hasPendingMessageRequest: threadViewModel.hasPendingMessageRequest)
+            itemViewState.bodyTextState = CVComponentBodyText.buildState(
+                interaction: interaction,
+                bodyText: bodyText,
+                viewStateSnapshot: viewStateSnapshot,
+                hasTapForMore: hasTapForMore,
+                hasPendingMessageRequest: threadViewModel.hasPendingMessageRequest
+            )
         }
         itemViewState.uiMode = viewStateSnapshot.uiMode
         itemViewState.previousUIMode = viewStateSnapshot.previousUIMode

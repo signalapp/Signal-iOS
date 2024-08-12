@@ -56,9 +56,8 @@ public extension ConversationViewController {
             if !hasViewWillAppearEverBegun {
                 return .none
             } else if threadViewModel.hasPendingMessageRequest {
-                let messageRequestType = Self.databaseStorage.read { transaction in
-                    MessageRequestView.messageRequestType(forThread: self.threadViewModel.threadRecord,
-                                                          transaction: transaction)
+                let messageRequestType = Self.databaseStorage.read { tx in
+                    return MessageRequestView.messageRequestType(forThread: self.threadViewModel.threadRecord, transaction: tx)
                 }
                 return .messageRequestView(messageRequestType: messageRequestType)
             } else if isLocalUserRequestingMember {

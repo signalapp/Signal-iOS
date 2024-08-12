@@ -775,11 +775,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 {
     OWSAssertDebug(groupId.length > 0);
 
-    // isGroupIdBlocked can open a sneaky transaction in
-    // BlockingManager.ensureLazyInitialization(), but we avoid this
-    // by ensuring that BlockingManager.warmCaches() is always
-    // called first.  I've added asserts within BlockingManager around
-    // this.
     if ([self.blockingManager isGroupIdBlocked:groupId transaction:transaction]) {
         return NO;
     }

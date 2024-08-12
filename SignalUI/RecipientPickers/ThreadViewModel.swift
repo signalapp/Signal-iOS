@@ -73,10 +73,12 @@ public class ThreadViewModel: NSObject {
         self.lastMessageForInbox = thread.lastInteractionForInbox(transaction: transaction)
 
         if forChatList {
-            chatListInfo = ChatListInfo(thread: thread,
-                                        lastMessageForInbox: lastMessageForInbox,
-                                        hasPendingMessageRequest: hasPendingMessageRequest,
-                                        transaction: transaction)
+            chatListInfo = ChatListInfo(
+                thread: thread,
+                lastMessageForInbox: lastMessageForInbox,
+                hasPendingMessageRequest: hasPendingMessageRequest,
+                transaction: transaction
+            )
         } else {
             chatListInfo = nil
         }
@@ -192,8 +194,10 @@ public class ChatListInfo: Dependencies {
             }
         }
         func loadAddedToGroupByName() -> String? {
-            guard let groupThread = thread as? TSGroupThread,
-                  let addedByAddress = groupThread.groupModel.addedByAddress else {
+            guard
+                let groupThread = thread as? TSGroupThread,
+                let addedByAddress = groupThread.groupModel.addedByAddress
+            else {
                 return nil
             }
             return Self.contactsManager.displayName(for: addedByAddress, tx: transaction).resolvedValue(useShortNameIfAvailable: true)

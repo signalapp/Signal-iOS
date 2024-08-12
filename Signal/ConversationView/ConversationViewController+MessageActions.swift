@@ -244,8 +244,13 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
     }
 
     public func shouldShowReactionPickerForInteraction(_ interaction: TSInteraction) -> Bool {
-        guard !threadViewModel.hasPendingMessageRequest else { return false }
-        guard threadViewModel.isLocalUserFullMemberOfThread else { return false }
+        if threadViewModel.hasPendingMessageRequest {
+            return false
+        }
+
+        guard threadViewModel.isLocalUserFullMemberOfThread else {
+            return false
+        }
 
         switch interaction {
         case let outgoingMessage as TSOutgoingMessage:
