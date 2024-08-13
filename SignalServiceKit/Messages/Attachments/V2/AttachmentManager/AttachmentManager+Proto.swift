@@ -50,7 +50,7 @@ extension AttachmentManager {
 
         func setMediaSizePixels(_ pixelSize: CGSize) {
             builder.setWidth(UInt32(pixelSize.width.rounded()))
-            builder.setHeight(UInt32(pixelSize.width.rounded()))
+            builder.setHeight(UInt32(pixelSize.height.rounded()))
         }
 
         if let stream = pointer.attachment.asStream() {
