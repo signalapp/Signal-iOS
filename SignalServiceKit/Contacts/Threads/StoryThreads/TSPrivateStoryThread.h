@@ -14,7 +14,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) BOOL allowsReplies;
 @property (nonatomic, readonly) NSString *name;
-@property (nonatomic, readonly) NSArray<SignalServiceAddress *> *addresses;
+
+/// - SeeAlso:
+/// ``TSThread/storyViewMode``. In combination with that property, describes the
+/// intended viewership of stories sent to this thread.
+@property (nonatomic) NSArray<SignalServiceAddress *> *addresses;
 
 @property (nonatomic, readonly) BOOL isMyStory;
 
@@ -83,12 +87,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 // clang-format on
 
 // --- CODE GENERATION MARKER
-
-- (void)updateWithStoryViewMode:(TSThreadStoryViewMode)storyViewMode
-                      addresses:(NSArray<SignalServiceAddress *> *)addresses
-           updateStorageService:(BOOL)updateStorageService
-                    transaction:(SDSAnyWriteTransaction *)transaction
-    NS_SWIFT_NAME(updateWithStoryViewMode(_:addresses:updateStorageService:transaction:));
 
 - (void)updateWithAllowsReplies:(BOOL)allowsReplies
            updateStorageService:(BOOL)updateStorageService

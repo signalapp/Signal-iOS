@@ -312,6 +312,8 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
                 allowReplies: distributionListProto.allowReplies,
                 viewMode: viewMode,
                 addresses: addresses,
+                updateStorageService: false,
+                updateHasSetMyStoryPrivacyIfNeeded: false,
                 tx: tx
             )
         } else {

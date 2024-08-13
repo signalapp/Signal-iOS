@@ -461,6 +461,12 @@ public class _MessageBackup_AccountData_SystemStoryManagerWrapper: _MessageBacku
         systemStoryManager.isOnboardingStoryViewed(transaction: SDSDB.shimOnlyBridge(tx))
     }
     public func setHasViewedOnboardingStory(value: Bool, tx: DBWriteTransaction) {
+        guard value else {
+            /// This is a one-way setting, so there's no way to set `false`. If
+            /// it's `false`, simply set nothing.
+            return
+        }
+
         let source: OnboardingStoryViewSource = .local(
             timestamp: Date.distantPast.ows_millisecondsSince1970,
             shouldUpdateStorageService: false
@@ -471,6 +477,12 @@ public class _MessageBackup_AccountData_SystemStoryManagerWrapper: _MessageBacku
         systemStoryManager.isGroupStoryEducationSheetViewed(tx: SDSDB.shimOnlyBridge(tx))
     }
     public func setHasSeenGroupStoryEducationSheet(value: Bool, tx: DBWriteTransaction) {
+        guard value else {
+            /// This is a one-way setting, so there's no way to set `false`. If
+            /// it's `false`, simply set nothing.
+            return
+        }
+
         systemStoryManager.setGroupStoryEducationSheetViewed(tx: SDSDB.shimOnlyBridge(tx))
     }
 }

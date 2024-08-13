@@ -42,8 +42,48 @@ public extension TSPrivateStoryThread {
         }
     }
 
+    // MARK: -
+
     override func updateWithShouldThreadBeVisible(_ shouldThreadBeVisible: Bool, transaction: SDSAnyWriteTransaction) {
         super.updateWithShouldThreadBeVisible(shouldThreadBeVisible, transaction: transaction)
         updateWithStoryViewMode(.disabled, transaction: transaction)
+    }
+
+    /// Update this private story thread with the given view mode and
+    /// corresponding addresses.
+    ///
+    /// - Parameter updateStorageService
+    /// Whether or not we should update the distribution list this thread
+    /// represents in Storage Service.
+    /// - Parameter updateHasSetMyStoryPrivacyIfNeeded
+    /// Whether or not we should set the local "has set My Story privacy" flag
+    /// (to `true`), assuming this thread represents "My Story". Only callers
+    /// who will be managing that flag's state themselves – at the time of
+    /// writing, that is exclusively Backups – should set this to `false`.
+    func updateWithStoryViewMode(
+        _ storyViewMode: TSThreadStoryViewMode,
+        addresses: [SignalServiceAddress],
+        updateStorageService: Bool,
+        updateHasSetMyStoryPrivacyIfNeeded: Bool = true,
+        transaction tx: SDSAnyWriteTransaction
+    ) {
+        if updateHasSetMyStoryPrivacyIfNeeded, isMyStory {
+            StoryManager.setHasSetMyStoriesPrivacy(
+                true,
+                shouldUpdateStorageService: updateStorageService,
+                transaction: tx
+            )
+        }
+
+        anyUpdatePrivateStoryThread(transaction: tx) { privateStoryThread in
+            privateStoryThread.storyViewMode = storyViewMode
+            privateStoryThread.addresses = addresses
+        }
+
+        if updateStorageService, let distributionListIdentifier {
+            storageServiceManager.recordPendingUpdates(
+                updatedStoryDistributionListIds: [ distributionListIdentifier ]
+            )
+        }
     }
 }

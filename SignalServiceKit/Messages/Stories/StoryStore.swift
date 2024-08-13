@@ -37,20 +37,33 @@ public protocol StoryStore {
 
     func getOrCreateMyStory(tx: DBWriteTransaction) -> TSPrivateStoryThread
 
+    /// Update the story thread with the given properties.
+    ///
+    /// - SeeAlso ``TSPrivateStoryThread/updateWithStoryViewMode(_:addresses:updateStorageService:updateHasSetMyStoryPrivacyIfNeeded:transaction:)
+    /// 
+    /// - Parameter updateStorageService
+    /// If this update should trigger a Storage Service update.
+    /// - Parameter updateHasSetMyStoryPrivacyIfNeeded
+    /// Whether or not we should set the local "has set My Story privacy" flag
+    /// (to `true`), assuming this thread represents "My Story". Only callers
+    /// who will be managing that flag's state themsevles – at the time of
+    /// writing, that is exclusively Backups – should set this to `false`.
     func update(
         storyThread: TSPrivateStoryThread,
         name: String,
         allowReplies: Bool,
         viewMode: TSThreadStoryViewMode,
         addresses: [SignalServiceAddress],
+        updateStorageService: Bool,
+        updateHasSetMyStoryPrivacyIfNeeded: Bool,
         tx: DBWriteTransaction
     )
 
     func insert(storyThread: TSPrivateStoryThread, tx: DBWriteTransaction)
 }
 
-extension StoryStore {
-    public func updateStoryContext(
+public extension StoryStore {
+    func updateStoryContext(
         _ storyContext: StoryContextAssociatedData,
         updateStorageService: Bool = true,
         isHidden: Bool? = nil,
@@ -128,22 +141,25 @@ public class StoryStoreImpl: StoryStore {
         allowReplies: Bool,
         viewMode: TSThreadStoryViewMode,
         addresses: [SignalServiceAddress],
+        updateStorageService: Bool,
+        updateHasSetMyStoryPrivacyIfNeeded: Bool,
         tx: any DBWriteTransaction
     ) {
         storyThread.updateWithName(
             name,
-            updateStorageService: false,
+            updateStorageService: updateStorageService,
             transaction: SDSDB.shimOnlyBridge(tx)
         )
         storyThread.updateWithAllowsReplies(
             allowReplies,
-            updateStorageService: false,
+            updateStorageService: updateStorageService,
             transaction: SDSDB.shimOnlyBridge(tx)
         )
         storyThread.updateWithStoryViewMode(
             viewMode,
             addresses: addresses,
-            updateStorageService: false,
+            updateStorageService: updateStorageService,
+            updateHasSetMyStoryPrivacyIfNeeded: updateHasSetMyStoryPrivacyIfNeeded,
             transaction: SDSDB.shimOnlyBridge(tx)
         )
     }
@@ -220,7 +236,16 @@ open class StoryStoreMock: StoryStore {
 
     public func getAllDeletedStories(tx: any DBReadTransaction) -> [Data] { return [] }
 
-    public func update(storyThread: TSPrivateStoryThread, name: String, allowReplies: Bool, viewMode: TSThreadStoryViewMode, addresses: [SignalServiceAddress], tx: any DBWriteTransaction) {
+    public func update(
+        storyThread: TSPrivateStoryThread,
+        name: String,
+        allowReplies: Bool,
+        viewMode: TSThreadStoryViewMode,
+        addresses: [SignalServiceAddress],
+        updateStorageService: Bool,
+        updateHasSetMyStoryPrivacyIfNeeded: Bool,
+        tx: any DBWriteTransaction
+    ) {
         // Unimplemented
     }
 

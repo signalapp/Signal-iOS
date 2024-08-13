@@ -36,7 +36,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, TSThreadStoryViewMode) {
  */
 @interface TSThread : BaseModel
 
-@property (nonatomic, readonly) TSThreadStoryViewMode storyViewMode;
+@property (nonatomic) TSThreadStoryViewMode storyViewMode;
 @property (nonatomic, readonly, nullable) NSNumber *lastSentStoryTimestamp;
 
 @property (nonatomic) BOOL shouldThreadBeVisible;

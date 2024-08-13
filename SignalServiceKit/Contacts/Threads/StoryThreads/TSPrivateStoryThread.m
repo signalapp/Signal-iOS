@@ -6,17 +6,10 @@
 #import "TSPrivateStoryThread.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
-@interface TSThread ()
-
-@property (nonatomic) TSThreadStoryViewMode storyViewMode;
-
-@end
-
 @interface TSPrivateStoryThread ()
 
 @property (nonatomic) BOOL allowsReplies;
 @property (nonatomic) NSString *name;
-@property (nonatomic) NSArray<SignalServiceAddress *> *addresses;
 
 @end
 
@@ -130,28 +123,6 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
     }
 
     return _name;
-}
-
-- (void)updateWithStoryViewMode:(TSThreadStoryViewMode)storyViewMode
-                      addresses:(NSArray<SignalServiceAddress *> *)addresses
-           updateStorageService:(BOOL)updateStorageService
-                    transaction:(SDSAnyWriteTransaction *)transaction
-{
-    if ([self isMyStory]) {
-        [StoryManager setHasSetMyStoriesPrivacy:YES
-                     shouldUpdateStorageService:updateStorageService
-                                    transaction:transaction];
-    }
-    [self anyUpdatePrivateStoryThreadWithTransaction:transaction
-                                               block:^(TSPrivateStoryThread *thread) {
-                                                   thread.storyViewMode = storyViewMode;
-                                                   thread.addresses = addresses;
-                                               }];
-
-    if (updateStorageService) {
-        [SSKEnvironment.storageServiceManagerObjc
-            recordPendingUpdatesWithUpdatedStoryDistributionListIds:@[ self.distributionListIdentifier ]];
-    }
 }
 
 - (void)updateWithAllowsReplies:(BOOL)allowsReplies
