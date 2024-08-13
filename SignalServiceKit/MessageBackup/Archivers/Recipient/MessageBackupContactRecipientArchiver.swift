@@ -140,10 +140,10 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
             if let profileKey = userProfile?.profileKey {
                 contact.profileKey = profileKey.keyData
             }
-            if let givenName = userProfile?.givenName {
+            if let givenName = userProfile?.givenName?.nilIfEmpty {
                 contact.profileGivenName = givenName
             }
-            if let familyName = userProfile?.familyName {
+            if let familyName = userProfile?.familyName?.nilIfEmpty {
                 contact.profileFamilyName = familyName
             }
 
@@ -318,8 +318,8 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
 
         profileManager.upsertOtherUserProfile(
             insertableAddress: profileInsertableAddress,
-            givenName: contactProto.profileGivenName,
-            familyName: contactProto.profileFamilyName,
+            givenName: contactProto.profileGivenName.nilIfEmpty,
+            familyName: contactProto.profileFamilyName.nilIfEmpty,
             profileKey: profileKey,
             tx: tx
         )

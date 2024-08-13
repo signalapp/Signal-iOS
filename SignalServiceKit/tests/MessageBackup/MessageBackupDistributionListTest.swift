@@ -24,9 +24,7 @@ final class MessageBackupDistributionListTest: MessageBackupIntegrationTestCase 
                 /// hardcode the "current time"; the timestamp below is from the
                 /// time this test was originally committed.
                 return Date(millisecondsSince1970: 1717631700000)
-            },
-            // TODO: [Backups] Enable comparator.
-            enableLibsignalComparator: false
+            }
         ) { sdsTx, tx in
             let deletedStories = privateStoryThreadDeletionManager.allDeletedIdentifiers(tx: tx)
             XCTAssertEqual(deletedStories.count, 2)
