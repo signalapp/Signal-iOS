@@ -312,6 +312,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         }
 
         private func didFinishDownloading(_ record: QueuedAttachmentDownloadRecord) async {
+            Logger.info("Succeeded download of attachment \(record.attachmentId)")
             self.currentRecordIds.remove(record.id!)
             await db.awaitableWrite { tx in
                 try? self.attachmentDownloadStore.removeAttachmentFromQueue(
@@ -326,6 +327,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             _ record: QueuedAttachmentDownloadRecord,
             isRetryable: Bool
         ) async {
+            Logger.error("Failed download of attachment \(record.attachmentId)")
             self.currentRecordIds.remove(record.id!)
             if isRetryable, let retryTime = self.retryTime(for: record) {
                 await db.awaitableWrite { tx in
@@ -420,13 +422,22 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 break
             case .blockedByActiveCall:
                 // This is a temporary setback; retry in a bit if the source allows it.
+                Logger.info("Skipping attachment download due to active call \(record.attachmentId)")
                 await self.didFailToDownload(record, isRetryable: true)
                 return
-            case .blockedByPendingMessageRequest, .blockedByAutoDownloadSettings:
+            case .blockedByPendingMessageRequest:
+                Logger.info("Skipping attachment download due to pending message request \(record.attachmentId)")
+                // These can only be resolved by user action; cancel the enqueued download.
+                await self.didFailToDownload(record, isRetryable: false)
+                return
+            case .blockedByAutoDownloadSettings:
+                Logger.info("Skipping attachment download due to auto download settings \(record.attachmentId)")
                 // These can only be resolved by user action; cancel the enqueued download.
                 await self.didFailToDownload(record, isRetryable: false)
                 return
             }
+
+            Logger.info("Downloading attachment \(record.attachmentId)")
 
             if
                 let originalAttachmentIdForQuotedReply = attachment.originalAttachmentIdForQuotedReply,
@@ -436,11 +447,13 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 )
             {
                 // Done!
+                Logger.info("Sourced quote attachment from original \(record.attachmentId)")
                 return
             }
 
             if await quoteUnquoteDownloadStickerFromInstalledPackIfPossible(record: record) {
                 // Done!
+                Logger.info("Sourced sticker attachment from installed sticker \(record.attachmentId)")
                 return
             }
 
