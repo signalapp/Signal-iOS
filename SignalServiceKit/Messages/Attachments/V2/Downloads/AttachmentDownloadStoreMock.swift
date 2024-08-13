@@ -25,11 +25,11 @@ open class AttachmentDownloadStoreMock: AttachmentDownloadStore {
         return queue.first(where: { $0.id == id })
     }
 
-    open func isAttachmentEnqueuedForDownload(
-        id: Attachment.IDType,
+    open func enqueuedDownload(
+        for id: Attachment.IDType,
         tx: DBReadTransaction
-    ) throws -> Bool {
-        return queue.contains(where: { $0.attachmentId == id })
+    ) throws -> QueuedAttachmentDownloadRecord? {
+        return queue.first(where: { $0.attachmentId == id })
     }
 
     open func peek(

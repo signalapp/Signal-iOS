@@ -45,10 +45,13 @@ public class AttachmentTransitPointer {
             return .enqueuedOrDownloading
         }
         do {
-            if try DependenciesBridge.shared.attachmentDownloadStore.isAttachmentEnqueuedForDownload(
-                id: attachment.id,
-                tx: tx
-            ) {
+            if
+                let record = try DependenciesBridge.shared.attachmentDownloadStore.enqueuedDownload(
+                    for: attachment.id,
+                    tx: tx
+                ),
+                record.minRetryTimestamp ?? 0 <= Date().ows_millisecondsSince1970
+            {
                 return .enqueuedOrDownloading
             }
         } catch {

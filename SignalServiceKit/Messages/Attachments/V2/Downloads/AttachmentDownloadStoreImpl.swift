@@ -32,21 +32,20 @@ public class AttachmentDownloadStoreImpl: AttachmentDownloadStore {
         return try Record.fetchOne(db, key: id)
     }
 
-    public func isAttachmentEnqueuedForDownload(
-        id: Attachment.IDType,
+    public func enqueuedDownload(
+        for id: Attachment.IDType,
         tx: DBReadTransaction
-    ) throws -> Bool {
-        return try isAttachmentEnqueuedForDownload(id: id, db: tx.db)
+    ) throws -> QueuedAttachmentDownloadRecord? {
+        return try enqueuedDownload(id: id, db: tx.db)
     }
 
-    internal func isAttachmentEnqueuedForDownload(
+    internal func enqueuedDownload(
         id: Attachment.IDType,
         db: Database
-    ) throws -> Bool {
+    ) throws -> QueuedAttachmentDownloadRecord? {
         return try Record
             .filter(Column(.attachmentId) == id)
-            .isEmpty(db)
-            .negated
+            .fetchOne(db)
     }
 
     public func peek(
