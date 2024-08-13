@@ -142,22 +142,15 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
             let isCollapsed = splitViewController?.isCollapsed ?? true
             if isCollapsed {
-                // If possible, wait until the pop transition is finished and
-                // animate the deselection nicely. Also allows the cell to
-                // remain selected while the transition is active.
                 if animated, let transitionCoordinator {
-                    transitionCoordinator.animate(alongsideTransition: nil) { [self] context in
-                        if !context.isCancelled {
-                            tableView.performBatchUpdates {
-                                tableView.deselectRow(at: selectedIndexPath, animated: true)
-                            } completion: { [self] finished in
-                                // Avoid stomping on view state if the user has already
-                                // interacted with the table view.
-                                if finished && viewState.lastSelectedThreadId == selectedThread.uniqueId {
-                                    viewState.lastSelectedThreadId = nil
-                                    loadCoordinator.scheduleLoad(updatedThreadIds: [selectedThread.uniqueId], animated: true)
-                                }
-                            }
+                    transitionCoordinator.animate { [self] _ in
+                        tableView.deselectRow(at: selectedIndexPath, animated: true)
+                    } completion: { [self] context in
+                        if context.isCancelled {
+                            tableView.selectRow(at: selectedIndexPath, animated: false, scrollPosition: .none)
+                        } else {
+                            viewState.lastSelectedThreadId = nil
+                            loadCoordinator.scheduleLoad(updatedThreadIds: [selectedThread.uniqueId], animated: true)
                         }
                     }
                 } else {
