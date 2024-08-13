@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation OWSVerificationStateChangeMessage
 
 - (instancetype)initWithThread:(TSThread *)thread
+                     timestamp:(uint64_t)timestamp
               recipientAddress:(SignalServiceAddress *)recipientAddress
              verificationState:(OWSVerificationState)verificationState
                  isLocalChange:(BOOL)isLocalChange
@@ -19,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(recipientAddress.isValid);
 
     self = [super initWithThread:thread
-                       timestamp:0
+                       timestamp:timestamp
                       serverGuid:nil
                      messageType:TSInfoMessageVerificationStateChange
              infoMessageUserInfo:nil];

@@ -30,12 +30,10 @@ public extension TSInfoMessage {
         }
 
         func saveProfileUpdateMessage(thread: TSThread) {
-            let profileUpdateMessage = TSInfoMessage(
+            let profileUpdateMessage: TSInfoMessage = .makeForProfileChange(
                 thread: thread,
-                messageType: .profileUpdate,
-                infoMessageUserInfo: [.profileChanges: profileChanges]
+                profileChanges: profileChanges
             )
-            profileUpdateMessage.wasRead = true
             profileUpdateMessage.anyInsert(transaction: transaction)
         }
 
@@ -53,19 +51,15 @@ public extension TSInfoMessage {
     }
 
     static func makeForProfileChange(
-        profileAddress: SignalServiceAddress,
-        oldName: String,
-        newName: String,
-        thread: TSThread
+        thread: TSThread,
+        timestamp: UInt64 = MessageTimestampGenerator.sharedInstance.generateTimestamp(),
+        profileChanges: ProfileChanges
     ) -> TSInfoMessage {
         let infoMessage = TSInfoMessage(
             thread: thread,
             messageType: .profileUpdate,
-            infoMessageUserInfo: [.profileChanges: ProfileChanges(
-                address: profileAddress,
-                oldNameLiteral: oldName,
-                newNameLiteral: newName
-            )]
+            timestamp: timestamp,
+            infoMessageUserInfo: [.profileChanges: profileChanges]
         )
         infoMessage.wasRead = true
 

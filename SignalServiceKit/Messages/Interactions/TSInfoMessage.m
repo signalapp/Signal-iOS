@@ -79,25 +79,6 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
     return self;
 }
 
-- (instancetype)initWithThread:(TSThread *)thread messageType:(TSInfoMessageType)messageType
-{
-    self = [self initWithThread:thread timestamp:0 serverGuid:nil messageType:messageType infoMessageUserInfo:nil];
-    return self;
-}
-
-- (instancetype)initWithThread:(TSThread *)thread
-                   messageType:(TSInfoMessageType)messageType
-           infoMessageUserInfo:(NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo
-{
-    self = [self initWithThread:thread
-                      timestamp:0
-                     serverGuid:nil
-                    messageType:messageType
-            infoMessageUserInfo:infoMessageUserInfo];
-
-    return self;
-}
-
 - (instancetype)initWithThread:(TSThread *)thread
                      timestamp:(uint64_t)timestamp
                     serverGuid:(nullable NSString *)serverGuid

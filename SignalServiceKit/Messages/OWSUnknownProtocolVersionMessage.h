@@ -62,6 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
              unregisteredAddress:(nullable SignalServiceAddress *)unregisteredAddress NS_UNAVAILABLE;
 
 - (instancetype)initWithThread:(TSThread *)thread
+                     timestamp:(uint64_t)timestamp
                         sender:(nullable SignalServiceAddress *)sender
                protocolVersion:(NSUInteger)protocolVersion NS_DESIGNATED_INITIALIZER;
 

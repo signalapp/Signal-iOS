@@ -837,6 +837,7 @@ public final class MessageReceiver: Dependencies {
             owsFailDebug("Unknown protocol version: \(dataMessage.requiredProtocolVersion)")
             OWSUnknownProtocolVersionMessage(
                 thread: thread,
+                timestamp: MessageTimestampGenerator.sharedInstance.generateTimestamp(),
                 sender: SignalServiceAddress(envelope.sourceAci),
                 protocolVersion: UInt(dataMessage.requiredProtocolVersion)
             ).anyInsert(transaction: tx)

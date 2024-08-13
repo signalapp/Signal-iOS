@@ -24,11 +24,12 @@ NSUInteger const OWSUnknownProtocolVersionMessageSchemaVersion = 1;
 @implementation OWSUnknownProtocolVersionMessage
 
 - (instancetype)initWithThread:(TSThread *)thread
+                     timestamp:(uint64_t)timestamp
                         sender:(nullable SignalServiceAddress *)sender
                protocolVersion:(NSUInteger)protocolVersion
 {
     self = [super initWithThread:thread
-                       timestamp:0
+                       timestamp:timestamp
                       serverGuid:nil
                      messageType:TSInfoMessageUnknownProtocolVersion
              infoMessageUserInfo:nil];

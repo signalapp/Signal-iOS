@@ -206,11 +206,11 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 switch unsealedEnvelope.contentHint {
                 case .default:
                     // If default, insert an error message right away
-                    errorMessage = TSErrorMessage.failedDecryption(
-                        forSender: sourceAddress,
-                        untrustedGroupId: unsealedEnvelope.untrustedGroupId,
+                    errorMessage = .failedDecryption(
+                        sender: sourceAddress,
+                        groupId: unsealedEnvelope.untrustedGroupId,
                         timestamp: validatedEnvelope.timestamp,
-                        transaction: transaction
+                        tx: transaction
                     )
                 case .resendable:
                     // If resendable, insert a placeholder
@@ -252,7 +252,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
 
                 if didReset {
                     // Always notify the user that we have performed an automatic archive.
-                    errorMessage = TSErrorMessage.sessionRefresh(in: contactThread)
+                    errorMessage = .sessionRefresh(thread: contactThread)
                 } else {
                     errorMessage = nil
                 }
@@ -263,11 +263,11 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             DependenciesBridge.shared.linkedDevicePniKeyManager
                 .recordSuspectedIssueWithPniIdentityKey(tx: transaction.asV2Write)
 
-            errorMessage = TSErrorMessage.failedDecryption(
-                forSender: sourceAddress,
-                untrustedGroupId: unsealedEnvelope.untrustedGroupId,
+            errorMessage = .failedDecryption(
+                sender: sourceAddress,
+                groupId: unsealedEnvelope.untrustedGroupId,
                 timestamp: validatedEnvelope.timestamp,
-                transaction: transaction
+                tx: transaction
             )
         }
 
@@ -753,10 +753,10 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                     guard let thread = placeholder.thread(tx: tx) else {
                         return
                     }
-                    let errorMessage = TSErrorMessage.failedDecryption(
-                        forSender: placeholder.sender,
+                    let errorMessage: TSErrorMessage = .failedDecryption(
                         thread: thread,
-                        timestamp: MessageTimestampGenerator.sharedInstance.generateTimestamp()
+                        timestamp: MessageTimestampGenerator.sharedInstance.generateTimestamp(),
+                        sender: placeholder.sender
                     )
                     errorMessage.anyInsert(transaction: tx)
                     self.notificationPresenter.notifyUser(forErrorMessage: errorMessage, thread: thread, transaction: tx)

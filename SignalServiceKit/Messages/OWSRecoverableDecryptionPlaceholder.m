@@ -11,11 +11,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSRecoverableDecryptionPlaceholder
 
-- (instancetype)initErrorMessageWithBuilder:(TSErrorMessageBuilder *)errorMessageBuilder
-{
-    return [super initErrorMessageWithBuilder:errorMessageBuilder];
-}
-
 - (nullable instancetype)initWithFailedEnvelopeTimestamp:(uint64_t)timestamp
                                                sourceAci:(AciObjC *)sourceAci
                                         untrustedGroupId:(nullable NSData *)untrustedGroupId
@@ -39,8 +34,8 @@ NS_ASSUME_NONNULL_BEGIN
     if (!thread) {
         return nil;
     }
-    TSErrorMessageBuilder *builder =
-        [TSErrorMessageBuilder errorMessageBuilderWithThread:thread errorType:TSErrorMessageDecryptionFailure];
+    TSErrorMessageBuilder *builder = [[TSErrorMessageBuilder alloc] initWithThread:thread
+                                                                         errorType:TSErrorMessageDecryptionFailure];
     builder.timestamp = timestamp;
     builder.senderAddress = sender;
     return [super initErrorMessageWithBuilder:builder];

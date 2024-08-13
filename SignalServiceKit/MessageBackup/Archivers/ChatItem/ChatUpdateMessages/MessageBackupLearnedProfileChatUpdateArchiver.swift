@@ -40,14 +40,6 @@ final class MessageBackupLearnedProfileChatUpdateArchiver {
             return messageFailure(.learnedProfileUpdateMissingPreviousName)
         }
 
-        guard let contactAddress = (thread as? TSContactThread)?.contactAddress.asSingleServiceIdBackupAddress() else {
-            return messageFailure(.learnedProfileUpdateMissingAuthor)
-        }
-
-        guard let threadRecipientId = context.recipientContext[.contact(contactAddress)] else {
-            return messageFailure(.referencedRecipientIdMissing(.contact(contactAddress)))
-        }
-
         var learnedProfileChatUpdate = BackupProto_LearnedProfileChatUpdate()
         switch displayNameBeforeLearningProfileKey {
         case .phoneNumber(let phoneNumber):
@@ -64,7 +56,7 @@ final class MessageBackupLearnedProfileChatUpdateArchiver {
         chatUpdateMessage.update = .learnedProfileChange(learnedProfileChatUpdate)
 
         let interactionArchiveDetails = Details(
-            author: threadRecipientId,
+            author: context.recipientContext.localRecipientId,
             directionalDetails: .directionless(BackupProto_ChatItem.DirectionlessMessageDetails()),
             dateCreated: infoMessage.timestamp,
             expireStartDate: nil,
@@ -118,6 +110,7 @@ final class MessageBackupLearnedProfileChatUpdateArchiver {
 
         let learnedProfileKeyInfoMessage: TSInfoMessage = .makeForLearnedProfileName(
             contactThread: contactThread,
+            timestamp: chatItem.dateSent,
             displayNameBefore: displayNameBefore
         )
         interactionStore.insertInteraction(learnedProfileKeyInfoMessage, tx: tx)

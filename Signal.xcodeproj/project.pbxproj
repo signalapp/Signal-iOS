@@ -2034,6 +2034,7 @@
 		D9E8EDF32C0FD8C800923E3C /* DeleteForMeInfoSheetCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E8EDF22C0FD8C800923E3C /* DeleteForMeInfoSheetCoordinator.swift */; };
 		D9EA2A872C2B609800B367DF /* MessageBackupChatUpdateMessageArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EA2A862C2B609800B367DF /* MessageBackupChatUpdateMessageArchiver.swift */; };
 		D9EA2A892C2B929400B367DF /* MessageBackupSimpleChatUpdateArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EA2A882C2B929400B367DF /* MessageBackupSimpleChatUpdateArchiver.swift */; };
+		D9EAB2A32C6AC6E100E26207 /* MessageBackupSimpleChatUpdateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D994C7CB2C45D0D9009ECEDA /* MessageBackupSimpleChatUpdateTest.swift */; };
 		D9EB221E2A4B636C00C73E1D /* Bitmaps+LineDrawing.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EB22192A4B636B00C73E1D /* Bitmaps+LineDrawing.swift */; };
 		D9EB221F2A4B636C00C73E1D /* Bitmaps+Shapes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EB221A2A4B636B00C73E1D /* Bitmaps+Shapes.swift */; };
 		D9EB22202A4B636C00C73E1D /* Bitmaps+Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EB221B2A4B636B00C73E1D /* Bitmaps+Image.swift */; };
@@ -15465,6 +15466,7 @@
 				D9DD64CF2C585173007CE0C3 /* MessageBackupLearnedProfileChatUpdateTest.swift in Sources */,
 				D994C7D72C45E7A0009ECEDA /* MessageBackupProfileChangeChatUpdateTest.swift in Sources */,
 				D9BFB8D22C4F054A00D67881 /* MessageBackupSessionSwitchoverChatUpdateTest.swift in Sources */,
+				D9EAB2A32C6AC6E100E26207 /* MessageBackupSimpleChatUpdateTest.swift in Sources */,
 				D9BFB8C22C4EF0C800D67881 /* MessageBackupThreadMergeChatUpdateTest.swift in Sources */,
 				66FC637229DF7A1500F00DAC /* MessageBodyRangesTests.swift in Sources */,
 				668444822A3292AB00DBED7C /* MessageBodyStyleTests.swift in Sources */,

@@ -360,8 +360,9 @@ final class MessageBackupSimpleChatUpdateArchiver {
                 return invalidProtoData(.verificationStateChangeNotFromContact)
             }
 
-            simpleChatUpdateInteraction = .errorMessage(TSErrorMessage.nonblockingIdentityChange(
-                in: thread,
+            simpleChatUpdateInteraction = .errorMessage(.nonblockingIdentityChange(
+                thread: thread,
+                timestamp: chatItem.dateSent,
                 // We'll use the author of this chat item as the user whose
                 // identity key changed.
                 address: contactAddress.asInteropAddress(),
@@ -386,6 +387,7 @@ final class MessageBackupSimpleChatUpdateArchiver {
 
             simpleChatUpdateInteraction = .prebuiltInfoMessage(OWSVerificationStateChangeMessage(
                 thread: thread,
+                timestamp: chatItem.dateSent,
                 // We'll use the author of this chat item as the user whose
                 // verification state changed.
                 recipientAddress: contactAddress.asInteropAddress(),
@@ -406,10 +408,13 @@ final class MessageBackupSimpleChatUpdateArchiver {
                 return invalidProtoData(.phoneNumberChangeNotFromContact)
             }
 
-            let changeNumberInfoMessage = TSInfoMessage(thread: thread, messageType: .phoneNumberChange)
-            changeNumberInfoMessage.setPhoneNumberChangeInfo(aci: aci, oldNumber: nil, newNumber: nil)
-
-            simpleChatUpdateInteraction = .prebuiltInfoMessage(changeNumberInfoMessage)
+            simpleChatUpdateInteraction = .prebuiltInfoMessage(.makeForPhoneNumberChange(
+                thread: thread,
+                timestamp: chatItem.dateSent,
+                aci: aci,
+                oldNumber: nil,
+                newNumber: nil
+            ))
         case .releaseChannelDonationRequest:
             // TODO: [Backups] Add support (and a test case!) for this once we've implemented the Release Notes channel.
             logger.warn("Encountered not-yet-supported release-channel-donation-request update")
@@ -417,8 +422,9 @@ final class MessageBackupSimpleChatUpdateArchiver {
         case .endSession:
             simpleChatUpdateInteraction = .simpleInfoMessage(.typeSessionDidEnd)
         case .chatSessionRefresh:
-            simpleChatUpdateInteraction = .errorMessage(TSErrorMessage.sessionRefresh(
-                in: thread
+            simpleChatUpdateInteraction = .errorMessage(.sessionRefresh(
+                thread: thread,
+                timestamp: chatItem.dateSent
             ))
         case .badDecrypt:
             guard let senderRecipient = context.recipientContext[chatItem.authorRecipientId] else {
@@ -428,10 +434,10 @@ final class MessageBackupSimpleChatUpdateArchiver {
                 return invalidProtoData(.decryptionErrorNotFromContact)
             }
 
-            simpleChatUpdateInteraction = .errorMessage(TSErrorMessage.failedDecryption(
-                forSender: contactAddress.asInteropAddress(),
+            simpleChatUpdateInteraction = .errorMessage(.failedDecryption(
                 thread: thread,
-                timestamp: chatItem.dateSent
+                timestamp: chatItem.dateSent,
+                sender: contactAddress.asInteropAddress()
             ))
         case .paymentsActivated:
             let senderAci: Aci
@@ -449,6 +455,7 @@ final class MessageBackupSimpleChatUpdateArchiver {
 
             simpleChatUpdateInteraction = .prebuiltInfoMessage(.paymentsActivatedMessage(
                 thread: thread,
+                timestamp: chatItem.dateSent,
                 senderAci: senderAci
             ))
         case .paymentActivationRequest:
@@ -467,6 +474,7 @@ final class MessageBackupSimpleChatUpdateArchiver {
 
             simpleChatUpdateInteraction = .prebuiltInfoMessage(.paymentsActivationRequestMessage(
                 thread: thread,
+                timestamp: chatItem.dateSent,
                 senderAci: senderAci
             ))
         case .unsupportedProtocolMessage:
@@ -484,6 +492,7 @@ final class MessageBackupSimpleChatUpdateArchiver {
 
             simpleChatUpdateInteraction = .prebuiltInfoMessage(OWSUnknownProtocolVersionMessage(
                 thread: thread,
+                timestamp: chatItem.dateSent,
                 sender: senderAddress,
                 // This isn't quite right, but we don't have the required
                 // protocol version for this message in the backup. Setting it
@@ -496,9 +505,16 @@ final class MessageBackupSimpleChatUpdateArchiver {
         }
 
         let interactionToInsert: TSInteraction = switch simpleChatUpdateInteraction {
-        case .simpleInfoMessage(let infoMessageType): TSInfoMessage(thread: thread, messageType: infoMessageType)
-        case .prebuiltInfoMessage(let infoMessage): infoMessage
-        case .errorMessage(let errorMessage): errorMessage
+        case .simpleInfoMessage(let infoMessageType):
+            TSInfoMessage(
+                thread: thread,
+                messageType: infoMessageType,
+                timestamp: chatItem.dateSent
+            )
+        case .prebuiltInfoMessage(let infoMessage):
+            infoMessage
+        case .errorMessage(let errorMessage):
+            errorMessage
         }
 
         interactionStore.insertInteraction(

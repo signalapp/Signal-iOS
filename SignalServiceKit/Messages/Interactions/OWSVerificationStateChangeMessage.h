@@ -66,6 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
              unregisteredAddress:(nullable SignalServiceAddress *)unregisteredAddress NS_UNAVAILABLE;
 
 - (instancetype)initWithThread:(TSThread *)thread
+                     timestamp:(uint64_t)timestamp
               recipientAddress:(SignalServiceAddress *)recipientAddress
              verificationState:(OWSVerificationState)verificationState
                  isLocalChange:(BOOL)isLocalChange NS_DESIGNATED_INITIALIZER;

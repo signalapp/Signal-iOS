@@ -99,7 +99,8 @@ final class MessageBackupSimpleChatUpdateTest: MessageBackupIntegrationTestCase 
                             .typeDisappearingMessagesUpdate,
                             .profileUpdate,
                             .threadMerge,
-                            .sessionSwitchover:
+                            .sessionSwitchover,
+                            .learnedProfileName:
                         throw FailTestError("Unexpectedly found complex update message \(infoMessage.messageType).")
                     case .verificationStateChange, .unknownProtocolVersion:
                         throw FailTestError("Unexpected message type for specific subclass in generic TSInfoMessage.")

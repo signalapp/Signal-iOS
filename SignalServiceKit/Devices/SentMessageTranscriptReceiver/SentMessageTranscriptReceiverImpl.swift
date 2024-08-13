@@ -361,8 +361,9 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
         {
             owsFailDebug("Unknown protocol version: \(requiredProtocolVersion)")
 
-            let message = OWSUnknownProtocolVersionMessage.init(
+            let message = OWSUnknownProtocolVersionMessage(
                 thread: thread,
+                timestamp: MessageTimestampGenerator.sharedInstance.generateTimestamp(),
                 sender: nil,
                 protocolVersion: UInt(requiredProtocolVersion)
             )

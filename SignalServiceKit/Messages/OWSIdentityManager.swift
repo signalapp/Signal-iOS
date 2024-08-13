@@ -397,8 +397,8 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             withContactAddress: SignalServiceAddress(serviceId),
             transaction: SDSDB.shimOnlyBridge(tx)
         )
-        let contactThreadMessage = TSErrorMessage.nonblockingIdentityChange(
-            in: contactThread,
+        let contactThreadMessage: TSErrorMessage = .nonblockingIdentityChange(
+            thread: contactThread,
             address: SignalServiceAddress(serviceId),
             wasIdentityVerified: wasIdentityVerified
         )
@@ -406,7 +406,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
 
         for groupThread in TSGroupThread.groupThreads(with: SignalServiceAddress(serviceId), transaction: SDSDB.shimOnlyBridge(tx)) {
             TSErrorMessage.nonblockingIdentityChange(
-                in: groupThread,
+                thread: groupThread,
                 address: SignalServiceAddress(serviceId),
                 wasIdentityVerified: wasIdentityVerified
             ).anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
@@ -934,6 +934,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         for thread in relevantThreads {
             OWSVerificationStateChangeMessage(
                 thread: thread,
+                timestamp: MessageTimestampGenerator.sharedInstance.generateTimestamp(),
                 recipientAddress: address,
                 verificationState: verificationState.rawValue,
                 isLocalChange: isLocalChange

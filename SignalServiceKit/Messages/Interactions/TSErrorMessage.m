@@ -208,59 +208,6 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
     return OWSLocalizedString(@"ERROR_MESSAGE_UNKNOWN_ERROR", @"");
 }
 
-+ (instancetype)sessionRefreshInThread:(TSThread *)thread
-{
-    return [[TSErrorMessageBuilder errorMessageBuilderWithThread:thread errorType:TSErrorMessageSessionRefresh] build];
-}
-
-+ (instancetype)nonblockingIdentityChangeInThread:(TSThread *)thread
-                                          address:(SignalServiceAddress *)address
-                              wasIdentityVerified:(BOOL)wasIdentityVerified
-{
-    TSErrorMessageBuilder *builder =
-        [TSErrorMessageBuilder errorMessageBuilderWithThread:thread errorType:TSErrorMessageNonBlockingIdentityChange];
-    builder.recipientAddress = address;
-    builder.wasIdentityVerified = wasIdentityVerified;
-    return [builder build];
-}
-
-+ (instancetype)failedDecryptionForSender:(nullable SignalServiceAddress *)sender
-                                   thread:(TSThread *)thread
-                                timestamp:(uint64_t)timestamp
-{
-    TSErrorMessageBuilder *builder =
-        [TSErrorMessageBuilder errorMessageBuilderWithThread:thread errorType:TSErrorMessageDecryptionFailure];
-    builder.senderAddress = sender;
-    builder.timestamp = timestamp;
-    return [builder build];
-}
-
-+ (instancetype)failedDecryptionForSender:(SignalServiceAddress *)sender
-                         untrustedGroupId:(nullable NSData *)untrustedGroupId
-                                timestamp:(uint64_t)timestamp
-                              transaction:(SDSAnyWriteTransaction *)transaction
-{
-    TSThread *_Nullable thread = nil;
-    if (untrustedGroupId.length > 0) {
-        TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:untrustedGroupId
-                                                                   transaction:transaction];
-        // If we aren't sure that the sender is a member of the reported groupId, we should fall back
-        // to inserting the placeholder in the contact thread.
-        if ([groupThread.groupMembership isFullMember:sender]) {
-            thread = groupThread;
-        }
-        OWSAssertDebug(thread);
-    }
-    if (!thread) {
-        thread = [TSContactThread getThreadWithContactAddress:sender transaction:transaction];
-        OWSAssertDebug(thread);
-    }
-    if (!thread) {
-        return nil;
-    }
-    return [self failedDecryptionForSender:sender thread:thread timestamp:timestamp];
-}
-
 #pragma mark - OWSReadTracking
 
 - (uint64_t)expireStartedAt

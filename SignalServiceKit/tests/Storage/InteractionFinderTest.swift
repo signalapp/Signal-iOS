@@ -17,15 +17,15 @@ class InteractionFinderTest: SSKBaseTest {
         let outgoingMessage1 = TSOutgoingMessage(in: contactThread1, messageBody: "good heavens")
         let outgoingMessage2 = TSOutgoingMessage(in: contactThread2, messageBody: "land's sakes")
         let outgoingMessage3 = TSOutgoingMessage(in: contactThread2, messageBody: "oh my word")
-        let errorMessage1 = TSErrorMessage.nonblockingIdentityChange(
-            in: contactThread1,
+        let errorMessage1: TSErrorMessage = .nonblockingIdentityChange(
+            thread: contactThread1,
             address: address1,
             wasIdentityVerified: false
         )
         let errorMessage2: TSErrorMessage = .failedDecryption(
-            forSender: nil,
             thread: contactThread1,
-            timestamp: 0
+            timestamp: 0,
+            sender: nil
         )
         // Non-message interactions
         let missedCall = TSCall(callType: .incomingMissed,

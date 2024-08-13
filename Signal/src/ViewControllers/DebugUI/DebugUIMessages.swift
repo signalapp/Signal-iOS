@@ -104,15 +104,12 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                 OWSTableItem(title: "Send pdf", actionBlock: {
                     DebugUIMessages.sendRandomAttachmentInThread(thread, uti: UTType.pdf.identifier)
                 }),
-                OWSTableItem(title: "Create all system messages", actionBlock: {
-                    DebugUIMessages.createSystemMessagesInThread(thread)
-                }),
                 OWSTableItem(title: "Create messages with variety of timestamps", actionBlock: {
                   DebugUIMessages.createTimestampMessagesInThread(thread)
                 }),
-                OWSTableItem(title: "Send text and system messages", actionBlock: {
+                OWSTableItem(title: "Send text messages", actionBlock: {
                     DebugUIMessages.askForQuantityWithTitle("How many messages?") { quantity in
-                        DebugUIMessages.sendTextAndSystemMessages(quantity, thread: thread)
+                        DebugUIMessages.sendTextMessages(quantity, thread: thread)
                     }
                 }),
                 OWSTableItem(title: "Message with stalled timer", actionBlock: {
@@ -1057,159 +1054,13 @@ class DebugUIMessages: DebugUIPage, Dependencies {
 
     // MARK: System Messages
 
-    private static func createSystemMessageInThread(_ thread: TSThread) {
-        let message = unsavedSystemMessagesInThread(thread).randomElement()!
-        databaseStorage.write { transaction in
-            message.anyInsert(transaction: transaction)
-        }
-    }
-
-    private static func createSystemMessagesInThread(_ thread: TSThread) {
-        let messages = unsavedSystemMessagesInThread(thread)
-        databaseStorage.write { transaction in
-            for message in messages {
-                message.anyInsert(transaction: transaction)
-            }
-        }
-    }
-
-    private static func unsavedSystemMessagesInThread(_ thread: TSThread) -> [TSInteraction] {
-        let messages = databaseStorage.write { transaction in
-            return unsavedSystemMessagesInThread(thread, transaction: transaction)
-        }
-        return messages
-    }
-
-    private static func unsavedSystemMessagesInThread(_ thread: TSThread, transaction: SDSAnyWriteTransaction) -> [TSInteraction] {
-        guard let incomingSenderAddress = anyIncomingSenderAddress(forThread: thread) else {
-            owsFailDebug("Missing incomingSenderAddress.")
-            return []
-        }
-
-        var results = [TSInteraction]()
-
-        // Calls
-
-        if let contactThread = thread as? TSContactThread {
-            results += [
-                TSCall(
-                    callType: .incoming,
-                    offerType: .audio,
-                    thread: contactThread,
-                    sentAtTimestamp: Date.ows_millisecondTimestamp()
-                ),
-                TSCall(
-                    callType: .outgoing,
-                    offerType: .audio,
-                    thread: contactThread,
-                    sentAtTimestamp: Date.ows_millisecondTimestamp()
-                ),
-                TSCall(
-                    callType: .incomingMissed,
-                    offerType: .audio,
-                    thread: contactThread,
-                    sentAtTimestamp: Date.ows_millisecondTimestamp()
-                ),
-                TSCall(
-                    callType: .incomingMissedBecauseOfChangedIdentity,
-                    offerType: .audio,
-                    thread: contactThread,
-                    sentAtTimestamp: Date.ows_millisecondTimestamp()
-                ),
-                TSCall(
-                    callType: .outgoingIncomplete,
-                    offerType: .audio,
-                    thread: contactThread,
-                    sentAtTimestamp: Date.ows_millisecondTimestamp()
-                ),
-                TSCall(
-                    callType: .incomingIncomplete,
-                    offerType: .audio,
-                    thread: contactThread,
-                    sentAtTimestamp: Date.ows_millisecondTimestamp()
-                ),
-                TSCall(
-                    callType: .incomingDeclined,
-                    offerType: .audio,
-                    thread: contactThread,
-                    sentAtTimestamp: Date.ows_millisecondTimestamp()
-                ),
-                TSCall(
-                    callType: .outgoingMissed,
-                    offerType: .audio,
-                    thread: contactThread,
-                    sentAtTimestamp: Date.ows_millisecondTimestamp()
-                ),
-                TSCall(
-                    callType: .incomingMissedBecauseOfDoNotDisturb,
-                    offerType: .audio,
-                    thread: contactThread,
-                    sentAtTimestamp: Date.ows_millisecondTimestamp()
-                )
-            ]
-        }
-
-        results += [
-            TSInfoMessage(thread: thread, messageType: .typeSessionDidEnd),
-            // TODO: customMessage?
-            TSInfoMessage(thread: thread, messageType: .typeGroupUpdate),
-            // TODO: customMessage?
-            TSInfoMessage(thread: thread, messageType: .typeGroupQuit),
-
-            OWSVerificationStateChangeMessage(
-                thread: thread,
-                recipientAddress: incomingSenderAddress,
-                verificationState: .default,
-                isLocalChange: true
-            ),
-            OWSVerificationStateChangeMessage(
-                thread: thread,
-                recipientAddress: incomingSenderAddress,
-                verificationState: .verified,
-                isLocalChange: true
-            ),
-            OWSVerificationStateChangeMessage(
-                thread: thread,
-                recipientAddress: incomingSenderAddress,
-                verificationState: .noLongerVerified,
-                isLocalChange: true
-            ),
-
-            OWSVerificationStateChangeMessage(
-                thread: thread,
-                recipientAddress: incomingSenderAddress,
-                verificationState: .default,
-                isLocalChange: false
-            ),
-            OWSVerificationStateChangeMessage(
-                thread: thread,
-                recipientAddress: incomingSenderAddress,
-                verificationState: .verified,
-                isLocalChange: false),
-            OWSVerificationStateChangeMessage(
-                thread: thread,
-                recipientAddress: incomingSenderAddress,
-                verificationState: .noLongerVerified,
-                isLocalChange: false
-            ),
-
-            TSErrorMessage.nonblockingIdentityChange(in: thread, address: incomingSenderAddress, wasIdentityVerified: false),
-            TSErrorMessage.nonblockingIdentityChange(in: thread, address: incomingSenderAddress, wasIdentityVerified: true)
-        ]
-
-        return results
-    }
-
-    private static func sendTextAndSystemMessages(_ counter: UInt, thread: TSThread) {
+    private static func sendTextMessages(_ counter: UInt, thread: TSThread) {
         guard counter > 0 else { return }
 
-        if Bool.random() {
-            sendTextMessageInThread(thread, counter: counter)
-        } else {
-            createSystemMessageInThread(thread)
-        }
+        sendTextMessageInThread(thread, counter: counter)
+
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            sendTextAndSystemMessages(counter - 1, thread: thread)
+            sendTextMessages(counter - 1, thread: thread)
         }
     }
 

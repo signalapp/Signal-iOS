@@ -100,6 +100,7 @@ final class MessageBackupSessionSwitchoverChatUpdateArchiver {
 
         let sessionSwitchoverInfoMessage: TSInfoMessage = .makeForSessionSwitchover(
             contactThread: switchedOverContactThread,
+            timestamp: chatItem.dateSent,
             phoneNumber: e164.stringValue
         )
         interactionStore.insertInteraction(sessionSwitchoverInfoMessage, tx: tx)

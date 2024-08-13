@@ -105,11 +105,14 @@ final class MessageBackupProfileChangeChatUpdateArchiver {
             return invalidProtoData(.profileChangeUpdateNotFromContact)
         }
 
-        let profileChangeInfoMessage = TSInfoMessage.makeForProfileChange(
-            profileAddress: profileChangeAuthorContactAddress.asInteropAddress(),
-            oldName: oldName,
-            newName: newName,
-            thread: chatThread.tsThread
+        let profileChangeInfoMessage: TSInfoMessage = .makeForProfileChange(
+            thread: chatThread.tsThread,
+            timestamp: chatItem.dateSent,
+            profileChanges: ProfileChanges(
+                address: profileChangeAuthorContactAddress.asInteropAddress(),
+                oldNameLiteral: oldName,
+                newNameLiteral: newName
+            )
         )
         interactionStore.insertInteraction(profileChangeInfoMessage, tx: tx)
 

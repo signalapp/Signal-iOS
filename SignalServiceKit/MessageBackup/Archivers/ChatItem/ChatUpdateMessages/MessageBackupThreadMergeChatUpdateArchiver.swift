@@ -100,6 +100,7 @@ final class MessageBackupThreadMergeChatUpdateArchiver {
 
         let threadMergeInfoMessage: TSInfoMessage = .makeForThreadMerge(
             mergedThread: mergedThread,
+            timestamp: chatItem.dateSent,
             previousE164: previousE164.stringValue
         )
         interactionStore.insertInteraction(threadMergeInfoMessage, tx: tx)

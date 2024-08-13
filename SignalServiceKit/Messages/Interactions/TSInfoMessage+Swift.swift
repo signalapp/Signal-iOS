@@ -6,6 +6,25 @@
 import Foundation
 import LibSignalClient
 
+// MARK: - Convenience initializers
+
+public extension TSInfoMessage {
+    convenience init(
+        thread: TSThread,
+        messageType: TSInfoMessageType,
+        timestamp: UInt64 = MessageTimestampGenerator.sharedInstance.generateTimestamp(),
+        infoMessageUserInfo: [InfoMessageUserInfoKey: Any]? = nil
+    ) {
+        self.init(
+            thread: thread,
+            timestamp: timestamp,
+            serverGuid: nil,
+            messageType: messageType,
+            infoMessageUserInfo: infoMessageUserInfo
+        )
+    }
+}
+
 // MARK: - Group updates
 
 public enum GroupUpdateSpamReportingMetadata {
@@ -222,6 +241,36 @@ public extension TSInfoMessage {
 
 // MARK: -
 
+extension TSInfoMessage {
+    static func makeForPhoneNumberChange(
+        thread: TSThread,
+        timestamp: UInt64 = MessageTimestampGenerator.sharedInstance.generateTimestamp(),
+        aci: Aci,
+        oldNumber: String?,
+        newNumber: E164?
+    ) -> TSInfoMessage {
+        var infoMessageUserInfo: [InfoMessageUserInfoKey: Any] = [
+            .changePhoneNumberAciString: aci.serviceIdUppercaseString
+        ]
+        if let oldNumber {
+            infoMessageUserInfo[.changePhoneNumberOld] = oldNumber
+        }
+        if let newNumber {
+            infoMessageUserInfo[.changePhoneNumberNew] = newNumber.stringValue
+        }
+
+        let infoMessage = TSInfoMessage(
+            thread: thread,
+            messageType: .phoneNumberChange,
+            timestamp: timestamp,
+            infoMessageUserInfo: infoMessageUserInfo
+        )
+        infoMessage.wasRead = true
+
+        return infoMessage
+    }
+}
+
 public extension TSInfoMessage {
     struct PhoneNumberChangeInfo {
         public let aci: Aci
@@ -256,21 +305,6 @@ public extension TSInfoMessage {
         guard let aci = phoneNumberChangeInfo()?.aci else { return nil }
         return AciObjC(aci)
     }
-
-    func setPhoneNumberChangeInfo(
-        aci: Aci,
-        oldNumber: String?,
-        newNumber: E164?
-    ) {
-        setInfoMessageValue(aci.serviceIdUppercaseString, forKey: .changePhoneNumberAciString)
-
-        if let oldNumber {
-            setInfoMessageValue(oldNumber, forKey: .changePhoneNumberOld)
-        }
-        if let newNumber {
-            setInfoMessageValue(newNumber.stringValue, forKey: .changePhoneNumberNew)
-        }
-    }
 }
 
 // MARK: -
@@ -278,6 +312,7 @@ public extension TSInfoMessage {
 extension TSInfoMessage {
     static func makeForThreadMerge(
         mergedThread: TSContactThread,
+        timestamp: UInt64 = MessageTimestampGenerator.sharedInstance.generateTimestamp(),
         previousE164: String?
     ) -> TSInfoMessage {
         let infoMessageUserInfo: [InfoMessageUserInfoKey: Any] = if let previousE164 {
@@ -289,6 +324,7 @@ extension TSInfoMessage {
         return TSInfoMessage(
             thread: mergedThread,
             messageType: .threadMerge,
+            timestamp: timestamp,
             infoMessageUserInfo: infoMessageUserInfo
         )
     }
@@ -326,6 +362,7 @@ public extension TSInfoMessage {
 extension TSInfoMessage {
     static func makeForSessionSwitchover(
         contactThread: TSContactThread,
+        timestamp: UInt64 = MessageTimestampGenerator.sharedInstance.generateTimestamp(),
         phoneNumber: String?
     ) -> TSInfoMessage {
         let infoMessageUserInfo: [InfoMessageUserInfoKey: Any] = if let phoneNumber {
@@ -337,6 +374,7 @@ extension TSInfoMessage {
         return TSInfoMessage(
             thread: contactThread,
             messageType: .sessionSwitchover,
+            timestamp: timestamp,
             infoMessageUserInfo: infoMessageUserInfo
         )
     }
@@ -395,6 +433,7 @@ extension TSInfoMessage {
 
     static func makeForLearnedProfileName(
         contactThread: TSContactThread,
+        timestamp: UInt64 = MessageTimestampGenerator.sharedInstance.generateTimestamp(),
         displayNameBefore: DisplayNameBeforeLearningProfileName
     ) -> TSInfoMessage {
         let infoMessageUserInfo: [InfoMessageUserInfoKey: Any] = switch displayNameBefore {
@@ -407,6 +446,7 @@ extension TSInfoMessage {
         return TSInfoMessage(
             thread: contactThread,
             messageType: .learnedProfileName,
+            timestamp: timestamp,
             infoMessageUserInfo: infoMessageUserInfo
         )
     }
@@ -491,11 +531,13 @@ public extension TSInfoMessage {
 extension TSInfoMessage {
     static func paymentsActivatedMessage(
         thread: TSThread,
+        timestamp: UInt64 = MessageTimestampGenerator.sharedInstance.generateTimestamp(),
         senderAci: Aci
     ) -> TSInfoMessage {
         return TSInfoMessage(
             thread: thread,
             messageType: .paymentsActivated,
+            timestamp: timestamp,
             infoMessageUserInfo: [
                 .paymentActivatedAci: senderAci.serviceIdString
             ]
@@ -504,11 +546,13 @@ extension TSInfoMessage {
 
     static func paymentsActivationRequestMessage(
         thread: TSThread,
+        timestamp: UInt64 = MessageTimestampGenerator.sharedInstance.generateTimestamp(),
         senderAci: Aci
     ) -> TSInfoMessage {
         return TSInfoMessage(
             thread: thread,
             messageType: .paymentsActivationRequest,
+            timestamp: timestamp,
             infoMessageUserInfo: [
                 .paymentActivationRequestSenderAci: senderAci.serviceIdString
             ]

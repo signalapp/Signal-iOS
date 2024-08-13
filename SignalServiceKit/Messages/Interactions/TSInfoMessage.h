@@ -102,12 +102,6 @@ extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyUsernameDisplayNameBef
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithThread:(TSThread *)thread messageType:(TSInfoMessageType)infoMessage;
-
-- (instancetype)initWithThread:(TSThread *)thread
-                   messageType:(TSInfoMessageType)messageType
-           infoMessageUserInfo:(NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo;
-
 - (instancetype)initWithThread:(TSThread *)thread
                      timestamp:(uint64_t)timestamp
                     serverGuid:(nullable NSString *)serverGuid

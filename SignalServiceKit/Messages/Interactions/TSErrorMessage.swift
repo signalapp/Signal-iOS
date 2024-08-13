@@ -4,6 +4,73 @@
 //
 
 extension TSErrorMessage {
+    static func sessionRefresh(
+        thread: TSThread,
+        timestamp: UInt64? = nil
+    ) -> TSErrorMessage {
+        let builder = TSErrorMessageBuilder(thread: thread, errorType: .sessionRefresh)
+        timestamp.map { builder.timestamp = $0 }
+        return TSErrorMessage(errorMessageWithBuilder: builder)
+    }
+
+    static func nonblockingIdentityChange(
+        thread: TSThread,
+        timestamp: UInt64? = nil,
+        address: SignalServiceAddress,
+        wasIdentityVerified: Bool
+    ) -> TSErrorMessage {
+        let builder = TSErrorMessageBuilder(thread: thread, errorType: .nonBlockingIdentityChange)
+        timestamp.map { builder.timestamp = $0 }
+        builder.recipientAddress = address
+        builder.wasIdentityVerified = wasIdentityVerified
+        return TSErrorMessage(errorMessageWithBuilder: builder)
+    }
+
+    static func failedDecryption(
+        thread: TSThread,
+        timestamp: UInt64,
+        sender: SignalServiceAddress?
+    ) -> TSErrorMessage {
+        let builder = TSErrorMessageBuilder(thread: thread, errorType: .decryptionFailure)
+        builder.timestamp = timestamp
+        builder.senderAddress = sender
+        return TSErrorMessage(errorMessageWithBuilder: builder)
+    }
+
+    static func failedDecryption(
+        sender: SignalServiceAddress,
+        groupId: Data?,
+        timestamp: UInt64,
+        tx: SDSAnyReadTransaction
+    ) -> TSErrorMessage? {
+        if
+            let groupId,
+            let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: tx),
+            groupThread.groupMembership.isFullMember(sender)
+        {
+            return .failedDecryption(
+                thread: groupThread,
+                timestamp: timestamp,
+                sender: sender
+            )
+        } else if let contactThread = TSContactThread.getWithContactAddress(
+            sender,
+            transaction: tx
+        ) {
+            return .failedDecryption(
+                thread: contactThread,
+                timestamp: timestamp,
+                sender: sender
+            )
+        }
+
+        return nil
+    }
+}
+
+// MARK: -
+
+extension TSErrorMessage {
     public func plaintextBody(_ tx: SDSAnyReadTransaction) -> String {
         return self.rawBody(transaction: tx) ?? ""
     }

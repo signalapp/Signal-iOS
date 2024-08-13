@@ -10,7 +10,7 @@ public class TSErrorMessageBuilder: TSMessageBuilder {
     public var senderAddress: SignalServiceAddress?
     public var wasIdentityVerified: Bool = false
 
-    private init(
+    init(
         thread: TSThread,
         errorType: TSErrorMessageType
     ) {
@@ -32,15 +32,6 @@ public class TSErrorMessageBuilder: TSMessageBuilder {
             storyReactionEmoji: nil,
             giftBadge: nil
         )
-    }
-
-    // MARK: -
-
-    public class func errorMessageBuilder(
-        thread: TSThread,
-        errorType: TSErrorMessageType
-    ) -> TSErrorMessageBuilder {
-        return TSErrorMessageBuilder(thread: thread, errorType: errorType)
     }
 
     // MARK: -
