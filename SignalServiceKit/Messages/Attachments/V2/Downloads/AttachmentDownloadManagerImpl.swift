@@ -1512,6 +1512,8 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     tx: tx
                 )
 
+                let alreadyAssignedFirstReference: Bool
+
                 let newAttachment: AttachmentStream
                 do {
                     guard self.orphanedAttachmentStore.orphanAttachmentExists(with: pendingAttachment.orphanRecordId, tx: tx) else {
@@ -1562,6 +1564,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         throw OWSAssertionError("Missing attachment we just created")
                     }
                     newAttachment = attachment
+                    alreadyAssignedFirstReference = true
                 } catch let AttachmentInsertError.duplicatePlaintextHash(existingAttachmentId) {
                     // Already have an attachment with the same plaintext hash!
                     // We will instead re-point all references to this attachment.
@@ -1571,12 +1574,16 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         throw OWSAssertionError("Missing attachment we just matched against")
                     }
                     newAttachment = attachment
+                    alreadyAssignedFirstReference = false
                 } catch let error {
                     throw error
                 }
 
                 // Move all existing references to the new thumbnail stream.
-                try references.suffix(max(references.count - 1, 0)).forEach { reference in
+                let referencesToUpdate = alreadyAssignedFirstReference
+                    ? references.suffix(max(references.count - 1, 0))
+                    : references
+                try referencesToUpdate.forEach { reference in
                     try self.attachmentStore.removeOwner(
                         reference.owner.id,
                         for: reference.attachmentRowId,
@@ -1619,6 +1626,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             )
 
             try await db.awaitableWrite { tx in
+                let alreadyAssignedFirstReference: Bool
                 let thumbnailAttachments = try self.attachmentStore
                     .allQuotedReplyAttachments(
                         forOriginalAttachmentId: downloadedAttachment.attachment.id,
@@ -1696,16 +1704,21 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         throw OWSAssertionError("Missing attachment we just created")
                     }
                     thumbnailAttachmentId = attachment.id
+                    alreadyAssignedFirstReference = true
                 } catch let AttachmentInsertError.duplicatePlaintextHash(existingAttachmentId) {
                     // Already have an attachment with the same plaintext hash!
                     // We will instead re-point all references to this attachment.
                     thumbnailAttachmentId = existingAttachmentId
+                    alreadyAssignedFirstReference = false
                 } catch let error {
                     throw error
                 }
 
                 // Move all existing references to the new thumbnail stream.
-                try references.suffix(max(references.count - 1, 0)).forEach { reference in
+                let referencesToUpdate = alreadyAssignedFirstReference
+                    ? references.suffix(max(references.count - 1, 0))
+                    : references
+                try referencesToUpdate.forEach { reference in
                     try self.attachmentStore.removeOwner(
                         reference.owner.id,
                         for: reference.attachmentRowId,
