@@ -301,6 +301,9 @@ public class CVAttachmentProgressView: ManualLayoutView {
             return
         }
         let progress = notification.userInfo?[TSResourceDownloads.attachmentDownloadProgressKey] as? CGFloat
+        if progress == nil {
+            Logger.warn("No progress for attachment progress notification.")
+        }
         updateDownloadProgress(progress)
     }
 
@@ -308,7 +311,6 @@ public class CVAttachmentProgressView: ManualLayoutView {
         AssertIsOnMainThread()
 
         guard let progress else {
-            Logger.warn("No progress for attachment.")
             stateView.state = .downloadUnknownProgress
             return
         }
