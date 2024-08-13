@@ -486,6 +486,7 @@ public class GroupManager: NSObject {
 
             let infoMessage = OWSDisappearingConfigurationUpdateInfoMessage(
                 contactThread: contactThread,
+                timestamp: MessageTimestampGenerator.sharedInstance.generateTimestamp(),
                 isConfigurationEnabled: result.newConfiguration.isEnabled,
                 configurationDurationSeconds: result.newConfiguration.durationSeconds,
                 createdByRemoteName: remoteContactName

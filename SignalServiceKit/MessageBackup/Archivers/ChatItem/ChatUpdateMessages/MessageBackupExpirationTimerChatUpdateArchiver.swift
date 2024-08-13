@@ -141,6 +141,7 @@ final class MessageBackupExpirationTimerChatUpdateArchiver {
 
         let dmUpdateInfoMessage = OWSDisappearingConfigurationUpdateInfoMessage(
             contactThread: contactThread,
+            timestamp: chatItem.dateSent,
             isConfigurationEnabled: expiresInSeconds > 0,
             configurationDurationSeconds: UInt32(clamping: expiresInSeconds), // Safe to clamp, we checked for overflow above
             createdByRemoteName: createdByRemoteName

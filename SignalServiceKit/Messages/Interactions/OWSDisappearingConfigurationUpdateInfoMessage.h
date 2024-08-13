@@ -63,6 +63,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// Create a new disappearing-timer-update info message.
 ///
+/// - Parameter timestamp
+/// The time at which this message was created. Note that historically this
+/// value was set to `0`, so legacy info messages may have a `0` timestamp.
+///
 /// - Important
 /// This info message today is only inserted for contact threads, and was
 /// historically persisted for GV1 groups. It's unclear, however, if these were
@@ -72,6 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// - SeeAlso ``GroupUpdateItemBuilder``
 /// - SeeAlso ``GroupUpdateInfoMessageInserter``
 - (instancetype)initWithContactThread:(TSContactThread *)contactThread
+                            timestamp:(uint64_t)timestamp
                isConfigurationEnabled:(BOOL)isConfigurationEnabled
          configurationDurationSeconds:(uint32_t)configurationDurationSeconds
                   createdByRemoteName:(nullable NSString *)remoteName NS_DESIGNATED_INITIALIZER;

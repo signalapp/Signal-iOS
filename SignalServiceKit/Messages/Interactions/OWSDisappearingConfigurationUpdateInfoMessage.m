@@ -31,12 +31,13 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (instancetype)initWithContactThread:(TSContactThread *)contactThread
+                            timestamp:(uint64_t)timestamp
                isConfigurationEnabled:(BOOL)isConfigurationEnabled
          configurationDurationSeconds:(uint32_t)configurationDurationSeconds
                   createdByRemoteName:(nullable NSString *)remoteName
 {
     self = [super initWithThread:contactThread
-                       timestamp:0
+                       timestamp:timestamp
                       serverGuid:nil
                      messageType:TSInfoMessageTypeDisappearingMessagesUpdate
              infoMessageUserInfo:nil];
