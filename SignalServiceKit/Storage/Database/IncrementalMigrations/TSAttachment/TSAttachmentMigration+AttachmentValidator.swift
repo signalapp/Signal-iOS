@@ -321,6 +321,7 @@ extension TSAttachmentMigration {
                     return try TSAttachmentMigration.OWSImageSource(fileUrl: unencryptedFileUrl)
                 } catch {
                     var errorString = "\(error)"
+                    errorString = errorString.replacingOccurrences(of: "/Attachments/", with: "/[attachment_dir]/")
                     errorString = errorString.replacingOccurrences(of: unencryptedFileUrl.lastPathComponent, with: "xxxx")
                     throw OWSAssertionError("Failed to open file handle image source \(errorString)")
                 }
