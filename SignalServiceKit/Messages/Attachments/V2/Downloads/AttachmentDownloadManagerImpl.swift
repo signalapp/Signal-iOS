@@ -448,12 +448,14 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             {
                 // Done!
                 Logger.info("Sourced quote attachment from original \(record.attachmentId)")
+                await self.didFinishDownloading(record)
                 return
             }
 
             if await quoteUnquoteDownloadStickerFromInstalledPackIfPossible(record: record) {
                 // Done!
                 Logger.info("Sourced sticker attachment from installed sticker \(record.attachmentId)")
+                await self.didFinishDownloading(record)
                 return
             }
 
@@ -525,13 +527,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             guard let downloadMetadata else {
                 owsFailDebug("Attempting to download an attachment without cdn info")
                 // Remove the download.
-                await db.awaitableWrite { tx in
-                    try? self.attachmentDownloadStore.removeAttachmentFromQueue(
-                        withId: attachment.id,
-                        source: record.sourceType,
-                        tx: tx
-                    )
-                }
+                await self.didFailToDownload(record, isRetryable: false)
                 return
             }
 
