@@ -1,1 +1,1 @@
-• We updated the control panel that appears during voice and video calls. If you want to save your best jokes and most interesting points until your favorite person is listening, now you can swipe up on the control panel to view the list of people who are in the call, see who has raised their hand, and perform other quick actions too.
+• เราอัปเดตแผงควบคุมที่จะแสดงในระหว่างการโทรด้วยเสียงและวิดีโอคอล จากนี้ไป เพียงคุณปัดขึ้นตรงแผงควบคุมนี้ ก็จะสามารถดูรายชื่อของคนที่อยู่ในสาย หรือดูได้ว่าใครยกมือ ทั้งยังเข้าถึงทางลัดต่างๆ ได้สะดวกยิ่งขึ้น

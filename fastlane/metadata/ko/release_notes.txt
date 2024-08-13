@@ -1,1 +1,1 @@
-• We updated the control panel that appears during voice and video calls. If you want to save your best jokes and most interesting points until your favorite person is listening, now you can swipe up on the control panel to view the list of people who are in the call, see who has raised their hand, and perform other quick actions too.
+• 음성 및 화상 통화 중 표시되는 제어판을 업데이트했습니다. 이제 제어판을 살짝 밀어 올려 통화에 참여 중인 사용자 목록을 보고, 누가 손을 들었는지 확인하고, 다른 빠른 작업을 수행할 수도 있습니다.

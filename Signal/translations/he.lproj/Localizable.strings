@@ -1049,7 +1049,7 @@
 "CHAT_LIST_UNREAD_FILTER_MENU_ACTION" = "סינון לפי צ׳אטים שלא נקראו";
 
 /* Message displayed on chat list when Filter by Unread is enabled but no unread chats are available */
-"CHAT_LIST_UNREAD_FILTER_NO_CHATS" = "No unread chats";
+"CHAT_LIST_UNREAD_FILTER_NO_CHATS" = "אין צ׳אטים שלא נקראו";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "צבע צ׳אט ורקע";

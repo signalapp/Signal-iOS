@@ -548,13 +548,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ і ще %1$d приєдналися до виклику</string>
+			<string>%2$@, %3$@ і ще %1$d користувач приєдналися до виклику</string>
 			<key>few</key>
-			<string>%2$@, %3$@ і ще %1$d приєдналися до виклику</string>
+			<string>%2$@, %3$@ і ще %1$d користувачі приєдналися до виклику</string>
 			<key>many</key>
-			<string>%2$@, %3$@ і ще %1$d приєдналися до виклику</string>
+			<string>%2$@, %3$@ і ще %1$d користувачів приєдналися до виклику</string>
 			<key>other</key>
-			<string>%2$@, %3$@ і ще %1$d приєдналися до виклику</string>
+			<string>%2$@, %3$@ і ще %1$d користувача приєдналися до виклику</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_LEFT_%d</key>
@@ -828,13 +828,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ запрошує до групи %1$d людину.</string>
+			<string>Користувач %2$@ запросив до групи %1$d учасника.</string>
 			<key>few</key>
-			<string>%2$@ запрошує до групи %1$d людей.</string>
+			<string>Користувач %2$@ запросив до групи %1$d учасників.</string>
 			<key>many</key>
-			<string>%2$@ запрошує до групи %1$d людей.</string>
+			<string>Користувач %2$@ запросив до групи %1$d учасників.</string>
 			<key>other</key>
-			<string>%2$@ запрошує до групи %1$d людини.</string>
+			<string>Користувач %2$@ запросив до групи %1$d учасника.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>
@@ -848,13 +848,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Запрошення до групи було відкликано для %1$d людини.</string>
+			<string>Відкликано %1$d запрошення в групу.</string>
 			<key>few</key>
-			<string>Запрошення до групи було відкликано для %1$d людей.</string>
+			<string>Відкликано %1$d запрошення в групу.</string>
 			<key>many</key>
-			<string>Запрошення до групи було відкликано для %1$d людей.</string>
+			<string>Відкликано %1$d запрошень у групу.</string>
 			<key>other</key>
-			<string>Запрошення до групи було відкликано для %1$d людини.</string>
+			<string>Відкликано %1$d запрошення в групу.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_%d</key>
@@ -868,13 +868,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ відкликає запрошення до групи для %1$d людини.</string>
+			<string>Користувач %2$@ відкликав %1$d запрошення в групу.</string>
 			<key>few</key>
-			<string>%2$@ відкликає запрошення до групи для %1$d людей.</string>
+			<string>Користувач %2$@ відкликав %1$d запрошення в групу.</string>
 			<key>many</key>
-			<string>%2$@ відкликає запрошення до групи для %1$d людей.</string>
+			<string>Користувач %2$@ відкликав %1$d запрошень у групу.</string>
 			<key>other</key>
-			<string>%2$@ відкликає запрошення до групи для %1$d людини.</string>
+			<string>Користувач %2$@ відкликав %1$d запрошення в групу.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_AND_CANCELED_%d</key>
