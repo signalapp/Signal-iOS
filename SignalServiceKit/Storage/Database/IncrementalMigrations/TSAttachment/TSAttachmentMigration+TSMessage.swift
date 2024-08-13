@@ -800,7 +800,7 @@ extension TSAttachmentMigration {
             }
 
             let pendingAttachment: TSAttachmentMigration.PendingV2AttachmentFile?
-            if let oldFilePath = oldAttachment.localFilePath, OWSFileSystem.fileOrFolderExists(atPath: oldFilePath) {
+            if let oldFilePath = oldAttachment.localFilePath, OWSFileSystem.fileExistsAndIsNotDirectory(atPath: oldFilePath) {
                 do {
                     pendingAttachment = try TSAttachmentMigration.V2AttachmentContentValidator.validateContents(
                         unencryptedFileUrl: URL(fileURLWithPath: oldFilePath),
@@ -1011,7 +1011,7 @@ extension TSAttachmentMigration {
 
             guard
                 let oldFilePath = oldAttachment.localFilePath,
-                OWSFileSystem.fileOrFolderExists(atPath: oldFilePath),
+                OWSFileSystem.fileExistsAndIsNotDirectory(atPath: oldFilePath),
                 rawContentType == .image || rawContentType == .video || rawContentType == .animatedImage
             else {
                 // We've got no original media stream, just a pointer or non-visual media.

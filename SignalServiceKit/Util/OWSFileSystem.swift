@@ -15,6 +15,16 @@ public extension OWSFileSystem {
         fileOrFolderExists(atPath: url.path)
     }
 
+    class func fileExistsAndIsNotDirectory(atPath filePath: String) -> Bool {
+        var isDirectory: ObjCBool = false
+        let exists = FileManager.default.fileExists(atPath: filePath, isDirectory: &isDirectory)
+        return exists && !isDirectory.boolValue
+    }
+
+    class func fileExistsAndIsNotDirectory(url: URL) -> Bool {
+        fileExistsAndIsNotDirectory(atPath: url.path)
+    }
+
     @discardableResult
     class func deleteFile(_ filePath: String) -> Bool {
         deleteFile(filePath, ignoreIfMissing: false)
