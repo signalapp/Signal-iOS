@@ -226,6 +226,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 tx: tx
             )
         }
+        self.attachmentUpdater.touchAllOwners(
+            attachmentId: attachmentId,
+            tx: tx
+        )
     }
 
     public func downloadProgress(for attachmentId: Attachment.IDType, tx: DBReadTransaction) -> CGFloat? {
