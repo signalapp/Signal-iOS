@@ -31,6 +31,8 @@ public extension ChatListViewController {
     func updateLastViewedThread(_ thread: TSThread, animated: Bool) {
         lastViewedThread = thread
         ensureSelectedThread(thread, animated: animated)
+        loadCoordinator.loadIfNecessary(suppressAnimations: !animated)
+        tableView.scrollToNearestSelectedRow(at: .none, animated: animated)
     }
 
     /// Verifies that the currently selected cell matches the provided thread.
@@ -39,20 +41,24 @@ public extension ChatListViewController {
     func ensureSelectedThread(_ targetThread: TSThread, animated: Bool) {
         // Ignore any updates if we're in multiselect mode. I don't think this can happen,
         // but if it does let's avoid stepping over the user's manual selection.
-        let currentSelection = tableView.indexPathsForSelectedRows ?? []
+        let selectedIndexPaths = tableView.indexPathsForSelectedRows ?? []
 
-        guard viewState.multiSelectState.isActive == false, currentSelection.count < 2 else {
+        guard viewState.multiSelectState.isActive == false, selectedIndexPaths.count < 2 else {
             return
         }
 
-        let currentlySelectedThread = currentSelection.first.flatMap(renderState.thread(forIndexPath:))
+        let selectedIndexPath = selectedIndexPaths.first
+        let selectedThread = selectedIndexPath.flatMap(renderState.thread(forIndexPath:))
 
-        if currentlySelectedThread?.uniqueId != targetThread.uniqueId {
-            if let targetPath = tableDataSource.renderState.indexPath(forUniqueId: targetThread.uniqueId) {
-                tableView.selectRow(at: targetPath, animated: animated, scrollPosition: .none)
-                tableView.scrollToRow(at: targetPath, at: .none, animated: animated)
-            } else if let stalePath = currentSelection.first {
-                tableView.deselectRow(at: stalePath, animated: animated)
+        tableView.performBatchUpdates {
+            viewState.lastSelectedThreadId = targetThread.uniqueId
+
+            if let selectedIndexPath, selectedThread?.uniqueId != targetThread.uniqueId {
+                tableView.deselectRow(at: selectedIndexPath, animated: animated)
+            }
+
+            if let targetIndexPath = renderState.indexPath(forUniqueId: targetThread.uniqueId) {
+                tableView.selectRow(at: targetIndexPath, animated: animated, scrollPosition: .none)
             }
         }
     }
