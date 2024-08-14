@@ -197,7 +197,7 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
         /// update that somehow doesn't produce a diff, we'll get back a list
         /// with a single "generic group update" item in it.
         owsPrecondition(!updateItemsForNewMessage.isEmpty)
-        let infoMessage = TSInfoMessage.newGroupUpdateInfoMessage(
+        let infoMessage: TSInfoMessage = .makeForGroupUpdate(
             timestamp: dateProvider().ows_millisecondsSince1970,
             spamReportingMetadata: spamReportingMetadata,
             groupThread: groupThread,

@@ -941,7 +941,7 @@
 		6676A40A2BD1EB3D006B9CC9 /* OwnedAttachmentPointerProto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6676A4092BD1EB3D006B9CC9 /* OwnedAttachmentPointerProto.swift */; };
 		6676A40C2BD1F5F9006B9CC9 /* QuotedAttachmentInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6676A40B2BD1F5F9006B9CC9 /* QuotedAttachmentInfo.swift */; };
 		66783C2B29CA4F6C00FC4E4E /* RegistrationTransferQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66783C2A29CA4F6C00FC4E4E /* RegistrationTransferQRCodeViewController.swift */; };
-		667AF9DA2B48A3F3008AEE5D /* TSInfoMessage+PersistableGroupUpdateItemUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667AF9D92B48A3F3008AEE5D /* TSInfoMessage+PersistableGroupUpdateItemUpdater.swift */; };
+		667AF9DA2B48A3F3008AEE5D /* TSInfoMessage+GroupUpdates+PersistableGroupUpdateItemUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667AF9D92B48A3F3008AEE5D /* TSInfoMessage+GroupUpdates+PersistableGroupUpdateItemUpdater.swift */; };
 		667AF9DE2B4C5824008AEE5D /* PersistableGroupUpdateItem+CVComponentSystemMessageAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667AF9DD2B4C5824008AEE5D /* PersistableGroupUpdateItem+CVComponentSystemMessageAction.swift */; };
 		667AF9E02B4C6377008AEE5D /* TSInfoMessage+LegacyPersistablegroupUpdateItemTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667AF9DF2B4C6377008AEE5D /* TSInfoMessage+LegacyPersistablegroupUpdateItemTest.swift */; };
 		667AF9E22B4DC5EE008AEE5D /* GroupUpdateSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667AF9E12B4DC5EE008AEE5D /* GroupUpdateSource.swift */; };
@@ -1861,6 +1861,13 @@
 		D941863C2ACE252D002FE2D3 /* CallRecordLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D941863B2ACE252D002FE2D3 /* CallRecordLogger.swift */; };
 		D943F3EF2892F89B008C0C8B /* NSELogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D943F3EE2892F89B008C0C8B /* NSELogger.swift */; };
 		D95777BE2B472AA100CFE3AE /* GroupCallRecordRingingCleanupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95777BD2B472AA100CFE3AE /* GroupCallRecordRingingCleanupManager.swift */; };
+		D95787772C6D2A080051AC74 /* TSInfoMessage+GroupUpdates.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95787762C6D2A080051AC74 /* TSInfoMessage+GroupUpdates.swift */; };
+		D95787792C6D2ADE0051AC74 /* TSInfoMessage+Payments.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95787782C6D2ADE0051AC74 /* TSInfoMessage+Payments.swift */; };
+		D957877B2C6D2B690051AC74 /* TSInfoMessage+LearnedProfileName.swift in Sources */ = {isa = PBXBuildFile; fileRef = D957877A2C6D2B690051AC74 /* TSInfoMessage+LearnedProfileName.swift */; };
+		D957877D2C6D2B970051AC74 /* TSInfoMessage+SessionSwitchover.swift in Sources */ = {isa = PBXBuildFile; fileRef = D957877C2C6D2B970051AC74 /* TSInfoMessage+SessionSwitchover.swift */; };
+		D957877F2C6D2CB60051AC74 /* TSInfoMessage+ThreadMerge.swift in Sources */ = {isa = PBXBuildFile; fileRef = D957877E2C6D2CB60051AC74 /* TSInfoMessage+ThreadMerge.swift */; };
+		D95787812C6D2D010051AC74 /* TSInfoMessage+PhoneNumberChange.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95787802C6D2D010051AC74 /* TSInfoMessage+PhoneNumberChange.swift */; };
+		D95787832C6D2FBA0051AC74 /* OWSDisappearingConfigurationUpdateInfoMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95787822C6D2FBA0051AC74 /* OWSDisappearingConfigurationUpdateInfoMessage.swift */; };
 		D958305A2AE85E1600BB06A4 /* ReceiptCredentialResultStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95830592AE85E1600BB06A4 /* ReceiptCredentialResultStore.swift */; };
 		D95830602AE8931900BB06A4 /* ReceiptCredentialRequestError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D958305F2AE8931900BB06A4 /* ReceiptCredentialRequestError.swift */; };
 		D958C6792B9FBD66002F6888 /* IncomingCallLogEventSyncMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D958C6782B9FBD66002F6888 /* IncomingCallLogEventSyncMessageManager.swift */; };
@@ -1960,7 +1967,7 @@
 		D9AE0AD929187F850063488B /* MessageSenderJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AE0AD829187F850063488B /* MessageSenderJobRecord.swift */; };
 		D9AE0ADB29188A170063488B /* LegacyMessageDecryptJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AE0ADA29188A170063488B /* LegacyMessageDecryptJobRecord.swift */; };
 		D9AE0ADD2918B2960063488B /* JobRecord+Columns.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AE0ADC2918B2960063488B /* JobRecord+Columns.swift */; };
-		D9B0AC7429EF42960070F31C /* TSInfoMessage+DisplayableGroupUpdateItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B0AC7329EF42960070F31C /* TSInfoMessage+DisplayableGroupUpdateItem.swift */; };
+		D9B0AC7429EF42960070F31C /* TSInfoMessage+GroupUpdates+DisplayableGroupUpdateItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B0AC7329EF42960070F31C /* TSInfoMessage+GroupUpdates+DisplayableGroupUpdateItem.swift */; };
 		D9B8541229137C150058F97B /* JobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B8541129137C150058F97B /* JobRecord.swift */; };
 		D9B95A9629E6830B00D7CB95 /* JobRecordTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B95A9429E682E900D7CB95 /* JobRecordTest.swift */; };
 		D9B95A9829E8906200D7CB95 /* OWSDeviceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B95A9729E8906200D7CB95 /* OWSDeviceTest.swift */; };
@@ -2251,7 +2258,7 @@
 		F9952B2F29F1E59F00EA989E /* OsExpiry.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9952B2E29F1E59F00EA989E /* OsExpiry.swift */; };
 		F9952B3129F2D99500EA989E /* ExpirationNagViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9952B3029F2D99500EA989E /* ExpirationNagViewTest.swift */; };
 		F99D2C8B2926F0DD00748CCB /* DonationPaymentDetailsViewControllerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F99D2C8A2926F0DD00748CCB /* DonationPaymentDetailsViewControllerTest.swift */; };
-		F9A042C6289C7468007D08B6 /* TSInfoMessage+PersistableGroupUpdateItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9A042C5289C7468007D08B6 /* TSInfoMessage+PersistableGroupUpdateItem.swift */; };
+		F9A042C6289C7468007D08B6 /* TSInfoMessage+GroupUpdates+PersistableGroupUpdateItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9A042C5289C7468007D08B6 /* TSInfoMessage+GroupUpdates+PersistableGroupUpdateItem.swift */; };
 		F9A042C8289C7500007D08B6 /* GroupManager+GroupUpdateInfoMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9A042C7289C7500007D08B6 /* GroupManager+GroupUpdateInfoMessages.swift */; };
 		F9A335CA282F0BF700B5F5FA /* BadgeGiftingChooseBadgeViewControllerStateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9A335C9282F0BF700B5F5FA /* BadgeGiftingChooseBadgeViewControllerStateTest.swift */; };
 		F9A335CC282F0DEC00B5F5FA /* BadgeGiftingChooseRecipientViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9A335CB282F0DEC00B5F5FA /* BadgeGiftingChooseRecipientViewController.swift */; };
@@ -2315,7 +2322,7 @@
 		F9C5CBD3289453B300548EEE /* TSInteraction+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8DF289453B100548EEE /* TSInteraction+SDS.swift */; };
 		F9C5CBD4289453B300548EEE /* TSMessage+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8E0289453B100548EEE /* TSMessage+SDS.swift */; };
 		F9C5CBD5289453B300548EEE /* TSIncomingMessage+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8E1289453B100548EEE /* TSIncomingMessage+SDS.swift */; };
-		F9C5CBD6289453B300548EEE /* TSInfoMessage+Swift.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8E2289453B100548EEE /* TSInfoMessage+Swift.swift */; };
+		F9C5CBD6289453B300548EEE /* TSInfoMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8E2289453B100548EEE /* TSInfoMessage.swift */; };
 		F9C5CBD7289453B300548EEE /* OWSLinkPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8E3289453B100548EEE /* OWSLinkPreview.swift */; };
 		F9C5CBD8289453B300548EEE /* TSOutgoingDeleteMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C8E4289453B100548EEE /* TSOutgoingDeleteMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CBD9289453B300548EEE /* TSUnreadIndicatorInteraction.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8E5289453B100548EEE /* TSUnreadIndicatorInteraction.m */; };
@@ -2332,7 +2339,7 @@
 		F9C5CBE4289453B300548EEE /* TSQuotedMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8F0289453B100548EEE /* TSQuotedMessage.m */; };
 		F9C5CBE5289453B300548EEE /* OWSDisappearingConfigurationUpdateInfoMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C8F1289453B100548EEE /* OWSDisappearingConfigurationUpdateInfoMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CBE6289453B300548EEE /* OWSDynamicOutgoingMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C8F2289453B100548EEE /* OWSDynamicOutgoingMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CBE7289453B300548EEE /* TSInfoMessage+GroupUpdateItemBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8F3289453B100548EEE /* TSInfoMessage+GroupUpdateItemBuilder.swift */; };
+		F9C5CBE7289453B300548EEE /* TSInfoMessage+GroupUpdates+GroupUpdateItemBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8F3289453B100548EEE /* TSInfoMessage+GroupUpdates+GroupUpdateItemBuilder.swift */; };
 		F9C5CBE8289453B300548EEE /* OWSEndSessionMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8F4289453B100548EEE /* OWSEndSessionMessage.m */; };
 		F9C5CBE9289453B300548EEE /* OWSStaticOutgoingMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C8F5289453B100548EEE /* OWSStaticOutgoingMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CBEB289453B300548EEE /* TSOutgoingMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8F7289453B100548EEE /* TSOutgoingMessage.m */; };
@@ -4015,7 +4022,7 @@
 		6676A4092BD1EB3D006B9CC9 /* OwnedAttachmentPointerProto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OwnedAttachmentPointerProto.swift; sourceTree = "<group>"; };
 		6676A40B2BD1F5F9006B9CC9 /* QuotedAttachmentInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotedAttachmentInfo.swift; sourceTree = "<group>"; };
 		66783C2A29CA4F6C00FC4E4E /* RegistrationTransferQRCodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTransferQRCodeViewController.swift; sourceTree = "<group>"; };
-		667AF9D92B48A3F3008AEE5D /* TSInfoMessage+PersistableGroupUpdateItemUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+PersistableGroupUpdateItemUpdater.swift"; sourceTree = "<group>"; };
+		667AF9D92B48A3F3008AEE5D /* TSInfoMessage+GroupUpdates+PersistableGroupUpdateItemUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+GroupUpdates+PersistableGroupUpdateItemUpdater.swift"; sourceTree = "<group>"; };
 		667AF9DD2B4C5824008AEE5D /* PersistableGroupUpdateItem+CVComponentSystemMessageAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersistableGroupUpdateItem+CVComponentSystemMessageAction.swift"; sourceTree = "<group>"; };
 		667AF9DF2B4C6377008AEE5D /* TSInfoMessage+LegacyPersistablegroupUpdateItemTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+LegacyPersistablegroupUpdateItemTest.swift"; sourceTree = "<group>"; };
 		667AF9E12B4DC5EE008AEE5D /* GroupUpdateSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupUpdateSource.swift; sourceTree = "<group>"; };
@@ -4942,6 +4949,13 @@
 		D9517ABF292C5A3900DDD37E /* Paypal+API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Paypal+API.swift"; sourceTree = "<group>"; };
 		D95777B92B46411300CFE3AE /* GroupCallPeekClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallPeekClient.swift; sourceTree = "<group>"; };
 		D95777BD2B472AA100CFE3AE /* GroupCallRecordRingingCleanupManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupCallRecordRingingCleanupManager.swift; sourceTree = "<group>"; };
+		D95787762C6D2A080051AC74 /* TSInfoMessage+GroupUpdates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+GroupUpdates.swift"; sourceTree = "<group>"; };
+		D95787782C6D2ADE0051AC74 /* TSInfoMessage+Payments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+Payments.swift"; sourceTree = "<group>"; };
+		D957877A2C6D2B690051AC74 /* TSInfoMessage+LearnedProfileName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+LearnedProfileName.swift"; sourceTree = "<group>"; };
+		D957877C2C6D2B970051AC74 /* TSInfoMessage+SessionSwitchover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+SessionSwitchover.swift"; sourceTree = "<group>"; };
+		D957877E2C6D2CB60051AC74 /* TSInfoMessage+ThreadMerge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+ThreadMerge.swift"; sourceTree = "<group>"; };
+		D95787802C6D2D010051AC74 /* TSInfoMessage+PhoneNumberChange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+PhoneNumberChange.swift"; sourceTree = "<group>"; };
+		D95787822C6D2FBA0051AC74 /* OWSDisappearingConfigurationUpdateInfoMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDisappearingConfigurationUpdateInfoMessage.swift; sourceTree = "<group>"; };
 		D95830592AE85E1600BB06A4 /* ReceiptCredentialResultStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptCredentialResultStore.swift; sourceTree = "<group>"; };
 		D958305F2AE8931900BB06A4 /* ReceiptCredentialRequestError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptCredentialRequestError.swift; sourceTree = "<group>"; };
 		D958C6782B9FBD66002F6888 /* IncomingCallLogEventSyncMessageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomingCallLogEventSyncMessageManager.swift; sourceTree = "<group>"; };
@@ -5045,7 +5059,7 @@
 		D9AE0AD829187F850063488B /* MessageSenderJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSenderJobRecord.swift; sourceTree = "<group>"; };
 		D9AE0ADA29188A170063488B /* LegacyMessageDecryptJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyMessageDecryptJobRecord.swift; sourceTree = "<group>"; };
 		D9AE0ADC2918B2960063488B /* JobRecord+Columns.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "JobRecord+Columns.swift"; sourceTree = "<group>"; };
-		D9B0AC7329EF42960070F31C /* TSInfoMessage+DisplayableGroupUpdateItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+DisplayableGroupUpdateItem.swift"; sourceTree = "<group>"; };
+		D9B0AC7329EF42960070F31C /* TSInfoMessage+GroupUpdates+DisplayableGroupUpdateItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+GroupUpdates+DisplayableGroupUpdateItem.swift"; sourceTree = "<group>"; };
 		D9B8541129137C150058F97B /* JobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobRecord.swift; sourceTree = "<group>"; };
 		D9B91D8D2B17E2A600BCB11A /* GroupCallRecordRingUpdateDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallRecordRingUpdateDelegate.swift; sourceTree = "<group>"; };
 		D9B95A9429E682E900D7CB95 /* JobRecordTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobRecordTest.swift; sourceTree = "<group>"; };
@@ -5360,7 +5374,7 @@
 		F9952B2E29F1E59F00EA989E /* OsExpiry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OsExpiry.swift; sourceTree = "<group>"; };
 		F9952B3029F2D99500EA989E /* ExpirationNagViewTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpirationNagViewTest.swift; sourceTree = "<group>"; };
 		F99D2C8A2926F0DD00748CCB /* DonationPaymentDetailsViewControllerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationPaymentDetailsViewControllerTest.swift; sourceTree = "<group>"; };
-		F9A042C5289C7468007D08B6 /* TSInfoMessage+PersistableGroupUpdateItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+PersistableGroupUpdateItem.swift"; sourceTree = "<group>"; };
+		F9A042C5289C7468007D08B6 /* TSInfoMessage+GroupUpdates+PersistableGroupUpdateItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+GroupUpdates+PersistableGroupUpdateItem.swift"; sourceTree = "<group>"; };
 		F9A042C7289C7500007D08B6 /* GroupManager+GroupUpdateInfoMessages.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "GroupManager+GroupUpdateInfoMessages.swift"; sourceTree = "<group>"; };
 		F9A335C9282F0BF700B5F5FA /* BadgeGiftingChooseBadgeViewControllerStateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingChooseBadgeViewControllerStateTest.swift; sourceTree = "<group>"; };
 		F9A335CB282F0DEC00B5F5FA /* BadgeGiftingChooseRecipientViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingChooseRecipientViewController.swift; sourceTree = "<group>"; };
@@ -5426,7 +5440,7 @@
 		F9C5C8DF289453B100548EEE /* TSInteraction+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TSInteraction+SDS.swift"; sourceTree = "<group>"; };
 		F9C5C8E0289453B100548EEE /* TSMessage+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TSMessage+SDS.swift"; sourceTree = "<group>"; };
 		F9C5C8E1289453B100548EEE /* TSIncomingMessage+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TSIncomingMessage+SDS.swift"; sourceTree = "<group>"; };
-		F9C5C8E2289453B100548EEE /* TSInfoMessage+Swift.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+Swift.swift"; sourceTree = "<group>"; };
+		F9C5C8E2289453B100548EEE /* TSInfoMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSInfoMessage.swift; sourceTree = "<group>"; };
 		F9C5C8E3289453B100548EEE /* OWSLinkPreview.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSLinkPreview.swift; sourceTree = "<group>"; };
 		F9C5C8E4289453B100548EEE /* TSOutgoingDeleteMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSOutgoingDeleteMessage.h; sourceTree = "<group>"; };
 		F9C5C8E5289453B100548EEE /* TSUnreadIndicatorInteraction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSUnreadIndicatorInteraction.m; sourceTree = "<group>"; };
@@ -5443,7 +5457,7 @@
 		F9C5C8F0289453B100548EEE /* TSQuotedMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSQuotedMessage.m; sourceTree = "<group>"; };
 		F9C5C8F1289453B100548EEE /* OWSDisappearingConfigurationUpdateInfoMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSDisappearingConfigurationUpdateInfoMessage.h; sourceTree = "<group>"; };
 		F9C5C8F2289453B100548EEE /* OWSDynamicOutgoingMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSDynamicOutgoingMessage.h; sourceTree = "<group>"; };
-		F9C5C8F3289453B100548EEE /* TSInfoMessage+GroupUpdateItemBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+GroupUpdateItemBuilder.swift"; sourceTree = "<group>"; };
+		F9C5C8F3289453B100548EEE /* TSInfoMessage+GroupUpdates+GroupUpdateItemBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+GroupUpdates+GroupUpdateItemBuilder.swift"; sourceTree = "<group>"; };
 		F9C5C8F4289453B100548EEE /* OWSEndSessionMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSEndSessionMessage.m; sourceTree = "<group>"; };
 		F9C5C8F5289453B100548EEE /* OWSStaticOutgoingMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSStaticOutgoingMessage.h; sourceTree = "<group>"; };
 		F9C5C8F7289453B100548EEE /* TSOutgoingMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSOutgoingMessage.m; sourceTree = "<group>"; };
@@ -11140,6 +11154,7 @@
 				F9C5C908289453B100548EEE /* OWSDisappearingConfigurationUpdateInfoMessage+SDS.swift */,
 				F9C5C8F1289453B100548EEE /* OWSDisappearingConfigurationUpdateInfoMessage.h */,
 				F9C5C90E289453B100548EEE /* OWSDisappearingConfigurationUpdateInfoMessage.m */,
+				D95787822C6D2FBA0051AC74 /* OWSDisappearingConfigurationUpdateInfoMessage.swift */,
 				F9C5C8DA289453B100548EEE /* OWSDisappearingMessagesConfigurationMessage.h */,
 				F9C5C8FB289453B100548EEE /* OWSDisappearingMessagesConfigurationMessage.m */,
 				F9C5C8F2289453B100548EEE /* OWSDynamicOutgoingMessage.h */,
@@ -11161,15 +11176,21 @@
 				F9C5C8E1289453B100548EEE /* TSIncomingMessage+SDS.swift */,
 				F9C5C8E8289453B100548EEE /* TSIncomingMessage.h */,
 				F9C5C8FC289453B100548EEE /* TSIncomingMessage.m */,
-				D9B0AC7329EF42960070F31C /* TSInfoMessage+DisplayableGroupUpdateItem.swift */,
-				F9C5C8F3289453B100548EEE /* TSInfoMessage+GroupUpdateItemBuilder.swift */,
-				F9A042C5289C7468007D08B6 /* TSInfoMessage+PersistableGroupUpdateItem.swift */,
-				667AF9D92B48A3F3008AEE5D /* TSInfoMessage+PersistableGroupUpdateItemUpdater.swift */,
+				D9B0AC7329EF42960070F31C /* TSInfoMessage+GroupUpdates+DisplayableGroupUpdateItem.swift */,
+				F9C5C8F3289453B100548EEE /* TSInfoMessage+GroupUpdates+GroupUpdateItemBuilder.swift */,
+				F9A042C5289C7468007D08B6 /* TSInfoMessage+GroupUpdates+PersistableGroupUpdateItem.swift */,
+				667AF9D92B48A3F3008AEE5D /* TSInfoMessage+GroupUpdates+PersistableGroupUpdateItemUpdater.swift */,
+				D95787762C6D2A080051AC74 /* TSInfoMessage+GroupUpdates.swift */,
+				D957877A2C6D2B690051AC74 /* TSInfoMessage+LearnedProfileName.swift */,
+				D95787782C6D2ADE0051AC74 /* TSInfoMessage+Payments.swift */,
+				D95787802C6D2D010051AC74 /* TSInfoMessage+PhoneNumberChange.swift */,
 				F9C5C8FA289453B100548EEE /* TSInfoMessage+ProfileChanges.swift */,
 				F9C5C8EE289453B100548EEE /* TSInfoMessage+SDS.swift */,
-				F9C5C8E2289453B100548EEE /* TSInfoMessage+Swift.swift */,
+				D957877C2C6D2B970051AC74 /* TSInfoMessage+SessionSwitchover.swift */,
+				D957877E2C6D2CB60051AC74 /* TSInfoMessage+ThreadMerge.swift */,
 				F9C5C8F9289453B100548EEE /* TSInfoMessage.h */,
 				F9C5C8DD289453B100548EEE /* TSInfoMessage.m */,
+				F9C5C8E2289453B100548EEE /* TSInfoMessage.swift */,
 				F9C5C8DF289453B100548EEE /* TSInteraction+SDS.swift */,
 				F9C5C8FE289453B100548EEE /* TSInteraction.h */,
 				F9C5C8E6289453B100548EEE /* TSInteraction.m */,
@@ -14740,6 +14761,7 @@
 				D9C0AE652BD7103100FCB05E /* OWSDeviceStore.swift in Sources */,
 				F9C5CBFC289453B300548EEE /* OWSDisappearingConfigurationUpdateInfoMessage+SDS.swift in Sources */,
 				F9C5CC02289453B300548EEE /* OWSDisappearingConfigurationUpdateInfoMessage.m in Sources */,
+				D95787832C6D2FBA0051AC74 /* OWSDisappearingConfigurationUpdateInfoMessage.swift in Sources */,
 				F9C5CCC4289453B300548EEE /* OWSDisappearingMessagesConfiguration+SDS.swift in Sources */,
 				F9C5CCD7289453B300548EEE /* OWSDisappearingMessagesConfiguration.m in Sources */,
 				F9C5CCDA289453B300548EEE /* OWSDisappearingMessagesConfiguration.swift in Sources */,
@@ -15232,14 +15254,20 @@
 				F9C5CBDB289453B300548EEE /* TSIncomingMessage+Builder.swift in Sources */,
 				F9C5CBD5289453B300548EEE /* TSIncomingMessage+SDS.swift in Sources */,
 				F9C5CBF0289453B300548EEE /* TSIncomingMessage.m in Sources */,
-				D9B0AC7429EF42960070F31C /* TSInfoMessage+DisplayableGroupUpdateItem.swift in Sources */,
-				F9C5CBE7289453B300548EEE /* TSInfoMessage+GroupUpdateItemBuilder.swift in Sources */,
-				F9A042C6289C7468007D08B6 /* TSInfoMessage+PersistableGroupUpdateItem.swift in Sources */,
-				667AF9DA2B48A3F3008AEE5D /* TSInfoMessage+PersistableGroupUpdateItemUpdater.swift in Sources */,
+				D9B0AC7429EF42960070F31C /* TSInfoMessage+GroupUpdates+DisplayableGroupUpdateItem.swift in Sources */,
+				F9C5CBE7289453B300548EEE /* TSInfoMessage+GroupUpdates+GroupUpdateItemBuilder.swift in Sources */,
+				F9A042C6289C7468007D08B6 /* TSInfoMessage+GroupUpdates+PersistableGroupUpdateItem.swift in Sources */,
+				667AF9DA2B48A3F3008AEE5D /* TSInfoMessage+GroupUpdates+PersistableGroupUpdateItemUpdater.swift in Sources */,
+				D95787772C6D2A080051AC74 /* TSInfoMessage+GroupUpdates.swift in Sources */,
+				D957877B2C6D2B690051AC74 /* TSInfoMessage+LearnedProfileName.swift in Sources */,
+				D95787792C6D2ADE0051AC74 /* TSInfoMessage+Payments.swift in Sources */,
+				D95787812C6D2D010051AC74 /* TSInfoMessage+PhoneNumberChange.swift in Sources */,
 				F9C5CBEE289453B300548EEE /* TSInfoMessage+ProfileChanges.swift in Sources */,
 				F9C5CBE2289453B300548EEE /* TSInfoMessage+SDS.swift in Sources */,
-				F9C5CBD6289453B300548EEE /* TSInfoMessage+Swift.swift in Sources */,
+				D957877D2C6D2B970051AC74 /* TSInfoMessage+SessionSwitchover.swift in Sources */,
+				D957877F2C6D2CB60051AC74 /* TSInfoMessage+ThreadMerge.swift in Sources */,
 				F9C5CBD1289453B300548EEE /* TSInfoMessage.m in Sources */,
+				F9C5CBD6289453B300548EEE /* TSInfoMessage.swift in Sources */,
 				F9C5CBD3289453B300548EEE /* TSInteraction+SDS.swift in Sources */,
 				F9C5CBDA289453B300548EEE /* TSInteraction.m in Sources */,
 				F9C5CBF8289453B300548EEE /* TSInteraction.swift in Sources */,

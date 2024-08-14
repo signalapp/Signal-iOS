@@ -167,9 +167,9 @@ NS_ASSUME_NONNULL_BEGIN
     DisappearingMessageToken *newToken =
         [[DisappearingMessageToken alloc] initWithIsEnabled:self.configurationIsEnabled
                                             durationSeconds:self.configurationDurationSeconds];
-    return [TSInfoMessage legacyDisappearingMessageUpdateDescriptionWithToken:newToken
-                                                      wasAddedToExistingGroup:self.createdInExistingGroup
-                                                                  updaterName:self.createdByRemoteName];
+    return [[self class] legacyDisappearingMessageUpdateDescriptionWithToken:newToken
+                                                     wasAddedToExistingGroup:self.createdInExistingGroup
+                                                                 updaterName:self.createdByRemoteName];
 }
 
 @end
