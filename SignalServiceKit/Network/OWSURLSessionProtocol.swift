@@ -74,27 +74,13 @@ public struct OWSUrlDownloadResponse {
 
 // MARK: - OWSUrlFrontingInfo
 
-public class OWSUrlFrontingInfo: Dependencies {
+struct OWSUrlFrontingInfo {
     public let frontingURLWithoutPathPrefix: URL
     public let frontingURLWithPathPrefix: URL
     public let unfrontedBaseUrl: URL
 
-    public init(
-        frontingURLWithoutPathPrefix: URL,
-        frontingURLWithPathPrefix: URL,
-        unfrontedBaseUrl: URL
-    ) {
-        self.frontingURLWithoutPathPrefix = frontingURLWithoutPathPrefix
-        self.frontingURLWithPathPrefix = frontingURLWithPathPrefix
-        self.unfrontedBaseUrl = unfrontedBaseUrl
-    }
-
     func isFrontedUrl(_ urlString: String) -> Bool {
         urlString.lowercased().hasPrefix(frontingURLWithoutPathPrefix.absoluteString)
-    }
-
-    var logDescription: String {
-        "[frontingURLWithoutPathPrefix: \(frontingURLWithoutPathPrefix), frontingURLWithPathPrefix: \(frontingURLWithPathPrefix), unfrontedBaseUrl: \(unfrontedBaseUrl)]"
     }
 }
 
@@ -178,13 +164,13 @@ public protocol OWSURLSessionProtocol: AnyObject, Dependencies {
 }
 
 extension OWSURLSessionProtocol {
-    public var unfrontedBaseUrl: URL? {
+    var unfrontedBaseUrl: URL? {
         endpoint.frontingInfo?.unfrontedBaseUrl ?? endpoint.baseUrl
     }
 
     // MARK: Convenience Methods
 
-    public init(
+    init(
         endpoint: OWSURLSessionEndpoint,
         configuration: URLSessionConfiguration,
         maxResponseSize: Int? = nil,
@@ -285,8 +271,8 @@ extension OWSURLSessionProtocol {
             let textParts = textPartsDictionary.map { (key, value) in
                 OWSMultipartTextPart(key: key, value: value)
             }
-            try OWSMultipartBody.write(forInputFileURL: inputFileURL,
-                                       outputFileURL: multipartBodyFileURL,
+            try OWSMultipartBody.write(inputFile: inputFileURL,
+                                       outputFile: multipartBodyFileURL,
                                        name: name,
                                        fileName: fileName,
                                        mimeType: mimeType,

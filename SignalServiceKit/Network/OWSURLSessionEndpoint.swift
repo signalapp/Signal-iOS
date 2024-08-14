@@ -5,22 +5,21 @@
 
 import Foundation
 
-@objc
-public class OWSURLSessionEndpoint: NSObject {
+public class OWSURLSessionEndpoint {
     /// This is generally the "scheme" & "host" portions of the URL, but it may
     /// also contain a path prefix in some cases.
-    public let baseUrl: URL?
+    let baseUrl: URL?
 
     /// If censorship circumvention is enabled, this will contain details that
     /// influence how requests are built.
-    public let frontingInfo: OWSUrlFrontingInfo?
+    let frontingInfo: OWSUrlFrontingInfo?
 
     /// If there's extra headers that need to be attached to every outgoing
     /// request, they'll be included here.
-    public let extraHeaders: [String: String]
+    private let extraHeaders: [String: String]
 
     /// The set of certificates we should use during the TLS handshake.
-    public let securityPolicy: OWSHTTPSecurityPolicy
+    let securityPolicy: OWSHTTPSecurityPolicy
 
     init(
         baseUrl: URL?,

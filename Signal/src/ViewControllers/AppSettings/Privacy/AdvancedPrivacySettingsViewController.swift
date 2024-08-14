@@ -253,7 +253,7 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
     private func ensureManualCensorshipCircumventionCountry() -> OWSCountryMetadata {
         let countryCode = self.signalService.manualCensorshipCircumventionCountryCode ?? PhoneNumberUtil.defaultCountryCode()
         self.signalService.manualCensorshipCircumventionCountryCode = countryCode
-        return OWSCountryMetadata(forCountryCode: countryCode)
+        return OWSCountryMetadata.countryMetadata(countryCode: countryCode)!
     }
 
     @objc

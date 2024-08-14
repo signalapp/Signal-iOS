@@ -561,7 +561,7 @@ extension MobileCoinAPI {
 
         static func anchorCertificates_mobileCoin() -> [Data] {
             [
-                Certificates.certificateData(forService: "isrgrootx1", type: "der", certificateBundle: .ssk, verifyDer: true)
+                Certificates.certificateData(forService: "isrgrootx1", type: "crt", certificateBundle: .ssk, verifyDer: true)
             ]
         }
 

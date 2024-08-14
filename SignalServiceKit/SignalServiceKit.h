@@ -40,8 +40,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/OWSAsserts.h>
 #import <SignalServiceKit/OWSBackgroundTask.h>
 #import <SignalServiceKit/OWSBlockedPhoneNumbersMessage.h>
-#import <SignalServiceKit/OWSCensorshipConfiguration.h>
-#import <SignalServiceKit/OWSCountryMetadata.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfigurationMessage.h>
@@ -60,7 +58,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/OWSLogs.h>
 #import <SignalServiceKit/OWSMessageContentJob.h>
 #import <SignalServiceKit/OWSMessageHandler.h>
-#import <SignalServiceKit/OWSMultipart.h>
 #import <SignalServiceKit/OWSOperation.h>
 #import <SignalServiceKit/OWSOutgoingArchivedPaymentMessage.h>
 #import <SignalServiceKit/OWSOutgoingCallMessage.h>

@@ -27,7 +27,7 @@ class DomainFrontingCountryViewController: OWSTableViewController2 {
             "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER",
             comment: "Section title for the 'domain fronting country' view."
         )
-        for countryMetadata in OWSCountryMetadata.allCountryMetadatas() {
+        for countryMetadata in OWSCountryMetadata.allCountryMetadatas {
             section.add(OWSTableItem(
                 customCellBlock: {
                     let cell = OWSTableItem.newCell()

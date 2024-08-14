@@ -92,19 +92,19 @@ public class OWSSignalService: OWSSignalServiceProtocol, Dependencies {
                 !countryCode.isEmpty
             else {
                 owsFailDebug("manualCensorshipCircumventionCountryCode was unexpectedly 0")
-                return .default()
+                return .defaultConfiguration
             }
 
-            let configuration = OWSCensorshipConfiguration(countryCode: countryCode)
+            let configuration = OWSCensorshipConfiguration.censorshipConfiguration(countryCode: countryCode)
 
             return configuration
         }
 
         guard
             let localNumber = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber,
-            let configuration = OWSCensorshipConfiguration(phoneNumber: localNumber)
+            let configuration = OWSCensorshipConfiguration.censorshipConfiguration(e164: localNumber)
         else {
-            return .default()
+            return .defaultConfiguration
         }
         return configuration
     }
@@ -119,11 +119,16 @@ public class OWSSignalService: OWSSignalServiceProtocol, Dependencies {
         }(), "Must not have open transaction.")
 
         let isCensorshipCircumventionActive = self.isCensorshipCircumventionActive
-        if isCensorshipCircumventionActive {
+        if isCensorshipCircumventionActive && signalServiceInfo.censorshipCircumventionSupported {
             let censorshipConfiguration = buildCensorshipConfiguration()
-            let frontingURLWithoutPathPrefix = censorshipConfiguration.domainFrontBaseURL
-            let frontingPathPrefix = signalServiceInfo.censorshipCircumventionPathPrefix
-            let frontingURLWithPathPrefix = frontingURLWithoutPathPrefix.appendingPathComponent(frontingPathPrefix)
+            let frontingURLWithoutPathPrefix = censorshipConfiguration.domainFrontBaseUrl
+            let frontingURLWithPathPrefix = {
+                if censorshipConfiguration.requiresPathPrefix {
+                    return frontingURLWithoutPathPrefix.appendingPathComponent(signalServiceInfo.censorshipCircumventionPathPrefix)
+                } else {
+                    return frontingURLWithoutPathPrefix
+                }
+            }()
             let unfrontedBaseUrl = signalServiceInfo.baseUrl
             let frontingInfo = OWSUrlFrontingInfo(
                 frontingURLWithoutPathPrefix: frontingURLWithoutPathPrefix,
@@ -132,7 +137,8 @@ public class OWSSignalService: OWSSignalServiceProtocol, Dependencies {
             )
             let baseUrl = frontingURLWithPathPrefix
             let securityPolicy = censorshipConfiguration.domainFrontSecurityPolicy
-            let extraHeaders = ["Host": TSConstants.censorshipReflectorHost]
+            let extraHeaders = ["Host": censorshipConfiguration.hostHeader(signalServiceInfo.type) ?? TSConstants.censorshipReflectorHost]
+            Logger.debug("baseUrl (fronting): \(baseUrl)")
             return OWSURLSessionEndpoint(
                 baseUrl: baseUrl,
                 frontingInfo: frontingInfo,
@@ -147,6 +153,7 @@ public class OWSSignalService: OWSSignalServiceProtocol, Dependencies {
             } else {
                 securityPolicy = OWSURLSession.defaultSecurityPolicy
             }
+            Logger.debug("baseUrl (no fronting): \(baseUrl)")
             return OWSURLSessionEndpoint(
                 baseUrl: baseUrl,
                 frontingInfo: nil,
@@ -215,7 +222,7 @@ public class OWSSignalService: OWSSignalServiceProtocol, Dependencies {
 
     private func updateHasCensoredPhoneNumber(_ localNumber: String?) {
         if let localNumber {
-            self.hasCensoredPhoneNumber = OWSCensorshipConfiguration.isCensoredPhoneNumber(localNumber)
+            self.hasCensoredPhoneNumber = OWSCensorshipConfiguration.isCensored(e164: localNumber)
         } else {
             self.hasCensoredPhoneNumber = false
         }

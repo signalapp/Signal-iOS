@@ -96,9 +96,11 @@ public extension OWSSignalServiceProtocol {
 
 public struct SignalServiceInfo {
     let baseUrl: URL
+    let censorshipCircumventionSupported: Bool
     let censorshipCircumventionPathPrefix: String
     let shouldUseSignalCertificate: Bool
     let shouldHandleRemoteDeprecation: Bool
+    let type: SignalServiceType
 }
 
 extension SignalServiceType {
@@ -108,72 +110,92 @@ extension SignalServiceType {
         case .mainSignalServiceIdentified:
             return SignalServiceInfo(
                 baseUrl: URL(string: TSConstants.mainServiceIdentifiedURL)!,
+                censorshipCircumventionSupported: true,
                 censorshipCircumventionPathPrefix: TSConstants.serviceCensorshipPrefix,
                 shouldUseSignalCertificate: true,
-                shouldHandleRemoteDeprecation: true
+                shouldHandleRemoteDeprecation: true,
+                type: self
             )
         case .mainSignalServiceUnidentified:
             return SignalServiceInfo(
                 baseUrl: URL(string: TSConstants.mainServiceUnidentifiedURL)!,
+                censorshipCircumventionSupported: true,
                 censorshipCircumventionPathPrefix: TSConstants.serviceCensorshipPrefix,
                 shouldUseSignalCertificate: true,
-                shouldHandleRemoteDeprecation: true
+                shouldHandleRemoteDeprecation: true,
+                type: self
             )
         case .storageService:
             return SignalServiceInfo(
                 baseUrl: URL(string: TSConstants.storageServiceURL)!,
+                censorshipCircumventionSupported: true,
                 censorshipCircumventionPathPrefix: TSConstants.storageServiceCensorshipPrefix,
                 shouldUseSignalCertificate: true,
-                shouldHandleRemoteDeprecation: true
+                shouldHandleRemoteDeprecation: true,
+                type: self
             )
         case .cdn0:
             return SignalServiceInfo(
                 baseUrl: URL(string: TSConstants.textSecureCDN0ServerURL)!,
+                censorshipCircumventionSupported: true,
                 censorshipCircumventionPathPrefix: TSConstants.cdn0CensorshipPrefix,
                 shouldUseSignalCertificate: true,
-                shouldHandleRemoteDeprecation: false
+                shouldHandleRemoteDeprecation: false,
+                type: self
             )
         case .cdn2:
             return SignalServiceInfo(
                 baseUrl: URL(string: TSConstants.textSecureCDN2ServerURL)!,
+                censorshipCircumventionSupported: true,
                 censorshipCircumventionPathPrefix: TSConstants.cdn2CensorshipPrefix,
                 shouldUseSignalCertificate: true,
-                shouldHandleRemoteDeprecation: false
+                shouldHandleRemoteDeprecation: false,
+                type: self
             )
         case .cdn3:
             return SignalServiceInfo(
                 baseUrl: URL(string: TSConstants.textSecureCDN3ServerURL)!,
+                censorshipCircumventionSupported: true,
                 censorshipCircumventionPathPrefix: TSConstants.cdn3CensorshipPrefix,
                 shouldUseSignalCertificate: true,
-                shouldHandleRemoteDeprecation: false
+                shouldHandleRemoteDeprecation: false,
+                type: self
             )
         case .updates:
             return SignalServiceInfo(
                 baseUrl: URL(string: TSConstants.updatesURL)!,
+                censorshipCircumventionSupported: false,
                 censorshipCircumventionPathPrefix: "unimplemented",
                 shouldUseSignalCertificate: false,
-                shouldHandleRemoteDeprecation: false
+                shouldHandleRemoteDeprecation: false,
+                type: self
             )
         case .updates2:
             return SignalServiceInfo(
                 baseUrl: URL(string: TSConstants.updates2URL)!,
+                censorshipCircumventionSupported: false,
                 censorshipCircumventionPathPrefix: "unimplemented", // BADGES TODO
                 shouldUseSignalCertificate: true,
-                shouldHandleRemoteDeprecation: false
+                shouldHandleRemoteDeprecation: false,
+                type: self
             )
         case .contactDiscoveryV2:
             return SignalServiceInfo(
                 baseUrl: URL(string: TSConstants.contactDiscoveryV2URL)!,
+                censorshipCircumventionSupported: true,
                 censorshipCircumventionPathPrefix: TSConstants.contactDiscoveryV2CensorshipPrefix,
                 shouldUseSignalCertificate: true,
-                shouldHandleRemoteDeprecation: false
+                shouldHandleRemoteDeprecation: false,
+                type: self
             )
         case .svr2:
             return SignalServiceInfo(
                 baseUrl: URL(string: TSConstants.svr2URL)!,
+                censorshipCircumventionSupported: true,
                 censorshipCircumventionPathPrefix: TSConstants.svr2CensorshipPrefix,
                 shouldUseSignalCertificate: true,
-                shouldHandleRemoteDeprecation: false
+                shouldHandleRemoteDeprecation: false,
+                type: self
             )
         }
     }
