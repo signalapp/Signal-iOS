@@ -1673,21 +1673,21 @@ extension GroupCallViewController: CallHeaderDelegate {
     }
 
     func didTapMembersButton() {
-        switch groupCall.concreteType {
-        case .groupThread(let groupThreadCall):
-            if FeatureFlags.groupCallDrawerSupport {
-                switch self.bottomSheetStateManager.bottomSheetState {
-                case .callControls, .callControlsAndOverflow, .transitioning:
-                    bottomSheetStateManager.submitState(.callInfo)
-                    self.bottomSheet.maximizeHeight(animated: true)
-                case .hidden:
-                    bottomSheetStateManager.submitState(.callInfo)
-                    self.bottomSheet.maximizeHeight(animated: false)
-                case .callInfo:
-                    bottomSheetStateManager.submitState(.callControls)
-                    self.bottomSheet.minimizeHeight(animated: true)
-                }
-            } else {
+        if FeatureFlags.groupCallDrawerSupport {
+            switch self.bottomSheetStateManager.bottomSheetState {
+            case .callControls, .callControlsAndOverflow, .transitioning:
+                bottomSheetStateManager.submitState(.callInfo)
+                self.bottomSheet.maximizeHeight(animated: true)
+            case .hidden:
+                bottomSheetStateManager.submitState(.callInfo)
+                self.bottomSheet.maximizeHeight(animated: false)
+            case .callInfo:
+                bottomSheetStateManager.submitState(.callControls)
+                self.bottomSheet.minimizeHeight(animated: true)
+            }
+        } else {
+            switch groupCall.concreteType {
+            case .groupThread(let groupThreadCall):
                 present(
                     GroupCallMemberSheet(
                         call: self.call,
@@ -1695,9 +1695,9 @@ extension GroupCallViewController: CallHeaderDelegate {
                     ),
                     animated: true
                 )
+            case .callLink:
+                owsFail("Call links require groupCallDrawerSupport")
             }
-        case .callLink:
-            owsFail("[CallLink] TODO: Add Info button for Call Link calls")
         }
     }
 }

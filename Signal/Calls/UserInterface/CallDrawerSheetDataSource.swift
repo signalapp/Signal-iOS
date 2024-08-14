@@ -178,6 +178,14 @@ extension GroupCallSheetDataSource: GroupCallMemberCellDelegate {
     }
 }
 
+// MARK: Call Links
+
+extension GroupCallSheetDataSource where Call == CallLinkCall {
+    func url() -> URL {
+        return self.groupCall.callLink.url()
+    }
+}
+
 // MARK: - Individual call data source
 
 class IndividualCallSheetDataSource: CallDrawerSheetDataSource {

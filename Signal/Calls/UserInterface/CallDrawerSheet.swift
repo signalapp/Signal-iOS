@@ -101,34 +101,48 @@ class CallDrawerSheet: InteractiveSheetViewController {
     private typealias Snapshot = NSDiffableDataSourceSnapshot<Section, RowID>
 
     private enum Section: Hashable {
+        case callLink
+        case members(MembersSection)
+    }
+
+    private enum MembersSection: Hashable {
         case raisedHands
         case inCall
     }
 
-    private struct RowID: Hashable {
-        var section: Section
-        var memberID: JoinedMember.ID
+    private enum RowID: Hashable {
+        case callLink(CallLinkRow)
+        case member(section: MembersSection, id: JoinedMember.ID)
+
+        enum CallLinkRow: Hashable {
+            case share
+        }
     }
 
     private lazy var dataSource = DiffableDataSource(
         tableView: tableView
     ) { [weak self] tableView, indexPath, id -> UITableViewCell? in
-        let cell = tableView.dequeueReusableCell(GroupCallMemberCell.self, for: indexPath)
+        switch id {
+        case let .member(section: section, id: memberID):
+            let cell = tableView.dequeueReusableCell(GroupCallMemberCell.self, for: indexPath)
 
-        cell.delegate = self?.callSheetDataSource
+            cell.delegate = self?.callSheetDataSource
 
-        guard let viewModel = self?.viewModelsByID[id.memberID] else {
-            owsFailDebug("missing view model")
+            guard let viewModel = self?.viewModelsByID[memberID] else {
+                owsFailDebug("missing view model")
+                return cell
+            }
+
+            cell.configure(with: viewModel, isHandRaised: section == .raisedHands)
+
             return cell
+        case let .callLink(row):
+            return tableView.dequeueReusableCell(CallLinkURLCell.self, for: indexPath)
         }
-
-        cell.configure(with: viewModel, isHandRaised: id.section == .raisedHands)
-
-        return cell
     }
 
     private class HeaderView: UIView {
-        private let section: Section
+        private let section: MembersSection
         var memberCount: Int = 0 {
             didSet {
                 self.updateText()
@@ -137,7 +151,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
 
         private let label = UILabel()
 
-        init(section: Section) {
+        init(section: MembersSection) {
             self.section = section
             super.init(frame: .zero)
 
@@ -200,6 +214,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
         contentView.addSubview(tableView)
         tableView.autoPinEdgesToSuperviewEdges()
 
+        tableView.register(CallLinkURLCell.self)
         tableView.register(GroupCallMemberCell.self)
 
         tableView.dataSource = self.dataSource
@@ -277,23 +292,28 @@ class CallDrawerSheet: InteractiveSheetViewController {
         AssertIsOnMainThread()
         var snapshot = Snapshot()
 
+        if self.callSheetDataSource is GroupCallSheetDataSource<CallLinkCall> {
+            snapshot.appendSections([.callLink])
+            snapshot.appendItems([.callLink(.share)], toSection: .callLink)
+        }
+
         let raiseHandMemberIds = callSheetDataSource.raisedHandMemberIds()
         if !raiseHandMemberIds.isEmpty {
-            snapshot.appendSections([.raisedHands])
+            snapshot.appendSections([.members(.raisedHands)])
             snapshot.appendItems(
                 raiseHandMemberIds.map {
-                    RowID(section: .raisedHands, memberID: $0)
+                    RowID.member(section: .raisedHands, id: $0)
                 },
-                toSection: .raisedHands
+                toSection: .members(.raisedHands)
             )
 
             raisedHandsHeader.memberCount = raiseHandMemberIds.count
         }
 
-        snapshot.appendSections([.inCall])
+        snapshot.appendSections([.members(.inCall)])
         snapshot.appendItems(
-            sortedMembers.map { RowID(section: .inCall, memberID: $0.id) },
-            toSection: .inCall
+            sortedMembers.map { RowID.member(section: .inCall, id: $0.id) },
+            toSection: .members(.inCall)
         )
 
         inCallHeader.memberCount = sortedMembers.count
@@ -455,6 +475,31 @@ extension CallDrawerSheet: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         return .leastNormalMagnitude
     }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let section = dataSource.snapshot().sectionIdentifiers[indexPath.section]
+        switch section {
+        case .callLink:
+            tableView.deselectRow(at: indexPath, animated: true)
+            self.shareCallLink()
+        case .members:
+            tableView.deselectRow(at: indexPath, animated: false)
+        }
+    }
+
+    private func shareCallLink() {
+        AssertIsOnMainThread()
+        guard let callLinkDataSource = self.callSheetDataSource as? GroupCallSheetDataSource<CallLinkCall> else {
+            owsFailDebug("Contains call link section without a call link data source")
+            return
+        }
+
+        let shareSheet = UIActivityViewController(
+            activityItems: [callLinkDataSource.url()],
+            applicationActivities: nil
+        )
+        present(shareSheet, animated: true)
+    }
 }
 
 // MARK: CallObserver
@@ -488,6 +533,49 @@ extension CallDrawerSheet {
 
     func isCrossFading() -> Bool {
         return self.presentingViewController != nil && callControls.alpha < 1 && tableView.alpha < 1
+    }
+}
+
+// MARK: - CallLinkURLCell
+
+private class CallLinkURLCell: UITableViewCell, ReusableTableViewCell {
+    static var reuseIdentifier = "CallLinkURLCell"
+
+    static let iconBackgroundSize: CGFloat = 36
+
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+
+        let hStack = UIStackView()
+        hStack.axis = .horizontal
+        hStack.spacing = 12
+
+        let iconBackground = UIView()
+        hStack.addArrangedSubview(iconBackground)
+        iconBackground.backgroundColor = .ows_gray60
+        iconBackground.autoSetDimensions(to: .square(Self.iconBackgroundSize))
+        iconBackground.layer.cornerRadius = Self.iconBackgroundSize / 2
+
+        let icon = UIImageView(image: Theme.iconImage(.buttonLink))
+        iconBackground.addSubview(icon)
+        icon.tintColor = .white
+        icon.autoCenterInSuperview()
+
+        let titleLabel = UILabel()
+        hStack.addArrangedSubview(titleLabel)
+        titleLabel.font = .dynamicTypeBody
+        titleLabel.textColor = .white
+        titleLabel.text = OWSLocalizedString(
+            "GROUP_CALL_MEMBER_LIST_SHARE_CALL_LINK_BUTTON",
+            comment: "Title for a button on the group members sheet for sharing that call's link."
+        )
+
+        self.contentView.addSubview(hStack)
+        hStack.autoPinEdgesToSuperviewMargins()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }
 
