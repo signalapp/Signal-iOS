@@ -199,7 +199,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
     private let inCallHeader = HeaderView(section: .inCall)
 
     func setBottomSheetMinimizedHeight() {
-        minimizedHeight = callControls.currentHeight + HeightConstants.bottomPadding
+        minimizedHeight = callControls.currentHeight + self.bottomPadding
     }
 
     private func setTableViewTopTranslation(to translation: CGFloat) {
@@ -725,7 +725,6 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
             }
             .store(in: &self.subscriptions)
     }
-
 }
 
 extension CallDrawerSheet: CallControlsHeightObserver {
@@ -737,8 +736,18 @@ extension CallDrawerSheet: CallControlsHeightObserver {
         }
     }
 
+    open override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+        self.setBottomSheetMinimizedHeight()
+    }
+
+    private var bottomPadding: CGFloat {
+        max(self.view.safeAreaInsets.bottom + HeightConstants.bottomPadding, HeightConstants.minimumBottomPaddingIncludingSafeArea)
+    }
+
     private enum HeightConstants {
-        static let bottomPadding: CGFloat = 48
+        static let bottomPadding: CGFloat = 14
+        static let minimumBottomPaddingIncludingSafeArea: CGFloat = 30
         static let initialTableInset: CGFloat = 25
     }
 }
