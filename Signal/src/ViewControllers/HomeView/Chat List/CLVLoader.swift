@@ -77,14 +77,14 @@ public class CLVLoader: Dependencies {
         var loadedPinnedThreads: [String: TSThread] = [:]
         var threads: [TSThread] = []
 
-        let allPinnedThreadIds = DependenciesBridge.shared.pinnedThreadStore.pinnedThreadIds(tx: transaction.asV2Read)
+        let pinInfo = ChatListPinInfo(store: DependenciesBridge.shared.pinnedThreadStore, transaction: transaction.asV2Read)
 
         // This method is a perf hotspot. To improve perf, we try to leverage
         // the model cache. If any problems arise, we fall back to using
         // threadFinder.enumerateVisibleThreads() which is robust but expensive.
         func loadWithoutCache() throws {
             try threadFinder.enumerateVisibleThreads(isArchived: isViewingArchive, transaction: transaction) { thread in
-                if allPinnedThreadIds.contains(thread.uniqueId) {
+                if pinInfo.isThreadPinned(thread) {
                     loadedPinnedThreads[thread.uniqueId] = thread
                 } else {
                     threads.append(thread)
@@ -150,7 +150,7 @@ public class CLVLoader: Dependencies {
                     break loading
                 }
 
-                if !isViewingArchive && allPinnedThreadIds.contains(thread.uniqueId) {
+                if !isViewingArchive && pinInfo.isThreadPinned(thread) {
                     loadedPinnedThreads[thread.uniqueId] = thread
                 } else {
                     threads.append(thread)
@@ -158,9 +158,9 @@ public class CLVLoader: Dependencies {
             }
         }
 
-        let sortedPinnedThreads = allPinnedThreadIds.compactMap { loadedPinnedThreads[$0] }
+        let sortedPinnedThreads = pinInfo.threadIds.compactMap { loadedPinnedThreads[$0] }
 
-        return CLVRenderState(viewInfo: viewInfo, pinnedThreads: sortedPinnedThreads, unpinnedThreads: threads)
+        return CLVRenderState(viewInfo: viewInfo, pinInfo: pinInfo, pinnedThreads: sortedPinnedThreads, unpinnedThreads: threads)
     }
 
     static func loadRenderStateAndDiff(viewInfo: CLVViewInfo,
@@ -182,8 +182,15 @@ public class CLVLoader: Dependencies {
     }
 
     static func newRenderStateWithViewInfo(_ viewInfo: CLVViewInfo, lastRenderState: CLVRenderState) -> CLVLoadResult {
-        let renderState = CLVRenderState(viewInfo: viewInfo, pinnedThreads: lastRenderState.pinnedThreads, unpinnedThreads: lastRenderState.unpinnedThreads)
-        return .renderStateWithRowChanges(renderState: renderState, rowChanges: [])
+        .renderStateWithRowChanges(
+            renderState: CLVRenderState(
+                viewInfo: viewInfo,
+                pinInfo: lastRenderState.pinInfo,
+                pinnedThreads: lastRenderState.pinnedThreads,
+                unpinnedThreads: lastRenderState.unpinnedThreads
+            ),
+            rowChanges: []
+        )
     }
 
     private static func loadRenderStateAndDiffInternal(viewInfo: CLVViewInfo,

@@ -10,6 +10,7 @@ struct CLVRenderState {
     struct Section: Hashable, Identifiable {
         var type: ChatListSectionType
         var id: ChatListSectionType { type }
+        var title: String?
         var threads: KeyPath<CLVRenderState, [TSThread]>?
         var value: AnyHashable?
     }
@@ -29,18 +30,20 @@ struct CLVRenderState {
     }
 
     static var empty: CLVRenderState {
-        CLVRenderState(viewInfo: .empty, pinnedThreads: [], unpinnedThreads: [])
+        CLVRenderState(viewInfo: .empty, pinInfo: .empty, pinnedThreads: [], unpinnedThreads: [])
     }
 
     let viewInfo: CLVViewInfo
+    let pinInfo: ChatListPinInfo
     let pinnedThreads: [TSThread]
     let unpinnedThreads: [TSThread]
 
     private(set) var sections: [Section] = []
     private(set) var inboxFilterSection: ChatListInboxFilterSection?
 
-    init(viewInfo: CLVViewInfo, pinnedThreads: [TSThread], unpinnedThreads: [TSThread]) {
+    init(viewInfo: CLVViewInfo, pinInfo: ChatListPinInfo, pinnedThreads: [TSThread], unpinnedThreads: [TSThread]) {
         self.viewInfo = viewInfo
+        self.pinInfo = pinInfo
         self.pinnedThreads = pinnedThreads
         self.unpinnedThreads = unpinnedThreads
         self.inboxFilterSection = ChatListInboxFilterSection(renderState: self)
@@ -50,15 +53,29 @@ struct CLVRenderState {
     private func makeSection(for sectionType: ChatListSectionType) -> Section? {
         switch sectionType {
         case .pinned:
-            return Section(type: sectionType, threads: \.pinnedThreads)
+            let isTitleVisible = hasSectionTitles && !pinnedThreads.isEmpty
+            return Section(
+                type: sectionType,
+                title: isTitleVisible ? OWSLocalizedString("PINNED_SECTION_TITLE", comment: "The title for pinned conversation section on the conversation list") : nil,
+                threads: \.pinnedThreads
+            )
+
         case .unpinned:
-            return Section(type: sectionType, threads: \.unpinnedThreads)
+            let isTitleVisible = hasSectionTitles && !unpinnedThreads.isEmpty
+            return Section(
+                type: sectionType,
+                title: isTitleVisible ? OWSLocalizedString("UNPINNED_SECTION_TITLE", comment: "The title for unpinned conversation section on the conversation list") : nil,
+                threads: \.unpinnedThreads
+            )
+
         case .reminders where hasVisibleReminders,
              .archiveButton where hasArchivedThreadsRow:
             return Section(type: sectionType)
+
         case .inboxFilterFooter:
             guard let inboxFilterSection else { return nil }
             return Section(type: sectionType, value: inboxFilterSection)
+
         case .reminders, .archiveButton:
             return nil
         }
@@ -66,6 +83,10 @@ struct CLVRenderState {
 
     var archiveCount: UInt {
         viewInfo.archiveCount
+    }
+
+    var hasSectionTitles: Bool {
+        pinInfo.pinnedThreadCount > 0
     }
 
     var inboxCount: UInt {
@@ -82,10 +103,6 @@ struct CLVRenderState {
 
     var hasVisibleReminders: Bool {
         viewInfo.hasVisibleReminders
-    }
-
-    var hasPinnedAndUnpinnedThreads: Bool {
-        !pinnedThreads.isEmpty && !unpinnedThreads.isEmpty
     }
 
     // MARK: UITableViewDataSource

@@ -255,54 +255,36 @@ extension CLVTableDataSource: UITableViewDelegate {
     }
 
     public func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        switch renderState.sections[section].type {
-        case .pinned, .unpinned:
-            if !renderState.hasPinnedAndUnpinnedThreads {
-                return CGFloat.epsilon
-            }
+        let section = renderState.sections[section]
 
-            return UITableView.automaticDimension
-
-        default:
-            // Without returning a header with a non-zero height, Grouped
-            // table view will use a default spacing between sections. We
-            // do not want that spacing so we use the smallest possible height.
-            return CGFloat.epsilon
-        }
+        // Without returning a header with a non-zero height, Grouped
+        // table view will use a default spacing between sections. We
+        // do not want that spacing so we use the smallest possible height.
+        return section.title == nil ? .leastNormalMagnitude : UITableView.automaticDimension
     }
 
     public func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         // Without returning a footer with a non-zero height, Grouped
         // table view will use a default spacing between sections. We
         // do not want that spacing so we use the smallest possible height.
-        return CGFloat.epsilon
+        return .leastNormalMagnitude
     }
 
     public func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let section = renderState.sections[section]
+        guard let title = renderState.sections[section].title else { return UIView() }
 
-        switch section.type {
-        case .pinned, .unpinned:
-            let container = UIView()
-            container.backgroundColor = Theme.backgroundColor
-            container.layoutMargins = UIEdgeInsets(top: 14, leading: 16, bottom: 8, trailing: 16)
+        let container = UIView()
+        container.backgroundColor = Theme.backgroundColor
+        container.layoutMargins = UIEdgeInsets(top: 14, leading: 16, bottom: 8, trailing: 16)
 
-            let label = UILabel()
-            container.addSubview(label)
-            label.autoPinEdgesToSuperviewMargins()
-            label.font = UIFont.dynamicTypeBody.semibold()
-            label.textColor = Theme.primaryTextColor
-            label.text = (section.type == .pinned
-                            ? OWSLocalizedString("PINNED_SECTION_TITLE",
-                                                comment: "The title for pinned conversation section on the conversation list")
-                            : OWSLocalizedString("UNPINNED_SECTION_TITLE",
-                                                comment: "The title for unpinned conversation section on the conversation list"))
+        let label = UILabel()
+        container.addSubview(label)
+        label.autoPinEdgesToSuperviewMargins()
+        label.font = UIFont.dynamicTypeBody.semibold()
+        label.textColor = Theme.primaryTextColor
+        label.text = title
 
-            return container
-
-        default:
-            return UIView()
-        }
+        return container
     }
 
     public func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
