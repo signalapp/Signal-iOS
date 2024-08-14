@@ -12,6 +12,8 @@ public protocol IncrementalMessageTSAttachmentMigrator {
 
     // Returns true if done.
     func runNextBatch() async throws -> Bool
+
+    var isRunningInMainApp: AtomicBool { get }
 }
 
 public class IncrementalMessageTSAttachmentMigratorImpl: IncrementalMessageTSAttachmentMigrator {
@@ -19,6 +21,8 @@ public class IncrementalMessageTSAttachmentMigratorImpl: IncrementalMessageTSAtt
     public typealias Store = IncrementalTSAttachmentMigrationStore
 
     private let databaseStorage: SDSDatabaseStorage
+
+    public let isRunningInMainApp = AtomicBool(false, lock: .init())
 
     public init(databaseStorage: SDSDatabaseStorage) {
         self.databaseStorage = databaseStorage
@@ -100,6 +104,8 @@ public class IncrementalMessageTSAttachmentMigratorImpl: IncrementalMessageTSAtt
 public class NoOpIncrementalMessageTSAttachmentMigrator: IncrementalMessageTSAttachmentMigrator {
     public init() {}
 
+    public let isRunningInMainApp = AtomicBool(false, lock: .init())
+
     public func runUntilFinished() async {}
 
     // Returns true if done.
@@ -113,6 +119,8 @@ public class NoOpIncrementalMessageTSAttachmentMigrator: IncrementalMessageTSAtt
 public class IncrementalMessageTSAttachmentMigratorMock: IncrementalMessageTSAttachmentMigrator {
 
     public init() {}
+
+    public let isRunningInMainApp = AtomicBool(false, lock: .init())
 
     public func runUntilFinished() async {}
 

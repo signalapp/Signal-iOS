@@ -100,6 +100,12 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         // Ensure that all windows have the correct frame.
         WindowManager.shared.updateWindowFrames()
+
+        AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
+            self.incrementalMessageTSAttachmentMigrator?.runInMainAppBackgroundIfNeeded(
+                databaseStorage: self.databaseStorage
+            )
+        }
     }
 
     private let flushQueue = DispatchQueue(label: "org.signal.flush", qos: .utility)

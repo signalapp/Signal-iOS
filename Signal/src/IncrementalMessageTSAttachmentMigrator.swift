@@ -125,6 +125,11 @@ extension IncrementalMessageTSAttachmentMigrator {
             return
         case .started:
             // Don't _start_ in the main app, but continue making progress if we already started.
+
+            if isRunningInMainApp.get() {
+                return
+            }
+
             Logger.info("Continuing migration in main app")
             Task {
                 await runInMainAppBackground()
@@ -135,8 +140,19 @@ extension IncrementalMessageTSAttachmentMigrator {
     private func runInMainAppBackground() async {
         var batchCount = 0
         var didFinish = false
+        isRunningInMainApp.set(true)
+        defer {
+            isRunningInMainApp.set(false)
+        }
         while !didFinish {
             do {
+                guard CurrentAppContext().isMainAppAndActive else {
+                    // If the main app goes into the background, we shouldn't be
+                    // grabbing the sql write lock. Stop.
+                    Logger.info("Stopping when backgrounding app")
+                    return
+                }
+
                 // Add a small delay between each batch to avoid locking the db write queue.
                 try await Task.sleep(nanoseconds: 300 * NSEC_PER_MSEC)
 
