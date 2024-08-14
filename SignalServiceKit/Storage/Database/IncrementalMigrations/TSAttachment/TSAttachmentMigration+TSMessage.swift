@@ -801,9 +801,10 @@ extension TSAttachmentMigration {
 
             let pendingAttachment: TSAttachmentMigration.PendingV2AttachmentFile?
             if let oldFilePath = oldAttachment.localFilePath, OWSFileSystem.fileExistsAndIsNotDirectory(atPath: oldFilePath) {
+                let oldFileUrl = URL(fileURLWithPath: oldFilePath)
                 do {
                     pendingAttachment = try TSAttachmentMigration.V2AttachmentContentValidator.validateContents(
-                        unencryptedFileUrl: URL(fileURLWithPath: oldFilePath),
+                        unencryptedFileUrl: oldFileUrl,
                         reservedFileIds: .init(
                             primaryFile: reservedFileIds.reservedV2AttachmentPrimaryFileId,
                             audioWaveform: reservedFileIds.reservedV2AttachmentAudioWaveformFileId,
@@ -818,7 +819,34 @@ extension TSAttachmentMigration {
                     // If we somehow had a file that was too big, just treat it as if we had no file.
                     pendingAttachment = nil
                 } catch {
-                    throw error
+                    // If we had a file I/O error (which is the only error thrown), its possible
+                    // it was a transiest file reading permission error that is fixed on device
+                    // restart. Try and work around this by copying the file first to a tmp file,
+                    // then trying again. If this fails give up, dropping the attachment file.
+                    let oldFileUrl = URL(fileURLWithPath: oldFilePath)
+                    let newTmpURL = OWSFileSystem.temporaryFileUrl(
+                        fileName: oldFileUrl.lastPathComponent,
+                        fileExtension: oldFileUrl.pathExtension,
+                        isAvailableWhileDeviceLocked: true
+                    )
+                    try FileManager.default.copyItem(at: oldFileUrl, to: newTmpURL)
+                    do {
+                        pendingAttachment = try TSAttachmentMigration.V2AttachmentContentValidator.validateContents(
+                            unencryptedFileUrl: newTmpURL,
+                            reservedFileIds: .init(
+                                primaryFile: reservedFileIds.reservedV2AttachmentPrimaryFileId,
+                                audioWaveform: reservedFileIds.reservedV2AttachmentAudioWaveformFileId,
+                                videoStillFrame: reservedFileIds.reservedV2AttachmentVideoStillFrameFileId
+                            ),
+                            encryptionKey: encryptionKey,
+                            mimeType: oldAttachment.contentType,
+                            renderingFlag: oldAttachment.attachmentType.asRenderingFlag,
+                            sourceFilename: oldAttachment.sourceFilename
+                        )
+                    } catch {
+                        Logger.error("File i/o failure of copied file: \(error)")
+                        pendingAttachment = nil
+                    }
                 }
             } else {
                 // A pointer; no validation needed.
