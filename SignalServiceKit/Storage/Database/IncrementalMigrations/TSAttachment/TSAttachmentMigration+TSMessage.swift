@@ -819,6 +819,7 @@ extension TSAttachmentMigration {
                     // If we somehow had a file that was too big, just treat it as if we had no file.
                     pendingAttachment = nil
                 } catch {
+                    Logger.error("Failed to validate: \(error). Attempting to copy file and retry")
                     // If we had a file I/O error (which is the only error thrown), its possible
                     // it was a transiest file reading permission error that is fixed on device
                     // restart. Try and work around this by copying the file first to a tmp file,
@@ -843,6 +844,7 @@ extension TSAttachmentMigration {
                             renderingFlag: oldAttachment.attachmentType.asRenderingFlag,
                             sourceFilename: oldAttachment.sourceFilename
                         )
+                        Logger.info("Succesfully validated after copying file")
                     } catch {
                         Logger.error("File i/o failure of copied file: \(error)")
                         pendingAttachment = nil
