@@ -897,6 +897,10 @@ class GroupCallViewController: UIViewController {
         callControlsOverflowBottomConstraint?.constant = callControlsOverflowBottomConstraintConstant
         callControlsConfirmationToastContainerViewBottomConstraint?.constant = callControlsConfirmationToastContainerViewBottomConstraintConstant
 
+        if self.isJustMe {
+            flipCameraTooltipManager.dismissTooltip()
+        }
+
         updateSwipeToastView()
     }
 
