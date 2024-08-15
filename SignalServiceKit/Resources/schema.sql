@@ -2015,3 +2015,23 @@ CREATE
                 ,"timestamp" INTEGER
 )
 ;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "AttachmentUploadRecord" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            ,"sourceType" INTEGER NOT NULL
+            ,"attachmentId" INTEGER NOT NULL
+            ,"uploadForm" BLOB
+            ,"uploadFormTimestamp" INTEGER
+            ,"localMetadata" BLOB
+            ,"uploadSessionUrl" BLOB
+            ,"attempt" INTEGER
+        )
+;
+
+CREATE
+    INDEX "index_attachment_upload_record_on_attachment_id"
+        ON "AttachmentUploadRecord"("attachmentId"
+)
+;

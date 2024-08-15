@@ -9,7 +9,9 @@ import GRDB
 extension Attachment {
     public struct Record: Codable, MutablePersistableRecord, FetchableRecord, Equatable, UInt64SafeRecord {
 
-        var sqliteId: Int64?
+        public typealias IDType = Int64
+
+        var sqliteId: IDType?
         let blurHash: String?
         let sha256ContentHash: Data?
         let encryptedByteCount: UInt32?
@@ -105,7 +107,7 @@ extension Attachment {
         // MARK: - Initializers
 
         internal init(
-            sqliteId: Int64? = nil,
+            sqliteId: IDType? = nil,
             blurHash: String?,
             sha256ContentHash: Data?,
             encryptedByteCount: UInt32?,
@@ -207,7 +209,7 @@ extension Attachment {
         }
 
         internal init(
-            sqliteId: Int64,
+            sqliteId: IDType,
             blurHash: String?,
             mimeType: String,
             encryptionKey: Data,
@@ -236,7 +238,7 @@ extension Attachment {
 
         // Private as we want to be deliberate around when sqlite id is not provided.
         private init(
-            optionalSqliteId: Int64?,
+            optionalSqliteId: IDType?,
             blurHash: String?,
             mimeType: String,
             encryptionKey: Data,

@@ -115,7 +115,7 @@ public enum Upload {
         public let plaintextDataLength: UInt32
     }
 
-    public struct LocalUploadMetadata: UploadMetadata {
+    public struct LocalUploadMetadata: UploadMetadata, Codable {
         /// File URL of the data consisting of "iv  + encrypted data + hmac"
         public let fileUrl: URL
 

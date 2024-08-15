@@ -280,6 +280,7 @@ public class GRDBSchemaMigrator: NSObject {
         case migrateStoryMessageTSAttachments1
         case migrateStoryMessageTSAttachments2
         case addBackupAttachmentDownloadQueue
+        case createAttachmentUploadRecordTable
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -3275,6 +3276,31 @@ public class GRDBSchemaMigrator: NSObject {
                     .unique()
                 table.column("timestamp", .integer)
             }
+
+            return .success(())
+        }
+
+        migrator.registerMigration(.createAttachmentUploadRecordTable) { tx in
+            try tx.database.execute(sql: "DROP TABLE IF EXISTS AttachmentUploadRecord")
+            try tx.database.create(table: "AttachmentUploadRecord") { table in
+                table.autoIncrementedPrimaryKey("id")
+                    .notNull()
+                table.column("sourceType", .integer)
+                    .notNull()
+                table.column("attachmentId", .integer)
+                    .notNull()
+                table.column("uploadForm", .blob)
+                table.column("uploadFormTimestamp", .integer)
+                table.column("localMetadata", .blob)
+                table.column("uploadSessionUrl", .blob)
+                table.column("attempt", .integer)
+            }
+
+            try tx.database.create(
+                index: "index_attachment_upload_record_on_attachment_id",
+                on: "AttachmentUploadRecord",
+                columns: ["attachmentId"]
+            )
 
             return .success(())
         }

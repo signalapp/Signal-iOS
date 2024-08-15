@@ -283,6 +283,7 @@ public extension DatabaseRecovery {
             // this runs migrations are done and the migration table will be deleted.
             TSAttachmentMigration.V1AttachmentReservedFileIds.databaseTableName,
             QueuedBackupAttachmentDownload.databaseTableName,
+            AttachmentUploadRecord.databaseTableName,
         ]
 
         private static func prepareToCopyTablesWithBestEffort(
