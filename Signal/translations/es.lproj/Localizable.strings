@@ -563,10 +563,10 @@
 "BLOCK_LIST_BLOCKED_USERS_SECTION" = "Personas bloqueadas";
 
 /* Error message indicating that a conversation can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "Grupo bloqueado previamente.";
+"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "Grupo ya bloqueado.";
 
 /* Error message indicating that a user can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "Persona bloqueada previamente.";
+"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "Persona ya bloqueada.";
 
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Desbloquear";
@@ -599,7 +599,7 @@
 "BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "Grupo bloqueado";
 
 /* The message of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "No te puedes bloquearte a ti mismx.";
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "No te puedes bloquear.";
 
 /* The title of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Error";
@@ -1049,7 +1049,7 @@
 "CHAT_LIST_UNREAD_FILTER_MENU_ACTION" = "Filtrar por No leídos";
 
 /* Message displayed on chat list when Filter by Unread is enabled but no unread chats are available */
-"CHAT_LIST_UNREAD_FILTER_NO_CHATS" = "No unread chats";
+"CHAT_LIST_UNREAD_FILTER_NO_CHATS" = "No hay chats sin leer";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Color y fondo de pantalla del chat";
@@ -1550,7 +1550,7 @@
 "CONVERSATION_SETTINGS_UNBLOCK_USER" = "Desbloquear persona";
 
 /* Label for button to unmute a thread. */
-"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "No silenciar";
+"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Reactivar notificaciones";
 
 /* Button to start a video call */
 "CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "vídeo";
@@ -2528,7 +2528,7 @@
 "ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "No se ha podido cargar el registro de depuración.";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Fallo al enviar mensaje: Persona bloqueada.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "No se ha podido enviar el mensaje a esta persona porque la tienes bloqueada.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "No se ha podido enviar el mensaje porque no se detallan destinatarios válidos.";
@@ -2860,11 +2860,14 @@
 /* A count of members in a given group call member list section, displayed after the header. */
 "GROUP_CALL_MEMBER_LIST_SECTION_HEADER_MEMBER_COUNT" = "(%1$d)";
 
+/* Title for a button on the group members sheet for sharing that call's link. */
+"GROUP_CALL_MEMBER_LIST_SHARE_CALL_LINK_BUTTON" = "Share call link";
+
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "No se puede recibir audio ni vídeo de %1$@";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
-"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "Esto se puede deber a que no han verificado el cambio de tus cifras de seguridad, hay un problema con su dispositivo, o te han bloqueado.";
+"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "Esto se puede deber a que no han verificado el cambio de tu número de seguridad, hay un problema con su dispositivo, o te han bloqueado.";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
 "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "No se puede recibir audio ni vídeo de %1$@";
@@ -3437,16 +3440,16 @@
 "GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "Contactar con un admin";
 
 /* Label for button that lets the user block a request to join the group. */
-"GROUPS_BLOCK_REQUEST_BUTTON" = "Vetar solicitud";
+"GROUPS_BLOCK_REQUEST_BUTTON" = "Bloquear solicitud";
 
 /* Label for button that will block a request to join a group. */
-"GROUPS_BLOCK_REQUEST_SHEET_BLOCK_BUTTON" = "Vetar solicitud";
+"GROUPS_BLOCK_REQUEST_SHEET_BLOCK_BUTTON" = "Bloquear solicitud";
 
 /* Message for sheet offering to let the user block a request to join the group. Embeds {{ the requester's name }}. */
 "GROUPS_BLOCK_REQUEST_SHEET_MESSAGE" = "%1$@ no podrá unirse al grupo o solicitarlo mediante enlace. Un admin puede añadir a esta persona al grupo.";
 
 /* Title for sheet asking if the user wants to block a request to join the group. */
-"GROUPS_BLOCK_REQUEST_SHEET_TITLE" = "¿Vetar solicitudes?";
+"GROUPS_BLOCK_REQUEST_SHEET_TITLE" = "¿Bloquear solicitud?";
 
 /* Message for the 'can't replace group admin' alert. */
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Designa a otra persona como admin antes de abandonar el grupo.";

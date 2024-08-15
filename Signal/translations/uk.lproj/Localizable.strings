@@ -98,7 +98,7 @@
 "ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "Додати в групу";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {contact name, group name} */
-"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Додати «%1$@» до «%2$@»?";
+"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Додати користувача %1$@ до «%2$@»?";
 
 /* The title on the 'add to group' confirmation action sheet. */
 "ADD_TO_GROUP_ACTION_SHEET_TITLE" = "Додати нового учасника";
@@ -110,7 +110,7 @@
 "ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "Користувач %1$@ вже є учасником групи «%2$@»";
 
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%1$@ додано до %2$@";
+"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "Користувача %1$@ додано до «%2$@»";
 
 /* Title of the 'add to group' view. */
 "ADD_TO_GROUP_TITLE" = "Додати до групи";
@@ -1049,7 +1049,7 @@
 "CHAT_LIST_UNREAD_FILTER_MENU_ACTION" = "Показати непрочитані";
 
 /* Message displayed on chat list when Filter by Unread is enabled but no unread chats are available */
-"CHAT_LIST_UNREAD_FILTER_NO_CHATS" = "No unread chats";
+"CHAT_LIST_UNREAD_FILTER_NO_CHATS" = "Непрочитаних чатів немає";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Колір чату та шпалери";
@@ -1385,7 +1385,7 @@
 "CONVERSATION_SETTINGS_ALL_MEDIA_HEADER" = "Усі медіафайли";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Оберіть, хто може змінювати назву, фото, опис групи і таймер тимчасових повідомлень.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Оберіть, хто може змінювати назву, фото, опис групи й таймер тимчасових повідомлень.";
 
 /* Footer string for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_FOOTER" = "Отримуйте відзнаки для свого профілю, підтримуючи Signal. Торкніться відзнаки, щоб дізнатися більше.";
@@ -2860,6 +2860,9 @@
 /* A count of members in a given group call member list section, displayed after the header. */
 "GROUP_CALL_MEMBER_LIST_SECTION_HEADER_MEMBER_COUNT" = "(%1$d)";
 
+/* Title for a button on the group members sheet for sharing that call's link. */
+"GROUP_CALL_MEMBER_LIST_SHARE_CALL_LINK_BUTTON" = "Share call link";
+
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Неможливо отримати аудіо та відео від %1$@";
 
@@ -3092,16 +3095,16 @@
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "Затверджувати нових учасників";
 
 /* Label for the 'enable and share link' button in the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK" = "Увімкнути та поділитися";
+"GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK" = "Надіслати посилання";
 
 /* Label for the 'share link' button in the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "Поділитися посиланням";
+"GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "Надіслати посилання";
 
 /* Subtitle for the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "Поділіться з друзями посиланням, щоб вони швидко приєдналися до групи.";
+"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "Надішліть друзям посилання, щоб вони швидко приєдналися до групи.";
 
 /* Title for the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_TITLE" = "Запрошення";
+"GROUP_LINK_PROMOTION_ALERT_TITLE" = "Запрошення в групу";
 
 /* Suggestion to invite more group members via the group invite link. */
 "GROUP_LINK_PROMOTION_UPDATE" = "Запросіть друзів до своєї групи, надіславши їм посилання";
@@ -3197,16 +3200,16 @@
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "Ви були видалені з групи.";
 
 /* Message indicating that the local user's request to join the group was approved. */
-"GROUP_LOCAL_USER_REQUEST_APPROVED" = "Ваш запит на приєднання до групи було прийнято.";
+"GROUP_LOCAL_USER_REQUEST_APPROVED" = "Вам дозволено приєднатися до групи.";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the request }}. */
-"GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%1$@ схвалив ваш запит на приєднання до групи.";
+"GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "Користувач %1$@ дозволив вам приєднатися до групи.";
 
 /* Message indicating that the local user cancelled their request to join the group. */
-"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "Ви скасували надіслання запиту на приєднання до групи.";
+"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "Ви скасували запит на приєднання до групи.";
 
 /* Message indicating that the local user's request to join the group was rejected. */
-"GROUP_LOCAL_USER_REQUEST_REJECTED" = "Ваш запит на приєднання до групи було відхилено.";
+"GROUP_LOCAL_USER_REQUEST_REJECTED" = "Вам не дозволено приєднатися до групи.";
 
 /* Message indicating that the local user requested to join the group. */
 "GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "Ви надіслали запит на приєднання до групи.";
@@ -3254,13 +3257,13 @@
 "GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ додав  %2$@.";
 
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "%1$@ додано до групи.";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "Користувача %1$@ додано до групи.";
 
 /* Message indicating that a remote user has declined their invite. */
 "GROUP_REMOTE_USER_DECLINED_INVITE" = "1 людина відхилила запрошення в групу.";
 
 /* Message indicating that a remote user has declined their invite. Embeds {{ user who invited them }}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "1 людина запрошена %1$@ відхилила запрошення до групи.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "1 людина відхилила запрошення в групу від користувача %1$@.";
 
 /* Message indicating that a remote user has declined an invite to the group from the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "Користувач %1$@ відхилив ваше запрошення в групу.";
@@ -3281,7 +3284,7 @@
 "GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "Ви запросили %1$@ в групу.";
 
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%1$@ приєднується до групи.";
+"GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "Користувач %1$@ приєднався до групи.";
 
 /* Message indicating that another user has joined the group. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "Користувач %1$@ приєднався до групи за допомогою посилання.";
@@ -3299,25 +3302,25 @@
 "GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "Користувач %1$@ видалив користувача %2$@.";
 
 /* Message indicating that a remote user's request to join the group was approved by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "Ви схвалили запит на приєднання до групи від %1$@.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "Ви дозволили користувачеві %1$@ приєднатися до групи.";
 
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ схвалив запит на приєднання до групи від %1$@.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "Користувач %2$@ дозволив користувачеві %1$@ приєднатися до групи.";
 
 /* Message indicating that a remote user's request to join the group was approved by an unknown user. Embeds {{ %1$@ requesting user name }}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_UNKNOWN_USER_FORMAT" = "Запит на приєднання до групи від %1$@ було прийнято.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_UNKNOWN_USER_FORMAT" = "Користувачеві %1$@ дозволено приєднатися до групи.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
-"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%1$@ скасував надсилання запиту на приєднання до групи.";
+"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "Користувач %1$@ скасував запит на приєднання до групи.";
 
 /* Message indicating that a remote user's request to join the group was rejected by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "Ви відхилили запит на приєднання до групи від %1$@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "Ви не дозволили користувачеві %1$@ приєднатися до групи.";
 
 /* Message indicating that a remote user's request to join the group was rejected by another user. Embeds {{ %1$@ requesting user name, %2$@ rejecting user name }}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ відхилив запит на приєднання до групи від %1$@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "Користувач %2$@ не дозволив користувачеві %1$@ приєднатися до групи.";
 
 /* Message indicating that a remote user's request to join the group was rejected. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "Запит на приєднання до групи від %1$@ було відхилено.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "Користувачеві %1$@ не дозволено приєднатися до групи.";
 
 /* Message indicating that a remote user requested to join the group. Embeds {{requesting user name}}. */
 "GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%1$@ хоче приєднатися до групи за допомогою посилання.";
@@ -3341,7 +3344,7 @@
 "GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Запити і запрошення";
 
 /* Name for a group story on the stories list. Embeds {author's name}, {group name} */
-"GROUP_STORY_NAME_FORMAT" = "%1$@ до %2$@";
+"GROUP_STORY_NAME_FORMAT" = "%1$@ у «%2$@»";
 
 /* Button to delete the story on the 'group story settings' view */
 "GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Вилучити групову історію";
@@ -4235,10 +4238,10 @@
 "MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Відкликати запит";
 
 /* Title for the confirmation alert when cancelling your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Скасувати ваш запит на приєднання до цієї групи?";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Скасувати запит на приєднання до цієї групи?";
 
 /* Indicator that you have requested to join this group. */
-"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "Ваш запит на приєднання надіслано до адміністраторів групи. Ви отримаєте повідомлення, коли вони відреагують.";
+"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "Ваш запит на приєднання надіслано адміністраторам групи. Ви отримаєте сповіщення, коли його розглянуть.";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Доставлено";
@@ -4442,7 +4445,7 @@
 "NEW_GROUP_DEFAULT_TITLE" = "Нова група";
 
 /* notification title. Embeds {{author name}} and {{group name}} */
-"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%1$@ до %2$@";
+"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%1$@ у «%2$@»";
 
 /* The title for the 'name new group' view. */
 "NEW_GROUP_NAME_GROUP_VIEW_TITLE" = "Ім'я групи";
@@ -5087,13 +5090,13 @@
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "Додати в групу";
 
 /* Title of 'accept member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Додати «%1$@» до групи?";
+"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Додати користувача %1$@ до групи?";
 
 /* Title of 'deny member request to join group' button. */
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "Відхилити запит";
 
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Відхилити запит від «%1$@»? Користувач більше не зможе надіслати запит на приєднання за посиланням на групу.";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Відхилити запит від користувача %1$@? Цей користувач не зможе надіслати ще один запит на приєднання за посиланням групи.";
 
 /* Label indicating that a group has no pending member requests. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "Немає нерозглянутих запитів на приєднання.";

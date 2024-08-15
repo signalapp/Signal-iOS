@@ -1049,7 +1049,7 @@
 "CHAT_LIST_UNREAD_FILTER_MENU_ACTION" = "用未讀訊息篩選";
 
 /* Message displayed on chat list when Filter by Unread is enabled but no unread chats are available */
-"CHAT_LIST_UNREAD_FILTER_NO_CHATS" = "No unread chats";
+"CHAT_LIST_UNREAD_FILTER_NO_CHATS" = "你冇未讀嘅聊天訊息";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "聊天顏色同背景";
@@ -2859,6 +2859,9 @@
 
 /* A count of members in a given group call member list section, displayed after the header. */
 "GROUP_CALL_MEMBER_LIST_SECTION_HEADER_MEMBER_COUNT" = "(%1$d)";
+
+/* Title for a button on the group members sheet for sharing that call's link. */
+"GROUP_CALL_MEMBER_LIST_SHARE_CALL_LINK_BUTTON" = "Share call link";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "收唔到 %1$@ 嘅聲同畫";

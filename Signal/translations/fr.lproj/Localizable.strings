@@ -1049,7 +1049,7 @@
 "CHAT_LIST_UNREAD_FILTER_MENU_ACTION" = "Filtrer les conversations non lues";
 
 /* Message displayed on chat list when Filter by Unread is enabled but no unread chats are available */
-"CHAT_LIST_UNREAD_FILTER_NO_CHATS" = "No unread chats";
+"CHAT_LIST_UNREAD_FILTER_NO_CHATS" = "Aucune conversation non lue";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Couleur et fond d’écran des conversations";
@@ -2860,6 +2860,9 @@
 /* A count of members in a given group call member list section, displayed after the header. */
 "GROUP_CALL_MEMBER_LIST_SECTION_HEADER_MEMBER_COUNT" = "(%1$d)";
 
+/* Title for a button on the group members sheet for sharing that call's link. */
+"GROUP_CALL_MEMBER_LIST_SHARE_CALL_LINK_BUTTON" = "Share call link";
+
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Impossible de recevoir l’audio et la vidéo de %1$@";
 
@@ -4604,7 +4607,7 @@
 "NOTIFICATIONS_SHOW" = "Afficher";
 
 /* Label for the 'ok' button. */
-"OK" = "Valider";
+"OK" = "OK";
 
 /* Label for the 'create new pin' button when reglock is disabled during onboarding. */
 "ONBOARDING_2FA_CREATE_NEW_PIN" = "Créer un nouveau PIN";
@@ -5588,7 +5591,7 @@
 "PUSH_MANAGER_REPLY" = "Répondre";
 
 /* Title of alert shown when push tokens sync job succeeds. */
-"PUSH_REGISTER_SUCCESS" = "Les notifications poussées ont été réactivées avec succès.";
+"PUSH_REGISTER_SUCCESS" = "Les notifications push ont bien été réactivées.";
 
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%1$@";
@@ -5735,7 +5738,7 @@
 "REGISTER_RATE_LIMITING_ERROR" = "Trop de tentatives. Veuillez patienter une minute avant de réessayer.";
 
 /* Title of alert shown when push tokens sync job fails. */
-"REGISTRATION_BODY" = "Échec de réactivation des notifications poussées";
+"REGISTRATION_BODY" = "Impossible de réactiver les notifications push.";
 
 /* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the action button on that alert. */
 "REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_ACTION" = "Mettre à jour";
@@ -6326,7 +6329,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "Changer de numéro de téléphone";
 
 /* Label for the 'confirm change phone number' button in the 'change phone number' views. */
-"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "Changer le numéro";
+"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "Changer de numéro";
 
 /* Format for the description text in the 'change phone number splash' view. Embeds: {{ %1$@ the old phone number, %2$@ the new phone number }}. */
 "SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "Vous êtes sur le point de changer votre numéro de téléphone de %1$@ en %2$@.\n\nAvant de continuer, assurez-vous que le numéro ci-dessous soit le bon.";
@@ -7070,7 +7073,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Délai avant verrouillage de l’écran";
 
 /* Label for the 'enable screen lock' switch of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Verrou d’écran";
+"SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Verrouillage de l’écran";
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY" = "Masquer l’écran dans le sélecteur d’app";

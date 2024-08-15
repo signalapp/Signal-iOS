@@ -626,7 +626,7 @@
 "BUTTON_CONTINUE" = "Працягнуць";
 
 /* Label for the 'copy' button. */
-"BUTTON_COPY" = "Капіяваць";
+"BUTTON_COPY" = "Капіраваць";
 
 /* Label for generic done button. */
 "BUTTON_DONE" = "Гатова";
@@ -1049,7 +1049,7 @@
 "CHAT_LIST_UNREAD_FILTER_MENU_ACTION" = "Адфільтраваць па непрачытаных";
 
 /* Message displayed on chat list when Filter by Unread is enabled but no unread chats are available */
-"CHAT_LIST_UNREAD_FILTER_NO_CHATS" = "No unread chats";
+"CHAT_LIST_UNREAD_FILTER_NO_CHATS" = "Няма непрачытаных чатаў";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Колер & шпалеры чата";
@@ -1292,7 +1292,7 @@
 "CONTACT_WITHOUT_NAME" = "Кантакт без імя";
 
 /* Context menu button title */
-"CONTEXT_MENU_COPY" = "Капіяваць";
+"CONTEXT_MENU_COPY" = "Капіраваць";
 
 /* Context menu button title */
 "CONTEXT_MENU_DELETE_MESSAGE" = "Выдаліць";
@@ -1580,7 +1580,7 @@
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Чытаць далей";
 
 /* Indicator that a value has been copied to the clipboard. */
-"COPIED_TO_CLIPBOARD" = "Скапіявана ў буфер абмену";
+"COPIED_TO_CLIPBOARD" = "Скапіравана ў буфер абмену";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Калі вы скінеце сеанс, вы па-ранейшаму зможаце атрымліваць паведамленні ад %1$@, але будзе немагчыма аднавіць раней пашкоджаныя паведамленні.";
@@ -1727,7 +1727,7 @@
 "DEBUG_LOG_ALERT_NO_LOGS" = "Не атрымалася знайсці ніякага журнала.";
 
 /* Label for the 'copy link' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Скапіяваць спасылку";
+"DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Скапіраваць спасылку";
 
 /* Label for the 'email debug log' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_EMAIL" = "Адправіць эл. лicт да службы падтрымкі";
@@ -2438,7 +2438,7 @@
 "EDIT_HISTORY_LABEL" = "Рэдагаваць гісторыю";
 
 /* Short name for edit menu item to copy contents of media message. */
-"EDIT_ITEM_COPY_ACTION" = "Капіяваць";
+"EDIT_ITEM_COPY_ACTION" = "Капіраваць";
 
 /* Error message to display to user when a message is too old to edit */
 "EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Змяненні могуць быць унесены толькі на працягу 24 гадзін з моманту адпраўкі гэтага паведамлення.";
@@ -2860,6 +2860,9 @@
 /* A count of members in a given group call member list section, displayed after the header. */
 "GROUP_CALL_MEMBER_LIST_SECTION_HEADER_MEMBER_COUNT" = "(%1$d)";
 
+/* Title for a button on the group members sheet for sharing that call's link. */
+"GROUP_CALL_MEMBER_LIST_SHARE_CALL_LINK_BUTTON" = "Share call link";
+
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Немагчыма атрымаць аўдыё & відэа ад %1$@";
 
@@ -3119,7 +3122,7 @@
 "GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH" = "Ухваліць новых удзельнікаў";
 
 /* Label for the 'copy link' button in the 'group link' view. */
-"GROUP_LINK_VIEW_COPY_LINK" = "Скапіяваць спасылку";
+"GROUP_LINK_VIEW_COPY_LINK" = "Скапіраваць спасылку";
 
 /* Label for the 'enable group link' switch in the 'group link' view. */
 "GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "Спасылка на групу";
@@ -3959,7 +3962,7 @@
 "MEGAPHONE_WILL_REMIND_LATER" = "Мы нагадаем пазней.";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_COPY_TEXT" = "Скапіяаваць тэкст паведамлення";
+"MESSAGE_ACTION_COPY_TEXT" = "Скапіраваць тэкст паведамлення";
 
 /* The title for the action that deletes a message for all users in the conversation. */
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Выдаліць для ўсіх";
@@ -4058,7 +4061,7 @@
 "MESSAGE_COMPOSEVIEW_TITLE" = "Новае паведамленне";
 
 /* Toast indicating that the user has copied the sent timestamp. */
-"MESSAGE_DETAIL_VIEW_DID_COPY_SENT_TIMESTAMP" = "Час адпраўкі скапіяваны";
+"MESSAGE_DETAIL_VIEW_DID_COPY_SENT_TIMESTAMP" = "Час адпраўкі скапіраваны";
 
 /* Title for the 'edit history' section on the 'message details' view. */
 "MESSAGE_DETAILS_EDIT_HISTORY_TITLE" = "Прагледзець гісторыю змяненняў";
@@ -5423,7 +5426,7 @@
 "PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Код у вашым буферы абмену не падобны на правільны код бяспекі для гэтага чата.";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal не можа знайсці код бяспекі ў вашым буферы абмену. Вы правільна скапіявалі яго?";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal не можа знайсці код бяспекі ў вашым буферы абмену. Вы правільна скапіравалі яго?";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Кожная пара карыстальнікаў Signal мае асобны код бяспекі. Яшчэ раз праверце, што %1$@ паказвае *ваш* асобны код бяспекі.";
@@ -6527,7 +6530,7 @@
 "SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "Адпраўце MobileCoin на адрас вашага кашалька, каб дадаць сродкі. Пачніце транзакцыю ў сваім уліковым запісе на біржы, якая падтрымлівае MobileCoin, потым праскануйце QR-код або скапіюйце адрас свайго кашалька.";
 
 /* Indicator that the payments wallet address has been copied to the pasteboard. */
-"SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "Адрас кашалька скапіяваны";
+"SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "Адрас кашалька скапіраваны";
 
 /* Label for the 'all payment records' section of the app settings. */
 "SETTINGS_PAYMENTS_ALL_RECORDS" = "Усе плацяжы";
@@ -6947,16 +6950,16 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_TITLE" = "Пацвердзіць фразу для аднаўлення";
 
 /* Indicator that the payments passphrase has been copied to the clipboard in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPIED_TO_CLIPBOARD" = "Фраза для аднаўлення скапіявана";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPIED_TO_CLIPBOARD" = "Фраза для аднаўлення скапіравана";
 
 /* Label for the 'copy to clipboard' button in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD" = "Скапіяваць у буфер абмену";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD" = "Скапіраваць у буфер абмену";
 
 /* Message for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "Калі вы вырашыце захоўваць сваю фразу для аднаўлення ў электронным фармаце, пераканайцеся, што яна захоўваецца ў надзейным месцы.";
 
 /* Title for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_TITLE" = "Скапіяваць у буфер абмену?";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_TITLE" = "Скапіраваць у буфер абмену?";
 
 /* Label for 'see passphrase again' button in the 'view payments passphrase' view of the app settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_SEE_PASSPHRASE_AGAIN" = "Прагледзець фразу яшчэ раз";
@@ -7280,7 +7283,7 @@
 "STORIES_CAPTION_READ_MORE" = "Чытаць далей";
 
 /* Context menu action to copy the selected story reply */
-"STORIES_COPY_REPLY_ACTION" = "Капіяваць";
+"STORIES_COPY_REPLY_ACTION" = "Капіраваць";
 
 /* Context menu action to delete the selected story reply */
 "STORIES_DELETE_REPLY_ACTION" = "Выдаліць";
@@ -7562,7 +7565,7 @@
 "STORY_VIEWS_OFF" = "Прагляды адключаны";
 
 /* Toast indicating that the user has copied their subscriber ID. (Externally referred to as donor ID) */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Ідэнтыфікатар спонсара скапіяваны ў буфер абмену";
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Ідэнтыфікатар спонсара скапіраваны ў буфер абмену";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Ваш код бяспекі з %1$@ супадае. Вы можаце пазначыць гэты кантакт як правераны.";
@@ -7970,16 +7973,16 @@
 "USERNAME_LINK_QR_CODE_VIEW_TITLE_SCAN" = "Сканаваць";
 
 /* Text presented in a toast notifying the user that their username was copied to the system clipboard. */
-"USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "Імя карыстальніка скапіявана";
+"USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "Імя карыстальніка скапіравана";
 
 /* Text presented in a toast notifying the user that their username link was copied to the system clipboard. */
-"USERNAME_LINK_QR_CODE_VIEW_USERNAME_LINK_COPIED" = "Спасылка скапіявана";
+"USERNAME_LINK_QR_CODE_VIEW_USERNAME_LINK_COPIED" = "Спасылка скапіравана";
 
 /* Text providing instructions on how to use the username link QR code scanning. */
 "USERNAME_LINK_SCAN_QR_CODE_INSTRUCTIONS_LABEL" = "Сканаваць QR-код на прыладзе вашага кантакту.";
 
 /* Text for a tappable cell that copies the user's username link when selected. */
-"USERNAME_LINK_SHARE_SHEET_COPY_LINK_ACTION" = "Скапіяваць спасылку";
+"USERNAME_LINK_SHARE_SHEET_COPY_LINK_ACTION" = "Скапіраваць спасылку";
 
 /* Text describing what you can do with a username link, on a sheet for sharing it. */
 "USERNAME_LINK_SHARE_SHEET_HEADER" = "Любы, хто мае гэтую спасылку, зможа прагледзець ваша імя карыстальніка і распачаць з вамі чат. Абагульвайце яе толькі з тымі людзьмі, да якіх маеце давер.";
