@@ -979,8 +979,6 @@ class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
         }
         let groupId = groupContextInfo.groupId
 
-        var needsUpdate = false
-
         if let localThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
             let localStorySendMode = localThread.storyViewMode.storageServiceMode
             if localStorySendMode != record.storySendMode {
@@ -1055,7 +1053,7 @@ class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
             localStoryContextAssociatedData.update(updateStorageService: false, isHidden: record.hideStory, transaction: transaction)
         }
 
-        return .merged(needsUpdate: needsUpdate, masterKey)
+        return .merged(needsUpdate: false, masterKey)
     }
 }
 

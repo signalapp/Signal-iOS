@@ -105,7 +105,7 @@ extension TSAttachmentMigration {
                     case .file, .fileV2, .foreignReferenceAttachment:
                         return .foreignReferenceAttachment
                     case .text(var textAttachment):
-                        var preview = textAttachment.preview
+                        let preview = textAttachment.preview
                         preview?.imageAttachmentId = nil
                         preview?.usesV2AttachmentReferenceValue = NSNumber(value: true)
                         textAttachment.preview = preview
@@ -266,7 +266,7 @@ extension TSAttachmentMigration {
             case .fileV2(let fileAttachment):
                 ownerType = mediaStoryOwnerType
                 captionBodyRanges = fileAttachment.captionStyles
-            case .text(let textAttachment):
+            case .text(_):
                 ownerType = textStoryOwnerType
                 captionBodyRanges = nil
             case .foreignReferenceAttachment:

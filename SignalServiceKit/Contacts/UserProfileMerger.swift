@@ -30,7 +30,7 @@ class UserProfileMerger: RecipientMergeObserver {
                         switch userProfile.internalAddress {
                         case .localUser:
                             break
-                        case .otherUser(let address):
+                        case .otherUser(_):
                             guard let serviceId = userProfile.serviceId else {
                                 return
                             }

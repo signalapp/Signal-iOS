@@ -511,7 +511,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                         context: recipientContext,
                         tx: tx
                     )
-                case .callLink(let callLinkRecipientProto):
+                case .callLink(_):
                     // TODO: [Backups] Restore call link recipients.
                     recipientResult = .failure([.restoreFrameError(.unimplemented, recipient.recipientId)])
                 }

@@ -212,7 +212,7 @@ extension TSResourceManager {
     ) -> OwnedAttachmentBuilder<QuotedAttachmentInfo>? {
         switch (originalReference.concreteType, originalAttachment.concreteType) {
 
-        case (.legacy(let tsAttachmentReference), .legacy(let tsAttachment)):
+        case (.legacy(_), .legacy(let tsAttachment)):
             return self.newQuotedReplyMessageThumbnailBuilder(
                 from: .fromLegacyOriginalAttachment(tsAttachment, originalMessageRowId: originalMessageRowId),
                 fallbackQuoteProto: fallbackQuoteProto,

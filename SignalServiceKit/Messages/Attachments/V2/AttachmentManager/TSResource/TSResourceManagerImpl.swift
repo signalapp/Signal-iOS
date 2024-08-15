@@ -462,7 +462,6 @@ public class TSResourceManagerImpl: TSResourceManager {
                 // 2. Otherwise try and use the cdn info from the v1 attachment, if it still exists,
                 //    and use that to create a new v2 attachment (even if the v1 is already downloaded).
                 // 3. Give up. Omit the thumbnail.
-                let v2DataSource: QuotedReplyAttachmentDataSource
                 if let proto = fallbackQuoteProto?.attachments.first?.thumbnail {
                     return newV2QuotedReplyMessageThumbnailBuilder(
                         from: .pointer(proto),

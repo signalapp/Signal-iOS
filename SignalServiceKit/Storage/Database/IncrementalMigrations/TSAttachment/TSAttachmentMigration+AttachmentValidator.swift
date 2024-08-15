@@ -468,7 +468,7 @@ extension TSAttachmentMigration {
                 let player = try AVAudioPlayer(contentsOf: unencryptedFileUrl)
                 player.prepareToPlay()
                 return player.duration
-            } catch let originalError {
+            } catch {
                 let pathExtension = unencryptedFileUrl.pathExtension
                 if
                     pathExtension == "aac"

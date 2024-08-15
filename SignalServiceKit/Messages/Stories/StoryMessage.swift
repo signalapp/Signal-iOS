@@ -237,7 +237,6 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         let caption = storyMessage.fileAttachment?.caption.map { caption in
             return StyleOnlyMessageBody(text: caption, protos: storyMessage.bodyRanges)
         }
-        let shouldLoop: Bool
 
         let attachment: StoryMessageAttachment
         let mediaAttachmentBuilder: OwnedAttachmentBuilder<TSResourceRetrievalInfo>?
@@ -260,7 +259,6 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             }
             mediaAttachmentBuilder = attachmentBuilder
             linkPreviewBuilder = nil
-            shouldLoop = fileAttachment.shouldLoop
         } else if let textAttachmentProto = storyMessage.textAttachment {
             linkPreviewBuilder = textAttachmentProto.preview.flatMap {
                 do {
@@ -280,7 +278,6 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
                 linkPreview: linkPreviewBuilder?.info,
                 transaction: transaction
             ))
-            shouldLoop = false
         } else {
             throw OWSAssertionError("Missing attachment for StoryMessage.")
         }
@@ -475,7 +472,6 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
 
         // If someday a system story caption has styles, they'd go here.
         let caption: StyleOnlyMessageBody? = nil
-        let shouldLoop = false
 
         let attachmentBuilder = try DependenciesBridge.shared.tsResourceManager.createAttachmentStreamBuilder(
             from: attachmentSource,

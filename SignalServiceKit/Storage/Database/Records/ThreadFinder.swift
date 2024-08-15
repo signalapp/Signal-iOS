@@ -48,7 +48,6 @@ public class ThreadFinder: Dependencies {
             FROM \(ThreadRecord.databaseTableName)
             WHERE \(threadColumn: .recordType) = \(SDSRecordType.privateStoryThread.rawValue)
         """
-        var stop = false
         let cursor = try ThreadRecord.fetchCursor(
             transaction.unwrapGrdbRead.database,
             sql: sql
@@ -75,7 +74,6 @@ public class ThreadFinder: Dependencies {
             ORDER BY \(threadColumn: .lastInteractionRowId) DESC
         """
 
-        var stop = false
         let cursor = try ThreadRecord.fetchCursor(
             transaction.unwrapGrdbRead.database,
             sql: sql
@@ -101,7 +99,6 @@ public class ThreadFinder: Dependencies {
             WHERE \(threadColumn: .recordType) IS NOT ?
         """
 
-        var stop = false
         let cursor = try ThreadRecord.fetchCursor(
             transaction.unwrapGrdbRead.database,
             sql: sql,

@@ -285,7 +285,6 @@ public class MockThreadStore: ThreadStore {
     }
 
     public func enumerateStoryThreads(tx: any DBReadTransaction, block: (TSPrivateStoryThread) throws -> Bool) throws {
-        var stop = false
         for thread in threads {
             guard let storyThread = thread as? TSPrivateStoryThread else {
                 continue
@@ -297,7 +296,6 @@ public class MockThreadStore: ThreadStore {
     }
 
     public func enumerateGroupThreads(tx: DBReadTransaction, block: (TSGroupThread) throws -> Bool) throws {
-        var stop = false
         for thread in threads {
             guard let groupThread = thread as? TSGroupThread else {
                 continue

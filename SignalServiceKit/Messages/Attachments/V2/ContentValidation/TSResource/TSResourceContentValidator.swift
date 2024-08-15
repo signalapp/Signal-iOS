@@ -365,11 +365,11 @@ open class TSResourceContentValidatorMock: TSResourceContentValidator {
         switch originalAttachment.concreteType {
         case .legacy(let tsAttachment):
             return .fromLegacyOriginalAttachment(tsAttachment, originalMessageRowId: originalMessageRowId)
-        case .v2(let attachment):
+        case .v2(_):
             switch originalReference.concreteType {
             case .legacy(_):
                 fatalError("Invalid combination")
-            case .v2(let attachmentReference):
+            case .v2(_):
                 throw OWSAssertionError("Unimplemented")
             }
         }

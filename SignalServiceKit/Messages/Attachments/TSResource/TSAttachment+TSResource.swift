@@ -65,7 +65,7 @@ extension TSAttachment: TSResource {
     public var isUploadedToTransitTier: Bool {
         if let stream = self as? TSAttachmentStream {
             return stream.isUploaded
-        } else if let pointer = self as? TSAttachmentPointer {
+        } else if self is TSAttachmentPointer {
             return true
         } else {
             return false

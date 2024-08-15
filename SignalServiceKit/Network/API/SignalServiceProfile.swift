@@ -153,7 +153,7 @@ public class SignalServiceProfile {
             }
 
             return capabilityFlag
-        } catch let error {
+        } catch {
             owsFailDebug("Failed to parse capability \(capabilityKey)! Hardcoding to true.")
             return true
         }

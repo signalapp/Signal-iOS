@@ -431,7 +431,7 @@ extension TSAttachmentMigration {
                 return nil
             }
 
-            guard let mimeType = imageFormat.mimeType else {
+            guard imageFormat.mimeType != nil else {
                 Logger.warn("Image does not have MIME type.")
                 return nil
             }

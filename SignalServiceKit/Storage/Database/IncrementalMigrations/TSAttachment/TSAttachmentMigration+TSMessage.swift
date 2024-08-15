@@ -1142,8 +1142,8 @@ extension TSAttachmentMigration {
 
             // NOTE: we DO NOT delete the old attachment. It belongs to the original message.
 
-            var newQuotedMessage = quotedMessage
-            var newQuotedAttachment = newQuotedMessage.quotedAttachment
+            let newQuotedMessage = quotedMessage
+            let newQuotedAttachment = newQuotedMessage.quotedAttachment
             newQuotedAttachment?.attachmentType = .v2
             newQuotedAttachment?.rawAttachmentId = ""
             newQuotedAttachment?.contentType = nil
@@ -1331,7 +1331,7 @@ extension TSAttachmentMigration.OWSLinkPreview {
 extension TSAttachmentMigration.TSQuotedMessage {
 
     fileprivate func removingLegacyAttachment() -> Self {
-        var newQuotedAttachment = quotedAttachment
+        let newQuotedAttachment = quotedAttachment
         newQuotedAttachment?.rawAttachmentId = ""
         newQuotedAttachment?.attachmentType = .v2
         newQuotedAttachment?.contentType = nil
