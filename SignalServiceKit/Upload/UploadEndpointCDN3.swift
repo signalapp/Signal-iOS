@@ -33,7 +33,7 @@ struct UploadEndpointCDN3: UploadEndpoint {
         return url
     }
 
-    internal func getResumableUploadProgress(attempt: Upload.Attempt) async throws -> Upload.ResumeProgress {
+    internal func getResumableUploadProgress<Metadata: UploadMetadata>(attempt: Upload.Attempt<Metadata>) async throws -> Upload.ResumeProgress {
         var headers = uploadForm.headers
         headers["Tus-Resumable"] = "1.0.0"
 
@@ -75,9 +75,9 @@ struct UploadEndpointCDN3: UploadEndpoint {
         return .uploaded(bytesAlreadyUploaded)
     }
 
-    func performUpload(
+    func performUpload<Metadata: UploadMetadata>(
         startPoint: Int,
-        attempt: Upload.Attempt,
+        attempt: Upload.Attempt<Metadata>,
         progress progressBlock: @escaping UploadEndpointProgress
     ) async throws {
         let urlSession = signalService.urlSessionForCdn(cdnNumber: uploadForm.cdnNumber, maxResponseSize: nil)

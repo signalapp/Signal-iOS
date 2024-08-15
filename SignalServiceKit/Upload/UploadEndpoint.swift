@@ -19,7 +19,7 @@ protocol UploadEndpoint {
     ///
     /// - Parameter state: The current upload state, containing the form, target URL and progress
     /// - Returns: `Upload.ResumeProgress` representing the currently upload progress, as known by the server.
-    func getResumableUploadProgress(attempt: Upload.Attempt) async throws -> Upload.ResumeProgress
+    func getResumableUploadProgress<Metadata: UploadMetadata>(attempt: Upload.Attempt<Metadata>) async throws -> Upload.ResumeProgress
 
     /// Upload bytes to the endpoing backend. This may be a fresh upload, or this may be resuming an
     /// upload from `startPoint`
@@ -28,7 +28,7 @@ protocol UploadEndpoint {
     ///   - startPoint: The current byte range to start uploading at.
     ///   - attempt: The current upload attempt, containing the local file metadata, upload endpoint, and target location.
     ///   - progress: Callback called with progress data as reported by the internal upload implementation
-    func performUpload(startPoint: Int, attempt: Upload.Attempt, progress progressBlock: @escaping UploadEndpointProgress) async throws
+    func performUpload<Metadata: UploadMetadata>(startPoint: Int, attempt: Upload.Attempt<Metadata>, progress progressBlock: @escaping UploadEndpointProgress) async throws
 }
 
 extension Upload {

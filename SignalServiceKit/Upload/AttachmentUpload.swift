@@ -10,47 +10,24 @@ extension Upload.Constants {
     fileprivate static let maxUploadProgressRetries = 2
 }
 
-public struct AttachmentUpload<Metadata: UploadMetadata> {
-    private let signalService: OWSSignalServiceProtocol
-    private let networkManager: NetworkManager
-    private let chatConnectionManager: ChatConnectionManager
-
-    private let fileSystem: Upload.Shims.FileSystem
-
-    private let logger: PrefixedLogger
-
-    private let localMetadata: Metadata
-    private let uploadForm: Upload.Form
-
-    public init(
-        localMetadata: Metadata,
-        uploadForm: Upload.Form,
-        signalService: OWSSignalServiceProtocol,
-        networkManager: NetworkManager,
-        chatConnectionManager: ChatConnectionManager,
-        fileSystem: Upload.Shims.FileSystem,
-        logger: PrefixedLogger
-    ) {
-        self.localMetadata = localMetadata
-        self.uploadForm = uploadForm
-        self.signalService = signalService
-        self.networkManager = networkManager
-        self.chatConnectionManager = chatConnectionManager
-        self.fileSystem = fileSystem
-        self.logger = logger
-    }
-
+public struct AttachmentUpload {
     // MARK: - Upload Entrypoint
 
     /// The main entry point into the CDN2/CDN3 upload flow.
     /// This method is responsible for prepping the source data and its metadata.
     /// From this point forward,  the upload doesn't have any knowledge of the source (attachment, backup, image, etc)
-    public func start(progress: Upload.ProgressBlock?) async throws -> Upload.Result<Metadata> {
+    public static func start<Metadata: UploadMetadata>(
+        attempt: Upload.Attempt<Metadata>,
+        progress: Upload.ProgressBlock?
+    ) async throws -> Upload.Result<Metadata> {
         try Task.checkCancellation()
 
-        progress?(buildProgress(done: 0, total: localMetadata.encryptedDataLength))
+        progress?(AttachmentUpload.buildProgress(done: 0, total: attempt.localMetadata.encryptedDataLength))
 
-        return try await attemptUpload(localMetadata: localMetadata, uploadForm: uploadForm, progress: progress)
+        return try await attemptUpload(
+            attempt: attempt,
+            progress: progress
+        )
     }
 
     /// The retriable parts of the upload.
@@ -64,26 +41,27 @@ public struct AttachmentUpload<Metadata: UploadMetadata> {
     ///   - progressBlock: Callback notified up upload progress.
     /// - returns: `Upload.Result` reflecting the metadata of the final upload result.
     ///
-    private func attemptUpload(
-        localMetadata: Metadata,
-        uploadForm: Upload.Form,
+    private static func attemptUpload<Metadata: UploadMetadata>(
+        attempt: Upload.Attempt<Metadata>,
         progress: Upload.ProgressBlock?
     ) async throws -> Upload.Result<Metadata> {
-        logger.info("Begin upload.")
-        let attempt = try await buildAttempt(for: localMetadata, form: uploadForm, logger: logger)
-        try await performResumableUpload(attempt: attempt, progress: progress)
+        attempt.logger.info("Begin upload.")
+        try await performResumableUpload(
+            attempt: attempt,
+            progress: progress
+        )
         return Upload.Result(
             cdnKey: attempt.cdnKey,
             cdnNumber: attempt.cdnNumber,
-            localUploadMetadata: localMetadata,
+            localUploadMetadata: attempt.localMetadata,
             beginTimestamp: attempt.beginTimestamp,
             finishTimestamp: Date().ows_millisecondsSince1970
         )
     }
 
     /// Consult the UploadEndpoint to determine how much has already been uploaded.
-    private func getResumableUploadProgress(
-        attempt: Upload.Attempt,
+    private static func getResumableUploadProgress<Metadata: UploadMetadata>(
+        attempt: Upload.Attempt<Metadata>,
         count: UInt = 0
     ) async throws -> Upload.ResumeProgress {
         do {
@@ -107,8 +85,8 @@ public struct AttachmentUpload<Metadata: UploadMetadata> {
     }
 
     /// Upload the file using the endpoint and report progress
-    private func performResumableUpload(
-        attempt: Upload.Attempt,
+    private static func performResumableUpload<Metadata: UploadMetadata>(
+        attempt: Upload.Attempt<Metadata>,
         count: UInt = 0,
         progress: Upload.ProgressBlock?
     ) async throws {
@@ -120,7 +98,7 @@ public struct AttachmentUpload<Metadata: UploadMetadata> {
         var bytesAlreadyUploaded = 0
 
         // Only check remote upload progress if we think progress was made locally
-        if count > 0 {
+        if attempt.isResumedUpload || count > 0 {
             let uploadProgress = try await getResumableUploadProgress(attempt: attempt)
             switch uploadProgress {
             case .complete:
@@ -146,7 +124,7 @@ public struct AttachmentUpload<Metadata: UploadMetadata> {
 
             // When resuming, we'll only upload a slice of the data.
             // We need to massage the progress to reflect the bytes already uploaded.
-            progress?(self.buildProgress(done: totalCompleted, total: totalDataLength))
+            progress?(buildProgress(done: totalCompleted, total: totalDataLength))
         }
 
         do {
@@ -198,11 +176,14 @@ public struct AttachmentUpload<Metadata: UploadMetadata> {
 
     // MARK: - Helper Methods
 
-    private func buildAttempt(
-        for localMetadata: UploadMetadata,
+    public static func buildAttempt<Metadata: UploadMetadata>(
+        for localMetadata: Metadata,
         form: Upload.Form,
+        existingSessionUrl: URL? = nil,
+        signalService: OWSSignalServiceProtocol,
+        fileSystem: Upload.Shims.FileSystem,
         logger: PrefixedLogger
-    ) async throws -> Upload.Attempt {
+    ) async throws -> Upload.Attempt<Metadata> {
         let endpoint: UploadEndpoint = try {
             switch form.cdnNumber {
             case 2:
@@ -223,7 +204,12 @@ public struct AttachmentUpload<Metadata: UploadMetadata> {
                 throw OWSAssertionError("Unsupported Endpoint: \(form.cdnNumber)")
             }
         }()
-        let uploadLocation = try await endpoint.fetchResumableUploadLocation()
+        let uploadLocation = try await {
+            if let existingSessionUrl {
+                return existingSessionUrl
+            }
+            return try await endpoint.fetchResumableUploadLocation()
+        }()
         return Upload.Attempt(
             cdnKey: form.cdnKey,
             cdnNumber: form.cdnNumber,
@@ -231,18 +217,12 @@ public struct AttachmentUpload<Metadata: UploadMetadata> {
             beginTimestamp: Date.ows_millisecondTimestamp(),
             endpoint: endpoint,
             uploadLocation: uploadLocation,
+            isResumedUpload: existingSessionUrl != nil,
             logger: logger
         )
     }
 
-    private func performRequest(_ request: TSRequest) async throws -> HTTPResponse {
-        try await networkManager.makePromise(
-            request: request,
-            canUseWebSocket: chatConnectionManager.canMakeRequests(connectionType: .identified)
-        ).awaitable()
-    }
-
-    private func buildProgress(done: Int, total: UInt32) -> Progress {
+    private static func buildProgress(done: Int, total: UInt32) -> Progress {
         let progress = Progress(parent: nil, userInfo: nil)
         progress.totalUnitCount = Int64(total)
         progress.completedUnitCount = Int64(done)

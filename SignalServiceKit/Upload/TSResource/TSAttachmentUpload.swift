@@ -123,8 +123,8 @@ public struct TSAttachmentUpload {
     }
 
     /// Consult the UploadEndpoint to determine how much has already been uploaded.
-    private func getResumableUploadProgress(
-        attempt: Upload.Attempt,
+    private func getResumableUploadProgress<Metadata: UploadMetadata>(
+        attempt: Upload.Attempt<Metadata>,
         count: UInt = 0
     ) async throws -> Upload.ResumeProgress {
         do {
@@ -148,8 +148,8 @@ public struct TSAttachmentUpload {
     }
 
     /// Upload the file using the endpoint and report progress
-    private func performResumableUpload(
-        attempt: Upload.Attempt,
+    private func performResumableUpload<Metadata: UploadMetadata>(
+        attempt: Upload.Attempt<Metadata>,
         count: UInt = 0,
         progress: Upload.ProgressBlock?
     ) async throws {
@@ -239,11 +239,11 @@ public struct TSAttachmentUpload {
 
     // MARK: - Helper Methods
 
-    private func buildAttempt(
-        for localMetadata: Upload.LocalUploadMetadata,
+    private func buildAttempt<Metadata: UploadMetadata>(
+        for localMetadata: Metadata,
         count: UInt = 0,
         logger: PrefixedLogger
-    ) async throws -> Upload.Attempt {
+    ) async throws -> Upload.Attempt<Metadata> {
         let request = OWSRequestFactory.allocAttachmentRequestV4()
         let form: Upload.Form = try await fetchUploadForm(request: request)
         let endpoint: UploadEndpoint = try {
@@ -274,6 +274,7 @@ public struct TSAttachmentUpload {
             beginTimestamp: Date.ows_millisecondTimestamp(),
             endpoint: endpoint,
             uploadLocation: uploadLocation,
+            isResumedUpload: false,
             logger: logger
         )
     }

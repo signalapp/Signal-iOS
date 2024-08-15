@@ -84,7 +84,9 @@ struct UploadEndpointCDN2: UploadEndpoint {
     }
 
     // Determine how much has already been uploaded.
-    internal func getResumableUploadProgress(attempt: Upload.Attempt) async throws -> Upload.ResumeProgress {
+    internal func getResumableUploadProgress<Metadata: UploadMetadata>(
+        attempt: Upload.Attempt<Metadata>
+    ) async throws -> Upload.ResumeProgress {
         var headers = [String: String]()
         headers["Content-Length"] = "0"
         headers["Content-Range"] = "bytes */\(attempt.localMetadata.encryptedDataLength)"
@@ -143,9 +145,9 @@ struct UploadEndpointCDN2: UploadEndpoint {
         return .uploaded(bytesAlreadyUploaded)
     }
 
-    func performUpload(
+    func performUpload<Metadata: UploadMetadata>(
         startPoint: Int,
-        attempt: Upload.Attempt,
+        attempt: Upload.Attempt<Metadata>,
         progress progressBlock: @escaping UploadEndpointProgress
     ) async throws {
         let totalDataLength = attempt.localMetadata.encryptedDataLength
@@ -182,13 +184,40 @@ struct UploadEndpointCDN2: UploadEndpoint {
             }
         }
 
-        let urlSession = signalService.urlSessionForCdn(cdnNumber: uploadForm.cdnNumber, maxResponseSize: nil)
-        _ = try await urlSession.uploadTaskPromise(
-            attempt.uploadLocation.absoluteString,
-            method: .put,
-            headers: headers,
-            fileUrl: fileUrl,
-            progress: progressBlock
-        ).awaitable()
+        do {
+            let urlSession = signalService.urlSessionForCdn(cdnNumber: uploadForm.cdnNumber, maxResponseSize: nil)
+            let response = try await urlSession.uploadTaskPromise(
+                attempt.uploadLocation.absoluteString,
+                method: .put,
+                headers: headers,
+                fileUrl: fileUrl,
+                progress: progressBlock
+            ).awaitable()
+            switch response.responseStatusCode {
+            case 200, 201:
+                return
+            default:
+                throw Upload.Error.unknown
+            }
+        } catch {
+            let retryMode: Upload.FailureMode.RetryMode = {
+                guard
+                    let retryHeader = error.httpResponseHeaders?.value(forHeader: "retry-after"),
+                    let delay = TimeInterval(retryHeader)
+                else { return .immediately }
+                return .afterDelay(delay)
+            }()
+
+            switch error.httpStatusCode {
+            case .some(500...599):
+                // On 5XX errors, clients should try to resume the upload
+                attempt.logger.warn("Temporary upload failure, retry.")
+                // Check for any progress here
+                throw Upload.Error.uploadFailure(recovery: .resume(retryMode))
+            default:
+                attempt.logger.warn("Unknown upload failure.")
+                throw Upload.Error.unknown
+            }
+        }
     }
 }

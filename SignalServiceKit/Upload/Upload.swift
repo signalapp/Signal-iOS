@@ -22,6 +22,9 @@ public enum Upload {
 
         /// If within this window, we can reause existing attachment transit tier uploads for resending.
         public static let uploadReuseWindow: TimeInterval = 60 * 60 * 24 * 3 // 3 days
+        public static let uploadFormReuseWindow: TimeInterval = 60 * 60 * 24 * 6 // 6 days
+
+        public static let maxUploadAttempts = 5
     }
 
     public enum FormSource {
@@ -144,13 +147,14 @@ public enum Upload {
         let finishTimestamp: UInt64
     }
 
-    public struct Attempt {
+    public struct Attempt<Metadata: UploadMetadata> {
         let cdnKey: String
         let cdnNumber: UInt32
-        let localMetadata: UploadMetadata
+        let localMetadata: Metadata
         let beginTimestamp: UInt64
         let endpoint: UploadEndpoint
         let uploadLocation: URL
+        let isResumedUpload: Bool
         let logger: PrefixedLogger
     }
 }

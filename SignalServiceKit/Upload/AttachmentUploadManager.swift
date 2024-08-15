@@ -30,6 +30,9 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
     private let signalService: OWSSignalServiceProtocol
     private let storyStore: StoryStore
 
+    // Map of active upload tasks.
+    private var activeUploads = [Attachment.IDType: Task<Void, Error>]()
+
     public init(
         attachmentEncrypter: Upload.Shims.AttachmentEncrypter,
         attachmentStore: AttachmentUploadStore,
@@ -57,16 +60,14 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
     public func uploadBackup(localUploadMetadata: Upload.EncryptedBackupUploadMetadata, form: Upload.Form) async throws -> Upload.Result<Upload.EncryptedBackupUploadMetadata> {
         let logger = PrefixedLogger(prefix: "[Upload]", suffix: "[backup]")
         do {
-            let upload = AttachmentUpload(
-                localMetadata: localUploadMetadata,
-                uploadForm: form,
+            let attempt = try await AttachmentUpload.buildAttempt(
+                for: localUploadMetadata,
+                form: form,
                 signalService: signalService,
-                networkManager: networkManager,
-                chatConnectionManager: chatConnectionManager,
                 fileSystem: fileSystem,
                 logger: logger
             )
-            return try await upload.start(progress: nil)
+            return try await AttachmentUpload.start(attempt: attempt, progress: nil)
         } catch {
             if error.isNetworkFailureOrTimeout {
                 logger.warn("Upload failed due to network error")
@@ -99,18 +100,15 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         ).start()
 
         do {
-            let upload = AttachmentUpload(
-                localMetadata: localMetadata,
-                uploadForm: form,
+            // We don't show progress for transient uploads
+            let attempt = try await AttachmentUpload.buildAttempt(
+                for: localMetadata,
+                form: form,
                 signalService: signalService,
-                networkManager: networkManager,
-                chatConnectionManager: chatConnectionManager,
                 fileSystem: fileSystem,
                 logger: logger
             )
-
-            // We don't show progress for transient uploads
-            return try await upload.start(progress: nil)
+            return try await AttachmentUpload.start(attempt: attempt, progress: nil)
         } catch {
             if error.isNetworkFailureOrTimeout {
                 logger.warn("Upload failed due to network error")
@@ -140,10 +138,235 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
     public func uploadAttachment(attachmentId: Attachment.IDType) async throws {
         let logger = PrefixedLogger(prefix: "[Upload]", suffix: "[\(attachmentId)]")
 
+        if let activeUpload = activeUploads[attachmentId] {
+            // If this fails, it means the internal retry logic has given up, so don't 
+            // attempt any retries here
+            do {
+                return try await activeUpload.value
+            } catch {
+                return try await uploadAttachment(attachmentId: attachmentId)
+            }
+        }
+
         let attachment = try db.read(block: { tx in
             try fetchAttachment(attachmentId: attachmentId, logger: logger, tx: tx)
         })
+
+        let uploadTask = Task {
+            defer {
+                // Clear out the active upload task once it finishes running.
+                activeUploads[attachmentId] = nil
+            }
+
+            // This task will only fail if a non-recoverable error is encountered, or the
+            // max number of retries is exhausted.
+            try await self.upload(attachment: attachment, sourceType: .transit, logger: logger)
+        }
+
+        // Add the active task to allow any additional uploads to ta
+        activeUploads[attachmentId] = uploadTask
+        return try await uploadTask.value
+    }
+
+    private func upload(
+        attachment: Attachment,
+        sourceType: AttachmentUploadRecord.SourceType,
+        logger: PrefixedLogger
+    ) async throws {
+        let attachmentId = attachment.id
+        var updateRecord = false
+        var cleanupMetadata = false
+
+        // Fetch the record if it exists, or create a new one.
+        // Note this record isn't persisted in this method, so it will need to be saved later.
+        var attachmentUploadRecord = try self.fetchOrCreateAttachmentRecord(
+            for: attachmentId,
+            sourceType: sourceType,
+            db: db
+        )
+
+        // Fetch or build the LocalUploadMetadata.
+        // See `Attachment.transitUploadStrategy(dateProvider:)` for details on when metadata
+        // is reused vs. constructed new.
         let localMetadata: Upload.LocalUploadMetadata
+        switch try getOrFetchUploadMetadata(
+            attachment: attachment,
+            record: attachmentUploadRecord,
+            logger: logger
+        ) {
+        case .existing(let metadata), .reuse(let metadata):
+            // Cached metadata is still good to use
+            localMetadata = metadata
+        case .new(let metadata):
+            localMetadata = metadata
+            updateRecord = true
+            cleanupMetadata = true
+
+            // New metadata was constructed, so clear out the stale upload form.
+            attachmentUploadRecord.localMetadata = metadata
+            attachmentUploadRecord.uploadForm = nil
+            attachmentUploadRecord.uploadFormTimestamp = nil
+            attachmentUploadRecord.uploadSessionUrl = nil
+        case .alreadyUploaded:
+            // No need to upload - Cleanup the upload record and return
+            await db.awaitableWrite { tx in
+                self.cleanup(record: attachmentUploadRecord, logger: logger, tx: tx)
+            }
+            return
+        }
+
+        let uploadForm: Upload.Form
+        switch try await getOrFetchUploadForm(record: attachmentUploadRecord) {
+        case .existing(let form):
+            uploadForm = form
+        case .new(let form):
+            updateRecord = true
+            uploadForm = form
+
+            attachmentUploadRecord.uploadForm = form
+            attachmentUploadRecord.uploadFormTimestamp = Date().ows_millisecondsSince1970
+            attachmentUploadRecord.uploadSessionUrl = nil
+        }
+
+        do {
+            let attempt = try await AttachmentUpload.buildAttempt(
+                for: localMetadata,
+                form: uploadForm,
+                existingSessionUrl: attachmentUploadRecord.uploadSessionUrl,
+                signalService: self.signalService,
+                fileSystem: self.fileSystem,
+                logger: logger
+            )
+
+            // The upload record has modified the metadata, upload form,
+            // or upload session URL, so persist it before beginning the upload.
+            if updateRecord || attachmentUploadRecord.uploadSessionUrl == nil {
+                try await db.awaitableWrite { tx in
+                    attachmentUploadRecord.uploadSessionUrl = attempt.uploadLocation
+                    try self.attachmentStore.upsert(record: attachmentUploadRecord, tx: tx)
+                }
+            }
+
+            let result = try await AttachmentUpload.start(attempt: attempt) {
+                self.updateProgress(id: attachmentId, progress: $0.fractionCompleted)
+            }
+
+            // Update the attachment and associated messages with the success
+            // and clean up and left over upload state
+            try await update(
+                record: attachmentUploadRecord,
+                with: result,
+                logger: logger
+            )
+
+            // On success, cleanup the temp file.  Temp files are only created for
+            // new local metadata, otherwise the existing attachment file location is used.
+            // TODO: Tie this in with OrphanedAttachmentRecord to track this
+            if cleanupMetadata {
+                do {
+                    try fileSystem.deleteFile(url: localMetadata.fileUrl)
+                } catch {
+                    owsFailDebug("Error: \(error)")
+                }
+            }
+        } catch {
+
+            // If the max number of upload failures was hit, give up and throw an error
+            if attachmentUploadRecord.attempt >= Upload.Constants.maxUploadAttempts {
+                await db.awaitableWrite { tx in
+                    self.cleanup(record: attachmentUploadRecord, logger: logger, tx: tx)
+                }
+                throw error
+            }
+
+            // Anything besides 'restart' should be handled below this method,
+            // or is an unhandled error that should be thrown to the caller
+            if case Upload.Error.uploadFailure(let recoveryMode) = error {
+                switch recoveryMode {
+                case .noMoreRetries:
+                    break
+                case .resume(let backOff):
+                    owsFailDebug("Received unexptected error during upload")
+                    fallthrough
+                case .restart(let backOff):
+                    switch backOff {
+                    case .immediately:
+                        break
+                    case .afterDelay(let delay):
+                        try await Upload.sleep(for: delay)
+                    }
+                }
+
+                // Only bump the attempt count if the upload failed.  Don't bump for things
+                // like network issues
+                attachmentUploadRecord.attempt += 1
+
+                // If the error has made it here, something was encountered during upload that requires
+                // a full restart of the upload.
+                // This means at least throwing away the upload form, and just to be sure,
+                // throw away the local metadata as well.
+                attachmentUploadRecord.localMetadata = nil
+                attachmentUploadRecord.uploadForm = nil
+                attachmentUploadRecord.uploadSessionUrl = nil
+
+                try await db.awaitableWrite { tx in
+                    try self.attachmentStore.upsert(record: attachmentUploadRecord, tx: tx)
+                }
+                return try await upload(attachment: attachment, sourceType: sourceType, logger: logger)
+            } else {
+                // Some other non-upload error was encountered - exit from the upload for now.
+                // Network failures or task cancellation shouldn't bump the attempt count, but
+                // any other error type should
+                if error.isNetworkFailureOrTimeout {
+                    logger.warn("Upload failed due to network error")
+                } else if error is CancellationError {
+                    logger.warn("Upload cancelled")
+                } else {
+                    attachmentUploadRecord.attempt += 1
+                    try await db.awaitableWrite { tx in
+                        try self.attachmentStore.upsert(record: attachmentUploadRecord, tx: tx)
+                    }
+                    if let statusCode = error.httpStatusCode {
+                        logger.warn("Unexpected upload error [status: \(statusCode)]")
+                    } else {
+                        logger.warn("Unexpected upload error")
+                    }
+                    throw error
+                }
+            }
+        }
+    }
+
+    // MARK: - Helpers
+
+    private func fetchOrCreateAttachmentRecord(
+        for attachmentId: Attachment.IDType,
+        sourceType: AttachmentUploadRecord.SourceType,
+        db: DB
+    ) throws -> AttachmentUploadRecord {
+        var attachmentUploadRecord: AttachmentUploadRecord
+        if let record = try db.read(block: { tx in
+            try self.attachmentStore.fetchAttachmentUploadRecord(for: attachmentId, sourceType: sourceType, tx: tx)
+        }) {
+            attachmentUploadRecord = record
+        } else {
+            attachmentUploadRecord = AttachmentUploadRecord(sourceType: .transit, attachmentId: attachmentId)
+        }
+        return attachmentUploadRecord
+    }
+
+    private enum MetadataResult {
+        case new(Upload.LocalUploadMetadata)
+        case existing(Upload.LocalUploadMetadata)
+        case reuse(Upload.LocalUploadMetadata)
+        case alreadyUploaded
+    }
+
+    private func getOrFetchUploadMetadata(
+        attachment: Attachment,
+        record: AttachmentUploadRecord,
+        logger: PrefixedLogger
+    ) throws -> MetadataResult {
         switch attachment.transitUploadStrategy(dateProvider: dateProvider) {
         case .cannotUpload:
             logger.warn("Attachment is not uploadable.")
@@ -151,69 +374,58 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             throw OWSUnretryableError()
         case .reuseExistingUpload:
             logger.debug("Attachment previously uploaded.")
-            return
+            return .alreadyUploaded
         case .reuseStreamEncryption(let metadata):
-            localMetadata = metadata
+            return .reuse(metadata)
         case .freshUpload(let stream):
-            localMetadata = try buildMetadata(forUploading: stream)
-        }
-
-        do {
-            let form = try await Upload.FormRequest(
-                signalService: signalService,
-                networkManager: networkManager,
-                chatConnectionManager: chatConnectionManager
-            ).start()
-
-            let upload = AttachmentUpload(
-                localMetadata: localMetadata,
-                uploadForm: form,
-                signalService: signalService,
-                networkManager: networkManager,
-                chatConnectionManager: chatConnectionManager,
-                fileSystem: fileSystem,
-                logger: logger
-            )
-
-            let result = try await upload.start {
-                self.updateProgress(id: attachmentId, progress: $0.fractionCompleted)
-            }
-
-            // Update the attachment and associated messages with the success
-            try await update(
-                attachmentId: attachmentId,
-                with: result,
-                logger: logger
-            )
-
-        } catch {
-            // Anything besides 'restart' should be handled below this method,
-            // or is an unhandled error that should be thrown to the caller
+            // Attempting to upload an existing attachment that's older than 3 days requires
+            // the attachment to be re-encrypted before upload.
+            // If this exists in the upload record from a prior attempt, use 
+            // that file if it still exists.
             if
-                case Upload.Error.uploadFailure(let recoveryMode) = error,
-                case .restart(let backOff) = recoveryMode
+                let metadata = record.localMetadata,
+                // TODO: 
+                // Currently, the file url is in a temp directory and doesn't
+                // persist across launches, so this will never be hit. The fix for this
+                // is to store the temporary file in a more persistent location, and
+                // register the file with the OrphanedAttachmentCleaner
+                OWSFileSystem.fileOrFolderExists(url: metadata.fileUrl)
             {
-                switch backOff {
-                case .immediately:
-                    break
-                case .afterDelay(let delay):
-                    try await Upload.sleep(for: delay)
-                }
-
-                return try await uploadAttachment(attachmentId: attachmentId)
-            } else if error.isNetworkFailureOrTimeout {
-                logger.warn("Upload failed due to network error")
-            } else if error is CancellationError {
-                logger.warn("Upload cancelled")
+                return .existing(metadata)
             } else {
-                if let statusCode = error.httpStatusCode {
-                    logger.warn("Unexpected upload error [status: \(statusCode)]")
-                } else {
-                    logger.warn("Unexpected upload error")
-                }
+                let metadata = try buildMetadata(forUploading: stream)
+                return .new(metadata)
             }
-            throw error
         }
+    }
+
+    private enum FormResult {
+        case new(Upload.Form)
+        case existing(Upload.Form)
+    }
+
+    /// Check for a cached upload form
+    /// This can be up to ~7 days old from the point of upload starting. Just to avoid running into any fuzzieness around the 7 day expiration, expire the form after 6 days
+    /// If the upload hasn't started, the form shouldnt' be cached
+    private func getOrFetchUploadForm(
+        record: AttachmentUploadRecord
+    ) async throws -> FormResult {
+        if
+            let form = record.uploadForm,
+            let formTimestamp = record.uploadFormTimestamp,
+            // And we are still in the window to reuse it
+            dateProvider().timeIntervalSince(
+                Date(millisecondsSince1970: formTimestamp)
+            ) <= Upload.Constants.uploadFormReuseWindow
+        {
+            return .existing(form)
+        }
+        let form = try await Upload.FormRequest(
+            signalService: signalService,
+            networkManager: networkManager,
+            chatConnectionManager: chatConnectionManager
+        ).start()
+        return .new(form)
     }
 
     private func fetchAttachment(
@@ -229,9 +441,17 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         return attachment
     }
 
+    private func cleanup(record: AttachmentUploadRecord, logger: PrefixedLogger, tx: DBWriteTransaction) {
+        do {
+            try self.attachmentStore.removeRecord(for: record.attachmentId, sourceType: record.sourceType, tx: tx)
+        } catch {
+            logger.warn("Failed to clean existing upload record for (\(record.attachmentId))")
+        }
+    }
+
     // Update all the necessary places once the upload succeeds
     private func update(
-        attachmentId: Attachment.IDType,
+        record: AttachmentUploadRecord,
         with result: Upload.Result<Upload.LocalUploadMetadata>,
         logger: PrefixedLogger
     ) async throws {
@@ -239,7 +459,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
 
             // Read the attachment fresh from the DB
             guard let attachmentStream = try? self.fetchAttachment(
-                attachmentId: attachmentId,
+                attachmentId: record.attachmentId,
                 logger: logger,
                 tx: tx
             ).asStream() else {
@@ -265,7 +485,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
 
             do {
                 try self.attachmentStore.enumerateAllReferences(
-                    toAttachmentId: attachmentId,
+                    toAttachmentId: record.attachmentId,
                     tx: tx
                 ) { attachmentReference in
                     switch attachmentReference.owner {
@@ -298,6 +518,8 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             } catch {
                 Logger.error("Failed to enumerate references: \(error)")
             }
+
+            self.cleanup(record: record, logger: logger, tx: tx)
         }
     }
 
