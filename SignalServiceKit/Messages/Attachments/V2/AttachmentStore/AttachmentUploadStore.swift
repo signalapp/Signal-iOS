@@ -14,4 +14,21 @@ public protocol AttachmentUploadStore: AttachmentStore {
         info: Attachment.TransitTierInfo,
         tx: DBWriteTransaction
     ) throws
+
+    func upsert(
+        record: AttachmentUploadRecord,
+        tx: DBWriteTransaction
+    ) throws
+
+    func removeRecord(
+        for attachmentId: Attachment.IDType,
+        sourceType: AttachmentUploadRecord.SourceType,
+        tx: DBWriteTransaction
+    ) throws
+
+    func fetchAttachmentUploadRecord(
+        for attachmentId: Attachment.IDType,
+        sourceType: AttachmentUploadRecord.SourceType,
+        tx: DBReadTransaction
+    ) throws -> AttachmentUploadRecord?
 }

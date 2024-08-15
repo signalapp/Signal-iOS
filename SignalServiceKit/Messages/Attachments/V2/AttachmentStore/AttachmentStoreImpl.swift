@@ -707,4 +707,77 @@ extension AttachmentStoreImpl: AttachmentUploadStore {
         record.lastTransitDownloadAttemptTimestamp = transitTierInfo.lastDownloadAttemptTimestamp
         try record.update(db)
     }
+
+    public func upsert(record: AttachmentUploadRecord, tx: DBWriteTransaction) throws {
+        try upsert(
+            record: record,
+            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database,
+            tx: tx
+        )
+    }
+
+    public func upsert(
+        record: AttachmentUploadRecord,
+        db: GRDB.Database,
+        tx: any DBWriteTransaction
+    ) throws {
+        var newRecord = AttachmentUploadRecord(sourceType: record.sourceType, attachmentId: record.attachmentId)
+        newRecord.sqliteId = record.sqliteId
+        newRecord.uploadForm = record.uploadForm
+        newRecord.uploadFormTimestamp = record.uploadFormTimestamp
+        newRecord.localMetadata = record.localMetadata
+        newRecord.uploadSessionUrl = record.uploadSessionUrl
+        newRecord.attempt = record.attempt
+        try newRecord.save(db)
+    }
+
+    public func removeRecord(
+        for attachmentId: Attachment.IDType,
+        sourceType: AttachmentUploadRecord.SourceType,
+        tx: DBWriteTransaction
+    ) throws {
+        return try removeRecord(
+            for: attachmentId,
+            sourceType: sourceType,
+            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database,
+            tx: tx
+        )
+    }
+
+    public func removeRecord(
+        for attachmentId: Attachment.IDType,
+        sourceType: AttachmentUploadRecord.SourceType,
+        db: GRDB.Database,
+        tx: any DBWriteTransaction
+    ) throws {
+        try AttachmentUploadRecord
+            .filter(Column(AttachmentUploadRecord.CodingKeys.attachmentId) == attachmentId)
+            .filter(Column(AttachmentUploadRecord.CodingKeys.sourceType) == sourceType.rawValue)
+            .deleteAll(db)
+    }
+
+    public func fetchAttachmentUploadRecord(
+        for attachmentId: Attachment.IDType,
+        sourceType: AttachmentUploadRecord.SourceType,
+        tx: DBReadTransaction
+    ) throws -> AttachmentUploadRecord? {
+        return try fetchAttachmentUploadRecord(
+            for: attachmentId,
+            sourceType: sourceType,
+            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database,
+            tx: tx
+        )
+    }
+
+    public func fetchAttachmentUploadRecord(
+        for attachmentId: Attachment.IDType,
+        sourceType: AttachmentUploadRecord.SourceType,
+        db: GRDB.Database,
+        tx: any DBReadTransaction
+    ) throws -> AttachmentUploadRecord? {
+        return try AttachmentUploadRecord
+            .filter(Column(AttachmentUploadRecord.CodingKeys.attachmentId) == attachmentId)
+            .filter(Column(AttachmentUploadRecord.CodingKeys.sourceType) == sourceType.rawValue)
+            .fetchOne(db)
+    }
 }

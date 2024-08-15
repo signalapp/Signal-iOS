@@ -101,4 +101,26 @@ class AttachmentUploadStoreMock: AttachmentStoreMock, AttachmentUploadStore {
     ) throws {
         uploadedAttachments.append(attachmentStream)
     }
+
+    func upsert(record: AttachmentUploadRecord, tx: DBWriteTransaction) throws { }
+
+    func removeRecord(for attachmentId: Attachment.IDType, tx: DBWriteTransaction) throws {}
+
+    func fetchAttachmentUploadRecord(for attachmentId: Attachment.IDType, tx: DBReadTransaction) throws -> AttachmentUploadRecord? {
+        return nil
+    }
+
+    func removeRecord(
+        for attachmentId: Attachment.IDType,
+        sourceType: AttachmentUploadRecord.SourceType,
+        tx: DBWriteTransaction
+    ) throws { }
+
+    func fetchAttachmentUploadRecord(
+        for attachmentId: Attachment.IDType,
+        sourceType: AttachmentUploadRecord.SourceType,
+        tx: DBReadTransaction
+    ) throws -> AttachmentUploadRecord? {
+        return nil
+    }
 }
