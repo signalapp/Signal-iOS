@@ -38,7 +38,7 @@ public protocol IndividualCallRecordManager {
         individualCallStatus: CallRecord.CallStatus.IndividualCallStatus,
         shouldSendSyncMessage: Bool,
         tx: DBWriteTransaction
-    )
+    ) -> CallRecord
 
     /// Update the given call record.
     func updateRecord(
@@ -144,7 +144,7 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
                 tx: tx
             )
         case .matchNotFound:
-            createRecordForInteraction(
+            _ = createRecordForInteraction(
                 individualCallInteraction: individualCallInteraction,
                 individualCallInteractionRowId: individualCallInteractionRowId,
                 contactThread: contactThread,
@@ -170,7 +170,7 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
         individualCallStatus: CallRecord.CallStatus.IndividualCallStatus,
         shouldSendSyncMessage: Bool,
         tx: DBWriteTransaction
-    ) {
+    ) -> CallRecord {
         logger.info("Creating new 1:1 call record from interaction.")
 
         let callRecord = CallRecord(
@@ -193,6 +193,8 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
                 tx: tx
             )
         }
+
+        return callRecord
     }
 
     public func updateRecord(

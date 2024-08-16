@@ -86,6 +86,10 @@ final class MessageBackupIndividualCallArchiver {
         individualCallUpdate.startedCallTimestamp = individualCallInteraction.timestamp
         if let associatedCallRecord {
             individualCallUpdate.callID = associatedCallRecord.callId
+            individualCallUpdate.read = switch associatedCallRecord.unreadStatus {
+            case .read: true
+            case .unread: false
+            }
         }
 
         var chatUpdateMessage = BackupProto_ChatUpdateMessage()
@@ -182,7 +186,7 @@ final class MessageBackupIndividualCallArchiver {
         interactionStore.insertInteraction(individualCallInteraction, tx: tx)
 
         if individualCall.hasCallID {
-            individualCallRecordManager.createRecordForInteraction(
+            let callRecord = individualCallRecordManager.createRecordForInteraction(
                 individualCallInteraction: individualCallInteraction,
                 individualCallInteractionRowId: individualCallInteraction.sqliteRowId!,
                 contactThread: contactThread,
@@ -194,6 +198,10 @@ final class MessageBackupIndividualCallArchiver {
                 shouldSendSyncMessage: false,
                 tx: tx
             )
+
+            if individualCall.read {
+                callRecordStore.markAsRead(callRecord: callRecord, tx: tx)
+            }
         }
 
         return .success(())

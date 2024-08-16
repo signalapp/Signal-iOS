@@ -300,9 +300,9 @@ private class MockGroupCallRecordManager: GroupCallRecordManager {
         _ groupCallStatus: GroupCallStatus,
         _ groupCallRingerAci: Aci?
     ) -> Void)?
-    func createGroupCallRecord(callId: UInt64, groupCallInteraction: OWSGroupCallMessage, groupCallInteractionRowId: Int64, groupThread: TSGroupThread, groupThreadRowId: Int64, callDirection: CallRecord.CallDirection, groupCallStatus: CallRecord.CallStatus.GroupCallStatus, groupCallRingerAci: Aci?, callEventTimestamp: UInt64, shouldSendSyncMessage: Bool, tx: DBWriteTransaction) -> CallRecord? {
+    func createGroupCallRecord(callId: UInt64, groupCallInteraction: OWSGroupCallMessage, groupCallInteractionRowId: Int64, groupThread: TSGroupThread, groupThreadRowId: Int64, callDirection: CallRecord.CallDirection, groupCallStatus: CallRecord.CallStatus.GroupCallStatus, groupCallRingerAci: Aci?, callEventTimestamp: UInt64, shouldSendSyncMessage: Bool, tx: DBWriteTransaction) -> CallRecord {
         createStub!(groupCallStatus, groupCallRingerAci)
-        return nil
+        return CallRecord(callId: callId, interactionRowId: groupCallInteractionRowId, threadRowId: groupThreadRowId, callType: .groupCall, callDirection: callDirection, callStatus: .group(groupCallStatus), callBeganTimestamp: callEventTimestamp)
     }
 
     var updateStub: ((

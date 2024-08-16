@@ -12,10 +12,6 @@
 // For information on using the generated types, please see the documentation:
 //   https://github.com/apple/swift-protobuf/
 
-//
-// Copyright 2024 Signal Messenger, LLC
-// SPDX-License-Identifier: AGPL-3.0-only
-
 import Foundation
 import SwiftProtobuf
 
@@ -1845,65 +1841,230 @@ public struct BackupProto_SendStatus {
 
   public var recipientID: UInt64 = 0
 
-  public var deliveryStatus: BackupProto_SendStatus.Status = .unknown
-
-  public var networkFailure: Bool = false
-
-  public var identityKeyMismatch: Bool = false
-
-  public var sealedSender: Bool = false
-
   /// the time the status was last updated -- if from a receipt, it should be the sentTime of the receipt
-  public var lastStatusUpdateTimestamp: UInt64 = 0
+  public var timestamp: UInt64 = 0
+
+  public var deliveryStatus: BackupProto_SendStatus.OneOf_DeliveryStatus? = nil
+
+  public var pending: BackupProto_SendStatus.Pending {
+    get {
+      if case .pending(let v)? = deliveryStatus {return v}
+      return BackupProto_SendStatus.Pending()
+    }
+    set {deliveryStatus = .pending(newValue)}
+  }
+
+  public var sent: BackupProto_SendStatus.Sent {
+    get {
+      if case .sent(let v)? = deliveryStatus {return v}
+      return BackupProto_SendStatus.Sent()
+    }
+    set {deliveryStatus = .sent(newValue)}
+  }
+
+  public var delivered: BackupProto_SendStatus.Delivered {
+    get {
+      if case .delivered(let v)? = deliveryStatus {return v}
+      return BackupProto_SendStatus.Delivered()
+    }
+    set {deliveryStatus = .delivered(newValue)}
+  }
+
+  public var read: BackupProto_SendStatus.Read {
+    get {
+      if case .read(let v)? = deliveryStatus {return v}
+      return BackupProto_SendStatus.Read()
+    }
+    set {deliveryStatus = .read(newValue)}
+  }
+
+  public var viewed: BackupProto_SendStatus.Viewed {
+    get {
+      if case .viewed(let v)? = deliveryStatus {return v}
+      return BackupProto_SendStatus.Viewed()
+    }
+    set {deliveryStatus = .viewed(newValue)}
+  }
+
+  public var skipped: BackupProto_SendStatus.Skipped {
+    get {
+      if case .skipped(let v)? = deliveryStatus {return v}
+      return BackupProto_SendStatus.Skipped()
+    }
+    set {deliveryStatus = .skipped(newValue)}
+  }
+
+  public var failed: BackupProto_SendStatus.Failed {
+    get {
+      if case .failed(let v)? = deliveryStatus {return v}
+      return BackupProto_SendStatus.Failed()
+    }
+    set {deliveryStatus = .failed(newValue)}
+  }
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  public enum Status: SwiftProtobuf.Enum {
-    public typealias RawValue = Int
-    case unknown // = 0
-    case failed // = 1
-    case pending // = 2
-    case sent // = 3
-    case delivered // = 4
-    case read // = 5
-    case viewed // = 6
+  public enum OneOf_DeliveryStatus: Equatable {
+    case pending(BackupProto_SendStatus.Pending)
+    case sent(BackupProto_SendStatus.Sent)
+    case delivered(BackupProto_SendStatus.Delivered)
+    case read(BackupProto_SendStatus.Read)
+    case viewed(BackupProto_SendStatus.Viewed)
+    case skipped(BackupProto_SendStatus.Skipped)
+    case failed(BackupProto_SendStatus.Failed)
 
-    /// e.g. user in group was blocked, so we skipped sending to them
-    case skipped // = 7
-    case UNRECOGNIZED(Int)
-
-    public init() {
-      self = .unknown
-    }
-
-    public init?(rawValue: Int) {
-      switch rawValue {
-      case 0: self = .unknown
-      case 1: self = .failed
-      case 2: self = .pending
-      case 3: self = .sent
-      case 4: self = .delivered
-      case 5: self = .read
-      case 6: self = .viewed
-      case 7: self = .skipped
-      default: self = .UNRECOGNIZED(rawValue)
+  #if !swift(>=4.1)
+    public static func ==(lhs: BackupProto_SendStatus.OneOf_DeliveryStatus, rhs: BackupProto_SendStatus.OneOf_DeliveryStatus) -> Bool {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch (lhs, rhs) {
+      case (.pending, .pending): return {
+        guard case .pending(let l) = lhs, case .pending(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.sent, .sent): return {
+        guard case .sent(let l) = lhs, case .sent(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.delivered, .delivered): return {
+        guard case .delivered(let l) = lhs, case .delivered(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.read, .read): return {
+        guard case .read(let l) = lhs, case .read(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.viewed, .viewed): return {
+        guard case .viewed(let l) = lhs, case .viewed(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.skipped, .skipped): return {
+        guard case .skipped(let l) = lhs, case .skipped(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.failed, .failed): return {
+        guard case .failed(let l) = lhs, case .failed(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      default: return false
       }
     }
+  #endif
+  }
 
-    public var rawValue: Int {
-      switch self {
-      case .unknown: return 0
-      case .failed: return 1
-      case .pending: return 2
-      case .sent: return 3
-      case .delivered: return 4
-      case .read: return 5
-      case .viewed: return 6
-      case .skipped: return 7
-      case .UNRECOGNIZED(let i): return i
+  public struct Pending {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    public init() {}
+  }
+
+  public struct Sent {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    public var sealedSender: Bool = false
+
+    public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    public init() {}
+  }
+
+  public struct Delivered {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    public var sealedSender: Bool = false
+
+    public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    public init() {}
+  }
+
+  public struct Read {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    public var sealedSender: Bool = false
+
+    public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    public init() {}
+  }
+
+  public struct Viewed {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    public var sealedSender: Bool = false
+
+    public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    public init() {}
+  }
+
+  /// e.g. user in group was blocked, so we skipped sending to them
+  public struct Skipped {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    public init() {}
+  }
+
+  public struct Failed {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    public var reason: BackupProto_SendStatus.Failed.FailureReason = .unknown
+
+    public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    public enum FailureReason: SwiftProtobuf.Enum {
+      public typealias RawValue = Int
+
+      /// A valid value -- could indicate a crash or lack of information
+      case unknown // = 0
+      case network // = 1
+      case identityKeyMismatch // = 2
+      case UNRECOGNIZED(Int)
+
+      public init() {
+        self = .unknown
       }
+
+      public init?(rawValue: Int) {
+        switch rawValue {
+        case 0: self = .unknown
+        case 1: self = .network
+        case 2: self = .identityKeyMismatch
+        default: self = .UNRECOGNIZED(rawValue)
+        }
+      }
+
+      public var rawValue: Int {
+        switch self {
+        case .unknown: return 0
+        case .network: return 1
+        case .identityKeyMismatch: return 2
+        case .UNRECOGNIZED(let i): return i
+        }
+      }
+
     }
 
+    public init() {}
   }
 
   public init() {}
@@ -1911,17 +2072,12 @@ public struct BackupProto_SendStatus {
 
 #if swift(>=4.2)
 
-extension BackupProto_SendStatus.Status: CaseIterable {
+extension BackupProto_SendStatus.Failed.FailureReason: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  public static let allCases: [BackupProto_SendStatus.Status] = [
+  public static let allCases: [BackupProto_SendStatus.Failed.FailureReason] = [
     .unknown,
-    .failed,
-    .pending,
-    .sent,
-    .delivered,
-    .read,
-    .viewed,
-    .skipped,
+    .network,
+    .identityKeyMismatch,
   ]
 }
 
@@ -3309,8 +3465,8 @@ public struct BackupProto_Quote {
 
   public var authorID: UInt64 = 0
 
-  public var text: String {
-    get {return _text ?? String()}
+  public var text: BackupProto_Text {
+    get {return _text ?? BackupProto_Text()}
     set {_text = newValue}
   }
   /// Returns true if `text` has been explicitly set.
@@ -3319,8 +3475,6 @@ public struct BackupProto_Quote {
   public mutating func clearText() {self._text = nil}
 
   public var attachments: [BackupProto_Quote.QuotedAttachment] = []
-
-  public var bodyRanges: [BackupProto_BodyRange] = []
 
   public var type: BackupProto_Quote.TypeEnum = .unknown
 
@@ -3401,7 +3555,7 @@ public struct BackupProto_Quote {
   public init() {}
 
   fileprivate var _targetSentTimestamp: UInt64? = nil
-  fileprivate var _text: String? = nil
+  fileprivate var _text: BackupProto_Text? = nil
 }
 
 #if swift(>=4.2)
@@ -3557,6 +3711,7 @@ public struct BackupProto_Reaction {
 
   public var sentTimestamp: UInt64 = 0
 
+  /// Optional because some clients may not track this data
   public var receivedTimestamp: UInt64 {
     get {return _receivedTimestamp ?? 0}
     set {_receivedTimestamp = newValue}
@@ -3566,7 +3721,8 @@ public struct BackupProto_Reaction {
   /// Clears the value of `receivedTimestamp`. Subsequent reads from it will return its default value.
   public mutating func clearReceivedTimestamp() {self._receivedTimestamp = nil}
 
-  /// A higher sort order means that a reaction is more recent
+  /// A higher sort order means that a reaction is more recent. Some clients may export this as
+  /// incrementing numbers (e.g. 1, 2, 3), others as timestamps.
   public var sortOrder: UInt64 = 0
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
@@ -3740,6 +3896,8 @@ public struct BackupProto_IndividualCall {
   public var state: BackupProto_IndividualCall.State = .unknownState
 
   public var startedCallTimestamp: UInt64 = 0
+
+  public var read: Bool = false
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -3924,6 +4082,8 @@ public struct BackupProto_GroupCall {
 
   /// The time the call ended. 0 indicates an unknown time.
   public var endedCallTimestamp: UInt64 = 0
+
+  public var read: Bool = false
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -5548,7 +5708,7 @@ public struct BackupProto_ChatStyle {
   }
 
   /// See AccountSettings.customChatColors
-  public var customColorID: UInt32 {
+  public var customColorID: UInt64 {
     get {
       if case .customColorID(let v)? = _storage._bubbleColor {return v}
       return 0
@@ -5593,7 +5753,7 @@ public struct BackupProto_ChatStyle {
     case autoBubbleColor(BackupProto_ChatStyle.AutomaticBubbleColor)
     case bubbleColorPreset(BackupProto_ChatStyle.BubbleColorPreset)
     /// See AccountSettings.customChatColors
-    case customColorID(UInt32)
+    case customColorID(UInt64)
 
   #if !swift(>=4.1)
     public static func ==(lhs: BackupProto_ChatStyle.OneOf_BubbleColor, rhs: BackupProto_ChatStyle.OneOf_BubbleColor) -> Bool {
@@ -5821,7 +5981,7 @@ public struct BackupProto_ChatStyle {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
-    public var id: UInt32 = 0
+    public var id: UInt64 = 0
 
     public var color: BackupProto_ChatStyle.CustomChatColor.OneOf_Color? = nil
 
@@ -5994,7 +6154,15 @@ extension BackupProto_ChatItem.IncomingMessageDetails: @unchecked Sendable {}
 extension BackupProto_ChatItem.OutgoingMessageDetails: @unchecked Sendable {}
 extension BackupProto_ChatItem.DirectionlessMessageDetails: @unchecked Sendable {}
 extension BackupProto_SendStatus: @unchecked Sendable {}
-extension BackupProto_SendStatus.Status: @unchecked Sendable {}
+extension BackupProto_SendStatus.OneOf_DeliveryStatus: @unchecked Sendable {}
+extension BackupProto_SendStatus.Pending: @unchecked Sendable {}
+extension BackupProto_SendStatus.Sent: @unchecked Sendable {}
+extension BackupProto_SendStatus.Delivered: @unchecked Sendable {}
+extension BackupProto_SendStatus.Read: @unchecked Sendable {}
+extension BackupProto_SendStatus.Viewed: @unchecked Sendable {}
+extension BackupProto_SendStatus.Skipped: @unchecked Sendable {}
+extension BackupProto_SendStatus.Failed: @unchecked Sendable {}
+extension BackupProto_SendStatus.Failed.FailureReason: @unchecked Sendable {}
 extension BackupProto_Text: @unchecked Sendable {}
 extension BackupProto_StandardMessage: @unchecked Sendable {}
 extension BackupProto_ContactMessage: @unchecked Sendable {}
@@ -8395,11 +8563,14 @@ extension BackupProto_SendStatus: SwiftProtobuf.Message, SwiftProtobuf._MessageI
   public static let protoMessageName: String = _protobuf_package + ".SendStatus"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "recipientId"),
-    2: .same(proto: "deliveryStatus"),
-    3: .same(proto: "networkFailure"),
-    4: .same(proto: "identityKeyMismatch"),
-    5: .same(proto: "sealedSender"),
-    6: .same(proto: "lastStatusUpdateTimestamp"),
+    2: .same(proto: "timestamp"),
+    3: .same(proto: "pending"),
+    4: .same(proto: "sent"),
+    5: .same(proto: "delivered"),
+    6: .same(proto: "read"),
+    7: .same(proto: "viewed"),
+    8: .same(proto: "skipped"),
+    9: .same(proto: "failed"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -8409,60 +8580,360 @@ extension BackupProto_SendStatus: SwiftProtobuf.Message, SwiftProtobuf._MessageI
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularUInt64Field(value: &self.recipientID) }()
-      case 2: try { try decoder.decodeSingularEnumField(value: &self.deliveryStatus) }()
-      case 3: try { try decoder.decodeSingularBoolField(value: &self.networkFailure) }()
-      case 4: try { try decoder.decodeSingularBoolField(value: &self.identityKeyMismatch) }()
-      case 5: try { try decoder.decodeSingularBoolField(value: &self.sealedSender) }()
-      case 6: try { try decoder.decodeSingularUInt64Field(value: &self.lastStatusUpdateTimestamp) }()
+      case 2: try { try decoder.decodeSingularUInt64Field(value: &self.timestamp) }()
+      case 3: try {
+        var v: BackupProto_SendStatus.Pending?
+        var hadOneofValue = false
+        if let current = self.deliveryStatus {
+          hadOneofValue = true
+          if case .pending(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.deliveryStatus = .pending(v)
+        }
+      }()
+      case 4: try {
+        var v: BackupProto_SendStatus.Sent?
+        var hadOneofValue = false
+        if let current = self.deliveryStatus {
+          hadOneofValue = true
+          if case .sent(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.deliveryStatus = .sent(v)
+        }
+      }()
+      case 5: try {
+        var v: BackupProto_SendStatus.Delivered?
+        var hadOneofValue = false
+        if let current = self.deliveryStatus {
+          hadOneofValue = true
+          if case .delivered(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.deliveryStatus = .delivered(v)
+        }
+      }()
+      case 6: try {
+        var v: BackupProto_SendStatus.Read?
+        var hadOneofValue = false
+        if let current = self.deliveryStatus {
+          hadOneofValue = true
+          if case .read(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.deliveryStatus = .read(v)
+        }
+      }()
+      case 7: try {
+        var v: BackupProto_SendStatus.Viewed?
+        var hadOneofValue = false
+        if let current = self.deliveryStatus {
+          hadOneofValue = true
+          if case .viewed(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.deliveryStatus = .viewed(v)
+        }
+      }()
+      case 8: try {
+        var v: BackupProto_SendStatus.Skipped?
+        var hadOneofValue = false
+        if let current = self.deliveryStatus {
+          hadOneofValue = true
+          if case .skipped(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.deliveryStatus = .skipped(v)
+        }
+      }()
+      case 9: try {
+        var v: BackupProto_SendStatus.Failed?
+        var hadOneofValue = false
+        if let current = self.deliveryStatus {
+          hadOneofValue = true
+          if case .failed(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.deliveryStatus = .failed(v)
+        }
+      }()
       default: break
       }
     }
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
     if self.recipientID != 0 {
       try visitor.visitSingularUInt64Field(value: self.recipientID, fieldNumber: 1)
     }
-    if self.deliveryStatus != .unknown {
-      try visitor.visitSingularEnumField(value: self.deliveryStatus, fieldNumber: 2)
+    if self.timestamp != 0 {
+      try visitor.visitSingularUInt64Field(value: self.timestamp, fieldNumber: 2)
     }
-    if self.networkFailure != false {
-      try visitor.visitSingularBoolField(value: self.networkFailure, fieldNumber: 3)
-    }
-    if self.identityKeyMismatch != false {
-      try visitor.visitSingularBoolField(value: self.identityKeyMismatch, fieldNumber: 4)
-    }
-    if self.sealedSender != false {
-      try visitor.visitSingularBoolField(value: self.sealedSender, fieldNumber: 5)
-    }
-    if self.lastStatusUpdateTimestamp != 0 {
-      try visitor.visitSingularUInt64Field(value: self.lastStatusUpdateTimestamp, fieldNumber: 6)
+    switch self.deliveryStatus {
+    case .pending?: try {
+      guard case .pending(let v)? = self.deliveryStatus else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
+    }()
+    case .sent?: try {
+      guard case .sent(let v)? = self.deliveryStatus else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
+    }()
+    case .delivered?: try {
+      guard case .delivered(let v)? = self.deliveryStatus else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
+    }()
+    case .read?: try {
+      guard case .read(let v)? = self.deliveryStatus else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
+    }()
+    case .viewed?: try {
+      guard case .viewed(let v)? = self.deliveryStatus else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
+    }()
+    case .skipped?: try {
+      guard case .skipped(let v)? = self.deliveryStatus else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 8)
+    }()
+    case .failed?: try {
+      guard case .failed(let v)? = self.deliveryStatus else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 9)
+    }()
+    case nil: break
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: BackupProto_SendStatus, rhs: BackupProto_SendStatus) -> Bool {
     if lhs.recipientID != rhs.recipientID {return false}
+    if lhs.timestamp != rhs.timestamp {return false}
     if lhs.deliveryStatus != rhs.deliveryStatus {return false}
-    if lhs.networkFailure != rhs.networkFailure {return false}
-    if lhs.identityKeyMismatch != rhs.identityKeyMismatch {return false}
-    if lhs.sealedSender != rhs.sealedSender {return false}
-    if lhs.lastStatusUpdateTimestamp != rhs.lastStatusUpdateTimestamp {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
-extension BackupProto_SendStatus.Status: SwiftProtobuf._ProtoNameProviding {
+extension BackupProto_SendStatus.Pending: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = BackupProto_SendStatus.protoMessageName + ".Pending"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let _ = try decoder.nextFieldNumber() {
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: BackupProto_SendStatus.Pending, rhs: BackupProto_SendStatus.Pending) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension BackupProto_SendStatus.Sent: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = BackupProto_SendStatus.protoMessageName + ".Sent"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "sealedSender"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBoolField(value: &self.sealedSender) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.sealedSender != false {
+      try visitor.visitSingularBoolField(value: self.sealedSender, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: BackupProto_SendStatus.Sent, rhs: BackupProto_SendStatus.Sent) -> Bool {
+    if lhs.sealedSender != rhs.sealedSender {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension BackupProto_SendStatus.Delivered: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = BackupProto_SendStatus.protoMessageName + ".Delivered"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "sealedSender"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBoolField(value: &self.sealedSender) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.sealedSender != false {
+      try visitor.visitSingularBoolField(value: self.sealedSender, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: BackupProto_SendStatus.Delivered, rhs: BackupProto_SendStatus.Delivered) -> Bool {
+    if lhs.sealedSender != rhs.sealedSender {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension BackupProto_SendStatus.Read: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = BackupProto_SendStatus.protoMessageName + ".Read"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "sealedSender"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBoolField(value: &self.sealedSender) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.sealedSender != false {
+      try visitor.visitSingularBoolField(value: self.sealedSender, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: BackupProto_SendStatus.Read, rhs: BackupProto_SendStatus.Read) -> Bool {
+    if lhs.sealedSender != rhs.sealedSender {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension BackupProto_SendStatus.Viewed: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = BackupProto_SendStatus.protoMessageName + ".Viewed"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "sealedSender"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBoolField(value: &self.sealedSender) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.sealedSender != false {
+      try visitor.visitSingularBoolField(value: self.sealedSender, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: BackupProto_SendStatus.Viewed, rhs: BackupProto_SendStatus.Viewed) -> Bool {
+    if lhs.sealedSender != rhs.sealedSender {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension BackupProto_SendStatus.Skipped: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = BackupProto_SendStatus.protoMessageName + ".Skipped"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let _ = try decoder.nextFieldNumber() {
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: BackupProto_SendStatus.Skipped, rhs: BackupProto_SendStatus.Skipped) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension BackupProto_SendStatus.Failed: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = BackupProto_SendStatus.protoMessageName + ".Failed"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "reason"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularEnumField(value: &self.reason) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.reason != .unknown {
+      try visitor.visitSingularEnumField(value: self.reason, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: BackupProto_SendStatus.Failed, rhs: BackupProto_SendStatus.Failed) -> Bool {
+    if lhs.reason != rhs.reason {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension BackupProto_SendStatus.Failed.FailureReason: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     0: .same(proto: "UNKNOWN"),
-    1: .same(proto: "FAILED"),
-    2: .same(proto: "PENDING"),
-    3: .same(proto: "SENT"),
-    4: .same(proto: "DELIVERED"),
-    5: .same(proto: "READ"),
-    6: .same(proto: "VIEWED"),
-    7: .same(proto: "SKIPPED"),
+    1: .same(proto: "NETWORK"),
+    2: .same(proto: "IDENTITY_KEY_MISMATCH"),
   ]
 }
 
@@ -10060,8 +10531,7 @@ extension BackupProto_Quote: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
     2: .same(proto: "authorId"),
     3: .same(proto: "text"),
     4: .same(proto: "attachments"),
-    5: .same(proto: "bodyRanges"),
-    6: .same(proto: "type"),
+    5: .same(proto: "type"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -10072,10 +10542,9 @@ extension BackupProto_Quote: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularUInt64Field(value: &self._targetSentTimestamp) }()
       case 2: try { try decoder.decodeSingularUInt64Field(value: &self.authorID) }()
-      case 3: try { try decoder.decodeSingularStringField(value: &self._text) }()
+      case 3: try { try decoder.decodeSingularMessageField(value: &self._text) }()
       case 4: try { try decoder.decodeRepeatedMessageField(value: &self.attachments) }()
-      case 5: try { try decoder.decodeRepeatedMessageField(value: &self.bodyRanges) }()
-      case 6: try { try decoder.decodeSingularEnumField(value: &self.type) }()
+      case 5: try { try decoder.decodeSingularEnumField(value: &self.type) }()
       default: break
       }
     }
@@ -10093,16 +10562,13 @@ extension BackupProto_Quote: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
       try visitor.visitSingularUInt64Field(value: self.authorID, fieldNumber: 2)
     }
     try { if let v = self._text {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 3)
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
     } }()
     if !self.attachments.isEmpty {
       try visitor.visitRepeatedMessageField(value: self.attachments, fieldNumber: 4)
     }
-    if !self.bodyRanges.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.bodyRanges, fieldNumber: 5)
-    }
     if self.type != .unknown {
-      try visitor.visitSingularEnumField(value: self.type, fieldNumber: 6)
+      try visitor.visitSingularEnumField(value: self.type, fieldNumber: 5)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -10112,7 +10578,6 @@ extension BackupProto_Quote: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
     if lhs.authorID != rhs.authorID {return false}
     if lhs._text != rhs._text {return false}
     if lhs.attachments != rhs.attachments {return false}
-    if lhs.bodyRanges != rhs.bodyRanges {return false}
     if lhs.type != rhs.type {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -10522,6 +10987,7 @@ extension BackupProto_IndividualCall: SwiftProtobuf.Message, SwiftProtobuf._Mess
     3: .same(proto: "direction"),
     4: .same(proto: "state"),
     5: .same(proto: "startedCallTimestamp"),
+    6: .same(proto: "read"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -10535,6 +11001,7 @@ extension BackupProto_IndividualCall: SwiftProtobuf.Message, SwiftProtobuf._Mess
       case 3: try { try decoder.decodeSingularEnumField(value: &self.direction) }()
       case 4: try { try decoder.decodeSingularEnumField(value: &self.state) }()
       case 5: try { try decoder.decodeSingularUInt64Field(value: &self.startedCallTimestamp) }()
+      case 6: try { try decoder.decodeSingularBoolField(value: &self.read) }()
       default: break
       }
     }
@@ -10560,6 +11027,9 @@ extension BackupProto_IndividualCall: SwiftProtobuf.Message, SwiftProtobuf._Mess
     if self.startedCallTimestamp != 0 {
       try visitor.visitSingularUInt64Field(value: self.startedCallTimestamp, fieldNumber: 5)
     }
+    if self.read != false {
+      try visitor.visitSingularBoolField(value: self.read, fieldNumber: 6)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -10569,6 +11039,7 @@ extension BackupProto_IndividualCall: SwiftProtobuf.Message, SwiftProtobuf._Mess
     if lhs.direction != rhs.direction {return false}
     if lhs.state != rhs.state {return false}
     if lhs.startedCallTimestamp != rhs.startedCallTimestamp {return false}
+    if lhs.read != rhs.read {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -10609,6 +11080,7 @@ extension BackupProto_GroupCall: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
     4: .same(proto: "startedCallRecipientId"),
     5: .same(proto: "startedCallTimestamp"),
     6: .same(proto: "endedCallTimestamp"),
+    7: .same(proto: "read"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -10623,6 +11095,7 @@ extension BackupProto_GroupCall: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
       case 4: try { try decoder.decodeSingularUInt64Field(value: &self._startedCallRecipientID) }()
       case 5: try { try decoder.decodeSingularUInt64Field(value: &self.startedCallTimestamp) }()
       case 6: try { try decoder.decodeSingularUInt64Field(value: &self.endedCallTimestamp) }()
+      case 7: try { try decoder.decodeSingularBoolField(value: &self.read) }()
       default: break
       }
     }
@@ -10651,6 +11124,9 @@ extension BackupProto_GroupCall: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
     if self.endedCallTimestamp != 0 {
       try visitor.visitSingularUInt64Field(value: self.endedCallTimestamp, fieldNumber: 6)
     }
+    if self.read != false {
+      try visitor.visitSingularBoolField(value: self.read, fieldNumber: 7)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -10661,6 +11137,7 @@ extension BackupProto_GroupCall: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
     if lhs._startedCallRecipientID != rhs._startedCallRecipientID {return false}
     if lhs.startedCallTimestamp != rhs.startedCallTimestamp {return false}
     if lhs.endedCallTimestamp != rhs.endedCallTimestamp {return false}
+    if lhs.read != rhs.read {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -13071,8 +13548,8 @@ extension BackupProto_ChatStyle: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
           }
         }()
         case 5: try {
-          var v: UInt32?
-          try decoder.decodeSingularUInt32Field(value: &v)
+          var v: UInt64?
+          try decoder.decodeSingularUInt64Field(value: &v)
           if let v = v {
             if _storage._bubbleColor != nil {try decoder.handleConflictingOneOf()}
             _storage._bubbleColor = .customColorID(v)
@@ -13113,7 +13590,7 @@ extension BackupProto_ChatStyle: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
       }()
       case .customColorID?: try {
         guard case .customColorID(let v)? = _storage._bubbleColor else { preconditionFailure() }
-        try visitor.visitSingularUInt32Field(value: v, fieldNumber: 5)
+        try visitor.visitSingularUInt64Field(value: v, fieldNumber: 5)
       }()
       case nil: break
       }
@@ -13254,7 +13731,7 @@ extension BackupProto_ChatStyle.CustomChatColor: SwiftProtobuf.Message, SwiftPro
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.id) }()
+      case 1: try { try decoder.decodeSingularUInt64Field(value: &self.id) }()
       case 2: try {
         var v: UInt32?
         try decoder.decodeSingularFixed32Field(value: &v)
@@ -13287,7 +13764,7 @@ extension BackupProto_ChatStyle.CustomChatColor: SwiftProtobuf.Message, SwiftPro
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
     // https://github.com/apple/swift-protobuf/issues/1182
     if self.id != 0 {
-      try visitor.visitSingularUInt32Field(value: self.id, fieldNumber: 1)
+      try visitor.visitSingularUInt64Field(value: self.id, fieldNumber: 1)
     }
     switch self.color {
     case .solid?: try {

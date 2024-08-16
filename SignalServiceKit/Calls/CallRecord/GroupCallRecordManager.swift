@@ -36,7 +36,7 @@ public protocol GroupCallRecordManager {
         callEventTimestamp: UInt64,
         shouldSendSyncMessage: Bool,
         tx: DBWriteTransaction
-    ) -> CallRecord?
+    ) -> CallRecord
 
     /// Update an group existing call record with the given parameters.
     ///
@@ -84,7 +84,7 @@ public extension GroupCallRecordManager {
         groupThread: TSGroupThread,
         groupThreadRowId: Int64,
         tx: DBWriteTransaction
-    ) -> CallRecord? {
+    ) -> CallRecord {
         createGroupCallRecord(
             callId: callId,
             groupCallInteraction: groupCallInteraction,
@@ -186,7 +186,7 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
         callEventTimestamp: UInt64,
         shouldSendSyncMessage: Bool,
         tx: DBWriteTransaction
-    ) -> CallRecord? {
+    ) -> CallRecord {
         let newCallRecord = CallRecord(
             callId: callId,
             interactionRowId: groupCallInteractionRowId,

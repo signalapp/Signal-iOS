@@ -349,23 +349,49 @@ message ChatItem {
 }
 
 message SendStatus {
-  enum Status {
-    UNKNOWN = 0;
-    FAILED = 1;
-    PENDING = 2;
-    SENT = 3;
-    DELIVERED = 4;
-    READ = 5;
-    VIEWED = 6;
-    SKIPPED = 7; // e.g. user in group was blocked, so we skipped sending to them
+  message Pending {}
+
+  message Sent {
+    bool sealedSender = 1;
+  }
+
+  message Delivered {
+    bool sealedSender = 1;
+  }
+
+  message Read {
+    bool sealedSender = 1;
+  }
+
+  message Viewed {
+    bool sealedSender = 1;
+  }
+
+  // e.g. user in group was blocked, so we skipped sending to them
+  message Skipped {}
+
+  message Failed {
+    enum FailureReason {
+      UNKNOWN = 0; // A valid value -- could indicate a crash or lack of information
+      NETWORK = 1;
+      IDENTITY_KEY_MISMATCH = 2;
+    }
+
+    FailureReason reason = 1;
   }
 
   uint64 recipientId = 1;
-  Status deliveryStatus = 2;
-  bool networkFailure = 3;
-  bool identityKeyMismatch = 4;
-  bool sealedSender = 5;
-  uint64 lastStatusUpdateTimestamp = 6; // the time the status was last updated -- if from a receipt, it should be the sentTime of the receipt
+  uint64 timestamp = 2; // the time the status was last updated -- if from a receipt, it should be the sentTime of the receipt
+
+  oneof deliveryStatus {
+    Pending pending = 3;
+    Sent sent = 4;
+    Delivered delivered = 5;
+    Read read = 6;
+    Viewed viewed = 7;
+    Skipped skipped = 8;
+    Failed failed = 9;
+  }
 }
 
 message Text {
@@ -629,10 +655,9 @@ message Quote {
 
   optional uint64 targetSentTimestamp = 1; // null if the target message could not be found at time of quote insert
   uint64 authorId = 2;
-  optional string text = 3;
+  optional Text text = 3;
   repeated QuotedAttachment attachments = 4;
-  repeated BodyRange bodyRanges = 5;
-  Type type = 6;
+  Type type = 5;
 }
 
 message BodyRange {
@@ -658,8 +683,11 @@ message Reaction {
   string emoji = 1;
   uint64 authorId = 2;
   uint64 sentTimestamp = 3;
+  // Optional because some clients may not track this data
   optional uint64 receivedTimestamp = 4;
-  uint64 sortOrder = 5; // A higher sort order means that a reaction is more recent
+  // A higher sort order means that a reaction is more recent. Some clients may export this as
+  // incrementing numbers (e.g. 1, 2, 3), others as timestamps.
+  uint64 sortOrder = 5;
 }
 
 message ChatUpdateMessage {
@@ -706,6 +734,7 @@ message IndividualCall {
   Direction direction = 3;
   State state = 4;
   uint64 startedCallTimestamp = 5;
+  bool read = 6;
 }
 
 message GroupCall {
@@ -737,6 +766,7 @@ message GroupCall {
   uint64 startedCallTimestamp = 5;
   // The time the call ended. 0 indicates an unknown time.
   uint64 endedCallTimestamp = 6;
+  bool read = 7;
 }
 
 message SimpleChatUpdate {
@@ -1049,7 +1079,7 @@ message ChatStyle {
   }
 
   message CustomChatColor {
-    uint32 id = 1;
+    uint64 id = 1;
 
     oneof color {
       fixed32 solid = 2;
@@ -1123,7 +1153,7 @@ message ChatStyle {
     BubbleColorPreset bubbleColorPreset = 4;
 
     // See AccountSettings.customChatColors
-    uint32 customColorId = 5;
+    uint64 customColorId = 5;
   }
 
   bool dimWallpaperInDarkMode = 7;

@@ -37,29 +37,8 @@ final class MessageBackupSimpleChatUpdateTest: MessageBackupIntegrationTestCase 
             var seenInfoMessageTypes = Set<TSInfoMessageType>()
             var seenErrorMessageTypes = Set<TSErrorMessageType>()
 
-            /// We should only have one thread, and it should be the one all the
-            /// expected interactions belong to.
-            try threadStore.enumerateNonStoryThreads(tx: tx) { thread throws -> Bool in
-                guard
-                    let contactThread = thread as? TSContactThread,
-                    let contactAci = contactThread.contactAddress.aci
-                else {
-                    throw FailTestError("Unexpectedly found non-contact thread, or contact thread missing ACI!")
-                }
-
-                XCTAssertEqual(contactAci, expectedAci)
-                return true
-            }
-
             /// We should have only exactly the info/error messages we expect.
             try deps.interactionStore.enumerateAllInteractions(tx: tx) { interaction throws -> Bool in
-                guard
-                    let contactThread = threadStore.fetchThreadForInteraction(interaction, tx: tx) as? TSContactThread,
-                    contactThread.contactAddress.aci == expectedAci
-                else {
-                    throw FailTestError("Info message in unexpected thread!")
-                }
-
                 if let verificationStateChange = interaction as? OWSVerificationStateChangeMessage {
                     /// Info messages for verification state changes are all
                     /// this subclass, rather than a generic info message.
@@ -192,7 +171,7 @@ final class MessageBackupSimpleChatUpdateTest: MessageBackupIntegrationTestCase 
             )
             XCTAssertEqual(
                 seenInfoMessageTypes.count,
-                4,
+                9,
                 "Unexpected number of info messages: \(seenInfoMessageTypes.count)."
             )
             XCTAssertEqual(

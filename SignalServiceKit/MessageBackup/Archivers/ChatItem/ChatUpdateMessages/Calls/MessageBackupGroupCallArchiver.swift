@@ -73,6 +73,10 @@ final class MessageBackupGroupCallArchiver {
         groupCallUpdate.endedCallTimestamp = endedCallTimestamp
         if let associatedCallRecord {
             groupCallUpdate.callID = associatedCallRecord.callId
+            groupCallUpdate.read = switch associatedCallRecord.unreadStatus {
+            case .read: true
+            case .unread: false
+            }
         }
 
         if let ringerAci = associatedCallRecord?.groupCallRingerAci {
@@ -190,7 +194,7 @@ final class MessageBackupGroupCallArchiver {
                 groupCallRingerAci = nil
             }
 
-            _ = groupCallRecordManager.createGroupCallRecord(
+            let callRecord = groupCallRecordManager.createGroupCallRecord(
                 callId: groupCall.callID,
                 groupCallInteraction: groupCallInteraction,
                 groupCallInteractionRowId: groupCallInteraction.sqliteRowId!,
@@ -203,6 +207,10 @@ final class MessageBackupGroupCallArchiver {
                 shouldSendSyncMessage: false,
                 tx: tx
             )
+
+            if groupCall.read {
+                callRecordStore.markAsRead(callRecord: callRecord, tx: tx)
+            }
         }
 
         return .success(())

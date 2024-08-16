@@ -811,10 +811,10 @@ private class MockGroupCallRecordManager: GroupCallRecordManager {
         _ direction: CallRecord.CallDirection,
         _ groupCallStatus: CallRecord.CallStatus.GroupCallStatus
     ) -> Void)?
-    func createGroupCallRecord(callId: UInt64, groupCallInteraction: OWSGroupCallMessage, groupCallInteractionRowId: Int64, groupThread: TSGroupThread, groupThreadRowId: Int64, callDirection: CallRecord.CallDirection, groupCallStatus: CallRecord.CallStatus.GroupCallStatus, groupCallRingerAci: Aci?, callEventTimestamp: UInt64, shouldSendSyncMessage: Bool, tx: DBWriteTransaction) -> CallRecord? {
+    func createGroupCallRecord(callId: UInt64, groupCallInteraction: OWSGroupCallMessage, groupCallInteractionRowId: Int64, groupThread: TSGroupThread, groupThreadRowId: Int64, callDirection: CallRecord.CallDirection, groupCallStatus: CallRecord.CallStatus.GroupCallStatus, groupCallRingerAci: Aci?, callEventTimestamp: UInt64, shouldSendSyncMessage: Bool, tx: DBWriteTransaction) -> CallRecord {
         createGroupCallStub!(callDirection, groupCallStatus)
         XCTAssertFalse(shouldSendSyncMessage)
-        return nil
+        return CallRecord(callId: callId, interactionRowId: groupCallInteractionRowId, threadRowId: groupThreadRowId, callType: .groupCall, callDirection: callDirection, callStatus: .group(groupCallStatus), callBeganTimestamp: callEventTimestamp)
     }
 
     var updateGroupCallStub: ((
@@ -853,8 +853,10 @@ private class MockIndividualCallRecordManager: IndividualCallRecordManager {
         individualCallStatus: CallRecord.CallStatus.IndividualCallStatus,
         shouldSendSyncMessage: Bool,
         tx: DBWriteTransaction
-    ) {
+    ) -> CallRecord {
         createdRecords.append(callId)
+
+        return CallRecord(callId: callId, interactionRowId: individualCallInteractionRowId, threadRowId: contactThreadRowId, callType: callType, callDirection: callDirection, callStatus: .individual(individualCallStatus), callBeganTimestamp: individualCallInteraction.timestamp)
     }
 
     func updateRecord(

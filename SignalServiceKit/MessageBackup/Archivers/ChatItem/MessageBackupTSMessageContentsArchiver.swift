@@ -316,8 +316,13 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             case .bubbleUpError(let errorResult):
                 return errorResult
             }
-            quote.text = text.body
-            quote.bodyRanges = text.bodyRanges
+
+            quote.text = { () -> BackupProto_Text in
+                var quoteText = BackupProto_Text()
+                quoteText.body = text.body
+                quoteText.bodyRanges = text.bodyRanges
+                return quoteText
+            }()
         }
 
         // TODO: [Backups] Set attachments on the quote
@@ -708,8 +713,8 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
 
             if quote.hasText {
                 guard let bodyResult = restoreMessageBody(
-                    text: quote.text,
-                    bodyRangeProtos: quote.bodyRanges,
+                    text: quote.text.body,
+                    bodyRangeProtos: quote.text.bodyRanges,
                     chatItemId: chatItemId
                 )
                     .unwrap(partialErrors: &partialErrors)

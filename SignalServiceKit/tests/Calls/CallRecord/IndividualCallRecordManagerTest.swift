@@ -171,7 +171,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
         let (thread, interaction) = createInteraction()
 
         mockDB.write { tx in
-            individualCallRecordManager.createRecordForInteraction(
+            _ = individualCallRecordManager.createRecordForInteraction(
                 individualCallInteraction: interaction,
                 individualCallInteractionRowId: interaction.sqliteRowId!,
                 contactThread: thread,
@@ -193,7 +193,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
         let (thread, interaction) = createInteraction()
 
         mockDB.write { tx in
-            individualCallRecordManager.createRecordForInteraction(
+            _ = individualCallRecordManager.createRecordForInteraction(
                 individualCallInteraction: interaction,
                 individualCallInteractionRowId: interaction.sqliteRowId!,
                 contactThread: thread,
@@ -309,7 +309,7 @@ private class SnoopingIndividualCallRecordManagerImpl: IndividualCallRecordManag
     var didAskToCreateRecord: CallRecord.CallStatus.IndividualCallStatus?
     var didAskToUpdateRecord: CallRecord.CallStatus.IndividualCallStatus?
 
-    override func createRecordForInteraction(individualCallInteraction: TSCall, individualCallInteractionRowId: Int64, contactThread: TSContactThread, contactThreadRowId: Int64, callId: UInt64, callType: CallRecord.CallType, callDirection: CallRecord.CallDirection, individualCallStatus: CallRecord.CallStatus.IndividualCallStatus, shouldSendSyncMessage: Bool, tx: DBWriteTransaction) {
+    override func createRecordForInteraction(individualCallInteraction: TSCall, individualCallInteractionRowId: Int64, contactThread: TSContactThread, contactThreadRowId: Int64, callId: UInt64, callType: CallRecord.CallType, callDirection: CallRecord.CallDirection, individualCallStatus: CallRecord.CallStatus.IndividualCallStatus, shouldSendSyncMessage: Bool, tx: DBWriteTransaction) -> CallRecord {
         didAskToCreateRecord = individualCallStatus
         return super.createRecordForInteraction(individualCallInteraction: individualCallInteraction, individualCallInteractionRowId: individualCallInteractionRowId, contactThread: contactThread, contactThreadRowId: contactThreadRowId, callId: callId, callType: callType, callDirection: callDirection, individualCallStatus: individualCallStatus, shouldSendSyncMessage: shouldSendSyncMessage, tx: tx)
     }
