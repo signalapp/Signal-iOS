@@ -92,6 +92,7 @@ public class ContactThreadNameCollisionFinder: NameCollisionFinder, Dependencies
             // Include all SignalAccounts as well (even though most are redundant) to
             // ensure we check against blocked system contact names.
             result.formUnion(SignalAccount.anyFetchAll(transaction: transaction).map { $0.recipientAddress })
+            result.remove(contactThread.contactAddress)
             result = result.filter { !$0.isLocalAddress }
             return Array(result)
         }()
