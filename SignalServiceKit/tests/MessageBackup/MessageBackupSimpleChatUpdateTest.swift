@@ -121,7 +121,11 @@ final class MessageBackupSimpleChatUpdateTest: MessageBackupIntegrationTestCase 
                     case
                             .typeSessionDidEnd,
                             .userJoinedSignal,
-                            .reportedSpam:
+                            .reportedSpam,
+                            .blockedOtherUser,
+                            .blockedGroup,
+                            .unblockedOtherUser,
+                            .unblockedGroup:
                         XCTAssertNil(infoMessage.infoMessageUserInfo)
                         fallthrough
                     case .phoneNumberChange:

@@ -182,6 +182,20 @@ final class MessageBackupSimpleChatUpdateArchiver {
             // take this action, so we're the author.
             updateAuthor = .localUser
             updateType = .reportedSpam
+        case .blockedOtherUser, .blockedGroup:
+            // We blocked, so we're the author.
+            //
+            // These messages are the same in a Backup, and disambiguated at
+            // restore-time by the type of chat thread they're in.
+            updateAuthor = .localUser
+            updateType = .blocked
+        case .unblockedOtherUser, .unblockedGroup:
+            // We unblocked, so we're the author.
+            //
+            // These messages are the same in a Backup, and disambiguated at
+            // restore-time by the type of chat thread they're in.
+            updateAuthor = .localUser
+            updateType = .unblocked
         }
 
         let updateAuthorRecipientId: MessageBackup.RecipientId
@@ -502,6 +516,20 @@ final class MessageBackupSimpleChatUpdateArchiver {
             ))
         case .reportedSpam:
             simpleChatUpdateInteraction = .simpleInfoMessage(.reportedSpam)
+        case .blocked:
+            switch chatThread.threadType {
+            case .contact:
+                simpleChatUpdateInteraction = .simpleInfoMessage(.blockedOtherUser)
+            case .groupV2:
+                simpleChatUpdateInteraction = .simpleInfoMessage(.blockedGroup)
+            }
+        case .unblocked:
+            switch chatThread.threadType {
+            case .contact:
+                simpleChatUpdateInteraction = .simpleInfoMessage(.unblockedOtherUser)
+            case .groupV2:
+                simpleChatUpdateInteraction = .simpleInfoMessage(.unblockedGroup)
+            }
         }
 
         let interactionToInsert: TSInteraction = switch simpleChatUpdateInteraction {

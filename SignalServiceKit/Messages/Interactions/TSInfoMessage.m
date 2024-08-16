@@ -310,6 +310,18 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
                 @"INFO_MESSAGE_REPORTED_SPAM", @"Shown when a user reports a conversation as spam.");
         case TSInfoMessageLearnedProfileName:
             return [self learnedProfileNameDescriptionWithTx:transaction];
+        case TSInfoMessageBlockedOtherUser:
+            return OWSLocalizedString(@"INFO_MESSAGE_BLOCKED_OTHER_USER",
+                @"An info message inserted into a 1:1 chat when you block another user.");
+        case TSInfoMessageBlockedGroup:
+            return OWSLocalizedString(
+                @"INFO_MESSAGE_BLOCKED_GROUP", @"An info message inserted into a group chat when you block the group.");
+        case TSInfoMessageUnblockedOtherUser:
+            return OWSLocalizedString(@"INFO_MESSAGE_UNBLOCKED_OTHER_USER",
+                @"An info message inserted into a 1:1 chat when you unblock another user.");
+        case TSInfoMessageUnblockedGroup:
+            return OWSLocalizedString(@"INFO_MESSAGE_UNBLOCKED_GROUP",
+                @"An info message inserted into a group chat when you unblock the group.");
     }
 
     OWSFailDebug(@"Unknown info message type");

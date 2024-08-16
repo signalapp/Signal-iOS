@@ -391,6 +391,10 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
             case TSInfoMessageSessionSwitchover:
             case TSInfoMessageReportedSpam:
             case TSInfoMessageLearnedProfileName:
+            case TSInfoMessageBlockedOtherUser:
+            case TSInfoMessageBlockedGroup:
+            case TSInfoMessageUnblockedOtherUser:
+            case TSInfoMessageUnblockedGroup:
                 break;
         }
     }

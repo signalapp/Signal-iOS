@@ -822,6 +822,14 @@ extension CVComponentSystemMessage {
                 return Theme.iconImage(.spam)
             case .learnedProfileName:
                 return Theme.iconImage(.threadCompact)
+            case .blockedOtherUser:
+                return Theme.iconImage(.chatSettingsBlock)
+            case .blockedGroup:
+                return Theme.iconImage(.chatSettingsBlock)
+            case .unblockedOtherUser:
+                return Theme.iconImage(.threadCompact)
+            case .unblockedGroup:
+                return Theme.iconImage(.threadCompact)
             }
         } else if let call = interaction as? TSCall {
             switch call.offerType {
@@ -1285,6 +1293,14 @@ extension CVComponentSystemMessage {
                 action: .didTapReportSpamLearnMore
             )
         case .learnedProfileName:
+            return nil
+        case .blockedOtherUser:
+            return nil
+        case .blockedGroup:
+            return nil
+        case .unblockedOtherUser:
+            return nil
+        case .unblockedGroup:
             return nil
         }
     }

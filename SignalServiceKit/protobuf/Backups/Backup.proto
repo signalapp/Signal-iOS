@@ -755,6 +755,8 @@ message SimpleChatUpdate {
     PAYMENT_ACTIVATION_REQUEST = 11;
     UNSUPPORTED_PROTOCOL_MESSAGE = 12;
     REPORTED_SPAM = 13;
+    BLOCKED = 14;
+    UNBLOCKED = 15;
   }
 
   Type type = 1;

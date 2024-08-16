@@ -141,7 +141,11 @@ extension BlockingManager {
 
     // MARK: Writers
 
-    public func addBlockedAddress(_ address: SignalServiceAddress, blockMode: BlockMode, transaction: SDSAnyWriteTransaction) {
+    public func addBlockedAddress(
+        _ address: SignalServiceAddress,
+        blockMode: BlockMode,
+        transaction tx: SDSAnyWriteTransaction
+    ) {
         guard address.isValid else {
             owsFailDebug("Invalid address: \(address).")
             return
@@ -150,22 +154,44 @@ extension BlockingManager {
             owsFailDebug("Cannot block the local address")
             return
         }
-        updateCurrentState(transaction: transaction, wasLocallyInitiated: blockMode.locallyInitiated) { state in
-            let didAdd = state.addBlockedAddress(address)
-            if didAdd && blockMode.locallyInitiated {
+
+        updateCurrentState(transaction: tx, wasLocallyInitiated: blockMode.locallyInitiated) { state in
+            guard state.addBlockedAddress(address) else {
+                return
+            }
+
+            if blockMode.locallyInitiated {
                 storageServiceManager.recordPendingUpdates(updatedAddresses: [address])
             }
-        }
 
-        // We will start dropping new stories from the blocked address;
-        // delete any existing ones we already have.
-        if let aci = address.aci {
-            StoryManager.deleteAllStories(forSender: aci, tx: transaction)
+            // We will start dropping new stories from the blocked address;
+            // delete any existing ones we already have.
+            if let aci = address.aci {
+                StoryManager.deleteAllStories(forSender: aci, tx: tx)
+            }
+            StoryManager.removeAddressFromAllPrivateStoryThreads(address, tx: tx)
+
+            // Insert an info message that we blocked this user.
+            let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
+            let threadStore = DependenciesBridge.shared.threadStore
+            let interactionStore = DependenciesBridge.shared.interactionStore
+            if
+                let recipient = recipientDatabaseTable.fetchRecipient(address: address, tx: tx.asV2Read),
+                let contactThread = threadStore.fetchContactThread(recipient: recipient, tx: tx.asV2Read)
+            {
+                interactionStore.insertInteraction(
+                    TSInfoMessage(thread: contactThread, messageType: .blockedOtherUser),
+                    tx: tx.asV2Write
+                )
+            }
         }
-        StoryManager.removeAddressFromAllPrivateStoryThreads(address, tx: transaction)
     }
 
-    public func removeBlockedAddress(_ address: SignalServiceAddress, wasLocallyInitiated: Bool, transaction: SDSAnyWriteTransaction) {
+    public func removeBlockedAddress(
+        _ address: SignalServiceAddress,
+        wasLocallyInitiated: Bool,
+        transaction tx: SDSAnyWriteTransaction
+    ) {
         guard address.isValid else {
             owsFailDebug("Invalid address: \(address).")
             return
@@ -174,10 +200,28 @@ extension BlockingManager {
             owsFailDebug("Cannot unblock the local address")
             return
         }
-        updateCurrentState(transaction: transaction, wasLocallyInitiated: wasLocallyInitiated) { state in
-            let didRemove = state.removeBlockedAddress(address)
-            if didRemove && wasLocallyInitiated {
+
+        updateCurrentState(transaction: tx, wasLocallyInitiated: wasLocallyInitiated) { state in
+            guard state.removeBlockedAddress(address) else {
+                return
+            }
+
+            if wasLocallyInitiated {
                 storageServiceManager.recordPendingUpdates(updatedAddresses: [address])
+            }
+
+            // Insert an info message that we unblocked this user.
+            let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
+            let threadStore = DependenciesBridge.shared.threadStore
+            let interactionStore = DependenciesBridge.shared.interactionStore
+            if
+                let recipient = recipientDatabaseTable.fetchRecipient(address: address, tx: tx.asV2Read),
+                let contactThread = threadStore.fetchContactThread(recipient: recipient, tx: tx.asV2Read)
+            {
+                interactionStore.insertInteraction(
+                    TSInfoMessage(thread: contactThread, messageType: .unblockedOtherUser),
+                    tx: tx.asV2Write
+                )
             }
         }
     }
@@ -190,23 +234,35 @@ extension BlockingManager {
         }
 
         updateCurrentState(transaction: transaction, wasLocallyInitiated: blockMode.locallyInitiated) { state in
-            let didInsert = state.addBlockedGroup(groupModel)
-            if didInsert {
-                Logger.info("Added blocked groupId: \(groupId.hexadecimalString)")
+            guard state.addBlockedGroup(groupModel) else {
+                return
+            }
 
-                if blockMode.locallyInitiated {
-                    storageServiceManager.recordPendingUpdates(groupModel: groupModel)
-                }
+            Logger.info("Added blocked groupId: \(groupId.hexadecimalString)")
 
+            if blockMode.locallyInitiated {
+                storageServiceManager.recordPendingUpdates(groupModel: groupModel)
+            }
+
+            if let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
                 // Quit the group if we're a member.
-                if blockMode == .localShouldLeaveGroups,
-                   groupModel.groupMembership.isLocalUserMemberOfAnyKind,
-                   let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction),
-                   groupThread.isLocalUserMemberOfAnyKind {
-                    GroupManager.leaveGroupOrDeclineInviteAsyncWithoutUI(groupThread: groupThread,
-                                                                         transaction: transaction,
-                                                                         success: nil)
+                if
+                    blockMode == .localShouldLeaveGroups,
+                    groupModel.groupMembership.isLocalUserMemberOfAnyKind,
+                    groupThread.isLocalUserMemberOfAnyKind
+                {
+                    GroupManager.leaveGroupOrDeclineInviteAsyncWithoutUI(
+                        groupThread: groupThread,
+                        transaction: transaction,
+                        success: nil
+                    )
                 }
+
+                // Insert an info message that we blocked this group.
+                DependenciesBridge.shared.interactionStore.insertInteraction(
+                    TSInfoMessage(thread: groupThread, messageType: .blockedGroup),
+                    tx: transaction.asV2Write
+                )
             }
         }
     }
@@ -218,17 +274,25 @@ extension BlockingManager {
         }
 
         updateCurrentState(transaction: transaction, wasLocallyInitiated: wasLocallyInitiated) { state in
-            if let unblockedGroup = state.removeBlockedGroup(groupId) {
-                Logger.info("Removed blocked groupId: \(groupId.hexadecimalString)")
+            guard let unblockedGroup = state.removeBlockedGroup(groupId) else {
+                return
+            }
 
-                if wasLocallyInitiated {
-                    storageServiceManager.recordPendingUpdates(groupModel: unblockedGroup)
-                }
+            Logger.info("Removed blocked groupId: \(groupId.hexadecimalString)")
 
+            if wasLocallyInitiated {
+                storageServiceManager.recordPendingUpdates(groupModel: unblockedGroup)
+            }
+
+            if let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
                 // Refresh unblocked group.
-                if let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
-                    groupV2Updates.tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithoutThrottling(groupThread)
-                }
+                groupV2Updates.tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithoutThrottling(groupThread)
+
+                // Insert an info message that we unblocked.
+                DependenciesBridge.shared.interactionStore.insertInteraction(
+                    TSInfoMessage(thread: groupThread, messageType: .unblockedGroup),
+                    tx: transaction.asV2Write
+                )
             }
         }
     }

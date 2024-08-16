@@ -102,6 +102,10 @@ extension TSInteraction {
             case .syncedThread: return true
             case .paymentsActivationRequest: return true
             case .paymentsActivated: return true
+            case .blockedOtherUser: return true
+            case .blockedGroup: return true
+            case .unblockedOtherUser: return true
+            case .unblockedGroup: return true
             }
         case let message as TSMessage:
             // skip considering this message if it's a group story reply, or a past edit revision

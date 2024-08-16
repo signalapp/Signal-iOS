@@ -155,7 +155,11 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupProtoArchiver {
                 .phoneNumberChange,
                 .paymentsActivationRequest,
                 .paymentsActivated,
-                .reportedSpam:
+                .reportedSpam,
+                .blockedOtherUser,
+                .blockedGroup,
+                .unblockedOtherUser,
+                .unblockedGroup:
             /// These info message types map to simple chat updates.
             return simpleChatUpdateArchiver.archiveSimpleChatUpdate(
                 infoMessage: infoMessage,
