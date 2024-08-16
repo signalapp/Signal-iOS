@@ -25,7 +25,7 @@ PODS:
   - Mantle (2.1.0):
     - Mantle/extobjc (= 2.1.0)
   - Mantle/extobjc (2.1.0)
-  - MobileCoin/CoreHTTP (6.0.0):
+  - MobileCoin/CoreHTTP (6.0.3):
     - LibMobileCoin/CoreHTTP (~> 6.0.0-pre1)
     - Logging (~> 1.4)
   - PureLayout (3.1.4)
@@ -59,7 +59,7 @@ DEPENDENCIES:
   - libwebp (from `./ThirdParty/libwebp.podspec.json`)
   - lottie-ios
   - Mantle (from `https://github.com/signalapp/Mantle`, branch `signal-master`)
-  - MobileCoin/CoreHTTP (from `https://github.com/mobilecoinofficial/MobileCoin-Swift`, tag `v6.0.0`)
+  - MobileCoin/CoreHTTP (from `https://github.com/mobilecoinofficial/MobileCoin-Swift`, tag `v6.0.3`)
   - PureLayout
   - Reachability
   - SignalRingRTC (from `https://github.com/signalapp/ringrtc`, tag `v2.46.0`)
@@ -100,7 +100,7 @@ EXTERNAL SOURCES:
     :git: https://github.com/signalapp/Mantle
   MobileCoin:
     :git: https://github.com/mobilecoinofficial/MobileCoin-Swift
-    :tag: v6.0.0
+    :tag: v6.0.3
   SignalRingRTC:
     :git: https://github.com/signalapp/ringrtc
     :tag: v2.46.0
@@ -131,7 +131,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/signalapp/Mantle
   MobileCoin:
     :git: https://github.com/mobilecoinofficial/MobileCoin-Swift
-    :tag: v6.0.0
+    :tag: v6.0.3
   SignalRingRTC:
     :git: https://github.com/signalapp/ringrtc
     :tag: v2.46.0
@@ -154,7 +154,7 @@ SPEC CHECKSUMS:
   Logging: beeb016c9c80cf77042d62e83495816847ef108b
   lottie-ios: fcb5e73e17ba4c983140b7d21095c834b3087418
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
-  MobileCoin: 3df783a5cc278a328635ea1f5c7124c5e924648d
+  MobileCoin: cd7f49d6eaa2d362e4c9f8324cae0cc3bc3c53b5
   PureLayout: f08c01b8dec00bb14a1fefa3de4c7d9c265df85e
   Reachability: fd0ecd23705e2599e4cceeb943222ae02296cbc6
   SignalRingRTC: cf554fd623632d2c03184a3181527f06580b018b
@@ -163,6 +163,6 @@ SPEC CHECKSUMS:
   SwiftProtobuf: 5e8349171e7c2f88f5b9e683cb3cb79d1dc780b3
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
 
-PODFILE CHECKSUM: 5288e14e17e9e819e91d8440bf5e10ec63e86829
+PODFILE CHECKSUM: 79863db7381dfd8f1ed42087cd6cd21de8426c3c
 
 COCOAPODS: 1.15.2
