@@ -83,6 +83,15 @@ class GroupCall: SignalRingRTC.GroupCallDelegate {
         )
     }
 
+    public var isJustMe: Bool {
+        switch ringRtcCall.localDeviceState.joinState {
+        case .notJoined, .joining, .pending:
+            return true
+        case .joined:
+            return ringRtcCall.remoteDeviceStates.isEmpty
+        }
+    }
+
     // MARK: - Concrete Type
 
     enum ConcreteType {

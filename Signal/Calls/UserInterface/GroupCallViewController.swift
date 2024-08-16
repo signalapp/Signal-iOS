@@ -48,6 +48,15 @@ class GroupCallViewController: UIViewController {
             sheetPanDelegate: self
         )
     }()
+    private lazy var fullscreenLocalMemberAddOnsView: SupplementalCallControlsForFullscreenLocalMember = {
+        let view = SupplementalCallControlsForFullscreenLocalMember(
+            call: call,
+            groupCall: groupCall,
+            callService: callService
+        )
+        view.isHidden = true
+        return view
+    }()
     private lazy var callControlsConfirmationToastContainerView = UIView()
     private var callService: CallService { AppEnvironment.shared.callService }
     private var incomingCallControls: IncomingCallControls?
@@ -386,6 +395,15 @@ class GroupCallViewController: UIViewController {
         swipeToastView.autoPinEdge(toSuperviewMargin: .leading, relation: .greaterThanOrEqual)
         swipeToastView.autoPinEdge(toSuperviewMargin: .trailing, relation: .greaterThanOrEqual)
 
+        view.addSubview(fullscreenLocalMemberAddOnsView)
+        fullscreenLocalMemberAddOnsView.autoPinLeadingToSuperviewMargin()
+        fullscreenLocalMemberAddOnsView.autoPinTrailingToSuperviewMargin()
+        fullscreenLocalMemberAddOnsView.autoPinEdge(
+            .bottom,
+            to: .bottom,
+            of: bottomVStack
+        )
+
         view.addSubview(callControlsConfirmationToastContainerView)
         callControlsConfirmationToastContainerView.autoHCenterInSuperview()
         view.addSubview(callControlsOverflowView)
@@ -518,7 +536,9 @@ class GroupCallViewController: UIViewController {
             return
         }
         bottomSheet.setBottomSheetMinimizedHeight()
-        present(self.bottomSheet, animated: true)
+        present(self.bottomSheet, animated: true) {
+            self.fullscreenLocalMemberAddOnsView.isHidden = false
+        }
     }
 
     private func dismissBottomSheet(animated: Bool = true) {
@@ -678,7 +698,7 @@ class GroupCallViewController: UIViewController {
         speakerView.applyChangesToCallMemberViewAndVideoView { view in
             view.removeFromSuperview()
         }
-        if self.isJustMe {
+        if groupCall.isJustMe {
             localMemberView.applyChangesToCallMemberViewAndVideoView { view in
                 speakerPage.addSubview(view)
                 view.frame = CGRect(origin: .zero, size: size)
@@ -798,7 +818,7 @@ class GroupCallViewController: UIViewController {
         shouldAnimateViewFrames: Bool = false,
         bottomSheetChangedStateFrom oldBottomSheetState: BottomSheetState? = nil
     ) {
-        let isFullScreen = self.isJustMe
+        let isFullScreen = groupCall.isJustMe
         localMemberView.configure(
             call: call,
             isFullScreen: isFullScreen
@@ -1114,6 +1134,8 @@ class GroupCallViewController: UIViewController {
             return
         }
 
+        fullscreenLocalMemberAddOnsView.isHidden = true
+
         bottomSheetStateManager.submitState(.callControls)
         self.raisedHandsToast.raisedHands.removeAll()
 
@@ -1154,15 +1176,6 @@ class GroupCallViewController: UIViewController {
         return true
     }
 
-    private var isJustMe: Bool {
-        switch ringRtcCall.localDeviceState.joinState {
-        case .notJoined, .joining, .pending:
-            return true
-        case .joined:
-            return ringRtcCall.remoteDeviceStates.isEmpty
-        }
-    }
-
     private var hasAtLeastTwoOthers: Bool {
         switch ringRtcCall.localDeviceState.joinState {
         case .notJoined, .joining, .pending:
@@ -1195,7 +1208,7 @@ class GroupCallViewController: UIViewController {
     }
 
     private var bottomSheetMustBeVisible: Bool {
-        return self.isJustMe
+        return groupCall.isJustMe
     }
 
     private var sheetTimeoutTimer: Timer?

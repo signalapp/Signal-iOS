@@ -2092,6 +2092,7 @@
 		E1E78CAF2B573BD100B6FC2D /* CallMemberCameraOffView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1E78CAE2B573BD100B6FC2D /* CallMemberCameraOffView.swift */; };
 		E1E78CB12B573C3100B6FC2D /* CallMemberWaitingAndErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1E78CB02B573C3100B6FC2D /* CallMemberWaitingAndErrorView.swift */; };
 		E1E78CB42B575C2700B6FC2D /* CallMemberVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1E78CB32B575C2700B6FC2D /* CallMemberVideoView.swift */; };
+		E1F7F1792C65666100F2754E /* SupplementalCallControlsForFullscreenLocalMember.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1F7F1782C65666100F2754E /* SupplementalCallControlsForFullscreenLocalMember.swift */; };
 		E44AD4E624E98F440035D7B8 /* PhotoCaptureDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44AD4E524E98F430035D7B8 /* PhotoCaptureDismiss.swift */; };
 		E75DD3E02810CDBD00E32C36 /* SubscriptionManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75DD3DF2810CDBD00E32C36 /* SubscriptionManagerTest.swift */; };
 		E7D7C93F28B580AC003F043B /* Bundle+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7D7C93E28B580AC003F043B /* Bundle+OWS.swift */; };
@@ -5196,6 +5197,7 @@
 		E1E78CAE2B573BD100B6FC2D /* CallMemberCameraOffView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallMemberCameraOffView.swift; sourceTree = "<group>"; };
 		E1E78CB02B573C3100B6FC2D /* CallMemberWaitingAndErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallMemberWaitingAndErrorView.swift; sourceTree = "<group>"; };
 		E1E78CB32B575C2700B6FC2D /* CallMemberVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallMemberVideoView.swift; sourceTree = "<group>"; };
+		E1F7F1782C65666100F2754E /* SupplementalCallControlsForFullscreenLocalMember.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplementalCallControlsForFullscreenLocalMember.swift; sourceTree = "<group>"; };
 		E44AD4E524E98F430035D7B8 /* PhotoCaptureDismiss.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCaptureDismiss.swift; sourceTree = "<group>"; };
 		E75DD3DF2810CDBD00E32C36 /* SubscriptionManagerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubscriptionManagerTest.swift; sourceTree = "<group>"; };
 		E7D7C93E28B580AC003F043B /* Bundle+OWS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bundle+OWS.swift"; sourceTree = "<group>"; };
@@ -9552,6 +9554,7 @@
 				766CE0D52A323DFE00AD609D /* RemoteVideoView.swift */,
 				342FFE7D271EF5B1000AC89F /* ReturnToCallViewController.swift */,
 				88D23D1823CEC0C700B0E74B /* SimulatorCallUIAdaptee.swift */,
+				E1F7F1782C65666100F2754E /* SupplementalCallControlsForFullscreenLocalMember.swift */,
 			);
 			path = UserInterface;
 			sourceTree = "<group>";
@@ -14036,6 +14039,7 @@
 				884DB94527DD70F700C6A309 /* StoryViewModel.swift in Sources */,
 				88B00D4D28A3346100BC9CA0 /* StoryViewsViewController.swift in Sources */,
 				88863A50280CAE4400977F69 /* StoryZoomAnimator.swift in Sources */,
+				E1F7F1792C65666100F2754E /* SupplementalCallControlsForFullscreenLocalMember.swift in Sources */,
 				6675F64F29261C39007A311E /* SyncPushTokensJob.swift in Sources */,
 				344A761324B36C8C009D69A5 /* TestingViewController.swift in Sources */,
 				506A9252290326A600A2EFC2 /* TextHelper.swift in Sources */,

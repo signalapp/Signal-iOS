@@ -280,10 +280,8 @@ class CallControls: UIView {
         button.setContentHuggingHorizontalHigh()
         button.setCompressionResistanceHorizontalLow()
         if useCallDrawerStyling {
-            // TODO: When feature flag is removed, set these colors in `CallButton`.
-            let unselectedBackgroundColor = UIColor(rgbHex: 0x4A4A4A).withAlphaComponent(0.63)
-            button.unselectedBackgroundColor = unselectedBackgroundColor
-            button.selectedIconColor = .ows_black
+            button.unselectedBackgroundColor = CallButton.unselectedBackgroundColorInDrawer
+            button.selectedIconColor = CallButton.selectedIconColorInDrawer
         } else {
             button.alpha = 0.9
         }
@@ -431,17 +429,9 @@ private class CallControlsViewModel {
         case .individual(let call):
             return ![.idle, .dialing, .remoteRinging, .localRinging_Anticipatory, .localRinging_ReadyToAnswer].contains(call.state)
         case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
-            // Because joined group calls include the `moreButton`, we're out of
-            // space for the `flipCameraButton`.
-            //
-            // Recall that the flip camera button is in the local pip once someone
-            // else has joined the call. That leaves the issue of where to locate
-            // the flip camera button when the user is fullscreen because they have
-            // joined and are the sole member in the call.
-            //
-            // TODO: Implement the future designs for this. In the meantime, Design
-            // wants us to omit the flip camera button from Call Controls when in
-            // joined fullscreen.
+            if FeatureFlags.groupCallDrawerSupport && call.isJustMe {
+                return true
+            }
             return call.hasJoinedOrIsWaitingForAdminApproval
         }
     }

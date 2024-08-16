@@ -250,8 +250,8 @@ class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
     private var flipCameraButtonWidthConstraint: NSLayoutConstraint?
     private var flipCameraImageWidthConstraint: NSLayoutConstraint?
 
-    private lazy var flipCameraCircleView: CircleView = {
-        let circleView = CircleView()
+    private lazy var flipCameraCircleView: CircleBlurView = {
+        let circleView = CircleBlurView(effect: UIBlurEffect(style: .systemThinMaterialDark))
         circleView.isUserInteractionEnabled = false
         return circleView
     }()
@@ -269,7 +269,7 @@ class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
     }()
 
     private lazy var flipCameraButton: UIButton = {
-        flipCameraCircleView.addSubview(flipCameraImageView)
+        flipCameraCircleView.contentView.addSubview(flipCameraImageView)
         flipCameraImageView.autoCenterInSuperview()
         let button = UIButton()
         button.addSubview(flipCameraCircleView)
