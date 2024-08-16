@@ -165,18 +165,25 @@ extension TSAttachmentMigration {
 
             let pendingAttachment: TSAttachmentMigration.PendingV2AttachmentFile?
             if let oldFilePath = oldAttachment.localFilePath {
-                pendingAttachment = try TSAttachmentMigration.V2AttachmentContentValidator.validateContents(
-                    unencryptedFileUrl: URL(fileURLWithPath: oldFilePath),
-                    reservedFileIds: .init(
-                        primaryFile: reservedFileIds.reservedV2AttachmentPrimaryFileId,
-                        audioWaveform: reservedFileIds.reservedV2AttachmentAudioWaveformFileId,
-                        videoStillFrame: reservedFileIds.reservedV2AttachmentVideoStillFrameFileId
-                    ),
-                    encryptionKey: oldAttachment.encryptionKey,
-                    mimeType: oldAttachment.contentType,
-                    renderingFlag: renderingFlag,
-                    sourceFilename: oldAttachment.sourceFilename
-                )
+                do {
+                    pendingAttachment = try TSAttachmentMigration.V2AttachmentContentValidator.validateContents(
+                        unencryptedFileUrl: URL(fileURLWithPath: oldFilePath),
+                        reservedFileIds: .init(
+                            primaryFile: reservedFileIds.reservedV2AttachmentPrimaryFileId,
+                            audioWaveform: reservedFileIds.reservedV2AttachmentAudioWaveformFileId,
+                            videoStillFrame: reservedFileIds.reservedV2AttachmentVideoStillFrameFileId
+                        ),
+                        encryptionKey: oldAttachment.encryptionKey,
+                        mimeType: oldAttachment.contentType,
+                        renderingFlag: renderingFlag,
+                        sourceFilename: oldAttachment.sourceFilename
+                    )
+                } catch {
+                    Logger.error("Failed to read story attachment file \((error as NSError).domain) \((error as NSError).code)")
+                    // Clean up files just in case.
+                    try reservedFileIds.cleanUpFiles()
+                    pendingAttachment = nil
+                }
             } else {
                 // A pointer; no validation needed.
                 pendingAttachment = nil
