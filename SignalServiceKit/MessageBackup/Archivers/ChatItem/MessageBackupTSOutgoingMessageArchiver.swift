@@ -524,7 +524,7 @@ private class RestoredSentMessageTranscript: SentMessageTranscript {
             recipientState.state = .sent
             recipientState.viewedTimestamp = NSNumber(value: sendStatus.timestamp)
             recipientState.wasSentByUD = viewed.sealedSender
-        case .skipped(let skipped):
+        case .skipped(_):
             recipientState.state = .skipped
         case .failed(let failed):
             let failureErrorCode: MessageBackup.SendStatusFailureErrorCode = {
