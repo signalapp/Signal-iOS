@@ -921,8 +921,6 @@ public struct BackupProto_Group {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
-    public var publicKey: Data = Data()
-
     public var title: BackupProto_Group.GroupAttributeBlob {
       get {return _title ?? BackupProto_Group.GroupAttributeBlob()}
       set {_title = newValue}
@@ -7160,7 +7158,6 @@ extension BackupProto_Group.StorySendMode: SwiftProtobuf._ProtoNameProviding {
 extension BackupProto_Group.GroupSnapshot: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_Group.protoMessageName + ".GroupSnapshot"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "publicKey"),
     2: .same(proto: "title"),
     11: .same(proto: "description"),
     3: .same(proto: "avatarUrl"),
@@ -7181,7 +7178,6 @@ extension BackupProto_Group.GroupSnapshot: SwiftProtobuf.Message, SwiftProtobuf.
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularBytesField(value: &self.publicKey) }()
       case 2: try { try decoder.decodeSingularMessageField(value: &self._title) }()
       case 3: try { try decoder.decodeSingularStringField(value: &self.avatarURL) }()
       case 4: try { try decoder.decodeSingularMessageField(value: &self._disappearingMessagesTimer) }()
@@ -7204,9 +7200,6 @@ extension BackupProto_Group.GroupSnapshot: SwiftProtobuf.Message, SwiftProtobuf.
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
     // https://github.com/apple/swift-protobuf/issues/1182
-    if !self.publicKey.isEmpty {
-      try visitor.visitSingularBytesField(value: self.publicKey, fieldNumber: 1)
-    }
     try { if let v = self._title {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
     } }()
@@ -7247,7 +7240,6 @@ extension BackupProto_Group.GroupSnapshot: SwiftProtobuf.Message, SwiftProtobuf.
   }
 
   public static func ==(lhs: BackupProto_Group.GroupSnapshot, rhs: BackupProto_Group.GroupSnapshot) -> Bool {
-    if lhs.publicKey != rhs.publicKey {return false}
     if lhs._title != rhs._title {return false}
     if lhs._description_p != rhs._description_p {return false}
     if lhs.avatarURL != rhs.avatarURL {return false}

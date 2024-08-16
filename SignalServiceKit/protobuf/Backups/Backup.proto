@@ -163,7 +163,7 @@ message Group {
   // We would use Groups.proto if we could, but we want a plaintext version to improve export readability.
   // For documentation, defer to Groups.proto. The only name change is Group -> GroupSnapshot to avoid the naming conflict.
   message GroupSnapshot {
-    bytes publicKey = 1;
+    reserved /*publicKey*/ 1;  // The field is deprecated in the context of static group state
     GroupAttributeBlob title = 2;
     GroupAttributeBlob description = 11;
     string avatarUrl = 3;

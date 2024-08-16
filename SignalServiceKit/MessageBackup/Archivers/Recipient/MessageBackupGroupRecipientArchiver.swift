@@ -94,11 +94,9 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
         let recipientId = context.assignRecipientId(to: groupAppId)
 
         let groupMasterKey: Data
-        let groupPublicKey: Data
         do {
             let groupSecretParams = try GroupSecretParams(contents: [UInt8](groupModel.secretParamsData))
             groupMasterKey = try groupSecretParams.getMasterKey().serialize().asData
-            groupPublicKey = try groupSecretParams.getPublicParams().serialize().asData
         } catch {
             errors.append(.archiveFrameError(.groupMasterKeyError(error), groupAppId))
             return
@@ -121,7 +119,6 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
         }()
         group.snapshot = { () -> BackupProto_Group.GroupSnapshot in
             var groupSnapshot = BackupProto_Group.GroupSnapshot()
-            groupSnapshot.publicKey = groupPublicKey
             groupSnapshot.avatarURL = groupModel.avatarUrlPath ?? ""
             groupSnapshot.version = groupModel.revision
             groupSnapshot.inviteLinkPassword = groupModel.inviteLinkPassword ?? Data()
