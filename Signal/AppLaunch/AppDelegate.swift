@@ -577,10 +577,12 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            RemoteMegaphoneFetcher(
-                databaseStorage: NSObject.databaseStorage,
-                signalService: NSObject.signalService
-            ).syncRemoteMegaphonesIfNecessary()
+            Task {
+                try? await RemoteMegaphoneFetcher(
+                    databaseStorage: NSObject.databaseStorage,
+                    signalService: NSObject.signalService
+                ).syncRemoteMegaphonesIfNecessary()
+            }
         }
 
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {

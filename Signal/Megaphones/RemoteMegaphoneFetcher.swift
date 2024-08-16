@@ -22,26 +22,25 @@ public class RemoteMegaphoneFetcher {
     /// Fetch all remote megaphones currently on the service and persist them
     /// locally. Removes any locally-persisted remote megaphones that are no
     /// longer available remotely.
-    @discardableResult
-    public func syncRemoteMegaphonesIfNecessary() -> Promise<Void> {
+    public func syncRemoteMegaphonesIfNecessary() async throws {
         let shouldSync = databaseStorage.read { self.shouldSync(transaction: $0) }
         guard shouldSync else {
-            return Promise.value(())
+            return
         }
 
         Logger.info("Beginning remote megaphone fetch.")
 
-        return fetchRemoteMegaphones().map(on: DispatchQueue.global()) { megaphones -> Void in
-            Logger.info("Syncing \(megaphones.count) fetched remote megaphones with local state.")
+        let megaphones = try await fetchRemoteMegaphones()
 
-            self.databaseStorage.write { transaction in
-                self.updatePersistedMegaphones(
-                    withFetchedMegaphones: megaphones,
-                    transaction: transaction
-                )
+        Logger.info("Syncing \(megaphones.count) fetched remote megaphones with local state.")
 
-                self.recordCompletedSync(transaction: transaction)
-            }
+        await self.databaseStorage.awaitableWrite { transaction in
+            self.updatePersistedMegaphones(
+                withFetchedMegaphones: megaphones,
+                transaction: transaction
+            )
+
+            self.recordCompletedSync(transaction: transaction)
         }
     }
 }
@@ -137,10 +136,12 @@ private extension RemoteMegaphoneFetcher {
 // MARK: - Fetching
 
 private extension RemoteMegaphoneFetcher {
-    func fetchRemoteMegaphones() -> Promise<[RemoteMegaphoneModel]> {
-        fetchManifests().then(on: DispatchQueue.global()) { manifests -> Promise<[RemoteMegaphoneModel]> in
-            Promise.when(fulfilled: manifests.map { manifest in
-                self.fetchTranslation(forMegaphoneManifest: manifest).map(on: DispatchQueue.global()) { translation in
+    func fetchRemoteMegaphones() async throws -> [RemoteMegaphoneModel] {
+        let manifests = try await fetchManifests()
+        return try await withThrowingTaskGroup(of: RemoteMegaphoneModel.self) { taskGroup in
+            for manifest in manifests {
+                taskGroup.addTask {
+                    let translation = try await self.fetchTranslation(forMegaphoneManifest: manifest)
                     if manifest.id != translation.id {
                         // We shouldn't fail here, but this scenario is
                         // unexpected so let's keep an eye out for it.
@@ -149,7 +150,8 @@ private extension RemoteMegaphoneFetcher {
 
                     return RemoteMegaphoneModel(manifest: manifest, translation: translation)
                 }
-            })
+            }
+            return try await taskGroup.reduce(into: [], { $0.append($1) })
         }
     }
 
@@ -161,27 +163,24 @@ private extension RemoteMegaphoneFetcher {
     /// Manifests contain metadata about a megaphone, such as when it should be
     /// shown and what actions it should expose. They do not contain any
     /// user-visible content, such as strings.
-    private func fetchManifests(remainingRetries: UInt = 2) -> Promise<[RemoteMegaphoneModel.Manifest]> {
-        firstly { () -> Promise<HTTPResponse> in
-            getUrlSession().dataTaskPromise(
-                .manifestUrlPath,
-                method: .get
-            )
-        }.map(on: DispatchQueue.global()) { response throws -> [RemoteMegaphoneModel.Manifest] in
-            guard let responseJson = response.responseBodyJson else {
-                throw OWSAssertionError("Missing body JSON for manifest!")
-            }
+    private func fetchManifests(remainingRetries: UInt = 2) async throws -> [RemoteMegaphoneModel.Manifest] {
+        var remainingRetries = remainingRetries
+        while true {
+            do {
+                let response = try await getUrlSession().dataTaskPromise(
+                    .manifestUrlPath,
+                    method: .get
+                ).awaitable()
 
-            return try RemoteMegaphoneModel.Manifest.parseFrom(responseJson: responseJson)
-        }.recover(on: DispatchQueue.global()) { error in
-            guard
-                error.isNetworkFailureOrTimeout,
-                remainingRetries > 0
-            else {
-                throw error
-            }
+                guard let responseJson = response.responseBodyJson else {
+                    throw OWSAssertionError("Missing body JSON for manifest!")
+                }
 
-            return self.fetchManifests(remainingRetries: remainingRetries - 1)
+                return try RemoteMegaphoneModel.Manifest.parseFrom(responseJson: responseJson)
+            } catch where remainingRetries > 0 && error.isNetworkFailureOrTimeout {
+                remainingRetries -= 1
+                continue
+            }
         }
     }
 
@@ -190,49 +189,26 @@ private extension RemoteMegaphoneFetcher {
     /// falling back to English otherwise.
     private func fetchTranslation(
         forMegaphoneManifest manifest: RemoteMegaphoneModel.Manifest
-    ) -> Promise<RemoteMegaphoneModel.Translation> {
+    ) async throws -> RemoteMegaphoneModel.Translation {
         let localeStrings: [String] = .possibleTranslationLocaleStrings
 
-        guard let firstLocaleString = localeStrings.first else {
-            return Promise(error: OWSAssertionError("Unexpectedly found no locale strings!"))
-        }
-
-        // Try and fetch using the first returned locale string...
-        var fetchPromise: Promise<RemoteMegaphoneModel.Translation> = fetchTranslation(
-            forMegaphoneManifest: manifest,
-            withLocaleString: firstLocaleString
-        )
-
-        // ...and for each subsequent locale string, if the previous fetch
-        // returned a 404 try the next one.
-        for localeString in localeStrings.dropFirst() {
-            fetchPromise = fetchPromise.recover(on: DispatchQueue.global(), { error in
-                guard
-                    let httpStatus = error.httpStatusCode,
-                    httpStatus == 404
-                else {
-                    // If we hit a non-404 error, propagate it out immediately.
-                    throw error
+        for (index, localeString) in localeStrings.enumerated() {
+            do {
+                var translation = try await fetchTranslation(forMegaphoneManifest: manifest, withLocaleString: localeString)
+                if let url = try await self.downloadImageIfNecessary(forTranslation: translation) {
+                    translation.setImageLocalUrl(url)
                 }
-
-                return self.fetchTranslation(
-                    forMegaphoneManifest: manifest,
-                    withLocaleString: localeString
-                )
-            })
-        }
-
-        return fetchPromise.then(on: DispatchQueue.global()) { translation -> Promise<RemoteMegaphoneModel.Translation> in
-            self.downloadImageIfNecessary(forTranslation: translation).map(on: DispatchQueue.global()) { url in
-                guard let url = url else {
-                    return translation
-                }
-
-                var translation = translation
-                translation.setImageLocalUrl(url)
                 return translation
+            } catch let error as OWSHTTPError where error.responseStatusCode == 404 && (index + 1) != localeStrings.endIndex {
+                // If this isn't the last locale & it's not found, try the next one.
+                continue
             }
+            // If we hit a non-404 error, propagate it out immediately.
         }
+
+        // We either return a value or throw an error in the loop as long as there
+        // is at least one locale.
+        throw OWSAssertionError("Unexpectedly found no locale strings!")
     }
 
     /// Fetch a translation for the given manifest, using the given locale
@@ -242,35 +218,25 @@ private extension RemoteMegaphoneFetcher {
         forMegaphoneManifest manifest: RemoteMegaphoneModel.Manifest,
         withLocaleString localeString: String,
         remainingRetries: UInt = 2
-    ) -> Promise<RemoteMegaphoneModel.Translation> {
-        return firstly { () -> Promise<HTTPResponse> in
-            guard let translationUrlPath: String = .translationUrlPath(
-                forManifest: manifest,
-                withLocaleString: localeString
-            ) else {
-                return .init(error: OWSAssertionError("Failed to create translation URL path for manifest \(manifest.id)"))
+    ) async throws -> RemoteMegaphoneModel.Translation {
+        var remainingRetries = remainingRetries
+        while true {
+            do {
+                guard let translationUrlPath: String = .translationUrlPath(
+                    forManifest: manifest,
+                    withLocaleString: localeString
+                ) else {
+                    throw OWSAssertionError("Failed to create translation URL path for manifest \(manifest.id)")
+                }
+                let response = try await getUrlSession().dataTaskPromise(translationUrlPath, method: .get).awaitable()
+                guard let responseJson = response.responseBodyJson else {
+                    throw OWSAssertionError("Missing body JSON for translation!")
+                }
+                return try RemoteMegaphoneModel.Translation.parseFrom(responseJson: responseJson)
+            } catch where remainingRetries > 0 && error.isNetworkFailureOrTimeout {
+                remainingRetries -= 1
+                continue
             }
-
-            return getUrlSession().dataTaskPromise(translationUrlPath, method: .get)
-        }.map(on: DispatchQueue.global()) { response throws in
-            guard let responseJson = response.responseBodyJson else {
-                throw OWSAssertionError("Missing body JSON for translation!")
-            }
-
-            return try RemoteMegaphoneModel.Translation.parseFrom(responseJson: responseJson)
-        }.recover(on: DispatchQueue.global()) { error in
-            guard
-                error.isNetworkFailureOrTimeout,
-                remainingRetries > 0
-            else {
-                throw error
-            }
-
-            return self.fetchTranslation(
-                forMegaphoneManifest: manifest,
-                withLocaleString: localeString,
-                remainingRetries: remainingRetries - 1
-            )
         }
     }
 
@@ -279,59 +245,51 @@ private extension RemoteMegaphoneFetcher {
     private func downloadImageIfNecessary(
         forTranslation translation: RemoteMegaphoneModel.Translation,
         remainingRetries: UInt = 2
-    ) -> Promise<URL?> {
+    ) async throws -> URL? {
         guard let imageRemoteUrlPath = translation.imageRemoteUrlPath else {
-            return .value(nil)
+            return nil
         }
 
         guard let imageFileUrl: URL = .imageFilePath(forFetchedTranslation: translation) else {
-            return .init(error: OWSAssertionError("Failed to get image file path for translation with ID \(translation.id)"))
+            throw OWSAssertionError("Failed to get image file path for translation with ID \(translation.id)")
         }
 
-        guard !FileManager.default.fileExists(atPath: imageFileUrl.path) else {
-            return .value(imageFileUrl)
-        }
-
-        return firstly {
-            getUrlSession().downloadTaskPromise(
-                imageRemoteUrlPath,
-                method: .get
-            )
-        }.map(on: DispatchQueue.global()) { (response: OWSUrlDownloadResponse) -> URL in
+        var remainingRetries = remainingRetries
+        while !FileManager.default.fileExists(atPath: imageFileUrl.path) {
             do {
-                try FileManager.default.moveItem(
-                    at: response.downloadUrl,
-                    to: imageFileUrl
-                )
-            } catch let error {
-                throw OWSAssertionError("Failed to move downloaded image! \(error)")
-            }
+                let response = try await getUrlSession().downloadTaskPromise(
+                    imageRemoteUrlPath,
+                    method: .get
+                ).awaitable()
 
-            return imageFileUrl
-        }.recover(on: DispatchQueue.global()) { error -> Promise<URL?> in
-            if
-                error.isNetworkFailureOrTimeout,
-                remainingRetries > 0
-            {
-                return self.downloadImageIfNecessary(
-                    forTranslation: translation,
-                    remainingRetries: remainingRetries - 1
-                )
-            } else if let httpStatusCode = error.httpStatusCode {
-                switch httpStatusCode {
+                do {
+                    try FileManager.default.moveItem(
+                        at: response.downloadUrl,
+                        to: imageFileUrl
+                    )
+                } catch let error {
+                    throw OWSAssertionError("Failed to move downloaded image! \(error)")
+                }
+                break
+            } catch where remainingRetries > 0 && error.isNetworkFailureOrTimeout {
+                remainingRetries -= 1
+                continue
+            } catch let error as OWSHTTPError {
+                switch error.responseStatusCode {
                 case 404:
                     owsFailDebug("Unexpectedly got 404 while fetching remote megaphone image for ID \(translation.id)!")
-                    return .value(nil)
+                    return nil
                 case 500..<600:
-                    owsFailDebug("Encountered server error with status \(httpStatusCode) while fetching remote megaphone image!")
-                    return .value(nil)
+                    owsFailDebug("Encountered server error with status \(error.responseStatusCode) while fetching remote megaphone image!")
+                    return nil
                 default:
-                    owsFailDebug("Unexpectedly got error status code \(httpStatusCode) while fetching remote megaphone image for ID \(translation.id)!")
+                    owsFailDebug("Unexpectedly got error status code \(error.responseStatusCode) while fetching remote megaphone image for ID \(translation.id)!")
+                    throw error
                 }
             }
-
-            throw error
         }
+
+        return imageFileUrl
     }
 }
 
