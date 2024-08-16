@@ -918,7 +918,7 @@ class GroupCallViewController: UIViewController {
         callControlsOverflowBottomConstraint?.constant = callControlsOverflowBottomConstraintConstant
         callControlsConfirmationToastContainerViewBottomConstraint?.constant = callControlsConfirmationToastContainerViewBottomConstraintConstant
 
-        if self.isJustMe {
+        if groupCall.isJustMe {
             flipCameraTooltipManager.dismissTooltip()
         }
 
