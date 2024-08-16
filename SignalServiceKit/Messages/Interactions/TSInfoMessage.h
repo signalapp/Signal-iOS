@@ -45,6 +45,7 @@ typedef NS_CLOSED_ENUM(NSInteger, TSInfoMessageType) {
     TSInfoMessageBlockedGroup,
     TSInfoMessageUnblockedOtherUser,
     TSInfoMessageUnblockedGroup,
+    TSInfoMessageAcceptedMessageRequest,
 };
 
 typedef NSString *InfoMessageUserInfoKey NS_STRING_ENUM;

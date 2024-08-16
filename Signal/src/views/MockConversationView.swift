@@ -461,4 +461,6 @@ extension MockConversationView: CVComponentDelegate {
     func didTapThreadMergeLearnMore(phoneNumber: String) {}
 
     func didTapReportSpamLearnMore() {}
+
+    func didTapMessageRequestAcceptedOptions() {}
 }

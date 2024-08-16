@@ -322,6 +322,10 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
         case TSInfoMessageUnblockedGroup:
             return OWSLocalizedString(@"INFO_MESSAGE_UNBLOCKED_GROUP",
                 @"An info message inserted into a group chat when you unblock the group.");
+        case TSInfoMessageAcceptedMessageRequest:
+            return OWSLocalizedString(@"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST",
+                @"An info message inserted into the chat when you accept a message request, in a 1:1 or group "
+                @"chat.");
     }
 
     OWSFailDebug(@"Unknown info message type");

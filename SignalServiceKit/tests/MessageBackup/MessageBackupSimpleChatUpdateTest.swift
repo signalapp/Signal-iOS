@@ -125,7 +125,8 @@ final class MessageBackupSimpleChatUpdateTest: MessageBackupIntegrationTestCase 
                             .blockedOtherUser,
                             .blockedGroup,
                             .unblockedOtherUser,
-                            .unblockedGroup:
+                            .unblockedGroup,
+                            .acceptedMessageRequest:
                         XCTAssertNil(infoMessage.infoMessageUserInfo)
                         fallthrough
                     case .phoneNumberChange:

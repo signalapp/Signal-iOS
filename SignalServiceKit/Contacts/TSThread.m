@@ -395,6 +395,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
             case TSInfoMessageBlockedGroup:
             case TSInfoMessageUnblockedOtherUser:
             case TSInfoMessageUnblockedGroup:
+            case TSInfoMessageAcceptedMessageRequest:
                 break;
         }
     }

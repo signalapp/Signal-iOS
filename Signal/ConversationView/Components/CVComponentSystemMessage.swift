@@ -830,6 +830,8 @@ extension CVComponentSystemMessage {
                 return Theme.iconImage(.threadCompact)
             case .unblockedGroup:
                 return Theme.iconImage(.threadCompact)
+            case .acceptedMessageRequest:
+                return Theme.iconImage(.threadCompact)
             }
         } else if let call = interaction as? TSCall {
             switch call.offerType {
@@ -1302,6 +1304,15 @@ extension CVComponentSystemMessage {
             return nil
         case .unblockedGroup:
             return nil
+        case .acceptedMessageRequest:
+            return CVMessageAction(
+                title: OWSLocalizedString(
+                    "INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_BUTTON",
+                    comment: "Title for a button shown alongside an info message indicating you accepted a message request."
+                ),
+                accessibilityIdentifier: "options",
+                action: .didTapMessageRequestAcceptedOptions
+            )
         }
     }
 

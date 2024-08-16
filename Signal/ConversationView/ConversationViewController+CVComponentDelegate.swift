@@ -1053,4 +1053,65 @@ extension ConversationViewController: CVComponentDelegate {
         dismissKeyBoard()
         self.presentActionSheet(alert)
     }
+
+    public func didTapMessageRequestAcceptedOptions() {
+        AssertIsOnMainThread()
+
+        let message: String
+        if thread is TSContactThread {
+            message = String(
+                format: OWSLocalizedString(
+                    "INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_CONTACT",
+                    comment: "Header for an action sheet providing options in response to an accepted 1:1 message request. Embeds {{ the name of your chat partner }}."
+                ),
+                threadViewModel.shortName ?? threadViewModel.name
+            )
+        } else if thread is TSGroupThread {
+            message = OWSLocalizedString(
+                "INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_GROUP",
+                comment: "Header for an action sheet providing options in response to an accepted group message request."
+            )
+        } else {
+            return
+        }
+
+        let alert = ActionSheetController(
+            message: message
+        )
+        alert.addAction(ActionSheetAction(
+            title: "Block",
+            style: .default,
+            handler: { [weak self] _ in
+                guard let self else { return }
+
+                let blockThreadActionSheet = createBlockThreadActionSheet()
+                presentActionSheet(blockThreadActionSheet)
+            }
+        ))
+        alert.addAction(ActionSheetAction(
+            title: "Report Spam",
+            style: .default,
+            handler: { [weak self] _ in
+                guard let self else { return }
+
+                let reportThreadActionSheet = createReportThreadActionSheet()
+                presentActionSheet(reportThreadActionSheet)
+            }
+        ))
+        alert.addAction(ActionSheetAction(
+            title: "Delete Chat",
+            style: .default,
+            handler: { [weak self] _ in
+                guard let self else { return }
+
+                let deleteThreadActionSheet = createDeleteThreadActionSheet()
+                presentActionSheet(deleteThreadActionSheet)
+            }
+        ))
+        alert.addAction(.cancel)
+
+        inputToolbar?.clearDesiredKeyboard()
+        dismissKeyBoard()
+        presentActionSheet(alert)
+    }
 }

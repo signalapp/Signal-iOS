@@ -4048,6 +4048,7 @@ public struct BackupProto_SimpleChatUpdate {
     case reportedSpam // = 13
     case blocked // = 14
     case unblocked // = 15
+    case messageRequestAccepted // = 16
     case UNRECOGNIZED(Int)
 
     public init() {
@@ -4072,6 +4073,7 @@ public struct BackupProto_SimpleChatUpdate {
       case 13: self = .reportedSpam
       case 14: self = .blocked
       case 15: self = .unblocked
+      case 16: self = .messageRequestAccepted
       default: self = .UNRECOGNIZED(rawValue)
       }
     }
@@ -4094,6 +4096,7 @@ public struct BackupProto_SimpleChatUpdate {
       case .reportedSpam: return 13
       case .blocked: return 14
       case .unblocked: return 15
+      case .messageRequestAccepted: return 16
       case .UNRECOGNIZED(let i): return i
       }
     }
@@ -4124,6 +4127,7 @@ extension BackupProto_SimpleChatUpdate.TypeEnum: CaseIterable {
     .reportedSpam,
     .blocked,
     .unblocked,
+    .messageRequestAccepted,
   ]
 }
 
@@ -10726,6 +10730,7 @@ extension BackupProto_SimpleChatUpdate.TypeEnum: SwiftProtobuf._ProtoNameProvidi
     13: .same(proto: "REPORTED_SPAM"),
     14: .same(proto: "BLOCKED"),
     15: .same(proto: "UNBLOCKED"),
+    16: .same(proto: "MESSAGE_REQUEST_ACCEPTED"),
   ]
 }
 

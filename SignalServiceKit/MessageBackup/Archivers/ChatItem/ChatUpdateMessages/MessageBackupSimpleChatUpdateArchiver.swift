@@ -196,6 +196,10 @@ final class MessageBackupSimpleChatUpdateArchiver {
             // restore-time by the type of chat thread they're in.
             updateAuthor = .localUser
             updateType = .unblocked
+        case .acceptedMessageRequest:
+            // We accepted, so we're the author.
+            updateAuthor = .localUser
+            updateType = .messageRequestAccepted
         }
 
         let updateAuthorRecipientId: MessageBackup.RecipientId
@@ -530,6 +534,8 @@ final class MessageBackupSimpleChatUpdateArchiver {
             case .groupV2:
                 simpleChatUpdateInteraction = .simpleInfoMessage(.unblockedGroup)
             }
+        case .messageRequestAccepted:
+            simpleChatUpdateInteraction = .simpleInfoMessage(.acceptedMessageRequest)
         }
 
         let interactionToInsert: TSInteraction = switch simpleChatUpdateInteraction {

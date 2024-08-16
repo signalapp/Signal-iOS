@@ -223,6 +223,12 @@ private extension ConversationViewController {
         GroupManager.leaveGroupOrDeclineInviteAsyncWithUI(groupThread: groupThread, fromViewController: self, success: completion)
     }
 
+    /// Accept a message request, or unblock chat.
+    ///
+    /// It's not obvious, but the "message request" UI is shown when a chat is
+    /// blocked. However, the "blocked chat" UI only has the option to delete a
+    /// chat or unblock. If the user selects "unblock", we end up here with
+    /// `unblockThread: true`.
     func acceptMessageRequest(
         in thread: TSThread,
         mode: MessageRequestMode,
@@ -249,8 +255,13 @@ private extension ConversationViewController {
         }
         await databaseStorage.awaitableWrite { transaction in
             if unblockThread {
-                self.blockingManager.removeBlockedThread(thread, wasLocallyInitiated: true, transaction: transaction)
+                self.blockingManager.removeBlockedThread(
+                    thread,
+                    wasLocallyInitiated: true,
+                    transaction: transaction
+                )
             }
+
             if unhideRecipient, let thread = thread as? TSContactThread {
                 DependenciesBridge.shared.recipientHidingManager.removeHiddenRecipient(
                     thread.contactAddress,
@@ -258,9 +269,21 @@ private extension ConversationViewController {
                     tx: transaction.asV2Write
                 )
             }
+
+            /// If we're not in "unblock" mode, we should take "accept message
+            /// request" actions. (Bleh.)
             if !unblockThread {
-                // If this is an accept (which also unhides a hidden recipient), not an unblock, we should send a
-                // sync messages telling our other devices that we accepted.
+                /// Insert an info message indicating that we accepted.
+                DependenciesBridge.shared.interactionStore.insertInteraction(
+                    TSInfoMessage(
+                        thread: thread,
+                        messageType: .acceptedMessageRequest
+                    ),
+                    tx: transaction.asV2Write
+                )
+
+                /// Send a sync message telling our other devices that we
+                /// accepted.
                 self.syncManager.sendMessageRequestResponseSyncMessage(
                     thread: thread,
                     responseType: .accept,

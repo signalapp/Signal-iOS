@@ -159,7 +159,8 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupProtoArchiver {
                 .blockedOtherUser,
                 .blockedGroup,
                 .unblockedOtherUser,
-                .unblockedGroup:
+                .unblockedGroup,
+                .acceptedMessageRequest:
             /// These info message types map to simple chat updates.
             return simpleChatUpdateArchiver.archiveSimpleChatUpdate(
                 infoMessage: infoMessage,
