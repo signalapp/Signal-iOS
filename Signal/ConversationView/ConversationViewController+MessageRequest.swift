@@ -9,7 +9,6 @@ import SignalServiceKit
 import SignalUI
 
 extension ConversationViewController: MessageRequestDelegate {
-
     func messageRequestViewDidTapBlock(mode: MessageRequestMode) {
         AssertIsOnMainThread()
 
@@ -25,9 +24,275 @@ extension ConversationViewController: MessageRequestDelegate {
     }
 
     func messageRequestViewDidTapReport() {
+        AssertIsOnMainThread()
+
         let reportSheet = createReportThreadActionSheet()
         presentActionSheet(reportSheet)
     }
+
+    func messageRequestViewDidTapAccept(mode: MessageRequestMode, unblockThread: Bool, unhideRecipient: Bool) {
+        AssertIsOnMainThread()
+
+        let thread = self.thread
+        Task {
+            await self.acceptMessageRequest(in: thread, mode: mode, unblockThread: unblockThread, unhideRecipient: unhideRecipient)
+        }
+    }
+
+    func messageRequestViewDidTapDelete() {
+        AssertIsOnMainThread()
+
+        let deleteSheet = createDeleteThreadActionSheet()
+        presentActionSheet(deleteSheet)
+    }
+
+    func messageRequestViewDidTapUnblock(mode: MessageRequestMode) {
+        AssertIsOnMainThread()
+
+        let threadName: String
+        let message: String
+        if let groupThread = thread as? TSGroupThread {
+            threadName = groupThread.groupNameOrDefault
+            message = OWSLocalizedString(
+                "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE", comment: "An explanation of what unblocking a group means.")
+        } else if let contactThread = thread as? TSContactThread {
+            threadName = databaseStorage.read { tx in
+                return contactsManager.displayName(for: contactThread.contactAddress, tx: tx).resolvedValue()
+            }
+            message = OWSLocalizedString(
+                "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE",
+                comment: "An explanation of what unblocking a contact means."
+            )
+        } else {
+            owsFailDebug("Invalid thread.")
+            return
+        }
+
+        let title = String(
+            format: OWSLocalizedString(
+                "BLOCK_LIST_UNBLOCK_TITLE_FORMAT",
+                comment: "A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}."
+            ),
+            threadName
+        )
+
+        OWSActionSheets.showConfirmationAlert(
+            title: title,
+            message: message,
+            proceedTitle: OWSLocalizedString(
+                "BLOCK_LIST_UNBLOCK_BUTTON",
+                comment: "Button label for the 'unblock' button"
+            )
+        ) { _ in
+            self.messageRequestViewDidTapAccept(mode: mode, unblockThread: true, unhideRecipient: true)
+        }
+    }
+
+    func messageRequestViewDidTapLearnMore() {
+        AssertIsOnMainThread()
+
+        // TODO Message Request: Use right support url. Right now this just links to the profiles FAQ
+        guard let url = URL(string: "https://support.signal.org/hc/articles/360007459591") else {
+            return owsFailDebug("Invalid url.")
+        }
+        let safariVC = SFSafariViewController(url: url)
+        present(safariVC, animated: true)
+    }
+}
+
+private extension ConversationViewController {
+    func blockThread() {
+        // Leave the group while blocking the thread.
+        databaseStorage.write { transaction in
+            blockingManager.addBlockedThread(thread,
+                                             blockMode: .localShouldLeaveGroups,
+                                             transaction: transaction)
+        }
+        syncManager.sendMessageRequestResponseSyncMessage(thread: thread,
+                                                          responseType: .block)
+        NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
+    }
+
+    func blockThreadAndDelete() {
+        // Do not leave the group while blocking the thread; we'll
+        // that below so that we can surface an error to the user
+        // if leaving the group fails.
+        databaseStorage.write { transaction in
+            blockingManager.addBlockedThread(thread,
+                                             blockMode: .localShouldNotLeaveGroups,
+                                             transaction: transaction)
+        }
+        leaveAndSoftDeleteThread(messageRequestResponseType: .blockAndDelete)
+    }
+
+    func blockThreadAndReportSpam(in thread: TSThread) {
+        databaseStorage.write { tx in
+            ReportSpamUIUtils.blockAndReport(in: thread, tx: tx)
+        }
+
+        presentToastCVC(
+            OWSLocalizedString(
+                "MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED",
+                comment: "String indicating that spam has been reported and the chat has been blocked."
+            )
+        )
+        NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
+    }
+
+    func reportSpamInThread() {
+        databaseStorage.write { tx in
+            ReportSpamUIUtils.report(in: thread, tx: tx)
+        }
+
+        presentToastCVC(
+            OWSLocalizedString(
+                "MESSAGE_REQUEST_SPAM_REPORTED",
+                comment: "String indicating that spam has been reported."
+            )
+        )
+        NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
+    }
+
+    func blockUserAndDelete(_ aci: Aci) {
+        // Do not leave the group while blocking the thread; we'll
+        // that below so that we can surface an error to the user
+        // if leaving the group fails.
+        databaseStorage.write { transaction in
+            blockingManager.addBlockedAddress(
+                SignalServiceAddress(aci),
+                blockMode: .localShouldNotLeaveGroups,
+                transaction: transaction
+            )
+        }
+        leaveAndSoftDeleteThread(messageRequestResponseType: .delete)
+    }
+
+    func blockUserAndGroupAndDelete(_ aci: Aci) {
+        ConversationViewController.databaseStorage.write { transaction in
+            if let groupThread = self.thread as? TSGroupThread {
+                // Do not leave the group while blocking the thread; we'll
+                // that below so that we can surface an error to the user
+                // if leaving the group fails.
+                self.blockingManager.addBlockedGroup(
+                    groupModel: groupThread.groupModel,
+                    blockMode: .localShouldNotLeaveGroups,
+                    transaction: transaction
+                )
+            } else {
+                owsFailDebug("Invalid thread.")
+            }
+            self.blockingManager.addBlockedAddress(
+                SignalServiceAddress(aci),
+                blockMode: .localShouldNotLeaveGroups,
+                transaction: transaction
+            )
+        }
+        leaveAndSoftDeleteThread(messageRequestResponseType: .blockAndDelete)
+    }
+
+    func leaveAndSoftDeleteThread(
+        messageRequestResponseType: OWSSyncMessageRequestResponseType
+    ) {
+        AssertIsOnMainThread()
+
+        syncManager.sendMessageRequestResponseSyncMessage(
+            thread: self.thread,
+            responseType: messageRequestResponseType
+        )
+
+        let completion = {
+            ConversationViewController.databaseStorage.write { transaction in
+                DependenciesBridge.shared.threadSoftDeleteManager.softDelete(
+                    threads: [self.thread],
+                    // We're already sending a sync message about this above!
+                    sendDeleteForMeSyncMessage: false,
+                    tx: transaction.asV2Write
+                )
+            }
+            self.conversationSplitViewController?.closeSelectedConversation(animated: true)
+            NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
+        }
+
+        guard let groupThread = thread as? TSGroupThread,
+              groupThread.isLocalUserFullOrInvitedMember else {
+            // If we don't need to leave the group, finish up immediately.
+            return completion()
+        }
+
+        // Leave the group if we're a member.
+        GroupManager.leaveGroupOrDeclineInviteAsyncWithUI(groupThread: groupThread, fromViewController: self, success: completion)
+    }
+
+    func acceptMessageRequest(
+        in thread: TSThread,
+        mode: MessageRequestMode,
+        unblockThread: Bool,
+        unhideRecipient: Bool
+    ) async {
+        switch mode {
+        case .none:
+            owsFailDebug("Invalid mode.")
+            return
+        case .contactOrGroupRequest:
+            break
+        case .groupInviteRequest:
+            guard let groupThread = thread as? TSGroupThread else {
+                owsFailDebug("Invalid thread.")
+                return
+            }
+            do {
+                try await GroupManager.acceptGroupInviteWithModal(groupThread, fromViewController: self)
+            } catch {
+                owsFailDebug("Couldn't accept group invite: \(error)")
+                return
+            }
+        }
+        await databaseStorage.awaitableWrite { transaction in
+            if unblockThread {
+                self.blockingManager.removeBlockedThread(thread, wasLocallyInitiated: true, transaction: transaction)
+            }
+            if unhideRecipient, let thread = thread as? TSContactThread {
+                DependenciesBridge.shared.recipientHidingManager.removeHiddenRecipient(
+                    thread.contactAddress,
+                    wasLocallyInitiated: true,
+                    tx: transaction.asV2Write
+                )
+            }
+            if !unblockThread {
+                // If this is an accept (which also unhides a hidden recipient), not an unblock, we should send a
+                // sync messages telling our other devices that we accepted.
+                self.syncManager.sendMessageRequestResponseSyncMessage(
+                    thread: thread,
+                    responseType: .accept,
+                    transaction: transaction
+                )
+            }
+
+            // Whitelist the thread
+            self.profileManager.addThread(
+                toProfileWhitelist: thread,
+                userProfileWriter: .localUser,
+                transaction: transaction
+            )
+
+            if !thread.isGroupThread {
+                // If this is a contact thread, we should give the
+                // now-unblocked contact our profile key.
+                let profileKeyMessage = OWSProfileKeyMessage(thread: thread, transaction: transaction)
+                let preparedMessage = PreparedOutgoingMessage.preprepared(
+                    transientMessageWithoutAttachments: profileKeyMessage
+                )
+                SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: transaction)
+            }
+
+            NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
+        }
+    }
+}
+
+// MARK: - Action Sheets
+
+extension ConversationViewController {
 
     func showBlockInviteActionSheet() {
         Logger.info("")
@@ -98,258 +363,6 @@ extension ConversationViewController: MessageRequestDelegate {
 
         presentActionSheet(actionSheet)
     }
-
-    func blockThread() {
-        // Leave the group while blocking the thread.
-        databaseStorage.write { transaction in
-            blockingManager.addBlockedThread(thread,
-                                             blockMode: .localShouldLeaveGroups,
-                                             transaction: transaction)
-        }
-        syncManager.sendMessageRequestResponseSyncMessage(thread: thread,
-                                                          responseType: .block)
-        NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
-    }
-
-    func blockThreadAndDelete() {
-        // Do not leave the group while blocking the thread; we'll
-        // that below so that we can surface an error to the user
-        // if leaving the group fails.
-        databaseStorage.write { transaction in
-            blockingManager.addBlockedThread(thread,
-                                             blockMode: .localShouldNotLeaveGroups,
-                                             transaction: transaction)
-        }
-        leaveAndSoftDeleteThread(messageRequestResponseType: .blockAndDelete)
-    }
-
-    func blockThreadAndReportSpam(in thread: TSThread) {
-        databaseStorage.write { tx in
-            ReportSpamUIUtils.blockAndReport(in: thread, tx: tx)
-        }
-
-        presentToastCVC(
-            OWSLocalizedString(
-                "MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED",
-                comment: "String indicating that spam has been reported and the chat has been blocked."
-            )
-        )
-        NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
-    }
-
-    func reportSpamInThread() {
-        databaseStorage.write { tx in
-            ReportSpamUIUtils.report(in: thread, tx: tx)
-        }
-
-        presentToastCVC(
-            OWSLocalizedString(
-                "MESSAGE_REQUEST_SPAM_REPORTED",
-                comment: "String indicating that spam has been reported."
-            )
-        )
-        NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
-    }
-
-    private func blockUserAndDelete(_ aci: Aci) {
-        // Do not leave the group while blocking the thread; we'll
-        // that below so that we can surface an error to the user
-        // if leaving the group fails.
-        databaseStorage.write { transaction in
-            blockingManager.addBlockedAddress(
-                SignalServiceAddress(aci),
-                blockMode: .localShouldNotLeaveGroups,
-                transaction: transaction
-            )
-        }
-        leaveAndSoftDeleteThread(messageRequestResponseType: .delete)
-    }
-
-    private func blockUserAndGroupAndDelete(_ aci: Aci) {
-        ConversationViewController.databaseStorage.write { transaction in
-            if let groupThread = self.thread as? TSGroupThread {
-                // Do not leave the group while blocking the thread; we'll
-                // that below so that we can surface an error to the user
-                // if leaving the group fails.
-                self.blockingManager.addBlockedGroup(
-                    groupModel: groupThread.groupModel,
-                    blockMode: .localShouldNotLeaveGroups,
-                    transaction: transaction
-                )
-            } else {
-                owsFailDebug("Invalid thread.")
-            }
-            self.blockingManager.addBlockedAddress(
-                SignalServiceAddress(aci),
-                blockMode: .localShouldNotLeaveGroups,
-                transaction: transaction
-            )
-        }
-        leaveAndSoftDeleteThread(messageRequestResponseType: .blockAndDelete)
-    }
-
-    func messageRequestViewDidTapDelete() {
-        AssertIsOnMainThread()
-        let deleteSheet = createDeleteThreadActionSheet()
-        presentActionSheet(deleteSheet)
-    }
-
-    private func leaveAndSoftDeleteThread(
-        messageRequestResponseType: OWSSyncMessageRequestResponseType
-    ) {
-        AssertIsOnMainThread()
-
-        syncManager.sendMessageRequestResponseSyncMessage(
-            thread: self.thread,
-            responseType: messageRequestResponseType
-        )
-
-        let completion = {
-            ConversationViewController.databaseStorage.write { transaction in
-                DependenciesBridge.shared.threadSoftDeleteManager.softDelete(
-                    threads: [self.thread],
-                    // We're already sending a sync message about this above!
-                    sendDeleteForMeSyncMessage: false,
-                    tx: transaction.asV2Write
-                )
-            }
-            self.conversationSplitViewController?.closeSelectedConversation(animated: true)
-            NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
-        }
-
-        guard let groupThread = thread as? TSGroupThread,
-              groupThread.isLocalUserFullOrInvitedMember else {
-            // If we don't need to leave the group, finish up immediately.
-            return completion()
-        }
-
-        // Leave the group if we're a member.
-        GroupManager.leaveGroupOrDeclineInviteAsyncWithUI(groupThread: groupThread, fromViewController: self, success: completion)
-    }
-
-    func messageRequestViewDidTapAccept(mode: MessageRequestMode, unblockThread: Bool, unhideRecipient: Bool) {
-        AssertIsOnMainThread()
-        let thread = self.thread
-        Task {
-            await self.acceptMessageRequest(in: thread, mode: mode, unblockThread: unblockThread, unhideRecipient: unhideRecipient)
-        }
-    }
-
-    private func acceptMessageRequest(
-        in thread: TSThread,
-        mode: MessageRequestMode,
-        unblockThread: Bool,
-        unhideRecipient: Bool
-    ) async {
-        switch mode {
-        case .none:
-            owsFailDebug("Invalid mode.")
-            return
-        case .contactOrGroupRequest:
-            break
-        case .groupInviteRequest:
-            guard let groupThread = thread as? TSGroupThread else {
-                owsFailDebug("Invalid thread.")
-                return
-            }
-            do {
-                try await GroupManager.acceptGroupInviteWithModal(groupThread, fromViewController: self)
-            } catch {
-                owsFailDebug("Couldn't accept group invite: \(error)")
-                return
-            }
-        }
-        await databaseStorage.awaitableWrite { transaction in
-            if unblockThread {
-                self.blockingManager.removeBlockedThread(thread, wasLocallyInitiated: true, transaction: transaction)
-            }
-            if unhideRecipient, let thread = thread as? TSContactThread {
-                DependenciesBridge.shared.recipientHidingManager.removeHiddenRecipient(
-                    thread.contactAddress,
-                    wasLocallyInitiated: true,
-                    tx: transaction.asV2Write
-                )
-            }
-            if !unblockThread {
-                // If this is an accept (which also unhides a hidden recipient), not an unblock, we should send a
-                // sync messages telling our other devices that we accepted.
-                self.syncManager.sendMessageRequestResponseSyncMessage(
-                    thread: thread,
-                    responseType: .accept,
-                    transaction: transaction
-                )
-            }
-
-            // Whitelist the thread
-            self.profileManager.addThread(
-                toProfileWhitelist: thread,
-                userProfileWriter: .localUser,
-                transaction: transaction
-            )
-
-            if !thread.isGroupThread {
-                // If this is a contact thread, we should give the
-                // now-unblocked contact our profile key.
-                let profileKeyMessage = OWSProfileKeyMessage(thread: thread, transaction: transaction)
-                let preparedMessage = PreparedOutgoingMessage.preprepared(
-                    transientMessageWithoutAttachments: profileKeyMessage
-                )
-                SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: transaction)
-            }
-
-            NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
-        }
-    }
-
-    func messageRequestViewDidTapUnblock(mode: MessageRequestMode) {
-        AssertIsOnMainThread()
-
-        let threadName: String
-        let message: String
-        if let groupThread = thread as? TSGroupThread {
-            threadName = groupThread.groupNameOrDefault
-            message = OWSLocalizedString(
-                "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE", comment: "An explanation of what unblocking a group means.")
-        } else if let contactThread = thread as? TSContactThread {
-            threadName = databaseStorage.read { tx in
-                return contactsManager.displayName(for: contactThread.contactAddress, tx: tx).resolvedValue()
-            }
-            message = OWSLocalizedString(
-                "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE", comment: "An explanation of what unblocking a contact means.")
-        } else {
-            owsFailDebug("Invalid thread.")
-            return
-        }
-
-        let title = String(format: OWSLocalizedString("BLOCK_LIST_UNBLOCK_TITLE_FORMAT",
-                                                     comment: "A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}."),
-                           threadName)
-
-        OWSActionSheets.showConfirmationAlert(
-            title: title,
-            message: message,
-            proceedTitle: OWSLocalizedString("BLOCK_LIST_UNBLOCK_BUTTON",
-                                            comment: "Button label for the 'unblock' button")
-        ) { _ in
-            self.messageRequestViewDidTapAccept(mode: mode, unblockThread: true, unhideRecipient: true)
-        }
-    }
-
-    func messageRequestViewDidTapLearnMore() {
-        AssertIsOnMainThread()
-
-        // TODO Message Request: Use right support url. Right now this just links to the profiles FAQ
-        guard let url = URL(string: "https://support.signal.org/hc/articles/360007459591") else {
-            return owsFailDebug("Invalid url.")
-        }
-        let safariVC = SFSafariViewController(url: url)
-        present(safariVC, animated: true)
-    }
-}
-
-// MARK: - Action Sheets
-
-extension ConversationViewController {
 
     func createBlockThreadActionSheet(sheetCompletion: ((Bool) -> Void)? = nil) -> ActionSheetController {
         Logger.info("")
