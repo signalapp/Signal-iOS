@@ -353,6 +353,7 @@ class GroupCallViewController: UIViewController {
         raisedHandsToastInnerContainer.preservesSuperviewLayoutMargins = true
         raisedHandsToastInnerContainer.addSubview(raisedHandsToast)
         raisedHandsToastContainer.addSubview(raisedHandsToastInnerContainer)
+        self.bottomVStack.ignoredViews.append(raisedHandsToastInnerContainer)
 
         raisedHandsToastInnerContainer.autoPinVerticalEdges(toEdgesOf: raisedHandsToastContainer)
         if UIDevice.current.isIPad {
