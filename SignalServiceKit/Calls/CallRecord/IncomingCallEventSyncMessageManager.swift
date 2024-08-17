@@ -383,7 +383,7 @@ private extension IncomingCallEventSyncMessageManagerImpl {
             owsFail("Missing SQLite row ID for just-inserted interaction!")
         }
 
-        individualCallRecordManager.createRecordForInteraction(
+        _ = individualCallRecordManager.createRecordForInteraction(
             individualCallInteraction: newIndividualCallInteraction,
             individualCallInteractionRowId: interactionRowId,
             contactThread: contactThread,
