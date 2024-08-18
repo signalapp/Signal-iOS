@@ -4592,7 +4592,7 @@
 "NOTIFICATIONS_NONE" = "No Name or Content";
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
-"NOTIFICATIONS_SECTION_INAPP" = "Play While App is Open";
+"NOTIFICATIONS_SECTION_INAPP" = "In-chat Message Sounds";
 
 /* Label for settings UI that allows user to add a new notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Add custom sound…";
