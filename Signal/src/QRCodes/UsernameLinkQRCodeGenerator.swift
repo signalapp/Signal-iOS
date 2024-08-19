@@ -98,7 +98,7 @@ class UsernameLinkQRCodeGenerator: QRCodeGenerator {
         ))
 
         // Draw the logo inside the circle in the deadzone.
-        let logo = UIImage(named: "signal-logo-40")!.asTintedImage(color: foregroundColor)!
+        let logo = UIImage(named: "signal-logo-40")!.withTintColor(foregroundColor, renderingMode: .alwaysTemplate)
         let logoRect = circleRect.scaled(toPercentage: Constants.deadzoneLogoSizePercentage)
         styledQRCodeContext.draw(logo.cgImage!, in: logoRect)
 

@@ -87,8 +87,7 @@ public enum StoryUtil: Dependencies {
     private static var systemStoryAvatar: ConversationAvatarDataSource {
         return .asset(
             avatar: UIImage(named: "signal-logo-128")?
-                .withRenderingMode(.alwaysTemplate)
-                .asTintedImage(color: .white)?
+                .withTintColor(.white, renderingMode: .alwaysTemplate)
                 .withBackgroundColor(.ows_accentBlue, insets: UIEdgeInsets(margin: 24)),
             badge: nil
         )

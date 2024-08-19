@@ -51,14 +51,14 @@ public class OWSSearchBar: UISearchBar {
 
             let clearImage = UIImage(imageLiteralResourceName: "x-circle-fill")
             searchBar.setImage(
-                clearImage.asTintedImage(color: foregroundColor),
+                clearImage.withTintColor(foregroundColor, renderingMode: .alwaysTemplate),
                 for: .clear,
                 state: .normal
             )
 
             let searchImage = UIImage(imageLiteralResourceName: "search")
             searchBar.setImage(
-                searchImage.asTintedImage(color: foregroundColor),
+                searchImage.withTintColor(foregroundColor, renderingMode: .alwaysTemplate),
                 for: .search,
                 state: .normal
             )

@@ -58,7 +58,7 @@ class AudioMessagePlaybackRateView: ManualLayoutViewWithLayer {
             playbackRate: playbackRate,
             color: textColor
         ).applyForRendering(label: label)
-        self.imageView.image = Constants.image?.asTintedImage(color: textColor)
+        self.imageView.image = Constants.image?.withTintColor(textColor, renderingMode: .alwaysTemplate)
     }
 
     // MARK: - Animating Changes

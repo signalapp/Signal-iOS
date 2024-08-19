@@ -68,41 +68,16 @@ public extension UIImageView {
 
 // MARK: -
 
-public extension UIImage {
-
-    func asTintedImage(color: UIColor) -> UIImage? {
-        let template = self.withRenderingMode(.alwaysTemplate)
-        let imageView = UIImageView(image: template)
-        imageView.tintColor = color
-
-        return imageView.renderAsImage(opaque: imageView.isOpaque, scale: UIScreen.main.scale)
-    }
-
+extension UIImage {
     /// Redraw the image into a new image, with an added background color, and inset the
     /// original image by the provided insets.
-    func withBackgroundColor(_ color: UIColor, insets: UIEdgeInsets = .zero) -> UIImage? {
-        UIGraphicsBeginImageContextWithOptions(size, true, scale)
-        defer {
-            UIGraphicsEndImageContext()
+    public func withBackgroundColor(_ color: UIColor, insets: UIEdgeInsets = .zero) -> UIImage? {
+        let bounds = CGRect(origin: .zero, size: size)
+        return UIGraphicsImageRenderer(bounds: bounds).image { context in
+            color.setFill()
+            context.fill(bounds)
+            draw(in: bounds.inset(by: insets))
         }
-
-        guard let ctx = UIGraphicsGetCurrentContext(), let image = cgImage else {
-            owsFailDebug("Failed to create image context when setting image background")
-            return nil
-        }
-
-        let rect = CGRect(origin: .zero, size: size)
-        ctx.setFillColor(color.cgColor)
-        ctx.fill(rect)
-        // draw the background behind
-        ctx.concatenate(CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: 0, ty: size.height))
-        ctx.draw(image, in: rect.inset(by: insets))
-
-        guard let newImage = UIGraphicsGetImageFromCurrentImageContext() else {
-            owsFailDebug("Failed to create background-colored image from context")
-            return nil
-        }
-        return newImage
     }
 }
 

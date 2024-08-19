@@ -91,7 +91,7 @@ class AudioMessageView: ManualStackView {
         waveformProgress.thumbColor = presentation.thumbColor(isIncoming: isIncoming)
         waveformContainer.addSubviewToFillSuperviewEdges(waveformProgress)
 
-        progressSlider.setThumbImage(UIImage(named: "audio_message_thumb")?.asTintedImage(color: presentation.thumbColor(isIncoming: isIncoming)), for: .normal)
+        progressSlider.setThumbImage(UIImage(named: "audio_message_thumb")?.withTintColor(presentation.thumbColor(isIncoming: isIncoming), renderingMode: .alwaysTemplate), for: .normal)
         progressSlider.setMinimumTrackImage(trackImage(color: presentation.playedColor(isIncoming: isIncoming)), for: .normal)
         progressSlider.setMaximumTrackImage(trackImage(color: presentation.unplayedColor(isIncoming: isIncoming)), for: .normal)
         progressSlider.isEnabled = presentation.audioAttachment.isDownloaded
@@ -420,7 +420,7 @@ class AudioMessageView: ManualStackView {
 
     private func trackImage(color: UIColor) -> UIImage? {
         return UIImage(named: "audio_message_track")?
-            .asTintedImage(color: color)?
+            .withTintColor(color, renderingMode: .alwaysTemplate)
             .resizableImage(withCapInsets: UIEdgeInsets(top: 0, leading: 2, bottom: 0, trailing: 2))
     }
 

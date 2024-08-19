@@ -64,7 +64,7 @@ public class RegistrationTransferQRCodeViewController: OWSViewController, OWSNav
     private lazy var closeButton: UIButton = {
         let closeButton = OWSButton()
         closeButton.setImage(
-            Theme.iconImage(.buttonX).asTintedImage(color: .ows_white),
+            Theme.iconImage(.buttonX).withTintColor(.ows_white, renderingMode: .alwaysTemplate),
             for: .normal
         )
         closeButton.contentMode = .center
