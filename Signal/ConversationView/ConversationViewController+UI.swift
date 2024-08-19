@@ -119,11 +119,7 @@ extension ConversationViewController {
                             "RETURN_CALL_PILL_BUTTON",
                             comment: "Button to return to current group call"
                         )
-                        let joinString = OWSLocalizedString(
-                            "JOIN_CALL_PILL_BUTTON",
-                            comment: "Button to join an active group call"
-                        )
-                        pill.buttonText = self.isCurrentCallForThread ? returnString : joinString
+                        pill.buttonText = self.isCurrentCallForThread ? returnString : CallStrings.joinCallPillButtonTitle
                         videoCallButton.customView = pill
                     } else {
                         videoCallButton.image = Theme.iconImage(.buttonVideoCall)

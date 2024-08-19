@@ -76,11 +76,35 @@ class CreateCallLinkViewController: InteractiveSheetViewController {
         self._tableViewController.setContents(buildTableContents(), shouldReload: shouldReload)
     }
 
+    private func callLinkCardCell() -> UITableViewCell {
+        let cell = OWSTableItem.newCell()
+
+        let view = CallLinkCardView(
+            callLink: self.callLink,
+            callLinkState: self.callLinkState,
+            adminPasskey: self.adminPasskey
+        )
+        cell.contentView.addSubview(view)
+        view.autoPinLeadingToSuperviewMargin()
+        view.autoPinTrailingToSuperviewMargin()
+        view.autoPinEdge(.top, to: .top, of: cell.contentView, withOffset: Constants.vMarginCallLinkCard)
+        view.autoPinEdge(.bottom, to: .bottom, of: cell.contentView, withOffset: -Constants.vMarginCallLinkCard)
+
+        cell.selectionStyle = .none
+        return cell
+    }
+
+    private enum Constants {
+        static let vMarginCallLinkCard: CGFloat = 12
+    }
+
     private func buildTableContents() -> OWSTableContents {
-        let linkItem = OWSTableItem.item(name: callLink.url().absoluteString)
-        let joinItem = OWSTableItem.actionItem(withText: "Join Call", actionBlock: { [unowned self] in
-            GroupCallViewController.presentLobby(for: self.callLink, adminPasskey: self.adminPasskey)
-        })
+        let callLinkCardItem = OWSTableItem(
+            customCellBlock: { [weak self] in
+                guard let self = self else { return UITableViewCell() }
+                return self.callLinkCardCell()
+            }
+        )
 
         var settingItems = [OWSTableItem]()
         settingItems.append(.item(
@@ -116,7 +140,7 @@ class CreateCallLinkViewController: InteractiveSheetViewController {
         return OWSTableContents(
             title: CallStrings.createCallLinkTitle,
             sections: [
-                OWSTableSection(items: [linkItem, joinItem]),
+                OWSTableSection(items: [callLinkCardItem]),
                 OWSTableSection(items: settingItems),
                 sharingSection,
             ]
@@ -260,4 +284,158 @@ class CreateCallLinkViewController: InteractiveSheetViewController {
 private class _CreateCallLinkViewController: OWSTableViewController2 {
     override var preferredNavigationBarStyle: OWSNavigationBarStyle { .solid }
     override var navbarBackgroundColorOverride: UIColor? { tableBackgroundColor }
+}
+
+// MARK: - CallLinkCardView
+
+private class CallLinkCardView: UIView {
+    private lazy var circleView: UIView = {
+        let circleView = CircleView()
+        circleView.backgroundColor = UIColor(rgbHex: Constants.iconBackgroundColor)
+        circleView.autoSetDimensions(to: CGSize(width: Constants.circleViewDimension, height: Constants.circleViewDimension))
+
+        let iconImageView = UIImageView(image: UIImage(named: "video-compact"))
+        iconImageView.tintColor = UIColor(rgbHex: Constants.iconTintColor)
+        iconImageView.autoSetDimensions(to: CGSize(width: Constants.iconDimension, height: Constants.iconDimension))
+        circleView.addSubview(iconImageView)
+        iconImageView.autoCenterInSuperview()
+        return circleView
+    }()
+
+    private lazy var textStack: UIStackView = {
+        let stackView = UIStackView()
+
+        let nameLabel = UILabel()
+        nameLabel.text = callLinkState.localizedName
+        nameLabel.lineBreakMode = .byWordWrapping
+        nameLabel.numberOfLines = 0
+        nameLabel.textColor = Theme.primaryTextColor
+        nameLabel.font = .dynamicTypeHeadline
+
+        let linkLabel = UILabel()
+        linkLabel.text = callLink.url().absoluteString
+        linkLabel.lineBreakMode = .byTruncatingTail
+        linkLabel.numberOfLines = 2
+
+        linkLabel.textColor = Theme.snippetColor
+        linkLabel.font = .dynamicTypeBody2
+
+        stackView.addArrangedSubviews([nameLabel, linkLabel])
+        stackView.axis = .vertical
+        stackView.spacing = Constants.textStackSpacing
+        stackView.alignment = .leading
+
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        return stackView
+    }()
+
+    private lazy var joinButton: UIButton = {
+        return JoinButton(callLink: callLink, adminPasskey: adminPasskey)
+    }()
+
+    private class JoinButton: UIButton {
+        private let callLink: CallLink
+        private let adminPasskey: Data
+
+        init(
+            callLink: CallLink,
+            adminPasskey: Data
+        ) {
+            self.callLink = callLink
+            self.adminPasskey = adminPasskey
+
+            super.init(frame: .zero)
+
+            let view = UIView()
+            view.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray65 : .ows_gray05
+            view.isUserInteractionEnabled = false
+            view.layer.cornerRadius = bounds.size.height / 2
+
+            let label = UILabel()
+            label.setCompressionResistanceHigh()
+            label.text = CallStrings.joinCallPillButtonTitle
+            label.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
+            label.textColor = Theme.accentBlueColor
+            view.isUserInteractionEnabled = false
+
+            self.clipsToBounds = true
+            self.addTarget(self, action: #selector(joinButtonWasTapped), for: .touchUpInside)
+
+            view.addSubview(label)
+            label.autoPinEdge(.top, to: .top, of: view, withOffset: Constants.vMargin)
+            label.autoPinEdge(.bottom, to: .bottom, of: view, withOffset: -Constants.vMargin)
+            label.autoPinEdge(.leading, to: .leading, of: view, withOffset: Constants.hMargin)
+            label.autoPinEdge(.trailing, to: .trailing, of: view, withOffset: -Constants.hMargin)
+
+            self.addSubview(view)
+            view.autoPinEdgesToSuperviewEdges()
+
+            self.accessibilityLabel = CallStrings.joinCallPillButtonTitle
+        }
+
+        @objc
+        private func joinButtonWasTapped() {
+            GroupCallViewController.presentLobby(for: self.callLink, adminPasskey: self.adminPasskey)
+        }
+
+        override public var bounds: CGRect {
+            didSet {
+                updateRadius()
+            }
+        }
+
+        private func updateRadius() {
+            layer.cornerRadius = bounds.size.height / 2
+        }
+
+        private enum Constants {
+            static let vMargin: CGFloat = 4
+            static let hMargin: CGFloat = 12
+        }
+
+        required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+    }
+
+    private let callLink: CallLink
+    private let callLinkState: CallLinkState
+    private let adminPasskey: Data
+
+    init(
+        callLink: CallLink,
+        callLinkState: CallLinkState,
+        adminPasskey: Data
+    ) {
+        self.callLink = callLink
+        self.callLinkState = callLinkState
+        self.adminPasskey = adminPasskey
+
+        super.init(frame: .zero)
+
+        let stackView = UIStackView()
+        stackView.addArrangedSubviews([circleView, textStack, joinButton])
+        stackView.axis = .horizontal
+        stackView.distribution = .fillProportionally
+        stackView.alignment = .center
+        stackView.spacing = Constants.spacingIconToText
+        stackView.setCustomSpacing(Constants.spacingTextToButton, after: textStack)
+
+        self.addSubview(stackView)
+        stackView.autoPinEdgesToSuperviewEdges()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    private enum Constants {
+        static let spacingTextToButton: CGFloat = 16
+        static let spacingIconToText: CGFloat = 12
+        static let textStackSpacing: CGFloat = 2
+        static let circleViewDimension: CGFloat = 64
+        static let iconDimension: CGFloat = 36
+        static let iconBackgroundColor: UInt32 = 0xE4E4FD
+        static let iconTintColor: UInt32 = 0x5151F6
+    }
 }

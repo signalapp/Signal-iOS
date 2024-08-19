@@ -26,9 +26,6 @@ public struct CallLinkState {
     }
 
     public static var defaultLocalizedName: String {
-        return OWSLocalizedString(
-            "SIGNAL_CALL",
-            comment: "Shown in the header when the user hasn't provided a custom name for a call."
-        )
+        return CallStrings.signalCall
     }
 }

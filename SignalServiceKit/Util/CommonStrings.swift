@@ -469,6 +469,13 @@ public enum CallStrings {
     static var showThreadButtonTitle: String {
         return OWSLocalizedString("SHOW_THREAD_BUTTON_TITLE", comment: "notification action")
     }
+
+    public static var signalCall: String {
+        return OWSLocalizedString(
+            "SIGNAL_CALL",
+            comment: "Shown in the header when the user hasn't provided a custom name for a call."
+        )
+    }
 }
 
 // MARK: -

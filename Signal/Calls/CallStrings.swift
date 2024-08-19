@@ -97,4 +97,11 @@ extension CallStrings {
             comment: "Button to copy a Call Link to the clipboard."
         )
     }
+
+    static var joinCallPillButtonTitle: String {
+        return OWSLocalizedString(
+            "JOIN_CALL_PILL_BUTTON",
+            comment: "Button to join an active group call"
+        )
+    }
 }
