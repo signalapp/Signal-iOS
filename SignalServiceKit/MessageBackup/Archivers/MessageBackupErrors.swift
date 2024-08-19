@@ -345,6 +345,8 @@ extension MessageBackup {
                 case chatItemMissingItem
                 /// A directionless chat item was not an update message.
                 case directionlessChatItemNotUpdateMessage
+                /// A ``BackupProto/ChatItem`` has a missing or invalid dateSent.
+                case chatItemInvalidDateSent
 
                 /// A message must come from either an Aci or an E164.
                 /// One in the backup did not.
@@ -585,6 +587,7 @@ extension MessageBackup {
                         .contactWithoutRegistrationInfo,
                         .chatItemMissingDirectionalDetails,
                         .chatItemMissingItem,
+                        .chatItemInvalidDateSent,
                         .directionlessChatItemNotUpdateMessage,
                         .incomingMessageNotFromAciOrE164,
                         .outgoingNonContactMessageRecipient,

@@ -30,7 +30,6 @@ public enum SentMessageTranscriptType {
         public let body: String?
         public let bodyRanges: MessageBodyRanges?
 
-        // TODO: generalize to cover attachments from backups
         public let attachmentPointerProtos: [SSKProtoAttachmentPointer]
 
         /// Construction of the builder itself deferred since the builder's constructor does database inserts.
@@ -83,8 +82,8 @@ public enum SentMessageTranscriptType {
     case archivedPayment(ArchivedPayment)
 }
 
-/// A transcript for a message that has already been sent, and which came in either
-/// as a sync message from a linked device, or from a backup.
+/// A transcript for a message that has already been sent, and which came in
+/// as a sync message from a linked device.
 public protocol SentMessageTranscript {
 
     var type: SentMessageTranscriptType { get }
