@@ -571,6 +571,7 @@
 		5011D1CD29400E7300064098 /* DeviceProvisioningURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5011D1CC29400E7300064098 /* DeviceProvisioningURL.swift */; };
 		5011D9702A0429B6000FE8E5 /* ThreadMergerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5011D96F2A0429B6000FE8E5 /* ThreadMergerTest.swift */; };
 		5011D9722A04720E000FE8E5 /* OWSOrphanDataCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CC66C02937B71E002172D0 /* OWSOrphanDataCleaner.swift */; };
+		501344F32C36030F00088821 /* EditCallLinkNameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501344F22C36030F00088821 /* EditCallLinkNameViewController.swift */; };
 		50159CDD2B4EF75600D344D4 /* LocalProfileChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50159CDC2B4EF75600D344D4 /* LocalProfileChecker.swift */; };
 		50169695291B0627007AD709 /* ContactDiscoveryManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50169694291B0627007AD709 /* ContactDiscoveryManagerTest.swift */; };
 		5018B9DD2ADF4157001DFB12 /* AuthedDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5018B9DC2ADF4157001DFB12 /* AuthedDevice.swift */; };
@@ -3642,6 +3643,7 @@
 		5011D96F2A0429B6000FE8E5 /* ThreadMergerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadMergerTest.swift; sourceTree = "<group>"; };
 		5013365E2B2BC2EF004119F1 /* ZkParamsMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZkParamsMigrator.swift; sourceTree = "<group>"; };
 		501336602B2BCA1F004119F1 /* ZkParamsMigratorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZkParamsMigratorTest.swift; sourceTree = "<group>"; };
+		501344F22C36030F00088821 /* EditCallLinkNameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCallLinkNameViewController.swift; sourceTree = "<group>"; };
 		50159CDC2B4EF75600D344D4 /* LocalProfileChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalProfileChecker.swift; sourceTree = "<group>"; };
 		50169694291B0627007AD709 /* ContactDiscoveryManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryManagerTest.swift; sourceTree = "<group>"; };
 		5018B9DC2ADF4157001DFB12 /* AuthedDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthedDevice.swift; sourceTree = "<group>"; };
@@ -9530,6 +9532,7 @@
 				B93955E22B06D47000F35940 /* CallsListViewController.swift */,
 				88D23D1C23CEC0C700B0E74B /* CallUIAdapter.swift */,
 				50733B1F2BAD03E400CEEC1F /* CreateCallLinkViewController.swift */,
+				501344F22C36030F00088821 /* EditCallLinkNameViewController.swift */,
 				E1DB073C2BA4FEDD00181E4C /* FlipCameraTooltip.swift */,
 				32B2A433256CDC42001D66C7 /* GroupCallErrorView.swift */,
 				E1CDDF6A2C35DD4500C6237C /* GroupCallMemberSheet.swift */,
@@ -13717,6 +13720,7 @@
 				F90B731D2926AFCF0027318D /* DonationViewsUtil+WaitForSubscriptionJob.swift in Sources */,
 				F9DD70B92811AF82000C5960 /* DonationViewsUtil.swift in Sources */,
 				05572BC42BFC0094006A72F1 /* DoubleTapToEditOnboardingController.swift in Sources */,
+				501344F32C36030F00088821 /* EditCallLinkNameViewController.swift in Sources */,
 				C11C278129F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift in Sources */,
 				3428577D26BD8777005A2A96 /* Emoji+Available.swift in Sources */,
 				3428577726BD8777005A2A96 /* Emoji+Category.swift in Sources */,

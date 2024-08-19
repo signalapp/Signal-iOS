@@ -24,7 +24,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     private let callManagerHttpClient: AnyObject
 
     private var audioSession: AudioSession { NSObject.audioSession }
-    private let authCredentialManager: any AuthCredentialManager
+    let authCredentialManager: any AuthCredentialManager
     private var databaseStorage: SDSDatabaseStorage { NSObject.databaseStorage }
     private var deviceSleepManager: DeviceSleepManager { DeviceSleepManager.shared }
     private var groupCallManager: GroupCallManager { NSObject.groupCallManager }
@@ -533,12 +533,12 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     }
 
     @MainActor
-    func buildAndConnectCallLinkCall(callLink: CallLink) async throws -> (SignalCall, CallLinkCall)? {
+    func buildAndConnectCallLinkCall(callLink: CallLink, adminPasskey: Data?) async throws -> (SignalCall, CallLinkCall)? {
         let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!
         let authCredential = try await authCredentialManager.fetchCallLinkAuthCredential(localIdentifiers: localIdentifiers)
         let callLinkState = try await callLinkFetcher.readCallLink(callLink.rootKey, authCredential: authCredential)
         return _buildAndConnectGroupCall(isOutgoingVideoMuted: false) { () -> (SignalCall, CallLinkCall)? in
-            // [CallLink] TODO: Provide adminPasskey.
+            // [CallLink] TODO: Read adminPasskey from disk instead of a parameter.
             let videoCaptureController = VideoCaptureController()
             let sfuUrl = DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL
             let secretParams = CallLinkSecretParams.deriveFromRootKey(callLink.rootKey.bytes)
@@ -547,7 +547,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
                 sfuUrl: sfuUrl,
                 authCredentialPresentation: authCredentialPresentation.serialize(),
                 linkRootKey: callLink.rootKey,
-                adminPasskey: nil,
+                adminPasskey: adminPasskey,
                 hkdfExtraInfo: Data(),
                 audioLevelsIntervalMillis: nil,
                 videoCaptureController: videoCaptureController

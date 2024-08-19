@@ -238,7 +238,7 @@ class GroupCallViewController: UIViewController {
         }
     }
 
-    static func presentLobby(for callLink: CallLink) {
+    static func presentLobby(for callLink: CallLink, adminPasskey: Data? = nil) {
         guard RemoteConfig.callLinkJoin else {
             return
         }
@@ -246,7 +246,7 @@ class GroupCallViewController: UIViewController {
             do {
                 return try await self._prepareLobby(from: viewController, shouldAskForCameraPermission: true) {
                     let callService = AppEnvironment.shared.callService!
-                    return try await callService.buildAndConnectCallLinkCall(callLink: callLink)
+                    return try await callService.buildAndConnectCallLinkCall(callLink: callLink, adminPasskey: adminPasskey)
                 }
             } catch {
                 owsFail("[CallLink] TODO: Couldn't buildAndConnectCallLinkCall \(error)")

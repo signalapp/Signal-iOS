@@ -255,7 +255,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     // MARK: Call Link Button
 
     private func createCallLink() {
-        CreateCallLinkViewController().createCallLinkOnServerAndPresent(fromViewController: self)
+        CreateCallLinkViewController.createCallLinkOnServerAndPresent(from: self)
     }
 
     // MARK: New call button

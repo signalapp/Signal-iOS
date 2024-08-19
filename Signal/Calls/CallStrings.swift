@@ -48,4 +48,53 @@ extension CallStrings {
             comment: "Button to join an ongoing group call"
         )
     }
+
+    static var createCallLinkTitle: String {
+        return OWSLocalizedString(
+            "CALL_LINK_CREATE",
+            comment: "Navigation bar title for the sheet used to create & configure a Call Link."
+        )
+    }
+
+    static var addCallName: String {
+        return OWSLocalizedString(
+            "CALL_LINK_ADD_NAME",
+            comment: "Button to open a screen to edit the name of a Call Link. Also used as the title of that screen once it opens."
+        )
+    }
+
+    static var editCallName: String {
+        return OWSLocalizedString(
+            "CALL_LINK_EDIT_NAME",
+            comment: "Button to open a screen to edit the name of a Call Link. Also used as the title of that screen once it opens."
+        )
+    }
+
+    static var approveAllMembers: String {
+        return OWSLocalizedString(
+            "CALL_LINK_REQUIRE_APPROVAL",
+            comment: "Name of a toggle switch to enable/disable admin approval for joining a Call Link."
+        )
+    }
+
+    static var shareLinkViaSignal: String {
+        return OWSLocalizedString(
+            "CALL_LINK_SHARE_VIA_SIGNAL",
+            comment: "Button to open UI to share a Call Link with someone on Signal."
+        )
+    }
+
+    static var shareLinkViaSystem: String {
+        return OWSLocalizedString(
+            "CALL_LINK_SHARE_VIA_SYSTEM",
+            comment: "Button to open the system share sheet to share a Call Link."
+        )
+    }
+
+    static var copyLinkToClipboard: String {
+        return OWSLocalizedString(
+            "CALL_LINK_COPY",
+            comment: "Button to copy a Call Link to the clipboard."
+        )
+    }
 }
