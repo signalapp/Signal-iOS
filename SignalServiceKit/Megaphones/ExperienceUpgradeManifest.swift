@@ -571,6 +571,7 @@ extension ExperienceUpgradeManifest {
     }
 
     private static func checkPreconditionsForContactsPermissionReminder() -> Bool {
+        // FIXME: [Contacts, iOS 18] Do we really want to nag users who've granted limited access?
         return CNContactStore.authorizationStatus(for: .contacts) != .authorized
     }
 

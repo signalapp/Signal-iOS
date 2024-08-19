@@ -24,9 +24,9 @@ class DebugUIContacts: DebugUIPage {
             OWSTableItem(title: "Create 10k Random Contacts",
                          actionBlock: { Task { await DebugContactsUtils.createRandomContacts(10 * 1000) } }),
             OWSTableItem(title: "Delete Random Contacts",
-                         actionBlock: { DebugContactsUtils.deleteRandomContacts() }),
+                         actionBlock: { Task { await DebugContactsUtils.deleteRandomContacts() } }),
             OWSTableItem(title: "Delete All Contacts",
-                         actionBlock: { DebugContactsUtils.deleteAllContacts() }),
+                         actionBlock: { Task { await DebugContactsUtils.deleteAllContacts() } }),
             OWSTableItem(title: "New Unregistered Contact Thread",
                          actionBlock: { DebugUIContacts.createUnregisteredContactThread() }),
         ])

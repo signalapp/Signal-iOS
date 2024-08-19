@@ -265,15 +265,16 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
 
     private func handleContactDelete(displayNameForToast: String) {
         switch CNContactStore.authorizationStatus(for: .contacts) {
-        case .authorized:
-            break
-        case .notDetermined, .denied, .restricted:
-            fallthrough
 #if compiler(>=6.0)
         case .limited:
-            owsFailDebug("Limited authorization for Contacts not yet supported")
+            Logger.info("Limited contacts authorization; treating as authorized for compatibility")
             fallthrough
 #endif
+        case .authorized:
+            break
+
+        case .notDetermined, .denied, .restricted:
+            fallthrough
         @unknown default:
             Logger.info("No contact permissions")
             showGenericErrorToastAndDismiss()

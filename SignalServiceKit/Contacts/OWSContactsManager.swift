@@ -15,7 +15,7 @@ extension Notification.Name {
 
 @objc
 public enum RawContactAuthorizationStatus: UInt {
-    case notDetermined, denied, restricted, authorized
+    case notDetermined, denied, restricted, limited, authorized
 }
 
 public enum ContactAuthorizationForEditing {
@@ -47,7 +47,8 @@ public class OWSContactsManager: NSObject, ContactsManagerProtocol {
             return .denied
         case .restricted:
             return .restricted
-        case .authorized:
+        // TODO: [Contacts, iOS 18] Validate if limited contacts authorization is appropriate
+        case .authorized, .limited:
             return .authorized
         }
     }
@@ -57,7 +58,8 @@ public class OWSContactsManager: NSObject, ContactsManagerProtocol {
             return .notDetermined
         case .denied, .restricted:
             return .denied
-        case .authorized:
+        // TODO: [Contacts, iOS 18] Validate if limited contacts authorization is appropriate
+        case .authorized, .limited:
             return .authorized
         }
     }
@@ -137,7 +139,8 @@ extension OWSContactsManager: SystemContactsFetcherDelegate {
             return
         }
         switch authorizationStatus {
-        case .restricted, .denied:
+        // TODO: [Contacts, iOS 18] Validate if limited contacts authorization is appropriate
+        case .restricted, .denied, .limited:
             self.updateContacts(nil, isUserRequested: false)
         case .notDetermined, .authorized:
             break

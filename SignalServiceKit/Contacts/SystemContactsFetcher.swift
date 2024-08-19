@@ -52,6 +52,10 @@ public class ContactsFrameworkContactStoreAdaptee: NSObject, ContactStoreAdaptee
             return .restricted
         case .denied:
             return .denied
+#if compiler(>=6.0)
+        case .limited:
+            return .limited
+#endif
         case .authorized:
              return .authorized
         @unknown default:
@@ -255,7 +259,8 @@ public class SystemContactsFetcher: NSObject {
                     self.updateContacts(completion: completion)
                 }
             }
-        case .authorized:
+        // TODO: [Contacts, iOS 18] Validate if limited contacts authorization is appropriate
+        case .authorized, .limited:
             self.updateContacts(completion: completion)
         case .denied, .restricted:
             self.delegate?.systemContactsFetcher(self, hasAuthorizationStatus: rawAuthorizationStatus)
