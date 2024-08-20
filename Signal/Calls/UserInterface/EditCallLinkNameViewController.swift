@@ -9,8 +9,9 @@ import SignalUI
 
 class EditCallLinkNameViewController: OWSTableViewController2 {
     private enum Constants {
-        /// Value taken from the spec.
+        /// Values taken from the spec.
         static let callNameByteLimit = 119
+        static let callNameGlyphLimit = 32
     }
 
     private lazy var callNameField = OWSTextField(
@@ -93,7 +94,8 @@ extension EditCallLinkNameViewController: UITextFieldDelegate {
             textField,
             shouldChangeCharactersInRange: range,
             replacementString: string,
-            maxByteCount: Constants.callNameByteLimit
+            maxByteCount: Constants.callNameByteLimit,
+            maxGlyphCount: Constants.callNameGlyphLimit
         )
     }
 }
