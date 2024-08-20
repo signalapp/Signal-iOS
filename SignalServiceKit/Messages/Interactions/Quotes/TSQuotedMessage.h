@@ -119,12 +119,12 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
                       isGiftBadge:(BOOL)isGiftBadge;
 
 // used when restoring quoted messages from backups
-// TODO: attachments should be here too, once they are body can be made nullable.
 + (instancetype)quotedMessageWithTargetMessageTimestamp:(nullable NSNumber *)timestamp
                                           authorAddress:(SignalServiceAddress *)authorAddress
-                                                   body:(NSString *)body
+                                                   body:(nullable NSString *)body
                                              bodyRanges:(nullable MessageBodyRanges *)bodyRanges
                                              bodySource:(TSQuotedMessageContentSource)bodySource
+                                   quotedAttachmentInfo:(nullable OWSAttachmentInfo *)attachmentInfo
                                             isGiftBadge:(BOOL)isGiftBadge;
 
 @end

@@ -210,11 +210,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)quotedMessageWithTargetMessageTimestamp:(nullable NSNumber *)timestamp
                                           authorAddress:(SignalServiceAddress *)authorAddress
-                                                   body:(NSString *)body
+                                                   body:(nullable NSString *)body
                                              bodyRanges:(nullable MessageBodyRanges *)bodyRanges
                                              bodySource:(TSQuotedMessageContentSource)bodySource
+                                   quotedAttachmentInfo:(nullable OWSAttachmentInfo *)attachmentInfo
                                             isGiftBadge:(BOOL)isGiftBadge
 {
+    OWSAssertDebug(body != nil || attachmentInfo != nil);
     OWSAssertDebug(authorAddress.isValid);
 
     uint64_t rawTimestamp;
@@ -230,7 +232,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                  body:body
                                            bodyRanges:bodyRanges
                                            bodySource:bodySource
-                         receivedQuotedAttachmentInfo:nil
+                         receivedQuotedAttachmentInfo:attachmentInfo
                                           isGiftBadge:isGiftBadge];
 }
 

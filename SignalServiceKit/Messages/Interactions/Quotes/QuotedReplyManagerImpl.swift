@@ -740,6 +740,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                 ),
                 bodyRanges: nil,
                 bodySource: .remote,
+                quotedAttachmentInfo: nil,
                 isGiftBadge: false
             ))
         }

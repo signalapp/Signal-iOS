@@ -364,6 +364,10 @@ extension MessageBackup {
                 /// A `BackupProto_BodyRange` with a missing or unrecognized style.
                 case unrecognizedBodyRangeStyle
 
+                /// A quoted message had no body, attachment, gift badge, or other
+                /// content in its representation of the original being quoted.
+                case quotedMessageEmptyContent
+
                 /// A `BackupProto_Group's` gv2 master key could not be parsed by libsignal.
                 case invalidGV2MasterKey
                 /// A `BackupProto_Group` was missing its group snapshot.
@@ -594,6 +598,7 @@ extension MessageBackup {
                         .unrecognizedMessageSendStatus,
                         .reactionNotFromAciOrE164,
                         .unrecognizedBodyRangeStyle,
+                        .quotedMessageEmptyContent,
                         .invalidGV2MasterKey,
                         .missingGV2GroupSnapshot,
                         .unrecognizedGV2MemberRole,

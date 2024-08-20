@@ -30,6 +30,7 @@ extension MessageBackup {
 
             fileprivate let reactions: [BackupProto_Reaction]
             fileprivate let bodyAttachments: [BackupProto_MessageAttachment]
+            fileprivate let quotedMessageThumbnail: BackupProto_MessageAttachment?
         }
 
         struct Payment {
@@ -395,39 +396,47 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             )])
         }
 
-        let restoreInteractionResult: RestoreInteractionResult<Void>
-        let restoreBodyAttachmentsResult: RestoreInteractionResult<Void>
+        var downstreamObjectResults = [RestoreInteractionResult<Void>]()
         switch restoredContents {
         case .text(let text):
-            restoreInteractionResult = reactionArchiver.restoreReactions(
+            downstreamObjectResults.append(reactionArchiver.restoreReactions(
                 text.reactions,
                 chatItemId: chatItemId,
                 message: message,
                 context: context.recipientContext,
                 tx: tx
-            )
-            restoreBodyAttachmentsResult = attachmentsArchiver.restoreBodyAttachments(
+            ))
+            downstreamObjectResults.append(attachmentsArchiver.restoreBodyAttachments(
                 text.bodyAttachments,
                 chatItemId: chatItemId,
                 messageRowId: messageRowId,
                 message: message,
                 thread: thread,
                 tx: tx
-            )
+            ))
+            if let quotedMessageThumbnail = text.quotedMessageThumbnail {
+                downstreamObjectResults.append(attachmentsArchiver.restoreQuotedReplyThumbnailAttachment(
+                    quotedMessageThumbnail,
+                    chatItemId: chatItemId,
+                    messageRowId: messageRowId,
+                    message: message,
+                    thread: thread,
+                    tx: tx
+                ))
+            }
         case .archivedPayment(let archivedPayment):
-            restoreInteractionResult = restoreArchivedPaymentContents(
+            downstreamObjectResults.append(restoreArchivedPaymentContents(
                 archivedPayment,
                 chatItemId: chatItemId,
                 thread: thread,
                 message: message,
                 tx: tx
-            )
-            // No body attachments to restore
-            restoreBodyAttachmentsResult = .success(())
+            ))
         }
 
-        return restoreInteractionResult
-            .combine(restoreBodyAttachmentsResult)
+        return downstreamObjectResults.reduce(.success(()), {
+            $0.combine($1)
+        })
     }
 
     // MARK: Helpers
@@ -524,6 +533,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         var partialErrors = [RestoreFrameError]()
 
         let quotedMessage: TSQuotedMessage?
+        let quotedMessageThumbnail: BackupProto_MessageAttachment?
         if standardMessage.hasQuote {
             guard
                 let quoteResult = restoreQuote(
@@ -536,9 +546,10 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             else {
                 return .messageFailure(partialErrors)
             }
-            quotedMessage = quoteResult
+            (quotedMessage, quotedMessageThumbnail) = quoteResult
         } else {
             quotedMessage = nil
+            quotedMessageThumbnail = nil
         }
 
         guard standardMessage.hasText else {
@@ -554,7 +565,8 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                 body: body,
                 quotedMessage: quotedMessage,
                 reactions: standardMessage.reactions,
-                bodyAttachments: standardMessage.attachments
+                bodyAttachments: standardMessage.attachments,
+                quotedMessageThumbnail: quotedMessageThumbnail
             )))
         case .partialRestore(let body, let partialErrors):
             return .partialRestore(
@@ -562,7 +574,8 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                     body: body,
                     quotedMessage: quotedMessage,
                     reactions: standardMessage.reactions,
-                    bodyAttachments: standardMessage.attachments
+                    bodyAttachments: standardMessage.attachments,
+                    quotedMessageThumbnail: quotedMessageThumbnail
                 )),
                 partialErrors
             )
@@ -655,7 +668,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         thread: MessageBackup.ChatThread,
         context: MessageBackup.ChatRestoringContext,
         tx: DBReadTransaction
-    ) -> RestoreInteractionResult<TSQuotedMessage> {
+    ) -> RestoreInteractionResult<(TSQuotedMessage, BackupProto_MessageAttachment?)> {
         let authorAddress: MessageBackup.InteropAddress
         switch context.recipientContext[quote.authorRecipientId] {
         case .none:
@@ -735,26 +748,48 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             isGiftBadge = true
         }
 
-        guard let quoteBody else {
-            // Non-text not supported yet.
-            return .messageFailure([.restoreFrameError(.unimplemented, chatItemId)])
+        let quotedAttachmentInfo: OWSAttachmentInfo?
+        let quotedAttachmentThumbnail: BackupProto_MessageAttachment?
+        if let quotedAttachmentProto = quote.attachments.first {
+            if quotedAttachmentProto.hasThumbnail {
+                quotedAttachmentInfo = .init(forV2ThumbnailReference: ())
+                quotedAttachmentThumbnail = quotedAttachmentProto.thumbnail
+            } else {
+                let mimeType = quotedAttachmentProto.contentType.nilIfEmpty
+                    ?? MimeType.applicationOctetStream.rawValue
+                let sourceFilename = quotedAttachmentProto.fileName.nilIfEmpty
+                quotedAttachmentInfo = .init(
+                    stubWithMimeType: mimeType,
+                    sourceFilename: sourceFilename
+                )
+                quotedAttachmentThumbnail = nil
+            }
+        } else {
+            quotedAttachmentInfo = nil
+            quotedAttachmentThumbnail = nil
         }
 
-        // TODO: [Backups] Support attachments
+        guard quoteBody != nil || quotedAttachmentThumbnail != nil || isGiftBadge else {
+            return .messageFailure([.restoreFrameError(
+                .invalidProtoData(.quotedMessageEmptyContent),
+                chatItemId
+            )])
+        }
 
         let quotedMessage = TSQuotedMessage(
             targetMessageTimestamp: targetMessageTimestamp,
             authorAddress: authorAddress,
-            body: quoteBody.text,
-            bodyRanges: quoteBody.ranges,
+            body: quoteBody?.text,
+            bodyRanges: quoteBody?.ranges,
             bodySource: bodySource,
+            quotedAttachmentInfo: quotedAttachmentInfo,
             isGiftBadge: isGiftBadge
         )
 
         if partialErrors.isEmpty {
-            return .success(quotedMessage)
+            return .success((quotedMessage, quotedAttachmentThumbnail))
         } else {
-            return .partialRestore(quotedMessage, partialErrors)
+            return .partialRestore((quotedMessage, quotedAttachmentThumbnail), partialErrors)
         }
     }
 
