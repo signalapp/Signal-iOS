@@ -131,7 +131,14 @@ class CreateCallLinkViewController: InteractiveSheetViewController {
                 actionBlock: { [unowned self] in self.copyCallLink() }
             ),
             OWSTableItem(
-                customCellBlock: { self.systemShareTableViewCell },
+                customCellBlock: {
+                    let cell = OWSTableItem.buildCell(
+                        icon: .buttonShare,
+                        itemName: CallStrings.shareLinkViaSystem
+                    )
+                    self.systemShareTableViewCell = cell
+                    return cell
+                },
                 actionBlock: { [unowned self] in self.shareCallLinkViaSystem() }
             )
         ])
@@ -147,10 +154,7 @@ class CreateCallLinkViewController: InteractiveSheetViewController {
         )
     }
 
-    private lazy var systemShareTableViewCell = OWSTableItem.buildCell(
-        name: CallStrings.shareLinkViaSystem,
-        iconView: OWSTableItem.imageView(forIcon: .buttonShare)
-    )
+    private var systemShareTableViewCell: UITableViewCell?
 
     // MARK: - Actions
 

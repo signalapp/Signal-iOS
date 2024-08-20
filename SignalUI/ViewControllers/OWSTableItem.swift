@@ -295,32 +295,6 @@ public extension OWSTableItem {
         Theme.isDarkThemeEnabled ? .ows_gray25 : .ows_gray45
     }
 
-    static func buildCell(name: String, iconView: UIView) -> UITableViewCell {
-        return buildCell(name: name, iconView: iconView, iconSpacing: self.iconSpacing)
-    }
-
-    static func buildCell(name: String, iconView: UIView, iconSpacing: CGFloat) -> UITableViewCell {
-        assert(!name.isEmpty)
-
-        let cell = OWSTableItem.newCell()
-        cell.preservesSuperviewLayoutMargins = true
-        cell.contentView.preservesSuperviewLayoutMargins = true
-
-        let rowLabel = UILabel()
-        rowLabel.text = name
-        rowLabel.textColor = Theme.primaryTextColor
-        rowLabel.font = OWSTableItem.primaryLabelFont
-        rowLabel.lineBreakMode = .byTruncatingTail
-
-        let contentRow = UIStackView(arrangedSubviews: [ iconView, rowLabel ])
-        contentRow.spacing = iconSpacing
-
-        cell.contentView.addSubview(contentRow)
-        contentRow.autoPinEdgesToSuperviewMargins()
-
-        return cell
-    }
-
     static func imageView(
         forIcon icon: ThemeIcon,
         tintColor: UIColor? = nil,
