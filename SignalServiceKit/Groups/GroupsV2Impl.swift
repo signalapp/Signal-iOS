@@ -890,6 +890,8 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
                             avatarUrlPath: avatarUrlPath,
                             groupV2Params: groupV2Params
                         )
+                    } catch OWSURLSessionError.responseTooLarge {
+                        avatarData = Data()
                     } catch where error.httpStatusCode == 404 {
                         // Fulfill with empty data if service returns 404 status code.
                         // We don't want the group to be left in an unrecoverable state
