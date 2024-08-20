@@ -99,8 +99,11 @@ public class StoryBadgeCountManager: NSObject, Dependencies {
 
 extension StoryBadgeCountManager: DatabaseChangeDelegate {
     public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
-        if databaseChanges.didUpdateModel(collection: StoryContextAssociatedData.collection()) ||
-            databaseChanges.didUpdateModel(collection: StoryMessage.collection()) {
+        let didUpdate = (
+            databaseChanges.didUpdate(tableName: StoryContextAssociatedData.databaseTableName)
+            || databaseChanges.didUpdate(tableName: StoryMessage.databaseTableName)
+        )
+        if didUpdate {
             computeBadgeCount()
         }
     }

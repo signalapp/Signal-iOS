@@ -294,11 +294,6 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
     // TSAttachmentStream.
 }
 
-+ (NSString *)collection
-{
-    return @"TSAttachements";
-}
-
 - (NSString *)previewText
 {
     NSString *attachmentString;

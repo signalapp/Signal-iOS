@@ -21,21 +21,12 @@ public protocol DatabaseChanges {
     var storyMessageDeletedUniqueIds: Set<UniqueId> { get }
 
     var tableNames: Set<String> { get }
-    var collections: Set<String> { get }
 
     var didUpdateInteractions: Bool { get }
 
     var didUpdateThreads: Bool { get }
 
-    var didUpdateInteractionsOrThreads: Bool { get }
-
-    // Note that this method should only be used for model
-    // collections, not key-value stores.
-    func didUpdateModel(collection: String) -> Bool
-
-    // Note: In GRDB, this will return true for _any_ key-value write.
-    //       This should be acceptable.
-    func didUpdate(keyValueStore: SDSKeyValueStore) -> Bool
+    func didUpdate(tableName: String) -> Bool
 
     func didUpdate(interaction: TSInteraction) -> Bool
 

@@ -230,20 +230,21 @@ extension StickerPackSerializer {
     static var titleColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "title", columnType: .unicodeString, isOptional: true) }
 
     public static var table: SDSTableMetadata {
-        SDSTableMetadata(collection: StickerPack.collection(),
-                         tableName: "model_StickerPack",
-                         columns: [
-        idColumn,
-        recordTypeColumn,
-        uniqueIdColumn,
-        authorColumn,
-        coverColumn,
-        dateCreatedColumn,
-        infoColumn,
-        isInstalledColumn,
-        itemsColumn,
-        titleColumn
-        ])
+        SDSTableMetadata(
+            tableName: "model_StickerPack",
+            columns: [
+                idColumn,
+                recordTypeColumn,
+                uniqueIdColumn,
+                authorColumn,
+                coverColumn,
+                dateCreatedColumn,
+                infoColumn,
+                isInstalledColumn,
+                itemsColumn,
+                titleColumn,
+            ]
+        )
     }
 }
 

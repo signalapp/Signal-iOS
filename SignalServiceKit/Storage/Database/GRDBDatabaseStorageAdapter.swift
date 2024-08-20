@@ -146,68 +146,6 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         }
     }
 
-    static var tables: [SDSTableMetadata] {
-        [
-            // Models
-            TSThread.table,
-            TSInteraction.table,
-            StickerPack.table,
-            InstalledSticker.table,
-            KnownStickerPack.table,
-            TSAttachment.table,
-            OWSMessageContentJob.table,
-            OWSRecipientIdentity.table,
-            OWSDisappearingMessagesConfiguration.table,
-            IncomingGroupsV2MessageJob.table,
-            TSPaymentModel.table
-        ]
-    }
-
-    static var swiftTables: [TableRecord.Type] {
-        [
-            ThreadAssociatedData.self,
-            PendingReadReceiptRecord.self,
-            PendingViewedReceiptRecord.self,
-            MediaGalleryRecord.self,
-            MessageSendLog.Payload.self,
-            MessageSendLog.Recipient.self,
-            MessageSendLog.Message.self,
-            ProfileBadge.self,
-            StoryMessage.self,
-            StoryContextAssociatedData.self,
-            DonationReceipt.self,
-            OWSReaction.self,
-            TSGroupMember.self,
-            TSMention.self,
-            ExperienceUpgrade.self,
-            CancelledGroupRing.self,
-            CdsPreviousE164.self,
-            SpamReportingTokenRecord.self,
-            UsernameLookupRecord.self,
-            JobRecord.self,
-            OWSDevice.self,
-            SignalAccount.self,
-            EditRecord.self,
-            SignalRecipient.self,
-            HiddenRecipient.self,
-            TSPaymentsActivationRequestModel.self,
-            CallRecord.self,
-            OWSUserProfile.self,
-            DeletedCallRecord.self,
-            NicknameRecord.self,
-            Attachment.Record.self,
-            AttachmentReference.MessageAttachmentReferenceRecord.self,
-            AttachmentReference.StoryMessageAttachmentReferenceRecord.self,
-            AttachmentReference.ThreadAttachmentReferenceRecord.self,
-            OrphanedAttachmentRecord.self,
-            QueuedAttachmentDownloadRecord.self,
-            ArchivedPayment.self,
-            TSAttachmentMigration.V1AttachmentReservedFileIds.self,
-            QueuedBackupAttachmentDownload.self,
-            AttachmentUploadRecord.self,
-        ]
-    }
-
     // MARK: - DatabasePathObservation
 
     private var darwinToken: Int32?

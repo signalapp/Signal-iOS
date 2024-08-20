@@ -1814,21 +1814,19 @@ extension %sSerializer {
         database_table_name = "model_%s" % str(clazz.name)
         swift_body += """
     public static var table: SDSTableMetadata {
-        SDSTableMetadata(collection: %s.collection(),
-                         tableName: "%s",
-                         columns: [
-""" % (
-            str(clazz.name),
-            database_table_name,
-        )
-        swift_body += ",\n".join(
+        SDSTableMetadata(
+            tableName: "%s",
+            columns: [
+""" % (database_table_name,)
+        swift_body += "\n".join(
             [
-                "        %sColumn" % str(column_property_name)
+                "                %sColumn," % str(column_property_name)
                 for column_property_name in column_property_names
             ]
         )
         swift_body += """
-        ])
+            ]
+        )
     }
 }
 """

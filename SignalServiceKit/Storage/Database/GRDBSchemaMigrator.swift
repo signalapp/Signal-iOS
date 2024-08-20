@@ -3630,7 +3630,7 @@ public class GRDBSchemaMigrator: NSObject {
             let indexUpdateSql = """
                 DELETE FROM \(FullTextSearchIndexer.contentTableName)
                 WHERE \(FullTextSearchIndexer.uniqueIdColumn) IN (\(uniqueIds.map { "\"\($0)\"" }.joined(separator: ", ")))
-                AND \(FullTextSearchIndexer.collectionColumn) = "\(TSInteraction.collection())"
+                AND \(FullTextSearchIndexer.collectionColumn) = 'TSInteraction'
             """
             try transaction.database.execute(sql: indexUpdateSql)
             return .success(())

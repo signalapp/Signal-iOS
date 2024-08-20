@@ -254,7 +254,7 @@ extension PaymentsProcessor: DatabaseChangeDelegate {
         AssertIsOnMainThread()
         owsAssertDebug(AppReadiness.isAppReady)
 
-        guard databaseChanges.didUpdateModel(collection: TSPaymentModel.collection()) else {
+        guard databaseChanges.didUpdate(tableName: TSPaymentModel.table.tableName) else {
             return
         }
 

@@ -54,11 +54,6 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 @implementation TSInteraction
 
-+ (NSString *)collection
-{
-    return @"TSInteraction";
-}
-
 - (instancetype)initWithCustomUniqueId:(NSString *)uniqueId
                              timestamp:(uint64_t)timestamp
                    receivedAtTimestamp:(uint64_t)receivedAtTimestamp

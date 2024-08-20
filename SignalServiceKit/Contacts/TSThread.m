@@ -42,11 +42,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation TSThread
 
-+ (NSString *)collection
-{
-    return @"TSThread";
-}
-
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
 {
     self = [super initWithUniqueId:uniqueId];

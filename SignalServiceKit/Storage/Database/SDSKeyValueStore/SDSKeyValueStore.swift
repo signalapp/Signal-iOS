@@ -14,16 +14,10 @@ import GRDB
 @objc
 public class SDSKeyValueStore: NSObject {
 
-    // Key-value stores use "collections" to group related keys.
-    //
-    // * In GRDB, we store each model in a separate table but
-    //   all k-v stores are in a single table.
-    //   GRDB maintains a mapping between tables and collections.
-    //   For the purposes of this mapping only we use dataStoreCollection.
-    static let dataStoreCollection = "keyvalue"
     static let tableName = "keyvalue"
 
     // By default, all reads/writes use this collection.
+    // Key-value stores use "collections" to group related keys.
     @objc
     public let collection: String
 
@@ -31,7 +25,6 @@ public class SDSKeyValueStore: NSObject {
     static let keyColumn = SDSColumnMetadata(columnName: "key", columnType: .unicodeString, isOptional: false)
     static let valueColumn = SDSColumnMetadata(columnName: "value", columnType: .blob, isOptional: false)
     public static let table = SDSTableMetadata(
-        collection: SDSKeyValueStore.dataStoreCollection,
         tableName: SDSKeyValueStore.tableName,
         columns: [
             collectionColumn,

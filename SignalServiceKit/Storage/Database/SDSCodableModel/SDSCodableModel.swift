@@ -108,11 +108,7 @@ public extension SDSCodableModel {
 
     var grdbId: NSNumber? { id.map { NSNumber(value: $0) } }
 
-    static func collection() -> String { String(describing: self) }
-
     var shouldBeSaved: Bool { true }
-
-    var transactionFinalizationKey: String { "\(Self.collection()).\(uniqueId)" }
 
     var sdsTableName: String { Self.databaseTableName }
 

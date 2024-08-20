@@ -15,10 +15,8 @@ public struct DatabaseChangesSnapshot: DatabaseChanges {
     public let interactionDeletedUniqueIds: Set<UniqueId>
     public let storyMessageDeletedUniqueIds: Set<UniqueId>
     public let tableNames: Set<String>
-    public let collections: Set<String>
     public let didUpdateInteractions: Bool
     public let didUpdateThreads: Bool
-    public let didUpdateInteractionsOrThreads: Bool
 
     public let lastError: Error?
 
@@ -31,10 +29,8 @@ public struct DatabaseChangesSnapshot: DatabaseChanges {
         interactionDeletedUniqueIds: Set<UniqueId>,
         storyMessageDeletedUniqueIds: Set<UniqueId>,
         tableNames: Set<String>,
-        collections: Set<String>,
         didUpdateInteractions: Bool,
         didUpdateThreads: Bool,
-        didUpdateInteractionsOrThreads: Bool,
         lastError: Error?
     ) {
         self.threadUniqueIds = threadUniqueIds
@@ -45,10 +41,8 @@ public struct DatabaseChangesSnapshot: DatabaseChanges {
         self.interactionDeletedUniqueIds = interactionDeletedUniqueIds
         self.storyMessageDeletedUniqueIds = storyMessageDeletedUniqueIds
         self.tableNames = tableNames
-        self.collections = collections
         self.didUpdateInteractions = didUpdateInteractions
         self.didUpdateThreads = didUpdateThreads
-        self.didUpdateInteractionsOrThreads = didUpdateInteractionsOrThreads
         self.lastError = lastError
     }
 
@@ -61,22 +55,11 @@ public struct DatabaseChangesSnapshot: DatabaseChanges {
             interactionDeletedUniqueIds.isEmpty &&
             storyMessageDeletedUniqueIds.isEmpty &&
             tableNames.isEmpty &&
-            collections.isEmpty &&
             lastError == nil
     }
 
-    private func didUpdate(collection: String) -> Bool {
-        collections.contains(collection)
-    }
-
-    public func didUpdateModel(collection: String) -> Bool {
-        return didUpdate(collection: collection)
-    }
-
-    public func didUpdate(keyValueStore: SDSKeyValueStore) -> Bool {
-        // GRDB: SDSKeyValueStore.dataStoreCollection
-        return (didUpdate(collection: keyValueStore.collection) ||
-                    didUpdate(collection: SDSKeyValueStore.dataStoreCollection))
+    public func didUpdate(tableName: String) -> Bool {
+        return tableNames.contains(tableName)
     }
 
     public func didUpdate(interaction: TSInteraction) -> Bool {

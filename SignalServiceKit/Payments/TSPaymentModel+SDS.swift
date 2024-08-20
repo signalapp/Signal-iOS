@@ -302,27 +302,28 @@ extension TSPaymentModelSerializer {
     static var interactionUniqueIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "interactionUniqueId", columnType: .unicodeString, isOptional: true) }
 
     public static var table: SDSTableMetadata {
-        SDSTableMetadata(collection: TSPaymentModel.collection(),
-                         tableName: "model_TSPaymentModel",
-                         columns: [
-        idColumn,
-        recordTypeColumn,
-        uniqueIdColumn,
-        addressUuidStringColumn,
-        createdTimestampColumn,
-        isUnreadColumn,
-        mcLedgerBlockIndexColumn,
-        mcReceiptDataColumn,
-        mcTransactionDataColumn,
-        memoMessageColumn,
-        mobileCoinColumn,
-        paymentAmountColumn,
-        paymentFailureColumn,
-        paymentStateColumn,
-        paymentTypeColumn,
-        requestUuidStringColumn,
-        interactionUniqueIdColumn
-        ])
+        SDSTableMetadata(
+            tableName: "model_TSPaymentModel",
+            columns: [
+                idColumn,
+                recordTypeColumn,
+                uniqueIdColumn,
+                addressUuidStringColumn,
+                createdTimestampColumn,
+                isUnreadColumn,
+                mcLedgerBlockIndexColumn,
+                mcReceiptDataColumn,
+                mcTransactionDataColumn,
+                memoMessageColumn,
+                mobileCoinColumn,
+                paymentAmountColumn,
+                paymentFailureColumn,
+                paymentStateColumn,
+                paymentTypeColumn,
+                requestUuidStringColumn,
+                interactionUniqueIdColumn,
+            ]
+        )
     }
 }
 

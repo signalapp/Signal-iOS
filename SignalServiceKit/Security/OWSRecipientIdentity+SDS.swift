@@ -205,18 +205,19 @@ extension OWSRecipientIdentitySerializer {
     static var verificationStateColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "verificationState", columnType: .int) }
 
     public static var table: SDSTableMetadata {
-        SDSTableMetadata(collection: OWSRecipientIdentity.collection(),
-                         tableName: "model_OWSRecipientIdentity",
-                         columns: [
-        idColumn,
-        recordTypeColumn,
-        uniqueIdColumn,
-        accountIdColumn,
-        createdAtColumn,
-        identityKeyColumn,
-        isFirstKnownKeyColumn,
-        verificationStateColumn
-        ])
+        SDSTableMetadata(
+            tableName: "model_OWSRecipientIdentity",
+            columns: [
+                idColumn,
+                recordTypeColumn,
+                uniqueIdColumn,
+                accountIdColumn,
+                createdAtColumn,
+                identityKeyColumn,
+                isFirstKnownKeyColumn,
+                verificationStateColumn,
+            ]
+        )
     }
 }
 

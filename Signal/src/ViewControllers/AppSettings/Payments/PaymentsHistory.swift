@@ -139,7 +139,7 @@ extension PaymentsHistoryDataSource: DatabaseChangeDelegate {
     public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()
 
-        guard databaseChanges.didUpdateModel(collection: TSPaymentModel.collection()) else {
+        guard databaseChanges.didUpdate(tableName: TSPaymentModel.table.tableName) else {
             return
         }
 

@@ -10,11 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSMessageContentJob
 
-+ (NSString *)collection
-{
-    return @"OWSBatchMessageProcessingJob";
-}
-
 - (instancetype)initWithEnvelopeData:(NSData *)envelopeData
                        plaintextData:(NSData *_Nullable)plaintextData
                      wasReceivedByUD:(BOOL)wasReceivedByUD

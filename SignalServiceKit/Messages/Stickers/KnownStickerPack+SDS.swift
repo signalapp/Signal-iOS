@@ -192,16 +192,17 @@ extension KnownStickerPackSerializer {
     static var referenceCountColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "referenceCount", columnType: .int64) }
 
     public static var table: SDSTableMetadata {
-        SDSTableMetadata(collection: KnownStickerPack.collection(),
-                         tableName: "model_KnownStickerPack",
-                         columns: [
-        idColumn,
-        recordTypeColumn,
-        uniqueIdColumn,
-        dateCreatedColumn,
-        infoColumn,
-        referenceCountColumn
-        ])
+        SDSTableMetadata(
+            tableName: "model_KnownStickerPack",
+            columns: [
+                idColumn,
+                recordTypeColumn,
+                uniqueIdColumn,
+                dateCreatedColumn,
+                infoColumn,
+                referenceCountColumn,
+            ]
+        )
     }
 }
 

@@ -191,16 +191,17 @@ extension InstalledStickerSerializer {
     static var contentTypeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "contentType", columnType: .unicodeString, isOptional: true) }
 
     public static var table: SDSTableMetadata {
-        SDSTableMetadata(collection: InstalledSticker.collection(),
-                         tableName: "model_InstalledSticker",
-                         columns: [
-        idColumn,
-        recordTypeColumn,
-        uniqueIdColumn,
-        emojiStringColumn,
-        infoColumn,
-        contentTypeColumn
-        ])
+        SDSTableMetadata(
+            tableName: "model_InstalledSticker",
+            columns: [
+                idColumn,
+                recordTypeColumn,
+                uniqueIdColumn,
+                emojiStringColumn,
+                infoColumn,
+                contentTypeColumn,
+            ]
+        )
     }
 }
 

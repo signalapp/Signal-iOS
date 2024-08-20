@@ -1129,7 +1129,7 @@ extension ConversationSettingsViewController: DatabaseChangeDelegate {
     public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()
 
-        if databaseChanges.didUpdateModel(collection: TSGroupMember.collection()) {
+        if databaseChanges.didUpdate(tableName: TSGroupMember.databaseTableName) {
             updateMutualGroupThreads()
             updateTableContents()
         }

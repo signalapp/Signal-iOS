@@ -45,27 +45,13 @@ class ObservedDatabaseChanges: NSObject {
         checkConcurrency()
         #endif
 
-        return (_collections.isEmpty &&
-                    _tableNames.isEmpty &&
-                    threads.isEmpty &&
-                    interactions.isEmpty &&
-                    storyMessages.isEmpty &&
-                    _lastError == nil)
-    }
-
-    // MARK: - Collections
-
-    private var _collections: Set<String> = Set()
-
-    func insert(collection: String) {
-        formUnion(collections: [collection])
-    }
-
-    func formUnion(collections: Set<String>) {
-        #if TESTABLE_BUILD
-        checkConcurrency()
-        #endif
-        _collections.formUnion(collections)
+        return (
+            _tableNames.isEmpty
+            && threads.isEmpty
+            && interactions.isEmpty
+            && storyMessages.isEmpty
+            && _lastError == nil
+        )
     }
 
     // MARK: - Table Names
@@ -417,10 +403,8 @@ extension ObservedDatabaseChanges {
         let interactionDeletedUniqueIds: Set<UniqueId> = interactions.deletedUniqueIds.keys
         let storyMessageDeletedUniqueIds: Set<UniqueId> = storyMessages.deletedUniqueIds.keys
         let tableNames: Set<String> = _tableNames
-        let collections: Set<String> = _collections
-        let didUpdateInteractions: Bool = collections.contains(TSInteraction.collection())
-        let didUpdateThreads: Bool = collections.contains(TSThread.collection())
-        let didUpdateInteractionsOrThreads: Bool = didUpdateInteractions || didUpdateThreads
+        let didUpdateInteractions: Bool = tableNames.contains(TSInteraction.table.tableName)
+        let didUpdateThreads: Bool = tableNames.contains(TSThread.table.tableName)
         let lastError = _lastError
 
         return DatabaseChangesSnapshot(
@@ -432,10 +416,8 @@ extension ObservedDatabaseChanges {
             interactionDeletedUniqueIds: interactionDeletedUniqueIds,
             storyMessageDeletedUniqueIds: storyMessageDeletedUniqueIds,
             tableNames: tableNames,
-            collections: collections,
             didUpdateInteractions: didUpdateInteractions,
             didUpdateThreads: didUpdateThreads,
-            didUpdateInteractionsOrThreads: didUpdateInteractionsOrThreads,
             lastError: lastError
         )
     }
@@ -462,14 +444,12 @@ extension ObservedDatabaseChanges {
         let interactions = self.interactions
         let threads = self.threads
         let storyMessages = self.storyMessages
-        let collections = self._collections
         let tableNames = self._tableNames
 
         lock.withLock {
             committedChanges.interactions.merge(interactions)
             committedChanges.threads.merge(threads)
             committedChanges.storyMessages.merge(storyMessages)
-            committedChanges.formUnion(collections: collections)
             committedChanges.formUnion(tableNames: tableNames)
         }
     }
@@ -512,9 +492,6 @@ extension ObservedDatabaseChanges {
                 uniqueIdColumnName: "\(interactionColumn: .uniqueId)"
             )
         )
-
-        // We need to convert db table names to "collections."
-        mapTableNamesToCollections()
     }
 
     private func mapRowIdsToUniqueIds(
@@ -569,35 +546,6 @@ extension ObservedDatabaseChanges {
         }
 
         return allUniqueIds
-    }
-
-    private static var tableNameToCollectionMap: [String: String] = {
-        var result = [String: String]()
-        for table in GRDBDatabaseStorageAdapter.tables {
-            result[table.tableName] = table.collection
-        }
-        for table in GRDBDatabaseStorageAdapter.swiftTables {
-            result[table.databaseTableName] = String(describing: table)
-        }
-        result[SDSKeyValueStore.tableName] = SDSKeyValueStore.dataStoreCollection
-        return result
-    }()
-
-    private func mapTableNamesToCollections() {
-        let tableNames = self._tableNames
-        guard tableNames.count > 0 else {
-            return
-        }
-
-        // If necessary, convert GRDB table names to "collections".
-        let tableNameToCollectionMap = Self.tableNameToCollectionMap
-        for tableName in tableNames {
-            guard let collection = tableNameToCollectionMap[tableName] else {
-                owsFailDebug("Unknown table: \(tableName)")
-                continue
-            }
-            insert(collection: collection)
-        }
     }
 }
 

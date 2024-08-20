@@ -660,36 +660,37 @@ extension TSThreadSerializer {
     static var editTargetTimestampColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "editTargetTimestamp", columnType: .int64, isOptional: true) }
 
     public static var table: SDSTableMetadata {
-        SDSTableMetadata(collection: TSThread.collection(),
-                         tableName: "model_TSThread",
-                         columns: [
-        idColumn,
-        recordTypeColumn,
-        uniqueIdColumn,
-        conversationColorNameObsoleteColumn,
-        creationDateColumn,
-        isArchivedObsoleteColumn,
-        lastInteractionRowIdColumn,
-        messageDraftColumn,
-        mutedUntilDateObsoleteColumn,
-        shouldThreadBeVisibleColumn,
-        contactPhoneNumberColumn,
-        contactUUIDColumn,
-        groupModelColumn,
-        hasDismissedOffersColumn,
-        isMarkedUnreadObsoleteColumn,
-        lastVisibleSortIdOnScreenPercentageObsoleteColumn,
-        lastVisibleSortIdObsoleteColumn,
-        messageDraftBodyRangesColumn,
-        mentionNotificationModeColumn,
-        mutedUntilTimestampObsoleteColumn,
-        allowsRepliesColumn,
-        lastSentStoryTimestampColumn,
-        nameColumn,
-        addressesColumn,
-        storyViewModeColumn,
-        editTargetTimestampColumn
-        ])
+        SDSTableMetadata(
+            tableName: "model_TSThread",
+            columns: [
+                idColumn,
+                recordTypeColumn,
+                uniqueIdColumn,
+                conversationColorNameObsoleteColumn,
+                creationDateColumn,
+                isArchivedObsoleteColumn,
+                lastInteractionRowIdColumn,
+                messageDraftColumn,
+                mutedUntilDateObsoleteColumn,
+                shouldThreadBeVisibleColumn,
+                contactPhoneNumberColumn,
+                contactUUIDColumn,
+                groupModelColumn,
+                hasDismissedOffersColumn,
+                isMarkedUnreadObsoleteColumn,
+                lastVisibleSortIdOnScreenPercentageObsoleteColumn,
+                lastVisibleSortIdObsoleteColumn,
+                messageDraftBodyRangesColumn,
+                mentionNotificationModeColumn,
+                mutedUntilTimestampObsoleteColumn,
+                allowsRepliesColumn,
+                lastSentStoryTimestampColumn,
+                nameColumn,
+                addressesColumn,
+                storyViewModeColumn,
+                editTargetTimestampColumn,
+            ]
+        )
     }
 }
 

@@ -84,11 +84,6 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-+ (NSString *)collection
-{
-    return NSStringFromClass([self class]);
-}
-
 #pragma mark -
 
 - (BOOL)shouldBeSaved
@@ -126,11 +121,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     // Do nothing.
-}
-
-- (NSString *)transactionFinalizationKey
-{
-    return [NSString stringWithFormat:@"%@.%@", self.class.collection, self.uniqueId];
 }
 
 #pragma mark - SDSRecordDelegate

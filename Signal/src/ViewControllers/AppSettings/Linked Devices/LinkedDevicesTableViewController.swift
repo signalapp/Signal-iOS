@@ -348,7 +348,7 @@ extension LinkedDevicesTableViewController: DatabaseChangeDelegate {
         AssertIsOnMainThread()
         owsAssertDebug(AppReadiness.isAppReady)
 
-        guard databaseChanges.didUpdateModel(collection: OWSDevice.collection()) else {
+        guard databaseChanges.didUpdate(tableName: OWSDevice.databaseTableName) else {
             return
         }
 

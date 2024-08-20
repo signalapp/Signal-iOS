@@ -205,18 +205,19 @@ extension OWSMessageContentJobSerializer {
     static var serverDeliveryTimestampColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "serverDeliveryTimestamp", columnType: .int64) }
 
     public static var table: SDSTableMetadata {
-        SDSTableMetadata(collection: OWSMessageContentJob.collection(),
-                         tableName: "model_OWSMessageContentJob",
-                         columns: [
-        idColumn,
-        recordTypeColumn,
-        uniqueIdColumn,
-        createdAtColumn,
-        envelopeDataColumn,
-        plaintextDataColumn,
-        wasReceivedByUDColumn,
-        serverDeliveryTimestampColumn
-        ])
+        SDSTableMetadata(
+            tableName: "model_OWSMessageContentJob",
+            columns: [
+                idColumn,
+                recordTypeColumn,
+                uniqueIdColumn,
+                createdAtColumn,
+                envelopeDataColumn,
+                plaintextDataColumn,
+                wasReceivedByUDColumn,
+                serverDeliveryTimestampColumn,
+            ]
+        )
     }
 }
 

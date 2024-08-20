@@ -46,20 +46,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
-/**
- *  Returns the collection to which the object belongs.
- *
- *  @return Key (string) identifying the collection
- */
-+ (NSString *)collection;
-
 // These methods should only ever be called within a GRDB write transaction.
 - (void)clearRowId;
 // This method is used to facilitate a database object replacement. See:
 // OWSRecoverableDecryptionPlaceholder.
 - (void)replaceRowId:(int64_t)rowId uniqueId:(NSString *)uniqueId;
-
-@property (nonatomic, readonly) NSString *transactionFinalizationKey;
 
 #pragma mark -
 

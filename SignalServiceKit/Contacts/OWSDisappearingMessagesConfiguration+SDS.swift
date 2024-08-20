@@ -180,15 +180,16 @@ extension OWSDisappearingMessagesConfigurationSerializer {
     static var enabledColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "enabled", columnType: .int) }
 
     public static var table: SDSTableMetadata {
-        SDSTableMetadata(collection: OWSDisappearingMessagesConfiguration.collection(),
-                         tableName: "model_OWSDisappearingMessagesConfiguration",
-                         columns: [
-        idColumn,
-        recordTypeColumn,
-        uniqueIdColumn,
-        durationSecondsColumn,
-        enabledColumn
-        ])
+        SDSTableMetadata(
+            tableName: "model_OWSDisappearingMessagesConfiguration",
+            columns: [
+                idColumn,
+                recordTypeColumn,
+                uniqueIdColumn,
+                durationSecondsColumn,
+                enabledColumn,
+            ]
+        )
     }
 }
 

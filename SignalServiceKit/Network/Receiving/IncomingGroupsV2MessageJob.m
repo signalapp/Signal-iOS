@@ -10,11 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation IncomingGroupsV2MessageJob
 
-+ (NSString *)collection
-{
-    return @"IncomingGroupsV2MessageJob";
-}
-
 - (instancetype)initWithEnvelopeData:(NSData *)envelopeData
                        plaintextData:(NSData *_Nullable)plaintextData
                              groupId:(NSData *_Nullable)groupId

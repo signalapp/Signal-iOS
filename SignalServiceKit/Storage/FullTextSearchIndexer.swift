@@ -141,6 +141,8 @@ extension FullTextSearchIndexer {
     static let collectionColumn = "collection"
     static let ftsContentColumn = "ftsIndexableContent"
 
+    private static let legacyCollectionName = "TSInteraction"
+
     private static func indexableContent(for message: TSMessage, tx: SDSAnyReadTransaction) -> String? {
         guard !message.isViewOnceMessage else {
             // Don't index "view-once messages".
@@ -169,7 +171,7 @@ extension FullTextSearchIndexer {
             VALUES
             (?, ?, ?)
             """,
-            arguments: [TSInteraction.collection(), message.uniqueId, ftsContent],
+            arguments: [legacyCollectionName, message.uniqueId, ftsContent],
             tx: tx
         )
     }
@@ -186,7 +188,7 @@ extension FullTextSearchIndexer {
             WHERE \(uniqueIdColumn) == ?
             AND \(collectionColumn) == ?
             """,
-            arguments: [message.uniqueId, TSInteraction.collection()],
+            arguments: [message.uniqueId, legacyCollectionName],
             tx: tx
         )
     }
@@ -241,7 +243,7 @@ extension FullTextSearchIndexer {
             let cursor = try Row.fetchCursor(tx.unwrapGrdbRead.database, sql: sql, arguments: [query])
             while let row = try cursor.next() {
                 let collection: String = row[collectionColumn]
-                guard collection == TSInteraction.collection() else {
+                guard collection == legacyCollectionName else {
                     owsFailDebug("Found something other than a message in the FTS table")
                     continue
                 }
