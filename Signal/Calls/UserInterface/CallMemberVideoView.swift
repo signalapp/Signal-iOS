@@ -11,6 +11,8 @@ import SignalServiceKit
 class CallMemberVideoView: UIView, CallMemberComposableView {
     private let type: CallMemberView.MemberType
 
+    private lazy var blurredAvatarBackgroundView = BlurredAvatarBackgroundView()
+
     init(type: CallMemberView.MemberType) {
         self.type = type
         super.init(frame: .zero)
@@ -29,7 +31,8 @@ class CallMemberVideoView: UIView, CallMemberComposableView {
             remoteVideoView.autoPinEdgesToSuperviewEdges()
             self.callViewWrapper = .remoteInIndividual(remoteVideoView)
         case .remoteInGroup:
-            break
+            self.addSubview(blurredAvatarBackgroundView)
+            self.blurredAvatarBackgroundView.autoPinEdgesToSuperviewEdges()
         }
     }
 
@@ -66,6 +69,10 @@ class CallMemberVideoView: UIView, CallMemberComposableView {
             }
         case .remoteInGroup(let context):
             guard let remoteGroupMemberDeviceState else { return }
+            self.blurredAvatarBackgroundView.update(
+                type: self.type,
+                remoteGroupMemberDeviceState: remoteGroupMemberDeviceState
+            )
             if remoteGroupMemberDeviceState.mediaKeysReceived, remoteGroupMemberDeviceState.videoTrack != nil {
                 self.isHidden = (remoteGroupMemberDeviceState.videoMuted == true)
             }
@@ -126,6 +133,7 @@ class CallMemberVideoView: UIView, CallMemberComposableView {
     func updateDimensions() {}
 
     func clearConfiguration() {
+        self.blurredAvatarBackgroundView.clear()
         if unwrapVideoView()?.superview === self { unwrapVideoView()?.removeFromSuperview() }
         callViewWrapper = nil
     }
