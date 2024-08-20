@@ -5,15 +5,15 @@
 
 import Foundation
 
-enum OWSFrontingHost: String {
-    case fastly = "github.githubassets.com"
-    case googleEgypt = "www.google.com.eg"
-    case googleUae = "www.google.ae"
-    case googleOman = "www.google.com.om"
-    case googleQatar = "www.google.com.qa"
-    case googleUzbekistan = "www.google.co.uz"
-    case googleVenezuela = "www.google.co.ve"
-    case `default` = "www.google.com"
+enum OWSFrontingHost {
+    case fastly
+    case googleEgypt
+    case googleUae
+    case googleOman
+    case googleQatar
+    case googleUzbekistan
+    case googleVenezuela
+    case `default`
 
     /// When using censorship circumvention, we pin to the fronted domain host.
     /// Adding a new domain front entails adding a corresponding OWSHTTPSecurityPolicy
@@ -36,6 +36,47 @@ enum OWSFrontingHost: String {
             return false
         }
     }
+
+    fileprivate func randomSniHeader() -> String {
+        self.sniHeaders.randomElement()!
+    }
+
+    /// None of these can be empty arrays or a crash will occur in `randomSniHeader()` above.
+    private var sniHeaders: [String] {
+        switch self {
+        case .fastly:
+            Self.fastlySniHeaders
+        case .googleEgypt:
+            Self.googleEgyptSniHeaders
+        case .googleUae:
+            Self.googleOmanSniHeaders
+        case .googleOman:
+            Self.googleOmanSniHeaders
+        case .googleQatar:
+            Self.googleQatarSniHeaders
+        case .googleUzbekistan:
+            Self.googleUzbekistanSniHeaders
+        case .googleVenezuela:
+            Self.googleVenezuelaSniHeaders
+        case .default:
+            Self.googleCommonSniHeaders
+        }
+    }
+
+    private static let fastlySniHeaders = ["github.githubassets.com", "pinterest.com", "www.redditstatic.com"]
+    private static let googleCommonSniHeaders = [
+        "www.google.com",
+        "android.clients.google.com",
+        "clients3.google.com",
+        "clients4.google.com",
+        "inbox.google.com"
+    ]
+    private static let googleEgyptSniHeaders = googleCommonSniHeaders + ["www.google.com.eg"]
+    private static let googleUaeSniHeaders = googleCommonSniHeaders + ["www.google.ae"]
+    private static let googleOmanSniHeaders = googleCommonSniHeaders + ["www.google.com.om"]
+    private static let googleQatarSniHeaders = googleCommonSniHeaders + ["www.google.com.qa"]
+    private static let googleUzbekistanSniHeaders = googleCommonSniHeaders + ["www.google.co.uz"]
+    private static let googleVenezuelaSniHeaders = googleCommonSniHeaders + ["www.google.co.ve"]
 }
 
 struct OWSCensorshipConfiguration {
@@ -90,8 +131,9 @@ struct OWSCensorshipConfiguration {
             return defaultConfiguration
         }
 
-        guard let baseUrl = URL(string: "https://\(specifiedDomain.rawValue)") else {
-            owsFailDebug("baseUrl was unexpectedly nil with specifiedDomain: \(specifiedDomain.rawValue)")
+        let sniHeader = specifiedDomain.randomSniHeader()
+        guard let baseUrl = URL(string: "https://\(sniHeader)") else {
+            owsFailDebug("baseUrl was unexpectedly nil with specifiedDomain: \(sniHeader)")
             return defaultConfiguration
         }
 
@@ -99,7 +141,7 @@ struct OWSCensorshipConfiguration {
     }
 
     static var defaultConfiguration: OWSCensorshipConfiguration {
-        let baseUrl = URL(string: "https://\(OWSFrontingHost.default.rawValue)")!
+        let baseUrl = URL(string: "https://\(OWSFrontingHost.default.randomSniHeader())")!
         return OWSCensorshipConfiguration(domainFrontBaseUrl: baseUrl, securityPolicy: OWSFrontingHost.default.securityPolicy, requiresPathPrefix: OWSFrontingHost.default.requiresPathPrefix)
 
     }
