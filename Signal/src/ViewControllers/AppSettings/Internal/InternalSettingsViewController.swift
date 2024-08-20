@@ -91,13 +91,6 @@ class InternalSettingsViewController: OWSTableViewController2 {
             }
         ))
 
-        if FeatureFlags.v2MessageAttachmentsToggle && !AttachmentFeatureFlags.readMessages {
-            debugSection.add(.actionItem(withText: "DANGER!!! Enable encrypted message attachments (and exit)") {
-                AttachmentFeatureFlags.enableV2ForMessages()
-                fatalError("Intentionally crashing to restart app")
-            })
-        }
-
         if FeatureFlags.messageBackupFileAlpha {
             debugSection.add(.actionItem(withText: "Export Message Backup proto") {
                 self.exportMessageBackupProto()

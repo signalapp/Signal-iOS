@@ -73,9 +73,6 @@ public class FeatureFlags: NSObject {
     public static let messageBackupFileAlpha = build.includes(.dev)
     public static let messageBackupFileAlphaRegistrationFlow = build.includes(.dev)
 
-    public static let v2MessageAttachmentsToggle = build.includes(.internal)
-    public static let v2MessageAttachmentsForceEnable = build.includes(.production)
-
     public static let callLinkCreate = build.includes(.dev)
 
     public static let callRaiseHandReceiveSupport = build.includes(.production)
