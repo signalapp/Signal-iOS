@@ -557,7 +557,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             }
             let callLinkCall = CallLinkCall(
                 callLink: callLink,
-                adminPasskey: nil,
+                adminPasskey: adminPasskey,
                 callLinkState: callLinkState,
                 ringRtcCall: ringRtcCall,
                 videoCaptureController: videoCaptureController
