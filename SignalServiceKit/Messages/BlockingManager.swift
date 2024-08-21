@@ -32,6 +32,7 @@ public class BlockingManager: NSObject {
         super.init()
         SwiftSingletons.register(self)
         AppReadiness.runNowOrWhenAppWillBecomeReady {
+            self.observeNotifications()
             self.loadStateOnLaunch()
         }
     }
@@ -52,7 +53,6 @@ public class BlockingManager: NSObject {
                 self.sendBlockListSyncMessage(force: false)
             }
         }
-        observeNotifications()
     }
 
     fileprivate func withCurrentState<T>(transaction: SDSAnyReadTransaction, _ handler: (State) -> T) -> T {
@@ -114,7 +114,6 @@ extension BlockingManager {
         }
     }
 
-    @objc
     public func blockedAddresses(transaction: SDSAnyReadTransaction) -> Set<SignalServiceAddress> {
         // TODO UUID - optimize this. Maybe blocking manager should store a SignalServiceAddressSet as
         // it's state instead of the two separate sets.
@@ -140,6 +139,10 @@ extension BlockingManager {
     }
 
     // MARK: Writers
+
+    public func addBlockedAci(_ aci: Aci, blockMode: BlockMode, tx: DBWriteTransaction) {
+        self.addBlockedAddress(SignalServiceAddress(aci), blockMode: blockMode, transaction: SDSDB.shimOnlyBridge(tx))
+    }
 
     public func addBlockedAddress(
         _ address: SignalServiceAddress,
@@ -396,7 +399,6 @@ extension BlockingManager {
         }
     }
 
-    @objc
     public func syncBlockList(completion: @escaping () -> Void) {
         DispatchQueue.global().async {
             self.sendBlockListSyncMessage(force: true)
@@ -467,13 +469,11 @@ extension BlockingManager {
 extension BlockingManager {
     @objc
     public static let blockListDidChange = Notification.Name("blockListDidChange")
-    @objc
     public static let blockedSyncDidComplete = Notification.Name("blockedSyncDidComplete")
 
     fileprivate func observeNotifications() {
         AssertIsOnMainThread()
 
-        NotificationCenter.default.removeObserver(self)
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(applicationDidBecomeActive),
@@ -483,7 +483,7 @@ extension BlockingManager {
     }
 
     @objc
-    fileprivate func applicationDidBecomeActive() {
+    private func applicationDidBecomeActive() {
         AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
             DispatchQueue.global().async {
                 self.sendBlockListSyncMessage(force: false)

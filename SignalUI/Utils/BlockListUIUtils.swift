@@ -241,16 +241,6 @@ public class BlockListUIUtils: Dependencies {
         completion: Completion?
     ) {
         let displayName = databaseStorage.read { tx in contactsManager.displayName(for: address, tx: tx).resolvedValue() }
-        showUnblockAddressesActionSheet([address], displayName: displayName, from: viewController, completion: completion)
-    }
-
-    private static func showUnblockAddressesActionSheet(
-        _ addresses: [SignalServiceAddress],
-        displayName: String,
-        from viewController: UIViewController,
-        completion: Completion?
-    ) {
-        owsAssertDebug(!addresses.isEmpty)
         owsAssertDebug(!displayName.isEmpty)
 
         let actionSheetTitle = String(
@@ -266,7 +256,7 @@ public class BlockListUIUtils: Dependencies {
             accessibilityIdentifier: "BlockListUIUtils.unblock",
             style: .destructive,
             handler: { _ in
-                unblockAddresses(addresses, displayName: displayName, from: viewController) { _ in
+                unblockAddress(address, displayName: displayName, from: viewController) { _ in
                     completion?(false)
                 }
             }
@@ -317,20 +307,17 @@ public class BlockListUIUtils: Dependencies {
         viewController.presentActionSheet(actionSheet)
     }
 
-    private static func unblockAddresses(
-        _ addresses: [SignalServiceAddress],
+    private static func unblockAddress(
+        _ address: SignalServiceAddress,
         displayName: String,
         from viewController: UIViewController,
         completion: ((ActionSheetAction) -> Void)?
     ) {
-        owsAssertDebug(!addresses.isEmpty)
+        owsAssertDebug(address.isValid)
         owsAssertDebug(!displayName.isEmpty)
 
         databaseStorage.write { tx in
-            for address in addresses {
-                owsAssertDebug(address.isValid)
-                self.blockingManager.removeBlockedAddress(address, wasLocallyInitiated: true, transaction: tx)
-            }
+            self.blockingManager.removeBlockedAddress(address, wasLocallyInitiated: true, transaction: tx)
         }
 
         let actionSheetTitleFormat = OWSLocalizedString(

@@ -158,10 +158,10 @@ private extension ConversationViewController {
         // that below so that we can surface an error to the user
         // if leaving the group fails.
         databaseStorage.write { transaction in
-            blockingManager.addBlockedAddress(
-                SignalServiceAddress(aci),
+            blockingManager.addBlockedAci(
+                aci,
                 blockMode: .localShouldNotLeaveGroups,
-                transaction: transaction
+                tx: transaction.asV2Write
             )
         }
         leaveAndSoftDeleteThread(messageRequestResponseType: .delete)
@@ -181,10 +181,10 @@ private extension ConversationViewController {
             } else {
                 owsFailDebug("Invalid thread.")
             }
-            self.blockingManager.addBlockedAddress(
-                SignalServiceAddress(aci),
+            self.blockingManager.addBlockedAci(
+                aci,
                 blockMode: .localShouldNotLeaveGroups,
-                transaction: transaction
+                tx: transaction.asV2Write
             )
         }
         leaveAndSoftDeleteThread(messageRequestResponseType: .blockAndDelete)
