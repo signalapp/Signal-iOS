@@ -102,9 +102,9 @@ class MockClient {
             registrationId: UInt32(bitPattern: bobMockClient.registrationId),
             deviceId: bobMockClient.deviceId,
             prekeyId: bobPreKey.id,
-            prekey: bobPreKey.publicKey,
+            prekey: try! bobPreKey.publicKey(),
             signedPrekeyId: bobSignedPreKey.id,
-            signedPrekey: bobSignedPreKey.publicKey,
+            signedPrekey: try! bobSignedPreKey.publicKey(),
             signedPrekeySignature: bobSignedPreKey.signature,
             identity: bobIdentityKey.identityKey
         )

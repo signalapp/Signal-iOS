@@ -106,7 +106,7 @@ public struct KyberPreKeyRecord: Codable {
 
         let record = try LibSignalClient.KyberPreKeyRecord(bytes: keyData)
         self.id = record.id
-        self.keyPair = record.keyPair
+        self.keyPair = try record.keyPair()
         self.signature = Data(record.signature)
         self.generatedAt = Date(millisecondsSince1970: record.timestamp)
         self.isLastResort = isLastResort
@@ -335,7 +335,7 @@ extension SSKKyberPreKeyStore: LibSignalClient.KyberPreKeyStore {
     ) throws {
         let record = SignalServiceKit.KyberPreKeyRecord(
             id,
-            keyPair: record.keyPair,
+            keyPair: try record.keyPair(),
             signature: Data(record.signature),
             generatedAt: Date(millisecondsSince1970: record.timestamp),
             isLastResort: false
@@ -403,10 +403,10 @@ extension SSKKyberPreKeyStore: LibSignalClient.KyberPreKeyStore {
 }
 
 extension LibSignalClient.KyberPreKeyRecord {
-    func asSSKLastResortRecord() -> SignalServiceKit.KyberPreKeyRecord {
+    func asSSKLastResortRecord() throws -> SignalServiceKit.KyberPreKeyRecord {
         return SignalServiceKit.KyberPreKeyRecord(
             self.id,
-            keyPair: self.keyPair,
+            keyPair: try self.keyPair(),
             signature: Data(self.signature),
             generatedAt: Date(millisecondsSince1970: self.timestamp),
             isLastResort: true

@@ -40,7 +40,7 @@ extension SSKSignedPreKeyStore: LibSignalClient.SignedPreKeyStore {
     }
 
     public func storeSignedPreKey(_ record: LibSignalClient.SignedPreKeyRecord, id: UInt32, context: StoreContext) throws {
-        let sskRecord = record.asSSKRecord()
+        let sskRecord = try record.asSSKRecord()
 
         self.storeSignedPreKey(Int32(bitPattern: id),
                                signedPreKeyRecord: sskRecord,
@@ -49,10 +49,10 @@ extension SSKSignedPreKeyStore: LibSignalClient.SignedPreKeyStore {
 }
 
 extension LibSignalClient.SignedPreKeyRecord {
-    func asSSKRecord() -> SignalServiceKit.SignedPreKeyRecord {
+    func asSSKRecord() throws -> SignalServiceKit.SignedPreKeyRecord {
         let keyPair = IdentityKeyPair(
-            publicKey: self.publicKey,
-            privateKey: self.privateKey
+            publicKey: try self.publicKey(),
+            privateKey: try self.privateKey()
         )
 
         return SignalServiceKit.SignedPreKeyRecord(

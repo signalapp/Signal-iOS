@@ -21,7 +21,10 @@ extension SSKPreKeyStore: LibSignalClient.PreKeyStore {
     }
 
     public func storePreKey(_ record: LibSignalClient.PreKeyRecord, id: UInt32, context: StoreContext) throws {
-        let keyPair = IdentityKeyPair(publicKey: record.publicKey, privateKey: record.privateKey)
+        let keyPair = IdentityKeyPair(
+            publicKey: try record.publicKey(),
+            privateKey: try record.privateKey()
+        )
         self.storePreKey(Int32(bitPattern: id),
                          preKeyRecord: SignalServiceKit.PreKeyRecord(id: Int32(bitPattern: id),
                                                                      keyPair: ECKeyPair(keyPair),
