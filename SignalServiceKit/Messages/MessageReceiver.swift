@@ -964,6 +964,16 @@ public final class MessageReceiver: Dependencies {
                     ownerType: .message,
                     tx: tx.asV2Write
                 )
+            } catch let error as LinkPreviewError {
+                switch error {
+                case .invalidPreview:
+                    // Just drop the link preview, but keep the message
+                    Logger.info("Dropping invalid link preview; keeping message")
+                    linkPreviewBuilder = nil
+                case .noPreview, .fetchFailure, .featureDisabled:
+                    owsFailDebug("Invalid link preview error on incoming proto")
+                    linkPreviewBuilder = nil
+                }
             } catch {
                 Logger.error("linkPreviewError: \(error)")
                 return nil

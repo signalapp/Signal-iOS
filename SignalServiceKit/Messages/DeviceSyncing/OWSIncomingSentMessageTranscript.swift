@@ -224,14 +224,30 @@ public class OWSIncomingSentMessageTranscript: Dependencies, SentMessageTranscri
             }
         }
 
-        let makeLinkPreviewBuilder = { [dataMessage] tx in
-            try dataMessage.preview.first.map { linkPreview in
-                return try DependenciesBridge.shared.linkPreviewManager.validateAndBuildLinkPreview(
-                    from: linkPreview,
-                    dataMessage: dataMessage,
-                    ownerType: .message,
-                    tx: tx
-                )
+        let makeLinkPreviewBuilder = { [dataMessage] tx -> OwnedAttachmentBuilder<OWSLinkPreview>? in
+            if let linkPreview = dataMessage.preview.first {
+                do {
+                    return try DependenciesBridge.shared.linkPreviewManager.validateAndBuildLinkPreview(
+                        from: linkPreview,
+                        dataMessage: dataMessage,
+                        ownerType: .message,
+                        tx: tx
+                    )
+                } catch let error as LinkPreviewError {
+                    switch error {
+                    case .invalidPreview:
+                        // Just drop the link preview, but keep the message
+                        Logger.info("Dropping invalid link preview; keeping message")
+                       return nil
+                    case .noPreview, .fetchFailure, .featureDisabled:
+                        owsFailDebug("Invalid link preview error on incoming proto")
+                        return nil
+                    }
+                } catch let error {
+                    throw error
+                }
+            } else {
+                return nil
             }
         }
 

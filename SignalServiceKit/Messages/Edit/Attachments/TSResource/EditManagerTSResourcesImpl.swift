@@ -168,13 +168,28 @@ public class EditManagerTSResourcesImpl: EditManagerTSResources {
                 tx: tx
             )
         case .proto(let preview, let dataMessage):
-            let linkPreviewBuilder = try linkPreviewManager.validateAndBuildLinkPreview(
-                from: preview,
-                dataMessage: dataMessage,
-                builder: builder,
-                ownerType: .message,
-                tx: tx
-            )
+            let linkPreviewBuilder: OwnedAttachmentBuilder<OWSLinkPreview>
+            do {
+                linkPreviewBuilder = try linkPreviewManager.validateAndBuildLinkPreview(
+                    from: preview,
+                    dataMessage: dataMessage,
+                    builder: builder,
+                    ownerType: .message,
+                    tx: tx
+                )
+            } catch let error as LinkPreviewError {
+                switch error {
+                case .invalidPreview:
+                    // Just drop the link preview, but keep the message
+                    Logger.info("Dropping invalid link preview; keeping message edit")
+                    return
+                case .noPreview, .fetchFailure, .featureDisabled:
+                    owsFailDebug("Invalid link preview error on incoming proto")
+                    return
+                }
+            } catch let error {
+                throw error
+            }
             tsMessageStore.update(latestRevision, with: linkPreviewBuilder.info, tx: tx)
             try linkPreviewBuilder.finalize(
                 owner: .messageLinkPreview(.init(
