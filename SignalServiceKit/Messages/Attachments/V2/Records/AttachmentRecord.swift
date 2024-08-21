@@ -28,10 +28,10 @@ extension Attachment {
         var transitDigestSHA256Ciphertext: Data?
         var lastTransitDownloadAttemptTimestamp: UInt64?
         let mediaName: String?
-        let mediaTierCdnNumber: UInt32?
+        var mediaTierCdnNumber: UInt32?
         var mediaTierUnencryptedByteCount: UInt32?
-        let mediaTierUploadEra: String?
-        let lastMediaTierDownloadAttemptTimestamp: UInt64?
+        var mediaTierUploadEra: String?
+        var lastMediaTierDownloadAttemptTimestamp: UInt64?
         let thumbnailCdnNumber: UInt32?
         let thumbnailUploadEra: String?
         let lastThumbnailDownloadAttemptTimestamp: UInt64?

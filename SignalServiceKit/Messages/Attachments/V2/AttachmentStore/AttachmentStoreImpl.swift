@@ -708,6 +708,33 @@ extension AttachmentStoreImpl: AttachmentUploadStore {
         try record.update(db)
     }
 
+    public func markUploadedToMediaTier(
+        attachmentStream: AttachmentStream,
+        mediaTierInfo: Attachment.MediaTierInfo,
+        tx: DBWriteTransaction
+    ) throws {
+        try markUploadedToMediaTier(
+            attachmentStream: attachmentStream,
+            mediaTierInfo: mediaTierInfo,
+            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database,
+            tx: tx
+        )
+    }
+
+    func markUploadedToMediaTier(
+        attachmentStream: AttachmentStream,
+        mediaTierInfo: Attachment.MediaTierInfo,
+        db: GRDB.Database,
+        tx: DBWriteTransaction
+    ) throws {
+        var record = Attachment.Record(attachment: attachmentStream.attachment)
+        record.mediaTierCdnNumber = mediaTierInfo.cdnNumber
+        record.mediaTierUploadEra = mediaTierInfo.uploadEra
+        record.mediaTierUnencryptedByteCount = mediaTierInfo.unencryptedByteCount
+        record.lastMediaTierDownloadAttemptTimestamp = mediaTierInfo.lastDownloadAttemptTimestamp
+        try record.update(db)
+    }
+
     public func upsert(record: AttachmentUploadRecord, tx: DBWriteTransaction) throws {
         try upsert(
             record: record,

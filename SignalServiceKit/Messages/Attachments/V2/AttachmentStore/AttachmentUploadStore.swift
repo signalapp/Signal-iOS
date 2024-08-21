@@ -15,6 +15,13 @@ public protocol AttachmentUploadStore: AttachmentStore {
         tx: DBWriteTransaction
     ) throws
 
+    /// Mark the attachment as having been uploaded to the media tier.
+    func markUploadedToMediaTier(
+        attachmentStream: AttachmentStream,
+        mediaTierInfo: Attachment.MediaTierInfo,
+        tx: DBWriteTransaction
+    ) throws
+
     func upsert(
         record: AttachmentUploadRecord,
         tx: DBWriteTransaction

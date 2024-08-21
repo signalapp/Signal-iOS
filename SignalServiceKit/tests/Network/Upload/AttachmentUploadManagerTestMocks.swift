@@ -102,6 +102,12 @@ class AttachmentUploadStoreMock: AttachmentStoreMock, AttachmentUploadStore {
         uploadedAttachments.append(attachmentStream)
     }
 
+    func markUploadedToMediaTier(
+        attachmentStream: AttachmentStream,
+        mediaTierInfo: Attachment.MediaTierInfo,
+        tx: DBWriteTransaction
+    ) throws {}
+
     func upsert(record: AttachmentUploadRecord, tx: DBWriteTransaction) throws { }
 
     func removeRecord(for attachmentId: Attachment.IDType, tx: DBWriteTransaction) throws {}
