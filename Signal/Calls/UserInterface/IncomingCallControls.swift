@@ -59,7 +59,6 @@ class IncomingCallControls: UIView {
             iconName: "video-slash-fill-28",
             // genstrings doesn't expand '\n' in a comment, so we don't need to escape the backslash.
             label: OWSLocalizedString("CALL_CONTROLS_INCOMING_ANSWER_WITHOUT_VIDEO", comment: "Label for button shown when an incoming call rings. This particular label has room for two lines; you may insert a manual linebreak with '\n' as long as both lines are 15 characters or shorter (8 fullwidth characters or shorter), as in the English translation."),
-            unselectedBackgroundColor: .ows_whiteAlpha40,
             accessibilityLabel: accessibilityLabel,
             action: { self.didAcceptCall(false) }
         )
@@ -117,7 +116,7 @@ class IncomingCallControls: UIView {
     private func createButton(
         iconName: String,
         label: String? = nil,
-        unselectedBackgroundColor: UIColor,
+        unselectedBackgroundColor: UIColor? = nil, // default if nil
         accessibilityLabel: String? = nil,
         action: @escaping () -> Void
     ) -> CallButton {
@@ -126,8 +125,9 @@ class IncomingCallControls: UIView {
         button.alpha = 0.9
         button.text = label
         button.accessibilityLabel = accessibilityLabel
-        button.unselectedBackgroundColor = unselectedBackgroundColor
-        button.selectedIconColor = .ows_gray75
+        if let unselectedBackgroundColor {
+            button.unselectedBackgroundColor = unselectedBackgroundColor
+        }
         return button
     }
 }

@@ -457,8 +457,6 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         button.addTarget(self, action: action, for: .touchUpInside)
         button.setContentHuggingHorizontalHigh()
         button.setCompressionResistanceHorizontalLow()
-        button.unselectedBackgroundColor = .ows_whiteAlpha40
-        button.selectedIconColor = .ows_gray75
         return button
     }
 
