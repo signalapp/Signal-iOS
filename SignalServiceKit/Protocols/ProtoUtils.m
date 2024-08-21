@@ -62,26 +62,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-+ (nullable NSString *)parseProtoE164:(nullable NSString *)value name:(NSString *)name
-{
-    if (value == nil) {
-        OWSFailDebug(@"%@ was unexpectedly nil.", name);
-        return nil;
-    }
-    if (value.length == 0) {
-        OWSFailDebug(@"%@ was unexpectedly empty.", name);
-        return nil;
-    }
-    if (!value.isStructurallyValidE164) {
-        if (SSKDebugFlags.internalLogging) {
-            OWSFailDebug(@"%@ was unexpectedly invalid: %@.", name, value);
-        }
-        OWSFailDebug(@"%@ was unexpectedly invalid.", name);
-        return nil;
-    }
-    return value;
-}
-
 @end
 
 NS_ASSUME_NONNULL_END

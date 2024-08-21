@@ -106,7 +106,6 @@ extension FeatureFlags {
 /// development should go here, rather than cluttering up FeatureFlags.
 @objc(SSKDebugFlags)
 public class DebugFlags: NSObject {
-    @objc
     public static let internalLogging = build.includes(.internal)
 
     public static let betaLogging = build.includes(.beta)
