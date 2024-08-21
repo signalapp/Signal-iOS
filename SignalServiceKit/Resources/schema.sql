@@ -2035,3 +2035,15 @@ CREATE
         ON "AttachmentUploadRecord"("attachmentId"
 )
 ;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "BlockedRecipient" (
+            "recipientId" INTEGER PRIMARY KEY REFERENCES "model_SignalRecipient"("id"
+        )
+            ON DELETE
+                CASCADE
+                    ON UPDATE
+                        CASCADE
+)
+;

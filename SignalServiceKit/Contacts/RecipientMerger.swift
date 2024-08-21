@@ -94,6 +94,7 @@ struct MergedRecipient {
 
 class RecipientMergerImpl: RecipientMerger {
     private let aciSessionStore: SignalSessionStore
+    private let blockedRecipientStore: any BlockedRecipientStore
     private let identityManager: OWSIdentityManager
     private let observers: Observers
     private let recipientDatabaseTable: RecipientDatabaseTable
@@ -108,6 +109,7 @@ class RecipientMergerImpl: RecipientMerger {
     /// order in which they are provided.
     init(
         aciSessionStore: SignalSessionStore,
+        blockedRecipientStore: any BlockedRecipientStore,
         identityManager: OWSIdentityManager,
         observers: Observers,
         recipientDatabaseTable: RecipientDatabaseTable,
@@ -115,6 +117,7 @@ class RecipientMergerImpl: RecipientMerger {
         storageServiceManager: StorageServiceManager
     ) {
         self.aciSessionStore = aciSessionStore
+        self.blockedRecipientStore = blockedRecipientStore
         self.identityManager = identityManager
         self.observers = observers
         self.recipientDatabaseTable = recipientDatabaseTable
@@ -747,6 +750,7 @@ class RecipientMergerImpl: RecipientMerger {
                 // TODO: Should we clean up any more state related to the discarded recipient?
                 aciSessionStore.mergeRecipient(affectedRecipient, into: mergedRecipient, tx: tx)
                 identityManager.mergeRecipient(affectedRecipient, into: mergedRecipient, tx: tx)
+                blockedRecipientStore.mergeRecipientId(affectedRecipient.id!, into: mergedRecipient.id!, tx: tx)
                 recipientDatabaseTable.removeRecipient(affectedRecipient, transaction: tx)
             } else if existingRecipients.contains(where: { $0.uniqueId == affectedRecipient.uniqueId }) {
                 recipientDatabaseTable.updateRecipient(affectedRecipient, transaction: tx)

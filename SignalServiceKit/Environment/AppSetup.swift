@@ -146,7 +146,8 @@ public class AppSetup {
             keyValueStoreFactory: keyValueStoreFactory,
             recipientIdFinder: recipientIdFinder
         )
-        let blockingManager = BlockingManager()
+        let blockedRecipientStore = BlockedRecipientStoreImpl()
+        let blockingManager = BlockingManager(blockedRecipientStore: blockedRecipientStore)
         let dateProvider = testDependencies.dateProvider ?? Date.provider
         let earlyMessageManager = EarlyMessageManager()
         let messageProcessor = MessageProcessor()
@@ -634,6 +635,7 @@ public class AppSetup {
         let authorMergeHelper = AuthorMergeHelper(keyValueStoreFactory: keyValueStoreFactory)
         let recipientMerger = RecipientMergerImpl(
             aciSessionStore: aciProtocolStore.sessionStore,
+            blockedRecipientStore: blockedRecipientStore,
             identityManager: identityManager,
             observers: RecipientMergerImpl.buildObservers(
                 authorMergeHelper: authorMergeHelper,

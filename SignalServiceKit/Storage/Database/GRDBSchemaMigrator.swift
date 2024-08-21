@@ -281,6 +281,7 @@ public class GRDBSchemaMigrator: NSObject {
         case migrateStoryMessageTSAttachments2
         case addBackupAttachmentDownloadQueue
         case createAttachmentUploadRecordTable
+        case addBlockedRecipient
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -342,7 +343,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 81
+    public static let grdbSchemaVersionLatest: UInt = 82
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -3305,6 +3306,12 @@ public class GRDBSchemaMigrator: NSObject {
             return .success(())
         }
 
+        migrator.registerMigration(.addBlockedRecipient) { tx in
+            try migrateBlockedRecipients(tx: tx)
+
+            return .success(())
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -4359,6 +4366,165 @@ public class GRDBSchemaMigrator: NSObject {
         )
 
         return .success(())
+    }
+
+    static func migrateBlockedRecipients(tx: GRDBWriteTransaction) throws {
+        try tx.database.create(table: "BlockedRecipient") { table in
+            table.column("recipientId", .integer)
+                .primaryKey()
+                .references("model_SignalRecipient", column: "id", onDelete: .cascade, onUpdate: .cascade)
+        }
+
+        let blockedAciStrings = try fetchAndClearBlockedIdentifiers(key: "kOWSBlockingManager_BlockedUUIDsKey", tx: tx).compactMap {
+            return UUID(uuidString: $0)?.uuidString
+        }
+        let blockedPhoneNumbers = Set(try fetchAndClearBlockedIdentifiers(key: "kOWSBlockingManager_BlockedPhoneNumbersKey", tx: tx)).filter {
+            return !$0.isEmpty
+        }
+        var blockedRecipientIds = Set<Int64>()
+        var outdatedRecipientIds = Set<Int64>()
+
+        for blockedAciString in blockedAciStrings {
+            let recipientId = try fetchOrCreateRecipientV1(aciString: blockedAciString, tx: tx)
+            blockedRecipientIds.insert(recipientId)
+        }
+
+        for blockedPhoneNumber in blockedPhoneNumbers {
+            let recipientId = try fetchOrCreateRecipientV1(phoneNumber: blockedPhoneNumber, tx: tx)
+            if blockedRecipientIds.contains(recipientId) {
+                // They're already blocked by their ACI.
+                continue
+            }
+            let isBlocked = try { () -> Bool in
+                if let aciString = try fetchRecipientAciString(recipientId: recipientId, tx: tx) {
+                    return try isPhoneNumberVisible(phoneNumber: blockedPhoneNumber, aciString: aciString, tx: tx)
+                } else {
+                    return true
+                }
+            }()
+            guard isBlocked else {
+                // They're only blocked by phone number.
+                outdatedRecipientIds.insert(recipientId)
+                continue
+            }
+            blockedRecipientIds.insert(recipientId)
+        }
+
+        for blockedRecipientId in blockedRecipientIds {
+            try tx.database.execute(
+                sql: "INSERT INTO BlockedRecipient (recipientId) VALUES (?)",
+                arguments: [blockedRecipientId]
+            )
+        }
+
+        for outdatedRecipientId in outdatedRecipientIds {
+            guard let recipientUniqueId = try fetchRecipientUniqueId(recipientId: outdatedRecipientId, tx: tx) else {
+                Logger.warn("Couldn't fetch uniqueId for just-fetched recipient.")
+                continue
+            }
+            guard UUID(uuidString: recipientUniqueId) != nil else {
+                Logger.warn("Couldn't validate uniqueId for just-fetched recipient.")
+                continue
+            }
+            do {
+                // This assertion should never fail. If `.updated.rawValue` ever changes,
+                // don't change `updatedValue`.
+                let updatedValue = 1
+                assert(updatedValue == StorageServiceOperation.State.ChangeState.updated.rawValue)
+                try tx.database.execute(
+                    sql: """
+                    UPDATE "keyvalue" SET "value" = json_set("value", ?, ?) WHERE "collection" IS 'kOWSStorageServiceOperation_IdentifierMap' AND "key" IS 'state'
+                    """,
+                    arguments: ["$.accountIdChangeMap.\(recipientUniqueId)", updatedValue]
+                )
+            } catch DatabaseError.SQLITE_ERROR {
+                // This likely means that we've never used Storage Service. In that case,
+                // we don't need to apply these changes.
+            }
+        }
+    }
+
+    private static func isPhoneNumberVisible(phoneNumber: String, aciString: String, tx: GRDBWriteTransaction) throws -> Bool {
+        let isSystemContact = try Int.fetchOne(
+            tx.database,
+            sql: "SELECT 1 FROM model_SignalAccount WHERE recipientPhoneNumber IS ?",
+            arguments: [phoneNumber]
+        ) != nil
+        if isSystemContact {
+            return true
+        }
+        let isPhoneNumberHidden = try Int.fetchOne(
+            tx.database,
+            sql: """
+            SELECT 1 FROM model_OWSUserProfile WHERE recipientUUID IS ? AND (
+                isPhoneNumberShared IS FALSE
+                OR (isPhoneNumberShared IS NULL AND profileName IS NOT NULL)
+            )
+            """,
+            arguments: [aciString]
+        ) != nil
+        return !isPhoneNumberHidden
+    }
+
+    private static func fetchAndClearBlockedIdentifiers(key: String, tx: GRDBWriteTransaction) throws -> [String] {
+        let collection = "kOWSBlockingManager_BlockedPhoneNumbersCollection"
+        let dataValue = try Data.fetchOne(
+            tx.database,
+            sql: "SELECT value FROM keyvalue WHERE collection IS ? AND key IS ?",
+            arguments: [collection, key]
+        )
+        try tx.database.execute(sql: "DELETE FROM keyvalue WHERE collection IS ? AND key IS ?", arguments: [collection, key])
+        guard let dataValue else {
+            return []
+        }
+        do {
+            let blockedIdentifiers = try NSKeyedUnarchiver.unarchivedObject(ofClasses: [NSArray.self, NSString.self], from: dataValue)
+            return (blockedIdentifiers as? [String]) ?? []
+        } catch {
+            Logger.warn("Couldn't decode blocked identifiers.")
+            return []
+        }
+    }
+
+    private static func fetchOrCreateRecipientV1(aciString: String, tx: GRDBWriteTransaction) throws -> SignalRecipient.RowId {
+        let db = tx.database
+        let existingRecipientId = try Int64.fetchOne(db, sql: "SELECT id FROM model_SignalRecipient WHERE recipientUUID IS ?", arguments: [aciString])
+        if let existingRecipientId {
+            return existingRecipientId
+        }
+        return try createRecipientV1(aciString: aciString, phoneNumber: nil, tx: tx)
+    }
+
+    private static func fetchOrCreateRecipientV1(phoneNumber: String, tx: GRDBWriteTransaction) throws -> SignalRecipient.RowId {
+        let db = tx.database
+        let existingRecipientId = try Int64.fetchOne(db, sql: "SELECT id FROM model_SignalRecipient WHERE recipientPhoneNumber IS ?", arguments: [phoneNumber])
+        if let existingRecipientId {
+            return existingRecipientId
+        }
+        return try createRecipientV1(aciString: nil, phoneNumber: phoneNumber, tx: tx)
+    }
+
+    private static func createRecipientV1(aciString: String?, phoneNumber: String?, tx: GRDBWriteTransaction) throws -> SignalRecipient.RowId {
+        try tx.database.execute(
+            sql: """
+            INSERT INTO "model_SignalRecipient" ("recordType", "uniqueId", "devices", "recipientPhoneNumber", "recipientUUID") VALUES (31, ?, ?, ?, ?)
+            """,
+            arguments: [
+                UUID().uuidString,
+                NSKeyedArchiver.archivedData(withRootObject: NSOrderedSet(array: [] as [NSNumber]), requiringSecureCoding: true),
+                phoneNumber,
+                aciString,
+            ]
+        )
+        return tx.database.lastInsertedRowID
+    }
+
+    private static func fetchRecipientAciString(recipientId: SignalRecipient.RowId, tx: GRDBWriteTransaction) throws -> String? {
+        return try String.fetchOne(tx.database, sql: "SELECT recipientUUID FROM model_SignalRecipient WHERE id = ?", arguments: [recipientId])
+    }
+
+    private static func fetchRecipientUniqueId(recipientId: SignalRecipient.RowId, tx: GRDBWriteTransaction) throws -> String? {
+        return try String.fetchOne(tx.database, sql: "SELECT uniqueId FROM model_SignalRecipient WHERE id = ?", arguments: [recipientId])
     }
 }
 

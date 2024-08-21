@@ -25,11 +25,16 @@ public enum BlockMode: UInt {
 // MARK: -
 
 public class BlockingManager: NSObject {
+    private let blockedRecipientStore: any BlockedRecipientStore
+
     private let lock = UnfairLock()
     private var state = State()
 
-    public override init() {
+    init(blockedRecipientStore: any BlockedRecipientStore) {
+        self.blockedRecipientStore = blockedRecipientStore
+
         super.init()
+
         SwiftSingletons.register(self)
         AppReadiness.runNowOrWhenAppWillBecomeReady {
             self.observeNotifications()
@@ -57,7 +62,7 @@ public class BlockingManager: NSObject {
 
     fileprivate func withCurrentState<T>(transaction: SDSAnyReadTransaction, _ handler: (State) -> T) -> T {
         lock.withLock {
-            state.reloadIfNecessary(transaction)
+            state.reloadIfNecessary(blockedRecipientStore: self.blockedRecipientStore, tx: transaction)
             return handler(state)
         }
     }
@@ -65,9 +70,9 @@ public class BlockingManager: NSObject {
     @discardableResult
     fileprivate func updateCurrentState(transaction: SDSAnyWriteTransaction, wasLocallyInitiated: Bool, _ handler: (inout State) -> Void) -> Bool {
         lock.withLock {
-            state.reloadIfNecessary(transaction)
+            state.reloadIfNecessary(blockedRecipientStore: self.blockedRecipientStore, tx: transaction)
             handler(&state)
-            let didUpdate = state.persistIfNecessary(transaction)
+            let didUpdate = state.persistIfNecessary(blockedRecipientStore: self.blockedRecipientStore, tx: transaction)
             if didUpdate {
                 if !wasLocallyInitiated {
                     State.setLastSyncedChangeToken(state.changeToken, transaction: transaction)
@@ -96,15 +101,11 @@ extension BlockingManager {
         guard !address.isLocalAddress else {
             return false
         }
-        return withCurrentState(transaction: transaction) { state in
-            if let phoneNumber = address.phoneNumber, state.blockedPhoneNumbers.contains(phoneNumber) {
-                return true
-            }
-            if let aci = address.serviceId as? Aci, state.blockedAcis.contains(aci) {
-                return true
-            }
+        let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
+        guard let recipientId = recipientDatabaseTable.fetchRecipient(address: address, tx: transaction.asV2Read)?.id else {
             return false
         }
+        return withCurrentState(transaction: transaction) { $0.blockedRecipientIds.contains(recipientId) }
     }
 
     @objc
@@ -115,21 +116,12 @@ extension BlockingManager {
     }
 
     public func blockedAddresses(transaction: SDSAnyReadTransaction) -> Set<SignalServiceAddress> {
-        // TODO UUID - optimize this. Maybe blocking manager should store a SignalServiceAddressSet as
-        // it's state instead of the two separate sets.
-        withCurrentState(transaction: transaction) { state in
-            var addressSet = Set<SignalServiceAddress>()
-            state.blockedPhoneNumbers.forEach {
-                let address = SignalServiceAddress.legacyAddress(serviceId: nil, phoneNumber: $0)
-                if address.isValid {
-                    addressSet.insert(address)
-                }
-            }
-            state.blockedAcis.forEach {
-                addressSet.insert(SignalServiceAddress($0))
-            }
-            return addressSet
-        }
+        let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
+
+        let blockedRecipientIds = withCurrentState(transaction: transaction) { $0.blockedRecipientIds }
+        return Set(blockedRecipientIds.compactMap {
+            return recipientDatabaseTable.fetchRecipient(rowId: $0, tx: transaction.asV2Read)?.address
+        })
     }
 
     public func blockedGroupModels(transaction: SDSAnyReadTransaction) -> [TSGroupModel] {
@@ -149,17 +141,23 @@ extension BlockingManager {
         blockMode: BlockMode,
         transaction tx: SDSAnyWriteTransaction
     ) {
-        guard address.isValid else {
-            owsFailDebug("Invalid address: \(address).")
-            return
-        }
         guard !address.isLocalAddress else {
             owsFailDebug("Cannot block the local address")
             return
         }
 
+        let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+        let recipient: SignalRecipient
+        if let serviceId = address.serviceId {
+            recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx.asV2Write)
+        } else if let phoneNumber = E164(address.phoneNumber) {
+            recipient = recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber, tx: tx.asV2Write)
+        } else {
+            owsFailDebug("Invalid address: \(address).")
+            return
+        }
         updateCurrentState(transaction: tx, wasLocallyInitiated: blockMode.locallyInitiated) { state in
-            guard state.addBlockedAddress(address) else {
+            guard state.addBlockedRecipientId(recipient.id!) else {
                 return
             }
 
@@ -175,13 +173,9 @@ extension BlockingManager {
             StoryManager.removeAddressFromAllPrivateStoryThreads(address, tx: tx)
 
             // Insert an info message that we blocked this user.
-            let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
             let threadStore = DependenciesBridge.shared.threadStore
             let interactionStore = DependenciesBridge.shared.interactionStore
-            if
-                let recipient = recipientDatabaseTable.fetchRecipient(address: address, tx: tx.asV2Read),
-                let contactThread = threadStore.fetchContactThread(recipient: recipient, tx: tx.asV2Read)
-            {
+            if let contactThread = threadStore.fetchContactThread(recipient: recipient, tx: tx.asV2Read) {
                 interactionStore.insertInteraction(
                     TSInfoMessage(thread: contactThread, messageType: .blockedOtherUser),
                     tx: tx.asV2Write
@@ -204,8 +198,13 @@ extension BlockingManager {
             return
         }
 
+        let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
+        guard let recipient = recipientDatabaseTable.fetchRecipient(address: address, tx: tx.asV2Read) else {
+            // No need to unblock non-existent recipients. They can't possibly be blocked.
+            return
+        }
         updateCurrentState(transaction: tx, wasLocallyInitiated: wasLocallyInitiated) { state in
-            guard state.removeBlockedAddress(address) else {
+            guard state.removeBlockedRecipientId(recipient.id!) else {
                 return
             }
 
@@ -214,13 +213,9 @@ extension BlockingManager {
             }
 
             // Insert an info message that we unblocked this user.
-            let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
             let threadStore = DependenciesBridge.shared.threadStore
             let interactionStore = DependenciesBridge.shared.interactionStore
-            if
-                let recipient = recipientDatabaseTable.fetchRecipient(address: address, tx: tx.asV2Read),
-                let contactThread = threadStore.fetchContactThread(recipient: recipient, tx: tx.asV2Read)
-            {
+            if let contactThread = threadStore.fetchContactThread(recipient: recipient, tx: tx.asV2Read) {
                 interactionStore.insertInteraction(
                     TSInfoMessage(thread: contactThread, messageType: .unblockedOtherUser),
                     tx: tx.asV2Write
@@ -395,7 +390,17 @@ extension BlockingManager {
                 }
             }.compactMapValues { $0 }
 
-            state.replace(blockedPhoneNumbers: blockedPhoneNumbers, blockedAcis: blockedAcis, blockedGroups: newBlockedGroups)
+            var blockedRecipientIds = Set<SignalRecipient.RowId>()
+
+            let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+            for blockedAci in blockedAcis {
+                blockedRecipientIds.insert(recipientFetcher.fetchOrCreate(serviceId: blockedAci, tx: transaction.asV2Write).id!)
+            }
+            for blockedPhoneNumber in blockedPhoneNumbers.compactMap(E164.init) {
+                blockedRecipientIds.insert(recipientFetcher.fetchOrCreate(phoneNumber: blockedPhoneNumber, tx: transaction.asV2Write).id!)
+            }
+
+            state.replace(blockedRecipientIds: blockedRecipientIds, blockedGroups: newBlockedGroups)
         }
     }
 
@@ -407,7 +412,8 @@ extension BlockingManager {
     }
 
     private func sendBlockListSyncMessage(force: Bool) {
-        guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else { return }
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else { return }
 
         databaseStorage.write { transaction in
             withCurrentState(transaction: transaction) { state in
@@ -428,11 +434,16 @@ extension BlockingManager {
                     return
                 }
 
+                let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
+                let blockedRecipients = state.blockedRecipientIds.compactMap {
+                    return recipientDatabaseTable.fetchRecipient(rowId: $0, tx: transaction.asV2Read)
+                }
+
                 let outgoingChangeToken = state.changeToken
                 let message = OWSBlockedPhoneNumbersMessage(
                     thread: thread,
-                    phoneNumbers: Array(state.blockedPhoneNumbers),
-                    aciStrings: state.blockedAcis.map { $0.serviceIdString },
+                    phoneNumbers: blockedRecipients.compactMap { $0.phoneNumber?.stringValue },
+                    aciStrings: blockedRecipients.compactMap { $0.aci?.serviceIdString },
                     groupIds: Array(state.blockedGroupMap.keys),
                     transaction: transaction
                 )
@@ -498,8 +509,7 @@ extension BlockingManager {
     struct State {
         private(set) var isDirty: Bool
         private(set) var changeToken: UInt64
-        private(set) var blockedPhoneNumbers: Set<String>
-        private(set) var blockedAcis: Set<Aci>
+        private(set) var blockedRecipientIds: Set<SignalRecipient.RowId>
         private(set) var blockedGroupMap: [Data: TSGroupModel]   // GroupId -> GroupModel
 
         static let invalidChangeToken: UInt64 = 0
@@ -510,8 +520,7 @@ extension BlockingManager {
             // Only non-zero change tokens should ever be stored in the database, so we'll pick up on the mismatch
             isDirty = false
             changeToken = Self.invalidChangeToken
-            blockedPhoneNumbers = Set()
-            blockedAcis = Set()
+            blockedRecipientIds = []
             blockedGroupMap = [:]
         }
 
@@ -539,62 +548,35 @@ extension BlockingManager {
         // MARK: - Mutation
 
         mutating func replace(
-            blockedPhoneNumbers newBlockedPhoneNumbers: Set<String>,
-            blockedAcis newBlockedAcis: Set<Aci>,
+            blockedRecipientIds newBlockedRecipientIds: Set<SignalRecipient.RowId>,
             blockedGroups newBlockedGroups: [Data: TSGroupModel]
         ) {
             owsAssertDebug(changeToken != Self.invalidChangeToken)
 
-            var blockedAddresses = [SignalServiceAddress]()
-            blockedAddresses.append(contentsOf: newBlockedPhoneNumbers.lazy.compactMap { phoneNumber in
-                let address = SignalServiceAddress.legacyAddress(serviceId: nil, phoneNumber: phoneNumber)
-                return address.isValid ? address : nil
-            })
-            blockedAddresses.append(contentsOf: newBlockedAcis.map { SignalServiceAddress($0) })
-
-            let oldBlockedPhoneNumbers = self.blockedPhoneNumbers
-            let oldBlockedAcis = self.blockedAcis
+            let oldBlockedRecipientIds = self.blockedRecipientIds
             let oldBlockedGroupMap = self.blockedGroupMap
 
-            self.blockedPhoneNumbers = Set(blockedAddresses.lazy.compactMap { $0.phoneNumber })
-            self.blockedAcis = Set(blockedAddresses.lazy.compactMap { $0.aci })
+            self.blockedRecipientIds = newBlockedRecipientIds
             self.blockedGroupMap = newBlockedGroups
 
-            isDirty = isDirty || (oldBlockedPhoneNumbers != self.blockedPhoneNumbers)
-            isDirty = isDirty || (oldBlockedAcis != self.blockedAcis)
+            isDirty = isDirty || (oldBlockedRecipientIds != self.blockedRecipientIds)
             isDirty = isDirty || (oldBlockedGroupMap != self.blockedGroupMap)
         }
 
         @discardableResult
-        mutating func addBlockedAddress(_ address: SignalServiceAddress) -> Bool {
+        mutating func addBlockedRecipientId(_ recipientId: SignalRecipient.RowId) -> Bool {
             owsAssertDebug(changeToken != Self.invalidChangeToken)
 
-            var didInsert = false
-            if let phoneNumber = address.phoneNumber {
-                let result = blockedPhoneNumbers.insert(phoneNumber)
-                didInsert = didInsert || result.inserted
-            }
-            if let aci = address.aci {
-                let result = blockedAcis.insert(aci)
-                didInsert = didInsert || result.inserted
-            }
+            let didInsert = blockedRecipientIds.insert(recipientId).inserted
             isDirty = isDirty || didInsert
             return didInsert
         }
 
         @discardableResult
-        mutating func removeBlockedAddress(_ address: SignalServiceAddress) -> Bool {
+        mutating func removeBlockedRecipientId(_ recipientId: SignalRecipient.RowId) -> Bool {
             owsAssertDebug(changeToken != Self.invalidChangeToken)
 
-            var didRemove = false
-            if let phoneNumber = address.phoneNumber, blockedPhoneNumbers.contains(phoneNumber) {
-                blockedPhoneNumbers.remove(phoneNumber)
-                didRemove = true
-            }
-            if let aci = address.aci, blockedAcis.contains(aci) {
-                blockedAcis.remove(aci)
-                didRemove = true
-            }
+            let didRemove = blockedRecipientIds.remove(recipientId) != nil
             isDirty = isDirty || didRemove
             return didRemove
         }
@@ -628,8 +610,6 @@ extension BlockingManager {
         enum PersistenceKey: String {
             case changeTokenKey = "kOWSBlockingManager_ChangeTokenKey"
             case lastSyncedChangeTokenKey = "kOWSBlockingManager_LastSyncedChangeTokenKey"
-            case blockedPhoneNumbersKey = "kOWSBlockingManager_BlockedPhoneNumbersKey"
-            case blockedAciStringsKey = "kOWSBlockingManager_BlockedUUIDsKey"
             case blockedGroupMapKey = "kOWSBlockingManager_BlockedGroupMapKey"
 
             // No longer in use
@@ -640,13 +620,14 @@ extension BlockingManager {
             }
         }
 
-        mutating func reloadIfNecessary(_ transaction: SDSAnyReadTransaction) {
+        mutating func reloadIfNecessary(blockedRecipientStore: any BlockedRecipientStore, tx transaction: SDSAnyReadTransaction) {
             owsAssertDebug(isDirty == false)
 
             let databaseChangeToken: UInt64 = Self.keyValueStore.getUInt64(
                 PersistenceKey.changeTokenKey.rawValue,
                 defaultValue: Self.initialChangeToken,
-                transaction: transaction)
+                transaction: transaction
+            )
 
             if databaseChangeToken != changeToken {
                 func fetchObject<T>(of type: T.Type, key: String, defaultValue: T) -> T {
@@ -662,15 +643,13 @@ extension BlockingManager {
                     defaultValue: Self.initialChangeToken,
                     transaction: transaction
                 )
-                blockedPhoneNumbers = Set(fetchObject(of: [String].self, key: PersistenceKey.blockedPhoneNumbersKey.rawValue, defaultValue: []))
-                let blockedAciStrings = fetchObject(of: [String].self, key: PersistenceKey.blockedAciStringsKey.rawValue, defaultValue: [])
-                blockedAcis = Set(blockedAciStrings.lazy.compactMap { Aci.parseFrom(aciString: $0) })
+                blockedRecipientIds = Set((try? blockedRecipientStore.blockedRecipientIds(tx: transaction.asV2Read)) ?? [])
                 blockedGroupMap = fetchObject(of: [Data: TSGroupModel].self, key: PersistenceKey.blockedGroupMapKey.rawValue, defaultValue: [:])
                 isDirty = false
             }
         }
 
-        mutating func persistIfNecessary(_ transaction: SDSAnyWriteTransaction) -> Bool {
+        mutating func persistIfNecessary(blockedRecipientStore: any BlockedRecipientStore, tx transaction: SDSAnyWriteTransaction) -> Bool {
             guard changeToken != Self.invalidChangeToken else {
                 owsFailDebug("Attempting to persist an unfetched change token. Aborting...")
                 return false
@@ -686,9 +665,20 @@ extension BlockingManager {
 
                 changeToken = databaseChangeToken + 1
                 Self.keyValueStore.setUInt64(changeToken, key: PersistenceKey.changeTokenKey.rawValue, transaction: transaction)
-                Self.keyValueStore.setObject(Array(blockedPhoneNumbers), key: PersistenceKey.blockedPhoneNumbersKey.rawValue, transaction: transaction)
-                Self.keyValueStore.setObject(blockedAcis.map { $0.serviceIdUppercaseString }, key: PersistenceKey.blockedAciStringsKey.rawValue, transaction: transaction)
                 Self.keyValueStore.setObject(blockedGroupMap, key: PersistenceKey.blockedGroupMapKey.rawValue, transaction: transaction)
+                do {
+                    let oldBlockedRecipientIds = Set(try blockedRecipientStore.blockedRecipientIds(tx: transaction.asV2Read))
+                    let newBlockedRecipientIds = self.blockedRecipientIds
+                    try oldBlockedRecipientIds.subtracting(newBlockedRecipientIds).forEach {
+                        try blockedRecipientStore.setBlocked(false, recipientId: $0, tx: transaction.asV2Write)
+                    }
+                    try newBlockedRecipientIds.subtracting(oldBlockedRecipientIds).forEach {
+                        try blockedRecipientStore.setBlocked(true, recipientId: $0, tx: transaction.asV2Write)
+                    }
+                } catch {
+                    DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(userDefaults: CurrentAppContext().appUserDefaults(), error: error)
+                    owsFailDebug("Couldn't update BlockedRecipients: \(error)")
+                }
                 isDirty = false
                 return true
 

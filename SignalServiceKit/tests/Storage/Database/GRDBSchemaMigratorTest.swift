@@ -345,4 +345,113 @@ extension GRDBSchemaMigratorTest {
             XCTAssertNil(try cursor.next())
         }
     }
+
+    func testMigrateBlockedRecipients() throws {
+        // Set up the database with sample data that may have existed.
+        let blockedAciStrings = [
+            "00000000-0000-4000-A000-000000000001",
+            "00000000-0000-4000-A000-000000000008",
+            "",
+        ]
+        let blockedPhoneNumbers = [
+            "+17635550102",
+            "+17635550103",
+            "+17635550104",
+            "+17635550105",
+            "+17635550107",
+            "+17635550109",
+            "",
+        ]
+
+        let blockedAciData = keyedArchiverData(rootObject: blockedAciStrings)
+        let blockedPhoneNumberData = keyedArchiverData(rootObject: blockedPhoneNumbers)
+
+        let databaseQueue = DatabaseQueue()
+        try databaseQueue.write { db in
+            try db.execute(sql: """
+            CREATE TABLE keyvalue (
+                "collection" TEXT NOT NULL,
+                "key" TEXT NOT NULL,
+                "value" BLOB NOT NULL,
+                PRIMARY KEY ("collection", "key")
+            );
+
+            CREATE TABLE "model_SignalRecipient" (
+                "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                "recordType" INTEGER NOT NULL,
+                "uniqueId" TEXT NOT NULL UNIQUE ON CONFLICT FAIL,
+                "devices" BLOB NOT NULL,
+                "recipientPhoneNumber" TEXT UNIQUE,
+                "recipientUUID" TEXT UNIQUE
+            );
+
+            INSERT INTO "model_SignalRecipient" (
+                "recordType", "uniqueId", "devices", "recipientPhoneNumber", "recipientUUID"
+            ) VALUES
+                (31, '00000000-0000-4000-B000-00000000000F', X'', '+17635550101', '00000000-0000-4000-A000-000000000001'),
+                (31, '00000000-0000-4000-B000-00000000000E', X'', '+17635550102', '00000000-0000-4000-A000-000000000002'),
+                (31, '00000000-0000-4000-B000-00000000000D', X'', '+17635550103', '00000000-0000-4000-A000-000000000003'),
+                (31, '00000000-0000-4000-B000-00000000000C', X'', '+17635550104', '00000000-0000-4000-A000-000000000004'),
+                (31, '00000000-0000-4000-B000-00000000000B', X'', '+17635550105', NULL),
+                (31, '00000000-0000-4000-B000-00000000000A', X'', NULL, '00000000-0000-4000-A000-000000000006'),
+                (31, '00000000-0000-4000-B000-000000000009', X'', '+17635550107', '00000000-0000-4000-A000-000000000007');
+
+            CREATE TABLE "model_OWSUserProfile" (
+                "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                "recipientUUID" TEXT UNIQUE,
+                "profileName" TEXT,
+                "isPhoneNumberShared" BOOLEAN
+            );
+
+            INSERT INTO "model_OWSUserProfile" ("recipientUUID", "profileName", "isPhoneNumberShared") VALUES
+                ('00000000-0000-4000-A000-000000000002', NULL, TRUE),
+                ('00000000-0000-4000-A000-000000000004', NULL, FALSE),
+                ('00000000-0000-4000-A000-000000000007', NULL, FALSE);
+
+            CREATE TABLE "model_SignalAccount" (
+                "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                "recipientPhoneNumber" TEXT UNIQUE
+            );
+
+            INSERT INTO "model_SignalAccount" ("recipientPhoneNumber") VALUES
+                ('+17635550103');
+            """)
+
+            try db.execute(
+                sql: """
+                INSERT INTO "keyvalue" ("collection", "key", "value") VALUES (?, ?, ?)
+                """,
+                arguments: ["kOWSBlockingManager_BlockedPhoneNumbersCollection", "kOWSBlockingManager_BlockedUUIDsKey", blockedAciData]
+            )
+            try db.execute(
+                sql: """
+                INSERT INTO "keyvalue" ("collection", "key", "value") VALUES (?, ?, ?)
+                """,
+                arguments: ["kOWSBlockingManager_BlockedPhoneNumbersCollection", "kOWSBlockingManager_BlockedPhoneNumbersKey", blockedPhoneNumberData]
+            )
+            try db.execute(
+                sql: """
+                INSERT INTO "keyvalue" ("collection", "key", "value") VALUES (?, ?, ?)
+                """,
+                arguments: ["kOWSStorageServiceOperation_IdentifierMap", "state", #"{"accountIdChangeMap":{"00000000-0000-4000-B000-000000000009": 0, "00000000-0000-4000-B000-000000000123": 0}}"#]
+            )
+
+            do {
+                let tx = GRDBWriteTransaction(database: db)
+                defer { tx.finalizeTransaction() }
+                try GRDBSchemaMigrator.migrateBlockedRecipients(tx: tx)
+            }
+
+            let blockedRecipientIds = try Int64.fetchAll(db, sql: "SELECT * FROM BlockedRecipient")
+            XCTAssertEqual(blockedRecipientIds, [1, 2, 3, 5, 8, 9])
+
+            let encodedState = try Data.fetchOne(db, sql: "SELECT value FROM keyvalue WHERE collection = ? AND key = ?", arguments: ["kOWSStorageServiceOperation_IdentifierMap", "state"])
+            let decodedState = try encodedState.map { try JSONDecoder().decode([String: [String: Int]].self, from: $0) } ?? [:]
+            XCTAssertEqual(decodedState["accountIdChangeMap"], [
+                "00000000-0000-4000-B000-000000000009": 1,
+                "00000000-0000-4000-B000-000000000123": 0,
+                "00000000-0000-4000-B000-00000000000C": 1,
+            ])
+        }
+    }
 }

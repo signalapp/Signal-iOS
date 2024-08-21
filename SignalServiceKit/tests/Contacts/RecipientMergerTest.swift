@@ -59,6 +59,7 @@ private class TestDependencies {
         )
         recipientMerger = RecipientMergerImpl(
             aciSessionStore: aciSessionStore,
+            blockedRecipientStore: MockBlockedRecipientStore(),
             identityManager: identityManager,
             observers: RecipientMergerImpl.Observers(
                 preThreadMerger: [],
