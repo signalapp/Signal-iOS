@@ -28,10 +28,6 @@ public class IncrementalMessageTSAttachmentMigratorImpl: IncrementalMessageTSAtt
         self.databaseStorage = databaseStorage
 
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync { [weak self] in
-            guard AttachmentFeatureFlags.incrementalMigration else {
-                return
-            }
-
             self?.databaseStorage.read { tx in
                 switch Store.getState(tx: tx) {
                 case .unstarted:
@@ -46,7 +42,9 @@ public class IncrementalMessageTSAttachmentMigratorImpl: IncrementalMessageTSAtt
     }
 
     public func runUntilFinished() async {
-        guard AttachmentFeatureFlags.incrementalMigration else { return }
+        // We DO NOT check the incrementalMigrationBreakGlass feature flag here;
+        // this is used by backups which require the migration to have finished
+        // and aren't enabled outside internal builds anyway.
         let state = databaseStorage.read(block: Store.getState(tx:))
         switch state {
         case .finished:

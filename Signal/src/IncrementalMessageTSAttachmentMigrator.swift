@@ -67,7 +67,7 @@ extension IncrementalMessageTSAttachmentMigrator {
     }
 
     private func shouldLaunchBGProcessingTask(databaseStorage: SDSDatabaseStorage) -> Bool {
-        guard AttachmentFeatureFlags.incrementalMigration else { return false }
+        if AttachmentFeatureFlags.incrementalMigrationBreakGlass { return false }
         let state = databaseStorage.read(block: Store.getState(tx:))
         return state != .finished
     }
@@ -118,7 +118,7 @@ extension IncrementalMessageTSAttachmentMigrator {
     }
 
     public func runInMainAppBackgroundIfNeeded(databaseStorage: SDSDatabaseStorage) {
-        guard AttachmentFeatureFlags.incrementalMigration else { return }
+        if AttachmentFeatureFlags.incrementalMigrationBreakGlass { return }
         let state = databaseStorage.read(block: Store.getState(tx:))
         switch state {
         case .finished, .unstarted:

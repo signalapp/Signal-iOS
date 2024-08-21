@@ -31,8 +31,7 @@ public class TSResourceManagerImpl: TSResourceManager {
     public func didFinishTSAttachmentToAttachmentMigration(tx: DBReadTransaction) -> Bool {
         guard
             AttachmentFeatureFlags.readMessages,
-            AttachmentFeatureFlags.writeMessages,
-            AttachmentFeatureFlags.incrementalMigration
+            AttachmentFeatureFlags.writeMessages
         else {
             return false
         }
