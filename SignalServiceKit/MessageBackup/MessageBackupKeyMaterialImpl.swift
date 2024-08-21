@@ -17,6 +17,15 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
 
         static let MessageBackupPrivateKeyInfoString = "20231003_Signal_Backups_GenerateBackupIdKeyPair"
         static let MessageBackupPrivateKeyDataLength = 32
+
+        static let MessageBackupMediaIdInfoString = "20231003_Signal_Backups_Media_ID"
+        static let MessageBackupMediaIdDataLength = 15
+
+        static let MessageBackupMediaEncryptionInfoString = "20231003_Signal_Backups_EncryptMedia"
+        static let MessageBackupMediaEncryptionDataLength = 80
+
+        static let MessageBackupThumbnailEncryptionInfoString = "20240513_Signal_Backups_EncryptThumbnail"
+        static let MessageBackupThumbnailEncryptionDataLength = 64
     }
 
     private let svr: SecureValueRecovery
@@ -33,39 +42,24 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
     }
 
     public func backupID(localAci: Aci, tx: DBReadTransaction) throws -> Data {
-        guard let backupKey = svr.data(for: .backupKey, transaction: tx) else {
-            throw MessageBackupKeyMaterialError.missingMasterKey
-        }
-        guard let infoData = Constants.MessageBackupIdInfoString.data(using: .utf8) else {
-            owsFailDebug("Failed to encode data")
-            throw MessageBackupKeyMaterialError.invalidKeyInfo
-        }
-        let keyBytes = try hkdf(
-            outputLength: Constants.MessageBackupIdLength,
-            inputKeyMaterial: backupKey.rawData,
+        let keyBytes = try buildBackupEncryptionMaterial(
+            localAci: localAci,
             salt: localAci.serviceIdBinary,
-            info: infoData
+            info: Constants.MessageBackupIdInfoString,
+            length: Constants.MessageBackupIdLength,
+            tx: tx
         )
         return Data(keyBytes)
     }
 
     public func backupPrivateKey(localAci: Aci, tx: DBReadTransaction) throws -> PrivateKey {
-        guard let backupKey = svr.data(for: .backupKey, transaction: tx) else {
-            throw MessageBackupKeyMaterialError.missingMasterKey
-        }
-
-        guard let infoData = Constants.MessageBackupPrivateKeyInfoString.data(using: .utf8) else {
-            owsFailDebug("Failed to encode data")
-            throw MessageBackupKeyMaterialError.invalidKeyInfo
-        }
-
-        let privateKeyBytes = try hkdf(
-            outputLength: Constants.MessageBackupPrivateKeyDataLength,
-            inputKeyMaterial: backupKey.rawData,
+        let privateKeyBytes = try buildBackupEncryptionMaterial(
+            localAci: localAci,
             salt: localAci.serviceIdBinary,
-            info: infoData
+            info: Constants.MessageBackupPrivateKeyInfoString,
+            length: Constants.MessageBackupPrivateKeyDataLength,
+            tx: tx
         )
-
         return try PrivateKey(privateKeyBytes)
     }
 
@@ -96,27 +90,104 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
         return try HmacStreamTransform(hmacKey: hmacKey, operation: .validate)
     }
 
+    public func mediaEncryptionMetadata(
+        localAci: Aci,
+        mediaName: String,
+        type: MediaEncryptionType,
+        tx: any DBReadTransaction
+    ) throws -> MediaEncryptionMetadata {
+        guard let mediaNameData = mediaName.data(using: .utf8) else {
+            owsFailDebug("Failed to encode data")
+            throw MessageBackupKeyMaterialError.invalidKeyInfo
+        }
+
+        let (info, length) = {
+            switch type {
+            case .attachment:
+                (Constants.MessageBackupMediaEncryptionInfoString, Constants.MessageBackupMediaEncryptionDataLength)
+            case .thumbnail:
+                (Constants.MessageBackupThumbnailEncryptionInfoString, Constants.MessageBackupThumbnailEncryptionDataLength)
+            }
+        }()
+
+        let mediaId = Data(try buildBackupEncryptionMaterial(
+            localAci: localAci,
+            salt: mediaNameData,
+            info: Constants.MessageBackupMediaIdInfoString,
+            length: Constants.MessageBackupMediaIdDataLength,
+            tx: tx
+        ))
+
+        let keyBytes = try buildBackupEncryptionMaterial(
+            localAci: localAci,
+            salt: mediaId,
+            info: info,
+            length: length,
+            tx: tx
+        )
+
+        guard keyBytes.count == length else {
+            throw MessageBackupKeyMaterialError.invalidEncryptionKey
+        }
+
+        let iv: Data
+        switch type {
+        case .attachment:
+            iv = Data(Array(keyBytes[64..<80]))
+        case .thumbnail:
+            iv = Randomness.generateRandomBytes(16)
+        }
+
+        return MediaEncryptionMetadata(
+            type: type,
+            mediaId: mediaId,
+            hmacKey: Data(Array(keyBytes[0..<32])),
+            encryptionKey: Data(Array(keyBytes[32..<64])),
+            iv: iv
+        )
+    }
+
     private func buildEncryptionMaterial(localAci: Aci, tx: DBReadTransaction) throws -> (encryptionKey: Data, hmacKey: Data) {
+        let keyBytes = try buildBackupEncryptionMaterial(
+            localAci: localAci,
+            salt: try backupID(localAci: localAci, tx: tx),
+            info: Constants.MessageBackupEncryptionInfoString,
+            length: Constants.MessageBackupEncryptionDataLength,
+            tx: tx
+        )
+        guard keyBytes.count == Constants.MessageBackupEncryptionDataLength else {
+            throw MessageBackupKeyMaterialError.invalidEncryptionKey
+        }
+        return (encryptionKey: Data(Array(keyBytes[32..<64])), hmacKey: Data(Array(keyBytes[0..<32])))
+    }
+
+    private func buildBackupEncryptionMaterial(
+        localAci: Aci,
+        salt: ContiguousBytes,
+        info: String,
+        length: Int,
+        tx: DBReadTransaction
+    ) throws -> [UInt8] {
         guard let backupKey = svr.data(for: .backupKey, transaction: tx) else {
             throw MessageBackupKeyMaterialError.missingMasterKey
         }
-        let backupId = try backupID(localAci: localAci, tx: tx)
-        guard let infoData = Constants.MessageBackupEncryptionInfoString.data(using: .utf8) else {
+
+        guard let infoData = info.data(using: .utf8) else {
             owsFailDebug("Failed to encode data")
             throw MessageBackupKeyMaterialError.invalidKeyInfo
         }
 
         let keyBytes = try hkdf(
-            outputLength: Constants.MessageBackupEncryptionDataLength,
+            outputLength: length,
             inputKeyMaterial: backupKey.rawData,
-            salt: backupId,
+            salt: salt,
             info: infoData
         )
 
-        guard keyBytes.count == Constants.MessageBackupEncryptionDataLength else {
+        guard keyBytes.count == length else {
             throw MessageBackupKeyMaterialError.invalidEncryptionKey
         }
 
-        return (encryptionKey: Data(Array(keyBytes[32..<64])), hmacKey: Data(Array(keyBytes[0..<32])))
+        return keyBytes
     }
 }
