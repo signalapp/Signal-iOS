@@ -2861,7 +2861,7 @@
 "GROUP_CALL_MEMBER_LIST_SECTION_HEADER_MEMBER_COUNT" = "(%1$d명)";
 
 /* Title for a button on the group members sheet for sharing that call's link. */
-"GROUP_CALL_MEMBER_LIST_SHARE_CALL_LINK_BUTTON" = "Share call link";
+"GROUP_CALL_MEMBER_LIST_SHARE_CALL_LINK_BUTTON" = "통화 링크 공유";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "%1$@ 님의 음성 및 영상 통화를 수신할 수 없습니다.";

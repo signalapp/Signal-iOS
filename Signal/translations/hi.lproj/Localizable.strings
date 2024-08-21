@@ -2861,7 +2861,7 @@
 "GROUP_CALL_MEMBER_LIST_SECTION_HEADER_MEMBER_COUNT" = "(%1$d)";
 
 /* Title for a button on the group members sheet for sharing that call's link. */
-"GROUP_CALL_MEMBER_LIST_SHARE_CALL_LINK_BUTTON" = "Share call link";
+"GROUP_CALL_MEMBER_LIST_SHARE_CALL_LINK_BUTTON" = "कॉल लिंक शेयर करें";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "%1$@ से ऑडियो और वीडियो नहीं प्राप्त की जा सकती";

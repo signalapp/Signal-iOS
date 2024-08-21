@@ -2861,7 +2861,7 @@
 "GROUP_CALL_MEMBER_LIST_SECTION_HEADER_MEMBER_COUNT" = "(%1$d)";
 
 /* Title for a button on the group members sheet for sharing that call's link. */
-"GROUP_CALL_MEMBER_LIST_SHARE_CALL_LINK_BUTTON" = "Share call link";
+"GROUP_CALL_MEMBER_LIST_SHARE_CALL_LINK_BUTTON" = "Partager le lien de l’appel";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Impossible de recevoir l’audio et la vidéo de %1$@";
@@ -7532,7 +7532,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Vos contacts peuvent voir votre nom et votre photo de profil. Ils peuvent aussi afficher vos stories, sauf si vous décidez de les masquer.";
 
 /* Header for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "Les <strong>contacts Signal</strong> sont des personnes en qui vous avez confiance pour au moins une des raisons suivantes :";
+"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "Les <bold>contacts Signal</bold> sont des personnes en qui vous avez confiance pour au moins une des raisons suivantes :";
 
 /* Label for the stories section of the settings view */
 "STORY_SETTINGS_TITLE" = "Stories";
@@ -8003,7 +8003,7 @@
 "USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "%1$@ n’est pas un nom d’utilisateur valide. Assurez-vous de saisir le nom d’utilisateur complet suivi de son ensemble de chiffres associé.";
 
 /* Title for an action sheet indicating that a user-entered username value is not a valid username. */
-"USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "Nom d’utilisateur invalide";
+"USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "Nom d’utilisateur incorrect";
 
 /* A message indicating that a username link the user attempted to query is no longer valid. */
 "USERNAME_LOOKUP_LINK_NO_LONGER_VALID_MESSAGE" = "Le lien de ce nom d’utilisateur n’est plus valide.";

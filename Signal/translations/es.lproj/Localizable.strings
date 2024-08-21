@@ -659,7 +659,7 @@
 "BUTTON_SELECT" = "Seleccionar";
 
 /* Label for the 'set' button. */
-"BUTTON_SET" = "Fijar";
+"BUTTON_SET" = "Definir";
 
 /* Label for the 'share' button. */
 "BUTTON_SHARE" = "Compartir";
@@ -1970,13 +1970,13 @@
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Los mensajes en este chat desaparecerán tras %1$@.";
 
 /* Disappearing message option to define a custom time */
-"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Tiempo personalizado";
+"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Duración personalizada";
 
 /* The unit for a number of days */
 "DISAPPEARING_MESSAGES_DAYS" = "días";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "Con esta opción activa, los mensajes enviados y recibidos en este chat desaparecerán tras ser vistos.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Si habilitas esta función, los mensajes enviados y recibidos en este chat desaparecerán tras ser vistos.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Los mensajes desaparecerán tras %1$@";
@@ -2297,7 +2297,7 @@
 "DONATION_SCREEN_DONATE_BUTTON" = "Donar";
 
 /* On donation screens, a small amount of information text is shown. This is the subtitle for that text. */
-"DONATION_SCREENS_HEADER_DESCRIPTION" = "Mensajería privada, financiada por ti. Sin anuncios, sin seguimiento, sin comprometer tu privacidad.Haz una donación ahora para ayudar a Signal.";
+"DONATION_SCREENS_HEADER_DESCRIPTION" = "Mensajería privada, financiada por ti. Sin anuncios, sin seguimiento, sin comprometer tu privacidad. Haz una donación ahora para apoyar a Signal.";
 
 /* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
 "DONATION_SCREENS_HEADER_READ_MORE" = "Más información";
@@ -2702,7 +2702,7 @@
 "FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "Los mensajes reenviados ahora se envían de inmediato.";
 
 /* Title for alert with information about forwarding messages. */
-"FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Reenvíos más rápidos";
+"FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Reenvío de mensajes más rápido";
 
 /* Indicates that a single message was forwarded. */
 "FORWARD_MESSAGE_MESSAGES_SENT_1" = "Mensaje enviado";
@@ -2861,7 +2861,7 @@
 "GROUP_CALL_MEMBER_LIST_SECTION_HEADER_MEMBER_COUNT" = "(%1$d)";
 
 /* Title for a button on the group members sheet for sharing that call's link. */
-"GROUP_CALL_MEMBER_LIST_SHARE_CALL_LINK_BUTTON" = "Share call link";
+"GROUP_CALL_MEMBER_LIST_SHARE_CALL_LINK_BUTTON" = "Compartir enlace de llamada";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "No se puede recibir audio ni vídeo de %1$@";
@@ -3107,7 +3107,7 @@
 "GROUP_LINK_PROMOTION_ALERT_TITLE" = "Invitar personas";
 
 /* Suggestion to invite more group members via the group invite link. */
-"GROUP_LINK_PROMOTION_UPDATE" = "Invita a más personas a tu grupo mediante enlace";
+"GROUP_LINK_PROMOTION_UPDATE" = "Invita a otras personas usando el enlace al grupo";
 
 /* Description text in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "Las personas que escaneen este código podrán unirse al grupo. Aun así, los admins deben aceptar a nuevos participantes si esa opción está activa.";
@@ -7103,7 +7103,7 @@
 "SETTINGS_SECURITY_TITLE" = "Seguridad";
 
 /* The footer for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Se usarán más datos al seleccionar la opción de alta calidad.";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Si seleccionas la opción de alta calidad, se usarán más datos.";
 
 /* The title for the photos and videos section in the sent media quality settings. */
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Calidad";
@@ -7676,7 +7676,7 @@
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "¿Actualizar suscripción?";
 
 /* Label for 'off' state of a switch control. */
-"SWITCH_OFF" = "Desactivado";
+"SWITCH_OFF" = "Desactivados";
 
 /* Label for 'on' state of a switch control. */
 "SWITCH_ON" = "Activo";

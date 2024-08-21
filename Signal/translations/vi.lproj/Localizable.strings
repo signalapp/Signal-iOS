@@ -2861,7 +2861,7 @@
 "GROUP_CALL_MEMBER_LIST_SECTION_HEADER_MEMBER_COUNT" = "(%1$d)";
 
 /* Title for a button on the group members sheet for sharing that call's link. */
-"GROUP_CALL_MEMBER_LIST_SHARE_CALL_LINK_BUTTON" = "Share call link";
+"GROUP_CALL_MEMBER_LIST_SHARE_CALL_LINK_BUTTON" = "Chia sẻ đường dẫn cuộc gọi";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Không thể nhận được âm thanh & video từ %1$@";
