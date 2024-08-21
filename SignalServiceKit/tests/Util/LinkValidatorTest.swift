@@ -80,9 +80,14 @@ class LinkValidatorTest: XCTestCase {
             ("https://中国互联网络信息中心.中国/nonASCIIPath", "https://xn--fiqa61au8b7zsevnm8ak20mc4a87e.xn--fiqs8s/nonASCIIPath"),
             ("https://中国互联网络信息中心.中国?nonASCIIQuery", "https://xn--fiqa61au8b7zsevnm8ak20mc4a87e.xn--fiqs8s?nonASCIIQuery"),
             ("https://中国互联网络信息中心.中国#fragment", "https://xn--fiqa61au8b7zsevnm8ak20mc4a87e.xn--fiqs8s#fragment"),
-            ("https://signal.org/你好", "https://signal.org/%E4%BD%A0%E5%A5%BD"),
-            ("https://signal.org?你好", "https://signal.org?%E4%BD%A0%E5%A5%BD"),
             ("https://signal.org#你好", "https://signal.org#%E4%BD%A0%E5%A5%BD"),
+
+            // Invalid characters in path/params
+            ("https://signal.org/你好", nil),
+            ("https://signal.org?你好", nil),
+            ("https://signal.org/hello?你好", nil),
+            ("https://signal.org/наушники", nil),
+            ("https://signal.org/hello?param=наушники", nil),
 
             ("", nil),
             ("alice bob jim", nil),

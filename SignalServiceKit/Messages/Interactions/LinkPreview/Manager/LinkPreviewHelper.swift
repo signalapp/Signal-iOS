@@ -53,6 +53,19 @@ public enum LinkPreviewHelper {
         }
         guard let hostname = rawHostname, Self.isValidHostname(hostname) else { return false }
 
+        // Check that the path and query params only have valid characters.
+        // The URL we get here has, in practice, already gone through sanitization
+        // and may already have percent-encoded the path and params, so we don't
+        // want to use url.path.
+        if
+            sourceString?.count ?? 0 > scheme.count + 4,
+            let withoutScheme = sourceString?.dropFirst(scheme.count + 4),
+            let pathOrParamsStart = withoutScheme.firstIndex(of: "/") ?? withoutScheme.firstIndex(of: "?"),
+            withoutScheme[pathOrParamsStart...].rangeOfCharacter(from: Self.validURICharacters.inverted) != nil
+        {
+            return false
+        }
+
         return true
     }
 
@@ -97,6 +110,38 @@ public enum LinkPreviewHelper {
         "test"
     ]
     private static let urlDelimeters: Set<Character> = Set(":/?#[]@")
+
+    // See <https://tools.ietf.org/html/rfc3986>.
+    private static let validURICharacters = CharacterSet([
+      "%",
+      // "gen-delims"
+      ":",
+      "/",
+      "?",
+      "#",
+      "[",
+      "]",
+      "@",
+      // "sub-delims"
+      "!",
+      "$",
+      "&",
+      "'",
+      "(",
+      ")",
+      "*",
+      "+",
+      ",",
+      ";",
+      "=",
+      // unreserved
+      "-",
+      ".",
+      "_",
+      "~",
+    ]).union(.decimalDigits)
+        .union(.init(charactersIn: "a"..."z"))
+        .union(.init(charactersIn: "A"..."Z"))
 
     /// Helper method that validates:
     /// - TLD is permitted
