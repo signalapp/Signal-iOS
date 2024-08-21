@@ -23,7 +23,7 @@ class CallControls: UIView {
             accessibilityLabel: viewModel.hangUpButtonAccessibilityLabel,
             action: #selector(CallControlsViewModel.didPressHangup)
         )
-        button.unselectedBackgroundColor = useCallDrawerStyling ? UIColor(rgbHex: 0xEB5545) : .ows_accentRed
+        button.unselectedBackgroundColor = UIColor(rgbHex: 0xEB5545)
         return button
     }()
     private(set) lazy var audioSourceButton = createButton(
@@ -93,49 +93,28 @@ class CallControls: UIView {
         return CallControlsViewModel.joinButtonLabel(for: call)
     }
 
-    private lazy var gradientView: UIView = {
-        let gradientLayer = CAGradientLayer()
-        gradientLayer.colors = [
-            UIColor.black.withAlphaComponent(0).cgColor,
-            UIColor.ows_blackAlpha60.cgColor
-        ]
-        let view = OWSLayerView(frame: .zero) { view in
-            gradientLayer.frame = view.bounds
-        }
-        view.layer.addSublayer(gradientLayer)
-        return view
-    }()
-
     private weak var delegate: CallControlsDelegate!
     private let viewModel: CallControlsViewModel
-
-    private let useCallDrawerStyling: Bool
 
     init(
         call: SignalCall,
         callService: CallService,
         confirmationToastManager: CallControlsConfirmationToastManager,
-        useCallDrawerStyling: Bool,
         delegate: CallControlsDelegate
     ) {
         let viewModel = CallControlsViewModel(
             call: call,
             callService: callService,
             confirmationToastManager: confirmationToastManager,
-            useCallDrawerStyling: useCallDrawerStyling,
             delegate: delegate
         )
         self.viewModel = viewModel
-        self.useCallDrawerStyling = useCallDrawerStyling
         self.delegate = delegate
         super.init(frame: .zero)
 
         viewModel.refreshView = { [weak self] in
             self?.updateControls()
         }
-
-        addSubview(gradientView)
-        gradientView.autoPinEdgesToSuperviewEdges()
 
         let joinButtonContainer = UIView()
         joinButtonContainer.addSubview(joinButton)
@@ -148,7 +127,7 @@ class CallControls: UIView {
             joinButtonContainer
         ])
         controlsStack.axis = .vertical
-        controlsStack.spacing = useCallDrawerStyling ? HeightConstants.stackSpacingInDrawer : HeightConstants.stackSpacingWithoutDrawer
+        controlsStack.spacing = HeightConstants.stackSpacing
         controlsStack.alignment = .center
 
         addSubview(controlsStack)
@@ -158,12 +137,10 @@ class CallControls: UIView {
             withInset: HeightConstants.bottomPadding,
             relation: .lessThanOrEqual
         )
-        let insetFromBottom: CGFloat = useCallDrawerStyling ? 56 : 32
-        let insetFromTop: CGFloat = useCallDrawerStyling ? 0 : 16
         NSLayoutConstraint.autoSetPriority(.defaultHigh - 1) {
-            controlsStack.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: insetFromBottom)
+            controlsStack.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: 56)
         }
-        controlsStack.autoPinEdge(toSuperviewEdge: .top, withInset: insetFromTop)
+        controlsStack.autoPinEdge(toSuperviewEdge: .top)
 
         updateControls()
     }
@@ -208,9 +185,6 @@ class CallControls: UIView {
                 button.isSmall = shouldControlButtonsBeSmall
             }
         }
-
-        // Show/hide the superview to adjust the containing stack.
-        gradientView.isHidden = viewModel.gradientViewIsHidden
 
         videoButton.isSelected = viewModel.videoButtonIsSelected
         muteButton.isSelected = viewModel.muteButtonIsSelected
@@ -279,12 +253,6 @@ class CallControls: UIView {
         button.addTarget(viewModel, action: action, for: .touchUpInside)
         button.setContentHuggingHorizontalHigh()
         button.setCompressionResistanceHorizontalLow()
-        if useCallDrawerStyling {
-            button.unselectedBackgroundColor = CallButton.unselectedBackgroundColorInDrawer
-            button.selectedIconColor = CallButton.selectedIconColorInDrawer
-        } else {
-            button.alpha = 0.9
-        }
         return button
     }
 
@@ -300,7 +268,7 @@ class CallControls: UIView {
         var height = self.buttonRowHeight + HeightConstants.bottomPadding
         if !viewModel.joinButtonIsHidden {
             height += HeightConstants.joinButtonHeight
-            height += (self.useCallDrawerStyling ? HeightConstants.stackSpacingInDrawer : HeightConstants.stackSpacingWithoutDrawer)
+            height += HeightConstants.stackSpacing
         }
         return height
     }
@@ -311,8 +279,7 @@ class CallControls: UIView {
 
     private enum HeightConstants {
         static let joinButtonHeight: CGFloat = 56
-        static let stackSpacingInDrawer: CGFloat = 30
-        static let stackSpacingWithoutDrawer: CGFloat = 40
+        static let stackSpacing: CGFloat = 30
         static let bottomPadding: CGFloat = 40
     }
 }
@@ -326,7 +293,6 @@ protocol CallControlsHeightObserver {
 private class CallControlsViewModel {
     private let call: SignalCall
     private let callService: CallService
-    private let useCallDrawerStyling: Bool
     private weak var delegate: CallControlsDelegate?
     private let confirmationToastManager: CallControlsConfirmationToastManager
     fileprivate var refreshView: (() -> Void)?
@@ -334,13 +300,11 @@ private class CallControlsViewModel {
         call: SignalCall,
         callService: CallService,
         confirmationToastManager: CallControlsConfirmationToastManager,
-        useCallDrawerStyling: Bool,
         delegate: CallControlsDelegate
     ) {
         self.call = call
         self.callService = callService
         self.confirmationToastManager = confirmationToastManager
-        self.useCallDrawerStyling = useCallDrawerStyling
         self.delegate = delegate
         switch call.mode {
         case .individual(let call):
@@ -429,7 +393,7 @@ private class CallControlsViewModel {
         case .individual(let call):
             return ![.idle, .dialing, .remoteRinging, .localRinging_Anticipatory, .localRinging_ReadyToAnswer].contains(call.state)
         case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
-            if FeatureFlags.groupCallDrawerSupport && call.isJustMe {
+            if call.isJustMe {
                 return true
             }
             return call.hasJoinedOrIsWaitingForAdminApproval
@@ -568,23 +532,6 @@ private class CallControlsViewModel {
         case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
             // [Call Link] TODO: Figure out if this should be shown while pending.
             return call.ringRtcCall.localDeviceState.joinState != .joined
-        }
-    }
-
-    var gradientViewIsHidden: Bool {
-        switch call.mode {
-        case .individual:
-            if useCallDrawerStyling {
-                return true
-            } else {
-                return call.joinState != .joined
-            }
-        case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
-            if useCallDrawerStyling {
-                return true
-            } else {
-                return !call.hasJoinedOrIsWaitingForAdminApproval
-            }
         }
     }
 

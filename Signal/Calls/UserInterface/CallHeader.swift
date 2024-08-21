@@ -19,16 +19,6 @@ protocol CallHeaderDelegate: AnyObject {
 class CallHeader: UIView {
     // MARK: - Views
 
-    private lazy var dateFormatter: DateFormatter = {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "HH:mm:ss"
-        dateFormatter.timeZone = TimeZone(identifier: "UTC")!
-        dateFormatter.locale = Locale(identifier: "en_US")
-        return dateFormatter
-    }()
-
-    private var callDurationTimer: Timer?
-
     private lazy var gradientView: UIView = {
         let gradientLayer = CAGradientLayer()
         gradientLayer.colors = [
@@ -46,7 +36,6 @@ class CallHeader: UIView {
 
     private let callTitleLabel = MarqueeLabel()
     private let callStatusLabel = UILabel()
-    private lazy var groupMembersButton = GroupMembersButton()
 
     private let groupCall: GroupCall
     private let ringRtcCall: SignalRingRTC.GroupCall
@@ -76,22 +65,12 @@ class CallHeader: UIView {
 
         // Group members button
 
-        let topRightButton: UIButton
-        if FeatureFlags.groupCallDrawerSupport {
-            topRightButton = OWSButton(
-                imageName: "info",
-                tintColor: .ows_white,
-                dimsWhenHighlighted: true
-            ) { [weak delegate] in
-                delegate?.didTapMembersButton()
-            }
-        } else {
-            groupMembersButton.addTarget(
-                delegate,
-                action: #selector(CallHeaderDelegate.didTapMembersButton),
-                for: .touchUpInside
-            )
-            topRightButton = groupMembersButton
+        let topRightButton = OWSButton(
+            imageName: "info",
+            tintColor: .ows_white,
+            dimsWhenHighlighted: true
+        ) { [weak delegate] in
+            delegate?.didTapMembersButton()
         }
 
         addShadow(to: topRightButton)
@@ -284,17 +263,10 @@ class CallHeader: UIView {
             }
             switch groupCall.concreteType {
             case .groupThread(let groupThreadCall):
-                if !ringRtcCall.remoteDeviceStates.isEmpty {
-                    // TODO: Remove callDurationText and callDurationTimer when this feature flag is removed.
-                    if FeatureFlags.groupCallDrawerSupport {
-                        fallthrough
-                    } else {
-                        return callDurationText()
-                    }
-                }
-                if case .ringing = groupThreadCall.groupCallRingState {
+                if ringRtcCall.remoteDeviceStates.isEmpty, case .ringing = groupThreadCall.groupCallRingState {
                     return ringingOthersText(groupThreadCall: groupThreadCall)
                 }
+                fallthrough
             case .callLink:
                 guard let peekInfo = ringRtcCall.peekInfo else {
                     return ""
@@ -445,22 +417,6 @@ class CallHeader: UIView {
         )
     }
 
-    private func callDurationText() -> String {
-        let callDuration = groupCall.commonState.connectionDuration()
-        let callDurationDate = Date(timeIntervalSinceReferenceDate: callDuration)
-        var formattedDate = dateFormatter.string(from: callDurationDate)
-        if formattedDate.hasPrefix("00:") {
-            // Don't show the "hours" portion of the date format unless the
-            // call duration is at least 1 hour.
-            formattedDate = String(formattedDate.dropFirst(3))
-        } else if formattedDate.hasPrefix("0") {
-            // If showing the "hours" portion of the date format, strip any leading
-            // zeroes.
-            formattedDate = String(formattedDate.dropFirst(1))
-        }
-        return formattedDate
-    }
-
     private func noOneElseIsHereText() -> String {
         return OWSLocalizedString(
             "GROUP_CALL_NO_ONE_HERE",
@@ -516,15 +472,6 @@ class CallHeader: UIView {
         }
     }
 
-    private func updateGroupMembersButton() {
-        guard case .groupThread = groupCall.concreteType else {
-            return
-        }
-        let isJoined = ringRtcCall.localDeviceState.joinState == .joined
-        let remoteMemberCount = isJoined ? ringRtcCall.remoteDeviceStates.count : Int(ringRtcCall.peekInfo?.deviceCountExcludingPendingDevices ?? 0)
-        groupMembersButton.updateMemberCount(remoteMemberCount + (isJoined ? 1 : 0))
-    }
-
     // For testing abnormal scenarios.
     @objc
     private func injectDisconnect() {
@@ -538,23 +485,6 @@ class CallHeader: UIView {
 
 extension CallHeader: GroupCallObserver {
     func groupCallLocalDeviceStateChanged(_ call: GroupCall) {
-        if case .groupThread = call.concreteType, call.joinState == .joined {
-            if callDurationTimer == nil {
-                let kDurationUpdateFrequencySeconds = 1 / 20.0
-                callDurationTimer = WeakTimer.scheduledTimer(
-                    timeInterval: TimeInterval(kDurationUpdateFrequencySeconds),
-                    target: self,
-                    userInfo: nil,
-                    repeats: true
-                ) {[weak self] _ in
-                    self?.updateCallStatusLabel()
-                }
-            }
-        } else {
-            callDurationTimer?.invalidate()
-            callDurationTimer = nil
-        }
-
         if call.hasJoinedOrIsWaitingForAdminApproval {
             gradientView.isHidden = false
             avatarView?.isHidden = true // hide the container
@@ -564,67 +494,18 @@ extension CallHeader: GroupCallObserver {
         }
 
         updateCallStatusLabel()
-        updateGroupMembersButton()
     }
 
     func groupCallPeekChanged(_ call: GroupCall) {
         updateCallStatusLabel()
-        updateGroupMembersButton()
     }
 
     func groupCallRemoteDeviceStatesChanged(_ call: GroupCall) {
         updateCallTitleLabel()
         updateCallStatusLabel()
-        updateGroupMembersButton()
     }
 
     func groupCallEnded(_ call: GroupCall, reason: GroupCallEndReason) {
-        callDurationTimer?.invalidate()
-        callDurationTimer = nil
-
         updateCallStatusLabel()
-        updateGroupMembersButton()
-    }
-}
-
-private class GroupMembersButton: UIButton {
-    private let iconImageView = UIImageView()
-    private let countLabel = UILabel()
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-
-        autoSetDimension(.height, toSize: 40)
-
-        iconImageView.contentMode = .scaleAspectFit
-        iconImageView.setTemplateImage(#imageLiteral(resourceName: "group-fill"), tintColor: .ows_white)
-        addSubview(iconImageView)
-        iconImageView.autoPinEdge(toSuperviewEdge: .leading)
-        iconImageView.autoSetDimensions(to: CGSize(square: 22))
-        iconImageView.autoPinEdge(toSuperviewEdge: .top, withInset: 2)
-
-        countLabel.font = UIFont.dynamicTypeFootnoteClamped.monospaced()
-        countLabel.textColor = .ows_white
-        addSubview(countLabel)
-        countLabel.autoPinEdge(.leading, to: .trailing, of: iconImageView, withOffset: 5)
-        countLabel.autoPinEdge(toSuperviewEdge: .trailing, withInset: 5)
-        countLabel.autoAlignAxis(.horizontal, toSameAxisOf: iconImageView)
-        countLabel.setContentHuggingHorizontalHigh()
-        countLabel.setCompressionResistanceHorizontalHigh()
-    }
-
-    func updateMemberCount(_ count: Int) {
-        countLabel.text = String(OWSFormat.formatInt(count))
-        self.isHidden = count == 0
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    override var isHighlighted: Bool {
-        didSet {
-            alpha = isHighlighted ? 0.5 : 1
-        }
     }
 }

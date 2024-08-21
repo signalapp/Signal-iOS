@@ -17,7 +17,7 @@ import UIKit
 class SupplementalCallControlsForFullscreenLocalMember: UIView {
     private lazy var flipCameraCircleView: CircleBlurView = {
         let circleView = CircleBlurView(effect: UIBlurEffect(style: .systemThinMaterialDark))
-        circleView.backgroundColor = CallButton.unselectedBackgroundColorInDrawer
+        circleView.backgroundColor = CallButton.unselectedBackgroundColor
         circleView.isUserInteractionEnabled = false
         return circleView
     }()
@@ -81,22 +81,18 @@ class SupplementalCallControlsForFullscreenLocalMember: UIView {
 
         groupCall.addObserver(self)
 
-        if FeatureFlags.groupCallDrawerSupport {
-            flipCameraButton.translatesAutoresizingMaskIntoConstraints = false
-            addSubview(flipCameraButton)
-            NSLayoutConstraint.activate([
-                flipCameraButton.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-                flipCameraButton.topAnchor.constraint(equalTo: self.topAnchor),
-                flipCameraButton.bottomAnchor.constraint(equalTo: self.bottomAnchor)
-            ])
-            updateView()
-        }
+        flipCameraButton.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(flipCameraButton)
+        NSLayoutConstraint.activate([
+            flipCameraButton.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+            flipCameraButton.topAnchor.constraint(equalTo: self.topAnchor),
+            flipCameraButton.bottomAnchor.constraint(equalTo: self.bottomAnchor)
+        ])
+        updateView()
     }
 
     private func updateView() {
-        if FeatureFlags.groupCallDrawerSupport {
-            flipCameraButton.isHidden = !groupCall.isJustMe || call.isOutgoingVideoMuted
-        }
+        flipCameraButton.isHidden = !groupCall.isJustMe || call.isOutgoingVideoMuted
     }
 
     // MARK: - Required

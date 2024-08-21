@@ -28,30 +28,15 @@ class CallDrawerSheet: InteractiveSheetViewController {
     private let call: SignalCall
     private let callSheetDataSource: CallDrawerSheetDataSource
 
-    override var sheetBackgroundColor: UIColor {
-        if self.useCallDrawerStyling {
-            return UIColor(rgbHex: 0x1C1C1E)
-        } else {
-            return self.tableView.backgroundColor ?? .systemGroupedBackground
-        }
-    }
+    override var sheetBackgroundColor: UIColor { UIColor(rgbHex: 0x1C1C1E) }
 
-    override var handleBackgroundColor: UIColor {
-        if self.useCallDrawerStyling {
-            return UIColor(rgbHex: 0x787880).withAlphaComponent(0.36)
-        } else {
-            return super.handleBackgroundColor
-        }
-    }
-
-    private let useCallDrawerStyling: Bool
+    override var handleBackgroundColor: UIColor { UIColor(rgbHex: 0x787880).withAlphaComponent(0.36) }
 
     init(
         call: SignalCall,
         callSheetDataSource: CallDrawerSheetDataSource,
         callService: CallService,
         confirmationToastManager: CallControlsConfirmationToastManager,
-        useCallDrawerStyling: Bool,
         callControlsDelegate: CallControlsDelegate,
         sheetPanDelegate: (any SheetPanDelegate)?
     ) {
@@ -61,10 +46,8 @@ class CallDrawerSheet: InteractiveSheetViewController {
             call: call,
             callService: callService,
             confirmationToastManager: confirmationToastManager,
-            useCallDrawerStyling: useCallDrawerStyling,
             delegate: callControlsDelegate
         )
-        self.useCallDrawerStyling = useCallDrawerStyling
 
         super.init(blurEffect: nil)
 

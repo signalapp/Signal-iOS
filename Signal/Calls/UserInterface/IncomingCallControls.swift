@@ -13,14 +13,13 @@ class IncomingCallControls: UIView {
             "CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
             comment: "label for declining incoming calls"
         )
-        let button = createButton(
+        return createButton(
             iconName: "phone-down-fill-28",
             label: OWSLocalizedString("CALL_CONTROLS_INCOMING_DECLINE", comment: "label for button shown when an incoming call rings"),
+            unselectedBackgroundColor: .ows_accentRed,
             accessibilityLabel: accessibilityLabel,
             action: self.didDeclineCall
         )
-        button.unselectedBackgroundColor = .ows_accentRed
-        return button
     }
 
     private func createAnswerAudioButton() -> CallButton {
@@ -28,14 +27,13 @@ class IncomingCallControls: UIView {
             "CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL",
             comment: "label for accepting incoming calls"
         )
-        let button = createButton(
+        return createButton(
             iconName: "phone-fill-28",
             label: OWSLocalizedString("CALL_CONTROLS_INCOMING_ANSWER", comment: "label for button shown when an incoming call rings"),
+            unselectedBackgroundColor: .ows_accentGreen,
             accessibilityLabel: accessibilityLabel,
             action: { self.didAcceptCall(false) }
         )
-        button.unselectedBackgroundColor = .ows_accentGreen
-        return button
     }
 
     private func createAnswerVideoButton() -> CallButton {
@@ -43,14 +41,13 @@ class IncomingCallControls: UIView {
             "CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL",
             comment: "label for accepting incoming calls"
         )
-        let button = createButton(
+        return createButton(
             iconName: "video-fill-28",
             label: OWSLocalizedString("CALL_CONTROLS_INCOMING_ANSWER", comment: "label for button shown when an incoming call rings"),
+            unselectedBackgroundColor: .ows_accentGreen,
             accessibilityLabel: accessibilityLabel,
             action: { self.didAcceptCall(true) }
         )
-        button.unselectedBackgroundColor = .ows_accentGreen
-        return button
     }
 
     private func createAnswerWithoutVideoButton() -> CallButton {
@@ -58,14 +55,14 @@ class IncomingCallControls: UIView {
             "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL",
             comment: "label for accepting incoming video calls as audio only"
         )
-        let button = createButton(
+        return createButton(
             iconName: "video-slash-fill-28",
             // genstrings doesn't expand '\n' in a comment, so we don't need to escape the backslash.
             label: OWSLocalizedString("CALL_CONTROLS_INCOMING_ANSWER_WITHOUT_VIDEO", comment: "Label for button shown when an incoming call rings. This particular label has room for two lines; you may insert a manual linebreak with '\n' as long as both lines are 15 characters or shorter (8 fullwidth characters or shorter), as in the English translation."),
+            unselectedBackgroundColor: .ows_whiteAlpha40,
             accessibilityLabel: accessibilityLabel,
             action: { self.didAcceptCall(false) }
         )
-        return button
     }
 
     private let didDeclineCall: () -> Void
@@ -120,6 +117,7 @@ class IncomingCallControls: UIView {
     private func createButton(
         iconName: String,
         label: String? = nil,
+        unselectedBackgroundColor: UIColor,
         accessibilityLabel: String? = nil,
         action: @escaping () -> Void
     ) -> CallButton {
@@ -128,6 +126,8 @@ class IncomingCallControls: UIView {
         button.alpha = 0.9
         button.text = label
         button.accessibilityLabel = accessibilityLabel
+        button.unselectedBackgroundColor = unselectedBackgroundColor
+        button.selectedIconColor = .ows_gray75
         return button
     }
 }

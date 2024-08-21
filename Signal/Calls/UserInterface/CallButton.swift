@@ -18,17 +18,14 @@ class CallButton: UIButton {
     }
 
     var iconColor: UIColor = .ows_white { didSet { updateAppearance() } }
-    var selectedIconColor: UIColor = .ows_gray75 { didSet { updateAppearance() } }
+    var selectedIconColor: UIColor = CallButton.selectedIconColor { didSet { updateAppearance() } }
     var currentIconColor: UIColor { isSelected ? selectedIconColor : iconColor }
 
-    var unselectedBackgroundColor = UIColor.ows_whiteAlpha40 { didSet { updateAppearance() } }
-    var selectedBackgroundColor = UIColor.ows_white { didSet { updateAppearance() } }
+    var unselectedBackgroundColor: UIColor = CallButton.unselectedBackgroundColor { didSet { updateAppearance() } }
+    var selectedBackgroundColor: UIColor = .ows_white { didSet { updateAppearance() } }
 
-    // TODO: When `FeatureFlags.groupCallDrawerSupport` is removed, have
-    // these replace [un]selectedBackgroundColor` in this file and make
-    // private and non-static.
-    static private(set) var unselectedBackgroundColorInDrawer = UIColor(rgbHex: 0x4A4A4A).withAlphaComponent(0.63)
-    static private(set) var selectedIconColorInDrawer: UIColor = .ows_black
+    static let unselectedBackgroundColor = UIColor(rgbHex: 0x4A4A4A).withAlphaComponent(0.63)
+    private static let selectedIconColor: UIColor = .ows_black
 
     var currentBackgroundColor: UIColor {
         return isSelected ? selectedBackgroundColor : unselectedBackgroundColor

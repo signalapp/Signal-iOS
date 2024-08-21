@@ -48,12 +48,6 @@ public class FeatureFlags: NSObject {
 
     public static let callLinkCreate = build.includes(.dev)
 
-    public static let callRaiseHandReceiveSupport = build.includes(.production)
-    public static let callRaiseHandSendSupport = build.includes(.production)
-    public static let callRaiseHandToastSupport = build.includes(.production)
-    public static let groupCallDrawerSupport = build.includes(.production)
-    public static let individualCallDrawerSupport = build.includes(.production)
-
     public static let chatListFilter = build.includes(.internal)
 }
 

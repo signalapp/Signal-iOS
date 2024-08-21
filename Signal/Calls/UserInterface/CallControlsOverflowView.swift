@@ -103,10 +103,7 @@ class CallControlsOverflowView: UIView {
         }
     }
 
-    private lazy var buttonStack: ButtonStack? = {
-        guard FeatureFlags.callRaiseHandSendSupport else { return nil }
-        return ButtonStack()
-    }()
+    private lazy var buttonStack = ButtonStack()
 
     private var reactionSender: ReactionSender
     private var reactionsSink: ReactionsSink
@@ -142,18 +139,14 @@ class CallControlsOverflowView: UIView {
             reactionPicker.trailingAnchor.constraint(equalTo: self.trailingAnchor),
         ])
 
-        if let stackView = buttonStack {
-            self.addSubview(stackView)
-            NSLayoutConstraint.activate([
-                stackView.topAnchor.constraint(equalTo: reactionPicker.bottomAnchor, constant: Constants.spacingBetweenEmojiPickerAndStackView),
-                stackView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
-                stackView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-                stackView.bottomAnchor.constraint(equalTo: self.bottomAnchor)
-            ])
-            stackView.raiseHandButton.addTarget(self, action: #selector(CallControlsOverflowView.didTapRaiseHandButton), for: .touchUpInside)
-        } else {
-            reactionPicker.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
-        }
+        self.addSubview(buttonStack)
+        NSLayoutConstraint.activate([
+            buttonStack.topAnchor.constraint(equalTo: reactionPicker.bottomAnchor, constant: Constants.spacingBetweenEmojiPickerAndStackView),
+            buttonStack.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+            buttonStack.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+            buttonStack.bottomAnchor.constraint(equalTo: self.bottomAnchor)
+        ])
+        buttonStack.raiseHandButton.addTarget(self, action: #selector(CallControlsOverflowView.didTapRaiseHandButton), for: .touchUpInside)
     }
 
     // MARK: - Constants
@@ -178,7 +171,7 @@ class CallControlsOverflowView: UIView {
     private(set) var isAnimating = false
 
     func animateIn() {
-        self.buttonStack?.isHandRaised = self.isLocalHandRaised
+        self.buttonStack.isHandRaised = self.isLocalHandRaised
 
         self.isHidden = false
         guard !isAnimating else {
@@ -199,12 +192,10 @@ class CallControlsOverflowView: UIView {
         self.reactionPicker.alpha = 1
         self.reactionPicker.playPresentationAnimation(duration: Constants.animationDuration)
 
-        if let buttonStack {
-            buttonStack.isHidden = false
-            buttonStack.alpha = 0
-            UIView.animate(withDuration: Constants.animationDuration) {
-                buttonStack.alpha = 1
-            }
+        buttonStack.isHidden = false
+        buttonStack.alpha = 0
+        UIView.animate(withDuration: Constants.animationDuration) { [buttonStack] in
+            buttonStack.alpha = 1
         }
         CATransaction.commit()
     }
@@ -226,14 +217,12 @@ class CallControlsOverflowView: UIView {
                 self?.callControlsOverflowPresenter?.callControlsOverflowDidDisappear()
             }
         )
-        if let buttonStack {
-            buttonStack.alpha = 1
-            buttonStack.backgroundColor = .ows_gray75
-            UIView.animate(withDuration: Constants.animationDuration) {
-                buttonStack.alpha = 0
-            } completion: { _ in
-                buttonStack.isHidden = true
-            }
+        buttonStack.alpha = 1
+        buttonStack.backgroundColor = .ows_gray75
+        UIView.animate(withDuration: Constants.animationDuration) { [buttonStack] in
+            buttonStack.alpha = 0
+        } completion: { [buttonStack] _ in
+            buttonStack.isHidden = true
         }
         CATransaction.commit()
     }
