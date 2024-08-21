@@ -1,1 +1,2 @@
-• Vi har uppdaterat kontrollpanelen som visas under röst- och videosamtal. Nu kan du svepa upp på kontrollpanelen för att visa listan över personer som deltar i samtalet, se vem som har räckt upp handen och utföra andra snabba åtgärder.
+• Now you can flip the camera even when you're alone in a group call. Get ready to give them a front-row view by switching to the back camera, or switch back to the front camera so that you're ready to talk back.
+• We also fixed a bug that made it harder to scroll between views during group calls while a hand was raised. It's hands down our favorite bugfix in this release. 

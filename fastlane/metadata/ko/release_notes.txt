@@ -1,1 +1,2 @@
-• 음성 및 화상 통화 중 표시되는 제어판을 업데이트했습니다. 이제 제어판을 살짝 밀어 올려 통화에 참여 중인 사용자 목록을 보고, 누가 손을 들었는지 확인하고, 다른 빠른 작업을 수행할 수도 있습니다.
+• Now you can flip the camera even when you're alone in a group call. Get ready to give them a front-row view by switching to the back camera, or switch back to the front camera so that you're ready to talk back.
+• We also fixed a bug that made it harder to scroll between views during group calls while a hand was raised. It's hands down our favorite bugfix in this release. 

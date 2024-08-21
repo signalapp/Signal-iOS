@@ -1,1 +1,2 @@
-• Ми оновили панель керування, що з'являється під час аудіо- та відеовикликів. Якщо хочеться приберегти найкращі жарти й найцікавіші тези для конкретної людини, тепер можна просто потягти вгору панель керування й переглянути учасників виклику, побачити, хто підняв руку, і виконати інші швидкі дії.
+• Now you can flip the camera even when you're alone in a group call. Get ready to give them a front-row view by switching to the back camera, or switch back to the front camera so that you're ready to talk back.
+• We also fixed a bug that made it harder to scroll between views during group calls while a hand was raised. It's hands down our favorite bugfix in this release. 

@@ -659,7 +659,7 @@
 "BUTTON_SELECT" = "Seleccionar";
 
 /* Label for the 'set' button. */
-"BUTTON_SET" = "Fijar";
+"BUTTON_SET" = "Definir";
 
 /* Label for the 'share' button. */
 "BUTTON_SHARE" = "Compartir";
@@ -709,8 +709,29 @@
 /* label for button shown when an incoming call rings */
 "CALL_CONTROLS_INCOMING_DECLINE" = "rechazar";
 
+/* Button to open a screen to edit the name of a Call Link. Also used as the title of that screen once it opens. */
+"CALL_LINK_ADD_NAME" = "Add Call Name";
+
+/* Button to copy a Call Link to the clipboard. */
+"CALL_LINK_COPY" = "Copy Link";
+
+/* Navigation bar title for the sheet used to create & configure a Call Link. */
+"CALL_LINK_CREATE" = "Create Call Link";
+
+/* Button to open a screen to edit the name of a Call Link. Also used as the title of that screen once it opens. */
+"CALL_LINK_EDIT_NAME" = "Edit Call Name";
+
 /* Shown in a message bubble when you send a call link in a Signal chat */
 "CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "Usa este enlace para unirte a llamada de Signal";
+
+/* Name of a toggle switch to enable/disable admin approval for joining a Call Link. */
+"CALL_LINK_REQUIRE_APPROVAL" = "Approve All Members";
+
+/* Button to open UI to share a Call Link with someone on Signal. */
+"CALL_LINK_SHARE_VIA_SIGNAL" = "Share Link via Signal";
+
+/* Button to open the system share sheet to share a Call Link. */
+"CALL_LINK_SHARE_VIA_SYSTEM" = "Share Link";
 
 /* Label on button for lowering hand in call. */
 "CALL_LOWER_HAND_BUTTON_LABEL" = "Bajar la mano";
@@ -1970,13 +1991,13 @@
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Los mensajes en este chat desaparecerán tras %1$@.";
 
 /* Disappearing message option to define a custom time */
-"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Tiempo personalizado";
+"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Duración personalizada";
 
 /* The unit for a number of days */
 "DISAPPEARING_MESSAGES_DAYS" = "días";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "Con esta opción activa, los mensajes enviados y recibidos en este chat desaparecerán tras ser vistos.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Si habilitas esta función, los mensajes enviados y recibidos en este chat desaparecerán tras ser vistos.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Los mensajes desaparecerán tras %1$@";
@@ -2297,7 +2318,7 @@
 "DONATION_SCREEN_DONATE_BUTTON" = "Donar";
 
 /* On donation screens, a small amount of information text is shown. This is the subtitle for that text. */
-"DONATION_SCREENS_HEADER_DESCRIPTION" = "Mensajería privada, financiada por ti. Sin anuncios, sin seguimiento, sin comprometer tu privacidad.Haz una donación ahora para ayudar a Signal.";
+"DONATION_SCREENS_HEADER_DESCRIPTION" = "Mensajería privada, financiada por ti. Sin anuncios, sin seguimiento, sin comprometer tu privacidad. Haz una donación ahora para apoyar a Signal.";
 
 /* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
 "DONATION_SCREENS_HEADER_READ_MORE" = "Más información";
@@ -2702,7 +2723,7 @@
 "FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "Los mensajes reenviados ahora se envían de inmediato.";
 
 /* Title for alert with information about forwarding messages. */
-"FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Reenvíos más rápidos";
+"FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Reenvío de mensajes más rápido";
 
 /* Indicates that a single message was forwarded. */
 "FORWARD_MESSAGE_MESSAGES_SENT_1" = "Mensaje enviado";
@@ -2861,7 +2882,7 @@
 "GROUP_CALL_MEMBER_LIST_SECTION_HEADER_MEMBER_COUNT" = "(%1$d)";
 
 /* Title for a button on the group members sheet for sharing that call's link. */
-"GROUP_CALL_MEMBER_LIST_SHARE_CALL_LINK_BUTTON" = "Share call link";
+"GROUP_CALL_MEMBER_LIST_SHARE_CALL_LINK_BUTTON" = "Compartir enlace de llamada";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "No se puede recibir audio ni vídeo de %1$@";
@@ -3107,7 +3128,7 @@
 "GROUP_LINK_PROMOTION_ALERT_TITLE" = "Invitar personas";
 
 /* Suggestion to invite more group members via the group invite link. */
-"GROUP_LINK_PROMOTION_UPDATE" = "Invita a más personas a tu grupo mediante enlace";
+"GROUP_LINK_PROMOTION_UPDATE" = "Invita a otras personas usando el enlace al grupo";
 
 /* Description text in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "Las personas que escaneen este código podrán unirse al grupo. Aun así, los admins deben aceptar a nuevos participantes si esa opción está activa.";
@@ -3652,6 +3673,24 @@
 /* info message text in conversation view */
 "INCOMING_VOICE_CALL" = "Llamada entrante";
 
+/* An info message inserted into the chat when you accept a message request, in a 1:1 or group chat. */
+"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST" = "You accepted the message request.";
+
+/* Header for an action sheet providing options in response to an accepted 1:1 message request. Embeds {{ the name of your chat partner }}. */
+"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_CONTACT" = "You accepted a message request from %1$@. If this was a mistake, you can choose an action below.";
+
+/* Header for an action sheet providing options in response to an accepted group message request. */
+"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_GROUP" = "You accepted a message request from this group. If this was a mistake, you can choose an action below.";
+
+/* Title for a button shown alongside an info message indicating you accepted a message request. */
+"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_BUTTON" = "Options";
+
+/* An info message inserted into a group chat when you block the group. */
+"INFO_MESSAGE_BLOCKED_GROUP" = "You blocked this group.";
+
+/* An info message inserted into a 1:1 chat when you block another user. */
+"INFO_MESSAGE_BLOCKED_OTHER_USER" = "You blocked this person.";
+
 /* Indicates that a previously-removed recipient has been added back to the current user's contacts. */
 "INFO_MESSAGE_CONTACT_REINSTATED" = "Esta persona ha sido añadida de nuevo a tu lista de contactos de Signal.";
 
@@ -3684,6 +3723,12 @@
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "Por tu seguridad, el historial de chats no se transfiere a dispositivos recién vinculados.";
+
+/* An info message inserted into a group chat when you unblock the group. */
+"INFO_MESSAGE_UNBLOCKED_GROUP" = "You unblocked this group.";
+
+/* An info message inserted into a 1:1 chat when you unblock another user. */
+"INFO_MESSAGE_UNBLOCKED_OTHER_USER" = "You unblocked this person.";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
 "INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%1$@ ha cambiado su número de teléfono.";
@@ -7103,7 +7148,7 @@
 "SETTINGS_SECURITY_TITLE" = "Seguridad";
 
 /* The footer for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Se usarán más datos al seleccionar la opción de alta calidad.";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Si seleccionas la opción de alta calidad, se usarán más datos.";
 
 /* The title for the photos and videos section in the sent media quality settings. */
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Calidad";
@@ -7676,7 +7721,7 @@
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "¿Actualizar suscripción?";
 
 /* Label for 'off' state of a switch control. */
-"SWITCH_OFF" = "Desactivado";
+"SWITCH_OFF" = "Desactivados";
 
 /* Label for 'on' state of a switch control. */
 "SWITCH_ON" = "Activo";

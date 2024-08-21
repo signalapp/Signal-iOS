@@ -1,1 +1,2 @@
-• Ενημερώσαμε τον πίνακα ελέγχου που εμφανίζεται κατά τη διάρκεια φωνητικών κλήσεων και βιντεοκλήσεων. Τώρα μπορείς να σύρεις προς τα επάνω στον πίνακα ελέγχου για να δεις τη λίστα των ατόμων που συμμετέχουν στην κλήση, να δεις ποιος έχει σηκώσει το χέρι του και να εκτελέσεις άλλες γρήγορες ενέργειες.
+• Now you can flip the camera even when you're alone in a group call. Get ready to give them a front-row view by switching to the back camera, or switch back to the front camera so that you're ready to talk back.
+• We also fixed a bug that made it harder to scroll between views during group calls while a hand was raised. It's hands down our favorite bugfix in this release. 

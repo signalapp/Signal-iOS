@@ -1,1 +1,2 @@
-• เราอัปเดตแผงควบคุมที่จะแสดงในระหว่างการโทรด้วยเสียงและวิดีโอคอล จากนี้ไป เพียงคุณปัดขึ้นตรงแผงควบคุมนี้ ก็จะสามารถดูรายชื่อของคนที่อยู่ในสาย หรือดูได้ว่าใครยกมือ ทั้งยังเข้าถึงทางลัดต่างๆ ได้สะดวกยิ่งขึ้น
+• Now you can flip the camera even when you're alone in a group call. Get ready to give them a front-row view by switching to the back camera, or switch back to the front camera so that you're ready to talk back.
+• We also fixed a bug that made it harder to scroll between views during group calls while a hand was raised. It's hands down our favorite bugfix in this release. 

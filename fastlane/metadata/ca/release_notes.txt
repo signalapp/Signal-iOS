@@ -1,1 +1,2 @@
-• Hem actualitzat el panell de control que apareix durant les trucades de veu i videotrucades. Ara podràs lliscar cap amunt al panell de control per veure la llista de persones que estan a la trucada i veure qui ha aixecat la mà i executar altres tasques ràpides.
+• Now you can flip the camera even when you're alone in a group call. Get ready to give them a front-row view by switching to the back camera, or switch back to the front camera so that you're ready to talk back.
+• We also fixed a bug that made it harder to scroll between views during group calls while a hand was raised. It's hands down our favorite bugfix in this release. 

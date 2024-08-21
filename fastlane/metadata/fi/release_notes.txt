@@ -1,1 +1,2 @@
-• Päivitimme ääni- ja videopuheluiden aikana näkyvän ohjauspaneelin. Nyt voit sipaista ylöspäin ohjauspaneelissa nähdäksesi luettelon puhelussa olevista ihmisistä, nähdäksesi kuka on nostanut kätensä ja suorittaaksesi muita nopeita toimia.
+• Now you can flip the camera even when you're alone in a group call. Get ready to give them a front-row view by switching to the back camera, or switch back to the front camera so that you're ready to talk back.
+• We also fixed a bug that made it harder to scroll between views during group calls while a hand was raised. It's hands down our favorite bugfix in this release. 

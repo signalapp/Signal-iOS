@@ -1,1 +1,2 @@
-• Frissítettük a hang- és videohívások közben megjelenő vezérlőpultot. Mostantól az ujjad vezérlőpulton való felfelé húzásával megtekintheted a hívásban részt vevő személyek listáját, megnézheted, ki emelte fel a kezét, és egyéb gyors műveleteket is végrehajthatsz.
+• Now you can flip the camera even when you're alone in a group call. Get ready to give them a front-row view by switching to the back camera, or switch back to the front camera so that you're ready to talk back.
+• We also fixed a bug that made it harder to scroll between views during group calls while a hand was raised. It's hands down our favorite bugfix in this release. 

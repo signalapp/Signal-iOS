@@ -1,1 +1,2 @@
-• वॉइस और वीडियो कॉल के दौरान दिखने वाले कंट्रोल पैनल को हमने अपडेट कर दिया है। अगर आप अपने सबसे अच्छे चुटकुले और दिलचस्प बातें उस समय के लिए बचाकर रखना चाहते हैं, जब आपका पसंदीदा व्यक्ति सुन रहा हो, तो अब आप कंट्रोल पैनल पर स्वाइप अप करके कॉल में मौजूद लोगों की सूची देख सकते हैं, उन लोगों को देख सकते हैं जिन्होंने अपना हाथ खड़ा किया है, और तुरंत की जा सकने वाली दूसरी कार्रवाइयाँ भी कर सकते हैं।
+• Now you can flip the camera even when you're alone in a group call. Get ready to give them a front-row view by switching to the back camera, or switch back to the front camera so that you're ready to talk back.
+• We also fixed a bug that made it harder to scroll between views during group calls while a hand was raised. It's hands down our favorite bugfix in this release. 

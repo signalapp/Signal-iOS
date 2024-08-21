@@ -1,1 +1,2 @@
-• Atualizamos o painel de controle que aparece durante as chamadas de voz e vídeo. Agora, você pode deslizar o painel para cima para ver a lista de participantes, conferir quem levantou a mão e realizar outras ações rápidas. Assim, você pode guardar suas melhores piadas e pontos mais interessantes para quando sua pessoa favorita estiver ouvindo.
+• Now you can flip the camera even when you're alone in a group call. Get ready to give them a front-row view by switching to the back camera, or switch back to the front camera so that you're ready to talk back.
+• We also fixed a bug that made it harder to scroll between views during group calls while a hand was raised. It's hands down our favorite bugfix in this release. 

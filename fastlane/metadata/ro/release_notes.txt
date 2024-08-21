@@ -1,1 +1,2 @@
-• Am actualizat panoul de control care apare în timpul apelurilor vocale și video. Dacă dorești să îți păstrezi cele mai bune glume și cele mai interesante păreri până când persoana preferată te ascultă, acum poți glisa în sus pe panoul de control pentru a vizualiza lista persoanelor care participă la apel, pentru a vedea cine a ridicat mâna și pentru a efectua și alte acțiuni rapide.
+• Now you can flip the camera even when you're alone in a group call. Get ready to give them a front-row view by switching to the back camera, or switch back to the front camera so that you're ready to talk back.
+• We also fixed a bug that made it harder to scroll between views during group calls while a hand was raised. It's hands down our favorite bugfix in this release. 

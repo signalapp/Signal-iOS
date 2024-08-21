@@ -1,1 +1,2 @@
-• Chúng tôi đã cập nhật bảng điều khiển xuất hiện trong quá trình thực hiện cuộc gọi thoại hoặc cuộc gọi video. Giờ đây bạn có thể vuốt lên ở bảng điều khiển để xem danh sách người đang tham gia cuộc gọi, người giơ tay, và còn có thể thực hiện các thao tác nhanh khác.
+• Now you can flip the camera even when you're alone in a group call. Get ready to give them a front-row view by switching to the back camera, or switch back to the front camera so that you're ready to talk back.
+• We also fixed a bug that made it harder to scroll between views during group calls while a hand was raised. It's hands down our favorite bugfix in this release. 

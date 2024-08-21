@@ -1,1 +1,2 @@
-• 我们更新了语音和视频通话期间显示的控制面板。现在您可以在控制面板上向上滑动以查看通话中的人员列表，并查看谁举了手以及执行其他快捷操作。
+• Now you can flip the camera even when you're alone in a group call. Get ready to give them a front-row view by switching to the back camera, or switch back to the front camera so that you're ready to talk back.
+• We also fixed a bug that made it harder to scroll between views during group calls while a hand was raised. It's hands down our favorite bugfix in this release. 
