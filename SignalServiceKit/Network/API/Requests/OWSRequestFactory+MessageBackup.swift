@@ -109,4 +109,35 @@ extension OWSRequestFactory {
         request.shouldHaveAuthorizationHeaders = false
         return request
     }
+
+    public static func copyToMediaTier(
+        auth: MessageBackupServiceAuth,
+        transitCdnNumber: UInt32,
+        transitCdnKey: String,
+        objectLength: UInt32,
+        mediaId: Data,
+        hmacKey: Data,
+        encryptionKey: Data,
+        iv: Data
+    ) -> TSRequest {
+        let parameters: [String: Any] = [
+            "sourceAttachment": [
+                "cdn": transitCdnNumber,
+                "key": transitCdnKey
+            ],
+            "objectLength": objectLength,
+            "mediaId": mediaId.asBase64Url,
+            "hmacKey": hmacKey.base64EncodedString(),
+            "encryptionKey": encryptionKey.base64EncodedString(),
+            "iv": iv.base64EncodedString()
+        ]
+        let request = TSRequest(
+            url: URL(string: "v1/archives/media")!,
+            method: "PUT",
+            parameters: parameters
+        )
+        auth.apply(to: request)
+        request.shouldHaveAuthorizationHeaders = false
+        return request
+    }
 }

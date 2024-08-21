@@ -24,8 +24,18 @@ public protocol MessageBackupRequestManager {
 
     func fetchCDNReadCredentials(cdn: Int32, auth: MessageBackupServiceAuth) async throws -> CDNReadCredential
 
+    func copyToMediaTier(
+        transitCdnNumber: UInt32,
+        transitCdnKey: String,
+        objectLength: UInt32,
+        mediaId: Data,
+        hmacKey: Data,
+        encryptionKey: Data,
+        iv: Data,
+        auth: MessageBackupServiceAuth
+    ) async throws -> UInt32
+
     // TODO: [Backups] Batched backup media
-    // TODO: [Backups] Backup media
     // TODO: [Backups] List media objects
     // TODO: [Backups] Delete media objects
     // TODO: [Backups] Redeem receipt
@@ -143,6 +153,33 @@ public struct MessageBackupRequestManagerImpl: MessageBackupRequestManager {
         return try await executeBackupService(
             auth: auth,
             requestFactory: { OWSRequestFactory.fetchCDNCredentials(auth: $0, cdn: cdn) }
+        )
+    }
+
+    public func copyToMediaTier(
+        transitCdnNumber: UInt32,
+        transitCdnKey: String,
+        objectLength: UInt32,
+        mediaId: Data,
+        hmacKey: Data,
+        encryptionKey: Data,
+        iv: Data,
+        auth: MessageBackupServiceAuth
+    ) async throws -> UInt32 {
+        return try await executeBackupService(
+            auth: auth,
+            requestFactory: {
+                OWSRequestFactory.copyToMediaTier(
+                    auth: $0,
+                    transitCdnNumber: transitCdnNumber,
+                    transitCdnKey: transitCdnKey,
+                    objectLength: objectLength,
+                    mediaId: mediaId,
+                    hmacKey: hmacKey,
+                    encryptionKey: encryptionKey,
+                    iv: iv
+                )
+            }
         )
     }
 
