@@ -830,8 +830,8 @@ extension TSAttachmentMigration {
                         fileExtension: oldFileUrl.pathExtension,
                         isAvailableWhileDeviceLocked: true
                     )
-                    try FileManager.default.copyItem(at: oldFileUrl, to: newTmpURL)
                     do {
+                        try FileManager.default.copyItem(at: oldFileUrl, to: newTmpURL)
                         pendingAttachment = try TSAttachmentMigration.V2AttachmentContentValidator.validateContents(
                             unencryptedFileUrl: newTmpURL,
                             reservedFileIds: .init(
