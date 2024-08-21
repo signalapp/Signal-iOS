@@ -313,8 +313,25 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         bottomGradientView.autoPinWidthToSuperview()
         bottomGradientView.autoPinEdge(toSuperviewEdge: .bottom)
 
+        // Confirmation toasts should sit on top of the `localVideoView`
+        // and most other UI elements, so this `addSubview` should remain towards
+        // the end of the setup.
+        view.addSubview(callControlsConfirmationToastContainerView)
+        self.callControlsConfirmationToastContainerViewBottomConstraint = callControlsConfirmationToastContainerView.autoPinEdge(
+            .bottom,
+            to: .bottom,
+            of: self.view,
+            withOffset: callControlsConfirmationToastContainerViewBottomConstraintConstant
+        )
+        callControlsConfirmationToastContainerView.autoHCenterInSuperview()
+
         createContactViews()
         createIncomingCallControls()
+    }
+
+    private var callControlsConfirmationToastContainerViewBottomConstraint: NSLayoutConstraint?
+    private var callControlsConfirmationToastContainerViewBottomConstraintConstant: CGFloat {
+        return -self.bottomSheet.sheetHeight - 16
     }
 
     private func presentBottomSheet(_ animated: Bool) {
@@ -856,6 +873,8 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
             callDurationTimer = nil
         }
 
+        callControlsConfirmationToastContainerViewBottomConstraint?.constant = callControlsConfirmationToastContainerViewBottomConstraintConstant
+
         scheduleBottomSheetTimeoutIfNecessary()
     }
 
@@ -1354,6 +1373,7 @@ private class PermissionErrorView: UIView {
 extension IndividualCallViewController: SheetPanDelegate {
     func sheetPanDidBegin() {
         bottomSheetState = .transitioning
+        self.callControlsConfirmationToastManager.forceDismissToast()
     }
 
     func sheetPanDidEnd() {
