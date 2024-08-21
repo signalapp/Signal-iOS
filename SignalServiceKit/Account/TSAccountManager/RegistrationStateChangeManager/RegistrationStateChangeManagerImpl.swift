@@ -339,7 +339,6 @@ extension RegistrationStateChangeManagerImpl {
         localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction
     ) {
-        owsAssertDebug(FeatureFlags.storageMode == .grdbTests)
         owsAssertDebug(CurrentAppContext().isRunningTests)
 
         tsAccountManager.initializeLocalIdentifiers(

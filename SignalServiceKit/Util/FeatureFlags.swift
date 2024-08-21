@@ -22,33 +22,6 @@ private let build = FeatureBuild.current
 
 // MARK: -
 
-@objc
-public enum StorageMode: Int {
-    // Use GRDB.
-    case grdb
-    // These modes can be used while running tests.
-    // They are more permissive than the release modes.
-    //
-    // The build shepherd should be running the test
-    // suites in .grdbTests mode before each release.
-    case grdbTests
-}
-
-// MARK: -
-
-extension StorageMode: CustomStringConvertible {
-    public var description: String {
-        switch self {
-        case .grdb:
-            return ".grdb"
-        case .grdbTests:
-            return ".grdbTests"
-        }
-    }
-}
-
-// MARK: -
-
 /// By centralizing feature flags here and documenting their rollout plan, it's easier to review
 /// which feature flags are in play.
 @objc(SSKFeatureFlags)
@@ -124,20 +97,6 @@ extension FeatureFlags {
             .compactMap { $0 }
             .joined(separator: " — ")
             .nilIfEmpty
-    }
-
-    @objc
-    public static var storageMode: StorageMode {
-        if CurrentAppContext().isRunningTests {
-            return .grdbTests
-        } else {
-            return .grdb
-        }
-    }
-
-    @objc
-    public static var storageModeDescription: String {
-        return "\(storageMode)"
     }
 }
 
