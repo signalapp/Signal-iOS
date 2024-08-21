@@ -17,6 +17,11 @@ public class NetworkManager: NSObject {
         super.init()
 
         SwiftSingletons.register(self)
+
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(reachabilityChanged),
+                                               name: SSKReachability.owsReachabilityDidChange,
+                                               object: nil)
     }
 
     // This method can be called from any thread.
@@ -33,6 +38,15 @@ public class NetworkManager: NSObject {
     private func websocketRequestPromise(request: TSRequest) -> Promise<HTTPResponse> {
         Promise.wrapAsync {
             try await DependenciesBridge.shared.chatConnectionManager.makeRequest(request)
+        }
+    }
+
+    @objc
+    private func reachabilityChanged() {
+        do {
+            try self.libsignalNet?.networkDidChange()
+        } catch {
+            owsFailDebug("libsignal error: \(error)")
         }
     }
 }
