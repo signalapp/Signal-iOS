@@ -926,7 +926,6 @@ public class AppSetup {
                 interactionStore: interactionStore,
                 archivedPaymentStore: archivedPaymentStore,
                 reactionStore: reactionStore,
-                sentMessageTranscriptReceiver: sentMessageTranscriptReceiver,
                 threadStore: threadStore
             ),
             contactRecipientArchiver: MessageBackupContactRecipientArchiver(

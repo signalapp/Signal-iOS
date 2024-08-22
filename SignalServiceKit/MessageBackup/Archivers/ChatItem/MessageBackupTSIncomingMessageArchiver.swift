@@ -5,14 +5,12 @@
 
 import LibSignalClient
 
-class MessageBackupTSIncomingMessageArchiver: MessageBackupProtoArchiver {
-    typealias Details = MessageBackup.InteractionArchiveDetails
-
+class MessageBackupTSIncomingMessageArchiver {
     private typealias ArchiveFrameError = MessageBackup.ArchiveFrameError<MessageBackup.InteractionUniqueId>
     private typealias RestoreFrameError = MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>
 
     private let contentsArchiver: MessageBackupTSMessageContentsArchiver
-    private let editMessageStore: EditMessageStore
+    private let editHistoryArchiver: MessageBackupTSMessageEditHistoryArchiver<TSIncomingMessage>
     private let interactionStore: InteractionStore
 
     init(
@@ -21,7 +19,9 @@ class MessageBackupTSIncomingMessageArchiver: MessageBackupProtoArchiver {
         interactionStore: InteractionStore
     ) {
         self.contentsArchiver = contentsArchiver
-        self.editMessageStore = editMessageStore
+        self.editHistoryArchiver = MessageBackupTSMessageEditHistoryArchiver(
+            editMessageStore: editMessageStore
+        )
         self.interactionStore = interactionStore
     }
 
@@ -29,52 +29,24 @@ class MessageBackupTSIncomingMessageArchiver: MessageBackupProtoArchiver {
 
     func archiveIncomingMessage(
         _ incomingMessage: TSIncomingMessage,
-        thread _: TSThread,
+        thread: TSThread,
         context: MessageBackup.ChatArchivingContext,
         tx: DBReadTransaction
     ) -> MessageBackup.ArchiveInteractionResult<Details> {
         var partialErrors = [ArchiveFrameError]()
 
-        let shouldArchiveEditHistory: Bool
-        switch incomingMessage.editState {
-        case .pastRevision:
-            /// This message represents a past revision of a message, which is
-            /// archived as part of archiving the latest revision. Consequently,
-            /// we can skip this past revision here.
-            return .skippableChatUpdate(.pastRevisionOfEditedMessage)
-        case .none:
-            shouldArchiveEditHistory = false
-        case .latestRevisionRead, .latestRevisionUnread:
-            shouldArchiveEditHistory = true
-        }
-
-        var incomingMessageDetails: Details
-        switch buildInteractionArchiveDetails(
-            incomingMessage: incomingMessage,
-            editRecord: nil,
+        let incomingMessageDetails: Details
+        switch editHistoryArchiver.archiveMessageAndEditHistory(
+            incomingMessage,
+            thread: thread,
             context: context,
-            partialErrors: &partialErrors,
+            builder: self,
             tx: tx
         ).bubbleUp(Details.self, partialErrors: &partialErrors) {
         case .continue(let _incomingMessageDetails):
             incomingMessageDetails = _incomingMessageDetails
         case .bubbleUpError(let errorResult):
             return errorResult
-        }
-
-        if shouldArchiveEditHistory {
-            switch addEditHistoryArchiveDetails(
-                toLatestRevisionArchiveDetails: &incomingMessageDetails,
-                latestRevisionMessage: incomingMessage,
-                context: context,
-                partialErrors: &partialErrors,
-                tx: tx
-            ).bubbleUp(Details.self, partialErrors: &partialErrors) {
-            case .continue:
-                break
-            case .bubbleUpError(let errorResult):
-                return errorResult
-            }
         }
 
         if partialErrors.isEmpty {
@@ -84,156 +56,148 @@ class MessageBackupTSIncomingMessageArchiver: MessageBackupProtoArchiver {
         }
     }
 
-    /// Archive each of the prior revisions of the given latest revision of a
-    /// message, and add those prior-revision archive details to the given
-    /// archive details for the latest revision.
-    private func addEditHistoryArchiveDetails(
-        toLatestRevisionArchiveDetails latestRevisionDetails: inout Details,
-        latestRevisionMessage: TSIncomingMessage,
-        context: MessageBackup.ChatArchivingContext,
-        partialErrors: inout [ArchiveFrameError],
-        tx: DBReadTransaction
-    ) -> MessageBackup.ArchiveInteractionResult<Void> {
-        /// The edit history, from oldest revision to newest. This ordering
-        /// matches the expected ordering for `revisions` on a `ChatItem`, but
-        /// is reverse of what we get from `editMessageStore`.
-        let editHistory: [(EditRecord, TSIncomingMessage?)]
-        do {
-            editHistory = try editMessageStore.findEditHistory(
-                for: latestRevisionMessage,
-                tx: tx
-            ).reversed()
-        } catch {
-            return .messageFailure([.archiveFrameError(
-                .editHistoryFailedToFetch,
-                latestRevisionMessage.uniqueInteractionId
-            )])
-        }
-
-        for (editRecord, pastRevisionMessage) in editHistory {
-            guard let pastRevisionMessage else { continue }
-
-            /// Build archive details for this past revision, so we can append
-            /// them to the most recent revision's archive details.
-            ///
-            /// We'll power through anything less than a `.completeFailure`
-            /// while restoring a past revision, instead tracking the error,
-            /// dropping the revision, and moving on.
-            let pastRevisionDetails: Details
-            switch buildInteractionArchiveDetails(
-                incomingMessage: pastRevisionMessage,
-                editRecord: editRecord,
-                context: context,
-                partialErrors: &partialErrors,
-                tx: tx
-            ) {
-            case .success(let _pastRevisionDetails):
-                pastRevisionDetails = _pastRevisionDetails
-            case .partialFailure(let _pastRevisionDetails, let _partialErrors):
-                pastRevisionDetails = _pastRevisionDetails
-                partialErrors.append(contentsOf: _partialErrors)
-            case .messageFailure(let _partialErrors):
-                partialErrors.append(contentsOf: _partialErrors)
-                continue
-            case .completeFailure(let fatalError):
-                return .completeFailure(fatalError)
-            case .skippableChatUpdate, .notYetImplemented:
-                // This should never happen for an edit revision!
-                continue
-            }
-
-            /// We're iterating the edit history from oldest to newest, so the
-            /// past revision details stored on `latestRevisionDetails` will
-            /// also be ordered oldest to newest.
-            latestRevisionDetails.addPastRevision(pastRevisionDetails)
-        }
-
-        return .success(())
-    }
-
-    /// Build archive details for the given message.
-    ///
-    /// - Parameter editRecord
-    /// If the given message is a prior revision, this should contain the edit
-    /// record corresponding to that revision.
-    private func buildInteractionArchiveDetails(
-        incomingMessage message: TSIncomingMessage,
-        editRecord: EditRecord?,
-        context: MessageBackup.ChatArchivingContext,
-        partialErrors: inout [ArchiveFrameError],
-        tx: DBReadTransaction
-    ) -> MessageBackup.ArchiveInteractionResult<Details> {
-        guard
-            let authorAddress = MessageBackup.ContactAddress(
-                // Incoming message authors are always ACIs, not PNIs
-                aci: Aci.parseFrom(aciString: message.authorUUID),
-                e164: E164(message.authorPhoneNumber)
-            )?.asArchivingAddress()
-        else {
-            // This is an invalid message.
-            return .messageFailure([.archiveFrameError(.invalidIncomingMessageAuthor, message.uniqueInteractionId)])
-        }
-        guard let author = context.recipientContext[authorAddress] else {
-            return .messageFailure([.archiveFrameError(
-                .referencedRecipientIdMissing(authorAddress),
-                message.uniqueInteractionId
-            )])
-        }
-
-        let contentsResult = contentsArchiver.archiveMessageContents(
-            message,
-            context: context.recipientContext,
-            tx: tx
-        )
-
-        let chatItemType: MessageBackupTSMessageContentsArchiver.ChatItemType
-        switch contentsResult.bubbleUp(Details.self, partialErrors: &partialErrors) {
-        case .continue(let t):
-            chatItemType = t
-        case .bubbleUpError(let errorResult):
-            return errorResult
-        }
-
-        let details = Details(
-            author: author,
-            directionalDetails: buildIncomingMessageDetails(message, editRecord: editRecord),
-            dateCreated: message.timestamp,
-            expireStartDate: message.expireStartedAt,
-            expiresInMs: UInt64(message.expiresInSeconds) * 1000,
-            isSealedSender: message.wasReceivedByUD.negated,
-            chatItemType: chatItemType
-        )
-
-        return .success(details)
-    }
-
-    private func buildIncomingMessageDetails(
-        _ message: TSIncomingMessage,
-        editRecord: EditRecord?
-    ) -> Details.DirectionalDetails {
-        var incomingMessage = BackupProto_ChatItem.IncomingMessageDetails()
-        incomingMessage.dateReceived = message.receivedAtTimestamp
-        incomingMessage.dateServerSent = message.serverTimestamp?.uint64Value ?? 0
-        // The message may not have been marked read if it's a past revision,
-        // but its edit record will have been.
-        incomingMessage.read = editRecord?.read ?? message.wasRead
-        incomingMessage.sealedSender = message.wasReceivedByUD
-
-        return .incoming(incomingMessage)
-    }
-
     // MARK: - Restoring
 
     func restoreIncomingChatItem(
         _ topLevelChatItem: BackupProto_ChatItem,
-        incomingDetails: BackupProto_ChatItem.IncomingMessageDetails,
         chatThread: MessageBackup.ChatThread,
         context: MessageBackup.ChatRestoringContext,
         tx: DBWriteTransaction
     ) -> MessageBackup.RestoreInteractionResult<Void> {
+        var partialErrors = [RestoreFrameError]()
+
+        guard
+            editHistoryArchiver.restoreMessageAndEditHistory(
+                topLevelChatItem,
+                chatThread: chatThread,
+                context: context,
+                builder: self,
+                tx: tx
+            ).unwrap(partialErrors: &partialErrors)
+        else {
+            return .messageFailure(partialErrors)
+        }
+
+        if partialErrors.isEmpty {
+            return .success(())
+        } else {
+            return .partialRestore((), partialErrors)
+        }
+    }
+}
+
+// MARK: - MessageBackupTSMessageEditHistoryBuilder
+
+extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHistoryBuilder {
+    typealias EditHistoryMessageType = TSIncomingMessage
+
+    // MARK: - Archiving
+
+    func buildMessageArchiveDetails(
+        message incomingMessage: EditHistoryMessageType,
+        editRecord: EditRecord?,
+        context: MessageBackup.ChatArchivingContext,
+        tx: DBReadTransaction
+    ) -> MessageBackup.ArchiveInteractionResult<Details> {
+        var partialErrors = [ArchiveFrameError]()
+
+        guard
+            let authorAddress = MessageBackup.ContactAddress(
+                // Incoming message authors are always ACIs, not PNIs
+                aci: Aci.parseFrom(aciString: incomingMessage.authorUUID),
+                e164: E164(incomingMessage.authorPhoneNumber)
+            )?.asArchivingAddress()
+        else {
+            // This is an invalid message.
+            return .messageFailure([.archiveFrameError(.invalidIncomingMessageAuthor, incomingMessage.uniqueInteractionId)])
+        }
+        guard let author = context.recipientContext[authorAddress] else {
+            return .messageFailure([.archiveFrameError(
+                .referencedRecipientIdMissing(authorAddress),
+                incomingMessage.uniqueInteractionId
+            )])
+        }
+
+        let chatItemType: MessageBackupTSMessageContentsArchiver.ChatItemType
+        switch contentsArchiver.archiveMessageContents(
+            incomingMessage,
+            context: context.recipientContext,
+            tx: tx
+        ).bubbleUp(Details.self, partialErrors: &partialErrors) {
+        case .continue(let _chatItemType):
+            chatItemType = _chatItemType
+        case .bubbleUpError(let errorResult):
+            return errorResult
+        }
+
+        let incomingMessageDetails: BackupProto_ChatItem.IncomingMessageDetails = buildIncomingMessageDetails(
+            incomingMessage,
+            editRecord: editRecord
+        )
+
+        let details = Details(
+            author: author,
+            directionalDetails: .incoming(incomingMessageDetails),
+            dateCreated: incomingMessage.timestamp,
+            expireStartDate: incomingMessage.expireStartedAt,
+            expiresInMs: UInt64(incomingMessage.expiresInSeconds) * 1000,
+            isSealedSender: incomingMessage.wasReceivedByUD.negated,
+            chatItemType: chatItemType
+        )
+
+        if partialErrors.isEmpty {
+            return .success(details)
+        } else {
+            return .partialFailure(details, partialErrors)
+        }
+    }
+
+    private func buildIncomingMessageDetails(
+        _ incomingMessage: TSIncomingMessage,
+        editRecord: EditRecord?
+    ) -> BackupProto_ChatItem.IncomingMessageDetails {
+        var incomingDetails = BackupProto_ChatItem.IncomingMessageDetails()
+        incomingDetails.dateReceived = incomingMessage.receivedAtTimestamp
+        incomingDetails.dateServerSent = incomingMessage.serverTimestamp?.uint64Value ?? 0
+        // The message may not have been marked read if it's a past revision,
+        // but its edit record will have been.
+        incomingDetails.read = editRecord?.read ?? incomingMessage.wasRead
+        incomingDetails.sealedSender = incomingMessage.wasReceivedByUD
+
+        return incomingDetails
+    }
+
+    // MARK: - Restoring
+
+    func restoreMessage(
+        _ chatItem: BackupProto_ChatItem,
+        isPastRevision: Bool,
+        hasPastRevisions: Bool,
+        chatThread: MessageBackup.ChatThread,
+        context: MessageBackup.ChatRestoringContext,
+        tx: any DBWriteTransaction
+    ) -> MessageBackup.RestoreInteractionResult<EditHistoryMessageType> {
+        guard let chatItemItem = chatItem.item else {
+            return .messageFailure([.restoreFrameError(
+                .invalidProtoData(.chatItemMissingItem),
+                chatItem.id
+            )])
+        }
+
+        let incomingDetails: BackupProto_ChatItem.IncomingMessageDetails
+        switch chatItem.directionalDetails {
+        case .incoming(let _incomingDetails):
+            incomingDetails = _incomingDetails
+        case nil, .outgoing, .directionless:
+            return .messageFailure([.restoreFrameError(
+                .invalidProtoData(.revisionOfIncomingMessageMissingIncomingDetails),
+                chatItem.id
+            )])
+        }
+
         let authorAci: Aci?
         let authorE164: E164?
-        switch context.recipientContext[topLevelChatItem.authorRecipientId] {
+        switch context.recipientContext[chatItem.authorRecipientId] {
         case .contact(let address):
             authorAci = address.aci
             authorE164 = address.e164
@@ -246,131 +210,37 @@ class MessageBackupTSIncomingMessageArchiver: MessageBackupProtoArchiver {
         default:
             return .messageFailure([.restoreFrameError(
                 .invalidProtoData(.incomingMessageNotFromAciOrE164),
-                topLevelChatItem.id
-            )])
-        }
-
-        var partialErrors = [RestoreFrameError]()
-
-        let latestRevisionRestoreResult = _restoreIncomingChatItem(
-            topLevelChatItem,
-            incomingDetails: incomingDetails,
-            authorAci: authorAci,
-            authorE164: authorE164,
-            hasRevisions: topLevelChatItem.revisions.count > 0,
-            isRevision: false,
-            chatThread: chatThread,
-            context: context,
-            tx: tx
-        )
-        guard let latestRevisionMessage = latestRevisionRestoreResult
-            .unwrap(partialErrors: &partialErrors)
-        else {
-            return .messageFailure(partialErrors)
-        }
-
-        var earlierRevisionMessages = [TSIncomingMessage]()
-
-        /// `ChatItem.revisions` is ordered oldest -> newest, which aligns with
-        /// how we want to insert them. Older revisions should be inserted
-        /// before newer ones.
-        for revisionChatItem in topLevelChatItem.revisions {
-            let incomingDetails: BackupProto_ChatItem.IncomingMessageDetails
-            switch revisionChatItem.directionalDetails {
-            case .incoming(let incomingMessageDetails):
-                incomingDetails = incomingMessageDetails
-            case nil, .outgoing, .directionless:
-                return .messageFailure([.restoreFrameError(
-                    .invalidProtoData(.revisionOfIncomingMessageMissingIncomingDetails),
-                    revisionChatItem.id
-                )])
-            }
-
-            let earlierRevisionRestoreResult = _restoreIncomingChatItem(
-                revisionChatItem,
-                incomingDetails: incomingDetails,
-                authorAci: authorAci,
-                authorE164: authorE164,
-                hasRevisions: false,
-                isRevision: true,
-                chatThread: chatThread,
-                context: context,
-                tx: tx
-            )
-            guard let earlierRevisionMessage = earlierRevisionRestoreResult
-                .unwrap(partialErrors: &partialErrors)
-            else {
-                /// This means we won't attempt to restore any later revisions,
-                /// but we can't be confident they would have restored
-                /// successfully anyway.
-                return .messageFailure(partialErrors)
-            }
-
-            earlierRevisionMessages.append(earlierRevisionMessage)
-        }
-
-        for earlierRevisionMessage in earlierRevisionMessages {
-            let editRecord = EditRecord(
-                latestRevisionId: latestRevisionMessage.sqliteRowId!,
-                pastRevisionId: earlierRevisionMessage.sqliteRowId!,
-                read: earlierRevisionMessage.wasRead
-            )
-
-            editMessageStore.insert(editRecord, tx: tx)
-        }
-
-        if partialErrors.isEmpty {
-            return .success(())
-        } else {
-            return .partialRestore((), partialErrors)
-        }
-    }
-
-    /// Restore an "original" chat item, or one representing a message without
-    /// any edits. The message represented by this chat item may later have
-    /// edits applied.
-    private func _restoreIncomingChatItem(
-        _ chatItem: BackupProto_ChatItem,
-        incomingDetails: BackupProto_ChatItem.IncomingMessageDetails,
-        authorAci: Aci?,
-        authorE164: E164?,
-        hasRevisions: Bool,
-        isRevision: Bool,
-        chatThread: MessageBackup.ChatThread,
-        context: MessageBackup.ChatRestoringContext,
-        tx: DBWriteTransaction
-    ) -> MessageBackup.RestoreInteractionResult<TSIncomingMessage> {
-        guard let chatItemItem = chatItem.item else {
-            return .messageFailure([.restoreFrameError(
-                .invalidProtoData(.chatItemMissingItem),
                 chatItem.id
             )])
         }
 
-        var partialErrors = [RestoreFrameError]()
-
-        let contentsResult = contentsArchiver.restoreContents(
-            chatItemItem,
-            chatItemId: chatItem.id,
-            chatThread: chatThread,
-            context: context,
-            tx: tx
-        )
-        guard let contents = contentsResult.unwrap(partialErrors: &partialErrors) else {
-            return .messageFailure(partialErrors)
-        }
-
         let editState: TSEditState = {
-            if isRevision {
+            if isPastRevision {
                 return .pastRevision
-            } else if hasRevisions, incomingDetails.read {
-                return .latestRevisionRead
-            } else if hasRevisions {
-                return .latestRevisionUnread
+            } else if hasPastRevisions {
+                if incomingDetails.read {
+                    return .latestRevisionRead
+                } else {
+                    return .latestRevisionUnread
+                }
             } else {
                 return .none
             }
         }()
+
+        var partialErrors = [RestoreFrameError]()
+
+        guard
+            let contents = contentsArchiver.restoreContents(
+                chatItemItem,
+                chatItemId: chatItem.id,
+                chatThread: chatThread,
+                context: context,
+                tx: tx
+            ).unwrap(partialErrors: &partialErrors)
+        else {
+            return .messageFailure(partialErrors)
+        }
 
         let message: TSIncomingMessage = {
             switch contents {
@@ -437,15 +307,16 @@ class MessageBackupTSIncomingMessageArchiver: MessageBackupProtoArchiver {
 
         interactionStore.insertInteraction(message, tx: tx)
 
-        let downstreamObjectsResult = contentsArchiver.restoreDownstreamObjects(
-            message: message,
-            thread: chatThread,
-            chatItemId: chatItem.id,
-            restoredContents: contents,
-            context: context,
-            tx: tx
-        )
-        guard downstreamObjectsResult.unwrap(partialErrors: &partialErrors) else {
+        guard
+            contentsArchiver.restoreDownstreamObjects(
+                message: message,
+                thread: chatThread,
+                chatItemId: chatItem.id,
+                restoredContents: contents,
+                context: context,
+                tx: tx
+            ).unwrap(partialErrors: &partialErrors)
+        else {
             return .messageFailure(partialErrors)
         }
 

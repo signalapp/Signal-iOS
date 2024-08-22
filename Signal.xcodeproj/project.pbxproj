@@ -1981,6 +1981,9 @@
 		D9BFB8CF2C4F052800D67881 /* session-switchover-chat-update-message.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9BFB8CD2C4F052800D67881 /* session-switchover-chat-update-message.binproto */; };
 		D9BFB8D02C4F052800D67881 /* session-switchover-chat-update-message.jsonproto in Resources */ = {isa = PBXBuildFile; fileRef = D9BFB8CE2C4F052800D67881 /* session-switchover-chat-update-message.jsonproto */; };
 		D9BFB8D22C4F054A00D67881 /* MessageBackupSessionSwitchoverChatUpdateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9BFB8D12C4F054A00D67881 /* MessageBackupSessionSwitchoverChatUpdateTest.swift */; };
+		D9C047022C6FC03600CF0286 /* MessageBackupOutgoingMessageWithEditsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C047012C6FC03600CF0286 /* MessageBackupOutgoingMessageWithEditsTest.swift */; };
+		D9C047052C6FD8A600CF0286 /* outgoing-message-with-edits.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9C047032C6FD8A600CF0286 /* outgoing-message-with-edits.binproto */; };
+		D9C047062C6FD8A600CF0286 /* outgoing-message-with-edits.jsonproto in Resources */ = {isa = PBXBuildFile; fileRef = D9C047042C6FD8A600CF0286 /* outgoing-message-with-edits.jsonproto */; };
 		D9C0AE652BD7103100FCB05E /* OWSDeviceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C0AE632BD7103100FCB05E /* OWSDeviceStore.swift */; };
 		D9C0AE662BD7103100FCB05E /* InactiveLinkedDeviceFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C0AE642BD7103100FCB05E /* InactiveLinkedDeviceFinder.swift */; };
 		D9C0AE672BD7162300FCB05E /* InactiveLinkedDeviceFinderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C0AE612BD7102500FCB05E /* InactiveLinkedDeviceFinderTest.swift */; };
@@ -2073,6 +2076,7 @@
 		D9F9A63F2C013EF100EF13EC /* ThreadSoftDeleteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F9A63E2C013EF100EF13EC /* ThreadSoftDeleteManager.swift */; };
 		D9F9A6412C06645F00EF13EC /* DeleteForMeOutgoingSyncMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F9A6402C06645F00EF13EC /* DeleteForMeOutgoingSyncMessageManager.swift */; };
 		D9F9A6452C07ADEB00EF13EC /* DeleteForMeOutgoingSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F9A6442C07ADEB00EF13EC /* DeleteForMeOutgoingSyncMessage.swift */; };
+		D9FC1C912C6FE5A50023AB87 /* MessageBackupTSMessageEditHistoryArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9FC1C902C6FE5A50023AB87 /* MessageBackupTSMessageEditHistoryArchiver.swift */; };
 		E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		E14EDF6E2A71AFDF00F0FD7C /* RecipientContextMenuHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E14EDF6D2A71AFDF00F0FD7C /* RecipientContextMenuHelper.swift */; };
 		E16B440E2BBF242C00D2583E /* ReactionsModelTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E16B440D2BBF242C00D2583E /* ReactionsModelTest.swift */; };
@@ -5074,6 +5078,9 @@
 		D9BFB8CD2C4F052800D67881 /* session-switchover-chat-update-message.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = "session-switchover-chat-update-message.binproto"; path = "Signal-Message-Backup-Tests/test-cases/session-switchover-chat-update-message.binproto"; sourceTree = "<group>"; };
 		D9BFB8CE2C4F052800D67881 /* session-switchover-chat-update-message.jsonproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "session-switchover-chat-update-message.jsonproto"; path = "Signal-Message-Backup-Tests/test-cases/session-switchover-chat-update-message.jsonproto"; sourceTree = "<group>"; };
 		D9BFB8D12C4F054A00D67881 /* MessageBackupSessionSwitchoverChatUpdateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupSessionSwitchoverChatUpdateTest.swift; sourceTree = "<group>"; };
+		D9C047012C6FC03600CF0286 /* MessageBackupOutgoingMessageWithEditsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupOutgoingMessageWithEditsTest.swift; sourceTree = "<group>"; };
+		D9C047032C6FD8A600CF0286 /* outgoing-message-with-edits.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = "outgoing-message-with-edits.binproto"; path = "Signal-Message-Backup-Tests/test-cases/outgoing-message-with-edits.binproto"; sourceTree = "<group>"; };
+		D9C047042C6FD8A600CF0286 /* outgoing-message-with-edits.jsonproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "outgoing-message-with-edits.jsonproto"; path = "Signal-Message-Backup-Tests/test-cases/outgoing-message-with-edits.jsonproto"; sourceTree = "<group>"; };
 		D9C0AE612BD7102500FCB05E /* InactiveLinkedDeviceFinderTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InactiveLinkedDeviceFinderTest.swift; sourceTree = "<group>"; };
 		D9C0AE632BD7103100FCB05E /* OWSDeviceStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSDeviceStore.swift; sourceTree = "<group>"; };
 		D9C0AE642BD7103100FCB05E /* InactiveLinkedDeviceFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InactiveLinkedDeviceFinder.swift; sourceTree = "<group>"; };
@@ -5176,6 +5183,7 @@
 		D9F9A63E2C013EF100EF13EC /* ThreadSoftDeleteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadSoftDeleteManager.swift; sourceTree = "<group>"; };
 		D9F9A6402C06645F00EF13EC /* DeleteForMeOutgoingSyncMessageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteForMeOutgoingSyncMessageManager.swift; sourceTree = "<group>"; };
 		D9F9A6442C07ADEB00EF13EC /* DeleteForMeOutgoingSyncMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeleteForMeOutgoingSyncMessage.swift; sourceTree = "<group>"; };
+		D9FC1C902C6FE5A50023AB87 /* MessageBackupTSMessageEditHistoryArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupTSMessageEditHistoryArchiver.swift; sourceTree = "<group>"; };
 		E14EDF6D2A71AFDF00F0FD7C /* RecipientContextMenuHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientContextMenuHelper.swift; sourceTree = "<group>"; };
 		E16B440D2BBF242C00D2583E /* ReactionsModelTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReactionsModelTest.swift; sourceTree = "<group>"; };
 		E17283DD2B2A713C00302DC7 /* CallControlsConfirmationToast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallControlsConfirmationToast.swift; sourceTree = "<group>"; };
@@ -8610,6 +8618,7 @@
 				6605B9812B19547C00E8A68A /* MessageBackupReactionArchiver.swift */,
 				66CD258E2B0EB4AC00139E17 /* MessageBackupTSIncomingMessageArchiver.swift */,
 				66CD25922B0EC55100139E17 /* MessageBackupTSMessageContentsArchiver.swift */,
+				D9FC1C902C6FE5A50023AB87 /* MessageBackupTSMessageEditHistoryArchiver.swift */,
 				66CD25942B0EC5EC00139E17 /* MessageBackupTSOutgoingMessageArchiver.swift */,
 			);
 			path = ChatItem;
@@ -9991,6 +10000,8 @@
 				D9DD64D72C5AD38B007CE0C3 /* incoming-message-with-edits.jsonproto */,
 				D9DD64CA2C58514C007CE0C3 /* learned-profile-chat-update-message.binproto */,
 				D9DD64CB2C58514C007CE0C3 /* learned-profile-chat-update-message.jsonproto */,
+				D9C047032C6FD8A600CF0286 /* outgoing-message-with-edits.binproto */,
+				D9C047042C6FD8A600CF0286 /* outgoing-message-with-edits.jsonproto */,
 				D994C7D32C45E764009ECEDA /* profile-change-chat-update-message.binproto */,
 				D994C7D22C45E764009ECEDA /* profile-change-chat-update-message.jsonproto */,
 				D9247E9D2BFBED2A00DFEF6F /* registered-blocked-contact.binproto */,
@@ -10336,6 +10347,7 @@
 				D9DD64D42C5ACEC6007CE0C3 /* MessageBackupIncomingMessageWithEditsTest.swift */,
 				D9C964162BE56DFB0058F143 /* MessageBackupIntegrationTestCase.swift */,
 				D9DD64CE2C585173007CE0C3 /* MessageBackupLearnedProfileChatUpdateTest.swift */,
+				D9C047012C6FC03600CF0286 /* MessageBackupOutgoingMessageWithEditsTest.swift */,
 				D994C7D62C45E7A0009ECEDA /* MessageBackupProfileChangeChatUpdateTest.swift */,
 				D9BFB8D12C4F054A00D67881 /* MessageBackupSessionSwitchoverChatUpdateTest.swift */,
 				D994C7CB2C45D0D9009ECEDA /* MessageBackupSimpleChatUpdateTest.swift */,
@@ -12770,6 +12782,8 @@
 				D9DD64D92C5AD38B007CE0C3 /* incoming-message-with-edits.jsonproto in Resources */,
 				D9DD64CC2C58514C007CE0C3 /* learned-profile-chat-update-message.binproto in Resources */,
 				D9DD64CD2C58514C007CE0C3 /* learned-profile-chat-update-message.jsonproto in Resources */,
+				D9C047052C6FD8A600CF0286 /* outgoing-message-with-edits.binproto in Resources */,
+				D9C047062C6FD8A600CF0286 /* outgoing-message-with-edits.jsonproto in Resources */,
 				D994C7D52C45E765009ECEDA /* profile-change-chat-update-message.binproto in Resources */,
 				D994C7D42C45E765009ECEDA /* profile-change-chat-update-message.jsonproto in Resources */,
 				D9247EA32BFBED2A00DFEF6F /* registered-blocked-contact.binproto in Resources */,
@@ -14622,6 +14636,7 @@
 				D9BFB8BF2C4EE33C00D67881 /* MessageBackupThreadMergeChatUpdateArchiver.swift in Sources */,
 				66CD258F2B0EB4AC00139E17 /* MessageBackupTSIncomingMessageArchiver.swift in Sources */,
 				66CD25932B0EC55100139E17 /* MessageBackupTSMessageContentsArchiver.swift in Sources */,
+				D9FC1C912C6FE5A50023AB87 /* MessageBackupTSMessageEditHistoryArchiver.swift in Sources */,
 				66CD25952B0EC5EC00139E17 /* MessageBackupTSOutgoingMessageArchiver.swift in Sources */,
 				F9C5CBC9289453B300548EEE /* MessageBody.swift in Sources */,
 				66FC636F29DF797700F00DAC /* MessageBodyRanges.swift in Sources */,
@@ -15476,6 +15491,7 @@
 				D9DD64D52C5ACEC6007CE0C3 /* MessageBackupIncomingMessageWithEditsTest.swift in Sources */,
 				D9C964172BE56DFB0058F143 /* MessageBackupIntegrationTestCase.swift in Sources */,
 				D9DD64CF2C585173007CE0C3 /* MessageBackupLearnedProfileChatUpdateTest.swift in Sources */,
+				D9C047022C6FC03600CF0286 /* MessageBackupOutgoingMessageWithEditsTest.swift in Sources */,
 				D994C7D72C45E7A0009ECEDA /* MessageBackupProfileChangeChatUpdateTest.swift in Sources */,
 				D9BFB8D22C4F054A00D67881 /* MessageBackupSessionSwitchoverChatUpdateTest.swift in Sources */,
 				D9EAB2A32C6AC6E100E26207 /* MessageBackupSimpleChatUpdateTest.swift in Sources */,

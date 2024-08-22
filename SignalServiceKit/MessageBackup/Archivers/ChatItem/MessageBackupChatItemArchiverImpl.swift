@@ -23,7 +23,6 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
     private let interactionStore: InteractionStore
     private let archivedPaymentStore: ArchivedPaymentStore
     private let reactionStore: ReactionStore
-    private let sentMessageTranscriptReceiver: SentMessageTranscriptReceiver
     private let threadStore: ThreadStore
 
     public init(
@@ -41,7 +40,6 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         interactionStore: InteractionStore,
         archivedPaymentStore: ArchivedPaymentStore,
         reactionStore: ReactionStore,
-        sentMessageTranscriptReceiver: SentMessageTranscriptReceiver,
         threadStore: ThreadStore
     ) {
         self.attachmentManager = attachmentManager
@@ -58,7 +56,6 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         self.interactionStore = interactionStore
         self.archivedPaymentStore = archivedPaymentStore
         self.reactionStore = reactionStore
-        self.sentMessageTranscriptReceiver = sentMessageTranscriptReceiver
         self.threadStore = threadStore
     }
 
@@ -85,8 +82,8 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
     private lazy var outgoingMessageArchiver =
         MessageBackupTSOutgoingMessageArchiver(
             contentsArchiver: contentsArchiver,
-            interactionStore: interactionStore,
-            sentMessageTranscriptReceiver: sentMessageTranscriptReceiver
+            editMessageStore: editMessageStore,
+            interactionStore: interactionStore
         )
     private lazy var chatUpdateMessageArchiver =
         MessageBackupChatUpdateMessageArchiver(
@@ -368,10 +365,9 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         switch chatItem.directionalDetails {
         case nil:
             return restoreFrameError(.invalidProtoData(.chatItemMissingDirectionalDetails))
-        case .incoming(let incomingDetails):
+        case .incoming:
             restoreInteractionResult = incomingMessageArchiver.restoreIncomingChatItem(
                 chatItem,
-                incomingDetails: incomingDetails,
                 chatThread: thread,
                 context: context,
                 tx: tx

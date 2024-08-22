@@ -485,10 +485,15 @@ extension MessageBackup {
                 /// A "learned profile update" was not authored by a contact.
                 case learnedProfileUpdateNotFromContact
 
-                /// A revision for an incoming message was missing incoming
-                /// message details. (Revisions must have the same
+                /// An incoming message, or a revision for an incoming message,
+                /// were missing incoming details. (Revisions must have the same
                 /// directionality as their parent.)
                 case revisionOfIncomingMessageMissingIncomingDetails
+
+                /// An outgoing message, or a revision for an outgoing message,
+                /// were missing outgoing details. (Revisions must have the same
+                /// directionality as their parent.)
+                case revisionOfOutgoingMessageMissingOutgoingDetails
 
                 /// A ``BackupProto_FilePointer`` had no known ``BackupProto_FilePointer/OneOf_Locator``.
                 case filePointerMissingLocator
@@ -642,6 +647,7 @@ extension MessageBackup {
                         .learnedProfileUpdateMissingPreviousName,
                         .learnedProfileUpdateNotFromContact,
                         .revisionOfIncomingMessageMissingIncomingDetails,
+                        .revisionOfOutgoingMessageMissingOutgoingDetails,
                         .filePointerMissingLocator,
                         .filePointerMissingTransitCdnNumber,
                         .filePointerMissingTransitCdnKey,

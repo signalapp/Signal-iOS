@@ -5,6 +5,89 @@
 
 import LibSignalClient
 
+class MessageBackupTSOutgoingMessageArchiver {
+    private typealias ArchiveFrameError = MessageBackup.ArchiveFrameError<MessageBackup.InteractionUniqueId>
+    private typealias RestoreFrameError = MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>
+
+    private let contentsArchiver: MessageBackupTSMessageContentsArchiver
+    private let editHistoryArchiver: MessageBackupTSMessageEditHistoryArchiver<TSOutgoingMessage>
+    private let interactionStore: InteractionStore
+
+    init(
+        contentsArchiver: MessageBackupTSMessageContentsArchiver,
+        editMessageStore: EditMessageStore,
+        interactionStore: InteractionStore
+    ) {
+        self.contentsArchiver = contentsArchiver
+        self.editHistoryArchiver = MessageBackupTSMessageEditHistoryArchiver(
+            editMessageStore: editMessageStore
+        )
+        self.interactionStore = interactionStore
+    }
+
+    // MARK: - Archiving
+
+    func archiveOutgoingMessage(
+        _ outgoingMessage: TSOutgoingMessage,
+        thread: TSThread,
+        context: MessageBackup.ChatArchivingContext,
+        tx: DBReadTransaction
+    ) -> MessageBackup.ArchiveInteractionResult<Details> {
+        var partialErrors = [ArchiveFrameError]()
+
+        let outgoingMessageDetails: Details
+        switch editHistoryArchiver.archiveMessageAndEditHistory(
+            outgoingMessage,
+            thread: thread,
+            context: context,
+            builder: self,
+            tx: tx
+        ).bubbleUp(Details.self, partialErrors: &partialErrors) {
+        case .continue(let _outgoingMessageDetails):
+            outgoingMessageDetails = _outgoingMessageDetails
+        case .bubbleUpError(let errorResult):
+            return errorResult
+        }
+
+        if partialErrors.isEmpty {
+            return .success(outgoingMessageDetails)
+        } else {
+            return .partialFailure(outgoingMessageDetails, partialErrors)
+        }
+    }
+
+    // MARK: - Restoring
+
+    func restoreChatItem(
+        _ topLevelChatItem: BackupProto_ChatItem,
+        chatThread: MessageBackup.ChatThread,
+        context: MessageBackup.ChatRestoringContext,
+        tx: DBWriteTransaction
+    ) -> MessageBackup.RestoreInteractionResult<Void> {
+        var partialErrors = [RestoreFrameError]()
+
+        guard
+            editHistoryArchiver.restoreMessageAndEditHistory(
+                topLevelChatItem,
+                chatThread: chatThread,
+                context: context,
+                builder: self,
+                tx: tx
+            ).unwrap(partialErrors: &partialErrors)
+        else {
+            return .messageFailure(partialErrors)
+        }
+
+        if partialErrors.isEmpty {
+            return .success(())
+        } else {
+            return .partialRestore((), partialErrors)
+        }
+    }
+}
+
+// MARK: -
+
 private extension MessageBackup {
     /// Maps cases in ``BackupProto_SendStatus/Failed/FailureReason`` to raw
     /// error codes used in ``TSOutgoingMessageRecipientState/errorCode``.
@@ -43,57 +126,40 @@ private extension MessageBackup {
     }
 }
 
-// MARK: -
+// MARK: - MessageBackupTSMessageEditHistoryBuilder
 
-class MessageBackupTSOutgoingMessageArchiver: MessageBackupProtoArchiver {
-    typealias Details = MessageBackup.InteractionArchiveDetails
-
-    private typealias ArchiveFrameError = MessageBackup.ArchiveFrameError<MessageBackup.InteractionUniqueId>
-
-    private let contentsArchiver: MessageBackupTSMessageContentsArchiver
-    private let interactionStore: InteractionStore
-    private let sentMessageTranscriptReceiver: SentMessageTranscriptReceiver
-
-    internal init(
-        contentsArchiver: MessageBackupTSMessageContentsArchiver,
-        interactionStore: InteractionStore,
-        sentMessageTranscriptReceiver: SentMessageTranscriptReceiver
-    ) {
-        self.contentsArchiver = contentsArchiver
-        self.interactionStore = interactionStore
-        self.sentMessageTranscriptReceiver = sentMessageTranscriptReceiver
-    }
+extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHistoryBuilder {
+    typealias EditHistoryMessageType = TSOutgoingMessage
 
     // MARK: - Archiving
 
-    func archiveOutgoingMessage(
-        _ message: TSOutgoingMessage,
-        thread _: TSThread,
+    func buildMessageArchiveDetails(
+        message outgoingMessage: EditHistoryMessageType,
+        editRecord: EditRecord?,
         context: MessageBackup.ChatArchivingContext,
-        tx: DBReadTransaction
+        tx: any DBReadTransaction
     ) -> MessageBackup.ArchiveInteractionResult<Details> {
         var partialErrors = [ArchiveFrameError]()
 
         let wasAnySendSealedSender: Bool
-        let directionalDetails: Details.DirectionalDetails
+        let outgoingDetails: BackupProto_ChatItem.OutgoingMessageDetails
         switch buildOutgoingMessageDetails(
-            message,
+            outgoingMessage,
             recipientContext: context.recipientContext
         ).bubbleUp(Details.self, partialErrors: &partialErrors) {
-        case .continue(let details):
-            directionalDetails = details.details
-            wasAnySendSealedSender = details.wasAnySendSealedSender
+        case .continue(let (_outgoingDetails, _wasAnySendSealedSender)):
+            outgoingDetails = _outgoingDetails
+            wasAnySendSealedSender = _wasAnySendSealedSender
         case .bubbleUpError(let errorResult):
             return errorResult
         }
 
-        let contentsResult = contentsArchiver.archiveMessageContents(
-            message,
+        let chatItemType: MessageBackup.InteractionArchiveDetails.ChatItemType
+        switch contentsArchiver.archiveMessageContents(
+            outgoingMessage,
             context: context.recipientContext,
             tx: tx
-        )
-        let chatItemType: MessageBackup.InteractionArchiveDetails.ChatItemType
-        switch contentsResult.bubbleUp(Details.self, partialErrors: &partialErrors) {
+        ).bubbleUp(Details.self, partialErrors: &partialErrors) {
         case .continue(let t):
             chatItemType = t
         case .bubbleUpError(let errorResult):
@@ -102,13 +168,14 @@ class MessageBackupTSOutgoingMessageArchiver: MessageBackupProtoArchiver {
 
         let details = Details(
             author: context.recipientContext.localRecipientId,
-            directionalDetails: directionalDetails,
-            dateCreated: message.timestamp,
-            expireStartDate: message.expireStartedAt,
-            expiresInMs: UInt64(message.expiresInSeconds) * 1000,
+            directionalDetails: .outgoing(outgoingDetails),
+            dateCreated: outgoingMessage.timestamp,
+            expireStartDate: outgoingMessage.expireStartedAt,
+            expiresInMs: UInt64(outgoingMessage.expiresInSeconds) * 1000,
             isSealedSender: wasAnySendSealedSender,
             chatItemType: chatItemType
         )
+
         if partialErrors.isEmpty {
             return .success(details)
         } else {
@@ -116,19 +183,17 @@ class MessageBackupTSOutgoingMessageArchiver: MessageBackupProtoArchiver {
         }
     }
 
-    struct OutgoingMessageDetails {
-        let details: Details.DirectionalDetails
-        let wasAnySendSealedSender: Bool
-    }
-
     private func buildOutgoingMessageDetails(
         _ message: TSOutgoingMessage,
         recipientContext: MessageBackup.RecipientArchivingContext
-    ) -> MessageBackup.ArchiveInteractionResult<OutgoingMessageDetails> {
+    ) -> MessageBackup.ArchiveInteractionResult<(
+        outgoingDetails: BackupProto_ChatItem.OutgoingMessageDetails,
+        wasAnySendSealedSender: Bool
+    )> {
         var perRecipientErrors = [ArchiveFrameError]()
 
         var wasAnySendSealedSender = false
-        var outgoingMessage = BackupProto_ChatItem.OutgoingMessageDetails()
+        var outgoingDetails = BackupProto_ChatItem.OutgoingMessageDetails()
 
         for (address, sendState) in message.recipientAddressStates ?? [:] {
             guard let recipientAddress = address.asSingleServiceIdBackupAddress()?.asArchivingAddress() else {
@@ -150,7 +215,6 @@ class MessageBackupTSOutgoingMessageArchiver: MessageBackupProtoArchiver {
             let statusTimestamp: UInt64
             switch sendState.state {
             case OWSOutgoingMessageRecipientState.sent:
-
                 if let readTimestamp = sendState.readTimestamp {
                     var readStatus = BackupProto_SendStatus.Read()
                     readStatus.sealedSender = sendState.wasSentByUD
@@ -208,22 +272,23 @@ class MessageBackupTSOutgoingMessageArchiver: MessageBackupProtoArchiver {
             sendStatus.timestamp = statusTimestamp
             sendStatus.deliveryStatus = deliveryStatus
 
-            outgoingMessage.sendStatus.append(sendStatus)
+            outgoingDetails.sendStatus.append(sendStatus)
 
+            // TODO: [Backups] I think this check is inverted
             if sendState.wasSentByUD.negated {
                 wasAnySendSealedSender = true
             }
         }
 
         if perRecipientErrors.isEmpty {
-            return .success(OutgoingMessageDetails(
-                details: .outgoing(outgoingMessage),
+            return .success((
+                outgoingDetails: outgoingDetails,
                 wasAnySendSealedSender: wasAnySendSealedSender
             ))
         } else {
             return .partialFailure(
-                OutgoingMessageDetails(
-                    details: .outgoing(outgoingMessage),
+                (
+                    outgoingDetails: outgoingDetails,
                     wasAnySendSealedSender: wasAnySendSealedSender
                 ),
                 perRecipientErrors
@@ -233,84 +298,105 @@ class MessageBackupTSOutgoingMessageArchiver: MessageBackupProtoArchiver {
 
     // MARK: - Restoring
 
-    func restoreChatItem(
+    /// An error representing a `TSMessage` failing to insert, since
+    /// ``TSMessage/anyInsert`` fails silently.
+    private struct MessageInsertionError: Error {}
+
+    func restoreMessage(
         _ chatItem: BackupProto_ChatItem,
+        isPastRevision: Bool,
+        hasPastRevisions: Bool,
         chatThread: MessageBackup.ChatThread,
         context: MessageBackup.ChatRestoringContext,
-        tx: DBWriteTransaction
-    ) -> MessageBackup.RestoreInteractionResult<Void> {
-        let outgoingDetails: BackupProto_ChatItem.OutgoingMessageDetails
-        switch chatItem.directionalDetails {
-        case .outgoing(let backupProtoChatItemOutgoingMessageDetails):
-            outgoingDetails = backupProtoChatItemOutgoingMessageDetails
-        case nil, .incoming, .directionless:
-            // Should be impossible.
+        tx: any DBWriteTransaction
+    ) -> MessageBackup.RestoreInteractionResult<EditHistoryMessageType> {
+        guard let chatItemType = chatItem.item else {
+            // Unrecognized item type!
             return .messageFailure([.restoreFrameError(
-                .developerError(OWSAssertionError("OutgoingMessageArchiver given non-outgoing message!")),
+                .invalidProtoData(.chatItemMissingItem),
                 chatItem.id
             )])
         }
 
-        guard let chatItemType = chatItem.item else {
-            // Unrecognized item type!
-            return .messageFailure([.restoreFrameError(.invalidProtoData(.chatItemMissingItem), chatItem.id)])
+        let outgoingDetails: BackupProto_ChatItem.OutgoingMessageDetails
+        switch chatItem.directionalDetails {
+        case .outgoing(let _outgoingDetails):
+            outgoingDetails = _outgoingDetails
+        case nil, .incoming, .directionless:
+            return .messageFailure([.restoreFrameError(
+                .invalidProtoData(.revisionOfOutgoingMessageMissingOutgoingDetails),
+                chatItem.id
+            )])
         }
 
-        var partialErrors = [MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>]()
+        var partialErrors = [RestoreFrameError]()
 
-        let contentsResult = contentsArchiver.restoreContents(
-            chatItemType,
-            chatItemId: chatItem.id,
-            chatThread: chatThread,
-            context: context,
-            tx: tx
-        )
-
-        guard let contents = contentsResult.unwrap(partialErrors: &partialErrors) else {
+        guard
+            let contents = contentsArchiver.restoreContents(
+                chatItemType,
+                chatItemId: chatItem.id,
+                chatThread: chatThread,
+                context: context,
+                tx: tx
+            ).unwrap(partialErrors: &partialErrors)
+        else {
             return .messageFailure(partialErrors)
         }
 
-        let messageResult = self.restoreAndInsertMessage(
-            chatItem: chatItem,
-            contents: contents,
-            outgoingDetails: outgoingDetails,
-            context: context,
-            chatThread: chatThread,
-            tx: tx
-        )
+        let editState: TSEditState = {
+            if isPastRevision {
+                return .pastRevision
+            } else if hasPastRevisions {
+                // Outgoing messages are implicitly read.
+                return .latestRevisionRead
+            } else {
+                return .none
+            }
+        }()
 
-        guard let message = messageResult.unwrap(partialErrors: &partialErrors) else {
+        guard
+            let outgoingMessage = restoreAndInsertOutgoingMessage(
+                chatItem: chatItem,
+                contents: contents,
+                outgoingDetails: outgoingDetails,
+                editState: editState,
+                context: context,
+                chatThread: chatThread,
+                tx: tx
+            ).unwrap(partialErrors: &partialErrors)
+        else {
             return .messageFailure(partialErrors)
         }
 
-        let downstreamObjectsResult = contentsArchiver.restoreDownstreamObjects(
-            message: message,
-            thread: chatThread,
-            chatItemId: chatItem.id,
-            restoredContents: contents,
-            context: context,
-            tx: tx
-        )
-        guard downstreamObjectsResult.unwrap(partialErrors: &partialErrors) else {
+        guard
+            contentsArchiver.restoreDownstreamObjects(
+                message: outgoingMessage,
+                thread: chatThread,
+                chatItemId: chatItem.id,
+                restoredContents: contents,
+                context: context,
+                tx: tx
+            ).unwrap(partialErrors: &partialErrors)
+        else {
             return .messageFailure(partialErrors)
         }
 
         if partialErrors.isEmpty {
-            return .success(())
+            return .success(outgoingMessage)
         } else {
-            return .partialRestore((), partialErrors)
+            return .partialRestore(outgoingMessage, partialErrors)
         }
     }
 
-    private func restoreAndInsertMessage(
+    private func restoreAndInsertOutgoingMessage(
         chatItem: BackupProto_ChatItem,
         contents: MessageBackup.RestoredMessageContents,
         outgoingDetails: BackupProto_ChatItem.OutgoingMessageDetails,
+        editState: TSEditState,
         context: MessageBackup.ChatRestoringContext,
         chatThread: MessageBackup.ChatThread,
         tx: DBWriteTransaction
     ) -> MessageBackup.RestoreInteractionResult<TSOutgoingMessage> {
-
         guard SDS.fitsInInt64(chatItem.dateSent), chatItem.dateSent > 0 else {
             return .messageFailure([.restoreFrameError(
                 .invalidProtoData(.chatItemInvalidDateSent),
@@ -320,7 +406,7 @@ class MessageBackupTSOutgoingMessageArchiver: MessageBackupProtoArchiver {
 
         let expirationToken: DisappearingMessageToken = .token(forProtoExpireTimerMillis: chatItem.expiresInMs)
 
-        var partialErrors = [MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>]()
+        var partialErrors = [RestoreFrameError]()
 
         var recipientStates = [MessageBackup.InteropAddress: TSOutgoingMessageRecipientState]()
         for sendStatus in outgoingDetails.sendStatus {
@@ -346,7 +432,7 @@ class MessageBackupTSOutgoingMessageArchiver: MessageBackupProtoArchiver {
             }
 
             guard
-                let recipientState = Self.recipientState(
+                let recipientState = recipientState(
                     for: sendStatus,
                     partialErrors: &partialErrors,
                     chatItemId: chatItem.id
@@ -364,31 +450,55 @@ class MessageBackupTSOutgoingMessageArchiver: MessageBackupProtoArchiver {
             return .messageFailure(partialErrors)
         }
 
-        let insertMessageResult: MessageBackup.RestoreInteractionResult<TSOutgoingMessage>
+        let outgoingMessage: TSOutgoingMessage
         switch contents {
         case .text(let text):
-            insertMessageResult = restoreTextMessage(
-                contents: text,
-                chatThread: chatThread,
-                chatItem: chatItem,
-                expirationToken: expirationToken,
+            let outgoingMessageBuilder = TSOutgoingMessageBuilder(
+                thread: chatThread.tsThread,
+                timestamp: chatItem.dateSent,
+                receivedAtTimestamp: nil,
+                messageBody: text.body.text,
+                bodyRanges: text.body.ranges,
+                editState: editState,
+                expiresInSeconds: expirationToken.durationSeconds,
+                expireStartedAt: chatItem.expireStartDate,
+                // TODO: [Backups] set true if this has a single body attachment w/ voice message flag
+                isVoiceMessage: false,
+                groupMetaMessage: .unspecified,
+                // TODO: [Backups] pass along if this is view once after proto field is added
+                isViewOnceMessage: false,
+                changeActionsProtoData: nil,
+                // We never restore stories.
+                storyAuthorAci: nil,
+                storyTimestamp: nil,
+                storyReactionEmoji: nil,
+                // TODO: [Backups] restore gift badges
+                giftBadge: nil
+            )
+
+            outgoingMessage = interactionStore.buildOutgoingMessage(
+                builder: outgoingMessageBuilder,
                 tx: tx
             )
         case .archivedPayment(let archivedPayment):
-            insertMessageResult = restorePaymentMessage(
-                payment: archivedPayment,
-                chatThread: chatThread,
-                chatItem: chatItem,
-                expirationToken: expirationToken,
+            let builder = OWSOutgoingArchivedPaymentMessageBuilder(
+                thread: chatThread.tsThread,
+                timestamp: chatItem.dateSent,
+                amount: archivedPayment.amount,
+                fee: archivedPayment.fee,
+                note: archivedPayment.note,
+                expirationStartedAt: chatItem.expireStartDate,
+                expirationDurationSeconds: expirationToken.durationSeconds
+            )
+
+            outgoingMessage = interactionStore.buildOutgoingArchivedPaymentMessage(
+                builder: builder,
                 tx: tx
             )
         }
 
-        guard let message = insertMessageResult.unwrap(partialErrors: &partialErrors) else {
-            return .messageFailure(partialErrors)
-        }
-
-        guard message.sqliteRowId != nil else {
+        interactionStore.insertInteraction(outgoingMessage, tx: tx)
+        guard outgoingMessage.sqliteRowId != nil else {
             // Failed insert!
             return .messageFailure(partialErrors + [.restoreFrameError(
                 .databaseInsertionFailed(MessageInsertionError()),
@@ -397,83 +507,21 @@ class MessageBackupTSOutgoingMessageArchiver: MessageBackupProtoArchiver {
         }
 
         interactionStore.updateRecipientsFromNonLocalDevice(
-            message,
+            outgoingMessage,
             recipientStates: recipientStates,
             isSentUpdate: false,
             tx: tx
         )
         if partialErrors.isEmpty {
-            return .success(message)
+            return .success(outgoingMessage)
         } else {
-            return .partialRestore(message, partialErrors)
+            return .partialRestore(outgoingMessage, partialErrors)
         }
     }
 
-    /// TSMessage.insert doesn't give us useful errors when it fails to insert.
-    /// Use this instead.
-    private struct MessageInsertionError: Error {}
-
-    private func restoreTextMessage(
-        contents: MessageBackup.RestoredMessageContents.Text,
-        chatThread: MessageBackup.ChatThread,
-        chatItem: BackupProto_ChatItem,
-        expirationToken: DisappearingMessageToken,
-        tx: DBWriteTransaction
-    ) -> MessageBackup.RestoreInteractionResult<TSOutgoingMessage> {
-        let outgoingMessageBuilder = TSOutgoingMessageBuilder(
-            thread: chatThread.tsThread,
-            timestamp: chatItem.dateSent,
-            receivedAtTimestamp: nil,
-            messageBody: contents.body.text,
-            bodyRanges: contents.body.ranges,
-            editState: .none, // TODO: [Backups] Back up outgoing message edt state
-            expiresInSeconds: expirationToken.durationSeconds,
-            expireStartedAt: chatItem.expireStartDate,
-            // TODO: [Backups] set true if this has a single body attachment w/ voice message flag
-            isVoiceMessage: false,
-            groupMetaMessage: .unspecified,
-            // TODO: [Backups] pass along if this is view once after proto field is added
-            isViewOnceMessage: false,
-            changeActionsProtoData: nil,
-            // We never restore stories.
-            storyAuthorAci: nil,
-            storyTimestamp: nil,
-            storyReactionEmoji: nil,
-            // TODO: [Backups] restore gift badges
-            giftBadge: nil
-        )
-        let outgoingMessage = interactionStore.buildOutgoingMessage(builder: outgoingMessageBuilder, tx: tx)
-        interactionStore.insertInteraction(outgoingMessage, tx: tx)
-
-        return .success(outgoingMessage)
-    }
-
-    private func restorePaymentMessage(
-        payment: MessageBackup.RestoredMessageContents.Payment,
-        chatThread: MessageBackup.ChatThread,
-        chatItem: BackupProto_ChatItem,
-        expirationToken: DisappearingMessageToken,
-        tx: DBWriteTransaction
-    ) -> MessageBackup.RestoreInteractionResult<TSOutgoingMessage> {
-        let builder = OWSOutgoingArchivedPaymentMessageBuilder(
-            thread: chatThread.tsThread,
-            timestamp: chatItem.dateSent,
-            amount: payment.amount,
-            fee: payment.fee,
-            note: payment.note,
-            expirationStartedAt: chatItem.expireStartDate,
-            expirationDurationSeconds: expirationToken.durationSeconds
-        )
-
-        let message = interactionStore.buildOutgoingArchivedPaymentMessage(builder: builder, tx: tx)
-        interactionStore.insertInteraction(message, tx: tx)
-
-        return .success(message)
-    }
-
-    private static func recipientState(
+    private func recipientState(
         for sendStatus: BackupProto_SendStatus,
-        partialErrors: inout [MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>],
+        partialErrors: inout [RestoreFrameError],
         chatItemId: MessageBackup.ChatItemId
     ) -> TSOutgoingMessageRecipientState? {
         guard let deliveryStatus = sendStatus.deliveryStatus else {
@@ -493,7 +541,7 @@ class MessageBackupTSOutgoingMessageArchiver: MessageBackupProtoArchiver {
         }
 
         switch deliveryStatus {
-        case .pending:
+        case .pending(_):
             recipientState.state = .pending
         case .sent(let sent):
             recipientState.state = .sent
