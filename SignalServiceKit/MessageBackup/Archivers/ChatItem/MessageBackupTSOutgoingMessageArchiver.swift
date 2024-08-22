@@ -408,7 +408,7 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
 
         var partialErrors = [RestoreFrameError]()
 
-        var recipientStates = [MessageBackup.InteropAddress: TSOutgoingMessageRecipientState]()
+        var recipientAddressStates = [MessageBackup.InteropAddress: TSOutgoingMessageRecipientState]()
         for sendStatus in outgoingDetails.sendStatus {
             let recipientAddress: MessageBackup.InteropAddress
             let recipientID = sendStatus.destinationRecipientId
@@ -441,24 +441,24 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
                 continue
             }
 
-            recipientStates[recipientAddress] = recipientState
+            recipientAddressStates[recipientAddress] = recipientState
         }
 
-        if recipientStates.isEmpty && outgoingDetails.sendStatus.isEmpty.negated {
+        if recipientAddressStates.isEmpty && outgoingDetails.sendStatus.isEmpty.negated {
             // We put up with some failures, but if we get no recipients at all
             // fail the whole thing.
             return .messageFailure(partialErrors)
         }
 
-        let outgoingMessage: TSOutgoingMessage
-        switch contents {
-        case .text(let text):
+        let outgoingMessage: TSOutgoingMessage = {
+            /// A "base" message builder, onto which we attach the data we
+            /// unwrap from `contents`.
             let outgoingMessageBuilder = TSOutgoingMessageBuilder(
                 thread: chatThread.tsThread,
                 timestamp: chatItem.dateSent,
                 receivedAtTimestamp: nil,
-                messageBody: text.body.text,
-                bodyRanges: text.body.ranges,
+                messageBody: nil,
+                bodyRanges: nil,
                 editState: editState,
                 expiresInSeconds: expirationToken.durationSeconds,
                 expireStartedAt: chatItem.expireStartDate,
@@ -467,6 +467,7 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
                 groupMetaMessage: .unspecified,
                 // TODO: [Backups] pass along if this is view once after proto field is added
                 isViewOnceMessage: false,
+                // TODO: [Backups] always treat view-once media in Backups as viewed
                 isViewOnceComplete: false,
                 wasRemotelyDeleted: false,
                 changeActionsProtoData: nil,
@@ -475,51 +476,43 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
                 storyTimestamp: nil,
                 storyReactionEmoji: nil,
                 quotedMessage: nil,
+                // TODO: [Backups] restore contact shares
                 contactShare: nil,
+                // TODO: [Backups] restore link previews
                 linkPreview: nil,
+                // TODO: [Backups] restore message stickers
                 messageSticker: nil,
                 // TODO: [Backups] restore gift badges
                 giftBadge: nil
             )
 
-            outgoingMessage = interactionStore.buildOutgoingMessage(
-                builder: outgoingMessageBuilder,
-                tx: tx
-            )
-        case .archivedPayment(let archivedPayment):
-            let messageBuilder = TSOutgoingMessageBuilder(
-                thread: chatThread.tsThread,
-                timestamp: chatItem.dateSent,
-                receivedAtTimestamp: nil,
-                messageBody: nil,
-                bodyRanges: nil,
-                editState: .none,
-                expiresInSeconds: expirationToken.durationSeconds,
-                expireStartedAt: chatItem.expireStartDate,
-                isVoiceMessage: false,
-                groupMetaMessage: .unspecified,
-                isViewOnceMessage: false,
-                isViewOnceComplete: false,
-                wasRemotelyDeleted: false,
-                changeActionsProtoData: nil,
-                storyAuthorAci: nil,
-                storyTimestamp: nil,
-                storyReactionEmoji: nil,
-                quotedMessage: nil,
-                contactShare: nil,
-                linkPreview: nil,
-                messageSticker: nil,
-                giftBadge: nil
-            )
+            switch contents {
+            case .archivedPayment(let archivedPayment):
+                return OWSOutgoingArchivedPaymentMessage(
+                    outgoingArchivedPaymentMessageWith: outgoingMessageBuilder,
+                    amount: archivedPayment.amount,
+                    fee: archivedPayment.fee,
+                    note: archivedPayment.note,
+                    recipientAddressStates: recipientAddressStates
+                )
+            case .text(let text):
+                outgoingMessageBuilder.messageBody = text.body.text
+                outgoingMessageBuilder.bodyRanges = text.body.ranges
+                outgoingMessageBuilder.quotedMessage = text.quotedMessage
 
-            outgoingMessage = interactionStore.buildOutgoingArchivedPaymentMessage(
-                builder: messageBuilder,
-                amount: archivedPayment.amount,
-                fee: archivedPayment.fee,
-                note: archivedPayment.note,
-                tx: tx
-            )
-        }
+                return TSOutgoingMessage(
+                    outgoingMessageWith: outgoingMessageBuilder,
+                    recipientAddressStates: recipientAddressStates
+                )
+            case .remoteDeleteTombstone:
+                outgoingMessageBuilder.wasRemotelyDeleted = true
+
+                return TSOutgoingMessage(
+                    outgoingMessageWith: outgoingMessageBuilder,
+                    recipientAddressStates: recipientAddressStates
+                )
+            }
+        }()
 
         interactionStore.insertInteraction(outgoingMessage, tx: tx)
         guard outgoingMessage.sqliteRowId != nil else {
@@ -530,12 +523,6 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
             )])
         }
 
-        interactionStore.updateRecipientsFromNonLocalDevice(
-            outgoingMessage,
-            recipientStates: recipientStates,
-            isSentUpdate: false,
-            tx: tx
-        )
         if partialErrors.isEmpty {
             return .success(outgoingMessage)
         } else {

@@ -60,30 +60,6 @@ public protocol InteractionStore {
     /// Insert the given interaction to the databse.
     func insertInteraction(_ interaction: TSInteraction, tx: DBWriteTransaction)
 
-    func update(
-        _ message: TSMessage,
-        with quotedMessage: TSQuotedMessage,
-        tx: DBWriteTransaction
-    )
-
-    func update(
-        _ message: TSMessage,
-        with linkPreview: OWSLinkPreview,
-        tx: DBWriteTransaction
-    )
-
-    func update(
-        _ message: TSMessage,
-        with contact: OWSContact,
-        tx: DBWriteTransaction
-    )
-
-    func update(
-        _ message: TSMessage,
-        with sticker: MessageSticker,
-        tx: DBWriteTransaction
-    )
-
     /// Applies the given block to the given already-inserted interaction, and
     /// saves the updated interaction to the database.
     func updateInteraction<InteractionType: TSInteraction>(
@@ -206,38 +182,6 @@ public class InteractionStoreImpl: InteractionStore {
 
     public func insertInteraction(_ interaction: TSInteraction, tx: DBWriteTransaction) {
         interaction.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    public func update(
-        _ message: TSMessage,
-        with quotedMessage: TSQuotedMessage,
-        tx: DBWriteTransaction
-    ) {
-        message.update(with: quotedMessage, transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    public func update(
-        _ message: TSMessage,
-        with linkPreview: OWSLinkPreview,
-        tx: DBWriteTransaction
-    ) {
-        message.update(with: linkPreview, transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    public func update(
-        _ message: TSMessage,
-        with contact: OWSContact,
-        tx: DBWriteTransaction
-    ) {
-        message.update(withContactShare: contact, transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    public func update(
-        _ message: TSMessage,
-        with sticker: MessageSticker,
-        tx: DBWriteTransaction
-    ) {
-        message.update(with: sticker, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     public func updateInteraction<InteractionType: TSInteraction>(

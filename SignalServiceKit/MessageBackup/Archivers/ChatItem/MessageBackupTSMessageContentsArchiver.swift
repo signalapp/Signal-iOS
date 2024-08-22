@@ -12,21 +12,15 @@ extension MessageBackup {
     /// being mapped from their representation in the backup proto. For example, normal
     /// text messages and quoted replies are a single "type" in the proto, but have separate
     /// class structures in the iOS code.
+    ///
     /// This object will be passed back into the ``MessageBackupTSMessageContentsArchiver`` class
     /// after the TSMessage has been created, so that downstream objects that require the TSMessage exist
-    /// can be created afterwards. So anything needed for that (but not needed to create the TSMessage)
-    /// can be made a fileprivate variable in these structs.
+    /// can be created afterwards. Anything needed for that step, but not needed to create the TSMessage,
+    /// should be made a fileprivate variable in these structs.
     enum RestoredMessageContents {
         struct Text {
-
-            // Internal - these fields are exposed for TSMessage construction.
-
             let body: MessageBody
             let quotedMessage: TSQuotedMessage?
-
-            // Private - these fields are used by ``restoreDownstreamObjects`` to
-            //     construct objects that are parsed from the backup proto but require
-            //     the TSMessage to exist first before they can be created/inserted.
 
             fileprivate let reactions: [BackupProto_Reaction]
             fileprivate let bodyAttachments: [BackupProto_MessageAttachment]
@@ -47,8 +41,9 @@ extension MessageBackup {
             fileprivate let payment: BackupProto_PaymentNotification.TransactionDetails.Transaction?
         }
 
-        case text(Text)
         case archivedPayment(Payment)
+        case text(Text)
+        case remoteDeleteTombstone
     }
 }
 
@@ -107,71 +102,16 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                 context: context,
                 tx: tx
             )
+        } else if message.wasRemotelyDeleted {
+            let remoteDeletedMessage = BackupProto_RemoteDeletedMessage()
+            return .success(.remoteDeletedMessage(remoteDeletedMessage))
         } else {
             // TODO: [Backups] Handle non-standard messages.
             return .notYetImplemented
         }
     }
 
-    private func archiveStandardMessageContents(
-        _ message: TSMessage,
-        messageBody: String,
-        context: MessageBackup.RecipientArchivingContext,
-        tx: DBReadTransaction
-    ) -> ArchiveInteractionResult<ChatItemType> {
-        var standardMessage = BackupProto_StandardMessage()
-        var partialErrors = [ArchiveFrameError]()
-
-        let text: BackupProto_Text
-        let textResult = archiveText(
-            MessageBody(text: messageBody, ranges: message.bodyRanges ?? .empty),
-            interactionUniqueId: message.uniqueInteractionId
-        )
-        switch textResult.bubbleUp(ChatItemType.self, partialErrors: &partialErrors) {
-        case .continue(let value):
-            text = value
-        case .bubbleUpError(let errorResult):
-            return errorResult
-        }
-        standardMessage.text = text
-
-        if let quotedMessage = message.quotedMessage {
-            let quote: BackupProto_Quote
-            let quoteResult = archiveQuote(
-                quotedMessage,
-                interactionUniqueId: message.uniqueInteractionId,
-                context: context
-            )
-            switch quoteResult.bubbleUp(ChatItemType.self, partialErrors: &partialErrors) {
-            case .continue(let _quote):
-                quote = _quote
-            case .bubbleUpError(let errorResult):
-                return errorResult
-            }
-
-            standardMessage.quote = quote
-        }
-
-        let reactions: [BackupProto_Reaction]
-        let reactionsResult = reactionArchiver.archiveReactions(
-            message,
-            context: context,
-            tx: tx
-        )
-        switch reactionsResult.bubbleUp(ChatItemType.self, partialErrors: &partialErrors) {
-        case .continue(let values):
-            reactions = values
-        case .bubbleUpError(let errorResult):
-            return errorResult
-        }
-        standardMessage.reactions = reactions
-
-        if partialErrors.isEmpty {
-            return .success(.standardMessage(standardMessage))
-        } else {
-            return .partialFailure(.standardMessage(standardMessage), partialErrors)
-        }
-    }
+    // MARK: -
 
     private func archivePaymentArchiveContents(
         _ archivedPaymentMessage: OWSArchivedPaymentMessage,
@@ -240,6 +180,68 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         paymentNotificationProto.transactionDetails = model.asArchivedPayment().toTransactionDetailsProto()
 
         return .success(.paymentNotification(paymentNotificationProto))
+    }
+
+    // MARK: -
+
+    private func archiveStandardMessageContents(
+        _ message: TSMessage,
+        messageBody: String,
+        context: MessageBackup.RecipientArchivingContext,
+        tx: DBReadTransaction
+    ) -> ArchiveInteractionResult<ChatItemType> {
+        var standardMessage = BackupProto_StandardMessage()
+        var partialErrors = [ArchiveFrameError]()
+
+        let text: BackupProto_Text
+        let textResult = archiveText(
+            MessageBody(text: messageBody, ranges: message.bodyRanges ?? .empty),
+            interactionUniqueId: message.uniqueInteractionId
+        )
+        switch textResult.bubbleUp(ChatItemType.self, partialErrors: &partialErrors) {
+        case .continue(let value):
+            text = value
+        case .bubbleUpError(let errorResult):
+            return errorResult
+        }
+        standardMessage.text = text
+
+        if let quotedMessage = message.quotedMessage {
+            let quote: BackupProto_Quote
+            let quoteResult = archiveQuote(
+                quotedMessage,
+                interactionUniqueId: message.uniqueInteractionId,
+                context: context
+            )
+            switch quoteResult.bubbleUp(ChatItemType.self, partialErrors: &partialErrors) {
+            case .continue(let _quote):
+                quote = _quote
+            case .bubbleUpError(let errorResult):
+                return errorResult
+            }
+
+            standardMessage.quote = quote
+        }
+
+        let reactions: [BackupProto_Reaction]
+        let reactionsResult = reactionArchiver.archiveReactions(
+            message,
+            context: context,
+            tx: tx
+        )
+        switch reactionsResult.bubbleUp(ChatItemType.self, partialErrors: &partialErrors) {
+        case .continue(let values):
+            reactions = values
+        case .bubbleUpError(let errorResult):
+            return errorResult
+        }
+        standardMessage.reactions = reactions
+
+        if partialErrors.isEmpty {
+            return .success(.standardMessage(standardMessage))
+        } else {
+            return .partialFailure(.standardMessage(standardMessage), partialErrors)
+        }
     }
 
     private func archiveText(
@@ -350,19 +352,6 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         tx: DBWriteTransaction
     ) -> RestoreInteractionResult<MessageBackup.RestoredMessageContents> {
         switch chatItemType {
-        case .standardMessage(let standardMessage):
-            return restoreStandardMessage(
-                standardMessage,
-                chatItemId: chatItemId,
-                chatThread: chatThread,
-                context: context,
-                tx: tx
-            )
-        case .updateMessage:
-            return .messageFailure([.restoreFrameError(
-                .developerError(OWSAssertionError("Chat update has no contents to restore!")),
-                chatItemId
-            )])
         case .paymentNotification(let paymentNotification):
             return restorePaymentNotification(
                 paymentNotification,
@@ -371,9 +360,27 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                 context: context,
                 tx: tx
             )
-        case .contactMessage, .stickerMessage, .remoteDeletedMessage, .giftBadge:
+        case .standardMessage(let standardMessage):
+            return restoreStandardMessage(
+                standardMessage,
+                chatItemId: chatItemId,
+                chatThread: chatThread,
+                context: context,
+                tx: tx
+            )
+        case .remoteDeletedMessage(_):
+            return .success(.remoteDeleteTombstone)
+        case .contactMessage, .stickerMessage, .giftBadge:
             // Other types not supported yet.
-            return .messageFailure([.restoreFrameError(.unimplemented, chatItemId)])
+            return .messageFailure([.restoreFrameError(
+                .unimplemented,
+                chatItemId
+            )])
+        case .updateMessage:
+            return .messageFailure([.restoreFrameError(
+                .developerError(OWSAssertionError("Chat update has no contents to restore!")),
+                chatItemId
+            )])
         }
     }
 
@@ -398,6 +405,14 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
 
         var downstreamObjectResults = [RestoreInteractionResult<Void>]()
         switch restoredContents {
+        case .archivedPayment(let archivedPayment):
+            downstreamObjectResults.append(restoreArchivedPaymentContents(
+                archivedPayment,
+                chatItemId: chatItemId,
+                thread: thread,
+                message: message,
+                tx: tx
+            ))
         case .text(let text):
             downstreamObjectResults.append(reactionArchiver.restoreReactions(
                 text.reactions,
@@ -424,14 +439,9 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                     tx: tx
                 ))
             }
-        case .archivedPayment(let archivedPayment):
-            downstreamObjectResults.append(restoreArchivedPaymentContents(
-                archivedPayment,
-                chatItemId: chatItemId,
-                thread: thread,
-                message: message,
-                tx: tx
-            ))
+        case .remoteDeleteTombstone:
+            // Nothing downstream to restore for a tombstone.
+            downstreamObjectResults.append(.success(()))
         }
 
         return downstreamObjectResults.reduce(.success(()), {
@@ -439,7 +449,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         })
     }
 
-    // MARK: Helpers
+    // MARK: -
 
     private func restoreArchivedPaymentContents(
         _ transaction: MessageBackup.RestoredMessageContents.Payment,
@@ -523,6 +533,8 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         )))
     }
 
+    // MARK: -
+
     private func restoreStandardMessage(
         _ standardMessage: BackupProto_StandardMessage,
         chatItemId: MessageBackup.ChatItemId,
@@ -584,7 +596,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         }
     }
 
-    func restoreMessageBody(
+    private func restoreMessageBody(
         _ text: BackupProto_Text,
         chatItemId: MessageBackup.ChatItemId
     ) -> RestoreInteractionResult<MessageBody> {
@@ -825,7 +837,9 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
     }
 }
 
-fileprivate extension ArchivedPayment {
+// MARK: -
+
+private extension ArchivedPayment {
     static func fromBackup(
         _ backup: MessageBackup.RestoredMessageContents.Payment,
         senderOrRecipientAci: Aci,
@@ -878,7 +892,7 @@ fileprivate extension ArchivedPayment {
     }
 }
 
-extension BackupProto_PaymentNotification.TransactionDetails.FailedTransaction.FailureReason {
+private extension BackupProto_PaymentNotification.TransactionDetails.FailedTransaction.FailureReason {
     func asFailureType() -> ArchivedPayment.FailureReason {
         switch self {
         case .UNRECOGNIZED, .generic: return .genericFailure
@@ -888,7 +902,7 @@ extension BackupProto_PaymentNotification.TransactionDetails.FailedTransaction.F
     }
 }
 
-extension BackupProto_PaymentNotification.TransactionDetails.Transaction.Status {
+private extension BackupProto_PaymentNotification.TransactionDetails.Transaction.Status {
     func asStatusType() -> ArchivedPayment.Status {
         switch self {
         case .UNRECOGNIZED, .initial: return .initial
@@ -898,7 +912,7 @@ extension BackupProto_PaymentNotification.TransactionDetails.Transaction.Status 
     }
 }
 
-extension BackupProto_PaymentNotification.TransactionDetails.MobileCoinTxoIdentification {
+private extension BackupProto_PaymentNotification.TransactionDetails.MobileCoinTxoIdentification {
     var nilIfEmpty: Self? {
         (publicKey.isEmpty && keyImages.isEmpty) ? nil : self
     }

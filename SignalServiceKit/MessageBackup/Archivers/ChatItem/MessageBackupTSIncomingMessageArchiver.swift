@@ -243,37 +243,46 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
         }
 
         let message: TSIncomingMessage = {
+            /// A "base" message builder, onto which we attach the data we
+            /// unwrap from `contents`.
+            let messageBuilder = TSIncomingMessageBuilder(
+                thread: chatThread.tsThread,
+                timestamp: chatItem.dateSent,
+                receivedAtTimestamp: incomingDetails.dateReceived,
+                authorAci: authorAci,
+                authorE164: authorE164,
+                messageBody: nil,
+                bodyRanges: nil,
+                editState: editState,
+                expiresInSeconds: UInt32(chatItem.expiresInMs / 1000),
+                expireStartedAt: chatItem.expireStartDate,
+                read: incomingDetails.read,
+                serverTimestamp: incomingDetails.dateServerSent,
+                serverDeliveryTimestamp: 0,
+                serverGuid: nil,
+                wasReceivedByUD: incomingDetails.sealedSender,
+                // TODO: [Backups] pass along if this is view once after proto field is added
+                isViewOnceMessage: false,
+                // TODO: [Backups] always treat view-once media in Backups as viewed
+                isViewOnceComplete: false,
+                wasRemotelyDeleted: false,
+                storyAuthorAci: nil,
+                storyTimestamp: nil,
+                storyReactionEmoji: nil,
+                quotedMessage: nil,
+                // TODO: [Backups] restore contact shares
+                contactShare: nil,
+                // TODO: [Backups] restore link previews
+                linkPreview: nil,
+                // TODO: [Backups] restore message stickers
+                messageSticker: nil,
+                // TODO: [Backups] restore gift badges
+                giftBadge: nil,
+                paymentNotification: nil
+            )
+
             switch contents {
             case .archivedPayment(let archivedPayment):
-                let messageBuilder = TSIncomingMessageBuilder(
-                    thread: chatThread.tsThread,
-                    timestamp: chatItem.dateSent,
-                    receivedAtTimestamp: incomingDetails.dateReceived,
-                    authorAci: authorAci,
-                    authorE164: authorE164,
-                    messageBody: nil,
-                    bodyRanges: nil,
-                    editState: editState,
-                    expiresInSeconds: UInt32(chatItem.expiresInMs / 1000),
-                    expireStartedAt: chatItem.expireStartDate,
-                    read: incomingDetails.read,
-                    serverTimestamp: incomingDetails.dateServerSent,
-                    serverDeliveryTimestamp: 0,
-                    serverGuid: nil,
-                    wasReceivedByUD: incomingDetails.sealedSender,
-                    isViewOnceMessage: false,
-                    isViewOnceComplete: false,
-                    wasRemotelyDeleted: false,
-                    storyAuthorAci: nil,
-                    storyTimestamp: nil,
-                    storyReactionEmoji: nil,
-                    quotedMessage: nil,
-                    contactShare: nil,
-                    linkPreview: nil,
-                    messageSticker: nil,
-                    giftBadge: nil,
-                    paymentNotification: nil
-                )
                 return OWSIncomingArchivedPaymentMessage(
                     incomingMessageWith: messageBuilder,
                     amount: archivedPayment.amount,
@@ -281,39 +290,15 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
                     note: archivedPayment.note
                 )
             case .text(let text):
-                let messageBody = text.body
-                let messageBuilder = TSIncomingMessageBuilder(
-                    thread: chatThread.tsThread,
-                    timestamp: chatItem.dateSent,
-                    receivedAtTimestamp: incomingDetails.dateReceived,
-                    authorAci: authorAci,
-                    authorE164: authorE164,
-                    messageBody: messageBody.text,
-                    bodyRanges: messageBody.ranges,
-                    editState: editState,
-                    expiresInSeconds: UInt32(chatItem.expiresInMs / 1000),
-                    expireStartedAt: chatItem.expireStartDate,
-                    read: incomingDetails.read,
-                    serverTimestamp: incomingDetails.dateServerSent,
-                    serverDeliveryTimestamp: 0,
-                    serverGuid: nil,
-                    wasReceivedByUD: incomingDetails.sealedSender,
-                    isViewOnceMessage: false,
-                    isViewOnceComplete: false,
-                    wasRemotelyDeleted: false,
-                    storyAuthorAci: nil,
-                    storyTimestamp: nil,
-                    storyReactionEmoji: nil,
-                    quotedMessage: nil,
-                    contactShare: nil,
-                    linkPreview: nil,
-                    messageSticker: nil,
-                    giftBadge: nil,
-                    paymentNotification: nil
-                )
-                let message = messageBuilder.build()
-                text.quotedMessage.map { interactionStore.update(message, with: $0, tx: tx) }
-                return message
+                messageBuilder.messageBody = text.body.text
+                messageBuilder.bodyRanges = text.body.ranges
+                messageBuilder.quotedMessage = text.quotedMessage
+
+                return messageBuilder.build()
+            case .remoteDeleteTombstone:
+                messageBuilder.wasRemotelyDeleted = true
+
+                return messageBuilder.build()
             }
         }()
 

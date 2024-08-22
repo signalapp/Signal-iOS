@@ -21,6 +21,25 @@ NS_ASSUME_NONNULL_BEGIN
                               explicitRecipients:@[]
                                skippedRecipients:@[]
                                      transaction:transaction];
+
+    if (!self) {
+        return self;
+    }
+
+    _archivedPaymentInfo = [[TSArchivedPaymentInfo alloc] initWithAmount:amount fee:fee note:note];
+    return self;
+}
+
+- (instancetype)initOutgoingArchivedPaymentMessageWithBuilder:(TSOutgoingMessageBuilder *)messageBuilder
+                                                       amount:(nullable NSString *)amount
+                                                          fee:(nullable NSString *)fee
+                                                         note:(nullable NSString *)note
+                                       recipientAddressStates:
+                                           (NSDictionary<SignalServiceAddress *, TSOutgoingMessageRecipientState *> *)
+                                               recipientAddressStates
+{
+    self = [super initOutgoingMessageWithBuilder:messageBuilder recipientAddressStates:recipientAddressStates];
+
     if (!self) {
         return self;
     }

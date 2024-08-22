@@ -148,10 +148,6 @@ typedef NS_ENUM(NSInteger, EncryptionStyle) {
                                    transaction:(SDSAnyReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;
 
 /// Create a `TSOutgoingMessage` with precomputed recipient states.
-///
-/// - Important
-/// The ``TSOutgoingMessageRecipientState/state`` property for each of the given
-/// recipient address states should be `.skipped` or `.sending`.
 - (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder
                         recipientAddressStates:
                             (NSDictionary<SignalServiceAddress *, TSOutgoingMessageRecipientState *> *)

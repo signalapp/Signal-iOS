@@ -281,13 +281,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                             (NSDictionary<SignalServiceAddress *, TSOutgoingMessageRecipientState *> *)
                                 recipientAddressStates
 {
-    [recipientAddressStates enumerateKeysAndObjectsUsingBlock:^(SignalServiceAddress *_Nonnull recipientAddress,
-        TSOutgoingMessageRecipientState *_Nonnull recipientAddressState,
-        BOOL *_Nonnull stop) {
-        OWSAssertDebug(recipientAddressState.state == OWSOutgoingMessageRecipientStateSkipped
-            || recipientAddressState.state == OWSOutgoingMessageRecipientStateSending);
-    }];
-
     self = [super initMessageWithBuilder:outgoingMessageBuilder];
     if (!self) {
         return self;
