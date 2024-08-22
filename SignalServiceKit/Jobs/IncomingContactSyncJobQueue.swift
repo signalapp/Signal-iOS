@@ -256,7 +256,10 @@ private class IncomingContactSyncJobRunner: JobRunner, Dependencies {
             insertedThreads.append((threadUniqueId: contactThread.uniqueId, sortOrder: inboxSortOrder))
         }
 
-        let disappearingMessageToken = DisappearingMessageToken.token(forProtoExpireTimerSeconds: contactDetails.expireTimer)
+        let disappearingMessageToken = VersionedDisappearingMessageToken.token(
+            forProtoExpireTimerSeconds: contactDetails.expireTimer,
+            version: contactDetails.expireTimerVersion
+        )
         GroupManager.remoteUpdateDisappearingMessages(
             contactThread: contactThread,
             disappearingMessageToken: disappearingMessageToken,

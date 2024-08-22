@@ -513,12 +513,13 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
                     mcReceiptData: mcReceiptData
                 )
                 let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-                let expiresInSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: transaction.asV2Read)
+                let dmConfig = dmConfigurationStore.fetchOrBuildDefault(for: .thread(thread), tx: transaction.asV2Read)
                 let message = OWSOutgoingPaymentMessage(
                     thread: thread,
                     messageBody: memoMessage,
                     paymentNotification: paymentNotification,
-                    expiresInSeconds: expiresInSeconds,
+                    expiresInSeconds: dmConfig.durationSeconds,
+                    expireTimerVersion: NSNumber(value: dmConfig.timerVersion),
                     transaction: transaction
                 )
                 message.anyInsert(transaction: transaction)

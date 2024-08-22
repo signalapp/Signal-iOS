@@ -44,6 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
                     contactShare:(nullable OWSContact *)contactShare
                        editState:(TSEditState)editState
                  expireStartedAt:(uint64_t)expireStartedAt
+              expireTimerVersion:(nullable NSNumber *)expireTimerVersion
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
                        giftBadge:(nullable OWSGiftBadge *)giftBadge
@@ -92,6 +93,7 @@ NS_ASSUME_NONNULL_BEGIN
                     contactShare:(nullable OWSContact *)contactShare
                        editState:(TSEditState)editState
                  expireStartedAt:(uint64_t)expireStartedAt
+              expireTimerVersion:(nullable NSNumber *)expireTimerVersion
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
                        giftBadge:(nullable OWSGiftBadge *)giftBadge
@@ -115,7 +117,7 @@ NS_ASSUME_NONNULL_BEGIN
                    isLocalChange:(BOOL)isLocalChange
                 recipientAddress:(SignalServiceAddress *)recipientAddress
                verificationState:(OWSVerificationState)verificationState
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:bodyRanges:contactShare:editState:expireStartedAt:expiresAt:expiresInSeconds:giftBadge:isGroupStoryReply:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:storyAuthorUuidString:storyReactionEmoji:storyTimestamp:wasRemotelyDeleted:customMessage:infoMessageUserInfo:messageType:read:serverGuid:unregisteredAddress:isLocalChange:recipientAddress:verificationState:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:bodyRanges:contactShare:editState:expireStartedAt:expireTimerVersion:expiresAt:expiresInSeconds:giftBadge:isGroupStoryReply:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:storyAuthorUuidString:storyReactionEmoji:storyTimestamp:wasRemotelyDeleted:customMessage:infoMessageUserInfo:messageType:read:serverGuid:unregisteredAddress:isLocalChange:recipientAddress:verificationState:));
 
 // clang-format on
 

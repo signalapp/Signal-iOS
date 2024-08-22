@@ -28,6 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
                     contactShare:(nullable OWSContact *)contactShare
                        editState:(TSEditState)editState
                  expireStartedAt:(uint64_t)expireStartedAt
+              expireTimerVersion:(nullable NSNumber *)expireTimerVersion
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
                        giftBadge:(nullable OWSGiftBadge *)giftBadge
@@ -67,6 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
                     contactShare:(nullable OWSContact *)contactShare
                        editState:(TSEditState)editState
                  expireStartedAt:(uint64_t)expireStartedAt
+              expireTimerVersion:(nullable NSNumber *)expireTimerVersion
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
                        giftBadge:(nullable OWSGiftBadge *)giftBadge
@@ -88,7 +90,7 @@ NS_ASSUME_NONNULL_BEGIN
              wasIdentityVerified:(BOOL)wasIdentityVerified
                         authorId:(NSString *)authorId
                     envelopeData:(nullable NSData *)envelopeData
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:bodyRanges:contactShare:editState:expireStartedAt:expiresAt:expiresInSeconds:giftBadge:isGroupStoryReply:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:storyAuthorUuidString:storyReactionEmoji:storyTimestamp:wasRemotelyDeleted:errorType:read:recipientAddress:sender:wasIdentityVerified:authorId:envelopeData:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:bodyRanges:contactShare:editState:expireStartedAt:expireTimerVersion:expiresAt:expiresInSeconds:giftBadge:isGroupStoryReply:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:storyAuthorUuidString:storyReactionEmoji:storyTimestamp:wasRemotelyDeleted:errorType:read:recipientAddress:sender:wasIdentityVerified:authorId:envelopeData:));
 
 // clang-format on
 

@@ -246,12 +246,11 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
                 tx: tx
             )
             sskPreferences.setPreferContactAvatars(value: settings.preferContactAvatars, tx: tx)
-            disappearingMessageConfigurationStore.set(
+            disappearingMessageConfigurationStore.setUniversalTimer(
                 token: DisappearingMessageToken(
                     isEnabled: settings.universalExpireTimerSeconds > 0,
                     durationSeconds: settings.universalExpireTimerSeconds
                 ),
-                for: .universal,
                 tx: tx
             )
             if settings.preferredReactionEmoji.count > 0 {

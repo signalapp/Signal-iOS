@@ -32,6 +32,7 @@ public struct DisappearingMessagesConfigurationRecord: SDSRecord {
     // Properties
     public let durationSeconds: UInt32
     public let enabled: Bool
+    public let timerVersion: UInt32
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -39,6 +40,7 @@ public struct DisappearingMessagesConfigurationRecord: SDSRecord {
         case uniqueId
         case durationSeconds
         case enabled
+        case timerVersion
     }
 
     public static func columnName(_ column: DisappearingMessagesConfigurationRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -67,6 +69,7 @@ public extension DisappearingMessagesConfigurationRecord {
         uniqueId = row[2]
         durationSeconds = row[3]
         enabled = row[4]
+        timerVersion = row[5]
     }
 }
 
@@ -99,11 +102,13 @@ extension OWSDisappearingMessagesConfiguration {
             let uniqueId: String = record.uniqueId
             let durationSeconds: UInt32 = record.durationSeconds
             let enabled: Bool = record.enabled
+            let timerVersion: UInt32 = record.timerVersion
 
             return OWSDisappearingMessagesConfiguration(grdbId: recordId,
                                                         uniqueId: uniqueId,
                                                         durationSeconds: durationSeconds,
-                                                        enabled: enabled)
+                                                        enabled: enabled,
+                                                        timerVersion: timerVersion)
 
         default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
@@ -156,11 +161,13 @@ extension OWSDisappearingMessagesConfiguration: DeepCopyable {
             let uniqueId: String = modelToCopy.uniqueId
             let durationSeconds: UInt32 = modelToCopy.durationSeconds
             let enabled: Bool = modelToCopy.isEnabled
+            let timerVersion: UInt32 = modelToCopy.timerVersion
 
             return OWSDisappearingMessagesConfiguration(grdbId: id,
                                                         uniqueId: uniqueId,
                                                         durationSeconds: durationSeconds,
-                                                        enabled: enabled)
+                                                        enabled: enabled,
+                                                        timerVersion: timerVersion)
         }
 
     }
@@ -178,6 +185,7 @@ extension OWSDisappearingMessagesConfigurationSerializer {
     // Properties
     static var durationSecondsColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "durationSeconds", columnType: .int64) }
     static var enabledColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "enabled", columnType: .int) }
+    static var timerVersionColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "timerVersion", columnType: .int64) }
 
     public static var table: SDSTableMetadata {
         SDSTableMetadata(
@@ -188,6 +196,7 @@ extension OWSDisappearingMessagesConfigurationSerializer {
                 uniqueIdColumn,
                 durationSecondsColumn,
                 enabledColumn,
+                timerVersionColumn,
             ]
         )
     }
@@ -573,8 +582,9 @@ class OWSDisappearingMessagesConfigurationSerializer: SDSSerializer {
         // Properties
         let durationSeconds: UInt32 = model.durationSeconds
         let enabled: Bool = model.isEnabled
+        let timerVersion: UInt32 = model.timerVersion
 
-        return DisappearingMessagesConfigurationRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, durationSeconds: durationSeconds, enabled: enabled)
+        return DisappearingMessagesConfigurationRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, durationSeconds: durationSeconds, enabled: enabled, timerVersion: timerVersion)
     }
 }
 

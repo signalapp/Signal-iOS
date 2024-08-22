@@ -53,6 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
                     contactShare:(nullable OWSContact *)contactShare
                        editState:(TSEditState)editState
                  expireStartedAt:(uint64_t)expireStartedAt
+              expireTimerVersion:(nullable NSNumber *)expireTimerVersion
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
                        giftBadge:(nullable OWSGiftBadge *)giftBadge
@@ -87,6 +88,7 @@ NS_ASSUME_NONNULL_BEGIN
                       contactShare:contactShare
                          editState:editState
                    expireStartedAt:expireStartedAt
+                expireTimerVersion:expireTimerVersion
                          expiresAt:expiresAt
                   expiresInSeconds:expiresInSeconds
                          giftBadge:giftBadge

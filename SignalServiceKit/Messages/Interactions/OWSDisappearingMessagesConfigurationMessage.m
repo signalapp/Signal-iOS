@@ -65,6 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         [dataMessageBuilder setExpireTimer:0];
     }
+    [dataMessageBuilder setExpireTimerVersion:self.configuration.timerVersion];
 
     return dataMessageBuilder;
 }

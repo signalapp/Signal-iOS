@@ -132,7 +132,9 @@ public class NotificationActionHandler: Dependencies {
                         // We only use the thread's DM timer for normal messages & 1:1 story
                         // replies -- group story replies last for the lifetime of the story.
                         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-                        builder.expiresInSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: transaction.asV2Read)
+                        let dmConfig = dmConfigurationStore.fetchOrBuildDefault(for: .thread(thread), tx: transaction.asV2Read)
+                        builder.expiresInSeconds = dmConfig.durationSeconds
+                        builder.expireTimerVersion = NSNumber(value: dmConfig.timerVersion)
                     }
 
                     let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(TSOutgoingMessage(

@@ -21,8 +21,8 @@ class OWSDisappearingMessagesConfigurationTest: XCTestCase {
     func testEquality() {
         mockDB.read { tx in
             let value1 = store.fetchOrBuildDefault(for: .universal, tx: tx)
-            let value2 = value1.copyAsEnabled(withDurationSeconds: 10)
-            let value3 = value2.copy(withIsEnabled: false)
+            let value2 = value1.copyAsEnabled(withDurationSeconds: 10, timerVersion: 1)
+            let value3 = value2.copy(withIsEnabled: false, timerVersion: 1)
             XCTAssertNotEqual(value1, value2)
             XCTAssertNotEqual(value2, value3)
             XCTAssertEqual(value1, value3)

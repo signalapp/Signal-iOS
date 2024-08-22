@@ -94,6 +94,12 @@ typedef NS_CLOSED_ENUM(NSInteger, TSEditState) {
 @property (nonatomic, readonly) uint32_t expiresInSeconds;
 @property (nonatomic, readonly) uint64_t expireStartedAt;
 @property (nonatomic, readonly) uint64_t expiresAt;
+/// Nullable UInt32, with 0 and null treated as equivalent.
+/// An incrementing clock value for the expire timer that determines if we update the thread-level
+/// timer when receiving a message. Taken from the local VersionedDisappearingMessageToken
+/// for outgoing messages.
+/// DOES NOT affect whether expiresInSeconds is respected on a per-message basis.
+@property (nonatomic, readonly, nullable) NSNumber *expireTimerVersion;
 @property (nonatomic, readonly) BOOL hasPerConversationExpiration;
 @property (nonatomic, readonly) BOOL hasPerConversationExpirationStarted;
 
@@ -156,6 +162,7 @@ typedef NS_CLOSED_ENUM(NSInteger, TSEditState) {
                     contactShare:(nullable OWSContact *)contactShare
                        editState:(TSEditState)editState
                  expireStartedAt:(uint64_t)expireStartedAt
+              expireTimerVersion:(nullable NSNumber *)expireTimerVersion
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
                        giftBadge:(nullable OWSGiftBadge *)giftBadge
@@ -170,7 +177,7 @@ typedef NS_CLOSED_ENUM(NSInteger, TSEditState) {
               storyReactionEmoji:(nullable NSString *)storyReactionEmoji
                   storyTimestamp:(nullable NSNumber *)storyTimestamp
               wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:bodyRanges:contactShare:editState:expireStartedAt:expiresAt:expiresInSeconds:giftBadge:isGroupStoryReply:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:storyAuthorUuidString:storyReactionEmoji:storyTimestamp:wasRemotelyDeleted:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:bodyRanges:contactShare:editState:expireStartedAt:expireTimerVersion:expiresAt:expiresInSeconds:giftBadge:isGroupStoryReply:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:storyAuthorUuidString:storyReactionEmoji:storyTimestamp:wasRemotelyDeleted:));
 
 // clang-format on
 

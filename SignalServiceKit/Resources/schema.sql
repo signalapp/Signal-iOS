@@ -122,6 +122,7 @@ CREATE
             ,"giftBadge" BLOB
             ,"editState" INTEGER DEFAULT 0
             ,"archivedPaymentInfo" BLOB
+            ,"expireTimerVersion" INTEGER
         )
 ;
 
@@ -307,6 +308,7 @@ CREATE
                 ON CONFLICT FAIL
             ,"durationSeconds" INTEGER NOT NULL
             ,"enabled" INTEGER NOT NULL
+            ,"timerVersion" INTEGER NOT NULL DEFAULT 1
         )
 ;
 
@@ -2046,4 +2048,12 @@ CREATE
                     ON UPDATE
                         CASCADE
 )
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "VersionedDMTimerCapabilities" (
+            "serviceId" BLOB NOT NULL UNIQUE
+            ,"isEnabled" BOOLEAN NOT NULL
+        )
 ;

@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 public protocol DisappearingMessagesConfigurationStore {
     typealias SetTokenResult = (
@@ -17,10 +18,56 @@ public protocol DisappearingMessagesConfigurationStore {
 
     @discardableResult
     func set(
-        token: DisappearingMessageToken,
+        token: VersionedDisappearingMessageToken,
         for scope: DisappearingMessagesConfigurationScope,
         tx: DBWriteTransaction
     ) -> SetTokenResult
+
+    func isVersionedDMTimerCapable(
+        serviceId: ServiceId,
+        tx: DBReadTransaction
+    ) -> Bool
+
+    func setIsVersionedTimerCapable(
+        serviceId: ServiceId,
+        tx: DBWriteTransaction
+    )
+}
+
+extension DisappearingMessagesConfigurationStore {
+
+    /// Convenience method for group threads to pass an unversioned token.
+    @discardableResult
+    func set(
+        token: DisappearingMessageToken,
+        for groupThread: TSGroupThread,
+        tx: DBWriteTransaction
+    ) -> SetTokenResult {
+        set(
+            token: .forGroupThread(
+                isEnabled: token.isEnabled,
+                durationSeconds: token.durationSeconds
+            ),
+            for: .thread(groupThread),
+            tx: tx
+        )
+    }
+
+    /// Convenience method for the universal timer to pass an unversioned token.
+    @discardableResult
+    func setUniversalTimer(
+        token: DisappearingMessageToken,
+        tx: DBWriteTransaction
+    ) -> SetTokenResult {
+        set(
+            token: .forUniversalTimer(
+                isEnabled: token.isEnabled,
+                durationSeconds: token.durationSeconds
+            ),
+            for: .universal,
+            tx: tx
+        )
+    }
 }
 
 public enum DisappearingMessagesConfigurationScope {
@@ -50,7 +97,8 @@ extension DisappearingMessagesConfigurationStore {
         fetch(for: scope, tx: tx) ?? OWSDisappearingMessagesConfiguration(
             threadId: scope.persistenceKey,
             enabled: false,
-            durationSeconds: 0
+            durationSeconds: 0,
+            timerVersion: 1
         )
     }
 
@@ -66,15 +114,36 @@ class DisappearingMessagesConfigurationStoreImpl: DisappearingMessagesConfigurat
 
     @discardableResult
     func set(
-        token: DisappearingMessageToken,
+        token: VersionedDisappearingMessageToken,
         for scope: DisappearingMessagesConfigurationScope,
         tx: DBWriteTransaction
     ) -> SetTokenResult {
         let oldConfiguration = fetchOrBuildDefault(for: scope, tx: tx)
+        if
+            token.version > 0,
+            case let .thread(thread) = scope,
+            let serviceId = (thread as? TSContactThread)?.contactAddress.serviceId
+        {
+            // If we get a dm timer higher than 2, we know for sure
+            // that our peer is capable.
+            if token.version > 2 {
+                self.setIsVersionedTimerCapable(
+                    serviceId: serviceId,
+                    tx: tx
+                )
+            }
+
+            // We got a dm timer; check against the version we have locally and reject if lower.
+            if token.version < oldConfiguration.timerVersion {
+                Logger.info("Dropping DM timer update with outdated version")
+                return (oldConfiguration, oldConfiguration)
+            }
+        }
+        let newVersion = token.version == 0 ? oldConfiguration.timerVersion : token.version
         let newConfiguration = (
             token.isEnabled
-            ? oldConfiguration.copyAsEnabled(withDurationSeconds: token.durationSeconds)
-            : oldConfiguration.copy(withIsEnabled: false)
+            ? oldConfiguration.copyAsEnabled(withDurationSeconds: token.durationSeconds, timerVersion: newVersion)
+            : oldConfiguration.copy(withIsEnabled: false, timerVersion: newVersion)
         )
         if newConfiguration.grdbId == nil || newConfiguration != oldConfiguration {
             newConfiguration.anyUpsert(transaction: SDSDB.shimOnlyBridge(tx))
@@ -84,6 +153,31 @@ class DisappearingMessagesConfigurationStoreImpl: DisappearingMessagesConfigurat
 
     func remove(for thread: TSThread, tx: DBWriteTransaction) {
         fetch(for: .thread(thread), tx: tx)?.anyRemove(transaction: SDSDB.shimOnlyBridge(tx))
+    }
+
+    func isVersionedDMTimerCapable(
+        serviceId: ServiceId,
+        tx: DBReadTransaction
+    ) -> Bool {
+        return (try? Bool.fetchOne(
+            SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database,
+            sql: "SELECT isEnabled FROM VersionedDMTimerCapabilities WHERE serviceId = ?;",
+            arguments: [Data(serviceId.serviceIdBinary)]
+        )) ?? false
+    }
+
+    func setIsVersionedTimerCapable(
+        serviceId: ServiceId,
+        tx: any DBWriteTransaction
+    ) {
+        do {
+            try SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database.execute(
+                sql: "INSERT OR REPLACE INTO VersionedDMTimerCapabilities (serviceId, isEnabled) VALUES(?, ?);",
+                arguments: [Data(serviceId.serviceIdBinary), true]
+            )
+        } catch {
+            Logger.error("Failed to write capablities")
+        }
     }
 }
 
@@ -98,15 +192,17 @@ class MockDisappearingMessagesConfigurationStore: DisappearingMessagesConfigurat
 
     @discardableResult
     func set(
-        token: DisappearingMessageToken,
+        token: VersionedDisappearingMessageToken,
         for scope: DisappearingMessagesConfigurationScope,
         tx: DBWriteTransaction
     ) -> SetTokenResult {
         let oldConfiguration = fetchOrBuildDefault(for: scope, tx: tx)
+        let newVersion = oldConfiguration.timerVersion
         let newConfiguration = OWSDisappearingMessagesConfiguration(
             threadId: scope.persistenceKey,
             enabled: token.isEnabled,
-            durationSeconds: token.durationSeconds
+            durationSeconds: token.durationSeconds,
+            timerVersion: newVersion
         )
         values[scope.persistenceKey] = newConfiguration
         return (oldConfiguration, newConfiguration)
@@ -114,6 +210,16 @@ class MockDisappearingMessagesConfigurationStore: DisappearingMessagesConfigurat
 
     func remove(for thread: TSThread, tx: DBWriteTransaction) {
         values[thread.uniqueId] = nil
+    }
+
+    var capabilities = [ServiceId: Bool]()
+
+    func isVersionedDMTimerCapable(serviceId: ServiceId, tx: any DBReadTransaction) -> Bool {
+        return capabilities[serviceId] ?? false
+    }
+
+    func setIsVersionedTimerCapable(serviceId: ServiceId, tx: any DBWriteTransaction) {
+        capabilities[serviceId] = true
     }
 }
 

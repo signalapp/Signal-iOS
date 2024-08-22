@@ -343,7 +343,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
             token: .token(
                 forProtoExpireTimerSeconds: groupSnapshot.extractDisappearingMessageTimer
             ),
-            for: .thread(groupThread),
+            for: groupThread,
             tx: tx
         )
 

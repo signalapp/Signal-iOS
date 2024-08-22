@@ -10,6 +10,7 @@ public struct ContactDetails {
     public let aci: Aci?
     public let phoneNumber: E164?
     public let expireTimer: UInt32
+    public let expireTimerVersion: UInt32
     public let inboxSortOrder: UInt32?
 }
 
@@ -51,6 +52,7 @@ public class ContactsInputStream {
             aci: aci,
             phoneNumber: phoneNumber,
             expireTimer: contactDetails.expireTimer,
+            expireTimerVersion: contactDetails.expireTimerVersion,
             inboxSortOrder: contactDetails.hasInboxPosition ? contactDetails.inboxPosition : nil
         )
     }

@@ -140,12 +140,14 @@ final class ThreadMergerTest: XCTestCase {
             serviceIdThread.uniqueId: OWSDisappearingMessagesConfiguration(
                 threadId: serviceIdThread.uniqueId,
                 enabled: serviceIdValue != nil,
-                durationSeconds: serviceIdValue ?? 0
+                durationSeconds: serviceIdValue ?? 0,
+                timerVersion: 1
             ),
             phoneNumberThread.uniqueId: OWSDisappearingMessagesConfiguration(
                 threadId: phoneNumberThread.uniqueId,
                 enabled: phoneNumberValue != nil,
-                durationSeconds: phoneNumberValue ?? 0
+                durationSeconds: phoneNumberValue ?? 0,
+                timerVersion: 1
             )
         ]
     }

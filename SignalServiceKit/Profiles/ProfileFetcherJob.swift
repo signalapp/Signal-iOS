@@ -21,6 +21,7 @@ public class ProfileFetcherJob {
 
     private let db: any DB
     private let deleteForMeSyncMessageSettingsStore: any DeleteForMeSyncMessageSettingsStore
+    private let disappearingMessagesConfigurationStore: any DisappearingMessagesConfigurationStore
     private let identityManager: any OWSIdentityManager
     private let paymentsHelper: any PaymentsHelper
     private let profileManager: any ProfileManager
@@ -37,6 +38,7 @@ public class ProfileFetcherJob {
         authedAccount: AuthedAccount,
         db: any DB,
         deleteForMeSyncMessageSettingsStore: any DeleteForMeSyncMessageSettingsStore,
+        disappearingMessagesConfigurationStore: any DisappearingMessagesConfigurationStore,
         identityManager: any OWSIdentityManager,
         paymentsHelper: any PaymentsHelper,
         profileManager: any ProfileManager,
@@ -52,6 +54,7 @@ public class ProfileFetcherJob {
         self.authedAccount = authedAccount
         self.db = db
         self.deleteForMeSyncMessageSettingsStore = deleteForMeSyncMessageSettingsStore
+        self.disappearingMessagesConfigurationStore = disappearingMessagesConfigurationStore
         self.identityManager = identityManager
         self.paymentsHelper = paymentsHelper
         self.profileManager = profileManager
@@ -343,12 +346,14 @@ public class ProfileFetcherJob {
                 tx: SDSDB.shimOnlyBridge(transaction)
             )
 
-            if localIdentifiers.contains(serviceId: serviceId) {
-                self.updateLocalCapabilitiesIfNeeded(
-                    fetchedCapabilities: fetchedProfile.profile.capabilities,
-                    tx: transaction
-                )
+            self.updateCapabilitiesIfNeeded(
+                serviceId: serviceId,
+                fetchedCapabilities: fetchedProfile.profile.capabilities,
+                localIdentifiers: localIdentifiers,
+                tx: transaction
+            )
 
+            if localIdentifiers.contains(serviceId: serviceId) {
                 self.reconcileLocalProfileIfNeeded(fetchedProfile: fetchedProfile)
             }
 
@@ -396,22 +401,36 @@ public class ProfileFetcherJob {
         udManager.setUnidentifiedAccessMode(unidentifiedAccessMode, for: serviceId, tx: SDSDB.shimOnlyBridge(tx))
     }
 
-    private func updateLocalCapabilitiesIfNeeded(
+    private func updateCapabilitiesIfNeeded(
+        serviceId: ServiceId,
         fetchedCapabilities: SignalServiceProfile.Capabilities,
+        localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction
     ) {
+        var shouldSendProfileSync = false
         if
+            localIdentifiers.contains(serviceId: serviceId),
             fetchedCapabilities.deleteSync,
             !deleteForMeSyncMessageSettingsStore.isSendingEnabled(tx: tx)
         {
             deleteForMeSyncMessageSettingsStore.enableSending(tx: tx)
 
-            /// Now that the capability is enabled, we want to enable sending
-            /// not just on this device but on all our devices. To that end, we
-            /// can send a "fetch our latest profile" sync message to our other
-            /// devices, which will make them fetch the profile and learn that
-            /// they should also enable `DeleteForMe` sending.
-            ///
+            shouldSendProfileSync = true
+        }
+
+        if
+            fetchedCapabilities.versionedExpireTimer,
+            !disappearingMessagesConfigurationStore.isVersionedDMTimerCapable(serviceId: serviceId, tx: tx)
+        {
+            disappearingMessagesConfigurationStore.setIsVersionedTimerCapable(serviceId: serviceId, tx: tx)
+
+            if localIdentifiers.contains(serviceId: serviceId) {
+                shouldSendProfileSync = true
+            }
+        }
+
+        if shouldSendProfileSync {
+            /// If some capability is newly enabled, we want all devices to be aware.
             /// This would happen automatically the next time those devices
             /// fetch the local profile, but we'd prefer it happen ASAP!
             syncManager.sendFetchLatestProfileSyncMessage(tx: SDSDB.shimOnlyBridge(tx))

@@ -69,6 +69,7 @@ extern NSUInteger TSErrorMessageSchemaVersion;
                     contactShare:(nullable OWSContact *)contactShare
                        editState:(TSEditState)editState
                  expireStartedAt:(uint64_t)expireStartedAt
+              expireTimerVersion:(nullable NSNumber *)expireTimerVersion
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
                        giftBadge:(nullable OWSGiftBadge *)giftBadge
@@ -108,6 +109,7 @@ extern NSUInteger TSErrorMessageSchemaVersion;
                     contactShare:(nullable OWSContact *)contactShare
                        editState:(TSEditState)editState
                  expireStartedAt:(uint64_t)expireStartedAt
+              expireTimerVersion:(nullable NSNumber *)expireTimerVersion
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
                        giftBadge:(nullable OWSGiftBadge *)giftBadge
@@ -127,7 +129,7 @@ extern NSUInteger TSErrorMessageSchemaVersion;
                 recipientAddress:(nullable SignalServiceAddress *)recipientAddress
                           sender:(nullable SignalServiceAddress *)sender
              wasIdentityVerified:(BOOL)wasIdentityVerified
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:bodyRanges:contactShare:editState:expireStartedAt:expiresAt:expiresInSeconds:giftBadge:isGroupStoryReply:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:storyAuthorUuidString:storyReactionEmoji:storyTimestamp:wasRemotelyDeleted:errorType:read:recipientAddress:sender:wasIdentityVerified:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:bodyRanges:contactShare:editState:expireStartedAt:expireTimerVersion:expiresAt:expiresInSeconds:giftBadge:isGroupStoryReply:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:storyAuthorUuidString:storyReactionEmoji:storyTimestamp:wasRemotelyDeleted:errorType:read:recipientAddress:sender:wasIdentityVerified:));
 
 // clang-format on
 

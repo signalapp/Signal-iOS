@@ -136,6 +136,9 @@ final class ThreadMerger {
         // should have disappearing messages enabled. If both threads have
         // disappearing messages enabled, pick the shorter value.
         let resolvedValue = [valuePair.fromValue, valuePair.intoValue].compacted().min()
+        // Pick the higher version value.
+        let versionPair = configPair.map(\.timerVersion)
+        let resolvedVersion = [valuePair.fromValue, valuePair.intoValue].compacted().max() ?? 1
 
         // If neither thread had disappearing messages enabled, don't change anything.
         guard let resolvedValue else {
@@ -143,13 +146,13 @@ final class ThreadMerger {
         }
 
         let oldConfig = configPair.intoValue
-        let newConfig = oldConfig.copyAsEnabled(withDurationSeconds: resolvedValue)
+        let newConfig = oldConfig.copyAsEnabled(withDurationSeconds: resolvedValue, timerVersion: resolvedVersion)
 
         if newConfig == oldConfig {
             return
         }
 
-        disappearingMessagesConfigurationManager.setToken(newConfig.asToken, for: threadPair.intoValue, tx: tx)
+        disappearingMessagesConfigurationManager.setToken(newConfig.asVersionedToken, for: threadPair.intoValue, tx: tx)
     }
 
     private func mergePinnedThreads(_ threadPair: MergePair<TSContactThread>, tx: DBWriteTransaction) {
@@ -389,11 +392,11 @@ extension ThreadMerger {
 }
 
 protocol _ThreadMerger_DisappearingMessagesConfigurationManagerShim {
-    func setToken(_ token: DisappearingMessageToken, for thread: TSContactThread, tx: DBWriteTransaction)
+    func setToken(_ token: VersionedDisappearingMessageToken, for thread: TSContactThread, tx: DBWriteTransaction)
 }
 
 class _ThreadMerger_DisappearingMessagesConfigurationManagerWrapper: _ThreadMerger_DisappearingMessagesConfigurationManagerShim {
-    func setToken(_ token: DisappearingMessageToken, for thread: TSContactThread, tx: DBWriteTransaction) {
+    func setToken(_ token: VersionedDisappearingMessageToken, for thread: TSContactThread, tx: DBWriteTransaction) {
         GroupManager.localUpdateDisappearingMessageToken(token, inContactThread: thread, tx: SDSDB.shimOnlyBridge(tx))
     }
 }
@@ -490,7 +493,7 @@ class ThreadMerger_MockDisappearingMessagesConfigurationManager: ThreadMerger.Sh
     init(_ disappearingMessagesConfigurationStore: MockDisappearingMessagesConfigurationStore) {
         self.store = disappearingMessagesConfigurationStore
     }
-    func setToken(_ token: DisappearingMessageToken, for thread: TSContactThread, tx: DBWriteTransaction) {
+    func setToken(_ token: VersionedDisappearingMessageToken, for thread: TSContactThread, tx: DBWriteTransaction) {
         self.store.set(token: token, for: .thread(thread), tx: tx)
     }
 }

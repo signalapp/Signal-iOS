@@ -77,7 +77,7 @@ public protocol _SentMessageTranscriptReceiver_GroupManagerShim {
 
     func remoteUpdateDisappearingMessages(
         withContactThread thread: TSContactThread,
-        disappearingMessageToken: DisappearingMessageToken,
+        disappearingMessageToken: VersionedDisappearingMessageToken,
         changeAuthor: Aci,
         localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction
@@ -90,7 +90,7 @@ public class _SentMessageTranscriptReceiver_GroupManagerWrapper: _SentMessageTra
 
     public func remoteUpdateDisappearingMessages(
         withContactThread thread: TSContactThread,
-        disappearingMessageToken: DisappearingMessageToken,
+        disappearingMessageToken: VersionedDisappearingMessageToken,
         changeAuthor: Aci,
         localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction

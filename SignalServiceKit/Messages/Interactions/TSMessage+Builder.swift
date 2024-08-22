@@ -14,6 +14,7 @@ public class TSMessageBuilder: NSObject {
     public var bodyRanges: MessageBodyRanges?
     public var editState: TSEditState
     public var expiresInSeconds: UInt32
+    public var expireTimerVersion: NSNumber?
     public var expireStartedAt: UInt64
     public var isViewOnceMessage: Bool
     public var isViewOnceComplete: Bool
@@ -41,6 +42,7 @@ public class TSMessageBuilder: NSObject {
         bodyRanges: MessageBodyRanges?,
         editState: TSEditState,
         expiresInSeconds: UInt32?,
+        expireTimerVersion: UInt32?,
         expireStartedAt: UInt64?,
         isViewOnceMessage: Bool,
         isViewOnceComplete: Bool,
@@ -63,6 +65,7 @@ public class TSMessageBuilder: NSObject {
         self.bodyRanges = bodyRanges
         self.editState = editState
         self.expiresInSeconds = expiresInSeconds ?? 0
+        self.expireTimerVersion = expireTimerVersion.map(NSNumber.init(value:))
         self.expireStartedAt = expireStartedAt ?? 0
         self.isViewOnceMessage = isViewOnceMessage
         self.isViewOnceComplete = isViewOnceComplete
@@ -78,6 +81,8 @@ public class TSMessageBuilder: NSObject {
         self.giftBadge = giftBadge
     }
 
+    /// NOTE: if expiresInSeconds is set, expireTimerVersion should also be set (even if its nil, which is a valid input)
+    /// Setting expiresInSeconds without passing along the version from the caller/proto can lead to bugs.
     @nonobjc
     static func withDefaultValues(
         thread: TSThread,
@@ -87,6 +92,7 @@ public class TSMessageBuilder: NSObject {
         bodyRanges: MessageBodyRanges? = nil,
         editState: TSEditState = .none,
         expiresInSeconds: UInt32? = nil,
+        expireTimerVersion: UInt32? = nil,
         expireStartedAt: UInt64? = nil,
         isViewOnceMessage: Bool = false,
         isViewOnceComplete: Bool = false,
@@ -108,6 +114,7 @@ public class TSMessageBuilder: NSObject {
             bodyRanges: bodyRanges,
             editState: editState,
             expiresInSeconds: expiresInSeconds,
+            expireTimerVersion: expireTimerVersion,
             expireStartedAt: expireStartedAt,
             isViewOnceMessage: isViewOnceMessage,
             isViewOnceComplete: isViewOnceComplete,

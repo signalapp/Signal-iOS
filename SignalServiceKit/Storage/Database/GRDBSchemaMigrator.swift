@@ -282,6 +282,10 @@ public class GRDBSchemaMigrator: NSObject {
         case addBackupAttachmentDownloadQueue
         case createAttachmentUploadRecordTable
         case addBlockedRecipient
+        case addDmTimerVersionColumn
+        case addVersionedDMTimer
+        case addDMTimerVersionToInteractionTable
+        case initializeDMTimerVersion
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -343,7 +347,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 82
+    public static let grdbSchemaVersionLatest: UInt = 83
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -3309,6 +3313,55 @@ public class GRDBSchemaMigrator: NSObject {
         migrator.registerMigration(.addBlockedRecipient) { tx in
             try migrateBlockedRecipients(tx: tx)
 
+            return .success(())
+        }
+
+        migrator.registerMigration(.addDmTimerVersionColumn) { tx in
+            try tx.database.alter(table: "model_OWSDisappearingMessagesConfiguration") { table in
+                table.add(column: "timerVersion", .integer)
+                    .defaults(to: 1)
+                    .notNull()
+            }
+            return .success(())
+        }
+
+        migrator.registerMigration(.addVersionedDMTimer) { tx in
+            // This table can be deleted 90 days after all clients ship capability
+            // support; the capability can be assumed true then.
+            try tx.database.create(table: "VersionedDMTimerCapabilities") { table in
+                table.column("serviceId", .blob).unique().notNull()
+                table.column("isEnabled", .boolean).notNull()
+            }
+            return .success(())
+        }
+
+        migrator.registerMigration(.addDMTimerVersionToInteractionTable) { tx in
+            try tx.database.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
+                table.add(column: "expireTimerVersion", .integer)
+            }
+            return .success(())
+        }
+
+        migrator.registerMigration(.initializeDMTimerVersion) { tx in
+            // One time, we update all timers to an initial value of 2.
+            // This prevents the following edge case:
+            //
+            // 1. Alice and Bob have a chat with DM timer set to some value.
+            // 2. Both Alice and Bob update their primaries. If not for this migration,
+            //    their clock value would be 1 (the default).
+            // 3. Alice links a new iPad/Desktop; it doesn't get a contact sync yet
+            //    It sets the chat's clock to 1 (the default).
+            // 4. Alice's iPad sends a message with expireTimer=nil clock=1
+            // 5. Bob (and Alice's primary) accept and set the timer to nil
+            //
+            // So we initialize all _existing_ timers to 2, so the default 1 value
+            // will be rejected in step 5.
+            // (Chats that have never set a timer have no configuration row and are
+            // fine to leave as-is. Also this will update the universal and group
+            // thread timer versions, but those are never used so it doesn't matter.)
+            try tx.database.execute(sql: """
+            UPDATE model_OWSDisappearingMessagesConfiguration SET timerVersion = 2;
+            """)
             return .success(())
         }
 

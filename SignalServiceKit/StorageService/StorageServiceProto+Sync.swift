@@ -1497,7 +1497,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         }
 
         let remoteExpireToken: DisappearingMessageToken = .token(forProtoExpireTimerSeconds: record.universalExpireTimer)
-        dmConfigurationStore.set(token: remoteExpireToken, for: .universal, tx: transaction.asV2Write)
+        dmConfigurationStore.setUniversalTimer(token: remoteExpireToken, tx: transaction.asV2Write)
 
         if !record.preferredReactionEmoji.isEmpty {
             // Treat new preferred emoji as a full source of truth (if not empty). Note

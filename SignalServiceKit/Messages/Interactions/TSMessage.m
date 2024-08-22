@@ -29,6 +29,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 @property (nonatomic) uint32_t expiresInSeconds;
 @property (nonatomic) uint64_t expireStartedAt;
+@property (nonatomic, nullable) NSNumber *expireTimerVersion;
 
 /**
  * The version of the model class's schema last used to serialize this model. Use this to manage data migrations during
@@ -90,6 +91,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _editState = messageBuilder.editState;
     _expiresInSeconds = messageBuilder.expiresInSeconds;
     _expireStartedAt = messageBuilder.expireStartedAt;
+    _expireTimerVersion = messageBuilder.expireTimerVersion;
     [self updateExpiresAt];
     _isViewOnceMessage = messageBuilder.isViewOnceMessage;
     _isViewOnceComplete = messageBuilder.isViewOnceComplete;
@@ -132,6 +134,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                     contactShare:(nullable OWSContact *)contactShare
                        editState:(TSEditState)editState
                  expireStartedAt:(uint64_t)expireStartedAt
+              expireTimerVersion:(nullable NSNumber *)expireTimerVersion
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
                        giftBadge:(nullable OWSGiftBadge *)giftBadge
@@ -164,6 +167,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _contactShare = contactShare;
     _editState = editState;
     _expireStartedAt = expireStartedAt;
+    _expireTimerVersion = expireTimerVersion;
     _expiresAt = expiresAt;
     _expiresInSeconds = expiresInSeconds;
     _giftBadge = giftBadge;

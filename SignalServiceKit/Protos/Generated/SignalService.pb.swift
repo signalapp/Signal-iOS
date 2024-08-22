@@ -1136,6 +1136,15 @@ struct SignalServiceProtos_DataMessage {
   /// Clears the value of `expireTimer`. Subsequent reads from it will return its default value.
   mutating func clearExpireTimer() {_uniqueStorage()._expireTimer = nil}
 
+  var expireTimerVersion: UInt32 {
+    get {return _storage._expireTimerVersion ?? 0}
+    set {_uniqueStorage()._expireTimerVersion = newValue}
+  }
+  /// Returns true if `expireTimerVersion` has been explicitly set.
+  var hasExpireTimerVersion: Bool {return _storage._expireTimerVersion != nil}
+  /// Clears the value of `expireTimerVersion`. Subsequent reads from it will return its default value.
+  mutating func clearExpireTimerVersion() {_uniqueStorage()._expireTimerVersion = nil}
+
   var profileKey: Data {
     get {return _storage._profileKey ?? Data()}
     set {_uniqueStorage()._profileKey = newValue}
@@ -1250,6 +1259,7 @@ struct SignalServiceProtos_DataMessage {
   /// Clears the value of `storyContext`. Subsequent reads from it will return its default value.
   mutating func clearStoryContext() {_uniqueStorage()._storyContext = nil}
 
+  /// NEXT ID: 24
   var giftBadge: SignalServiceProtos_DataMessage.GiftBadge {
     get {return _storage._giftBadge ?? SignalServiceProtos_DataMessage.GiftBadge()}
     set {_uniqueStorage()._giftBadge = newValue}
@@ -4330,6 +4340,15 @@ struct SignalServiceProtos_ContactDetails {
   /// Clears the value of `expireTimer`. Subsequent reads from it will return its default value.
   mutating func clearExpireTimer() {self._expireTimer = nil}
 
+  var expireTimerVersion: UInt32 {
+    get {return _expireTimerVersion ?? 0}
+    set {_expireTimerVersion = newValue}
+  }
+  /// Returns true if `expireTimerVersion` has been explicitly set.
+  var hasExpireTimerVersion: Bool {return self._expireTimerVersion != nil}
+  /// Clears the value of `expireTimerVersion`. Subsequent reads from it will return its default value.
+  mutating func clearExpireTimerVersion() {self._expireTimerVersion = nil}
+
   var inboxPosition: UInt32 {
     get {return _inboxPosition ?? 0}
     set {_inboxPosition = newValue}
@@ -4379,6 +4398,7 @@ struct SignalServiceProtos_ContactDetails {
   fileprivate var _name: String? = nil
   fileprivate var _avatar: SignalServiceProtos_ContactDetails.Avatar? = nil
   fileprivate var _expireTimer: UInt32? = nil
+  fileprivate var _expireTimerVersion: UInt32? = nil
   fileprivate var _inboxPosition: UInt32? = nil
 }
 
@@ -5894,6 +5914,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
     15: .same(proto: "groupV2"),
     4: .same(proto: "flags"),
     5: .same(proto: "expireTimer"),
+    23: .same(proto: "expireTimerVersion"),
     6: .same(proto: "profileKey"),
     7: .same(proto: "timestamp"),
     8: .same(proto: "quote"),
@@ -5917,6 +5938,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
     var _groupV2: SignalServiceProtos_GroupContextV2? = nil
     var _flags: UInt32? = nil
     var _expireTimer: UInt32? = nil
+    var _expireTimerVersion: UInt32? = nil
     var _profileKey: Data? = nil
     var _timestamp: UInt64? = nil
     var _quote: SignalServiceProtos_DataMessage.Quote? = nil
@@ -5951,6 +5973,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
       _groupV2 = source._groupV2
       _flags = source._flags
       _expireTimer = source._expireTimer
+      _expireTimerVersion = source._expireTimerVersion
       _profileKey = source._profileKey
       _timestamp = source._timestamp
       _quote = source._quote
@@ -6004,6 +6027,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
         case 20: try { try decoder.decodeSingularMessageField(value: &_storage._payment) }()
         case 21: try { try decoder.decodeSingularMessageField(value: &_storage._storyContext) }()
         case 22: try { try decoder.decodeSingularMessageField(value: &_storage._giftBadge) }()
+        case 23: try { try decoder.decodeSingularUInt32Field(value: &_storage._expireTimerVersion) }()
         default: break
         }
       }
@@ -6076,6 +6100,9 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
       try { if let v = _storage._giftBadge {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 22)
       } }()
+      try { if let v = _storage._expireTimerVersion {
+        try visitor.visitSingularUInt32Field(value: v, fieldNumber: 23)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -6090,6 +6117,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
         if _storage._groupV2 != rhs_storage._groupV2 {return false}
         if _storage._flags != rhs_storage._flags {return false}
         if _storage._expireTimer != rhs_storage._expireTimer {return false}
+        if _storage._expireTimerVersion != rhs_storage._expireTimerVersion {return false}
         if _storage._profileKey != rhs_storage._profileKey {return false}
         if _storage._timestamp != rhs_storage._timestamp {return false}
         if _storage._quote != rhs_storage._quote {return false}
@@ -9247,6 +9275,7 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
     2: .same(proto: "name"),
     3: .same(proto: "avatar"),
     8: .same(proto: "expireTimer"),
+    12: .same(proto: "expireTimerVersion"),
     10: .same(proto: "inboxPosition"),
   ]
 
@@ -9262,6 +9291,7 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
       case 8: try { try decoder.decodeSingularUInt32Field(value: &self._expireTimer) }()
       case 9: try { try decoder.decodeSingularStringField(value: &self._aci) }()
       case 10: try { try decoder.decodeSingularUInt32Field(value: &self._inboxPosition) }()
+      case 12: try { try decoder.decodeSingularUInt32Field(value: &self._expireTimerVersion) }()
       default: break
       }
     }
@@ -9290,6 +9320,9 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
     try { if let v = self._inboxPosition {
       try visitor.visitSingularUInt32Field(value: v, fieldNumber: 10)
     } }()
+    try { if let v = self._expireTimerVersion {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 12)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -9299,6 +9332,7 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
     if lhs._name != rhs._name {return false}
     if lhs._avatar != rhs._avatar {return false}
     if lhs._expireTimer != rhs._expireTimer {return false}
+    if lhs._expireTimerVersion != rhs._expireTimerVersion {return false}
     if lhs._inboxPosition != rhs._inboxPosition {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true

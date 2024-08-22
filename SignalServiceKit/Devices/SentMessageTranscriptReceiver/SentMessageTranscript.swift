@@ -8,7 +8,7 @@ import LibSignalClient
 
 public enum SentMessageTranscriptTarget {
     case group(TSGroupThread)
-    case contact(TSContactThread, DisappearingMessageToken)
+    case contact(TSContactThread, VersionedDisappearingMessageToken)
 
     var thread: TSThread {
         switch self {
@@ -54,6 +54,7 @@ public enum SentMessageTranscriptType {
 
         public let expirationStartedAt: UInt64?
         public let expirationDurationSeconds: UInt32?
+        public let expireTimerVersion: UInt32?
 
         public let storyTimestamp: UInt64?
         public let storyAuthorAci: Aci?

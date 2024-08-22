@@ -49,6 +49,8 @@ public class FeatureFlags: NSObject {
     public static let callLinkCreate = build.includes(.dev)
 
     public static let chatListFilter = build.includes(.internal)
+
+    public static let versionedExpireTimer = false
 }
 
 // MARK: -

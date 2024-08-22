@@ -124,6 +124,8 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                     thread: archivedPayment.target.thread,
                     timestamp: transcript.timestamp,
                     expiresInSeconds: archivedPayment.expirationDurationSeconds,
+                    // Archived payments don't set the chat timer; version is irrelevant.
+                    expireTimerVersion: nil,
                     expireStartedAt: archivedPayment.expirationStartedAt
                 ),
                 amount: archivedPayment.amount,
@@ -200,6 +202,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             bodyRanges: messageParams.bodyRanges,
             editState: .none, // Sent transcripts with edit state are handled by a different codepath
             expiresInSeconds: messageParams.expirationDurationSeconds,
+            expireTimerVersion: messageParams.expireTimerVersion,
             expireStartedAt: messageParams.expirationStartedAt,
             isVoiceMessage: false,
             groupMetaMessage: .unspecified,

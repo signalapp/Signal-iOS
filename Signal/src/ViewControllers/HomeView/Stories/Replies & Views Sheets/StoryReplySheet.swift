@@ -65,7 +65,9 @@ extension StoryReplySheet {
 
             if shouldUseThreadDMTimer {
                 let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-                builder.expiresInSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: transaction.asV2Read)
+                let dmConfig = dmConfigurationStore.fetchOrBuildDefault(for: .thread(thread), tx: transaction.asV2Read)
+                builder.expiresInSeconds = dmConfig.durationSeconds
+                builder.expireTimerVersion = NSNumber(value: dmConfig.timerVersion)
             }
 
             let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(builder.build(transaction: transaction))

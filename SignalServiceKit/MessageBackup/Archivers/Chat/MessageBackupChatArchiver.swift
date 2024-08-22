@@ -378,7 +378,12 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
 
         if chat.expirationTimerMs != 0 {
             dmConfigurationStore.set(
-                token: .init(isEnabled: true, durationSeconds: UInt32(chat.expirationTimerMs / 1000)),
+                token: .init(
+                    isEnabled: true,
+                    durationSeconds: UInt32(chat.expirationTimerMs / 1000),
+                    // TODO: [Backups] add DM timer version to backups
+                    version: nil
+                ),
                 for: .thread(chatThread.tsThread),
                 tx: tx
             )

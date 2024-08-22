@@ -25,7 +25,9 @@ public final class ThreadUtil: Dependencies {
 
     private static func applyDisappearingMessagesConfiguration(to builder: TSOutgoingMessageBuilder, tx: DBReadTransaction) {
         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-        builder.expiresInSeconds = dmConfigurationStore.durationSeconds(for: builder.thread, tx: tx)
+        let dmConfig = dmConfigurationStore.fetchOrBuildDefault(for: .thread(builder.thread), tx: tx)
+        builder.expiresInSeconds = dmConfig.durationSeconds
+        builder.expireTimerVersion = NSNumber(value: dmConfig.timerVersion)
     }
 
     public class func enqueueMessagePromise(
@@ -237,8 +239,20 @@ extension ThreadUtil {
 
     private static func setUniversalTimer(contactThread: TSContactThread, tx: SDSAnyWriteTransaction) {
         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-        let dmUniversalToken = dmConfigurationStore.fetchOrBuildDefault(for: .universal, tx: tx.asV2Read).asToken
-        let dmResult = dmConfigurationStore.set(token: dmUniversalToken, for: .thread(contactThread), tx: tx.asV2Write)
+        let dmUniversalToken = dmConfigurationStore.fetchOrBuildDefault(for: .universal, tx: tx.asV2Read)
+        let version = dmConfigurationStore.fetchOrBuildDefault(
+            for: .thread(contactThread),
+            tx: tx.asV2Read
+        ).timerVersion
+        let dmResult = dmConfigurationStore.set(
+            token: .init(
+                isEnabled: dmUniversalToken.isEnabled,
+                durationSeconds: dmUniversalToken.durationSeconds,
+                version: version
+            ),
+            for: .thread(contactThread),
+            tx: tx.asV2Write
+        )
         OWSDisappearingConfigurationUpdateInfoMessage(
             contactThread: contactThread,
             timestamp: MessageTimestampGenerator.sharedInstance.generateTimestamp(),

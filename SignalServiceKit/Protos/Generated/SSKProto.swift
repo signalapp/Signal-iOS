@@ -7902,6 +7902,15 @@ public class SSKProtoDataMessage: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
+    public var expireTimerVersion: UInt32 {
+        return proto.expireTimerVersion
+    }
+    @objc
+    public var hasExpireTimerVersion: Bool {
+        return proto.hasExpireTimerVersion
+    }
+
+    @objc
     public var profileKey: Data? {
         guard hasProfileKey else {
             return nil
@@ -8122,6 +8131,9 @@ extension SSKProtoDataMessage {
         if hasExpireTimer {
             builder.setExpireTimer(expireTimer)
         }
+        if hasExpireTimerVersion {
+            builder.setExpireTimerVersion(expireTimerVersion)
+        }
         if let _value = profileKey {
             builder.setProfileKey(_value)
         }
@@ -8216,6 +8228,11 @@ public class SSKProtoDataMessageBuilder: NSObject {
     @objc
     public func setExpireTimer(_ valueParam: UInt32) {
         proto.expireTimer = valueParam
+    }
+
+    @objc
+    public func setExpireTimerVersion(_ valueParam: UInt32) {
+        proto.expireTimerVersion = valueParam
     }
 
     @objc
@@ -16085,6 +16102,15 @@ public class SSKProtoContactDetails: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
+    public var expireTimerVersion: UInt32 {
+        return proto.expireTimerVersion
+    }
+    @objc
+    public var hasExpireTimerVersion: Bool {
+        return proto.hasExpireTimerVersion
+    }
+
+    @objc
     public var inboxPosition: UInt32 {
         return proto.inboxPosition
     }
@@ -16189,6 +16215,9 @@ extension SSKProtoContactDetails {
         if hasExpireTimer {
             builder.setExpireTimer(expireTimer)
         }
+        if hasExpireTimerVersion {
+            builder.setExpireTimerVersion(expireTimerVersion)
+        }
         if hasInboxPosition {
             builder.setInboxPosition(inboxPosition)
         }
@@ -16254,6 +16283,11 @@ public class SSKProtoContactDetailsBuilder: NSObject {
     @objc
     public func setExpireTimer(_ valueParam: UInt32) {
         proto.expireTimer = valueParam
+    }
+
+    @objc
+    public func setExpireTimerVersion(_ valueParam: UInt32) {
+        proto.expireTimerVersion = valueParam
     }
 
     @objc

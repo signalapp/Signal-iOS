@@ -101,6 +101,7 @@ public struct InteractionRecord: SDSRecord {
     public let giftBadge: Data?
     public let editState: TSEditState?
     public let archivedPaymentInfo: Data?
+    public let expireTimerVersion: UInt32?
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -177,6 +178,7 @@ public struct InteractionRecord: SDSRecord {
         case giftBadge
         case editState
         case archivedPaymentInfo
+        case expireTimerVersion
     }
 
     public static func columnName(_ column: InteractionRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -274,6 +276,7 @@ public extension InteractionRecord {
         giftBadge = row[71]
         editState = row[72]
         archivedPaymentInfo = row[73]
+        expireTimerVersion = row[74]
     }
 }
 
@@ -319,6 +322,7 @@ extension TSInteraction {
                throw SDSError.missingRequiredField()
             }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
+            let expireTimerVersion: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.expireTimerVersion, name: "expireTimerVersion", conversion: { NSNumber(value: $0) })
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
             let giftBadgeSerialized: Data? = record.giftBadge
@@ -360,6 +364,7 @@ extension TSInteraction {
                                                 contactShare: contactShare,
                                                 editState: editState,
                                                 expireStartedAt: expireStartedAt,
+                                                expireTimerVersion: expireTimerVersion,
                                                 expiresAt: expiresAt,
                                                 expiresInSeconds: expiresInSeconds,
                                                 giftBadge: giftBadge,
@@ -399,6 +404,7 @@ extension TSInteraction {
                throw SDSError.missingRequiredField()
             }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
+            let expireTimerVersion: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.expireTimerVersion, name: "expireTimerVersion", conversion: { NSNumber(value: $0) })
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
             let giftBadgeSerialized: Data? = record.giftBadge
@@ -440,6 +446,7 @@ extension TSInteraction {
                                                         contactShare: contactShare,
                                                         editState: editState,
                                                         expireStartedAt: expireStartedAt,
+                                                        expireTimerVersion: expireTimerVersion,
                                                         expiresAt: expiresAt,
                                                         expiresInSeconds: expiresInSeconds,
                                                         giftBadge: giftBadge,
@@ -479,6 +486,7 @@ extension TSInteraction {
                throw SDSError.missingRequiredField()
             }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
+            let expireTimerVersion: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.expireTimerVersion, name: "expireTimerVersion", conversion: { NSNumber(value: $0) })
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
             let giftBadgeSerialized: Data? = record.giftBadge
@@ -524,6 +532,7 @@ extension TSInteraction {
                                                                  contactShare: contactShare,
                                                                  editState: editState,
                                                                  expireStartedAt: expireStartedAt,
+                                                                 expireTimerVersion: expireTimerVersion,
                                                                  expiresAt: expiresAt,
                                                                  expiresInSeconds: expiresInSeconds,
                                                                  giftBadge: giftBadge,
@@ -593,6 +602,7 @@ extension TSInteraction {
                throw SDSError.missingRequiredField()
             }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
+            let expireTimerVersion: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.expireTimerVersion, name: "expireTimerVersion", conversion: { NSNumber(value: $0) })
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
             let giftBadgeSerialized: Data? = record.giftBadge
@@ -635,6 +645,7 @@ extension TSInteraction {
                                                      contactShare: contactShare,
                                                      editState: editState,
                                                      expireStartedAt: expireStartedAt,
+                                                     expireTimerVersion: expireTimerVersion,
                                                      expiresAt: expiresAt,
                                                      expiresInSeconds: expiresInSeconds,
                                                      giftBadge: giftBadge,
@@ -678,6 +689,7 @@ extension TSInteraction {
                throw SDSError.missingRequiredField()
             }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
+            let expireTimerVersion: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.expireTimerVersion, name: "expireTimerVersion", conversion: { NSNumber(value: $0) })
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
             let giftBadgeSerialized: Data? = record.giftBadge
@@ -722,6 +734,7 @@ extension TSInteraction {
                                              contactShare: contactShare,
                                              editState: editState,
                                              expireStartedAt: expireStartedAt,
+                                             expireTimerVersion: expireTimerVersion,
                                              expiresAt: expiresAt,
                                              expiresInSeconds: expiresInSeconds,
                                              giftBadge: giftBadge,
@@ -767,6 +780,7 @@ extension TSInteraction {
                throw SDSError.missingRequiredField()
             }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
+            let expireTimerVersion: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.expireTimerVersion, name: "expireTimerVersion", conversion: { NSNumber(value: $0) })
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
             let giftBadgeSerialized: Data? = record.giftBadge
@@ -818,6 +832,7 @@ extension TSInteraction {
                                                      contactShare: contactShare,
                                                      editState: editState,
                                                      expireStartedAt: expireStartedAt,
+                                                     expireTimerVersion: expireTimerVersion,
                                                      expiresAt: expiresAt,
                                                      expiresInSeconds: expiresInSeconds,
                                                      giftBadge: giftBadge,
@@ -863,6 +878,7 @@ extension TSInteraction {
                throw SDSError.missingRequiredField()
             }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
+            let expireTimerVersion: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.expireTimerVersion, name: "expireTimerVersion", conversion: { NSNumber(value: $0) })
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
             let giftBadgeSerialized: Data? = record.giftBadge
@@ -916,6 +932,7 @@ extension TSInteraction {
                                              contactShare: contactShare,
                                              editState: editState,
                                              expireStartedAt: expireStartedAt,
+                                             expireTimerVersion: expireTimerVersion,
                                              expiresAt: expiresAt,
                                              expiresInSeconds: expiresInSeconds,
                                              giftBadge: giftBadge,
@@ -963,6 +980,7 @@ extension TSInteraction {
                throw SDSError.missingRequiredField()
             }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
+            let expireTimerVersion: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.expireTimerVersion, name: "expireTimerVersion", conversion: { NSNumber(value: $0) })
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
             let giftBadgeSerialized: Data? = record.giftBadge
@@ -1012,6 +1030,7 @@ extension TSInteraction {
                                                               contactShare: contactShare,
                                                               editState: editState,
                                                               expireStartedAt: expireStartedAt,
+                                                              expireTimerVersion: expireTimerVersion,
                                                               expiresAt: expiresAt,
                                                               expiresInSeconds: expiresInSeconds,
                                                               giftBadge: giftBadge,
@@ -1056,6 +1075,7 @@ extension TSInteraction {
                throw SDSError.missingRequiredField()
             }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
+            let expireTimerVersion: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.expireTimerVersion, name: "expireTimerVersion", conversion: { NSNumber(value: $0) })
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
             let giftBadgeSerialized: Data? = record.giftBadge
@@ -1105,6 +1125,7 @@ extension TSInteraction {
                                                       contactShare: contactShare,
                                                       editState: editState,
                                                       expireStartedAt: expireStartedAt,
+                                                      expireTimerVersion: expireTimerVersion,
                                                       expiresAt: expiresAt,
                                                       expiresInSeconds: expiresInSeconds,
                                                       giftBadge: giftBadge,
@@ -1149,6 +1170,7 @@ extension TSInteraction {
                throw SDSError.missingRequiredField()
             }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
+            let expireTimerVersion: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.expireTimerVersion, name: "expireTimerVersion", conversion: { NSNumber(value: $0) })
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
             let giftBadgeSerialized: Data? = record.giftBadge
@@ -1189,6 +1211,7 @@ extension TSInteraction {
                                                        contactShare: contactShare,
                                                        editState: editState,
                                                        expireStartedAt: expireStartedAt,
+                                                       expireTimerVersion: expireTimerVersion,
                                                        expiresAt: expiresAt,
                                                        expiresInSeconds: expiresInSeconds,
                                                        giftBadge: giftBadge,
@@ -1227,6 +1250,7 @@ extension TSInteraction {
                throw SDSError.missingRequiredField()
             }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
+            let expireTimerVersion: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.expireTimerVersion, name: "expireTimerVersion", conversion: { NSNumber(value: $0) })
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
             let giftBadgeSerialized: Data? = record.giftBadge
@@ -1267,6 +1291,7 @@ extension TSInteraction {
                                                       contactShare: contactShare,
                                                       editState: editState,
                                                       expireStartedAt: expireStartedAt,
+                                                      expireTimerVersion: expireTimerVersion,
                                                       expiresAt: expiresAt,
                                                       expiresInSeconds: expiresInSeconds,
                                                       giftBadge: giftBadge,
@@ -1305,6 +1330,7 @@ extension TSInteraction {
                throw SDSError.missingRequiredField()
             }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
+            let expireTimerVersion: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.expireTimerVersion, name: "expireTimerVersion", conversion: { NSNumber(value: $0) })
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
             let giftBadgeSerialized: Data? = record.giftBadge
@@ -1349,6 +1375,7 @@ extension TSInteraction {
                                                     contactShare: contactShare,
                                                     editState: editState,
                                                     expireStartedAt: expireStartedAt,
+                                                    expireTimerVersion: expireTimerVersion,
                                                     expiresAt: expiresAt,
                                                     expiresInSeconds: expiresInSeconds,
                                                     giftBadge: giftBadge,
@@ -1390,6 +1417,7 @@ extension TSInteraction {
                throw SDSError.missingRequiredField()
             }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
+            let expireTimerVersion: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.expireTimerVersion, name: "expireTimerVersion", conversion: { NSNumber(value: $0) })
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
             let giftBadgeSerialized: Data? = record.giftBadge
@@ -1437,6 +1465,7 @@ extension TSInteraction {
                                                      contactShare: contactShare,
                                                      editState: editState,
                                                      expireStartedAt: expireStartedAt,
+                                                     expireTimerVersion: expireTimerVersion,
                                                      expiresAt: expiresAt,
                                                      expiresInSeconds: expiresInSeconds,
                                                      giftBadge: giftBadge,
@@ -1504,6 +1533,7 @@ extension TSInteraction {
                throw SDSError.missingRequiredField()
             }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
+            let expireTimerVersion: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.expireTimerVersion, name: "expireTimerVersion", conversion: { NSNumber(value: $0) })
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
             let giftBadgeSerialized: Data? = record.giftBadge
@@ -1544,6 +1574,7 @@ extension TSInteraction {
                                   contactShare: contactShare,
                                   editState: editState,
                                   expireStartedAt: expireStartedAt,
+                                  expireTimerVersion: expireTimerVersion,
                                   expiresAt: expiresAt,
                                   expiresInSeconds: expiresInSeconds,
                                   giftBadge: giftBadge,
@@ -1582,6 +1613,7 @@ extension TSInteraction {
                throw SDSError.missingRequiredField()
             }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
+            let expireTimerVersion: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.expireTimerVersion, name: "expireTimerVersion", conversion: { NSNumber(value: $0) })
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
             let giftBadgeSerialized: Data? = record.giftBadge
@@ -1622,6 +1654,7 @@ extension TSInteraction {
                                      contactShare: contactShare,
                                      editState: editState,
                                      expireStartedAt: expireStartedAt,
+                                     expireTimerVersion: expireTimerVersion,
                                      expiresAt: expiresAt,
                                      expiresInSeconds: expiresInSeconds,
                                      giftBadge: giftBadge,
@@ -1664,6 +1697,7 @@ extension TSInteraction {
                throw SDSError.missingRequiredField()
             }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
+            let expireTimerVersion: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.expireTimerVersion, name: "expireTimerVersion", conversion: { NSNumber(value: $0) })
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
             let giftBadgeSerialized: Data? = record.giftBadge
@@ -1705,6 +1739,7 @@ extension TSInteraction {
                                  contactShare: contactShare,
                                  editState: editState,
                                  expireStartedAt: expireStartedAt,
+                                 expireTimerVersion: expireTimerVersion,
                                  expiresAt: expiresAt,
                                  expiresInSeconds: expiresInSeconds,
                                  giftBadge: giftBadge,
@@ -1759,6 +1794,7 @@ extension TSInteraction {
                throw SDSError.missingRequiredField()
             }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
+            let expireTimerVersion: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.expireTimerVersion, name: "expireTimerVersion", conversion: { NSNumber(value: $0) })
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
             let giftBadgeSerialized: Data? = record.giftBadge
@@ -1799,6 +1835,7 @@ extension TSInteraction {
                                                     contactShare: contactShare,
                                                     editState: editState,
                                                     expireStartedAt: expireStartedAt,
+                                                    expireTimerVersion: expireTimerVersion,
                                                     expiresAt: expiresAt,
                                                     expiresInSeconds: expiresInSeconds,
                                                     giftBadge: giftBadge,
@@ -1837,6 +1874,7 @@ extension TSInteraction {
                throw SDSError.missingRequiredField()
             }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
+            let expireTimerVersion: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.expireTimerVersion, name: "expireTimerVersion", conversion: { NSNumber(value: $0) })
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
             let giftBadgeSerialized: Data? = record.giftBadge
@@ -1879,6 +1917,7 @@ extension TSInteraction {
                                                              contactShare: contactShare,
                                                              editState: editState,
                                                              expireStartedAt: expireStartedAt,
+                                                             expireTimerVersion: expireTimerVersion,
                                                              expiresAt: expiresAt,
                                                              expiresInSeconds: expiresInSeconds,
                                                              giftBadge: giftBadge,
@@ -1919,6 +1958,7 @@ extension TSInteraction {
                throw SDSError.missingRequiredField()
             }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
+            let expireTimerVersion: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.expireTimerVersion, name: "expireTimerVersion", conversion: { NSNumber(value: $0) })
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
             let giftBadgeSerialized: Data? = record.giftBadge
@@ -1962,6 +2002,7 @@ extension TSInteraction {
                                                            contactShare: contactShare,
                                                            editState: editState,
                                                            expireStartedAt: expireStartedAt,
+                                                           expireTimerVersion: expireTimerVersion,
                                                            expiresAt: expiresAt,
                                                            expiresInSeconds: expiresInSeconds,
                                                            giftBadge: giftBadge,
@@ -2002,6 +2043,7 @@ extension TSInteraction {
                throw SDSError.missingRequiredField()
             }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
+            let expireTimerVersion: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.expireTimerVersion, name: "expireTimerVersion", conversion: { NSNumber(value: $0) })
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
             let giftBadgeSerialized: Data? = record.giftBadge
@@ -2033,6 +2075,7 @@ extension TSInteraction {
                              contactShare: contactShare,
                              editState: editState,
                              expireStartedAt: expireStartedAt,
+                             expireTimerVersion: expireTimerVersion,
                              expiresAt: expiresAt,
                              expiresInSeconds: expiresInSeconds,
                              giftBadge: giftBadge,
@@ -2066,6 +2109,7 @@ extension TSInteraction {
                throw SDSError.missingRequiredField()
             }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
+            let expireTimerVersion: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.expireTimerVersion, name: "expireTimerVersion", conversion: { NSNumber(value: $0) })
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
             let giftBadgeSerialized: Data? = record.giftBadge
@@ -2115,6 +2159,7 @@ extension TSInteraction {
                                      contactShare: contactShare,
                                      editState: editState,
                                      expireStartedAt: expireStartedAt,
+                                     expireTimerVersion: expireTimerVersion,
                                      expiresAt: expiresAt,
                                      expiresInSeconds: expiresInSeconds,
                                      giftBadge: giftBadge,
@@ -2328,6 +2373,7 @@ extension TSInteraction: DeepCopyable {
             }
             let editState: TSEditState = modelToCopy.editState
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
+            let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
             // NOTE: If this generates build errors, you made need to
@@ -2426,6 +2472,7 @@ extension TSInteraction: DeepCopyable {
                                                       contactShare: contactShare,
                                                       editState: editState,
                                                       expireStartedAt: expireStartedAt,
+                                                      expireTimerVersion: expireTimerVersion,
                                                       expiresAt: expiresAt,
                                                       expiresInSeconds: expiresInSeconds,
                                                       giftBadge: giftBadge,
@@ -2492,6 +2539,7 @@ extension TSInteraction: DeepCopyable {
             }
             let editState: TSEditState = modelToCopy.editState
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
+            let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
             // NOTE: If this generates build errors, you made need to
@@ -2590,6 +2638,7 @@ extension TSInteraction: DeepCopyable {
                                                               contactShare: contactShare,
                                                               editState: editState,
                                                               expireStartedAt: expireStartedAt,
+                                                              expireTimerVersion: expireTimerVersion,
                                                               expiresAt: expiresAt,
                                                               expiresInSeconds: expiresInSeconds,
                                                               giftBadge: giftBadge,
@@ -2656,6 +2705,7 @@ extension TSInteraction: DeepCopyable {
             }
             let editState: TSEditState = modelToCopy.editState
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
+            let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
             // NOTE: If this generates build errors, you made need to
@@ -2769,6 +2819,7 @@ extension TSInteraction: DeepCopyable {
                                              contactShare: contactShare,
                                              editState: editState,
                                              expireStartedAt: expireStartedAt,
+                                             expireTimerVersion: expireTimerVersion,
                                              expiresAt: expiresAt,
                                              expiresInSeconds: expiresInSeconds,
                                              giftBadge: giftBadge,
@@ -2838,6 +2889,7 @@ extension TSInteraction: DeepCopyable {
             }
             let editState: TSEditState = modelToCopy.editState
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
+            let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
             // NOTE: If this generates build errors, you made need to
@@ -2939,6 +2991,7 @@ extension TSInteraction: DeepCopyable {
                                                      contactShare: contactShare,
                                                      editState: editState,
                                                      expireStartedAt: expireStartedAt,
+                                                     expireTimerVersion: expireTimerVersion,
                                                      expiresAt: expiresAt,
                                                      expiresInSeconds: expiresInSeconds,
                                                      giftBadge: giftBadge,
@@ -3006,6 +3059,7 @@ extension TSInteraction: DeepCopyable {
             }
             let editState: TSEditState = modelToCopy.editState
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
+            let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
             // NOTE: If this generates build errors, you made need to
@@ -3104,6 +3158,7 @@ extension TSInteraction: DeepCopyable {
                                      contactShare: contactShare,
                                      editState: editState,
                                      expireStartedAt: expireStartedAt,
+                                     expireTimerVersion: expireTimerVersion,
                                      expiresAt: expiresAt,
                                      expiresInSeconds: expiresInSeconds,
                                      giftBadge: giftBadge,
@@ -3170,6 +3225,7 @@ extension TSInteraction: DeepCopyable {
             }
             let editState: TSEditState = modelToCopy.editState
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
+            let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
             // NOTE: If this generates build errors, you made need to
@@ -3280,6 +3336,7 @@ extension TSInteraction: DeepCopyable {
                                                      contactShare: contactShare,
                                                      editState: editState,
                                                      expireStartedAt: expireStartedAt,
+                                                     expireTimerVersion: expireTimerVersion,
                                                      expiresAt: expiresAt,
                                                      expiresInSeconds: expiresInSeconds,
                                                      giftBadge: giftBadge,
@@ -3344,6 +3401,7 @@ extension TSInteraction: DeepCopyable {
             }
             let editState: TSEditState = modelToCopy.editState
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
+            let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
             // NOTE: If this generates build errors, you made need to
@@ -3463,6 +3521,7 @@ extension TSInteraction: DeepCopyable {
                                                     contactShare: contactShare,
                                                     editState: editState,
                                                     expireStartedAt: expireStartedAt,
+                                                    expireTimerVersion: expireTimerVersion,
                                                     expiresAt: expiresAt,
                                                     expiresInSeconds: expiresInSeconds,
                                                     giftBadge: giftBadge,
@@ -3526,6 +3585,7 @@ extension TSInteraction: DeepCopyable {
             }
             let editState: TSEditState = modelToCopy.editState
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
+            let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
             // NOTE: If this generates build errors, you made need to
@@ -3635,6 +3695,7 @@ extension TSInteraction: DeepCopyable {
                                                                  contactShare: contactShare,
                                                                  editState: editState,
                                                                  expireStartedAt: expireStartedAt,
+                                                                 expireTimerVersion: expireTimerVersion,
                                                                  expiresAt: expiresAt,
                                                                  expiresInSeconds: expiresInSeconds,
                                                                  giftBadge: giftBadge,
@@ -3700,6 +3761,7 @@ extension TSInteraction: DeepCopyable {
             }
             let editState: TSEditState = modelToCopy.editState
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
+            let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
             // NOTE: If this generates build errors, you made need to
@@ -3805,6 +3867,7 @@ extension TSInteraction: DeepCopyable {
                                                         contactShare: contactShare,
                                                         editState: editState,
                                                         expireStartedAt: expireStartedAt,
+                                                        expireTimerVersion: expireTimerVersion,
                                                         expiresAt: expiresAt,
                                                         expiresInSeconds: expiresInSeconds,
                                                         giftBadge: giftBadge,
@@ -3866,6 +3929,7 @@ extension TSInteraction: DeepCopyable {
             }
             let editState: TSEditState = modelToCopy.editState
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
+            let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
             // NOTE: If this generates build errors, you made need to
@@ -3971,6 +4035,7 @@ extension TSInteraction: DeepCopyable {
                                                 contactShare: contactShare,
                                                 editState: editState,
                                                 expireStartedAt: expireStartedAt,
+                                                expireTimerVersion: expireTimerVersion,
                                                 expiresAt: expiresAt,
                                                 expiresInSeconds: expiresInSeconds,
                                                 giftBadge: giftBadge,
@@ -4032,6 +4097,7 @@ extension TSInteraction: DeepCopyable {
             }
             let editState: TSEditState = modelToCopy.editState
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
+            let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
             // NOTE: If this generates build errors, you made need to
@@ -4137,6 +4203,7 @@ extension TSInteraction: DeepCopyable {
                                  contactShare: contactShare,
                                  editState: editState,
                                  expireStartedAt: expireStartedAt,
+                                 expireTimerVersion: expireTimerVersion,
                                  expiresAt: expiresAt,
                                  expiresInSeconds: expiresInSeconds,
                                  giftBadge: giftBadge,
@@ -4198,6 +4265,7 @@ extension TSInteraction: DeepCopyable {
             }
             let editState: TSEditState = modelToCopy.editState
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
+            let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
             // NOTE: If this generates build errors, you made need to
@@ -4297,6 +4365,7 @@ extension TSInteraction: DeepCopyable {
                                              contactShare: contactShare,
                                              editState: editState,
                                              expireStartedAt: expireStartedAt,
+                                             expireTimerVersion: expireTimerVersion,
                                              expiresAt: expiresAt,
                                              expiresInSeconds: expiresInSeconds,
                                              giftBadge: giftBadge,
@@ -4364,6 +4433,7 @@ extension TSInteraction: DeepCopyable {
             }
             let editState: TSEditState = modelToCopy.editState
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
+            let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
             // NOTE: If this generates build errors, you made need to
@@ -4451,6 +4521,7 @@ extension TSInteraction: DeepCopyable {
                                                      contactShare: contactShare,
                                                      editState: editState,
                                                      expireStartedAt: expireStartedAt,
+                                                     expireTimerVersion: expireTimerVersion,
                                                      expiresAt: expiresAt,
                                                      expiresInSeconds: expiresInSeconds,
                                                      giftBadge: giftBadge,
@@ -4516,6 +4587,7 @@ extension TSInteraction: DeepCopyable {
             }
             let editState: TSEditState = modelToCopy.editState
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
+            let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
             // NOTE: If this generates build errors, you made need to
@@ -4600,6 +4672,7 @@ extension TSInteraction: DeepCopyable {
                                      contactShare: contactShare,
                                      editState: editState,
                                      expireStartedAt: expireStartedAt,
+                                     expireTimerVersion: expireTimerVersion,
                                      expiresAt: expiresAt,
                                      expiresInSeconds: expiresInSeconds,
                                      giftBadge: giftBadge,
@@ -4664,6 +4737,7 @@ extension TSInteraction: DeepCopyable {
             }
             let editState: TSEditState = modelToCopy.editState
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
+            let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
             // NOTE: If this generates build errors, you made need to
@@ -4772,6 +4846,7 @@ extension TSInteraction: DeepCopyable {
                                                            contactShare: contactShare,
                                                            editState: editState,
                                                            expireStartedAt: expireStartedAt,
+                                                           expireTimerVersion: expireTimerVersion,
                                                            expiresAt: expiresAt,
                                                            expiresInSeconds: expiresInSeconds,
                                                            giftBadge: giftBadge,
@@ -4834,6 +4909,7 @@ extension TSInteraction: DeepCopyable {
             }
             let editState: TSEditState = modelToCopy.editState
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
+            let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
             // NOTE: If this generates build errors, you made need to
@@ -4940,6 +5016,7 @@ extension TSInteraction: DeepCopyable {
                                                              contactShare: contactShare,
                                                              editState: editState,
                                                              expireStartedAt: expireStartedAt,
+                                                             expireTimerVersion: expireTimerVersion,
                                                              expiresAt: expiresAt,
                                                              expiresInSeconds: expiresInSeconds,
                                                              giftBadge: giftBadge,
@@ -5002,6 +5079,7 @@ extension TSInteraction: DeepCopyable {
             }
             let editState: TSEditState = modelToCopy.editState
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
+            let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
             // NOTE: If this generates build errors, you made need to
@@ -5106,6 +5184,7 @@ extension TSInteraction: DeepCopyable {
                                                     contactShare: contactShare,
                                                     editState: editState,
                                                     expireStartedAt: expireStartedAt,
+                                                    expireTimerVersion: expireTimerVersion,
                                                     expiresAt: expiresAt,
                                                     expiresInSeconds: expiresInSeconds,
                                                     giftBadge: giftBadge,
@@ -5166,6 +5245,7 @@ extension TSInteraction: DeepCopyable {
             }
             let editState: TSEditState = modelToCopy.editState
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
+            let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
             // NOTE: If this generates build errors, you made need to
@@ -5270,6 +5350,7 @@ extension TSInteraction: DeepCopyable {
                                                       contactShare: contactShare,
                                                       editState: editState,
                                                       expireStartedAt: expireStartedAt,
+                                                      expireTimerVersion: expireTimerVersion,
                                                       expiresAt: expiresAt,
                                                       expiresInSeconds: expiresInSeconds,
                                                       giftBadge: giftBadge,
@@ -5330,6 +5411,7 @@ extension TSInteraction: DeepCopyable {
             }
             let editState: TSEditState = modelToCopy.editState
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
+            let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
             // NOTE: If this generates build errors, you made need to
@@ -5434,6 +5516,7 @@ extension TSInteraction: DeepCopyable {
                                                        contactShare: contactShare,
                                                        editState: editState,
                                                        expireStartedAt: expireStartedAt,
+                                                       expireTimerVersion: expireTimerVersion,
                                                        expiresAt: expiresAt,
                                                        expiresInSeconds: expiresInSeconds,
                                                        giftBadge: giftBadge,
@@ -5494,6 +5577,7 @@ extension TSInteraction: DeepCopyable {
             }
             let editState: TSEditState = modelToCopy.editState
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
+            let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
             // NOTE: If this generates build errors, you made need to
@@ -5598,6 +5682,7 @@ extension TSInteraction: DeepCopyable {
                                   contactShare: contactShare,
                                   editState: editState,
                                   expireStartedAt: expireStartedAt,
+                                  expireTimerVersion: expireTimerVersion,
                                   expiresAt: expiresAt,
                                   expiresInSeconds: expiresInSeconds,
                                   giftBadge: giftBadge,
@@ -5658,6 +5743,7 @@ extension TSInteraction: DeepCopyable {
             }
             let editState: TSEditState = modelToCopy.editState
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
+            let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
             // NOTE: If this generates build errors, you made need to
@@ -5733,6 +5819,7 @@ extension TSInteraction: DeepCopyable {
                              contactShare: contactShare,
                              editState: editState,
                              expireStartedAt: expireStartedAt,
+                             expireTimerVersion: expireTimerVersion,
                              expiresAt: expiresAt,
                              expiresInSeconds: expiresInSeconds,
                              giftBadge: giftBadge,
@@ -5910,6 +5997,7 @@ extension TSInteractionSerializer {
     static var giftBadgeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "giftBadge", columnType: .blob, isOptional: true) }
     static var editStateColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "editState", columnType: .int, isOptional: true) }
     static var archivedPaymentInfoColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "archivedPaymentInfo", columnType: .blob, isOptional: true) }
+    static var expireTimerVersionColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "expireTimerVersion", columnType: .int64, isOptional: true) }
 
     public static var table: SDSTableMetadata {
         SDSTableMetadata(
@@ -5989,6 +6077,7 @@ extension TSInteractionSerializer {
                 giftBadgeColumn,
                 editStateColumn,
                 archivedPaymentInfoColumn,
+                expireTimerVersionColumn,
             ]
         )
     }
@@ -6441,8 +6530,9 @@ class TSInteractionSerializer: SDSSerializer {
         let giftBadge: Data? = nil
         let editState: TSEditState? = nil
         let archivedPaymentInfo: Data? = nil
+        let expireTimerVersion: UInt32? = nil
 
-        return InteractionRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentIds: attachmentIds, authorId: authorId, authorPhoneNumber: authorPhoneNumber, authorUUID: authorUUID, body: body, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, wasNotCreatedLocally: wasNotCreatedLocally, isLocalChange: isLocalChange, isViewOnceComplete: isViewOnceComplete, isViewOnceMessage: isViewOnceMessage, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, preKeyBundle: preKeyBundle, protocolVersion: protocolVersion, quotedMessage: quotedMessage, read: read, recipientAddress: recipientAddress, recipientAddressStates: recipientAddressStates, sender: sender, serverTimestamp: serverTimestamp, deprecated_sourceDeviceId: deprecated_sourceDeviceId, storedMessageState: storedMessageState, storedShouldStartExpireTimer: storedShouldStartExpireTimer, unregisteredAddress: unregisteredAddress, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD, infoMessageUserInfo: infoMessageUserInfo, wasRemotelyDeleted: wasRemotelyDeleted, bodyRanges: bodyRanges, offerType: offerType, serverDeliveryTimestamp: serverDeliveryTimestamp, eraId: eraId, hasEnded: hasEnded, creatorUuid: creatorUuid, joinedMemberUuids: joinedMemberUuids, wasIdentityVerified: wasIdentityVerified, paymentCancellation: paymentCancellation, paymentNotification: paymentNotification, paymentRequest: paymentRequest, viewed: viewed, serverGuid: serverGuid, storyAuthorUuidString: storyAuthorUuidString, storyTimestamp: storyTimestamp, isGroupStoryReply: isGroupStoryReply, storyReactionEmoji: storyReactionEmoji, giftBadge: giftBadge, editState: editState, archivedPaymentInfo: archivedPaymentInfo)
+        return InteractionRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentIds: attachmentIds, authorId: authorId, authorPhoneNumber: authorPhoneNumber, authorUUID: authorUUID, body: body, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, wasNotCreatedLocally: wasNotCreatedLocally, isLocalChange: isLocalChange, isViewOnceComplete: isViewOnceComplete, isViewOnceMessage: isViewOnceMessage, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, preKeyBundle: preKeyBundle, protocolVersion: protocolVersion, quotedMessage: quotedMessage, read: read, recipientAddress: recipientAddress, recipientAddressStates: recipientAddressStates, sender: sender, serverTimestamp: serverTimestamp, deprecated_sourceDeviceId: deprecated_sourceDeviceId, storedMessageState: storedMessageState, storedShouldStartExpireTimer: storedShouldStartExpireTimer, unregisteredAddress: unregisteredAddress, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD, infoMessageUserInfo: infoMessageUserInfo, wasRemotelyDeleted: wasRemotelyDeleted, bodyRanges: bodyRanges, offerType: offerType, serverDeliveryTimestamp: serverDeliveryTimestamp, eraId: eraId, hasEnded: hasEnded, creatorUuid: creatorUuid, joinedMemberUuids: joinedMemberUuids, wasIdentityVerified: wasIdentityVerified, paymentCancellation: paymentCancellation, paymentNotification: paymentNotification, paymentRequest: paymentRequest, viewed: viewed, serverGuid: serverGuid, storyAuthorUuidString: storyAuthorUuidString, storyTimestamp: storyTimestamp, isGroupStoryReply: isGroupStoryReply, storyReactionEmoji: storyReactionEmoji, giftBadge: giftBadge, editState: editState, archivedPaymentInfo: archivedPaymentInfo, expireTimerVersion: expireTimerVersion)
     }
 }
 

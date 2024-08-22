@@ -1212,6 +1212,7 @@
 		66F2CE1F2A3A37CB00519342 /* EditableMessageBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F2CE1E2A3A37CB00519342 /* EditableMessageBody.swift */; };
 		66F2CE212A3CBE4A00519342 /* NSRangedValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F2CE202A3CBE4A00519342 /* NSRangedValue.swift */; };
 		66F44B4B2909EEDA004CF66C /* OWSViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F44B4A2909EEDA004CF66C /* OWSViewController.swift */; };
+		66F6D69C2C73F01900EFAF75 /* VersionedDisappearingMessageToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F6D69B2C73F01900EFAF75 /* VersionedDisappearingMessageToken.swift */; };
 		66FA2B1D28CB0DE1006845CD /* PaymentsBiometryLockPromptViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FA2B1C28CB0DE1006845CD /* PaymentsBiometryLockPromptViewController.swift */; };
 		66FBC4E128DA820900BD9E8B /* MyStorySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FBC4E028DA820900BD9E8B /* MyStorySettingsViewController.swift */; };
 		66FBC4E328DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FBC4E228DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift */; };
@@ -4298,6 +4299,7 @@
 		66F2CE1E2A3A37CB00519342 /* EditableMessageBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditableMessageBody.swift; sourceTree = "<group>"; };
 		66F2CE202A3CBE4A00519342 /* NSRangedValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSRangedValue.swift; sourceTree = "<group>"; };
 		66F44B4A2909EEDA004CF66C /* OWSViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSViewController.swift; sourceTree = "<group>"; };
+		66F6D69B2C73F01900EFAF75 /* VersionedDisappearingMessageToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VersionedDisappearingMessageToken.swift; sourceTree = "<group>"; };
 		66FA2B1C28CB0DE1006845CD /* PaymentsBiometryLockPromptViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentsBiometryLockPromptViewController.swift; sourceTree = "<group>"; };
 		66FA2B1E28CBA4A5006845CD /* BiometryType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometryType.swift; sourceTree = "<group>"; };
 		66FBC4E028DA820900BD9E8B /* MyStorySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyStorySettingsViewController.swift; sourceTree = "<group>"; };
@@ -10431,6 +10433,7 @@
 			isa = PBXGroup;
 			children = (
 				502D45452A09C2EE00B8BCE0 /* DisappearingMessagesConfigurationStore.swift */,
+				66F6D69B2C73F01900EFAF75 /* VersionedDisappearingMessageToken.swift */,
 			);
 			path = DisappearingMessagesConfiguration;
 			sourceTree = "<group>";
@@ -15365,6 +15368,7 @@
 				5037F1942A43A6A300C372AD /* UserProfileMerger.swift in Sources */,
 				506ABE6B2A43AECA008844D1 /* UserProfileStore.swift in Sources */,
 				504F397C29D23B1700E849A6 /* ValidatedIncomingEnvelope.swift in Sources */,
+				66F6D69C2C73F01900EFAF75 /* VersionedDisappearingMessageToken.swift in Sources */,
 				F9C5CE3B289453B400548EEE /* VersionedProfiles.swift in Sources */,
 				724D47B92B97C301001BE973 /* VersionedProfilesImpl.swift in Sources */,
 				45A66116299EDF3000632EE2 /* VideoAttachmentDetection.swift in Sources */,

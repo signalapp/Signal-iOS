@@ -124,6 +124,7 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
             // Prior revisions don't expire (timer=0); instead they
             // are cascade-deleted when the latest revision expires.
             expiresInSeconds: isLatestRevision ? message.expiresInSeconds : 0,
+            expireTimerVersion: isLatestRevision ? message.expireTimerVersion?.uint32Value : nil,
             expireStartedAt: message.expireStartedAt,
             read: isLatestRevision ? false : true,
             serverTimestamp: serverTimestamp,
@@ -199,6 +200,7 @@ public struct OutgoingEditMessageWrapper: EditMessageWrapper {
             // Prior revisions don't expire (timer=0); instead they
             // are cascade-deleted when the latest revision expires.
             expiresInSeconds: isLatestRevision ? message.expiresInSeconds : 0,
+            expireTimerVersion: isLatestRevision ? message.expireTimerVersion?.uint32Value : 0,
             expireStartedAt: message.expireStartedAt,
             isVoiceMessage: message.isVoiceMessage,
             groupMetaMessage: message.groupMetaMessage,

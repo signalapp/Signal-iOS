@@ -255,6 +255,8 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
                 bodyRanges: nil,
                 editState: editState,
                 expiresInSeconds: UInt32(chatItem.expiresInMs / 1000),
+                // Backed up messages don't set the chat timer; version is irrelevant.
+                expireTimerVersion: nil,
                 expireStartedAt: chatItem.expireStartDate,
                 read: incomingDetails.read,
                 serverTimestamp: incomingDetails.dateServerSent,

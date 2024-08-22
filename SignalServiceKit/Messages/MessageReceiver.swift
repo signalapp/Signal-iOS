@@ -424,6 +424,7 @@ public final class MessageReceiver: Dependencies {
                         timestamp: sent.timestamp,
                         serverTimestamp: decryptedEnvelope.serverTimestamp,
                         expiresInSeconds: dataMessage.expireTimer,
+                        expireTimerVersion: dataMessage.expireTimerVersion,
                         sentTranscript: transcript,
                         transaction: tx
                     )
@@ -860,6 +861,7 @@ public final class MessageReceiver: Dependencies {
                 timestamp: envelope.timestamp,
                 serverTimestamp: envelope.serverTimestamp,
                 expiresInSeconds: dataMessage.expireTimer,
+                expireTimerVersion: dataMessage.expireTimerVersion,
                 sentTranscript: nil,
                 transaction: tx
             )
@@ -1044,6 +1046,7 @@ public final class MessageReceiver: Dependencies {
             bodyRanges: bodyRanges,
             editState: .none,
             expiresInSeconds: dataMessage.expireTimer,
+            expireTimerVersion: dataMessage.expireTimerVersion,
             expireStartedAt: 0,
             read: false,
             serverTimestamp: envelope.serverTimestamp,
@@ -1204,7 +1207,10 @@ public final class MessageReceiver: Dependencies {
         }
         GroupManager.remoteUpdateDisappearingMessages(
             contactThread: contactThread,
-            disappearingMessageToken: .token(forProtoExpireTimerSeconds: dataMessage.expireTimer),
+            disappearingMessageToken: .token(
+                forProtoExpireTimerSeconds: dataMessage.expireTimer,
+                version: dataMessage.expireTimerVersion
+            ),
             changeAuthor: envelope.sourceAci,
             localIdentifiers: localIdentifiers,
             transaction: tx

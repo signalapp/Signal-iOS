@@ -404,7 +404,7 @@ public class GroupManager: NSObject {
         tx: SDSAnyWriteTransaction
     ) -> DisappearingMessagesConfigurationStore.SetTokenResult {
         let setTokenResult = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-            .set(token: newToken, for: .thread(groupThread), tx: tx.asV2Write)
+            .set(token: newToken, for: groupThread, tx: tx.asV2Write)
 
         if setTokenResult.newConfiguration != setTokenResult.oldConfiguration {
             databaseStorage.touch(thread: groupThread, shouldReindex: false, transaction: tx)
@@ -417,7 +417,7 @@ public class GroupManager: NSObject {
 
     public static func remoteUpdateDisappearingMessages(
         contactThread: TSContactThread,
-        disappearingMessageToken: DisappearingMessageToken,
+        disappearingMessageToken: VersionedDisappearingMessageToken,
         changeAuthor: Aci?,
         localIdentifiers: LocalIdentifiers,
         transaction: SDSAnyWriteTransaction
@@ -432,7 +432,7 @@ public class GroupManager: NSObject {
     }
 
     public static func localUpdateDisappearingMessageToken(
-        _ disappearingMessageToken: DisappearingMessageToken,
+        _ disappearingMessageToken: VersionedDisappearingMessageToken,
         inContactThread contactThread: TSContactThread,
         tx: SDSAnyWriteTransaction
     ) {
@@ -455,7 +455,7 @@ public class GroupManager: NSObject {
     }
 
     private static func updateDisappearingMessagesInDatabaseAndCreateMessages(
-        newToken: DisappearingMessageToken,
+        newToken: VersionedDisappearingMessageToken,
         contactThread: TSContactThread,
         changeAuthor: Aci?,
         localIdentifiers: LocalIdentifiers,

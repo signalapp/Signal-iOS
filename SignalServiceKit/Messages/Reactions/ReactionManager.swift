@@ -73,6 +73,7 @@ public class ReactionManager: NSObject {
         }
 
         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+        let dmConfig = dmConfigurationStore.fetchOrBuildDefault(for: .thread(thread), tx: tx.asV2Read)
 
         let outgoingMessage = OWSOutgoingReactionMessage(
             thread: thread,
@@ -83,7 +84,8 @@ public class ReactionManager: NSObject {
             // messages, older desktop instances will read it from the "unsupported"
             // message resulting in the timer clearing. So we populate it to ensure
             // that does not happen.
-            expiresInSeconds: dmConfigurationStore.durationSeconds(for: thread, tx: tx.asV2Read),
+            expiresInSeconds: dmConfig.durationSeconds,
+            expireTimerVersion: NSNumber(value: dmConfig.timerVersion),
             transaction: tx
         )
 
@@ -121,6 +123,7 @@ public class ReactionManager: NSObject {
         timestamp: UInt64,
         serverTimestamp: UInt64,
         expiresInSeconds: UInt32,
+        expireTimerVersion: UInt32?,
         sentTranscript: OWSIncomingSentMessageTranscript?,
         transaction: SDSAnyWriteTransaction
     ) -> ReactionProcessingResult {
@@ -209,7 +212,12 @@ public class ReactionManager: NSObject {
 
                 // Group story replies do not follow the thread DM timer, instead they
                 // disappear automatically when their parent story disappears.
-                builder.expiresInSeconds = thread.isGroupThread ? 0 : expiresInSeconds
+                if thread.isGroupThread {
+                    builder.expiresInSeconds = 0
+                } else {
+                    builder.expiresInSeconds = expiresInSeconds
+                    builder.expireTimerVersion = expireTimerVersion.map(NSNumber.init(value:))
+                }
             }
 
             let message: TSMessage

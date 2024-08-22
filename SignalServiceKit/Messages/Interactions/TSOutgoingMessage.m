@@ -120,6 +120,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                     contactShare:(nullable OWSContact *)contactShare
                        editState:(TSEditState)editState
                  expireStartedAt:(uint64_t)expireStartedAt
+              expireTimerVersion:(nullable NSNumber *)expireTimerVersion
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
                        giftBadge:(nullable OWSGiftBadge *)giftBadge
@@ -158,6 +159,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                       contactShare:contactShare
                          editState:editState
                    expireStartedAt:expireStartedAt
+                expireTimerVersion:expireTimerVersion
                          expiresAt:expiresAt
                   expiresInSeconds:expiresInSeconds
                          giftBadge:giftBadge
@@ -830,6 +832,12 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     }
 
     [builder setExpireTimer:self.expiresInSeconds];
+    if (self.expireTimerVersion) {
+        [builder setExpireTimerVersion:[self.expireTimerVersion unsignedIntValue]];
+    } else {
+        [builder setExpireTimerVersion:0];
+    }
+
 
     // Group Messages
     if ([thread isKindOfClass:[TSGroupThread class]]) {

@@ -1057,7 +1057,7 @@ public extension PaymentsImpl {
             mcReceiptData: mcReceiptData
         )
         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-        let expiresInSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: transaction.asV2Read)
+        let dmConfig = dmConfigurationStore.fetchOrBuildDefault(for: .thread(thread), tx: transaction.asV2Read)
 
         let messageBody: String? = {
             guard let picoMob = paymentModel.paymentAmount?.picoMob else {
@@ -1075,7 +1075,8 @@ public extension PaymentsImpl {
             thread: thread,
             messageBody: messageBody,
             paymentNotification: paymentNotification,
-            expiresInSeconds: expiresInSeconds,
+            expiresInSeconds: dmConfig.durationSeconds,
+            expireTimerVersion: NSNumber(value: dmConfig.timerVersion),
             transaction: transaction
         )
 

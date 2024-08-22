@@ -204,7 +204,7 @@ extension UnpreparedOutgoingMessage {
         }
 
         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-        let expiresInSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: transaction.asV2Read)
+        let dmConfig = dmConfigurationStore.fetchOrBuildDefault(for: .thread(thread), tx: transaction.asV2Read)
 
         let isVoiceMessage = mediaAttachments.count == 1
             && oversizeTextDataSource == nil
@@ -229,7 +229,8 @@ extension UnpreparedOutgoingMessage {
         messageBuilder.messageBody = truncatedBody?.text
         messageBuilder.bodyRanges = truncatedBody?.ranges
 
-        messageBuilder.expiresInSeconds = expiresInSeconds
+        messageBuilder.expiresInSeconds = dmConfig.durationSeconds
+        messageBuilder.expireTimerVersion = NSNumber.init(value: dmConfig.timerVersion)
         messageBuilder.isVoiceMessage = isVoiceMessage
         messageBuilder.isViewOnceMessage = isViewOnceMessage
 

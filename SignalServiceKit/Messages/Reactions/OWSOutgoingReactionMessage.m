@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
                          emoji:(NSString *)emoji
                     isRemoving:(BOOL)isRemoving
               expiresInSeconds:(uint32_t)expiresInSeconds
+            expireTimerVersion:(nullable NSNumber *)expireTimerVersion
                    transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug([thread.uniqueId isEqualToString:message.uniqueThreadId]);
@@ -23,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
     messageBuilder.expiresInSeconds = expiresInSeconds;
+    messageBuilder.expireTimerVersion = expireTimerVersion;
     self = [super initOutgoingMessageWithBuilder:messageBuilder
                             additionalRecipients:@[]
                               explicitRecipients:@[]

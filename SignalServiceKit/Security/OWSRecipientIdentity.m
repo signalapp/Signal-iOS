@@ -132,7 +132,7 @@ NSUInteger const RecipientIdentitySchemaVersion = 1;
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
-                       accountId:(NSString *)recipientUniqueId
+                       accountId:(NSString *)accountId
                        createdAt:(NSDate *)createdAt
                      identityKey:(NSData *)identityKey
                  isFirstKnownKey:(BOOL)isFirstKnownKey
@@ -145,7 +145,7 @@ NSUInteger const RecipientIdentitySchemaVersion = 1;
         return self;
     }
 
-    _accountId = recipientUniqueId;
+    _accountId = accountId;
     _createdAt = createdAt;
     _identityKey = identityKey;
     _isFirstKnownKey = isFirstKnownKey;

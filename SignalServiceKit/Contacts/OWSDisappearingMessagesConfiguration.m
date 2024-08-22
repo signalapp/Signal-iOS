@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, getter=isEnabled) BOOL enabled;
 @property (nonatomic) uint32_t durationSeconds;
+@property (nonatomic) uint32_t timerVersion;
 
 @end
 
@@ -28,7 +29,10 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (instancetype)initWithThreadId:(NSString *)threadId enabled:(BOOL)isEnabled durationSeconds:(uint32_t)seconds
+- (instancetype)initWithThreadId:(NSString *)threadId
+                         enabled:(BOOL)isEnabled
+                 durationSeconds:(uint32_t)seconds
+                    timerVersion:(uint32_t)timerVersion
 {
     OWSAssertDebug(threadId.length > 0);
 
@@ -40,6 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     _enabled = isEnabled;
     _durationSeconds = seconds;
+    _timerVersion = timerVersion;
 
     return self;
 }
@@ -55,6 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
                       uniqueId:(NSString *)uniqueId
                  durationSeconds:(unsigned int)durationSeconds
                          enabled:(BOOL)enabled
+                    timerVersion:(unsigned int)timerVersion
 {
     self = [super initWithGrdbId:grdbId
                         uniqueId:uniqueId];
@@ -65,6 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     _durationSeconds = durationSeconds;
     _enabled = enabled;
+    _timerVersion = timerVersion;
 
     return self;
 }
@@ -96,25 +103,28 @@ NS_ASSUME_NONNULL_BEGIN
     return [NSString formatDurationLosslessWithDurationSeconds:self.durationSeconds];
 }
 
-- (instancetype)copyWithIsEnabled:(BOOL)isEnabled
+- (instancetype)copyWithIsEnabled:(BOOL)isEnabled timerVersion:(uint32_t)timerVersion
 {
     OWSDisappearingMessagesConfiguration *newInstance = [self copy];
     newInstance.enabled = isEnabled;
+    newInstance.timerVersion = timerVersion;
     return newInstance;
 }
 
-- (instancetype)copyWithDurationSeconds:(uint32_t)durationSeconds
+- (instancetype)copyWithDurationSeconds:(uint32_t)durationSeconds timerVersion:(uint32_t)timerVersion
 {
     OWSDisappearingMessagesConfiguration *newInstance = [self copy];
     newInstance.durationSeconds = durationSeconds;
+    newInstance.timerVersion = timerVersion;
     return newInstance;
 }
 
-- (instancetype)copyAsEnabledWithDurationSeconds:(uint32_t)durationSeconds
+- (instancetype)copyAsEnabledWithDurationSeconds:(uint32_t)durationSeconds timerVersion:(uint32_t)timerVersion
 {
     OWSDisappearingMessagesConfiguration *newInstance = [self copy];
     newInstance.enabled = YES;
     newInstance.durationSeconds = durationSeconds;
+    newInstance.timerVersion = timerVersion;
     return newInstance;
 }
 
@@ -132,7 +142,8 @@ NS_ASSUME_NONNULL_BEGIN
         // Don't bother comparing durationSeconds if not enabled.
         return YES;
     }
-    return otherConfiguration.durationSeconds == self.durationSeconds;
+    return otherConfiguration.durationSeconds == self.durationSeconds
+        && otherConfiguration.timerVersion == self.timerVersion;
 }
 
 @end

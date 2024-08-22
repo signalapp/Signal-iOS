@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
                          emoji:(NSString *)emoji
                     isRemoving:(BOOL)isRemoving
               expiresInSeconds:(uint32_t)expiresInSeconds
+            expireTimerVersion:(nullable NSNumber *)expireTimerVersion
                    transaction:(SDSAnyReadTransaction *)transaction;
 
 @property (nonatomic, readonly) NSString *messageUniqueId;

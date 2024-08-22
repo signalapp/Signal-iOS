@@ -24,6 +24,7 @@ class OWSOutgoingReactionMessageTest: SSKBaseTest {
                 emoji: "🔮",
                 isRemoving: false,
                 expiresInSeconds: 1234,
+                expireTimerVersion: nil,
                 transaction: transaction
             )
         }

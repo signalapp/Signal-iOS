@@ -1170,6 +1170,7 @@ public class AppSetup {
         let profileFetcher = ProfileFetcherImpl(
             db: db,
             deleteForMeSyncMessageSettingsStore: deleteForMeSyncMessageSettingsStore,
+            disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
             identityManager: identityManager,
             paymentsHelper: paymentsHelper,
             profileManager: profileManager,

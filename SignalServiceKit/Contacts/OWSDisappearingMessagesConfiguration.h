@@ -21,7 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 // This initializer should only be used internally.
 - (instancetype)initWithThreadId:(NSString *)threadId
                          enabled:(BOOL)isEnabled
-                 durationSeconds:(uint32_t)seconds NS_DESIGNATED_INITIALIZER;
+                 durationSeconds:(uint32_t)seconds
+                    timerVersion:(uint32_t)timerVersion NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 
@@ -34,7 +35,8 @@ NS_ASSUME_NONNULL_BEGIN
                       uniqueId:(NSString *)uniqueId
                  durationSeconds:(unsigned int)durationSeconds
                          enabled:(BOOL)enabled
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:durationSeconds:enabled:));
+                    timerVersion:(unsigned int)timerVersion
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:durationSeconds:enabled:timerVersion:));
 
 // clang-format on
 
@@ -43,6 +45,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:durationSeconds:ena
 @property (nonatomic, readonly, getter=isEnabled) BOOL enabled;
 @property (nonatomic, readonly) uint32_t durationSeconds;
 @property (nonatomic, readonly) NSString *durationString;
+@property (nonatomic, readonly) uint32_t timerVersion;
 
 + (NSArray<NSNumber *> *)presetDurationsSeconds;
 + (uint32_t)maxDurationSeconds;
@@ -51,9 +54,9 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:durationSeconds:ena
 // Otherwise any modifications will be made to the
 // instance in the YDB object cache and hasChangedForThread:
 // won't be able to detect changes.
-- (instancetype)copyWithIsEnabled:(BOOL)isEnabled;
-- (instancetype)copyWithDurationSeconds:(uint32_t)durationSeconds;
-- (instancetype)copyAsEnabledWithDurationSeconds:(uint32_t)durationSeconds;
+- (instancetype)copyWithIsEnabled:(BOOL)isEnabled timerVersion:(uint32_t)timerVersion;
+- (instancetype)copyWithDurationSeconds:(uint32_t)durationSeconds timerVersion:(uint32_t)timerVersion;
+- (instancetype)copyAsEnabledWithDurationSeconds:(uint32_t)durationSeconds timerVersion:(uint32_t)timerVersion;
 
 @end
 

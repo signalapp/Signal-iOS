@@ -17,7 +17,8 @@
 		"TSThread.editTargetTimestamp": "UInt64",
 		"TSThread.lastSentStoryTimestamp": "UInt64",
 		"TSThread.lastViewedStoryTimestamp": "UInt64",
-		"TSThread.lastReceivedStoryTimestamp": "UInt64"
+		"TSThread.lastReceivedStoryTimestamp": "UInt64",
+                "TSMessage.expireTimerVersion": "UInt32"
 	},
 	"properties_to_ignore": [
 		"TSYapDatabaseObject.grdbId",

@@ -52,6 +52,7 @@ final class ContactOutputStream {
         // can easily distinguish between a modern client declaring "off" vs a
         // legacy client "not specifying".
         contactBuilder.setExpireTimer(0)
+        contactBuilder.setExpireTimerVersion(disappearingMessagesConfiguration?.timerVersion ?? 1)
         if let disappearingMessagesConfiguration, disappearingMessagesConfiguration.isEnabled {
             contactBuilder.setExpireTimer(disappearingMessagesConfiguration.durationSeconds)
         }

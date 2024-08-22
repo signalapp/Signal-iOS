@@ -127,6 +127,7 @@ public class OutgoingMessageFactory: NSObject, Factory {
             bodyRanges: bodyRangesBuilder(),
             editState: editStateBuilder(),
             expiresInSeconds: expiresInSecondsBuilder(),
+            expireTimerVersion: expireTimerVersionBuilder(),
             expireStartedAt: expireStartedAtBuilder(),
             isVoiceMessage: isVoiceMessageBuilder(),
             groupMetaMessage: groupMetaMessageBuilder(),
@@ -190,6 +191,10 @@ public class OutgoingMessageFactory: NSObject, Factory {
     }
 
     public var expiresInSecondsBuilder: () -> UInt32? = {
+        return nil
+    }
+
+    public var expireTimerVersionBuilder: () -> UInt32? = {
         return nil
     }
 
@@ -286,6 +291,7 @@ public class IncomingMessageFactory: NSObject, Factory {
             bodyRanges: bodyRangesBuilder(),
             editState: editStateBuilder(),
             expiresInSeconds: expiresInSecondsBuilder(),
+            expireTimerVersion: expireTimerVersionBuilder(),
             expireStartedAt: 0,
             read: false,
             serverTimestamp: serverTimestampBuilder(),
@@ -363,6 +369,10 @@ public class IncomingMessageFactory: NSObject, Factory {
 
     public var expiresInSecondsBuilder: () -> UInt32 = {
         return 0
+    }
+
+    public var expireTimerVersionBuilder: () -> UInt32? = {
+        return nil
     }
 
     public var serverTimestampBuilder: () -> UInt64 = {
