@@ -411,8 +411,6 @@ enum OWSOrphanDataCleaner {
             return nil
         }
 
-        let wallpaperOrphanedPaths = findOrphanedWallpaperPaths()
-
         guard isMainAppAndActive else {
             return nil
         }
@@ -567,7 +565,6 @@ enum OWSOrphanDataCleaner {
 
         var orphanFileAndDirectoryPaths: Set<String> = []
         orphanFileAndDirectoryPaths.formUnion(voiceMessageDraftOrphanedPaths)
-        orphanFileAndDirectoryPaths.formUnion(wallpaperOrphanedPaths)
 
         return OWSOrphanData(interactionIds: orphanInteractionIds,
                              attachmentIds: orphanAttachmentIds,
@@ -635,13 +632,6 @@ enum OWSOrphanDataCleaner {
             fetchExpectedRelativePaths: {
                 VoiceMessageInterruptedDraftStore.allDraftFilePaths(transaction: $0)
             }
-        )
-    }
-
-    private static func findOrphanedWallpaperPaths() -> Set<String> {
-        findOrphanedPaths(
-            baseUrl: LegacyWallpaperImageStore.customPhotoDirectory,
-            fetchExpectedRelativePaths: { LegacyWallpaperImageStore.allCustomPhotoRelativePaths(tx: $0.asV2Read) }
         )
     }
 

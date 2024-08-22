@@ -788,8 +788,6 @@
 		661396AF28BE881E00E0C4DF /* ChainedPromiseTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */; };
 		66144B2F2BF7FB5200E2C9CD /* WallpaperImageStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66144B2E2BF7FB5200E2C9CD /* WallpaperImageStore.swift */; };
 		66144B312BF7FB7B00E2C9CD /* WallpaperImageStoreImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66144B302BF7FB7B00E2C9CD /* WallpaperImageStoreImpl.swift */; };
-		66144B342BF7FB9F00E2C9CD /* LegacyWallpaperImageStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66144B332BF7FB9F00E2C9CD /* LegacyWallpaperImageStore.swift */; };
-		66144B362BF7FBC900E2C9CD /* BridgingWallpaperImageStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66144B352BF7FBC900E2C9CD /* BridgingWallpaperImageStore.swift */; };
 		66144B382BF8155F00E2C9CD /* MockWallpaperImageStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66144B372BF8155F00E2C9CD /* MockWallpaperImageStore.swift */; };
 		66144B3D2BFD22FA00E2C9CD /* AttachmentRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66144B3C2BFD22FA00E2C9CD /* AttachmentRecord.swift */; };
 		66144B3F2BFD3AA700E2C9CD /* AttachmentReferenceRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66144B3E2BFD3AA700E2C9CD /* AttachmentReferenceRecord.swift */; };
@@ -3870,8 +3868,6 @@
 		661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainedPromiseTest.swift; sourceTree = "<group>"; };
 		66144B2E2BF7FB5200E2C9CD /* WallpaperImageStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WallpaperImageStore.swift; sourceTree = "<group>"; };
 		66144B302BF7FB7B00E2C9CD /* WallpaperImageStoreImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WallpaperImageStoreImpl.swift; sourceTree = "<group>"; };
-		66144B332BF7FB9F00E2C9CD /* LegacyWallpaperImageStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyWallpaperImageStore.swift; sourceTree = "<group>"; };
-		66144B352BF7FBC900E2C9CD /* BridgingWallpaperImageStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BridgingWallpaperImageStore.swift; sourceTree = "<group>"; };
 		66144B372BF8155F00E2C9CD /* MockWallpaperImageStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockWallpaperImageStore.swift; sourceTree = "<group>"; };
 		66144B3C2BFD22FA00E2C9CD /* AttachmentRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentRecord.swift; sourceTree = "<group>"; };
 		66144B3E2BFD3AA700E2C9CD /* AttachmentReferenceRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentReferenceRecord.swift; sourceTree = "<group>"; };
@@ -7146,7 +7142,6 @@
 		500AEE032A4B68D200371F05 /* UISupport */ = {
 			isa = PBXGroup;
 			children = (
-				66144B322BF7FB8B00E2C9CD /* TSResource */,
 				500AEE062A4DF48700371F05 /* ChatColorSettingStore.swift */,
 				66144B372BF8155F00E2C9CD /* MockWallpaperImageStore.swift */,
 				66144B2E2BF7FB5200E2C9CD /* WallpaperImageStore.swift */,
@@ -7660,15 +7655,6 @@
 				66AE577E2984AB8700E40CFA /* ToyExample.swift */,
 			);
 			path = V2;
-			sourceTree = "<group>";
-		};
-		66144B322BF7FB8B00E2C9CD /* TSResource */ = {
-			isa = PBXGroup;
-			children = (
-				66144B352BF7FBC900E2C9CD /* BridgingWallpaperImageStore.swift */,
-				66144B332BF7FB9F00E2C9CD /* LegacyWallpaperImageStore.swift */,
-			);
-			path = TSResource;
 			sourceTree = "<group>";
 		};
 		66144B3B2BFD22EE00E2C9CD /* Records */ = {
@@ -14266,7 +14252,6 @@
 				F9C5CC31289453B300548EEE /* BlockingManager.swift in Sources */,
 				F9C5CC74289453B300548EEE /* BlurHash.swift in Sources */,
 				668FE09B28B923A4008B9071 /* Bool+SSK.swift in Sources */,
-				66144B362BF7FBC900E2C9CD /* BridgingWallpaperImageStore.swift in Sources */,
 				D9F9A63B2BFFFCC400EF13EC /* BulkDeleteInteractionJobQueue.swift in Sources */,
 				D9F9A6392BFFC84300EF13EC /* BulkDeleteInteractionJobRecord.swift in Sources */,
 				E7D7C93F28B580AC003F043B /* Bundle+OWS.swift in Sources */,
@@ -14545,7 +14530,6 @@
 				F9C5CD49289453B300548EEE /* LegacySendingChain.m in Sources */,
 				F9C5CD4C289453B300548EEE /* LegacySessionRecord.m in Sources */,
 				F9C5CD4E289453B300548EEE /* LegacySessionState.m in Sources */,
-				66144B342BF7FB9F00E2C9CD /* LegacyWallpaperImageStore.swift in Sources */,
 				D9F399B22A96D65D001599EC /* LinkedDevicePniKeyManager.swift in Sources */,
 				66076B4C2BC053290043D547 /* LinkPreviewBuilder.swift in Sources */,
 				66076B4E2BC056980043D547 /* LinkPreviewBuilderImpl.swift in Sources */,
