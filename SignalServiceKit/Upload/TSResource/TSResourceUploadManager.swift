@@ -60,7 +60,7 @@ public class TSResourceUploadManagerImpl: TSResourceUploadManager {
         case .legacy(let uniqueId):
             try await tsAttachmentUploadManager.uploadAttachment(attachmentId: uniqueId, messageIds: legacyMessageOwnerIds)
         case .v2(let rowId):
-            try await attachmentUploadManager.uploadAttachment(attachmentId: rowId)
+            try await attachmentUploadManager.uploadTransitTierAttachment(attachmentId: rowId)
         }
     }
 

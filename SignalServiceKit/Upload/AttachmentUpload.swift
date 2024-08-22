@@ -18,6 +18,7 @@ public struct AttachmentUpload {
     /// From this point forward,  the upload doesn't have any knowledge of the source (attachment, backup, image, etc)
     public static func start<Metadata: UploadMetadata>(
         attempt: Upload.Attempt<Metadata>,
+        dateProvider: @escaping DateProvider,
         progress: Upload.ProgressBlock?
     ) async throws -> Upload.Result<Metadata> {
         try Task.checkCancellation()
@@ -26,6 +27,7 @@ public struct AttachmentUpload {
 
         return try await attemptUpload(
             attempt: attempt,
+            dateProvider: dateProvider,
             progress: progress
         )
     }
@@ -43,6 +45,7 @@ public struct AttachmentUpload {
     ///
     private static func attemptUpload<Metadata: UploadMetadata>(
         attempt: Upload.Attempt<Metadata>,
+        dateProvider: @escaping DateProvider,
         progress: Upload.ProgressBlock?
     ) async throws -> Upload.Result<Metadata> {
         attempt.logger.info("Begin upload.")
@@ -55,7 +58,7 @@ public struct AttachmentUpload {
             cdnNumber: attempt.cdnNumber,
             localUploadMetadata: attempt.localMetadata,
             beginTimestamp: attempt.beginTimestamp,
-            finishTimestamp: Date().ows_millisecondsSince1970
+            finishTimestamp: dateProvider().ows_millisecondsSince1970
         )
     }
 
@@ -182,6 +185,7 @@ public struct AttachmentUpload {
         existingSessionUrl: URL? = nil,
         signalService: OWSSignalServiceProtocol,
         fileSystem: Upload.Shims.FileSystem,
+        dateProvider: @escaping DateProvider,
         logger: PrefixedLogger
     ) async throws -> Upload.Attempt<Metadata> {
         let endpoint: UploadEndpoint = try {
@@ -214,7 +218,7 @@ public struct AttachmentUpload {
             cdnKey: form.cdnKey,
             cdnNumber: form.cdnNumber,
             localMetadata: localMetadata,
-            beginTimestamp: Date.ows_millisecondTimestamp(),
+            beginTimestamp: dateProvider().ows_millisecondsSince1970,
             endpoint: endpoint,
             uploadLocation: uploadLocation,
             isResumedUpload: existingSessionUrl != nil,
@@ -239,16 +243,13 @@ extension Upload {
 
 extension Upload {
     struct FormRequest {
-        private let signalService: OWSSignalServiceProtocol
         private let networkManager: NetworkManager
         private let chatConnectionManager: ChatConnectionManager
 
         public init(
-            signalService: OWSSignalServiceProtocol,
             networkManager: NetworkManager,
             chatConnectionManager: ChatConnectionManager
         ) {
-            self.signalService = signalService
             self.networkManager = networkManager
             self.chatConnectionManager = chatConnectionManager
         }

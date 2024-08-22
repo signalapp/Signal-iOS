@@ -245,7 +245,7 @@ public class Attachment {
     }
 
     public enum TransitUploadStrategy {
-        case reuseExistingUpload(TransitTierInfo)
+        case reuseExistingUpload(Upload.LocalUploadMetadata, TransitTierInfo)
         case reuseStreamEncryption(Upload.LocalUploadMetadata)
         case freshUpload(AttachmentStream)
         case cannotUpload
@@ -256,6 +256,15 @@ public class Attachment {
         guard let stream = self.asStream() else {
             return .cannotUpload
         }
+
+        let metadata = Upload.LocalUploadMetadata(
+            fileUrl: stream.fileURL,
+            key: encryptionKey,
+            digest: stream.info.digestSHA256Ciphertext,
+            encryptedDataLength: stream.info.encryptedByteCount,
+            plaintextDataLength: stream.info.unencryptedByteCount
+        )
+
         if
             // We have a prior upload
             let transitTierInfo,
@@ -265,7 +274,7 @@ public class Attachment {
             ) <= Upload.Constants.uploadReuseWindow
         {
             // We have unexpired transit tier info. Reuse that upload.
-            return .reuseExistingUpload(transitTierInfo)
+            return .reuseExistingUpload(metadata, transitTierInfo)
         } else if
             // This device has never uploaded
             transitTierInfo == nil,
@@ -275,13 +284,7 @@ public class Attachment {
             // Reuse our local encryption for sending.
             // Without this, we'd have to reupload all our outgoing attacments
             // in order to copy them to the media tier.
-            return .reuseStreamEncryption(.init(
-                fileUrl: stream.fileURL,
-                key: encryptionKey,
-                digest: stream.info.digestSHA256Ciphertext,
-                encryptedDataLength: stream.info.encryptedByteCount,
-                plaintextDataLength: stream.info.unencryptedByteCount
-            ))
+            return .reuseStreamEncryption(metadata)
         } else {
             // Upload from scratch
             return .freshUpload(stream)

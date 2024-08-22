@@ -39,7 +39,7 @@ class AttachmentUploadManagerTests: XCTestCase {
         // 2. Successful upload
         helper.addUploadRequestMock(auth: auth, location: location, type: .success)
 
-        _ = try await uploadManager.uploadAttachment(attachmentId: 1)
+        _ = try await uploadManager.uploadTransitTierAttachment(attachmentId: 1)
 
         if case let .uploadLocation(request) = helper.capturedRequests[1] {
             XCTAssertEqual(request.url!.absoluteString, uploadLocation)
@@ -74,7 +74,7 @@ class AttachmentUploadManagerTests: XCTestCase {
         // 4. Complete the upload
         helper.addUploadRequestMock(auth: auth, location: location, type: .success)
 
-        try await uploadManager.uploadAttachment(attachmentId: 1)
+        try await uploadManager.uploadTransitTierAttachment(attachmentId: 1)
 
         if case let .uploadTask(request) = helper.capturedRequests[4] {
             XCTAssertEqual(request.url!.absoluteString, location)
@@ -107,7 +107,7 @@ class AttachmentUploadManagerTests: XCTestCase {
         // 4. Complete the upload
         helper.addUploadRequestMock(auth: auth, location: location, type: .success)
 
-        try await uploadManager.uploadAttachment(attachmentId: 1)
+        try await uploadManager.uploadTransitTierAttachment(attachmentId: 1)
 
         if case let .uploadTask(request) = helper.capturedRequests[4] {
             XCTAssertEqual(request.url!.absoluteString, location)
@@ -140,7 +140,7 @@ class AttachmentUploadManagerTests: XCTestCase {
         // 6. Complete the upload
         helper.addUploadRequestMock(auth: auth2, location: location2, type: .success)
 
-        try await uploadManager.uploadAttachment(attachmentId: 1)
+        try await uploadManager.uploadTransitTierAttachment(attachmentId: 1)
 
         if case let .uploadTask(request) = helper.capturedRequests[6] {
             XCTAssertEqual(request.url!.absoluteString, location2)
@@ -168,7 +168,7 @@ class AttachmentUploadManagerTests: XCTestCase {
         }
 
         do {
-            try await uploadManager.uploadAttachment(attachmentId: 1)
+            try await uploadManager.uploadTransitTierAttachment(attachmentId: 1)
             XCTFail("Should fail to upload!")
         } catch {
             // Success
@@ -187,7 +187,7 @@ class AttachmentUploadManagerTests: XCTestCase {
             ).attachment
         }
 
-        try await uploadManager.uploadAttachment(attachmentId: 1)
+        try await uploadManager.uploadTransitTierAttachment(attachmentId: 1)
 
         XCTAssertTrue(helper.capturedRequests.isEmpty)
     }
@@ -212,7 +212,7 @@ class AttachmentUploadManagerTests: XCTestCase {
         // 2. Successful upload
         helper.addUploadRequestMock(auth: auth, location: location, type: .success)
 
-        _ = try await uploadManager.uploadAttachment(attachmentId: 1)
+        _ = try await uploadManager.uploadTransitTierAttachment(attachmentId: 1)
 
         if case let .uploadLocation(request) = helper.capturedRequests[1] {
             XCTAssertEqual(request.url!.absoluteString, uploadLocation)
@@ -276,7 +276,7 @@ class AttachmentUploadManagerTests: XCTestCase {
         // 2. Successful upload
         helper.addUploadRequestMock(auth: auth, location: location, type: .success)
 
-        _ = try await uploadManager.uploadAttachment(attachmentId: 1)
+        _ = try await uploadManager.uploadTransitTierAttachment(attachmentId: 1)
 
         if case let .uploadLocation(request) = helper.capturedRequests[1] {
             XCTAssertEqual(request.url!.absoluteString, uploadLocation)
@@ -336,7 +336,7 @@ class AttachmentUploadManagerTests: XCTestCase {
         // 2. Successful upload
         helper.addUploadRequestMock(auth: auth, location: location, type: .success)
 
-        _ = try await uploadManager.uploadAttachment(attachmentId: 1)
+        _ = try await uploadManager.uploadTransitTierAttachment(attachmentId: 1)
 
         if case let .uploadLocation(request) = helper.capturedRequests[1] {
             XCTAssertEqual(request.url!.absoluteString, uploadLocation)
