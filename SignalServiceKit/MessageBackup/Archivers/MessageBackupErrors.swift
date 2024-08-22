@@ -368,6 +368,12 @@ extension MessageBackup {
                 /// content in its representation of the original being quoted.
                 case quotedMessageEmptyContent
 
+                /// A link preview with an empty string for the url
+                case linkPreviewEmptyUrl
+                /// Link preview urls must be present in the message body;
+                /// this error is for when they are not.
+                case linkPreviewUrlNotInBody
+
                 /// A `BackupProto_Group's` gv2 master key could not be parsed by libsignal.
                 case invalidGV2MasterKey
                 /// A `BackupProto_Group` was missing its group snapshot.
@@ -604,6 +610,8 @@ extension MessageBackup {
                         .reactionNotFromAciOrE164,
                         .unrecognizedBodyRangeStyle,
                         .quotedMessageEmptyContent,
+                        .linkPreviewEmptyUrl,
+                        .linkPreviewUrlNotInBody,
                         .invalidGV2MasterKey,
                         .missingGV2GroupSnapshot,
                         .unrecognizedGV2MemberRole,

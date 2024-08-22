@@ -125,6 +125,34 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
         )
     }
 
+    public func restoreLinkPreviewAttachment(
+        _ attachment: BackupProto_FilePointer,
+        chatItemId: MessageBackup.ChatItemId,
+        messageRowId: Int64,
+        message: TSMessage,
+        thread: MessageBackup.ChatThread,
+        tx: DBWriteTransaction
+    ) -> MessageBackup.RestoreInteractionResult<Void> {
+        let ownedAttachment = OwnedAttachmentBackupPointerProto(
+            proto: attachment,
+            // Link previews have no flags
+            renderingFlag: .default,
+            // ClientUUID is only for body and quoted reply attachments.
+            clientUUID: nil,
+            owner: .messageLinkPreview(.init(
+                messageRowId: messageRowId,
+                receivedAtTimestamp: message.receivedAtTimestamp,
+                threadRowId: thread.threadRowId
+            ))
+        )
+
+        return restoreAttachments(
+            [ownedAttachment],
+            chatItemId: chatItemId,
+            tx: tx
+        )
+    }
+
     private func restoreAttachments(
         _ attachments: [OwnedAttachmentBackupPointerProto],
         chatItemId: MessageBackup.ChatItemId,

@@ -272,7 +272,6 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
                 quotedMessage: nil,
                 // TODO: [Backups] restore contact shares
                 contactShare: nil,
-                // TODO: [Backups] restore link previews
                 linkPreview: nil,
                 // TODO: [Backups] restore message stickers
                 messageSticker: nil,
@@ -293,6 +292,7 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
                 messageBuilder.messageBody = text.body.text
                 messageBuilder.bodyRanges = text.body.ranges
                 messageBuilder.quotedMessage = text.quotedMessage
+                messageBuilder.linkPreview = text.linkPreview
 
                 return messageBuilder.build()
             case .remoteDeleteTombstone:

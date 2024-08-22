@@ -21,10 +21,12 @@ extension MessageBackup {
         struct Text {
             let body: MessageBody
             let quotedMessage: TSQuotedMessage?
+            let linkPreview: OWSLinkPreview?
 
             fileprivate let reactions: [BackupProto_Reaction]
             fileprivate let bodyAttachments: [BackupProto_MessageAttachment]
             fileprivate let quotedMessageThumbnail: BackupProto_MessageAttachment?
+            fileprivate let linkPreviewImage: BackupProto_FilePointer?
         }
 
         struct Payment {
@@ -439,6 +441,16 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                     tx: tx
                 ))
             }
+            if let linkPreviewImage = text.linkPreviewImage {
+                downstreamObjectResults.append(attachmentsArchiver.restoreLinkPreviewAttachment(
+                    linkPreviewImage,
+                    chatItemId: chatItemId,
+                    messageRowId: messageRowId,
+                    message: message,
+                    thread: thread,
+                    tx: tx
+                ))
+            }
         case .remoteDeleteTombstone:
             // Nothing downstream to restore for a tombstone.
             downstreamObjectResults.append(.success(()))
@@ -564,6 +576,25 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             quotedMessageThumbnail = nil
         }
 
+        let linkPreview: OWSLinkPreview?
+        let linkPreviewAttachment: BackupProto_FilePointer?
+        if let linkPreviewProto = standardMessage.linkPreview.first {
+            guard
+                let linkPreviewResult = restoreLinkPreview(
+                    linkPreviewProto,
+                    standardMessage: standardMessage,
+                    chatItemId: chatItemId,
+                    tx: tx
+                ).unwrap(partialErrors: &partialErrors)
+            else {
+                return .messageFailure(partialErrors)
+            }
+            (linkPreview, linkPreviewAttachment) = linkPreviewResult
+        } else {
+            linkPreview = nil
+            linkPreviewAttachment = nil
+        }
+
         guard standardMessage.hasText else {
             // TODO: [Backups] Support messages with no text
             return .messageFailure([.restoreFrameError(.unimplemented, chatItemId)])
@@ -576,18 +607,22 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             return .success(.text(.init(
                 body: body,
                 quotedMessage: quotedMessage,
+                linkPreview: linkPreview,
                 reactions: standardMessage.reactions,
                 bodyAttachments: standardMessage.attachments,
-                quotedMessageThumbnail: quotedMessageThumbnail
+                quotedMessageThumbnail: quotedMessageThumbnail,
+                linkPreviewImage: linkPreviewAttachment
             )))
         case .partialRestore(let body, let partialErrors):
             return .partialRestore(
                 .text(.init(
                     body: body,
                     quotedMessage: quotedMessage,
+                    linkPreview: linkPreview,
                     reactions: standardMessage.reactions,
                     bodyAttachments: standardMessage.attachments,
-                    quotedMessageThumbnail: quotedMessageThumbnail
+                    quotedMessageThumbnail: quotedMessageThumbnail,
+                    linkPreviewImage: linkPreviewAttachment
                 )),
                 partialErrors
             )
@@ -833,6 +868,53 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             return nil
         } else {
             return filteredMessages.first
+        }
+    }
+
+    private func restoreLinkPreview(
+        _ linkPreviewProto: BackupProto_LinkPreview,
+        standardMessage: BackupProto_StandardMessage,
+        chatItemId: MessageBackup.ChatItemId,
+        tx: DBReadTransaction
+    ) -> RestoreInteractionResult<(OWSLinkPreview, BackupProto_FilePointer?)> {
+        guard let url = linkPreviewProto.url.nilIfEmpty else {
+            return .messageFailure([.restoreFrameError(
+                .invalidProtoData(.linkPreviewEmptyUrl),
+                chatItemId
+            )])
+        }
+        guard standardMessage.text.body.contains(url) else {
+            return .messageFailure([.restoreFrameError(
+                .invalidProtoData(.linkPreviewUrlNotInBody),
+                chatItemId
+            )])
+        }
+        let date: Date?
+        if linkPreviewProto.hasDate {
+            date = .init(millisecondsSince1970: linkPreviewProto.date)
+        } else {
+            date = nil
+        }
+
+        let metadata = OWSLinkPreview.Metadata(
+            urlString: url,
+            title: linkPreviewProto.title.nilIfEmpty,
+            previewDescription: linkPreviewProto.description_p.nilIfEmpty,
+            date: date
+        )
+
+        if linkPreviewProto.hasImage {
+            let linkPreview = OWSLinkPreview.withForeignReferenceImageAttachment(
+                metadata: metadata,
+                ownerType: .message
+            )
+            return .success((linkPreview, linkPreviewProto.image))
+        } else {
+            let linkPreview = OWSLinkPreview.withoutImage(
+                metadata: metadata,
+                ownerType: .message
+            )
+            return .success((linkPreview, nil))
         }
     }
 }
