@@ -12,6 +12,10 @@
 // For information on using the generated types, please see the documentation:
 //   https://github.com/apple/swift-protobuf/
 
+//
+// Copyright 2024 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import Foundation
 import SwiftProtobuf
 
@@ -3711,16 +3715,6 @@ public struct BackupProto_Reaction {
 
   public var sentTimestamp: UInt64 = 0
 
-  /// Optional because some clients may not track this data
-  public var receivedTimestamp: UInt64 {
-    get {return _receivedTimestamp ?? 0}
-    set {_receivedTimestamp = newValue}
-  }
-  /// Returns true if `receivedTimestamp` has been explicitly set.
-  public var hasReceivedTimestamp: Bool {return self._receivedTimestamp != nil}
-  /// Clears the value of `receivedTimestamp`. Subsequent reads from it will return its default value.
-  public mutating func clearReceivedTimestamp() {self._receivedTimestamp = nil}
-
   /// A higher sort order means that a reaction is more recent. Some clients may export this as
   /// incrementing numbers (e.g. 1, 2, 3), others as timestamps.
   public var sortOrder: UInt64 = 0
@@ -3728,8 +3722,6 @@ public struct BackupProto_Reaction {
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
-
-  fileprivate var _receivedTimestamp: UInt64? = nil
 }
 
 public struct BackupProto_ChatUpdateMessage {
@@ -10729,8 +10721,7 @@ extension BackupProto_Reaction: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
     1: .same(proto: "emoji"),
     2: .same(proto: "authorId"),
     3: .same(proto: "sentTimestamp"),
-    4: .same(proto: "receivedTimestamp"),
-    5: .same(proto: "sortOrder"),
+    4: .same(proto: "sortOrder"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -10742,18 +10733,13 @@ extension BackupProto_Reaction: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
       case 1: try { try decoder.decodeSingularStringField(value: &self.emoji) }()
       case 2: try { try decoder.decodeSingularUInt64Field(value: &self.authorID) }()
       case 3: try { try decoder.decodeSingularUInt64Field(value: &self.sentTimestamp) }()
-      case 4: try { try decoder.decodeSingularUInt64Field(value: &self._receivedTimestamp) }()
-      case 5: try { try decoder.decodeSingularUInt64Field(value: &self.sortOrder) }()
+      case 4: try { try decoder.decodeSingularUInt64Field(value: &self.sortOrder) }()
       default: break
       }
     }
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    // The use of inline closures is to circumvent an issue where the compiler
-    // allocates stack space for every if/case branch local when no optimizations
-    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
-    // https://github.com/apple/swift-protobuf/issues/1182
     if !self.emoji.isEmpty {
       try visitor.visitSingularStringField(value: self.emoji, fieldNumber: 1)
     }
@@ -10763,11 +10749,8 @@ extension BackupProto_Reaction: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
     if self.sentTimestamp != 0 {
       try visitor.visitSingularUInt64Field(value: self.sentTimestamp, fieldNumber: 3)
     }
-    try { if let v = self._receivedTimestamp {
-      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 4)
-    } }()
     if self.sortOrder != 0 {
-      try visitor.visitSingularUInt64Field(value: self.sortOrder, fieldNumber: 5)
+      try visitor.visitSingularUInt64Field(value: self.sortOrder, fieldNumber: 4)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -10776,7 +10759,6 @@ extension BackupProto_Reaction: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
     if lhs.emoji != rhs.emoji {return false}
     if lhs.authorID != rhs.authorID {return false}
     if lhs.sentTimestamp != rhs.sentTimestamp {return false}
-    if lhs._receivedTimestamp != rhs._receivedTimestamp {return false}
     if lhs.sortOrder != rhs.sortOrder {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
