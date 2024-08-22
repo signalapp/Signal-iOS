@@ -10,7 +10,7 @@ public struct OversizeTextDataSource {
     public let legacyDataSource: TSAttachmentDataSource
 
     public var dataSource: TSResourceDataSource {
-        if AttachmentFeatureFlags.writeMessages, let v2DataSource {
+        if let v2DataSource {
             return v2DataSource.tsDataSource
         } else {
             return legacyDataSource.tsDataSource
@@ -91,26 +91,15 @@ public class TSResourceContentValidatorImpl: TSResourceContentValidator {
         renderingFlag: AttachmentReference.RenderingFlag,
         ownerType: TSResourceOwnerType
     ) throws -> TSResourceDataSource {
-        if ownerType.writeV2FeatureFlag {
-            let attachmentDataSource: AttachmentDataSource =
-                try attachmentValidator.validateContents(
-                    dataSource: dataSource,
-                    shouldConsume: shouldConsume,
-                    mimeType: mimeType,
-                    renderingFlag: renderingFlag,
-                    sourceFilename: sourceFilename
-                )
-            return attachmentDataSource.tsDataSource
-        } else {
-            // We don't do validation up front for legacy attachments.
-            return TSAttachmentDataSource(
+        let attachmentDataSource: AttachmentDataSource =
+            try attachmentValidator.validateContents(
+                dataSource: dataSource,
+                shouldConsume: shouldConsume,
                 mimeType: mimeType,
-                caption: caption,
                 renderingFlag: renderingFlag,
-                sourceFilename: dataSource.sourceFilename,
-                dataSource: .dataSource(dataSource, shouldCopy: !shouldConsume)
-            ).tsDataSource
-        }
+                sourceFilename: sourceFilename
+            )
+        return attachmentDataSource.tsDataSource
     }
 
     public func validateContents(
@@ -121,25 +110,14 @@ public class TSResourceContentValidatorImpl: TSResourceContentValidator {
         renderingFlag: AttachmentReference.RenderingFlag,
         ownerType: TSResourceOwnerType
     ) throws -> TSResourceDataSource {
-        if ownerType.writeV2FeatureFlag {
-            let attachmentDataSource: AttachmentDataSource =
-                try attachmentValidator.validateContents(
-                    data: data,
-                    mimeType: mimeType,
-                    renderingFlag: renderingFlag,
-                    sourceFilename: sourceFilename
-                )
-            return attachmentDataSource.tsDataSource
-        } else {
-            // We don't do validation up front for legacy attachments.
-            return TSAttachmentDataSource(
+        let attachmentDataSource: AttachmentDataSource =
+            try attachmentValidator.validateContents(
+                data: data,
                 mimeType: mimeType,
-                caption: caption,
                 renderingFlag: renderingFlag,
-                sourceFilename: sourceFilename,
-                dataSource: .data(data)
-            ).tsDataSource
-        }
+                sourceFilename: sourceFilename
+            )
+        return attachmentDataSource.tsDataSource
     }
 
     public func prepareOversizeTextIfNeeded(
@@ -160,19 +138,15 @@ public class TSResourceContentValidatorImpl: TSResourceContentValidator {
         }
 
         let v2DataSource: AttachmentDataSource?
-        if AttachmentFeatureFlags.writeMessages {
-            let result = try attachmentValidator.prepareOversizeTextIfNeeded(
-                from: messageBody
-            )
-            switch result {
-            case .inline, nil:
-                owsFailDebug("Got no oversize text for v2 even though we have one for v1")
-                v2DataSource = nil
-            case .oversize(_, let fullsize):
-                v2DataSource = .from(pendingAttachment: fullsize)
-            }
-        } else {
+        let result = try attachmentValidator.prepareOversizeTextIfNeeded(
+            from: messageBody
+        )
+        switch result {
+        case .inline, nil:
+            owsFailDebug("Got no oversize text for v2 even though we have one for v1")
             v2DataSource = nil
+        case .oversize(_, let fullsize):
+            v2DataSource = .from(pendingAttachment: fullsize)
         }
         let dataSource = OversizeTextDataSource.init(
             v2DataSource: v2DataSource,
@@ -229,19 +203,11 @@ public class TSResourceContentValidatorImpl: TSResourceContentValidator {
             throw OWSAssertionError("Invalid attachment + reference combination")
 
         case (.v2(let attachment), .v2(let attachmentReference)):
-            guard AttachmentFeatureFlags.writeMessages else {
-                throw OWSAssertionError("How did we get a v2 attachment if we aren't creating them yet")
-            }
             return try attachmentValidator.prepareQuotedReplyThumbnail(
                 fromOriginalAttachment: attachment,
                 originalReference: attachmentReference
             ).tsDataSource
         case (.legacy(let tsAttachment), .legacy):
-            guard AttachmentFeatureFlags.writeMessages else {
-                // legacy to legacy is easy; we just refer to the original.
-                return .fromLegacyOriginalAttachment(tsAttachment, originalMessageRowId: originalMessageRowId)
-            }
-
             // We have a legacy attachment, but we want to clone it as a v2 attachment.
             // This is doable; we can read the attachment data in and clone that directly.
             return try prepareV2QuotedReplyThumbnail(

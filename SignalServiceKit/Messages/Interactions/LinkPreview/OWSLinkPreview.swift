@@ -145,12 +145,11 @@ public class OWSLinkPreview: MTLModel, Codable {
         urlString: String,
         title: String? = nil,
         ownerType: TSResourceOwnerType,
-        usesV2AttachmentReference: Bool? = nil
+        usesV2AttachmentReference: Bool = true
     ) -> OWSLinkPreview {
         /// In legacy-world, we put nil on the attachment id to mark this as not having an attachment
         /// In v2-world, the existence of an AttachmentReference is what determines if a link preview has an image or not.
         /// In either case, the legacy attachment id is nil, but fetching ends up different, so mark it down at write time.
-        let usesV2AttachmentReference = usesV2AttachmentReference ?? ownerType.writeV2FeatureFlag
         return .init(
             urlString: urlString,
             title: title,

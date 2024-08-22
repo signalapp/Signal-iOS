@@ -11,7 +11,7 @@ public struct LinkPreviewTSResourceDataSource {
     public let imageLegacyDataSource: TSAttachmentDataSource?
 
     public func imageDataSource(ownerType: TSResourceOwnerType) -> TSResourceDataSource? {
-        if ownerType.writeV2FeatureFlag, let imageV2DataSource {
+        if let imageV2DataSource {
             return imageV2DataSource.tsDataSource
         } else {
             return imageLegacyDataSource?.tsDataSource
@@ -59,18 +59,12 @@ public class LinkPreviewTSResourceBuilder: LinkPreviewBuilder {
         // legacy and v2 attachments; if the message has a legacy quote on
         // it we want the link preview to be legacy too, even if we have
         // since started using v2 for new attachments.
-        let v2DataSource: AttachmentDataSource?
-        if ownerType.writeV2FeatureFlag {
-            v2DataSource = try attachmentValidator.validateContents(
-                data: imageData,
-                mimeType: imageMimeType,
-                renderingFlag: .default,
-                sourceFilename: nil
-            )
-        } else {
-            // Don't bother, though, if we aren't using v2 at all.
-            v2DataSource = nil
-        }
+        let v2DataSource: AttachmentDataSource? = try attachmentValidator.validateContents(
+            data: imageData,
+            mimeType: imageMimeType,
+            renderingFlag: .default,
+            sourceFilename: nil
+        )
 
         let legacyDataSource = TSAttachmentDataSource(
             mimeType: imageMimeType,

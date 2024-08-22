@@ -61,20 +61,17 @@ public protocol OrphanedAttachmentCleaner {
 public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
 
     private let dbProvider: () -> DatabaseWriter
-    private let featureFlags: Shims.FeatureFlags
     private let taskScheduler: Shims.TaskScheduler
 
     private var observer: OrphanTableObserver!
 
     public convenience init(
         db: SDSDatabaseStorage,
-        featureFlags: Shims.FeatureFlags = Wrappers.FeatureFlags(),
         fileSystem: Shims.OWSFileSystem = Wrappers.OWSFileSystem(),
         taskScheduler: Shims.TaskScheduler = Wrappers.TaskScheduler()
     ) {
         self.init(
             dbProvider: { db.grdbStorage.pool },
-            featureFlags: featureFlags,
             fileSystem: fileSystem,
             taskScheduler: taskScheduler
         )
@@ -82,12 +79,10 @@ public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
 
     internal init(
         dbProvider: @escaping () -> DatabaseWriter,
-        featureFlags: Shims.FeatureFlags,
         fileSystem: Shims.OWSFileSystem,
         taskScheduler: Shims.TaskScheduler
     ) {
         self.dbProvider = dbProvider
-        self.featureFlags = featureFlags
         self.taskScheduler = taskScheduler
         self.observer = OrphanTableObserver(
             jobRunner: JobRunner(
@@ -100,10 +95,6 @@ public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
     }
 
     public func beginObserving() {
-        guard featureFlags.readV2Attachments else {
-            return
-        }
-
         // Kick off a run immediately for any rows already in the database.
         taskScheduler.task { [observer] in
             await observer!.jobRunner.runNextCleanupJob()
@@ -333,31 +324,12 @@ public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
 
 extension OrphanedAttachmentCleanerImpl {
     public enum Shims {
-        public typealias FeatureFlags = _OrphanedAttachmentCleanerImpl_FeatureFlagsShim
         public typealias OWSFileSystem = _OrphanedAttachmentCleanerImpl_OWSFileSystemShim
         public typealias TaskScheduler = _OrphanedAttachmentCleanerImpl_TaskSchedulerShim
     }
     public enum Wrappers {
-        public typealias FeatureFlags = _OrphanedAttachmentCleanerImpl_FeatureFlagsWrapper
         public typealias OWSFileSystem = _OrphanedAttachmentCleanerImpl_OWSFileSystemWrapper
         public typealias TaskScheduler = _OrphanedAttachmentCleanerImpl_TaskSchedulerWrapper
-    }
-}
-
-public protocol _OrphanedAttachmentCleanerImpl_FeatureFlagsShim {
-
-    var readV2Attachments: Bool { get }
-}
-
-public class _OrphanedAttachmentCleanerImpl_FeatureFlagsWrapper: _OrphanedAttachmentCleanerImpl_FeatureFlagsShim {
-
-    public init() {}
-
-    public var readV2Attachments: Bool {
-        return
-            AttachmentFeatureFlags.readThreadWallpapers
-            || AttachmentFeatureFlags.readStories
-            || AttachmentFeatureFlags.readMessages
     }
 }
 

@@ -6,16 +6,6 @@
 import Foundation
 
 public enum AttachmentFeatureFlags {
-
-    public static let readThreadWallpapers = true
-    public static let writeThreadWallpapers = true
-
-    public static let readStories = true
-    public static let writeStories = true
-
-    public static var readMessages = true
-    public static var writeMessages = true
-
     /// Setting this to true will prevent the migration of TSMessage's TSAttachments from making
     /// _further_ progress. Already-migrated TSAttachments cannot be undone; we also cannot
     /// turn off usage of v2 for _new_ attachments.

@@ -29,12 +29,6 @@ public class TSResourceManagerImpl: TSResourceManager {
     // MARK: - Migration
 
     public func didFinishTSAttachmentToAttachmentMigration(tx: DBReadTransaction) -> Bool {
-        guard
-            AttachmentFeatureFlags.readMessages,
-            AttachmentFeatureFlags.writeMessages
-        else {
-            return false
-        }
         let tx = SDSDB.shimOnlyBridge(tx)
         return IncrementalTSAttachmentMigrationStore.getState(tx: tx) == .finished
     }
@@ -48,33 +42,25 @@ public class TSResourceManagerImpl: TSResourceManager {
         message: TSMessage,
         tx: DBWriteTransaction
     ) throws {
-        if AttachmentFeatureFlags.writeMessages {
-            guard let messageRowId = message.sqliteRowId else {
-                owsFailDebug("Adding attachments to an uninserted message!")
-                return
-            }
-            guard let threadRowId = threadStore.fetchThread(uniqueId: message.uniqueThreadId, tx: tx)?.sqliteRowId else {
-                owsFailDebug("Adding attachments to an message without a thread")
-                return
-            }
-            try attachmentManager.createAttachmentPointer(
-                from: .init(
-                    proto: proto,
-                    owner: .messageOversizeText(.init(
-                        messageRowId: messageRowId,
-                        receivedAtTimestamp: message.receivedAtTimestamp,
-                        threadRowId: threadRowId
-                    ))
-                ),
-                tx: tx
-            )
-        } else {
-            tsAttachmentManager.createBodyAttachmentPointers(
-                from: [proto],
-                message: message,
-                tx: SDSDB.shimOnlyBridge(tx)
-            )
+        guard let messageRowId = message.sqliteRowId else {
+            owsFailDebug("Adding attachments to an uninserted message!")
+            return
         }
+        guard let threadRowId = threadStore.fetchThread(uniqueId: message.uniqueThreadId, tx: tx)?.sqliteRowId else {
+            owsFailDebug("Adding attachments to an message without a thread")
+            return
+        }
+        try attachmentManager.createAttachmentPointer(
+            from: .init(
+                proto: proto,
+                owner: .messageOversizeText(.init(
+                    messageRowId: messageRowId,
+                    receivedAtTimestamp: message.receivedAtTimestamp,
+                    threadRowId: threadRowId
+                ))
+            ),
+            tx: tx
+        )
     }
 
     public func createBodyAttachmentPointers(
@@ -82,35 +68,27 @@ public class TSResourceManagerImpl: TSResourceManager {
         message: TSMessage,
         tx: DBWriteTransaction
     ) throws {
-        if AttachmentFeatureFlags.writeMessages {
-            guard let messageRowId = message.sqliteRowId else {
-                owsFailDebug("Adding attachments to an uninserted message!")
-                return
-            }
-            guard let threadRowId = threadStore.fetchThread(uniqueId: message.uniqueThreadId, tx: tx)?.sqliteRowId else {
-                owsFailDebug("Adding attachments to an message without a thread")
-                return
-            }
-            try attachmentManager.createAttachmentPointers(
-                from: protos.map { proto in
-                    return .init(
-                        proto: proto,
-                        owner: .messageBodyAttachment(.init(
-                            messageRowId: messageRowId,
-                            receivedAtTimestamp: message.receivedAtTimestamp,
-                            threadRowId: threadRowId
-                        ))
-                    )
-                },
-                tx: tx
-            )
-        } else {
-            tsAttachmentManager.createBodyAttachmentPointers(
-                from: protos,
-                message: message,
-                tx: SDSDB.shimOnlyBridge(tx)
-            )
+        guard let messageRowId = message.sqliteRowId else {
+            owsFailDebug("Adding attachments to an uninserted message!")
+            return
         }
+        guard let threadRowId = threadStore.fetchThread(uniqueId: message.uniqueThreadId, tx: tx)?.sqliteRowId else {
+            owsFailDebug("Adding attachments to an message without a thread")
+            return
+        }
+        try attachmentManager.createAttachmentPointers(
+            from: protos.map { proto in
+                return .init(
+                    proto: proto,
+                    owner: .messageBodyAttachment(.init(
+                        messageRowId: messageRowId,
+                        receivedAtTimestamp: message.receivedAtTimestamp,
+                        threadRowId: threadRowId
+                    ))
+                )
+            },
+            tx: tx
+        )
     }
 
     public func createOversizeTextAttachmentStream(
@@ -118,7 +96,7 @@ public class TSResourceManagerImpl: TSResourceManager {
         message: TSMessage,
         tx: DBWriteTransaction
     ) throws {
-        if AttachmentFeatureFlags.writeMessages, let attachmentDataSource = dataSource.v2DataSource {
+        if let attachmentDataSource = dataSource.v2DataSource {
             guard let messageRowId = message.sqliteRowId else {
                 owsFailDebug("Adding attachments to an uninserted message!")
                 return
@@ -201,23 +179,15 @@ public class TSResourceManagerImpl: TSResourceManager {
         ownerType: TSResourceOwnerType,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<TSResourceRetrievalInfo> {
-        if ownerType.writeV2FeatureFlag {
-            return OwnedAttachmentBuilder<TSResourceRetrievalInfo>(
-                info: .v2,
-                finalize: { [attachmentManager] owner, innerTx in
-                    return try attachmentManager.createAttachmentPointer(
-                        from: .init(proto: proto, owner: owner),
-                        tx: innerTx
-                    )
-                }
-            )
-        } else {
-            let attachment = try tsAttachmentManager.createAttachmentPointer(
-                from: proto,
-                tx: SDSDB.shimOnlyBridge(tx)
-            )
-            return .withoutFinalizer(.legacy(uniqueId: attachment.uniqueId))
-        }
+        return OwnedAttachmentBuilder<TSResourceRetrievalInfo>(
+            info: .v2,
+            finalize: { [attachmentManager] owner, innerTx in
+                return try attachmentManager.createAttachmentPointer(
+                    from: .init(proto: proto, owner: owner),
+                    tx: innerTx
+                )
+            }
+        )
     }
 
     public func createAttachmentStreamBuilder(
@@ -368,16 +338,14 @@ public class TSResourceManagerImpl: TSResourceManager {
             }
         }
 
-        if AttachmentFeatureFlags.readMessages {
-            guard let messageRowId = message.sqliteRowId else {
-                owsFailDebug("Removing attachments from un-inserted message.")
-                return
-            }
-            try attachmentManager.removeAllAttachments(
-                from: v2Owners.map { $0.with(messageRowId: messageRowId) },
-                tx: tx
-            )
+        guard let messageRowId = message.sqliteRowId else {
+            owsFailDebug("Removing attachments from un-inserted message.")
+            return
         }
+        try attachmentManager.removeAllAttachments(
+            from: v2Owners.map { $0.with(messageRowId: messageRowId) },
+            tx: tx
+        )
     }
 
     public func removeAttachments(from storyMessage: StoryMessage, tx: DBWriteTransaction) throws {
@@ -397,19 +365,17 @@ public class TSResourceManagerImpl: TSResourceManager {
         case .foreignReferenceAttachment:
             break
         }
-        if AttachmentFeatureFlags.readStories {
-            guard let storyMessageRowId = storyMessage.id else {
-                owsFailDebug("Removing attachments from an un-inserted message")
-                return
-            }
-            try attachmentManager.removeAllAttachments(
-                from: [
-                    .storyMessageMedia(storyMessageRowId: storyMessageRowId),
-                    .storyMessageLinkPreview(storyMessageRowId: storyMessageRowId)
-                ],
-                tx: tx
-            )
+        guard let storyMessageRowId = storyMessage.id else {
+            owsFailDebug("Removing attachments from an un-inserted message")
+            return
         }
+        try attachmentManager.removeAllAttachments(
+            from: [
+                .storyMessageMedia(storyMessageRowId: storyMessageRowId),
+                .storyMessageLinkPreview(storyMessageRowId: storyMessageRowId)
+            ],
+            tx: tx
+        )
     }
 
     // MARK: - Updates
@@ -449,43 +415,31 @@ public class TSResourceManagerImpl: TSResourceManager {
             else {
                 return nil
             }
-            if AttachmentFeatureFlags.writeMessages {
-                // We are in a conundrum. New messages should be using v2 attachments, but
-                // we are quoting a legacy message attachment.
-                // The process of cloning a legacy attachment as a v2 attachment is asynchronous
-                // and cannot be done in this write transaction.
-                // So we will try the following in order:
-                // 1. Use the provided fallback proto (meaning the user will need to download
-                //    the quote thumbnail from the sender's cdn upload, even though we already
-                //    technically have the original source locally. Not a big deal.
-                // 2. Otherwise try and use the cdn info from the v1 attachment, if it still exists,
-                //    and use that to create a new v2 attachment (even if the v1 is already downloaded).
-                // 3. Give up. Omit the thumbnail.
-                if let proto = fallbackQuoteProto?.attachments.first?.thumbnail {
-                    return newV2QuotedReplyMessageThumbnailBuilder(
-                        from: .pointer(proto),
-                        originalMessageRowId: dataSource.originalMessageRowId,
-                        tx: tx
-                    )
-                } else if let proto = Self.buildProtoAsIfWeReceivedThisAttachment(attachment) {
-                    return newV2QuotedReplyMessageThumbnailBuilder(
-                        from: .pointer(proto),
-                        originalMessageRowId: dataSource.originalMessageRowId,
-                        tx: tx
-                    )
-                } else {
-                    return nil
-                }
+            // We are in a conundrum. New messages should be using v2 attachments, but
+            // we are quoting a legacy message attachment.
+            // The process of cloning a legacy attachment as a v2 attachment is asynchronous
+            // and cannot be done in this write transaction.
+            // So we will try the following in order:
+            // 1. Use the provided fallback proto (meaning the user will need to download
+            //    the quote thumbnail from the sender's cdn upload, even though we already
+            //    technically have the original source locally. Not a big deal.
+            // 2. Otherwise try and use the cdn info from the v1 attachment, if it still exists,
+            //    and use that to create a new v2 attachment (even if the v1 is already downloaded).
+            // 3. Give up. Omit the thumbnail.
+            if let proto = fallbackQuoteProto?.attachments.first?.thumbnail {
+                return newV2QuotedReplyMessageThumbnailBuilder(
+                    from: .pointer(proto),
+                    originalMessageRowId: dataSource.originalMessageRowId,
+                    tx: tx
+                )
+            } else if let proto = Self.buildProtoAsIfWeReceivedThisAttachment(attachment) {
+                return newV2QuotedReplyMessageThumbnailBuilder(
+                    from: .pointer(proto),
+                    originalMessageRowId: dataSource.originalMessageRowId,
+                    tx: tx
+                )
             } else {
-                guard
-                    let info = tsAttachmentManager.cloneThumbnailForNewQuotedReplyMessage(
-                        originalAttachment: attachment,
-                        tx: SDSDB.shimOnlyBridge(tx)
-                    )
-                else {
-                    return nil
-                }
-                return .withoutFinalizer(info)
+                return nil
             }
         case .v2Source(let v2DataSource):
             return newV2QuotedReplyMessageThumbnailBuilder(
@@ -501,10 +455,6 @@ public class TSResourceManagerImpl: TSResourceManager {
         originalMessageRowId: Int64?,
         tx: DBWriteTransaction
     ) -> OwnedAttachmentBuilder<QuotedAttachmentInfo>? {
-        guard AttachmentFeatureFlags.writeMessages else {
-            owsFailDebug("Should not have a v2 data source if we aren't using v2 attachments!")
-            return nil
-        }
         guard MimeTypeUtil.isSupportedVisualMediaMimeType(dataSource.mimeType) else {
             // Can't make a thumbnail, just return a stub.
             return .withoutFinalizer(

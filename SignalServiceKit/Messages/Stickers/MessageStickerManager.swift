@@ -87,21 +87,6 @@ public class MessageStickerManagerImpl: MessageStickerManager {
         stickerInfo: StickerInfo,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<TSResourceRetrievalInfo> {
-
-        // As an optimization, if the sticker is already installed,
-        // try to derive an TSAttachmentStream (only legacy) using that.
-        // V2 attachments use the local sticker pack at "download" time.
-        if
-            !AttachmentFeatureFlags.writeMessages,
-            let attachment = tsAttachmentForInstalledSticker(
-                dataProto: dataProto,
-                stickerInfo: stickerInfo,
-                tx: tx
-            )
-        {
-            return attachment
-        }
-
         do {
             let proto: SSKProtoAttachmentPointer
             if dataProto.contentType == MimeType.applicationOctetStream.rawValue {

@@ -24,7 +24,6 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
         mockTaskScheduler = OrphanedAttachmentCleanerImpl.Mocks.TaskScheduler()
         orphanedAttachmentCleaner = OrphanedAttachmentCleanerImpl(
             dbProvider: { [db] in db!.databaseQueue },
-            featureFlags: OrphanedAttachmentCleanerImpl.Mocks.FeatureFlags(),
             fileSystem: mockFileSystem,
             taskScheduler: mockTaskScheduler
         )
@@ -264,17 +263,9 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
 
 extension OrphanedAttachmentCleanerImpl {
     enum Mocks {
-        fileprivate typealias FeatureFlags = _OrphanedAttachmentCleanerImpl_FeatureFlagsMock
         fileprivate typealias OWSFileSystem = _OrphanedAttachmentCleanerImpl_OWSFileSystemMock
         fileprivate typealias TaskScheduler = _OrphanedAttachmentCleanerImpl_TaskSchedulerMock
     }
-}
-
-private class _OrphanedAttachmentCleanerImpl_FeatureFlagsMock: _OrphanedAttachmentCleanerImpl_FeatureFlagsShim {
-
-    init() {}
-
-    var readV2Attachments: Bool { true }
 }
 
 private class _OrphanedAttachmentCleanerImpl_OWSFileSystemMock: _OrphanedAttachmentCleanerImpl_OWSFileSystemShim {

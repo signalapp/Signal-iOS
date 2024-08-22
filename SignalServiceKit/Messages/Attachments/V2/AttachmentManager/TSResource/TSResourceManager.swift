@@ -33,14 +33,6 @@ public enum TSResourceOwnerType {
     case message
     case story
     case thread
-
-    var writeV2FeatureFlag: Bool {
-        switch self {
-        case .message: AttachmentFeatureFlags.writeMessages
-        case .story: AttachmentFeatureFlags.writeStories
-        case .thread: AttachmentFeatureFlags.writeThreadWallpapers
-        }
-    }
 }
 
 public protocol TSResourceManager {

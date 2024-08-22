@@ -23,59 +23,29 @@ public class BridgingWallpaperImageStore: WallpaperImageStore {
         for thread: TSThread,
         onInsert: @escaping (DBWriteTransaction) throws -> Void
     ) throws {
-        if AttachmentFeatureFlags.writeThreadWallpapers {
-            try wallpaperStore.setWallpaperImage(photo, for: thread, onInsert: onInsert)
-        } else {
-            try LegacyWallpaperImageStore.setPhoto(photo, for: thread)
-            try db.write { tx in
-                try onInsert(tx)
-            }
-        }
+        try wallpaperStore.setWallpaperImage(photo, for: thread, onInsert: onInsert)
     }
 
     public func setGlobalThreadWallpaperImage(
         _ photo: UIImage?,
         onInsert: @escaping (DBWriteTransaction) throws -> Void
     ) throws {
-        if AttachmentFeatureFlags.writeThreadWallpapers {
-            try wallpaperStore.setGlobalThreadWallpaperImage(photo, onInsert: onInsert)
-        } else {
-            try LegacyWallpaperImageStore.setPhoto(photo, for: nil)
-            try db.write { tx in
-                try onInsert(tx)
-            }
-        }
+        try wallpaperStore.setGlobalThreadWallpaperImage(photo, onInsert: onInsert)
     }
 
     public func loadWallpaperImage(for thread: TSThread, tx: DBReadTransaction) -> UIImage? {
-        if AttachmentFeatureFlags.readThreadWallpapers {
-            return wallpaperStore.loadWallpaperImage(for: thread, tx: tx)
-        } else {
-            return LegacyWallpaperImageStore.loadPhoto(for: thread)
-        }
+        return wallpaperStore.loadWallpaperImage(for: thread, tx: tx)
     }
 
     public func loadGlobalThreadWallpaper(tx: DBReadTransaction) -> UIImage? {
-        if AttachmentFeatureFlags.readThreadWallpapers {
-            return wallpaperStore.loadGlobalThreadWallpaper(tx: tx)
-        } else {
-            return LegacyWallpaperImageStore.loadPhoto(for: nil)
-        }
+        return wallpaperStore.loadGlobalThreadWallpaper(tx: tx)
     }
 
     public func copyWallpaperImage(from fromThread: TSThread, to toThread: TSThread, tx: DBWriteTransaction) throws {
-        if AttachmentFeatureFlags.writeThreadWallpapers {
-            try wallpaperStore.copyWallpaperImage(from: fromThread, to: toThread, tx: tx)
-        } else {
-            try LegacyWallpaperImageStore.copyPhoto(from: fromThread, to: toThread)
-        }
+        try wallpaperStore.copyWallpaperImage(from: fromThread, to: toThread, tx: tx)
     }
 
     public func resetAllWallpaperImages(tx: DBWriteTransaction) throws {
-        if AttachmentFeatureFlags.writeThreadWallpapers {
-            try wallpaperStore.resetAllWallpaperImages(tx: tx)
-        } else {
-            try LegacyWallpaperImageStore.resetAll()
-        }
+        try wallpaperStore.resetAllWallpaperImages(tx: tx)
     }
 }

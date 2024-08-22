@@ -71,7 +71,7 @@ public class TSResourceDownloadManagerImpl: TSResourceDownloadManager {
         }
         // They should all be one type or the other. No mixing allowed.
         owsAssertDebug(!(hasLegacyRef && hasV2Ref))
-        if hasV2Ref && AttachmentFeatureFlags.readMessages {
+        if hasV2Ref {
             attachmentDownloadManager.enqueueDownloadOfAttachmentsForMessage(message, priority: priority, tx: tx)
         } else if hasLegacyRef {
             tsAttachmentDownloadManager.enqueueDownloadOfAttachmentsForMessage(

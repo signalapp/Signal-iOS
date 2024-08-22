@@ -41,21 +41,17 @@ public class TSResourceStoreImpl: TSResourceStore {
     public func allAttachments(for message: TSMessage, tx: DBReadTransaction) -> [TSResourceReference] {
         let v2References: [TSResourceReference]
 
-        if AttachmentFeatureFlags.readMessages {
-            guard let messageRowId = message.sqliteRowId else {
-                owsFailDebug("Fetching attachments for an un-inserted message!")
-                return []
-            }
-            v2References = attachmentStore
-                .fetchReferences(
-                    owners: AttachmentReference.MessageOwnerTypeRaw.allCases.map {
-                        $0.with(messageRowId: messageRowId)
-                    },
-                    tx: tx
-                )
-        } else {
-            v2References = []
+        guard let messageRowId = message.sqliteRowId else {
+            owsFailDebug("Fetching attachments for an un-inserted message!")
+            return []
         }
+        v2References = attachmentStore
+            .fetchReferences(
+                owners: AttachmentReference.MessageOwnerTypeRaw.allCases.map {
+                    $0.with(messageRowId: messageRowId)
+                },
+                tx: tx
+            )
 
         let legacyReferences: [TSResourceReference] = tsAttachmentStore.allAttachments(
             for: message,
@@ -71,7 +67,7 @@ public class TSResourceStoreImpl: TSResourceStore {
     }
 
     public func bodyAttachments(for message: TSMessage, tx: DBReadTransaction) -> [TSResourceReference] {
-        if AttachmentFeatureFlags.readMessages, message.attachmentIds.isEmpty {
+        if message.attachmentIds.isEmpty {
             guard let messageRowId = message.sqliteRowId else {
                 owsFailDebug("Fetching attachments for an un-inserted message!")
                 return []
@@ -94,7 +90,7 @@ public class TSResourceStoreImpl: TSResourceStore {
     }
 
     public func bodyMediaAttachments(for message: TSMessage, tx: DBReadTransaction) -> [TSResourceReference] {
-        if AttachmentFeatureFlags.readMessages, message.attachmentIds.isEmpty {
+        if message.attachmentIds.isEmpty {
             guard let messageRowId = message.sqliteRowId else {
                 owsFailDebug("Fetching attachments for an un-inserted message!")
                 return []
@@ -115,7 +111,7 @@ public class TSResourceStoreImpl: TSResourceStore {
     }
 
     public func oversizeTextAttachment(for message: TSMessage, tx: DBReadTransaction) -> TSResourceReference? {
-        if AttachmentFeatureFlags.readMessages, message.attachmentIds.isEmpty {
+        if message.attachmentIds.isEmpty {
             guard let messageRowId = message.sqliteRowId else {
                 owsFailDebug("Fetching attachments for an un-inserted message!")
                 return nil
@@ -139,7 +135,6 @@ public class TSResourceStoreImpl: TSResourceStore {
 
     public func contactShareAvatarAttachment(for message: TSMessage, tx: DBReadTransaction) -> TSResourceReference? {
         if
-            AttachmentFeatureFlags.readMessages,
             let contactShare = message.contactShare,
             contactShare.legacyAvatarAttachmentId == nil
         {
@@ -156,7 +151,7 @@ public class TSResourceStoreImpl: TSResourceStore {
         guard let linkPreview = message.linkPreview else {
             return nil
         }
-        if AttachmentFeatureFlags.readMessages, linkPreview.usesV2AttachmentReference {
+        if linkPreview.usesV2AttachmentReference {
             guard let messageRowId = message.sqliteRowId else {
                 owsFailDebug("Fetching attachments for an un-inserted message!")
                 return nil
@@ -173,14 +168,12 @@ public class TSResourceStoreImpl: TSResourceStore {
         }
         if let legacyAttachmentId = messageSticker.legacyAttachmentId {
             return legacyReference(uniqueId: legacyAttachmentId, tx: tx)
-        } else if AttachmentFeatureFlags.readMessages {
+        } else {
             guard let messageRowId = message.sqliteRowId else {
                 owsFailDebug("Fetching attachments for an un-inserted message!")
                 return nil
             }
             return attachmentStore.fetchFirstReference(owner: .messageSticker(messageRowId: messageRowId), tx: tx)
-        } else {
-            return nil
         }
     }
 
@@ -216,7 +209,6 @@ public class TSResourceStoreImpl: TSResourceStore {
         tx: DBReadTransaction
     ) -> TSResourceReference? {
         if
-            AttachmentFeatureFlags.readMessages,
             let originalMessageRowId = originalMessage.sqliteRowId,
             let attachment = attachmentStore.attachmentToUseInQuote(originalMessageRowId: originalMessageRowId, tx: tx)
         {
@@ -246,9 +238,6 @@ public class TSResourceStoreImpl: TSResourceStore {
         case .file(let storyMessageFileAttachment):
             return tsAttachmentStore.storyAttachmentReference(storyMessageFileAttachment, tx: SDSDB.shimOnlyBridge(tx))
         case .foreignReferenceAttachment:
-            guard AttachmentFeatureFlags.readStories else {
-                return nil
-            }
             guard let storyMessageRowId = storyMessage.id else {
                 owsFailDebug("Fetching attachments for an un-inserted story message!")
                 return nil
@@ -271,7 +260,7 @@ public class TSResourceStoreImpl: TSResourceStore {
             guard let linkPreview = textAttachment.preview else {
                 return nil
             }
-            if AttachmentFeatureFlags.readStories, linkPreview.usesV2AttachmentReference {
+            if linkPreview.usesV2AttachmentReference {
                 guard let storyMessageRowId = storyMessage.id else {
                     owsFailDebug("Fetching attachments for an un-inserted story message!")
                     return nil

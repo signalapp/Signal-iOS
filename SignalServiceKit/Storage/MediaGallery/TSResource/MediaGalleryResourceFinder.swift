@@ -531,9 +531,6 @@ public struct MediaGalleryResourceFinder {
     }
 
     private func mode(tx: DBReadTransaction) -> Mode {
-        guard AttachmentFeatureFlags.readMessages else {
-            return .justLegacy
-        }
         if
             DependenciesBridge.shared.tsResourceManager
                 .didFinishTSAttachmentToAttachmentMigration(tx: tx)
