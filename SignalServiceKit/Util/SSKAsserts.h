@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #define OWSSingletonAssertInit()                                                                                       \
     @synchronized([self class]) {                                                                                      \
-        if (!AppContextObjcBridge.CurrentAppContext.isRunningTests) {                                                  \
+        if (!AppContextObjCBridge.shared.isRunningTests) {                                                             \
             OWSAssertDebug(!_isSingletonCreated);                                                                      \
             _isSingletonCreated = YES;                                                                                 \
         }                                                                                                              \

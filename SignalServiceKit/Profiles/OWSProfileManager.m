@@ -110,7 +110,7 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationDidBecomeActive:)
-                                                 name:AppContextObjcBridge.owsApplicationDidBecomeActiveNotification
+                                                 name:AppContextObjCBridge.owsApplicationDidBecomeActiveNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(reachabilityChanged:)

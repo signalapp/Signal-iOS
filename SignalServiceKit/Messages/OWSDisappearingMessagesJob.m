@@ -62,11 +62,11 @@ void AssertIsOnDisappearingMessagesQueue(void)
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationDidBecomeActive:)
-                                                 name:AppContextObjcBridge.owsApplicationDidBecomeActiveNotification
+                                                 name:AppContextObjCBridge.owsApplicationDidBecomeActiveNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationWillResignActive:)
-                                                 name:AppContextObjcBridge.owsApplicationWillResignActiveNotification
+                                                 name:AppContextObjCBridge.owsApplicationWillResignActiveNotification
                                                object:nil];
 
     return self;
@@ -167,7 +167,7 @@ void AssertIsOnDisappearingMessagesQueue(void)
     OWSAssertDebug(date);
 
     dispatch_async(dispatch_get_main_queue(), ^{
-        if (!AppContextObjcBridge.CurrentAppContext.isMainAppAndActive) {
+        if (!AppContextObjCBridge.shared.isMainAppAndActive) {
             // Don't schedule run when inactive or not in main app.
             return;
         }
@@ -196,7 +196,7 @@ void AssertIsOnDisappearingMessagesQueue(void)
 {
     OWSAssertIsOnMainThread();
 
-    if (!AppContextObjcBridge.CurrentAppContext.isMainAppAndActive) {
+    if (!AppContextObjCBridge.shared.isMainAppAndActive) {
         // Don't schedule run when inactive or not in main app.
         OWSFailDebug(@"Disappearing messages job timer fired while main app inactive.");
         return;
@@ -218,7 +218,7 @@ void AssertIsOnDisappearingMessagesQueue(void)
         recentlyScheduledDisappearanceTimer = YES;
     }
 
-    if (!AppContextObjcBridge.CurrentAppContext.isMainAppAndActive) {
+    if (!AppContextObjCBridge.shared.isMainAppAndActive) {
         return;
     }
 

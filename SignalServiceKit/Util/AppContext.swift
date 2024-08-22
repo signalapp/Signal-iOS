@@ -10,17 +10,12 @@ import UIKit
 public typealias BackgroundTaskExpirationHandler = () -> Void
 public typealias AppActiveBlock = () -> Void
 
-// TODO: Cleanup this protocol. It was ported from ObjC and is a mess. Many funcs within should be vars.
-@objc
-public protocol AppContext: NSObjectProtocol {
-    @objc
+public protocol AppContext {
     var isMainApp: Bool { get }
-    @objc
     var isMainAppAndActive: Bool { get }
     var isNSE: Bool { get }
     /// Whether the user is using a right-to-left language like Arabic.
     var isRTL: Bool { get }
-    @objc
     var isRunningTests: Bool { get }
     var mainWindow: UIWindow? { get set }
     var frame: CGRect { get }
@@ -54,11 +49,9 @@ public protocol AppContext: NSObjectProtocol {
 
     /// Should start a background task if isMainApp is YES.
     /// Should just return UIBackgroundTaskInvalid if isMainApp is NO.
-    @objc(beginBackgroundTaskWithExpirationHandler:)
     func beginBackgroundTask(with expirationHandler: @escaping BackgroundTaskExpirationHandler) -> UIBackgroundTaskIdentifier
 
     /// Should be a NOOP if isMainApp is NO.
-    @objc
     func endBackgroundTask(_ backgroundTaskIdentifier: UIBackgroundTaskIdentifier)
 
     /// Should be a NOOP if isMainApp is NO.
@@ -70,16 +63,13 @@ public protocol AppContext: NSObjectProtocol {
     func open(_ url: URL, completion: ((_ success: Bool) -> Void)?)
     func runNowOrWhenMainAppIsActive(_ block: @escaping AppActiveBlock)
 
-    @objc
     var appLaunchTime: Date { get }
 
     /// Will be updated every time the app is foregrounded.
     var appForegroundTime: Date { get }
 
-    @objc
     func appDocumentDirectoryPath() -> String
 
-    @objc
     func appSharedDataDirectoryPath() -> String
 
     func appDatabaseBaseDirectoryPath() -> String
@@ -99,20 +89,51 @@ public protocol AppContext: NSObjectProtocol {
     func resetAppDataAndExit() -> Never
 }
 
-@available(swift, obsoleted: 1)
-@objc
-public class AppContextObjcBridge: NSObject {
-    @objc
-    public static let owsApplicationWillResignActiveNotification = Notification.Name.OWSApplicationWillResignActive.rawValue
-    @objc
-    public static let owsApplicationDidBecomeActiveNotification = Notification.Name.OWSApplicationDidBecomeActive.rawValue
+@objcMembers
+public final class AppContextObjCBridge: NSObject {
+    @available(swift, obsoleted: 1)
+    public static let shared = AppContextObjCBridge()
 
-    @objc
-    public static func CurrentAppContext() -> any AppContext { SignalServiceKit.CurrentAppContext() }
-    @objc
-    public static func SetCurrentAppContext(_ appContext: any AppContext) { SignalServiceKit.SetCurrentAppContext(appContext) }
+    public static let owsApplicationWillResignActiveNotification = Notification.Name.OWSApplicationWillResignActive
+    public static let owsApplicationDidBecomeActiveNotification = Notification.Name.OWSApplicationDidBecomeActive
 
-    override private init() {}
+    private var appContext: any AppContext {
+        SignalServiceKit.CurrentAppContext()
+    }
+
+    private override init() {}
+
+    public var appDocumentDirectoryPath: String {
+        appContext.appDocumentDirectoryPath()
+    }
+
+    public var appSharedDataDirectoryPath: String {
+        appContext.appSharedDataDirectoryPath()
+    }
+
+    public var appLaunchTime: Date {
+        appContext.appLaunchTime
+    }
+
+    public var isMainApp: Bool {
+        appContext.isMainApp
+    }
+
+    public var isMainAppAndActive: Bool {
+        appContext.isMainAppAndActive
+    }
+
+    public var isRunningTests: Bool {
+        appContext.isRunningTests
+    }
+
+    public func beginBackgroundTask(expirationHandler: @escaping () -> Void) -> UIBackgroundTaskIdentifier {
+        appContext.beginBackgroundTask(with: expirationHandler)
+    }
+
+    public func endBackgroundTask(_ identifier: UIBackgroundTaskIdentifier) {
+        appContext.endBackgroundTask(identifier)
+    }
 }
 
 // These are fired whenever the corresponding "main app" or "app extension"
