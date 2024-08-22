@@ -16,6 +16,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
     public var authorE164: E164?
     public var authorE164ObjC: E164ObjC? { authorE164.map { E164ObjC($0) } }
 
+    public var read: Bool
     public var serverTimestamp: UInt64
     public var serverDeliveryTimestamp: UInt64
     public var serverGuid: String?
@@ -40,14 +41,21 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
         serverGuid: String?,
         wasReceivedByUD: Bool,
         isViewOnceMessage: Bool,
+        isViewOnceComplete: Bool,
+        wasRemotelyDeleted: Bool,
         storyAuthorAci: Aci?,
         storyTimestamp: UInt64?,
         storyReactionEmoji: String?,
+        quotedMessage: TSQuotedMessage?,
+        contactShare: OWSContact?,
+        linkPreview: OWSLinkPreview?,
+        messageSticker: MessageSticker?,
         giftBadge: OWSGiftBadge?,
         paymentNotification: TSPaymentNotification?
     ) {
         self.authorAci = authorAci
         self.authorE164 = authorE164
+        self.read = read
         self.serverTimestamp = serverTimestamp
         self.serverDeliveryTimestamp = serverDeliveryTimestamp
         self.serverGuid = serverGuid
@@ -64,10 +72,15 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
             expiresInSeconds: expiresInSeconds,
             expireStartedAt: expireStartedAt,
             isViewOnceMessage: isViewOnceMessage,
-            read: read,
+            isViewOnceComplete: isViewOnceComplete,
+            wasRemotelyDeleted: wasRemotelyDeleted,
             storyAuthorAci: storyAuthorAci.map { AciObjC($0) },
             storyTimestamp: storyTimestamp,
             storyReactionEmoji: storyReactionEmoji,
+            quotedMessage: quotedMessage,
+            contactShare: contactShare,
+            linkPreview: linkPreview,
+            messageSticker: messageSticker,
             giftBadge: giftBadge
         )
     }
@@ -90,9 +103,15 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
         serverGuid: String? = nil,
         wasReceivedByUD: Bool = false,
         isViewOnceMessage: Bool = false,
+        isViewOnceComplete: Bool = false,
+        wasRemotelyDeleted: Bool = false,
         storyAuthorAci: Aci? = nil,
         storyTimestamp: UInt64? = nil,
         storyReactionEmoji: String? = nil,
+        quotedMessage: TSQuotedMessage? = nil,
+        contactShare: OWSContact? = nil,
+        linkPreview: OWSLinkPreview? = nil,
+        messageSticker: MessageSticker? = nil,
         giftBadge: OWSGiftBadge? = nil,
         paymentNotification: TSPaymentNotification? = nil
     ) -> TSIncomingMessageBuilder {
@@ -113,9 +132,15 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
             serverGuid: serverGuid,
             wasReceivedByUD: wasReceivedByUD,
             isViewOnceMessage: isViewOnceMessage,
+            isViewOnceComplete: isViewOnceComplete,
+            wasRemotelyDeleted: wasRemotelyDeleted,
             storyAuthorAci: storyAuthorAci,
             storyTimestamp: storyTimestamp,
             storyReactionEmoji: storyReactionEmoji,
+            quotedMessage: quotedMessage,
+            contactShare: contactShare,
+            linkPreview: linkPreview,
+            messageSticker: messageSticker,
             giftBadge: giftBadge,
             paymentNotification: paymentNotification
         )

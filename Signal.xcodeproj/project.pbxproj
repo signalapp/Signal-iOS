@@ -1706,7 +1706,6 @@
 		C14EC1A92BAA4B5F00A4D064 /* StreamTransformTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14EC1A82BAA4B5F00A4D064 /* StreamTransformTests.swift */; };
 		C14EC1AB2BAB57B900A4D064 /* DecryptingStreamTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14EC1AA2BAB57B900A4D064 /* DecryptingStreamTransform.swift */; };
 		C15837EF29A592BA00176927 /* UsernameValidationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C15837EE29A592BA00176927 /* UsernameValidationManager.swift */; };
-		C165F8B92C249622007BB812 /* OWSOutgoingArchivedPaymentMessageBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C165F8B82C249622007BB812 /* OWSOutgoingArchivedPaymentMessageBuilder.swift */; };
 		C1661A1A2C3D939300AB887F /* ArchivedPaymentHistoryItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1661A192C3D939300AB887F /* ArchivedPaymentHistoryItem.swift */; };
 		C1661A1C2C3D93AE00AB887F /* TSPaymentModelHistoryItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1661A1B2C3D93AE00AB887F /* TSPaymentModelHistoryItem.swift */; };
 		C1661A1E2C3D942300AB887F /* PaymentHistoryItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1661A1D2C3D942300AB887F /* PaymentHistoryItem.swift */; };
@@ -4790,7 +4789,6 @@
 		C14EC1A82BAA4B5F00A4D064 /* StreamTransformTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamTransformTests.swift; sourceTree = "<group>"; };
 		C14EC1AA2BAB57B900A4D064 /* DecryptingStreamTransform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecryptingStreamTransform.swift; sourceTree = "<group>"; };
 		C15837EE29A592BA00176927 /* UsernameValidationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameValidationManager.swift; sourceTree = "<group>"; };
-		C165F8B82C249622007BB812 /* OWSOutgoingArchivedPaymentMessageBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSOutgoingArchivedPaymentMessageBuilder.swift; sourceTree = "<group>"; };
 		C1661A192C3D939300AB887F /* ArchivedPaymentHistoryItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivedPaymentHistoryItem.swift; sourceTree = "<group>"; };
 		C1661A1B2C3D93AE00AB887F /* TSPaymentModelHistoryItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSPaymentModelHistoryItem.swift; sourceTree = "<group>"; };
 		C1661A1D2C3D942300AB887F /* PaymentHistoryItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentHistoryItem.swift; sourceTree = "<group>"; };
@@ -11234,7 +11232,6 @@
 				C13341112C221DAD00C26ED5 /* OWSOutgoingArchivedPaymentMessage+SDS.swift */,
 				C190F8F22C1B47E100D1EAC9 /* OWSOutgoingArchivedPaymentMessage.h */,
 				C190F8F32C1B47E100D1EAC9 /* OWSOutgoingArchivedPaymentMessage.m */,
-				C165F8B82C249622007BB812 /* OWSOutgoingArchivedPaymentMessageBuilder.swift */,
 				F9C5C913289453B100548EEE /* OWSOutgoingPaymentMessage+SDS.swift */,
 				F9C5C912289453B100548EEE /* OWSOutgoingPaymentMessage.h */,
 				F9C5C914289453B100548EEE /* OWSOutgoingPaymentMessage.m */,
@@ -14822,7 +14819,6 @@
 				F9C5CDDC289453B400548EEE /* OWSOperation.swift in Sources */,
 				C13341132C221DAD00C26ED5 /* OWSOutgoingArchivedPaymentMessage+SDS.swift in Sources */,
 				C190F8F42C1B47E100D1EAC9 /* OWSOutgoingArchivedPaymentMessage.m in Sources */,
-				C165F8B92C249622007BB812 /* OWSOutgoingArchivedPaymentMessageBuilder.swift in Sources */,
 				F9C5CC62289453B300548EEE /* OWSOutgoingCallMessage.m in Sources */,
 				F9C5CC37289453B300548EEE /* OWSOutgoingNullMessage.m in Sources */,
 				F9C5CC06289453B300548EEE /* OWSOutgoingPaymentMessage+SDS.swift in Sources */,

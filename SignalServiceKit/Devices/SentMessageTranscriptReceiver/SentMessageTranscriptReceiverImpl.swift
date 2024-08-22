@@ -119,17 +119,19 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                 return .failure(OWSAssertionError("Protocol version validation failed"))
             }
 
-            let builder = OWSOutgoingArchivedPaymentMessageBuilder(
-                thread: archivedPayment.target.thread,
-                timestamp: transcript.timestamp,
+            let message = interactionStore.buildOutgoingArchivedPaymentMessage(
+                builder: .withDefaultValues(
+                    thread: archivedPayment.target.thread,
+                    timestamp: transcript.timestamp,
+                    expiresInSeconds: archivedPayment.expirationDurationSeconds,
+                    expireStartedAt: archivedPayment.expirationStartedAt
+                ),
                 amount: archivedPayment.amount,
                 fee: archivedPayment.fee,
                 note: archivedPayment.note,
-                expirationStartedAt: archivedPayment.expirationStartedAt,
-                expirationDurationSeconds: archivedPayment.expirationDurationSeconds
+                tx: tx
             )
 
-            let message = interactionStore.buildOutgoingArchivedPaymentMessage(builder: builder, tx: tx)
             interactionStore.insertInteraction(message, tx: tx)
             interactionStore.updateRecipientsFromNonLocalDevice(
                 message,
@@ -177,26 +179,6 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
 
         updateDisappearingMessageTokenIfNecessary(target: messageParams.target, localIdentifiers: localIdentifiers, tx: tx)
 
-        let outgoingMessageBuilder = TSOutgoingMessageBuilder(
-            thread: messageParams.target.thread,
-            timestamp: transcript.timestamp,
-            receivedAtTimestamp: nil,
-            messageBody: messageParams.body,
-            bodyRanges: messageParams.bodyRanges,
-            editState: .none, // Sent transcripts with edit state are handled by a different codepath
-            expiresInSeconds: messageParams.expirationDurationSeconds,
-            expireStartedAt: messageParams.expirationStartedAt,
-            isVoiceMessage: false,
-            groupMetaMessage: .unspecified,
-            isViewOnceMessage: messageParams.isViewOnceMessage,
-            changeActionsProtoData: nil,
-            storyAuthorAci: messageParams.storyAuthorAci,
-            storyTimestamp: messageParams.storyTimestamp,
-            storyReactionEmoji: nil,
-            giftBadge: messageParams.giftBadge
-        )
-        var outgoingMessage = interactionStore.buildOutgoingMessage(builder: outgoingMessageBuilder, tx: tx)
-
         let linkPreviewBuilder: OwnedAttachmentBuilder<OWSLinkPreview>?
         let quotedMessageBuilder: OwnedAttachmentBuilder<TSQuotedMessage>?
         let contactBuilder: OwnedAttachmentBuilder<OWSContact>?
@@ -209,6 +191,32 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
         } catch let error {
             return .failure(error)
         }
+
+        let outgoingMessageBuilder = TSOutgoingMessageBuilder(
+            thread: messageParams.target.thread,
+            timestamp: transcript.timestamp,
+            receivedAtTimestamp: nil,
+            messageBody: messageParams.body,
+            bodyRanges: messageParams.bodyRanges,
+            editState: .none, // Sent transcripts with edit state are handled by a different codepath
+            expiresInSeconds: messageParams.expirationDurationSeconds,
+            expireStartedAt: messageParams.expirationStartedAt,
+            isVoiceMessage: false,
+            groupMetaMessage: .unspecified,
+            isViewOnceMessage: messageParams.isViewOnceMessage,
+            isViewOnceComplete: false,
+            wasRemotelyDeleted: false,
+            changeActionsProtoData: nil,
+            storyAuthorAci: messageParams.storyAuthorAci,
+            storyTimestamp: messageParams.storyTimestamp,
+            storyReactionEmoji: nil,
+            quotedMessage: quotedMessageBuilder?.info,
+            contactShare: contactBuilder?.info,
+            linkPreview: linkPreviewBuilder?.info,
+            messageSticker: messageStickerBuilder?.info,
+            giftBadge: messageParams.giftBadge
+        )
+        var outgoingMessage = interactionStore.buildOutgoingMessage(builder: outgoingMessageBuilder, tx: tx)
 
         let hasRenderableContent = outgoingMessageBuilder.hasRenderableContent(
             hasBodyAttachments: messageParams.attachmentPointerProtos.isEmpty.negated,
@@ -249,12 +257,6 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             guard let threadRowId = messageParams.target.thread.sqliteRowId else {
                 return .failure(OWSAssertionError("Uninserted thread"))
             }
-
-            // Update attachment fields before inserting.
-            quotedMessageBuilder.map { interactionStore.update(outgoingMessage, with: $0.info, tx: tx) }
-            contactBuilder.map { interactionStore.update(outgoingMessage, with: $0.info, tx: tx) }
-            linkPreviewBuilder.map { interactionStore.update(outgoingMessage, with: $0.info, tx: tx) }
-            messageStickerBuilder.map { interactionStore.update(outgoingMessage, with: $0.info, tx: tx) }
 
             // Check for any placeholders inserted because of a previously undecryptable message
             // The sender may have resent the message. If so, we should swap it in place of the placeholder

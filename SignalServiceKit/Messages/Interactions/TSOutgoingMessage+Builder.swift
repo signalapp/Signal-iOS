@@ -24,10 +24,16 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
         isVoiceMessage: Bool,
         groupMetaMessage: TSGroupMetaMessage,
         isViewOnceMessage: Bool,
+        isViewOnceComplete: Bool,
+        wasRemotelyDeleted: Bool,
         changeActionsProtoData: Data?,
         storyAuthorAci: Aci?,
         storyTimestamp: UInt64?,
         storyReactionEmoji: String?,
+        quotedMessage: TSQuotedMessage?,
+        contactShare: OWSContact?,
+        linkPreview: OWSLinkPreview?,
+        messageSticker: MessageSticker?,
         giftBadge: OWSGiftBadge?
     ) {
         self.isVoiceMessage = isVoiceMessage
@@ -44,10 +50,15 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
             expiresInSeconds: expiresInSeconds,
             expireStartedAt: expireStartedAt,
             isViewOnceMessage: isViewOnceMessage,
-            read: true, // Outgoing messages are always read.
+            isViewOnceComplete: isViewOnceComplete,
+            wasRemotelyDeleted: wasRemotelyDeleted,
             storyAuthorAci: storyAuthorAci.map { AciObjC($0) },
             storyTimestamp: storyTimestamp,
             storyReactionEmoji: storyReactionEmoji,
+            quotedMessage: quotedMessage,
+            contactShare: contactShare,
+            linkPreview: linkPreview,
+            messageSticker: messageSticker,
             giftBadge: giftBadge
         )
     }
@@ -65,10 +76,16 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
         isVoiceMessage: Bool = false,
         groupMetaMessage: TSGroupMetaMessage = .unspecified,
         isViewOnceMessage: Bool = false,
+        isViewOnceComplete: Bool = false,
+        wasRemotelyDeleted: Bool = false,
         changeActionsProtoData: Data? = nil,
         storyAuthorAci: Aci? = nil,
         storyTimestamp: UInt64? = nil,
         storyReactionEmoji: String? = nil,
+        quotedMessage: TSQuotedMessage? = nil,
+        contactShare: OWSContact? = nil,
+        linkPreview: OWSLinkPreview? = nil,
+        messageSticker: MessageSticker? = nil,
         giftBadge: OWSGiftBadge? = nil
     ) -> TSOutgoingMessageBuilder {
         return TSOutgoingMessageBuilder(
@@ -83,10 +100,16 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
             isVoiceMessage: isVoiceMessage,
             groupMetaMessage: groupMetaMessage,
             isViewOnceMessage: isViewOnceMessage,
+            isViewOnceComplete: isViewOnceComplete,
+            wasRemotelyDeleted: wasRemotelyDeleted,
             changeActionsProtoData: changeActionsProtoData,
             storyAuthorAci: storyAuthorAci,
             storyTimestamp: storyTimestamp,
             storyReactionEmoji: storyReactionEmoji,
+            quotedMessage: quotedMessage,
+            contactShare: contactShare,
+            linkPreview: linkPreview,
+            messageSticker: messageSticker,
             giftBadge: giftBadge
         )
     }

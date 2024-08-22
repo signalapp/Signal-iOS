@@ -131,10 +131,16 @@ public class OutgoingMessageFactory: NSObject, Factory {
             isVoiceMessage: isVoiceMessageBuilder(),
             groupMetaMessage: groupMetaMessageBuilder(),
             isViewOnceMessage: isViewOnceMessageBuilder(),
+            isViewOnceComplete: false,
+            wasRemotelyDeleted: false,
             changeActionsProtoData: changeActionsProtoDataBuilder(),
             storyAuthorAci: storyAuthorAciBuilder(),
             storyTimestamp: storyTimestampBuilder(),
             storyReactionEmoji: storyReactionEmojiBuilder(),
+            quotedMessage: quotedMessageBuilder(),
+            contactShare: contactShareBuilder(),
+            linkPreview: linkPreviewBuilder(),
+            messageSticker: messageStickerBuilder(),
             giftBadge: giftBadgeBuilder()
         ).build(transaction: transaction)
         let attachmentIds = attachmentIdsBuilder(transaction)
@@ -219,6 +225,22 @@ public class OutgoingMessageFactory: NSObject, Factory {
         return nil
     }
 
+    public var quotedMessageBuilder: () -> TSQuotedMessage? = {
+        return nil
+    }
+
+    public var contactShareBuilder: () -> OWSContact? = {
+        return nil
+    }
+
+    public var linkPreviewBuilder: () -> OWSLinkPreview? = {
+        return nil
+    }
+
+    public var messageStickerBuilder: () -> MessageSticker? = {
+        return nil
+    }
+
     public var giftBadgeBuilder: () -> OWSGiftBadge? = {
         return nil
     }
@@ -271,9 +293,15 @@ public class IncomingMessageFactory: NSObject, Factory {
             serverGuid: serverGuidBuilder(),
             wasReceivedByUD: wasReceivedByUDBuilder(),
             isViewOnceMessage: isViewOnceMessageBuilder(),
+            isViewOnceComplete: false,
+            wasRemotelyDeleted: false,
             storyAuthorAci: storyAuthorAciBuilder(),
             storyTimestamp: storyTimestampBuilder(),
             storyReactionEmoji: storyReactionEmojiBuilder(),
+            quotedMessage: quotedMessageBuilder(),
+            contactShare: contactShareBuilder(),
+            linkPreview: linkPreviewBuilder(),
+            messageSticker: messageStickerBuilder(),
             giftBadge: giftBadgeBuilder(),
             paymentNotification: paymentNotificationBuilder()
         )
@@ -366,6 +394,22 @@ public class IncomingMessageFactory: NSObject, Factory {
     }
 
     public var storyReactionEmojiBuilder: () -> String? = {
+        return nil
+    }
+
+    public var quotedMessageBuilder: () -> TSQuotedMessage? = {
+        return nil
+    }
+
+    public var contactShareBuilder: () -> OWSContact? = {
+        return nil
+    }
+
+    public var linkPreviewBuilder: () -> OWSLinkPreview? = {
+        return nil
+    }
+
+    public var messageStickerBuilder: () -> MessageSticker? = {
         return nil
     }
 

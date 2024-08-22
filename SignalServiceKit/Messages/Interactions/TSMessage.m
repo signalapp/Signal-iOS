@@ -92,11 +92,18 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _expireStartedAt = messageBuilder.expireStartedAt;
     [self updateExpiresAt];
     _isViewOnceMessage = messageBuilder.isViewOnceMessage;
-    _isViewOnceComplete = NO;
+    _isViewOnceComplete = messageBuilder.isViewOnceComplete;
+    _wasRemotelyDeleted = messageBuilder.wasRemotelyDeleted;
+
     _storyTimestamp = messageBuilder.storyTimestamp;
     _storyAuthorUuidString = messageBuilder.storyAuthorAci.serviceIdUppercaseString;
     _storyReactionEmoji = messageBuilder.storyReactionEmoji;
     _isGroupStoryReply = messageBuilder.isGroupStoryReply;
+
+    _quotedMessage = messageBuilder.quotedMessage;
+    _contactShare = messageBuilder.contactShare;
+    _linkPreview = messageBuilder.linkPreview;
+    _messageSticker = messageBuilder.messageSticker;
     _giftBadge = messageBuilder.giftBadge;
 
 #ifdef DEBUG
@@ -473,13 +480,13 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                                     block:^(TSMessage *message) { [message setLinkPreview:linkPreview]; }];
 }
 
-- (void)updateWithQuotedMessage:(TSQuotedMessage *)linkPreview transaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithQuotedMessage:(TSQuotedMessage *)quotedMessage transaction:(SDSAnyWriteTransaction *)transaction
 {
-    OWSAssertDebug(linkPreview);
+    OWSAssertDebug(quotedMessage);
     OWSAssertDebug(transaction);
 
     [self anyUpdateMessageWithTransaction:transaction
-                                    block:^(TSMessage *message) { [message setQuotedMessage:linkPreview]; }];
+                                    block:^(TSMessage *message) { [message setQuotedMessage:quotedMessage]; }];
 }
 
 - (void)updateWithMessageSticker:(MessageSticker *)messageSticker transaction:(SDSAnyWriteTransaction *)transaction

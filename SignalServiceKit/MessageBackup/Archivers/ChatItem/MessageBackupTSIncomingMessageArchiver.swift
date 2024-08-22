@@ -262,9 +262,15 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
                     serverGuid: nil,
                     wasReceivedByUD: incomingDetails.sealedSender,
                     isViewOnceMessage: false,
+                    isViewOnceComplete: false,
+                    wasRemotelyDeleted: false,
                     storyAuthorAci: nil,
                     storyTimestamp: nil,
                     storyReactionEmoji: nil,
+                    quotedMessage: nil,
+                    contactShare: nil,
+                    linkPreview: nil,
+                    messageSticker: nil,
                     giftBadge: nil,
                     paymentNotification: nil
                 )
@@ -293,9 +299,15 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
                     serverGuid: nil,
                     wasReceivedByUD: incomingDetails.sealedSender,
                     isViewOnceMessage: false,
+                    isViewOnceComplete: false,
+                    wasRemotelyDeleted: false,
                     storyAuthorAci: nil,
                     storyTimestamp: nil,
                     storyReactionEmoji: nil,
+                    quotedMessage: nil,
+                    contactShare: nil,
+                    linkPreview: nil,
+                    messageSticker: nil,
                     giftBadge: nil,
                     paymentNotification: nil
                 )

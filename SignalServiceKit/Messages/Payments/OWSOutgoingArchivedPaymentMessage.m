@@ -10,13 +10,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSOutgoingArchivedPaymentMessage
 
-- (instancetype)initWithThread:(TSThread *)thread
-                        amount:(nullable NSString *)amount
-                           fee:(nullable NSString *)fee
-                          note:(nullable NSString *)note
-                   transaction:(SDSAnyReadTransaction *)transaction
+- (instancetype)initOutgoingArchivedPaymentMessageWithBuilder:(TSOutgoingMessageBuilder *)messageBuilder
+                                                       amount:(nullable NSString *)amount
+                                                          fee:(nullable NSString *)fee
+                                                         note:(nullable NSString *)note
+                                                  transaction:(SDSAnyReadTransaction *)transaction
 {
-    TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
     self = [super initOutgoingMessageWithBuilder:messageBuilder
                             additionalRecipients:@[]
                               explicitRecipients:@[]
@@ -27,26 +26,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _archivedPaymentInfo = [[TSArchivedPaymentInfo alloc] initWithAmount:amount fee:fee note:note];
-
-    return self;
-}
-
-- (instancetype)initOutgoingArchivedPaymentMessageWithBuilder:
-                    (OWSOutgoingArchivedPaymentMessageBuilder *)outgoingArchivedPaymentMessageBuilder
-                                                  transaction:(SDSAnyReadTransaction *)transaction
-{
-    self = [super initOutgoingMessageWithBuilder:outgoingArchivedPaymentMessageBuilder
-                            additionalRecipients:@[]
-                              explicitRecipients:@[]
-                               skippedRecipients:@[]
-                                     transaction:transaction];
-    if (!self) {
-        return self;
-    }
-
-    _archivedPaymentInfo = [[TSArchivedPaymentInfo alloc] initWithAmount:outgoingArchivedPaymentMessageBuilder.amount
-                                                                     fee:outgoingArchivedPaymentMessageBuilder.fee
-                                                                    note:outgoingArchivedPaymentMessageBuilder.note];
     return self;
 }
 

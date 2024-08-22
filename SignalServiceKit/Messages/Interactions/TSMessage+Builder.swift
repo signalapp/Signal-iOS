@@ -16,15 +16,21 @@ public class TSMessageBuilder: NSObject {
     public var expiresInSeconds: UInt32
     public var expireStartedAt: UInt64
     public var isViewOnceMessage: Bool
-    public var read: Bool
+    public var isViewOnceComplete: Bool
+    public var wasRemotelyDeleted: Bool
+
     public var storyAuthorAci: AciObjC?
     public var storyTimestamp: NSNumber?
     public var storyReactionEmoji: String?
-    public var giftBadge: OWSGiftBadge?
-
     public var isGroupStoryReply: Bool {
         storyAuthorAci != nil && storyTimestamp != nil && thread.isGroupThread
     }
+
+    public var quotedMessage: TSQuotedMessage?
+    public var contactShare: OWSContact?
+    public var linkPreview: OWSLinkPreview?
+    public var messageSticker: MessageSticker?
+    public var giftBadge: OWSGiftBadge?
 
     @nonobjc
     init(
@@ -37,10 +43,15 @@ public class TSMessageBuilder: NSObject {
         expiresInSeconds: UInt32?,
         expireStartedAt: UInt64?,
         isViewOnceMessage: Bool,
-        read: Bool,
+        isViewOnceComplete: Bool,
+        wasRemotelyDeleted: Bool,
         storyAuthorAci: AciObjC?,
         storyTimestamp: UInt64?,
         storyReactionEmoji: String?,
+        quotedMessage: TSQuotedMessage?,
+        contactShare: OWSContact?,
+        linkPreview: OWSLinkPreview?,
+        messageSticker: MessageSticker?,
         giftBadge: OWSGiftBadge?
     ) {
         let nowMs = NSDate.ows_millisecondTimeStamp()
@@ -54,10 +65,16 @@ public class TSMessageBuilder: NSObject {
         self.expiresInSeconds = expiresInSeconds ?? 0
         self.expireStartedAt = expireStartedAt ?? 0
         self.isViewOnceMessage = isViewOnceMessage
-        self.read = read
+        self.isViewOnceComplete = isViewOnceComplete
+        self.wasRemotelyDeleted = wasRemotelyDeleted
         self.storyAuthorAci = storyAuthorAci
         self.storyTimestamp = storyTimestamp.map { NSNumber(value: $0) }
         self.storyReactionEmoji = storyReactionEmoji
+
+        self.quotedMessage = quotedMessage
+        self.contactShare = contactShare
+        self.linkPreview = linkPreview
+        self.messageSticker = messageSticker
         self.giftBadge = giftBadge
     }
 
@@ -72,10 +89,15 @@ public class TSMessageBuilder: NSObject {
         expiresInSeconds: UInt32? = nil,
         expireStartedAt: UInt64? = nil,
         isViewOnceMessage: Bool = false,
-        read: Bool = false,
+        isViewOnceComplete: Bool = false,
+        wasRemotelyDeleted: Bool = false,
         storyAuthorAci: AciObjC? = nil,
         storyTimestamp: UInt64? = nil,
         storyReactionEmoji: String? = nil,
+        quotedMessage: TSQuotedMessage? = nil,
+        contactShare: OWSContact? = nil,
+        linkPreview: OWSLinkPreview? = nil,
+        messageSticker: MessageSticker? = nil,
         giftBadge: OWSGiftBadge? = nil
     ) -> TSMessageBuilder {
         return TSMessageBuilder(
@@ -88,10 +110,15 @@ public class TSMessageBuilder: NSObject {
             expiresInSeconds: expiresInSeconds,
             expireStartedAt: expireStartedAt,
             isViewOnceMessage: isViewOnceMessage,
-            read: read,
+            isViewOnceComplete: isViewOnceComplete,
+            wasRemotelyDeleted: wasRemotelyDeleted,
             storyAuthorAci: storyAuthorAci,
             storyTimestamp: storyTimestamp,
             storyReactionEmoji: storyReactionEmoji,
+            quotedMessage: quotedMessage,
+            contactShare: contactShare,
+            linkPreview: linkPreview,
+            messageSticker: messageSticker,
             giftBadge: giftBadge
         )
     }

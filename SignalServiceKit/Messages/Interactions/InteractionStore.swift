@@ -100,7 +100,10 @@ public protocol InteractionStore {
     ) -> TSOutgoingMessage
 
     func buildOutgoingArchivedPaymentMessage(
-        builder: OWSOutgoingArchivedPaymentMessageBuilder,
+        builder: TSOutgoingMessageBuilder,
+        amount: String?,
+        fee: String?,
+        note: String?,
         tx: DBReadTransaction
     ) -> OWSOutgoingArchivedPaymentMessage
 
@@ -268,11 +271,17 @@ public class InteractionStoreImpl: InteractionStore {
     }
 
     public func buildOutgoingArchivedPaymentMessage(
-        builder: OWSOutgoingArchivedPaymentMessageBuilder,
+        builder: TSOutgoingMessageBuilder,
+        amount: String?,
+        fee: String?,
+        note: String?,
         tx: DBReadTransaction
     ) -> OWSOutgoingArchivedPaymentMessage {
         return OWSOutgoingArchivedPaymentMessage(
             outgoingArchivedPaymentMessageWith: builder,
+            amount: amount,
+            fee: fee,
+            note: note,
             transaction: SDSDB.shimOnlyBridge(tx)
         )
     }
@@ -442,7 +451,10 @@ open class MockInteractionStore: InteractionStore {
     }
 
     public func buildOutgoingArchivedPaymentMessage(
-        builder: OWSOutgoingArchivedPaymentMessageBuilder,
+        builder: TSOutgoingMessageBuilder,
+        amount: String?,
+        fee: String?,
+        note: String?,
         tx: DBReadTransaction
     ) -> OWSOutgoingArchivedPaymentMessage {
         owsFail("Not implemented, because this message type really needs an SDSAnyReadTransaction to be initialized, and at the time of writing no caller cares.")

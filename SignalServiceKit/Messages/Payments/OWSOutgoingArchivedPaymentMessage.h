@@ -10,7 +10,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSOutgoingArchivedPaymentMessageBuilder;
 @class TSPaymentReference;
 
 @interface OWSOutgoingArchivedPaymentMessage : TSOutgoingMessage <OWSArchivedPaymentMessage>
@@ -67,15 +66,10 @@ NS_ASSUME_NONNULL_BEGIN
               storedMessageState:(TSOutgoingMessageState)storedMessageState
             wasNotCreatedLocally:(BOOL)wasNotCreatedLocally NS_UNAVAILABLE;
 
-- (instancetype)initWithThread:(TSThread *)thread
-                        amount:(nullable NSString *)amount
-                           fee:(nullable NSString *)fee
-                          note:(nullable NSString *)note
-                   transaction:(SDSAnyReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)initOutgoingArchivedPaymentMessageWithBuilder:
-                    (OWSOutgoingArchivedPaymentMessageBuilder *)outgoingArchivedPaymentMessageBuilder
-
+- (instancetype)initOutgoingArchivedPaymentMessageWithBuilder:(TSOutgoingMessageBuilder *)messageBuilder
+                                                       amount:(nullable NSString *)amount
+                                                          fee:(nullable NSString *)fee
+                                                         note:(nullable NSString *)note
                                                   transaction:(SDSAnyReadTransaction *)transaction
     NS_DESIGNATED_INITIALIZER;
 

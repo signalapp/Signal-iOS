@@ -1051,9 +1051,15 @@ public final class MessageReceiver: Dependencies {
             serverGuid: serverGuid?.uuidString.lowercased(),
             wasReceivedByUD: request.wasReceivedByUD,
             isViewOnceMessage: isViewOnceMessage,
+            isViewOnceComplete: false,
+            wasRemotelyDeleted: false,
             storyAuthorAci: storyAuthorAci,
             storyTimestamp: storyTimestamp,
             storyReactionEmoji: nil,
+            quotedMessage: quotedMessageBuilder?.info,
+            contactShare: contactBuilder?.info,
+            linkPreview: linkPreviewBuilder?.info,
+            messageSticker: messageStickerBuilder?.info,
             giftBadge: giftBadge,
             paymentNotification: paymentModels?.notification
         )
@@ -1081,12 +1087,6 @@ public final class MessageReceiver: Dependencies {
             owsFailDebug("Ignoring gift sent to group.")
             return nil
         }
-
-        // Update attachment fields before inserting.
-        quotedMessageBuilder.map { message.update(with: $0.info, transaction: tx) }
-        contactBuilder.map { message.update(withContactShare: $0.info, transaction: tx) }
-        linkPreviewBuilder.map { message.update(with: $0.info, transaction: tx) }
-        messageStickerBuilder.map { message.update(with: $0.info, transaction: tx) }
 
         // Check for any placeholders inserted because of a previously
         // undecryptable message. The sender may have resent the message. If so, we

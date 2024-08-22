@@ -467,11 +467,17 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
                 groupMetaMessage: .unspecified,
                 // TODO: [Backups] pass along if this is view once after proto field is added
                 isViewOnceMessage: false,
+                isViewOnceComplete: false,
+                wasRemotelyDeleted: false,
                 changeActionsProtoData: nil,
                 // We never restore stories.
                 storyAuthorAci: nil,
                 storyTimestamp: nil,
                 storyReactionEmoji: nil,
+                quotedMessage: nil,
+                contactShare: nil,
+                linkPreview: nil,
+                messageSticker: nil,
                 // TODO: [Backups] restore gift badges
                 giftBadge: nil
             )
@@ -481,18 +487,36 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
                 tx: tx
             )
         case .archivedPayment(let archivedPayment):
-            let builder = OWSOutgoingArchivedPaymentMessageBuilder(
+            let messageBuilder = TSOutgoingMessageBuilder(
                 thread: chatThread.tsThread,
                 timestamp: chatItem.dateSent,
-                amount: archivedPayment.amount,
-                fee: archivedPayment.fee,
-                note: archivedPayment.note,
-                expirationStartedAt: chatItem.expireStartDate,
-                expirationDurationSeconds: expirationToken.durationSeconds
+                receivedAtTimestamp: nil,
+                messageBody: nil,
+                bodyRanges: nil,
+                editState: .none,
+                expiresInSeconds: expirationToken.durationSeconds,
+                expireStartedAt: chatItem.expireStartDate,
+                isVoiceMessage: false,
+                groupMetaMessage: .unspecified,
+                isViewOnceMessage: false,
+                isViewOnceComplete: false,
+                wasRemotelyDeleted: false,
+                changeActionsProtoData: nil,
+                storyAuthorAci: nil,
+                storyTimestamp: nil,
+                storyReactionEmoji: nil,
+                quotedMessage: nil,
+                contactShare: nil,
+                linkPreview: nil,
+                messageSticker: nil,
+                giftBadge: nil
             )
 
             outgoingMessage = interactionStore.buildOutgoingArchivedPaymentMessage(
-                builder: builder,
+                builder: messageBuilder,
+                amount: archivedPayment.amount,
+                fee: archivedPayment.fee,
+                note: archivedPayment.note,
                 tx: tx
             )
         }

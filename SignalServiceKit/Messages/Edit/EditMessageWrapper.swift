@@ -21,6 +21,8 @@ public protocol EditMessageWrapper {
 
     var wasRead: Bool { get }
 
+    /// Clones this message into a new builder, applying the given edits and
+    /// zeroing-out any attachment-related fields.
     func cloneAsBuilderWithoutAttachments(
         applying: MessageEdits,
         isLatestRevision: Bool
@@ -107,6 +109,9 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
         let serverDeliveryTimestamp = edits.serverDeliveryTimestamp.unwrapChange(orKeepValue: message.serverDeliveryTimestamp)
         let serverGuid = edits.serverGuid.unwrapChange(orKeepValue: message.serverGuid)
 
+        /// Copies the wrapped message's fields with edited fields overridden as
+        /// appropriate. Attachment-related properties are zeroed-out, and
+        /// handled later by ``EditManagerTSResources/reconcileAttachments``.
         return TSIncomingMessageBuilder(
             thread: thread,
             timestamp: timestamp,
@@ -126,9 +131,15 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
             serverGuid: serverGuid,
             wasReceivedByUD: message.wasReceivedByUD,
             isViewOnceMessage: message.isViewOnceMessage,
+            isViewOnceComplete: message.isViewOnceComplete,
+            wasRemotelyDeleted: message.wasRemotelyDeleted,
             storyAuthorAci: message.storyAuthorAci?.wrappedAciValue,
             storyTimestamp: message.storyTimestamp?.uint64Value,
             storyReactionEmoji: message.storyReactionEmoji,
+            quotedMessage: nil,
+            contactShare: nil,
+            linkPreview: nil,
+            messageSticker: nil,
             giftBadge: message.giftBadge,
             paymentNotification: nil
         )
@@ -174,12 +185,16 @@ public struct OutgoingEditMessageWrapper: EditMessageWrapper {
         let timestamp = edits.timestamp.unwrapChange(orKeepValue: message.timestamp)
         let receivedAtTimestamp = edits.receivedAtTimestamp.unwrapChange(orKeepValue: message.receivedAtTimestamp)
 
+        /// Copies the wrapped message's fields with edited fields overridden as
+        /// appropriate. Attachment-related properties are zeroed-out, and
+        /// handled later by ``EditManagerTSResources/reconcileAttachments``.
         return TSOutgoingMessageBuilder(
             thread: thread,
             timestamp: timestamp,
             receivedAtTimestamp: receivedAtTimestamp,
             messageBody: body,
             bodyRanges: bodyRanges,
+            // Outgoing messages are implicitly read.
             editState: isLatestRevision ? .latestRevisionRead : .pastRevision,
             // Prior revisions don't expire (timer=0); instead they
             // are cascade-deleted when the latest revision expires.
@@ -188,10 +203,16 @@ public struct OutgoingEditMessageWrapper: EditMessageWrapper {
             isVoiceMessage: message.isVoiceMessage,
             groupMetaMessage: message.groupMetaMessage,
             isViewOnceMessage: message.isViewOnceMessage,
+            isViewOnceComplete: message.isViewOnceComplete,
+            wasRemotelyDeleted: message.wasRemotelyDeleted,
             changeActionsProtoData: message.changeActionsProtoData,
             storyAuthorAci: message.storyAuthorAci?.wrappedAciValue,
             storyTimestamp: message.storyTimestamp?.uint64Value,
             storyReactionEmoji: message.storyReactionEmoji,
+            quotedMessage: nil,
+            contactShare: nil,
+            linkPreview: nil,
+            messageSticker: nil,
             giftBadge: message.giftBadge
         )
     }

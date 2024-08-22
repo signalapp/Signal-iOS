@@ -26,10 +26,15 @@ public class TSErrorMessageBuilder: TSMessageBuilder {
             expiresInSeconds: nil,
             expireStartedAt: nil,
             isViewOnceMessage: false,
-            read: false,
+            isViewOnceComplete: false,
+            wasRemotelyDeleted: false,
             storyAuthorAci: nil,
             storyTimestamp: nil,
             storyReactionEmoji: nil,
+            quotedMessage: nil,
+            contactShare: nil,
+            linkPreview: nil,
+            messageSticker: nil,
             giftBadge: nil
         )
     }
