@@ -17,4 +17,17 @@ extension OWSRecoverableDecryptionPlaceholder {
 
         interaction.anyOverwritingUpdate(transaction: writeTx)
     }
+
+    /// After this date, the placeholder is no longer eligible for replacement with the original content.
+    @objc
+    var expirationDate: Date {
+        var expirationInterval = RemoteConfig.replaceableInteractionExpiration
+        owsAssertDebug(expirationInterval >= 0)
+
+        if (DebugFlags.fastPlaceholderExpiration.get()) {
+            expirationInterval = min(expirationInterval, 5.0)
+        }
+
+        return self.receivedAtDate.addingTimeInterval(max(0, expirationInterval))
+    }
 }

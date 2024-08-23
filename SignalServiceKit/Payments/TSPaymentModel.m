@@ -200,11 +200,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(ledgerBlockTimestamp > 0);
 
-    if (SSKDebugFlags.paymentsIgnoreBlockTimestamps.get) {
-        OWSLogInfo(@"Ignoring ledger timestamp.");
-        return;
-    }
-
     [self anyUpdateWithTransaction:transaction
                              block:^(TSPaymentModel *paymentModel) {
                                  OWSAssertDebug(!paymentModel.hasMCLedgerBlockTimestamp);

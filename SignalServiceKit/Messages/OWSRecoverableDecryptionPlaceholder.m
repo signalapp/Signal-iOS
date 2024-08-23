@@ -125,18 +125,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Methods
 
-- (NSDate *)expirationDate
-{
-    NSTimeInterval expirationInterval = [RemoteConfig replaceableInteractionExpiration];
-    OWSAssertDebug(expirationInterval >= 0);
-
-    if (SSKDebugFlags.fastPlaceholderExpiration.value) {
-        expirationInterval = MIN(expirationInterval, 5.0);
-    }
-
-    return [self.receivedAtDate dateByAddingTimeInterval:MAX(0, expirationInterval)];
-}
-
 - (BOOL)supportsReplacement
 {
     return [self.expirationDate isAfterNow] && !self.wasRead;

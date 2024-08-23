@@ -7,8 +7,7 @@ import CryptoKit
 import Foundation
 import LibSignalClient
 
-@objc
-public class RemoteConfig: NSObject {
+public class RemoteConfig {
 
     /// Difference between the last time the server says it is and the time our
     /// local device says it is. Add this to the local device time to get the
@@ -76,12 +75,10 @@ public class RemoteConfig: NSObject {
         )
     }
 
-    @objc
     public static var groupsV2MaxGroupSizeRecommended: UInt {
         getUIntValue(forFlag: .groupsV2MaxGroupSizeRecommended, defaultValue: 151)
     }
 
-    @objc
     public static var groupsV2MaxGroupSizeHardLimit: UInt {
         getUIntValue(forFlag: .groupsV2MaxGroupSizeHardLimit, defaultValue: 1001)
     }
@@ -90,58 +87,53 @@ public class RemoteConfig: NSObject {
         groupsV2MaxGroupSizeHardLimit
     }
 
-    @objc
     public static var cdsSyncInterval: TimeInterval {
         interval(.cdsSyncInterval, defaultInterval: kDayInterval * 2)
     }
 
-    @objc
     public static var automaticSessionResetKillSwitch: Bool {
         return isEnabled(.automaticSessionResetKillSwitch)
     }
 
-    @objc
     public static var automaticSessionResetAttemptInterval: TimeInterval {
         interval(.automaticSessionResetAttemptInterval, defaultInterval: kHourInterval)
     }
 
-    @objc
     public static var reactiveProfileKeyAttemptInterval: TimeInterval {
         interval(.reactiveProfileKeyAttemptInterval, defaultInterval: kHourInterval)
     }
 
-    @objc
     public static var paymentsResetKillSwitch: Bool {
         isEnabled(.paymentsResetKillSwitch)
     }
 
     public static func standardMediaQualityLevel(localPhoneNumber: String?) -> ImageQualityLevel? {
-        guard let remoteConfig = Self.remoteConfigManager.cachedConfig else { return nil }
+        guard let remoteConfig = NSObject.remoteConfigManager.cachedConfig else { return nil }
         return remoteConfig.standardMediaQualityLevel(localPhoneNumber: localPhoneNumber)
     }
 
     public static var paymentsDisabledRegions: PhoneNumberRegions {
-        guard let remoteConfig = Self.remoteConfigManager.cachedConfig else { return [] }
+        guard let remoteConfig = NSObject.remoteConfigManager.cachedConfig else { return [] }
         return remoteConfig.paymentsDisabledRegions
     }
 
     public static var applePayDisabledRegions: PhoneNumberRegions {
-        guard let remoteConfig = Self.remoteConfigManager.cachedConfig else { return [] }
+        guard let remoteConfig = NSObject.remoteConfigManager.cachedConfig else { return [] }
         return remoteConfig.applePayDisabledRegions
     }
 
     public static var creditAndDebitCardDisabledRegions: PhoneNumberRegions {
-        guard let remoteConfig = Self.remoteConfigManager.cachedConfig else { return [] }
+        guard let remoteConfig = NSObject.remoteConfigManager.cachedConfig else { return [] }
         return remoteConfig.creditAndDebitCardDisabledRegions
     }
 
     public static var sepaEnabledRegions: PhoneNumberRegions {
-        guard let remoteConfig = Self.remoteConfigManager.cachedConfig else { return [] }
+        guard let remoteConfig = NSObject.remoteConfigManager.cachedConfig else { return [] }
         return remoteConfig.sepaEnabledRegions
     }
 
     public static var idealEnabledRegions: PhoneNumberRegions {
-        guard let remoteConfig = Self.remoteConfigManager.cachedConfig else { return [] }
+        guard let remoteConfig = NSObject.remoteConfigManager.cachedConfig else { return [] }
         return remoteConfig.idealEnabledRegions
     }
 
@@ -182,7 +174,7 @@ public class RemoteConfig: NSObject {
     }
 
     public static var paypalDisabledRegions: PhoneNumberRegions {
-        guard let remoteConfig = Self.remoteConfigManager.cachedConfig else { return [] }
+        guard let remoteConfig = NSObject.remoteConfigManager.cachedConfig else { return [] }
         return remoteConfig.paypalDisabledRegions
     }
 
@@ -207,17 +199,14 @@ public class RemoteConfig: NSObject {
         return PhoneNumberRegions(fromRemoteConfig: valueList)
     }
 
-    @objc
     public static var messageResendKillSwitch: Bool {
         isEnabled(.messageResendKillSwitch)
     }
 
-    @objc
     public static var replaceableInteractionExpiration: TimeInterval {
         interval(.replaceableInteractionExpiration, defaultInterval: kHourInterval)
     }
 
-    @objc
     public static var messageSendLogEntryLifetime: TimeInterval {
         interval(.messageSendLogEntryLifetime, defaultInterval: 2 * kWeekInterval)
     }
@@ -388,7 +377,7 @@ public class RemoteConfig: NSObject {
 
         guard
             let localPhoneNumber,
-            let localCallingCode = phoneNumberUtil.parseE164(localPhoneNumber)?.getCallingCode()?.stringValue
+            let localCallingCode = NSObject.phoneNumberUtil.parseE164(localPhoneNumber)?.getCallingCode()?.stringValue
         else {
             owsFailDebug("Invalid local number")
             return nil
@@ -429,7 +418,7 @@ public class RemoteConfig: NSObject {
     }
 
     private static func isEnabled(_ flag: IsEnabledFlag, defaultValue: Bool = false) -> Bool {
-        guard let remoteConfig = Self.remoteConfigManager.cachedConfig else {
+        guard let remoteConfig = NSObject.remoteConfigManager.cachedConfig else {
             return defaultValue
         }
         return remoteConfig.isEnabled(flag, defaultValue: defaultValue)
@@ -440,7 +429,7 @@ public class RemoteConfig: NSObject {
     }
 
     private static func isEnabled(_ flag: TimeGatedFlag, defaultValue: Bool = false) -> Bool {
-        guard let remoteConfig = Self.remoteConfigManager.cachedConfig else {
+        guard let remoteConfig = NSObject.remoteConfigManager.cachedConfig else {
             return defaultValue
         }
         return remoteConfig.isEnabled(flag, defaultValue: defaultValue)
@@ -455,14 +444,14 @@ public class RemoteConfig: NSObject {
     }
 
     private static func value(_ flag: ValueFlag) -> String? {
-        guard let remoteConfig = Self.remoteConfigManager.cachedConfig else {
+        guard let remoteConfig = NSObject.remoteConfigManager.cachedConfig else {
             return nil
         }
         return remoteConfig.valueFlags[flag.rawValue]
     }
 
     public static func debugDescriptions() -> [String: String] {
-        guard let remoteConfig = Self.remoteConfigManager.cachedConfig else {
+        guard let remoteConfig = NSObject.remoteConfigManager.cachedConfig else {
             return [:]
         }
         var result = [String: String]()
@@ -766,7 +755,7 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
     // MARK: -
 
     @objc
-    func registrationStateDidChange() {
+    private func registrationStateDidChange() {
         AssertIsOnMainThread()
 
         guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else { return }

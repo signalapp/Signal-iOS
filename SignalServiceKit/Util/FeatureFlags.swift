@@ -22,10 +22,9 @@ private let build = FeatureBuild.current
 
 // MARK: -
 
-/// By centralizing feature flags here and documenting their rollout plan, it's easier to review
-/// which feature flags are in play.
-@objc(SSKFeatureFlags)
-public class FeatureFlags: NSObject {
+/// By centralizing feature flags here and documenting their rollout plan,
+/// it's easier to review which feature flags are in play.
+public enum FeatureFlags {
 
     public static let choochoo = build.includes(.internal)
 
@@ -100,8 +99,7 @@ extension FeatureFlags {
 
 /// Flags that we'll leave in the code base indefinitely that are helpful for
 /// development should go here, rather than cluttering up FeatureFlags.
-@objc(SSKDebugFlags)
-public class DebugFlags: NSObject {
+public enum DebugFlags {
     public static let internalLogging = build.includes(.internal)
 
     public static let betaLogging = build.includes(.beta)
@@ -114,7 +112,6 @@ public class DebugFlags: NSObject {
 
     public static let internalMegaphoneEligible = build.includes(.internal)
 
-    @objc
     public static let reduceLogChatter: Bool = {
         // This is a little verbose to make it easy to change while developing.
         if CurrentAppContext().isRunningTests {
@@ -168,16 +165,7 @@ public class DebugFlags: NSObject {
         details: LocalizationNotNeeded("Attachment downloads will be blocked by manual download.")
     )
 
-    public static let fastPerfTests = false
-
     public static let extraDebugLogs = build.includes(.internal)
-
-    @objc
-    public static let paymentsIgnoreBlockTimestamps = TestableFlag(
-        false,
-        title: LocalizationNotNeeded("Payments: Ignore ledger block timestamps"),
-        details: LocalizationNotNeeded("Payments will not fill in missing ledger block timestamps")
-    )
 
     public static let paymentsIgnoreCurrencyConversions = TestableFlag(
         false,
@@ -263,7 +251,6 @@ public class DebugFlags: NSObject {
         details: LocalizationNotNeeded("Waits 10s before responding to a resend request.")
     )
 
-    @objc
     public static let fastPlaceholderExpiration = TestableFlag(
         false,
         title: LocalizationNotNeeded("Sender Key: Early placeholder expiration"),
@@ -291,7 +278,6 @@ public class DebugFlags: NSObject {
             paymentsFailOutgoingVerification,
             paymentsHaltProcessing,
             paymentsIgnoreBadData,
-            paymentsIgnoreBlockTimestamps,
             paymentsIgnoreCurrencyConversions,
             paymentsMalformedMessages,
             paymentsNoRequestsComplete,
@@ -302,10 +288,8 @@ public class DebugFlags: NSObject {
 
 // MARK: -
 
-@objc
-public class TestableFlag: NSObject {
+public class TestableFlag {
     private let defaultValue: Bool
-    private let affectsCapabilities: Bool
     private let flag: AtomicBool
     public let title: String
     public let details: String
@@ -314,16 +298,12 @@ public class TestableFlag: NSObject {
     fileprivate init(_ defaultValue: Bool,
                      title: String,
                      details: String,
-                     affectsCapabilities: Bool = false,
                      toggleHandler: ((Bool) -> Void)? = nil) {
         self.defaultValue = defaultValue
         self.title = title
         self.details = details
-        self.affectsCapabilities = affectsCapabilities
         self.flag = AtomicBool(defaultValue, lock: .sharedGlobal)
         self.toggleHandler = toggleHandler
-
-        super.init()
 
         // Normally we'd store the observer here and remove it in deinit.
         // But TestableFlags are always static; they don't *get* deinitialized except in testing.
@@ -334,13 +314,6 @@ public class TestableFlag: NSObject {
         }
     }
 
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public var value: Bool {
-        self.get()
-    }
-
-    @objc
     public func get() -> Bool {
         guard build.includes(.internal) else {
             return defaultValue
@@ -351,35 +324,15 @@ public class TestableFlag: NSObject {
     public func set(_ value: Bool) {
         flag.set(value)
 
-        if affectsCapabilities {
-            updateCapabilities()
-        }
-
         toggleHandler?(value)
     }
 
     @objc
-    public func switchDidChange(_ sender: UISwitch) {
+    private func switchDidChange(_ sender: UISwitch) {
         set(sender.isOn)
     }
 
-    @objc
-    public var switchSelector: Selector {
-        #selector(switchDidChange(_:))
-    }
+    public var switchSelector: Selector { #selector(switchDidChange(_:)) }
 
-    @objc
     public static let ResetAllTestableFlagsNotification = NSNotification.Name("ResetAllTestableFlags")
-
-    private func updateCapabilities() {
-        firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
-            return Promise.wrapAsync {
-                try await DependenciesBridge.shared.accountAttributesUpdater.updateAccountAttributes(authedAccount: .implicit())
-            }
-        }.done {
-            Logger.info("")
-        }.catch { error in
-            owsFailDebug("Error: \(error)")
-        }
-    }
 }
