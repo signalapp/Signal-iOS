@@ -138,7 +138,7 @@ final class ThreadMerger {
         let resolvedValue = [valuePair.fromValue, valuePair.intoValue].compacted().min()
         // Pick the higher version value.
         let versionPair = configPair.map(\.timerVersion)
-        let resolvedVersion = [valuePair.fromValue, valuePair.intoValue].compacted().max() ?? 1
+        let resolvedVersion = [versionPair.fromValue, versionPair.intoValue].compacted().max() ?? 1
 
         // If neither thread had disappearing messages enabled, don't change anything.
         guard let resolvedValue else {
