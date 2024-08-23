@@ -50,7 +50,7 @@ public class FeatureFlags: NSObject {
 
     public static let chatListFilter = build.includes(.internal)
 
-    public static let versionedExpireTimer = false
+    public static let versionedExpireTimer = true
 }
 
 // MARK: -
