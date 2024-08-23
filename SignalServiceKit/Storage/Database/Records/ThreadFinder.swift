@@ -52,11 +52,15 @@ public class ThreadFinder: Dependencies {
             transaction.unwrapGrdbRead.database,
             sql: sql
         )
-        while
-            let threadRecord = try cursor.next(),
-            let storyThread = (try TSThread.fromRecord(threadRecord)) as? TSPrivateStoryThread,
-            try block(storyThread)
-        {}
+        while let threadRecord = try cursor.next() {
+            guard let storyThread = (try TSThread.fromRecord(threadRecord)) as? TSPrivateStoryThread else {
+                owsFailDebug("Skipping thread that's not a story.")
+                continue
+            }
+            guard try block(storyThread) else {
+                break
+            }
+        }
     }
 
     /// Enumerates group threads in "last interaction" order.
@@ -78,11 +82,15 @@ public class ThreadFinder: Dependencies {
             transaction.unwrapGrdbRead.database,
             sql: sql
         )
-        while
-            let threadRecord = try cursor.next(),
-            let groupThread = (try TSThread.fromRecord(threadRecord)) as? TSGroupThread,
-            try block(groupThread)
-        {}
+        while let threadRecord = try cursor.next() {
+            guard let groupThread = (try TSThread.fromRecord(threadRecord)) as? TSGroupThread else {
+                owsFailDebug("Skipping thread that's not a group.")
+                continue
+            }
+            guard try block(groupThread) else {
+                break
+            }
+        }
     }
 
     /// Enumerates all non-story threads in arbitrary order.
