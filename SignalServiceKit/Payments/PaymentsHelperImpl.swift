@@ -25,7 +25,7 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
     }
 
     public var isKillSwitchActive: Bool {
-        RemoteConfig.paymentsResetKillSwitch || !hasValidPhoneNumberForPayments
+        RemoteConfig.current.paymentsResetKillSwitch || !hasValidPhoneNumberForPayments
     }
 
     public var hasValidPhoneNumberForPayments: Bool {
@@ -35,13 +35,12 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
         guard let localNumber = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber else {
             return false
         }
-        let paymentsDisabledRegions = RemoteConfig.paymentsDisabledRegions
+        let paymentsDisabledRegions = RemoteConfig.current.paymentsDisabledRegions
         if paymentsDisabledRegions.isEmpty {
             return Self.isValidPhoneNumberForPayments_fixedAllowlist(localNumber)
         } else {
-            return Self.isValidPhoneNumberForPayments_remoteConfigBlocklist(localNumber,
-                                                                            paymentsDisabledRegions: paymentsDisabledRegions)
-             }
+            return Self.isValidPhoneNumberForPayments_remoteConfigBlocklist(localNumber, paymentsDisabledRegions: paymentsDisabledRegions)
+        }
     }
 
     private static func isValidPhoneNumberForPayments_fixedAllowlist(_ e164: String) -> Bool {

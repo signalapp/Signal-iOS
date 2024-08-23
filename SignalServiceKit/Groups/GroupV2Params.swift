@@ -102,7 +102,7 @@ public extension GroupV2Params {
     }
 
     private static var maxGroupSize: Int {
-        return Int(RemoteConfig.groupsV2MaxGroupSizeHardLimit)
+        return Int(RemoteConfig.current.groupsV2MaxGroupSizeHardLimit)
     }
 
     private static let decryptedServiceIdCache = LRUCache<Data, ServiceId>(

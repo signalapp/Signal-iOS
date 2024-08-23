@@ -47,7 +47,7 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
             // RemoteConfig isn't available while we're still setting up singletons,
             // so we might not shadow the first few requests.
             AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-                let frequency = RemoteConfig.experimentalTransportShadowingHigh ? 1.0 : 0.1
+                let frequency = RemoteConfig.current.experimentalTransportShadowingHigh ? 1.0 : 0.1
                 Logger.info("Using unauth OWSChatConnectionWithLibSignalShadowing, shadowing frequency \(frequency)")
                 shadowingConnection.updateShadowingFrequency(frequency)
             }

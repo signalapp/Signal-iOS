@@ -17,7 +17,7 @@ class FlagsViewController: OWSTableViewController2 {
 
     func updateTableContents() {
         let contents = OWSTableContents()
-        contents.add(buildSection(title: "Remote Config", flagMap: RemoteConfig.debugDescriptions()))
+        contents.add(buildSection(title: "Remote Config", flagMap: RemoteConfig.current.debugDescriptions()))
         self.contents = contents
     }
 

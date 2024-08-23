@@ -265,6 +265,6 @@ protocol InactiveLinkedDeviceFinderImpl_RemoteConfig_Shim {
 
 class InactiveLinkedDeviceFinderImpl_RemoteConfig_Wrapper: InactiveLinkedDeviceFinderImpl_RemoteConfig_Shim {
     func linkedDeviceLifespan() -> TimeInterval {
-        return RemoteConfig.linkedDeviceLifespan
+        return RemoteConfig.current.linkedDeviceLifespan
     }
 }

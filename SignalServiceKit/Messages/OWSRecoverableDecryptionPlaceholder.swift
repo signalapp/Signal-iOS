@@ -21,7 +21,7 @@ extension OWSRecoverableDecryptionPlaceholder {
     /// After this date, the placeholder is no longer eligible for replacement with the original content.
     @objc
     var expirationDate: Date {
-        var expirationInterval = RemoteConfig.replaceableInteractionExpiration
+        var expirationInterval = RemoteConfig.current.replaceableInteractionExpiration
         owsAssertDebug(expirationInterval >= 0)
 
         if (DebugFlags.fastPlaceholderExpiration.get()) {

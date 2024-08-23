@@ -135,7 +135,7 @@ public final class APNSRotationStore: NSObject {
             Logger.info("No push token available, not rotating.")
             return false
         }
-        guard RemoteConfig.enableAutoAPNSRotation else {
+        guard RemoteConfig.current.enableAutoAPNSRotation else {
             Logger.info("Not enabled remotely, not rotating token.")
             return false
         }

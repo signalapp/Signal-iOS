@@ -21,11 +21,11 @@ public class GroupManager: NSObject {
     public static let groupUpdateTimeoutDuration: TimeInterval = 30
 
     public static var groupsV2MaxGroupSizeRecommended: UInt {
-        return RemoteConfig.groupsV2MaxGroupSizeRecommended
+        return RemoteConfig.current.groupsV2MaxGroupSizeRecommended
     }
 
     public static var groupsV2MaxGroupSizeHardLimit: UInt {
-        return RemoteConfig.groupsV2MaxGroupSizeHardLimit
+        return RemoteConfig.current.groupsV2MaxGroupSizeHardLimit
     }
 
     public static let maxGroupNameEncryptedByteCount: Int = 1024

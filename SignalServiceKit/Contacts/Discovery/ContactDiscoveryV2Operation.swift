@@ -83,7 +83,7 @@ final class ContactDiscoveryV2Operation {
             persistentState = ContactDiscoveryV2PersistentStateImpl()
         }
         let connectionImpl: ConnectionImpl
-        if RemoteConfig.cdsiLookupWithLibsignal {
+        if RemoteConfig.current.cdsiLookupWithLibsignal {
             connectionImpl = .libSignalNet(libsignalNet)
         } else {
             connectionImpl = .nativeFactory(SgxWebsocketConnectionFactoryImpl(websocketFactory: websocketFactory))

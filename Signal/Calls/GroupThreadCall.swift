@@ -33,7 +33,7 @@ final class GroupThreadCall: Signal.GroupCall {
             videoCaptureController: videoCaptureController
         )
 
-        if groupThread.groupModel.groupMembers.count > RemoteConfig.maxGroupCallRingSize {
+        if groupThread.groupModel.groupMembers.count > RemoteConfig.current.maxGroupCallRingSize {
             self.ringRestrictions.insert(.groupTooLarge)
         }
 
@@ -100,7 +100,7 @@ final class GroupThreadCall: Signal.GroupCall {
         }
         NSObject.databaseStorage.read(block: groupThread.anyReload(transaction:))
         let groupModel = groupThread.groupModel
-        let isGroupTooLarge = groupModel.groupMembers.count > RemoteConfig.maxGroupCallRingSize
+        let isGroupTooLarge = groupModel.groupMembers.count > RemoteConfig.current.maxGroupCallRingSize
         ringRestrictions.update(.groupTooLarge, present: isGroupTooLarge)
     }
 

@@ -1211,7 +1211,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             return
         }
 
-        guard RemoteConfig.shouldCheckForServiceExtensionFailures else {
+        guard RemoteConfig.current.shouldCheckForServiceExtensionFailures else {
             return
         }
 

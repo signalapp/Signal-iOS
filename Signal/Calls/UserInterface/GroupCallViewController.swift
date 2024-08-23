@@ -229,7 +229,7 @@ class GroupCallViewController: UIViewController {
     }
 
     static func presentLobby(for callLink: CallLink, adminPasskey: Data? = nil) {
-        guard RemoteConfig.callLinkJoin else {
+        guard RemoteConfig.current.callLinkJoin else {
             return
         }
         self._presentLobby { viewController in

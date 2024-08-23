@@ -50,7 +50,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         senderId: String,
         transaction: SDSAnyWriteTransaction
     ) {
-        if RemoteConfig.automaticSessionResetKillSwitch {
+        if RemoteConfig.current.automaticSessionResetKillSwitch {
             Logger.warn("Skipping null message after undecryptable message from \(senderId) due to kill switch.")
             return
         }
@@ -59,7 +59,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
 
         let lastNullMessageDate = store.getDate(senderId, transaction: transaction)
         let timeSinceNullMessage = abs(lastNullMessageDate?.timeIntervalSinceNow ?? .infinity)
-        guard timeSinceNullMessage > RemoteConfig.automaticSessionResetAttemptInterval else {
+        guard timeSinceNullMessage > RemoteConfig.current.automaticSessionResetAttemptInterval else {
             Logger.warn("Skipping null message after undecryptable message from \(senderId), " +
                             "last null message sent \(lastNullMessageDate!.ows_millisecondsSince1970).")
             return
@@ -99,7 +99,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
 
         let lastProfileKeyMessageDate = store.getDate(sourceAci.serviceIdUppercaseString, transaction: transaction)
         let timeSinceProfileKeyMessage = abs(lastProfileKeyMessageDate?.timeIntervalSinceNow ?? .infinity)
-        guard timeSinceProfileKeyMessage > RemoteConfig.reactiveProfileKeyAttemptInterval else {
+        guard timeSinceProfileKeyMessage > RemoteConfig.current.reactiveProfileKeyAttemptInterval else {
             Logger.warn("Skipping reactive profile key message after non-UD message from \(sourceAci), last reactive profile key message sent \(lastProfileKeyMessageDate!.ows_millisecondsSince1970).")
             return
         }
@@ -195,7 +195,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         switch validatedEnvelope.localIdentity {
         case .aci:
             if
-                !RemoteConfig.messageResendKillSwitch,
+                !RemoteConfig.current.messageResendKillSwitch,
                 let modernResendErrorMessageBytes = buildResendRequestDecryptionError(
                     validatedEnvelope: validatedEnvelope,
                     unsealedEnvelope: unsealedEnvelope

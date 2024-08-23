@@ -41,15 +41,15 @@ public class DonationUtilities: Dependencies {
         let isApplePayAvailable: Bool = {
             if
                 PKPaymentAuthorizationController.canMakePayments(),
-                !RemoteConfig.applePayDisabledRegions.contains(e164: localNumber)
+                !RemoteConfig.current.applePayDisabledRegions.contains(e164: localNumber)
             {
                 switch donationMode {
                 case .oneTime:
-                    return RemoteConfig.canDonateOneTimeWithApplePay
+                    return RemoteConfig.current.canDonateOneTimeWithApplePay
                 case .gift:
-                    return RemoteConfig.canDonateGiftWithApplePay
+                    return RemoteConfig.current.canDonateGiftWithApplePay
                 case .monthly:
-                    return RemoteConfig.canDonateMonthlyWithApplePay
+                    return RemoteConfig.current.canDonateMonthlyWithApplePay
                 }
             }
 
@@ -58,15 +58,15 @@ public class DonationUtilities: Dependencies {
 
         let isPaypalAvailable = {
             if
-                !RemoteConfig.paypalDisabledRegions.contains(e164: localNumber)
+                !RemoteConfig.current.paypalDisabledRegions.contains(e164: localNumber)
             {
                 switch donationMode {
                 case .oneTime:
-                    return RemoteConfig.canDonateOneTimeWithPaypal
+                    return RemoteConfig.current.canDonateOneTimeWithPaypal
                 case .gift:
-                    return RemoteConfig.canDonateGiftWithPayPal
+                    return RemoteConfig.current.canDonateGiftWithPayPal
                 case .monthly:
-                    return RemoteConfig.canDonateMonthlyWithPaypal
+                    return RemoteConfig.current.canDonateMonthlyWithPaypal
                 }
             }
 
@@ -75,15 +75,15 @@ public class DonationUtilities: Dependencies {
 
         let isCardAvailable = {
             if
-                !RemoteConfig.creditAndDebitCardDisabledRegions.contains(e164: localNumber)
+                !RemoteConfig.current.creditAndDebitCardDisabledRegions.contains(e164: localNumber)
             {
                 switch donationMode {
                 case .oneTime:
-                    return RemoteConfig.canDonateOneTimeWithCreditOrDebitCard
+                    return RemoteConfig.current.canDonateOneTimeWithCreditOrDebitCard
                 case .gift:
-                    return RemoteConfig.canDonateGiftWithCreditOrDebitCard
+                    return RemoteConfig.current.canDonateGiftWithCreditOrDebitCard
                 case .monthly:
-                    return RemoteConfig.canDonateMonthlyWithCreditOrDebitCard
+                    return RemoteConfig.current.canDonateMonthlyWithCreditOrDebitCard
                 }
             }
 
@@ -95,7 +95,7 @@ public class DonationUtilities: Dependencies {
                 return true
             }
 
-            guard RemoteConfig.sepaEnabledRegions.contains(e164: localNumber) else {
+            guard RemoteConfig.current.sepaEnabledRegions.contains(e164: localNumber) else {
                 return false
             }
 
@@ -112,7 +112,7 @@ public class DonationUtilities: Dependencies {
                 return true
             }
 
-            guard RemoteConfig.idealEnabledRegions.contains(e164: localNumber) else {
+            guard RemoteConfig.current.idealEnabledRegions.contains(e164: localNumber) else {
                 return false
             }
 

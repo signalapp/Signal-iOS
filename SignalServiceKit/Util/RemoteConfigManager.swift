@@ -9,6 +9,10 @@ import LibSignalClient
 
 public class RemoteConfig {
 
+    public static var current: RemoteConfig {
+        return NSObject.remoteConfigManager.cachedConfig ?? .emptyConfig
+    }
+
     /// Difference between the last time the server says it is and the time our
     /// local device says it is. Add this to the local device time to get the
     /// "real" time according to the server.
@@ -22,12 +26,13 @@ public class RemoteConfig {
     fileprivate let isEnabledFlags: [String: Bool]
     fileprivate let valueFlags: [String: String]
     fileprivate let timeGatedFlags: [String: Date]
-    private let paymentsDisabledRegions: PhoneNumberRegions
-    private let applePayDisabledRegions: PhoneNumberRegions
-    private let creditAndDebitCardDisabledRegions: PhoneNumberRegions
-    private let paypalDisabledRegions: PhoneNumberRegions
-    private let sepaEnabledRegions: PhoneNumberRegions
-    private let idealEnabledRegions: PhoneNumberRegions
+
+    public let paymentsDisabledRegions: PhoneNumberRegions
+    public let applePayDisabledRegions: PhoneNumberRegions
+    public let creditAndDebitCardDisabledRegions: PhoneNumberRegions
+    public let paypalDisabledRegions: PhoneNumberRegions
+    public let sepaEnabledRegions: PhoneNumberRegions
+    public let idealEnabledRegions: PhoneNumberRegions
 
     init(
         clockSkew: TimeInterval,
@@ -75,110 +80,75 @@ public class RemoteConfig {
         )
     }
 
-    public static var groupsV2MaxGroupSizeRecommended: UInt {
+    public var groupsV2MaxGroupSizeRecommended: UInt {
         getUIntValue(forFlag: .groupsV2MaxGroupSizeRecommended, defaultValue: 151)
     }
 
-    public static var groupsV2MaxGroupSizeHardLimit: UInt {
+    public var groupsV2MaxGroupSizeHardLimit: UInt {
         getUIntValue(forFlag: .groupsV2MaxGroupSizeHardLimit, defaultValue: 1001)
     }
 
-    public static var groupsV2MaxBannedMembers: UInt {
+    public var groupsV2MaxBannedMembers: UInt {
         groupsV2MaxGroupSizeHardLimit
     }
 
-    public static var cdsSyncInterval: TimeInterval {
+    public var cdsSyncInterval: TimeInterval {
         interval(.cdsSyncInterval, defaultInterval: kDayInterval * 2)
     }
 
-    public static var automaticSessionResetKillSwitch: Bool {
+    public var automaticSessionResetKillSwitch: Bool {
         return isEnabled(.automaticSessionResetKillSwitch)
     }
 
-    public static var automaticSessionResetAttemptInterval: TimeInterval {
+    public var automaticSessionResetAttemptInterval: TimeInterval {
         interval(.automaticSessionResetAttemptInterval, defaultInterval: kHourInterval)
     }
 
-    public static var reactiveProfileKeyAttemptInterval: TimeInterval {
+    public var reactiveProfileKeyAttemptInterval: TimeInterval {
         interval(.reactiveProfileKeyAttemptInterval, defaultInterval: kHourInterval)
     }
 
-    public static var paymentsResetKillSwitch: Bool {
+    public var paymentsResetKillSwitch: Bool {
         isEnabled(.paymentsResetKillSwitch)
     }
 
-    public static func standardMediaQualityLevel(localPhoneNumber: String?) -> ImageQualityLevel? {
-        guard let remoteConfig = NSObject.remoteConfigManager.cachedConfig else { return nil }
-        return remoteConfig.standardMediaQualityLevel(localPhoneNumber: localPhoneNumber)
-    }
-
-    public static var paymentsDisabledRegions: PhoneNumberRegions {
-        guard let remoteConfig = NSObject.remoteConfigManager.cachedConfig else { return [] }
-        return remoteConfig.paymentsDisabledRegions
-    }
-
-    public static var applePayDisabledRegions: PhoneNumberRegions {
-        guard let remoteConfig = NSObject.remoteConfigManager.cachedConfig else { return [] }
-        return remoteConfig.applePayDisabledRegions
-    }
-
-    public static var creditAndDebitCardDisabledRegions: PhoneNumberRegions {
-        guard let remoteConfig = NSObject.remoteConfigManager.cachedConfig else { return [] }
-        return remoteConfig.creditAndDebitCardDisabledRegions
-    }
-
-    public static var sepaEnabledRegions: PhoneNumberRegions {
-        guard let remoteConfig = NSObject.remoteConfigManager.cachedConfig else { return [] }
-        return remoteConfig.sepaEnabledRegions
-    }
-
-    public static var idealEnabledRegions: PhoneNumberRegions {
-        guard let remoteConfig = NSObject.remoteConfigManager.cachedConfig else { return [] }
-        return remoteConfig.idealEnabledRegions
-    }
-
-    public static var canDonateOneTimeWithApplePay: Bool {
+    public var canDonateOneTimeWithApplePay: Bool {
         !isEnabled(.applePayOneTimeDonationKillSwitch)
     }
 
-    public static var canDonateGiftWithApplePay: Bool {
+    public var canDonateGiftWithApplePay: Bool {
         !isEnabled(.applePayGiftDonationKillSwitch)
     }
 
-    public static var canDonateMonthlyWithApplePay: Bool {
+    public var canDonateMonthlyWithApplePay: Bool {
         !isEnabled(.applePayMonthlyDonationKillSwitch)
     }
 
-    public static var canDonateOneTimeWithCreditOrDebitCard: Bool {
+    public var canDonateOneTimeWithCreditOrDebitCard: Bool {
         !isEnabled(.cardOneTimeDonationKillSwitch)
     }
 
-    public static var canDonateGiftWithCreditOrDebitCard: Bool {
+    public var canDonateGiftWithCreditOrDebitCard: Bool {
         !isEnabled(.cardGiftDonationKillSwitch)
     }
 
-    public static var canDonateMonthlyWithCreditOrDebitCard: Bool {
+    public var canDonateMonthlyWithCreditOrDebitCard: Bool {
         !isEnabled(.cardMonthlyDonationKillSwitch)
     }
 
-    public static var canDonateOneTimeWithPaypal: Bool {
+    public var canDonateOneTimeWithPaypal: Bool {
         !isEnabled(.paypalOneTimeDonationKillSwitch)
     }
 
-    public static var canDonateGiftWithPayPal: Bool {
+    public var canDonateGiftWithPayPal: Bool {
         !isEnabled(.paypalGiftDonationKillSwitch)
     }
 
-    public static var canDonateMonthlyWithPaypal: Bool {
+    public var canDonateMonthlyWithPaypal: Bool {
         !isEnabled(.paypalMonthlyDonationKillSwitch)
     }
 
-    public static var paypalDisabledRegions: PhoneNumberRegions {
-        guard let remoteConfig = NSObject.remoteConfigManager.cachedConfig else { return [] }
-        return remoteConfig.paypalDisabledRegions
-    }
-
-    private func standardMediaQualityLevel(localPhoneNumber: String?) -> ImageQualityLevel? {
+    public func standardMediaQualityLevel(localPhoneNumber: String?) -> ImageQualityLevel? {
         let rawValue: String = ValueFlag.standardMediaQualityLevel.rawValue
         guard
             let csvString = valueFlags[rawValue],
@@ -199,52 +169,52 @@ public class RemoteConfig {
         return PhoneNumberRegions(fromRemoteConfig: valueList)
     }
 
-    public static var messageResendKillSwitch: Bool {
+    public var messageResendKillSwitch: Bool {
         isEnabled(.messageResendKillSwitch)
     }
 
-    public static var replaceableInteractionExpiration: TimeInterval {
+    public var replaceableInteractionExpiration: TimeInterval {
         interval(.replaceableInteractionExpiration, defaultInterval: kHourInterval)
     }
 
-    public static var messageSendLogEntryLifetime: TimeInterval {
+    public var messageSendLogEntryLifetime: TimeInterval {
         interval(.messageSendLogEntryLifetime, defaultInterval: 2 * kWeekInterval)
     }
 
-    public static var maxGroupCallRingSize: UInt {
+    public var maxGroupCallRingSize: UInt {
         getUIntValue(forFlag: .maxGroupCallRingSize, defaultValue: 16)
     }
 
-    public static var enableAutoAPNSRotation: Bool {
+    public var enableAutoAPNSRotation: Bool {
         return isEnabled(.enableAutoAPNSRotation, defaultValue: false)
     }
 
     /// The minimum length for a valid nickname, in Unicode codepoints.
-    public static var minNicknameLength: UInt32 {
+    public var minNicknameLength: UInt32 {
         getUInt32Value(forFlag: .minNicknameLength, defaultValue: 3)
     }
 
     /// The maximum length for a valid nickname, in Unicode codepoints.
-    public static var maxNicknameLength: UInt32 {
+    public var maxNicknameLength: UInt32 {
         getUInt32Value(forFlag: .maxNicknameLength, defaultValue: 32)
     }
 
-    public static var maxAttachmentDownloadSizeBytes: UInt {
+    public var maxAttachmentDownloadSizeBytes: UInt {
         return getUIntValue(forFlag: .maxAttachmentDownloadSizeBytes, defaultValue: 100 * 1024 * 1024)
     }
 
     // Hardcoded value (but lives alongside `maxAttachmentDownloadSizeBytes`).
-    public static var maxMediaTierThumbnailDownloadSizeBytes: UInt = 1024 * 8
+    public var maxMediaTierThumbnailDownloadSizeBytes: UInt = 1024 * 8
 
-    public static var enableGifSearch: Bool {
+    public var enableGifSearch: Bool {
         return isEnabled(.enableGifSearch, defaultValue: true)
     }
 
-    public static var shouldCheckForServiceExtensionFailures: Bool {
+    public var shouldCheckForServiceExtensionFailures: Bool {
         return !isEnabled(.serviceExtensionFailureKillSwitch)
     }
 
-    public static var backgroundRefreshInterval: TimeInterval {
+    public var backgroundRefreshInterval: TimeInterval {
         return TimeInterval(getUIntValue(
             forFlag: .backgroundRefreshInterval,
             defaultValue: UInt(kDayInterval)
@@ -252,33 +222,33 @@ public class RemoteConfig {
     }
 
     @available(*, unavailable, message: "cached in UserDefaults by ChatConnectionManager")
-    public static var experimentalTransportUseLibsignal: Bool {
+    public var experimentalTransportUseLibsignal: Bool {
         return false
     }
 
-    public static var experimentalTransportShadowingHigh: Bool {
+    public var experimentalTransportShadowingHigh: Bool {
         return isEnabled(.experimentalTransportShadowingHigh, defaultValue: false)
     }
 
     @available(*, unavailable, message: "cached in UserDefaults by ChatConnectionManager")
-    public static var experimentalTransportShadowingEnabled: Bool {
+    public var experimentalTransportShadowingEnabled: Bool {
         return false
     }
 
-    public static var cdsiLookupWithLibsignal: Bool {
+    public var cdsiLookupWithLibsignal: Bool {
         return isEnabled(.cdsiLookupWithLibsignal, defaultValue: true)
     }
 
     /// The time a linked device may be offline before it expires and is
     /// unlinked.
-    public static var linkedDeviceLifespan: TimeInterval {
+    public var linkedDeviceLifespan: TimeInterval {
         return interval(
             .linkedDeviceLifespanInterval,
             defaultInterval: kMonthInterval
         )
     }
 
-    public static var callLinkJoin: Bool {
+    public var callLinkJoin: Bool {
         return (
             FeatureBuild.current == .dev
             || FeatureBuild.current == .internal && isEnabled(.callLinkJoin)
@@ -287,7 +257,7 @@ public class RemoteConfig {
 
     // MARK: UInt values
 
-    private static func getUIntValue(
+    private func getUIntValue(
         forFlag flag: ValueFlag,
         defaultValue: UInt
     ) -> UInt {
@@ -297,7 +267,7 @@ public class RemoteConfig {
         )
     }
 
-    private static func getUInt32Value(
+    private func getUInt32Value(
         forFlag flag: ValueFlag,
         defaultValue: UInt32
     ) -> UInt32 {
@@ -307,7 +277,7 @@ public class RemoteConfig {
         )
     }
 
-    private static func getStringConvertibleValue<V>(
+    private func getStringConvertibleValue<V>(
         forFlag flag: ValueFlag,
         defaultValue: V
     ) -> V where V: LosslessStringConvertible {
@@ -410,29 +380,15 @@ public class RemoteConfig {
 
     // MARK: -
 
-    private static func interval(_ flag: ValueFlag, defaultInterval: TimeInterval) -> TimeInterval {
+    private func interval(_ flag: ValueFlag, defaultInterval: TimeInterval) -> TimeInterval {
         guard let intervalString: String = value(flag), let interval = TimeInterval(intervalString) else {
             return defaultInterval
         }
         return interval
     }
 
-    private static func isEnabled(_ flag: IsEnabledFlag, defaultValue: Bool = false) -> Bool {
-        guard let remoteConfig = NSObject.remoteConfigManager.cachedConfig else {
-            return defaultValue
-        }
-        return remoteConfig.isEnabled(flag, defaultValue: defaultValue)
-    }
-
     private func isEnabled(_ flag: IsEnabledFlag, defaultValue: Bool = false) -> Bool {
         return isEnabledFlags[flag.rawValue] ?? defaultValue
-    }
-
-    private static func isEnabled(_ flag: TimeGatedFlag, defaultValue: Bool = false) -> Bool {
-        guard let remoteConfig = NSObject.remoteConfigManager.cachedConfig else {
-            return defaultValue
-        }
-        return remoteConfig.isEnabled(flag, defaultValue: defaultValue)
     }
 
     private func isEnabled(_ flag: TimeGatedFlag, defaultValue: Bool = false) -> Bool {
@@ -443,31 +399,25 @@ public class RemoteConfig {
         return correctedDate >= dateThreshold
     }
 
-    private static func value(_ flag: ValueFlag) -> String? {
-        guard let remoteConfig = NSObject.remoteConfigManager.cachedConfig else {
-            return nil
-        }
-        return remoteConfig.valueFlags[flag.rawValue]
+    private func value(_ flag: ValueFlag) -> String? {
+        return valueFlags[flag.rawValue]
     }
 
-    public static func debugDescriptions() -> [String: String] {
-        guard let remoteConfig = NSObject.remoteConfigManager.cachedConfig else {
-            return [:]
-        }
+    public func debugDescriptions() -> [String: String] {
         var result = [String: String]()
-        for (key, value) in remoteConfig.isEnabledFlags {
+        for (key, value) in isEnabledFlags {
             result[key] = "\(value)"
         }
-        for (key, value) in remoteConfig.valueFlags {
+        for (key, value) in valueFlags {
             result[key] = "\(value)"
         }
-        for (key, value) in remoteConfig.timeGatedFlags {
+        for (key, value) in timeGatedFlags {
             result[key] = "\(value)"
         }
         return result
     }
 
-    public static func logFlags() {
+    public func logFlags() {
         for (key, value) in debugDescriptions() {
             Logger.info("RemoteConfig: \(key) = \(value)")
         }
@@ -801,7 +751,7 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
         warmSecondaryCaches(valueFlags: valueFlags ?? [:])
 
         AppReadiness.runNowOrWhenAppWillBecomeReady {
-            RemoteConfig.logFlags()
+            RemoteConfig.current.logFlags()
         }
     }
 

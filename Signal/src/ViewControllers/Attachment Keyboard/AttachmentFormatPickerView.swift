@@ -181,7 +181,7 @@ class AttachmentFormatPickerView: UIView {
         }
 
         private static func cases(except: [AttachmentType]) -> [AttachmentType] {
-            let showGifSearch = RemoteConfig.enableGifSearch
+            let showGifSearch = RemoteConfig.current.enableGifSearch
             return allCases.filter { (value: AttachmentType) in
                 if value == .gif && showGifSearch.negated { return false }
                 return except.contains(value).negated

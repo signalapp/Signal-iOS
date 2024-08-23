@@ -112,7 +112,7 @@ class NSECallMessageHandler: CallMessageHandler {
                         return false
                     }
 
-                    guard thread.groupMembership.fullMembers.count <= RemoteConfig.maxGroupCallRingSize else {
+                    guard thread.groupMembership.fullMembers.count <= RemoteConfig.current.maxGroupCallRingSize else {
                         NSELogger.uncorrelated.warn("discarding group ring \(ringId) from \(caller.aci) for too-large group")
                         return false
                     }

@@ -1041,7 +1041,7 @@ public extension TSAttachmentDownloadManager {
                                     attachmentPointer: TSAttachmentPointer) -> Promise<TSAttachmentStream> {
 
         // We want to avoid large downloads from a compromised or buggy service.
-        let maxDownloadSize = RemoteConfig.maxAttachmentDownloadSizeBytes
+        let maxDownloadSize = RemoteConfig.current.maxAttachmentDownloadSizeBytes
 
         return firstly(on: schedulers.sync) { () -> Promise<URL> in
             self.download(

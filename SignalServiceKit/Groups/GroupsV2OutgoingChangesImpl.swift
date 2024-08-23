@@ -510,7 +510,7 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
             // If we will overrun the max number of banned members, unban currently
             // banned members until we have enough room, beginning with the
             // least-recently banned.
-            let maxNumBannableIds = RemoteConfig.groupsV2MaxBannedMembers
+            let maxNumBannableIds = RemoteConfig.current.groupsV2MaxBannedMembers
             let netNumIdsToBan = acisToBan.count - acisToUnban.count
             let nOldMembersToUnban = currentBannedMembers.count + netNumIdsToBan - Int(maxNumBannableIds)
 

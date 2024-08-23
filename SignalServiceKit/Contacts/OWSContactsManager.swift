@@ -1017,7 +1017,7 @@ extension OWSContactsManager: ContactManager {
         switch intersectionMode {
         case .fullIntersection:
             setPriorIntersectionPhoneNumbers(phoneNumbers, tx: tx)
-            let nextFullIntersectionDate = Date(timeIntervalSinceNow: RemoteConfig.cdsSyncInterval)
+            let nextFullIntersectionDate = Date(timeIntervalSinceNow: RemoteConfig.current.cdsSyncInterval)
             keyValueStore.setDate(nextFullIntersectionDate, key: Constants.nextFullIntersectionDate, transaction: tx)
 
         case .deltaIntersection:

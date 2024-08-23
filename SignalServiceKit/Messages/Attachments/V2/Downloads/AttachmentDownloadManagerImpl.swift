@@ -96,7 +96,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     public func downloadTransientAttachment(metadata: AttachmentDownloads.DownloadMetadata) -> Promise<URL> {
         return Promise.wrapAsync {
             // We want to avoid large downloads from a compromised or buggy service.
-            let maxDownloadSize = RemoteConfig.maxAttachmentDownloadSizeBytes
+            let maxDownloadSize = RemoteConfig.current.maxAttachmentDownloadSizeBytes
             let downloadState = DownloadState(type: .transientAttachment(metadata))
 
             let encryptedFileUrl = try await self.downloadQueue.enqueueDownload(
@@ -532,7 +532,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             do {
                 downloadedFileUrl = try await downloadQueue.enqueueDownload(
                     downloadState: .init(type: .attachment(downloadMetadata, id: attachment.id)),
-                    maxDownloadSizeBytes: RemoteConfig.maxAttachmentDownloadSizeBytes
+                    maxDownloadSizeBytes: RemoteConfig.current.maxAttachmentDownloadSizeBytes
                 )
             } catch let error {
                 Logger.error("Failed to download: \(error)")

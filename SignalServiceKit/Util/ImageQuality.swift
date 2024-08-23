@@ -18,7 +18,7 @@ public enum ImageQualityLevel: UInt, Comparable {
     // is always level three. If not remotely specified,
     // standard uses quality level two.
     public static func remoteDefault(localPhoneNumber: String?) -> ImageQualityLevel {
-        return RemoteConfig.standardMediaQualityLevel(localPhoneNumber: localPhoneNumber) ?? .two
+        return RemoteConfig.current.standardMediaQualityLevel(localPhoneNumber: localPhoneNumber) ?? .two
     }
 
     public var startingTier: ImageQualityTier {

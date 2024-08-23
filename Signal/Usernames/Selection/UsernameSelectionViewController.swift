@@ -31,10 +31,10 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
 
     enum Constants {
         /// Minimum length for a nickname, in Unicode code points.
-        static let minNicknameCodepointLength: UInt32 = RemoteConfig.minNicknameLength
+        static let minNicknameCodepointLength: UInt32 = RemoteConfig.current.minNicknameLength
 
         /// Maximum length for a nickname, in Unicode code points.
-        static let maxNicknameCodepointLength: UInt32 = RemoteConfig.maxNicknameLength
+        static let maxNicknameCodepointLength: UInt32 = RemoteConfig.current.maxNicknameLength
 
         /// Amount of time to wait after the username text field is edited
         /// before kicking off a reservation attempt.

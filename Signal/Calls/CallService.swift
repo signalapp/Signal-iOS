@@ -1529,7 +1529,7 @@ extension CallService: CallManagerDelegate {
                 return .cancel
             }
 
-            guard thread.groupMembership.fullMembers.count <= RemoteConfig.maxGroupCallRingSize else {
+            guard thread.groupMembership.fullMembers.count <= RemoteConfig.current.maxGroupCallRingSize else {
                 Logger.warn("discarding group ring \(ringId) from \(senderAci) for too-large group")
                 return .cancel
             }

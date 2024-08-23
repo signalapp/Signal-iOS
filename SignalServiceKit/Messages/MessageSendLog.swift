@@ -39,7 +39,7 @@ public class MessageSendLog {
     }
 
     private enum Constants {
-        static let payloadLifetime: TimeInterval = RemoteConfig.messageSendLogEntryLifetime
+        static let payloadLifetime: TimeInterval = RemoteConfig.current.messageSendLogEntryLifetime
         static let cleanupLimit = 25
     }
 
@@ -96,7 +96,7 @@ public class MessageSendLog {
     }
 
     func recordPayload(_ plaintext: Data, for message: TSOutgoingMessage, tx: SDSAnyWriteTransaction) -> Int64? {
-        guard !RemoteConfig.messageResendKillSwitch else {
+        guard !RemoteConfig.current.messageResendKillSwitch else {
             return nil
         }
         guard message.shouldRecordSendLog else { return nil }
@@ -181,7 +181,7 @@ public class MessageSendLog {
         timestamp: UInt64,
         tx: SDSAnyReadTransaction
     ) -> Payload? {
-        guard !RemoteConfig.messageResendKillSwitch else {
+        guard !RemoteConfig.current.messageResendKillSwitch else {
             return nil
         }
 
@@ -209,7 +209,7 @@ public class MessageSendLog {
     }
 
     public func sendComplete(message: TSOutgoingMessage, tx: SDSAnyWriteTransaction) {
-        guard !RemoteConfig.messageResendKillSwitch else {
+        guard !RemoteConfig.current.messageResendKillSwitch else {
             return
         }
         guard message.shouldRecordSendLog else { return }
@@ -297,7 +297,7 @@ public class MessageSendLog {
         message: TSOutgoingMessage,
         tx: SDSAnyWriteTransaction
     ) {
-        guard !RemoteConfig.messageResendKillSwitch else {
+        guard !RemoteConfig.current.messageResendKillSwitch else {
             return
         }
         do {
@@ -326,7 +326,7 @@ public class MessageSendLog {
         recipientDeviceId: UInt32,
         tx: SDSAnyWriteTransaction
     ) {
-        guard !RemoteConfig.messageResendKillSwitch else {
+        guard !RemoteConfig.current.messageResendKillSwitch else {
             return
         }
         do {
