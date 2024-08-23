@@ -212,38 +212,31 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
             }
 
             let deliveryStatus: BackupProto_SendStatus.OneOf_DeliveryStatus
-            let statusTimestamp: UInt64
-            switch sendState.state {
-            case OWSOutgoingMessageRecipientState.sent:
-                if let readTimestamp = sendState.readTimestamp {
-                    var readStatus = BackupProto_SendStatus.Read()
-                    readStatus.sealedSender = sendState.wasSentByUD
+            switch sendState.status {
+            case .sent:
+                var sentStatus = BackupProto_SendStatus.Sent()
+                sentStatus.sealedSender = sendState.wasSentByUD
 
-                    deliveryStatus = .read(readStatus)
-                    statusTimestamp = readTimestamp.uint64Value
-                } else if let viewedTimestamp = sendState.viewedTimestamp {
-                    var viewedStatus = BackupProto_SendStatus.Viewed()
-                    viewedStatus.sealedSender = sendState.wasSentByUD
+                deliveryStatus = .sent(sentStatus)
+            case .delivered:
+                var deliveredStatus = BackupProto_SendStatus.Delivered()
+                deliveredStatus.sealedSender = sendState.wasSentByUD
 
-                    deliveryStatus = .viewed(viewedStatus)
-                    statusTimestamp = viewedTimestamp.uint64Value
-                } else if let deliveryTimestamp = sendState.deliveryTimestamp {
-                    var deliveredStatus = BackupProto_SendStatus.Delivered()
-                    deliveredStatus.sealedSender = sendState.wasSentByUD
+                deliveryStatus = .delivered(deliveredStatus)
+            case .read:
+                var readStatus = BackupProto_SendStatus.Read()
+                readStatus.sealedSender = sendState.wasSentByUD
 
-                    deliveryStatus = .delivered(deliveredStatus)
-                    statusTimestamp = deliveryTimestamp.uint64Value
-                } else {
-                    var sentStatus = BackupProto_SendStatus.Sent()
-                    sentStatus.sealedSender = sendState.wasSentByUD
+                deliveryStatus = .read(readStatus)
+            case .viewed:
+                var viewedStatus = BackupProto_SendStatus.Viewed()
+                viewedStatus.sealedSender = sendState.wasSentByUD
 
-                    deliveryStatus = .sent(sentStatus)
-                    statusTimestamp = message.timestamp
-                }
-            case OWSOutgoingMessageRecipientState.failed:
+                deliveryStatus = .viewed(viewedStatus)
+            case .failed:
                 var failedStatus = BackupProto_SendStatus.Failed()
                 failedStatus.reason = { () -> BackupProto_SendStatus.Failed.FailureReason in
-                    guard let errorCode = sendState.errorCode?.intValue else {
+                    guard let errorCode = sendState.errorCode else {
                         return .unknown
                     }
 
@@ -258,18 +251,15 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
                 }()
 
                 deliveryStatus = .failed(failedStatus)
-                statusTimestamp = message.timestamp
-            case OWSOutgoingMessageRecipientState.sending, OWSOutgoingMessageRecipientState.pending:
+            case .sending, .pending:
                 deliveryStatus = .pending(BackupProto_SendStatus.Pending())
-                statusTimestamp = message.timestamp
-            case OWSOutgoingMessageRecipientState.skipped:
+            case .skipped:
                 deliveryStatus = .skipped(BackupProto_SendStatus.Skipped())
-                statusTimestamp = message.timestamp
             }
 
             var sendStatus = BackupProto_SendStatus()
             sendStatus.recipientID = recipientId.value
-            sendStatus.timestamp = statusTimestamp
+            sendStatus.timestamp = sendState.statusTimestamp
             sendStatus.deliveryStatus = deliveryStatus
 
             outgoingDetails.sendStatus.append(sendStatus)
@@ -549,34 +539,26 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
             return nil
         }
 
-        guard let recipientState = TSOutgoingMessageRecipientState() else {
-            partialErrors.append(.restoreFrameError(
-                .databaseInsertionFailed(OWSAssertionError("Unable to create recipient state!")),
-                chatItemId
-            ))
-            return nil
-        }
-
+        let recipientStatus: OWSOutgoingMessageRecipientStatus
+        var wasSentByUD: Bool = false
+        var errorCode: Int?
         switch deliveryStatus {
         case .pending(_):
-            recipientState.state = .pending
+            recipientStatus = .pending
         case .sent(let sent):
-            recipientState.state = .sent
-            recipientState.wasSentByUD = sent.sealedSender
+            recipientStatus = .sent
+            wasSentByUD = sent.sealedSender
         case .delivered(let delivered):
-            recipientState.state = .sent
-            recipientState.deliveryTimestamp = NSNumber(value: sendStatus.timestamp)
-            recipientState.wasSentByUD = delivered.sealedSender
+            recipientStatus = .delivered
+            wasSentByUD = delivered.sealedSender
         case .read(let read):
-            recipientState.state = .sent
-            recipientState.readTimestamp = NSNumber(value: sendStatus.timestamp)
-            recipientState.wasSentByUD = read.sealedSender
+            recipientStatus = .read
+            wasSentByUD = read.sealedSender
         case .viewed(let viewed):
-            recipientState.state = .sent
-            recipientState.viewedTimestamp = NSNumber(value: sendStatus.timestamp)
-            recipientState.wasSentByUD = viewed.sealedSender
+            recipientStatus = .viewed
+            wasSentByUD = viewed.sealedSender
         case .skipped(_):
-            recipientState.state = .skipped
+            recipientStatus = .skipped
         case .failed(let failed):
             let failureErrorCode: MessageBackup.SendStatusFailureErrorCode = {
                 switch failed.reason {
@@ -586,10 +568,15 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
                 }
             }()
 
-            recipientState.state = .failed
-            recipientState.errorCode = NSNumber(value: failureErrorCode.rawValue)
+            recipientStatus = .failed
+            errorCode = failureErrorCode.rawValue
         }
 
-        return recipientState
+        return TSOutgoingMessageRecipientState(
+            status: recipientStatus,
+            statusTimestamp: sendStatus.timestamp,
+            wasSentByUD: wasSentByUD,
+            errorCode: errorCode
+        )
     }
 }

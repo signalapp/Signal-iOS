@@ -12,6 +12,9 @@ extern const NSUInteger kOversizeTextMessageSizeThreshold;
 
 @class OWSOutgoingSyncMessage;
 @class SignalServiceAddress;
+@class TSOutgoingMessageRecipientState;
+
+typedef NS_ENUM(NSUInteger, OWSOutgoingMessageRecipientStatus);
 
 typedef NS_CLOSED_ENUM(NSUInteger, OutgoingGroupProtoResult) {
     OutgoingGroupProtoResult_AddedWithoutGroupAvatar,
@@ -37,27 +40,6 @@ typedef NS_CLOSED_ENUM(NSInteger, TSOutgoingMessageState) {
 
 NSString *NSStringForOutgoingMessageState(TSOutgoingMessageState value);
 
-typedef NS_CLOSED_ENUM(NSInteger, OWSOutgoingMessageRecipientState) {
-    // Message could not be sent to recipient.
-    OWSOutgoingMessageRecipientStateFailed = 0,
-    // Message is being sent to the recipient (enqueued, uploading or sending).
-    OWSOutgoingMessageRecipientStateSending,
-    // The message was not sent because the recipient is not valid
-    // or already has received the message via another channel.
-    // For example, this recipient may have left the group
-    OWSOutgoingMessageRecipientStateSkipped,
-    // The message has been sent to the service.  It may also have been delivered or read.
-    OWSOutgoingMessageRecipientStateSent,
-    // The server rejected the message send request until some other condition is satisfied.
-    // Currently, this only flags messages that the server suspects may be spam.
-    OWSOutgoingMessageRecipientStatePending,
-
-    OWSOutgoingMessageRecipientStateMin = OWSOutgoingMessageRecipientStateFailed,
-    OWSOutgoingMessageRecipientStateMax = OWSOutgoingMessageRecipientStatePending,
-};
-
-NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientState value);
-
 typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
     TSGroupMetaMessageUnspecified,
     TSGroupMetaMessageNew,
@@ -81,24 +63,6 @@ typedef NS_ENUM(NSInteger, EncryptionStyle) {
 @class ServiceIdObjC;
 @class SignalServiceAddress;
 @class TSOutgoingMessageBuilder;
-
-@interface TSOutgoingMessageRecipientState : MTLModel
-
-// These properties are mutable for Swift interop.
-
-@property (atomic) OWSOutgoingMessageRecipientState state;
-// This property should only be set if state == .sent.
-@property (atomic, nullable) NSNumber *deliveryTimestamp;
-// This property should only be set if state == .sent.
-@property (atomic, nullable) NSNumber *readTimestamp;
-// This property should only be set if state == .sent.
-@property (atomic, nullable) NSNumber *viewedTimestamp;
-// This property should only be set if state == .failed or state == .sending (with a prior failure)
-@property (atomic, nullable) NSNumber *errorCode;
-
-@property (atomic, readwrite) BOOL wasSentByUD;
-
-@end
 
 #pragma mark -
 
@@ -216,14 +180,14 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 
 @property (atomic, readonly) BOOL hasSyncedTranscript;
 @property (atomic, readonly, nullable) NSString *customMessage;
-@property (atomic, readonly, nullable) NSString *mostRecentFailureText;
+@property (atomic, nullable) NSString *mostRecentFailureText;
 
 @property (atomic, readonly) TSGroupMetaMessage groupMetaMessage;
 
 @property (nonatomic, readonly) BOOL isVoiceMessage;
 
 // This property won't be accurate for legacy messages.
-@property (atomic, readonly) BOOL wasNotCreatedLocally;
+@property (atomic) BOOL wasNotCreatedLocally;
 
 @property (nonatomic, readonly) BOOL isOnline;
 
@@ -266,84 +230,9 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
                                                                    transaction:(SDSAnyWriteTransaction *)transaction
     NS_SWIFT_NAME(buildTranscriptSyncMessage(localThread:transaction:));
 
-// All recipients of this message.
-- (NSArray<SignalServiceAddress *> *)recipientAddresses;
-
-// All recipients of this message who we are currently trying to send to (pending, queued, uploading or during send).
-- (NSArray<SignalServiceAddress *> *)sendingRecipientAddresses;
-
-// All recipients of this message to whom it has been sent (and possibly delivered or read).
-- (NSArray<SignalServiceAddress *> *)sentRecipientAddresses;
-
-// All recipients of this message to whom it has been sent and delivered (and possibly read).
-- (NSArray<SignalServiceAddress *> *)deliveredRecipientAddresses;
-
-// All recipients of this message to whom it has been sent, delivered and read.
-- (NSArray<SignalServiceAddress *> *)readRecipientAddresses;
-
-// All recipients of this message to whom it has been sent, delivered and viewed.
-- (NSArray<SignalServiceAddress *> *)viewedRecipientAddresses;
-
-// Number of recipients of this message to whom it has been sent.
-- (NSUInteger)sentRecipientsCount;
-
-- (nullable TSOutgoingMessageRecipientState *)recipientStateForAddress:(SignalServiceAddress *)address;
-
 #pragma mark - Update With... Methods
 
-// This method is used to record a successful send to one recipient.
-- (void)updateWithSentRecipient:(ServiceIdObjC *)serviceId
-                    wasSentByUD:(BOOL)wasSentByUD
-                    transaction:(SDSAnyWriteTransaction *)transaction;
-
-// This method is used to record a successful send to one recipient.
-- (void)updateWithSentRecipientAddress:(SignalServiceAddress *)recipientAddress
-                           wasSentByUD:(BOOL)wasSentByUD
-                           transaction:(SDSAnyWriteTransaction *)transaction;
-
-// This method is used to record a skipped send to one recipient.
-- (void)updateWithSkippedRecipient:(SignalServiceAddress *)recipientAddress
-                       transaction:(SDSAnyWriteTransaction *)transaction;
-
-// On app launch, all "sending" recipients should be marked as "failed".
-- (void)updateWithAllSendingRecipientsMarkedAsFailedWithTransaction:(SDSAnyWriteTransaction *)transaction;
-
-- (BOOL)hasFailedRecipients;
-
-// When we start a message send, all "failed" recipients should be marked as "sending".
-- (void)updateAllUnsentRecipientsAsSendingWithTransaction:(SDSAnyWriteTransaction *)transaction
-    NS_SWIFT_NAME(updateAllUnsentRecipientsAsSending(transaction:));
-
-// This method is used to forge the message state for fake messages.
-//
-// NOTE: This method should only be used by Debug UI, etc.
-#ifdef TESTABLE_BUILD
-- (void)updateWithFakeMessageState:(TSOutgoingMessageState)messageState
-                       transaction:(SDSAnyWriteTransaction *)transaction;
-#endif
-
-// This method is used to record a failed send to all "sending" recipients.
-- (void)updateWithSendingError:(NSError *)error
-                   transaction:(SDSAnyWriteTransaction *)transaction NS_SWIFT_NAME(update(sendingError:transaction:));
-
 - (void)updateWithHasSyncedTranscript:(BOOL)hasSyncedTranscript transaction:(SDSAnyWriteTransaction *)transaction;
-
-/// Updates recipients based on information from either a linked device outgoing message transcript, or a restored
-/// message backup.
-/// - parameter isSentUpdate: If false, treats this as message creation, overwriting all existing recipient state.
-///      Otherwise, treats this as a sent update, only adding or updating recipients, never removing.
-- (void)updateRecipientsFromNonLocalDevice:
-            (NSDictionary<SignalServiceAddress *, TSOutgoingMessageRecipientState *> *)recipientStates
-                              isSentUpdate:(BOOL)isSentUpdate
-                               transaction:(SDSAnyWriteTransaction *)transaction
-    NS_SWIFT_NAME(updateRecipientsFromNonLocalDevice(_:isSentUpdate:transaction:));
-
-- (void)updateWithRecipientAddressStates:
-            (nullable NSDictionary<SignalServiceAddress *, TSOutgoingMessageRecipientState *> *)recipientAddressStates
-                             transaction:(SDSAnyWriteTransaction *)transaction
-    NS_SWIFT_NAME(updateWith(recipientAddressStates:transaction:));
-
-- (NSString *)statusDescription;
 
 @end
 

@@ -237,7 +237,7 @@ extension OutgoingStoryMessage {
                 // For every message after the first for a given recipient, mark the
                 // recipient as skipped so we don't send them any additional copies.
                 for message in messages.dropFirst() {
-                    message.update(withSkippedRecipient: address, transaction: transaction)
+                    message.updateWithSkippedRecipient(address, transaction: transaction)
                 }
             }
         }

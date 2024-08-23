@@ -292,9 +292,12 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
                                                                           transaction: transaction).compactMap { $0 as? TSOutgoingMessage }
                         XCTAssertNotNil(fetched.first)
                         let message = fetched.first!
-                        let deliveryTimestamp = message.recipientAddressStates?[self.bobClient.address]?.deliveryTimestamp
+                        let recipientState = message.recipientState(for: self.bobClient.address)
+                        XCTAssertNotNil(recipientState)
+                        XCTAssertEqual(recipientState?.status, .delivered)
+                        let deliveryTimestamp = recipientState?.statusTimestamp
                         XCTAssertNotNil(deliveryTimestamp)
-                        XCTAssertGreaterThan(deliveryTimestamp!.uintValue, 1650000000000)
+                        XCTAssert((deliveryTimestamp ?? 0) > 1650000000000)
                         expectation.fulfill()
                     }
                 }
@@ -383,9 +386,12 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
                                                                           transaction: transaction).compactMap { $0 as? TSOutgoingMessage }
                         XCTAssertNotNil(fetched.first)
                         let message = fetched.first!
-                        let actualDeliveryTimestamp = message.recipientAddressStates?[self.bobClient.address]?.deliveryTimestamp
+                        let recipientState = message.recipientState(for: self.bobClient.address)
+                        XCTAssertNotNil(recipientState)
+                        XCTAssertEqual(recipientState?.status, .delivered)
+                        let actualDeliveryTimestamp = recipientState?.statusTimestamp
                         XCTAssertNotNil(actualDeliveryTimestamp)
-                        XCTAssertEqual(actualDeliveryTimestamp!.uint64Value, deliveryTimestamp)
+                        XCTAssertEqual(actualDeliveryTimestamp, deliveryTimestamp)
                         expectation.fulfill()
                     }
                 }

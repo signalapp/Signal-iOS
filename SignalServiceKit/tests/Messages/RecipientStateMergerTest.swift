@@ -50,10 +50,16 @@ final class RecipientStateMergerTest: XCTestCase {
             recipientStateMerger.normalize(&recipientStates, tx: tx)
         }
 
-        XCTAssertEqual(recipientStates!.removeValue(forKey: makeAddress(aci1))?.deliveryTimestamp?.uint64Value, 1)
-        XCTAssertEqual(recipientStates!.removeValue(forKey: makeAddress(aci2))?.deliveryTimestamp?.uint64Value, 2)
-        XCTAssertEqual(recipientStates!.removeValue(forKey: makeAddress(pni3))?.deliveryTimestamp?.uint64Value, 3)
-        XCTAssertEqual(recipientStates!.removeValue(forKey: makeAddress(aci4))?.deliveryTimestamp?.uint64Value, 4)
+        func assertDeliveryTimestamp(_ serviceId: ServiceId, equalTo: UInt64) {
+            let recipientState = recipientStates!.removeValue(forKey: makeAddress(serviceId))
+            XCTAssertEqual(recipientState?.status, .delivered)
+            XCTAssertEqual(recipientState?.statusTimestamp, equalTo)
+        }
+
+        assertDeliveryTimestamp(aci1, equalTo: 1)
+        assertDeliveryTimestamp(aci2, equalTo: 2)
+        assertDeliveryTimestamp(pni3, equalTo: 3)
+        assertDeliveryTimestamp(aci4, equalTo: 4)
         XCTAssertEqual(recipientStates, [:])
     }
 
@@ -66,8 +72,11 @@ final class RecipientStateMergerTest: XCTestCase {
     }
 
     private func makeState(deliveryTimestamp: UInt64) -> TSOutgoingMessageRecipientState {
-        let result = TSOutgoingMessageRecipientState()!
-        result.deliveryTimestamp = NSNumber(value: deliveryTimestamp)
-        return result
+        return TSOutgoingMessageRecipientState(
+            status: .delivered,
+            statusTimestamp: deliveryTimestamp,
+            wasSentByUD: false,
+            errorCode: nil
+        )
     }
 }

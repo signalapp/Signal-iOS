@@ -46,7 +46,7 @@ class TSOutgoingMessageTest: SSKBaseTest {
 
             XCTAssertFalse(message.shouldStartExpireTimer())
 
-            message.update(withSentRecipient: ServiceIdObjC.wrapValue(otherAci), wasSentByUD: false, transaction: transaction)
+            message.updateWithSentRecipient(otherAci, wasSentByUD: false, transaction: transaction)
 
             XCTAssertFalse(message.shouldStartExpireTimer())
         }
@@ -64,7 +64,7 @@ class TSOutgoingMessageTest: SSKBaseTest {
 
             XCTAssertFalse(message.shouldStartExpireTimer())
 
-            message.update(withSentRecipient: ServiceIdObjC.wrapValue(otherAci), wasSentByUD: false, transaction: transaction)
+            message.updateWithSentRecipient(otherAci, wasSentByUD: false, transaction: transaction)
 
             XCTAssertTrue(message.shouldStartExpireTimer())
         }
@@ -137,7 +137,7 @@ class TSOutgoingMessageTest: SSKBaseTest {
             message.anyInsert(transaction: transaction)
             let messageData = message.buildPlainTextData(thread, transaction: transaction)!
 
-            message.update(withSentRecipient: ServiceIdObjC.wrapValue(otherAci), wasSentByUD: true, transaction: transaction)
+            message.updateWithSentRecipient(otherAci, wasSentByUD: true, transaction: transaction)
 
             let messageSendLog = SSKEnvironment.shared.messageSendLogRef
             let payloadId = messageSendLog.recordPayload(messageData, for: message, tx: transaction)!
@@ -177,7 +177,7 @@ class TSOutgoingMessageTest: SSKBaseTest {
             message.anyInsert(transaction: transaction)
             let messageData = message.buildPlainTextData(thread, transaction: transaction)!
 
-            message.update(withSentRecipient: ServiceIdObjC.wrapValue(otherAci), wasSentByUD: true, transaction: transaction)
+            message.updateWithSentRecipient(otherAci, wasSentByUD: true, transaction: transaction)
 
             let messageSendLog = SSKEnvironment.shared.messageSendLogRef
             let payloadId = messageSendLog.recordPayload(messageData, for: message, tx: transaction)!
@@ -236,7 +236,7 @@ class TSOutgoingMessageTest: SSKBaseTest {
             message.anyInsert(transaction: transaction)
             let messageData = message.buildPlainTextData(thread, transaction: transaction)!
 
-            message.update(withSentRecipient: ServiceIdObjC.wrapValue(otherAci), wasSentByUD: false, transaction: transaction)
+            message.updateWithSentRecipient(otherAci, wasSentByUD: false, transaction: transaction)
 
             let messageSendLog = SSKEnvironment.shared.messageSendLogRef
             let payloadId = messageSendLog.recordPayload(messageData, for: message, tx: transaction)!
@@ -276,7 +276,7 @@ class TSOutgoingMessageTest: SSKBaseTest {
             message.anyInsert(transaction: transaction)
             let messageData = message.buildPlainTextData(thread, transaction: transaction)!
 
-            message.update(withSentRecipient: ServiceIdObjC.wrapValue(otherAci), wasSentByUD: true, transaction: transaction)
+            message.updateWithSentRecipient(otherAci, wasSentByUD: true, transaction: transaction)
 
             let messageSendLog = SSKEnvironment.shared.messageSendLogRef
             let payloadId = messageSendLog.recordPayload(messageData, for: message, tx: transaction)!
@@ -320,7 +320,7 @@ class TSOutgoingMessageTest: SSKBaseTest {
             message.anyInsert(transaction: transaction)
             let messageData = message.buildPlainTextData(thread, transaction: transaction)!
 
-            message.update(withSentRecipient: ServiceIdObjC.wrapValue(otherAci), wasSentByUD: true, transaction: transaction)
+            message.updateWithSentRecipient(otherAci, wasSentByUD: true, transaction: transaction)
 
             let messageSendLog = SSKEnvironment.shared.messageSendLogRef
             let payloadId = messageSendLog.recordPayload(messageData, for: message, tx: transaction)!

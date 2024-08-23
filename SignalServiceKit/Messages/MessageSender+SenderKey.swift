@@ -228,8 +228,8 @@ extension MessageSender {
             }
 
             sendResult.success.forEach { recipient in
-                message.update(
-                    withSentRecipient: ServiceIdObjC.wrapValue(recipient.serviceId),
+                message.updateWithSentRecipient(
+                    recipient.serviceId,
                     wasSentByUD: true,
                     transaction: tx
                 )

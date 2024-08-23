@@ -142,7 +142,7 @@ class StoryInfoSheet: OWSTableSheetViewController {
 
         var sections = [OWSTableSection]()
 
-        let orderedSendingStates: [OWSOutgoingMessageRecipientState] = [
+        let orderedSendingStates: [OWSOutgoingMessageRecipientStatus] = [
             .sent,
             .sending,
             .pending,
@@ -178,9 +178,9 @@ class StoryInfoSheet: OWSTableSheetViewController {
         return sections
     }
 
-    private func sectionTitle(for state: OWSOutgoingMessageRecipientState) -> String {
+    private func sectionTitle(for state: OWSOutgoingMessageRecipientStatus) -> String {
         switch state {
-        case .sent:
+        case .sent, .delivered, .read, .viewed:
             return OWSLocalizedString(
                 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT",
                 comment: "Status label for messages which are sent."
@@ -208,9 +208,9 @@ class StoryInfoSheet: OWSTableSheetViewController {
         }
     }
 
-    private func statusMessage(for state: OWSOutgoingMessageRecipientState) -> String {
+    private func statusMessage(for state: OWSOutgoingMessageRecipientStatus) -> String {
         switch state {
-        case .sent:
+        case .sent, .delivered, .read, .viewed:
             return DateUtil.formatPastTimestampRelativeToNow(storyMessage.timestamp)
         case .sending:
             return OWSLocalizedString("MESSAGE_STATUS_SENDING", comment: "message status while message is sending.")

@@ -261,11 +261,12 @@ private class MockOutgoingMessage: TSOutgoingMessage {
     }
 
     override func recipientState(for recipientAddress: SignalServiceAddress) -> TSOutgoingMessageRecipientState? {
-        let result = TSOutgoingMessageRecipientState()!
-        result.state = .sent
-        result.deliveryTimestamp = NSNumber(value: NSDate.ows_millisecondTimeStamp())
-        result.readTimestamp = NSNumber(value: NSDate.ows_millisecondTimeStamp())
-        return result
+        return TSOutgoingMessageRecipientState(
+            status: .read,
+            statusTimestamp: Date().ows_millisecondsSince1970,
+            wasSentByUD: true,
+            errorCode: nil
+        )
     }
 }
 

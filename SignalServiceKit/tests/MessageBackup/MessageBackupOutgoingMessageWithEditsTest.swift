@@ -18,10 +18,7 @@ final class MessageBackupOutgoingMessageWithEditsTest: MessageBackupIntegrationT
     func testOutgoingMessageWithEdits() async throws {
         let hanAci = Aci.constantForTesting("5F8C568D-0119-47BD-81AA-BB87C9B71995")
 
-        try await runTest(
-            backupName: "outgoing-message-with-edits",
-            enableLibsignalComparator: false
-        ) { sdsTx, tx in
+        try await runTest(backupName: "outgoing-message-with-edits") { sdsTx, tx in
             let allInteractions = try deps.interactionStore.fetchAllInteractions(tx: tx)
             /// The message, and two previous revisions.
             XCTAssertEqual(allInteractions.count, 3)
@@ -64,23 +61,24 @@ final class MessageBackupOutgoingMessageWithEditsTest: MessageBackupIntegrationT
             XCTAssertEqual(originalRevision.body, "Original message")
             XCTAssertEqual(originalRevision.timestamp, 1000)
             XCTAssertNil(try singleRecipientState(originalRevision).errorCode)
-            XCTAssertEqual(try singleRecipientState(originalRevision).state, .sent)
-            XCTAssertEqual(try singleRecipientState(originalRevision).readTimestamp?.uint64Value, 1001)
+            XCTAssertEqual(try singleRecipientState(originalRevision).status, .read)
+            XCTAssertEqual(try singleRecipientState(originalRevision).statusTimestamp, 1001)
             XCTAssertEqual(originalRevision.editState, .pastRevision)
 
             /// ...and that we got the intermediate revision...
             XCTAssertEqual(middleRevision.body, "First revision")
             XCTAssertEqual(middleRevision.timestamp, 2000)
             XCTAssertNil(try singleRecipientState(middleRevision).errorCode)
-            XCTAssertEqual(try singleRecipientState(middleRevision).state, .sent)
-            XCTAssertEqual(try singleRecipientState(middleRevision).deliveryTimestamp?.uint64Value, 2001)
+            XCTAssertEqual(try singleRecipientState(middleRevision).status, .delivered)
+            XCTAssertEqual(try singleRecipientState(middleRevision).statusTimestamp, 2001)
             XCTAssertEqual(middleRevision.editState, .pastRevision)
 
             /// ...and the final revision...
             XCTAssertEqual(mostRecentRevision.body, "Latest revision")
             XCTAssertEqual(mostRecentRevision.timestamp, 3000)
             XCTAssertNil(try singleRecipientState(mostRecentRevision).errorCode)
-            XCTAssertEqual(try singleRecipientState(mostRecentRevision).state, .sent)
+            XCTAssertEqual(try singleRecipientState(mostRecentRevision).status, .sent)
+            XCTAssertEqual(try singleRecipientState(mostRecentRevision).statusTimestamp, 3001)
             XCTAssertEqual(mostRecentRevision.editState, .latestRevisionRead)
 
             /// ...and its downstream reactions.

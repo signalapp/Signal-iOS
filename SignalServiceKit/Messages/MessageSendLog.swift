@@ -314,7 +314,12 @@ public class MessageSendLog {
 
             // This block of code just avoids a spurious assert by only asserting if the message has not been marked delivered:
             let dbCopy = TSOutgoingMessage.anyFetchOutgoingMessage(uniqueId: message.uniqueId, transaction: tx)
-            owsAssertDebug(dbCopy?.recipientState(for: SignalServiceAddress(recipientAci))?.deliveryTimestamp != nil)
+            switch dbCopy?.recipientState(for: SignalServiceAddress(recipientAci))?.status {
+            case .delivered, .read, .viewed:
+                break
+            case nil, .failed, .sending, .skipped, .sent, .pending:
+                owsFailDebug("Unexpected foreign key constraint violation!")
+            }
         } catch {
             owsFailDebug("Failed to record pending delivery \(error)")
         }

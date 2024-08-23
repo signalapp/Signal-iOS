@@ -265,12 +265,14 @@ public class PreparedOutgoingMessage {
         messageForSendStateUpdates.updateAllUnsentRecipientsAsSending(transaction: tx)
     }
 
-    public func updateWithAllSendingRecipientsMarkedAsFailed(tx: SDSAnyWriteTransaction) {
-        messageForSendStateUpdates.updateWithAllSendingRecipientsMarkedAsFailed(with: tx)
-    }
-
-    public func updateWithSendingError(_ error: Error, tx: SDSAnyWriteTransaction) {
-        messageForSendStateUpdates.update(sendingError: error, transaction: tx)
+    public func updateWithAllSendingRecipientsMarkedAsFailed(
+        error: (any Error)? = nil,
+        tx: SDSAnyWriteTransaction
+    ) {
+        messageForSendStateUpdates.updateWithAllSendingRecipientsMarkedAsFailed(
+            error: error,
+            transaction: tx
+        )
     }
 
     // MARK: - Persistence

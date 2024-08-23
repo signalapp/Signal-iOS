@@ -91,7 +91,7 @@ public extension DecodableDefault {
         }
 
         public enum OutgoingMessageSending: Source {
-            public static var defaultValue: OWSOutgoingMessageRecipientState { .sending }
+            public static var defaultValue: OWSOutgoingMessageRecipientStatus { .sending }
         }
     }
 }

@@ -159,10 +159,13 @@ public class OWSIncomingSentMessageTranscript: Dependencies, SentMessageTranscri
                 continue
             }
 
-            let recipientState: TSOutgoingMessageRecipientState = TSOutgoingMessageRecipientState()
-            recipientState.state = .sent
-            recipientState.wasSentByUD = statusProto.unidentified
-            recipientStates[.init(serviceId: serviceId, e164: nil)] = recipientState
+            let recipientState = TSOutgoingMessageRecipientState(
+                status: .sent,
+                statusTimestamp: sentProto.timestamp,
+                wasSentByUD: statusProto.unidentified,
+                errorCode: nil
+            )
+            recipientStates[SignalServiceAddress(serviceId)] = recipientState
         }
 
         guard validateTimestampsMatch(type: type, sentProto: sentProto, dataMessage: dataMessage) else {

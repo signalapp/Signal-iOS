@@ -42,7 +42,7 @@ public class MessageRecipientStatusUtils {
         hasBodyAttachments: Bool
     ) -> (status: MessageReceiptStatus, shortStatusMessage: String, longStatusMessage: String) {
 
-        switch recipientState.state {
+        switch recipientState.status {
         case .failed:
             let shortStatusMessage = OWSLocalizedString("MESSAGE_STATUS_FAILED_SHORT", comment: "status message for failed messages")
             let longStatusMessage = OWSLocalizedString("MESSAGE_STATUS_FAILED", comment: "status message for failed messages")
@@ -66,31 +66,27 @@ public class MessageRecipientStatusUtils {
                 return (status: .sending, shortStatusMessage: statusMessage, longStatusMessage: statusMessage)
             }
         case .sent:
-            if let viewedTimestamp = recipientState.viewedTimestamp {
-                let timestampString = DateUtil.formatPastTimestampRelativeToNow(viewedTimestamp.uint64Value)
-                let shortStatusMessage = timestampString
-                let longStatusMessage = OWSLocalizedString("MESSAGE_STATUS_VIEWED", comment: "status message for viewed messages") + " " + timestampString
-                return (status: .viewed, shortStatusMessage: shortStatusMessage, longStatusMessage: longStatusMessage)
-            }
-            if let readTimestamp = recipientState.readTimestamp {
-                let timestampString = DateUtil.formatPastTimestampRelativeToNow(readTimestamp.uint64Value)
-                let shortStatusMessage = timestampString
-                let longStatusMessage = OWSLocalizedString("MESSAGE_STATUS_READ", comment: "status message for read messages") + " " + timestampString
-                return (status: .read, shortStatusMessage: shortStatusMessage, longStatusMessage: longStatusMessage)
-            }
-            if let deliveryTimestamp = recipientState.deliveryTimestamp {
-                let timestampString = DateUtil.formatPastTimestampRelativeToNow(deliveryTimestamp.uint64Value)
-                let shortStatusMessage = timestampString
-                let longStatusMessage = OWSLocalizedString("MESSAGE_STATUS_DELIVERED",
-                                                          comment: "message status for message delivered to their recipient.") + " " + timestampString
-                return (status: .delivered, shortStatusMessage: shortStatusMessage, longStatusMessage: longStatusMessage)
-            }
-
             let timestampString = DateUtil.formatPastTimestampRelativeToNow(outgoingMessage.timestamp)
             let shortStatusMessage = timestampString
             let longStatusMessage = OWSLocalizedString("MESSAGE_STATUS_SENT",
                                                       comment: "status message for sent messages") + " " + timestampString
             return (status: .sent, shortStatusMessage: shortStatusMessage, longStatusMessage: longStatusMessage)
+        case .delivered:
+            let timestampString = DateUtil.formatPastTimestampRelativeToNow(recipientState.statusTimestamp)
+            let shortStatusMessage = timestampString
+            let longStatusMessage = OWSLocalizedString("MESSAGE_STATUS_DELIVERED",
+                                                       comment: "message status for message delivered to their recipient.") + " " + timestampString
+            return (status: .delivered, shortStatusMessage: shortStatusMessage, longStatusMessage: longStatusMessage)
+        case .read:
+            let timestampString = DateUtil.formatPastTimestampRelativeToNow(recipientState.statusTimestamp)
+            let shortStatusMessage = timestampString
+            let longStatusMessage = OWSLocalizedString("MESSAGE_STATUS_READ", comment: "status message for read messages") + " " + timestampString
+            return (status: .read, shortStatusMessage: shortStatusMessage, longStatusMessage: longStatusMessage)
+        case .viewed:
+            let timestampString = DateUtil.formatPastTimestampRelativeToNow(recipientState.statusTimestamp)
+            let shortStatusMessage = timestampString
+            let longStatusMessage = OWSLocalizedString("MESSAGE_STATUS_VIEWED", comment: "status message for viewed messages") + " " + timestampString
+            return (status: .viewed, shortStatusMessage: shortStatusMessage, longStatusMessage: longStatusMessage)
         case .skipped:
             let statusMessage = OWSLocalizedString("MESSAGE_STATUS_RECIPIENT_SKIPPED",
                                                   comment: "message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account.")

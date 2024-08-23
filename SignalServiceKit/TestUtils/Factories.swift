@@ -470,7 +470,7 @@ public class ConversationFactory: NSObject {
                 )
             }
 
-            message.update(withFakeMessageState: .sent, transaction: asyncTransaction)
+            message.updateWithFakeMessageState(.sent, tx: asyncTransaction)
         }
 
         return message

@@ -1107,8 +1107,8 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                 outgoingMessageBuilder.timestamp = timestamp
                 let outgoingMessage = outgoingMessageBuilder.build(transaction: transaction)
                 outgoingMessage.anyInsert(transaction: transaction)
-                outgoingMessage.update(withFakeMessageState: .sent, transaction: transaction)
-                outgoingMessage.update(withSentRecipient: ServiceIdObjC.wrapValue(incomingSenderAci), wasSentByUD: false, transaction: transaction)
+                outgoingMessage.updateWithFakeMessageState(.sent, tx: transaction)
+                outgoingMessage.updateWithSentRecipient(incomingSenderAci, wasSentByUD: false, transaction: transaction)
                 outgoingMessage.update(
                     withDeliveredRecipient: SignalServiceAddress(incomingSenderAci),
                     deviceId: 0,
@@ -1652,7 +1652,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
 
         contactShareBlock?(message, transaction)
 
-        message.update(withFakeMessageState: messageState, transaction: transaction)
+        message.updateWithFakeMessageState(messageState, tx: transaction)
 
         try? quotedMessageBuilder?.finalize(
             owner: .quotedReplyAttachment(.init(

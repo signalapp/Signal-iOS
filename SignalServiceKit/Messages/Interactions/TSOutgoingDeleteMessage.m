@@ -107,7 +107,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.messageUniqueId) {
         TSOutgoingMessage *deletedMessage = [TSOutgoingMessage anyFetchOutgoingMessageWithUniqueId:self.messageUniqueId
                                                                                        transaction:transaction];
-        [deletedMessage updateWithRecipientAddressStates:self.recipientAddressStates transaction:transaction];
+        [deletedMessage updateWithRecipientAddressStates:self.recipientAddressStates tx:transaction];
     }
 }
 

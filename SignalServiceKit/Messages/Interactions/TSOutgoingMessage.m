@@ -39,39 +39,11 @@ NSString *NSStringForOutgoingMessageState(TSOutgoingMessageState value)
     }
 }
 
-NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientState value)
-{
-    switch (value) {
-        case OWSOutgoingMessageRecipientStateFailed:
-            return @"OWSOutgoingMessageRecipientStateFailed";
-        case OWSOutgoingMessageRecipientStateSending:
-            return @"OWSOutgoingMessageRecipientStateSending";
-        case OWSOutgoingMessageRecipientStateSkipped:
-            return @"OWSOutgoingMessageRecipientStateSkipped";
-        case OWSOutgoingMessageRecipientStateSent:
-            return @"OWSOutgoingMessageRecipientStateSent";
-        case OWSOutgoingMessageRecipientStatePending:
-            return @"OWSOutgoingMessageRecipientStatePending";
-    }
-}
-
 #pragma mark -
 
 @interface TSMessage (Private)
 
 - (void)removeAllAttachmentsWithTransaction:(SDSAnyWriteTransaction *)transaction;
-
-@end
-
-#pragma mark -
-
-@interface TSOutgoingMessageRecipientState ()
-
-@end
-
-#pragma mark -
-
-@implementation TSOutgoingMessageRecipientState
 
 @end
 
@@ -83,8 +55,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
 @property (atomic) BOOL hasSyncedTranscript;
 @property (atomic, nullable) NSString *customMessage;
-@property (atomic, nullable) NSString *mostRecentFailureText;
-@property (atomic) BOOL wasNotCreatedLocally;
 @property (atomic) TSGroupMetaMessage groupMetaMessage;
 @property (nonatomic, readonly) NSUInteger outgoingMessageSchemaVersion;
 
@@ -261,10 +231,13 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
             OWSFailDebug(@"Ignoring invalid address.");
             continue;
         }
-        TSOutgoingMessageRecipientState *recipientState = [TSOutgoingMessageRecipientState new];
-        recipientState.state = [skippedRecipientsSet containsObject:recipientAddress]
-            ? OWSOutgoingMessageRecipientStateSkipped
-            : OWSOutgoingMessageRecipientStateSending;
+
+        OWSOutgoingMessageRecipientStatus recipientStatus = [skippedRecipientsSet containsObject:recipientAddress]
+            ? OWSOutgoingMessageRecipientStatusSkipped
+            : OWSOutgoingMessageRecipientStatusSending;
+
+        TSOutgoingMessageRecipientState *recipientState =
+            [[TSOutgoingMessageRecipientState alloc] initWithStatus:recipientStatus];
         recipientAddressStates[recipientAddress] = recipientState;
     }
 
@@ -355,34 +328,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     return (self.hasLegacyMessageState && self.messageState == TSOutgoingMessageStateSent);
 }
 
-+ (TSOutgoingMessageState)messageStateForRecipientStates:(NSArray<TSOutgoingMessageRecipientState *> *)recipientStates
-{
-    OWSAssertDebug(recipientStates);
-
-    // If there are any "sending" recipients, consider this message "sending".
-    // If there are any "pending" recipients, consider this message "pending".
-    BOOL hasFailed = NO;
-    for (TSOutgoingMessageRecipientState *recipientState in recipientStates) {
-        if (recipientState.state == OWSOutgoingMessageRecipientStateSending) {
-            return TSOutgoingMessageStateSending;
-        } else if (recipientState.state == OWSOutgoingMessageRecipientStatePending) {
-            return TSOutgoingMessageStatePending;
-        } else if (recipientState.state == OWSOutgoingMessageRecipientStateFailed) {
-            hasFailed = YES;
-        }
-    }
-
-    // If there are any "failed" recipients, consider this message "failed".
-    if (hasFailed) {
-        return TSOutgoingMessageStateFailed;
-    }
-
-    // Otherwise, consider the message "sent".
-    //
-    // NOTE: This includes messages with no recipients.
-    return TSOutgoingMessageStateSent;
-}
-
 - (BOOL)shouldBeSaved
 {
     if (!super.shouldBeSaved) {
@@ -461,155 +406,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     return OWSInteractionType_OutgoingMessage;
 }
 
-// MCR: Check what calls this method and if it needs to be changed.
-- (NSArray<SignalServiceAddress *> *)recipientAddresses
-{
-    return self.recipientAddressStates.allKeys;
-}
-
-- (NSArray<SignalServiceAddress *> *)sendingRecipientAddresses
-{
-    NSMutableArray<SignalServiceAddress *> *result = [NSMutableArray new];
-    for (SignalServiceAddress *recipientAddress in self.recipientAddressStates) {
-        TSOutgoingMessageRecipientState *recipientState = self.recipientAddressStates[recipientAddress];
-        if (recipientState.state == OWSOutgoingMessageRecipientStateSending
-            || recipientState.state == OWSOutgoingMessageRecipientStatePending) {
-            [result addObject:recipientAddress];
-        }
-    }
-    return result;
-}
-
-- (NSArray<SignalServiceAddress *> *)sentRecipientAddresses
-{
-    NSMutableArray<SignalServiceAddress *> *result = [NSMutableArray new];
-    for (SignalServiceAddress *recipientAddress in self.recipientAddressStates) {
-        TSOutgoingMessageRecipientState *recipientState = self.recipientAddressStates[recipientAddress];
-        if (recipientState.state == OWSOutgoingMessageRecipientStateSent) {
-            [result addObject:recipientAddress];
-        }
-    }
-    return result;
-}
-
-- (NSArray<SignalServiceAddress *> *)deliveredRecipientAddresses
-{
-    NSMutableArray<SignalServiceAddress *> *result = [NSMutableArray new];
-    for (SignalServiceAddress *recipientAddress in self.recipientAddressStates) {
-        TSOutgoingMessageRecipientState *recipientState = self.recipientAddressStates[recipientAddress];
-        if (recipientState.deliveryTimestamp != nil) {
-            [result addObject:recipientAddress];
-        }
-    }
-    return result;
-}
-
-- (NSArray<SignalServiceAddress *> *)readRecipientAddresses
-{
-    NSMutableArray<SignalServiceAddress *> *result = [NSMutableArray new];
-    for (SignalServiceAddress *recipientAddress in self.recipientAddressStates) {
-        TSOutgoingMessageRecipientState *recipientState = self.recipientAddressStates[recipientAddress];
-        if (recipientState.readTimestamp != nil) {
-            [result addObject:recipientAddress];
-        }
-    }
-    return result;
-}
-
-- (NSArray<SignalServiceAddress *> *)viewedRecipientAddresses
-{
-    NSMutableArray<SignalServiceAddress *> *result = [NSMutableArray new];
-    for (SignalServiceAddress *recipientAddress in self.recipientAddressStates) {
-        TSOutgoingMessageRecipientState *recipientState = self.recipientAddressStates[recipientAddress];
-        if (recipientState.viewedTimestamp != nil) {
-            [result addObject:recipientAddress];
-        }
-    }
-    return result;
-}
-
-- (NSUInteger)sentRecipientsCount
-{
-    return [self.recipientAddressStates
-                .allValues filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(
-                                                           TSOutgoingMessageRecipientState *recipientState,
-                                                           NSDictionary<NSString *, id> *_Nullable bindings) {
-        return recipientState.state == OWSOutgoingMessageRecipientStateSent;
-    }]].count;
-}
-
-// MCR: Check what calls this and if it needs to be changed.
-- (nullable TSOutgoingMessageRecipientState *)recipientStateForAddress:(SignalServiceAddress *)address
-{
-    OWSAssertDebug(address.isValid);
-
-    TSOutgoingMessageRecipientState *_Nullable result = self.recipientAddressStates[address];
-    OWSAssertDebug(result);
-    return [result copy];
-}
-
 #pragma mark - Update With... Methods
-
-- (void)updateWithSendingError:(NSError *)error transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(error);
-    [self
-        anyUpdateOutgoingMessageWithTransaction:transaction
-                                          block:^(TSOutgoingMessage *message) {
-                                              // Mark any "sending" recipients as "failed."
-                                              for (TSOutgoingMessageRecipientState *recipientState in message
-                                                       .recipientAddressStates.allValues) {
-                                                  if (recipientState.state == OWSOutgoingMessageRecipientStateSending) {
-                                                      recipientState.state = OWSOutgoingMessageRecipientStateFailed;
-                                                  }
-                                              }
-                                              [message setMostRecentFailureText:error.userErrorDescription];
-                                          }];
-}
-
-- (void)updateWithAllSendingRecipientsMarkedAsFailedWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(transaction);
-
-    [self
-        anyUpdateOutgoingMessageWithTransaction:transaction
-                                          block:^(TSOutgoingMessage *message) {
-                                              // Mark any "sending" recipients as "failed."
-                                              for (TSOutgoingMessageRecipientState *recipientState in message
-                                                       .recipientAddressStates.allValues) {
-                                                  if (recipientState.state == OWSOutgoingMessageRecipientStateSending) {
-                                                      recipientState.state = OWSOutgoingMessageRecipientStateFailed;
-                                                  }
-                                              }
-                                          }];
-}
-
-- (BOOL)hasFailedRecipients
-{
-    for (TSOutgoingMessageRecipientState *recipientState in self.recipientAddressStates.allValues) {
-        if (recipientState.state == OWSOutgoingMessageRecipientStateFailed) {
-            return YES;
-        }
-    }
-    return NO;
-}
-
-- (void)updateAllUnsentRecipientsAsSendingWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(transaction);
-
-    [self
-        anyUpdateOutgoingMessageWithTransaction:transaction
-                                          block:^(TSOutgoingMessage *message) {
-                                              // Mark any "failed" recipients as "sending."
-                                              for (TSOutgoingMessageRecipientState *recipientState in message
-                                                       .recipientAddressStates.allValues) {
-                                                  if (recipientState.state == OWSOutgoingMessageRecipientStateFailed) {
-                                                      recipientState.state = OWSOutgoingMessageRecipientStateSending;
-                                                  }
-                                              }
-                                          }];
-}
 
 - (void)updateWithHasSyncedTranscript:(BOOL)hasSyncedTranscript transaction:(SDSAnyWriteTransaction *)transaction
 {
@@ -618,156 +415,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                                 [message setHasSyncedTranscript:hasSyncedTranscript];
                                             }];
 }
-
-- (void)updateWithSentRecipient:(ServiceIdObjC *)serviceId
-                    wasSentByUD:(BOOL)wasSentByUD
-                    transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(serviceId);
-    OWSAssertDebug(transaction);
-
-    SignalServiceAddress *recipientAddress = [[SignalServiceAddress alloc] initWithServiceIdObjC:serviceId];
-    [self updateWithSentRecipientAddress:recipientAddress wasSentByUD:wasSentByUD transaction:transaction];
-}
-
-- (void)updateWithSentRecipientAddress:(SignalServiceAddress *)recipientAddress
-                           wasSentByUD:(BOOL)wasSentByUD
-                           transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(recipientAddress);
-    OWSAssertDebug(transaction);
-    [self anyUpdateOutgoingMessageWithTransaction:transaction
-                                            block:^(TSOutgoingMessage *message) {
-                                                TSOutgoingMessageRecipientState *_Nullable recipientState
-                                                    = message.recipientAddressStates[recipientAddress];
-                                                if (!recipientState) {
-                                                    OWSFailDebug(
-                                                        @"Missing recipient state for recipient: %@", recipientAddress);
-                                                    return;
-                                                }
-                                                recipientState.state = OWSOutgoingMessageRecipientStateSent;
-                                                recipientState.wasSentByUD = wasSentByUD;
-                                                recipientState.errorCode = nil;
-                                            }];
-}
-
-- (void)updateWithSkippedRecipient:(SignalServiceAddress *)recipientAddress
-                       transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(recipientAddress.isValid);
-    OWSAssertDebug(transaction);
-
-    [self anyUpdateOutgoingMessageWithTransaction:transaction
-                                            block:^(TSOutgoingMessage *message) {
-                                                TSOutgoingMessageRecipientState *_Nullable recipientState
-                                                    = message.recipientAddressStates[recipientAddress];
-                                                if (!recipientState) {
-                                                    OWSFailDebug(
-                                                        @"Missing recipient state for recipient: %@", recipientAddress);
-                                                    return;
-                                                }
-                                                recipientState.state = OWSOutgoingMessageRecipientStateSkipped;
-                                            }];
-}
-
-- (void)updateRecipientsFromNonLocalDevice:
-            (NSDictionary<SignalServiceAddress *, TSOutgoingMessageRecipientState *> *)recipientStates
-                              isSentUpdate:(BOOL)isSentUpdate
-                               transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(transaction);
-
-    [self anyUpdateOutgoingMessageWithTransaction:transaction
-                                            block:^(TSOutgoingMessage *message) {
-                                                if (recipientStates.count > 0) {
-                                                    // If we have specific recipient info from the transcript,
-                                                    // build a new recipient state map.
-
-
-                                                    if (isSentUpdate) {
-                                                        // If this is a "sent update", make sure that:
-                                                        //
-                                                        // a) "Sent updates" should never remove any recipients.  We end
-                                                        // up with the
-                                                        //    union of the existing and new recipients.
-                                                        // b) "Sent updates" should never downgrade the "recipient
-                                                        // state" for any
-                                                        //    recipients.  Prefer existing "recipient state"; "sent
-                                                        //    updates" only add new recipients at the "sent" state.
-                                                        //
-                                                        // Therefore we retain all existing entries in the recipient
-                                                        // state map.
-                                                        NSMutableDictionary<SignalServiceAddress *,
-                                                            TSOutgoingMessageRecipientState *> *recipientAddressStates
-                                                            = recipientStates.mutableCopy;
-                                                        [recipientAddressStates
-                                                            addEntriesFromDictionary:self.recipientAddressStates];
-                                                        [message setRecipientAddressStates:recipientAddressStates];
-                                                    } else {
-                                                        [message setRecipientAddressStates:recipientStates];
-                                                    }
-                                                } else {
-                                                    // Otherwise assume this is a legacy message before UD was
-                                                    // introduced, and mark any "sending" recipient as "sent".  Note
-                                                    // that this will apply to non-legacy messages with no recipients.
-                                                    for (TSOutgoingMessageRecipientState *recipientState in message
-                                                             .recipientAddressStates.allValues) {
-                                                        if (recipientState.state
-                                                            == OWSOutgoingMessageRecipientStateSending) {
-                                                            recipientState.state = OWSOutgoingMessageRecipientStateSent;
-                                                        }
-                                                    }
-                                                }
-
-                                                if (!isSentUpdate) {
-                                                    [message setWasNotCreatedLocally:YES];
-                                                }
-                                            }];
-}
-
-- (void)updateWithRecipientAddressStates:
-            (nullable NSDictionary<SignalServiceAddress *, TSOutgoingMessageRecipientState *> *)recipientAddressStates
-                             transaction:(SDSAnyWriteTransaction *)transaction
-{
-    [self anyUpdateOutgoingMessageWithTransaction:transaction
-                                            block:^(TSOutgoingMessage *message) {
-                                                message.recipientAddressStates = [recipientAddressStates copy];
-                                            }];
-}
-
-#ifdef TESTABLE_BUILD
-- (void)updateWithFakeMessageState:(TSOutgoingMessageState)messageState
-                       transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(transaction);
-    [self anyUpdateOutgoingMessageWithTransaction:transaction
-                                            block:^(TSOutgoingMessage *message) {
-                                                for (TSOutgoingMessageRecipientState *recipientState in message
-                                                         .recipientAddressStates.allValues) {
-                                                    switch (messageState) {
-                                                        case TSOutgoingMessageStateSending:
-                                                            recipientState.state
-                                                                = OWSOutgoingMessageRecipientStateSending;
-                                                            break;
-                                                        case TSOutgoingMessageStateFailed:
-                                                            recipientState.state
-                                                                = OWSOutgoingMessageRecipientStateFailed;
-                                                            break;
-                                                        case TSOutgoingMessageStateSent:
-                                                            recipientState.state = OWSOutgoingMessageRecipientStateSent;
-                                                            break;
-                                                        case TSOutgoingMessageStatePending:
-                                                            recipientState.state
-                                                                = OWSOutgoingMessageRecipientStatePending;
-                                                            break;
-                                                        default:
-                                                            OWSFailDebug(@"unexpected message state.");
-                                                            break;
-                                                    }
-                                                }
-                                            }];
-}
-#endif
 
 #pragma mark -
 
@@ -1023,18 +670,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                                          outgoingMessage:self
                                                        isRecipientUpdate:self.hasSyncedTranscript
                                                              transaction:transaction];
-}
-
-- (NSString *)statusDescription
-{
-    NSMutableString *result = [NSMutableString new];
-    [result appendFormat:@"[status: %@\n", NSStringForOutgoingMessageState(self.messageState)];
-    for (SignalServiceAddress *address in self.recipientAddressStates) {
-        TSOutgoingMessageRecipientState *recipientState = self.recipientAddressStates[address];
-        [result appendFormat:@", %@: %@\n", address, NSStringForOutgoingMessageRecipientState(recipientState.state)];
-    }
-    [result appendString:@"]"];
-    return [result copy];
 }
 
 @end

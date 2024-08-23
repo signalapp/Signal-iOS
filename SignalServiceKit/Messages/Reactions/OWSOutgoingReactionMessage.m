@@ -62,12 +62,6 @@ NS_ASSUME_NONNULL_BEGIN
     return builder;
 }
 
-- (void)updateWithSendingError:(NSError *)error transaction:(SDSAnyWriteTransaction *)transaction
-{
-    [super updateWithSendingError:error transaction:transaction];
-    [self revertLocalStateIfFailedForEveryoneWithTx:transaction];
-}
-
 - (NSSet<NSString *> *)relatedUniqueIds
 {
     return [[super relatedUniqueIds] setByAddingObjectsFromArray:@[ self.messageUniqueId ]];

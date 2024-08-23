@@ -46,7 +46,7 @@ public class FailedMessagesJob {
         }
 
         // Update
-        message.updateWithAllSendingRecipientsMarkedAsFailed(with: writeTx)
+        message.updateWithAllSendingRecipientsMarkedAsFailed(transaction: writeTx)
         count += 1
 
         // Log if appropriate

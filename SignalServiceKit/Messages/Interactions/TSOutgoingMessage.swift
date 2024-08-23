@@ -5,18 +5,346 @@
 
 import LibSignalClient
 
-public extension TSOutgoingMessage {
+// MARK: - Get recipients
+
+extension TSOutgoingMessage {
     @objc
-    var isStorySend: Bool { isGroupStoryReply }
+    open func recipientState(for address: SignalServiceAddress) -> TSOutgoingMessageRecipientState? {
+        return recipientAddressStates?[address]
+    }
+
+    /// All recipients of this message.
+    @objc
+    public func recipientAddresses() -> [SignalServiceAddress] {
+        return filterRecipientAddresses { _ in
+            return true
+        }
+    }
+
+    /// All recipients of this message to whom we are currently trying to send.
+    @objc
+    public func sendingRecipientAddresses() -> [SignalServiceAddress] {
+        return filterRecipientAddresses { state in
+            switch state.status {
+            case .sending, .pending: return true
+            case .skipped, .failed, .sent, .delivered, .read, .viewed: return false
+            }
+        }
+    }
+
+    /// All recipients of this message to whom it has been sent, including those
+    /// for whom it has been delivered, read, or viewed.
+    ///
+    /// - Note: we only learn "read" status if read receipts are enabled.
+    @objc
+    public func sentRecipientAddresses() -> [SignalServiceAddress] {
+        return filterRecipientAddresses { state in
+            switch state.status {
+            case .sent, .delivered, .read, .viewed: return true
+            case .skipped, .sending, .pending, .failed: return false
+            }
+        }
+    }
+
+    /// All recipients of this message to whom it has been sent and delivered,
+    /// including those for whom it has been read or viewed.
+    ///
+    /// - Note: we only learn "read" status if read receipts are enabled.
+    @objc
+    public func deliveredRecipientAddresses() -> [SignalServiceAddress] {
+        return filterRecipientAddresses { state in
+            switch state.status {
+            case .delivered, .read, .viewed: return true
+            case .skipped, .sending, .sent, .pending, .failed: return false
+            }
+        }
+    }
+
+    /// All recipients of this message to whom it has been sent, delivered, and
+    /// read, including those for whom it has been viewed.
+    ///
+    /// - Note: we only learn "read" status if read receipts are enabled.
+    @objc
+    open func readRecipientAddresses() -> [SignalServiceAddress] {
+        return filterRecipientAddresses { state in
+            switch state.status {
+            case .read, .viewed: return true
+            case .skipped, .sending, .sent, .delivered, .pending, .failed: return false
+            }
+        }
+    }
+
+    /// All recipients of this message to whom it has been sent, delivered, and
+    /// viewed.
+    @objc
+    public func viewedRecipientAddresses() -> [SignalServiceAddress] {
+        return filterRecipientAddresses { state in
+            switch state.status {
+            case .viewed: return true
+            case .skipped, .sending, .sent, .delivered, .read, .pending, .failed: return false
+            }
+        }
+    }
 
     @objc
-    func failedRecipientAddresses(errorCode: Int) -> [SignalServiceAddress] {
-        guard let states = recipientAddressStates else { return [] }
+    public func failedRecipientAddresses(errorCode: Int) -> [SignalServiceAddress] {
+        return filterRecipientAddresses { state in
+            return state.status == .failed && state.errorCode == errorCode
+        }
+    }
 
-        return states.filter { _, state in
-            return state.state == .failed && state.errorCode?.intValue == errorCode
+    private func filterRecipientAddresses(
+        predicate: (TSOutgoingMessageRecipientState) -> Bool
+    ) -> [SignalServiceAddress] {
+        guard let recipientAddressStates else { return [] }
+
+        return recipientAddressStates.filter { _, state in
+            predicate(state)
         }.map { $0.key }
     }
+}
+
+// MARK: - Update recipients
+
+public extension TSOutgoingMessage {
+    @objc
+    func updateWithRecipientAddressStates(
+        _ recipientAddressStates: [SignalServiceAddress: TSOutgoingMessageRecipientState]?,
+        tx: SDSAnyWriteTransaction
+    ) {
+        anyUpdateOutgoingMessage(transaction: tx) { outgoingMessage in
+            outgoingMessage.recipientAddressStates = recipientAddressStates
+        }
+    }
+
+    /// Records a successful send to a one recipient.
+    func updateWithSentRecipient(
+        _ serviceId: ServiceId,
+        wasSentByUD: Bool,
+        transaction tx: SDSAnyWriteTransaction
+    ) {
+        let address = SignalServiceAddress(serviceId)
+
+        anyUpdateOutgoingMessage(transaction: tx) { outgoingMessage in
+            guard let recipientState = outgoingMessage.recipientAddressStates?[address] else {
+                owsFailDebug("Missing recipient state for recipient: \(address)!")
+                return
+            }
+
+            recipientState.updateStatus(.sent)
+            recipientState.wasSentByUD = wasSentByUD
+            recipientState.errorCode = nil
+        }
+    }
+
+    /// Records a skipped send to one recipient.
+    func updateWithSkippedRecipient(
+        _ address: SignalServiceAddress,
+        transaction tx: SDSAnyWriteTransaction
+    ) {
+        anyUpdateOutgoingMessage(transaction: tx) { outgoingMessage in
+            guard let recipientState = outgoingMessage.recipientAddressStates?[address] else {
+                owsFailDebug("Missing recipient state for recipient: \(address)!")
+                return
+            }
+
+            recipientState.updateStatus(.skipped)
+        }
+    }
+
+    /// Updates recipients based on information from a linked device outgoing
+    /// message transcript.
+    ///
+    /// - Parameter isSentUpdate:
+    /// If false, treats this as message creation, overwriting all existing
+    /// recipient state. Otherwise, treats this as a sent update, only adding or
+    /// updating recipients but never removing.
+    func updateRecipientsFromNonLocalDevice(
+        _ nonLocalRecipientStates: [SignalServiceAddress: TSOutgoingMessageRecipientState],
+        isSentUpdate: Bool,
+        transaction tx: SDSAnyWriteTransaction
+    ) {
+        anyUpdateOutgoingMessage(transaction: tx) { outgoingMessage in
+            let localRecipientStates = outgoingMessage.recipientAddressStates ?? [:]
+
+            if nonLocalRecipientStates.count > 0 {
+                /// If we have specific recipient info from the transcript,
+                /// build new recipient states wholesale.
+                if isSentUpdate {
+                    /// If this is a "sent update", make sure that:
+                    ///
+                    /// 1) We never remove any recipients. We end up with the
+                    /// union of the existing and new recipients.
+                    ///
+                    /// 2) We never downgrade the recipient state for any
+                    /// recipients. Prefer existing recipient state; "sent
+                    /// updates" only add new recipients in the "sent" state.
+                    var nonLocalRecipientStates = nonLocalRecipientStates
+                    for (recipientAddress, recipientState) in localRecipientStates {
+                        nonLocalRecipientStates[recipientAddress] = recipientState
+                    }
+
+                    outgoingMessage.recipientAddressStates = nonLocalRecipientStates
+                } else {
+                    outgoingMessage.recipientAddressStates = nonLocalRecipientStates
+                }
+            } else {
+                /// Otherwise, mark any "sending" recipients as "sent".
+                for recipientState in localRecipientStates.values {
+                    guard recipientState.status == .sending else {
+                        continue
+                    }
+
+                    recipientState.updateStatus(.sent)
+                }
+            }
+
+            if !isSentUpdate {
+                outgoingMessage.wasNotCreatedLocally = true
+            }
+        }
+    }
+
+    /// Records failed sends to the given recipients.
+    func updateWithFailedRecipients(
+        _ recipientErrors: some Collection<(serviceId: ServiceId, error: Error)>,
+        tx: SDSAnyWriteTransaction
+    ) {
+        let fatalErrors = recipientErrors.lazy.filter { !$0.error.isRetryable }
+        let retryableErrors = recipientErrors.lazy.filter { $0.error.isRetryable }
+
+        if fatalErrors.isEmpty {
+            Logger.warn("Couldn't send \(self.timestamp), but all errors are retryable: \(Array(retryableErrors))")
+        } else {
+            Logger.warn("Couldn't send \(self.timestamp): \(Array(fatalErrors)); retryable errors: \(Array(retryableErrors))")
+        }
+
+        self.anyUpdateOutgoingMessage(transaction: tx) {
+            for (serviceId, error) in recipientErrors {
+                guard let recipientState = $0.recipientAddressStates?[SignalServiceAddress(serviceId)] else {
+                    owsFailDebug("Missing recipient state for \(serviceId)")
+                    continue
+                }
+                if error.isRetryable, recipientState.status == .sending {
+                    // For retryable errors, we can just set the error code and leave the
+                    // state set as Sending
+                } else if error is SpamChallengeRequiredError || error is SpamChallengeResolvedError {
+                    recipientState.updateStatus(.pending)
+                } else {
+                    recipientState.updateStatus(.failed)
+                }
+
+                recipientState.errorCode = (error as NSError).code
+            }
+        }
+    }
+
+    /// Mark all "sending" recipients as "failed".
+    ///
+    /// This should be called on app launch.
+    @objc
+    func updateWithAllSendingRecipientsMarkedAsFailed(
+        error: (any Error)? = nil,
+        transaction tx: SDSAnyWriteTransaction
+    ) {
+        anyUpdateOutgoingMessage(transaction: tx) { outgoingMessage in
+            if let error {
+                outgoingMessage.mostRecentFailureText = error.userErrorDescription
+            }
+
+            guard let recipientAddressStates = outgoingMessage.recipientAddressStates else {
+                return
+            }
+
+            for recipientState in recipientAddressStates.values {
+                if recipientState.status == .sending {
+                    recipientState.updateStatus(.failed)
+                }
+            }
+        }
+    }
+
+    /// Mark all "failed" recipients as "sending".
+    ///
+    /// This should be called when we start a message send.
+    func updateAllUnsentRecipientsAsSending(
+        transaction tx: SDSAnyWriteTransaction
+    ) {
+        anyUpdateOutgoingMessage(transaction: tx) { outgoingMessage in
+            guard let recipientAddressStates = outgoingMessage.recipientAddressStates else {
+                return
+            }
+
+            for recipientState in recipientAddressStates.values {
+                if recipientState.status == .failed {
+                    recipientState.updateStatus(.sending)
+                }
+            }
+        }
+    }
+}
+
+#if TESTABLE_BUILD
+public extension TSOutgoingMessage {
+    func updateWithFakeMessageState(
+        _ messageState: TSOutgoingMessageState,
+        tx: SDSAnyWriteTransaction
+    ) {
+        anyUpdateOutgoingMessage(transaction: tx) { outgoingMessage in
+            guard let recipientAddressStates = outgoingMessage.recipientAddressStates else {
+                return
+            }
+
+            for recipientState in recipientAddressStates.values {
+                switch messageState {
+                case .sending:
+                    recipientState.updateStatus(.sending)
+                case .failed:
+                    recipientState.updateStatus(.failed)
+                case .sent:
+                    recipientState.updateStatus(.sent)
+                case .pending:
+                    recipientState.updateStatus(.pending)
+                case .sent_OBSOLETE, .delivered_OBSOLETE:
+                    break
+                }
+            }
+        }
+    }
+}
+#endif
+
+// MARK: -
+
+public extension TSOutgoingMessage {
+    @objc
+    static func messageStateForRecipientStates(
+        _ recipientStates: [TSOutgoingMessageRecipientState]
+    ) -> TSOutgoingMessageState {
+        var hasFailedRecipient: Bool = false
+
+        for recipientState in recipientStates {
+            switch recipientState.status {
+            case .sending:
+                return .sending
+            case .pending:
+                return .pending
+            case .failed:
+                hasFailedRecipient = true
+            case .skipped, .sent, .delivered, .read, .viewed:
+                break
+            }
+        }
+
+        if hasFailedRecipient {
+            return .failed
+        } else {
+            return .sent
+        }
+    }
+
+    @objc
+    var isStorySend: Bool { isGroupStoryReply }
 
     @objc
     var canSendWithSenderKey: Bool {
@@ -29,7 +357,7 @@ public extension TSOutgoingMessage {
         // that our next SenderKey message will send successfully.
         guard let states = recipientAddressStates else { return true }
         return states
-            .compactMap { $0.value.errorCode?.intValue }
+            .compactMap { $0.value.errorCode }
             .allSatisfy { $0 != SenderKeyUnavailableError.errorCode }
     }
 
@@ -227,39 +555,6 @@ extension TSOutgoingMessage {
     }
 }
 
-// MARK: - Errors
-
-extension TSOutgoingMessage {
-    func updateWithFailedRecipients(_ recipientErrors: some Collection<(serviceId: ServiceId, error: Error)>, tx: SDSAnyWriteTransaction) {
-        let fatalErrors = recipientErrors.lazy.filter { !$0.error.isRetryable }
-        let retryableErrors = recipientErrors.lazy.filter { $0.error.isRetryable }
-
-        if fatalErrors.isEmpty {
-            Logger.warn("Couldn't send \(self.timestamp), but all errors are retryable: \(Array(retryableErrors))")
-        } else {
-            Logger.warn("Couldn't send \(self.timestamp): \(Array(fatalErrors)); retryable errors: \(Array(retryableErrors))")
-        }
-
-        self.anyUpdateOutgoingMessage(transaction: tx) {
-            for (serviceId, error) in recipientErrors {
-                guard let recipientState = $0.recipientAddressStates?[SignalServiceAddress(serviceId)] else {
-                    owsFailDebug("Missing recipient state for \(serviceId)")
-                    continue
-                }
-                if error.isRetryable, recipientState.state == .sending {
-                    // For retryable errors, we can just set the error code and leave the
-                    // state set as Sending
-                } else if error is SpamChallengeRequiredError || error is SpamChallengeResolvedError {
-                    recipientState.state = .pending
-                } else {
-                    recipientState.state = .failed
-                }
-                recipientState.errorCode = NSNumber(value: (error as NSError).code)
-            }
-        }
-    }
-}
-
 // MARK: - Receipts
 
 extension TSOutgoingMessage {
@@ -273,8 +568,8 @@ extension TSOutgoingMessage {
         handleReceipt(
             from: recipientAddress,
             deviceId: deviceId,
-            type: \.deliveryTimestamp,
-            timestamp: timestamp,
+            receiptType: .delivered,
+            receiptTimestamp: timestamp,
             tryToClearPhoneNumberSharing: true,
             tx: tx
         )
@@ -286,7 +581,13 @@ extension TSOutgoingMessage {
         readTimestamp timestamp: UInt64,
         tx: SDSAnyWriteTransaction
     ) {
-        handleReceipt(from: recipientAddress, deviceId: deviceId, type: \.readTimestamp, timestamp: timestamp, tx: tx)
+        handleReceipt(
+            from: recipientAddress,
+            deviceId: deviceId,
+            receiptType: .read,
+            receiptTimestamp: timestamp,
+            tx: tx
+        )
     }
 
     public func update(
@@ -295,14 +596,34 @@ extension TSOutgoingMessage {
         viewedTimestamp timestamp: UInt64,
         tx: SDSAnyWriteTransaction
     ) {
-        handleReceipt(from: recipientAddress, deviceId: deviceId, type: \.viewedTimestamp, timestamp: timestamp, tx: tx)
+        handleReceipt(
+            from: recipientAddress,
+            deviceId: deviceId,
+            receiptType: .viewed,
+            receiptTimestamp: timestamp,
+            tx: tx
+        )
+    }
+
+    private enum IncomingReceiptType {
+        case delivered
+        case read
+        case viewed
+
+        var asRecipientStatus: OWSOutgoingMessageRecipientStatus {
+            switch self {
+            case .delivered: return .delivered
+            case .read: return .read
+            case .viewed: return .viewed
+            }
+        }
     }
 
     private func handleReceipt(
         from recipientAddress: SignalServiceAddress,
         deviceId: UInt32,
-        type timestampProperty: ReferenceWritableKeyPath<TSOutgoingMessageRecipientState, NSNumber?>,
-        timestamp: UInt64,
+        receiptType: IncomingReceiptType,
+        receiptTimestamp: UInt64,
         tryToClearPhoneNumberSharing: Bool = false,
         tx: SDSAnyWriteTransaction
     ) {
@@ -346,9 +667,42 @@ extension TSOutgoingMessage {
                 owsFailDebug("Missing recipient state for \(recipientAddress)")
                 return
             }
-            recipientState.state = .sent
-            recipientState[keyPath: timestampProperty] = NSNumber(value: timestamp)
-            recipientState.errorCode = nil
+
+            /// We want to avoid "downgrading" the recipient status; for
+            /// example, if we receive a delivery receipt after a read receipt,
+            /// we want to preserve the `.read` status.
+            ///
+            /// We do, however, support overwriting the recipient status'
+            /// timestamp when receiving a receipt matching the existing
+            /// recipient status (e.g., receiving a `.read` receipt when the
+            /// recipient status is already `.read`).
+            let shouldUpdateRecipientStatus: Bool = {
+                switch (recipientState.status, receiptType) {
+                case (.failed, _), (.sending, _), (.sent, _), (.skipped, _), (.pending, _):
+                    return true
+                case
+                        (.delivered, .delivered),
+                        (.delivered, .read),
+                        (.delivered, .viewed),
+                        (.read, .read),
+                        (.read, .viewed),
+                        (.viewed, .viewed):
+                    return true
+                case
+                        (.read, .delivered),
+                        (.viewed, .delivered),
+                        (.viewed, .read):
+                    return false
+                }
+            }()
+
+            if shouldUpdateRecipientStatus {
+                recipientState.updateStatus(
+                    receiptType.asRecipientStatus,
+                    statusTimestamp: receiptTimestamp
+                )
+                recipientState.errorCode = nil
+            }
         }
     }
 }

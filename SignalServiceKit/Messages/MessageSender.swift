@@ -573,7 +573,7 @@ public class MessageSender: Dependencies {
             .subtracting(sendingRecipients.lazy.map { SignalServiceAddress($0) })
         for address in skippedRecipients {
             // Mark this recipient as "skipped".
-            message.update(withSkippedRecipient: address, transaction: tx)
+            message.updateWithSkippedRecipient(address, transaction: tx)
         }
     }
 
@@ -993,7 +993,7 @@ public class MessageSender: Dependencies {
         // If we only received errors that we should ignore, consider this send a
         // success, unless the message could not be sent to any recipient.
         guard let anyError = filteredErrors.first?.error else {
-            if message.sentRecipientsCount() == 0 {
+            if message.sentRecipientAddresses().count == 0 {
                 throw MessageSenderErrorNoValidRecipients()
             }
             return
@@ -1237,7 +1237,7 @@ public class MessageSender: Dependencies {
         if shouldSkipMessageSend(messageSend, deviceMessages: deviceMessages) {
             // This emulates the completion logic of an actual successful send (see below).
             await self.databaseStorage.awaitableWrite { tx in
-                message.update(withSkippedRecipient: messageSend.localIdentifiers.aciAddress, transaction: tx)
+                message.updateWithSkippedRecipient(messageSend.localIdentifiers.aciAddress, transaction: tx)
             }
             return []
         }
@@ -1552,7 +1552,7 @@ public class MessageSender: Dependencies {
                 }
             }
 
-            message.update(withSentRecipient: ServiceIdObjC.wrapValue(messageSend.serviceId), wasSentByUD: wasSentByUD, transaction: transaction)
+            message.updateWithSentRecipient(messageSend.serviceId, wasSentByUD: wasSentByUD, transaction: transaction)
 
             if let resendResponse = message as? OWSOutgoingResendResponse {
                 resendResponse.didPerformMessageSend(sentDeviceMessages, to: messageSend.serviceId, tx: transaction)
@@ -1703,7 +1703,7 @@ public class MessageSender: Dependencies {
 
         if thread.isNonContactThread {
             // Mark as "skipped" group members who no longer have signal accounts.
-            message.update(withSkippedRecipient: SignalServiceAddress(serviceId), transaction: tx)
+            message.updateWithSkippedRecipient(SignalServiceAddress(serviceId), transaction: tx)
         }
 
         let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable

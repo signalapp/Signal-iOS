@@ -40,8 +40,16 @@ extension OWSOutgoingReactionMessage {
         }
     }
 
-    @objc
-    func revertLocalStateIfFailedForEveryone(tx: SDSAnyWriteTransaction) {
+    public override func updateWithAllSendingRecipientsMarkedAsFailed(
+        error: (any Error)? = nil,
+        transaction tx: SDSAnyWriteTransaction
+    ) {
+        super.updateWithAllSendingRecipientsMarkedAsFailed(error: error, transaction: tx)
+
+        revertLocalStateIfFailedForEveryone(tx: tx)
+    }
+
+    private func revertLocalStateIfFailedForEveryone(tx: SDSAnyWriteTransaction) {
         // Do nothing if we successfully delivered to anyone. Only cleanup
         // local state if we fail to deliver to anyone.
         guard sentRecipientAddresses().isEmpty else {

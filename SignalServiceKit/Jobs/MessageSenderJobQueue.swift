@@ -83,7 +83,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
         do {
             jobRecord = try message.asMessageSenderJobRecord(isHighPriority: isHighPriority, tx: transaction)
         } catch {
-            message.updateWithSendingError(error, tx: transaction)
+            message.updateWithAllSendingRecipientsMarkedAsFailed(error: error, tx: transaction)
             future?.reject(error)
             return
         }
@@ -279,7 +279,7 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
         databaseStorage.write { tx in
             self.durableOperationDelegate?.durableOperation(self, didFailWithError: error, transaction: tx)
 
-            self.message.updateWithSendingError(error, tx: tx)
+            self.message.updateWithAllSendingRecipientsMarkedAsFailed(error: error, tx: tx)
         }
         future?.reject(error)
     }

@@ -725,9 +725,9 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
 
                     // Only take the sending state from the message if we're in a transient state
                     if recipientState.sendingState != .sent {
-                        recipientState.sendingState = outgoingMessageState.state
+                        recipientState.setSendingState(outgoingMessageState.status)
                     }
-                    if outgoingMessageState.state == .failed, firstFailedThread == nil {
+                    if outgoingMessageState.status == .failed, firstFailedThread == nil {
                         if let context = recipientState.firstValidContext() {
                             firstFailedThread = context.thread(transaction: transaction)
                         } else if let groupId {
@@ -736,7 +736,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
                         }
                     }
 
-                    recipientState.sendingErrorCode = outgoingMessageState.errorCode?.intValue
+                    recipientState.sendingErrorCode = outgoingMessageState.errorCode
                     recipientStates[serviceId] = recipientState
                 }
 
@@ -764,7 +764,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
                         }
                     }
 
-                    recipientState.sendingState = .failed
+                    recipientState.setSendingState(.failed)
                     recipientStates[uuid] = recipientState
                 }
 
@@ -968,7 +968,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         // Only send to recipients in the "failed" state
         for (serviceId, state) in recipientStates {
             guard state.sendingState != .failed else { continue }
-            messages.forEach { $0.update(withSkippedRecipient: SignalServiceAddress(serviceId), transaction: transaction) }
+            messages.forEach { $0.updateWithSkippedRecipient(SignalServiceAddress(serviceId), transaction: transaction) }
         }
 
         messages.forEach { message in
@@ -1098,11 +1098,35 @@ public struct StoryReceivedState: Codable {
 public struct StoryRecipientState: Codable {
     public var allowsReplies: Bool
     public var contexts: [UUID]
-    @DecodableDefault.OutgoingMessageSending public var sendingState: OWSOutgoingMessageRecipientState
+    /// - Note:
+    /// This property collapses the `.delivered`, `.read`, and `.viewed`  states
+    /// into `.sent`. This matches the legacy behavior of
+    /// ``TSOutgoingMessageRecipientState``.
+    @DecodableDefault.OutgoingMessageSending public private(set) var sendingState: OWSOutgoingMessageRecipientStatus
     public var sendingErrorCode: Int?
     public var viewedTimestamp: UInt64?
 
-    public init(allowsReplies: Bool, contexts: [UUID], sendingState: OWSOutgoingMessageRecipientState = .sending) {
+    /// Set a new value for ``sendingState``.
+    public mutating func setSendingState(_ newValue: OWSOutgoingMessageRecipientStatus) {
+        sendingState = {
+            switch newValue {
+            case .failed:
+                return .failed
+            case .sending:
+                return .sending
+            case .skipped:
+                return .skipped
+            case .sent, .delivered, .read, .viewed:
+                /// Collapse all these cases into `.sent`, which matches the
+                /// legacy behavior of ``TSOutgoingMessageRecipientState``.
+                return .sent
+            case .pending:
+                return .pending
+            }
+        }()
+    }
+
+    public init(allowsReplies: Bool, contexts: [UUID], sendingState: OWSOutgoingMessageRecipientStatus = .sending) {
         self.allowsReplies = allowsReplies
         self.contexts = contexts
         self.sendingState = sendingState
@@ -1145,8 +1169,6 @@ extension StoryRecipientState {
         return firstValidContext
     }
 }
-
-extension OWSOutgoingMessageRecipientState: Codable {}
 
 extension SignalServiceAddress {
 

@@ -63,4 +63,27 @@ extension OWSOutgoingSentMessageTranscript {
         sentBuilder.setExpirationStartTimestamp(message.timestamp)
         return true
     }
+
+    @objc(prepareUnidentifiedStatusSyncMessageContentWithSentBuilder:tx:)
+    func prepareUnidentifiedStatusSyncMessageContent(
+        with sentBuilder: SSKProtoSyncMessageSentBuilder,
+        tx: SDSAnyReadTransaction
+    ) {
+        for recipientAddress in message.sentRecipientAddresses() {
+            guard let recipientState = message.recipientState(for: recipientAddress) else {
+                owsFailDebug("Unexpectedly missing recipient state for address?")
+                continue
+            }
+            guard let recipientServiceId = recipientAddress.serviceId else {
+                owsFailDebug("Missing service ID for sent recipient!")
+                continue
+            }
+
+            let statusBuilder = SSKProtoSyncMessageSentUnidentifiedDeliveryStatus.builder()
+            statusBuilder.setDestinationServiceID(recipientServiceId.serviceIdString)
+            statusBuilder.setUnidentified(recipientState.wasSentByUD)
+
+            sentBuilder.addUnidentifiedStatus(statusBuilder.buildInfallibly())
+        }
+    }
 }

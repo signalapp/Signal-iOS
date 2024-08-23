@@ -211,11 +211,20 @@ final class DisappearingMessageFinderTest: SSKBaseTest {
 
         write { transaction in
             // Mark outgoing message as "sent", "delivered" or "delivered and read" using production methods.
-            expiringSentOutgoingMessage.update(
-                withSentRecipient: otherAddress.serviceIdObjC!,
-                wasSentByUD: false,
-                transaction: transaction
-            )
+            for message in [
+                expiringSentOutgoingMessage,
+                expiringDeliveredOutgoingMessage,
+                expiringDeliveredAndReadOutgoingMessage
+            ] {
+                // To model production behavior, mark messages as "sent" before
+                // optionally marking as "delivered" or "read".
+                message.updateWithSentRecipient(
+                    otherAddress.serviceId!,
+                    wasSentByUD: false,
+                    transaction: transaction
+                )
+            }
+
             expiringDeliveredOutgoingMessage.update(
                 withDeliveredRecipient: otherAddress,
                 deviceId: 0,

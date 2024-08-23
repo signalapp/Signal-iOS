@@ -153,7 +153,7 @@ public extension TSInteraction {
                         // Reset the sending states, so we can render the sending state of the deleted message.
                         // TSOutgoingDeleteMessage will automatically pass through it's send state to the message
                         // record that it is deleting.
-                        latestMessage.updateWith(recipientAddressStates: deleteMessage.recipientAddressStates, transaction: tx)
+                        latestMessage.updateWithRecipientAddressStates(deleteMessage.recipientAddressStates, tx: tx)
 
                         if let aci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci {
                             _ = TSMessage.tryToRemotelyDeleteMessage(

@@ -99,25 +99,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    for (SignalServiceAddress *recipientAddress in self.message.sentRecipientAddresses) {
-        TSOutgoingMessageRecipientState *_Nullable recipientState =
-            [self.message recipientStateForAddress:recipientAddress];
-        if (!recipientState) {
-            OWSFailDebug(@"missing recipient state for: %@", recipientAddress);
-            continue;
-        }
-        if (recipientState.state != OWSOutgoingMessageRecipientStateSent) {
-            OWSFailDebug(@"unexpected recipient state for: %@", recipientAddress);
-            continue;
-        }
-
-        SSKProtoSyncMessageSentUnidentifiedDeliveryStatusBuilder *statusBuilder =
-            [SSKProtoSyncMessageSentUnidentifiedDeliveryStatus builder];
-        [statusBuilder setDestinationServiceID:recipientAddress.serviceIdString];
-        [statusBuilder setUnidentified:recipientState.wasSentByUD];
-        SSKProtoSyncMessageSentUnidentifiedDeliveryStatus *status = [statusBuilder buildInfallibly];
-        [sentBuilder addUnidentifiedStatus:status];
-    }
+    [self prepareUnidentifiedStatusSyncMessageContentWithSentBuilder:sentBuilder tx:transaction];
 
     NSError *error;
     SSKProtoSyncMessageSent *_Nullable sentProto = [sentBuilder buildAndReturnError:&error];

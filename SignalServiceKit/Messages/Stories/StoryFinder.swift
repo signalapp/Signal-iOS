@@ -334,7 +334,7 @@ public class StoryFinder: NSObject {
             AND (
                     SELECT 1 FROM json_tree(\(StoryMessage.columnName(.manifest)), '$.outgoing.recipientStates')
                     WHERE json_tree.type IS 'object'
-                    AND json_extract(json_tree.value, '$.sendingState') = \(OWSOutgoingMessageRecipientState.sending.rawValue)
+                    AND json_extract(json_tree.value, '$.sendingState') = \(OWSOutgoingMessageRecipientStatus.sending.rawValue)
                 )
             ORDER BY \(StoryMessage.columnName(.timestamp)) ASC
         """
@@ -361,7 +361,7 @@ public class StoryFinder: NSObject {
                 AND (
                     SELECT 1 FROM json_tree(\(StoryMessage.columnName(.manifest)), '$.outgoing.recipientStates')
                     WHERE json_tree.type IS 'object'
-                    AND json_extract(json_tree.value, '$.sendingState') = \(OWSOutgoingMessageRecipientState.failed.rawValue)
+                    AND json_extract(json_tree.value, '$.sendingState') = \(OWSOutgoingMessageRecipientStatus.failed.rawValue)
                 )
             )
         """

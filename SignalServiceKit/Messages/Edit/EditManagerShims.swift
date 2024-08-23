@@ -85,9 +85,9 @@ public class _EditManagerImpl_DataStoreWrapper: EditManagerImpl.Shims.DataStore 
         withRecipientAddressStates recipientAddressStates: [SignalServiceAddress: TSOutgoingMessageRecipientState]?,
         tx: DBWriteTransaction
     ) {
-        message.updateWith(
-            recipientAddressStates: recipientAddressStates,
-            transaction: SDSDB.shimOnlyBridge(tx)
+        message.updateWithRecipientAddressStates(
+            recipientAddressStates,
+            tx: SDSDB.shimOnlyBridge(tx)
         )
     }
 

@@ -258,7 +258,7 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
                 transaction: tx
             )
             builder.skippedRecipients.forEach {
-                message.update(withSkippedRecipient: $0, transaction: tx)
+                message.updateWithSkippedRecipient($0, transaction: tx)
             }
             return message
         }
