@@ -111,7 +111,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TSInvalidIdentityKeySendingErrorMessage (SDS)
 
-@property (nonatomic, readonly) PreKeyBundle *preKeyBundle;
+@property (nonatomic, readonly) NSData *preKeyBundle;
 
 @end
 

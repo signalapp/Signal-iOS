@@ -94,8 +94,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/OWSViewOnceMessageReadSyncMessage.h>
 #import <SignalServiceKit/OWSViewedReceiptsForLinkedDevicesMessage.h>
 #import <SignalServiceKit/OutgoingPaymentSyncMessage.h>
-#import <SignalServiceKit/PreKeyBundle+jsonDict.h>
-#import <SignalServiceKit/PreKeyBundle.h>
 #import <SignalServiceKit/PreKeyRecord.h>
 #import <SignalServiceKit/ProfileManagerProtocol.h>
 #import <SignalServiceKit/ProtoUtils.h>

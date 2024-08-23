@@ -98,7 +98,7 @@ class TSInvalidIdentityKeySendingErrorMessageSerializer: SDSSerializer {
         let messageSticker: Data? = optionalArchive(model.messageSticker)
         let messageType: TSInfoMessageType? = nil
         let mostRecentFailureText: String? = nil
-        let preKeyBundle: Data? = optionalArchive(model.preKeyBundle)
+        let preKeyBundle: Data? = model.preKeyBundle
         let protocolVersion: UInt? = nil
         let quotedMessage: Data? = optionalArchive(model.quotedMessage)
         let read: Bool? = model.wasRead

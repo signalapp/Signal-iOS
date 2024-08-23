@@ -7,14 +7,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class PreKeyBundle;
 @class TSOutgoingMessage;
 @class TSThread;
 
-// We no longer create new instances of this class (as of mid-2017).
-// However, existing instances may exist, so we should keep this class
-// around to honor their old behavior.
-/* DEPRECATED */ @interface TSInvalidIdentityKeySendingErrorMessage : TSInvalidIdentityKeyErrorMessage
+/// We no longer create new instances of this class (as of mid-2017).
+/// However, existing instances may exist, so we should keep this class
+/// around to honor their old behavior.
+@interface /* DEPRECATED */ TSInvalidIdentityKeySendingErrorMessage : TSInvalidIdentityKeyErrorMessage
 
 @property (nonatomic, readonly) NSString *messageId;
 
@@ -93,7 +92,7 @@ NS_ASSUME_NONNULL_BEGIN
                           sender:(nullable SignalServiceAddress *)sender
              wasIdentityVerified:(BOOL)wasIdentityVerified
                        messageId:(NSString *)messageId
-                    preKeyBundle:(PreKeyBundle *)preKeyBundle
+                    preKeyBundle:(NSData *)preKeyBundle
 NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:bodyRanges:contactShare:editState:expireStartedAt:expireTimerVersion:expiresAt:expiresInSeconds:giftBadge:isGroupStoryReply:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:storyAuthorUuidString:storyReactionEmoji:storyTimestamp:wasRemotelyDeleted:errorType:read:recipientAddress:sender:wasIdentityVerified:messageId:preKeyBundle:));
 
 // clang-format on

@@ -34,14 +34,16 @@ public struct TestProtocolRunner {
         let prekeyId: UInt32 = 4570
         let signedPrekeyId: UInt32 = 3006
 
-        let bobBundle = try PreKeyBundle(registrationId: bobRegistrationId,
-                                         deviceId: recipientClient.deviceId,
-                                         prekeyId: prekeyId,
-                                         prekey: bobPreKey.publicKey,
-                                         signedPrekeyId: signedPrekeyId,
-                                         signedPrekey: bobSignedPreKey.publicKey,
-                                         signedPrekeySignature: bobSignedPreKeySignature,
-                                         identity: bobIdentityKey.identityKey)
+        let bobBundle = try LibSignalClient.PreKeyBundle(
+            registrationId: bobRegistrationId,
+            deviceId: recipientClient.deviceId,
+            prekeyId: prekeyId,
+            prekey: bobPreKey.publicKey,
+            signedPrekeyId: signedPrekeyId,
+            signedPrekey: bobSignedPreKey.publicKey,
+            signedPrekeySignature: bobSignedPreKeySignature,
+            identity: bobIdentityKey.identityKey
+        )
 
         // Alice processes the bundle:
         try processPreKeyBundle(bobBundle,

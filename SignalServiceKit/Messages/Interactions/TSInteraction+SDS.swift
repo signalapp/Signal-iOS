@@ -1987,8 +1987,7 @@ extension TSInteraction {
             let sender: SignalServiceAddress? = try SDSDeserialization.optionalUnarchive(senderSerialized, name: "sender")
             let wasIdentityVerified: Bool = try SDSDeserialization.required(record.wasIdentityVerified, name: "wasIdentityVerified")
             let messageId: String = try SDSDeserialization.required(record.messageId, name: "messageId")
-            let preKeyBundleSerialized: Data? = record.preKeyBundle
-            let preKeyBundle: PreKeyBundle = try SDSDeserialization.unarchive(preKeyBundleSerialized, name: "preKeyBundle")
+            let preKeyBundle: Data = try SDSDeserialization.required(record.preKeyBundle, name: "preKeyBundle")
 
             return TSInvalidIdentityKeySendingErrorMessage(grdbId: recordId,
                                                            uniqueId: uniqueId,
@@ -4830,9 +4829,7 @@ extension TSInteraction: DeepCopyable {
             }
             let wasIdentityVerified: Bool = modelToCopy.wasIdentityVerified
             let messageId: String = modelToCopy.messageId
-            // NOTE: If this generates build errors, you made need to
-            // implement DeepCopyable for this type in DeepCopy.swift.
-            let preKeyBundle: PreKeyBundle = try DeepCopies.deepCopy(modelToCopy.preKeyBundle)
+            let preKeyBundle: Data = modelToCopy.preKeyBundle
 
             return TSInvalidIdentityKeySendingErrorMessage(grdbId: id,
                                                            uniqueId: uniqueId,

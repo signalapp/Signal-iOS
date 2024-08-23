@@ -161,10 +161,10 @@ public class MessageSender: Dependencies {
 
         do {
             let result = try await requestMaker.makeRequest().awaitable()
-            guard let responseObject = result.responseJson as? [String: Any] else {
+            guard let responseData = result.response.responseBodyData else {
                 throw OWSAssertionError("Prekey fetch missing response object.")
             }
-            guard let bundle = SignalServiceKit.PreKeyBundle(from: responseObject, forDeviceNumber: NSNumber(value: deviceId)) else {
+            guard let bundle = try? JSONDecoder().decode(SignalServiceKit.PreKeyBundle.self, from: responseData) else {
                 throw OWSAssertionError("Prekey fetch returned an invalid bundle.")
             }
             return bundle
@@ -200,64 +200,66 @@ public class MessageSender: Dependencies {
     ) throws {
         assert(!Thread.isMainThread)
 
-        Logger.info("Creating session for \(serviceId), deviceId: \(deviceId)")
-
         if try containsValidSession(for: serviceId, deviceId: deviceId, tx: transaction.asV2Write) {
-            Logger.warn("Session already exists.")
+            Logger.warn("Session already exists for \(serviceId), deviceId: \(deviceId).")
             return
         }
 
+        guard let deviceBundle = preKeyBundle.devices.first(where: { $0.deviceId == deviceId }) else {
+            throw OWSAssertionError("Server didn't provide a bundle for the requested device.")
+        }
+
+        Logger.info("Creating session for \(serviceId), deviceId: \(deviceId); signed \(deviceBundle.signedPreKey.keyId), one-time \(deviceBundle.preKey?.keyId as Optional), kyber \(deviceBundle.pqPreKey?.keyId as Optional)")
+
         let bundle: LibSignalClient.PreKeyBundle
-        if preKeyBundle.preKeyPublic.isEmpty {
-            if preKeyBundle.pqPreKeyPublic.isEmpty {
-                Logger.info("Creating prekey bundle with signed prekey (\(preKeyBundle.signedPreKeyId))")
+        if let preKey = deviceBundle.preKey {
+            if let pqPreKey = deviceBundle.pqPreKey {
                 bundle = try LibSignalClient.PreKeyBundle(
-                    registrationId: UInt32(bitPattern: preKeyBundle.registrationId),
-                    deviceId: UInt32(bitPattern: preKeyBundle.deviceId),
-                    signedPrekeyId: UInt32(bitPattern: preKeyBundle.signedPreKeyId),
-                    signedPrekey: try PublicKey(preKeyBundle.signedPreKeyPublic),
-                    signedPrekeySignature: preKeyBundle.signedPreKeySignature,
-                    identity: try LibSignalClient.IdentityKey(bytes: preKeyBundle.identityKey))
+                    registrationId: deviceBundle.registrationId,
+                    deviceId: deviceId,
+                    prekeyId: preKey.keyId,
+                    prekey: preKey.publicKey,
+                    signedPrekeyId: deviceBundle.signedPreKey.keyId,
+                    signedPrekey: deviceBundle.signedPreKey.publicKey,
+                    signedPrekeySignature: deviceBundle.signedPreKey.signature,
+                    identity: preKeyBundle.identityKey,
+                    kyberPrekeyId: pqPreKey.keyId,
+                    kyberPrekey: pqPreKey.publicKey,
+                    kyberPrekeySignature: pqPreKey.signature
+                )
             } else {
-                Logger.info("Creating prekey bundle with signed (\(preKeyBundle.signedPreKeyId)) and pq (\(preKeyBundle.pqPreKeyId)) prekey")
                 bundle = try LibSignalClient.PreKeyBundle(
-                    registrationId: UInt32(bitPattern: preKeyBundle.registrationId),
-                    deviceId: UInt32(bitPattern: preKeyBundle.deviceId),
-                    signedPrekeyId: UInt32(bitPattern: preKeyBundle.signedPreKeyId),
-                    signedPrekey: try PublicKey(preKeyBundle.signedPreKeyPublic),
-                    signedPrekeySignature: preKeyBundle.signedPreKeySignature,
-                    identity: try LibSignalClient.IdentityKey(bytes: preKeyBundle.identityKey),
-                    kyberPrekeyId: UInt32(bitPattern: preKeyBundle.pqPreKeyId),
-                    kyberPrekey: try KEMPublicKey(preKeyBundle.pqPreKeyPublic),
-                    kyberPrekeySignature: preKeyBundle.pqPreKeySignature
+                    registrationId: deviceBundle.registrationId,
+                    deviceId: deviceId,
+                    prekeyId: preKey.keyId,
+                    prekey: preKey.publicKey,
+                    signedPrekeyId: deviceBundle.signedPreKey.keyId,
+                    signedPrekey: deviceBundle.signedPreKey.publicKey,
+                    signedPrekeySignature: deviceBundle.signedPreKey.signature,
+                    identity: preKeyBundle.identityKey
                 )
             }
         } else {
-            if preKeyBundle.pqPreKeyPublic.isEmpty {
-                Logger.info("Creating prekey bundle with signed (\(preKeyBundle.signedPreKeyId)) and one-time (\(preKeyBundle.preKeyId)) prekey")
+            if let pqPreKey = deviceBundle.pqPreKey {
                 bundle = try LibSignalClient.PreKeyBundle(
-                    registrationId: UInt32(bitPattern: preKeyBundle.registrationId),
-                    deviceId: UInt32(bitPattern: preKeyBundle.deviceId),
-                    prekeyId: UInt32(bitPattern: preKeyBundle.preKeyId),
-                    prekey: try PublicKey(preKeyBundle.preKeyPublic),
-                    signedPrekeyId: UInt32(bitPattern: preKeyBundle.signedPreKeyId),
-                    signedPrekey: try PublicKey(preKeyBundle.signedPreKeyPublic),
-                    signedPrekeySignature: preKeyBundle.signedPreKeySignature,
-                    identity: try LibSignalClient.IdentityKey(bytes: preKeyBundle.identityKey))
+                    registrationId: deviceBundle.registrationId,
+                    deviceId: deviceId,
+                    signedPrekeyId: deviceBundle.signedPreKey.keyId,
+                    signedPrekey: deviceBundle.signedPreKey.publicKey,
+                    signedPrekeySignature: deviceBundle.signedPreKey.signature,
+                    identity: preKeyBundle.identityKey,
+                    kyberPrekeyId: pqPreKey.keyId,
+                    kyberPrekey: pqPreKey.publicKey,
+                    kyberPrekeySignature: pqPreKey.signature
+                )
             } else {
-                Logger.info("Creating prekey bundle with signed (\(preKeyBundle.signedPreKeyId)) and one-time (\(preKeyBundle.preKeyId)) and pq \(preKeyBundle.pqPreKeyId) prekey")
                 bundle = try LibSignalClient.PreKeyBundle(
-                    registrationId: UInt32(bitPattern: preKeyBundle.registrationId),
-                    deviceId: UInt32(bitPattern: preKeyBundle.deviceId),
-                    prekeyId: UInt32(bitPattern: preKeyBundle.preKeyId),
-                    prekey: try PublicKey(preKeyBundle.preKeyPublic),
-                    signedPrekeyId: UInt32(bitPattern: preKeyBundle.signedPreKeyId),
-                    signedPrekey: try PublicKey(preKeyBundle.signedPreKeyPublic),
-                    signedPrekeySignature: preKeyBundle.signedPreKeySignature,
-                    identity: try LibSignalClient.IdentityKey(bytes: preKeyBundle.identityKey),
-                    kyberPrekeyId: UInt32(bitPattern: preKeyBundle.pqPreKeyId),
-                    kyberPrekey: try KEMPublicKey(preKeyBundle.pqPreKeyPublic),
-                    kyberPrekeySignature: preKeyBundle.pqPreKeySignature
+                    registrationId: deviceBundle.registrationId,
+                    deviceId: deviceId,
+                    signedPrekeyId: deviceBundle.signedPreKey.keyId,
+                    signedPrekey: deviceBundle.signedPreKey.publicKey,
+                    signedPrekeySignature: deviceBundle.signedPreKey.signature,
+                    identity: preKeyBundle.identityKey
                 )
             }
         }
@@ -307,14 +309,9 @@ public class MessageSender: Dependencies {
         preKeyBundle: SignalServiceKit.PreKeyBundle,
         transaction tx: SDSAnyWriteTransaction
     ) {
-        do {
-            let identityManager = DependenciesBridge.shared.identityManager
-            let newIdentityKey = try IdentityKey(bytes: preKeyBundle.identityKey)
-            identityManager.saveIdentityKey(newIdentityKey, for: serviceId, tx: tx.asV2Write)
-            staleIdentityCache[recipientUniqueId] = Date()
-        } catch {
-            owsFailDebug("Error: \(error)")
-        }
+        let identityManager = DependenciesBridge.shared.identityManager
+        identityManager.saveIdentityKey(preKeyBundle.identityKey, for: serviceId, tx: tx.asV2Write)
+        staleIdentityCache[recipientUniqueId] = Date()
     }
 
     private func willLikelyHaveUntrustedIdentityKeyError(for recipientUniqueId: RecipientUniqueId) -> Bool {

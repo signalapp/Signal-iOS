@@ -67,6 +67,12 @@ public extension Data {
         return base64Url
     }
 
+    init?(base64EncodedWithoutPadding base64StringWithoutPadding: String) {
+        let paddedLength = (base64StringWithoutPadding.count + 3) / 4 * 4
+        let paddingCount = paddedLength - base64StringWithoutPadding.count
+        self.init(base64Encoded: base64StringWithoutPadding + String(repeating: "=", count: paddingCount))
+    }
+
     func base64EncodedStringWithoutPadding() -> String {
         let resultWithPadding = base64EncodedString()
         let paddingCount = Self.base64PaddingCount(for: self.count)

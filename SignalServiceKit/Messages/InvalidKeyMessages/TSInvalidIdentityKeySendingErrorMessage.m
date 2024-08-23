@@ -4,7 +4,6 @@
 //
 
 #import "TSInvalidIdentityKeySendingErrorMessage.h"
-#import "PreKeyBundle+jsonDict.h"
 #import "TSContactThread.h"
 #import "TSOutgoingMessage.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -13,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TSInvalidIdentityKeySendingErrorMessage ()
 
-@property (nonatomic, readonly) PreKeyBundle *preKeyBundle;
+@property (nonatomic, readonly) NSData *preKeyBundle;
 
 @end
 
@@ -71,7 +70,7 @@ NS_ASSUME_NONNULL_BEGIN
                           sender:(nullable SignalServiceAddress *)sender
              wasIdentityVerified:(BOOL)wasIdentityVerified
                        messageId:(NSString *)messageId
-                    preKeyBundle:(PreKeyBundle *)preKeyBundle
+                    preKeyBundle:(NSData *)preKeyBundle
 {
     self = [super initWithGrdbId:grdbId
                         uniqueId:uniqueId

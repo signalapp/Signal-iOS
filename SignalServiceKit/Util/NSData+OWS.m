@@ -77,37 +77,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Base64
 
-+ (nullable NSData *)dataFromBase64StringNoPadding:(NSString *)aString
-{
-    int padding = aString.length % 4;
-
-    NSMutableString *strResult = [aString mutableCopy];
-    if (padding != 0) {
-        int charsToAdd = 4 - padding;
-        for (int i = 0; i < charsToAdd; i++) {
-            [strResult appendString:@"="];
-        }
-    }
-    return [self dataFromBase64String:strResult];
-}
-
-//
-// dataFromBase64String:
-//
-// Creates an NSData object containing the base64 decoded representation of
-// the base64 string 'aString'
-//
-// Parameters:
-//    aString - the base64 string to decode
-//
-// returns the NSData representation of the base64 string
-//
-
-+ (nullable NSData *)dataFromBase64String:(NSString *)aString
-{
-    return [[NSData alloc] initWithBase64EncodedString:aString options:NSDataBase64DecodingIgnoreUnknownCharacters];
-}
-
 //
 // base64EncodedString
 //

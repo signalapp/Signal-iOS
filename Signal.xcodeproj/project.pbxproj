@@ -567,6 +567,7 @@
 		501052672BDB22940097DDC5 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 501052652BDB15B90097DDC5 /* PrivacyInfo.xcprivacy */; };
 		501052692BDB232A0097DDC5 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 501052682BDB232A0097DDC5 /* PrivacyInfo.xcprivacy */; };
 		5010526B2BDB23F50097DDC5 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 5010526A2BDB23F50097DDC5 /* PrivacyInfo.xcprivacy */; };
+		5010B6B42C6BD41E00314CD4 /* PreKeyBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5010B6B32C6BD41E00314CD4 /* PreKeyBundle.swift */; };
 		5011D1CB293FC7E000064098 /* DomainFrontingCountryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5011D1CA293FC7E000064098 /* DomainFrontingCountryViewController.swift */; };
 		5011D1CD29400E7300064098 /* DeviceProvisioningURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5011D1CC29400E7300064098 /* DeviceProvisioningURL.swift */; };
 		5011D9702A0429B6000FE8E5 /* ThreadMergerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5011D96F2A0429B6000FE8E5 /* ThreadMergerTest.swift */; };
@@ -2313,7 +2314,6 @@
 		F9C5CBC8289453B300548EEE /* TSCall.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C8D3289453B100548EEE /* TSCall.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CBC9289453B300548EEE /* MessageBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8D4289453B100548EEE /* MessageBody.swift */; };
 		F9C5CBCA289453B300548EEE /* MessageSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8D5289453B100548EEE /* MessageSender.swift */; };
-		F9C5CBCB289453B300548EEE /* PreKeyBundle+jsonDict.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8D6289453B100548EEE /* PreKeyBundle+jsonDict.m */; };
 		F9C5CBCC289453B300548EEE /* OWSUnknownProtocolVersionMessage+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8D7289453B100548EEE /* OWSUnknownProtocolVersionMessage+SDS.swift */; };
 		F9C5CBCD289453B300548EEE /* OWSVerificationStateChangeMessage+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8D9289453B100548EEE /* OWSVerificationStateChangeMessage+SDS.swift */; };
 		F9C5CBCE289453B300548EEE /* OWSDisappearingMessagesConfigurationMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C8DA289453B100548EEE /* OWSDisappearingMessagesConfigurationMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -2444,7 +2444,6 @@
 		F9C5CC58289453B300548EEE /* StoryMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C96A289453B100548EEE /* StoryMessage.swift */; };
 		F9C5CC59289453B300548EEE /* StoryFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C96B289453B100548EEE /* StoryFinder.swift */; };
 		F9C5CC5A289453B300548EEE /* OutgoingStoryMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C96C289453B100548EEE /* OutgoingStoryMessage.swift */; };
-		F9C5CC5B289453B300548EEE /* PreKeyBundle+jsonDict.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C96D289453B100548EEE /* PreKeyBundle+jsonDict.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CC5C289453B300548EEE /* TSCall+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C96E289453B100548EEE /* TSCall+SDS.swift */; };
 		F9C5CC5D289453B300548EEE /* TSCall.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C96F289453B100548EEE /* TSCall.m */; };
 		F9C5CC5E289453B300548EEE /* OWSDisappearingMessagesJob.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C970289453B100548EEE /* OWSDisappearingMessagesJob.m */; };
@@ -2609,7 +2608,6 @@
 		F9C5CD40289453B300548EEE /* LegacyReceivingChain.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA63289453B100548EEE /* LegacyReceivingChain.m */; };
 		F9C5CD41289453B300548EEE /* LegacySessionRecord.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA64289453B100548EEE /* LegacySessionRecord.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CD42289453B300548EEE /* SignedPrekeyRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA65289453B100548EEE /* SignedPrekeyRecord.m */; };
-		F9C5CD43289453B300548EEE /* PreKeyBundle.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA66289453B100548EEE /* PreKeyBundle.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CD44289453B300548EEE /* LegacyMessageKeys.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA67289453B100548EEE /* LegacyMessageKeys.m */; };
 		F9C5CD45289453B300548EEE /* LegacySessionState.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA68289453B100548EEE /* LegacySessionState.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CD46289453B300548EEE /* PreKeyRecord.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA69289453B100548EEE /* PreKeyRecord.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -2622,7 +2620,6 @@
 		F9C5CD4D289453B300548EEE /* PreKeyRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA70289453B100548EEE /* PreKeyRecord.m */; };
 		F9C5CD4E289453B300548EEE /* LegacySessionState.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA71289453B100548EEE /* LegacySessionState.m */; };
 		F9C5CD4F289453B300548EEE /* LegacyMessageKeys.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA72289453B100548EEE /* LegacyMessageKeys.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CD50289453B300548EEE /* PreKeyBundle.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA73289453B100548EEE /* PreKeyBundle.m */; };
 		F9C5CD51289453B300548EEE /* SSKSignedPreKeyStore.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA74289453B100548EEE /* SSKSignedPreKeyStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CD52289453B300548EEE /* SSKPreKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA75289453B100548EEE /* SSKPreKeyStore.swift */; };
 		F9C5CD53289453B300548EEE /* SSKPreKeyStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA76289453B100548EEE /* SSKPreKeyStore.m */; };
@@ -3638,6 +3635,7 @@
 		501052652BDB15B90097DDC5 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		501052682BDB232A0097DDC5 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		5010526A2BDB23F50097DDC5 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		5010B6B32C6BD41E00314CD4 /* PreKeyBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyBundle.swift; sourceTree = "<group>"; };
 		5011D1CA293FC7E000064098 /* DomainFrontingCountryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DomainFrontingCountryViewController.swift; sourceTree = "<group>"; };
 		5011D1CC29400E7300064098 /* DeviceProvisioningURL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceProvisioningURL.swift; sourceTree = "<group>"; };
 		5011D96F2A0429B6000FE8E5 /* ThreadMergerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadMergerTest.swift; sourceTree = "<group>"; };
@@ -5433,7 +5431,6 @@
 		F9C5C8D3289453B100548EEE /* TSCall.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSCall.h; sourceTree = "<group>"; };
 		F9C5C8D4289453B100548EEE /* MessageBody.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageBody.swift; sourceTree = "<group>"; };
 		F9C5C8D5289453B100548EEE /* MessageSender.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageSender.swift; sourceTree = "<group>"; };
-		F9C5C8D6289453B100548EEE /* PreKeyBundle+jsonDict.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "PreKeyBundle+jsonDict.m"; sourceTree = "<group>"; };
 		F9C5C8D7289453B100548EEE /* OWSUnknownProtocolVersionMessage+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSUnknownProtocolVersionMessage+SDS.swift"; sourceTree = "<group>"; };
 		F9C5C8D9289453B100548EEE /* OWSVerificationStateChangeMessage+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSVerificationStateChangeMessage+SDS.swift"; sourceTree = "<group>"; };
 		F9C5C8DA289453B100548EEE /* OWSDisappearingMessagesConfigurationMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSDisappearingMessagesConfigurationMessage.h; sourceTree = "<group>"; };
@@ -5564,7 +5561,6 @@
 		F9C5C96A289453B100548EEE /* StoryMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryMessage.swift; sourceTree = "<group>"; };
 		F9C5C96B289453B100548EEE /* StoryFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryFinder.swift; sourceTree = "<group>"; };
 		F9C5C96C289453B100548EEE /* OutgoingStoryMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutgoingStoryMessage.swift; sourceTree = "<group>"; };
-		F9C5C96D289453B100548EEE /* PreKeyBundle+jsonDict.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PreKeyBundle+jsonDict.h"; sourceTree = "<group>"; };
 		F9C5C96E289453B100548EEE /* TSCall+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TSCall+SDS.swift"; sourceTree = "<group>"; };
 		F9C5C96F289453B100548EEE /* TSCall.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSCall.m; sourceTree = "<group>"; };
 		F9C5C970289453B100548EEE /* OWSDisappearingMessagesJob.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSDisappearingMessagesJob.m; sourceTree = "<group>"; };
@@ -5729,7 +5725,6 @@
 		F9C5CA63289453B100548EEE /* LegacyReceivingChain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LegacyReceivingChain.m; sourceTree = "<group>"; };
 		F9C5CA64289453B100548EEE /* LegacySessionRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LegacySessionRecord.h; sourceTree = "<group>"; };
 		F9C5CA65289453B100548EEE /* SignedPrekeyRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignedPrekeyRecord.m; sourceTree = "<group>"; };
-		F9C5CA66289453B100548EEE /* PreKeyBundle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreKeyBundle.h; sourceTree = "<group>"; };
 		F9C5CA67289453B100548EEE /* LegacyMessageKeys.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LegacyMessageKeys.m; sourceTree = "<group>"; };
 		F9C5CA68289453B100548EEE /* LegacySessionState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LegacySessionState.h; sourceTree = "<group>"; };
 		F9C5CA69289453B100548EEE /* PreKeyRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreKeyRecord.h; sourceTree = "<group>"; };
@@ -5742,7 +5737,6 @@
 		F9C5CA70289453B100548EEE /* PreKeyRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreKeyRecord.m; sourceTree = "<group>"; };
 		F9C5CA71289453B100548EEE /* LegacySessionState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LegacySessionState.m; sourceTree = "<group>"; };
 		F9C5CA72289453B100548EEE /* LegacyMessageKeys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LegacyMessageKeys.h; sourceTree = "<group>"; };
-		F9C5CA73289453B100548EEE /* PreKeyBundle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreKeyBundle.m; sourceTree = "<group>"; };
 		F9C5CA74289453B100548EEE /* SSKSignedPreKeyStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSKSignedPreKeyStore.h; sourceTree = "<group>"; };
 		F9C5CA75289453B100548EEE /* SSKPreKeyStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSKPreKeyStore.swift; sourceTree = "<group>"; };
 		F9C5CA76289453B100548EEE /* SSKPreKeyStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSKPreKeyStore.m; sourceTree = "<group>"; };
@@ -11090,8 +11084,6 @@
 				F9C5C952289453B100548EEE /* OWSUnknownProtocolVersionMessage.h */,
 				F9C5C99E289453B100548EEE /* OWSUnknownProtocolVersionMessage.m */,
 				50B62C732AB211E800705A89 /* PniSignatureProcessor.swift */,
-				F9C5C96D289453B100548EEE /* PreKeyBundle+jsonDict.h */,
-				F9C5C8D6289453B100548EEE /* PreKeyBundle+jsonDict.m */,
 				F9C5C996289453B100548EEE /* ReceiptSender.swift */,
 				66D13F092A731E590092D47B /* RecipientHidingManager+SignalServiceAddress.swift */,
 				E1A090372A4B909B00F2BE8B /* RecipientHidingManager.swift */,
@@ -11682,8 +11674,7 @@
 				F9C5CA6F289453B100548EEE /* LegacySessionRecord.m */,
 				F9C5CA68289453B100548EEE /* LegacySessionState.h */,
 				F9C5CA71289453B100548EEE /* LegacySessionState.m */,
-				F9C5CA66289453B100548EEE /* PreKeyBundle.h */,
-				F9C5CA73289453B100548EEE /* PreKeyBundle.m */,
+				5010B6B32C6BD41E00314CD4 /* PreKeyBundle.swift */,
 				F9C5CA69289453B100548EEE /* PreKeyRecord.h */,
 				F9C5CA70289453B100548EEE /* PreKeyRecord.m */,
 				F9C5CA6E289453B100548EEE /* SignedPrekeyRecord.h */,
@@ -12191,8 +12182,6 @@
 				F9C5CD0A289453B300548EEE /* OWSVerificationStateSyncMessage.h in Headers */,
 				F9C5CD0B289453B300548EEE /* OWSViewedReceiptsForLinkedDevicesMessage.h in Headers */,
 				F9C5CD11289453B300548EEE /* OWSViewOnceMessageReadSyncMessage.h in Headers */,
-				F9C5CC5B289453B300548EEE /* PreKeyBundle+jsonDict.h in Headers */,
-				F9C5CD43289453B300548EEE /* PreKeyBundle.h in Headers */,
 				F9C5CD46289453B300548EEE /* PreKeyRecord.h in Headers */,
 				F9C5CCE7289453B300548EEE /* ProfileManagerProtocol.h in Headers */,
 				F9C5CCEA289453B300548EEE /* ProtoUtils.h in Headers */,
@@ -14910,8 +14899,7 @@
 				500876142BF7B32A00D6F615 /* Preconditions.swift in Sources */,
 				7255A4D42B98E36900E95368 /* Preferences.swift in Sources */,
 				D95C39EC296E1BC600A9DA23 /* PrefixedLogger.swift in Sources */,
-				F9C5CBCB289453B300548EEE /* PreKeyBundle+jsonDict.m in Sources */,
-				F9C5CD50289453B300548EEE /* PreKeyBundle.m in Sources */,
+				5010B6B42C6BD41E00314CD4 /* PreKeyBundle.swift in Sources */,
 				5050A8792B76E2E100E9BFA4 /* PreKeyId.swift in Sources */,
 				6659A02A2A7C121C00066AB7 /* PreKeyManager+Shims.swift in Sources */,
 				F9C5CCAC289453B300548EEE /* PreKeyManager.swift in Sources */,

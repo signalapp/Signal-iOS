@@ -19,9 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Base64
 
-+ (nullable NSData *)dataFromBase64StringNoPadding:(NSString *)aString;
-+ (nullable NSData *)dataFromBase64String:(NSString *)aString;
-
 - (NSString *)base64EncodedString;
 
 #pragma mark -

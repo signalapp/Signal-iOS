@@ -264,16 +264,6 @@ extension TSGroupModel: DeepCopyable {
 // MARK: -
 
 @objc
-extension PreKeyBundle: DeepCopyable {
-    public func deepCopy() throws -> AnyObject {
-        // This class can use shallow copies.
-        return try DeepCopies.shallowCopy(self)
-    }
-}
-
-// MARK: -
-
-@objc
 extension TSOutgoingMessageRecipientState: DeepCopyable {
     public func deepCopy() throws -> AnyObject {
         // This class can use shallow copies.
