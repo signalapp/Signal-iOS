@@ -427,167 +427,158 @@ public class RemoteConfig {
 // MARK: - IsEnabledFlag
 
 private enum IsEnabledFlag: String, FlagType {
-    case automaticSessionResetKillSwitch = "ios.automaticSessionResetKillSwitch"
-    case paymentsResetKillSwitch = "ios.paymentsResetKillSwitch"
-    case messageResendKillSwitch = "ios.messageResendKillSwitch"
-    case applePayOneTimeDonationKillSwitch = "ios.applePayOneTimeDonationKillSwitch"
     case applePayGiftDonationKillSwitch = "ios.applePayGiftDonationKillSwitch"
     case applePayMonthlyDonationKillSwitch = "ios.applePayMonthlyDonationKillSwitch"
-    case cardOneTimeDonationKillSwitch = "ios.cardOneTimeDonationKillSwitch"
+    case applePayOneTimeDonationKillSwitch = "ios.applePayOneTimeDonationKillSwitch"
+    case automaticSessionResetKillSwitch = "ios.automaticSessionResetKillSwitch"
+    case callLinkJoin = "ios.callLink.join.v1"
     case cardGiftDonationKillSwitch = "ios.cardGiftDonationKillSwitch"
     case cardMonthlyDonationKillSwitch = "ios.cardMonthlyDonationKillSwitch"
-    case paypalOneTimeDonationKillSwitch = "ios.paypalOneTimeDonationKillSwitch"
-    case paypalGiftDonationKillSwitch = "ios.paypalGiftDonationKillSwitch"
-    case paypalMonthlyDonationKillSwitch = "ios.paypalMonthlyDonationKillSwitch"
-    case enableAutoAPNSRotation = "ios.enableAutoAPNSRotation"
-    case ringrtcNwPathMonitorTrialKillSwitch = "ios.ringrtcNwPathMonitorTrialKillSwitch"
-    case enableGifSearch = "global.gifSearch"
-    case serviceExtensionFailureKillSwitch = "ios.serviceExtensionFailureKillSwitch"
-    case experimentalTransportUseLibsignal = "ios.experimentalTransportEnabled.libsignal"
-    case experimentalTransportUseLibsignalAuth = "ios.experimentalTransportEnabled.libsignalAuth"
-    case experimentalTransportShadowingHigh = "ios.experimentalTransportEnabled.shadowingHigh"
-    case experimentalTransportShadowingEnabled = "ios.experimentalTransportEnabled.shadowing"
+    case cardOneTimeDonationKillSwitch = "ios.cardOneTimeDonationKillSwitch"
     case cdsiLookupWithLibsignal = "ios.cdsiLookup.libsignal"
     case deleteForMeSyncMessageSending = "ios.deleteForMeSyncMessage.sending"
-    case callLinkJoin = "ios.callLink.join.v1"
+    case enableAutoAPNSRotation = "ios.enableAutoAPNSRotation"
+    case enableGifSearch = "global.gifSearch"
+    case experimentalTransportShadowingEnabled = "ios.experimentalTransportEnabled.shadowing"
+    case experimentalTransportShadowingHigh = "ios.experimentalTransportEnabled.shadowingHigh"
+    case experimentalTransportUseLibsignal = "ios.experimentalTransportEnabled.libsignal"
+    case experimentalTransportUseLibsignalAuth = "ios.experimentalTransportEnabled.libsignalAuth"
+    case messageResendKillSwitch = "ios.messageResendKillSwitch"
+    case paymentsResetKillSwitch = "ios.paymentsResetKillSwitch"
+    case paypalGiftDonationKillSwitch = "ios.paypalGiftDonationKillSwitch"
+    case paypalMonthlyDonationKillSwitch = "ios.paypalMonthlyDonationKillSwitch"
+    case paypalOneTimeDonationKillSwitch = "ios.paypalOneTimeDonationKillSwitch"
+    case ringrtcNwPathMonitorTrialKillSwitch = "ios.ringrtcNwPathMonitorTrialKillSwitch"
+    case serviceExtensionFailureKillSwitch = "ios.serviceExtensionFailureKillSwitch"
 
     var isSticky: Bool {
         switch self {
-        case .automaticSessionResetKillSwitch: fallthrough
-        case .paymentsResetKillSwitch: fallthrough
-        case .messageResendKillSwitch: fallthrough
-        case .applePayOneTimeDonationKillSwitch: fallthrough
-        case .applePayGiftDonationKillSwitch: fallthrough
-        case .applePayMonthlyDonationKillSwitch: fallthrough
-        case .cardOneTimeDonationKillSwitch: fallthrough
-        case .cardGiftDonationKillSwitch: fallthrough
-        case .cardMonthlyDonationKillSwitch: fallthrough
-        case .paypalOneTimeDonationKillSwitch: fallthrough
-        case .paypalGiftDonationKillSwitch: fallthrough
-        case .paypalMonthlyDonationKillSwitch: fallthrough
-        case .enableAutoAPNSRotation: fallthrough
-        case .ringrtcNwPathMonitorTrialKillSwitch: fallthrough
-        case .enableGifSearch: fallthrough
-        case .serviceExtensionFailureKillSwitch: fallthrough
-        case .experimentalTransportUseLibsignal: fallthrough
-        case .experimentalTransportUseLibsignalAuth: fallthrough
-        case .experimentalTransportShadowingHigh: fallthrough
-        case .experimentalTransportShadowingEnabled: fallthrough
-        case .cdsiLookupWithLibsignal: fallthrough
-        case .deleteForMeSyncMessageSending:
-            return false
-        case .callLinkJoin:
-            return false
+        case .applePayGiftDonationKillSwitch: false
+        case .applePayMonthlyDonationKillSwitch: false
+        case .applePayOneTimeDonationKillSwitch: false
+        case .automaticSessionResetKillSwitch: false
+        case .callLinkJoin: false
+        case .cardGiftDonationKillSwitch: false
+        case .cardMonthlyDonationKillSwitch: false
+        case .cardOneTimeDonationKillSwitch: false
+        case .cdsiLookupWithLibsignal: false
+        case .deleteForMeSyncMessageSending: false
+        case .enableAutoAPNSRotation: false
+        case .enableGifSearch: false
+        case .experimentalTransportShadowingEnabled: false
+        case .experimentalTransportShadowingHigh: false
+        case .experimentalTransportUseLibsignal: false
+        case .experimentalTransportUseLibsignalAuth: false
+        case .messageResendKillSwitch: false
+        case .paymentsResetKillSwitch: false
+        case .paypalGiftDonationKillSwitch: false
+        case .paypalMonthlyDonationKillSwitch: false
+        case .paypalOneTimeDonationKillSwitch: false
+        case .ringrtcNwPathMonitorTrialKillSwitch: false
+        case .serviceExtensionFailureKillSwitch: false
         }
     }
     var isHotSwappable: Bool {
         switch self {
-        case .cdsiLookupWithLibsignal: fallthrough
-        case .serviceExtensionFailureKillSwitch:
-            return true
-        case .automaticSessionResetKillSwitch: fallthrough
-        case .paymentsResetKillSwitch: fallthrough
-        case .messageResendKillSwitch: fallthrough
-        case .applePayOneTimeDonationKillSwitch: fallthrough
-        case .applePayGiftDonationKillSwitch: fallthrough
-        case .applePayMonthlyDonationKillSwitch: fallthrough
-        case .cardOneTimeDonationKillSwitch: fallthrough
-        case .cardGiftDonationKillSwitch: fallthrough
-        case .cardMonthlyDonationKillSwitch: fallthrough
-        case .paypalOneTimeDonationKillSwitch: fallthrough
-        case .paypalGiftDonationKillSwitch: fallthrough
-        case .paypalMonthlyDonationKillSwitch: fallthrough
-        case .enableAutoAPNSRotation: fallthrough
-        case .ringrtcNwPathMonitorTrialKillSwitch: fallthrough
-        case .enableGifSearch: fallthrough
-        case .experimentalTransportUseLibsignal: fallthrough
-        case .experimentalTransportUseLibsignalAuth: fallthrough
-        case .experimentalTransportShadowingHigh: fallthrough
-        case .experimentalTransportShadowingEnabled: fallthrough
-        case .deleteForMeSyncMessageSending:
-            return false
-        case .callLinkJoin:
-            return true
+        case .applePayGiftDonationKillSwitch: false
+        case .applePayMonthlyDonationKillSwitch: false
+        case .applePayOneTimeDonationKillSwitch: false
+        case .automaticSessionResetKillSwitch: false
+        case .callLinkJoin: true
+        case .cardGiftDonationKillSwitch: false
+        case .cardMonthlyDonationKillSwitch: false
+        case .cardOneTimeDonationKillSwitch: false
+        case .cdsiLookupWithLibsignal: true
+        case .deleteForMeSyncMessageSending: false
+        case .enableAutoAPNSRotation: false
+        case .enableGifSearch: false
+        case .experimentalTransportShadowingEnabled: false
+        case .experimentalTransportShadowingHigh: false
+        case .experimentalTransportUseLibsignal: false
+        case .experimentalTransportUseLibsignalAuth: false
+        case .messageResendKillSwitch: false
+        case .paymentsResetKillSwitch: false
+        case .paypalGiftDonationKillSwitch: false
+        case .paypalMonthlyDonationKillSwitch: false
+        case .paypalOneTimeDonationKillSwitch: false
+        case .ringrtcNwPathMonitorTrialKillSwitch: false
+        case .serviceExtensionFailureKillSwitch: true
         }
     }
 }
 
 private enum ValueFlag: String, FlagType {
-    case groupsV2MaxGroupSizeRecommended = "global.groupsv2.maxGroupSize"
-    case groupsV2MaxGroupSizeHardLimit = "global.groupsv2.groupSizeHardLimit"
-    case clientExpiration = "ios.clientExpiration"
-    case cdsSyncInterval = "cds.syncInterval.seconds"
-    case automaticSessionResetAttemptInterval = "ios.automaticSessionResetAttemptInterval"
-    case reactiveProfileKeyAttemptInterval = "ios.reactiveProfileKeyAttemptInterval"
-    case standardMediaQualityLevel = "ios.standardMediaQualityLevel"
-    case replaceableInteractionExpiration = "ios.replaceableInteractionExpiration"
-    case messageSendLogEntryLifetime = "ios.messageSendLogEntryLifetime"
-    case paymentsDisabledRegions = "global.payments.disabledRegions"
     case applePayDisabledRegions = "global.donations.apayDisabledRegions"
-    case creditAndDebitCardDisabledRegions = "global.donations.ccDisabledRegions"
-    case paypalDisabledRegions = "global.donations.paypalDisabledRegions"
-    case sepaEnabledRegions = "global.donations.sepaEnabledRegions"
-    case idealEnabledRegions = "global.donations.idealEnabledRegions"
-    case maxGroupCallRingSize = "global.calling.maxGroupCallRingSize"
-    case minNicknameLength = "global.nicknames.min"
-    case maxNicknameLength = "global.nicknames.max"
-    case maxAttachmentDownloadSizeBytes = "global.attachments.maxBytes"
+    case automaticSessionResetAttemptInterval = "ios.automaticSessionResetAttemptInterval"
     case backgroundRefreshInterval = "ios.backgroundRefreshInterval"
+    case cdsSyncInterval = "cds.syncInterval.seconds"
+    case clientExpiration = "ios.clientExpiration"
+    case creditAndDebitCardDisabledRegions = "global.donations.ccDisabledRegions"
+    case groupsV2MaxGroupSizeHardLimit = "global.groupsv2.groupSizeHardLimit"
+    case groupsV2MaxGroupSizeRecommended = "global.groupsv2.maxGroupSize"
+    case idealEnabledRegions = "global.donations.idealEnabledRegions"
     case linkedDeviceLifespanInterval = "ios.linkedDeviceLifespanInterval"
+    case maxAttachmentDownloadSizeBytes = "global.attachments.maxBytes"
+    case maxGroupCallRingSize = "global.calling.maxGroupCallRingSize"
+    case maxNicknameLength = "global.nicknames.max"
+    case messageSendLogEntryLifetime = "ios.messageSendLogEntryLifetime"
+    case minNicknameLength = "global.nicknames.min"
+    case paymentsDisabledRegions = "global.payments.disabledRegions"
+    case paypalDisabledRegions = "global.donations.paypalDisabledRegions"
+    case reactiveProfileKeyAttemptInterval = "ios.reactiveProfileKeyAttemptInterval"
+    case replaceableInteractionExpiration = "ios.replaceableInteractionExpiration"
+    case sepaEnabledRegions = "global.donations.sepaEnabledRegions"
+    case standardMediaQualityLevel = "ios.standardMediaQualityLevel"
 
     var isSticky: Bool {
         switch self {
-        case .groupsV2MaxGroupSizeRecommended: fallthrough
-        case .groupsV2MaxGroupSizeHardLimit:
-            return true
-        case .clientExpiration: fallthrough
-        case .cdsSyncInterval: fallthrough
-        case .automaticSessionResetAttemptInterval: fallthrough
-        case .reactiveProfileKeyAttemptInterval: fallthrough
-        case .standardMediaQualityLevel: fallthrough
-        case .replaceableInteractionExpiration: fallthrough
-        case .messageSendLogEntryLifetime: fallthrough
-        case .paymentsDisabledRegions: fallthrough
-        case .applePayDisabledRegions: fallthrough
-        case .creditAndDebitCardDisabledRegions: fallthrough
-        case .paypalDisabledRegions: fallthrough
-        case .sepaEnabledRegions: fallthrough
-        case .idealEnabledRegions: fallthrough
-        case .maxGroupCallRingSize: fallthrough
-        case .minNicknameLength: fallthrough
-        case .maxNicknameLength: fallthrough
-        case .maxAttachmentDownloadSizeBytes: fallthrough
-        case .backgroundRefreshInterval: fallthrough
-        case .linkedDeviceLifespanInterval:
-            return false
+        case .applePayDisabledRegions: false
+        case .automaticSessionResetAttemptInterval: false
+        case .backgroundRefreshInterval: false
+        case .cdsSyncInterval: false
+        case .clientExpiration: false
+        case .creditAndDebitCardDisabledRegions: false
+        case .groupsV2MaxGroupSizeHardLimit: true
+        case .groupsV2MaxGroupSizeRecommended: true
+        case .idealEnabledRegions: false
+        case .linkedDeviceLifespanInterval: false
+        case .maxAttachmentDownloadSizeBytes: false
+        case .maxGroupCallRingSize: false
+        case .maxNicknameLength: false
+        case .messageSendLogEntryLifetime: false
+        case .minNicknameLength: false
+        case .paymentsDisabledRegions: false
+        case .paypalDisabledRegions: false
+        case .reactiveProfileKeyAttemptInterval: false
+        case .replaceableInteractionExpiration: false
+        case .sepaEnabledRegions: false
+        case .standardMediaQualityLevel: false
         }
     }
 
     var isHotSwappable: Bool {
         switch self {
-        case .groupsV2MaxGroupSizeRecommended: fallthrough
-        case .groupsV2MaxGroupSizeHardLimit: fallthrough
-        case .automaticSessionResetAttemptInterval: fallthrough
-        case .reactiveProfileKeyAttemptInterval: fallthrough
-        case .paymentsDisabledRegions: fallthrough
-        case .applePayDisabledRegions: fallthrough
-        case .creditAndDebitCardDisabledRegions: fallthrough
-        case .paypalDisabledRegions: fallthrough
-        case .sepaEnabledRegions: fallthrough
-        case .idealEnabledRegions: fallthrough
-        case .maxGroupCallRingSize: fallthrough
-        case .backgroundRefreshInterval: fallthrough
-        case .linkedDeviceLifespanInterval:
-            return true
-        case .clientExpiration: fallthrough
-        case .cdsSyncInterval: fallthrough
-        case .standardMediaQualityLevel: fallthrough
-        case .replaceableInteractionExpiration: fallthrough
-        case .messageSendLogEntryLifetime: fallthrough
-        case .minNicknameLength: fallthrough
-        case .maxNicknameLength: fallthrough
-        case .maxAttachmentDownloadSizeBytes:
-            return false
+        case .applePayDisabledRegions: true
+        case .automaticSessionResetAttemptInterval: true
+        case .backgroundRefreshInterval: true
+        case .cdsSyncInterval: false
+        case .clientExpiration: false
+        case .creditAndDebitCardDisabledRegions: true
+        case .groupsV2MaxGroupSizeHardLimit: true
+        case .groupsV2MaxGroupSizeRecommended: true
+        case .idealEnabledRegions: true
+        case .linkedDeviceLifespanInterval: true
+        case .maxAttachmentDownloadSizeBytes: false
+        case .maxGroupCallRingSize: true
+        case .maxNicknameLength: false
+        case .messageSendLogEntryLifetime: false
+        case .minNicknameLength: false
+        case .paymentsDisabledRegions: true
+        case .paypalDisabledRegions: true
+        case .reactiveProfileKeyAttemptInterval: true
+        case .replaceableInteractionExpiration: false
+        case .sepaEnabledRegions: true
+        case .standardMediaQualityLevel: false
         }
     }
 }
@@ -597,8 +588,7 @@ private enum TimeGatedFlag: String, FlagType {
 
     var isSticky: Bool {
         switch self {
-        case .__none:
-            return false
+        case .__none: false
         }
     }
 
