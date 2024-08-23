@@ -108,6 +108,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSDisappearingMessagesConfiguration *newInstance = [self copy];
     newInstance.enabled = isEnabled;
     newInstance.timerVersion = timerVersion;
+    if (!isEnabled) {
+        newInstance.durationSeconds = 0;
+    }
     return newInstance;
 }
 

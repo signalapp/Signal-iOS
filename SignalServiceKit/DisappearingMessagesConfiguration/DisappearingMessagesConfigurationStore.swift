@@ -109,7 +109,20 @@ extension DisappearingMessagesConfigurationStore {
 
 class DisappearingMessagesConfigurationStoreImpl: DisappearingMessagesConfigurationStore {
     func fetch(for scope: DisappearingMessagesConfigurationScope, tx: DBReadTransaction) -> OWSDisappearingMessagesConfiguration? {
-        OWSDisappearingMessagesConfiguration.anyFetch(uniqueId: scope.persistenceKey, transaction: SDSDB.shimOnlyBridge(tx))
+        guard
+            let config = OWSDisappearingMessagesConfiguration.anyFetch(
+                uniqueId: scope.persistenceKey,
+                transaction: SDSDB.shimOnlyBridge(tx)
+            )
+        else {
+            return nil
+        }
+        // What's in the database may have a nonzero duration but isEnabled=false.
+        // Normalize so if isEnabled is false, duration is 0.
+        if !config.isEnabled && config.durationSeconds != 0 {
+            return config.copy(withDurationSeconds: 0, timerVersion: config.timerVersion)
+        }
+        return config
     }
 
     @discardableResult
