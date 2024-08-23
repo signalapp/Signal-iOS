@@ -1145,6 +1145,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 Logger.info("Cancelling download.")
                 // Cancelling will inform the URLSessionTask delegate.
                 task.cancel()
+                progressStates.cancelledAttachmentIds.remove(attachmentId)
                 return
             }
 
