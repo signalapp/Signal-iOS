@@ -177,6 +177,13 @@ final class ScrubbingLogFormatterTest: XCTestCase {
         XCTFail("Too many things that aren't group IDs are being treated as group IDs.")
     }
 
+    func testCallLinkScrubbed() {
+        XCTAssertEqual(
+            format("https://signal.link/call/#key=bcdf-ghkm-npqr-stxz-bcdf-ghkm-npqr-stxz"),
+            "https://signal.link/call/#key=bcdf-…-xxxx"
+        )
+    }
+
     func testNotScrubbed() {
         let input = "Some unfiltered string"
         let result = format(input)

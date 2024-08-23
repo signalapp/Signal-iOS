@@ -51,6 +51,11 @@ class ScrubbingLogFormatter: NSObject, DDLogFormatter {
             )
         }
 
+        static let callLink: Replacement = Replacement(
+            pattern: #"([bcdfghkmnpqrstxz]{4})(-[bcdfghkmnpqrstxz]{4}){7}"#,
+            replacementTemplate: "$1-…-xxxx"
+        )
+
         static let phoneNumber: Replacement = Replacement(
             pattern: #"\+\d{7,12}(\d{3})"#,
             replacementTemplate: "+x…$1"
@@ -140,6 +145,7 @@ class ScrubbingLogFormatter: NSObject, DDLogFormatter {
         .phoneNumber,
         .groupId(length: Int(kGroupIdLengthV2)),
         .groupId(length: Int(kGroupIdLengthV1)),
+        .callLink,
         .uuid,
         .data,
         .iOS13Data,
