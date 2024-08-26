@@ -500,6 +500,13 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
                     outgoingMessageWith: outgoingMessageBuilder,
                     recipientAddressStates: recipientAddressStates
                 )
+            case .contactShare(let contactShare):
+                outgoingMessageBuilder.contactShare = contactShare.contact
+
+                return TSOutgoingMessage(
+                    outgoingMessageWith: outgoingMessageBuilder,
+                    recipientAddressStates: recipientAddressStates
+                )
             case .remoteDeleteTombstone:
                 outgoingMessageBuilder.wasRemotelyDeleted = true
 

@@ -29,6 +29,15 @@ extension MessageBackup {
             fileprivate let linkPreviewImage: BackupProto_FilePointer?
         }
 
+        /// Note: not a "Contact" in the Signal sense (not a Recipient or SignalAccount), just a message
+        /// that includes contact info taken from system contacts; the user must interact with it to do
+        /// anything, such as adding the shared contact info to a new system contact.
+        struct ContactShare {
+            let contact: OWSContact
+            fileprivate let avatarAttachment: BackupProto_FilePointer?
+            fileprivate let reactions: [BackupProto_Reaction]
+        }
+
         struct Payment {
             enum Status {
                 case success(BackupProto_PaymentNotification.TransactionDetails.Transaction.Status)
@@ -45,6 +54,7 @@ extension MessageBackup {
 
         case archivedPayment(Payment)
         case text(Text)
+        case contactShare(ContactShare)
         case remoteDeleteTombstone
     }
 }
@@ -62,6 +72,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
     private let interactionStore: InteractionStore
     private let archivedPaymentStore: ArchivedPaymentStore
     private let attachmentsArchiver: MessageBackupMessageAttachmentArchiver
+    private let contactAttachmentArchiver = MessageBackupContactAttachmentArchiver()
     private let reactionArchiver: MessageBackupReactionArchiver
 
     init(
@@ -370,9 +381,17 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                 context: context,
                 tx: tx
             )
+        case .contactMessage(let contactMessage):
+            return restoreContactMessage(
+                contactMessage,
+                chatItemId: chatItemId,
+                chatThread: chatThread,
+                context: context,
+                tx: tx
+            )
         case .remoteDeletedMessage(_):
             return .success(.remoteDeleteTombstone)
-        case .contactMessage, .stickerMessage, .giftBadge:
+        case .stickerMessage, .giftBadge:
             // Other types not supported yet.
             return .messageFailure([.restoreFrameError(
                 .unimplemented,
@@ -444,6 +463,24 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             if let linkPreviewImage = text.linkPreviewImage {
                 downstreamObjectResults.append(attachmentsArchiver.restoreLinkPreviewAttachment(
                     linkPreviewImage,
+                    chatItemId: chatItemId,
+                    messageRowId: messageRowId,
+                    message: message,
+                    thread: thread,
+                    tx: tx
+                ))
+            }
+        case .contactShare(let contactShare):
+            downstreamObjectResults.append(reactionArchiver.restoreReactions(
+                contactShare.reactions,
+                chatItemId: chatItemId,
+                message: message,
+                context: context.recipientContext,
+                tx: tx
+            ))
+            if let avatarAttachment = contactShare.avatarAttachment {
+                downstreamObjectResults.append(attachmentsArchiver.restoreContactAvatarAttachment(
+                    avatarAttachment,
                     chatItemId: chatItemId,
                     messageRowId: messageRowId,
                     message: message,
@@ -916,6 +953,49 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             )
             return .success((linkPreview, nil))
         }
+    }
+
+    // MARK: -
+
+    private func restoreContactMessage(
+        _ contactMessage: BackupProto_ContactMessage,
+        chatItemId: MessageBackup.ChatItemId,
+        chatThread: MessageBackup.ChatThread,
+        context: MessageBackup.ChatRestoringContext,
+        tx: DBReadTransaction
+    ) -> RestoreInteractionResult<MessageBackup.RestoredMessageContents> {
+        var partialErrors = [RestoreFrameError]()
+
+        guard
+            contactMessage.contact.count == 1,
+            let contactAttachment = contactMessage.contact.first
+        else {
+            return .messageFailure([.restoreFrameError(
+                .invalidProtoData(.contactMessageNonSingularContactAttachmentCount),
+                chatItemId
+            )])
+        }
+
+        let contactResult = contactAttachmentArchiver.restoreContact(
+            contactAttachment,
+            chatItemId: chatItemId
+        )
+        guard let contact = contactResult.unwrap(partialErrors: &partialErrors) else {
+            return .messageFailure(partialErrors)
+        }
+
+        let avatar: BackupProto_FilePointer?
+        if contactAttachment.hasAvatar {
+            avatar = contactAttachment.avatar
+        } else {
+            avatar = nil
+        }
+
+        return .success(.contactShare(.init(
+            contact: contact,
+            avatarAttachment: avatar,
+            reactions: contactMessage.reactions
+        )))
     }
 }
 

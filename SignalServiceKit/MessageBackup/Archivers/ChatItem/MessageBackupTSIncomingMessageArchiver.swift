@@ -297,6 +297,10 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
                 messageBuilder.linkPreview = text.linkPreview
 
                 return messageBuilder.build()
+            case .contactShare(let contactShare):
+                messageBuilder.contactShare = contactShare.contact
+
+                return messageBuilder.build()
             case .remoteDeleteTombstone:
                 messageBuilder.wasRemotelyDeleted = true
 

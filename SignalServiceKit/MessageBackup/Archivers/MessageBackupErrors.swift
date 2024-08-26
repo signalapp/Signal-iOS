@@ -374,6 +374,8 @@ extension MessageBackup {
                 /// this error is for when they are not.
                 case linkPreviewUrlNotInBody
 
+                /// A ``BackupProto_ContactMessage/contact`` had 0 or multiple values.
+                case contactMessageNonSingularContactAttachmentCount
                 /// A ``BackupProto_ContactAttachment/Phone/value`` was missing or empty.
                 case contactAttachmentPhoneNumberMissingValue
                 /// A ``BackupProto_ContactAttachment/Phone/type`` was unknown.
@@ -626,6 +628,7 @@ extension MessageBackup {
                         .quotedMessageEmptyContent,
                         .linkPreviewEmptyUrl,
                         .linkPreviewUrlNotInBody,
+                        .contactMessageNonSingularContactAttachmentCount,
                         .contactAttachmentPhoneNumberMissingValue,
                         .contactAttachmentPhoneNumberUnknownType,
                         .contactAttachmentEmailMissingValue,
