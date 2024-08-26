@@ -374,6 +374,20 @@ extension MessageBackup {
                 /// this error is for when they are not.
                 case linkPreviewUrlNotInBody
 
+                /// A ``BackupProto_ContactAttachment/Phone/value`` was missing or empty.
+                case contactAttachmentPhoneNumberMissingValue
+                /// A ``BackupProto_ContactAttachment/Phone/type`` was unknown.
+                case contactAttachmentPhoneNumberUnknownType
+                /// A ``BackupProto_ContactAttachment/Email/value`` was missing or empty.
+                case contactAttachmentEmailMissingValue
+                /// A ``BackupProto_ContactAttachment/Email/type`` was unknown.
+                case contactAttachmentEmailUnknownType
+                /// A ``BackupProto_ContactAttachment/PostalAddress`` with all empty fields;
+                /// at least some field has to be nonempty to be a valid address.
+                case contactAttachmentEmptyAddress
+                /// A ``BackupProto_ContactAttachment/PostalAddress/type`` was unknown.
+                case contactAttachmentAddressUnknownType
+
                 /// A `BackupProto_Group's` gv2 master key could not be parsed by libsignal.
                 case invalidGV2MasterKey
                 /// A `BackupProto_Group` was missing its group snapshot.
@@ -612,6 +626,12 @@ extension MessageBackup {
                         .quotedMessageEmptyContent,
                         .linkPreviewEmptyUrl,
                         .linkPreviewUrlNotInBody,
+                        .contactAttachmentPhoneNumberMissingValue,
+                        .contactAttachmentPhoneNumberUnknownType,
+                        .contactAttachmentEmailMissingValue,
+                        .contactAttachmentEmailUnknownType,
+                        .contactAttachmentEmptyAddress,
+                        .contactAttachmentAddressUnknownType,
                         .invalidGV2MasterKey,
                         .missingGV2GroupSnapshot,
                         .unrecognizedGV2MemberRole,

@@ -1214,6 +1214,7 @@
 		66F2CE212A3CBE4A00519342 /* NSRangedValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F2CE202A3CBE4A00519342 /* NSRangedValue.swift */; };
 		66F44B4B2909EEDA004CF66C /* OWSViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F44B4A2909EEDA004CF66C /* OWSViewController.swift */; };
 		66F6D69C2C73F01900EFAF75 /* VersionedDisappearingMessageToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F6D69B2C73F01900EFAF75 /* VersionedDisappearingMessageToken.swift */; };
+		66F6D69E2C77E4C500EFAF75 /* MessageBackupContactAttachmentArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F6D69D2C77E4C500EFAF75 /* MessageBackupContactAttachmentArchiver.swift */; };
 		66FA2B1D28CB0DE1006845CD /* PaymentsBiometryLockPromptViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FA2B1C28CB0DE1006845CD /* PaymentsBiometryLockPromptViewController.swift */; };
 		66FBC4E128DA820900BD9E8B /* MyStorySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FBC4E028DA820900BD9E8B /* MyStorySettingsViewController.swift */; };
 		66FBC4E328DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FBC4E228DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift */; };
@@ -4300,6 +4301,7 @@
 		66F2CE202A3CBE4A00519342 /* NSRangedValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSRangedValue.swift; sourceTree = "<group>"; };
 		66F44B4A2909EEDA004CF66C /* OWSViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSViewController.swift; sourceTree = "<group>"; };
 		66F6D69B2C73F01900EFAF75 /* VersionedDisappearingMessageToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VersionedDisappearingMessageToken.swift; sourceTree = "<group>"; };
+		66F6D69D2C77E4C500EFAF75 /* MessageBackupContactAttachmentArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupContactAttachmentArchiver.swift; sourceTree = "<group>"; };
 		66FA2B1C28CB0DE1006845CD /* PaymentsBiometryLockPromptViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentsBiometryLockPromptViewController.swift; sourceTree = "<group>"; };
 		66FA2B1E28CBA4A5006845CD /* BiometryType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometryType.swift; sourceTree = "<group>"; };
 		66FBC4E028DA820900BD9E8B /* MyStorySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyStorySettingsViewController.swift; sourceTree = "<group>"; };
@@ -8598,6 +8600,7 @@
 				66CD258C2B0EB3A700139E17 /* MessageBackup+InteractionTypes.swift */,
 				66CD25672B06960F00139E17 /* MessageBackupChatItemArchiver.swift */,
 				66CD25882B0EA39200139E17 /* MessageBackupChatItemArchiverImpl.swift */,
+				66F6D69D2C77E4C500EFAF75 /* MessageBackupContactAttachmentArchiver.swift */,
 				665F6F9C2C5C2FAD0002915C /* MessageBackupMessageAttachmentArchiver.swift */,
 				6605B9812B19547C00E8A68A /* MessageBackupReactionArchiver.swift */,
 				66CD258E2B0EB4AC00139E17 /* MessageBackupTSIncomingMessageArchiver.swift */,
@@ -14578,6 +14581,7 @@
 				D9EA2A872C2B609800B367DF /* MessageBackupChatUpdateMessageArchiver.swift in Sources */,
 				66CD25912B0EC20800139E17 /* MessageBackupConstants.swift in Sources */,
 				6619A1CB2B2D176E004B38FE /* MessageBackupContactAddress.swift in Sources */,
+				66F6D69E2C77E4C500EFAF75 /* MessageBackupContactAttachmentArchiver.swift in Sources */,
 				66CD256E2B06E14F00139E17 /* MessageBackupContactRecipientArchiver.swift in Sources */,
 				C1CA5F8E2BE2F21C00D733CA /* MessageBackupDistributionListRecipientArchiver.swift in Sources */,
 				D90D4D842BBB61680097C573 /* MessageBackupEmptyFrameId.swift in Sources */,
