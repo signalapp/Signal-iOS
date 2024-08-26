@@ -68,8 +68,8 @@ class UrlOpener {
         if SignalProxy.isValidProxyLink(url) {
             return .signalProxy(url)
         }
-        if let deviceProvisiongUrl = parseSgnlLinkDeviceUrl(url) {
-            return .linkDevice(deviceProvisiongUrl)
+        if let deviceProvisioningUrl = parseSgnlLinkDeviceUrl(url) {
+            return .linkDevice(deviceProvisioningUrl)
         }
         if let donationType = Stripe.parseStripeIDEALCallback(url) {
             return .completeIDEALDonation(donationType)
