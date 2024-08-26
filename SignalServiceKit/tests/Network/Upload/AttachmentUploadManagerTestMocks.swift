@@ -86,6 +86,7 @@ class _AttachmentUploadManager_ChatConnectionManagerMock: ChatConnectionManager 
 // MARK: - AttachmentStore
 
 class AttachmentUploadStoreMock: AttachmentStoreMock, AttachmentUploadStore {
+
     var uploadedAttachments = [AttachmentStream]()
 
     var mockFetcher: ((Attachment.IDType) -> Attachment)?
@@ -105,6 +106,12 @@ class AttachmentUploadStoreMock: AttachmentStoreMock, AttachmentUploadStore {
     func markUploadedToMediaTier(
         attachmentStream: AttachmentStream,
         mediaTierInfo: Attachment.MediaTierInfo,
+        tx: DBWriteTransaction
+    ) throws {}
+
+    func markThumbnailUploadedToMediaTier(
+        attachmentStream: AttachmentStream,
+        thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo,
         tx: DBWriteTransaction
     ) throws {}
 

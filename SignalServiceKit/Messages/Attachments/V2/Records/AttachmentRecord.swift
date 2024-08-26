@@ -32,9 +32,9 @@ extension Attachment {
         var mediaTierUnencryptedByteCount: UInt32?
         var mediaTierUploadEra: String?
         var lastMediaTierDownloadAttemptTimestamp: UInt64?
-        let thumbnailCdnNumber: UInt32?
-        let thumbnailUploadEra: String?
-        let lastThumbnailDownloadAttemptTimestamp: UInt64?
+        var thumbnailCdnNumber: UInt32?
+        var thumbnailUploadEra: String?
+        var lastThumbnailDownloadAttemptTimestamp: UInt64?
         let localRelativeFilePath: String?
         let localRelativeFilePathThumbnail: String?
         let cachedAudioDurationSeconds: Double?

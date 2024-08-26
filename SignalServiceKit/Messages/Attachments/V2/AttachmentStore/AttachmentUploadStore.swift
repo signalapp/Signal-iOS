@@ -22,6 +22,13 @@ public protocol AttachmentUploadStore: AttachmentStore {
         tx: DBWriteTransaction
     ) throws
 
+    /// Mark the attachment thumbnail as having been uploaded to the media tier.
+    func markThumbnailUploadedToMediaTier(
+        attachmentStream: AttachmentStream,
+        thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo,
+        tx: DBWriteTransaction
+    ) throws
+
     func upsert(
         record: AttachmentUploadRecord,
         tx: DBWriteTransaction
