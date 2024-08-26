@@ -103,8 +103,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         tableView.allowsMultipleSelectionDuringEditing = true
         tableView.separatorStyle = .none
         tableView.contentInset = .zero
-        // [CallLink] TODO: Add the icon & formatting to the table view row.
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: Self.createCallLinkReuseIdentifier)
+        tableView.register(CreateCallLinkCell.self, forCellReuseIdentifier: Self.createCallLinkReuseIdentifier)
         tableView.register(CallCell.self, forCellReuseIdentifier: Self.callCellReuseIdentifier)
         tableView.dataSource = dataSource
 
@@ -1128,10 +1127,13 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     private func buildTableViewCell(tableView: UITableView, indexPath: IndexPath) -> UITableViewCell? {
         switch Section(rawValue: indexPath.section) {
         case .createCallLink:
-            let createCallLinkCell = tableView.dequeueReusableCell(withIdentifier: Self.createCallLinkReuseIdentifier, for: indexPath)
-            // [CallLink] TODO: Localize.
-            createCallLinkCell.textLabel?.text = "Create a Call Link"
-            return createCallLinkCell
+            if let createCallLinkCell = tableView.dequeueReusableCell(
+                withIdentifier: Self.createCallLinkReuseIdentifier,
+                for: indexPath
+            ) as? CreateCallLinkCell {
+                return createCallLinkCell
+            }
+            return nil
         case .existingCalls:
             guard
                 let callCell = tableView.dequeueReusableCell(
@@ -1201,7 +1203,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
     private func reloadAllRows() {
         var snapshot = getSnapshot()
-        snapshot.reloadSections([.existingCalls])
+        snapshot.reloadSections([.createCallLink, .existingCalls])
         dataSource.apply(snapshot)
     }
 
@@ -2039,6 +2041,58 @@ private extension CallsListViewController {
             case .ended:
                 delegate.showCallInfo(from: viewModel)
             }
+        }
+    }
+}
+
+private extension CallsListViewController {
+    class CreateCallLinkCell: UITableViewCell {
+        private enum Constants {
+            static let iconDimension: CGFloat = 24
+            static let spacing: CGFloat = 18
+            static let hMargin: CGFloat = 26
+            static let vMargin: CGFloat = 15
+        }
+
+        private lazy var iconView: UIImageView = {
+            let imageView = UIImageView(image: UIImage(named: "link"))
+            imageView.tintColor = Theme.primaryIconColor
+            imageView.autoSetDimensions(to: CGSize(square: Constants.iconDimension))
+            return imageView
+        }()
+
+        private lazy var label: UILabel = {
+            let label = UILabel()
+            label.font = .dynamicTypeHeadline
+            label.textColor = Theme.primaryTextColor
+            label.numberOfLines = 3
+            label.lineBreakMode = .byTruncatingTail
+            label.text = OWSLocalizedString(
+                "CREATE_CALL_LINK_LABEL",
+                comment: "Label for button that enables you to make a new call link."
+            )
+            return label
+        }()
+
+        override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+            super.init(style: style, reuseIdentifier: reuseIdentifier)
+
+            let stackView = UIStackView(arrangedSubviews: [iconView, label])
+            stackView.axis = .horizontal
+            stackView.spacing = Constants.spacing
+            stackView.alignment = .center
+
+            self.addSubview(stackView)
+            stackView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(hMargin: Constants.hMargin, vMargin: Constants.vMargin))
+        }
+
+        required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+
+        override func prepareForReuse() {
+            iconView.tintColor = Theme.primaryIconColor
+            label.textColor = Theme.primaryTextColor
         }
     }
 }
