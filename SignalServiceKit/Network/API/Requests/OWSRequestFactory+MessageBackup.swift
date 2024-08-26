@@ -112,31 +112,77 @@ extension OWSRequestFactory {
 
     public static func copyToMediaTier(
         auth: MessageBackupServiceAuth,
-        transitCdnNumber: UInt32,
-        transitCdnKey: String,
-        objectLength: UInt32,
-        mediaId: Data,
-        hmacKey: Data,
-        encryptionKey: Data,
-        iv: Data
+        item: MessageBackup.Request.MediaItem
     ) -> TSRequest {
-        let parameters: [String: Any] = [
-            "sourceAttachment": [
-                "cdn": transitCdnNumber,
-                "key": transitCdnKey
-            ],
-            "objectLength": objectLength,
-            "mediaId": mediaId.asBase64Url,
-            "hmacKey": hmacKey.base64EncodedString(),
-            "encryptionKey": encryptionKey.base64EncodedString(),
-            "iv": iv.base64EncodedString()
-        ]
         let request = TSRequest(
             url: URL(string: "v1/archives/media")!,
+            method: "PUT",
+            parameters: item.asParameters
+        )
+        auth.apply(to: request)
+        request.shouldHaveAuthorizationHeaders = false
+        return request
+    }
+
+    public static func archiveMedia(
+        auth: MessageBackupServiceAuth,
+        items: [MessageBackup.Request.MediaItem]
+    ) -> TSRequest {
+        let parameters: [String: Any] = [ "items": items.map(\.asParameters) ]
+        let request = TSRequest(
+            url: URL(string: "v1/archives/media/batch")!,
             method: "PUT",
             parameters: parameters
         )
         auth.apply(to: request)
+        request.shouldHaveAuthorizationHeaders = false
+        return request
+    }
+
+    public static func listMedia(
+        auth: MessageBackupServiceAuth,
+        cursor: String?,
+        limit: UInt32?
+    ) -> TSRequest {
+        var parameters: [String: Any] = [:]
+        if let limit {
+            parameters["limit"] = limit
+        }
+        if let cursor {
+            parameters["cursor"] = cursor
+        }
+        let request = TSRequest(
+            url: URL(string: "v1/archives/media")!,
+            method: "GET",
+            parameters: parameters
+        )
+        auth.apply(to: request)
+        request.shouldHaveAuthorizationHeaders = false
+        return request
+    }
+
+    public static func deleteMedia(
+        auth: MessageBackupServiceAuth,
+        objects: [MessageBackup.Request.DeleteMediaTarget]
+    ) -> TSRequest {
+        let request = TSRequest(
+            url: URL(string: "v1/archives/media/delete")!,
+            method: "POST",
+            parameters: ["mediaToDelete": objects]
+        )
+        auth.apply(to: request)
+        request.shouldHaveAuthorizationHeaders = false
+        return request
+    }
+
+    public static func redeemReceipt(
+        receiptCredentialPresentation: Data
+    ) -> TSRequest {
+        let request = TSRequest(
+            url: URL(string: "v1/archives/redeem-receipt")!,
+            method: "POST",
+            parameters: ["receiptCredentialPresentation": receiptCredentialPresentation.base64EncodedString()]
+        )
         request.shouldHaveAuthorizationHeaders = false
         return request
     }

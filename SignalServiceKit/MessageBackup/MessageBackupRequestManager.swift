@@ -6,6 +6,65 @@
 import Foundation
 import LibSignalClient
 
+public extension MessageBackup {
+    enum Request {
+        public struct SourceAttachment: Codable {
+            let cdn: UInt32
+            let key: String
+        }
+
+        public struct MediaItem: Codable {
+            let sourceAttachment: SourceAttachment
+            let objectLength: UInt32
+            let mediaId: Data
+            let hmacKey: Data
+            let encryptionKey: Data
+            let iv: Data
+
+            var asParameters: [String: Any] {
+                [
+                    "sourceAttachment": [
+                        "cdn": self.sourceAttachment.cdn,
+                        "key": self.sourceAttachment.key
+                    ],
+                    "objectLength": self.objectLength,
+                    "mediaId": self.mediaId.asBase64Url,
+                    "hmacKey": self.hmacKey.base64EncodedString(),
+                    "encryptionKey": self.encryptionKey.base64EncodedString(),
+                    "iv": self.iv.base64EncodedString()
+                ]
+            }
+        }
+
+        public struct DeleteMediaTarget: Codable {
+            let cdn: UInt32
+            let mediaId: String
+        }
+    }
+
+    enum Response {
+        public struct BatchedBackupMediaResult: Codable {
+            let status: UInt32?
+            let failureReason: String?
+            let cdn: UInt32?
+            let mediaId: String
+        }
+
+        public struct ListMediaResult: Codable {
+            let storedMediaObjects: [StoredMedia]
+            let backupDir: String
+            let mediaDir: String
+            let cursor: String?
+        }
+
+        public struct StoredMedia: Codable {
+            let cdn: UInt32
+            let mediaId: String
+            let objectLength: UInt64
+        }
+    }
+}
+
 public protocol MessageBackupRequestManager {
 
     func fetchBackupServiceAuth(localAci: Aci, auth: ChatServiceAuth) async throws -> MessageBackupServiceAuth
@@ -25,20 +84,29 @@ public protocol MessageBackupRequestManager {
     func fetchCDNReadCredentials(cdn: Int32, auth: MessageBackupServiceAuth) async throws -> CDNReadCredential
 
     func copyToMediaTier(
-        transitCdnNumber: UInt32,
-        transitCdnKey: String,
-        objectLength: UInt32,
-        mediaId: Data,
-        hmacKey: Data,
-        encryptionKey: Data,
-        iv: Data,
+        item: MessageBackup.Request.MediaItem,
         auth: MessageBackupServiceAuth
     ) async throws -> UInt32
 
-    // TODO: [Backups] Batched backup media
-    // TODO: [Backups] List media objects
-    // TODO: [Backups] Delete media objects
-    // TODO: [Backups] Redeem receipt
+    func copyToMediaTier(
+        items: [MessageBackup.Request.MediaItem],
+        auth: MessageBackupServiceAuth
+    ) async throws -> [MessageBackup.Response.BatchedBackupMediaResult]
+
+    func listMediaObjects(
+        cursor: String?,
+        limit: UInt32?,
+        auth: MessageBackupServiceAuth
+    ) async throws -> MessageBackup.Response.ListMediaResult
+
+    func deleteMediaObjects(
+        objects: [MessageBackup.Request.DeleteMediaTarget],
+        auth: MessageBackupServiceAuth
+    ) async throws
+
+    func redeemReceipt(
+        receiptCredentialPresentation: Data
+    ) async throws
 }
 
 public struct MessageBackupRequestManagerImpl: MessageBackupRequestManager {
@@ -157,13 +225,7 @@ public struct MessageBackupRequestManagerImpl: MessageBackupRequestManager {
     }
 
     public func copyToMediaTier(
-        transitCdnNumber: UInt32,
-        transitCdnKey: String,
-        objectLength: UInt32,
-        mediaId: Data,
-        hmacKey: Data,
-        encryptionKey: Data,
-        iv: Data,
+        item: MessageBackup.Request.MediaItem,
         auth: MessageBackupServiceAuth
     ) async throws -> UInt32 {
         return try await executeBackupService(
@@ -171,16 +233,60 @@ public struct MessageBackupRequestManagerImpl: MessageBackupRequestManager {
             requestFactory: {
                 OWSRequestFactory.copyToMediaTier(
                     auth: $0,
-                    transitCdnNumber: transitCdnNumber,
-                    transitCdnKey: transitCdnKey,
-                    objectLength: objectLength,
-                    mediaId: mediaId,
-                    hmacKey: hmacKey,
-                    encryptionKey: encryptionKey,
-                    iv: iv
+                    item: item
                 )
             }
         )
+    }
+
+    public func copyToMediaTier(
+        items: [MessageBackup.Request.MediaItem],
+        auth: MessageBackupServiceAuth
+    ) async throws -> [MessageBackup.Response.BatchedBackupMediaResult] {
+        return try await executeBackupService(
+            auth: auth,
+            requestFactory: {
+                OWSRequestFactory.archiveMedia(
+                    auth: $0,
+                    items: items
+                )
+            }
+        )
+    }
+
+    public func listMediaObjects(
+        cursor: String?,
+        limit: UInt32?,
+        auth: MessageBackupServiceAuth
+    ) async throws -> MessageBackup.Response.ListMediaResult {
+        return try await executeBackupService(
+            auth: auth,
+            requestFactory: {
+                OWSRequestFactory.listMedia(
+                    auth: $0,
+                    cursor: cursor,
+                    limit: limit
+                )
+            }
+        )
+    }
+
+    public func deleteMediaObjects(objects: [MessageBackup.Request.DeleteMediaTarget], auth: MessageBackupServiceAuth) async throws {
+        _ = try await executeBackupServiceRequest(
+            auth: auth,
+            requestFactory: {
+                OWSRequestFactory.deleteMedia(
+                    auth: $0,
+                    objects: objects
+                )
+            }
+        )
+    }
+
+    // MARK: - Subscriptions
+
+    public func redeemReceipt(receiptCredentialPresentation: Data) async throws {
+        _ = OWSRequestFactory.redeemReceipt(receiptCredentialPresentation: receiptCredentialPresentation)
     }
 
     // MARK: - Private utility methods
