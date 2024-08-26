@@ -27,13 +27,16 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         db: DB,
         interactionStore: InteractionStore,
         mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore,
+        messageBackupKeyMaterial: MessageBackupKeyMaterial,
+        messageBackupRequestManager: MessageBackupRequestManager,
         orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
         orphanedAttachmentStore: OrphanedAttachmentStore,
         profileManager: Shims.ProfileManager,
         signalService: OWSSignalServiceProtocol,
         stickerManager: Shims.StickerManager,
         storyStore: StoryStore,
-        threadStore: ThreadStore
+        threadStore: ThreadStore,
+        tsAccountManager: TSAccountManager
     ) {
         self.attachmentDownloadStore = attachmentDownloadStore
         self.attachmentStore = attachmentStore
@@ -74,7 +77,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             decrypter: decrypter,
             downloadQueue: downloadQueue,
             downloadabilityChecker: downloadabilityChecker,
-            stickerManager: stickerManager
+            messageBackupKeyMaterial: messageBackupKeyMaterial,
+            messageBackupRequestManager: messageBackupRequestManager,
+            stickerManager: stickerManager,
+            tsAccountManager: tsAccountManager
         )
 
         appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
@@ -245,7 +251,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         private let decrypter: Decrypter
         private let downloadabilityChecker: DownloadabilityChecker
         private let downloadQueue: DownloadQueue
+        private let messageBackupKeyMaterial: MessageBackupKeyMaterial
+        private let messageBackupRequestManager: MessageBackupRequestManager
         private let stickerManager: Shims.StickerManager
+        private let tsAccountManager: TSAccountManager
 
         init(
             attachmentDownloadStore: AttachmentDownloadStore,
@@ -256,7 +265,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             decrypter: Decrypter,
             downloadQueue: DownloadQueue,
             downloadabilityChecker: DownloadabilityChecker,
-            stickerManager: Shims.StickerManager
+            messageBackupKeyMaterial: MessageBackupKeyMaterial,
+            messageBackupRequestManager: MessageBackupRequestManager,
+            stickerManager: Shims.StickerManager,
+            tsAccountManager: TSAccountManager
         ) {
             self.attachmentDownloadStore = attachmentDownloadStore
             self.attachmentStore = attachmentStore
@@ -266,7 +278,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             self.decrypter = decrypter
             self.downloadQueue = downloadQueue
             self.downloadabilityChecker = downloadabilityChecker
+            self.messageBackupKeyMaterial = messageBackupKeyMaterial
+            self.messageBackupRequestManager = messageBackupRequestManager
             self.stickerManager = stickerManager
+            self.tsAccountManager = tsAccountManager
         }
 
         private let maxConcurrentDownloads: UInt = 4
@@ -487,7 +502,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 guard
                     let mediaTierInfo = attachment.mediaTierInfo,
                     let mediaName = attachment.mediaName,
-                    let cdnNumber = mediaTierInfo.cdnNumber
+                    let cdnNumber = mediaTierInfo.cdnNumber,
+                    let encryptionMetadata = await buildCdnEncryptionMetadata(mediaName: mediaName, type: .attachment),
+                    let cdnCredential = await fetchBackupCdnReadCredential(for: cdnNumber)
                 else {
                     downloadMetadata = nil
                     break
@@ -497,7 +514,8 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     cdnNumber: cdnNumber,
                     encryptionKey: attachment.encryptionKey,
                     source: .mediaTierFullsize(
-                        mediaName: mediaName,
+                        cdnReadCredential: cdnCredential,
+                        outerEncryptionMetadata: encryptionMetadata,
                         digest: mediaTierInfo.digestSHA256Ciphertext,
                         plaintextLength: mediaTierInfo.unencryptedByteCount
                     )
@@ -506,7 +524,18 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 guard
                     let thumbnailInfo = attachment.thumbnailMediaTierInfo,
                     let mediaName = attachment.mediaName,
-                    let cdnNumber = thumbnailInfo.cdnNumber
+                    let cdnNumber = thumbnailInfo.cdnNumber,
+                    // This is the outer encryption
+                    let outerEncryptionMetadata = await buildCdnEncryptionMetadata(
+                        mediaName: "\(mediaName)_thumbnail",
+                        type: .attachment
+                    ),
+                    // inner encryption
+                    let innerEncryptionMetadata = await buildCdnEncryptionMetadata(
+                        mediaName: "\(mediaName)_thumbnail",
+                        type: .thumbnail
+                    ),
+                    let cdnReadCredential = await fetchBackupCdnReadCredential(for: cdnNumber)
                 else {
                     downloadMetadata = nil
                     break
@@ -516,7 +545,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     cdnNumber: cdnNumber,
                     encryptionKey: attachment.encryptionKey,
                     source: .mediaTierThumbnail(
-                        mediaName: mediaName
+                        cdnReadCredential: cdnReadCredential,
+                        outerEncyptionMetadata: outerEncryptionMetadata,
+                        innerEncryptionMetadata: innerEncryptionMetadata
                     )
                 )
             }
@@ -664,6 +695,50 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             }
 
             return true
+        }
+
+        private func buildCdnEncryptionMetadata(
+            mediaName: String,
+            type: MediaTierEncryptionType
+        ) -> MediaTierEncryptionMetadata? {
+            guard let mediaEncryptionMetadata = try? db.read(block: { tx in
+                try messageBackupKeyMaterial.mediaEncryptionMetadata(
+                    mediaName: mediaName,
+                    type: type,
+                    tx: tx
+                )
+            }) else {
+                owsFailDebug("Failed to build backup media metadata")
+                return nil
+            }
+            return mediaEncryptionMetadata
+        }
+
+        private func fetchBackupCdnReadCredential(for cdn: UInt32) async -> MediaTierReadCredential? {
+            guard let localAci = db.read(block: { tx in
+                self.tsAccountManager.localIdentifiers(tx: tx)?.aci
+            }) else {
+                owsFailDebug("Missing local identifier")
+                return nil
+            }
+
+            guard let auth = try? await messageBackupRequestManager.fetchBackupServiceAuth(
+                localAci: localAci,
+                auth: .implicit()
+            ) else {
+                owsFailDebug("Failed to fetch backup credential")
+                return nil
+            }
+
+            guard let metadata = try? await messageBackupRequestManager.fetchMediaTierCdnRequestMetadata(
+                cdn: Int32(cdn),
+                auth: auth
+            ) else {
+                owsFailDebug("Failed to fetch backup credential")
+                return nil
+            }
+
+            return metadata
         }
     }
 
@@ -929,10 +1004,11 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         throw OWSAssertionError("Invalid cdnKey.")
                     }
                     return "attachments/\(encodedKey)"
-                case .mediaTierFullsize:
-                    throw OWSAssertionError("Unimplemented")
-                case .mediaTierThumbnail:
-                    throw OWSAssertionError("Unimplemented")
+                case
+                        .mediaTierFullsize(let cdnCredential, let outerEncryptionMetadata, _, _),
+                        .mediaTierThumbnail(let cdnCredential, let outerEncryptionMetadata, _):
+                    let prefix = cdnCredential.mediaTierUrlPrefix()
+                    return "\(prefix)/\(outerEncryptionMetadata.mediaId.asBase64Url)"
                 }
             }
         }
@@ -954,12 +1030,8 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 switch metadata.source {
                 case .transitTier:
                     return [:]
-                case .mediaTierFullsize:
-                    // TODO: apply headers
-                    return [:]
-                case .mediaTierThumbnail:
-                    // TODO: apply headers
-                    return [:]
+                case .mediaTierFullsize(let cdnCredential, _, _, _), .mediaTierThumbnail(let cdnCredential, _, _):
+                    return cdnCredential.cdnAuthHeaders
                 }
             }
         }
@@ -1293,22 +1365,29 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                                     renderingFlag: .default,
                                     sourceFilename: nil
                                 )
-                            case .mediaTierFullsize(_, let digest, let plaintextLength):
+                            case .mediaTierFullsize(_, let outerEncryptionMetadata, let digest, let plaintextLength):
+                                let innerPlaintextLength: Int? = {
+                                    guard let plaintextLength else { return nil }
+                                    return Int(plaintextLength)
+                                }()
+
                                 pendingAttachment = try attachmentValidator.validateContents(
                                     ofBackupMediaFileAt: encryptedFileUrl,
-                                    encryptionKey: metadata.encryptionKey,
-                                    plaintextLength: plaintextLength,
-                                    digestSHA256Ciphertext: digest,
+                                    outerEncryptionData: EncryptionMetadata(key: outerEncryptionMetadata.encryptionKey),
+                                    innerEncryptionData: .init(
+                                        key: metadata.encryptionKey,
+                                        digest: digest,
+                                        plaintextLength: innerPlaintextLength
+                                    ),
                                     mimeType: metadata.mimeType,
                                     renderingFlag: .default,
                                     sourceFilename: nil
                                 )
-                            case .mediaTierThumbnail(_):
+                            case .mediaTierThumbnail(_, let outerEncryptionMetadata, let innerEncryptionData):
                                 pendingAttachment = try attachmentValidator.validateContents(
                                     ofBackupMediaFileAt: encryptedFileUrl,
-                                    encryptionKey: metadata.encryptionKey,
-                                    plaintextLength: nil,
-                                    digestSHA256Ciphertext: nil,
+                                    outerEncryptionData: EncryptionMetadata(key: outerEncryptionMetadata.encryptionKey),
+                                    innerEncryptionData: EncryptionMetadata(key: innerEncryptionData.encryptionKey),
                                     mimeType: metadata.mimeType,
                                     renderingFlag: .default,
                                     sourceFilename: nil

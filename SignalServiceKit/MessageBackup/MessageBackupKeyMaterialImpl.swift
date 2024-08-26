@@ -43,7 +43,6 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
 
     public func backupID(localAci: Aci, tx: DBReadTransaction) throws -> Data {
         let keyBytes = try buildBackupEncryptionMaterial(
-            localAci: localAci,
             salt: localAci.serviceIdBinary,
             info: Constants.MessageBackupIdInfoString,
             length: Constants.MessageBackupIdLength,
@@ -54,7 +53,6 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
 
     public func backupPrivateKey(localAci: Aci, tx: DBReadTransaction) throws -> PrivateKey {
         let privateKeyBytes = try buildBackupEncryptionMaterial(
-            localAci: localAci,
             salt: localAci.serviceIdBinary,
             info: Constants.MessageBackupPrivateKeyInfoString,
             length: Constants.MessageBackupPrivateKeyDataLength,
@@ -91,11 +89,10 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
     }
 
     public func mediaEncryptionMetadata(
-        localAci: Aci,
         mediaName: String,
-        type: MediaEncryptionType,
+        type: MediaTierEncryptionType,
         tx: any DBReadTransaction
-    ) throws -> MediaEncryptionMetadata {
+    ) throws -> MediaTierEncryptionMetadata {
         guard let mediaNameData = mediaName.data(using: .utf8) else {
             owsFailDebug("Failed to encode data")
             throw MessageBackupKeyMaterialError.invalidKeyInfo
@@ -111,7 +108,6 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
         }()
 
         let mediaId = Data(try buildBackupEncryptionMaterial(
-            localAci: localAci,
             salt: mediaNameData,
             info: Constants.MessageBackupMediaIdInfoString,
             length: Constants.MessageBackupMediaIdDataLength,
@@ -119,7 +115,6 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
         ))
 
         let keyBytes = try buildBackupEncryptionMaterial(
-            localAci: localAci,
             salt: mediaId,
             info: info,
             length: length,
@@ -130,26 +125,28 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
             throw MessageBackupKeyMaterialError.invalidEncryptionKey
         }
 
-        let iv: Data
         switch type {
         case .attachment:
-            iv = Data(Array(keyBytes[64..<80]))
+            return MediaTierEncryptionMetadata(
+                type: type,
+                mediaId: mediaId,
+                hmacKey: Data(Array(keyBytes[0..<32])),
+                aesKey: Data(Array(keyBytes[32..<64])),
+                iv: Data(Array(keyBytes[64..<80]))
+            )
         case .thumbnail:
-            iv = Randomness.generateRandomBytes(16)
+            return MediaTierEncryptionMetadata(
+                type: type,
+                mediaId: mediaId,
+                hmacKey: Data(Array(keyBytes[32..<64])),
+                aesKey: Data(Array(keyBytes[0..<32])),
+                iv: Randomness.generateRandomBytes(16)
+            )
         }
-
-        return MediaEncryptionMetadata(
-            type: type,
-            mediaId: mediaId,
-            hmacKey: Data(Array(keyBytes[0..<32])),
-            encryptionKey: Data(Array(keyBytes[32..<64])),
-            iv: iv
-        )
     }
 
     private func buildEncryptionMaterial(localAci: Aci, tx: DBReadTransaction) throws -> (encryptionKey: Data, hmacKey: Data) {
         let keyBytes = try buildBackupEncryptionMaterial(
-            localAci: localAci,
             salt: try backupID(localAci: localAci, tx: tx),
             info: Constants.MessageBackupEncryptionInfoString,
             length: Constants.MessageBackupEncryptionDataLength,
@@ -162,7 +159,6 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
     }
 
     private func buildBackupEncryptionMaterial(
-        localAci: Aci,
         salt: ContiguousBytes,
         info: String,
         length: Int,

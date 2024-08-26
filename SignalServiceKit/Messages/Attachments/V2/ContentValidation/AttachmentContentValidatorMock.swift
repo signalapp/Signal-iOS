@@ -44,9 +44,8 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
 
     open func validateContents(
         ofBackupMediaFileAt fileUrl: URL,
-        encryptionKey: Data,
-        plaintextLength: UInt32?,
-        digestSHA256Ciphertext: Data?,
+        outerEncryptionData: EncryptionMetadata,
+        innerEncryptionData: EncryptionMetadata,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?

@@ -113,42 +113,48 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
 
     public func validateContents(
         ofBackupMediaFileAt fileUrl: URL,
-        encryptionKey: Data,
-        plaintextLength plaintextLengthParam: UInt32?,
-        digestSHA256Ciphertext: Data?,
+        outerEncryptionData: EncryptionMetadata,
+        innerEncryptionData: EncryptionMetadata,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?
     ) throws -> any PendingAttachment {
+
+        // This temp file becomes the new attachment source, and will
+        // be owned by that part of the process and doesn't need to be
+        // cleaned up here.
+        let tmpFileUrl = OWSFileSystem.temporaryFileUrl()
+        try Cryptography.decryptFile(
+            at: fileUrl,
+            metadata: outerEncryptionData,
+            output: tmpFileUrl
+        )
+
         // Get plaintext length if not given, and validate digest if given.
-        let plaintextLength: UInt32
-        if let plaintextLengthParam, digestSHA256Ciphertext == nil {
-            plaintextLength = plaintextLengthParam
+        let plaintextLength: Int
+        if let innerPlainTextLength = innerEncryptionData.plaintextLength, innerEncryptionData.digest == nil {
+            plaintextLength = innerPlainTextLength
         } else {
             var decryptedLength = 0
             try Cryptography.decryptFile(
-                at: fileUrl,
-                metadata: .init(
-                    key: encryptionKey,
-                    digest: digestSHA256Ciphertext,
-                    plaintextLength: plaintextLengthParam.map(Int.init)
-                ),
+                at: tmpFileUrl,
+                metadata: innerEncryptionData,
                 output: { data in
                     decryptedLength += data.count
                 }
             )
-            plaintextLength = plaintextLengthParam ?? UInt32(decryptedLength)
+            plaintextLength = decryptedLength
         }
 
         let input = Input.encryptedFile(
-            fileUrl,
-            encryptionKey: encryptionKey,
-            plaintextLength: plaintextLength,
-            digestSHA256Ciphertext: nil
+            tmpFileUrl,
+            encryptionKey: innerEncryptionData.key,
+            plaintextLength: UInt32(plaintextLength),
+            digestSHA256Ciphertext: innerEncryptionData.digest
         )
         return try validateContents(
             input: input,
-            encryptionKey: encryptionKey,
+            encryptionKey: innerEncryptionData.key,
             mimeType: mimeType,
             renderingFlag: renderingFlag,
             sourceFilename: sourceFilename

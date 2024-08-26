@@ -85,9 +85,8 @@ public protocol AttachmentContentValidator {
     /// contents can change over time so it is best to re-validate.
     func validateContents(
         ofBackupMediaFileAt fileUrl: URL,
-        encryptionKey: Data,
-        plaintextLength: UInt32?,
-        digestSHA256Ciphertext: Data?,
+        outerEncryptionData: EncryptionMetadata,
+        innerEncryptionData: EncryptionMetadata,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?

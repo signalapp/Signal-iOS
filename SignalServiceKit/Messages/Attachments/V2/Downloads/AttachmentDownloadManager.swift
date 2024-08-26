@@ -23,15 +23,24 @@ public enum AttachmentDownloads {
 
         public enum Source: Equatable {
             case transitTier(cdnKey: String, digest: Data, plaintextLength: UInt32?)
-            case mediaTierFullsize(mediaName: String, digest: Data, plaintextLength: UInt32?)
-            case mediaTierThumbnail(mediaName: String)
+            case mediaTierFullsize(
+                cdnReadCredential: MediaTierReadCredential,
+                outerEncryptionMetadata: MediaTierEncryptionMetadata,
+                digest: Data,
+                plaintextLength: UInt32?
+            )
+            case mediaTierThumbnail(
+                cdnReadCredential: MediaTierReadCredential,
+                outerEncyptionMetadata: MediaTierEncryptionMetadata,
+                innerEncryptionMetadata: MediaTierEncryptionMetadata
+            )
         }
 
         public var digest: Data? {
             switch source {
             case .transitTier(_, let digest, _):
                 return digest
-            case .mediaTierFullsize(_, let digest, _):
+            case .mediaTierFullsize(_, _, let digest, _):
                 return digest
             case .mediaTierThumbnail:
                 // No digest for media tier thumbnails; they come from the local user.
@@ -43,7 +52,7 @@ public enum AttachmentDownloads {
             switch source {
             case .transitTier(_, _, let plaintextLength):
                 return plaintextLength
-            case .mediaTierFullsize(_, _, let plaintextLength):
+            case .mediaTierFullsize(_, _, _, let plaintextLength):
                 return plaintextLength
             case .mediaTierThumbnail:
                 // Thumbnails don't include a length out of band.

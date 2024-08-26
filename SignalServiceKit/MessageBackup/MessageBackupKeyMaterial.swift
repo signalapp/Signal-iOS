@@ -13,17 +13,21 @@ enum MessageBackupKeyMaterialError: Error {
     case invalidEncryptionKey
 }
 
-public enum MediaEncryptionType {
+public enum MediaTierEncryptionType {
     case attachment
     case thumbnail
 }
 
-public struct MediaEncryptionMetadata {
-    let type: MediaEncryptionType
+public struct MediaTierEncryptionMetadata: Equatable {
+    let type: MediaTierEncryptionType
     let mediaId: Data
     let hmacKey: Data
-    let encryptionKey: Data
+    let aesKey: Data
     let iv: Data
+
+    public var encryptionKey: Data {
+        return aesKey + hmacKey
+    }
 }
 
 public protocol MessageBackupKeyMaterial {
@@ -43,11 +47,10 @@ public protocol MessageBackupKeyMaterial {
     func messageBackupKey(localAci: Aci, tx: DBReadTransaction) throws -> MessageBackupKey
 
     func mediaEncryptionMetadata(
-        localAci: Aci,
         mediaName: String,
-        type: MediaEncryptionType,
+        type: MediaTierEncryptionType,
         tx: any DBReadTransaction
-    ) throws -> MediaEncryptionMetadata
+    ) throws -> MediaTierEncryptionMetadata
 
     /// Builds an encrypting StreamTransform object derived from the backup master key and the backupID
     func createEncryptingStreamTransform(localAci: Aci, tx: DBReadTransaction) throws -> EncryptingStreamTransform

@@ -252,6 +252,66 @@ public class AppSetup {
         let tsResourceContentValidator = TSResourceContentValidatorImpl(
             attachmentValidator: attachmentContentValidator
         )
+
+        let tsAccountManager = TSAccountManagerImpl(
+            appReadiness: TSAccountManagerImpl.Wrappers.AppReadiness(),
+            dateProvider: dateProvider,
+            db: db,
+            keyValueStoreFactory: keyValueStoreFactory,
+            schedulers: schedulers
+        )
+
+        let svrCredentialStorage = SVRAuthCredentialStorageImpl(keyValueStoreFactory: keyValueStoreFactory)
+        let svrLocalStorage = SVRLocalStorageImpl(keyValueStoreFactory: keyValueStoreFactory)
+
+        let accountAttributesUpdater = AccountAttributesUpdaterImpl(
+            appReadiness: AccountAttributesUpdaterImpl.Wrappers.AppReadiness(),
+            appVersion: appVersion,
+            dateProvider: dateProvider,
+            db: db,
+            profileManager: profileManager,
+            keyValueStoreFactory: keyValueStoreFactory,
+            serviceClient: SignalServiceRestClient(),
+            schedulers: schedulers,
+            svrLocalStorage: svrLocalStorage,
+            syncManager: syncManager,
+            tsAccountManager: tsAccountManager
+        )
+
+        let svr = SecureValueRecovery2Impl(
+            accountAttributesUpdater: accountAttributesUpdater,
+            appReadiness: SVR2.Wrappers.AppReadiness(),
+            appVersion: appVersion,
+            connectionFactory: SgxWebsocketConnectionFactoryImpl(websocketFactory: webSocketFactory),
+            credentialStorage: svrCredentialStorage,
+            db: db,
+            keyValueStoreFactory: keyValueStoreFactory,
+            schedulers: schedulers,
+            storageServiceManager: storageServiceManager,
+            svrLocalStorage: svrLocalStorage,
+            syncManager: syncManager,
+            tsAccountManager: tsAccountManager,
+            tsConstants: tsConstants,
+            twoFAManager: SVR2.Wrappers.OWS2FAManager(ows2FAManager)
+        )
+
+        let messageBackupKeyMaterial = MessageBackupKeyMaterialImpl(svr: svr)
+        let messageBackupRequestManager = MessageBackupRequestManagerImpl(
+            dateProvider: dateProvider,
+            db: db,
+            keyValueStoreFactory: keyValueStoreFactory,
+            messageBackupAuthCredentialManager: MessageBackupAuthCredentialManagerImpl(
+                authCredentialStore: authCredentialStore,
+                dateProvider: dateProvider,
+                db: db,
+                keyValueStoreFactory: keyValueStoreFactory,
+                messageBackupKeyMaterial: messageBackupKeyMaterial,
+                networkManager: networkManager
+            ),
+            messageBackupKeyMaterial: messageBackupKeyMaterial,
+            networkManager: networkManager
+        )
+
         let attachmentStore = AttachmentStoreImpl()
         let orphanedAttachmentStore = OrphanedAttachmentStoreImpl()
         let attachmentDownloadStore = AttachmentDownloadStoreImpl(dateProvider: dateProvider)
@@ -265,13 +325,16 @@ public class AppSetup {
             db: db,
             interactionStore: interactionStore,
             mediaBandwidthPreferenceStore: mediaBandwidthPreferenceStore,
+            messageBackupKeyMaterial: messageBackupKeyMaterial,
+            messageBackupRequestManager: messageBackupRequestManager,
             orphanedAttachmentCleaner: orphanedAttachmentCleaner,
             orphanedAttachmentStore: orphanedAttachmentStore,
             profileManager: AttachmentDownloadManagerImpl.Wrappers.ProfileManager(profileManager),
             signalService: signalService,
             stickerManager: AttachmentDownloadManagerImpl.Wrappers.StickerManager(),
             storyStore: storyStore,
-            threadStore: threadStore
+            threadStore: threadStore,
+            tsAccountManager: tsAccountManager
         )
         let attachmentManager = AttachmentManagerImpl(
             attachmentDownloadManager: attachmentDownloadManager,
@@ -294,14 +357,6 @@ public class AppSetup {
         let tsResourceDownloadManager = TSResourceDownloadManagerImpl(
             attachmentDownloadManager: attachmentDownloadManager,
             tsResourceStore: tsResourceStore
-        )
-
-        let tsAccountManager = TSAccountManagerImpl(
-            appReadiness: TSAccountManagerImpl.Wrappers.AppReadiness(),
-            dateProvider: dateProvider,
-            db: db,
-            keyValueStoreFactory: keyValueStoreFactory,
-            schedulers: schedulers
         )
 
         let quotedReplyManager = QuotedReplyManagerImpl(
@@ -416,40 +471,6 @@ public class AppSetup {
             dateProvider: dateProvider,
             groupUpdateItemBuilder: groupUpdateItemBuilder,
             notificationPresenter: notificationPresenter
-        )
-
-        let svrCredentialStorage = SVRAuthCredentialStorageImpl(keyValueStoreFactory: keyValueStoreFactory)
-        let svrLocalStorage = SVRLocalStorageImpl(keyValueStoreFactory: keyValueStoreFactory)
-
-        let accountAttributesUpdater = AccountAttributesUpdaterImpl(
-            appReadiness: AccountAttributesUpdaterImpl.Wrappers.AppReadiness(),
-            appVersion: appVersion,
-            dateProvider: dateProvider,
-            db: db,
-            profileManager: profileManager,
-            keyValueStoreFactory: keyValueStoreFactory,
-            serviceClient: SignalServiceRestClient(),
-            schedulers: schedulers,
-            svrLocalStorage: svrLocalStorage,
-            syncManager: syncManager,
-            tsAccountManager: tsAccountManager
-        )
-
-        let svr = SecureValueRecovery2Impl(
-            accountAttributesUpdater: accountAttributesUpdater,
-            appReadiness: SVR2.Wrappers.AppReadiness(),
-            appVersion: appVersion,
-            connectionFactory: SgxWebsocketConnectionFactoryImpl(websocketFactory: webSocketFactory),
-            credentialStorage: svrCredentialStorage,
-            db: db,
-            keyValueStoreFactory: keyValueStoreFactory,
-            schedulers: schedulers,
-            storageServiceManager: storageServiceManager,
-            svrLocalStorage: svrLocalStorage,
-            syncManager: syncManager,
-            tsAccountManager: tsAccountManager,
-            tsConstants: tsConstants,
-            twoFAManager: SVR2.Wrappers.OWS2FAManager(ows2FAManager)
         )
 
         let chatColorSettingStore = ChatColorSettingStore(keyValueStoreFactory: keyValueStoreFactory)
@@ -836,7 +857,6 @@ public class AppSetup {
             viewOnceMessages: SentMessageTranscriptReceiverImpl.Wrappers.ViewOnceMessages()
         )
 
-        let messageBackupKeyMaterial = MessageBackupKeyMaterialImpl(svr: svr)
         let preferences = Preferences()
         let subscriptionManager = testDependencies.subscriptionManager ?? SubscriptionManagerImpl()
         let systemStoryManager = testDependencies.systemStoryManager ?? SystemStoryManager()
@@ -890,21 +910,7 @@ public class AppSetup {
             attachmentDownloadManager: attachmentDownloadManager,
             attachmentUploadManager: attachmentUploadManager,
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
-            backupRequestManager: MessageBackupRequestManagerImpl(
-                dateProvider: dateProvider,
-                db: db,
-                keyValueStoreFactory: keyValueStoreFactory,
-                messageBackupAuthCredentialManager: MessageBackupAuthCredentialManagerImpl(
-                    authCredentialStore: authCredentialStore,
-                    dateProvider: dateProvider,
-                    db: db,
-                    keyValueStoreFactory: keyValueStoreFactory,
-                    messageBackupKeyMaterial: messageBackupKeyMaterial,
-                    networkManager: networkManager
-                ),
-                messageBackupKeyMaterial: messageBackupKeyMaterial,
-                networkManager: networkManager
-            ),
+            backupRequestManager: messageBackupRequestManager,
             chatArchiver: MessageBackupChatArchiverImpl(
                 dmConfigurationStore: disappearingMessagesConfigurationStore,
                 pinnedThreadManager: pinnedThreadManager,
