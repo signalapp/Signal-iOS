@@ -170,7 +170,7 @@ public struct OWSCountryMetadata {
         OWSCountryMetadata(name: "Niue", frontingDomain: nil, countryCode: "NU"),
         OWSCountryMetadata(name: "New Zealand", frontingDomain: nil, countryCode: "NZ"),
         OWSCountryMetadata(name: "Oman", frontingDomain: .googleOman, countryCode: "OM"),
-        OWSCountryMetadata(name: "Pakistan", frontingDomain: nil, countryCode: "PK"),
+        OWSCountryMetadata(name: "Pakistan", frontingDomain: .googlePakistan, countryCode: "PK"),
         OWSCountryMetadata(name: "Panama", frontingDomain: nil, countryCode: "PA"),
         OWSCountryMetadata(name: "Peru", frontingDomain: nil, countryCode: "PE"),
         OWSCountryMetadata(name: "Philippines", frontingDomain: nil, countryCode: "PH"),

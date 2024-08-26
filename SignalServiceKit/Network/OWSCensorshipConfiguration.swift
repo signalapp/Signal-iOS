@@ -10,6 +10,7 @@ enum OWSFrontingHost {
     case googleEgypt
     case googleUae
     case googleOman
+    case googlePakistan
     case googleQatar
     case googleUzbekistan
     case googleVenezuela
@@ -21,7 +22,7 @@ enum OWSFrontingHost {
     /// If the security policy requires new certificates, include them in the SSK bundle
     fileprivate var securityPolicy: OWSHTTPSecurityPolicy {
         switch self {
-        case .googleEgypt, .googleUae, .googleOman, .googleQatar, .googleUzbekistan, .googleVenezuela, .default:
+        case .googleEgypt, .googleUae, .googleOman, .googlePakistan, .googleQatar, .googleUzbekistan, .googleVenezuela, .default:
             return PinningPolicy.google.securityPolicy
         case .fastly:
             return PinningPolicy.fastly.securityPolicy
@@ -30,7 +31,7 @@ enum OWSFrontingHost {
 
     fileprivate var requiresPathPrefix: Bool {
         switch self {
-        case .googleEgypt, .googleUae, .googleOman, .googleQatar, .googleUzbekistan, .googleVenezuela, .`default`:
+        case .googleEgypt, .googleUae, .googleOman, .googlePakistan, .googleQatar, .googleUzbekistan, .googleVenezuela, .`default`:
             return true
         case .fastly:
             return false
@@ -52,6 +53,8 @@ enum OWSFrontingHost {
             Self.googleOmanSniHeaders
         case .googleOman:
             Self.googleOmanSniHeaders
+        case .googlePakistan:
+            Self.googlePakistanSniHeaders
         case .googleQatar:
             Self.googleQatarSniHeaders
         case .googleUzbekistan:
@@ -74,6 +77,7 @@ enum OWSFrontingHost {
     private static let googleEgyptSniHeaders = googleCommonSniHeaders + ["www.google.com.eg"]
     private static let googleUaeSniHeaders = googleCommonSniHeaders + ["www.google.ae"]
     private static let googleOmanSniHeaders = googleCommonSniHeaders + ["www.google.com.om"]
+    private static let googlePakistanSniHeaders = googleCommonSniHeaders + ["www.google.com.pk"]
     private static let googleQatarSniHeaders = googleCommonSniHeaders + ["www.google.com.qa"]
     private static let googleUzbekistanSniHeaders = googleCommonSniHeaders + ["www.google.co.uz"]
     private static let googleVenezuelaSniHeaders = googleCommonSniHeaders + ["www.google.co.ve"]
@@ -178,6 +182,8 @@ struct OWSCensorshipConfiguration {
         "+998": "UZ",
         // Russia
         "+7": "RU",
+        // Pakistan
+        "+92": "PK",
     ]
 
     /// Returns nil if the phone number is not known to be censored
