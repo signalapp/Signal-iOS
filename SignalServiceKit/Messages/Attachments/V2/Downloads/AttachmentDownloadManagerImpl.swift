@@ -82,8 +82,8 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         }
     }
 
-    public func downloadBackup(metadata: MessageBackupRemoteInfo, authHeaders: [String: String]) -> Promise<URL> {
-        let downloadState = DownloadState(type: .backup(metadata, authHeaders: authHeaders))
+    public func downloadBackup(metadata: BackupReadCredential) -> Promise<URL> {
+        let downloadState = DownloadState(type: .backup(metadata: metadata))
         return Promise.wrapAsync {
             let maxDownloadSize = MessageBackup.Constants.maxDownloadSizeBytes
             return try await self.downloadQueue.enqueueDownload(
@@ -913,15 +913,15 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     }
 
     private enum DownloadType {
-        case backup(MessageBackupRemoteInfo, authHeaders: [String: String])
+        case backup(metadata: BackupReadCredential)
         case transientAttachment(DownloadMetadata)
         case attachment(DownloadMetadata, id: Attachment.IDType)
 
         // MARK: - Helpers
         func urlPath() throws -> String {
             switch self {
-            case .backup(let info, _):
-                return "backups/\(info.backupDir)/\(info.backupName)"
+            case .backup(let info):
+                return info.backupLocationUrl()
             case .attachment(let metadata, _), .transientAttachment(let metadata):
                 switch metadata.source {
                 case .transitTier(let cdnKey, _, _):
@@ -939,7 +939,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
         func cdnNumber() -> UInt32 {
             switch self {
-            case .backup(let info, _):
+            case .backup(let info):
                 return UInt32(clamping: info.cdn)
             case .attachment(let metadata, _), .transientAttachment(let metadata):
                 return metadata.cdnNumber
@@ -948,8 +948,8 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
         func additionalHeaders() -> [String: String] {
             switch self {
-            case .backup(_, let authHeaders):
-                return authHeaders
+            case .backup(let metadata):
+                return metadata.cdnAuthHeaders
             case .attachment(let metadata, _), .transientAttachment(let metadata):
                 switch metadata.source {
                 case .transitTier:

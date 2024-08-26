@@ -71,8 +71,7 @@ public enum AttachmentDownloads {
 public protocol AttachmentDownloadManager {
 
     func downloadBackup(
-        metadata: MessageBackupRemoteInfo,
-        authHeaders: [String: String]
+        metadata: BackupReadCredential
     ) -> Promise<URL>
 
     func downloadTransientAttachment(

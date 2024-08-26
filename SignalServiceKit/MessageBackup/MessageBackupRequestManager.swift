@@ -81,7 +81,9 @@ public protocol MessageBackupRequestManager {
 
     func refreshBackupInfo(auth: MessageBackupServiceAuth) async throws
 
-    func fetchCDNReadCredentials(cdn: Int32, auth: MessageBackupServiceAuth) async throws -> CDNReadCredential
+    func fetchMediaTierCdnRequestMetadata(cdn: Int32, auth: MessageBackupServiceAuth) async throws -> MediaTierReadCredential
+
+    func fetchBackupRequestMetadata(auth: MessageBackupServiceAuth) async throws -> BackupReadCredential
 
     func copyToMediaTier(
         item: MessageBackup.Request.MediaItem,
@@ -111,18 +113,36 @@ public protocol MessageBackupRequestManager {
 
 public struct MessageBackupRequestManagerImpl: MessageBackupRequestManager {
 
+    private enum Constants {
+        static let keyValueStoreCollectionName = "MessageBackupRequestManager"
+
+        static let cdnNumberOfDaysFetchIntervalInSeconds: TimeInterval = kDayInterval
+        static let keyValueStoreCdn2CredentialKey = "Cdn2Credential"
+        static let keyValueStoreCdn3CredentialKey = "Cdn3Credential"
+
+        static let keyValueStoreBackupInfoKey = "BackupInfo"
+        static let backupInfoNumberOfDaysFetchIntervalInSeconds: TimeInterval = kDayInterval
+        static let keyValueStoreLastBackupInfoFetchTimeKey = "LastBackupInfoFetchTime"
+    }
+
+    private let dateProvider: DateProvider
     private let db: DB
+    private let kvStore: KeyValueStore
     private let messageBackupAuthCredentialManager: MessageBackupAuthCredentialManager
     private let messageBackupKeyMaterial: MessageBackupKeyMaterial
     private let networkManager: NetworkManager
 
     init(
+        dateProvider: @escaping DateProvider,
         db: DB,
+        keyValueStoreFactory: KeyValueStoreFactory,
         messageBackupAuthCredentialManager: MessageBackupAuthCredentialManager,
         messageBackupKeyMaterial: MessageBackupKeyMaterial,
         networkManager: NetworkManager
     ) {
+        self.dateProvider = dateProvider
         self.db = db
+        self.kvStore = keyValueStoreFactory.keyValueStore(collection: Constants.keyValueStoreCollectionName)
         self.messageBackupAuthCredentialManager = messageBackupAuthCredentialManager
         self.messageBackupKeyMaterial = messageBackupKeyMaterial
         self.networkManager = networkManager
@@ -192,10 +212,46 @@ public struct MessageBackupRequestManagerImpl: MessageBackupRequestManager {
 
     /// Fetch details about the current backup
     public func fetchBackupInfo(auth: MessageBackupServiceAuth) async throws -> MessageBackupRemoteInfo {
-        return try await executeBackupService(
+        let cachedBackupInfo = db.read { tx -> MessageBackupRemoteInfo? in
+            let lastInfoFetchTime = kvStore.getDate(
+                Constants.keyValueStoreLastBackupInfoFetchTimeKey,
+                transaction: tx
+            ) ?? .distantPast
+
+            // Refresh backup info after 24 hours
+            if abs(lastInfoFetchTime.timeIntervalSinceNow) < Constants.backupInfoNumberOfDaysFetchIntervalInSeconds {
+                do {
+                    if let backupInfo: MessageBackupRemoteInfo = try kvStore.getCodableValue(
+                        forKey: Constants.keyValueStoreBackupInfoKey,
+                        transaction: tx
+                    ) {
+                        return backupInfo
+                    }
+                } catch {
+                    // Failure to deserialize this object should be ok since it's simply
+                    // a cache of the remote info and can be refetched.  But still worth
+                    // a log entry in case something results in repeated errors.
+                    Logger.debug("Couldn't decode backup info, fetch remotely")
+                }
+            }
+            return nil
+        }
+
+        if let cachedBackupInfo {
+            return cachedBackupInfo
+        }
+
+        let backupInfo: MessageBackupRemoteInfo = try await executeBackupService(
             auth: auth,
             requestFactory: OWSRequestFactory.backupInfoRequest(auth:)
         )
+
+        try await db.awaitableWrite { tx in
+            try kvStore.setCodable(backupInfo, key: Constants.keyValueStoreBackupInfoKey, transaction: tx)
+            kvStore.setDate(dateProvider(), key: Constants.keyValueStoreLastBackupInfoFetchTimeKey, transaction: tx)
+        }
+
+        return backupInfo
     }
 
     /// Backup keep-alive request.  If not called, the backup may be deleted after 30 days.
@@ -217,11 +273,69 @@ public struct MessageBackupRequestManagerImpl: MessageBackupRequestManager {
     // MARK: - Media
 
     /// Retrieve credentials used for reading from the CDN
-    public func fetchCDNReadCredentials(cdn: Int32, auth: MessageBackupServiceAuth) async throws -> CDNReadCredential {
-        return try await executeBackupService(
+    private func fetchCDNReadCredentials(
+        cdn: Int32,
+        auth: MessageBackupServiceAuth
+    ) async throws -> CDNReadCredential {
+
+        let cacheKey = {
+            switch cdn {
+            case 2:
+                return Constants.keyValueStoreCdn2CredentialKey
+            case 3:
+                return Constants.keyValueStoreCdn3CredentialKey
+            default:
+                owsFailDebug("Invalid CDN version requested")
+                return Constants.keyValueStoreCdn3CredentialKey
+            }
+        }()
+
+        let result = db.read { tx -> CDNReadCredential? in
+            do {
+                if
+                    let backupAuthCredential: CDNReadCredential = try kvStore.getCodableValue(forKey: cacheKey, transaction: tx),
+                    backupAuthCredential.isExpired.negated
+                {
+                    return backupAuthCredential
+                }
+            } catch {
+                // Failure to deserialize this object should be ok since the credential
+                // can be refetched.  But still worth a log entry in case something
+                // results in repeated errors.
+                Logger.info("Couldn't decode backup info, fetch remotely")
+            }
+            return nil
+        }
+
+        if let result {
+            return result
+        }
+
+        let authCredential: CDNReadCredential = try await executeBackupService(
             auth: auth,
             requestFactory: { OWSRequestFactory.fetchCDNCredentials(auth: $0, cdn: cdn) }
         )
+
+        try await db.awaitableWrite { tx in
+            try kvStore.setCodable(authCredential, key: cacheKey, transaction: tx)
+        }
+
+        return authCredential
+    }
+
+    public func fetchBackupRequestMetadata(auth: MessageBackupServiceAuth) async throws -> BackupReadCredential {
+        let info = try await fetchBackupInfo(auth: auth)
+        let authCredential = try await fetchCDNReadCredentials(cdn: info.cdn, auth: auth)
+        return BackupReadCredential(credential: authCredential, info: info)
+    }
+
+    public func fetchMediaTierCdnRequestMetadata(
+        cdn: Int32,
+        auth: MessageBackupServiceAuth
+    ) async throws -> MediaTierReadCredential {
+        let info = try await fetchBackupInfo(auth: auth)
+        let authCredential = try await fetchCDNReadCredentials(cdn: cdn, auth: auth)
+        return MediaTierReadCredential(cdn: cdn, credential: authCredential, info: info)
     }
 
     public func copyToMediaTier(
@@ -316,6 +430,80 @@ public struct MessageBackupRequestManagerImpl: MessageBackupRequestManager {
     }
 }
 
-public struct CDNReadCredential: Decodable {
+private struct CDNReadCredential: Codable, Equatable {
+    private static let cdnCredentialLifetimeInSeconds = kDayInterval
+
+    let createDate: Date
     let headers: [String: String]
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.headers = try container.decode([String: String].self, forKey: .headers)
+
+        // createDate will default to current date, but can be overwritten during decodable initialization
+        self.createDate = try container.decodeIfPresent(Date.self, forKey: .createDate) ?? Date()
+    }
+
+    var isExpired: Bool {
+        return abs(createDate.timeIntervalSinceNow) >= CDNReadCredential.cdnCredentialLifetimeInSeconds
+    }
+}
+
+public struct MediaTierReadCredential: Equatable {
+
+    public let cdn: Int32
+    private let credential: CDNReadCredential
+    private let info: MessageBackupRemoteInfo
+
+    fileprivate init(
+        cdn: Int32,
+        credential: CDNReadCredential,
+        info: MessageBackupRemoteInfo
+    ) {
+        self.cdn = cdn
+        self.credential = credential
+        self.info = info
+    }
+
+    var isExpired: Bool {
+        return credential.isExpired
+    }
+
+    var cdnAuthHeaders: [String: String] {
+        return credential.headers
+    }
+
+    func mediaTierUrlPrefix() -> String {
+        return "backups/\(info.backupDir)/\(info.mediaDir)"
+    }
+}
+
+public struct BackupReadCredential: Equatable {
+
+    private let credential: CDNReadCredential
+    private let info: MessageBackupRemoteInfo
+
+    fileprivate init(
+        credential: CDNReadCredential,
+        info: MessageBackupRemoteInfo
+    ) {
+        self.credential = credential
+        self.info = info
+    }
+
+    var isExpired: Bool {
+        return credential.isExpired
+    }
+
+    var cdn: Int32 {
+        return info.cdn
+    }
+
+    var cdnAuthHeaders: [String: String] {
+        return credential.headers
+    }
+
+    func backupLocationUrl() -> String {
+        return "backups/\(info.backupDir)/\(info.backupName)"
+    }
 }

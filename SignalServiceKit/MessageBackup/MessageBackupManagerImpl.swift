@@ -112,12 +112,8 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
     public func downloadEncryptedBackup(localIdentifiers: LocalIdentifiers, auth: ChatServiceAuth) async throws -> URL {
         let backupAuth = try await backupRequestManager.fetchBackupServiceAuth(localAci: localIdentifiers.aci, auth: auth)
-        let info = try await backupRequestManager.fetchBackupInfo(auth: backupAuth)
-        let credentials = try await backupRequestManager.fetchCDNReadCredentials(cdn: info.cdn, auth: backupAuth)
-        let tmpFileUrl = try await attachmentDownloadManager.downloadBackup(
-            metadata: info,
-            authHeaders: credentials.headers
-        ).awaitable()
+        let metadata = try await backupRequestManager.fetchBackupRequestMetadata(auth: backupAuth)
+        let tmpFileUrl = try await attachmentDownloadManager.downloadBackup(metadata: metadata).awaitable()
 
         // Once protos calm down, this can be enabled to warn/error on failed validation
         // try await validateBackup(localIdentifiers: localIdentifiers, fileUrl: tmpFileUrl)

@@ -891,7 +891,9 @@ public class AppSetup {
             attachmentUploadManager: attachmentUploadManager,
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
             backupRequestManager: MessageBackupRequestManagerImpl(
+                dateProvider: dateProvider,
                 db: db,
+                keyValueStoreFactory: keyValueStoreFactory,
                 messageBackupAuthCredentialManager: MessageBackupAuthCredentialManagerImpl(
                     authCredentialStore: authCredentialStore,
                     dateProvider: dateProvider,
