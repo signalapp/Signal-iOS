@@ -194,6 +194,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
 
         tableView.delegate = self
         tableView.tableHeaderView = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 0, height: CGFloat.leastNormalMagnitude)))
+        tableView.backgroundColor = sheetBackgroundColor
         contentView.addSubview(tableView)
         tableView.autoPinEdgesToSuperviewEdges()
 
