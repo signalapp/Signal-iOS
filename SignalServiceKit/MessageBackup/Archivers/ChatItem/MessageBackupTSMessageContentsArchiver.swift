@@ -24,6 +24,7 @@ extension MessageBackup {
             let linkPreview: OWSLinkPreview?
 
             fileprivate let reactions: [BackupProto_Reaction]
+            fileprivate let oversizeTextAttachment: BackupProto_FilePointer?
             fileprivate let bodyAttachments: [BackupProto_MessageAttachment]
             fileprivate let quotedMessageThumbnail: BackupProto_MessageAttachment?
             fileprivate let linkPreviewImage: BackupProto_FilePointer?
@@ -442,6 +443,16 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                 context: context.recipientContext,
                 tx: tx
             ))
+            if let oversizeTextAttachment = text.oversizeTextAttachment {
+                downstreamObjectResults.append(attachmentsArchiver.restoreOversizeTextAttachment(
+                    oversizeTextAttachment,
+                    chatItemId: chatItemId,
+                    messageRowId: messageRowId,
+                    message: message,
+                    thread: thread,
+                    tx: tx
+                ))
+            }
             downstreamObjectResults.append(attachmentsArchiver.restoreBodyAttachments(
                 text.bodyAttachments,
                 chatItemId: chatItemId,
@@ -632,9 +643,25 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             linkPreviewAttachment = nil
         }
 
-        guard standardMessage.hasText else {
-            // TODO: [Backups] Support messages with no text
-            return .messageFailure([.restoreFrameError(.unimplemented, chatItemId)])
+        let oversizeTextAttachment: BackupProto_FilePointer?
+        if standardMessage.hasLongText {
+            oversizeTextAttachment = standardMessage.longText
+        } else {
+            oversizeTextAttachment = nil
+        }
+
+        if oversizeTextAttachment != nil && standardMessage.text.body.isEmpty {
+            return .messageFailure([.restoreFrameError(
+                .invalidProtoData(.longTextStandardMessageMissingBody),
+                chatItemId
+            )])
+        }
+
+        if standardMessage.text.body.isEmpty && standardMessage.attachments.isEmpty {
+            return .messageFailure([.restoreFrameError(
+                .invalidProtoData(.emptyStandardMessage),
+                chatItemId
+            )])
         }
         let text = standardMessage.text
 
@@ -646,6 +673,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                 quotedMessage: quotedMessage,
                 linkPreview: linkPreview,
                 reactions: standardMessage.reactions,
+                oversizeTextAttachment: oversizeTextAttachment,
                 bodyAttachments: standardMessage.attachments,
                 quotedMessageThumbnail: quotedMessageThumbnail,
                 linkPreviewImage: linkPreviewAttachment
@@ -657,6 +685,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                     quotedMessage: quotedMessage,
                     linkPreview: linkPreview,
                     reactions: standardMessage.reactions,
+                    oversizeTextAttachment: oversizeTextAttachment,
                     bodyAttachments: standardMessage.attachments,
                     quotedMessageThumbnail: quotedMessageThumbnail,
                     linkPreviewImage: linkPreviewAttachment

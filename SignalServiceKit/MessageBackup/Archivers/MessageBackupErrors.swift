@@ -361,6 +361,13 @@ extension MessageBackup {
                 /// One in the backup did not.
                 case reactionNotFromAciOrE164
 
+                /// A ``BackupProto_StandardMessage`` had neither body text nor any attachments.
+                case emptyStandardMessage
+
+                /// A ``BackupProto_StandardMessage/longText`` was present despite an empty
+                /// message body (the body text must always be a prefix of the long text)
+                case longTextStandardMessageMissingBody
+
                 /// A `BackupProto_BodyRange` with a missing or unrecognized style.
                 case unrecognizedBodyRangeStyle
 
@@ -624,6 +631,8 @@ extension MessageBackup {
                         .outgoingNonContactMessageRecipient,
                         .unrecognizedMessageSendStatus,
                         .reactionNotFromAciOrE164,
+                        .emptyStandardMessage,
+                        .longTextStandardMessageMissingBody,
                         .unrecognizedBodyRangeStyle,
                         .quotedMessageEmptyContent,
                         .linkPreviewEmptyUrl,
