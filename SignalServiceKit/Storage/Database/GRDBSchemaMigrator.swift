@@ -286,6 +286,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addVersionedDMTimer
         case addDMTimerVersionToInteractionTable
         case initializeDMTimerVersion
+        case attachmentAddMediaTierDigest
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -347,7 +348,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 83
+    public static let grdbSchemaVersionLatest: UInt = 84
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -3362,6 +3363,13 @@ public class GRDBSchemaMigrator: NSObject {
             try tx.database.execute(sql: """
             UPDATE model_OWSDisappearingMessagesConfiguration SET timerVersion = 2;
             """)
+            return .success(())
+        }
+
+        migrator.registerMigration(.attachmentAddMediaTierDigest) { tx in
+            try tx.database.alter(table: "Attachment") { table in
+                table.add(column: "mediaTierDigestSHA256Ciphertext", .blob)
+            }
             return .success(())
         }
 

@@ -206,7 +206,7 @@ public class Attachment {
         self.mediaTierInfo = MediaTierInfo(
             cdnNumber: record.mediaTierCdnNumber,
             unencryptedByteCount: record.mediaTierUnencryptedByteCount ?? record.unencryptedByteCount,
-            digestSHA256Ciphertext: record.digestSHA256Ciphertext,
+            digestSHA256Ciphertext: record.mediaTierDigestSHA256Ciphertext ?? record.digestSHA256Ciphertext,
             uploadEra: record.mediaTierUploadEra,
             lastDownloadAttemptTimestamp: record.lastMediaTierDownloadAttemptTimestamp
         )

@@ -29,6 +29,7 @@ extension Attachment {
         var lastTransitDownloadAttemptTimestamp: UInt64?
         let mediaName: String?
         var mediaTierCdnNumber: UInt32?
+        var mediaTierDigestSHA256Ciphertext: Data?
         var mediaTierUnencryptedByteCount: UInt32?
         var mediaTierUploadEra: String?
         var lastMediaTierDownloadAttemptTimestamp: UInt64?
@@ -68,6 +69,7 @@ extension Attachment {
             case mediaTierCdnNumber
             case mediaTierUnencryptedByteCount
             case mediaTierUploadEra
+            case mediaTierDigestSHA256Ciphertext
             case lastMediaTierDownloadAttemptTimestamp
             case thumbnailCdnNumber
             case thumbnailUploadEra
@@ -125,6 +127,7 @@ extension Attachment {
             lastTransitDownloadAttemptTimestamp: UInt64?,
             mediaName: String?,
             mediaTierCdnNumber: UInt32?,
+            mediaTierDigestSHA256Ciphertext: Data?,
             mediaTierUnencryptedByteCount: UInt32?,
             mediaTierUploadEra: String?,
             lastMediaTierDownloadAttemptTimestamp: UInt64?,
@@ -159,6 +162,7 @@ extension Attachment {
             self.lastTransitDownloadAttemptTimestamp = lastTransitDownloadAttemptTimestamp
             self.mediaName = mediaName
             self.mediaTierCdnNumber = mediaTierCdnNumber
+            self.mediaTierDigestSHA256Ciphertext = mediaTierDigestSHA256Ciphertext
             self.mediaTierUnencryptedByteCount = mediaTierUnencryptedByteCount
             self.mediaTierUploadEra = mediaTierUploadEra
             self.lastMediaTierDownloadAttemptTimestamp = lastMediaTierDownloadAttemptTimestamp
@@ -268,6 +272,7 @@ extension Attachment {
             self.lastTransitDownloadAttemptTimestamp = transitTierInfo?.lastDownloadAttemptTimestamp
             self.mediaName = mediaName
             self.mediaTierCdnNumber = mediaTierInfo?.cdnNumber
+            self.mediaTierDigestSHA256Ciphertext = mediaTierInfo?.digestSHA256Ciphertext
             self.mediaTierUnencryptedByteCount = mediaTierInfo?.unencryptedByteCount
             self.mediaTierUploadEra = mediaTierInfo?.uploadEra
             self.lastMediaTierDownloadAttemptTimestamp = mediaTierInfo?.lastDownloadAttemptTimestamp
