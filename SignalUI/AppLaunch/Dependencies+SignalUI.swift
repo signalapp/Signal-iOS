@@ -58,14 +58,6 @@ public extension Dependencies {
 
     static var fullTextSearcher: FullTextSearcher { .shared }
 
-    var chatColors: ChatColors {
-        SUIEnvironment.shared.chatColorsRef
-    }
-
-    static var chatColors: ChatColors {
-        SUIEnvironment.shared.chatColorsRef
-    }
-
     var payments: Payments {
         SUIEnvironment.shared.paymentsRef
     }

@@ -21,7 +21,7 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(chatColorsDidChange),
-            name: ChatColors.chatColorsDidChangeNotification,
+            name: ChatColorSettingStore.chatColorsDidChangeNotification,
             object: nil
         )
     }
@@ -42,7 +42,9 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
     private var chatColor: ColorOrGradientSetting!
 
     private func updateChatColor() {
-        chatColor = databaseStorage.read { tx in ChatColors.resolvedChatColor(for: thread, tx: tx) }
+        chatColor = databaseStorage.read { tx in
+            DependenciesBridge.shared.chatColorSettingStore.resolvedChatColor(for: thread, tx: tx.asV2Read)
+        }
     }
 
     @objc
@@ -342,11 +344,19 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
     }
 
     func resetChatColor() {
-        databaseStorage.asyncWrite { [thread] tx in ChatColors.setChatColorSetting(.auto, for: thread, tx: tx) }
+        databaseStorage.asyncWrite { [thread] tx in
+            DependenciesBridge.shared.chatColorSettingStore.setChatColorSetting(
+                .auto,
+                for: thread,
+                tx: tx.asV2Write
+            )
+        }
     }
 
     private func resetAllChatColors() {
-        databaseStorage.asyncWrite { tx in ChatColors.resetAllSettings(transaction: tx) }
+        databaseStorage.asyncWrite { tx in
+            DependenciesBridge.shared.chatColorSettingStore.resetAllSettings(tx: tx.asV2Write)
+        }
     }
 }
 

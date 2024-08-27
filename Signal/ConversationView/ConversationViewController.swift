@@ -118,7 +118,10 @@ public final class ConversationViewController: OWSViewController {
     }
 
     static func loadChatColor(for thread: TSThread, tx: SDSAnyReadTransaction) -> ColorOrGradientSetting {
-        return ChatColors.resolvedChatColor(for: thread, tx: tx)
+        return DependenciesBridge.shared.chatColorSettingStore.resolvedChatColor(
+            for: thread,
+            tx: tx.asV2Read
+        )
     }
 
     static func loadWallpaperViewBuilder(for thread: TSThread, tx: SDSAnyReadTransaction) -> WallpaperViewBuilder? {

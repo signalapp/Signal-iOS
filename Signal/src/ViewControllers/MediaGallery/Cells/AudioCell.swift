@@ -136,7 +136,7 @@ class AudioCell: MediaTileListModeCell {
             viewWidth: contentView.bounds.width,
             hasWallpaper: false,
             isWallpaperPhoto: false,
-            chatColor: ChatColors.Constants.defaultColor.colorSetting
+            chatColor: ChatColorSettingStore.Constants.defaultColor.colorSetting
         )
         let coreState = CVCoreState(conversationStyle: conversationStyle, mediaCache: audioItem.mediaCache)
         let viewStateSnapshot = CVViewStateSnapshot.mockSnapshotForStandaloneItems(

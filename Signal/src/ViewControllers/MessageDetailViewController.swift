@@ -222,7 +222,10 @@ class MessageDetailViewController: OWSTableViewController2 {
             viewWidth: view.width - (cellOuterInsets.totalWidth + (Self.cellHInnerMargin * 2)),
             hasWallpaper: false,
             isWallpaperPhoto: false,
-            chatColor: ChatColors.resolvedChatColor(for: thread, tx: transaction)
+            chatColor: DependenciesBridge.shared.chatColorSettingStore.resolvedChatColor(
+                for: thread,
+                tx: transaction.asV2Read
+            )
         )
 
         return CVLoader.buildStandaloneRenderItem(

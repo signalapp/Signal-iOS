@@ -174,7 +174,11 @@ class PreviewWallpaperViewController: UIViewController {
         }
         mockConversationView.model = buildMockConversationModel()
         mockConversationView.customChatColor = databaseStorage.read { tx in
-            ChatColors.resolvedChatColor(for: thread, previewWallpaper: resolvedWallpaper, tx: tx)
+            DependenciesBridge.shared.chatColorSettingStore.resolvedChatColor(
+                for: thread,
+                previewWallpaper: resolvedWallpaper,
+                tx: tx.asV2Read
+            )
         }
     }
 

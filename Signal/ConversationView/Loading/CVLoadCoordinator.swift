@@ -164,7 +164,7 @@ public class CVLoadCoordinator: NSObject {
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(chatColorsDidChange),
-                                               name: ChatColors.chatColorsDidChangeNotification,
+                                               name: ChatColorSettingStore.chatColorsDidChangeNotification,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(didLearnRecipientAssociation(notification:)),

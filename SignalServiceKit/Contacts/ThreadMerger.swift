@@ -451,7 +451,6 @@ extension ThreadMerger {
         threadAssociatedDataStore: MockThreadAssociatedDataStore = MockThreadAssociatedDataStore(),
         threadStore: ThreadStore = MockThreadStore()
     ) -> ThreadMerger {
-        let chatColorSettingStore = ChatColorSettingStore(keyValueStoreFactory: keyValueStoreFactory)
         let disappearingMessagesConfigurationStore = MockDisappearingMessagesConfigurationStore()
         let threadReplyInfoStore = ThreadReplyInfoStore(keyValueStoreFactory: keyValueStoreFactory)
         let wallpaperImageStore = MockWallpaperImageStore()
@@ -459,6 +458,10 @@ extension ThreadMerger {
             keyValueStoreFactory: keyValueStoreFactory,
             notificationScheduler: SyncScheduler(),
             wallpaperImageStore: wallpaperImageStore
+        )
+        let chatColorSettingStore = ChatColorSettingStore(
+            keyValueStoreFactory: keyValueStoreFactory,
+            wallpaperStore: wallpaperStore
         )
         let threadRemover = ThreadRemoverImpl(
             chatColorSettingStore: chatColorSettingStore,

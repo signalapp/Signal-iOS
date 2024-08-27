@@ -148,7 +148,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
             owsAssertDebug(item != nil)
         }
 
-        let groupNameColors = ChatColors.groupNameColors(forThread: thread)
+        let groupNameColors = GroupNameColors.groupNameColors(forThread: thread)
         let displayNameCache = DisplayNameCache()
 
         // Update the properties of the view items.
@@ -193,7 +193,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
             return nil
         }
 
-        let groupNameColors = ChatColors.groupNameColors(forThread: thread)
+        let groupNameColors = GroupNameColors.groupNameColors(forThread: thread)
         let displayNameCache = DisplayNameCache()
 
         configureItemViewState(item: itemBuilder,
@@ -215,7 +215,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
                                                thread: TSThread,
                                                threadViewModel: ThreadViewModel,
                                                viewStateSnapshot: CVViewStateSnapshot,
-                                               groupNameColors: ChatColors.GroupNameColors,
+                                               groupNameColors: GroupNameColors,
                                                displayNameCache: DisplayNameCache,
                                                transaction: SDSAnyReadTransaction) {
         let itemViewState = item.itemViewState

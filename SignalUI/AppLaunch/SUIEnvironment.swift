@@ -27,8 +27,6 @@ public class SUIEnvironment: NSObject {
 
     public var contactsViewHelperRef: ContactsViewHelper = ContactsViewHelper()
 
-    public var chatColorsRef: ChatColors = ChatColors()
-
     public var paymentsRef: Payments = PaymentsImpl()
 
     private(set) public var linkPreviewFetcher: (any LinkPreviewFetcher)!

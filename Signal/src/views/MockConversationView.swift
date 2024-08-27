@@ -122,7 +122,10 @@ class MockConversationView: UIView {
 
         var renderItems = [CVRenderItem]()
         databaseStorage.read { transaction in
-            let chatColor = self.customChatColor ?? ChatColors.resolvedChatColor(for: thread, tx: transaction)
+            let chatColor = self.customChatColor ?? DependenciesBridge.shared.chatColorSettingStore.resolvedChatColor(
+                for: thread,
+                tx: transaction.asV2Read
+            )
             let conversationStyle = ConversationStyle(
                 type: .`default`,
                 thread: self.thread,

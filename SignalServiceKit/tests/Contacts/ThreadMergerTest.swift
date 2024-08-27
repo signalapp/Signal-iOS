@@ -40,7 +40,6 @@ final class ThreadMergerTest: XCTestCase {
         _signalServiceAddressCache = SignalServiceAddressCache()
 
         callRecordStore = MockCallRecordStore()
-        chatColorSettingStore = ChatColorSettingStore(keyValueStoreFactory: keyValueStoreFactory)
         db = MockDB()
         deletedCallRecordStore = MockDeletedCallRecordStore()
         disappearingMessagesConfigurationStore = MockDisappearingMessagesConfigurationStore()
@@ -55,6 +54,10 @@ final class ThreadMergerTest: XCTestCase {
             keyValueStoreFactory: keyValueStoreFactory,
             notificationScheduler: SyncScheduler(),
             wallpaperImageStore: MockWallpaperImageStore()
+        )
+        chatColorSettingStore = ChatColorSettingStore(
+            keyValueStoreFactory: keyValueStoreFactory,
+            wallpaperStore: wallpaperStore
         )
         threadRemover = ThreadRemoverImpl(
             chatColorSettingStore: chatColorSettingStore,

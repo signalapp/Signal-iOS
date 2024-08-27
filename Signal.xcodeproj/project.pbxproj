@@ -363,7 +363,7 @@
 		34A954BD271A471300B05242 /* SignalUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34A954A8271A471200B05242 /* SignalUI.framework */; };
 		34A954BE271A471300B05242 /* SignalUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 34A954A8271A471200B05242 /* SignalUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		34A954DC271B4F3E00B05242 /* Theme+Icons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A954D4271B4F3E00B05242 /* Theme+Icons.swift */; };
-		34A954DE271B4F3E00B05242 /* ChatColors+SignalUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A954D6271B4F3E00B05242 /* ChatColors+SignalUI.swift */; };
+		34A954DE271B4F3E00B05242 /* GroupNameColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A954D6271B4F3E00B05242 /* GroupNameColors.swift */; };
 		34A954E0271B4F3E00B05242 /* ColorOrGradient+SignalUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A954D8271B4F3E00B05242 /* ColorOrGradient+SignalUI.swift */; };
 		34A954E2271B4F3E00B05242 /* ColorOrGradientSwatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A954DA271B4F3E00B05242 /* ColorOrGradientSwatchView.swift */; };
 		34A954E8271B4F6A00B05242 /* VideoPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A954E5271B4F6A00B05242 /* VideoPlayer.swift */; };
@@ -3280,7 +3280,7 @@
 		34A954B1271A471300B05242 /* SignalUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SignalUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		34A954CA271B4BE600B05242 /* ShareViewDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShareViewDelegate.swift; sourceTree = "<group>"; };
 		34A954D4271B4F3E00B05242 /* Theme+Icons.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Theme+Icons.swift"; sourceTree = "<group>"; };
-		34A954D6271B4F3E00B05242 /* ChatColors+SignalUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ChatColors+SignalUI.swift"; sourceTree = "<group>"; };
+		34A954D6271B4F3E00B05242 /* GroupNameColors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupNameColors.swift; sourceTree = "<group>"; };
 		34A954D8271B4F3E00B05242 /* ColorOrGradient+SignalUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ColorOrGradient+SignalUI.swift"; sourceTree = "<group>"; };
 		34A954DA271B4F3E00B05242 /* ColorOrGradientSwatchView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorOrGradientSwatchView.swift; sourceTree = "<group>"; };
 		34A954E5271B4F6A00B05242 /* VideoPlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoPlayer.swift; sourceTree = "<group>"; };
@@ -6573,10 +6573,10 @@
 		34A954D2271B4F3E00B05242 /* Appearance */ = {
 			isa = PBXGroup;
 			children = (
-				34A954D6271B4F3E00B05242 /* ChatColors+SignalUI.swift */,
 				34A954D8271B4F3E00B05242 /* ColorOrGradient+SignalUI.swift */,
 				34A954DA271B4F3E00B05242 /* ColorOrGradientSwatchView.swift */,
 				34A95506271B510400B05242 /* ConversationStyle.swift */,
+				34A954D6271B4F3E00B05242 /* GroupNameColors.swift */,
 				B9F817632BA263A900EAEE23 /* SignalSymbols.swift */,
 				34A954D4271B4F3E00B05242 /* Theme+Icons.swift */,
 				7677E40C29F75C4200AC6A75 /* Theme.swift */,
@@ -13147,7 +13147,6 @@
 				5073EACF2C4F469A001FBB3E /* CallLinkFetcher.swift in Sources */,
 				5073EAD02C4F4723001FBB3E /* CallLinkState.swift in Sources */,
 				83B9573927C9A1FA00A678FD /* CaptchaView.swift in Sources */,
-				34A954DE271B4F3E00B05242 /* ChatColors+SignalUI.swift in Sources */,
 				D925F5512983399D00158EE4 /* CircleButton.swift in Sources */,
 				3402AA9D271D9E180084CBAE /* CircleView.swift in Sources */,
 				34A954E0271B4F3E00B05242 /* ColorOrGradient+SignalUI.swift in Sources */,
@@ -13196,6 +13195,7 @@
 				3402AA91271D9E180084CBAE /* GalleryRailView.swift in Sources */,
 				3402AAA9271D9E180084CBAE /* GradientView.swift in Sources */,
 				34A955B2271B53F600B05242 /* GroupManager+GroupInvites.swift in Sources */,
+				34A954DE271B4F3E00B05242 /* GroupNameColors.swift in Sources */,
 				88B986F928807ED500F8C74D /* GroupTableViewCell.swift in Sources */,
 				3402AA02271D9DAF0084CBAE /* GroupViewUtils.swift in Sources */,
 				509085B82C498C3F00409B85 /* HTMLMetadata.swift in Sources */,

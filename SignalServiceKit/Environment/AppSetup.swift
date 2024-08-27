@@ -473,7 +473,6 @@ public class AppSetup {
             notificationPresenter: notificationPresenter
         )
 
-        let chatColorSettingStore = ChatColorSettingStore(keyValueStoreFactory: keyValueStoreFactory)
         let groupMemberStore = GroupMemberStoreImpl()
         let threadAssociatedDataStore = ThreadAssociatedDataStoreImpl()
         let threadReplyInfoStore = ThreadReplyInfoStore(keyValueStoreFactory: keyValueStoreFactory)
@@ -488,6 +487,10 @@ public class AppSetup {
             keyValueStoreFactory: keyValueStoreFactory,
             notificationScheduler: schedulers.main,
             wallpaperImageStore: wallpaperImageStore
+        )
+        let chatColorSettingStore = ChatColorSettingStore(
+            keyValueStoreFactory: keyValueStoreFactory,
+            wallpaperStore: wallpaperStore
         )
 
         let disappearingMessagesConfigurationStore = DisappearingMessagesConfigurationStoreImpl()

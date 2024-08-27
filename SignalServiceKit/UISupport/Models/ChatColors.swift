@@ -33,6 +33,17 @@ public enum ChatColorSetting: Equatable {
             return false
         }
     }
+
+    public var constantColor: ColorOrGradientSetting? {
+        switch self {
+        case .auto:
+            return nil
+        case .builtIn(let value):
+            return value.colorSetting
+        case .custom(_, let value):
+            return value.colorSetting
+        }
+    }
 }
 
 public struct CustomChatColor: Codable {

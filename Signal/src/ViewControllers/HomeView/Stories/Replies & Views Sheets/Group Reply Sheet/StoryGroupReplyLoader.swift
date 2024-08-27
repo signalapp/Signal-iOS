@@ -232,7 +232,7 @@ class StoryGroupReplyLoader: Dependencies {
             }
         }
 
-        let groupNameColors = ChatColors.groupNameColors(forThread: groupThread)
+        let groupNameColors = GroupNameColors.groupNameColors(forThread: groupThread)
         let displayNamesByAddress = contactsManagerImpl.displayNamesByAddress(
             for: Array(authorAddresses),
             transaction: transaction

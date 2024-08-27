@@ -192,7 +192,10 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
             viewWidth: viewWidth,
             hasWallpaper: false,
             isWallpaperPhoto: false,
-            chatColor: ChatColors.resolvedChatColor(for: thread, tx: tx)
+            chatColor: DependenciesBridge.shared.chatColorSettingStore.resolvedChatColor(
+                for: thread,
+                tx: tx.asV2Read
+            )
         )
 
         let itemDate = NSDate.ows_date(withMillisecondsSince1970: interaction.timestamp)

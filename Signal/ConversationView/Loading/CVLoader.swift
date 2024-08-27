@@ -263,7 +263,10 @@ public class CVLoader: NSObject {
         spoilerState: SpoilerRenderState,
         transaction: SDSAnyReadTransaction
     ) -> CVRenderItem? {
-        let chatColor = ChatColors.resolvedChatColor(for: thread, tx: transaction)
+        let chatColor = DependenciesBridge.shared.chatColorSettingStore.resolvedChatColor(
+            for: thread,
+            tx: transaction.asV2Read
+        )
         let conversationStyle = ConversationStyle(
             type: .`default`,
             thread: thread,
@@ -355,7 +358,10 @@ public class CVLoader: NSObject {
             return nil
         }
 
-        let chatColor = ChatColors.resolvedChatColor(for: thread, tx: transaction)
+        let chatColor = DependenciesBridge.shared.chatColorSettingStore.resolvedChatColor(
+            for: thread,
+            tx: transaction.asV2Read
+        )
         let mockViewWidth: CGFloat = 800
         let conversationStyle = ConversationStyle(
             type: .`default`,
