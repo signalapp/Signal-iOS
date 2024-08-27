@@ -507,6 +507,13 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
                     outgoingMessageWith: outgoingMessageBuilder,
                     recipientAddressStates: recipientAddressStates
                 )
+            case .stickerMessage(let stickerMessage):
+                outgoingMessageBuilder.messageSticker = stickerMessage.sticker
+
+                return TSOutgoingMessage(
+                    outgoingMessageWith: outgoingMessageBuilder,
+                    recipientAddressStates: recipientAddressStates
+                )
             case .remoteDeleteTombstone:
                 outgoingMessageBuilder.wasRemotelyDeleted = true
 

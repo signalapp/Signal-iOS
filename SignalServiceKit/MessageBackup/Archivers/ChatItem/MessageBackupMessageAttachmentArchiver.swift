@@ -209,6 +209,38 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
         )
     }
 
+    public func restoreStickerAttachment(
+        _ attachment: BackupProto_FilePointer,
+        stickerPackId: Data,
+        stickerId: UInt32,
+        chatItemId: MessageBackup.ChatItemId,
+        messageRowId: Int64,
+        message: TSMessage,
+        thread: MessageBackup.ChatThread,
+        tx: DBWriteTransaction
+    ) -> MessageBackup.RestoreInteractionResult<Void> {
+        let ownedAttachment = OwnedAttachmentBackupPointerProto(
+            proto: attachment,
+            // Sticker messages have no flags
+            renderingFlag: .default,
+            // ClientUUID is only for body and quoted reply attachments.
+            clientUUID: nil,
+            owner: .messageSticker(.init(
+                messageRowId: messageRowId,
+                receivedAtTimestamp: message.receivedAtTimestamp,
+                threadRowId: thread.threadRowId,
+                stickerPackId: stickerPackId,
+                stickerId: stickerId
+            ))
+        )
+
+        return restoreAttachments(
+            [ownedAttachment],
+            chatItemId: chatItemId,
+            tx: tx
+        )
+    }
+
     private func restoreAttachments(
         _ attachments: [OwnedAttachmentBackupPointerProto],
         chatItemId: MessageBackup.ChatItemId,

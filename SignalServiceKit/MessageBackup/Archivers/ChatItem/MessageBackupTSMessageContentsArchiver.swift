@@ -39,6 +39,12 @@ extension MessageBackup {
             fileprivate let reactions: [BackupProto_Reaction]
         }
 
+        struct StickerMessage {
+            let sticker: MessageSticker
+            fileprivate let attachment: BackupProto_FilePointer
+            fileprivate let reactions: [BackupProto_Reaction]
+        }
+
         struct Payment {
             enum Status {
                 case success(BackupProto_PaymentNotification.TransactionDetails.Transaction.Status)
@@ -56,6 +62,7 @@ extension MessageBackup {
         case archivedPayment(Payment)
         case text(Text)
         case contactShare(ContactShare)
+        case stickerMessage(StickerMessage)
         case remoteDeleteTombstone
     }
 }
@@ -390,9 +397,17 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                 context: context,
                 tx: tx
             )
+        case .stickerMessage(let stickerMessage):
+            return restoreStickerMessage(
+                stickerMessage,
+                chatItemId: chatItemId,
+                chatThread: chatThread,
+                context: context,
+                tx: tx
+            )
         case .remoteDeletedMessage(_):
             return .success(.remoteDeleteTombstone)
-        case .stickerMessage, .giftBadge:
+        case .giftBadge:
             // Other types not supported yet.
             return .messageFailure([.restoreFrameError(
                 .unimplemented,
@@ -499,6 +514,24 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                     tx: tx
                 ))
             }
+        case .stickerMessage(let stickerMessage):
+            downstreamObjectResults.append(reactionArchiver.restoreReactions(
+                stickerMessage.reactions,
+                chatItemId: chatItemId,
+                message: message,
+                context: context.recipientContext,
+                tx: tx
+            ))
+            downstreamObjectResults.append(attachmentsArchiver.restoreStickerAttachment(
+                stickerMessage.attachment,
+                stickerPackId: stickerMessage.sticker.packId,
+                stickerId: stickerMessage.sticker.stickerId,
+                chatItemId: chatItemId,
+                messageRowId: messageRowId,
+                message: message,
+                thread: thread,
+                tx: tx
+            ))
         case .remoteDeleteTombstone:
             // Nothing downstream to restore for a tombstone.
             downstreamObjectResults.append(.success(()))
@@ -1024,6 +1057,34 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             contact: contact,
             avatarAttachment: avatar,
             reactions: contactMessage.reactions
+        )))
+    }
+
+    // MARK: -
+
+    private func restoreStickerMessage(
+        _ stickerMessage: BackupProto_StickerMessage,
+        chatItemId: MessageBackup.ChatItemId,
+        chatThread: MessageBackup.ChatThread,
+        context: MessageBackup.ChatRestoringContext,
+        tx: DBReadTransaction
+    ) -> RestoreInteractionResult<MessageBackup.RestoredMessageContents> {
+        var partialErrors = [RestoreFrameError]()
+
+        let stickerProto = stickerMessage.sticker
+        let messageSticker = MessageSticker.withForeignReferenceAttachment(
+            info: .init(
+                packId: stickerProto.packID,
+                packKey: stickerProto.packKey,
+                stickerId: stickerProto.stickerID
+            ),
+            emoji: stickerProto.emoji.nilIfEmpty
+        )
+
+        return .success(.stickerMessage(.init(
+            sticker: messageSticker,
+            attachment: stickerProto.data,
+            reactions: stickerMessage.reactions
         )))
     }
 }

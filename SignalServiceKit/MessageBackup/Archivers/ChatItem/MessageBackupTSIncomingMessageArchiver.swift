@@ -301,6 +301,10 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
                 messageBuilder.contactShare = contactShare.contact
 
                 return messageBuilder.build()
+            case .stickerMessage(let stickerMessage):
+                messageBuilder.messageSticker = stickerMessage.sticker
+
+                return messageBuilder.build()
             case .remoteDeleteTombstone:
                 messageBuilder.wasRemotelyDeleted = true
 
