@@ -870,6 +870,8 @@ public class AppSetup {
             db: db,
             fileSystem: Upload.Wrappers.FileSystem(),
             interactionStore: interactionStore,
+            messageBackupKeyMaterial: messageBackupKeyMaterial,
+            messageBackupRequestManager: messageBackupRequestManager,
             networkManager: networkManager,
             signalService: signalService,
             storyStore: storyStore

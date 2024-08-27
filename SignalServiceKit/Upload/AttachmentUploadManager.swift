@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 public protocol AttachmentUploadManager {
     /// Upload a transient backup file that isn't an attachment (not saved to the database or sent).
@@ -26,12 +27,29 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
     private let db: DB
     private let fileSystem: Upload.Shims.FileSystem
     private let interactionStore: InteractionStore
+    private let messageBackupKeyMaterial: MessageBackupKeyMaterial
+    private let messageBackupRequestManager: MessageBackupRequestManager
     private let networkManager: NetworkManager
     private let signalService: OWSSignalServiceProtocol
     private let storyStore: StoryStore
 
     // Map of active upload tasks.
     private var activeUploads = [Attachment.IDType: Task<(AttachmentUploadRecord, Upload.Result<Upload.LocalUploadMetadata>), Error>]()
+
+    private enum UploadType {
+        case transitTier
+        case mediaTier(auth: MessageBackupServiceAuth, isThumbnail: Bool)
+
+        var sourceType: AttachmentUploadRecord.SourceType {
+            switch self {
+            case .transitTier:
+                return .transit
+            case .mediaTier(_, let isThumbnail):
+                return isThumbnail ? .thumbnail : .media
+            }
+        }
+
+    }
 
     public init(
         attachmentEncrypter: Upload.Shims.AttachmentEncrypter,
@@ -41,6 +59,8 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         db: DB,
         fileSystem: Upload.Shims.FileSystem,
         interactionStore: InteractionStore,
+        messageBackupKeyMaterial: MessageBackupKeyMaterial,
+        messageBackupRequestManager: MessageBackupRequestManager,
         networkManager: NetworkManager,
         signalService: OWSSignalServiceProtocol,
         storyStore: StoryStore
@@ -52,6 +72,8 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         self.db = db
         self.fileSystem = fileSystem
         self.interactionStore = interactionStore
+        self.messageBackupKeyMaterial = messageBackupKeyMaterial
+        self.messageBackupRequestManager = messageBackupRequestManager
         self.networkManager = networkManager
         self.signalService = signalService
         self.storyStore = storyStore
@@ -130,14 +152,8 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         let logger = PrefixedLogger(prefix: "[Upload]", suffix: "[\(attachmentId)]")
         let (record, result) = try await uploadAttachment(
             attachmentId: attachmentId,
-            sourceType: .transit,
+            type: .transitTier,
             logger: logger,
-            formFetcher: {
-                try await Upload.FormRequest(
-                    networkManager: self.networkManager,
-                    chatConnectionManager: self.chatConnectionManager
-                ).start()
-            },
             progress: {
                 self.updateProgress(id: attachmentId, progress: $0.fractionCompleted)
             }
@@ -167,6 +183,61 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         }
     }
 
+    public func uploadMediaTierAttachment(
+        attachmentId: Attachment.IDType,
+        uploadEra: String,
+        localAci: Aci,
+        auth: MessageBackupServiceAuth
+    ) async throws {
+        let logger = PrefixedLogger(prefix: "[MediaTierUpload]", suffix: "[\(attachmentId)]")
+        let (record, result) = try await uploadAttachment(
+            attachmentId: attachmentId,
+            type: .mediaTier(auth: auth, isThumbnail: false),
+            logger: logger,
+            progress: nil
+        )
+
+        // Read the attachment fresh from the DB
+        guard
+            let attachmentStream = try? db.read(block: { try self.fetchAttachment(
+                attachmentId: attachmentId,
+                logger: logger,
+                tx: $0
+            )}).asStream(),
+            let mediaName = attachmentStream.attachment.mediaName
+        else {
+            logger.warn("Attachment deleted while uploading")
+            return
+        }
+
+        let cdnNumber =  try await self.copyToMediaTier(
+            localAci: localAci,
+            mediaName: mediaName,
+            uploadEra: uploadEra,
+            result: result,
+            logger: logger
+        )
+
+        try await db.awaitableWrite { tx in
+
+            let mediaTierInfo = Attachment.MediaTierInfo(
+                cdnNumber: cdnNumber,
+                unencryptedByteCount: result.localUploadMetadata.plaintextDataLength,
+                digestSHA256Ciphertext: result.localUploadMetadata.digest,
+                uploadEra: uploadEra,
+                lastDownloadAttemptTimestamp: nil
+            )
+
+            try self.attachmentStore.markUploadedToMediaTier(
+                attachmentStream: attachmentStream,
+                mediaTierInfo: mediaTierInfo,
+                tx: tx
+            )
+
+            self.cleanup(record: record, logger: logger, tx: tx)
+        }
+    }
+
     /// Entry point for uploading an `AttachmentStream`
     /// Fetches the `AttachmentStream`, fetches an upload form, builds the AttachmentUpload, begins the
     /// upload, and updates the `AttachmentStream` upon success.
@@ -179,9 +250,8 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
     /// rebuild the endpoint and upload state before trying again.
     private func uploadAttachment(
         attachmentId: Attachment.IDType,
-        sourceType: AttachmentUploadRecord.SourceType,
+        type: UploadType,
         logger: PrefixedLogger,
-        formFetcher: @escaping FormFetcher,
         progress: Upload.ProgressBlock?
     ) async throws -> (record: AttachmentUploadRecord, result: Upload.Result<Upload.LocalUploadMetadata>) {
 
@@ -193,9 +263,8 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             } catch {
                 return try await uploadAttachment(
                     attachmentId: attachmentId,
-                    sourceType: sourceType,
+                    type: type,
                     logger: logger,
-                    formFetcher: formFetcher,
                     progress: progress
                 )
             }
@@ -215,9 +284,8 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             // max number of retries is exhausted.
             return try await self.upload(
                 attachment: attachment,
-                sourceType: sourceType,
+                type: type,
                 logger: logger,
-                formFetcher: formFetcher,
                 progress: progress
             )
         }
@@ -227,12 +295,10 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         return try await uploadTask.value
     }
 
-    private typealias FormFetcher = () async throws -> Upload.Form
     private func upload(
         attachment: Attachment,
-        sourceType: AttachmentUploadRecord.SourceType,
+        type: UploadType,
         logger: PrefixedLogger,
-        formFetcher: FormFetcher,
         progress: Upload.ProgressBlock?
     ) async throws -> (AttachmentUploadRecord, Upload.Result<Upload.LocalUploadMetadata>) {
         let attachmentId = attachment.id
@@ -243,7 +309,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         // Note this record isn't persisted in this method, so it will need to be saved later.
         var attachmentUploadRecord = try self.fetchOrCreateAttachmentRecord(
             for: attachmentId,
-            sourceType: sourceType,
+            sourceType: type.sourceType,
             db: db
         )
 
@@ -253,6 +319,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         let localMetadata: Upload.LocalUploadMetadata
         switch try getOrFetchUploadMetadata(
             attachment: attachment,
+            type: type,
             record: attachmentUploadRecord,
             logger: logger
         ) {
@@ -298,7 +365,15 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             uploadForm = form
         } else {
             updateRecord = true
-            uploadForm = try await formFetcher()
+            switch type {
+            case .transitTier:
+                uploadForm = try await Upload.FormRequest(
+                    networkManager: self.networkManager,
+                    chatConnectionManager: self.chatConnectionManager
+                ).start()
+            case .mediaTier(let auth, _):
+                uploadForm = try await self.messageBackupRequestManager.fetchBackupUploadForm(auth: auth)
+            }
 
             attachmentUploadRecord.uploadForm = uploadForm
             attachmentUploadRecord.uploadFormTimestamp = Date().ows_millisecondsSince1970
@@ -374,9 +449,8 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                 }
                 return try await upload(
                     attachment: attachment,
-                    sourceType: sourceType,
+                    type: type,
                     logger: logger,
-                    formFetcher: formFetcher,
                     progress: progress
                 )
             } else {
@@ -430,9 +504,28 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
 
     private func getOrFetchUploadMetadata(
         attachment: Attachment,
+        type: UploadType,
         record: AttachmentUploadRecord,
         logger: PrefixedLogger
     ) throws -> MetadataResult {
+
+        if case .mediaTier = type {
+            // We never allow uploads of data we don't have locally.
+            guard let stream = attachment.asStream() else {
+                logger.warn("Attachment is not uploadable.")
+                throw OWSUnretryableError()
+            }
+
+            let metadata = Upload.LocalUploadMetadata(
+                fileUrl: stream.fileURL,
+                key: attachment.encryptionKey,
+                digest: stream.info.digestSHA256Ciphertext,
+                encryptedDataLength: stream.info.encryptedByteCount,
+                plaintextDataLength: stream.info.unencryptedByteCount
+            )
+            return .reuse(metadata)
+        }
+
         switch attachment.transitUploadStrategy(dateProvider: dateProvider) {
         case .cannotUpload:
             logger.warn("Attachment is not uploadable.")
@@ -545,6 +638,38 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         } catch {
             Logger.error("Failed to enumerate references: \(error)")
         }
+    }
+
+    public func copyToMediaTier(
+        localAci: Aci,
+        mediaName: String,
+        uploadEra: String,
+        result: Upload.Result<Upload.LocalUploadMetadata>,
+        logger: PrefixedLogger
+    ) async throws -> UInt32 {
+        let auth = try await messageBackupRequestManager.fetchBackupServiceAuth(localAci: localAci, auth: .implicit())
+        let mediaEncryptionMetadata = try db.read { tx in
+            try messageBackupKeyMaterial.mediaEncryptionMetadata(
+                mediaName: mediaName,
+                type: .attachment,
+                tx: tx
+            )
+        }
+
+        return try await messageBackupRequestManager.copyToMediaTier(
+            item: .init(
+                sourceAttachment: .init(
+                    cdn: result.cdnNumber,
+                    key: result.cdnKey
+                ),
+                objectLength: result.localUploadMetadata.plaintextDataLength,
+                mediaId: mediaEncryptionMetadata.mediaId,
+                hmacKey: mediaEncryptionMetadata.hmacKey,
+                encryptionKey: mediaEncryptionMetadata.encryptionKey,
+                iv: mediaEncryptionMetadata.iv
+            ),
+            auth: auth
+        )
     }
 
     func buildMetadata(forUploading attachmentStream: AttachmentStream) throws -> Upload.LocalUploadMetadata {

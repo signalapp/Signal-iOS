@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 @testable import SignalServiceKit
 
 extension AttachmentUploadManagerImpl {
@@ -14,6 +15,9 @@ extension AttachmentUploadManagerImpl {
 
         typealias AttachmentEncrypter = _Upload_AttachmentEncrypterMock
         typealias FileSystem = _Upload_FileSystemMock
+
+        typealias MessageBackupKeyMaterial = _AttachmentUploadManager_MessageBackupKeyMaterialMock
+        typealias MessageBackupRequestManager = _AttachmentUploadManager_MessageBackupRequestManagerMock
     }
 }
 
@@ -81,6 +85,107 @@ class _AttachmentUploadManager_ChatConnectionManagerMock: ChatConnectionManager 
     func canMakeRequests(connectionType: OWSChatConnectionType) -> Bool { true }
     func makeRequest(_ request: TSRequest) async throws -> HTTPResponse { fatalError() }
     func didReceivePush() { }
+}
+
+class _AttachmentUploadManager_MessageBackupKeyMaterialMock: MessageBackupKeyMaterial {
+    func backupID(localAci: Aci, tx: DBReadTransaction) throws -> Data {
+        fatalError("Unimplemented for tests")
+    }
+
+    func backupPrivateKey(localAci: Aci, tx: DBReadTransaction) throws -> PrivateKey {
+        fatalError("Unimplemented for tests")
+    }
+
+    func backupAuthRequestContext(localAci: Aci, tx: DBReadTransaction) throws -> BackupAuthCredentialRequestContext {
+        fatalError("Unimplemented for tests")
+    }
+
+    func messageBackupKey(localAci: Aci, tx: DBReadTransaction) throws -> MessageBackupKey {
+        fatalError("Unimplemented for tests")
+    }
+
+    func mediaEncryptionMetadata(mediaName: String, type: MediaTierEncryptionType, tx: DBReadTransaction) throws -> MediaTierEncryptionMetadata {
+        return .init(type: type, mediaId: Data(), hmacKey: Data(), aesKey: Data(), iv: Data())
+    }
+
+    func createEncryptingStreamTransform(localAci: Aci, tx: DBReadTransaction) throws -> EncryptingStreamTransform {
+        fatalError("Unimplemented for tests")
+    }
+
+    func createDecryptingStreamTransform(localAci: Aci, tx: DBReadTransaction) throws -> DecryptingStreamTransform {
+        fatalError("Unimplemented for tests")
+    }
+
+    func createHmacGeneratingStreamTransform(localAci: Aci, tx: DBReadTransaction) throws -> HmacStreamTransform {
+        fatalError("Unimplemented for tests")
+    }
+
+    func createHmacValidatingStreamTransform(localAci: Aci, tx: DBReadTransaction) throws -> HmacStreamTransform {
+        fatalError("Unimplemented for tests")
+    }
+}
+
+class _AttachmentUploadManager_MessageBackupRequestManagerMock: MessageBackupRequestManager {
+    func fetchBackupServiceAuth(localAci: Aci, auth: ChatServiceAuth) async throws -> MessageBackupServiceAuth {
+        fatalError("Unimplemented for tests")
+    }
+
+    func reserveBackupId(localAci: Aci, auth: ChatServiceAuth) async throws { }
+
+    func registerBackupKeys(auth: MessageBackupServiceAuth) async throws { }
+
+    func fetchBackupUploadForm(auth: MessageBackupServiceAuth) async throws -> Upload.Form {
+        fatalError("Unimplemented for tests")
+    }
+
+    func fetchBackupMediaAttachmentUploadForm(auth: MessageBackupServiceAuth) async throws -> Upload.Form {
+        fatalError("Unimplemented for tests")
+    }
+
+    func fetchBackupInfo(auth: MessageBackupServiceAuth) async throws -> MessageBackupRemoteInfo {
+        fatalError("Unimplemented for tests")
+    }
+
+    func refreshBackupInfo(auth: MessageBackupServiceAuth) async throws { }
+
+    func fetchMediaTierCdnRequestMetadata(cdn: Int32, auth: MessageBackupServiceAuth) async throws -> MediaTierReadCredential {
+        fatalError("Unimplemented for tests")
+    }
+
+    func fetchBackupRequestMetadata(auth: MessageBackupServiceAuth) async throws -> BackupReadCredential {
+        fatalError("Unimplemented for tests")
+    }
+
+    func copyToMediaTier(
+        item: MessageBackup.Request.MediaItem,
+        auth: MessageBackupServiceAuth
+    ) async throws -> UInt32 {
+        return 3
+    }
+
+    func copyToMediaTier(
+        items: [MessageBackup.Request.MediaItem],
+        auth: MessageBackupServiceAuth
+    ) async throws -> [MessageBackup.Response.BatchedBackupMediaResult] {
+        return []
+    }
+
+    func listMediaObjects(
+        cursor: String?,
+        limit: UInt32?,
+        auth: MessageBackupServiceAuth
+    ) async throws -> MessageBackup.Response.ListMediaResult {
+        fatalError("Unimplemented for tests")
+    }
+
+    func deleteMediaObjects(
+        objects: [MessageBackup.Request.DeleteMediaTarget],
+        auth: MessageBackupServiceAuth
+    ) async throws {
+    }
+
+    func redeemReceipt(receiptCredentialPresentation: Data) async throws {
+    }
 }
 
 // MARK: - AttachmentStore
