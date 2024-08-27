@@ -11,6 +11,8 @@ public class LinkingTextView: UITextView {
     public override init(frame: CGRect, textContainer: NSTextContainer?) {
         super.init(frame: frame, textContainer: textContainer)
 
+        self.disableAiWritingTools()
+
         backgroundColor = .clear
         isOpaque = false
         isEditable = false

@@ -510,6 +510,7 @@ class MessageRequestView: UIStackView {
 
     private func prepareTextView(attributedString: NSAttributedString, appendLearnMoreLink: Bool) -> UITextView {
         let textView = UITextView()
+        textView.disableAiWritingTools()
         textView.isOpaque = false
         textView.isEditable = false
         textView.contentInset = .zero

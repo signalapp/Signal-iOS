@@ -148,6 +148,8 @@ class MediaCaptionView: UIView {
             self.spoilerState = spoilerState
             super.init(frame: .zero, textContainer: nil)
 
+            self.disableAiWritingTools()
+
             isEditable = false
             isSelectable = false
             self.textContainer.lineBreakMode = .byTruncatingTail

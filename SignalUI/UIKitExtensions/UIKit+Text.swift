@@ -37,6 +37,17 @@ public extension UITextView {
     }
 }
 
+public extension UITextInputTraits {
+
+    func disableAiWritingTools() {
+        #if compiler(>=16.0)
+        if #available(iOS 18, *) {
+            self.writingToolsBehavior = .none
+        }
+        #endif
+    }
+}
+
 // MARK: -
 
 public extension NSTextContainer {

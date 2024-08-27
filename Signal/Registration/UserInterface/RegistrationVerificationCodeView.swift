@@ -18,6 +18,15 @@ private protocol RegistrationVerificationCodeTextFieldDelegate: AnyObject {
 private class RegistrationVerificationCodeTextField: UITextField {
     fileprivate weak var codeDelegate: RegistrationVerificationCodeTextFieldDelegate?
 
+    init() {
+        super.init(frame: .zero)
+        self.disableAiWritingTools()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     override func deleteBackward() {
         var isDeletePrevious = false
         if let selectedTextRange = selectedTextRange {

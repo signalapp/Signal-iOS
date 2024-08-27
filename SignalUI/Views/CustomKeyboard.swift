@@ -140,6 +140,9 @@ private class CustomKeyboardResponder: UITextView {
     init(customKeyboard: CustomKeyboard) {
         self.customKeyboard = customKeyboard
         super.init(frame: .zero, textContainer: nil)
+
+        self.disableAiWritingTools()
+
         autocorrectionType = .no
         keyboardAppearance = Theme.keyboardAppearance
         inputAssistantItem.leadingBarButtonGroups = []

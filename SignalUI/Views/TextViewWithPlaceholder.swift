@@ -104,6 +104,7 @@ public class TextViewWithPlaceholder: UIView {
 
     private func buildTextView() -> UITextView {
         let textView = UITextView()
+        textView.disableAiWritingTools()
         textView.isScrollEnabled = false
         textView.backgroundColor = .clear
 

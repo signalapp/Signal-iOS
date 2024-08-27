@@ -41,6 +41,7 @@ public class MediaTextView: UITextView {
 
     override init(frame: CGRect, textContainer: NSTextContainer?) {
         super.init(frame: frame, textContainer: textContainer)
+        self.disableAiWritingTools()
 
         backgroundColor = .clear
         isOpaque = false

@@ -8,11 +8,13 @@ import UIKit
 open class OWSTextField: UITextField {
     public override init(frame: CGRect) {
         super.init(frame: frame)
+        self.disableAiWritingTools()
         applyTheme()
     }
 
     public required init?(coder: NSCoder) {
         super.init(coder: coder)
+        self.disableAiWritingTools()
         applyTheme()
     }
 
