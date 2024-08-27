@@ -1,117 +1,114 @@
 {
   "images" : [
     {
-      "filename" : "notification-20@2x.png",
-      "idiom" : "iphone",
+      "filename" : "Signal_40x40.png",
+      "idiom" : "universal",
+      "platform" : "ios",
       "scale" : "2x",
       "size" : "20x20"
     },
     {
-      "filename" : "notification-20@3x.png",
-      "idiom" : "iphone",
+      "filename" : "Signal_60x60.png",
+      "idiom" : "universal",
+      "platform" : "ios",
       "scale" : "3x",
       "size" : "20x20"
     },
     {
-      "filename" : "settings-29@1x.png",
-      "idiom" : "iphone",
-      "scale" : "1x",
-      "size" : "29x29"
-    },
-    {
-      "filename" : "settings-29@2x.png",
-      "idiom" : "iphone",
+      "filename" : "Signal_58x58.png",
+      "idiom" : "universal",
+      "platform" : "ios",
       "scale" : "2x",
       "size" : "29x29"
     },
     {
-      "filename" : "settings-29@3x.png",
-      "idiom" : "iphone",
+      "filename" : "Signal_87x87.png",
+      "idiom" : "universal",
+      "platform" : "ios",
       "scale" : "3x",
       "size" : "29x29"
     },
     {
-      "filename" : "spotlight-40@2x.png",
-      "idiom" : "iphone",
+      "filename" : "Signal_76x76.png",
+      "idiom" : "universal",
+      "platform" : "ios",
+      "scale" : "2x",
+      "size" : "38x38"
+    },
+    {
+      "filename" : "Signal_114x114.png",
+      "idiom" : "universal",
+      "platform" : "ios",
+      "scale" : "3x",
+      "size" : "38x38"
+    },
+    {
+      "filename" : "Signal_80x80.png",
+      "idiom" : "universal",
+      "platform" : "ios",
       "scale" : "2x",
       "size" : "40x40"
     },
     {
-      "filename" : "spotlight-40@3x.png",
-      "idiom" : "iphone",
+      "filename" : "Signal_120x120.png",
+      "idiom" : "universal",
+      "platform" : "ios",
       "scale" : "3x",
       "size" : "40x40"
     },
     {
-      "filename" : "iphone-60@2x.png",
-      "idiom" : "iphone",
+      "filename" : "Signal_120x120 1.png",
+      "idiom" : "universal",
+      "platform" : "ios",
       "scale" : "2x",
       "size" : "60x60"
     },
     {
-      "filename" : "iphone-60@3x.png",
-      "idiom" : "iphone",
+      "filename" : "Signal_180x180.png",
+      "idiom" : "universal",
+      "platform" : "ios",
       "scale" : "3x",
       "size" : "60x60"
     },
     {
-      "filename" : "notification-20@1x.png",
-      "idiom" : "ipad",
-      "scale" : "1x",
-      "size" : "20x20"
-    },
-    {
-      "filename" : "notification-20@2x.png",
-      "idiom" : "ipad",
+      "filename" : "Signal_128x128.png",
+      "idiom" : "universal",
+      "platform" : "ios",
       "scale" : "2x",
-      "size" : "20x20"
+      "size" : "64x64"
     },
     {
-      "filename" : "settings-29@1x.png",
-      "idiom" : "ipad",
-      "scale" : "1x",
-      "size" : "29x29"
+      "filename" : "Signal_192x192.png",
+      "idiom" : "universal",
+      "platform" : "ios",
+      "scale" : "3x",
+      "size" : "64x64"
     },
     {
-      "filename" : "settings-29@2x.png",
-      "idiom" : "ipad",
+      "filename" : "Signal_136x136.png",
+      "idiom" : "universal",
+      "platform" : "ios",
       "scale" : "2x",
-      "size" : "29x29"
+      "size" : "68x68"
     },
     {
-      "filename" : "spotlight-40@1x.png",
-      "idiom" : "ipad",
-      "scale" : "1x",
-      "size" : "40x40"
-    },
-    {
-      "filename" : "spotlight-40@2x.png",
-      "idiom" : "ipad",
-      "scale" : "2x",
-      "size" : "40x40"
-    },
-    {
-      "filename" : "ipad-76@1x.png",
-      "idiom" : "ipad",
-      "scale" : "1x",
-      "size" : "76x76"
-    },
-    {
-      "filename" : "ipad-76@2x.png",
-      "idiom" : "ipad",
+      "filename" : "Signal_152x152.png",
+      "idiom" : "universal",
+      "platform" : "ios",
       "scale" : "2x",
       "size" : "76x76"
     },
     {
-      "filename" : "ipad-pro-83.5@2x.png",
-      "idiom" : "ipad",
+      "filename" : "Signal_167x167.png",
+      "idiom" : "universal",
+      "platform" : "ios",
       "scale" : "2x",
       "size" : "83.5x83.5"
     },
     {
-      "filename" : "app-store-1024.png",
-      "idiom" : "ios-marketing",
-      "scale" : "1x",
+      "filename" : "Signal_1024x1024.png",
+      "idiom" : "universal",
+      "platform" : "ios",
       "size" : "1024x1024"
     }
   ],

@@ -3,146 +3,21 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalUI
 import SignalServiceKit
-
-// MARK: - AppIcon
-
-enum CustomAppIcon: String {
-    case white = "AppIcon-white"
-    case color = "AppIcon-color"
-    case dark = "AppIcon-dark"
-    case darkVariant = "AppIcon-dark-variant"
-    case chat = "AppIcon-chat"
-    case bubbles = "AppIcon-bubbles"
-    case yellow = "AppIcon-yellow"
-    case news = "AppIcon-news"
-    case notes = "AppIcon-notes"
-    case weather = "AppIcon-weather"
-    case wave = "AppIcon-wave"
-
-    static func iconIsSelected(customIcon: CustomAppIcon?) -> Bool {
-        UIApplication.shared.alternateIconName == customIcon?.rawValue
-    }
-
-    /// The name for the preview image for the default app icon.
-    ///
-    /// If you try to load the full app icon set into a `UIImage`, it loads a
-    /// low-resolution version of it, so this needs to be a separate image set.
-    /// Even Apple's own demo project has low-resolution picker images
-    /// because they didn't do this.
-    static let defaultAppIconPreviewImageName = "AppIcon_preview"
-
-    static var currentIconImageName: String {
-        UIApplication.shared.alternateIconName ?? defaultAppIconPreviewImageName
-    }
-
-    /// Indicates if the icon should be rendered with a shadow in the picker.
-    ///
-    /// Some icons have a white background and should show a subtle
-    /// shadow in the picker to separate it from the background.
-    var shouldShowShadow: Bool {
-        switch self {
-        case .color, .dark, .darkVariant, .chat, .yellow, .news, .notes, .weather, .wave:
-            return false
-        case .white, .bubbles:
-            return true
-        }
-    }
-}
-
-// MARK: - AppIconLearnMoreTableViewController
-
-private class AppIconLearnMoreTableViewController: OWSTableViewController2 {
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        updateTableContents()
-
-        navigationItem.leftBarButtonItem = .doneButton(dismissingFrom: self)
-    }
-
-    override func themeDidChange() {
-        super.themeDidChange()
-        updateTableContents()
-    }
-
-    private func updateTableContents() {
-        let contents = OWSTableContents()
-
-        let topSection = OWSTableSection()
-        topSection.headerAttributedTitle = NSAttributedString(
-            string: OWSLocalizedString(
-                "SETTINGS_APP_ICON_EDUCATION_APP_NAME",
-                comment: "Information on sheet about changing the app icon - first line"
-            )
-        )
-        .styled(
-            with: .font(.dynamicTypeSubheadlineClamped),
-            .color(Theme.secondaryTextAndIconColor)
-        )
-        topSection.add(.init(customCellBlock: { [weak self] in
-            let homescreenImageName = UIDevice.current.isIPad ? "homescreen_ipados" : "homescreen_ios"
-            return self?.createCell(
-                with: homescreenImageName,
-                insets: .init(hMargin: 48, vMargin: 24)
-            ) ?? UITableViewCell()
-        }))
-        topSection.shouldDisableCellSelection = true
-
-        let bottomSection = OWSTableSection()
-        bottomSection.headerAttributedTitle = NSAttributedString(
-            string: OWSLocalizedString(
-                "SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK",
-                comment: "Information on sheet about changing the app icon - second line"
-            )
-        )
-        .styled(
-            with: .font(.dynamicTypeSubheadlineClamped),
-            .color(Theme.secondaryTextAndIconColor)
-        )
-        bottomSection.add(.init(customCellBlock: { [weak self] in
-            let dockImageName = UIDevice.current.isIPad ? "dock_ipados" : "dock_ios"
-            return self?.createCell(
-                with: dockImageName,
-                insets: .init(top: 0, leading: 16, bottom: 29, trailing: 16)
-            ) ?? UITableViewCell()
-        }))
-        bottomSection.shouldDisableCellSelection = true
-
-        contents.add(sections: [topSection, bottomSection])
-        self.contents = contents
-    }
-
-    private func createCell(
-        with image: String,
-        insets: UIEdgeInsets
-    ) -> UITableViewCell {
-        let cell = OWSTableItem.newCell()
-        let image = UIImage(named: image)
-        let imageView = UIImageView(image: image)
-        imageView.contentMode = .scaleAspectFit
-        cell.contentView.addSubview(imageView)
-        imageView.autoPinEdgesToSuperviewEdges(with: insets)
-        return cell
-    }
-}
-
-// MARK: - AppIconSettingsTableViewControllerDelegate
+import SignalUI
 
 protocol AppIconSettingsTableViewControllerDelegate: AnyObject {
     func didChangeIcon()
 }
 
-// MARK: - AppIconSettingsTableViewController
-
-class AppIconSettingsTableViewController: OWSTableViewController2 {
+final class AppIconSettingsTableViewController: OWSTableViewController2 {
 
     // MARK: Static properties
 
-    private static let customIcons: [[CustomAppIcon?]] = [
-        [.none, .white, .color, .dark],
-        [.darkVariant, .chat, .bubbles, .yellow],
-        [.news, .notes, .weather, .wave],
+    private static let customIcons: [[AppIcon]] = [
+        [.default, .white, .color, .night],
+        [.nightVariant, .chat, .bubbles, .yellow],
+        [.news, .notes, .weather, .waves],
     ]
 
     /// This URL itself is not used. The action is overridden in the text view delegate function.
@@ -250,10 +125,10 @@ class AppIconSettingsTableViewController: OWSTableViewController2 {
         presentFormSheet(navigationController, animated: true)
     }
 
-    private func didTapIcon(_ icon: CustomAppIcon?) {
-        guard !CustomAppIcon.iconIsSelected(customIcon: icon) else { return }
+    private func didTapIcon(_ icon: AppIcon) {
+        guard UIApplication.shared.currentAppIcon != icon else { return }
 
-        UIApplication.shared.setAlternateIconName(icon?.rawValue) { error in
+        UIApplication.shared.setAlternateIconName(icon.alternateIconName) { error in
             if let error {
                 owsFailDebug("Failed to update app icon: \(error)")
             }
@@ -280,11 +155,11 @@ class AppIconSettingsTableViewController: OWSTableViewController2 {
         static let iconCornerRadius: CGFloat = 12
         static let selectedOutlineCornerRadius: CGFloat = 16
 
-        let icon: CustomAppIcon?
+        let icon: AppIcon?
         private let button: UIView
         private let selectedOutlineView: UIView
 
-        init(icon: CustomAppIcon?, action: @escaping () -> Void) {
+        init(icon: AppIcon, action: @escaping () -> Void) {
             self.icon = icon
             self.button = Self.makeButton(for: icon, action: action)
             self.selectedOutlineView = UIView.container()
@@ -307,7 +182,7 @@ class AppIconSettingsTableViewController: OWSTableViewController2 {
         }
 
         func updateSelectedState() {
-            if CustomAppIcon.iconIsSelected(customIcon: icon) {
+            if UIApplication.shared.currentAppIcon == icon {
                 button.transform = .scale(0.8)
                 selectedOutlineView.layer.borderWidth = 3
             } else {
@@ -316,14 +191,14 @@ class AppIconSettingsTableViewController: OWSTableViewController2 {
             }
         }
 
-        private static func makeButton(for icon: CustomAppIcon?, action: @escaping () -> Void) -> UIView {
-            let image = UIImage(named: icon?.rawValue ?? CustomAppIcon.defaultAppIconPreviewImageName)
+        private static func makeButton(for icon: AppIcon, action: @escaping () -> Void) -> UIView {
+            let image = UIImage(resource: icon.previewImageResource)
             let button = OWSButton(block: action)
             button.setImage(image, for: .normal)
             button.clipsToBounds = true
             button.layer.cornerRadius = iconCornerRadius
 
-            if icon?.shouldShowShadow == true {
+            if icon.shouldShowShadow {
                 let backgroundView = UIView.container()
                 backgroundView.setShadow(radius: 1, opacity: 0.24, offset: .zero, color: .ows_black)
                 backgroundView.addSubview(button)

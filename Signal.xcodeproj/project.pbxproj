@@ -12,6 +12,8 @@
 		052647C12C6404DD0076E99D /* ChatListFilterStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052647C02C6404D70076E99D /* ChatListFilterStore.swift */; };
 		052A33382C52BF410083D812 /* ChatListFilterActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052A33372C52BF410083D812 /* ChatListFilterActions.swift */; };
 		052D17882C7E34D00023D56F /* AppIcon.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 052D17872C7E34D00023D56F /* AppIcon.xcassets */; };
+		052D178A2C7E60340023D56F /* AppIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052D17892C7E60340023D56F /* AppIcon.swift */; };
+		052D178C2C7E60750023D56F /* AppIconLearnMoreTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052D178B2C7E60750023D56F /* AppIconLearnMoreTableViewController.swift */; };
 		05412B3C2C22219E007AC9C7 /* InboxFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05412B3B2C22219E007AC9C7 /* InboxFilter.swift */; };
 		05412B3F2C29C0A0007AC9C7 /* UIButton+DeprecationWorkaround.m in Sources */ = {isa = PBXBuildFile; fileRef = 05412B3E2C29C0A0007AC9C7 /* UIButton+DeprecationWorkaround.m */; };
 		05412B402C29C0A0007AC9C7 /* UIButton+DeprecationWorkaround.h in Headers */ = {isa = PBXBuildFile; fileRef = 05412B3D2C29C0A0007AC9C7 /* UIButton+DeprecationWorkaround.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -2950,6 +2952,8 @@
 		052647C02C6404D70076E99D /* ChatListFilterStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListFilterStore.swift; sourceTree = "<group>"; };
 		052A33372C52BF410083D812 /* ChatListFilterActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListFilterActions.swift; sourceTree = "<group>"; };
 		052D17872C7E34D00023D56F /* AppIcon.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = AppIcon.xcassets; sourceTree = "<group>"; };
+		052D17892C7E60340023D56F /* AppIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIcon.swift; sourceTree = "<group>"; };
+		052D178B2C7E60750023D56F /* AppIconLearnMoreTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconLearnMoreTableViewController.swift; sourceTree = "<group>"; };
 		05412B3B2C22219E007AC9C7 /* InboxFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxFilter.swift; sourceTree = "<group>"; };
 		05412B3D2C29C0A0007AC9C7 /* UIButton+DeprecationWorkaround.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIButton+DeprecationWorkaround.h"; sourceTree = "<group>"; };
 		05412B3E2C29C0A0007AC9C7 /* UIButton+DeprecationWorkaround.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIButton+DeprecationWorkaround.m"; sourceTree = "<group>"; };
@@ -9212,6 +9216,8 @@
 			isa = PBXGroup;
 			children = (
 				8827004D23208A1900F01C46 /* AppearanceSettingsTableViewController.swift */,
+				052D17892C7E60340023D56F /* AppIcon.swift */,
+				052D178B2C7E60750023D56F /* AppIconLearnMoreTableViewController.swift */,
 				B909C1582AAA5BAA00FED2AF /* AppIconSettingsTableViewController.swift */,
 				8829883825B979F900DEE1E3 /* ThemeSettingsTableViewController.swift */,
 			);
@@ -13319,7 +13325,9 @@
 				F92074762888648A00B7F087 /* AppDelegate.swift in Sources */,
 				8827004E23208A1900F01C46 /* AppearanceSettingsTableViewController.swift in Sources */,
 				34D99CE4217509C2000AFB39 /* AppEnvironment.swift in Sources */,
+				052D178A2C7E60340023D56F /* AppIcon.swift in Sources */,
 				50EF8DCA2A1885C000A00935 /* AppIconBadgeUpdater.swift in Sources */,
+				052D178C2C7E60750023D56F /* AppIconLearnMoreTableViewController.swift in Sources */,
 				B909C1592AAA5BAA00FED2AF /* AppIconSettingsTableViewController.swift in Sources */,
 				F941B17028412D5F00498CCD /* ApplePayButton.swift in Sources */,
 				88F58A1725EEE5B9008CDA24 /* AppSettingsViewController.swift in Sources */,

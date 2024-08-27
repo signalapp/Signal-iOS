@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class AppearanceSettingsTableViewController: OWSTableViewController2 {
+final class AppearanceSettingsTableViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -74,7 +74,7 @@ class AppearanceSettingsTableViewController: OWSTableViewController2 {
     }
 
     private func buildCurrentAppIconView() -> UIView {
-        let image = UIImage(named: CustomAppIcon.currentIconImageName)
+        let image = UIImage(resource: UIApplication.shared.currentAppIcon.previewImageResource)
         let imageView = UIImageView(image: image)
         imageView.autoSetDimensions(to: .square(24))
         // 60x60 icons have corner radius 12
