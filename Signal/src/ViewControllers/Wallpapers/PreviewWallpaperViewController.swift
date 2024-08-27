@@ -133,9 +133,9 @@ class PreviewWallpaperViewController: UIViewController {
         DispatchQueue.global().async { [weak self, thread] in
             do {
                 if let croppedAndScaledPhoto {
-                    try Wallpaper.setPhoto(croppedAndScaledPhoto, for: thread)
+                    try DependenciesBridge.shared.wallpaperStore.setPhoto(croppedAndScaledPhoto, for: thread)
                 } else if let preset {
-                    try Wallpaper.setBuiltIn(preset, for: thread)
+                    try DependenciesBridge.shared.wallpaperStore.setBuiltIn(preset, for: thread)
                 }
             } catch {
                 owsFailDebug("Failed to set wallpaper \(error)")
@@ -325,7 +325,10 @@ private class WallpaperPage: UIViewController {
         view = rootView
 
         let shouldDimInDarkTheme = databaseStorage.read { transaction in
-            Wallpaper.dimInDarkMode(for: thread, transaction: transaction)
+            DependenciesBridge.shared.wallpaperStore.fetchDimInDarkMode(
+                for: thread?.uniqueId,
+                tx: transaction.asV2Read
+            )
         }
         let wallpaperView = Wallpaper.viewBuilder(
             for: wallpaper,

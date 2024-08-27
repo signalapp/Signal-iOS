@@ -151,10 +151,20 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
                                         comment: "Dim wallpaper action in wallpaper settings view."),
             accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "dim_wallpaper"),
             isOn: { () -> Bool in
-                self.databaseStorage.read { Wallpaper.dimInDarkMode(for: self.thread, transaction: $0) }
+                self.databaseStorage.read {
+                    return DependenciesBridge.shared.wallpaperStore.fetchDimInDarkMode(
+                        for: self.thread?.uniqueId,
+                        tx: $0.asV2Read
+                    )
+                }
             },
             isEnabled: {
-                self.databaseStorage.read { Wallpaper.wallpaperForRendering(for: self.thread, transaction: $0) != nil }
+                self.databaseStorage.read {
+                    DependenciesBridge.shared.wallpaperStore.fetchWallpaperForRendering(
+                        for: self.thread?.uniqueId,
+                        tx: $0.asV2Read
+                    ) != nil
+                }
             },
             target: self,
             selector: #selector(updateWallpaperDimming)

@@ -22,7 +22,10 @@ class SetWallpaperViewController: OWSTableViewController2 {
     static func load(thread: TSThread?, tx: SDSAnyReadTransaction) -> SetWallpaperViewController {
         return SetWallpaperViewController(
             thread: thread,
-            shouldDimInDarkMode: Wallpaper.dimInDarkMode(for: thread, transaction: tx)
+            shouldDimInDarkMode: DependenciesBridge.shared.wallpaperStore.fetchDimInDarkMode(
+                for: thread?.uniqueId,
+                tx: tx.asV2Read
+            )
         )
     }
 

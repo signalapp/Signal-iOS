@@ -9,36 +9,14 @@ import SignalServiceKit
 
 extension Wallpaper {
 
-    public static func setBuiltIn(_ wallpaper: Wallpaper, for thread: TSThread? = nil) throws {
-        owsAssertDebug(wallpaper != .photo)
-
-        try set(wallpaper, for: thread)
-    }
-
-    public static func setPhoto(_ photo: UIImage, for thread: TSThread? = nil) throws {
-        try set(.photo, photo: photo, for: thread)
-    }
-
-    public static func dimInDarkMode(for thread: TSThread? = nil, transaction tx: SDSAnyReadTransaction) -> Bool {
-        let wallpaperStore = DependenciesBridge.shared.wallpaperStore
-        return fetchResolvedValue(
-            for: thread,
-            fetchBlock: { wallpaperStore.fetchDimInDarkMode(for: $0?.uniqueId, tx: tx.asV2Read) }
-        ) ?? true
-    }
-
-    public static func wallpaperSetting(for thread: TSThread?, transaction tx: SDSAnyReadTransaction) -> Wallpaper? {
-        get(for: thread?.uniqueId, transaction: tx)
-    }
-
-    public static func wallpaperForRendering(for thread: TSThread?, transaction tx: SDSAnyReadTransaction) -> Wallpaper? {
-        return fetchResolvedValue(for: thread, fetchBlock: { get(for: $0?.uniqueId, transaction: tx) })
-    }
-
     public static func viewBuilder(for thread: TSThread? = nil, tx: SDSAnyReadTransaction) -> WallpaperViewBuilder? {
         AssertIsOnMainThread()
 
-        guard let resolvedWallpaper = Self.wallpaperForRendering(for: thread, transaction: tx) else {
+        let wallpaperStore = DependenciesBridge.shared.wallpaperStore
+        guard let resolvedWallpaper = wallpaperStore.fetchWallpaperForRendering(
+            for: thread?.uniqueId,
+            tx: tx.asV2Read
+        ) else {
             return nil
         }
 
@@ -55,7 +33,7 @@ extension Wallpaper {
                         }
                     })
             },
-            shouldDimInDarkTheme: dimInDarkMode(for: thread, transaction: tx)
+            shouldDimInDarkTheme: wallpaperStore.fetchDimInDarkMode(for: thread?.uniqueId, tx: tx.asV2Read)
         )
     }
 
@@ -80,39 +58,6 @@ extension Wallpaper {
     private static func fetchResolvedValue<T>(for thread: TSThread?, fetchBlock: (TSThread?) -> T?) -> T? {
         if let thread, let threadValue = fetchBlock(thread) { return threadValue }
         return fetchBlock(nil)
-    }
-}
-
-// MARK: -
-
-private extension Wallpaper {
-    static func set(_ wallpaper: Wallpaper?, photo: UIImage? = nil, for thread: TSThread?) throws {
-        owsAssertDebug(photo == nil || wallpaper == .photo)
-
-        let wallpaperStore = DependenciesBridge.shared.wallpaperStore
-        let wallpaperImageStore = DependenciesBridge.shared.wallpaperImageStore
-
-        let onInsert = { [wallpaperStore] (tx: DBWriteTransaction) throws -> Void in
-            wallpaperStore.setWallpaper(wallpaper?.rawValue, for: thread?.uniqueId, tx: tx)
-        }
-
-        if let thread {
-            try wallpaperImageStore.setWallpaperImage(photo, for: thread, onInsert: onInsert)
-        } else {
-            try wallpaperImageStore.setGlobalThreadWallpaperImage(photo, onInsert: onInsert)
-        }
-    }
-
-    static func get(for threadUniqueId: String?, transaction tx: SDSAnyReadTransaction) -> Wallpaper? {
-        let wallpaperStore = DependenciesBridge.shared.wallpaperStore
-        guard let rawValue = wallpaperStore.fetchWallpaper(for: threadUniqueId, tx: tx.asV2Read) else {
-            return nil
-        }
-        guard let wallpaper = Wallpaper(rawValue: rawValue) else {
-            owsFailDebug("Unexpectedly wallpaper \(rawValue)")
-            return nil
-        }
-        return wallpaper
     }
 }
 

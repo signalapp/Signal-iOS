@@ -125,7 +125,11 @@ public class ChatColors: Dependencies {
         if thread != nil, let globalColor = chatColorSetting(for: nil, tx: tx).constantColor {
             return globalColor
         }
-        let resolvedWallpaper = previewWallpaper ?? Wallpaper.wallpaperForRendering(for: thread, transaction: tx)
+        let resolvedWallpaper = previewWallpaper ??
+            DependenciesBridge.shared.wallpaperStore.fetchWallpaperForRendering(
+                for: thread?.uniqueId,
+                tx: tx.asV2Read
+            )
         if let wallpaperColor = resolvedWallpaper?.defaultChatColor {
             return wallpaperColor.colorSetting
         }

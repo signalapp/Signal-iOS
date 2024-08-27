@@ -189,10 +189,9 @@ final class ThreadMerger {
     private func mergeWallpaper(_ threadPair: MergePair<TSContactThread>, tx: DBWriteTransaction) {
         let settingPair = threadPair.map { wallpaperStore.fetchWallpaper(for: $0.uniqueId, tx: tx) }
         if settingPair.intoValue == nil, let fromSetting = settingPair.fromValue {
-            wallpaperStore.setWallpaper(fromSetting, for: threadPair.intoValue.uniqueId, tx: tx)
-            if let fromDimInDarkMode = wallpaperStore.fetchDimInDarkMode(for: threadPair.fromValue.uniqueId, tx: tx) {
-                wallpaperStore.setDimInDarkMode(fromDimInDarkMode, for: threadPair.intoValue.uniqueId, tx: tx)
-            }
+            wallpaperStore.setWallpaperType(fromSetting, for: threadPair.intoValue.uniqueId, tx: tx)
+            let fromDimInDarkMode = wallpaperStore.fetchDimInDarkMode(for: threadPair.fromValue.uniqueId, tx: tx)
+            wallpaperStore.setDimInDarkMode(fromDimInDarkMode, for: threadPair.intoValue.uniqueId, tx: tx)
             do {
                 try self.wallpaperImageStore.copyWallpaperImage(from: threadPair.fromValue, to: threadPair.intoValue, tx: tx)
             } catch CocoaError.fileReadNoSuchFile, CocoaError.fileNoSuchFile, POSIXError.ENOENT {
@@ -455,7 +454,12 @@ extension ThreadMerger {
         let chatColorSettingStore = ChatColorSettingStore(keyValueStoreFactory: keyValueStoreFactory)
         let disappearingMessagesConfigurationStore = MockDisappearingMessagesConfigurationStore()
         let threadReplyInfoStore = ThreadReplyInfoStore(keyValueStoreFactory: keyValueStoreFactory)
-        let wallpaperStore = WallpaperStore(keyValueStoreFactory: keyValueStoreFactory, notificationScheduler: SyncScheduler())
+        let wallpaperImageStore = MockWallpaperImageStore()
+        let wallpaperStore = WallpaperStore(
+            keyValueStoreFactory: keyValueStoreFactory,
+            notificationScheduler: SyncScheduler(),
+            wallpaperImageStore: wallpaperImageStore
+        )
         let threadRemover = ThreadRemoverImpl(
             chatColorSettingStore: chatColorSettingStore,
             databaseStorage: ThreadRemover_MockDatabaseStorage(),

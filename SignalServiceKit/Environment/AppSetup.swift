@@ -486,7 +486,8 @@ public class AppSetup {
         )
         let wallpaperStore = WallpaperStore(
             keyValueStoreFactory: keyValueStoreFactory,
-            notificationScheduler: schedulers.main
+            notificationScheduler: schedulers.main,
+            wallpaperImageStore: wallpaperImageStore
         )
 
         let disappearingMessagesConfigurationStore = DisappearingMessagesConfigurationStoreImpl()

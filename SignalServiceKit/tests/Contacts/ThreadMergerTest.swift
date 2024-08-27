@@ -51,7 +51,11 @@ final class ThreadMergerTest: XCTestCase {
         threadAssociatedDataManager = ThreadMerger_MockThreadAssociatedDataManager(threadAssociatedDataStore)
         threadReplyInfoStore = ThreadReplyInfoStore(keyValueStoreFactory: keyValueStoreFactory)
         threadStore = MockThreadStore()
-        wallpaperStore = WallpaperStore(keyValueStoreFactory: keyValueStoreFactory, notificationScheduler: SyncScheduler())
+        wallpaperStore = WallpaperStore(
+            keyValueStoreFactory: keyValueStoreFactory,
+            notificationScheduler: SyncScheduler(),
+            wallpaperImageStore: MockWallpaperImageStore()
+        )
         threadRemover = ThreadRemoverImpl(
             chatColorSettingStore: chatColorSettingStore,
             databaseStorage: ThreadRemover_MockDatabaseStorage(),
