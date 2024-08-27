@@ -20,8 +20,8 @@ public class SignalTSAttachmentCloner {
         let newUrl = OWSFileSystem.temporaryFileUrl(fileExtension: sourceUrl.pathExtension)
         try FileManager.default.copyItem(at: sourceUrl, to: newUrl)
 
-        let clonedDataSource = try DataSourcePath.dataSource(
-            with: newUrl,
+        let clonedDataSource = try DataSourcePath(
+            fileUrl: newUrl,
             shouldDeleteOnDeallocation: true
         )
         clonedDataSource.sourceFilename = attachment.sourceFilename

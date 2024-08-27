@@ -782,8 +782,7 @@ extension ConversationViewController: UIDocumentPickerDelegate {
 
         func buildDataSource() -> DataSource? {
             do {
-                return try DataSourcePath.dataSource(with: url,
-                                                     shouldDeleteOnDeallocation: false)
+                return try DataSourcePath(fileUrl: url, shouldDeleteOnDeallocation: false)
             } catch {
                 owsFailDebug("Error: \(error).")
                 return nil
@@ -817,7 +816,7 @@ extension ConversationViewController: UIDocumentPickerDelegate {
                                                      canCancel: true) { modalActivityIndicator in
             let dataSource: DataSource
             do {
-                dataSource = try DataSourcePath.dataSource(with: movieURL, shouldDeleteOnDeallocation: false)
+                dataSource = try DataSourcePath(fileUrl: movieURL, shouldDeleteOnDeallocation: false)
             } catch {
                 owsFailDebug("Error: \(error).")
 

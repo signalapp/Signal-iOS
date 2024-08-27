@@ -840,7 +840,7 @@ class CameraCaptureSession: NSObject {
         guard OWSMediaUtils.isValidVideo(path: outputUrl.path) else {
             return handleVideoCaptureError(PhotoCaptureError.invalidVideo)
         }
-        guard let dataSource = try? DataSourcePath.dataSource(with: outputUrl, shouldDeleteOnDeallocation: true) else {
+        guard let dataSource = try? DataSourcePath(fileUrl: outputUrl, shouldDeleteOnDeallocation: true) else {
             return handleVideoCaptureError(PhotoCaptureError.captureFailed)
         }
 
@@ -1010,7 +1010,7 @@ extension CameraCaptureSession: PhotoCaptureDelegate {
         case .failure(let error):
             delegate.cameraCaptureSession(self, didFailWith: error)
         case .success(let photoData):
-            let dataSource = DataSourceValue.dataSource(with: photoData, utiType: UTType.jpeg.identifier)
+            let dataSource = DataSourceValue(photoData, utiType: UTType.jpeg.identifier)
 
             let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: UTType.jpeg.identifier)
             delegate.cameraCaptureSession(self, didFinishProcessing: attachment)

@@ -165,7 +165,7 @@ class PhotoAlbumContents {
                     return
                 }
 
-                guard let dataSource = DataSourceValue.dataSource(with: imageData, utiType: dataUTI) else {
+                guard let dataSource = DataSourceValue(imageData, utiType: dataUTI) else {
                     future.reject(PhotoLibraryError.assertionError(description: "dataSource was unexpectedly nil"))
                     return
                 }
@@ -195,7 +195,7 @@ class PhotoAlbumContents {
                     let url = onDiskVideo.url
                     dataUTI = MimeTypeUtil.utiTypeForFileExtension(url.pathExtension) ?? UTType.video.identifier
 
-                    if let dataSource = try? DataSourcePath.dataSource(with: url, shouldDeleteOnDeallocation: false) {
+                    if let dataSource = try? DataSourcePath(fileUrl: url, shouldDeleteOnDeallocation: false) {
                         if !SignalAttachment.isVideoThatNeedsCompression(dataSource: dataSource, dataUTI: dataUTI) {
                             future.resolve(SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI))
                             return

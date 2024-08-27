@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-#import <SignalServiceKit/DataSource.h>
 #import <SignalServiceKit/TSAttachment.h>
 
 #if TARGET_OS_IPHONE
@@ -16,6 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 @class AudioWaveform;
 @class SSKProtoAttachmentPointer;
 @class TSAttachmentPointer;
+
+@protocol DataSource;
 
 typedef void (^OWSThumbnailSuccess)(UIImage *image);
 typedef void (^OWSThumbnailFailure)(void);

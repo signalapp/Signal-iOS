@@ -253,8 +253,7 @@ public class SignalAttachment: NSObject {
         let newUrl = OWSFileSystem.temporaryFileUrl(fileExtension: sourceUrl.pathExtension)
         try FileManager.default.copyItem(at: sourceUrl, to: newUrl)
 
-        let clonedDataSource = try DataSourcePath.dataSource(with: newUrl,
-                                                             shouldDeleteOnDeallocation: true)
+        let clonedDataSource = try DataSourcePath(fileUrl: newUrl, shouldDeleteOnDeallocation: true)
         clonedDataSource.sourceFilename = sourceFilename
 
         return self.replacingDataSource(with: clonedDataSource)
@@ -670,7 +669,7 @@ public class SignalAttachment: NSObject {
                     owsFailDebug("Missing expected pasteboard data for UTI: \(dataUTI)")
                     return nil
                 }
-                let dataSource = DataSourceValue.dataSource(with: data, utiType: dataUTI)
+                let dataSource = DataSourceValue(data, utiType: dataUTI)
 
                 // If the data source is sticker like AND we're pasting the attachment,
                 // we want to make it borderless.
@@ -685,7 +684,7 @@ public class SignalAttachment: NSObject {
                     owsFailDebug("Missing expected pasteboard data for UTI: \(dataUTI)")
                     return nil
                 }
-                let dataSource = DataSourceValue.dataSource(with: data, utiType: dataUTI)
+                let dataSource = DataSourceValue(data, utiType: dataUTI)
                 return videoAttachment(dataSource: dataSource, dataUTI: dataUTI)
             }
         }
@@ -695,7 +694,7 @@ public class SignalAttachment: NSObject {
                     owsFailDebug("Missing expected pasteboard data for UTI: \(dataUTI)")
                     return nil
                 }
-                let dataSource = DataSourceValue.dataSource(with: data, utiType: dataUTI)
+                let dataSource = DataSourceValue(data, utiType: dataUTI)
                 return audioAttachment(dataSource: dataSource, dataUTI: dataUTI)
             }
         }
@@ -705,7 +704,7 @@ public class SignalAttachment: NSObject {
             owsFailDebug("Missing expected pasteboard data for UTI: \(dataUTI)")
             return nil
         }
-        let dataSource = DataSourceValue.dataSource(with: data, utiType: dataUTI)
+        let dataSource = DataSourceValue(data, utiType: dataUTI)
         return genericAttachment(dataSource: dataSource, dataUTI: dataUTI)
     }
 
@@ -734,7 +733,7 @@ public class SignalAttachment: NSObject {
         assert(!dataUTI.isEmpty)
         assert(dataSource != nil)
         guard let dataSource = dataSource else {
-            let attachment = SignalAttachment(dataSource: DataSourceValue.emptyDataSource(), dataUTI: dataUTI)
+            let attachment = SignalAttachment(dataSource: DataSourceValue(), dataUTI: dataUTI)
             attachment.error = .missingData
             return attachment
         }
@@ -939,7 +938,7 @@ public class SignalAttachment: NSObject {
 
             let outputDataSource: DataSource
             do {
-                outputDataSource = try DataSourcePath.dataSource(with: tempFileUrl, shouldDeleteOnDeallocation: false)
+                outputDataSource = try DataSourcePath(fileUrl: tempFileUrl, shouldDeleteOnDeallocation: false)
             } catch {
                 owsFailDebug("Failed to create data source for downsampled image \(error)")
                 return .error(error: .couldNotConvertImage)
@@ -1068,7 +1067,7 @@ public class SignalAttachment: NSObject {
 
         if dataUTI == UTType.png.identifier {
             let cleanedData = try Self.removeMetadata(fromPng: data)
-            guard let dataSource = DataSourceValue.dataSource(with: cleanedData, utiType: dataUTI) else {
+            guard let dataSource = DataSourceValue(cleanedData, utiType: dataUTI) else {
                 throw SignalAttachmentError.couldNotRemoveMetadata
             }
             return replacingDataSource(with: dataSource)
@@ -1123,7 +1122,7 @@ public class SignalAttachment: NSObject {
             throw SignalAttachmentError.couldNotRemoveMetadata
         }
 
-        guard let dataSource = DataSourceValue.dataSource(with: mutableData as Data, utiType: dataUTI) else {
+        guard let dataSource = DataSourceValue(mutableData as Data, utiType: dataUTI) else {
             throw SignalAttachmentError.couldNotRemoveMetadata
         }
 
@@ -1138,7 +1137,7 @@ public class SignalAttachment: NSObject {
     //       Check the attachment's error property.
     private class func videoAttachment(dataSource: DataSource?, dataUTI: String) -> SignalAttachment {
         guard let dataSource = dataSource else {
-            let dataSource = DataSourceValue.emptyDataSource()
+            let dataSource = DataSourceValue()
             let attachment = SignalAttachment(dataSource: dataSource, dataUTI: dataUTI)
             attachment.error = .missingData
             return attachment
@@ -1176,7 +1175,7 @@ public class SignalAttachment: NSObject {
         Logger.debug("")
 
         guard let url = dataSource.dataUrl else {
-            let attachment = SignalAttachment(dataSource: DataSourceValue.emptyDataSource(), dataUTI: dataUTI)
+            let attachment = SignalAttachment(dataSource: DataSourceValue(), dataUTI: dataUTI)
             attachment.error = .missingData
             return attachment
         }
@@ -1188,7 +1187,7 @@ public class SignalAttachment: NSObject {
     public static func compressVideoAsMp4(asset: AVAsset, baseFilename: String?, dataUTI: String, sessionCallback: (@MainActor (AVAssetExportSession) -> Void)? = nil) async throws -> SignalAttachment {
         Logger.debug("")
         guard let exportSession = AVAssetExportSession(asset: asset, presetName: AVAssetExportPreset640x480) else {
-            let attachment = SignalAttachment(dataSource: DataSourceValue.emptyDataSource(), dataUTI: dataUTI)
+            let attachment = SignalAttachment(dataSource: DataSourceValue(), dataUTI: dataUTI)
             attachment.error = .couldNotConvertToMpeg4
             return attachment
         }
@@ -1245,8 +1244,7 @@ public class SignalAttachment: NSObject {
         let mp4Filename = baseFilename?.filenameWithoutExtension.appendingFileExtension("mp4")
 
         do {
-            let dataSource = try DataSourcePath.dataSource(with: exportURL,
-                                                           shouldDeleteOnDeallocation: true)
+            let dataSource = try DataSourcePath(fileUrl: exportURL, shouldDeleteOnDeallocation: true)
             dataSource.sourceFilename = mp4Filename
 
             let attachment = SignalAttachment(dataSource: dataSource, dataUTI: UTType.mpeg4Movie.identifier)
@@ -1256,7 +1254,7 @@ public class SignalAttachment: NSObject {
             return attachment
         } catch {
             owsFailDebug("Failed to build data source for exported video URL")
-            let attachment = SignalAttachment(dataSource: DataSourceValue.emptyDataSource(), dataUTI: dataUTI)
+            let attachment = SignalAttachment(dataSource: DataSourceValue(), dataUTI: dataUTI)
             attachment.error = .couldNotConvertToMpeg4
             return attachment
         }
@@ -1342,7 +1340,7 @@ public class SignalAttachment: NSObject {
     }
 
     public class func empty() -> SignalAttachment {
-        SignalAttachment.attachment(dataSource: DataSourceValue.emptyDataSource(), dataUTI: UTType.content.identifier)
+        SignalAttachment.attachment(dataSource: DataSourceValue(), dataUTI: UTType.content.identifier)
     }
 
     // MARK: Helper Methods
@@ -1355,7 +1353,7 @@ public class SignalAttachment: NSObject {
         assert(dataSource != nil)
 
         guard let dataSource = dataSource else {
-            let attachment = SignalAttachment(dataSource: DataSourceValue.emptyDataSource(), dataUTI: dataUTI)
+            let attachment = SignalAttachment(dataSource: DataSourceValue(), dataUTI: dataUTI)
             attachment.error = .missingData
             return attachment
         }

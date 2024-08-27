@@ -584,8 +584,8 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
             else {
                 throw OWSAssertionError("Invalid onboarding asset")
             }
-            let dataSource = try DataSourcePath.dataSource(
-                with: resultUrl,
+            let dataSource = try DataSourcePath(
+                fileUrl: resultUrl,
                 shouldDeleteOnDeallocation: CurrentAppContext().isRunningTests.negated
             )
             return try storyMessageFactory.validateAttachmentContents(

@@ -282,7 +282,7 @@ NSString *NSStringForAttachmentThumbnailQuality(TSAttachmentThumbnailQuality val
         *error = OWSErrorMakeAssertionError(@"Missing URL for attachment.");
         return NO;
     }
-    return [dataSource writeToUrl:originalMediaURL error:error];
+    return [dataSource writeTo:originalMediaURL error:error];
 }
 
 - (BOOL)writeConsumingDataSource:(id<DataSource>)dataSource error:(NSError **)error

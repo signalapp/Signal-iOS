@@ -181,7 +181,7 @@ public class TSResourceContentValidatorImpl: TSResourceContentValidator {
                 renderingFlag: .default,
                 sourceFilename: nil,
                 dataSource: .dataSource(
-                    DataSourceValue.dataSource(withOversizeText: messageBody.text),
+                    DataSourceValue(oversizeText: messageBody.text),
                     shouldCopy: false
                 )
             )

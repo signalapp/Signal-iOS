@@ -711,7 +711,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             return try Self.createAttachment(withText: (url as URL).absoluteString)
         case .contact:
             let contactData = try await Self.loadDataRepresentation(fromItemProvider: itemProvider, forTypeIdentifier: UTType.contact.identifier)
-            let dataSource = DataSourceValue.dataSource(with: contactData, utiType: UTType.contact.identifier)
+            let dataSource = DataSourceValue(contactData, utiType: UTType.contact.identifier)
             let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: UTType.contact.identifier)
             attachment.isConvertibleToContactShare = true
             if let attachmentError = attachment.error {
@@ -724,7 +724,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         case .pkPass:
             let typeIdentifier = "com.apple.pkpass"
             let pkPass = try await Self.loadDataRepresentation(fromItemProvider: itemProvider, forTypeIdentifier: typeIdentifier)
-            let dataSource = DataSourceValue.dataSource(with: pkPass, fileExtension: "pkpass")
+            let dataSource = DataSourceValue(pkPass, fileExtension: "pkpass")
             let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: typeIdentifier)
             if let attachmentError = attachment.error {
                 throw attachmentError
@@ -734,7 +734,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     }
 
     nonisolated private static func copyAttachment(fromUrl url: URL, defaultTypeIdentifier: String = UTType.data.identifier) throws -> SignalAttachment {
-        guard let dataSource = try? DataSourcePath.dataSource(with: url, shouldDeleteOnDeallocation: false) else {
+        guard let dataSource = try? DataSourcePath(fileUrl: url, shouldDeleteOnDeallocation: false) else {
             throw ShareViewControllerError.nonFileUrl
         }
         dataSource.sourceFilename = url.lastPathComponent
@@ -840,7 +840,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     }
 
     nonisolated private static func createAttachment(withText text: String) throws -> SignalAttachment {
-        let dataSource = DataSourceValue.dataSource(withOversizeText: text)
+        let dataSource = DataSourceValue(oversizeText: text)
         let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: UTType.text.identifier)
         if let attachmentError = attachment.error {
             throw attachmentError
@@ -854,7 +854,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             throw ShareViewControllerError.uiImageMissingOrCorruptImageData
         }
         let type = UTType.png
-        let dataSource = DataSourceValue.dataSource(with: imagePng, utiType: type.identifier)
+        let dataSource = DataSourceValue(imagePng, utiType: type.identifier)
         let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: type.identifier)
         if let attachmentError = attachment.error {
             throw attachmentError

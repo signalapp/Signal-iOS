@@ -66,8 +66,8 @@ extension SignalAttachment {
             .map(on: queue) { (urls: [URL]) -> SegmentAttachmentResult in
                 let segments = try urls.map { url in
                     return SignalAttachment.attachment(
-                        dataSource: try DataSourcePath.dataSource(
-                            with: url,
+                        dataSource: try DataSourcePath(
+                            fileUrl: url,
                             shouldDeleteOnDeallocation: true
                         ),
                         dataUTI: dataUTI

@@ -823,7 +823,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
 
         let dataSource: DataSource
         do {
-            dataSource = try DataSourcePath.dataSource(withFilePath: fileUrl.path, shouldDeleteOnDeallocation: false)
+            dataSource = try DataSourcePath(filePath: fileUrl.path, shouldDeleteOnDeallocation: false)
             dataSource.sourceFilename = filename
         } catch {
             owsFailDebug("error while creating data source: \(error)")
@@ -882,7 +882,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
     }
 
     private static func sendRandomAttachmentInThread(_ thread: TSThread, uti: String, length: UInt32 = 256) {
-        guard let dataSource = DataSourceValue.dataSource(with: createRandomDataOfSize(length), utiType: uti) else {
+        guard let dataSource = DataSourceValue(createRandomDataOfSize(length), utiType: uti) else {
             owsFailDebug("Failed to create data source.")
             return
         }
@@ -961,7 +961,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             }
 
             guard
-                let dataSource = try? DataSourcePath.dataSource(withFilePath: tempFilePath, shouldDeleteOnDeallocation: false),
+                let dataSource = try? DataSourcePath(filePath: tempFilePath, shouldDeleteOnDeallocation: false),
                 let uti = MimeTypeUtil.utiTypeForMimeType(fakeAssetLoader.mimeType)
             else {
                 return nil
@@ -1258,10 +1258,10 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                 var attachmentDataSources = [TSResourceDataSource]()
                 for _ in (0..<attachmentCount) {
                     let dataSource = try DependenciesBridge.shared.tsResourceContentValidator.validateContents(
-                        dataSource: DataSourceValue.dataSource(
-                            with: ImageFactory().buildPNGData(),
+                        dataSource: DataSourceValue(
+                            ImageFactory().buildPNGData(),
                             fileExtension: "png"
-                        )!,
+                        ),
                         shouldConsume: true,
                         mimeType: "image/png",
                         sourceFilename: "test.png",
@@ -1554,7 +1554,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
 
             let type = UTType.data
             let dataLength: UInt32 = 32
-            guard let dataSource = DataSourceValue.dataSource(with: createRandomDataOfSize(dataLength), utiType: type.identifier) else { return }
+            guard let dataSource = DataSourceValue(createRandomDataOfSize(dataLength), utiType: type.identifier) else { return }
 
             dataSource.sourceFilename = filename
             let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: type.identifier)

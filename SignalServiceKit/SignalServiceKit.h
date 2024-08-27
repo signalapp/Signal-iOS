@@ -16,7 +16,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/BaseModel.h>
 #import <SignalServiceKit/Contact.h>
 #import <SignalServiceKit/DarwinNotificationCenter.h>
-#import <SignalServiceKit/DataSource.h>
 #import <SignalServiceKit/DebuggerUtils.h>
 #import <SignalServiceKit/FunctionalUtil.h>
 #import <SignalServiceKit/IncomingGroupsV2MessageJob.h>

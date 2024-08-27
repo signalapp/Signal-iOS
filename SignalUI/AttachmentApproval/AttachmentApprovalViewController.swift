@@ -699,7 +699,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
                     owsFailDebug("Could not export for output.")
                     return attachmentApprovalItem.attachment
             }
-            guard let dataSource = DataSourceValue.dataSource(with: dstData, utiType: dataType.identifier) else {
+            guard let dataSource = DataSourceValue(dstData, utiType: dataType.identifier) else {
                 owsFailDebug("Could not prepare data source for output.")
                 return attachmentApprovalItem.attachment
             }
@@ -738,7 +738,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         guard let dataUTI = MimeTypeUtil.utiTypeForFileExtension(fileExtension) else {
             throw OWSAssertionError("Missing dataUTI.")
         }
-        let dataSource = try DataSourcePath.dataSource(withFilePath: filePath, shouldDeleteOnDeallocation: true)
+        let dataSource = try DataSourcePath(filePath: filePath, shouldDeleteOnDeallocation: true)
         // Rewrite the filename's extension to reflect the output file format.
         var filename: String? = attachmentApprovalItem.attachment.sourceFilename
         if let sourceFilename = attachmentApprovalItem.attachment.sourceFilename {

@@ -130,7 +130,7 @@ public class MessageStickerManagerImpl: MessageStickerManager {
             return nil
         }
         do {
-            let dataSource = try DataSourcePath.dataSource(with: stickerDataUrl, shouldDeleteOnDeallocation: false)
+            let dataSource = try DataSourcePath(fileUrl: stickerDataUrl, shouldDeleteOnDeallocation: false)
             let mimeType: String
             let imageMetadata = Data.imageMetadata(withPath: stickerDataUrl.path, mimeType: nil)
             if imageMetadata.imageFormat != .unknown,

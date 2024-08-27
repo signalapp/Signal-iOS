@@ -511,7 +511,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             return .value(())
         }
 
-        let dataSource = try DataSourcePath.dataSource(with: result.syncFileUrl, shouldDeleteOnDeallocation: true)
+        let dataSource = try DataSourcePath(fileUrl: result.syncFileUrl, shouldDeleteOnDeallocation: true)
 
         if debounce {
             self.isRequestInFlight = true

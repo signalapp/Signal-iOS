@@ -1323,8 +1323,8 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                             }
 
                             let pendingAttachment = try attachmentValidator.validateContents(
-                                dataSource: DataSourcePath.dataSource(
-                                    with: stickerDataUrl,
+                                dataSource: DataSourcePath(
+                                    fileUrl: stickerDataUrl,
                                     shouldDeleteOnDeallocation: false
                                 ),
                                 shouldConsume: false,
