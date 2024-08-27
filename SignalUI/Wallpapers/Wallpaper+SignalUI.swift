@@ -7,36 +7,7 @@ import Foundation
 import PureLayout
 import SignalServiceKit
 
-public enum Wallpaper: String, CaseIterable {
-    // Solid
-    case blush
-    case copper
-    case zorba
-    case envy
-    case sky
-    case wildBlueYonder
-    case lavender
-    case shocking
-    case gray
-    case eden
-    case violet
-    case eggplant
-
-    // Gradient
-    case starshipGradient
-    case woodsmokeGradient
-    case coralGradient
-    case ceruleanGradient
-    case roseGradient
-    case aquamarineGradient
-    case tropicalGradient
-    case blueGradient
-    case bisqueGradient
-
-    // Custom
-    case photo
-
-    public static var defaultWallpapers: [Wallpaper] { allCases.filter { $0 != .photo } }
+extension Wallpaper {
 
     public static func setBuiltIn(_ wallpaper: Wallpaper, for thread: TSThread? = nil) throws {
         owsAssertDebug(wallpaper != .photo)
