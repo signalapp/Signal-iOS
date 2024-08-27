@@ -11,6 +11,7 @@
 		0517B9782BFCFF12002CDE7D /* TSThreadTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0517B9772BFCFF12002CDE7D /* TSThreadTests.swift */; };
 		052647C12C6404DD0076E99D /* ChatListFilterStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052647C02C6404D70076E99D /* ChatListFilterStore.swift */; };
 		052A33382C52BF410083D812 /* ChatListFilterActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052A33372C52BF410083D812 /* ChatListFilterActions.swift */; };
+		052D17882C7E34D00023D56F /* AppIcon.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 052D17872C7E34D00023D56F /* AppIcon.xcassets */; };
 		05412B3C2C22219E007AC9C7 /* InboxFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05412B3B2C22219E007AC9C7 /* InboxFilter.swift */; };
 		05412B3F2C29C0A0007AC9C7 /* UIButton+DeprecationWorkaround.m in Sources */ = {isa = PBXBuildFile; fileRef = 05412B3E2C29C0A0007AC9C7 /* UIButton+DeprecationWorkaround.m */; };
 		05412B402C29C0A0007AC9C7 /* UIButton+DeprecationWorkaround.h in Headers */ = {isa = PBXBuildFile; fileRef = 05412B3D2C29C0A0007AC9C7 /* UIButton+DeprecationWorkaround.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -2950,6 +2951,7 @@
 		0517B9772BFCFF12002CDE7D /* TSThreadTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSThreadTests.swift; sourceTree = "<group>"; };
 		052647C02C6404D70076E99D /* ChatListFilterStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListFilterStore.swift; sourceTree = "<group>"; };
 		052A33372C52BF410083D812 /* ChatListFilterActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListFilterActions.swift; sourceTree = "<group>"; };
+		052D17872C7E34D00023D56F /* AppIcon.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = AppIcon.xcassets; sourceTree = "<group>"; };
 		05412B3B2C22219E007AC9C7 /* InboxFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxFilter.swift; sourceTree = "<group>"; };
 		05412B3D2C29C0A0007AC9C7 /* UIButton+DeprecationWorkaround.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIButton+DeprecationWorkaround.h"; sourceTree = "<group>"; };
 		05412B3E2C29C0A0007AC9C7 /* UIButton+DeprecationWorkaround.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIButton+DeprecationWorkaround.m"; sourceTree = "<group>"; };
@@ -9854,6 +9856,7 @@
 				B660F66C1C29867F00687D6E /* test */,
 				5033D46C29DCA8DE007FEADA /* URLs */,
 				D99840BB297A04A300F7ED6D /* Usernames */,
+				052D17872C7E34D00023D56F /* AppIcon.xcassets */,
 				B66DBF4919D5BBC8006EA940 /* Images.xcassets */,
 				F0C124B626D4788A0031C96F /* NSE-Images.xcassets */,
 				881FF30623B5B1520023B620 /* Signal-AppStore.entitlements */,
@@ -12572,6 +12575,7 @@
 				34848D5F25D43ADD00E5034B /* about-mobilecoin.json in Resources */,
 				34848D6025D43ADD00E5034B /* activate-payments.json in Resources */,
 				34848D6125D43ADD00E5034B /* add-money.json in Resources */,
+				052D17882C7E34D00023D56F /* AppIcon.xcassets in Resources */,
 				88DBDFBB2638FFBD00C2101C /* audio-played-dot.json in Resources */,
 				45B74A742044AAB600CD42F8 /* aurora-quiet.aifc in Resources */,
 				45B74A882044AAB600CD42F8 /* aurora.aifc in Resources */,
