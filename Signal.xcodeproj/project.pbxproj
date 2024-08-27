@@ -1021,6 +1021,7 @@
 		668A28AF2BF703E100BB29B3 /* CreateV2AttachmentTablesMigrationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668A28AE2BF703E100BB29B3 /* CreateV2AttachmentTablesMigrationTest.swift */; };
 		668B24182BBB663400EB60C4 /* MockAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668B24172BBB663400EB60C4 /* MockAttachment.swift */; };
 		668B30092BBDD9A20001FD25 /* EditManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668B30082BBDD9A20001FD25 /* EditManagerImpl.swift */; };
+		668B5BFC2C7E46D30018CF36 /* PaletteChatColor+Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668B5BFB2C7E46D30018CF36 /* PaletteChatColor+Constants.swift */; };
 		668CAB3E289983520085A2C3 /* AudioMessagePlaybackRateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668CAB3D289983520085A2C3 /* AudioMessagePlaybackRateView.swift */; };
 		668E403C2BE43752004B6730 /* YYImage+Attachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668E403B2BE43752004B6730 /* YYImage+Attachment.swift */; };
 		668FE09B28B923A4008B9071 /* Bool+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668FE09A28B923A4008B9071 /* Bool+SSK.swift */; };
@@ -4108,6 +4109,7 @@
 		668AB0CB28AD610600B31984 /* StoryUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryUtil.swift; sourceTree = "<group>"; };
 		668B24172BBB663400EB60C4 /* MockAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAttachment.swift; sourceTree = "<group>"; };
 		668B30082BBDD9A20001FD25 /* EditManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditManagerImpl.swift; sourceTree = "<group>"; };
+		668B5BFB2C7E46D30018CF36 /* PaletteChatColor+Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PaletteChatColor+Constants.swift"; sourceTree = "<group>"; };
 		668CAB3D289983520085A2C3 /* AudioMessagePlaybackRateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioMessagePlaybackRateView.swift; sourceTree = "<group>"; };
 		668E403B2BE43752004B6730 /* YYImage+Attachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "YYImage+Attachment.swift"; sourceTree = "<group>"; };
 		668FE09A28B923A4008B9071 /* Bool+SSK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bool+SSK.swift"; sourceTree = "<group>"; };
@@ -8820,6 +8822,7 @@
 			children = (
 				66F6D6A22C7D0CCA00EFAF75 /* ChatColors.swift */,
 				66F6D6A42C7D0E0000EFAF75 /* ColorOrGradient.swift */,
+				668B5BFB2C7E46D30018CF36 /* PaletteChatColor+Constants.swift */,
 				66F6D6A82C7D106100EFAF75 /* Wallpaper+Constants.swift */,
 				66F6D6A62C7D0FF300EFAF75 /* Wallpaper.swift */,
 			);
@@ -14892,6 +14895,7 @@
 				F9C5CCFE289453B300548EEE /* OWSVerificationStateSyncMessage.m in Sources */,
 				F9C5CCFC289453B300548EEE /* OWSViewedReceiptsForLinkedDevicesMessage.m in Sources */,
 				F9C5CCFF289453B300548EEE /* OWSViewOnceMessageReadSyncMessage.m in Sources */,
+				668B5BFC2C7E46D30018CF36 /* PaletteChatColor+Constants.swift in Sources */,
 				F9C5CDCD289453B400548EEE /* ParamParser.swift in Sources */,
 				F9C5CD89289453B300548EEE /* PaymentFinder.swift in Sources */,
 				F9C5CD86289453B300548EEE /* Payments+SSK.swift in Sources */,
