@@ -543,6 +543,9 @@ extension MessageBackup {
                 case filePointerMissingSize
                 /// A ``BackupProto_MessageAttachment/clientUuid`` contained an invalid UUID.
                 case invalidAttachmentClientUUID
+
+                /// A ``BackupProto_GiftBadge/state`` was unrecognized.
+                case unrecognizedGiftBadgeState
             }
 
             /// The proto contained invalid or self-contradictory data, e.g an invalid ACI.
@@ -695,7 +698,8 @@ extension MessageBackup {
                         .filePointerMissingEncryptionKey,
                         .filePointerMissingDigest,
                         .filePointerMissingSize,
-                        .invalidAttachmentClientUUID:
+                        .invalidAttachmentClientUUID,
+                        .unrecognizedGiftBadgeState:
                     // Collapse all others by the id of the containing frame.
                     return idLogString
                 }

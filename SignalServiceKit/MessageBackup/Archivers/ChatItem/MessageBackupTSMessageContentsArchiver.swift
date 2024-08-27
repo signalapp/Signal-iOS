@@ -18,6 +18,20 @@ extension MessageBackup {
     /// can be created afterwards. Anything needed for that step, but not needed to create the TSMessage,
     /// should be made a fileprivate variable in these structs.
     enum RestoredMessageContents {
+        struct Payment {
+            enum Status {
+                case success(BackupProto_PaymentNotification.TransactionDetails.Transaction.Status)
+                case failure(BackupProto_PaymentNotification.TransactionDetails.FailedTransaction.FailureReason)
+            }
+
+            let amount: String?
+            let fee: String?
+            let note: String?
+
+            fileprivate let status: Status
+            fileprivate let payment: BackupProto_PaymentNotification.TransactionDetails.Transaction?
+        }
+
         struct Text {
             let body: MessageBody
             let quotedMessage: TSQuotedMessage?
@@ -35,35 +49,28 @@ extension MessageBackup {
         /// anything, such as adding the shared contact info to a new system contact.
         struct ContactShare {
             let contact: OWSContact
+
             fileprivate let avatarAttachment: BackupProto_FilePointer?
             fileprivate let reactions: [BackupProto_Reaction]
         }
 
         struct StickerMessage {
             let sticker: MessageSticker
+
             fileprivate let attachment: BackupProto_FilePointer
             fileprivate let reactions: [BackupProto_Reaction]
         }
 
-        struct Payment {
-            enum Status {
-                case success(BackupProto_PaymentNotification.TransactionDetails.Transaction.Status)
-                case failure(BackupProto_PaymentNotification.TransactionDetails.FailedTransaction.FailureReason)
-            }
-
-            let amount: String?
-            let fee: String?
-            let note: String?
-
-            fileprivate let status: Status
-            fileprivate let payment: BackupProto_PaymentNotification.TransactionDetails.Transaction?
+        struct GiftBadge {
+            let giftBadge: OWSGiftBadge
         }
 
         case archivedPayment(Payment)
+        case remoteDeleteTombstone
         case text(Text)
         case contactShare(ContactShare)
         case stickerMessage(StickerMessage)
-        case remoteDeleteTombstone
+        case giftBadge(GiftBadge)
     }
 }
 
@@ -116,6 +123,12 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                 context: context,
                 tx: tx
             )
+        } else if message.wasRemotelyDeleted {
+            return archiveRemoteDeleteTombstone(
+                message,
+                context: context,
+                tx: tx
+            )
         } else if let messageBody = message.body {
             return archiveStandardMessageContents(
                 message,
@@ -123,9 +136,12 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                 context: context,
                 tx: tx
             )
-        } else if message.wasRemotelyDeleted {
-            let remoteDeletedMessage = BackupProto_RemoteDeletedMessage()
-            return .success(.remoteDeletedMessage(remoteDeletedMessage))
+        } else if let giftBadge = message.giftBadge {
+            return archiveGiftBadge(
+                giftBadge,
+                context: context,
+                tx: tx
+            )
         } else {
             // TODO: [Backups] Handle non-standard messages.
             return .notYetImplemented
@@ -201,6 +217,17 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         paymentNotificationProto.transactionDetails = model.asArchivedPayment().toTransactionDetailsProto()
 
         return .success(.paymentNotification(paymentNotificationProto))
+    }
+
+    // MARK: -
+
+    private func archiveRemoteDeleteTombstone(
+        _ remoteDeleteTombstone: TSMessage,
+        context: MessageBackup.RecipientArchivingContext,
+        tx: DBReadTransaction
+    ) -> ArchiveInteractionResult<ChatItemType> {
+        let remoteDeletedMessage = BackupProto_RemoteDeletedMessage()
+        return .success(.remoteDeletedMessage(remoteDeletedMessage))
     }
 
     // MARK: -
@@ -354,6 +381,32 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         return .success(quote)
     }
 
+    // MARK: -
+
+    private func archiveGiftBadge(
+        _ giftBadge: OWSGiftBadge,
+        context: MessageBackup.RecipientArchivingContext,
+        tx: DBReadTransaction
+    ) -> ArchiveInteractionResult<ChatItemType> {
+        var giftBadgeProto = BackupProto_GiftBadge()
+
+        if let redemptionCredential = giftBadge.redemptionCredential {
+            giftBadgeProto.receiptCredentialPresentation = redemptionCredential
+            giftBadgeProto.state = { () -> BackupProto_GiftBadge.State in
+                switch giftBadge.redemptionState {
+                case .pending: return .unopened
+                case .redeemed: return .redeemed
+                case .opened: return .opened
+                }
+            }()
+        } else {
+            giftBadgeProto.receiptCredentialPresentation = Data()
+            giftBadgeProto.state = .failed
+        }
+
+        return .success(.giftBadge(giftBadgeProto))
+    }
+
     // MARK: - Restoring
 
     /// Parses the proto structure of message contents into
@@ -381,6 +434,14 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                 context: context,
                 tx: tx
             )
+        case .remoteDeletedMessage(let remoteDeletedMessage):
+            return restoreRemoteDeleteTombstone(
+                remoteDeletedMessage,
+                chatItemId: chatItemId,
+                chatThread: chatThread,
+                context: context,
+                tx: tx
+            )
         case .standardMessage(let standardMessage):
             return restoreStandardMessage(
                 standardMessage,
@@ -405,14 +466,13 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                 context: context,
                 tx: tx
             )
-        case .remoteDeletedMessage(_):
-            return .success(.remoteDeleteTombstone)
-        case .giftBadge:
-            // Other types not supported yet.
-            return .messageFailure([.restoreFrameError(
-                .unimplemented,
-                chatItemId
-            )])
+        case .giftBadge(let giftBadge):
+            return restoreGiftBadge(
+                giftBadge,
+                chatItemId: chatItemId,
+                context: context,
+                tx: tx
+            )
         case .updateMessage:
             return .messageFailure([.restoreFrameError(
                 .developerError(OWSAssertionError("Chat update has no contents to restore!")),
@@ -532,9 +592,9 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                 thread: thread,
                 tx: tx
             ))
-        case .remoteDeleteTombstone:
-            // Nothing downstream to restore for a tombstone.
-            downstreamObjectResults.append(.success(()))
+        case .remoteDeleteTombstone, .giftBadge:
+            // Nothing downstream to restore.
+            break
         }
 
         return downstreamObjectResults.reduce(.success(()), {
@@ -624,6 +684,18 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             status: status,
             payment: paymentTransaction
         )))
+    }
+
+    // MARK: -
+
+    private func restoreRemoteDeleteTombstone(
+        _ remoteDeleteTombstone: BackupProto_RemoteDeletedMessage,
+        chatItemId: MessageBackup.ChatItemId,
+        chatThread: MessageBackup.ChatThread,
+        context: MessageBackup.ChatRestoringContext,
+        tx: DBReadTransaction
+    ) -> RestoreInteractionResult<MessageBackup.RestoredMessageContents> {
+        return .success(.remoteDeleteTombstone)
     }
 
     // MARK: -
@@ -1085,6 +1157,52 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             sticker: messageSticker,
             attachment: stickerProto.data,
             reactions: stickerMessage.reactions
+        )))
+    }
+
+    // MARK: -
+
+    private func restoreGiftBadge(
+        _ giftBadgeProto: BackupProto_GiftBadge,
+        chatItemId: MessageBackup.ChatItemId,
+        context: MessageBackup.ChatRestoringContext,
+        tx: DBReadTransaction
+    ) -> RestoreInteractionResult<MessageBackup.RestoredMessageContents> {
+        let giftBadge: OWSGiftBadge
+        switch giftBadgeProto.state {
+        case .unopened:
+            giftBadge = .restoreFromBackup(
+                receiptCredentialPresentation: giftBadgeProto.receiptCredentialPresentation,
+                redemptionState: .pending
+            )
+        case .opened:
+            giftBadge = .restoreFromBackup(
+                receiptCredentialPresentation: giftBadgeProto.receiptCredentialPresentation,
+                redemptionState: .opened
+            )
+        case .redeemed:
+            giftBadge = .restoreFromBackup(
+                receiptCredentialPresentation: giftBadgeProto.receiptCredentialPresentation,
+                redemptionState: .redeemed
+            )
+        case .failed:
+            /// Passing `receiptCredentialPresentation: nil` will make this a
+            /// non-functional gift badge in practice. At the time of writing
+            /// iOS doesn't have a "failed" gift badge state, so we'll use this
+            /// instead.
+            giftBadge = .restoreFromBackup(
+                receiptCredentialPresentation: nil,
+                redemptionState: .pending
+            )
+        case .UNRECOGNIZED(let int):
+            return .messageFailure([.restoreFrameError(
+                .invalidProtoData(.unrecognizedGiftBadgeState),
+                chatItemId
+            )])
+        }
+
+        return .success(.giftBadge(MessageBackup.RestoredMessageContents.GiftBadge(
+            giftBadge: giftBadge
         )))
     }
 }

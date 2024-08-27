@@ -290,26 +290,22 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
                     fee: archivedPayment.fee,
                     note: archivedPayment.note
                 )
+            case .remoteDeleteTombstone:
+                messageBuilder.wasRemotelyDeleted = true
             case .text(let text):
                 messageBuilder.messageBody = text.body.text
                 messageBuilder.bodyRanges = text.body.ranges
                 messageBuilder.quotedMessage = text.quotedMessage
                 messageBuilder.linkPreview = text.linkPreview
-
-                return messageBuilder.build()
             case .contactShare(let contactShare):
                 messageBuilder.contactShare = contactShare.contact
-
-                return messageBuilder.build()
             case .stickerMessage(let stickerMessage):
                 messageBuilder.messageSticker = stickerMessage.sticker
-
-                return messageBuilder.build()
-            case .remoteDeleteTombstone:
-                messageBuilder.wasRemotelyDeleted = true
-
-                return messageBuilder.build()
+            case .giftBadge(let giftBadge):
+                messageBuilder.giftBadge = giftBadge.giftBadge
             }
+
+            return messageBuilder.build()
         }()
 
         interactionStore.insertInteraction(message, tx: tx)

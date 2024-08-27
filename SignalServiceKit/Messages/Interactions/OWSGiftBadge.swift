@@ -27,8 +27,20 @@ public class OWSGiftBadge: MTLModel {
     @objc
     public var redemptionState: OWSGiftBadgeRedemptionState = .pending
 
-    public init(redemptionCredential: Data) {
+    public convenience init(redemptionCredential: Data) {
+        self.init(
+            redemptionCredential: redemptionCredential,
+            redemptionState: .pending
+        )
+    }
+
+    private init(
+        redemptionCredential: Data?,
+        redemptionState: OWSGiftBadgeRedemptionState
+    ) {
         self.redemptionCredential = redemptionCredential
+        self.redemptionState = redemptionState
+
         super.init()
     }
 
@@ -70,6 +82,20 @@ public class OWSGiftBadge: MTLModel {
 
         return (receiptLevel, Date(timeIntervalSince1970: TimeInterval(receiptExpiration)))
     }
+
+    // MARK: -
+
+    public class func restoreFromBackup(
+        receiptCredentialPresentation: Data?,
+        redemptionState: OWSGiftBadgeRedemptionState
+    ) -> OWSGiftBadge {
+        return OWSGiftBadge(
+            redemptionCredential: receiptCredentialPresentation,
+            redemptionState: redemptionState
+        )
+    }
+
+    // MARK: -
 
     @objc(maybeBuildFromDataMessage:)
     public class func maybeBuild(from dataMessage: SSKProtoDataMessage) -> OWSGiftBadge? {

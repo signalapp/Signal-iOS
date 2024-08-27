@@ -491,37 +491,24 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
                     note: archivedPayment.note,
                     recipientAddressStates: recipientAddressStates
                 )
+            case .remoteDeleteTombstone:
+                outgoingMessageBuilder.wasRemotelyDeleted = true
             case .text(let text):
                 outgoingMessageBuilder.messageBody = text.body.text
                 outgoingMessageBuilder.bodyRanges = text.body.ranges
                 outgoingMessageBuilder.quotedMessage = text.quotedMessage
-
-                return TSOutgoingMessage(
-                    outgoingMessageWith: outgoingMessageBuilder,
-                    recipientAddressStates: recipientAddressStates
-                )
             case .contactShare(let contactShare):
                 outgoingMessageBuilder.contactShare = contactShare.contact
-
-                return TSOutgoingMessage(
-                    outgoingMessageWith: outgoingMessageBuilder,
-                    recipientAddressStates: recipientAddressStates
-                )
             case .stickerMessage(let stickerMessage):
                 outgoingMessageBuilder.messageSticker = stickerMessage.sticker
-
-                return TSOutgoingMessage(
-                    outgoingMessageWith: outgoingMessageBuilder,
-                    recipientAddressStates: recipientAddressStates
-                )
-            case .remoteDeleteTombstone:
-                outgoingMessageBuilder.wasRemotelyDeleted = true
-
-                return TSOutgoingMessage(
-                    outgoingMessageWith: outgoingMessageBuilder,
-                    recipientAddressStates: recipientAddressStates
-                )
+            case .giftBadge(let giftBadge):
+                outgoingMessageBuilder.giftBadge = giftBadge.giftBadge
             }
+
+            return TSOutgoingMessage(
+                outgoingMessageWith: outgoingMessageBuilder,
+                recipientAddressStates: recipientAddressStates
+            )
         }()
 
         interactionStore.insertInteraction(outgoingMessage, tx: tx)
