@@ -1,2 +1,2 @@
-• Now you can flip the camera even when you're alone in a group call. Get ready to give them a front-row view by switching to the back camera, or switch back to the front camera so that you're ready to talk back. 
-• We fixed a bug that prevented some users from joining a new group or re-joining an existing group, and we also fixed a bug that made it harder to scroll between views during group calls while a hand was raised. These are hands down our favorite bugfixes in this release. 
+• Ara, durant una trucada grupal, podràs canviar de càmera encara que els altres participants no s'hi hagin unit. 
+• Hem corregit un error que impedia a alguns usuaris unir-se a un grup nou o tornar a unir-se a un grup existent. També hem corregit un error que feia més difícil desplaçar-se entre vistes de càmera durant les trucades de grup mentre hi havia una mà aixecada. 

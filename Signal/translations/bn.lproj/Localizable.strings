@@ -3674,22 +3674,22 @@
 "INCOMING_VOICE_CALL" = "ভয়েস কল আসছে";
 
 /* An info message inserted into the chat when you accept a message request, in a 1:1 or group chat. */
-"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST" = "You accepted the message request.";
+"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST" = "আপনি মেসেজের অনুরোধ গ্রহণ করেছেন।";
 
 /* Header for an action sheet providing options in response to an accepted 1:1 message request. Embeds {{ the name of your chat partner }}. */
 "INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_CONTACT" = "আপনি %1$@-এর কাছ থেকে একটি মেসেজের অনুরোধ গ্রহণ করেছেন। যদি এটি একটি ভুল হয়ে থাকে, তাহলে আপনি নিচের একটি পদক্ষেপ বেছে নিতে পারেন।";
 
 /* Header for an action sheet providing options in response to an accepted group message request. */
-"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_GROUP" = "You accepted a message request from this group. If this was a mistake, you can choose an action below.";
+"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_GROUP" = "আপনি এই গ্রুপ থেকে একটি মেসেজের অনুরোধ গ্রহণ করেছেন। যদি এটি একটি ভুল হয়ে থাকে, তাহলে আপনি নিচের একটি পদক্ষেপ বেছে নিতে পারেন।";
 
 /* Title for a button shown alongside an info message indicating you accepted a message request. */
 "INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_BUTTON" = "অপশন";
 
 /* An info message inserted into a group chat when you block the group. */
-"INFO_MESSAGE_BLOCKED_GROUP" = "You blocked this group.";
+"INFO_MESSAGE_BLOCKED_GROUP" = "আপনি এই গ্রুপটি ব্লক করেছেন।";
 
 /* An info message inserted into a 1:1 chat when you block another user. */
-"INFO_MESSAGE_BLOCKED_OTHER_USER" = "You blocked this person.";
+"INFO_MESSAGE_BLOCKED_OTHER_USER" = "আপনি এই ব্যক্তিকে ব্লক করেছেন।";
 
 /* Indicates that a previously-removed recipient has been added back to the current user's contacts. */
 "INFO_MESSAGE_CONTACT_REINSTATED" = "এই ব্যক্তিকে আপনার Signal কন্টাক্ট লিস্টে আবার যোগ করা হয়েছে।";
@@ -3725,10 +3725,10 @@
 "INFO_MESSAGE_SYNCED_THREAD" = "আপনার নিরাপত্তার জন্য, চ্যাট-এর ইতিহাস নতুন লিংককৃত ডিভাইসে স্থানান্তর করা হয় না।";
 
 /* An info message inserted into a group chat when you unblock the group. */
-"INFO_MESSAGE_UNBLOCKED_GROUP" = "You unblocked this group.";
+"INFO_MESSAGE_UNBLOCKED_GROUP" = "আপনি এই গ্রুপটিকে আনব্লক করেছেন।";
 
 /* An info message inserted into a 1:1 chat when you unblock another user. */
-"INFO_MESSAGE_UNBLOCKED_OTHER_USER" = "You unblocked this person.";
+"INFO_MESSAGE_UNBLOCKED_OTHER_USER" = "আপনি এই ব্যক্তিকে আনব্লক করেছেন।";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
 "INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%1$@ তার ফোন নাম্বার পরিবর্তন করেছেন।";

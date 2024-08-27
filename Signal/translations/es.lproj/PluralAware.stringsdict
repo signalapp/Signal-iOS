@@ -109,7 +109,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 elemento</string>
+			<string>%1$d elemento</string>
 			<key>other</key>
 			<string>%1$d elementos</string>
 		</dict>
@@ -696,9 +696,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ ha retirado las invitaciones para el grupo a 1 persona.</string>
+			<string>%2$@ ha retirado la invitación al grupo enviada a %1$d persona.</string>
 			<key>other</key>
-			<string>%2$@ ha retirado las invitaciones para el grupo a %1$d personas.</string>
+			<string>%2$@ ha retirado las invitaciones al grupo enviadas a %1$d personas.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_AND_CANCELED_%d</key>
@@ -776,7 +776,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>No se puede compartir más de 1 elemento.</string>
+			<string>No se puede compartir más de %1$d elemento.</string>
 			<key>other</key>
 			<string>No se pueden compartir más de %1$d elementos.</string>
 		</dict>
@@ -1080,9 +1080,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d reacción adicional.</string>
+			<string>%1$d reacción más.</string>
 			<key>other</key>
-			<string>%1$d reacciones adicionales</string>
+			<string>%1$d reacciones más.</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>

@@ -1,2 +1,2 @@
-• Now you can flip the camera even when you're alone in a group call. Get ready to give them a front-row view by switching to the back camera, or switch back to the front camera so that you're ready to talk back. 
-• We fixed a bug that prevented some users from joining a new group or re-joining an existing group, and we also fixed a bug that made it harder to scroll between views during group calls while a hand was raised. These are hands down our favorite bugfixes in this release. 
+• Τώρα μπορείς να εναλλάσσεις μεταξύ της μπροστινής και της πίσω κάμερας σε μια ομαδική κλήση, ακόμη και αν δεν έχουν ακόμη μπει άλλα άτομα στην κλήση. 
+• Διορθώσαμε ένα σφάλμα που εμπόδιζε ορισμένους χρήστες να μπουν σε μια νέα ομάδα ή να ξαναμπούν σε μια υπάρχουσα ομάδα, και διορθώσαμε επίσης ένα σφάλμα που δυσκόλευε την κύλιση μεταξύ των προβολών κατά τη διάρκεια ομαδικών κλήσεων, ενώ υπήρχε σηκωμένο χέρι. 
