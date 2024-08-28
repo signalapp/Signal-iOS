@@ -492,10 +492,18 @@ public class AttachmentManagerImpl: AttachmentManager {
             return .failure(.missingLocator)
         }
         guard cdnNumber > 0 else {
-            return .failure(.missingTransitCdnNumber)
+            if case .attachmentLocator = proto.locator {
+                return .failure(.missingTransitCdnNumber)
+            } else {
+                return .success(nil)
+            }
         }
         guard let cdnKey = cdnKey.nilIfEmpty else {
-            return .failure(.missingTransitCdnKey)
+            if case .attachmentLocator = proto.locator {
+                return .failure(.missingTransitCdnKey)
+            } else {
+                return .success(nil)
+            }
         }
         guard let encryptionKey = encryptionKey.nilIfEmpty else {
             return .failure(.missingEncryptionKey)

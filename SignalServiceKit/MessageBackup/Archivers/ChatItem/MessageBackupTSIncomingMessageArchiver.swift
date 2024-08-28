@@ -293,8 +293,8 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
             case .remoteDeleteTombstone:
                 messageBuilder.wasRemotelyDeleted = true
             case .text(let text):
-                messageBuilder.messageBody = text.body.text
-                messageBuilder.bodyRanges = text.body.ranges
+                messageBuilder.messageBody = text.body?.text
+                messageBuilder.bodyRanges = text.body?.ranges
                 messageBuilder.quotedMessage = text.quotedMessage
                 messageBuilder.linkPreview = text.linkPreview
             case .contactShare(let contactShare):

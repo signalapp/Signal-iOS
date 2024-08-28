@@ -75,6 +75,10 @@ public enum AttachmentDownloads {
             self.source = source
         }
     }
+
+    public enum Error: Swift.Error {
+        case expiredCredentials
+    }
 }
 
 public protocol AttachmentDownloadManager {

@@ -494,8 +494,8 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
             case .remoteDeleteTombstone:
                 outgoingMessageBuilder.wasRemotelyDeleted = true
             case .text(let text):
-                outgoingMessageBuilder.messageBody = text.body.text
-                outgoingMessageBuilder.bodyRanges = text.body.ranges
+                outgoingMessageBuilder.messageBody = text.body?.text
+                outgoingMessageBuilder.bodyRanges = text.body?.ranges
                 outgoingMessageBuilder.quotedMessage = text.quotedMessage
             case .contactShare(let contactShare):
                 outgoingMessageBuilder.contactShare = contactShare.contact

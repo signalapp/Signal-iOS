@@ -540,6 +540,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     downloadMetadata = nil
                     break
                 }
+
                 downloadMetadata = .init(
                     mimeType: attachment.mimeType,
                     cdnNumber: cdnNumber,
@@ -570,6 +571,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 // We retry all network-level errors (with an exponential backoff).
                 // Even if we get e.g. a 404, the file may not be available _yet_
                 // but might be in the future.
+                // The other type of error that can be expected here is if CDN
+                // credentials expire between enqueueing the download and the download
+                // excuting. The outcome is the same: fail the current download and retry.
                 await self.didFailToDownload(record, isRetryable: true)
                 return
             }
@@ -1035,6 +1039,20 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 }
             }
         }
+
+        func isExpired() -> Bool {
+            switch self {
+            case .backup(let metadata):
+                return metadata.isExpired
+            case .attachment(let metadata, _), .transientAttachment(let metadata):
+                switch metadata.source {
+                case .transitTier:
+                    return false
+                case .mediaTierFullsize(let cdnCredential, _, _, _), .mediaTierThumbnail(let cdnCredential, _, _):
+                    return cdnCredential.isExpired
+                }
+            }
+        }
     }
 
     private class DownloadState {
@@ -1055,6 +1073,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
         func additionalHeaders() -> [String: String] {
             return type.additionalHeaders()
+        }
+
+        func isExpired() -> Bool {
+            return type.isExpired()
         }
     }
 
@@ -1121,6 +1143,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             resumeData: Data?,
             attemptCount: UInt
         ) async throws -> URL {
+            guard downloadState.isExpired().negated else {
+                throw AttachmentDownloads.Error.expiredCredentials
+            }
+
             let urlSession = self.signalService.urlSessionForCdn(
                 cdnNumber: downloadState.cdnNumber(),
                 maxResponseSize: maxDownloadSizeBytes
@@ -1374,7 +1400,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                                 pendingAttachment = try attachmentValidator.validateContents(
                                     ofBackupMediaFileAt: encryptedFileUrl,
                                     outerEncryptionData: EncryptionMetadata(key: outerEncryptionMetadata.encryptionKey),
-                                    innerEncryptionData: .init(
+                                    innerEncryptionData: EncryptionMetadata(
                                         key: metadata.encryptionKey,
                                         digest: digest,
                                         plaintextLength: innerPlaintextLength

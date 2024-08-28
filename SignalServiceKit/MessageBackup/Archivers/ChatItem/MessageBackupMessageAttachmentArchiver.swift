@@ -265,11 +265,7 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
             tx: tx
         )
 
-        // TODO: enqueue download of all the message's attachments
-
-        if errors.isEmpty {
-            return .success(())
-        } else {
+        guard errors.isEmpty else {
             // Treat attachment failures as message failures; a message
             // might have _only_ attachments and without them its invalid.
             return .messageFailure(errors.map {
@@ -279,6 +275,27 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
                 )
             })
         }
+
+        let results = attachmentStore.fetchReferences(owners: attachments.map(\.owner.id), tx: tx)
+        if results.isEmpty && !attachments.isEmpty {
+            return .messageFailure([.restoreFrameError(
+                .failedToCreateAttachment,
+                chatItemId
+            )])
+        }
+
+        do {
+            try results.forEach {
+                try backupAttachmentDownloadStore.enqueue($0, tx: tx)
+            }
+        } catch {
+            return .partialRestore((), [.restoreFrameError(
+                .failedToEnqueueAttachmentDownload(error),
+                chatItemId
+            )])
+        }
+
+        return .success(())
     }
 }
 

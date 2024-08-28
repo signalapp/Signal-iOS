@@ -566,6 +566,11 @@ extension MessageBackup {
             /// backup subscription id. See ``Attachment/uploadEra(backupSubscriptionId:)``.
             case uploadEraDerivationFailed(RawError)
 
+            case failedToEnqueueAttachmentDownload(RawError)
+
+            /// We failed to properly create the attachment in the DB after restoring
+            case failedToCreateAttachment
+
             /// These should never happen; it means some invariant we could not
             /// enforce with the type system was broken. Nothing was wrong with
             /// the proto; its the iOS code that has a bug somewhere.
@@ -703,13 +708,13 @@ extension MessageBackup {
                     // Collapse all others by the id of the containing frame.
                     return idLogString
                 }
-            case .referencedChatThreadNotFound, .referencedGroupThreadNotFound:
+            case .referencedChatThreadNotFound, .referencedGroupThreadNotFound, .failedToCreateAttachment:
                 // Collapse these by the id they refer to, which is in the "type".
                 return typeLogString
             case .databaseModelMissingRowId(let modelClass):
                 // Collapse these by the relevant class.
                 return "\(modelClass)"
-            case .databaseInsertionFailed(let rawError), .uploadEraDerivationFailed(let rawError):
+            case .databaseInsertionFailed(let rawError), .uploadEraDerivationFailed(let rawError), .failedToEnqueueAttachmentDownload(let rawError):
                 // We don't want to re-log every instance of this we see if they repeat.
                 // Collapse them by the raw error itself.
                 return "\(rawError)"

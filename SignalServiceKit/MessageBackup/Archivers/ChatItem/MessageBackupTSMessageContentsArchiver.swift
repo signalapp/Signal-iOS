@@ -33,7 +33,7 @@ extension MessageBackup {
         }
 
         struct Text {
-            let body: MessageBody
+            let body: MessageBody?
             let quotedMessage: TSQuotedMessage?
             let linkPreview: OWSLinkPreview?
 
@@ -528,14 +528,16 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                     tx: tx
                 ))
             }
-            downstreamObjectResults.append(attachmentsArchiver.restoreBodyAttachments(
-                text.bodyAttachments,
-                chatItemId: chatItemId,
-                messageRowId: messageRowId,
-                message: message,
-                thread: thread,
-                tx: tx
-            ))
+            if text.bodyAttachments.isEmpty.negated {
+                downstreamObjectResults.append(attachmentsArchiver.restoreBodyAttachments(
+                    text.bodyAttachments,
+                    chatItemId: chatItemId,
+                    messageRowId: messageRowId,
+                    message: message,
+                    thread: thread,
+                    tx: tx
+                ))
+            }
             if let quotedMessageThumbnail = text.quotedMessageThumbnail {
                 downstreamObjectResults.append(attachmentsArchiver.restoreQuotedReplyThumbnailAttachment(
                     quotedMessageThumbnail,
@@ -805,7 +807,10 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
     private func restoreMessageBody(
         _ text: BackupProto_Text,
         chatItemId: MessageBackup.ChatItemId
-    ) -> RestoreInteractionResult<MessageBody> {
+    ) -> RestoreInteractionResult<MessageBody?> {
+        guard text.body.isEmpty.negated else {
+            return .success(nil)
+        }
         return restoreMessageBody(
             text: text.body,
             bodyRangeProtos: text.bodyRanges,
@@ -817,7 +822,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         text: String,
         bodyRangeProtos: [BackupProto_BodyRange],
         chatItemId: MessageBackup.ChatItemId
-    ) -> RestoreInteractionResult<MessageBody> {
+    ) -> RestoreInteractionResult<MessageBody?> {
         var partialErrors = [RestoreFrameError]()
         var bodyMentions = [NSRange: Aci]()
         var bodyStyles = [NSRangedValue<MessageBodyRanges.SingleStyle>]()
