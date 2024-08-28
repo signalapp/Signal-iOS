@@ -130,7 +130,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
         let appSecuritySection = OWSTableSection()
         appSecuritySection.headerTitle = OWSLocalizedString("SETTINGS_SECURITY_TITLE", comment: "Section header")
 
-        switch ScreenLock.shared.biometryType {
+        switch DeviceOwnerAuthenticationType.current {
         case .unknown:
             appSecuritySection.footerTitle = OWSLocalizedString("SETTINGS_SECURITY_DETAIL", comment: "Section footer")
         case .passcode:
@@ -139,6 +139,8 @@ class PrivacySettingsViewController: OWSTableViewController2 {
             appSecuritySection.footerTitle = OWSLocalizedString("SETTINGS_SECURITY_DETAIL_FACEID", comment: "Section footer")
         case .touchId:
             appSecuritySection.footerTitle = OWSLocalizedString("SETTINGS_SECURITY_DETAIL_TOUCHID", comment: "Section footer")
+        case .opticId:
+            appSecuritySection.footerTitle = OWSLocalizedString("SETTINGS_SECURITY_DETAIL_OPTICID", comment: "Section footer")
         }
 
         appSecuritySection.add(.switch(
@@ -174,7 +176,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
         let paymentsSection = OWSTableSection()
         paymentsSection.headerTitle = OWSLocalizedString("SETTINGS_PAYMENTS_SECURITY_TITLE", comment: "Title for the payments section in the app’s privacy settings tableview")
 
-        switch BiometryType.biometryType {
+        switch DeviceOwnerAuthenticationType.current {
         case .unknown:
             paymentsSection.footerTitle = OWSLocalizedString("SETTINGS_PAYMENTS_SECURITY_DETAIL", comment: "Caption for footer label beneath the payments lock privacy toggle for a biometry type that is unknown.")
         case .passcode:
@@ -183,6 +185,8 @@ class PrivacySettingsViewController: OWSTableViewController2 {
             paymentsSection.footerTitle = OWSLocalizedString("SETTINGS_PAYMENTS_SECURITY_DETAIL_FACEID", comment: "Caption for footer label beneath the payments lock privacy toggle for faceid biometry.")
         case .touchId:
             paymentsSection.footerTitle = OWSLocalizedString("SETTINGS_PAYMENTS_SECURITY_DETAIL_TOUCHID", comment: "Caption for footer label beneath the payments lock privacy toggle for touchid biometry")
+        case .opticId:
+            paymentsSection.footerTitle = OWSLocalizedString("SETTINGS_PAYMENTS_SECURITY_DETAIL_OPTICID", comment: "Caption for footer label beneath the payments lock privacy toggle for opticid biometry")
         }
 
         paymentsSection.add(.switch(

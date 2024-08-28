@@ -103,29 +103,6 @@ public class ScreenLock: NSObject {
         NotificationCenter.default.postNotificationNameAsync(ScreenLock.ScreenLockDidChange, object: nil)
     }
 
-    public enum BiometryType {
-        case unknown, passcode, faceId, touchId
-    }
-    public var biometryType: BiometryType {
-        let context = screenLockContext()
-
-        var authError: NSError?
-        let canEvaluatePolicy = context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &authError)
-
-        guard canEvaluatePolicy, authError == nil else { return .unknown }
-
-        switch context.biometryType {
-        case .none:
-            return .passcode
-        case .faceID:
-            return .faceId
-        case .touchID:
-            return .touchId
-        @unknown default:
-            return .unknown
-        }
-    }
-
     // MARK: - Methods
 
     // This method should only be called:
@@ -184,7 +161,7 @@ public class ScreenLock: NSObject {
             }
         }
 
-        let context = screenLockContext()
+        let context = DeviceOwnerAuthenticationType.localAuthenticationContext()
 
         var authError: NSError?
         let canEvaluatePolicy = context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &authError)
@@ -290,18 +267,5 @@ public class ScreenLock: NSObject {
         return OWSError(error: .localAuthenticationError,
                         description: errorDescription,
                         isRetryable: false)
-    }
-
-    // MARK: - Context
-
-    private func screenLockContext() -> LAContext {
-        let context = LAContext()
-
-        // Never recycle biometric auth.
-        context.touchIDAuthenticationAllowableReuseDuration = TimeInterval(0)
-
-        assert(!context.interactionNotAllowed)
-
-        return context
     }
 }

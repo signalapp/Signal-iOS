@@ -6,11 +6,11 @@
 import Foundation
 import LocalAuthentication
 
-public enum BiometryType {
-    case unknown, passcode, faceId, touchId
+public enum DeviceOwnerAuthenticationType {
+    case unknown, passcode, faceId, touchId, opticId
 }
 
-extension BiometryType {
+extension DeviceOwnerAuthenticationType {
     public static func localAuthenticationContext() -> LAContext {
         let context = LAContext()
 
@@ -22,8 +22,12 @@ extension BiometryType {
         return context
     }
 
-    public static var biometryType: BiometryType {
+    /// > Important: Do not call this in the reply block of the ``LocalAuthentication/LAContext/evaluatePolicy(_:localizedReason:reply:)`` method because that might lead to a deadlock.
+    public static var current: Self {
         let context = localAuthenticationContext()
+
+        // the return value of this doesn't matter; the docs on LAContext.biometryType specify this has to be called first though
+        context.canEvaluatePolicy(.deviceOwnerAuthentication, error: nil)
 
         switch context.biometryType {
         case .none:
@@ -32,25 +36,10 @@ extension BiometryType {
             return .faceId
         case .touchID:
             return .touchId
+        case .opticID:
+            return .opticId
         @unknown default:
             return .unknown
         }
     }
-
-    public static var validBiometryType: ValidBiometryType? {
-        switch biometryType {
-        case .unknown:
-            return nil
-        case .passcode:
-            return .passcode
-        case .faceId:
-            return .faceId
-        case .touchId:
-            return .touchId
-        }
-    }
-}
-
-public enum ValidBiometryType {
-    case passcode, faceId, touchId
 }

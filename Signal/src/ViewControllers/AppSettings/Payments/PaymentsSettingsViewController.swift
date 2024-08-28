@@ -1074,12 +1074,10 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
     private func promptBiometryPaymentsLock() {
         AssertIsOnMainThread()
 
-        guard let validBiometryType = BiometryType.validBiometryType else {
+        guard let view = PaymentsBiometryLockPromptViewController(deviceOwnerAuthenticationType: .current, delegate: nil) else {
             owsFailDebug("Unknown biometry type, cannot enable payments lock")
             return
         }
-
-        let view = PaymentsBiometryLockPromptViewController(biometryType: validBiometryType, delegate: nil)
         let navigationVC = OWSNavigationController(rootViewController: view)
         present(navigationVC, animated: true)
     }

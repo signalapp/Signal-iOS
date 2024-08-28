@@ -121,7 +121,7 @@ public class OWSPaymentsLock: Dependencies {
             return
         }
 
-        let context = BiometryType.localAuthenticationContext()
+        let context = DeviceOwnerAuthenticationType.localAuthenticationContext()
 
         var authError: NSError?
         let canEvaluatePolicy = context.canEvaluatePolicy(

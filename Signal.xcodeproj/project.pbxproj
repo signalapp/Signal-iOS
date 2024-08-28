@@ -1246,7 +1246,7 @@
 		72328C872C6C3E6D000EA728 /* OWSMultipart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72328C862C6C3E6D000EA728 /* OWSMultipart.swift */; };
 		72328C892C6C6733000EA728 /* OWSCountryMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72328C882C6C6733000EA728 /* OWSCountryMetadata.swift */; };
 		72328C8B2C6C7322000EA728 /* OWSCensorshipConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72328C8A2C6C7322000EA728 /* OWSCensorshipConfiguration.swift */; };
-		72345D192B9A17CF000237B3 /* BiometryType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FA2B1E28CBA4A5006845CD /* BiometryType.swift */; };
+		72345D192B9A17CF000237B3 /* DeviceOwnerAuthenticationType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FA2B1E28CBA4A5006845CD /* DeviceOwnerAuthenticationType.swift */; };
 		72345D1D2B9A1984000237B3 /* CommonStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955AB271B521500B05242 /* CommonStrings.swift */; };
 		72345D1E2B9A1F64000237B3 /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C090A1A210FD9C7001FD7F9 /* HapticFeedback.swift */; };
 		72345D1F2B9A1FCF000237B3 /* DateUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3452851A26DE890300824983 /* DateUtil.swift */; };
@@ -4292,7 +4292,7 @@
 		66F6D6A62C7D0FF300EFAF75 /* Wallpaper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wallpaper.swift; sourceTree = "<group>"; };
 		66F6D6A82C7D106100EFAF75 /* Wallpaper+Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Wallpaper+Constants.swift"; sourceTree = "<group>"; };
 		66FA2B1C28CB0DE1006845CD /* PaymentsBiometryLockPromptViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentsBiometryLockPromptViewController.swift; sourceTree = "<group>"; };
-		66FA2B1E28CBA4A5006845CD /* BiometryType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometryType.swift; sourceTree = "<group>"; };
+		66FA2B1E28CBA4A5006845CD /* DeviceOwnerAuthenticationType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceOwnerAuthenticationType.swift; sourceTree = "<group>"; };
 		66FBC4E028DA820900BD9E8B /* MyStorySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyStorySettingsViewController.swift; sourceTree = "<group>"; };
 		66FBC4E228DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectMyStoryRecipientsViewController.swift; sourceTree = "<group>"; };
 		66FC636E29DF797700F00DAC /* MessageBodyRanges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBodyRanges.swift; sourceTree = "<group>"; };
@@ -11823,7 +11823,6 @@
 				502C69712B06F07900012867 /* AwaitableAsyncBlockOperation.swift */,
 				F9C5CB64289453B200548EEE /* Batching.swift */,
 				F9C5CB40289453B200548EEE /* Bench.swift */,
-				66FA2B1E28CBA4A5006845CD /* BiometryType.swift */,
 				668FE09A28B923A4008B9071 /* Bool+SSK.swift */,
 				E7D7C93E28B580AC003F043B /* Bundle+OWS.swift */,
 				88D7BA9D266809F50088D1C2 /* CallMessageRelay.swift */,
@@ -11847,6 +11846,7 @@
 				F94C911F28FDEA2E0065DF75 /* Decimal+Rounded.swift */,
 				F9C5CB79289453B200548EEE /* DecodableDefaults.swift */,
 				F9C5CB3A289453B200548EEE /* DeviceNames.swift */,
+				66FA2B1E28CBA4A5006845CD /* DeviceOwnerAuthenticationType.swift */,
 				348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */,
 				502D69312A7AC07C0085B656 /* Dictionary+SSK.swift */,
 				F9C5CB16289453B200548EEE /* DispatchQueue+OWS.swift */,
@@ -14186,7 +14186,6 @@
 				6600F369298DA57200B1EDB7 /* BaseOWSURLSessionMock.swift in Sources */,
 				F9C5CE36289453B400548EEE /* Batching.swift in Sources */,
 				F9C5CE12289453B400548EEE /* Bench.swift in Sources */,
-				72345D192B9A17CF000237B3 /* BiometryType.swift in Sources */,
 				50F039C42C6D239500162B99 /* BlockedRecipientStore.swift in Sources */,
 				F9C5CC31289453B300548EEE /* BlockingManager.swift in Sources */,
 				F9C5CC74289453B300548EEE /* BlurHash.swift in Sources */,
@@ -14309,6 +14308,7 @@
 				505C2ED629971D4E00C23FB2 /* DeviceLimitExceededError.swift in Sources */,
 				50E5E4B129932D9B00E15A1C /* DeviceMessage.swift in Sources */,
 				F9C5CE0C289453B400548EEE /* DeviceNames.swift in Sources */,
+				72345D192B9A17CF000237B3 /* DeviceOwnerAuthenticationType.swift in Sources */,
 				F9C5CDC3289453B400548EEE /* DeviceProvisioningService.swift in Sources */,
 				72C9058C2B9AC7BD00E586B8 /* DeviceSleepManager.swift in Sources */,
 				F9C5CC94289453B300548EEE /* DeviceTransfer.pb.swift in Sources */,

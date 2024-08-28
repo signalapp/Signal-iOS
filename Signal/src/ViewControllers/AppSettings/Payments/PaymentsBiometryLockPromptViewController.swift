@@ -13,18 +13,42 @@ public protocol PaymentsBiometryLockPromptDelegate: AnyObject {
 
 // MARK: -
 
+private enum KnownDeviceOwnerAuthenticationType {
+    case passcode, touchId, faceId, opticId
+
+    static func from(_ deviceOwnerAuthenticationType: DeviceOwnerAuthenticationType) -> KnownDeviceOwnerAuthenticationType? {
+        switch deviceOwnerAuthenticationType {
+        case .unknown:
+            return nil
+        case .passcode:
+            return .passcode
+        case .faceId:
+            return .faceId
+        case .touchId:
+            return .touchId
+        case .opticId:
+            return .opticId
+        }
+    }
+}
+
+// MARK: -
+
 public class PaymentsBiometryLockPromptViewController: OWSViewController {
 
     private var hasBeenDoubleReminded: Bool = false
 
-    private let validBiometryType: ValidBiometryType
+    private let knownDeviceOwnerAuthenticationType: KnownDeviceOwnerAuthenticationType
 
     private weak var delegate: PaymentsBiometryLockPromptDelegate?
 
     private let rootView = UIStackView()
 
-    public init(biometryType: ValidBiometryType, delegate: PaymentsBiometryLockPromptDelegate?) {
-        self.validBiometryType = biometryType
+    public init?(deviceOwnerAuthenticationType: DeviceOwnerAuthenticationType, delegate: PaymentsBiometryLockPromptDelegate?) {
+        guard let knownDeviceOwnerAuthenticationType = KnownDeviceOwnerAuthenticationType.from(deviceOwnerAuthenticationType) else {
+            return nil
+        }
+        self.knownDeviceOwnerAuthenticationType = knownDeviceOwnerAuthenticationType
         self.delegate = delegate
 
         super.init()
@@ -209,7 +233,7 @@ public class PaymentsBiometryLockPromptViewController: OWSViewController {
     }
 
     private func localizedExplanationLabelText() -> String {
-        switch validBiometryType {
+        switch knownDeviceOwnerAuthenticationType {
         case .faceId:
             return OWSLocalizedString(
                 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_FACEID",
@@ -218,6 +242,10 @@ public class PaymentsBiometryLockPromptViewController: OWSViewController {
             return OWSLocalizedString(
                 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_TOUCHID",
                 comment: "Explanation of 'payments lock' with Touch ID in the 'payments lock prompt' view shown after payments activation.")
+        case .opticId:
+            return OWSLocalizedString(
+                "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_OPTICID",
+                comment: "Explanation of 'payments lock' with Optic ID in the 'payments lock prompt' view shown after payments activation.")
         case .passcode:
             return OWSLocalizedString(
                 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_PASSCODE",
@@ -226,7 +254,7 @@ public class PaymentsBiometryLockPromptViewController: OWSViewController {
     }
 
     private func enableButtonTitle() -> String {
-        switch validBiometryType {
+        switch knownDeviceOwnerAuthenticationType {
         case .faceId:
             return OWSLocalizedString(
                 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_FACEID",
@@ -235,6 +263,10 @@ public class PaymentsBiometryLockPromptViewController: OWSViewController {
             return OWSLocalizedString(
                 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_TOUCHID",
                 comment: "Enable Button title in Payments Lock Prompt view for Touch ID.")
+        case .opticId:
+            return OWSLocalizedString(
+                "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_OPTICID",
+                comment: "Enable Button title in Payments Lock Prompt view for Optic ID.")
         case .passcode:
             return OWSLocalizedString(
                 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_PASSCODE",
@@ -243,7 +275,7 @@ public class PaymentsBiometryLockPromptViewController: OWSViewController {
     }
 
     private func doubleReminderActionSheetTitle() -> String {
-        switch validBiometryType {
+        switch knownDeviceOwnerAuthenticationType {
         case .faceId:
             return OWSLocalizedString(
                 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_FACEID",
@@ -252,6 +284,10 @@ public class PaymentsBiometryLockPromptViewController: OWSViewController {
             return OWSLocalizedString(
                 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_TOUCHID",
                 comment: "Double reminder action sheet title in Payments Lock Prompt view for Touch ID.")
+        case .opticId:
+            return OWSLocalizedString(
+                "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_OPTICID",
+                comment: "Double reminder action sheet title in Payments Lock Prompt view for Optic ID.")
         case .passcode:
             return OWSLocalizedString(
                 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_PASSCODE",
