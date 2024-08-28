@@ -710,28 +710,28 @@
 "CALL_CONTROLS_INCOMING_DECLINE" = "rifiuta";
 
 /* Button to open a screen to edit the name of a Call Link. Also used as the title of that screen once it opens. */
-"CALL_LINK_ADD_NAME" = "Add Call Name";
+"CALL_LINK_ADD_NAME" = "Aggiungi nome chiamata";
 
 /* Button to copy a Call Link to the clipboard. */
-"CALL_LINK_COPY" = "Copy Link";
+"CALL_LINK_COPY" = "Copia link";
 
 /* Navigation bar title for the sheet used to create & configure a Call Link. */
-"CALL_LINK_CREATE" = "Create Call Link";
+"CALL_LINK_CREATE" = "Crea link chiamata";
 
 /* Button to open a screen to edit the name of a Call Link. Also used as the title of that screen once it opens. */
-"CALL_LINK_EDIT_NAME" = "Edit Call Name";
+"CALL_LINK_EDIT_NAME" = "Modifica nome chiamata";
 
 /* Shown in a message bubble when you send a call link in a Signal chat */
 "CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "Usa questo link per unirti a una chiamata Signal";
 
 /* Name of a toggle switch to enable/disable admin approval for joining a Call Link. */
-"CALL_LINK_REQUIRE_APPROVAL" = "Approve All Members";
+"CALL_LINK_REQUIRE_APPROVAL" = "Approva tutti i partecipanti";
 
 /* Button to open UI to share a Call Link with someone on Signal. */
-"CALL_LINK_SHARE_VIA_SIGNAL" = "Share Link via Signal";
+"CALL_LINK_SHARE_VIA_SIGNAL" = "Condividi il link via Signal";
 
 /* Button to open the system share sheet to share a Call Link. */
-"CALL_LINK_SHARE_VIA_SYSTEM" = "Share Link";
+"CALL_LINK_SHARE_VIA_SYSTEM" = "Condividi link";
 
 /* Label on button for lowering hand in call. */
 "CALL_LOWER_HAND_BUTTON_LABEL" = "Abbassa la mano";
@@ -1608,6 +1608,9 @@
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "Seleziona il codice del Paese";
+
+/* Label for button that enables you to make a new call link. */
+"CREATE_CALL_LINK_LABEL" = "Create a Call Link";
 
 /* Body text for an interactive in-app prompt to set up a Signal username. */
 "CREATE_USERNAME_MEGAPHONE_BODY" = "Privacy del numero di telefono, nomi utente, codici QR e link: scopri le novità!";
@@ -3674,22 +3677,22 @@
 "INCOMING_VOICE_CALL" = "Chiamata vocale in arrivo";
 
 /* An info message inserted into the chat when you accept a message request, in a 1:1 or group chat. */
-"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST" = "You accepted the message request.";
+"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST" = "Hai accettato la richiesta di messaggio.";
 
 /* Header for an action sheet providing options in response to an accepted 1:1 message request. Embeds {{ the name of your chat partner }}. */
-"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_CONTACT" = "You accepted a message request from %1$@. If this was a mistake, you can choose an action below.";
+"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_CONTACT" = "Hai accettato una richiesta di messaggio da parte di %1$@. Se lo hai fatto per errore, puoi scegliere una delle azioni di seguito.";
 
 /* Header for an action sheet providing options in response to an accepted group message request. */
-"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_GROUP" = "You accepted a message request from this group. If this was a mistake, you can choose an action below.";
+"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_GROUP" = "Hai accettato una richiesta di messaggio da parte di questo gruppo. Se lo hai fatto per errore, puoi scegliere una delle azioni di seguito.";
 
 /* Title for a button shown alongside an info message indicating you accepted a message request. */
-"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_BUTTON" = "Options";
+"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_BUTTON" = "Opzioni";
 
 /* An info message inserted into a group chat when you block the group. */
-"INFO_MESSAGE_BLOCKED_GROUP" = "You blocked this group.";
+"INFO_MESSAGE_BLOCKED_GROUP" = "Hai bloccato questo gruppo.";
 
 /* An info message inserted into a 1:1 chat when you block another user. */
-"INFO_MESSAGE_BLOCKED_OTHER_USER" = "You blocked this person.";
+"INFO_MESSAGE_BLOCKED_OTHER_USER" = "Hai bloccato questa persona.";
 
 /* Indicates that a previously-removed recipient has been added back to the current user's contacts. */
 "INFO_MESSAGE_CONTACT_REINSTATED" = "Questa persona è stata riaggiunta al tuo elenco contatti di Signal.";
@@ -3725,10 +3728,10 @@
 "INFO_MESSAGE_SYNCED_THREAD" = "Per la tua sicurezza, la cronologia delle chat non viene trasferita sui nuovi dispositivi collegati.";
 
 /* An info message inserted into a group chat when you unblock the group. */
-"INFO_MESSAGE_UNBLOCKED_GROUP" = "You unblocked this group.";
+"INFO_MESSAGE_UNBLOCKED_GROUP" = "Hai sbloccato questo gruppo.";
 
 /* An info message inserted into a 1:1 chat when you unblock another user. */
-"INFO_MESSAGE_UNBLOCKED_OTHER_USER" = "You unblocked this person.";
+"INFO_MESSAGE_UNBLOCKED_OTHER_USER" = "Hai sbloccato questa persona.";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
 "INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%1$@ ha cambiato il suo numero di telefono.";

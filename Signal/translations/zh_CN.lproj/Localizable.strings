@@ -710,28 +710,28 @@
 "CALL_CONTROLS_INCOMING_DECLINE" = "拒绝";
 
 /* Button to open a screen to edit the name of a Call Link. Also used as the title of that screen once it opens. */
-"CALL_LINK_ADD_NAME" = "Add Call Name";
+"CALL_LINK_ADD_NAME" = "添加通话名称";
 
 /* Button to copy a Call Link to the clipboard. */
-"CALL_LINK_COPY" = "Copy Link";
+"CALL_LINK_COPY" = "复制链接";
 
 /* Navigation bar title for the sheet used to create & configure a Call Link. */
-"CALL_LINK_CREATE" = "Create Call Link";
+"CALL_LINK_CREATE" = "创建通话链接";
 
 /* Button to open a screen to edit the name of a Call Link. Also used as the title of that screen once it opens. */
-"CALL_LINK_EDIT_NAME" = "Edit Call Name";
+"CALL_LINK_EDIT_NAME" = "编辑通话名称";
 
 /* Shown in a message bubble when you send a call link in a Signal chat */
 "CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "使用此链接加入 Signal 通话";
 
 /* Name of a toggle switch to enable/disable admin approval for joining a Call Link. */
-"CALL_LINK_REQUIRE_APPROVAL" = "Approve All Members";
+"CALL_LINK_REQUIRE_APPROVAL" = "批准所有成员";
 
 /* Button to open UI to share a Call Link with someone on Signal. */
-"CALL_LINK_SHARE_VIA_SIGNAL" = "Share Link via Signal";
+"CALL_LINK_SHARE_VIA_SIGNAL" = "通过 Signal 分享链接";
 
 /* Button to open the system share sheet to share a Call Link. */
-"CALL_LINK_SHARE_VIA_SYSTEM" = "Share Link";
+"CALL_LINK_SHARE_VIA_SYSTEM" = "分享链接";
 
 /* Label on button for lowering hand in call. */
 "CALL_LOWER_HAND_BUTTON_LABEL" = "放下";
@@ -1608,6 +1608,9 @@
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "选择国家编码";
+
+/* Label for button that enables you to make a new call link. */
+"CREATE_CALL_LINK_LABEL" = "Create a Call Link";
 
 /* Body text for an interactive in-app prompt to set up a Signal username. */
 "CREATE_USERNAME_MEGAPHONE_BODY" = "我们推出了手机号码隐私、可选用户名和链接功能。";
@@ -3674,22 +3677,22 @@
 "INCOMING_VOICE_CALL" = "语音来电";
 
 /* An info message inserted into the chat when you accept a message request, in a 1:1 or group chat. */
-"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST" = "You accepted the message request.";
+"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST" = "您接受了消息请求。";
 
 /* Header for an action sheet providing options in response to an accepted 1:1 message request. Embeds {{ the name of your chat partner }}. */
-"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_CONTACT" = "You accepted a message request from %1$@. If this was a mistake, you can choose an action below.";
+"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_CONTACT" = "您接受了来自%1$@的消息请求。如果这是一个误操作，您可以选择以下任意操作。";
 
 /* Header for an action sheet providing options in response to an accepted group message request. */
-"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_GROUP" = "You accepted a message request from this group. If this was a mistake, you can choose an action below.";
+"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_GROUP" = "您接受了来自该群组的消息请求。如果这是一个误操作，您可以选择以下任意操作。";
 
 /* Title for a button shown alongside an info message indicating you accepted a message request. */
-"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_BUTTON" = "Options";
+"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_BUTTON" = "选项";
 
 /* An info message inserted into a group chat when you block the group. */
-"INFO_MESSAGE_BLOCKED_GROUP" = "You blocked this group.";
+"INFO_MESSAGE_BLOCKED_GROUP" = "你已屏蔽此群组。";
 
 /* An info message inserted into a 1:1 chat when you block another user. */
-"INFO_MESSAGE_BLOCKED_OTHER_USER" = "You blocked this person.";
+"INFO_MESSAGE_BLOCKED_OTHER_USER" = "您已屏蔽此用户。";
 
 /* Indicates that a previously-removed recipient has been added back to the current user's contacts. */
 "INFO_MESSAGE_CONTACT_REINSTATED" = "此用户已重新添加到您的 Signal 联系人列表。";
@@ -3725,10 +3728,10 @@
 "INFO_MESSAGE_SYNCED_THREAD" = "为了您的安全，聊天记录将不会同步至新链接的设备。";
 
 /* An info message inserted into a group chat when you unblock the group. */
-"INFO_MESSAGE_UNBLOCKED_GROUP" = "You unblocked this group.";
+"INFO_MESSAGE_UNBLOCKED_GROUP" = "您已取消屏蔽此群组。";
 
 /* An info message inserted into a 1:1 chat when you unblock another user. */
-"INFO_MESSAGE_UNBLOCKED_OTHER_USER" = "You unblocked this person.";
+"INFO_MESSAGE_UNBLOCKED_OTHER_USER" = "您已取消屏蔽此用户。";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
 "INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%1$@已更改手机号码。";

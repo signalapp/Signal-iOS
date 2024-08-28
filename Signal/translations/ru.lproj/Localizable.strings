@@ -710,28 +710,28 @@
 "CALL_CONTROLS_INCOMING_DECLINE" = "отклонить";
 
 /* Button to open a screen to edit the name of a Call Link. Also used as the title of that screen once it opens. */
-"CALL_LINK_ADD_NAME" = "Add Call Name";
+"CALL_LINK_ADD_NAME" = "Добавить имя звонка";
 
 /* Button to copy a Call Link to the clipboard. */
-"CALL_LINK_COPY" = "Copy Link";
+"CALL_LINK_COPY" = "Копировать ссылку";
 
 /* Navigation bar title for the sheet used to create & configure a Call Link. */
-"CALL_LINK_CREATE" = "Create Call Link";
+"CALL_LINK_CREATE" = "Создать ссылку для звонка";
 
 /* Button to open a screen to edit the name of a Call Link. Also used as the title of that screen once it opens. */
-"CALL_LINK_EDIT_NAME" = "Edit Call Name";
+"CALL_LINK_EDIT_NAME" = "Изменить имя звонка";
 
 /* Shown in a message bubble when you send a call link in a Signal chat */
 "CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "Используйте эту ссылку, чтобы присоединиться к звонку Signal";
 
 /* Name of a toggle switch to enable/disable admin approval for joining a Call Link. */
-"CALL_LINK_REQUIRE_APPROVAL" = "Approve All Members";
+"CALL_LINK_REQUIRE_APPROVAL" = "Одобрить всех участников";
 
 /* Button to open UI to share a Call Link with someone on Signal. */
-"CALL_LINK_SHARE_VIA_SIGNAL" = "Share Link via Signal";
+"CALL_LINK_SHARE_VIA_SIGNAL" = "Поделиться ссылкой через Signal";
 
 /* Button to open the system share sheet to share a Call Link. */
-"CALL_LINK_SHARE_VIA_SYSTEM" = "Share Link";
+"CALL_LINK_SHARE_VIA_SYSTEM" = "Поделиться ссылкой";
 
 /* Label on button for lowering hand in call. */
 "CALL_LOWER_HAND_BUTTON_LABEL" = "Опустить руку";
@@ -1608,6 +1608,9 @@
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "Выберите код страны";
+
+/* Label for button that enables you to make a new call link. */
+"CREATE_CALL_LINK_LABEL" = "Create a Call Link";
 
 /* Body text for an interactive in-app prompt to set up a Signal username. */
 "CREATE_USERNAME_MEGAPHONE_BODY" = "Представляем конфиденциальность номеров телефона, дополнительные имена пользователя и ссылки.";
@@ -3674,22 +3677,22 @@
 "INCOMING_VOICE_CALL" = "Входящий голосовой звонок";
 
 /* An info message inserted into the chat when you accept a message request, in a 1:1 or group chat. */
-"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST" = "You accepted the message request.";
+"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST" = "Вы приняли запрос на общение.";
 
 /* Header for an action sheet providing options in response to an accepted 1:1 message request. Embeds {{ the name of your chat partner }}. */
-"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_CONTACT" = "You accepted a message request from %1$@. If this was a mistake, you can choose an action below.";
+"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_CONTACT" = "Вы приняли запрос на сообщение от %1$@. Если это было сделано по ошибке, вы можете выбрать действие ниже.";
 
 /* Header for an action sheet providing options in response to an accepted group message request. */
-"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_GROUP" = "You accepted a message request from this group. If this was a mistake, you can choose an action below.";
+"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_GROUP" = "Вы приняли запрос на общение от этой группы. Если это было сделано по ошибке, вы можете выбрать действие ниже.";
 
 /* Title for a button shown alongside an info message indicating you accepted a message request. */
-"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_BUTTON" = "Options";
+"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_BUTTON" = "Варианты";
 
 /* An info message inserted into a group chat when you block the group. */
-"INFO_MESSAGE_BLOCKED_GROUP" = "You blocked this group.";
+"INFO_MESSAGE_BLOCKED_GROUP" = "Вы заблокировали эту группу.";
 
 /* An info message inserted into a 1:1 chat when you block another user. */
-"INFO_MESSAGE_BLOCKED_OTHER_USER" = "You blocked this person.";
+"INFO_MESSAGE_BLOCKED_OTHER_USER" = "Вы заблокировали этого человека.";
 
 /* Indicates that a previously-removed recipient has been added back to the current user's contacts. */
 "INFO_MESSAGE_CONTACT_REINSTATED" = "Этот человек был снова добавлен в ваш список контактов Signal.";
@@ -3725,10 +3728,10 @@
 "INFO_MESSAGE_SYNCED_THREAD" = "Для вашей безопасности история чата не переносится на новые привязанные устройства.";
 
 /* An info message inserted into a group chat when you unblock the group. */
-"INFO_MESSAGE_UNBLOCKED_GROUP" = "You unblocked this group.";
+"INFO_MESSAGE_UNBLOCKED_GROUP" = "Вы разблокировали эту группу.";
 
 /* An info message inserted into a 1:1 chat when you unblock another user. */
-"INFO_MESSAGE_UNBLOCKED_OTHER_USER" = "You unblocked this person.";
+"INFO_MESSAGE_UNBLOCKED_OTHER_USER" = "Вы разблокировали этого человека.";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
 "INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%1$@ изменил(-а) свой номер телефона.";
