@@ -32,16 +32,39 @@ extension MessageBackup {
     }
 }
 
-/**
- * Creates input and output streams for reading and writing to a backup file on disk.
- *
- * The backup file is just a sequence of serialized proto bytes, back to back, delimited by varint
- * byte sizes so we know how much to read into memory to deserialize the next proto.
- * The input and output streams abstract over this, and allow callers to just think in terms of "frames",
- * the individual proto objects that we read and write one at a time.
- */
-public protocol MessageBackupProtoStreamProvider {
+/// Creates streams for reading and writing to a plaintext Backup file on-disk.
+///
+/// A Backup file is a sequence of concatenated serialized proto bytes delimited
+/// by varint byte sizes, which tell us how much to read into memory to
+/// deserialize the next proto. The streams provided by this type abstract over
+/// this serialized format, allowing callers instead to think in terms of
+/// "frames", or individual proto objects that we read or write individually.
+///
+/// - SeeAlso: ``MessageBackupEncryptedProtoStreamProvider``
+public protocol MessageBackupPlaintextProtoStreamProvider {
+    typealias ProtoStream = MessageBackup.ProtoStream
 
+    /// Open an output stream to write a plaintext backup to a file on disk. The
+    /// caller owns the returned stream, and is responsible for closing it once
+    /// finished.
+    func openPlaintextOutputFileStream() -> ProtoStream.OpenOutputStreamResult<URL>
+
+    /// Open an input stream to read a plaintext backup from a file on disk. The
+    /// caller becomes the owner of the stream, and is responsible for closing
+    /// it once finished.
+    func openPlaintextInputFileStream(fileUrl: URL) -> ProtoStream.OpenInputStreamResult
+}
+
+/// Creates streams for reading and writing to an encrypted Backup file on-disk.
+///
+/// A Backup file is a sequence of concatenated serialized proto bytes delimited
+/// by varint byte sizes, which tell us how much to read into memory to
+/// deserialize the next proto. The streams provided by this type abstract over
+/// this serialized format, allowing callers instead to think in terms of
+/// "frames", or individual proto objects that we read or write individually.
+///
+/// - SeeAlso: ``MessageBackupPlaintextProtoStreamProvider``
+public protocol MessageBackupEncryptedProtoStreamProvider {
     typealias ProtoStream = MessageBackup.ProtoStream
 
     /// Open an output stream to write an encrypted backup to a file on disk.
@@ -52,11 +75,6 @@ public protocol MessageBackupProtoStreamProvider {
         tx: DBReadTransaction
     ) -> ProtoStream.OpenOutputStreamResult<ProtoStream.EncryptionMetadataProvider>
 
-    /// Open an output stream to write a plaintext backup to a file on disk. The
-    /// caller owns the returned stream, and is responsible for closing it once
-    /// finished.
-    func openPlaintextOutputFileStream() -> ProtoStream.OpenOutputStreamResult<URL>
-
     /// Open an input stream to read an encrypted backup from a file on disk.
     /// The caller becomes the owner of the stream, and is responsible for
     /// closing it once finished.
@@ -65,19 +83,17 @@ public protocol MessageBackupProtoStreamProvider {
         localAci: Aci,
         tx: DBReadTransaction
     ) -> ProtoStream.OpenInputStreamResult
-
-    /// Open an input stream to read a plaintext backup from a file on disk. The
-    /// caller becomes the owner of the stream, and is responsible for closing
-    /// it once finished.
-    func openPlaintextInputFileStream(fileUrl: URL) -> ProtoStream.OpenInputStreamResult
 }
 
-public class MessageBackupProtoStreamProviderImpl: MessageBackupProtoStreamProvider {
+// MARK: -
 
+public class MessageBackupEncryptedProtoStreamProviderImpl: MessageBackupEncryptedProtoStreamProvider {
     private let backupKeyMaterial: MessageBackupKeyMaterial
+    private let genericStreamProvider: GenericStreamProvider
 
     public init(backupKeyMaterial: MessageBackupKeyMaterial) {
         self.backupKeyMaterial = backupKeyMaterial
+        self.genericStreamProvider = GenericStreamProvider()
     }
 
     public func openEncryptedOutputFileStream(
@@ -99,7 +115,9 @@ public class MessageBackupProtoStreamProviderImpl: MessageBackupProtoStreamProvi
 
             let outputStream: MessageBackupProtoOutputStream
             let fileUrl: URL
-            switch openOutputFileStream(transforms: transforms) {
+            switch genericStreamProvider.openOutputFileStream(
+                transforms: transforms
+            ) {
             case .success(let _outputStream, let _fileUrl):
                 outputStream = _outputStream
                 fileUrl = _fileUrl
@@ -123,14 +141,6 @@ public class MessageBackupProtoStreamProviderImpl: MessageBackupProtoStreamProvi
         }
     }
 
-    public func openPlaintextOutputFileStream() -> ProtoStream.OpenOutputStreamResult<URL> {
-        let transforms: [any StreamTransform] = [
-            ChunkedOutputStreamTransform(),
-        ]
-
-        return openOutputFileStream(transforms: transforms)
-    }
-
     public func openEncryptedInputFileStream(
         fileUrl: URL,
         localAci: Aci,
@@ -148,10 +158,60 @@ public class MessageBackupProtoStreamProviderImpl: MessageBackupProtoStreamProvi
                 ChunkedInputStreamTransform(),
             ]
 
-            return openInputFileStream(fileUrl: fileUrl, transforms: transforms)
+            return genericStreamProvider.openInputFileStream(
+                fileUrl: fileUrl,
+                transforms: transforms
+            )
         } catch {
             return .unableToOpenFileStream
         }
+    }
+
+    private func validateBackupHMAC(localAci: Aci, fileUrl: URL, tx: DBReadTransaction) -> Bool {
+        do {
+            let inputStreamResult = genericStreamProvider.openInputFileStream(
+                fileUrl: fileUrl,
+                transforms: [
+                    try backupKeyMaterial.createHmacGeneratingStreamTransform(
+                        localAci: localAci,
+                        tx: tx
+                    )
+                ]
+            )
+
+            switch inputStreamResult {
+            case .success(_, let rawInputStream):
+                // Read through the input stream. The HmacStreamTransform will both build
+                // an HMAC of the input data and read the HMAC from the end of the input file.
+                // Once the end of the stream is reached, the transform will compare the
+                // HMACs and throw an exception if they differ.
+                while try rawInputStream.read(maxLength: 32 * 1024).count > 0 {}
+                try rawInputStream.close()
+                return true
+            case .fileNotFound, .unableToOpenFileStream, .hmacValidationFailedOnEncryptedFile:
+                return false
+            }
+        } catch {
+            return false
+        }
+    }
+}
+
+public class MessageBackupPlaintextProtoStreamProviderImpl: MessageBackupPlaintextProtoStreamProvider {
+    private let genericStreamProvider: GenericStreamProvider
+
+    init() {
+        self.genericStreamProvider = GenericStreamProvider()
+    }
+
+    public func openPlaintextOutputFileStream() -> ProtoStream.OpenOutputStreamResult<URL> {
+        let transforms: [any StreamTransform] = [
+            ChunkedOutputStreamTransform(),
+        ]
+
+        return genericStreamProvider.openOutputFileStream(
+            transforms: transforms
+        )
     }
 
     public func openPlaintextInputFileStream(fileUrl: URL) -> ProtoStream.OpenInputStreamResult {
@@ -159,10 +219,21 @@ public class MessageBackupProtoStreamProviderImpl: MessageBackupProtoStreamProvi
             ChunkedInputStreamTransform(),
         ]
 
-        return openInputFileStream(fileUrl: fileUrl, transforms: transforms)
+        return genericStreamProvider.openInputFileStream(
+            fileUrl: fileUrl,
+            transforms: transforms
+        )
     }
+}
 
-    private func openOutputFileStream(
+// MARK: -
+
+private class GenericStreamProvider {
+    typealias ProtoStream = MessageBackup.ProtoStream
+
+    init() {}
+
+    func openOutputFileStream(
         transforms: [any StreamTransform]
     ) -> ProtoStream.OpenOutputStreamResult<URL> {
         let fileUrl = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
@@ -191,7 +262,7 @@ public class MessageBackupProtoStreamProviderImpl: MessageBackupProtoStreamProvi
         return .success(messageBackupOutputStream, fileUrl)
     }
 
-    private func openInputFileStream(
+    func openInputFileStream(
         fileUrl: URL,
         transforms: [any StreamTransform]
     ) -> ProtoStream.OpenInputStreamResult {
@@ -222,29 +293,6 @@ public class MessageBackupProtoStreamProviderImpl: MessageBackupProtoStreamProvi
         )
 
         return .success(messageBackupInputStream, rawStream: transformableInputStream)
-    }
-
-    private func validateBackupHMAC(localAci: Aci, fileUrl: URL, tx: DBReadTransaction) -> Bool {
-        do {
-            let inputStreamResult = openInputFileStream(fileUrl: fileUrl, transforms: [
-                try backupKeyMaterial.createHmacGeneratingStreamTransform(localAci: localAci, tx: tx)
-            ])
-
-            switch inputStreamResult {
-            case .success(_, let rawInputStream):
-                // Read through the input stream. The HmacStreamTransform will both build
-                // an HMAC of the input data and read the HMAC from the end of the input file.
-                // Once the end of the stream is reached, the transform will compare the
-                // HMACs and throw an exception if they differ.
-                while try rawInputStream.read(maxLength: 32 * 1024).count > 0 {}
-                try rawInputStream.close()
-                return true
-            case .fileNotFound, .unableToOpenFileStream, .hmacValidationFailedOnEncryptedFile:
-                return false
-            }
-        } catch {
-            return false
-        }
     }
 
     private class StreamDelegate: NSObject, Foundation.StreamDelegate {

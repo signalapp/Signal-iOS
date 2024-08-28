@@ -35,13 +35,14 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     private let dateProvider: DateProvider
     private let db: DB
     private let distributionListRecipientArchiver: MessageBackupDistributionListRecipientArchiver
+    private let encryptedStreamProvider: MessageBackupEncryptedProtoStreamProvider
     private let groupRecipientArchiver: MessageBackupGroupRecipientArchiver
     private let incrementalTSAttachmentMigrator: IncrementalMessageTSAttachmentMigrator
     private let kvStore: KeyValueStore
     private let localRecipientArchiver: MessageBackupLocalRecipientArchiver
     private let messageBackupKeyMaterial: MessageBackupKeyMaterial
     private let releaseNotesRecipientArchiver: MessageBackupReleaseNotesRecipientArchiver
-    private let streamProvider: MessageBackupProtoStreamProvider
+    private let plaintextStreamProvider: MessageBackupPlaintextProtoStreamProvider
 
     public init(
         accountDataArchiver: MessageBackupAccountDataArchiver,
@@ -55,13 +56,14 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         dateProvider: @escaping DateProvider,
         db: DB,
         distributionListRecipientArchiver: MessageBackupDistributionListRecipientArchiver,
+        encryptedStreamProvider: MessageBackupEncryptedProtoStreamProvider,
         groupRecipientArchiver: MessageBackupGroupRecipientArchiver,
         incrementalTSAttachmentMigrator: IncrementalMessageTSAttachmentMigrator,
         kvStoreFactory: KeyValueStoreFactory,
         localRecipientArchiver: MessageBackupLocalRecipientArchiver,
         messageBackupKeyMaterial: MessageBackupKeyMaterial,
         releaseNotesRecipientArchiver: MessageBackupReleaseNotesRecipientArchiver,
-        streamProvider: MessageBackupProtoStreamProvider
+        plaintextStreamProvider: MessageBackupPlaintextProtoStreamProvider
     ) {
         self.accountDataArchiver = accountDataArchiver
         self.attachmentDownloadManager = attachmentDownloadManager
@@ -74,13 +76,14 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         self.dateProvider = dateProvider
         self.db = db
         self.distributionListRecipientArchiver = distributionListRecipientArchiver
+        self.encryptedStreamProvider = encryptedStreamProvider
         self.groupRecipientArchiver = groupRecipientArchiver
         self.incrementalTSAttachmentMigrator = incrementalTSAttachmentMigrator
         self.kvStore = kvStoreFactory.keyValueStore(collection: Constants.keyValueStoreCollectionName)
         self.localRecipientArchiver = localRecipientArchiver
         self.messageBackupKeyMaterial = messageBackupKeyMaterial
         self.releaseNotesRecipientArchiver = releaseNotesRecipientArchiver
-        self.streamProvider = streamProvider
+        self.plaintextStreamProvider = plaintextStreamProvider
     }
 
     // MARK: - Remote backups
@@ -148,7 +151,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         return try await db.awaitableWrite { tx in
             let outputStream: MessageBackupProtoOutputStream
             let metadataProvider: MessageBackup.ProtoStream.EncryptionMetadataProvider
-            switch self.streamProvider.openEncryptedOutputFileStream(
+            switch self.encryptedStreamProvider.openEncryptedOutputFileStream(
                 localAci: localIdentifiers.aci,
                 tx: tx
             ) {
@@ -182,7 +185,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         return try await db.awaitableWrite { tx in
             let outputStream: MessageBackupProtoOutputStream
             let fileUrl: URL
-            switch self.streamProvider.openPlaintextOutputFileStream() {
+            switch self.plaintextStreamProvider.openPlaintextOutputFileStream() {
             case .success(let _outputStream, let _fileUrl):
                 outputStream = _outputStream
                 fileUrl = _fileUrl
@@ -362,7 +365,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
         try await db.awaitableWrite { tx in
             let inputStream: MessageBackupProtoInputStream
-            switch self.streamProvider.openEncryptedInputFileStream(
+            switch self.encryptedStreamProvider.openEncryptedInputFileStream(
                 fileUrl: fileUrl,
                 localAci: localIdentifiers.aci,
                 tx: tx
@@ -398,7 +401,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
         try await db.awaitableWrite { tx in
             let inputStream: MessageBackupProtoInputStream
-            switch self.streamProvider.openPlaintextInputFileStream(
+            switch self.plaintextStreamProvider.openPlaintextInputFileStream(
                 fileUrl: fileUrl
             ) {
             case .success(let protoStream, _):

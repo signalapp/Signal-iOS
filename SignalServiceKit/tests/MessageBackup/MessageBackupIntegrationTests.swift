@@ -8,20 +8,52 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class MessageBackupIntegrationTestCase: XCTestCase {
+class MessageBackupIntegrationTests: XCTestCase {
     override func setUp() {
         DDLog.add(DDTTYLogger.sharedInstance!)
     }
 
-    var deps: DependenciesBridge { .shared }
+    /// Performs a round-trip import/export test on all `.binproto` integration
+    /// test cases.
+    func testAllIntegrationTestCases() async throws {
+        guard
+            let allBinprotoFileUrls = Bundle(for: type(of: self)).urls(
+                forResourcesWithExtension: "binproto",
+                subdirectory: nil
+            )
+        else {
+            XCTFail("Failed to find binprotos in test bundle!")
+            return
+        }
+
+        for binprotoFileUrl in allBinprotoFileUrls {
+            let filename = binprotoFileUrl
+                .lastPathComponent
+                .filenameWithoutExtension
+
+            try await runRoundTripTest(
+                testCaseName: filename,
+                testCaseFileUrl: binprotoFileUrl
+            )
+        }
+    }
 
     // MARK: -
 
-    private var messageBackupManager: MessageBackupManager {
-        deps.messageBackupManager
-    }
+    private var deps: DependenciesBridge { .shared }
 
-    var localIdentifiers: LocalIdentifiers {
+    /// Runs a round-trip import/export test for the given `.binproto` file.
+    ///
+    /// The round-trip test imports the given `.binproto` into an empty app,
+    /// then exports the app's state into another `.binproto`. The
+    /// originally-imported and recently-exported `.binprotos` are then compared
+    /// by LibSignal. They should be equivalent; any disparity indicates that
+    /// some data was dropped or modified as part of the import/export process,
+    /// which should be idempotent.
+    private func runRoundTripTest(
+        testCaseName: String,
+        testCaseFileUrl: URL
+    ) async throws {
         /// A backup doesn't contain our own local identifiers. Rather, those
         /// are determined as part of registration for a backup import, and are
         /// already-known for a backup export.
@@ -29,62 +61,36 @@ class MessageBackupIntegrationTestCase: XCTestCase {
         /// Consequently, we can use any local identifiers for our test
         /// purposes without worrying about the contents of each test case's
         /// backup file.
-        return .forUnitTests
-    }
+        let localIdentifiers: LocalIdentifiers = .forUnitTests
 
-    func runTest(
-        backupName: String,
-        dateProvider: DateProvider? = nil,
-        enableLibsignalComparator: Bool = true,
-        assertionsBlock: (SDSAnyReadTransaction, DBReadTransaction) throws -> Void
-    ) async throws {
-        let testCaseBackupUrl = backupFileUrl(named: backupName)
-        try await importAndAssert(
-            backupUrl: testCaseBackupUrl,
-            dateProvider: dateProvider,
-            localIdentifiers: localIdentifiers,
-            assertionsBlock: assertionsBlock
-        )
+        /// Backup files hardcode timestamps, some of which are interpreted
+        /// relative to "now". For example, "deleted" story distribution lists
+        /// are marked as deleted for a period of time before being actually
+        /// deleted; when these frames are restored from a Backup, their
+        /// deletion timestamp is compared to "now" to determine if they should
+        /// be deleted.
+        ///
+        /// Consequently, in order for tests to remain stable over time we need
+        /// to "anchor" them with an unchanging timestamp. To that end, we'll
+        /// extract the `backupTimeMs` field from the Backup header, and use
+        /// that as our "now" during import.
+        let backupTimeMs = try readBackupTimeMs(testCaseFileUrl: testCaseFileUrl)
 
-        let exportedBackupUrl = try await messageBackupManager
-            .exportPlaintextBackup(localIdentifiers: localIdentifiers)
+        await initializeApp(dateProvider: { Date(millisecondsSince1970: backupTimeMs) })
 
-        try await importAndAssert(
-            backupUrl: exportedBackupUrl,
-            dateProvider: dateProvider,
-            localIdentifiers: localIdentifiers,
-            assertionsBlock: assertionsBlock
-        )
-
-        if enableLibsignalComparator {
-            try compareViaLibsignal(
-                sharedTestCaseBackupUrl: testCaseBackupUrl,
-                exportedBackupUrl: exportedBackupUrl
-            )
-        }
-    }
-
-    private func backupFileUrl(named backupName: String) -> URL {
-        let testBundle = Bundle(for: type(of: self))
-        return testBundle.url(forResource: backupName, withExtension: "binproto")!
-    }
-
-    private func importAndAssert(
-        backupUrl: URL,
-        dateProvider: DateProvider?,
-        localIdentifiers: LocalIdentifiers,
-        assertionsBlock: (SDSAnyReadTransaction, DBReadTransaction) throws -> Void
-    ) async throws {
-        await initializeApp(dateProvider: dateProvider)
-
-        try await messageBackupManager.importPlaintextBackup(
-            fileUrl: backupUrl,
+        try await deps.messageBackupManager.importPlaintextBackup(
+            fileUrl: testCaseFileUrl,
             localIdentifiers: localIdentifiers
         )
 
-        try NSObject.databaseStorage.read { tx in
-            try assertionsBlock(tx, tx.asV2Read)
-        }
+        let exportedBackupUrl = try await deps.messageBackupManager
+            .exportPlaintextBackup(localIdentifiers: localIdentifiers)
+
+        try compareViaLibsignal(
+            testCaseName: testCaseName,
+            sharedTestCaseBackupUrl: testCaseFileUrl,
+            exportedBackupUrl: exportedBackupUrl
+        )
     }
 
     /// Compare the canonical representation of the Backups at the two given
@@ -94,6 +100,7 @@ class MessageBackupIntegrationTestCase: XCTestCase {
     /// If there are errors reading or validating either Backup, or if the
     /// Backups' canonical representations are not equal.
     private func compareViaLibsignal(
+        testCaseName: String,
         sharedTestCaseBackupUrl: URL,
         exportedBackupUrl: URL
     ) throws {
@@ -101,7 +108,7 @@ class MessageBackupIntegrationTestCase: XCTestCase {
         let exportedBackup = try ComparableBackup(url: exportedBackupUrl)
 
         guard sharedTestCaseBackup.unknownFields.fields.isEmpty else {
-            XCTFail("Shared test case Backup had unknown fields: \(sharedTestCaseBackup.unknownFields)")
+            XCTFail("Test \(testCaseName) had unknown fields: \(sharedTestCaseBackup.unknownFields)!")
             return
         }
 
@@ -112,7 +119,7 @@ class MessageBackupIntegrationTestCase: XCTestCase {
             XCTFail("""
             ------------
 
-            Test failed: Backups were different when compared via LibSignal! Copy the JSON lines below and run `pbpaste | parse-libsignal-comparator-failure.py`.
+            Test case failed: \(testCaseName). Copy the JSON lines below and run `pbpaste | parse-libsignal-comparator-failure.py`.
 
             \(sharedTestCaseBackupString.removeCharacters(characterSet: .whitespacesAndNewlines))
             \(exportedBackupString.removeCharacters(characterSet: .whitespacesAndNewlines))
@@ -124,8 +131,42 @@ class MessageBackupIntegrationTestCase: XCTestCase {
 
     // MARK: -
 
+    /// Read the `backupTimeMs` field from the header of the Backup file at the
+    /// given local URL.
+    private func readBackupTimeMs(testCaseFileUrl: URL) throws -> UInt64 {
+        let plaintextStreamProvider = MessageBackupPlaintextProtoStreamProviderImpl()
+
+        let stream: MessageBackupProtoInputStream
+        switch plaintextStreamProvider.openPlaintextInputFileStream(
+            fileUrl: testCaseFileUrl
+        ) {
+        case .success(let _stream, _):
+            stream = _stream
+        case .fileNotFound:
+            throw OWSAssertionError("Missing test case backup file!")
+        case .unableToOpenFileStream:
+            throw OWSAssertionError("Failed to open test case backup file!")
+        case .hmacValidationFailedOnEncryptedFile:
+            throw OWSAssertionError("Impossible – this is a plaintext stream!")
+        }
+
+        let backupInfo: BackupProto_BackupInfo
+        switch stream.readHeader() {
+        case .success(let _backupInfo, _):
+            backupInfo = _backupInfo
+        case .invalidByteLengthDelimiter:
+            throw OWSAssertionError("Invalid byte length delimiter!")
+        case .protoDeserializationError(let error):
+            throw OWSAssertionError("Proto deserialization error: \(error)!")
+        }
+
+        return backupInfo.backupTimeMs
+    }
+
+    // MARK: -
+
     @MainActor
-    final func initializeApp(dateProvider: DateProvider?) async {
+    private func initializeApp(dateProvider: DateProvider?) async {
         let testAppContext = TestAppContext()
         SetCurrentAppContext(testAppContext)
 
@@ -162,6 +203,8 @@ class MessageBackupIntegrationTestCase: XCTestCase {
     }
 }
 
+// MARK: -
+
 private extension LibSignalClient.ComparableBackup {
     convenience init(url: URL) throws {
         let fileHandle = try FileHandle(forReadingFrom: url)
@@ -176,7 +219,7 @@ private extension LibSignalClient.ComparableBackup {
     }
 }
 
-// MARK: -
+// MARK: - CrashyMocks
 
 private func failTest<T>(
     _ type: T.Type,

@@ -958,6 +958,9 @@ public class AppSetup {
                 storyStore: storyStore,
                 threadStore: threadStore
             ),
+            encryptedStreamProvider: MessageBackupEncryptedProtoStreamProviderImpl(
+                backupKeyMaterial: messageBackupKeyMaterial
+            ),
             groupRecipientArchiver: MessageBackupGroupRecipientArchiver(
                 disappearingMessageConfigStore: disappearingMessagesConfigurationStore,
                 groupsV2: groupsV2,
@@ -970,9 +973,7 @@ public class AppSetup {
             localRecipientArchiver: MessageBackupLocalRecipientArchiver(),
             messageBackupKeyMaterial: messageBackupKeyMaterial,
             releaseNotesRecipientArchiver: MessageBackupReleaseNotesRecipientArchiver(),
-            streamProvider: MessageBackupProtoStreamProviderImpl(
-                backupKeyMaterial: messageBackupKeyMaterial
-            )
+            plaintextStreamProvider: MessageBackupPlaintextProtoStreamProviderImpl()
         )
 
         let externalPendingIDEALDonationStore = ExternalPendingIDEALDonationStoreImpl(keyStoreFactory: keyValueStoreFactory)
