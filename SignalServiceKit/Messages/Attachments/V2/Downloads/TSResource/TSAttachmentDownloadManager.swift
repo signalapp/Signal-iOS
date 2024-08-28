@@ -987,9 +987,6 @@ public extension TSAttachmentDownloadManager {
                 return ".contactShareAvatar"
             case .contactSync:
                 return ".contactSync"
-            default:
-                owsFailDebug("unexpected value: \(self.rawValue)")
-                return "Unknown"
             }
         }
     }

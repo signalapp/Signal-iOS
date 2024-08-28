@@ -1146,8 +1146,6 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         context: MessageBackup.ChatRestoringContext,
         tx: DBReadTransaction
     ) -> RestoreInteractionResult<MessageBackup.RestoredMessageContents> {
-        var partialErrors = [RestoreFrameError]()
-
         let stickerProto = stickerMessage.sticker
         let messageSticker = MessageSticker.withForeignReferenceAttachment(
             info: .init(
@@ -1199,7 +1197,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                 receiptCredentialPresentation: nil,
                 redemptionState: .pending
             )
-        case .UNRECOGNIZED(let int):
+        case .UNRECOGNIZED(_):
             return .messageFailure([.restoreFrameError(
                 .invalidProtoData(.unrecognizedGiftBadgeState),
                 chatItemId
