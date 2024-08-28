@@ -382,11 +382,15 @@ class GroupCallViewController: UIViewController {
         view.addSubview(fullscreenLocalMemberAddOnsView)
         fullscreenLocalMemberAddOnsView.autoPinLeadingToSuperviewMargin()
         fullscreenLocalMemberAddOnsView.autoPinTrailingToSuperviewMargin()
-        fullscreenLocalMemberAddOnsView.autoPinEdge(
-            .bottom,
-            to: .bottom,
-            of: bottomVStack
-        )
+        if !UIDevice.current.isIPad {
+            fullscreenLocalMemberAddOnsView.autoPinEdge(
+                .bottom,
+                to: .bottom,
+                of: bottomVStack
+            )
+        } else {
+            fullscreenLocalMemberAddOnsView.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: Constants.flipCamButtonTrailingToSuperviewEdgePadding)
+        }
 
         view.addSubview(callControlsConfirmationToastContainerView)
         callControlsConfirmationToastContainerView.autoHCenterInSuperview()
@@ -614,6 +618,7 @@ class GroupCallViewController: UIViewController {
 
     private enum Constants {
         static let spacingTopRaiseHandToastToBottomLocalPip: CGFloat = 12
+        static let flipCamButtonTrailingToSuperviewEdgePadding: CGFloat = 34
     }
 
     private func updateMemberViewFrames(
