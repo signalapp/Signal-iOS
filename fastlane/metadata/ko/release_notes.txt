@@ -1,2 +1,2 @@
-• Now you can flip the camera even when you're alone in a group call. Get ready to give them a front-row view by switching to the back camera, or switch back to the front camera so that you're ready to talk back.
-• We also fixed a bug that made it harder to scroll between views during group calls while a hand was raised. It's hands down our favorite bugfix in this release. 
+• 이제 그룹 통화에서 다른 사용자가 통화에 아직 참여하지 않았더라도 전면 카메라와 후면 카메라를 전환할 수 있습니다. 
+• 일부 사용자가 새 그룹 통화에 참여하거나 기존 그룹에 다시 참여할 수 없는 문제를 해결했습니다. 또한 그룹 통화 중 손을 든 상태로 보기 간에 스크롤 하는 데 어려움을 겪는 문제도 해결했습니다. 

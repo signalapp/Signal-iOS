@@ -1,2 +1,2 @@
-• Now you can flip the camera even when you're alone in a group call. Get ready to give them a front-row view by switching to the back camera, or switch back to the front camera so that you're ready to talk back.
-• We also fixed a bug that made it harder to scroll between views during group calls while a hand was raised. It's hands down our favorite bugfix in this release. 
+• Nu kan du vende kameraet, selv når du er alene i et gruppeopkald. Gør dig klar til at give dem et billede på forreste række ved at skifte til det bagerste kamera, eller skift tilbage til det forreste kamera, så du er klar til at tale tilbage. 
+• Vi rettede en fejl, der forhindrede nogle brugere i at deltage i en ny gruppe eller deltage i en eksisterende gruppe igen, og vi rettede også en fejl, der gjorde det sværere at rulle mellem visninger under gruppeopkald, mens en hånd blev løftet. Dette er uden tvivl vores foretrukne fejlrettelser i denne udgivelse. 

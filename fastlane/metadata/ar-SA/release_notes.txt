@@ -1,2 +1,2 @@
-• Now you can flip the camera even when you're alone in a group call. Get ready to give them a front-row view by switching to the back camera, or switch back to the front camera so that you're ready to talk back.
-• We also fixed a bug that made it harder to scroll between views during group calls while a hand was raised. It's hands down our favorite bugfix in this release. 
+• يُمكنك الآن الاختيار بين الكاميرا الأمامية والخلفية في المكالمات الجماعية حتى قبل انضمام الآخرين إلى المكالمة. 
+• لقد أصلحنا خطأ كان يحول دون انضمام بعض المستخدمين إلى مجموعة جديدة أو الانضمام من جديد إلى مجموعة قائمة، كما أصلحنا خطأ كان يصعّب عملية التمرير بين المشاهدات خلال المكالمات الجماعية عندما تكون يد مرفوعة. 
