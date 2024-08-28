@@ -233,7 +233,7 @@ private class BannerView: UIView {
             avatarView.autoMatch(.height, to: .width, of: avatarView)
 
             if address.isLocalAddress,
-               let avatarImage = profileManager.localProfileAvatarImage() {
+               let avatarImage = profileManager.localProfileAvatarImage {
                 avatarView.image = avatarImage
             } else {
                 let avatar = Self.avatarBuilder.avatarImageWithSneakyTransaction(forAddress: address,

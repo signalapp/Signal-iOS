@@ -213,7 +213,7 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
     }
 
     private func tryToUpdate(groupId: Data) -> Promise<Void> {
-        let profileKeyData = profileManager.localProfileKey().keyData
+        let profileKeyData = profileManager.localProfileKey.keyData
         guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci else {
             owsFailDebug("missing local address")
             return Promise(error: GroupsV2Error.shouldDiscard)

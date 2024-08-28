@@ -19,7 +19,7 @@ extension AccountAttributes {
         let registrationId = DependenciesBridge.shared.tsAccountManager.getOrGenerateAciRegistrationId(tx: transaction.asV2Write)
         let pniRegistrationId = DependenciesBridge.shared.tsAccountManager.getOrGeneratePniRegistrationId(tx: transaction.asV2Write)
 
-        let profileKey = dependencies.profileManager.localProfileKey()
+        let profileKey = dependencies.profileManager.localProfileKey
         let udAccessKey: String
         do {
             udAccessKey = try SMKUDAccessKey(profileKey: profileKey.keyData).keyData.base64EncodedString()

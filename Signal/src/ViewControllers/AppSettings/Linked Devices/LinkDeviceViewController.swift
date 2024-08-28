@@ -148,7 +148,7 @@ class LinkDeviceViewController: OWSViewController {
             areReadReceiptsEnabled = receiptManager.areReadReceiptsEnabled(transaction: tx)
             masterKey = DependenciesBridge.shared.svr.masterKeyDataForKeysSyncMessage(tx: tx.asV2Read)
         }
-        let myProfileKeyData = profileManager.localProfileKey().keyData
+        let myProfileKeyData = profileManager.localProfileKey.keyData
 
         guard let myAci = localIdentifiers?.aci, let myPhoneNumber = localIdentifiers?.phoneNumber else {
             owsFail("Can't provision without an aci & phone number.")

@@ -292,7 +292,7 @@ class BlurredAvatarBackgroundView: UIView {
                 }
                 backgroundColor = AvatarTheme.forAddress(localAddress).backgroundColor
             }
-            backgroundAvatarImage = profileManager.localProfileAvatarImage()
+            backgroundAvatarImage = profileManager.localProfileAvatarImage
         case .remoteInGroup:
             guard let remoteGroupMemberDeviceState else { return }
             let (image, color) = avatarImageAndBackgroundColorWithSneakyTransaction(for: remoteGroupMemberDeviceState.address)

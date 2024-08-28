@@ -299,7 +299,7 @@ public class _RegistrationCoordinator_ProfileManagerWrapper: _RegistrationCoordi
 
     public var hasProfileName: Bool { manager.hasProfileName }
 
-    public var localProfileKey: Aes256Key { manager.localProfileKey() }
+    public var localProfileKey: Aes256Key { manager.localProfileKey }
 
     public func updateLocalProfile(
         givenName: OWSUserProfile.NameComponent,

@@ -511,7 +511,7 @@ extension ConversationHeaderDelegate {
     func threadName(renderLocalUserAsNoteToSelf: Bool, transaction: SDSAnyReadTransaction) -> String {
         var threadName: String
         if thread.isNoteToSelf, !renderLocalUserAsNoteToSelf {
-            threadName = profileManager.localFullName() ?? ""
+            threadName = profileManager.localFullName ?? ""
         } else {
             threadName = contactsManager.displayName(for: thread, transaction: transaction)
         }

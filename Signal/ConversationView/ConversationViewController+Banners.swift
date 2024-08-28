@@ -86,7 +86,7 @@ public extension ConversationViewController {
     ) -> UIImage? {
         if
             address.isLocalAddress,
-            let profileAvatar = self.profileManager.localProfileAvatarImage()
+            let profileAvatar = self.profileManager.localProfileAvatarImage
         {
             return profileAvatar.resizedImage(to: CGSize(square: 24))
         }

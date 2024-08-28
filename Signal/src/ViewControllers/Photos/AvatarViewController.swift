@@ -52,7 +52,7 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
                                                                 ? .noteToSelf
                                                                 : .asUser)
             if address.isLocalAddress, !renderLocalUserAsNoteToSelf {
-                if let avatar = Self.profileManager.localProfileAvatarImage() {
+                if let avatar = Self.profileManager.localProfileAvatarImage {
                     return avatar
                 }
                 return Self.avatarBuilder.avatarImageForLocalUser(diameterPoints: diameter,

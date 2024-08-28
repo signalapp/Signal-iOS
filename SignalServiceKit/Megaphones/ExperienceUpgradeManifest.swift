@@ -637,7 +637,7 @@ extension ExperienceUpgradeManifest {
         switch conditionalCheck {
         case .standardDonate:
             if
-                let localProfileBadgeInfo = profileManager.localProfileBadgeInfo(),
+                let localProfileBadgeInfo = profileManager.localProfileBadgeInfo,
                 !localProfileBadgeInfo.isEmpty
             {
                 // Fail the check if we currently have a badge.

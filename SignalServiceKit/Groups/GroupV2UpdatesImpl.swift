@@ -766,7 +766,7 @@ private extension GroupV2UpdatesImpl {
                 )
             } else if
                 let profileKey = profileKeysByAci[localIdentifiers.aci],
-                profileKey != self.profileManager.localProfileKey().keyData
+                profileKey != self.profileManager.localProfileKey.keyData
             {
                 // If the final group state includes a stale profile key for the
                 // local user, schedule an update to fix that. Note that we skip
@@ -1041,7 +1041,7 @@ private extension GroupV2UpdatesImpl {
         spamReportingMetadata: GroupUpdateSpamReportingMetadata
     ) async throws -> TSGroupThread {
 
-        let localProfileKey = profileManager.localProfileKey()
+        let localProfileKey = profileManager.localProfileKey
 
         return try await databaseStorage.awaitableWrite { (transaction: SDSAnyWriteTransaction) throws -> TSGroupThread in
             guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {

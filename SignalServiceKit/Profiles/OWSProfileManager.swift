@@ -603,7 +603,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
             return
         }
 
-        if profileManager.localProfileAvatarData() != nil {
+        if profileManager.localProfileAvatarData != nil {
             Logger.info("Scheduling a backup.")
 
             // Schedule a backup.

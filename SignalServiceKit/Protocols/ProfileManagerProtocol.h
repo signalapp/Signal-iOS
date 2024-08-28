@@ -43,18 +43,16 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
 @protocol ProfileManagerProtocol <NSObject>
 
 @property (nonatomic, readonly) BadgeStore *badgeStore;
+@property (nonatomic, readonly) OWSAES256Key *localProfileKey;
+@property (nonatomic, readonly, nullable) NSString *localGivenName;
+@property (nonatomic, readonly, nullable) NSString *localFamilyName;
+@property (nonatomic, readonly, nullable) NSString *localFullName;
+@property (nonatomic, readonly, nullable) UIImage *localProfileAvatarImage;
+@property (nonatomic, readonly, nullable) NSData *localProfileAvatarData;
+@property (nonatomic, readonly, nullable) NSArray<OWSUserProfileBadgeInfo *> *localProfileBadgeInfo;
 
-- (OWSAES256Key *)localProfileKey;
 // localUserProfileExists is true if there is _ANY_ local profile.
 - (BOOL)localProfileExistsWithTransaction:(SDSAnyReadTransaction *)transaction;
-// hasLocalProfile is true if there is a local profile with a name or avatar.
-- (BOOL)hasLocalProfile;
-- (nullable NSString *)localGivenName;
-- (nullable NSString *)localFamilyName;
-- (nullable NSString *)localFullName;
-- (nullable UIImage *)localProfileAvatarImage;
-- (nullable NSData *)localProfileAvatarData;
-- (nullable NSArray<OWSUserProfileBadgeInfo *> *)localProfileBadgeInfo;
 
 - (nullable NSString *)fullNameForAddress:(SignalServiceAddress *)address
                               transaction:(SDSAnyReadTransaction *)transaction;
@@ -107,6 +105,8 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
 
 - (void)warmCaches;
 
+// hasLocalProfile is true if there is a local profile with a name or avatar.
+@property (nonatomic, readonly) BOOL hasLocalProfile;
 @property (nonatomic, readonly) BOOL hasProfileName;
 
 // This is an internal implementation detail and should only be used by OWSUserProfile.
