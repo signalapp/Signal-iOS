@@ -73,7 +73,7 @@ class PushChallenge: SpamChallenge, Dependencies {
     }
 
     private func postToken(_ token: String) {
-        let request = OWSRequestFactory.pushChallengeResponse(withToken: token)
+        let request = OWSRequestFactory.pushChallengeResponse(token: token)
 
         firstly(on: workQueue) {
             self.networkManager.makePromise(request: request)

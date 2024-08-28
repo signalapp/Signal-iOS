@@ -298,7 +298,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
         }
 
         let request = OWSRequestFactory.getVersionedProfileRequest(
-            aci: AciObjC(aci),
+            aci: aci,
             profileKeyVersion: profileKeyVersionArg,
             credentialRequest: credentialRequestArg,
             udAccessKey: udAccessKey,

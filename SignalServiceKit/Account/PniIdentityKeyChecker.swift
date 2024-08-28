@@ -117,7 +117,7 @@ class _PniIdentityKeyCheckerImpl_ProfileFetcher_Wrapper: _PniIdentityKeyCheckerI
 
         do {
             let request = OWSRequestFactory.getUnversionedProfileRequest(
-                serviceId: PniObjC(localPni),
+                serviceId: localPni,
                 udAccessKey: nil,
                 auth: .implicit()
             )

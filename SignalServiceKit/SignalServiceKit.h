@@ -77,7 +77,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/OWSReceiptsForSenderMessage.h>
 #import <SignalServiceKit/OWSRecipientIdentity.h>
 #import <SignalServiceKit/OWSRecoverableDecryptionPlaceholder.h>
-#import <SignalServiceKit/OWSRequestFactory.h>
 #import <SignalServiceKit/OWSStaticOutgoingMessage.h>
 #import <SignalServiceKit/OWSStickerPackSyncMessage.h>
 #import <SignalServiceKit/OWSSyncConfigurationMessage.h>

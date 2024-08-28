@@ -384,15 +384,7 @@ extension StoryManager {
         }
     }
 
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public class func appendStoryHeadersToRequest(_ mutableRequest: NSMutableURLRequest) {
-        var request = mutableRequest as URLRequest
-        appendStoryHeaders(to: &request)
-        mutableRequest.allHTTPHeaderFields = request.allHTTPHeaderFields
-    }
-
-    public static func appendStoryHeaders(to request: inout URLRequest) {
+    public static func appendStoryHeaders(to request: TSRequest) {
         for (key, value) in buildStoryHeaders() {
             request.setValue(value, forHTTPHeaderField: key)
         }

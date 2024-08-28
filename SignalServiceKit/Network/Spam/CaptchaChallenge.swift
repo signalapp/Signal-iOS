@@ -45,8 +45,9 @@ class CaptchaChallenge: SpamChallenge, Dependencies {
         }
 
         let request = OWSRequestFactory.recaptchChallengeResponse(
-            withToken: token,
-            captchaToken: captchaToken)
+            serverToken: token,
+            captchaToken: captchaToken
+        )
 
         firstly(on: workQueue) {
             self.networkManager.makePromise(request: request)

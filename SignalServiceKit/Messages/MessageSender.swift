@@ -146,7 +146,7 @@ public class MessageSender: Dependencies {
             label: "Prekey Fetch",
             requestFactoryBlock: { (udAccessKeyForRequest: SMKUDAccessKey?) -> TSRequest? in
                 return OWSRequestFactory.recipientPreKeyRequest(
-                    withServiceId: ServiceIdObjC.wrapValue(serviceId),
+                    serviceId: serviceId,
                     deviceId: deviceId,
                     udAccessKey: udAccessKeyForRequest
                 )
@@ -1475,7 +1475,7 @@ public class MessageSender: Dependencies {
             label: "Message Send",
             requestFactoryBlock: { (udAccessKey: SMKUDAccessKey?) in
                 OWSRequestFactory.submitMessageRequest(
-                    withServiceId: ServiceIdObjC.wrapValue(messageSend.serviceId),
+                    serviceId: messageSend.serviceId,
                     messages: deviceMessages,
                     timestamp: message.timestamp,
                     udAccessKey: udAccessKey,

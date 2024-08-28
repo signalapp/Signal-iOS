@@ -59,7 +59,7 @@ class OWSRequestFactoryTest: SSKBaseTest {
         let serviceId = Aci.randomForTesting()
 
         let request = OWSRequestFactory.submitMessageRequest(
-            withServiceId: ServiceIdObjC.wrapValue(serviceId),
+            serviceId: serviceId,
             messages: [],
             timestamp: 1234,
             udAccessKey: udAccessKey,
@@ -73,7 +73,7 @@ class OWSRequestFactoryTest: SSKBaseTest {
         XCTAssertEqual(url.path, "v1/messages/\(serviceId.serviceIdString)")
         XCTAssertEqual(Set(request.parameters.keys), Set(["messages", "timestamp", "online", "urgent"]))
         XCTAssertEqual(request.parameters["messages"] as? NSArray, [])
-        XCTAssertEqual(request.parameters["timestamp"] as? UInt, 1234)
+        XCTAssertEqual(request.parameters["timestamp"] as? UInt64, 1234)
         XCTAssertEqual(request.parameters["online"] as? Bool, true)
         XCTAssertEqual(request.parameters["urgent"] as? Bool, false)
         XCTAssertEqual(try queryItemsAsDictionary(url: url), ["story": "false"])
@@ -86,7 +86,7 @@ class OWSRequestFactoryTest: SSKBaseTest {
 
         let request = OWSRequestFactory.submitMultiRecipientMessageRequest(
             ciphertext: ciphertext,
-            compositeUDAccessKey: udAccessKey,
+            accessKey: udAccessKey,
             timestamp: 1234,
             isOnline: true,
             isUrgent: false,

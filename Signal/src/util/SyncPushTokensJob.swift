@@ -123,7 +123,7 @@ class SyncPushTokensJob: NSObject {
 
     func updatePushTokens(pushToken: String, voipToken: String?, auth: ChatServiceAuth) async throws {
         let request = OWSRequestFactory.registerForPushRequest(
-            withPushIdentifier: pushToken,
+            identifier: pushToken,
             voipIdentifier: voipToken
         )
         request.setAuth(auth)

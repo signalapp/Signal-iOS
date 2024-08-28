@@ -139,10 +139,7 @@ class AuthCredentialManagerImpl: AuthCredentialManager {
         let endTimestamp = startTimestamp + Constants.numberOfDaysToFetch * UInt64(kDayInterval)
         let timestampRange = startTimestamp...endTimestamp
 
-        let request = OWSRequestFactory.groupAuthenticationCredentialRequest(
-            fromRedemptionSeconds: startTimestamp,
-            toRedemptionSeconds: endTimestamp
-        )
+        let request = OWSRequestFactory.authCredentialRequest(from: startTimestamp, to: endTimestamp)
 
         let response = try await NSObject.networkManager.makePromise(
             request: request,

@@ -155,7 +155,7 @@ public class ProfileFetcherJob {
                 default:
                     Logger.info("Unversioned profile fetch.")
                     return OWSRequestFactory.getUnversionedProfileRequest(
-                        serviceId: ServiceIdObjC.wrapValue(serviceId),
+                        serviceId: serviceId,
                         udAccessKey: udAccessKeyForRequest,
                         auth: self.authedAccount.chatServiceAuth
                     )

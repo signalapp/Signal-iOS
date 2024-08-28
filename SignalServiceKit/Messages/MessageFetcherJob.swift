@@ -443,7 +443,7 @@ private class MessageAckOperation: OWSOperation {
     public override func run() {
         let request: TSRequest
         if let serverGuid = envelopeInfo.serverGuid, !serverGuid.isEmpty {
-            request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(withServerGuid: serverGuid)
+            request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(serverGuid: serverGuid)
         } else {
             let error = OWSAssertionError("Cannot ACK message which has neither source, nor server GUID and timestamp.")
             reportError(error)

@@ -664,7 +664,7 @@ extension MessageSender {
 
         let request = OWSRequestFactory.submitMultiRecipientMessageRequest(
             ciphertext: ciphertext,
-            compositeUDAccessKey: compositeKey,
+            accessKey: compositeKey,
             timestamp: timestamp,
             isOnline: isOnline,
             isUrgent: isUrgent,
