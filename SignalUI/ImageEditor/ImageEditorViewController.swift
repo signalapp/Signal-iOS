@@ -583,7 +583,7 @@ extension ImageEditorViewController: ImageEditorBottomBarButtonProvider {
             button.setBackgroundColor(.ows_white, for: .highlighted)
             button.setBackgroundColor(.ows_white, for: .selected)
             if let image = button.image(for: .normal) {
-                let tintedImage = image.withTintColor(.ows_black, renderingMode: .alwaysTemplate)
+                let tintedImage = image.withTintColor(.ows_black, renderingMode: .alwaysOriginal)
                 button.setImage(tintedImage, for: .highlighted)
                 button.setImage(tintedImage, for: .selected)
             }
