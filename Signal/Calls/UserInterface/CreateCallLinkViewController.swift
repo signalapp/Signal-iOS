@@ -168,7 +168,23 @@ class CreateCallLinkViewController: InteractiveSheetViewController {
         if didPersist {
             return
         }
+        didPersist = true
+
         // [CallLink] TODO: Insert it into the Calls Tab.
+        // [CallLink] TODO: Move this into a -Manager object.
+        Task { [callLink, adminPasskey] in
+            await NSObject.databaseStorage.awaitableWrite { tx in
+                let localThread = TSContactThread.getOrCreateLocalThread(transaction: tx)!
+                let callLinkUpdate = OutgoingCallLinkUpdateMessage(
+                    localThread: localThread,
+                    rootKey: callLink.rootKey,
+                    adminPasskey: adminPasskey,
+                    tx: tx
+                )
+                let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueueRef
+                messageSenderJobQueue.add(message: .preprepared(transientMessageWithoutAttachments: callLinkUpdate), transaction: tx)
+            }
+        }
     }
 
     private func editName() {

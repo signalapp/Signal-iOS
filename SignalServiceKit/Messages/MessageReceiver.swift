@@ -4,6 +4,7 @@
 //
 
 import LibSignalClient
+import SignalRingRTC
 
 /// An ObjC wrapper around UnidentifiedSenderMessageContent.ContentHint
 @objc
@@ -618,6 +619,13 @@ public final class MessageReceiver: Dependencies {
                     syncMessageTimestamp: decryptedEnvelope.timestamp,
                     tx: tx.asV2Write
                 )
+        } else if let callLinkUpdate = syncMessage.callLinkUpdate {
+            switch callLinkUpdate.type {
+            case nil:
+                Logger.warn("Ignoring CallLinkUpdate with unexpected type.")
+            case .update:
+                self.handleCallLinkUpdate(callLinkUpdate)
+            }
         } else if let callLogEvent = syncMessage.callLogEvent {
             guard
                 let incomingCallLogEvent = try? IncomingCallLogEventSyncMessageParams.parse(
@@ -697,6 +705,18 @@ public final class MessageReceiver: Dependencies {
             blockedGroupIds: Set(blocked.groupIds),
             tx: tx
         )
+    }
+
+    private func handleCallLinkUpdate(_ callLinkUpdate: SSKProtoSyncMessageCallLinkUpdate) {
+        guard
+            let rootKeyData = callLinkUpdate.rootKey,
+            let rootKey = try? CallLinkRootKey(rootKeyData)
+        else {
+            Logger.warn("Ignoring CallLinkUpdate with invalid rootKey.")
+            return
+        }
+        // [CallLink] TODO: Insert into the DB (if needed) & fetch details.
+        Logger.verbose("Ignoring CallLinkUpdate w/\(rootKey.description) & \(callLinkUpdate.adminPasskey != nil)")
     }
 
     private func handleIncomingEnvelope(
@@ -2004,6 +2024,9 @@ extension SSKProtoSyncMessage {
         }
         if callEvent != nil {
             parts.append("callEvent")
+        }
+        if callLinkUpdate != nil {
+            parts.append("callLinkUpdate")
         }
         if callLogEvent != nil {
             parts.append("callLogEvent")

@@ -2631,6 +2631,15 @@ struct SignalServiceProtos_SyncMessage {
   /// Clears the value of `callEvent`. Subsequent reads from it will return its default value.
   mutating func clearCallEvent() {_uniqueStorage()._callEvent = nil}
 
+  var callLinkUpdate: SignalServiceProtos_SyncMessage.CallLinkUpdate {
+    get {return _storage._callLinkUpdate ?? SignalServiceProtos_SyncMessage.CallLinkUpdate()}
+    set {_uniqueStorage()._callLinkUpdate = newValue}
+  }
+  /// Returns true if `callLinkUpdate` has been explicitly set.
+  var hasCallLinkUpdate: Bool {return _storage._callLinkUpdate != nil}
+  /// Clears the value of `callLinkUpdate`. Subsequent reads from it will return its default value.
+  mutating func clearCallLinkUpdate() {_uniqueStorage()._callLinkUpdate = nil}
+
   var callLogEvent: SignalServiceProtos_SyncMessage.CallLogEvent {
     get {return _storage._callLogEvent ?? SignalServiceProtos_SyncMessage.CallLogEvent()}
     set {_uniqueStorage()._callLogEvent = newValue}
@@ -3659,6 +3668,71 @@ struct SignalServiceProtos_SyncMessage {
     fileprivate var _event: SignalServiceProtos_SyncMessage.CallEvent.Event? = nil
   }
 
+  struct CallLinkUpdate {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    var rootKey: Data {
+      get {return _rootKey ?? Data()}
+      set {_rootKey = newValue}
+    }
+    /// Returns true if `rootKey` has been explicitly set.
+    var hasRootKey: Bool {return self._rootKey != nil}
+    /// Clears the value of `rootKey`. Subsequent reads from it will return its default value.
+    mutating func clearRootKey() {self._rootKey = nil}
+
+    var adminPasskey: Data {
+      get {return _adminPasskey ?? Data()}
+      set {_adminPasskey = newValue}
+    }
+    /// Returns true if `adminPasskey` has been explicitly set.
+    var hasAdminPasskey: Bool {return self._adminPasskey != nil}
+    /// Clears the value of `adminPasskey`. Subsequent reads from it will return its default value.
+    mutating func clearAdminPasskey() {self._adminPasskey = nil}
+
+    /// defaults to UPDATE
+    var type: SignalServiceProtos_SyncMessage.CallLinkUpdate.TypeEnum {
+      get {return _type ?? .update}
+      set {_type = newValue}
+    }
+    /// Returns true if `type` has been explicitly set.
+    var hasType: Bool {return self._type != nil}
+    /// Clears the value of `type`. Subsequent reads from it will return its default value.
+    mutating func clearType() {self._type = nil}
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    enum TypeEnum: SwiftProtobuf.Enum {
+      typealias RawValue = Int
+      case update // = 0
+
+      init() {
+        self = .update
+      }
+
+      init?(rawValue: Int) {
+        switch rawValue {
+        case 0: self = .update
+        default: return nil
+        }
+      }
+
+      var rawValue: Int {
+        switch self {
+        case .update: return 0
+        }
+      }
+
+    }
+
+    init() {}
+
+    fileprivate var _rootKey: Data? = nil
+    fileprivate var _adminPasskey: Data? = nil
+    fileprivate var _type: SignalServiceProtos_SyncMessage.CallLinkUpdate.TypeEnum? = nil
+  }
+
   struct CallLogEvent {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -4023,6 +4097,10 @@ extension SignalServiceProtos_SyncMessage.CallEvent.Direction: CaseIterable {
 }
 
 extension SignalServiceProtos_SyncMessage.CallEvent.Event: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+extension SignalServiceProtos_SyncMessage.CallLinkUpdate.TypeEnum: CaseIterable {
   // Support synthesized by the compiler.
 }
 
@@ -4830,6 +4908,8 @@ extension SignalServiceProtos_SyncMessage.CallEvent: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.CallEvent.TypeEnum: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.CallEvent.Direction: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.CallEvent.Event: @unchecked Sendable {}
+extension SignalServiceProtos_SyncMessage.CallLinkUpdate: @unchecked Sendable {}
+extension SignalServiceProtos_SyncMessage.CallLinkUpdate.TypeEnum: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.CallLogEvent: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.CallLogEvent.TypeEnum: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.DeleteForMe: @unchecked Sendable {}
@@ -7465,6 +7545,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
     16: .same(proto: "viewed"),
     18: .same(proto: "pniChangeNumber"),
     19: .same(proto: "callEvent"),
+    20: .same(proto: "callLinkUpdate"),
     21: .same(proto: "callLogEvent"),
     22: .same(proto: "deleteForMe"),
   ]
@@ -7487,6 +7568,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
     var _viewed: [SignalServiceProtos_SyncMessage.Viewed] = []
     var _pniChangeNumber: SignalServiceProtos_SyncMessage.PniChangeNumber? = nil
     var _callEvent: SignalServiceProtos_SyncMessage.CallEvent? = nil
+    var _callLinkUpdate: SignalServiceProtos_SyncMessage.CallLinkUpdate? = nil
     var _callLogEvent: SignalServiceProtos_SyncMessage.CallLogEvent? = nil
     var _deleteForMe: SignalServiceProtos_SyncMessage.DeleteForMe? = nil
 
@@ -7520,6 +7602,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
       _viewed = source._viewed
       _pniChangeNumber = source._pniChangeNumber
       _callEvent = source._callEvent
+      _callLinkUpdate = source._callLinkUpdate
       _callLogEvent = source._callLogEvent
       _deleteForMe = source._deleteForMe
     }
@@ -7557,6 +7640,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
         case 16: try { try decoder.decodeRepeatedMessageField(value: &_storage._viewed) }()
         case 18: try { try decoder.decodeSingularMessageField(value: &_storage._pniChangeNumber) }()
         case 19: try { try decoder.decodeSingularMessageField(value: &_storage._callEvent) }()
+        case 20: try { try decoder.decodeSingularMessageField(value: &_storage._callLinkUpdate) }()
         case 21: try { try decoder.decodeSingularMessageField(value: &_storage._callLogEvent) }()
         case 22: try { try decoder.decodeSingularMessageField(value: &_storage._deleteForMe) }()
         default: break
@@ -7622,6 +7706,9 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
       try { if let v = _storage._callEvent {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 19)
       } }()
+      try { if let v = _storage._callLinkUpdate {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 20)
+      } }()
       try { if let v = _storage._callLogEvent {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 21)
       } }()
@@ -7654,6 +7741,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
         if _storage._viewed != rhs_storage._viewed {return false}
         if _storage._pniChangeNumber != rhs_storage._pniChangeNumber {return false}
         if _storage._callEvent != rhs_storage._callEvent {return false}
+        if _storage._callLinkUpdate != rhs_storage._callLinkUpdate {return false}
         if _storage._callLogEvent != rhs_storage._callLogEvent {return false}
         if _storage._deleteForMe != rhs_storage._deleteForMe {return false}
         return true
@@ -8682,6 +8770,60 @@ extension SignalServiceProtos_SyncMessage.CallEvent.Event: SwiftProtobuf._ProtoN
     1: .same(proto: "ACCEPTED"),
     2: .same(proto: "NOT_ACCEPTED"),
     3: .same(proto: "DELETED"),
+  ]
+}
+
+extension SignalServiceProtos_SyncMessage.CallLinkUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".CallLinkUpdate"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "rootKey"),
+    2: .same(proto: "adminPasskey"),
+    3: .same(proto: "type"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBytesField(value: &self._rootKey) }()
+      case 2: try { try decoder.decodeSingularBytesField(value: &self._adminPasskey) }()
+      case 3: try { try decoder.decodeSingularEnumField(value: &self._type) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._rootKey {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._adminPasskey {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 2)
+    } }()
+    try { if let v = self._type {
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 3)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_SyncMessage.CallLinkUpdate, rhs: SignalServiceProtos_SyncMessage.CallLinkUpdate) -> Bool {
+    if lhs._rootKey != rhs._rootKey {return false}
+    if lhs._adminPasskey != rhs._adminPasskey {return false}
+    if lhs._type != rhs._type {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SignalServiceProtos_SyncMessage.CallLinkUpdate.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "UPDATE"),
   ]
 }
 

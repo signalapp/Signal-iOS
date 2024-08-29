@@ -635,6 +635,17 @@ message SyncMessage {
     optional Event event = 6;
   }
 
+  message CallLinkUpdate {
+    enum Type {
+      UPDATE = 0;
+      reserved 1; // was DELETE, superseded by storage service
+    }
+
+    optional bytes rootKey = 1;
+    optional bytes adminPasskey = 2;
+    optional Type type = 3; // defaults to UPDATE
+  }
+
   message CallLogEvent {
     enum Type {
       CLEARED = 0;
@@ -722,6 +733,7 @@ message SyncMessage {
   reserved 17; // Formerly, PNI identity sync messages
   optional PniChangeNumber pniChangeNumber = 18;
   optional CallEvent callEvent = 19;
+  optional CallLinkUpdate callLinkUpdate = 20;
   optional CallLogEvent callLogEvent = 21;
   optional DeleteForMe deleteForMe = 22;
 }

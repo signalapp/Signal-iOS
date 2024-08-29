@@ -12939,6 +12939,233 @@ extension SSKProtoSyncMessageCallEventBuilder {
 
 #endif
 
+// MARK: - SSKProtoSyncMessageCallLinkUpdateType
+
+@objc
+public enum SSKProtoSyncMessageCallLinkUpdateType: Int32 {
+    case update = 0
+}
+
+private func SSKProtoSyncMessageCallLinkUpdateTypeWrap(_ value: SignalServiceProtos_SyncMessage.CallLinkUpdate.TypeEnum) -> SSKProtoSyncMessageCallLinkUpdateType {
+    switch value {
+    case .update: return .update
+    }
+}
+
+private func SSKProtoSyncMessageCallLinkUpdateTypeUnwrap(_ value: SSKProtoSyncMessageCallLinkUpdateType) -> SignalServiceProtos_SyncMessage.CallLinkUpdate.TypeEnum {
+    switch value {
+    case .update: return .update
+    }
+}
+
+// MARK: - SSKProtoSyncMessageCallLinkUpdate
+
+@objc
+public class SSKProtoSyncMessageCallLinkUpdate: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: SignalServiceProtos_SyncMessage.CallLinkUpdate
+
+    @objc
+    public var rootKey: Data? {
+        guard hasRootKey else {
+            return nil
+        }
+        return proto.rootKey
+    }
+    @objc
+    public var hasRootKey: Bool {
+        return proto.hasRootKey
+    }
+
+    @objc
+    public var adminPasskey: Data? {
+        guard hasAdminPasskey else {
+            return nil
+        }
+        return proto.adminPasskey
+    }
+    @objc
+    public var hasAdminPasskey: Bool {
+        return proto.hasAdminPasskey
+    }
+
+    public var type: SSKProtoSyncMessageCallLinkUpdateType? {
+        guard hasType else {
+            return nil
+        }
+        return SSKProtoSyncMessageCallLinkUpdateTypeWrap(proto.type)
+    }
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    @objc
+    public var unwrappedType: SSKProtoSyncMessageCallLinkUpdateType {
+        if !hasType {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: CallLinkUpdate.type.")
+        }
+        return SSKProtoSyncMessageCallLinkUpdateTypeWrap(proto.type)
+    }
+    @objc
+    public var hasType: Bool {
+        return proto.hasType
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_SyncMessage.CallLinkUpdate) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_SyncMessage.CallLinkUpdate(serializedData: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.CallLinkUpdate) {
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension SSKProtoSyncMessageCallLinkUpdate {
+    @objc
+    public static func builder() -> SSKProtoSyncMessageCallLinkUpdateBuilder {
+        return SSKProtoSyncMessageCallLinkUpdateBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoSyncMessageCallLinkUpdateBuilder {
+        let builder = SSKProtoSyncMessageCallLinkUpdateBuilder()
+        if let _value = rootKey {
+            builder.setRootKey(_value)
+        }
+        if let _value = adminPasskey {
+            builder.setAdminPasskey(_value)
+        }
+        if let _value = type {
+            builder.setType(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class SSKProtoSyncMessageCallLinkUpdateBuilder: NSObject {
+
+    private var proto = SignalServiceProtos_SyncMessage.CallLinkUpdate()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setRootKey(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.rootKey = valueParam
+    }
+
+    public func setRootKey(_ valueParam: Data) {
+        proto.rootKey = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setAdminPasskey(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.adminPasskey = valueParam
+    }
+
+    public func setAdminPasskey(_ valueParam: Data) {
+        proto.adminPasskey = valueParam
+    }
+
+    @objc
+    public func setType(_ valueParam: SSKProtoSyncMessageCallLinkUpdateType) {
+        proto.type = SSKProtoSyncMessageCallLinkUpdateTypeUnwrap(valueParam)
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoSyncMessageCallLinkUpdate {
+        return SSKProtoSyncMessageCallLinkUpdate(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try SSKProtoSyncMessageCallLinkUpdate(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension SSKProtoSyncMessageCallLinkUpdate {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoSyncMessageCallLinkUpdateBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoSyncMessageCallLinkUpdate? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoSyncMessageCallLogEventType
 
 @objc
@@ -14639,6 +14866,9 @@ public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
     public let callEvent: SSKProtoSyncMessageCallEvent?
 
     @objc
+    public let callLinkUpdate: SSKProtoSyncMessageCallLinkUpdate?
+
+    @objc
     public let callLogEvent: SSKProtoSyncMessageCallLogEvent?
 
     @objc
@@ -14681,6 +14911,7 @@ public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
                  viewed: [SSKProtoSyncMessageViewed],
                  pniChangeNumber: SSKProtoSyncMessagePniChangeNumber?,
                  callEvent: SSKProtoSyncMessageCallEvent?,
+                 callLinkUpdate: SSKProtoSyncMessageCallLinkUpdate?,
                  callLogEvent: SSKProtoSyncMessageCallLogEvent?,
                  deleteForMe: SSKProtoSyncMessageDeleteForMe?) {
         self.proto = proto
@@ -14700,6 +14931,7 @@ public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
         self.viewed = viewed
         self.pniChangeNumber = pniChangeNumber
         self.callEvent = callEvent
+        self.callLinkUpdate = callLinkUpdate
         self.callLogEvent = callLogEvent
         self.deleteForMe = deleteForMe
     }
@@ -14790,6 +15022,11 @@ public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
             callEvent = SSKProtoSyncMessageCallEvent(proto.callEvent)
         }
 
+        var callLinkUpdate: SSKProtoSyncMessageCallLinkUpdate?
+        if proto.hasCallLinkUpdate {
+            callLinkUpdate = SSKProtoSyncMessageCallLinkUpdate(proto.callLinkUpdate)
+        }
+
         var callLogEvent: SSKProtoSyncMessageCallLogEvent?
         if proto.hasCallLogEvent {
             callLogEvent = SSKProtoSyncMessageCallLogEvent(proto.callLogEvent)
@@ -14817,6 +15054,7 @@ public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
                   viewed: viewed,
                   pniChangeNumber: pniChangeNumber,
                   callEvent: callEvent,
+                  callLinkUpdate: callLinkUpdate,
                   callLogEvent: callLogEvent,
                   deleteForMe: deleteForMe)
     }
@@ -14911,6 +15149,9 @@ extension SSKProtoSyncMessage {
         }
         if let _value = callEvent {
             builder.setCallEvent(_value)
+        }
+        if let _value = callLinkUpdate {
+            builder.setCallLinkUpdate(_value)
         }
         if let _value = callLogEvent {
             builder.setCallLogEvent(_value)
@@ -15115,6 +15356,17 @@ public class SSKProtoSyncMessageBuilder: NSObject {
 
     public func setCallEvent(_ valueParam: SSKProtoSyncMessageCallEvent) {
         proto.callEvent = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setCallLinkUpdate(_ valueParam: SSKProtoSyncMessageCallLinkUpdate?) {
+        guard let valueParam = valueParam else { return }
+        proto.callLinkUpdate = valueParam.proto
+    }
+
+    public func setCallLinkUpdate(_ valueParam: SSKProtoSyncMessageCallLinkUpdate) {
+        proto.callLinkUpdate = valueParam.proto
     }
 
     @objc

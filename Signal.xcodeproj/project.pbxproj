@@ -636,6 +636,7 @@
 		505C2ED629971D4E00C23FB2 /* DeviceLimitExceededError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2ED529971D4E00C23FB2 /* DeviceLimitExceededError.swift */; };
 		505C2ED92997422D00C23FB2 /* SelfSignedIdentityTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2ED82997422D00C23FB2 /* SelfSignedIdentityTest.swift */; };
 		505F76332BC45C0700B1B51C /* FeatureFlags+Generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505F76322BC45C0700B1B51C /* FeatureFlags+Generated.swift */; };
+		5060EBBA2C7D211A00DF77AD /* OutgoingCallLinkUpdateMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5060EBB92C7D211A00DF77AD /* OutgoingCallLinkUpdateMessage.swift */; };
 		506695E129C296D500B6D8D0 /* RecipientMergerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506695E029C296D500B6D8D0 /* RecipientMergerTest.swift */; };
 		506695E329C29BCE00B6D8D0 /* RecipientMerger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506695E229C29BCE00B6D8D0 /* RecipientMerger.swift */; };
 		506695E529C29C2F00B6D8D0 /* RecipientDatabaseTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506695E429C29C2F00B6D8D0 /* RecipientDatabaseTable.swift */; };
@@ -3699,6 +3700,7 @@
 		505C2ED82997422D00C23FB2 /* SelfSignedIdentityTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelfSignedIdentityTest.swift; sourceTree = "<group>"; };
 		505C2EDA29974D2000C23FB2 /* StorageServiceContactTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageServiceContactTest.swift; sourceTree = "<group>"; };
 		505F76322BC45C0700B1B51C /* FeatureFlags+Generated.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FeatureFlags+Generated.swift"; sourceTree = "<group>"; };
+		5060EBB92C7D211A00DF77AD /* OutgoingCallLinkUpdateMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingCallLinkUpdateMessage.swift; sourceTree = "<group>"; };
 		506695E029C296D500B6D8D0 /* RecipientMergerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientMergerTest.swift; sourceTree = "<group>"; };
 		506695E229C29BCE00B6D8D0 /* RecipientMerger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientMerger.swift; sourceTree = "<group>"; };
 		506695E429C29C2F00B6D8D0 /* RecipientDatabaseTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientDatabaseTable.swift; sourceTree = "<group>"; };
@@ -10746,6 +10748,7 @@
 				32525F9427C74B1A0099E801 /* GroupCallManager.swift */,
 				D95777B92B46411300CFE3AE /* GroupCallPeekClient.swift */,
 				6640639D294D20A900997E0B /* OutgoingCallEventSyncMessage.swift */,
+				5060EBB92C7D211A00DF77AD /* OutgoingCallLinkUpdateMessage.swift */,
 				D9DB37F22B71B037007B16C8 /* OutgoingCallLogEventSyncMessage.swift */,
 				F9C5C93C289453B100548EEE /* OWSOutgoingCallMessage.h */,
 				F9C5C974289453B100548EEE /* OWSOutgoingCallMessage.m */,
@@ -14652,6 +14655,7 @@
 				502C69702B06CE9C00012867 /* OutgoingAttachmentInfo.swift in Sources */,
 				6640639E294D20A900997E0B /* OutgoingCallEventSyncMessage.swift in Sources */,
 				D979CC292AD3933B006AAC49 /* OutgoingCallEventSyncMessageManager.swift in Sources */,
+				5060EBBA2C7D211A00DF77AD /* OutgoingCallLinkUpdateMessage.swift in Sources */,
 				D9DB37F32B71B037007B16C8 /* OutgoingCallLogEventSyncMessage.swift in Sources */,
 				C13B9BB62A1819C7007F74C4 /* OutgoingEditMessage.swift in Sources */,
 				C1EAECDF2A1EFC21008A3D58 /* OutgoingEditMessageSyncTranscript.swift in Sources */,
