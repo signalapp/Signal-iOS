@@ -199,17 +199,12 @@ public enum OWSRequestFactory {
                          parameters: [:])
     }
 
-    public static func registerForPushRequest(identifier: String, voipIdentifier: String?) -> TSRequest {
-        owsAssertDebug(!identifier.isEmpty)
+    public static func registerForPushRequest(apnsToken: String) -> TSRequest {
+        owsAssertDebug(!apnsToken.isEmpty)
 
         let path = "\(self.textSecureAccountsAPI)/apn"
 
-        var parameters: [String: Any] = ["apnRegistrationId": identifier]
-        if let voipIdentifier, !voipIdentifier.isEmpty {
-            parameters["voipRegistrationId"] = voipIdentifier
-        }
-
-        return TSRequest(url: URL(string: path)!, method: "PUT", parameters: parameters)
+        return TSRequest(url: URL(string: path)!, method: "PUT", parameters: ["apnRegistrationId": apnsToken])
     }
 
     static func unregisterAccountRequest() -> TSRequest {

@@ -287,6 +287,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addDMTimerVersionToInteractionTable
         case initializeDMTimerVersion
         case attachmentAddMediaTierDigest
+        case removeVoIPToken
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -3370,6 +3371,13 @@ public class GRDBSchemaMigrator: NSObject {
             try tx.database.alter(table: "Attachment") { table in
                 table.add(column: "mediaTierDigestSHA256Ciphertext", .blob)
             }
+            return .success(())
+        }
+
+        migrator.registerMigration(.removeVoIPToken) { tx in
+            try tx.database.execute(sql: """
+            DELETE FROM "keyvalue" WHERE "collection" = 'SignalPreferences' AND "key" = 'LastRecordedVoipToken'
+            """)
             return .success(())
         }
 

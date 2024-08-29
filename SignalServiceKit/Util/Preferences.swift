@@ -48,7 +48,6 @@ public class Preferences: NSObject {
         case notificationPreviewType = "Notification Preview Type Key"
         case playSoundInForeground = "NotificationSoundInForeground"
         case lastRecordedPushToken = "LastRecordedPushToken"
-        case lastRecordedVoipToken = "LastRecordedVoipToken"
         case callsHideIPAddress = "CallsHideIPAddress"
         case hasDeclinedNoContactsView = "hasDeclinedNoContactsView"
         case hasGeneratedThumbnails = "OWSPreferencesKeyHasGeneratedThumbnails"
@@ -371,21 +370,8 @@ public class Preferences: NSObject {
         setString(value, for: .lastRecordedPushToken, tx: tx)
     }
 
-    public var voipToken: String? {
-        string(forKey: .lastRecordedVoipToken)
-    }
-
-    public func getVoipToken(tx: SDSAnyReadTransaction) -> String? {
-        return getString(for: .lastRecordedVoipToken, tx: tx)
-    }
-
-    public func setVoipToken(_ value: String?, tx: SDSAnyWriteTransaction) {
-        setString(value, for: .lastRecordedVoipToken, tx: tx)
-    }
-
     public func unsetRecordedAPNSTokens() {
         Logger.warn("Forgetting recorded APNS tokens")
         removeValue(forKey: .lastRecordedPushToken)
-        removeValue(forKey: .lastRecordedVoipToken)
     }
 }

@@ -124,7 +124,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
             return mockSession
         }
 
-        pushRegistrationManagerMock.mockRegistrationId = .init(apnsToken: "apn", voipToken: nil)
+        pushRegistrationManagerMock.mockRegistrationId = .init(apnsToken: "apn")
 
         var didSetLocalIdentifiers = false
         registrationStateChangeManagerMock.didProvisionSecondaryMock = { e164, aci, pni, _, storedDeviceId in

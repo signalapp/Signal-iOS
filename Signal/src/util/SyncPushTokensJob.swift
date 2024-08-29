@@ -55,13 +55,13 @@ class SyncPushTokensJob: NSObject {
             }
         }
 
-        let (pushToken, voipToken) = (regResult.apnsToken, regResult.voipToken)
+        let pushToken = regResult.apnsToken
 
-        Logger.info("Fetched pushToken: \(redact(pushToken)), voipToken: \(redact(voipToken))")
+        Logger.info("Fetched pushToken: \(redact(pushToken))")
 
         var shouldUploadTokens = false
 
-        if preferences.pushToken != pushToken || preferences.voipToken != voipToken {
+        if preferences.pushToken != pushToken {
             Logger.info("Push tokens changed.")
             shouldUploadTokens = true
         } else if mode == .forceUpload {
@@ -76,14 +76,14 @@ class SyncPushTokensJob: NSObject {
         }
 
         guard shouldUploadTokens else {
-            Logger.info("No reason to upload pushToken: \(redact(pushToken)), voipToken: \(redact(voipToken))")
+            Logger.info("No reason to upload pushToken: \(redact(pushToken))")
             return
         }
 
-        Logger.warn("uploading tokens to account servers. pushToken: \(redact(pushToken)), voipToken: \(redact(voipToken))")
-        try await self.updatePushTokens(pushToken: pushToken, voipToken: voipToken, auth: auth)
+        Logger.warn("uploading tokens to account servers. pushToken: \(redact(pushToken))")
+        try await self.updatePushTokens(pushToken: pushToken, auth: auth)
 
-        await recordPushTokensLocally(pushToken: pushToken, voipToken: voipToken)
+        await recordPushTokensLocally(pushToken: pushToken)
 
         Self.hasUploadedTokensOnce.set(true)
 
@@ -102,30 +102,23 @@ class SyncPushTokensJob: NSObject {
 
     // MARK: 
 
-    private func recordPushTokensLocally(pushToken: String, voipToken: String?) async {
+    private func recordPushTokensLocally(pushToken: String) async {
         assert(!Thread.isMainThread)
 
         await databaseStorage.awaitableWrite { tx in
-            Logger.warn("Recording push tokens locally. pushToken: \(redact(pushToken)), voipToken: \(redact(voipToken))")
+            Logger.warn("Recording push tokens locally. pushToken: \(redact(pushToken))")
 
             if pushToken != self.preferences.getPushToken(tx: tx) {
                 Logger.info("Recording new plain push token")
                 self.preferences.setPushToken(pushToken, tx: tx)
-            }
-            if voipToken != self.preferences.getVoipToken(tx: tx) {
-                Logger.info("Recording new voip token")
-                self.preferences.setVoipToken(voipToken, tx: tx)
             }
         }
     }
 
     // MARK: - Requests
 
-    func updatePushTokens(pushToken: String, voipToken: String?, auth: ChatServiceAuth) async throws {
-        let request = OWSRequestFactory.registerForPushRequest(
-            identifier: pushToken,
-            voipIdentifier: voipToken
-        )
+    func updatePushTokens(pushToken: String, auth: ChatServiceAuth) async throws {
+        let request = OWSRequestFactory.registerForPushRequest(apnsToken: pushToken)
         request.setAuth(auth)
         return try await updatePushTokens(request: request, remainingRetries: 3)
     }

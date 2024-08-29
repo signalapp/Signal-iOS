@@ -78,7 +78,7 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
                 ).map { [self] vanillaPushToken in
                     // We need the voip registry to handle voip pushes relayed from the NSE.
                     createVoipRegistryIfNecessary()
-                    return ApnRegistrationId(apnsToken: vanillaPushToken, voipToken: nil)
+                    return ApnRegistrationId(apnsToken: vanillaPushToken)
                 }
         }
     }

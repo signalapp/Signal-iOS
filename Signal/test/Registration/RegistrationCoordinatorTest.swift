@@ -3821,7 +3821,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
         static let captchaToken = "captchaToken"
         static let apnsToken = "apnsToken"
-        static let apnsRegistrationId = RegistrationRequestFactory.ApnRegistrationId(apnsToken: apnsToken, voipToken: nil)
+        static let apnsRegistrationId = RegistrationRequestFactory.ApnRegistrationId(apnsToken: apnsToken)
 
         static let authUsername = "username_jdhfsalkjfhd"
         static let authPassword = "password_dskafjasldkfjasf"
