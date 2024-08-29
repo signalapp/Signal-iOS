@@ -13,6 +13,26 @@ class MessageBackupIntegrationTests: XCTestCase {
         DDLog.add(DDTTYLogger.sharedInstance!)
     }
 
+    // MARK: -
+
+    /// Describes what output to log if LibSignal reports a test failure.
+    private enum LibSignalComparisonFailureLogOutput {
+        /// Log the full backup JSONs returned by LibSignal, for external
+        /// analysis via `parse-libsignal-comparator-failure.py`.
+        case fullLibSignalJSON
+
+        /// Log a minimal diff of the backup JSONs returned by LibSignal, for
+        /// inline analysis in the Xcode logs.
+        case minimalDiff
+    }
+
+    /// The preferred log output for test failures.
+    ///
+    /// Set by default to `.minimalDiff` to reduce log noise in automated test
+    /// runs. Toggle to `.fullLibSignalJSON` if desired during local
+    /// development, for more thorough inspection of the failure case.
+    private let preferredFailureLogOutput: LibSignalComparisonFailureLogOutput = .minimalDiff
+
     /// Performs a round-trip import/export test on all `.binproto` integration
     /// test cases.
     func testAllIntegrationTestCases() async throws {
@@ -33,7 +53,8 @@ class MessageBackupIntegrationTests: XCTestCase {
 
             try await runRoundTripTest(
                 testCaseName: filename,
-                testCaseFileUrl: binprotoFileUrl
+                testCaseFileUrl: binprotoFileUrl,
+                failureLogOutput: preferredFailureLogOutput
             )
         }
     }
@@ -52,7 +73,8 @@ class MessageBackupIntegrationTests: XCTestCase {
     /// which should be idempotent.
     private func runRoundTripTest(
         testCaseName: String,
-        testCaseFileUrl: URL
+        testCaseFileUrl: URL,
+        failureLogOutput: LibSignalComparisonFailureLogOutput
     ) async throws {
         /// A backup doesn't contain our own local identifiers. Rather, those
         /// are determined as part of registration for a backup import, and are
@@ -89,7 +111,8 @@ class MessageBackupIntegrationTests: XCTestCase {
         try compareViaLibsignal(
             testCaseName: testCaseName,
             sharedTestCaseBackupUrl: testCaseFileUrl,
-            exportedBackupUrl: exportedBackupUrl
+            exportedBackupUrl: exportedBackupUrl,
+            failureLogOutput: failureLogOutput
         )
     }
 
@@ -102,7 +125,8 @@ class MessageBackupIntegrationTests: XCTestCase {
     private func compareViaLibsignal(
         testCaseName: String,
         sharedTestCaseBackupUrl: URL,
-        exportedBackupUrl: URL
+        exportedBackupUrl: URL,
+        failureLogOutput: LibSignalComparisonFailureLogOutput
     ) throws {
         let sharedTestCaseBackup = try ComparableBackup(url: sharedTestCaseBackupUrl)
         let exportedBackup = try ComparableBackup(url: exportedBackupUrl)
@@ -115,17 +139,46 @@ class MessageBackupIntegrationTests: XCTestCase {
         let sharedTestCaseBackupString = sharedTestCaseBackup.comparableString()
         let exportedBackupString = exportedBackup.comparableString()
 
+        let jsonEncoder = JSONEncoder()
+        jsonEncoder.outputFormatting = .prettyPrinted
+
         if sharedTestCaseBackupString != exportedBackupString {
-            XCTFail("""
-            ------------
+            switch failureLogOutput {
+            case .fullLibSignalJSON:
+                XCTFail("""
 
-            Test case failed: \(testCaseName). Copy the JSON lines below and run `pbpaste | parse-libsignal-comparator-failure.py`.
+                ------------
 
-            \(sharedTestCaseBackupString.removeCharacters(characterSet: .whitespacesAndNewlines))
-            \(exportedBackupString.removeCharacters(characterSet: .whitespacesAndNewlines))
+                Test case failed: \(testCaseName). Copy the JSON lines below and run `pbpaste | parse-libsignal-comparator-failure.py`.
 
-            ------------
-            """)
+                \(sharedTestCaseBackupString.removeCharacters(characterSet: .whitespacesAndNewlines))
+                \(exportedBackupString.removeCharacters(characterSet: .whitespacesAndNewlines))
+
+                ------------
+                """)
+            case .minimalDiff:
+                let jsonStringDiff: LineByLineStringDiff = .diffing(
+                    lhs: sharedTestCaseBackupString,
+                    rhs: exportedBackupString
+                )
+
+                let prettyDiff = jsonStringDiff.prettyPrint(
+                    lhsLabel: "testcase",
+                    rhsLabel: "exported",
+                    diffGroupDivider: "************"
+                )
+
+                XCTFail("""
+
+                ------------
+
+                Test case failed: \(testCaseName). JSON diff:
+
+                \(prettyDiff)
+
+                ------------
+                """)
+            }
         }
     }
 

@@ -1945,6 +1945,7 @@
 		D99ABC782A3D132D0034CD3B /* blue-rectangle.png in Resources */ = {isa = PBXBuildFile; fileRef = D99ABC762A3D132D0034CD3B /* blue-rectangle.png */; };
 		D99ABC7A2A3D1D710034CD3B /* semitransparent.png in Resources */ = {isa = PBXBuildFile; fileRef = D99ABC792A3D1D710034CD3B /* semitransparent.png */; };
 		D99D960F292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99D960E292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift */; };
+		D9A36B932C7FEDA100CEC0E7 /* LineByLineStringDiff.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A36B922C7FEDA100CEC0E7 /* LineByLineStringDiff.swift */; };
 		D9A3E22B2A0D633500E2A8B5 /* UsernameLookupRecordTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F56F298DF41B00158EE4 /* UsernameLookupRecordTest.swift */; };
 		D9A3E2302A0DABDF00E2A8B5 /* UsernameQuerier.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A3E22F2A0DABDF00E2A8B5 /* UsernameQuerier.swift */; };
 		D9A3E2322A0DBDFC00E2A8B5 /* Usernames+UsernameLinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F55429834BC900158EE4 /* Usernames+UsernameLinkTests.swift */; };
@@ -5019,6 +5020,7 @@
 		D99ABC762A3D132D0034CD3B /* blue-rectangle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "blue-rectangle.png"; sourceTree = "<group>"; };
 		D99ABC792A3D1D710034CD3B /* semitransparent.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = semitransparent.png; sourceTree = "<group>"; };
 		D99D960E292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonateViewController+OneTimePaypalDonation.swift"; sourceTree = "<group>"; };
+		D9A36B922C7FEDA100CEC0E7 /* LineByLineStringDiff.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineByLineStringDiff.swift; sourceTree = "<group>"; };
 		D9A3E22F2A0DABDF00E2A8B5 /* UsernameQuerier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameQuerier.swift; sourceTree = "<group>"; };
 		D9A81C6A2BAA54FC00C07D2B /* CallRecordSyncMessageConversationIdAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRecordSyncMessageConversationIdAdapter.swift; sourceTree = "<group>"; };
 		D9A81C6C2BAA59EF00C07D2B /* MockCallRecordSyncMessageConversationIdAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCallRecordSyncMessageConversationIdAdapter.swift; sourceTree = "<group>"; };
@@ -10288,6 +10290,7 @@
 			isa = PBXGroup;
 			children = (
 				D9247E4F2BFBE9B400DFEF6F /* SharedTestCases */,
+				D9A36B922C7FEDA100CEC0E7 /* LineByLineStringDiff.swift */,
 				D9C964162BE56DFB0058F143 /* MessageBackupIntegrationTests.swift */,
 			);
 			path = MessageBackup;
@@ -14465,6 +14468,7 @@
 				F9C5CD49289453B300548EEE /* LegacySendingChain.m in Sources */,
 				F9C5CD4C289453B300548EEE /* LegacySessionRecord.m in Sources */,
 				F9C5CD4E289453B300548EEE /* LegacySessionState.m in Sources */,
+				D9A36B932C7FEDA100CEC0E7 /* LineByLineStringDiff.swift in Sources */,
 				D9F399B22A96D65D001599EC /* LinkedDevicePniKeyManager.swift in Sources */,
 				66076B4C2BC053290043D547 /* LinkPreviewBuilder.swift in Sources */,
 				66076B4E2BC056980043D547 /* LinkPreviewBuilderImpl.swift in Sources */,
