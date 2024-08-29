@@ -597,10 +597,10 @@ class StoryContextViewController: OWSViewController {
             repliesAndViewsButton.semanticContentAttribute = .unspecified
 
             if let leadingIcon = leadingIcon {
-                repliesAndViewsButton.setImage(leadingIcon.withTintColor(Theme.darkThemePrimaryColor, renderingMode: .alwaysTemplate), for: .normal)
+                repliesAndViewsButton.setImage(leadingIcon.withTintColor(Theme.darkThemePrimaryColor, renderingMode: .alwaysOriginal), for: .normal)
                 repliesAndViewsButton.ows_imageEdgeInsets = UIEdgeInsets(top: 2, leading: 0, bottom: 0, trailing: 16)
             } else if let trailingIcon = trailingIcon {
-                repliesAndViewsButton.setImage(trailingIcon.withTintColor(Theme.darkThemePrimaryColor, renderingMode: .alwaysTemplate), for: .normal)
+                repliesAndViewsButton.setImage(trailingIcon.withTintColor(Theme.darkThemePrimaryColor, renderingMode: .alwaysOriginal), for: .normal)
                 repliesAndViewsButton.semanticContentAttribute = CurrentAppContext().isRTL ? .forceLeftToRight : .forceRightToLeft
                 repliesAndViewsButton.ows_imageEdgeInsets = UIEdgeInsets(top: 3, leading: 0, bottom: 0, trailing: 0)
             } else {
