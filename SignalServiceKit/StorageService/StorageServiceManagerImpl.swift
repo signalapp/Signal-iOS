@@ -5,6 +5,7 @@
 
 import Foundation
 import LibSignalClient
+import SignalRingRTC
 import SwiftProtobuf
 
 public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
@@ -298,6 +299,10 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
         updatePendingMutations { $0.updatedStoryDistributionListIds.formUnion(updatedStoryDistributionListIds) }
     }
 
+    public func recordPendingUpdates(callLinkRootKeys: [CallLinkRootKey]) {
+        updatePendingMutations { $0.updatedCallLinkRootKeys.formUnion(callLinkRootKeys.lazy.map(\.bytes)) }
+    }
+
     @objc
     public func recordPendingUpdates(groupModel: TSGroupModel) {
         if let groupModelV2 = groupModel as? TSGroupModelV2 {
@@ -406,6 +411,7 @@ private struct PendingMutations {
     var updatedServiceIds = Set<ServiceId>()
     var updatedGroupV2MasterKeys = Set<Data>()
     var updatedStoryDistributionListIds = Set<Data>()
+    var updatedCallLinkRootKeys = Set<Data>()
     var updatedLocalAccount = false
 
     var hasChanges: Bool {
@@ -415,6 +421,7 @@ private struct PendingMutations {
             || !updatedServiceIds.isEmpty
             || !updatedGroupV2MasterKeys.isEmpty
             || !updatedStoryDistributionListIds.isEmpty
+            || !updatedCallLinkRootKeys.isEmpty
         )
     }
 }
@@ -535,7 +542,8 @@ class StorageServiceOperation: OWSOperation {
             Account: \(pendingMutations.updatedLocalAccount); \
             Contacts: \(allRecipientUniqueIds.count); \
             GV2: \(pendingMutations.updatedGroupV2MasterKeys.count); \
-            DLists: \(pendingMutations.updatedStoryDistributionListIds.count))
+            DLists: \(pendingMutations.updatedStoryDistributionListIds.count); \
+            CLinks: \(pendingMutations.updatedCallLinkRootKeys.count))
             """
         )
 
@@ -553,6 +561,13 @@ class StorageServiceOperation: OWSOperation {
 
         pendingMutations.updatedStoryDistributionListIds.forEach {
             state.storyDistributionListChangeMap[$0] = .updated
+        }
+
+        pendingMutations.updatedCallLinkRootKeys.forEach {
+            guard FeatureFlags.callLinkStorageService else {
+                return
+            }
+            state.callLinkRootKeyChangeMap[$0] = .updated
         }
     }
 
@@ -695,6 +710,12 @@ class StorageServiceOperation: OWSOperation {
             updateRecords(
                 state: &state,
                 stateUpdater: buildStoryDistributionListUpdater(),
+                needsInterceptForMigration: needsInterceptForMigration,
+                transaction: transaction
+            )
+            updateRecords(
+                state: &state,
+                stateUpdater: buildCallLinkUpdater(),
                 needsInterceptForMigration: needsInterceptForMigration,
                 transaction: transaction
             )
@@ -922,6 +943,12 @@ class StorageServiceOperation: OWSOperation {
                         stateUpdater: storyDistributionListUpdater
                     )
                 }
+
+            let callLinkUpdater = buildCallLinkUpdater()
+            // [CallLink] TODO: Enumerate & insert all Call Links.
+            ([] as [CallLinkRootKey]).forEach {
+                createRecord(localId: $0.bytes, stateUpdater: callLinkUpdater)
+            }
         }
 
         let identifiers = allItems.map { $0.identifier }
@@ -1129,6 +1156,12 @@ class StorageServiceOperation: OWSOperation {
                     orphanedStoryDistributionListCount += 1
                 }
 
+                var orphanedCallLinkRootKeyCount = 0
+                for (callLinkRootKey, storageIdentifier) in mutableState.callLinkRootKeyToStorageIdentifierMap where !allManifestItems.contains(storageIdentifier) {
+                    mutableState.callLinkRootKeyChangeMap[callLinkRootKey] = .updated
+                    orphanedCallLinkRootKeyCount += 1
+                }
+
                 var orphanedAccountCount = 0
                 let currentDate = Date()
                 for (recipientUniqueId, identifier) in mutableState.accountIdToIdentifierMap where !allManifestItems.contains(identifier) {
@@ -1149,6 +1182,7 @@ class StorageServiceOperation: OWSOperation {
                     mutableState.accountIdChangeMap.count
                     + mutableState.groupV2ChangeMap.count
                     + mutableState.storyDistributionListChangeMap.count
+                    + mutableState.callLinkRootKeyChangeMap.count
                 )
 
                 Logger.info(
@@ -1158,7 +1192,8 @@ class StorageServiceOperation: OWSOperation {
                     \(invalidIdentifierCount) missing/invalid ids; \
                     \(orphanedAccountCount) orphaned accounts; \
                     \(orphanedGroupV2Count) orphaned gv2; \
-                    \(orphanedStoryDistributionListCount) orphaned dlists
+                    \(orphanedStoryDistributionListCount) orphaned dlists; \
+                    \(orphanedCallLinkRootKeyCount) orphaned clinks
                     """
                 )
 
@@ -1257,6 +1292,7 @@ class StorageServiceOperation: OWSOperation {
         let groupV1Updater = buildGroupV1Updater()
         let groupV2Updater = buildGroupV2Updater()
         let storyDistributionListUpdater = buildStoryDistributionListUpdater()
+        let callLinkUpdater = buildCallLinkUpdater()
         for item in items {
             func _mergeRecord<StateUpdater: StorageServiceStateUpdater>(
                 _ record: StateUpdater.RecordType,
@@ -1279,6 +1315,8 @@ class StorageServiceOperation: OWSOperation {
                 _mergeRecord(groupV2Record, stateUpdater: groupV2Updater)
             } else if let storyDistributionListRecord = item.storyDistributionListRecord {
                 _mergeRecord(storyDistributionListRecord, stateUpdater: storyDistributionListUpdater)
+            } else if let callLinkRecord = item.callLinkRecord, FeatureFlags.callLinkStorageService {
+                _mergeRecord(callLinkRecord, stateUpdater: callLinkUpdater)
             } else if case .account = item.identifier.type {
                 owsFailDebug("unexpectedly found account record in remaining items")
             } else {
@@ -1335,6 +1373,8 @@ class StorageServiceOperation: OWSOperation {
             return true
         case .storyDistributionList:
             return true
+        case .callLink:
+            return FeatureFlags.callLinkStorageService
         case .unknown, .UNRECOGNIZED, nil:
             return false
         }
@@ -1433,7 +1473,8 @@ class StorageServiceOperation: OWSOperation {
                 buildAccountUpdater(),
                 buildContactUpdater(),
                 buildGroupV2Updater(),
-                buildStoryDistributionListUpdater()
+                buildStoryDistributionListUpdater(),
+                buildCallLinkUpdater()
             ]
 
             if StorageServiceUnknownFieldMigrator.needsAnyUnknownFieldsMigrations(tx: tx) {
@@ -1647,6 +1688,15 @@ class StorageServiceOperation: OWSOperation {
         )
     }
 
+    private func buildCallLinkUpdater() -> MultipleElementStateUpdater<StorageServiceCallLinkRecordUpdater> {
+        return MultipleElementStateUpdater(
+            recordUpdater: StorageServiceCallLinkRecordUpdater(),
+            changeState: \.callLinkRootKeyChangeMap,
+            storageIdentifier: \.callLinkRootKeyToStorageIdentifierMap,
+            recordWithUnknownFields: \.callLinkRootKeyToRecordWithUnknownFields
+        )
+    }
+
     // MARK: - State
 
     private static var maxConsecutiveConflicts = 3
@@ -1736,6 +1786,22 @@ class StorageServiceOperation: OWSOperation {
             set { _storyDistributionListChangeMap = newValue }
         }
 
+        private var _callLinkRootKeyChangeMap: [Data: ChangeState]?
+        fileprivate var callLinkRootKeyChangeMap: [Data: ChangeState] {
+            get { _callLinkRootKeyChangeMap ?? [:] }
+            set { _callLinkRootKeyChangeMap = newValue }
+        }
+        private var _callLinkRootKeyToStorageIdentifierMap: [Data: StorageService.StorageIdentifier]?
+        fileprivate var callLinkRootKeyToStorageIdentifierMap: [Data: StorageService.StorageIdentifier] {
+            get { _callLinkRootKeyToStorageIdentifierMap ?? [:] }
+            set { _callLinkRootKeyToStorageIdentifierMap = newValue }
+        }
+        private var _callLinkRootKeyToRecordWithUnknownFields: [Data: StorageServiceProtoCallLinkRecord]?
+        fileprivate var callLinkRootKeyToRecordWithUnknownFields: [Data: StorageServiceProtoCallLinkRecord] {
+            get { _callLinkRootKeyToRecordWithUnknownFields ?? [:] }
+            set { _callLinkRootKeyToRecordWithUnknownFields = newValue }
+        }
+
         fileprivate var allIdentifiers: [StorageService.StorageIdentifier] {
             var allIdentifiers = [StorageService.StorageIdentifier]()
             if let localAccountIdentifier = localAccountIdentifier {
@@ -1746,6 +1812,7 @@ class StorageServiceOperation: OWSOperation {
             allIdentifiers += groupV1IdToIdentifierMap.values
             allIdentifiers += groupV2MasterKeyToIdentifierMap.values
             allIdentifiers += storyDistributionListIdentifierToStorageIdentifierMap.values
+            allIdentifiers += callLinkRootKeyToStorageIdentifierMap.values
 
             // We must persist any unknown identifiers, as they are potentially associated with
             // valid records that this version of the app doesn't yet understand how to parse.

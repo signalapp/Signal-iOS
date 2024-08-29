@@ -192,6 +192,7 @@ struct StorageServiceProtos_ManifestRecord {
       case groupv2 // = 3
       case account // = 4
       case storyDistributionList // = 5
+      case callLink // = 7
       case UNRECOGNIZED(Int)
 
       init() {
@@ -206,6 +207,7 @@ struct StorageServiceProtos_ManifestRecord {
         case 3: self = .groupv2
         case 4: self = .account
         case 5: self = .storyDistributionList
+        case 7: self = .callLink
         default: self = .UNRECOGNIZED(rawValue)
         }
       }
@@ -218,6 +220,7 @@ struct StorageServiceProtos_ManifestRecord {
         case .groupv2: return 3
         case .account: return 4
         case .storyDistributionList: return 5
+        case .callLink: return 7
         case .UNRECOGNIZED(let i): return i
         }
       }
@@ -241,6 +244,7 @@ extension StorageServiceProtos_ManifestRecord.Key.TypeEnum: CaseIterable {
     .groupv2,
     .account,
     .storyDistributionList,
+    .callLink,
   ]
 }
 
@@ -293,6 +297,14 @@ struct StorageServiceProtos_StorageRecord {
     set {record = .storyDistributionList(newValue)}
   }
 
+  var callLink: StorageServiceProtos_CallLinkRecord {
+    get {
+      if case .callLink(let v)? = record {return v}
+      return StorageServiceProtos_CallLinkRecord()
+    }
+    set {record = .callLink(newValue)}
+  }
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum OneOf_Record: Equatable {
@@ -301,6 +313,7 @@ struct StorageServiceProtos_StorageRecord {
     case groupV2(StorageServiceProtos_GroupV2Record)
     case account(StorageServiceProtos_AccountRecord)
     case storyDistributionList(StorageServiceProtos_StoryDistributionListRecord)
+    case callLink(StorageServiceProtos_CallLinkRecord)
 
   #if !swift(>=4.1)
     static func ==(lhs: StorageServiceProtos_StorageRecord.OneOf_Record, rhs: StorageServiceProtos_StorageRecord.OneOf_Record) -> Bool {
@@ -326,6 +339,10 @@ struct StorageServiceProtos_StorageRecord {
       }()
       case (.storyDistributionList, .storyDistributionList): return {
         guard case .storyDistributionList(let l) = lhs, case .storyDistributionList(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.callLink, .callLink): return {
+        guard case .callLink(let l) = lhs, case .callLink(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
       default: return false
@@ -1033,6 +1050,25 @@ struct StorageServiceProtos_StoryDistributionListRecord {
   init() {}
 }
 
+struct StorageServiceProtos_CallLinkRecord {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// 16 bytes
+  var rootKey: Data = Data()
+
+  /// Non-empty when the current user is an admin
+  var adminPasskey: Data = Data()
+
+  /// When present and non-zero, `adminPasskey`
+  var deletedAtTimestampMs: UInt64 = 0
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
 #if swift(>=5.5) && canImport(_Concurrency)
 extension StorageServiceProtos_OptionalBool: @unchecked Sendable {}
 extension StorageServiceProtos_StorageItem: @unchecked Sendable {}
@@ -1060,6 +1096,7 @@ extension StorageServiceProtos_AccountRecord.Payments: @unchecked Sendable {}
 extension StorageServiceProtos_AccountRecord.UsernameLink: @unchecked Sendable {}
 extension StorageServiceProtos_AccountRecord.UsernameLink.Color: @unchecked Sendable {}
 extension StorageServiceProtos_StoryDistributionListRecord: @unchecked Sendable {}
+extension StorageServiceProtos_CallLinkRecord: @unchecked Sendable {}
 #endif  // swift(>=5.5) && canImport(_Concurrency)
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
@@ -1358,6 +1395,7 @@ extension StorageServiceProtos_ManifestRecord.Key.TypeEnum: SwiftProtobuf._Proto
     3: .same(proto: "GROUPV2"),
     4: .same(proto: "ACCOUNT"),
     5: .same(proto: "STORY_DISTRIBUTION_LIST"),
+    7: .same(proto: "CALL_LINK"),
   ]
 }
 
@@ -1369,6 +1407,7 @@ extension StorageServiceProtos_StorageRecord: SwiftProtobuf.Message, SwiftProtob
     3: .same(proto: "groupV2"),
     4: .same(proto: "account"),
     5: .same(proto: "storyDistributionList"),
+    7: .same(proto: "callLink"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1442,6 +1481,19 @@ extension StorageServiceProtos_StorageRecord: SwiftProtobuf.Message, SwiftProtob
           self.record = .storyDistributionList(v)
         }
       }()
+      case 7: try {
+        var v: StorageServiceProtos_CallLinkRecord?
+        var hadOneofValue = false
+        if let current = self.record {
+          hadOneofValue = true
+          if case .callLink(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.record = .callLink(v)
+        }
+      }()
       default: break
       }
     }
@@ -1472,6 +1524,10 @@ extension StorageServiceProtos_StorageRecord: SwiftProtobuf.Message, SwiftProtob
     case .storyDistributionList?: try {
       guard case .storyDistributionList(let v)? = self.record else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
+    }()
+    case .callLink?: try {
+      guard case .callLink(let v)? = self.record else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
     }()
     case nil: break
     }
@@ -2496,6 +2552,50 @@ extension StorageServiceProtos_StoryDistributionListRecord: SwiftProtobuf.Messag
     if lhs.deletedAtTimestamp != rhs.deletedAtTimestamp {return false}
     if lhs.allowsReplies != rhs.allowsReplies {return false}
     if lhs.isBlockList != rhs.isBlockList {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension StorageServiceProtos_CallLinkRecord: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".CallLinkRecord"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "rootKey"),
+    2: .same(proto: "adminPasskey"),
+    3: .same(proto: "deletedAtTimestampMs"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBytesField(value: &self.rootKey) }()
+      case 2: try { try decoder.decodeSingularBytesField(value: &self.adminPasskey) }()
+      case 3: try { try decoder.decodeSingularUInt64Field(value: &self.deletedAtTimestampMs) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.rootKey.isEmpty {
+      try visitor.visitSingularBytesField(value: self.rootKey, fieldNumber: 1)
+    }
+    if !self.adminPasskey.isEmpty {
+      try visitor.visitSingularBytesField(value: self.adminPasskey, fieldNumber: 2)
+    }
+    if self.deletedAtTimestampMs != 0 {
+      try visitor.visitSingularUInt64Field(value: self.deletedAtTimestampMs, fieldNumber: 3)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: StorageServiceProtos_CallLinkRecord, rhs: StorageServiceProtos_CallLinkRecord) -> Bool {
+    if lhs.rootKey != rhs.rootKey {return false}
+    if lhs.adminPasskey != rhs.adminPasskey {return false}
+    if lhs.deletedAtTimestampMs != rhs.deletedAtTimestampMs {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

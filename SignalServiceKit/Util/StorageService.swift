@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalRingRTC
 
 @objc
 public protocol StorageServiceManagerObjc {
@@ -43,6 +44,8 @@ public protocol StorageServiceManagerObjc {
 }
 
 public protocol StorageServiceManager: StorageServiceManagerObjc {
+    func recordPendingUpdates(callLinkRootKeys: [CallLinkRootKey])
+
     func backupPendingChanges(authedDevice: AuthedDevice)
 
     @discardableResult
@@ -188,6 +191,15 @@ public struct StorageService: Dependencies {
             return record
         }
 
+        public var callLinkRecord: StorageServiceProtoCallLinkRecord? {
+            guard case .callLink = type else { return nil }
+            guard case .callLink(let record) = record.record else {
+                owsFailDebug("unexpectedly missing call link record")
+                return nil
+            }
+            return record
+        }
+
         public init(identifier: StorageIdentifier, contact: StorageServiceProtoContactRecord) {
             var storageRecord = StorageServiceProtoStorageRecord.builder()
             storageRecord.setRecord(.contact(contact))
@@ -215,6 +227,12 @@ public struct StorageService: Dependencies {
         public init(identifier: StorageIdentifier, storyDistributionList: StorageServiceProtoStoryDistributionListRecord) {
             var storageRecord = StorageServiceProtoStorageRecord.builder()
             storageRecord.setRecord(.storyDistributionList(storyDistributionList))
+            self.init(identifier: identifier, record: storageRecord.buildInfallibly())
+        }
+
+        public init(identifier: StorageIdentifier, callLink: StorageServiceProtoCallLinkRecord) {
+            var storageRecord = StorageServiceProtoStorageRecord.builder()
+            storageRecord.setRecord(.callLink(callLink))
             self.init(identifier: identifier, record: storageRecord.buildInfallibly())
         }
 
@@ -570,6 +588,8 @@ extension StorageServiceProtoManifestRecordKeyType: CustomStringConvertible {
             return ".account"
         case .storyDistributionList:
             return ".storyDistributionList"
+        case .callLink:
+            return ".callLink"
         case .UNRECOGNIZED:
             return ".UNRECOGNIZED"
         }

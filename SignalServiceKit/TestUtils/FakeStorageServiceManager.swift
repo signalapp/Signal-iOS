@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalRingRTC
 
 #if TESTABLE_BUILD
 
@@ -13,6 +14,7 @@ public class FakeStorageServiceManager: NSObject, StorageServiceManager {
     public func recordPendingUpdates(updatedAddresses: [SignalServiceAddress]) {}
     public func recordPendingUpdates(updatedGroupV2MasterKeys: [Data]) {}
     public func recordPendingUpdates(updatedStoryDistributionListIds: [Data]) {}
+    public func recordPendingUpdates(callLinkRootKeys: [CallLinkRootKey]) {}
     public func recordPendingUpdates(groupModel: TSGroupModel) {}
     public func recordPendingLocalAccountUpdates() {}
 

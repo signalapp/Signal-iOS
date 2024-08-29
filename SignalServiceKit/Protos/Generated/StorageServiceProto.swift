@@ -717,6 +717,7 @@ public enum StorageServiceProtoManifestRecordKeyType: SwiftProtobuf.Enum {
     case groupv2 // 3
     case account // 4
     case storyDistributionList // 5
+    case callLink // 7
     case UNRECOGNIZED(Int)
 
     public init() {
@@ -731,6 +732,7 @@ public enum StorageServiceProtoManifestRecordKeyType: SwiftProtobuf.Enum {
             case 3: self = .groupv2
             case 4: self = .account
             case 5: self = .storyDistributionList
+            case 7: self = .callLink
             default: self = .UNRECOGNIZED(rawValue)
         }
     }
@@ -743,6 +745,7 @@ public enum StorageServiceProtoManifestRecordKeyType: SwiftProtobuf.Enum {
             case .groupv2: return 3
             case .account: return 4
             case .storyDistributionList: return 5
+            case .callLink: return 7
             case .UNRECOGNIZED(let i): return i
         }
     }
@@ -756,6 +759,7 @@ private func StorageServiceProtoManifestRecordKeyTypeWrap(_ value: StorageServic
     case .groupv2: return .groupv2
     case .account: return .account
     case .storyDistributionList: return .storyDistributionList
+    case .callLink: return .callLink
     case .UNRECOGNIZED(let i): return .UNRECOGNIZED(i)
     }
 }
@@ -768,6 +772,7 @@ private func StorageServiceProtoManifestRecordKeyTypeUnwrap(_ value: StorageServ
     case .groupv2: return .groupv2
     case .account: return .account
     case .storyDistributionList: return .storyDistributionList
+    case .callLink: return .callLink
     case .UNRECOGNIZED(let i): return .UNRECOGNIZED(i)
     }
 }
@@ -1047,6 +1052,7 @@ public enum StorageServiceProtoStorageRecordOneOfRecord {
     case groupV2(StorageServiceProtoGroupV2Record)
     case account(StorageServiceProtoAccountRecord)
     case storyDistributionList(StorageServiceProtoStoryDistributionListRecord)
+    case callLink(StorageServiceProtoCallLinkRecord)
 }
 
 private func StorageServiceProtoStorageRecordOneOfRecordWrap(_ value: StorageServiceProtos_StorageRecord.OneOf_Record) -> StorageServiceProtoStorageRecordOneOfRecord {
@@ -1056,6 +1062,7 @@ private func StorageServiceProtoStorageRecordOneOfRecordWrap(_ value: StorageSer
     case .groupV2(let value): return .groupV2(StorageServiceProtoGroupV2Record(value))
     case .account(let value): return .account(StorageServiceProtoAccountRecord(value))
     case .storyDistributionList(let value): return .storyDistributionList(StorageServiceProtoStoryDistributionListRecord(value))
+    case .callLink(let value): return .callLink(StorageServiceProtoCallLinkRecord(value))
     }
 }
 
@@ -1066,6 +1073,7 @@ private func StorageServiceProtoStorageRecordOneOfRecordUnwrap(_ value: StorageS
     case .groupV2(let value): return .groupV2(value.proto)
     case .account(let value): return .account(value.proto)
     case .storyDistributionList(let value): return .storyDistributionList(value.proto)
+    case .callLink(let value): return .callLink(value.proto)
     }
 }
 
@@ -3570,6 +3578,156 @@ extension StorageServiceProtoStoryDistributionListRecord {
 
 extension StorageServiceProtoStoryDistributionListRecordBuilder {
     public func buildIgnoringErrors() -> StorageServiceProtoStoryDistributionListRecord? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
+// MARK: - StorageServiceProtoCallLinkRecord
+
+public struct StorageServiceProtoCallLinkRecord: Codable, CustomDebugStringConvertible {
+
+    fileprivate let proto: StorageServiceProtos_CallLinkRecord
+
+    public var rootKey: Data? {
+        guard hasRootKey else {
+            return nil
+        }
+        return proto.rootKey
+    }
+    public var hasRootKey: Bool {
+        return !proto.rootKey.isEmpty
+    }
+
+    public var adminPasskey: Data? {
+        guard hasAdminPasskey else {
+            return nil
+        }
+        return proto.adminPasskey
+    }
+    public var hasAdminPasskey: Bool {
+        return !proto.adminPasskey.isEmpty
+    }
+
+    public var deletedAtTimestampMs: UInt64 {
+        return proto.deletedAtTimestampMs
+    }
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: StorageServiceProtos_CallLinkRecord) {
+        self.proto = proto
+    }
+
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    public init(serializedData: Data) throws {
+        let proto = try StorageServiceProtos_CallLinkRecord(serializedData: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate init(_ proto: StorageServiceProtos_CallLinkRecord) {
+        self.init(proto: proto)
+    }
+
+    public init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension StorageServiceProtoCallLinkRecord {
+    public static func builder() -> StorageServiceProtoCallLinkRecordBuilder {
+        return StorageServiceProtoCallLinkRecordBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> StorageServiceProtoCallLinkRecordBuilder {
+        var builder = StorageServiceProtoCallLinkRecordBuilder()
+        if let _value = rootKey {
+            builder.setRootKey(_value)
+        }
+        if let _value = adminPasskey {
+            builder.setAdminPasskey(_value)
+        }
+        builder.setDeletedAtTimestampMs(deletedAtTimestampMs)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct StorageServiceProtoCallLinkRecordBuilder {
+
+    private var proto = StorageServiceProtos_CallLinkRecord()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setRootKey(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.rootKey = valueParam
+    }
+
+    public mutating func setRootKey(_ valueParam: Data) {
+        proto.rootKey = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setAdminPasskey(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.adminPasskey = valueParam
+    }
+
+    public mutating func setAdminPasskey(_ valueParam: Data) {
+        proto.adminPasskey = valueParam
+    }
+
+    public mutating func setDeletedAtTimestampMs(_ valueParam: UInt64) {
+        proto.deletedAtTimestampMs = valueParam
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func buildInfallibly() -> StorageServiceProtoCallLinkRecord {
+        return StorageServiceProtoCallLinkRecord(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try StorageServiceProtoCallLinkRecord(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension StorageServiceProtoCallLinkRecord {
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension StorageServiceProtoCallLinkRecordBuilder {
+    public func buildIgnoringErrors() -> StorageServiceProtoCallLinkRecord? {
         return self.buildInfallibly()
     }
 }

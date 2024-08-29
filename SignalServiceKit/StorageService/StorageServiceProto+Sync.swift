@@ -5,6 +5,7 @@
 
 import Foundation
 import LibSignalClient
+import SignalRingRTC
 import SwiftProtobuf
 
 // MARK: - Record Updater Protocol
@@ -1825,6 +1826,63 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
         return .merged(needsUpdate: needsUpdate, identifier)
     }
 }
+
+// MARK: - Call Link Record
+
+class StorageServiceCallLinkRecordUpdater: StorageServiceRecordUpdater {
+    typealias IdType = Data
+    typealias RecordType = StorageServiceProtoCallLinkRecord
+
+    init() {
+    }
+
+    func unknownFields(for record: StorageServiceProtoCallLinkRecord) -> UnknownStorage? { record.unknownFields }
+
+    func buildStorageItem(for record: StorageServiceProtoCallLinkRecord) -> StorageService.StorageItem {
+        return StorageService.StorageItem(identifier: .generate(type: .callLink), callLink: record)
+    }
+
+    func buildRecord(
+        for rootKeyData: Data,
+        unknownFields: UnknownStorage?,
+        transaction: SDSAnyReadTransaction
+    ) -> StorageServiceProtoCallLinkRecord? {
+        owsPrecondition(FeatureFlags.callLinkStorageService)
+
+        guard let rootKey = try? CallLinkRootKey(rootKeyData) else {
+            owsFailDebug("Invalid CallLinkRootKey")
+            return nil
+        }
+        var builder = StorageServiceProtoCallLinkRecord.builder()
+        builder.setRootKey(rootKey.bytes)
+
+        // [CallLink] TODO: Fetch from DB & add relevant fields.
+
+        if let unknownFields {
+            builder.setUnknownFields(unknownFields)
+        }
+        return builder.buildInfallibly()
+    }
+
+    func mergeRecord(
+        _ record: StorageServiceProtoCallLinkRecord,
+        transaction: SDSAnyWriteTransaction
+    ) -> StorageServiceMergeResult<Data> {
+        owsPrecondition(FeatureFlags.callLinkStorageService)
+
+        guard let rootKeyData = record.rootKey, let rootKey = try? CallLinkRootKey(rootKeyData) else {
+            owsFailDebug("invalid rootKey")
+            return .invalid
+        }
+
+        // [CallLink] TODO: Persist into DB & fetch from server.
+        Logger.verbose("Ignoring CallLink w/\(rootKey.description)")
+
+        return .merged(needsUpdate: false, rootKey.bytes)
+    }
+}
+
+// MARK: -
 
 extension StorageServiceProtoOptionalBool {
     var boolValue: Bool? {

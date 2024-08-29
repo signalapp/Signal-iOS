@@ -4,6 +4,7 @@
 //
 
 import LibSignalClient
+import SignalRingRTC
 import XCTest
 
 @testable import SignalServiceKit
@@ -13,6 +14,7 @@ private class MockStorageServiceManager: StorageServiceManager {
     func recordPendingUpdates(updatedAddresses: [SignalServiceAddress]) {}
     func recordPendingUpdates(updatedGroupV2MasterKeys: [Data]) {}
     func recordPendingUpdates(updatedStoryDistributionListIds: [Data]) {}
+    func recordPendingUpdates(callLinkRootKeys: [CallLinkRootKey]) {}
     func recordPendingUpdates(groupModel: TSGroupModel) {}
     func recordPendingLocalAccountUpdates() {}
     func setLocalIdentifiers(_ localIdentifiers: LocalIdentifiersObjC) {}
