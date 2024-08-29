@@ -1411,6 +1411,8 @@ extension GroupCallViewController: GroupCallObserver {
         owsPrecondition(self.groupCall === call)
 
         let title: String
+        let message: String?
+        let shouldDismissCallAfterDismissingActionSheet: Bool
 
         switch reason {
         case .deviceExplicitlyDisconnected:
@@ -1425,20 +1427,37 @@ extension GroupCallViewController: GroupCallObserver {
                     comment: "An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}."
                 )
                 title = String.localizedStringWithFormat(formatString, maxDevices)
+                message = nil
             } else {
                 title = OWSLocalizedString(
                     "GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT",
                     comment: "An error displayed to the user when the group call ends because it has exceeded the max devices."
                 )
+                message = nil
             }
+            shouldDismissCallAfterDismissingActionSheet = true
 
         case .removedFromCall:
-            // [CallLink] TODO: .
-            fallthrough
+            title = OWSLocalizedString(
+                "GROUP_CALL_REMOVED",
+                comment: "The title of an alert when you've been removed from a group call."
+            )
+            message = OWSLocalizedString(
+                "GROUP_CALL_REMOVED_MESSAGE",
+                comment: "The message of an alert when you've been removed from a group call."
+            )
+            shouldDismissCallAfterDismissingActionSheet = true
 
         case .deniedRequestToJoinCall:
-            // [CallLink] TODO: .
-            fallthrough
+            title = OWSLocalizedString(
+                "GROUP_CALL_REQUEST_DENIED",
+                comment: "The title of an alert when tried to join a call using a link but the admin rejected your request."
+            )
+            message = OWSLocalizedString(
+                "GROUP_CALL_REQUEST_DENIED_MESSAGE",
+                comment: "The message of an alert when tried to join a call using a link but the admin rejected your request."
+            )
+            shouldDismissCallAfterDismissingActionSheet = true
 
         case
                 .serverExplicitlyDisconnected,
@@ -1458,23 +1477,26 @@ extension GroupCallViewController: GroupCallObserver {
                 "GROUP_CALL_UNEXPECTEDLY_ENDED",
                 comment: "An error displayed to the user when the group call unexpectedly ends."
             )
+            message = nil
+            shouldDismissCallAfterDismissingActionSheet = false
         }
-
-        let actionSheet = ActionSheetController(title: title)
-        actionSheet.addAction(ActionSheetAction(
-            title: CommonStrings.okButton,
-            style: .default,
-            handler: { [weak self] _ in
-                guard reason == .hasMaxDevices else { return }
-                self?.dismissCall()
-            }
-        ))
-        presentActionSheet(actionSheet)
 
         if self.isReadyToHandleObserver {
             showCallControlsIfTheyMustBeVisible()
             updateCallUI()
         }
+
+        let actionSheet = ActionSheetController(title: title, message: message)
+        actionSheet.addAction(ActionSheetAction(
+            title: CommonStrings.okButton,
+            style: .default,
+            handler: { [weak self] _ in
+                if shouldDismissCallAfterDismissingActionSheet {
+                    self?.dismissCall()
+                }
+            }
+        ))
+        (self.presentedViewController ?? self).presentActionSheet(actionSheet)
     }
 
     func groupCallReceivedReactions(_ call: GroupCall, reactions: [SignalRingRTC.Reaction]) {
