@@ -30,37 +30,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
 #pragma mark -
 
-@implementation OWSProfileSnapshot
-
-- (instancetype)initWithGivenName:(nullable NSString *)givenName
-                       familyName:(nullable NSString *)familyName
-                         fullName:(nullable NSString *)fullName
-                              bio:(nullable NSString *)bio
-                         bioEmoji:(nullable NSString *)bioEmoji
-                       avatarData:(nullable NSData *)avatarData
-                 profileBadgeInfo:(nullable NSArray<OWSUserProfileBadgeInfo *> *)badgeArray
-{
-
-    self = [super init];
-    if (!self) {
-        return self;
-    }
-
-    _givenName = givenName;
-    _familyName = familyName;
-    _fullName = fullName;
-    _bio = bio;
-    _bioEmoji = bioEmoji;
-    _avatarData = avatarData;
-    _profileBadgeInfo = [badgeArray copy];
-
-    return self;
-}
-
-@end
-
-#pragma mark -
-
 // Access to most state should happen while synchronized on the profile manager.
 // Writes should happen off the main thread, wherever possible.
 @implementation OWSProfileManager

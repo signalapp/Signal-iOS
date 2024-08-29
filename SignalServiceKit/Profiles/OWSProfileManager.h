@@ -15,6 +15,7 @@ extern NSString *const kNSNotificationKey_UserProfileWriter;
 @class MessageSender;
 @class OWSAES256Key;
 @class OWSProfileManagerSwiftValues;
+@class OWSProfileSnapshot;
 @class OWSUserProfile;
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
@@ -22,21 +23,6 @@ extern NSString *const kNSNotificationKey_UserProfileWriter;
 @class SDSKeyValueStore;
 @class SignalServiceAddress;
 @class TSThread;
-
-typedef void (^ProfileManagerFailureBlock)(NSError *error);
-
-@interface OWSProfileSnapshot : NSObject
-
-@property (nonatomic, readonly, nullable) NSString *givenName;
-@property (nonatomic, readonly, nullable) NSString *familyName;
-@property (nonatomic, readonly, nullable) NSString *fullName;
-@property (nonatomic, readonly, nullable) NSString *bio;
-@property (nonatomic, readonly, nullable) NSString *bioEmoji;
-
-@property (nonatomic, readonly, nullable) NSData *avatarData;
-@property (nonatomic, readonly, nullable) NSArray<OWSUserProfileBadgeInfo *> *profileBadgeInfo;
-
-@end
 
 #pragma mark -
 

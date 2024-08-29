@@ -458,13 +458,7 @@ extension TSThread {
 
         let caller = inPersonForRecipient(SignalServiceAddress(callerAci), transaction: tx)
 
-        return INStartCallIntent(
-            audioRoute: .unknown,
-            destinationType: .normal,
-            contacts: [caller],
-            recordTypeForRedialing: .unknown,
-            callCapability: .unknown
-        )
+        return INStartCallIntent(callRecordFilter: nil, callRecordToCallBack: nil, audioRoute: .unknown, destinationType: .normal, contacts: [caller], callCapability: .unknown)
     }
 
     private func inPersonForRecipient(
