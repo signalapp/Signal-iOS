@@ -156,7 +156,6 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             return archiveStandardMessageContents(
                 message,
                 messageRowId: messageRowId,
-                messageBody: message.body,
                 context: context
             )
         }
@@ -246,41 +245,70 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
     private func archiveStandardMessageContents(
         _ message: TSMessage,
         messageRowId: Int64,
-        messageBody: String?,
         context: MessageBackup.RecipientArchivingContext
     ) -> ArchiveInteractionResult<ChatItemType> {
-        guard let messageBody else {
-            // TODO: [Backups] implement restore of attachment-only messages.
-            return .notYetImplemented
-        }
-
         var standardMessage = BackupProto_StandardMessage()
         var partialErrors = [ArchiveFrameError]()
 
-        let text: BackupProto_Text
-        let textResult = archiveText(
-            MessageBody(text: messageBody, ranges: message.bodyRanges ?? .empty),
-            interactionUniqueId: message.uniqueInteractionId
+        // Every "StandardMessage" must have either a body or body attachments;
+        // if neither is set this stays false and we fail the message.
+        var hasPrimaryContent = false
+
+        if let messageBody = message.body {
+            hasPrimaryContent = true
+
+            let text: BackupProto_Text
+            let textResult = archiveText(
+                MessageBody(text: messageBody, ranges: message.bodyRanges ?? .empty),
+                interactionUniqueId: message.uniqueInteractionId
+            )
+            switch textResult.bubbleUp(ChatItemType.self, partialErrors: &partialErrors) {
+            case .continue(let value):
+                text = value
+            case .bubbleUpError(let errorResult):
+                return errorResult
+            }
+            standardMessage.text = text
+
+            // Oversize text is only ever a thing _alongside_ body text, the body
+            // text is a prefix of the oversize text.
+
+            // Returns nil if no oversize text; this is both how we check and how we archive.
+            let oversizeTextResult = attachmentsArchiver.archiveOversizeTextAttachment(
+                messageRowId: messageRowId,
+                messageId: message.uniqueInteractionId,
+                context: context
+            )
+            switch oversizeTextResult.bubbleUp(ChatItemType.self, partialErrors: &partialErrors) {
+            case .continue(let oversizeTextAttachmentProto):
+                oversizeTextAttachmentProto.map { standardMessage.longText = $0 }
+            case .bubbleUpError(let errorResult):
+                return errorResult
+            }
+        }
+
+        let bodyAttachmentsResult = attachmentsArchiver.archiveBodyAttachments(
+            messageId: message.uniqueInteractionId,
+            messageRowId: messageRowId,
+            context: context
         )
-        switch textResult.bubbleUp(ChatItemType.self, partialErrors: &partialErrors) {
-        case .continue(let value):
-            text = value
+        switch bodyAttachmentsResult.bubbleUp(ChatItemType.self, partialErrors: &partialErrors) {
+        case .continue(let bodyAttachmentProtos):
+            if !bodyAttachmentProtos.isEmpty {
+                hasPrimaryContent = true
+                standardMessage.attachments = bodyAttachmentProtos
+            }
         case .bubbleUpError(let errorResult):
             return errorResult
         }
-        standardMessage.text = text
 
-        // Returns nil if no oversize text; this is both how we check and how we archive.
-        let oversizeTextResult = attachmentsArchiver.archiveOversizeTextAttachment(
-            messageRowId: messageRowId,
-            messageId: message.uniqueInteractionId,
-            context: context
-        )
-        switch oversizeTextResult.bubbleUp(ChatItemType.self, partialErrors: &partialErrors) {
-        case .continue(let oversizeTextAttachmentProto):
-            oversizeTextAttachmentProto.map { standardMessage.longText = $0 }
-        case .bubbleUpError(let errorResult):
-            return errorResult
+        guard hasPrimaryContent else {
+            // If we got this far without a body or body attachments,
+            // this message is invalid and should be dropped.
+            // We would hard-error here, but we know these exist in the wild
+            // and don't want to hard error any user that has them when we can
+            // just skip.
+            return .skippableChatUpdate(.emptyBodyMessage)
         }
 
         if let quotedMessage = message.quotedMessage {

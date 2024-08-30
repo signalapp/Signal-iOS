@@ -26,15 +26,40 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
     // MARK: - Archiving
 
     func archiveBodyAttachments(
-        _ message: TSMessage,
-        context: MessageBackup.RecipientArchivingContext,
-        tx: DBReadTransaction
-    ) -> MessageBackup.ArchiveInteractionResult<[BackupProto_FilePointer]> {
-        // TODO: convert message's attachments into proto
+        messageId: MessageBackup.InteractionUniqueId,
+        messageRowId: Int64,
+        context: MessageBackup.ArchivingContext
+    ) -> MessageBackup.ArchiveInteractionResult<[BackupProto_MessageAttachment]> {
+        let referencedAttachments = attachmentStore.fetchReferencedAttachments(
+            for: .messageBodyAttachment(messageRowId: messageRowId),
+            tx: context.tx
+        )
+        if referencedAttachments.isEmpty {
+            return .success([])
+        }
 
-        // TODO: enqueue upload of message's attachments to media tier (& thumbnail)
+        let isFreeTierBackup = Self.isFreeTierBackup()
+        var pointers = [BackupProto_MessageAttachment]()
+        for referencedAttachment in referencedAttachments {
+            let pointerProto = referencedAttachment.asBackupFilePointer(isFreeTierBackup: isFreeTierBackup)
 
-        return .success([])
+            var attachmentProto = BackupProto_MessageAttachment()
+            attachmentProto.pointer = pointerProto
+            attachmentProto.flag = referencedAttachment.reference.renderingFlag.asBackupProtoFlag
+            attachmentProto.wasDownloaded = referencedAttachment.attachment.asStream() != nil
+
+            switch referencedAttachment.reference.owner {
+            case .message(.bodyAttachment(let metadata)):
+                metadata.idInOwner.map { attachmentProto.clientUuid = $0.data }
+            default:
+                // Technically this is an error, but ignoring right now doesn't hurt.
+                continue
+            }
+
+            pointers.append(attachmentProto)
+        }
+
+        return .success(pointers)
     }
 
     public func archiveOversizeTextAttachment(

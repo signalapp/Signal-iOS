@@ -145,6 +145,12 @@ extension MessageBackup {
         /// these, instead handling all past revisions when handling the latest
         /// revision of a message.
         case pastRevisionOfEditedMessage
+
+        /// An empty message is one expected to have a body (it is a visible, sent/received message)
+        /// that does not (neither a text body nor any body attachments). In an ideal world, these would
+        /// not exist. Sadly, we know they do exist for historical reasons and are not rendered by iOS,
+        /// and therefore should be dropped when creating a backup.
+        case emptyBodyMessage
     }
 
     enum ArchiveInteractionResult<Component> {
