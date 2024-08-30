@@ -260,10 +260,12 @@ public extension NSObject {
         SSKEnvironment.shared.signalServiceAddressCacheRef
     }
 
+    @nonobjc
     final var messageDecrypter: OWSMessageDecrypter {
         SSKEnvironment.shared.messageDecrypterRef
     }
 
+    @nonobjc
     static var messageDecrypter: OWSMessageDecrypter {
         SSKEnvironment.shared.messageDecrypterRef
     }

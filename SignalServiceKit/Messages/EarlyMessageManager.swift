@@ -193,7 +193,7 @@ public class EarlyMessageManager: NSObject {
         }
 
         guard let associatedMessageAuthor else {
-            return owsFailDebug("unexpectedly missing associatedMessageAuthor for early envelope \(OWSMessageHandler.description(for: envelope))")
+            return owsFailDebug("unexpectedly missing associatedMessageAuthor for early envelope \(OWSMessageDecrypter.description(for: envelope))")
         }
 
         let identifier = MessageIdentifier(
@@ -201,7 +201,7 @@ public class EarlyMessageManager: NSObject {
             author: associatedMessageAuthor.wrappedAciValue
         )
 
-        Logger.info("Recording early envelope \(OWSMessageHandler.description(for: envelope)) for message \(identifier)")
+        Logger.info("Recording early envelope \(OWSMessageDecrypter.description(for: envelope)) for message \(identifier)")
 
         var envelopes: [EarlyEnvelope]
         do {
@@ -213,7 +213,7 @@ public class EarlyMessageManager: NSObject {
 
         while envelopes.count >= Self.maxQueuedPerMessage, let droppedEarlyEnvelope = envelopes.first {
             envelopes.remove(at: 0)
-            owsFailDebug("Dropping early envelope \(OWSMessageHandler.description(for: droppedEarlyEnvelope.envelope)) for message \(identifier) due to excessive early envelopes.")
+            owsFailDebug("Dropping early envelope \(OWSMessageDecrypter.description(for: droppedEarlyEnvelope.envelope)) for message \(identifier) due to excessive early envelopes.")
         }
 
         envelopes.append(EarlyEnvelope(
@@ -226,7 +226,7 @@ public class EarlyMessageManager: NSObject {
         do {
             try pendingEnvelopeStore.setCodable(envelopes, key: identifier.key, transaction: transaction)
         } catch {
-            owsFailDebug("Failed to persist early envelope \(OWSMessageHandler.description(for: envelope)) for message \(identifier) with error \(error)")
+            owsFailDebug("Failed to persist early envelope \(OWSMessageDecrypter.description(for: envelope)) for message \(identifier) with error \(error)")
         }
     }
 
@@ -494,7 +494,7 @@ public class EarlyMessageManager: NSObject {
 
         // Re-process any early envelopes associated with this message
         for earlyEnvelope in earlyEnvelopes ?? [] {
-            Logger.info("Reprocessing early envelope \(OWSMessageHandler.description(for: earlyEnvelope.envelope)) for \(identifier)")
+            Logger.info("Reprocessing early envelope \(OWSMessageDecrypter.description(for: earlyEnvelope.envelope)) for \(identifier)")
 
             guard let plaintextData = earlyEnvelope.plainTextData else {
                 Logger.warn("Dropping early envelope without plaintextData.")
