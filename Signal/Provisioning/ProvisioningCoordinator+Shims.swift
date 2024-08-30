@@ -73,7 +73,7 @@ public class _ProvisioningCoordinator_ProfileManagerWrapper: _ProvisioningCoordi
     }
 
     public func localProfileKey() -> Aes256Key {
-        return profileManager.localProfileKey()
+        return profileManager.localProfileKey
     }
 
     public func setLocalProfileKey(

@@ -94,7 +94,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
             }
             guard let newAvatar = avatarBuilder.avatarImage(
                 model: model,
-                diameterPixels: kOWSProfileManager_MaxAvatarDiameterPixels
+                diameterPixels: OWSProfileManager.maxAvatarDiameterPixels
             ) else {
                 owsFailDebug("Failed to generate new avatar.")
                 return

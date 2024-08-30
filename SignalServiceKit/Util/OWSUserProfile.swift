@@ -1398,8 +1398,7 @@ extension OWSUserProfile {
         )
     }
 
-    @available(swift, obsoleted: 1.0)
-    @objc
+    #if USE_DEBUG_UI
     public func clearProfile(
         profileKey: Aes256Key,
         userProfileWriter: UserProfileWriter,
@@ -1421,6 +1420,7 @@ extension OWSUserProfile {
             completion: completion
         )
     }
+    #endif
 
     @available(swift, obsoleted: 1.0)
     @objc

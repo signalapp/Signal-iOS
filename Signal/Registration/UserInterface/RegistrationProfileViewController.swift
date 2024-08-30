@@ -332,7 +332,11 @@ class RegistrationProfileViewController: OWSViewController {
             currentAvatarImage: avatarData?.asImage
         ) { [weak self] newAvatarImage in
             guard let self else { return }
-            self.avatarData = newAvatarImage?.asData
+            if let newAvatarImage {
+                self.avatarData = OWSProfileManager.avatarData(avatarImage: newAvatarImage)
+            } else {
+                self.avatarData = nil
+            }
         }
         presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
     }
@@ -602,8 +606,4 @@ extension RegistrationProfileViewController {
 
 private extension Data {
     var asImage: UIImage? { .init(data: self) }
-}
-
-private extension UIImage {
-    var asData: Data { OWSProfileManager.avatarData(forAvatarImage: self) }
 }

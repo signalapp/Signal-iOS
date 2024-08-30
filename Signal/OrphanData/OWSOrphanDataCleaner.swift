@@ -381,7 +381,7 @@ enum OWSOrphanDataCleaner {
         let profileAvatarFilePaths: Set<String> = {
             var result: Set<String> = []
             databaseStorage.read { transaction in
-                result = OWSProfileManager.allProfileAvatarFilePaths(with: transaction)
+                result = OWSProfileManager.allProfileAvatarFilePaths(transaction: transaction)
             }
             return result
         }()

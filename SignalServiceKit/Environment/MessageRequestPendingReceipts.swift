@@ -269,7 +269,7 @@ public class PendingReceiptFinder {
 
 fileprivate extension Notification {
     var userProfileWriter: UserProfileWriter {
-        guard let userProfileWriterValue = userInfo?[kNSNotificationKey_UserProfileWriter] as? NSNumber else {
+        guard let userProfileWriterValue = userInfo?[OWSProfileManager.notificationKeyUserProfileWriter] as? NSNumber else {
             owsFailDebug("userProfileWriterValue was unexpectedly nil")
             return .unknown
         }

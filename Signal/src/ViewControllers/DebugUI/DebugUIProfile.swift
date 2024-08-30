@@ -21,7 +21,7 @@ class DebugUIProfile: DebugUIPage, Dependencies {
                 Self.profileManagerImpl.logProfileWhitelist()
             },
             OWSTableItem(title: "Log Profile Key") {
-                let localProfileKey = Self.profileManagerImpl.localProfileKey()
+                let localProfileKey = Self.profileManagerImpl.localProfileKey
                 Logger.info("localProfileKey: \(localProfileKey.keyData.hexadecimalString)")
             },
             OWSTableItem(title: "Regenerate Profile/ProfileKey") {

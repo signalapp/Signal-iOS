@@ -1291,7 +1291,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         // storage service if we have no record of a local profile. This allows us
         // to restore your profile during onboarding but ensures no other device
         // can ever change the profile key other than the primary device.
-        let allowsRemoteProfileKeyChanges = !profileManager.hasLocalProfile() || !isPrimaryDevice
+        let allowsRemoteProfileKeyChanges = !profileManager.hasLocalProfile || !isPrimaryDevice
         if allowsRemoteProfileKeyChanges, let profileKey = record.profileKey, localUserProfile?.profileKey?.keyData != profileKey {
             profileManager.setProfileKeyData(
                 profileKey,

@@ -6,6 +6,729 @@
 import Foundation
 import LibSignalClient
 
+/// This class has been ported over from objc and the notes attached to that are reproduced below.
+/// Note that the veracity of the thread safety claims seems dubious.
+///
+/// This class can be safely accessed and used from any thread.
+///
+/// Access to most state should happen while locked. Writes should happen off the main thread, wherever possible.
+public class OWSProfileManager: NSObject, ProfileManagerProtocol {
+    public static let maxAvatarDiameterPixels: UInt = 1024
+    public static let notificationKeyUserProfileWriter = "kNSNotificationKey_UserProfileWriter"
+
+    public let whitelistedPhoneNumbersStore = SDSKeyValueStore(collection: "kOWSProfileManager_UserWhitelistCollection")
+    public let whitelistedServiceIdsStore = SDSKeyValueStore(collection: "kOWSProfileManager_UserUUIDWhitelistCollection")
+    public let whitelistedGroupsStore = SDSKeyValueStore(collection: "kOWSProfileManager_GroupWhitelistCollection")
+    public let settingsStore = SDSKeyValueStore(collection: "kOWSProfileManager_SettingsStore")
+    public let badgeStore = BadgeStore()
+
+    // This can be inlined soon, but first a direct port from objc to swift
+    public let swiftValues: OWSProfileManagerSwiftValues
+
+    /// This property is used by the Swift extension to ensure that only one
+    /// profile update is in flight at a time. It should only be accessed on the
+    /// main thread.
+    fileprivate var isUpdatingProfileOnService: Bool = false
+
+    // The old objc code used synchronized a lock which is a recursive lock so using NSRecursiveLock here to recreate that behavior.
+    private let lock = NSRecursiveLock()
+
+    // This may not need to be @Atomic, but it was in the old code. Most of the time it's accessed while holding lock, but sometimes
+    // it is not. The pattern of use in the objc code has been replicated here for the time being.
+    @Atomic private var _localUserProfile: OWSUserProfile?
+
+    fileprivate let metadataStore = SDSKeyValueStore(collection: "kOWSProfileManager_Metadata")
+    @Atomic fileprivate var isRotatingProfileKey: Bool = false
+
+    init(databaseStorage: SDSDatabaseStorage, swiftValues: OWSProfileManagerSwiftValues) {
+        AssertIsOnMainThread()
+
+        self.swiftValues = swiftValues
+
+        super.init()
+
+        SwiftSingletons.register(self)
+
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+            if TSAccountManagerObjcBridge.isRegisteredPrimaryDeviceWithMaybeTransaction {
+                self.rotateLocalProfileKeyIfNecessary()
+            }
+
+            self.updateProfileOnServiceIfNecessary(authedAccount: .implicit())
+            Self.updateStorageServiceIfNecessary()
+        }
+
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: .OWSApplicationDidBecomeActive, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(reachabilityChanged(_:)), name: SSKReachability.owsReachabilityDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(blockListDidChange(_:)), name: BlockingManager.blockListDidChange, object: nil)
+    }
+
+    // MARK: - User Profile Accessor
+
+    public func warmCaches() {
+        owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
+
+        // Clear out so we re-initialize if we ever re-run the "on launch" logic,
+        // such as after a completed database transfer.
+        lock.withLock {
+            _localUserProfile = nil
+        }
+
+        // Since localUserProfile can create a transaction, we want to make sure it's not called for the first
+        // time unexpectedly (e.g. in a nested transaction.)
+        _ = localUserProfile
+    }
+
+    // MARK: - Local Profile
+
+    public func localProfileWasUpdated(_ localUserProfile: OWSUserProfile) {
+        owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
+        lock.withLock {
+            _localUserProfile = localUserProfile.shallowCopy()
+        }
+    }
+
+    /// This computed var should only be accessed from the main thread.
+    public var localProfileKey: Aes256Key {
+        owsAssertDebug(self.localUserProfile.profileKey?.keyData.count ?? 0 == Aes256Key.keyByteLength)
+
+        // FIXME: The objc code ignored the nullability match here; for now we've forced it with `!` but this is unsatisfactory.
+        return self.localUserProfile.profileKey!
+    }
+    /// localUserProfileExists is true if there is _ANY_ local profile.
+    /// This method should only be called from the main thread.
+    public func localProfileExists(with transaction: SDSAnyReadTransaction) -> Bool {
+        OWSUserProfile.doesLocalProfileExist(transaction: transaction)
+    }
+
+    /// hasLocalProfile is true if there is a local profile with a name or avatar.
+    public var hasLocalProfile: Bool {
+        hasProfileName || localProfileAvatarImage != nil
+    }
+
+    public var hasProfileName: Bool {
+        !localGivenName.isEmptyOrNil
+    }
+
+    public var localGivenName: String? {
+        localUserProfile.filteredGivenName
+    }
+
+    public var localFamilyName: String? {
+        localUserProfile.filteredFamilyName
+    }
+
+    public var localFullName: String? {
+        localUserProfile.filteredFullName
+    }
+
+    public var localProfileAvatarImage: UIImage? {
+        guard let avatarFileName = localUserProfile.avatarFileName else {
+            return nil
+        }
+        return loadProfileAvatar(filename: avatarFileName)
+    }
+
+    public var localProfileAvatarData: Data? {
+        guard let filename = localUserProfile.avatarFileName, !filename.isEmpty else {
+            return nil
+        }
+        return loadProfileAvatarData(filename: filename)
+    }
+
+    public var localProfileBadgeInfo: [OWSUserProfileBadgeInfo]? {
+        localUserProfile.badges
+    }
+
+    @objc(localProfileSnapshotWithShouldIncludeAvatar:)
+    public func localProfileSnapshot(shouldIncludeAvatar: Bool) -> OWSProfileSnapshot {
+        profileSnapshot(for: localUserProfile, shouldIncludeAvatar: shouldIncludeAvatar)
+    }
+
+    private func profileSnapshot(for userProfile: OWSUserProfile, shouldIncludeAvatar: Bool) -> OWSProfileSnapshot {
+        var avatarData: Data?
+        if shouldIncludeAvatar, let avatarFilename = userProfile.avatarFileName, !avatarFilename.isEmpty {
+            avatarData = loadProfileAvatarData(filename: avatarFilename)
+        }
+        return OWSProfileSnapshot(givenName: userProfile.filteredGivenName,
+                                  familyName: userProfile.filteredFamilyName,
+                                  fullName: userProfile.filteredFullName,
+                                  bio: userProfile.bio,
+                                  bioEmoji: userProfile.bioEmoji,
+                                  avatarData: avatarData,
+                                  profileBadgeInfo: userProfile.badges)
+    }
+
+    public static func avatarData(avatarImage image: UIImage) -> Data? {
+        var image = image
+        let maxAvatarBytes = 5_000_000
+
+        if image.pixelWidth != maxAvatarDiameterPixels || image.pixelHeight != maxAvatarDiameterPixels {
+            // To help ensure the user is being shown the same cropping of their avatar as
+            // everyone else will see, we want to be sure that the image was resized before this point.
+            owsFailDebug("Avatar image should have been resized before trying to upload")
+            image = image.resizedImage(toFillPixelSize: .init(width: CGFloat(maxAvatarDiameterPixels), height: CGFloat(maxAvatarDiameterPixels)))
+        }
+
+        guard let data = image.jpegData(compressionQuality: 0.95) else {
+            return nil
+        }
+        if data.count > maxAvatarBytes {
+            // Our avatar dimensions are so small that it's incredibly unlikely we wouldn't be able to fit our profile
+            // photo. e.g. generating pure noise at our resolution compresses to ~200k.
+            owsFailDebug("Surprised to find profile avatar was too large. Was it scaled properly? image: \(image)")
+        }
+
+        return data
+    }
+
+    private var localUserProfileShallowCopy: OWSUserProfile? {
+        lock.withLock {
+            if let _localUserProfile {
+                owsAssertDebug(_localUserProfile.profileKey != nil)
+                return _localUserProfile.shallowCopy()
+            } else {
+                return nil
+            }
+        }
+    }
+
+    // comments in objc implied this should only be used internally within this file, but making
+    // this fileprivate revealed the comments were inaccurate
+    var localUserProfile: OWSUserProfile {
+        owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
+        if let localUserProfileShallowCopy {
+            return localUserProfileShallowCopy
+        }
+
+        // copied from objc; thread-safety claims are ?
+        //
+        // We create the profile outside the lock critical section to avoid any risk
+        // of deadlock. Thanks to ensureLocalProfileCached, there should be no risk
+        // of races. And races should be harmless since: a)
+        // getOrBuildUserProfileForInternalAddress is idempotent and b) we use the
+        // "update with..." pattern.
+        //
+        // We first try using a read block to avoid opening a write block.
+        if let localUserProfile = databaseStorage.read(block: {getLocalUserProfile($0)}) {
+            return localUserProfile.shallowCopy()
+        }
+        let localUserProfile = databaseStorage.write { transaction in
+            let localUserProfile = OWSUserProfile.getOrBuildUserProfileForLocalUser(userProfileWriter: .localUser, tx: transaction)
+            owsAssertDebug(localUserProfile.profileKey != nil)
+            return localUserProfile
+        }
+        return lock.withLock {
+            _localUserProfile = localUserProfile
+            return localUserProfile.shallowCopy()
+        }
+    }
+
+    fileprivate func getLocalUserProfile(_ tx: SDSAnyReadTransaction) -> OWSUserProfile? {
+        // This appears to be kludged in here by the objc code. It's unclear why this variable
+        // has the effect it has in this function. Likely this sort of thing should not be getting
+        // called at all if migrations are not already completed, but I guess we don't have a
+        // process wide guarantee of that?
+        let migrationsAreComplete = GRDBSchemaMigrator.areMigrationsComplete
+
+        if migrationsAreComplete, let localUserProfileShallowCopy {
+            return localUserProfileShallowCopy
+        }
+
+        let localUserProfile = OWSUserProfile.getUserProfileForLocalUser(tx: tx)
+
+        if migrationsAreComplete {
+            return lock.withLock {
+                _localUserProfile = localUserProfile
+                return localUserProfile?.shallowCopy()
+            }
+        }
+
+        return localUserProfile?.shallowCopy()
+    }
+
+    // MARK: - Profile Whitelist
+
+    #if USE_DEBUG_UI
+
+    public func clearProfileWhitelist() {
+        Logger.warn("Clearing the profile whitelist.")
+
+        databaseStorage.asyncWrite { transaction in
+            self.whitelistedPhoneNumbersStore.removeAll(transaction: transaction)
+            self.whitelistedServiceIdsStore.removeAll(transaction: transaction)
+            self.whitelistedGroupsStore.removeAll(transaction: transaction)
+
+            owsAssertDebug(self.whitelistedPhoneNumbersStore.numberOfKeys(transaction: transaction) == 0)
+            owsAssertDebug(self.whitelistedServiceIdsStore.numberOfKeys(transaction: transaction) == 0)
+            owsAssertDebug(self.whitelistedGroupsStore.numberOfKeys(transaction: transaction) == 0)
+        }
+    }
+
+    public func logProfileWhitelist() {
+        databaseStorage.read { transaction in
+            Logger.error("\(self.whitelistedPhoneNumbersStore.collection): \(self.whitelistedPhoneNumbersStore.numberOfKeys(transaction: transaction))")
+            for key in self.whitelistedPhoneNumbersStore.allKeys(transaction: transaction) {
+                Logger.error("\t profile whitelist user phone number: \(key)")
+            }
+
+            Logger.error("\(self.whitelistedServiceIdsStore.collection): \(self.whitelistedServiceIdsStore.numberOfKeys(transaction: transaction))")
+            for key in self.whitelistedServiceIdsStore.allKeys(transaction: transaction) {
+                Logger.error("\t profile whitelist user service id: \(key)")
+            }
+
+            Logger.error("\(self.whitelistedGroupsStore.collection): \(self.whitelistedGroupsStore.numberOfKeys(transaction: transaction))")
+            for key in self.whitelistedGroupsStore.allKeys(transaction: transaction) {
+                Logger.error("\t profile whitelist group: \(key)")
+            }
+        }
+    }
+
+    public func debug_regenerateLocalProfileWithSneakyTransaction() {
+        let userProfile = localUserProfile
+        databaseStorage.write { transaction in
+            userProfile.clearProfile(profileKey: Aes256Key(), userProfileWriter: .debugging, transaction: transaction, completion: nil)
+        }
+        Task {
+            do {
+                try await DependenciesBridge.shared.accountAttributesUpdater.updateAccountAttributes(authedAccount: .implicit())
+            } catch {
+                Logger.error("Error: \(error)")
+            }
+        }
+    }
+
+    #endif
+
+    public func setLocalProfileKey(_ key: Aes256Key, userProfileWriter: UserProfileWriter, transaction: SDSAnyWriteTransaction) {
+        owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
+
+        let localUserProfile = lock.withLock {
+            // If it didn't exist, create it in a safe way as accessing the property
+            // will do a sneaky transaction.
+            if let _localUserProfile {
+                return _localUserProfile
+            }
+
+            // We assert on the ivar directly here, as we want this to be cached already
+            // by the time this method is called. If it's not, we've changed our caching
+            // logic and should re-evaluate this method.
+            owsFailDebug("Missing local profile when setting key.")
+            let localUserProfile = OWSUserProfile.getOrBuildUserProfileForLocalUser(userProfileWriter: .localUser, tx: transaction)
+            _localUserProfile = localUserProfile
+            return localUserProfile
+        }
+
+        localUserProfile.update(profileKey: .setTo(key), userProfileWriter: userProfileWriter, transaction: transaction, completion: nil)
+    }
+
+    public func normalizeRecipientInProfileWhitelist(_ recipient: SignalRecipient, tx: SDSAnyWriteTransaction) {
+        swift_normalizeRecipientInProfileWhitelist(recipient, tx: tx)
+    }
+
+    public func addUser(toProfileWhitelist address: SignalServiceAddress, userProfileWriter: UserProfileWriter, transaction: SDSAnyWriteTransaction) {
+        owsAssertDebug(address.isValid)
+        addUsers(toProfileWhitelist: [address], userProfileWriter: userProfileWriter, transaction: transaction)
+    }
+
+    public func addUsers(toProfileWhitelist addresses: [SignalServiceAddress], userProfileWriter: UserProfileWriter, transaction: SDSAnyWriteTransaction) {
+        let addressesToAdd = addressesNotBlockedOrInWhitelist(addresses, transaction: transaction)
+        addConfirmedUnwhitelistedAddresses(addressesToAdd, userProfileWriter: userProfileWriter, transaction: transaction)
+    }
+
+    public func removeUser(fromProfileWhitelist address: SignalServiceAddress) {
+        owsAssertDebug(address.isValid)
+
+        removeUsers(fromProfileWhitelist: [address])
+    }
+
+    public func removeUser(fromProfileWhitelist address: SignalServiceAddress, userProfileWriter: UserProfileWriter, transaction: SDSAnyWriteTransaction) {
+        owsAssertDebug(address.isValid)
+
+        let addressesToRemove = addressesInWhitelist([address], transaction: transaction)
+        removeConfirmedWhitelistedAddresses(addressesToRemove, userProfileWriter: userProfileWriter, transaction: transaction)
+    }
+
+    // TODO: We could add a userProfileWriter parameter.
+    private func removeUsers(fromProfileWhitelist addresses: [SignalServiceAddress]) {
+        // Try to avoid opening a write transaction.
+        databaseStorage.asyncRead { readTransaction in
+            let addressesToRemove = self.addressesInWhitelist(addresses, transaction: readTransaction)
+            if addressesToRemove.isEmpty {
+                return
+            }
+            self.databaseStorage.asyncWrite { writeTransaction in
+                self.removeConfirmedWhitelistedAddresses(addressesToRemove, userProfileWriter: .localUser, transaction: writeTransaction)
+            }
+        }
+    }
+
+    private func addressesNotBlockedOrInWhitelist(_ addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> Set<SignalServiceAddress> {
+        var notBlockedOrInWhitelist = Set<SignalServiceAddress>()
+        for address in addresses {
+            // If the address is blocked, we don't want to include it
+            if blockingManager.isAddressBlocked(address, transaction: transaction) || RecipientHidingManagerObjcBridge.isHiddenAddress(address, tx: transaction) {
+                continue
+            }
+
+            if !isAddressInWhitelist(address, tx: transaction) {
+                notBlockedOrInWhitelist.insert(address)
+            }
+        }
+
+        return notBlockedOrInWhitelist
+    }
+
+    private func addressesInWhitelist(_ addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> Set<SignalServiceAddress> {
+        var whitelistedAddresses = Set<SignalServiceAddress>()
+
+        for address in addresses {
+            if isAddressInWhitelist(address, tx: transaction) {
+                whitelistedAddresses.insert(address)
+            }
+        }
+
+        return whitelistedAddresses
+    }
+
+    private func isAddressInWhitelist(_ address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> Bool {
+        if let uppercaseServiceId = address.serviceIdUppercaseString, whitelistedServiceIdsStore.hasValue(forKey: uppercaseServiceId, transaction: tx) {
+            return true
+        }
+
+        if let phoneNumber = address.phoneNumber, whitelistedPhoneNumbersStore.hasValue(forKey: phoneNumber, transaction: tx) {
+            return true
+        }
+
+        return false
+    }
+
+    private func removeConfirmedWhitelistedAddresses(_ addressesToRemove: Set<SignalServiceAddress>, userProfileWriter: UserProfileWriter, transaction: SDSAnyWriteTransaction) {
+        guard !addressesToRemove.isEmpty else {
+            return
+        }
+
+        for address in addressesToRemove {
+            // Historically we put both the ACI and phone number into their respective
+            // stores. We currently save only the best identifier, but we should still
+            // try and remove both to handle these historical cases.
+            if let uppercaseServiceId = address.serviceIdUppercaseString {
+                whitelistedServiceIdsStore.removeValue(forKey: uppercaseServiceId, transaction: transaction)
+            }
+            if let phoneNumber = address.phoneNumber {
+                whitelistedPhoneNumbersStore.removeValue(forKey: phoneNumber, transaction: transaction)
+            }
+
+            if let thread = TSContactThread.getWithContactAddress(address, transaction: transaction) {
+                databaseStorage.touch(thread: thread, shouldReindex: false, transaction: transaction)
+            }
+        }
+
+        transaction.addSyncCompletion {
+            // Mark the removed whitelisted addresses for update
+            if OWSUserProfile.shouldUpdateStorageServiceForUserProfileWriter(userProfileWriter) {
+                self.storageServiceManagerObjc.recordPendingUpdates(updatedAddresses: Array(addressesToRemove))
+            }
+
+            for address in addressesToRemove {
+                NotificationCenter.default.postNotificationNameAsync(UserProfileNotifications.profileWhitelistDidChange, object: nil, userInfo: [
+                    UserProfileNotifications.profileAddressKey: address,
+                    Self.notificationKeyUserProfileWriter: NSNumber(value: userProfileWriter.rawValue),
+                ])
+            }
+        }
+    }
+
+    private func addConfirmedUnwhitelistedAddresses(_ addressesToAdd: Set<SignalServiceAddress>, userProfileWriter: UserProfileWriter, transaction: SDSAnyWriteTransaction) {
+        guard !addressesToAdd.isEmpty else {
+            return
+        }
+
+        for address in addressesToAdd {
+            let serviceId = address.serviceId
+            if let serviceId = serviceId as? Aci {
+                whitelistedServiceIdsStore.setBool(true, key: serviceId.serviceIdUppercaseString, transaction: transaction)
+            } else if let phoneNumber = address.phoneNumber {
+                whitelistedPhoneNumbersStore.setBool(true, key: phoneNumber, transaction: transaction)
+            } else if let serviceId = serviceId as? Pni {
+                whitelistedServiceIdsStore.setBool(true, key: serviceId.serviceIdUppercaseString, transaction: transaction)
+            }
+
+            if let thread = TSContactThread.getWithContactAddress(address, transaction: transaction) {
+                databaseStorage.touch(thread: thread, shouldReindex: false, transaction: transaction)
+            }
+        }
+
+        transaction.addSyncCompletion {
+            // Mark the new whitelisted addresses for update
+            if OWSUserProfile.shouldUpdateStorageServiceForUserProfileWriter(userProfileWriter) {
+                self.storageServiceManagerObjc.recordPendingUpdates(updatedAddresses: Array(addressesToAdd))
+            }
+
+            for address in addressesToAdd {
+                NotificationCenter.default.postNotificationNameAsync(UserProfileNotifications.profileWhitelistDidChange, object: nil, userInfo: [
+                    UserProfileNotifications.profileAddressKey: address,
+                    Self.notificationKeyUserProfileWriter: NSNumber(value: userProfileWriter.rawValue),
+                ])
+            }
+        }
+    }
+
+    public func isUser(inProfileWhitelist address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool {
+        owsAssertDebug(address.isValid)
+
+        if blockingManager.isAddressBlocked(address, transaction: transaction) || RecipientHidingManagerObjcBridge.isHiddenAddress(address, tx: transaction) {
+            return false
+        }
+
+        return isAddressInWhitelist(address, tx: transaction)
+    }
+
+    public func addGroupId(toProfileWhitelist groupId: Data, userProfileWriter: UserProfileWriter, transaction: SDSAnyWriteTransaction) {
+        owsAssertDebug(!groupId.isEmpty)
+        let groupIdKey = groupKey(groupId: groupId)
+        if !whitelistedGroupsStore.hasValue(forKey: groupIdKey, transaction: transaction) {
+            addConfirmedUnwhitelistedGroupId(groupId, userProfileWriter: userProfileWriter, transaction: transaction)
+        }
+    }
+
+    public func removeGroupId(fromProfileWhitelist groupId: Data, userProfileWriter: UserProfileWriter, transaction: SDSAnyWriteTransaction) {
+        owsAssertDebug(!groupId.isEmpty)
+        let groupIdKey = groupKey(groupId: groupId)
+        if whitelistedGroupsStore.hasValue(forKey: groupIdKey, transaction: transaction) {
+            removeConfirmedWhitelistedGroupId(groupId, userProfileWriter: userProfileWriter, transaction: transaction)
+        }
+    }
+
+    private func removeConfirmedWhitelistedGroupId(_ groupId: Data, userProfileWriter: UserProfileWriter, transaction: SDSAnyWriteTransaction) {
+        owsAssertDebug(!groupId.isEmpty)
+        let groupIdKey = groupKey(groupId: groupId)
+        whitelistedGroupsStore.removeValue(forKey: groupIdKey, transaction: transaction)
+        groupIdWhitelistWasUpdated(groupId, userProfileWriter: userProfileWriter, transaction: transaction)
+    }
+
+    private func addConfirmedUnwhitelistedGroupId(_ groupId: Data, userProfileWriter: UserProfileWriter, transaction: SDSAnyWriteTransaction) {
+        owsAssertDebug(!groupId.isEmpty)
+        let groupIdKey = groupKey(groupId: groupId)
+        whitelistedGroupsStore.setBool(true, key: groupIdKey, transaction: transaction)
+        groupIdWhitelistWasUpdated(groupId, userProfileWriter: userProfileWriter, transaction: transaction)
+    }
+
+    private func groupIdWhitelistWasUpdated(_ groupId: Data, userProfileWriter: UserProfileWriter, transaction: SDSAnyWriteTransaction) {
+        if let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
+            databaseStorage.touch(thread: groupThread, shouldReindex: false, transaction: transaction)
+        }
+
+        transaction.addSyncCompletion {
+            // Mark the group for update
+            if OWSUserProfile.shouldUpdateStorageServiceForUserProfileWriter(userProfileWriter) {
+                self.recordPendingUpdatesForStorageService(groupId: groupId)
+            }
+
+            NotificationCenter.default.postNotificationNameAsync(UserProfileNotifications.profileWhitelistDidChange, object: nil, userInfo: [
+                UserProfileNotifications.profileGroupIdKey: groupId,
+                Self.notificationKeyUserProfileWriter: NSNumber(value: userProfileWriter.rawValue)
+            ])
+        }
+    }
+
+    private func recordPendingUpdatesForStorageService(groupId: Data) {
+        owsAssertDebug(!groupId.isEmpty)
+        databaseStorage.asyncRead { transaction in
+            guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+                owsFailDebug("Missing groupThread.")
+                return
+            }
+            self.storageServiceManagerObjc.recordPendingUpdates(groupModel: groupThread.groupModel)
+        }
+    }
+
+    public func addThread(toProfileWhitelist thread: TSThread, userProfileWriter: UserProfileWriter, transaction: SDSAnyWriteTransaction) {
+        if thread.isGroupThread, let groupThread = thread as? TSGroupThread {
+            addGroupId(toProfileWhitelist: groupThread.groupModel.groupId, userProfileWriter: userProfileWriter, transaction: transaction)
+        } else if !thread.isGroupThread, let contactThread = thread as? TSContactThread {
+            addUser(toProfileWhitelist: contactThread.contactAddress, userProfileWriter: userProfileWriter, transaction: transaction)
+        }
+    }
+
+    public func isGroupId(inProfileWhitelist groupId: Data, transaction: SDSAnyReadTransaction) -> Bool {
+        owsAssertDebug(!groupId.isEmpty)
+        if blockingManager.isGroupIdBlocked(groupId, transaction: transaction) {
+            return false
+        }
+        let groupIdKey = groupKey(groupId: groupId)
+        return whitelistedGroupsStore.hasValue(forKey: groupIdKey, transaction: transaction)
+    }
+
+    public func isThread(inProfileWhitelist thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
+        if thread.isGroupThread, let groupThread = thread as? TSGroupThread {
+            return isGroupId(inProfileWhitelist: groupThread.groupModel.groupId, transaction: transaction)
+        } else if !thread.isGroupThread, let contactThread = thread as? TSContactThread {
+            return isUser(inProfileWhitelist: contactThread.contactAddress, transaction: transaction)
+        } else {
+            return false
+        }
+    }
+
+    // MARK: Other User's Profiles
+
+    public func profileKeyData(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Data? {
+        profileKey(for: address, transaction: transaction)?.keyData
+    }
+
+    public func profileKey(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Aes256Key? {
+        owsAssertDebug(address.isValid)
+        let userProfile = getUserProfile(for: address, transaction: transaction)
+        return userProfile?.profileKey
+    }
+
+    public func unfilteredGivenName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String? {
+        owsAssertDebug(address.isValid)
+        return getUserProfile(for: address, transaction: transaction)?.givenName
+    }
+
+    public func givenName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String? {
+        owsAssertDebug(address.isValid)
+        return getUserProfile(for: address, transaction: transaction)?.filteredGivenName
+    }
+
+    public func unfilteredFamilyName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String? {
+        owsAssertDebug(address.isValid)
+        return getUserProfile(for: address, transaction: transaction)?.familyName
+    }
+
+    public func familyName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String? {
+        owsAssertDebug(address.isValid)
+        return getUserProfile(for: address, transaction: transaction)?.filteredFamilyName
+    }
+
+    public func fullName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String? {
+        owsAssertDebug(address.isValid)
+        return getUserProfile(for: address, transaction: transaction)?.filteredFullName
+    }
+
+    public func profileAvatar(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> UIImage? {
+        owsAssertDebug(address.isValid)
+        let userProfile = getUserProfile(for: address, transaction: transaction)
+        guard let avatarFileName = userProfile?.avatarFileName, !avatarFileName.isEmpty else {
+            return nil
+        }
+        return loadProfileAvatar(filename: avatarFileName)
+    }
+
+    public func hasProfileAvatarData(_ address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool {
+        let userProfile = getUserProfile(for: address, transaction: transaction)
+        guard let avatarFileName = userProfile?.avatarFileName, !avatarFileName.isEmpty else {
+            return false
+        }
+        let filePath = OWSUserProfile.profileAvatarFilePath(for: avatarFileName)
+        return OWSFileSystem.fileOrFolderExists(atPath: filePath)
+    }
+
+    public func profileAvatarData(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Data? {
+        owsAssertDebug(address.isValid)
+        let userProfile = getUserProfile(for: address, transaction: transaction)
+        guard let avatarFileName = userProfile?.avatarFileName, !avatarFileName.isEmpty else {
+            return nil
+        }
+        return loadProfileAvatarData(filename: avatarFileName)
+    }
+
+    public func profileAvatarURLPath(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String? {
+        owsAssertDebug(address.isValid)
+        let userProfile = getUserProfile(for: address, transaction: transaction)
+        return userProfile?.avatarUrlPath
+    }
+
+    public func profileBioForDisplay(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String? {
+        owsAssertDebug(address.isValid)
+        let userProfile = getUserProfile(for: address, transaction: transaction)
+        return OWSUserProfile.bioForDisplay(bio: userProfile?.bio, bioEmoji: userProfile?.bioEmoji)
+    }
+
+    public func getUserProfile(for addressParam: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> OWSUserProfile? {
+        _getUserProfile(for: addressParam, tx: transaction)
+    }
+
+    // MARK: - Avatar Disk Cache
+
+    private func loadProfileAvatarData(filename: String) -> Data? {
+        owsAssertDebug(!filename.isEmpty)
+
+        let filePath = OWSUserProfile.profileAvatarFilePath(for: filename)
+        let avatarData = try? NSData(contentsOfFile: filePath) as Data
+
+        guard let avatarData, avatarData.ows_isValidImage else {
+            Logger.warn("Failed to get valid avatar data")
+            return nil
+        }
+        return avatarData
+    }
+
+    private func loadProfileAvatar(filename: String) -> UIImage? {
+        guard !filename.isEmpty else {
+            return nil
+        }
+
+        guard let data = loadProfileAvatarData(filename: filename) else {
+            return nil
+        }
+
+        guard let image = UIImage(data: data) else {
+            Logger.warn("Could not load profile avatar.")
+            return nil
+        }
+        return image
+    }
+
+    public func leaseCacheSize(_ size: Int) -> ModelReadCacheSizeLease? {
+        modelReadCaches.userProfileReadCache.leaseCacheSize(size)
+    }
+
+    public func rotateProfileKeyUponRecipientHide(withTx tx: SDSAnyWriteTransaction) {
+        rotateProfileKeyUponRecipientHideObjC(tx: tx)
+    }
+
+    // MARK: - Notifications
+
+    @objc
+    private func applicationDidBecomeActive(_ notification: NSNotification) {
+        AssertIsOnMainThread()
+        // TODO: Sync if necessary.
+        updateProfileOnServiceIfNecessary(authedAccount: .implicit())
+    }
+
+    @objc
+    private func reachabilityChanged(_ notification: NSNotification) {
+        AssertIsOnMainThread()
+        updateProfileOnServiceIfNecessary(authedAccount: .implicit())
+    }
+
+    @objc
+    private func blockListDidChange(_ notification: NSNotification) {
+        AssertIsOnMainThread()
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+            self.rotateLocalProfileKeyIfNecessary()
+        }
+    }
+
+    // MARK: - Clean Up
+
+    public static func allProfileAvatarFilePaths(transaction: SDSAnyReadTransaction) -> Set<String> {
+        OWSUserProfile.allProfileAvatarFilePaths(tx: transaction)
+    }
+
+    // MARK: - Profile Key Rotation
+
+    public func forceRotateLocalProfileKeyForGroupDeparture(with transaction: SDSAnyWriteTransaction) {
+        forceRotateLocalProfileKeyForGroupDepartureObjc(tx: transaction)
+    }
+
+    public func groupKey(groupId: Data) -> String {
+        groupId.hexadecimalString
+    }
+}
+
 public class OWSProfileManagerSwiftValues {
     fileprivate let pendingUpdateRequests = AtomicValue<[OWSProfileManager.ProfileUpdateRequest]>([], lock: .init())
 
@@ -447,7 +1170,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
             transaction: tx
         )
         self.whitelistedGroupsStore.removeValues(
-            forKeys: trigger.groupIds.map { self.groupKey(forGroupId: $0) },
+            forKeys: trigger.groupIds.map { self.groupKey(groupId: $0) },
             transaction: tx
         )
     }
@@ -723,7 +1446,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
         // TODO: Don't reach out to global state.
         if address.isLocalAddress {
             // For "local reads", use the local user profile.
-            return getLocalUserProfile(with: tx)
+            return getLocalUserProfile(tx)
         } else {
             return modelReadCaches.userProfileReadCache.getUserProfiles(for: [.otherUser(address)], transaction: tx).first!
         }
@@ -734,7 +1457,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
             // TODO: Don't reach out to global state.
             return address.isLocalAddress
         }, then: { localAddresses in
-            lazy var profile = { self.getLocalUserProfile(with: tx) }()
+            lazy var profile = { self.getLocalUserProfile(tx) }()
             return localAddresses.lazy.map { _ in profile }
         }, otherwise: { otherAddresses in
             return self.modelReadCaches.userProfileReadCache.getUserProfiles(for: otherAddresses.map { .otherUser($0) }, transaction: tx)
@@ -900,7 +1623,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
         }
         guard
             DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice ?? false,
-            self.localProfileAvatarData() != nil
+            self.localProfileAvatarData != nil
         else {
             databaseStorage.write { tx in clearAvatarRepairNeeded(tx: tx) }
             return
@@ -968,7 +1691,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
 
             // We capture the local user profile early to eliminate the risk of opening
             // a transaction within a transaction.
-            let userProfile = profileManagerImpl.localUserProfile()
+            let userProfile = profileManagerImpl.localUserProfile
             guard let profileKey = newProfileKey ?? userProfile.profileKey else {
                 throw OWSAssertionError("Can't upload profile without profileKey.")
             }
@@ -1077,13 +1800,13 @@ extension OWSProfileManager: ProfileManager, Dependencies {
                 // can't decrypt the existing avatar, then we don't really have any choice
                 // other than blowing it away.
             }
-            if let avatarFilename = localUserProfile().avatarFileName, let avatarData = localProfileAvatarData() {
+            if let avatarFilename = localUserProfile.avatarFileName, let avatarData = localProfileAvatarData {
                 return (.changeAvatar(avatarData), .setTo(avatarFilename))
             }
             return (.clearAvatar, .setTo(nil))
         case .noChange:
             // We aren't changing the avatar, so use the existing value.
-            if localUserProfile().avatarUrlPath != nil {
+            if localUserProfile.avatarUrlPath != nil {
                 return (.keepAvatar, .noChange)
             }
             return (.clearAvatar, .setTo(nil))

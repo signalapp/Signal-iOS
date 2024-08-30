@@ -151,7 +151,10 @@ public class AvatarHistoryManager: NSObject {
         let identifier = UUID().uuidString
         let url = URL(fileURLWithPath: identifier + ".jpg", relativeTo: Self.imageHistoryDirectory)
 
-        let avatarData = OWSProfileManager.avatarData(forAvatarImage: image)
+        guard let avatarData = OWSProfileManager.avatarData(avatarImage: image) else {
+            owsFailDebug("avatarData was nil")
+            return nil
+        }
         do {
             try avatarData.write(to: url)
         } catch {

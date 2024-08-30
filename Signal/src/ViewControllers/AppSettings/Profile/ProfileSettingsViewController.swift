@@ -815,7 +815,12 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
     private func setAvatarImage(_ avatarImage: UIImage?) {
         AssertIsOnMainThread()
-        profileValues.avatarData.changedValue = .setTo(avatarImage.map(OWSProfileManager.avatarData(forAvatarImage:)))
+        let avatarData = if let avatarImage {
+            OWSProfileManager.avatarData(avatarImage: avatarImage)
+        } else {
+            nil as Data?
+        }
+        profileValues.avatarData.changedValue = .setTo(avatarData)
         updateTableContents()
         updateNavigationItem()
     }

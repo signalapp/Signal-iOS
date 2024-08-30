@@ -1256,8 +1256,6 @@
 		724D47B02B97BE13001BE973 /* ZkParamsMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5013365E2B2BC2EF004119F1 /* ZkParamsMigrator.swift */; };
 		724D47B22B97BE96001BE973 /* ZkParamsMigratorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501336602B2BCA1F004119F1 /* ZkParamsMigratorTest.swift */; };
 		724D47B52B97C28F001BE973 /* ProfileManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508347052AABBF9900DD2EC0 /* ProfileManagerTest.swift */; };
-		724D47B62B97C29F001BE973 /* OWSProfileManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129B11FD1F7E800532771 /* OWSProfileManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		724D47B72B97C301001BE973 /* OWSProfileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129B21FD1F7E800532771 /* OWSProfileManager.m */; };
 		724D47B82B97C301001BE973 /* OWSProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470249D2385B6360078D72C /* OWSProfileManager.swift */; };
 		724D47B92B97C301001BE973 /* VersionedProfilesImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470249F238C85850078D72C /* VersionedProfilesImpl.swift */; };
 		724D47BA2B97C51D001BE973 /* GroupsV2Protos.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3456A73123D63EBE00947219 /* GroupsV2Protos.swift */; };
@@ -3109,8 +3107,6 @@
 		345DE95F23ED9AA500A8E6E3 /* GroupsV2ProfileKeyUpdater.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2ProfileKeyUpdater.swift; sourceTree = "<group>"; };
 		3461284A1FD0B93F00532771 /* SAELoadViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SAELoadViewController.swift; sourceTree = "<group>"; };
 		346129AE1FD1F5D900532771 /* SystemContactsFetcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SystemContactsFetcher.swift; sourceTree = "<group>"; };
-		346129B11FD1F7E800532771 /* OWSProfileManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSProfileManager.h; sourceTree = "<group>"; };
-		346129B21FD1F7E800532771 /* OWSProfileManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSProfileManager.m; sourceTree = "<group>"; };
 		3463532E256EA525003C5428 /* ConversationViewTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConversationViewTest.swift; sourceTree = "<group>"; };
 		34635331257549F1003C5428 /* CVReactionCountsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVReactionCountsView.swift; sourceTree = "<group>"; };
 		34641E172088D7E900E2EDE5 /* ScreenLock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScreenLock.swift; sourceTree = "<group>"; };
@@ -8851,8 +8847,6 @@
 				F9C5CB69289453B200548EEE /* BadgeAssets.swift */,
 				F9C5CB66289453B200548EEE /* BadgeStore.swift */,
 				50159CDC2B4EF75600D344D4 /* LocalProfileChecker.swift */,
-				346129B11FD1F7E800532771 /* OWSProfileManager.h */,
-				346129B21FD1F7E800532771 /* OWSProfileManager.m */,
 				3470249D2385B6360078D72C /* OWSProfileManager.swift */,
 				72D12EB62C802833001DAD29 /* OWSProfileSnapshot.swift */,
 				F9C5CB68289453B200548EEE /* ProfileFetcher.swift */,
@@ -12125,7 +12119,6 @@
 				6642A8742A8D80CB00E591C2 /* OWSPaymentActivationRequestMessage.h in Headers */,
 				6605D4FD2A85AD17004DC345 /* OWSPaymentMessage.h in Headers */,
 				F9C5CC6F289453B300548EEE /* OWSProfileKeyMessage.h in Headers */,
-				724D47B62B97C29F001BE973 /* OWSProfileManager.h in Headers */,
 				F9C5CD00289453B300548EEE /* OWSReadReceiptsForLinkedDevicesMessage.h in Headers */,
 				F9C5CC4B289453B300548EEE /* OWSReadTracking.h in Headers */,
 				F9C5CC55289453B300548EEE /* OWSReceiptManager.h in Headers */,
@@ -14771,7 +14764,6 @@
 				6642A8762A8D80F400E591C2 /* OWSPaymentActivationRequestMessage.m in Sources */,
 				72C9058D2B9AC81B00E586B8 /* OWSPaymentsLock.swift in Sources */,
 				F9C5CC32289453B300548EEE /* OWSProfileKeyMessage.m in Sources */,
-				724D47B72B97C301001BE973 /* OWSProfileManager.m in Sources */,
 				724D47B82B97C301001BE973 /* OWSProfileManager.swift in Sources */,
 				72D12EB72C802833001DAD29 /* OWSProfileSnapshot.swift in Sources */,
 				F9C5CCF1289453B300548EEE /* OWSProvisioningCipher.swift in Sources */,

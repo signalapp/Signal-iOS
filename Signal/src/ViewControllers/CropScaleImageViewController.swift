@@ -44,7 +44,7 @@ class CropScaleImageViewController: OWSViewController {
     //
     // TODO: We could make this a parameter.
     var dstSizePixels: CGSize {
-        return CGSize(square: CGFloat(kOWSProfileManager_MaxAvatarDiameterPixels))
+        return CGSize(square: CGFloat(OWSProfileManager.maxAvatarDiameterPixels))
     }
     var dstAspectRatio: CGFloat {
         return dstSizePixels.width / dstSizePixels.height

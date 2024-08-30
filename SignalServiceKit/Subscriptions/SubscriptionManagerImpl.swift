@@ -232,7 +232,7 @@ public class SubscriptionManagerImpl: NSObject {
         databaseStorage.write { transaction in
             subscriptionKVS.setBool(true, key: hasMigratedToStorageServiceKey, transaction: transaction)
 
-            let localProfile = profileManagerImpl.localUserProfile()
+            let localProfile = profileManagerImpl.localUserProfile
             let displayBadgesOnProfile = localProfile.badges.allSatisfy { badge in
                 badge.isVisible ?? {
                     owsFailDebug("Local user badges should always have a non-nil visibility flag")
@@ -1276,7 +1276,7 @@ extension SubscriptionManagerImpl: SubscriptionManager {
     }
 
     public func reconcileBadgeStates(transaction: SDSAnyWriteTransaction) {
-        let currentBadges = profileManagerImpl.localUserProfile().badges
+        let currentBadges = profileManagerImpl.localUserProfile.badges
 
         let currentSubscriberBadgeIDs = currentBadges.compactMap { (badge: OWSUserProfileBadgeInfo) -> String? in
             guard SubscriptionBadgeIds.contains(badge.badgeId) else { return nil }
