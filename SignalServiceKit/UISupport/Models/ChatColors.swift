@@ -47,7 +47,7 @@ public enum ChatColorSetting: Equatable {
 }
 
 public struct CustomChatColor: Codable {
-    public struct Key {
+    public struct Key: Hashable {
         public let rawValue: String
 
         public static func generateRandom() -> Self {

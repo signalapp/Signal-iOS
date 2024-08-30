@@ -290,7 +290,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
         // TODO: [Backups] Archive call link recipients.
 
+        let customChatColorContext = MessageBackup.CustomChatColorArchivingContext(tx: tx)
         let chatArchivingContext = MessageBackup.ChatArchivingContext(
+            customChatColorContext: customChatColorContext,
             recipientContext: recipientArchivingContext,
             tx: tx
         )
@@ -448,11 +450,13 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         }
 
         let context = MessageBackup.RestoringContext(tx: tx)
+        let customChatColorContext = MessageBackup.CustomChatColorRestoringContext(tx: tx)
         let recipientContext = MessageBackup.RecipientRestoringContext(
             localIdentifiers: localIdentifiers,
             tx: tx
         )
         let chatContext = MessageBackup.ChatRestoringContext(
+            customChatColorContext: customChatColorContext,
             recipientContext: recipientContext,
             tx: tx
         )

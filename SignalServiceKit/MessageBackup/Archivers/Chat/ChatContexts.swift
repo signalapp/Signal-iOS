@@ -87,15 +87,18 @@ extension MessageBackup {
      */
     public class ChatArchivingContext: ArchivingContext {
 
+        public let customChatColorContext: CustomChatColorArchivingContext
         public let recipientContext: RecipientArchivingContext
 
         private var currentChatId = ChatId(value: 1)
         private let map = SharedMap<ThreadUniqueId, ChatId>()
 
         internal init(
+            customChatColorContext: CustomChatColorArchivingContext,
             recipientContext: RecipientArchivingContext,
             tx: DBWriteTransaction
         ) {
+            self.customChatColorContext = customChatColorContext
             self.recipientContext = recipientContext
             super.init(tx: tx)
         }
@@ -116,15 +119,18 @@ extension MessageBackup {
 
     public class ChatRestoringContext: RestoringContext {
 
+        public let customChatColorContext: CustomChatColorRestoringContext
         public let recipientContext: RecipientRestoringContext
 
         private let map = SharedMap<ChatId, ThreadUniqueId>()
         private let pinnedThreadIndexMap = SharedMap<ThreadUniqueId, UInt32>()
 
         internal init(
+            customChatColorContext: CustomChatColorRestoringContext,
             recipientContext: RecipientRestoringContext,
             tx: DBWriteTransaction
         ) {
+            self.customChatColorContext = customChatColorContext
             self.recipientContext = recipientContext
             super.init(tx: tx)
         }
@@ -161,6 +167,77 @@ extension MessageBackup {
                     return lhsSortIndex < rhsSortIndex
                 })
                 .map(\.0)
+        }
+    }
+
+    // MARK: Custom Chat Colors
+
+    public struct CustomChatColorId: Hashable, MessageBackupLoggableId {
+        let value: UInt64
+
+        public init(value: UInt64) {
+            self.value = value
+        }
+
+        fileprivate init(customChatColor: BackupProto_ChatStyle.CustomChatColor) {
+            self.init(value: customChatColor.id)
+        }
+
+        // MARK: MessageBackupLoggableId
+
+        public var typeLogString: String { "BackupProto_ChatStyle.CustomChatColor" }
+        public var idLogString: String { "\(value)" }
+    }
+
+    /**
+     * As we go archiving custom chat styles, we use this object to track mappings from the addressing we use in the app
+     * to the ID addressing system of the backup protos.
+     *
+     * For example, we will assign a ``MessageBackup/CustomChatColorId`` to each ``CustomChatColor`` as we
+     * insert them. Later, when we create the ``BackupProto_ChatStyle/CustomChatColor`` corresponding to the
+     * ``CustomChatColor``, we will need to add the corresponding ``MessageBackup/CustomChatColorId``,
+     * which we look up using the custom chat color id this context keeps.
+     */
+    public class CustomChatColorArchivingContext: ArchivingContext {
+
+        private var currentCustomChatColorId = CustomChatColorId(value: 1)
+        private let map = SharedMap<CustomChatColor.Key, CustomChatColorId>()
+
+        internal override init(tx: DBWriteTransaction) {
+            super.init(tx: tx)
+        }
+
+        internal func assignCustomChatColorId(to customChatColorKey: CustomChatColor.Key) -> CustomChatColorId {
+            defer {
+                currentCustomChatColorId = CustomChatColorId(value: currentCustomChatColorId.value + 1)
+            }
+            map[customChatColorKey] = currentCustomChatColorId
+            return currentCustomChatColorId
+        }
+
+        internal subscript(_ customChatColorKey: CustomChatColor.Key) -> CustomChatColorId? {
+            // swiftlint:disable:next implicit_getter
+            get { map[customChatColorKey] }
+        }
+    }
+
+    public class CustomChatColorRestoringContext: RestoringContext {
+
+        private let map = SharedMap<CustomChatColorId, CustomChatColor.Key>()
+
+        internal override init(tx: DBWriteTransaction) {
+            super.init(tx: tx)
+        }
+
+        internal subscript(_ chatColorId: CustomChatColorId) -> CustomChatColor.Key? {
+            map[chatColorId]
+        }
+
+        internal func mapCustomChatColorId(
+            _ customChatColorId: CustomChatColorId,
+            to key: CustomChatColor.Key
+        ) {
+            map[customChatColorId] = key
         }
     }
 }
