@@ -76,12 +76,14 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
     private lazy var incomingMessageArchiver =
         MessageBackupTSIncomingMessageArchiver(
             contentsArchiver: contentsArchiver,
+            dateProvider: dateProvider,
             editMessageStore: editMessageStore,
             interactionStore: interactionStore
         )
     private lazy var outgoingMessageArchiver =
         MessageBackupTSOutgoingMessageArchiver(
             contentsArchiver: contentsArchiver,
+            dateProvider: dateProvider,
             editMessageStore: editMessageStore,
             interactionStore: interactionStore
         )

@@ -15,11 +15,13 @@ class MessageBackupTSOutgoingMessageArchiver {
 
     init(
         contentsArchiver: MessageBackupTSMessageContentsArchiver,
+        dateProvider: @escaping DateProvider,
         editMessageStore: EditMessageStore,
         interactionStore: InteractionStore
     ) {
         self.contentsArchiver = contentsArchiver
         self.editHistoryArchiver = MessageBackupTSMessageEditHistoryArchiver(
+            dateProvider: dateProvider,
             editMessageStore: editMessageStore
         )
         self.interactionStore = interactionStore

@@ -151,6 +151,9 @@ extension MessageBackup {
         /// not exist. Sadly, we know they do exist for historical reasons and are not rendered by iOS,
         /// and therefore should be dropped when creating a backup.
         case emptyBodyMessage
+
+        /// This is a message that is expiring soon, so we don't back it up at all.
+        case soonToExpireMessage
     }
 
     enum ArchiveInteractionResult<Component> {
