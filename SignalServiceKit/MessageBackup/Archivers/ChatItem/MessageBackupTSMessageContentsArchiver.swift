@@ -520,7 +520,11 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             return archiveInteractionResult
         }
 
-        return .success(proto)
+        if partialErrors.isEmpty {
+            return .success(proto)
+        } else {
+            return .partialFailure(proto, partialErrors)
+        }
     }
 
     // MARK: -
@@ -1004,7 +1008,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         let messageBodyResult = restoreMessageBody(text, chatItemId: chatItemId)
         switch messageBodyResult {
         case .success(let body):
-            return .success(.text(.init(
+            let contents = MessageBackup.RestoredMessageContents.text(.init(
                 body: body,
                 quotedMessage: quotedMessage,
                 linkPreview: linkPreview,
@@ -1013,8 +1017,13 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                 bodyAttachments: standardMessage.attachments,
                 quotedMessageThumbnail: quotedMessageThumbnail,
                 linkPreviewImage: linkPreviewAttachment
-            )))
-        case .partialRestore(let body, let partialErrors):
+            ))
+            if partialErrors.isEmpty {
+                return .success(contents)
+            } else {
+                return .partialRestore(contents, partialErrors)
+            }
+        case .partialRestore(let body, let messageBodyErrors):
             return .partialRestore(
                 .text(.init(
                     body: body,
@@ -1026,10 +1035,10 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                     quotedMessageThumbnail: quotedMessageThumbnail,
                     linkPreviewImage: linkPreviewAttachment
                 )),
-                partialErrors
+                partialErrors + messageBodyErrors
             )
-        case .messageFailure(let errors):
-            return .messageFailure(errors)
+        case .messageFailure(let messageBodyErrors):
+            return .messageFailure(partialErrors + messageBodyErrors)
         }
     }
 
@@ -1357,11 +1366,16 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             avatar = nil
         }
 
-        return .success(.contactShare(.init(
+        let contents = MessageBackup.RestoredMessageContents.contactShare(.init(
             contact: contact,
             avatarAttachment: avatar,
             reactions: contactMessage.reactions
-        )))
+        ))
+        if partialErrors.isEmpty {
+            return .success(contents)
+        } else {
+            return .partialRestore(contents, partialErrors)
+        }
     }
 
     // MARK: -
