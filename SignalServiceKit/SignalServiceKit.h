@@ -128,7 +128,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/TSUnreadIndicatorInteraction.h>
 #import <SignalServiceKit/TSYapDatabaseObject.h>
 #import <SignalServiceKit/Threading.h>
-#import <SignalServiceKit/UnfairLock.h>
 #import <SignalServiceKit/YDBStorage.h>
 
 #define OWSLocalizedString(key, comment)                                                                               \
