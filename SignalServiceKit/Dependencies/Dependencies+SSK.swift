@@ -286,10 +286,12 @@ public extension NSObject {
         SSKEnvironment.shared.pendingReceiptRecorderRef
     }
 
+    @nonobjc
     final var outageDetection: OutageDetection {
         .shared
     }
 
+    @nonobjc
     static var outageDetection: OutageDetection {
         .shared
     }

@@ -6,47 +6,52 @@
 import Foundation
 import os
 
-@objc
-public class OutageDetection: NSObject {
-    @objc(shared)
+public class OutageDetection {
     public static let shared = OutageDetection()
 
-    @objc
     public static let outageStateDidChange = Notification.Name("OutageStateDidChange")
 
-    private let _hasOutage = AtomicBool(false, lock: .sharedGlobal)
-    @objc
-    public private(set) var hasOutage: Bool {
-        get {
-            _hasOutage.get()
+    private enum OutageState {
+        /// There's no reason to check for an outage.
+        case doNotCheck
+        /// There might be an outage, so we need to check.
+        case shouldCheck(hasOutage: Bool)
+
+        var hasOutage: Bool {
+            switch self {
+            case .doNotCheck: return false
+            case .shouldCheck(let hasOutage): return hasOutage
+            }
         }
-        set {
-            let oldValue = _hasOutage.swap(newValue)
 
-            if oldValue != newValue {
-                Logger.info("hasOutage: \(oldValue) -> \(newValue).")
-
-                NotificationCenter.default.postNotificationNameAsync(OutageDetection.outageStateDidChange, object: nil)
+        var shouldCheck: Bool {
+            switch self {
+            case .doNotCheck: return false
+            case .shouldCheck: return true
             }
         }
     }
-    private let _shouldCheckForOutage = AtomicBool(false, lock: .sharedGlobal)
-    private var shouldCheckForOutage: Bool {
-        get {
-            _shouldCheckForOutage.get()
+
+    private let _outageState = AtomicValue<OutageState>(.doNotCheck, lock: .init())
+
+    private func updateOutageState(mutateBlock: (inout OutageState) -> Void) {
+        let (oldValue, newValue) = _outageState.update { mutableState in
+            let oldValue = mutableState
+            mutateBlock(&mutableState)
+            return (oldValue, mutableState)
         }
-        set {
-            let oldValue = _shouldCheckForOutage.swap(newValue)
 
-            if oldValue != newValue {
-                Logger.info("shouldCheckForOutage: \(oldValue) -> \(newValue).")
+        if oldValue.hasOutage != newValue.hasOutage {
+            Logger.info("hasOutage? \(newValue.hasOutage)")
+            NotificationCenter.default.postNotificationNameAsync(OutageDetection.outageStateDidChange, object: nil)
+        }
 
-                DispatchQueue.main.async {
-                    self.ensureCheckTimer()
-                }
-            }
+        if oldValue.shouldCheck != newValue.shouldCheck {
+            DispatchQueue.main.async { self.ensureCheckTimer() }
         }
     }
+
+    public var hasOutage: Bool { _outageState.get().hasOutage }
 
     // We only show the outage warning when we're certain there's an outage.
     // DNS lookup failures, etc. are not considered an outage.
@@ -71,8 +76,16 @@ public class OutageDetection: NSObject {
         var isOutageDetected = false
         for case let address as NSData in addresses {
             var hostname = [CChar](repeating: 0, count: Int(NI_MAXHOST))
-            if getnameinfo(address.bytes.assumingMemoryBound(to: sockaddr.self), socklen_t(address.length),
-                           &hostname, socklen_t(hostname.count), nil, 0, NI_NUMERICHOST) == 0 {
+            let result = getnameinfo(
+                address.bytes.assumingMemoryBound(to: sockaddr.self),
+                socklen_t(address.length),
+                &hostname,
+                socklen_t(hostname.count),
+                nil,
+                0,
+                NI_NUMERICHOST
+            )
+            if result == 0 {
                 let addressString = String(cString: hostname)
                 let kHealthyAddress = "127.0.0.1"
                 let kOutageAddress = "127.0.0.2"
@@ -94,7 +107,13 @@ public class OutageDetection: NSObject {
         Logger.info("")
 
         DispatchQueue.global().async {
-            self.hasOutage = self.checkForOutageSync()
+            let hasOutage = self.checkForOutageSync()
+            self.updateOutageState { outageState in
+                switch outageState {
+                case .doNotCheck: break
+                case .shouldCheck: outageState = .shouldCheck(hasOutage: hasOutage)
+                }
+            }
         }
     }
 
@@ -107,38 +126,35 @@ public class OutageDetection: NSObject {
             return
         }
 
-        if shouldCheckForOutage {
-            if checkTimer != nil {
-                // Already has timer.
+        checkTimer?.invalidate()
+        checkTimer = nil
+
+        guard _outageState.get().shouldCheck else {
+            return
+        }
+
+        // The TTL of the DNS record is 60 seconds.
+        checkTimer = WeakTimer.scheduledTimer(timeInterval: 60, target: self, userInfo: nil, repeats: true) { [weak self] _ in
+            AssertIsOnMainThread()
+
+            guard CurrentAppContext().isMainAppAndActive else {
                 return
             }
 
-            // The TTL of the DNS record is 60 seconds.
-            checkTimer?.invalidate()
-            checkTimer = WeakTimer.scheduledTimer(timeInterval: 60, target: self, userInfo: nil, repeats: true) { [weak self] _ in
-                AssertIsOnMainThread()
-
-                guard CurrentAppContext().isMainAppAndActive else {
-                    return
-                }
-
-                self?.checkForOutageAsync()
-            }
-        } else {
-            checkTimer?.invalidate()
-            checkTimer = nil
-            self.hasOutage = false
+            self?.checkForOutageAsync()
         }
     }
 
-    @objc
-    public func reportConnectionSuccess() {
-        self.shouldCheckForOutage = false
-        self.hasOutage = false
+    func reportConnectionSuccess() {
+        self.updateOutageState { $0 = .doNotCheck }
     }
 
-    @objc
-    public func reportConnectionFailure() {
-        self.shouldCheckForOutage = true
+    func reportConnectionFailure() {
+        self.updateOutageState { outageState in
+            switch outageState {
+            case .doNotCheck: outageState = .shouldCheck(hasOutage: false)
+            case .shouldCheck: break
+            }
+        }
     }
 }
