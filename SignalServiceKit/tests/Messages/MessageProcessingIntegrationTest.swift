@@ -122,8 +122,8 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
             envelopeSource: .tests
         ) { error in
             switch error {
-            case MessageProcessingError.duplicatePendingEnvelope?:
-                XCTFail("duplicatePendingEnvelope")
+            case MessageProcessingError.replacedEnvelope?:
+                XCTFail("replacedEnvelope")
             case .some:
                 XCTFail("failure")
             case nil:

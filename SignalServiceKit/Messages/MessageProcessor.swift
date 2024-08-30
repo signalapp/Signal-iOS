@@ -259,15 +259,12 @@ public class MessageProcessor: NSObject {
     }
 
     private func processReceivedEnvelope(_ receivedEnvelope: ReceivedEnvelope, envelopeSource: EnvelopeSource) {
-        let result = pendingEnvelopes.enqueue(receivedEnvelope)
-        switch result {
-        case .duplicate:
-            let envelope = receivedEnvelope.envelope
-            Logger.warn("Duplicate envelope \(envelope.timestamp). Server timestamp: \(envelope.serverTimestamp), serverGuid: \(envelope.serverGuid ?? "nil"), EnvelopeSource: \(envelopeSource).")
-            receivedEnvelope.completion(MessageProcessingError.duplicatePendingEnvelope)
-        case .enqueued:
-            drainPendingEnvelopes()
+        let replacedEnvelope = pendingEnvelopes.enqueue(receivedEnvelope)
+        if let replacedEnvelope {
+            Logger.warn("Replaced \(replacedEnvelope.envelope.timestamp) serverGuid: \(replacedEnvelope.envelope.serverGuid as Optional)")
+            replacedEnvelope.completion(MessageProcessingError.replacedEnvelope)
         }
+        drainPendingEnvelopes()
     }
 
     public var queuedContentCount: Int {
@@ -463,7 +460,7 @@ public class MessageProcessor: NSObject {
             // Success.
             return .shouldAck
         }
-        if case MessageProcessingError.duplicatePendingEnvelope = error {
+        if case MessageProcessingError.replacedEnvelope = error {
             // _DO NOT_ ACK if de-duplicated before decryption.
             return .shouldNotAck(error: error)
         } else if case MessageProcessingError.blockedSender = error {
@@ -848,21 +845,16 @@ private class PendingEnvelopes {
         }
     }
 
-    enum EnqueueResult {
-        case duplicate
-        case enqueued
-    }
-
-    func enqueue(_ receivedEnvelope: ReceivedEnvelope) -> EnqueueResult {
-        unfairLock.withLock {
-            for pendingEnvelope in pendingEnvelopes {
-                if pendingEnvelope.isDuplicateOf(receivedEnvelope) {
-                    return .duplicate
-                }
+    func enqueue(_ receivedEnvelope: ReceivedEnvelope) -> ReceivedEnvelope? {
+        return unfairLock.withLock { () -> ReceivedEnvelope? in
+            if let indexToReplace = pendingEnvelopes.firstIndex(where: { receivedEnvelope.isDuplicateOf($0) }) {
+                let replacedEnvelope = pendingEnvelopes[indexToReplace]
+                pendingEnvelopes[indexToReplace] = receivedEnvelope
+                return replacedEnvelope
+            } else {
+                pendingEnvelopes.append(receivedEnvelope)
+                return nil
             }
-            pendingEnvelopes.append(receivedEnvelope)
-
-            return .enqueued
         }
     }
 }
@@ -872,6 +864,6 @@ private class PendingEnvelopes {
 public enum MessageProcessingError: Error {
     case wrongDestinationUuid
     case invalidMessageTypeForDestinationUuid
-    case duplicatePendingEnvelope
+    case replacedEnvelope
     case blockedSender
 }
