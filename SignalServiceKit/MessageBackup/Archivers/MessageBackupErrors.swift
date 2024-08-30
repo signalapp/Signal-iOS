@@ -267,12 +267,16 @@ extension MessageBackup {
         public enum ErrorType {
             /// Error iterating over all threads for backup purposes.
             case threadIteratorError(RawError)
+            /// We fetched a thread (via the iterator) with no sqlite row id.
+            case fetchedThreadMissingRowId
 
             /// Some unrecognized thread was found when iterating over all threads.
             case unrecognizedThreadType
 
             /// Error iterating over all interactions for backup purposes.
             case interactionIteratorError(RawError)
+            /// We fetched an interaction (via the iterator) with no sqlite row id.
+            case fetchedInteractionMissingRowId
 
             /// These should never happen; it means some invariant in the backup code
             /// we could not enforce with the type system was broken. Nothing was wrong with

@@ -108,6 +108,12 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         _ message: TSMessage,
         context: MessageBackup.RecipientArchivingContext
     ) -> ArchiveInteractionResult<ChatItemType> {
+        guard let messageRowId = message.sqliteRowId else {
+            return .completeFailure(.fatalArchiveError(
+                .fetchedInteractionMissingRowId
+            ))
+        }
+
         if let paymentMessage = message as? OWSPaymentMessage {
             return archivePaymentMessageContents(
                 paymentMessage,
@@ -125,10 +131,18 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                 message,
                 context: context
             )
-        } else if let messageBody = message.body {
-            return archiveStandardMessageContents(
+        } else if let contactShare = message.contactShare {
+            return archiveContactShareMessageContents(
                 message,
-                messageBody: messageBody,
+                contactShare: contactShare,
+                messageRowId: messageRowId,
+                context: context
+            )
+        } else if let messageSticker = message.messageSticker {
+            return archiveStickerMessageContents(
+                message,
+                messageSticker: messageSticker,
+                messageRowId: messageRowId,
                 context: context
             )
         } else if let giftBadge = message.giftBadge {
@@ -137,8 +151,12 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                 context: context
             )
         } else {
-            // TODO: [Backups] Handle non-standard messages.
-            return .notYetImplemented
+            return archiveStandardMessageContents(
+                message,
+                messageRowId: messageRowId,
+                messageBody: message.body,
+                context: context
+            )
         }
     }
 
@@ -225,9 +243,15 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
 
     private func archiveStandardMessageContents(
         _ message: TSMessage,
-        messageBody: String,
+        messageRowId: Int64,
+        messageBody: String?,
         context: MessageBackup.RecipientArchivingContext
     ) -> ArchiveInteractionResult<ChatItemType> {
+        guard let messageBody else {
+            // TODO: [Backups] implement restore of attachment-only messages.
+            return .notYetImplemented
+        }
+
         var standardMessage = BackupProto_StandardMessage()
         var partialErrors = [ArchiveFrameError]()
 
@@ -368,6 +392,26 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         // TODO: [Backups] Set attachments on the quote
 
         return .success(quote)
+    }
+
+    // MARK: -
+
+    private func archiveContactShareMessageContents(
+        _ message: TSMessage,
+        contactShare: OWSContact,
+        messageRowId: Int64,
+        context: MessageBackup.RecipientArchivingContext
+    ) -> ArchiveInteractionResult<ChatItemType> {
+        return .notYetImplemented
+    }
+
+    private func archiveStickerMessageContents(
+        _ message: TSMessage,
+        messageSticker: MessageSticker,
+        messageRowId: Int64,
+        context: MessageBackup.RecipientArchivingContext
+    ) -> ArchiveInteractionResult<ChatItemType> {
+        return .notYetImplemented
     }
 
     // MARK: -

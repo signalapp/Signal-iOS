@@ -131,7 +131,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
 
         guard let threadRowId = thread.sqliteRowId else {
             return .completeFailure(.fatalArchiveError(
-                .threadIteratorError(OWSAssertionError("Missing thread row id"))
+                .fetchedThreadMissingRowId
             ))
         }
 
@@ -173,7 +173,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
 
         guard let threadRowId = thread.sqliteRowId else {
             return .completeFailure(.fatalArchiveError(
-                .threadIteratorError(OWSAssertionError("Missing thread row id"))
+                .fetchedThreadMissingRowId
             ))
         }
 
@@ -203,7 +203,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
 
         guard let threadRowId = thread.sqliteRowId else {
             return .completeFailure(.fatalArchiveError(
-                .threadIteratorError(OWSAssertionError("Missing thread row id"))
+                .fetchedThreadMissingRowId
             ))
         }
 
