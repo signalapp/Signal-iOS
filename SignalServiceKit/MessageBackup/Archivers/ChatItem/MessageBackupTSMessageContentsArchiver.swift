@@ -87,7 +87,9 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
     private let interactionStore: InteractionStore
     private let archivedPaymentStore: ArchivedPaymentStore
     private let attachmentsArchiver: MessageBackupMessageAttachmentArchiver
-    private let contactAttachmentArchiver = MessageBackupContactAttachmentArchiver()
+    private lazy var contactAttachmentArchiver = MessageBackupContactAttachmentArchiver(
+        attachmentsArchiver: attachmentsArchiver
+    )
     private let reactionArchiver: MessageBackupReactionArchiver
 
     init(
@@ -471,7 +473,41 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         messageRowId: Int64,
         context: MessageBackup.RecipientArchivingContext
     ) -> ArchiveInteractionResult<ChatItemType> {
-        return .notYetImplemented
+        var partialErrors = [ArchiveFrameError]()
+
+        var proto = BackupProto_ContactMessage()
+
+        let contactResult = contactAttachmentArchiver.archiveContact(
+            contactShare,
+            uniqueInteractionId: message.uniqueInteractionId,
+            messageRowId: messageRowId,
+            context: context
+        )
+        switch contactResult.bubbleUp(ChatItemType.self, partialErrors: &partialErrors) {
+        case .continue(let contactProto):
+            proto.contact = [contactProto]
+        case .bubbleUpError(let errorResult):
+            return errorResult
+        }
+
+        let reactions: [BackupProto_Reaction]
+        let reactionsResult = reactionArchiver.archiveReactions(
+            message,
+            context: context
+        )
+        switch reactionsResult.bubbleUp(ChatItemType.self, partialErrors: &partialErrors) {
+        case .continue(let values):
+            reactions = values
+        case .bubbleUpError(let errorResult):
+            return errorResult
+        }
+        proto.reactions = reactions
+
+        if partialErrors.isEmpty {
+            return .success(.contactMessage(proto))
+        } else {
+            return .partialFailure(.contactMessage(proto), partialErrors)
+        }
     }
 
     private func archiveStickerMessageContents(

@@ -61,6 +61,18 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
         )
     }
 
+    public func archiveContactShareAvatarAttachment(
+        messageId: MessageBackup.InteractionUniqueId,
+        messageRowId: Int64,
+        context: MessageBackup.ArchivingContext
+    ) -> MessageBackup.ArchiveInteractionResult<BackupProto_FilePointer?> {
+        return self.archiveSingleAttachment(
+            ownerType: .contactAvatar,
+            messageRowId: messageRowId,
+            context: context
+        )
+    }
+
     public func archiveStickerAttachment(
         messageId: MessageBackup.InteractionUniqueId,
         messageRowId: Int64,

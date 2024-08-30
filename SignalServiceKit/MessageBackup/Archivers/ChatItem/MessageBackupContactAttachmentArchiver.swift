@@ -10,11 +10,19 @@ internal class MessageBackupContactAttachmentArchiver: MessageBackupProtoArchive
     typealias RestoreInteractionResult = MessageBackup.RestoreInteractionResult
     private typealias RestoreFrameError = MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>
 
-    init() {}
+    private let attachmentsArchiver: MessageBackupMessageAttachmentArchiver
+
+    init(
+        attachmentsArchiver: MessageBackupMessageAttachmentArchiver
+    ) {
+        self.attachmentsArchiver = attachmentsArchiver
+    }
 
     func archiveContact(
         _ contact: OWSContact,
-        uniqueInteractionId: MessageBackup.InteractionUniqueId
+        uniqueInteractionId: MessageBackup.InteractionUniqueId,
+        messageRowId: Int64,
+        context: MessageBackup.ArchivingContext
     ) -> MessageBackup.ArchiveInteractionResult<BackupProto_ContactAttachment> {
         let resultType = BackupProto_ContactAttachment.self
         var partialErrors = [ArchiveFrameError]()
@@ -65,7 +73,18 @@ internal class MessageBackupContactAttachmentArchiver: MessageBackupProtoArchive
             contactProto.organization = organization
         }
 
-        // TODO: [Backups] archive the avatar FilePointer
+        // Returns nil if no avatar; this is both how we check existence and how we archive.
+        let avatarResult = attachmentsArchiver.archiveContactShareAvatarAttachment(
+            messageId: uniqueInteractionId,
+            messageRowId: messageRowId,
+            context: context
+        )
+        switch avatarResult.bubbleUp(BackupProto_ContactAttachment.self, partialErrors: &partialErrors) {
+        case .continue(let avatarPointerProto):
+            avatarPointerProto.map { contactProto.avatar = $0 }
+        case .bubbleUpError(let errorResult):
+            return errorResult
+        }
 
         if partialErrors.isEmpty {
             return .success(contactProto)
