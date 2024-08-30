@@ -592,12 +592,12 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
         // Enqueue downloads for all the attachments.
 
-        // TODO[Backups]: do this in a separate write transaction after we query the list media
+        // TODO: [Backups] do this in a separate write transaction after we query the list media
         // tier attachments endpoint. We may be missing cdn number info for backup attachments
         // that we can retrieve via the list; also we can cancel the download of attachments
         // not in the list endpoint's results. We need to make the list endpoint request durably.
 
-        // TODO[Backups]: enqueue download of transit tier attachments where backup tier unavailable
+        // TODO: [Backups] enqueue download of transit tier attachments where backup tier unavailable
         // and wasDownloaded=true.
         let nowMs = dateProvider().ows_millisecondsSince1970
         let shouldDownloadAllFullsize = backupAttachmentDownloadStore.getShouldStoreAllMediaLocally(tx: tx)

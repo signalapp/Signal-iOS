@@ -225,9 +225,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         case .partialFailure(let deets, let errors):
             details = deets
             partialErrors.append(contentsOf: errors)
-        case
-                .skippableChatUpdate,
-                .notYetImplemented:
+        case .skippableChatUpdate:
             // Skip! Say it succeeded so we ignore it.
             return .success
         case .messageFailure(let errors):

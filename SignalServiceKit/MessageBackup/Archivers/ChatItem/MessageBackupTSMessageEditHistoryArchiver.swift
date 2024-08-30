@@ -214,7 +214,7 @@ final class MessageBackupTSMessageEditHistoryArchiver<MessageType: TSMessage>
                 continue
             case .completeFailure(let fatalError):
                 return .completeFailure(fatalError)
-            case .skippableChatUpdate, .notYetImplemented:
+            case .skippableChatUpdate:
                 // This should never happen for an edit revision!
                 continue
             }

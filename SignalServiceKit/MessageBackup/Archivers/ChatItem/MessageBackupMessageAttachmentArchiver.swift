@@ -59,6 +59,8 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
             pointers.append(attachmentProto)
         }
 
+        // TODO: [Backups] enqueue the attachments to be uploaded
+
         return .success(pointers)
     }
 
@@ -108,6 +110,8 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
         attachmentProto.flag = referencedAttachment.reference.renderingFlag.asBackupProtoFlag
         attachmentProto.wasDownloaded = referencedAttachment.attachment.asStream() != nil
         // NOTE: clientUuid is unecessary for quoted reply attachments.
+
+        // TODO: [Backups] enqueue the attachment to be uploaded
 
         return .success(attachmentProto)
     }
@@ -372,6 +376,9 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
         }
 
         let isFreeTierBackup = Self.isFreeTierBackup()
+
+        // TODO: [Backups] enqueue the attachment to be uploaded
+
         return .success(referencedAttachment.asBackupFilePointer(isFreeTierBackup: isFreeTierBackup))
     }
 

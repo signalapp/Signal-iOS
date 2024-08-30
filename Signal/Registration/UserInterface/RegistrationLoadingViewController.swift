@@ -31,7 +31,7 @@ class RegistrationLoadingViewController: OWSViewController {
                     comment: "Label for a progress spinner currently validating code"
                 )
             case .restoringBackup:
-                // TODO[Backups]: localize
+                // TODO: [Backups] localize
                 return "Restoring from backup…"
                 // comment: "Label for a progress spinner when restoring from backup"
             }

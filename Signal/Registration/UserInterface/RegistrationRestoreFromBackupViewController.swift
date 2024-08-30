@@ -27,7 +27,7 @@ class RegistrationRestoreFromBackupViewController: OWSViewController {
 
     // MARK: Rendering
 
-    // TODO[Backups]: localize
+    // TODO: [Backups] localize
     private lazy var titleLabel: UILabel = {
         let result = UILabel.titleLabelForRegistration(
             text: "Restore from backup"
@@ -36,7 +36,7 @@ class RegistrationRestoreFromBackupViewController: OWSViewController {
         return result
     }()
 
-    // TODO[Backups]: localize
+    // TODO: [Backups] localize
     private lazy var explanationLabel: UILabel = {
         let result = UILabel.explanationLabelForRegistration(text:
             "Restore message history from a local backup. Only media sent or received in the past 30 days is included."
@@ -129,7 +129,7 @@ class RegistrationRestoreFromBackupViewController: OWSViewController {
         return button
     }
 
-    // TODO[Backups]: localize
+    // TODO: [Backups] localize
     private lazy var restoreFromBackupButton = choiceButton(
         title: "Restore Signal Backup",
         // comment: "The title for the device transfer 'choice' view 'transfer' option"
@@ -140,7 +140,7 @@ class RegistrationRestoreFromBackupViewController: OWSViewController {
         selector: #selector(didSelectRestoreLocal)
     )
 
-    // TODO[Backups]: localize
+    // TODO: [Backups] localize
     private lazy var continueButton = choiceButton(
         title: "Continue without restoring",
         // comment: "The title for the device transfer 'choice' view 'transfer' option"

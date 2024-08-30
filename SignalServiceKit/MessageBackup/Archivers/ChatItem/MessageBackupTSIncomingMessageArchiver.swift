@@ -259,19 +259,16 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
                 wasReceivedByUD: incomingDetails.sealedSender,
                 // TODO: [Backups] pass along if this is view once after proto field is added
                 isViewOnceMessage: false,
-                // TODO: [Backups] always treat view-once media in Backups as viewed
+                // TODO: [Backups] restore viewed view-once messages after proto field is added
                 isViewOnceComplete: false,
                 wasRemotelyDeleted: false,
                 storyAuthorAci: nil,
                 storyTimestamp: nil,
                 storyReactionEmoji: nil,
                 quotedMessage: nil,
-                // TODO: [Backups] restore contact shares
                 contactShare: nil,
                 linkPreview: nil,
-                // TODO: [Backups] restore message stickers
                 messageSticker: nil,
-                // TODO: [Backups] restore gift badges
                 giftBadge: nil,
                 paymentNotification: nil
             )

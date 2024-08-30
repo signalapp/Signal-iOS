@@ -164,9 +164,6 @@ extension MessageBackup {
         /// We intentionally skip archiving some chat-update interactions.
         case skippableChatUpdate(SkippableChatUpdate)
 
-        // TODO: [Backups] Remove this once we flesh out implementation for all interactions.
-        case notYetImplemented
-
         // MARK: Errors
 
         /// Some portion of the interaction failed to archive, but we can still archive the rest of it.
@@ -244,8 +241,6 @@ extension MessageBackup.ArchiveInteractionResult {
         // These types are just bubbled up as-is
         case .skippableChatUpdate(let skippableChatUpdate):
             return .bubbleUpError(.skippableChatUpdate(skippableChatUpdate))
-        case .notYetImplemented:
-            return .bubbleUpError(.notYetImplemented)
         case .completeFailure(let error):
             return .bubbleUpError(.completeFailure(error))
 

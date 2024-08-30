@@ -260,8 +260,7 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
 
             outgoingDetails.sendStatus.append(sendStatus)
 
-            // TODO: [Backups] I think this check is inverted
-            if sendState.wasSentByUD.negated {
+            if sendState.wasSentByUD {
                 wasAnySendSealedSender = true
             }
         }
@@ -449,12 +448,11 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
                 // Backed up messages don't set the chat timer; version is irrelevant.
                 expireTimerVersion: nil,
                 expireStartedAt: chatItem.expireStartDate,
-                // TODO: [Backups] set true if this has a single body attachment w/ voice message flag
                 isVoiceMessage: false,
                 groupMetaMessage: .unspecified,
                 // TODO: [Backups] pass along if this is view once after proto field is added
                 isViewOnceMessage: false,
-                // TODO: [Backups] always treat view-once media in Backups as viewed
+                // TODO: [Backups] restore viewed view-once messages after proto field is added
                 isViewOnceComplete: false,
                 wasRemotelyDeleted: false,
                 changeActionsProtoData: nil,
@@ -463,13 +461,9 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
                 storyTimestamp: nil,
                 storyReactionEmoji: nil,
                 quotedMessage: nil,
-                // TODO: [Backups] restore contact shares
                 contactShare: nil,
-                // TODO: [Backups] restore link previews
                 linkPreview: nil,
-                // TODO: [Backups] restore message stickers
                 messageSticker: nil,
-                // TODO: [Backups] restore gift badges
                 giftBadge: nil
             )
 
@@ -488,6 +482,8 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
                 outgoingMessageBuilder.messageBody = text.body?.text
                 outgoingMessageBuilder.bodyRanges = text.body?.ranges
                 outgoingMessageBuilder.quotedMessage = text.quotedMessage
+                outgoingMessageBuilder.linkPreview = text.linkPreview
+                outgoingMessageBuilder.isVoiceMessage = text.isVoiceMessage
             case .contactShare(let contactShare):
                 outgoingMessageBuilder.contactShare = contactShare.contact
             case .stickerMessage(let stickerMessage):

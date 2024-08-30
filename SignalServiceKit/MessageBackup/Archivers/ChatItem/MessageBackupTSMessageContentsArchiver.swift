@@ -36,6 +36,7 @@ extension MessageBackup {
             let body: MessageBody?
             let quotedMessage: TSQuotedMessage?
             let linkPreview: OWSLinkPreview?
+            let isVoiceMessage: Bool
 
             fileprivate let reactions: [BackupProto_Reaction]
             fileprivate let oversizeTextAttachment: BackupProto_FilePointer?
@@ -1033,6 +1034,16 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         }
         let text = standardMessage.text
 
+        let isVoiceMessage: Bool
+        if
+            standardMessage.attachments.count == 1,
+            standardMessage.attachments.first?.flag == .voiceMessage
+        {
+            isVoiceMessage = true
+        } else {
+            isVoiceMessage = false
+        }
+
         let messageBodyResult = restoreMessageBody(text, chatItemId: chatItemId)
         switch messageBodyResult {
         case .success(let body):
@@ -1040,6 +1051,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                 body: body,
                 quotedMessage: quotedMessage,
                 linkPreview: linkPreview,
+                isVoiceMessage: isVoiceMessage,
                 reactions: standardMessage.reactions,
                 oversizeTextAttachment: oversizeTextAttachment,
                 bodyAttachments: standardMessage.attachments,
@@ -1057,6 +1069,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                     body: body,
                     quotedMessage: quotedMessage,
                     linkPreview: linkPreview,
+                    isVoiceMessage: isVoiceMessage,
                     reactions: standardMessage.reactions,
                     oversizeTextAttachment: oversizeTextAttachment,
                     bodyAttachments: standardMessage.attachments,
