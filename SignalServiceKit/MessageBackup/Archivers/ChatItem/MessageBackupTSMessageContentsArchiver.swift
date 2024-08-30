@@ -268,6 +268,19 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         }
         standardMessage.text = text
 
+        // Returns nil if no oversize text; this is both how we check and how we archive.
+        let oversizeTextResult = attachmentsArchiver.archiveOversizeTextAttachment(
+            messageRowId: messageRowId,
+            messageId: message.uniqueInteractionId,
+            context: context
+        )
+        switch oversizeTextResult.bubbleUp(ChatItemType.self, partialErrors: &partialErrors) {
+        case .continue(let oversizeTextAttachmentProto):
+            oversizeTextAttachmentProto.map { standardMessage.longText = $0 }
+        case .bubbleUpError(let errorResult):
+            return errorResult
+        }
+
         if let quotedMessage = message.quotedMessage {
             let quote: BackupProto_Quote
             let quoteResult = archiveQuote(

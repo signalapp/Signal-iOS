@@ -37,6 +37,18 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
         return .success([])
     }
 
+    public func archiveOversizeTextAttachment(
+        messageRowId: Int64,
+        messageId: MessageBackup.InteractionUniqueId,
+        context: MessageBackup.ArchivingContext
+    ) -> MessageBackup.ArchiveInteractionResult<BackupProto_FilePointer?> {
+        return self.archiveSingleAttachment(
+            ownerType: .oversizeText,
+            messageRowId: messageRowId,
+            context: context
+        )
+    }
+
     // MARK: Restoring
 
     public func restoreBodyAttachments(
@@ -241,6 +253,8 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
         )
     }
 
+    // MARK: - Private
+
     internal static func uploadEra() throws -> String {
         // TODO: [Backups] use actual subscription id. For now use a fixed,
         // arbitrary id, so that it never changes.
@@ -253,6 +267,28 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
         // if so we only use the AttachmentLocator instead of BackupLocator.
         return false
     }
+
+    // MARK: Archiving
+
+    private func archiveSingleAttachment(
+        ownerType: AttachmentReference.MessageOwnerTypeRaw,
+        messageRowId: Int64,
+        context: MessageBackup.ArchivingContext
+    ) -> MessageBackup.ArchiveInteractionResult<BackupProto_FilePointer?> {
+        guard
+            let referencedAttachment = attachmentStore.fetchFirstReferencedAttachment(
+                for: ownerType.with(messageRowId: messageRowId),
+                tx: context.tx
+            )
+        else {
+            return .success(nil)
+        }
+
+        let isFreeTierBackup = Self.isFreeTierBackup()
+        return .success(referencedAttachment.asBackupFilePointer(isFreeTierBackup: isFreeTierBackup))
+    }
+
+    // MARK: Restoring
 
     private func restoreAttachments(
         _ attachments: [OwnedAttachmentBackupPointerProto],
