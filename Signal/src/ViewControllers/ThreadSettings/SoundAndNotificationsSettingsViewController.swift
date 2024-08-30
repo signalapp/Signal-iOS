@@ -34,7 +34,7 @@ class SoundAndNotificationsSettingsViewController: OWSTableViewController2 {
                 return OWSTableItem.newCell()
             }
 
-            let sound = Sounds.notificationSoundForThread(self.threadViewModel.threadRecord)
+            let sound = Sounds.notificationSoundWithSneakyTransaction(forThreadUniqueId: self.threadViewModel.threadRecord.uniqueId)
             let cell = OWSTableItem.buildCell(
                 icon: .chatSettingsMessageSound,
                 itemName: OWSLocalizedString(

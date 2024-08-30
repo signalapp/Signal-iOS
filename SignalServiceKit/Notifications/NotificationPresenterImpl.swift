@@ -373,20 +373,17 @@ public class NotificationPresenterImpl: NotificationPresenter {
             interaction = wrapper
         }
 
+        let threadUniqueId = thread.uniqueId
         enqueueNotificationAction {
-            let notificationSuppressionRule = await self.notificationSuppressionRuleIfMainAppAndActive()
-            let sound = self.requestSound(for: thread, isMainAppAndActive: notificationSuppressionRule != nil)
-            await self.presenter.notify(
+            await self.notifyViaPresenter(
                 category: category,
                 title: callPreview?.notificationTitle,
                 body: notificationBody,
                 threadIdentifier: callPreview?.threadIdentifier,
                 userInfo: userInfo,
                 interaction: interaction,
-                sound: sound,
-                replacingIdentifier: notificationInfo.groupingId.uuidString,
-                isMainAppAndActive: notificationSuppressionRule != nil,
-                notificationSuppressionRule: notificationSuppressionRule ?? .none
+                soundQuery: .thread(threadUniqueId),
+                replacingIdentifier: notificationInfo.groupingId.uuidString
             )
         }
     }
@@ -403,20 +400,17 @@ public class NotificationPresenterImpl: NotificationPresenter {
             AppNotificationUserInfoKey.threadId: thread.uniqueId
         ]
 
+        let threadUniqueId = thread.uniqueId
         enqueueNotificationAction {
-            let notificationSuppressionRule = await self.notificationSuppressionRuleIfMainAppAndActive()
-            let sound = self.requestSound(for: thread, isMainAppAndActive: notificationSuppressionRule != nil)
-            await self.presenter.notify(
+            await self.notifyViaPresenter(
                 category: .missedCallFromNoLongerVerifiedIdentity,
                 title: callPreview?.notificationTitle,
                 body: notificationBody,
                 threadIdentifier: callPreview?.threadIdentifier,
                 userInfo: userInfo,
                 interaction: nil,
-                sound: sound,
-                replacingIdentifier: notificationInfo.groupingId.uuidString,
-                isMainAppAndActive: notificationSuppressionRule != nil,
-                notificationSuppressionRule: notificationSuppressionRule ?? .none
+                soundQuery: .thread(threadUniqueId),
+                replacingIdentifier: notificationInfo.groupingId.uuidString
             )
         }
     }
@@ -436,20 +430,18 @@ public class NotificationPresenterImpl: NotificationPresenter {
             ? .missedCallWithActions
             : .missedCallWithoutActions
         )
+
+        let threadUniqueId = thread.uniqueId
         enqueueNotificationAction {
-            let notificationSuppressionRule = await self.notificationSuppressionRuleIfMainAppAndActive()
-            let sound = self.requestSound(for: thread, isMainAppAndActive: notificationSuppressionRule != nil)
-            await self.presenter.notify(
+            await self.notifyViaPresenter(
                 category: category,
                 title: callPreview?.notificationTitle,
                 body: notificationBody,
                 threadIdentifier: callPreview?.threadIdentifier,
                 userInfo: userInfo,
                 interaction: nil,
-                sound: sound,
-                replacingIdentifier: notificationInfo.groupingId.uuidString,
-                isMainAppAndActive: notificationSuppressionRule != nil,
-                notificationSuppressionRule: notificationSuppressionRule ?? .none
+                soundQuery: .thread(threadUniqueId),
+                replacingIdentifier: notificationInfo.groupingId.uuidString
             )
         }
     }
@@ -652,24 +644,21 @@ public class NotificationPresenterImpl: NotificationPresenter {
             interaction = wrapper
         }
 
+        let threadUniqueId = thread.uniqueId
+        let editTargetUniqueId = editTarget?.uniqueId
         enqueueNotificationAction {
-            if let editTarget, await !self.presenter.replaceNotification(messageId: editTarget.uniqueId) {
+            if let editTargetUniqueId, await !self.presenter.replaceNotification(messageId: editTargetUniqueId) {
                 // The original notification was already dismissed. Don't show the edited one either.
                 return
             }
-
-            let notificationSuppressionRule = await self.notificationSuppressionRuleIfMainAppAndActive()
-            let sound = (editTarget != nil) ? nil : self.requestSound(for: thread, isMainAppAndActive: notificationSuppressionRule != nil)
-            await self.presenter.notify(
+            await self.notifyViaPresenter(
                 category: category,
                 title: notificationTitle,
                 body: notificationBody,
                 threadIdentifier: threadIdentifier,
                 userInfo: userInfo,
                 interaction: interaction,
-                sound: sound,
-                isMainAppAndActive: notificationSuppressionRule != nil,
-                notificationSuppressionRule: notificationSuppressionRule ?? .none
+                soundQuery: (editTargetUniqueId != nil) ? .none : .thread(threadUniqueId)
             )
         }
     }
@@ -791,19 +780,16 @@ public class NotificationPresenterImpl: NotificationPresenter {
             interaction = wrapper
         }
 
+        let threadUniqueId = thread.uniqueId
         enqueueNotificationAction {
-            let notificationSuppressionRule = await self.notificationSuppressionRuleIfMainAppAndActive()
-            let sound = self.requestSound(for: thread, isMainAppAndActive: notificationSuppressionRule != nil)
-            await self.presenter.notify(
+            await self.notifyViaPresenter(
                 category: category,
                 title: notificationTitle,
                 body: notificationBody,
-                threadIdentifier: thread.uniqueId,
+                threadIdentifier: threadUniqueId,
                 userInfo: userInfo,
                 interaction: interaction,
-                sound: sound,
-                isMainAppAndActive: notificationSuppressionRule != nil,
-                notificationSuppressionRule: notificationSuppressionRule ?? .none
+                soundQuery: .thread(threadUniqueId)
             )
         }
     }
@@ -825,18 +811,14 @@ public class NotificationPresenterImpl: NotificationPresenter {
         ]
 
         enqueueNotificationAction {
-            let notificationSuppressionRule = await self.notificationSuppressionRuleIfMainAppAndActive()
-            let sound = self.requestSound(for: thread, isMainAppAndActive: notificationSuppressionRule != nil)
-            await self.presenter.notify(
+            await self.notifyViaPresenter(
                 category: .infoOrErrorMessage,
                 title: notificationTitle,
                 body: notificationBody,
                 threadIdentifier: nil, // show ungrouped
                 userInfo: userInfo,
                 interaction: nil,
-                sound: sound,
-                isMainAppAndActive: notificationSuppressionRule != nil,
-                notificationSuppressionRule: notificationSuppressionRule ?? .none
+                soundQuery: .thread(threadId)
             )
         }
     }
@@ -859,8 +841,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         let message = String(format: messageFormat, errorString)
 
         enqueueNotificationAction {
-            let notificationSuppressionRule = await self.notificationSuppressionRuleIfMainAppAndActive()
-            await self.presenter.notify(
+            await self.notifyViaPresenter(
                 category: .internalError,
                 title: title,
                 body: message,
@@ -869,9 +850,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
                     AppNotificationUserInfoKey.defaultAction: AppNotificationAction.submitDebugLogs.rawValue
                 ],
                 interaction: nil,
-                sound: self.requestGlobalSound(isMainAppAndActive: notificationSuppressionRule != nil),
-                isMainAppAndActive: notificationSuppressionRule != nil,
-                notificationSuppressionRule: notificationSuppressionRule ?? .none
+                soundQuery: .global
             )
         }
     }
@@ -898,18 +877,14 @@ public class NotificationPresenterImpl: NotificationPresenter {
         ]
 
         enqueueNotificationAction {
-            let notificationSuppressionRule = await self.notificationSuppressionRuleIfMainAppAndActive()
-            let sound = self.requestSound(for: thread, isMainAppAndActive: notificationSuppressionRule != nil)
-            await self.presenter.notify(
+            await self.notifyViaPresenter(
                 category: .infoOrErrorMessage,
                 title: notificationTitle,
                 body: notificationBody,
                 threadIdentifier: nil, // show ungrouped
                 userInfo: userInfo,
                 interaction: nil,
-                sound: sound,
-                isMainAppAndActive: notificationSuppressionRule != nil,
-                notificationSuppressionRule: notificationSuppressionRule ?? .none
+                soundQuery: .thread(threadId)
             )
         }
     }
@@ -1083,18 +1058,14 @@ public class NotificationPresenterImpl: NotificationPresenter {
         }
 
         enqueueNotificationAction(afterCommitting: transaction) {
-            let notificationSuppressionRule = await self.notificationSuppressionRuleIfMainAppAndActive()
-            let sound = wantsSound ? self.requestSound(for: thread, isMainAppAndActive: notificationSuppressionRule != nil) : nil
-            await self.presenter.notify(
+            await self.notifyViaPresenter(
                 category: .infoOrErrorMessage,
                 title: notificationTitle,
                 body: notificationBody,
                 threadIdentifier: threadIdentifier,
                 userInfo: userInfo,
                 interaction: interaction,
-                sound: sound,
-                isMainAppAndActive: notificationSuppressionRule != nil,
-                notificationSuppressionRule: notificationSuppressionRule ?? .none
+                soundQuery: wantsSound ? .thread(threadId) : .none
             )
         }
     }
@@ -1145,8 +1116,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         let storyMessageId = storyMessage.uniqueId
 
         enqueueNotificationAction(afterCommitting: transaction) {
-            let notificationSuppressionRule = await self.notificationSuppressionRuleIfMainAppAndActive()
-            await self.presenter.notify(
+            await self.notifyViaPresenter(
                 category: .failedStorySend,
                 title: notificationTitle,
                 body: notificationBody,
@@ -1156,9 +1126,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
                     AppNotificationUserInfoKey.storyMessageId: storyMessageId
                 ],
                 interaction: interaction,
-                sound: self.requestGlobalSound(isMainAppAndActive: notificationSuppressionRule != nil),
-                isMainAppAndActive: notificationSuppressionRule != nil,
-                notificationSuppressionRule: notificationSuppressionRule ?? .none
+                soundQuery: .global
             )
         }
     }
@@ -1169,8 +1137,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
             comment: "Notification prompting the user to relaunch Signal after a device transfer completed."
         )
         enqueueNotificationAction {
-            let notificationSuppressionRule = await self.notificationSuppressionRuleIfMainAppAndActive()
-            await self.presenter.notify(
+            await self.notifyViaPresenter(
                 category: .transferRelaunch,
                 title: nil,
                 body: notificationBody,
@@ -1181,10 +1148,8 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 interaction: nil,
                 // Use a default sound so we don't read from
                 // the db (which doesn't work until we relaunch)
-                sound: .standard(.note),
-                forceBeforeRegistered: true,
-                isMainAppAndActive: notificationSuppressionRule != nil,
-                notificationSuppressionRule: notificationSuppressionRule ?? .none
+                soundQuery: .constant(.standard(.note)),
+                forceBeforeRegistered: true
             )
             completion()
         }
@@ -1200,8 +1165,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
             comment: "Notification warning the user that they have been de-registered."
         )
         enqueueNotificationAction(afterCommitting: transaction) {
-            let notificationSuppressionRule = await self.notificationSuppressionRuleIfMainAppAndActive()
-            await self.presenter.notify(
+            await self.notifyViaPresenter(
                 category: .deregistration,
                 title: nil,
                 body: notificationBody,
@@ -1210,9 +1174,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
                     AppNotificationUserInfoKey.defaultAction: AppNotificationAction.reregister.rawValue
                 ],
                 interaction: nil,
-                sound: self.requestGlobalSound(isMainAppAndActive: notificationSuppressionRule != nil),
-                isMainAppAndActive: notificationSuppressionRule != nil,
-                notificationSuppressionRule: notificationSuppressionRule ?? .none
+                soundQuery: .global
             )
         }
     }
@@ -1221,6 +1183,51 @@ public class NotificationPresenterImpl: NotificationPresenter {
     /// actions.
     public func postGenericIncomingMessageNotification() async {
         await presenter.postGenericIncomingMessageNotification()
+    }
+
+    private enum SoundQuery {
+        case none
+        case global
+        case thread(String)
+        case constant(Sound)
+    }
+
+    private func notifyViaPresenter(
+        category: AppNotificationCategory,
+        title: String?,
+        body: String,
+        threadIdentifier: String?,
+        userInfo: [AnyHashable: Any],
+        interaction: INInteraction?,
+        soundQuery: SoundQuery,
+        replacingIdentifier: String? = nil,
+        forceBeforeRegistered: Bool = false
+    ) async {
+        let notificationSuppressionRule = await self.notificationSuppressionRuleIfMainAppAndActive()
+        let sound: Sound?
+        switch soundQuery {
+        case .none:
+            sound = nil
+        case .global:
+            sound = self.requestGlobalSound(isMainAppAndActive: notificationSuppressionRule != nil)
+        case .thread(let threadUniqueId):
+            sound = self.requestSound(forThreadUniqueId: threadUniqueId, isMainAppAndActive: notificationSuppressionRule != nil)
+        case .constant(let constantSound):
+            sound = constantSound
+        }
+        await self.presenter.notify(
+            category: category,
+            title: title,
+            body: body,
+            threadIdentifier: threadIdentifier,
+            userInfo: userInfo,
+            interaction: interaction,
+            sound: sound,
+            replacingIdentifier: replacingIdentifier,
+            forceBeforeRegistered: forceBeforeRegistered,
+            isMainAppAndActive: notificationSuppressionRule != nil,
+            notificationSuppressionRule: notificationSuppressionRule ?? .none
+        )
     }
 
     // MARK: - Cancellation
@@ -1297,8 +1304,8 @@ public class NotificationPresenterImpl: NotificationPresenter {
     private let unfairLock = UnfairLock()
     private var mostRecentNotifications = TruncatedList<UInt64>(maxLength: kAudioNotificationsThrottleCount)
 
-    private func requestSound(for thread: TSThread, isMainAppAndActive: Bool) -> Sound? {
-        return checkIfShouldPlaySound(isMainAppAndActive: isMainAppAndActive) ? Sounds.notificationSoundForThread(thread) : nil
+    private func requestSound(forThreadUniqueId threadUniqueId: String, isMainAppAndActive: Bool) -> Sound? {
+        return checkIfShouldPlaySound(isMainAppAndActive: isMainAppAndActive) ? Sounds.notificationSoundWithSneakyTransaction(forThreadUniqueId: threadUniqueId) : nil
     }
 
     private func requestGlobalSound(isMainAppAndActive: Bool) -> Sound? {

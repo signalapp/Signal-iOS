@@ -445,9 +445,9 @@ public class Sounds: Dependencies {
         keyValueStore.setUInt(sound.id, key: soundsStorageGlobalNotificationKey, transaction: transaction)
     }
 
-    public static func notificationSoundForThread(_ thread: TSThread) -> Sound {
+    public static func notificationSoundWithSneakyTransaction(forThreadUniqueId threadUniqueId: String) -> Sound {
         let soundId = databaseStorage.read { transaction in
-            return keyValueStore.getUInt(thread.uniqueId, transaction: transaction)
+            return keyValueStore.getUInt(threadUniqueId, transaction: transaction)
         }
         guard let soundId else { return globalNotificationSound }
         return soundForId(soundId)

@@ -20,7 +20,7 @@ class NotificationSettingsSoundViewController: OWSTableViewController2 {
         self.completion = completion
 
         if let thread {
-            self.originalNotificationSound = Sounds.notificationSoundForThread(thread)
+            self.originalNotificationSound = Sounds.notificationSoundWithSneakyTransaction(forThreadUniqueId: thread.uniqueId)
         } else {
             self.originalNotificationSound = Sounds.globalNotificationSound
         }
