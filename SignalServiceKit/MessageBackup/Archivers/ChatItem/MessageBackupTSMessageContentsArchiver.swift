@@ -480,7 +480,56 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         messageRowId: Int64,
         context: MessageBackup.RecipientArchivingContext
     ) -> ArchiveInteractionResult<ChatItemType> {
-        return .notYetImplemented
+        var partialErrors = [ArchiveFrameError]()
+
+        var proto = BackupProto_StickerMessage()
+
+        var stickerProto = BackupProto_Sticker()
+        stickerProto.packID = messageSticker.packId
+        stickerProto.packKey = messageSticker.packKey
+        stickerProto.stickerID = messageSticker.stickerId
+        messageSticker.emoji.map { stickerProto.emoji = $0 }
+
+        let stickerAttachmentResult = attachmentsArchiver.archiveStickerAttachment(
+            messageId: message.uniqueInteractionId,
+            messageRowId: messageRowId,
+            context: context
+        )
+
+        switch stickerAttachmentResult.bubbleUp(ChatItemType.self, partialErrors: &partialErrors) {
+        case .continue(let stickerAttachmentProto):
+            guard let stickerAttachmentProto else {
+                // We can't have a sticker without an attachment.
+                return .messageFailure(partialErrors + [.archiveFrameError(
+                    .stickerMessageMissingStickerAttachment,
+                    message.uniqueInteractionId
+                )])
+            }
+            stickerProto.data = stickerAttachmentProto
+        case .bubbleUpError(let errorResult):
+            return errorResult
+        }
+
+        proto.sticker = stickerProto
+
+        let reactions: [BackupProto_Reaction]
+        let reactionsResult = reactionArchiver.archiveReactions(
+            message,
+            context: context
+        )
+        switch reactionsResult.bubbleUp(ChatItemType.self, partialErrors: &partialErrors) {
+        case .continue(let values):
+            reactions = values
+        case .bubbleUpError(let errorResult):
+            return errorResult
+        }
+        proto.reactions = reactions
+
+        if partialErrors.isEmpty {
+            return .success(.stickerMessage(proto))
+        } else {
+            return .partialFailure(.stickerMessage(proto), partialErrors)
+        }
     }
 
     // MARK: -

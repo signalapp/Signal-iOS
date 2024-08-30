@@ -65,6 +65,9 @@ extension MessageBackup {
             /// A link preview is missing its url
             case linkPreviewMissingUrl
 
+            /// A sticker message had no associated attachment for the sticker's image contents.
+            case stickerMessageMissingStickerAttachment
+
             /// A reaction has an invalid or missing author address information, causing the
             /// reaction to be skipped.
             case invalidReactionAddress
@@ -230,6 +233,7 @@ extension MessageBackup {
                     .invalidOutgoingMessageRecipient,
                     .invalidQuoteAuthor,
                     .linkPreviewMissingUrl,
+                    .stickerMessageMissingStickerAttachment,
                     .invalidReactionAddress,
                     .emptyGroupUpdate,
                     .missingLocalProfile,
