@@ -61,6 +61,32 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
         )
     }
 
+    public func archiveQuotedReplyThumbnailAttachment(
+        messageId: MessageBackup.InteractionUniqueId,
+        messageRowId: Int64,
+        context: MessageBackup.ArchivingContext
+    ) -> MessageBackup.ArchiveInteractionResult<BackupProto_MessageAttachment?> {
+        guard
+            let referencedAttachment = attachmentStore.fetchFirstReferencedAttachment(
+                for: .quotedReplyAttachment(messageRowId: messageRowId),
+                tx: context.tx
+            )
+        else {
+            return .success(nil)
+        }
+
+        let isFreeTierBackup = Self.isFreeTierBackup()
+        let pointerProto = referencedAttachment.asBackupFilePointer(isFreeTierBackup: isFreeTierBackup)
+
+        var attachmentProto = BackupProto_MessageAttachment()
+        attachmentProto.pointer = pointerProto
+        attachmentProto.flag = referencedAttachment.reference.renderingFlag.asBackupProtoFlag
+        attachmentProto.wasDownloaded = referencedAttachment.attachment.asStream() != nil
+        // NOTE: clientUuid is unecessary for quoted reply attachments.
+
+        return .success(attachmentProto)
+    }
+
     public func archiveContactShareAvatarAttachment(
         messageId: MessageBackup.InteractionUniqueId,
         messageRowId: Int64,
@@ -393,6 +419,22 @@ extension BackupProto_MessageAttachment.Flag {
             return .borderless
         case .gif:
             return .shouldLoop
+        }
+    }
+}
+
+extension AttachmentReference.RenderingFlag {
+
+    fileprivate var asBackupProtoFlag: BackupProto_MessageAttachment.Flag {
+        switch self {
+        case .default:
+            return .none
+        case .voiceMessage:
+            return .voiceMessage
+        case .borderless:
+            return .borderless
+        case .shouldLoop:
+            return .gif
         }
     }
 }

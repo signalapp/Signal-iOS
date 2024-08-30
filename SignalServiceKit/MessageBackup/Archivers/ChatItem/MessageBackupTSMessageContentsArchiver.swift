@@ -288,6 +288,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             let quoteResult = archiveQuote(
                 quotedMessage,
                 interactionUniqueId: message.uniqueInteractionId,
+                messageRowId: messageRowId,
                 context: context
             )
             switch quoteResult.bubbleUp(ChatItemType.self, partialErrors: &partialErrors) {
@@ -375,6 +376,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
     private func archiveQuote(
         _ quotedMessage: TSQuotedMessage,
         interactionUniqueId: MessageBackup.InteractionUniqueId,
+        messageRowId: Int64,
         context: MessageBackup.RecipientArchivingContext
     ) -> ArchiveInteractionResult<BackupProto_Quote> {
         var partialErrors = [ArchiveFrameError]()
@@ -419,9 +421,65 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             }()
         }
 
-        // TODO: [Backups] Set attachments on the quote
+        if let attachmentInfo = quotedMessage.attachmentInfo() {
+            let quoteAttachmentResult = self.archiveQuoteAttachment(
+                attachmentInfo: attachmentInfo,
+                interactionUniqueId: interactionUniqueId,
+                messageRowId: messageRowId,
+                context: context
+            )
+            switch quoteAttachmentResult.bubbleUp(BackupProto_Quote.self, partialErrors: &partialErrors) {
+            case .continue(let quoteAttachmentProto):
+                quote.attachments = [quoteAttachmentProto]
+            case .bubbleUpError(let errorResult):
+                return errorResult
+            }
+        }
 
-        return .success(quote)
+        if partialErrors.isEmpty {
+            return .success(quote)
+        } else {
+            return .partialFailure(quote, partialErrors)
+        }
+    }
+
+    private func archiveQuoteAttachment(
+        attachmentInfo: OWSAttachmentInfo,
+        interactionUniqueId: MessageBackup.InteractionUniqueId,
+        messageRowId: Int64,
+        context: MessageBackup.ArchivingContext
+    ) -> MessageBackup.ArchiveInteractionResult<BackupProto_Quote.QuotedAttachment> {
+        var partialErrors = [MessageBackup.ArchiveFrameError<MessageBackup.InteractionUniqueId>]()
+
+        var proto = BackupProto_Quote.QuotedAttachment()
+        if let stubMimeType = attachmentInfo.stubMimeType {
+            proto.contentType = stubMimeType
+        }
+        if let stubSourceFilename = attachmentInfo.stubSourceFilename {
+            proto.fileName = stubSourceFilename
+        }
+        guard attachmentInfo.attachmentType == .V2 else {
+            // If its just a stub, early return with no thumbnail image
+            return .success(proto)
+        }
+
+        let imageResult = attachmentsArchiver.archiveQuotedReplyThumbnailAttachment(
+            messageId: interactionUniqueId,
+            messageRowId: messageRowId,
+            context: context
+        )
+        switch imageResult.bubbleUp(BackupProto_Quote.QuotedAttachment.self, partialErrors: &partialErrors) {
+        case .continue(let pointerProto):
+            pointerProto.map { proto.thumbnail = $0 }
+        case .bubbleUpError(let result):
+            return result
+        }
+
+        if partialErrors.isEmpty {
+            return .success(proto)
+        } else {
+            return .partialFailure(proto, partialErrors)
+        }
     }
 
     private func archiveLinkPreview(
