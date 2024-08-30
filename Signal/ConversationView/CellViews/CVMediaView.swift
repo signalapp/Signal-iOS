@@ -63,6 +63,8 @@ public class CVMediaView: ManualLayoutViewWithLayer {
         AssertIsOnMainThread()
 
         switch attachment {
+        case .backupThumbnail(let thumbnail):
+            configureForBackupThumbnailMedia(thumbnail.attachmentBackupThumbnail)
         case .pointer(let pointer, _):
             return configureForUndownloadedMedia(pointer.attachmentPointer)
         case .stream(let attachmentStream):
@@ -81,6 +83,12 @@ public class CVMediaView: ManualLayoutViewWithLayer {
                 configure(forError: .invalid)
             }
         }
+    }
+
+    private func configureForBackupThumbnailMedia(_ thumbnail: TSResourceBackupThumbnail) {
+        configureForBackupThumbnail(attachmentBackupThumbnail: thumbnail)
+
+        _ = addProgressIfNecessary()
     }
 
     private func configureForUndownloadedMedia(_ pointer: TSResourcePointer) {
@@ -227,6 +235,17 @@ public class CVMediaView: ManualLayoutViewWithLayer {
         let mediaViewAdapter = MediaViewAdapterVideo(attachmentStream: attachmentStream,
                                                      thumbnailQuality: thumbnailQuality)
         createNewReusableMediaView(mediaViewAdapter: mediaViewAdapter, isAnimated: isAnimated)
+    }
+
+    private func configureForBackupThumbnail(attachmentBackupThumbnail: TSResourceBackupThumbnail) {
+        let cacheKey = CVMediaCache.CacheKey.backupThumbnail(attachmentBackupThumbnail.resource.resourceId)
+        if let reusableMediaView = mediaCache.getMediaView(cacheKey, isAnimated: false) {
+            applyReusableMediaView(reusableMediaView)
+            return
+        }
+
+        let mediaViewAdapter = MediaViewAdapterBackupThumbnail(attachmentBackupThumbnail: attachmentBackupThumbnail)
+        createNewReusableMediaView(mediaViewAdapter: mediaViewAdapter, isAnimated: false)
     }
 
     private func addVideoPlayButton() {

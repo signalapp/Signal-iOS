@@ -402,6 +402,9 @@ public class CVAttachmentProgressView: ManualLayoutView {
     ) -> ProgressType {
 
         switch attachment {
+        case .backupThumbnail:
+            // TODO[Backups]: Update download state based on the media tier attachment state
+            return .none
         case .stream(let attachmentStream):
             if let outgoingMessage = interaction as? TSOutgoingMessage {
                 let hasSendFailed = outgoingMessage.messageState == .failed

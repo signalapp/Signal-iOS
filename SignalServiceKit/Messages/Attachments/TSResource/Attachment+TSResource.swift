@@ -33,6 +33,34 @@ extension Attachment: TSResource {
     public func asResourceStream() -> TSResourceStream? {
         return AttachmentStream(attachment: self)
     }
+
+    public func asResourceBackupThumbnail() -> TSResourceBackupThumbnail? {
+        return asBackupThumbnail()
+    }
+}
+
+extension AttachmentBackupThumbnail: TSResourceBackupThumbnail {
+    public var originalMimeType: String {
+        attachment.mimeType
+    }
+
+    public var estimatedOriginalSizeInBytes: UInt32 {
+        guard let unencryptedByteCount = attachment.mediaTierInfo?.unencryptedByteCount else {
+            return 0
+        }
+
+        let encryptionOverheadByteLength: UInt32 = /* iv */ 16 + /* hmac */ 32
+        let paddedSize = UInt32(Cryptography.paddedSize(unpaddedSize: UInt(unencryptedByteCount)))
+        let pkcs7PaddingLength = 16 - (paddedSize % 16)
+        return paddedSize + pkcs7PaddingLength + encryptionOverheadByteLength
+    }
+
+    public var image: UIImage? {
+        return try? UIImage.from(self)
+    }
+    public var resource: TSResource {
+        return attachment
+    }
 }
 
 // MARK: - Attachment Stream
@@ -86,6 +114,10 @@ extension AttachmentStream: TSResource {
     public var concreteType: ConcreteTSResource { attachment.concreteType }
 
     public func asResourceStream() -> TSResourceStream? { self }
+
+    public func asResourceBackupThumbnail() -> TSResourceBackupThumbnail? {
+        return self.attachment.asResourceBackupThumbnail()
+    }
 }
 
 // MARK: - AttachmentTransitPointer

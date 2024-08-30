@@ -400,6 +400,54 @@ class MediaViewAdapterStill: MediaViewAdapterSwift {
     }
 }
 
+class MediaViewAdapterBackupThumbnail: MediaViewAdapterSwift {
+
+    public let shouldBeRenderedByYY = false
+    let attachmentBackupThumbnail: TSResourceBackupThumbnail
+    let imageView = CVImageView()
+
+    init(attachmentBackupThumbnail: TSResourceBackupThumbnail) {
+        self.attachmentBackupThumbnail = attachmentBackupThumbnail
+    }
+
+    var mediaView: UIView {
+        imageView
+    }
+
+    var isLoaded: Bool {
+        imageView.image != nil
+    }
+
+    var cacheKey: CVMediaCache.CacheKey {
+        .backupThumbnail(attachmentBackupThumbnail.resource.resourceId)
+    }
+
+    func loadMedia() -> Promise<AnyObject> {
+        return Promise.wrapAsync {
+            guard let image = self.attachmentBackupThumbnail.image else {
+                throw OWSAssertionError("Could not load thumbnail")
+            }
+            return image
+        }
+    }
+
+    func applyMedia(_ media: AnyObject) {
+        AssertIsOnMainThread()
+
+        guard let image = media as? UIImage else {
+            owsFailDebug("Media has unexpected type: \(type(of: media))")
+            return
+        }
+        imageView.image = image
+    }
+
+    func unloadMedia() {
+        AssertIsOnMainThread()
+
+        imageView.image = nil
+    }
+}
+
 // MARK: -
 
 class MediaViewAdapterVideo: MediaViewAdapterSwift {

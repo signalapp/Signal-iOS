@@ -19,6 +19,17 @@ extension UIImage {
         )
     }
 
+    public static func from(
+        _ attachmentThumbnail: AttachmentBackupThumbnail
+    ) throws -> UIImage {
+        return try .fromEncryptedFile(
+            at: attachmentThumbnail.fileURL,
+            encryptionKey: attachmentThumbnail.attachment.encryptionKey,
+            plaintextLength: nil,
+            mimeType: MimeType.imageJpeg.rawValue
+        )
+    }
+
     /// If no plaintext length is provided, the file is assumed to only use pkcs7 padding.
     public static func fromEncryptedFile(
         at fileURL: URL,

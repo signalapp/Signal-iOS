@@ -585,6 +585,9 @@ public struct CVMediaAlbumItem: Equatable {
             return false
         case .pointer(_, let transitTierDownloadState):
             return transitTierDownloadState == .failed
+        case .backupThumbnail:
+            // TODO[Backups]: Check state of media tier download
+            return false
         }
     }
 

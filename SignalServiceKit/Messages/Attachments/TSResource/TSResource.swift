@@ -54,6 +54,8 @@ public protocol TSResource {
     var concreteType: ConcreteTSResource { get }
 
     func asResourceStream() -> TSResourceStream?
+
+    func asResourceBackupThumbnail() -> TSResourceBackupThumbnail?
 }
 
 extension TSResource {

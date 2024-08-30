@@ -7,6 +7,11 @@ import Foundation
 
 public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
+    private enum DownloadResult {
+        case stream(AttachmentStream)
+        case thumbnail(AttachmentBackupThumbnail)
+    }
+
     private let appReadiness: Shims.AppReadiness
     private let attachmentDownloadStore: AttachmentDownloadStore
     private let attachmentStore: AttachmentStore
@@ -614,9 +619,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 return
             }
 
-            let attachmentStream: AttachmentStream
+            let result: DownloadResult
             do {
-                attachmentStream = try await attachmentUpdater.updateAttachmentAsDownloaded(
+                result = try await attachmentUpdater.updateAttachmentAsDownloaded(
                     attachmentId: attachment.id,
                     pendingAttachment: pendingAttachment,
                     source: record.sourceType
@@ -627,14 +632,16 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 return
             }
 
-            do {
-                try await attachmentUpdater.copyThumbnailForQuotedReplyIfNeeded(
-                    attachmentStream
-                )
-            } catch let error {
-                // Log error but don't block finishing; the thumbnails
-                // can update themselves later.
-                Logger.error("Failed to update thumbnails: \(error)")
+            if case .stream(let attachmentStream) = result {
+                do {
+                    try await attachmentUpdater.copyThumbnailForQuotedReplyIfNeeded(
+                        attachmentStream
+                    )
+                } catch let error {
+                    // Log error but don't block finishing; the thumbnails
+                    // can update themselves later.
+                    Logger.error("Failed to update thumbnails: \(error)")
+                }
             }
 
             await self.didFinishDownloading(record)
@@ -1511,7 +1518,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             attachmentId: Attachment.IDType,
             pendingAttachment: PendingAttachment,
             source: QueuedAttachmentDownloadRecord.SourceType
-        ) async throws -> AttachmentStream {
+        ) async throws -> DownloadResult {
             return try await db.awaitableWrite { tx in
                 guard let existingAttachment = self.attachmentStore.fetch(id: attachmentId, tx: tx) else {
                     Logger.error("Missing attachment after download; could have been deleted while downloading.")
@@ -1519,7 +1526,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 }
                 if let stream = existingAttachment.asStream() {
                     // Its already a stream?
-                    return stream
+                    return .stream(stream)
                 }
 
                 do {
@@ -1545,8 +1552,19 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     // Make sure to clear out the pending attachment from the orphan table so it isn't deleted!
                     try self.orphanedAttachmentCleaner.releasePendingAttachment(withId: pendingAttachment.orphanRecordId, tx: tx)
 
-                    guard let stream = self.attachmentStore.fetch(id: attachmentId, tx: tx)?.asStream() else {
-                        throw OWSAssertionError("Not a stream")
+                    let attachment = self.attachmentStore.fetch(id: attachmentId, tx: tx)
+                    let result: DownloadResult
+                    switch source {
+                    case .transitTier, .mediaTierFullsize:
+                        guard let stream = attachment?.asStream() else {
+                            throw OWSAssertionError("Not a stream")
+                        }
+                        result = .stream(stream)
+                    case .mediaTierThumbnail:
+                        guard let thumbnail = attachment?.asBackupThumbnail() else {
+                            throw OWSAssertionError("Not a thumbnail")
+                        }
+                        result = .thumbnail(thumbnail)
                     }
 
                     tx.addAsyncCompletion(on: SyncScheduler()) { [weak self] in
@@ -1556,7 +1574,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         }
                     }
 
-                    return stream
+                    return result
 
                 } catch let AttachmentInsertError.duplicatePlaintextHash(existingAttachmentId) {
                     // Already have an attachment with the same plaintext hash!
@@ -1603,7 +1621,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         }
                     }
 
-                    return stream
+                    return .stream(stream)
                 } catch let error {
                     throw error
                 }

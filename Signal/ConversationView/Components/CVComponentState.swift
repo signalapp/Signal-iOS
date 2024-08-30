@@ -10,6 +10,7 @@ import SignalUI
 public enum CVAttachment: Equatable {
     case stream(ReferencedTSResourceStream)
     case pointer(ReferencedTSResourcePointer, transitTierDownloadState: AttachmentDownloadState)
+    case backupThumbnail(ReferencedTSResourceBackupThumbnail)
 
     public var attachment: ReferencedTSResource {
         switch self {
@@ -17,6 +18,8 @@ public enum CVAttachment: Equatable {
             return stream
         case .pointer(let pointer, _):
             return pointer
+        case .backupThumbnail(let thumbnail):
+            return thumbnail
         }
     }
 
@@ -24,17 +27,26 @@ public enum CVAttachment: Equatable {
         switch self {
         case .stream(let stream):
             return stream.attachmentStream
-        case .pointer:
+        case .pointer, .backupThumbnail:
             return nil
         }
     }
 
     public var attachmentPointer: TSResourcePointer? {
         switch self {
-        case .stream:
+        case .stream, .backupThumbnail:
             return nil
         case .pointer(let pointer, _):
             return pointer.attachmentPointer
+        }
+    }
+
+    public var attachmentBackupThumbnail: TSResourceBackupThumbnail? {
+        switch self {
+        case .stream, .pointer:
+            return nil
+        case .backupThumbnail(let thumbnail):
+            return thumbnail.attachmentBackupThumbnail
         }
     }
 
@@ -43,6 +55,8 @@ public enum CVAttachment: Equatable {
             return .stream(stream)
         } else if let pointer = attachment.asReferencedPointer {
             return .pointer(pointer, transitTierDownloadState: pointer.attachmentPointer.downloadState(tx: tx.asV2Read))
+        } else if let thumbnail = attachment.asReferencedBackupThumbnail {
+            return .backupThumbnail(thumbnail)
         } else {
             return nil
         }
@@ -57,7 +71,16 @@ public enum CVAttachment: Equatable {
             return lhsPointer.attachment.resourceId == rhsPointer.attachment.resourceId
                 && lhsPointer.reference.hasSameOwner(as: rhsPointer.reference)
                 && lhsState == rhsState
-        case (.stream, .pointer), (.pointer, .stream):
+        case (.backupThumbnail(let lhsThumbnail), .backupThumbnail(let rhsThumbnail)):
+            return lhsThumbnail.attachment.resourceId == rhsThumbnail.attachment.resourceId
+                && lhsThumbnail.reference.hasSameOwner(as: rhsThumbnail.reference)
+        case
+            (.stream, .pointer),
+            (.stream, .backupThumbnail),
+            (.pointer, .stream),
+            (.pointer, .backupThumbnail),
+            (.backupThumbnail, .pointer),
+            (.backupThumbnail, .stream):
             return false
         }
     }
@@ -137,6 +160,10 @@ public class CVComponentState: Equatable, Dependencies {
 
         var attachmentPointer: TSResourcePointer? {
             attachment.attachmentPointer
+        }
+
+        var attachmentBackupThumbnail: TSResourceBackupThumbnail? {
+            attachment.attachmentBackupThumbnail
         }
     }
     let genericAttachment: GenericAttachment?
@@ -1012,6 +1039,7 @@ fileprivate extension CVComponentState.Builder {
             if mediaAlbumItems.count > 0 {
                 var mediaAlbumHasFailedAttachment = false
                 var mediaAlbumHasPendingAttachment = false
+                // TODO
                 for attachment in bodyAttachments {
                     guard
                         attachment.attachment.asResourceStream() == nil,
@@ -1408,6 +1436,25 @@ fileprivate extension CVComponentState.Builder {
                     isBroken: false,
                     threadHasPendingMessageRequest: threadHasPendingMessageRequest
                 ))
+            case .backupThumbnail(let thumbnail):
+                // TODO: Need to make CVMediaAlbumItem take a thumbnail
+                var mediaSize: CGSize = .zero
+                // need to determine if a size is possible
+                // TODO Cache this
+                if let sourceMediaSizePixels = thumbnail.attachmentBackupThumbnail.image?.size {
+                    mediaSize = sourceMediaSizePixels
+                } else {
+                    owsFailDebug("Invalid attachment.")
+                }
+                mediaAlbumItems.append(CVMediaAlbumItem(
+                    attachment: cvAttachment,
+                    attachmentStream: nil,
+                    hasCaption: hasCaption,
+                    mediaSize: mediaSize,
+                    isBroken: false,
+                    threadHasPendingMessageRequest: threadHasPendingMessageRequest
+                ))
+                continue
             }
         }
         return mediaAlbumItems

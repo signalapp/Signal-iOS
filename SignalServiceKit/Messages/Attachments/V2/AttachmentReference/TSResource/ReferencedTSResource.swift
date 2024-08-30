@@ -30,6 +30,13 @@ public class ReferencedTSResource {
         return .init(reference: reference, attachmentPointer: resourcePointer)
     }
 
+    public var asReferencedBackupThumbnail: ReferencedTSResourceBackupThumbnail? {
+        guard let resourceBackupThumbnail = attachment.asResourceBackupThumbnail() else {
+            return nil
+        }
+        return .init(reference: reference, attachmentBackupThumbnail: resourceBackupThumbnail)
+    }
+
     public func previewText() -> String {
         switch (reference.concreteType, attachment.concreteType) {
         case (.v2(let reference), .v2(let attachment)):
@@ -73,6 +80,15 @@ public class ReferencedTSResourcePointer: ReferencedTSResource {
     }
 }
 
+public class ReferencedTSResourceBackupThumbnail: ReferencedTSResource {
+    public let attachmentBackupThumbnail: TSResourceBackupThumbnail
+
+    public init(reference: TSResourceReference, attachmentBackupThumbnail: TSResourceBackupThumbnail) {
+        self.attachmentBackupThumbnail = attachmentBackupThumbnail
+        super.init(reference: reference, attachment: attachmentBackupThumbnail.resource)
+    }
+}
+
 extension ReferencedAttachment {
 
     var referencedTSResource: ReferencedTSResource {
@@ -91,5 +107,12 @@ extension ReferencedAttachmentTransitPointer {
 
     var referencedTSResourcePointer: ReferencedTSResourcePointer {
         return .init(reference: reference, attachmentPointer: attachmentPointer.asResourcePointer)
+    }
+}
+
+extension ReferencedAttachmentBackupThumbnail {
+
+    var referencedTSResourceBackupThumbnail: ReferencedTSResourceBackupThumbnail {
+        return .init(reference: reference, attachmentBackupThumbnail: attachmentBackupThumbnail)
     }
 }

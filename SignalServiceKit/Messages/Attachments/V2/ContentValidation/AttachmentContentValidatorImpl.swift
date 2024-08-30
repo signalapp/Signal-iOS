@@ -836,28 +836,49 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 ),
                 encryptionMetadata
             )
-        case .encryptedFile(let fileUrl, _, let plaintextLength, let digestParam):
-            // Already encrypted, so nothing to encrypt.
+        case .encryptedFile(let fileUrl, let inputEncryptionKey, let plaintextLength, let digestParam):
+            // If the input and output encryption keys are the same
+            // the file is already encrypted, so nothing to encrypt.
             // Just compute the digest if we don't already have it.
+            // If they don't match, re-encrypt the source to a new file
+            // and pass back the updated encryption metadata
+            if inputEncryptionKey == encryptionKey {
 
-            let digest: Data
-            if let digestParam {
-                digest = digestParam
-            } else {
-                // Compute the digest over the entire encrypted file.
-                digest = try Cryptography.computeSHA256DigestOfFile(at: fileUrl)
-            }
-            return (
-                PendingFile(
-                    tmpFileUrl: fileUrl,
-                    isTmpFileEncrypted: true
-                ),
-                EncryptionMetadata(
-                    key: encryptionKey,
-                    digest: digest,
-                    plaintextLength: Int(plaintextLength)
+                let digest: Data
+                if let digestParam {
+                    digest = digestParam
+                } else {
+                    // Compute the digest over the entire encrypted file.
+                    digest = try Cryptography.computeSHA256DigestOfFile(at: fileUrl)
+                }
+                return (
+                    PendingFile(
+                        tmpFileUrl: fileUrl,
+                        isTmpFileEncrypted: true
+                    ),
+                    EncryptionMetadata(
+                        key: encryptionKey,
+                        digest: digest,
+                        plaintextLength: Int(plaintextLength)
+                    )
                 )
-            )
+            } else {
+                let fileHandle = try Cryptography.encryptedFileHandle(at: fileUrl, encryptionKey: inputEncryptionKey)
+                let outputFile = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
+                let encryptionMetadata = try Cryptography.reencryptFileHandle(
+                    at: fileHandle,
+                    encryptionKey: encryptionKey,
+                    encryptedOutputUrl: outputFile,
+                    applyExtraPadding: false
+                )
+                return (
+                    PendingFile(
+                        tmpFileUrl: outputFile,
+                        isTmpFileEncrypted: true
+                    ),
+                    encryptionMetadata
+                )
+            }
         }
     }
 }

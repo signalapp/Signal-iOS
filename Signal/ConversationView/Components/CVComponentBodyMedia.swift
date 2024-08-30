@@ -210,6 +210,9 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                         switch item.attachment {
                         case .stream:
                             return nil
+                        case .backupThumbnail:
+                            // TODO[Backups]: Check for media tier download state
+                            return nil
                         case .pointer(let attachment, let transitTierDownloadState):
                             if item.threadHasPendingMessageRequest {
                                 // Doesn't count.
@@ -392,6 +395,9 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                 attachmentStream: stream,
                 imageView: mediaView
             )
+            return true
+        case .backupThumbnail:
+            // TODO[Backups]: If the media tier download hasn't been started, enqueue it
             return true
         }
     }

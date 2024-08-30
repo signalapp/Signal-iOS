@@ -231,6 +231,10 @@ public class Attachment {
         return AttachmentStream(attachment: self)
     }
 
+    func asBackupThumbnail() -> AttachmentBackupThumbnail? {
+        return AttachmentBackupThumbnail(attachment: self)
+    }
+
     public static func mediaName(digestSHA256Ciphertext: Data) -> String {
         // We use the hexadecimal-encoded digest as the media name.
         // This ensures media name collisions occur only between the

@@ -147,7 +147,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             }
 
             switch genericAttachment.attachment {
-            case .stream, .pointer(_, .enqueuedOrDownloading):
+            case .stream, .pointer(_, .enqueuedOrDownloading), .backupThumbnail:
                 break
             case .pointer(_, .failed), .pointer(_, .none):
                 textComponents.append(OWSLocalizedString("ACTION_TAP_TO_DOWNLOAD", comment: "A label for 'tap to download' buttons."))
@@ -160,6 +160,9 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             if let fileSize = attachmentStream.unencryptedResourceByteCount {
                 text = OWSFormat.localizedFileSizeString(from: Int64(fileSize))
             }
+        } else if let _ = self.genericAttachment.attachmentBackupThumbnail {
+            // TODO[Backups]: Handle similar to attachment pointers above
+            owsFailDebug("Not implemented yet")
         } else {
             owsFailDebug("Invalid attachment")
         }
@@ -307,6 +310,9 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             case .enqueuedOrDownloading:
                 break
             }
+        case .backupThumbnail:
+            // TODO[Backups]: Check media tier download state (mirror the pointer behavior)
+            break
         }
 
         return true

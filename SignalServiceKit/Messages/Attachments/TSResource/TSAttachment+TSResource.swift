@@ -93,6 +93,10 @@ extension TSAttachment: TSResource {
         return stream
     }
 
+    public func asResourceBackupThumbnail() -> TSResourceBackupThumbnail? {
+        return nil
+    }
+
     public func attachmentType(forContainingMessage: TSMessage, tx: DBReadTransaction) -> TSAttachmentType {
         return attachmentType
     }

@@ -49,6 +49,15 @@ public class ReferencedAttachmentTransitPointer: ReferencedAttachment {
     }
 }
 
+public class ReferencedAttachmentBackupThumbnail: ReferencedAttachment {
+    public let attachmentBackupThumbnail: AttachmentBackupThumbnail
+
+    public init(reference: AttachmentReference, attachmentBackupThumbnail: AttachmentBackupThumbnail) {
+        self.attachmentBackupThumbnail = attachmentBackupThumbnail
+        super.init(reference: reference, attachment: attachmentBackupThumbnail.attachment)
+    }
+}
+
 extension ReferencedAttachment {
 
     public func previewText() -> String {
