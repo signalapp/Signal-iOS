@@ -429,96 +429,18 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
             owner = .globalThreadWallpaperImage
         }
         guard
-            let attachmentReference = attachmentStore.fetchFirstReference(
-                owner: owner,
+            let referencedAttachment = attachmentStore.fetchFirstReferencedAttachment(
+                for: owner,
                 tx: context.tx
-            ),
-            let attachment = attachmentStore.fetch(for: attachmentReference, tx: context.tx)
+            )
         else {
             return .success(nil)
         }
 
-        var proto = BackupProto_FilePointer()
-        proto.contentType = attachment.mimeType
-        if let sourceFilename = attachmentReference.sourceFilename {
-            proto.fileName = sourceFilename
-        }
-        if let blurHash = attachment.blurHash {
-            proto.blurHash = blurHash
-        }
+        // TODO: [Backups] enqueue the attachment to be uploaded
 
-        switch attachment.streamInfo?.contentType {
-        case
-                .animatedImage(let pixelSize),
-                .image(let pixelSize),
-                .video(_, let pixelSize, _):
-            proto.width = UInt32(pixelSize.width)
-            proto.height = UInt32(pixelSize.height)
-        case .audio, .file, .invalid:
-            break
-        case nil:
-            if let mediaSize = attachmentReference.sourceMediaSizePixels {
-                proto.width = UInt32(mediaSize.width)
-                proto.height = UInt32(mediaSize.height)
-            }
-        }
-
-        // We only create the backup locator for non-free tier backups.
-        let isFreeTier = MessageBackupMessageAttachmentArchiver.isFreeTierBackup()
-
-        let locator: BackupProto_FilePointer.OneOf_Locator
-        if
-            !isFreeTier,
-            let mediaName = attachment.mediaName,
-            let mediaTierDigest =
-                attachment.mediaTierInfo?.digestSHA256Ciphertext
-                ?? attachment.streamInfo?.digestSHA256Ciphertext,
-            let mediaTierUnencryptedByteCount =
-                attachment.mediaTierInfo?.unencryptedByteCount
-                ?? attachment.streamInfo?.unencryptedByteCount
-        {
-            var backupLocator = BackupProto_FilePointer.BackupLocator()
-            backupLocator.mediaName = mediaName
-            // Backups use the same encryption key we use locally, always.
-            backupLocator.key = attachment.encryptionKey
-            backupLocator.digest = mediaTierDigest
-            backupLocator.size = mediaTierUnencryptedByteCount
-
-            // We may not have uploaded yet, so we may not know the cdn number.
-            // Set it if we have it; its ok if we don't.
-            if let cdnNumber = attachment.mediaTierInfo?.cdnNumber {
-                backupLocator.cdnNumber = cdnNumber
-            }
-            if let transitTierInfo = attachment.transitTierInfo {
-                backupLocator.transitCdnKey = transitTierInfo.cdnKey
-                backupLocator.transitCdnNumber = transitTierInfo.cdnNumber
-            }
-            locator = .backupLocator(backupLocator)
-        } else if
-            let transitTierInfo = attachment.transitTierInfo
-        {
-            var transitTierLocator = BackupProto_FilePointer.AttachmentLocator()
-            transitTierLocator.cdnKey = transitTierInfo.cdnKey
-            transitTierLocator.cdnNumber = transitTierInfo.cdnNumber
-            transitTierLocator.uploadTimestamp = transitTierInfo.uploadTimestamp
-            transitTierLocator.key = transitTierInfo.encryptionKey
-            transitTierLocator.digest = transitTierInfo.digestSHA256Ciphertext
-            if let unencryptedByteCount = transitTierInfo.unencryptedByteCount {
-                transitTierLocator.size = unencryptedByteCount
-            }
-            locator = .attachmentLocator(transitTierLocator)
-        } else {
-            locator = .invalidAttachmentLocator(BackupProto_FilePointer.InvalidAttachmentLocator())
-        }
-
-        proto.locator = locator
-
-        // TODO: [Backups] enqueue the attachment to be uploaded.
-
-        // Notes:
-        // * incrementalMac and incrementalMacChunkSize unsupported by iOS
-        // * caption is never set for wallpapers
-        return .success(proto)
+        let isFreeTierBackup = MessageBackupMessageAttachmentArchiver.isFreeTierBackup()
+        return .success(referencedAttachment.asBackupFilePointer(isFreeTierBackup: isFreeTierBackup))
     }
 
     private func restoreWallpaperAttachment<IDType>(

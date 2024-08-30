@@ -350,3 +350,90 @@ extension MessageBackup.RestoreFrameError.ErrorType {
         }
     }
 }
+
+extension ReferencedAttachment {
+
+    internal func asBackupFilePointer(
+        isFreeTierBackup: Bool
+    ) -> BackupProto_FilePointer {
+        var proto = BackupProto_FilePointer()
+        proto.contentType = attachment.mimeType
+        if let sourceFilename = reference.sourceFilename {
+            proto.fileName = sourceFilename
+        }
+        if let caption = reference.legacyMessageCaption {
+            proto.caption = caption
+        }
+        if let blurHash = attachment.blurHash {
+            proto.blurHash = blurHash
+        }
+
+        switch attachment.streamInfo?.contentType {
+        case
+                .animatedImage(let pixelSize),
+                .image(let pixelSize),
+                .video(_, let pixelSize, _):
+            proto.width = UInt32(pixelSize.width)
+            proto.height = UInt32(pixelSize.height)
+        case .audio, .file, .invalid:
+            break
+        case nil:
+            if let mediaSize = reference.sourceMediaSizePixels {
+                proto.width = UInt32(mediaSize.width)
+                proto.height = UInt32(mediaSize.height)
+            }
+        }
+
+        let locator: BackupProto_FilePointer.OneOf_Locator
+        if
+            // We only create the backup locator for non-free tier backups.
+            !isFreeTierBackup,
+            let mediaName = attachment.mediaName,
+            let mediaTierDigest =
+                attachment.mediaTierInfo?.digestSHA256Ciphertext
+                ?? attachment.streamInfo?.digestSHA256Ciphertext,
+            let mediaTierUnencryptedByteCount =
+                attachment.mediaTierInfo?.unencryptedByteCount
+                ?? attachment.streamInfo?.unencryptedByteCount
+        {
+            var backupLocator = BackupProto_FilePointer.BackupLocator()
+            backupLocator.mediaName = mediaName
+            // Backups use the same encryption key we use locally, always.
+            backupLocator.key = attachment.encryptionKey
+            backupLocator.digest = mediaTierDigest
+            backupLocator.size = mediaTierUnencryptedByteCount
+
+            // We may not have uploaded yet, so we may not know the cdn number.
+            // Set it if we have it; its ok if we don't.
+            if let cdnNumber = attachment.mediaTierInfo?.cdnNumber {
+                backupLocator.cdnNumber = cdnNumber
+            }
+            if let transitTierInfo = attachment.transitTierInfo {
+                backupLocator.transitCdnKey = transitTierInfo.cdnKey
+                backupLocator.transitCdnNumber = transitTierInfo.cdnNumber
+            }
+            locator = .backupLocator(backupLocator)
+        } else if
+            let transitTierInfo = attachment.transitTierInfo
+        {
+            var transitTierLocator = BackupProto_FilePointer.AttachmentLocator()
+            transitTierLocator.cdnKey = transitTierInfo.cdnKey
+            transitTierLocator.cdnNumber = transitTierInfo.cdnNumber
+            transitTierLocator.uploadTimestamp = transitTierInfo.uploadTimestamp
+            transitTierLocator.key = transitTierInfo.encryptionKey
+            transitTierLocator.digest = transitTierInfo.digestSHA256Ciphertext
+            if let unencryptedByteCount = transitTierInfo.unencryptedByteCount {
+                transitTierLocator.size = unencryptedByteCount
+            }
+            locator = .attachmentLocator(transitTierLocator)
+        } else {
+            locator = .invalidAttachmentLocator(BackupProto_FilePointer.InvalidAttachmentLocator())
+        }
+
+        proto.locator = locator
+
+        // Notes:
+        // * incrementalMac and incrementalMacChunkSize unsupported by iOS
+        return proto
+    }
+}
