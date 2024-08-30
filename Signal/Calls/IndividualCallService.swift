@@ -209,7 +209,7 @@ final class IndividualCallService: CallServiceStateObserver {
         let newCall = SignalCall(individualCall: individualCall)
 
         DispatchQueue.main.async {
-            let backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "\(#function)", completionBlock: { status in
+            let backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "\(#function)", completionBlock: { [weak newCall] status in
                 AssertIsOnMainThread()
 
                 guard status == .expired else {
@@ -217,7 +217,11 @@ final class IndividualCallService: CallServiceStateObserver {
                 }
 
                 // See if the newCall actually became the currentCall.
-                guard case .individual(let currentCall) = self.callServiceState.currentCall?.mode, newCall === currentCall else {
+                guard
+                    case .individual(let currentCall) = self.callServiceState.currentCall?.mode,
+                    let newCall,
+                    newCall === currentCall
+                else {
                     Logger.warn("ignoring obsolete call")
                     return
                 }
