@@ -11,12 +11,35 @@ extension MessageBackup {
     public struct AccountDataId: MessageBackupLoggableId {
         static let localUser = AccountDataId()
 
-        private init() {}
+        static func forCustomChatColorError(chatColorId: CustomChatColorId) -> Self {
+            return .init(chatColorId)
+        }
+
+        /// Since custom chat colors are included in account data, errors can be nested
+        /// with an account data -> chat color id
+        private let chatColorId: CustomChatColorId?
+
+        private init(_ chatColorId: CustomChatColorId? = nil) {
+            self.chatColorId = chatColorId
+        }
 
         // MARK: MessageBackupLoggableId
 
-        public var typeLogString: String { "BackupProto_AccountData" }
-        public var idLogString: String { "localUser" }
+        public var typeLogString: String {
+            if chatColorId != nil {
+                return "BackupProto_AccountData_CustomChatColor"
+            } else {
+                return "BackupProto_AccountData"
+            }
+        }
+
+        public var idLogString: String {
+            if let chatColorId {
+                return "localUser_\(chatColorId.value)"
+            } else {
+                return "localUser"
+            }
+        }
     }
 
     public typealias ArchiveAccountDataResult = ArchiveSingleFrameResult<Void, AccountDataId>
@@ -29,17 +52,18 @@ extension MessageBackup {
 public protocol MessageBackupAccountDataArchiver: MessageBackupProtoArchiver {
     func archiveAccountData(
         stream: MessageBackupProtoOutputStream,
-        context: MessageBackup.ArchivingContext
+        context: MessageBackup.CustomChatColorArchivingContext
     ) -> MessageBackup.ArchiveAccountDataResult
 
     func restore(
         _ accountData: BackupProto_AccountData,
-        context: MessageBackup.RestoringContext
+        context: MessageBackup.CustomChatColorRestoringContext
     ) -> MessageBackup.RestoreAccountDataResult
 }
 
 public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchiver {
 
+    private let chatStyleArchiver: MessageBackupChatStyleArchiver
     private let disappearingMessageConfigurationStore: DisappearingMessagesConfigurationStore
     private let linkPreviewSettingStore: LinkPreviewSettingStore
     private let localUsernameManager: LocalUsernameManager
@@ -57,6 +81,7 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
     private let usernameEducationManager: UsernameEducationManager
 
     public init(
+        chatStyleArchiver: MessageBackupChatStyleArchiver,
         disappearingMessageConfigurationStore: DisappearingMessagesConfigurationStore,
         linkPreviewSettingStore: LinkPreviewSettingStore,
         localUsernameManager: LocalUsernameManager,
@@ -73,6 +98,7 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
         udManager: MessageBackup.AccountData.Shims.UDManager,
         usernameEducationManager: UsernameEducationManager
     ) {
+        self.chatStyleArchiver = chatStyleArchiver
         self.disappearingMessageConfigurationStore = disappearingMessageConfigurationStore
         self.linkPreviewSettingStore = linkPreviewSettingStore
         self.localUsernameManager = localUsernameManager
@@ -92,7 +118,7 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
 
     public func archiveAccountData(
         stream: MessageBackupProtoOutputStream,
-        context: MessageBackup.ArchivingContext
+        context: MessageBackup.CustomChatColorArchivingContext
     ) -> MessageBackup.ArchiveAccountDataResult {
 
         guard let localProfile = profileManager.getUserProfileForLocalUser(tx: context.tx) else {
@@ -122,7 +148,13 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
             accountData.usernameLink = result.usernameLink
         }
 
-        accountData.accountSettings = buildAccountSettingsProto(context: context)
+        let accountSettingsResult = buildAccountSettingsProto(context: context)
+        switch accountSettingsResult {
+        case .success(let accountSettings):
+            accountData.accountSettings = accountSettings
+        case .failure(let error):
+            return .failure(error)
+        }
 
         let error = Self.writeFrameToStream(stream, objectId: MessageBackup.AccountDataId.localUser) {
             var frame = BackupProto_Frame()
@@ -154,8 +186,8 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
     }
 
     private func buildAccountSettingsProto(
-        context: MessageBackup.ArchivingContext
-    ) -> BackupProto_AccountData.AccountSettings {
+        context: MessageBackup.CustomChatColorArchivingContext
+    ) -> MessageBackup.ArchiveSingleFrameResult<BackupProto_AccountData.AccountSettings, MessageBackup.AccountDataId> {
 
         // Fetch all the account settings
         let readReceipts = receiptManager.areReadReceiptsEnabled(tx: context.tx)
@@ -204,14 +236,23 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
         accountSettings.preferredReactionEmoji = reactionManager.customEmojiSet(tx: context.tx) ?? []
         accountSettings.storyViewReceiptsEnabled = storyManager.areViewReceiptsEnabled(tx: context.tx)
         // TODO: [Backups] Archive default chat style
-        // TODO: [Backups] Archive custom chat colors
 
-        return accountSettings
+        let customChatColorsResult = chatStyleArchiver.archiveCustomChatColors(
+            context: context
+        )
+        switch customChatColorsResult {
+        case .success(let customChatColors):
+            accountSettings.customChatColors = customChatColors
+        case .failure(let error):
+            return .failure(error)
+        }
+
+        return .success(accountSettings)
     }
 
     public func restore(
         _ accountData: BackupProto_AccountData,
-        context: MessageBackup.RestoringContext
+        context: MessageBackup.CustomChatColorRestoringContext
     ) -> MessageBackup.RestoreAccountDataResult {
         guard let profileKey = Aes256Key(data: accountData.profileKey) else {
             return .failure([.restoreFrameError(
@@ -219,6 +260,8 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
                 .localUser
             )])
         }
+
+        var partialErrors = [MessageBackup.RestoreFrameError<MessageBackup.AccountDataId>]()
 
         // Given name and profile key are required for the local profile. The
         // rest are optional.
@@ -288,7 +331,20 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
             )
 
             // TODO: [Backups] Restore default chat style
-            // TODO: [Backups] Restore custom chat colors
+
+            let customChatColorsResult = chatStyleArchiver.restoreCustomChatColors(
+                settings.customChatColors,
+                context: context
+            )
+            switch customChatColorsResult {
+            case .success:
+                break
+            case .partialRestore(let errors):
+                partialErrors.append(contentsOf: errors)
+            case .failure(let errors):
+                partialErrors.append(contentsOf: errors)
+                return .failure(partialErrors)
+            }
         }
 
         // Restore username details (username, link, QR color)
@@ -308,7 +364,11 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
             localUsernameManager.setUsernameLinkQRCodeColor(color: usernameLink.color.qrCodeColor, tx: context.tx)
         }
 
-        return .success
+        if partialErrors.isEmpty {
+            return .success
+        } else {
+            return .partialRestore(partialErrors)
+        }
     }
 }
 

@@ -895,8 +895,14 @@ public class AppSetup {
 
         let reactionStore: any ReactionStore = ReactionStoreImpl()
 
+        let messageBackupChatStyleArchiver = MessageBackupChatStyleArchiver(
+            chatColorSettingStore: chatColorSettingStore,
+            dateProvider: dateProvider,
+            wallpaperStore: wallpaperStore
+        )
         let messageBackupManager = MessageBackupManagerImpl(
             accountDataArchiver: MessageBackupAccountDataArchiverImpl(
+                chatStyleArchiver: messageBackupChatStyleArchiver,
                 disappearingMessageConfigurationStore: disappearingMessagesConfigurationStore,
                 linkPreviewSettingStore: linkPreviewSettingStore,
                 localUsernameManager: localUsernameManager,

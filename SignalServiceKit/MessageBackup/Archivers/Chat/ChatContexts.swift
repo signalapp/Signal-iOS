@@ -269,3 +269,10 @@ extension TSInteraction {
         return MessageBackup.ThreadUniqueId(interaction: self)
     }
 }
+
+extension CustomChatColor.Key: MessageBackupLoggableId {
+
+    public var typeLogString: String { "CustomChatColor.Key" }
+
+    public var idLogString: String { rawValue }
+}

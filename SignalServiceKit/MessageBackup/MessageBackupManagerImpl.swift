@@ -210,10 +210,10 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     ) throws {
         try writeHeader(stream: stream, tx: tx)
 
-        let context = MessageBackup.ArchivingContext(tx: tx)
+        let customChatColorContext = MessageBackup.CustomChatColorArchivingContext(tx: tx)
         let accountDataResult = accountDataArchiver.archiveAccountData(
             stream: stream,
-            context: context
+            context: customChatColorContext
         )
         switch accountDataResult {
         case .success:
@@ -290,7 +290,6 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
         // TODO: [Backups] Archive call link recipients.
 
-        let customChatColorContext = MessageBackup.CustomChatColorArchivingContext(tx: tx)
         let chatArchivingContext = MessageBackup.ChatArchivingContext(
             customChatColorContext: customChatColorContext,
             recipientContext: recipientArchivingContext,
@@ -449,7 +448,6 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             throw BackupVersionNotSupportedError()
         }
 
-        let context = MessageBackup.RestoringContext(tx: tx)
         let customChatColorContext = MessageBackup.CustomChatColorRestoringContext(tx: tx)
         let recipientContext = MessageBackup.RecipientRestoringContext(
             localIdentifiers: localIdentifiers,
@@ -556,7 +554,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             case .account(let backupProtoAccountData):
                 let accountDataResult = accountDataArchiver.restore(
                     backupProtoAccountData,
-                    context: context
+                    context: customChatColorContext
                 )
                 switch accountDataResult {
                 case .success:

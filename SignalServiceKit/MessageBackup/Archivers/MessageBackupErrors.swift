@@ -40,6 +40,10 @@ extension MessageBackup {
             /// thread to be skipped.
             case contactThreadMissingAddress
 
+            /// Custom chat colors should never have light/dark theme. The UI
+            /// disallows it and the proto cannot represent it.
+            case themedCustomChatColor
+
             /// An incoming message has an invalid or missing author address information,
             /// causing the message to be skipped.
             case invalidIncomingMessageAuthor
@@ -208,6 +212,7 @@ extension MessageBackup {
                     .fileIOError,
                     .groupMasterKeyError,
                     .contactThreadMissingAddress,
+                    .themedCustomChatColor,
                     .invalidDistributionListMemberAddress,
                     .invalidIncomingMessageAuthor,
                     .invalidOutgoingMessageRecipient,
@@ -338,6 +343,11 @@ extension MessageBackup {
                 /// A ``BackupProto/Contact`` missing info as to whether or not
                 /// it is registered.
                 case contactWithoutRegistrationInfo
+
+                /// A ``BackupProto_ChatStyle/CustomChatColor`` had an unrecognized color oneof.
+                case unrecognizedCustomChatStyleColor
+                /// A ``BackupProto_ChatStyle/Gradient`` had less than two colors.
+                case chatStyleGradientSingleOrNoColors
 
                 /// A ``BackupProto/ChatItem`` was missing directional details.
                 case chatItemMissingDirectionalDetails
@@ -634,6 +644,8 @@ extension MessageBackup {
                         .chatItemMissingDirectionalDetails,
                         .chatItemMissingItem,
                         .chatItemInvalidDateSent,
+                        .unrecognizedCustomChatStyleColor,
+                        .chatStyleGradientSingleOrNoColors,
                         .directionlessChatItemNotUpdateMessage,
                         .incomingMessageNotFromAciOrE164,
                         .outgoingNonContactMessageRecipient,
