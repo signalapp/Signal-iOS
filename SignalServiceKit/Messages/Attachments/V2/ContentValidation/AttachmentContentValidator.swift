@@ -80,13 +80,23 @@ public protocol AttachmentContentValidator {
     ///
     /// Unlike attachments from the live service, digest is not required; we can guarantee
     /// correctness for backup media files since they come from the local user.
+    /// 
+    /// Unlike transit tier attachments, backup attachments are encrypted twice: once when uploaded
+    /// to the transit tier, and again when copied to the media tier.  This means validating media tier
+    /// attachments required decrypting the file twice to allow validating the actual contents of the attachment.
     ///
     /// Strictly speaking we don't usually need content type validation either, but the set of valid
     /// contents can change over time so it is best to re-validate.
+    ///
+    /// - Parameter outerEncryptionData: The media tier encryption metadata use as the outer layer of encryption.
+    /// - Parameter innerEncryptionData: The transit tier encryption metadata.
+    /// - Parameter finalEncryptionKey: The encryption key used to encrypt the file in it's final destination.  If the finalEncryptionKey
+    /// matches the encryption key in `innerEncryptionData`, this re-encryption will be skipped.
     func validateContents(
         ofBackupMediaFileAt fileUrl: URL,
         outerEncryptionData: EncryptionMetadata,
         innerEncryptionData: EncryptionMetadata,
+        finalEncryptionKey: Data,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?

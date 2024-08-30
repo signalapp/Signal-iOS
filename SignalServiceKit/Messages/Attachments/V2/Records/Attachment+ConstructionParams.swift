@@ -289,14 +289,14 @@ extension Attachment {
             }
             return .init(
                 blurHash: attachment.blurHash,
-                mimeType: validatedMimeType,
+                mimeType: attachment.mimeType,
                 encryptionKey: attachment.encryptionKey,
-                streamInfo: streamInfo,
+                streamInfo: attachment.streamInfo,
                 transitTierInfo: attachment.transitTierInfo,
-                mediaName: mediaName,
+                mediaName: attachment.mediaName,
                 mediaTierInfo: attachment.mediaTierInfo,
                 thumbnailMediaTierInfo: thumbnailMediaTierInfo,
-                localRelativeFilePathThumbnail: attachment.localRelativeFilePathThumbnail,
+                localRelativeFilePathThumbnail: streamInfo.localRelativeFilePath,
                 originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply
             )
         }

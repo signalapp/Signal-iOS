@@ -115,6 +115,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         ofBackupMediaFileAt fileUrl: URL,
         outerEncryptionData: EncryptionMetadata,
         innerEncryptionData: EncryptionMetadata,
+        finalEncryptionKey: Data,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?
@@ -154,7 +155,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         )
         return try validateContents(
             input: input,
-            encryptionKey: innerEncryptionData.key,
+            encryptionKey: finalEncryptionKey,
             mimeType: mimeType,
             renderingFlag: renderingFlag,
             sourceFilename: sourceFilename

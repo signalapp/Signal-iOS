@@ -46,6 +46,7 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
         ofBackupMediaFileAt fileUrl: URL,
         outerEncryptionData: EncryptionMetadata,
         innerEncryptionData: EncryptionMetadata,
+        finalEncryptionKey: Data,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?

@@ -1405,6 +1405,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                                         digest: digest,
                                         plaintextLength: innerPlaintextLength
                                     ),
+                                    finalEncryptionKey: metadata.encryptionKey,
                                     mimeType: metadata.mimeType,
                                     renderingFlag: .default,
                                     sourceFilename: nil
@@ -1414,6 +1415,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                                     ofBackupMediaFileAt: encryptedFileUrl,
                                     outerEncryptionData: EncryptionMetadata(key: outerEncryptionMetadata.encryptionKey),
                                     innerEncryptionData: EncryptionMetadata(key: innerEncryptionData.encryptionKey),
+                                    finalEncryptionKey: metadata.encryptionKey,
                                     mimeType: metadata.mimeType,
                                     renderingFlag: .default,
                                     sourceFilename: nil
