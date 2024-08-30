@@ -223,6 +223,10 @@ public class Attachment {
         return transitTierInfo != nil
     }
 
+    public var hasMediaTierInfo: Bool {
+        return mediaTierInfo != nil
+    }
+
     func asStream() -> AttachmentStream? {
         return AttachmentStream(attachment: self)
     }

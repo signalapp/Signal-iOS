@@ -47,6 +47,8 @@ public protocol TSResource {
 
     var isUploadedToTransitTier: Bool { get }
 
+    var hasMediaTierInfo: Bool { get }
+
     // MARK: - Converters
 
     var concreteType: ConcreteTSResource { get }

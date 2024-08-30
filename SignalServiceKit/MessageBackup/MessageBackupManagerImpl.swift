@@ -600,12 +600,15 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         let shouldDownloadAllFullsize = backupAttachmentDownloadStore.getShouldStoreAllMediaLocally(tx: tx)
         try backupAttachmentDownloadStore.dequeueAndClearTable(tx: tx) { backupDownload in
             // Every backup attachment gets enqueued for thumbnail download at lower priority.
+            /*
+            TODO: Re-enable thumbnail downloading once AttachmentDownloadManager understands thumbnail types
             attachmentDownloadManager.enqueueDownloadOfAttachment(
                 id: backupDownload.attachmentRowId,
                 priority: .backupRestoreLow,
                 source: .mediaTierThumbnail,
                 tx: tx
             )
+            */
             // If its recent media, also download fullsize at higher priority.
             // Or if "optimize media" is off, download fullsize everything
             // regardless of date.

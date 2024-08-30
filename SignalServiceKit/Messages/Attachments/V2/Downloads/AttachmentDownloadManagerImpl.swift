@@ -7,6 +7,7 @@ import Foundation
 
 public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
+    private let appReadiness: Shims.AppReadiness
     private let attachmentDownloadStore: AttachmentDownloadStore
     private let attachmentStore: AttachmentStore
     private let attachmentUpdater: AttachmentUpdater
@@ -16,6 +17,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     private let downloadabilityChecker: DownloadabilityChecker
     private let progressStates: ProgressStates
     private let queueLoader: PersistedQueueLoader
+    private let tsAccountManager: TSAccountManager
 
     public init(
         appReadiness: Shims.AppReadiness,
@@ -40,6 +42,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     ) {
         self.attachmentDownloadStore = attachmentDownloadStore
         self.attachmentStore = attachmentStore
+        self.appReadiness = appReadiness
         self.db = db
         self.decrypter = Decrypter(
             attachmentValidator: attachmentValidator,
@@ -82,7 +85,24 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             stickerManager: stickerManager,
             tsAccountManager: tsAccountManager
         )
+        self.tsAccountManager = tsAccountManager
 
+        appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
+            self?.beginDownloadingIfNecessary()
+        }
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(registrationStateDidChange),
+            name: .registrationStateDidChange,
+            object: nil
+        )
+    }
+
+    @objc
+    private func registrationStateDidChange() {
+        AssertIsOnMainThread()
+        guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else { return }
         appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
             self?.beginDownloadingIfNecessary()
         }
@@ -214,6 +234,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         guard CurrentAppContext().isMainApp else {
             return
         }
+        guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
+            return
+        }
+
         Task { [weak self] in
             try await self?.queueLoader.loadFromQueueIfAble()
         }

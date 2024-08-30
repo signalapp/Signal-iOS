@@ -1428,6 +1428,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                     ExperienceUpgradeFinder.markAllCompleteForNewUser(transaction: transaction.unwrapGrdbWrite)
                 }
             }
+            DependenciesBridge.shared.attachmentDownloadManager.beginDownloadingIfNecessary()
         }
 
         Self.updateApplicationShortcutItems(isRegistered: isRegistered)

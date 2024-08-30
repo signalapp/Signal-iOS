@@ -72,6 +72,10 @@ extension TSAttachment: TSResource {
         }
     }
 
+    public var hasMediaTierInfo: Bool {
+        return false
+    }
+
     public var mimeType: String {
         return contentType
     }
