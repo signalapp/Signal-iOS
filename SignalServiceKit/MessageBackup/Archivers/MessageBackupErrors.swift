@@ -487,6 +487,9 @@ extension MessageBackup {
                 /// `BackupProto_DistributionListItem.deletionTimestamp` was invalid
                 case invalidDistributionListDeletionTimestamp
 
+                /// ``BackupProto_DistributionListItem`` was used as a chat; this isn't allowed.
+                case distributionListUsedAsChat
+
                 /// A ``BackupProto/ChatUpdateMessage/update`` was empty.
                 case emptyChatUpdateMessage
                 /// A ``BackupProto/SimpleChatUpdate/type`` was unrecognized.
@@ -714,6 +717,7 @@ extension MessageBackup {
                         .invalidDistributionListPrivacyMode,
                         .invalidDistributionListPrivacyModeMissingRequiredMembers,
                         .invalidDistributionListDeletionTimestamp,
+                        .distributionListUsedAsChat,
                         .emptyChatUpdateMessage,
                         .unrecognizedSimpleChatUpdate,
                         .verificationStateChangeNotFromContact,

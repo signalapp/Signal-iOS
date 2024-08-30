@@ -359,10 +359,10 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
                 threadRowId: contactThreadRowId
             )
         case .distributionList:
-            return .failure([
-                .restoreFrameError(
-                    .developerError(OWSAssertionError("Distribution Lists cannot be chat authors")),
-                    chat.chatId)])
+            return .failure([.restoreFrameError(
+                .invalidProtoData(.distributionListUsedAsChat),
+                chat.chatId
+            )])
         }
 
         context.mapChatId(chat.chatId, to: chatThread)
