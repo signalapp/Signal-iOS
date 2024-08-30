@@ -181,6 +181,59 @@ public extension Cryptography {
         )
     }
 
+    /// Re-encrypt the contents of an encrypted file handle source and return the result in a new file.
+    /// The encrypted output is prefixed with the random iv and postfixed with the hmac.
+    /// The ciphertext is padded using standard pkcs7 padding AND allows for applying optional custom bucketing padding
+    /// to the plaintext prior to encryption.
+    ///
+    /// - parameter encryptedFileHandle: The encrypted file handle to read from.
+    /// - parameter encryptionKey: The key to encrypt with; the AES key and the hmac key concatenated together.
+    ///     (The same format as ``EncryptionMetadata/key``). A random key will be generated if none is provided.
+    /// - parameter encryptedOutputUrl: Where to write the reencrypted output.
+    /// - parameter applyExtraPadding: If true, extra zero padding will be applied to ensure bucketing of file sizes,
+    ///     in addition to standard PKCS7 padding. If false, only standard PKCS7 padding is applied.
+    static func reencryptFileHandle(
+        at encryptedFileHandle: EncryptedFileHandle,
+        encryptionKey inputKey: Data?,
+        encryptedOutputUrl outputFileURL: URL,
+        applyExtraPadding: Bool
+    ) throws -> EncryptionMetadata {
+        guard FileManager.default.createFile(
+            atPath: outputFileURL.path,
+            contents: nil,
+            attributes: [.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication]
+        ) else {
+            throw OWSAssertionError("Cannot access output file.")
+        }
+        let outputFileHandle = try FileHandle(forWritingTo: outputFileURL)
+
+        let inputKey = inputKey ?? randomAttachmentEncryptionKey()
+        let encryptionKey = inputKey.prefix(aesKeySize)
+        let hmacKey = inputKey.suffix(hmac256KeyLength)
+
+        return try _encryptAttachment(
+            enumerateInputInBlocks: { closure in
+                var totalBytesRead: UInt = 0
+                var bytesRead: Int
+                repeat {
+                    let data = try encryptedFileHandle.read(upToCount: UInt32(diskPageSize))
+                    bytesRead = data.count
+                    if bytesRead > 0 {
+                        totalBytesRead += UInt(bytesRead)
+                        try closure(data)
+                    }
+                } while bytesRead > 0
+                return totalBytesRead
+            },
+            output: { outputBlock in
+                outputFileHandle.write(outputBlock)
+            },
+            encryptionKey: encryptionKey,
+            hmacKey: hmacKey,
+            applyExtraPadding: applyExtraPadding
+        )
+    }
+
     /// Encrypt input data in memory, producing the encrypted output data.
     ///
     /// - parameter input: The data to encrypt.
