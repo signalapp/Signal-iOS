@@ -103,7 +103,9 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
             // When returning to conversation list, try to ensure that the "last" thread is still
             // visible.  The threads often change ordering while in conversation view due
-            // to incoming & outgoing messages.
+            // to incoming & outgoing messages. Reload to ensure we have this latest ordering
+            // before we find the index path we want to scroll to.
+            loadCoordinator.loadIfNecessary(suppressAnimations: true, shouldForceLoad: true)
             if let indexPathOfLastThread = renderState.indexPath(forUniqueId: lastViewedThread.uniqueId) {
                 tableView.scrollToRow(at: indexPathOfLastThread, at: .none, animated: false)
             }
