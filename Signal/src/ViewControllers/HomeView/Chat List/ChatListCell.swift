@@ -639,8 +639,14 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
             animation.isCumulative = true
             animation.repeatCount = .greatestFiniteMagnitude
             messageStatusIconView.layer.add(animation, forKey: "animation")
+            messageStatusIconView.layer.speed = 1
         } else {
             messageStatusIconView.layer.removeAllAnimations()
+            // TODO: use UIViewPropertyAnimator or another cancellable animator.
+            // Something on UITableViewCell or CVView is making removed
+            // CAAnimations continue after being removed from the layer.
+            // As a short term hack, set speed to 0.
+            messageStatusIconView.layer.speed = 0
         }
 
         return messageStatusIconView
