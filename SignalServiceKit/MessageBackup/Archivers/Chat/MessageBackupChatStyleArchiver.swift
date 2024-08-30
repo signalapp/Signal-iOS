@@ -7,15 +7,24 @@ import Foundation
 
 public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
 
+    private let attachmentManager: AttachmentManager
+    private let attachmentStore: AttachmentStore
+    private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
     private let chatColorSettingStore: ChatColorSettingStore
     private let dateProvider: DateProvider
     private let wallpaperStore: WallpaperStore
 
     public init(
+        attachmentManager: AttachmentManager,
+        attachmentStore: AttachmentStore,
+        backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
         chatColorSettingStore: ChatColorSettingStore,
         dateProvider: @escaping DateProvider,
         wallpaperStore: WallpaperStore
     ) {
+        self.attachmentManager = attachmentManager
+        self.attachmentStore = attachmentStore
+        self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
         self.chatColorSettingStore = chatColorSettingStore
         self.dateProvider = dateProvider
         self.wallpaperStore = wallpaperStore
@@ -226,8 +235,23 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
             if let preset = wallpaper.asBackupProto() {
                 proto.wallpaper = .wallpaperPreset(preset)
             } else if wallpaper == .photo {
-                // TODO: [Backups] archive wallpaper image
-                proto.wallpaper = .none
+                let result = self.archiveWallpaperAttachment(
+                    thread: thread,
+                    errorId: errorId,
+                    context: context
+                )
+                switch result {
+                case .success(let wallpaperAttachmentProto):
+                    if let wallpaperAttachmentProto {
+                        hasAnExplicitlySetField = true
+                        proto.wallpaper = .wallpaperPhoto(wallpaperAttachmentProto)
+                    } else {
+                        // No wallpaper found; don't set.
+                        break
+                    }
+                case .failure(let error):
+                    return .failure(error)
+                }
             } else {
                 return .failure(.archiveFrameError(
                     .unknownWallpaper,
@@ -279,6 +303,8 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
         context: MessageBackup.CustomChatColorRestoringContext,
         errorId: IDType
     ) -> MessageBackup.RestoreFrameResult<IDType> {
+        var partialErrors = [MessageBackup.RestoreFrameError<IDType>]()
+
         if let chatStyleProto {
             switch chatStyleProto.bubbleColor {
             case .none:
@@ -358,10 +384,206 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
                     for: thread?.tsThread.uniqueId,
                     tx: context.tx
                 )
-            case .wallpaperPhoto:
-                // TODO: [Backups] Restore wallpaper image
-                break
+            case .wallpaperPhoto(let filePointer):
+                wallpaperStore.setWallpaperType(
+                    .photo,
+                    for: thread?.tsThread.uniqueId,
+                    tx: context.tx
+                )
+                let attachmentResult = restoreWallpaperAttachment(
+                    filePointer,
+                    thread: thread,
+                    errorId: errorId,
+                    context: context
+                )
+                switch attachmentResult {
+                case .success:
+                    break
+                case .partialRestore(let errors):
+                    partialErrors.append(contentsOf: errors)
+                case .failure(let errors):
+                    partialErrors.append(contentsOf: errors)
+                    return .failure(partialErrors)
+                }
             }
+        }
+
+        if partialErrors.isEmpty {
+            return .success
+        } else {
+            return .partialRestore(partialErrors)
+        }
+    }
+
+    // MARK: - Wallpaper Images
+
+    private func archiveWallpaperAttachment<IDType>(
+        thread: MessageBackup.ChatThread?,
+        errorId: IDType,
+        context: MessageBackup.ArchivingContext
+    ) -> MessageBackup.ArchiveSingleFrameResult<BackupProto_FilePointer?, IDType> {
+        let owner: AttachmentReference.OwnerId
+        if let thread {
+            owner = .threadWallpaperImage(threadRowId: thread.threadRowId)
+        } else {
+            owner = .globalThreadWallpaperImage
+        }
+        guard
+            let attachmentReference = attachmentStore.fetchFirstReference(
+                owner: owner,
+                tx: context.tx
+            ),
+            let attachment = attachmentStore.fetch(for: attachmentReference, tx: context.tx)
+        else {
+            return .success(nil)
+        }
+
+        var proto = BackupProto_FilePointer()
+        proto.contentType = attachment.mimeType
+        if let sourceFilename = attachmentReference.sourceFilename {
+            proto.fileName = sourceFilename
+        }
+        if let blurHash = attachment.blurHash {
+            proto.blurHash = blurHash
+        }
+
+        switch attachment.streamInfo?.contentType {
+        case
+                .animatedImage(let pixelSize),
+                .image(let pixelSize),
+                .video(_, let pixelSize, _):
+            proto.width = UInt32(pixelSize.width)
+            proto.height = UInt32(pixelSize.height)
+        case .audio, .file, .invalid:
+            break
+        case nil:
+            if let mediaSize = attachmentReference.sourceMediaSizePixels {
+                proto.width = UInt32(mediaSize.width)
+                proto.height = UInt32(mediaSize.height)
+            }
+        }
+
+        // We only create the backup locator for non-free tier backups.
+        let isFreeTier = MessageBackupMessageAttachmentArchiver.isFreeTierBackup()
+
+        let locator: BackupProto_FilePointer.OneOf_Locator
+        if
+            !isFreeTier,
+            let mediaName = attachment.mediaName,
+            let mediaTierDigest =
+                attachment.mediaTierInfo?.digestSHA256Ciphertext
+                ?? attachment.streamInfo?.digestSHA256Ciphertext,
+            let mediaTierUnencryptedByteCount =
+                attachment.mediaTierInfo?.unencryptedByteCount
+                ?? attachment.streamInfo?.unencryptedByteCount
+        {
+            var backupLocator = BackupProto_FilePointer.BackupLocator()
+            backupLocator.mediaName = mediaName
+            // Backups use the same encryption key we use locally, always.
+            backupLocator.key = attachment.encryptionKey
+            backupLocator.digest = mediaTierDigest
+            backupLocator.size = mediaTierUnencryptedByteCount
+
+            // We may not have uploaded yet, so we may not know the cdn number.
+            // Set it if we have it; its ok if we don't.
+            if let cdnNumber = attachment.mediaTierInfo?.cdnNumber {
+                backupLocator.cdnNumber = cdnNumber
+            }
+            if let transitTierInfo = attachment.transitTierInfo {
+                backupLocator.transitCdnKey = transitTierInfo.cdnKey
+                backupLocator.transitCdnNumber = transitTierInfo.cdnNumber
+            }
+            locator = .backupLocator(backupLocator)
+        } else if
+            let transitTierInfo = attachment.transitTierInfo
+        {
+            var transitTierLocator = BackupProto_FilePointer.AttachmentLocator()
+            transitTierLocator.cdnKey = transitTierInfo.cdnKey
+            transitTierLocator.cdnNumber = transitTierInfo.cdnNumber
+            transitTierLocator.uploadTimestamp = transitTierInfo.uploadTimestamp
+            transitTierLocator.key = transitTierInfo.encryptionKey
+            transitTierLocator.digest = transitTierInfo.digestSHA256Ciphertext
+            if let unencryptedByteCount = transitTierInfo.unencryptedByteCount {
+                transitTierLocator.size = unencryptedByteCount
+            }
+            locator = .attachmentLocator(transitTierLocator)
+        } else {
+            locator = .invalidAttachmentLocator(BackupProto_FilePointer.InvalidAttachmentLocator())
+        }
+
+        proto.locator = locator
+
+        // TODO: [Backups] enqueue the attachment to be uploaded.
+
+        // Notes:
+        // * incrementalMac and incrementalMacChunkSize unsupported by iOS
+        // * caption is never set for wallpapers
+        return .success(proto)
+    }
+
+    private func restoreWallpaperAttachment<IDType>(
+        _ attachment: BackupProto_FilePointer,
+        thread: MessageBackup.ChatThread?,
+        errorId: IDType,
+        context: MessageBackup.RestoringContext
+    ) -> MessageBackup.RestoreFrameResult<IDType> {
+        let uploadEra: String
+        do {
+            uploadEra = try MessageBackupMessageAttachmentArchiver.uploadEra()
+        } catch {
+            return .failure([.restoreFrameError(
+                .uploadEraDerivationFailed(error),
+                errorId
+            )])
+        }
+
+        let ownedAttachment = OwnedAttachmentBackupPointerProto(
+            proto: attachment,
+            // Wallpapers never have any flag or client id
+            renderingFlag: .default,
+            clientUUID: nil,
+            owner: {
+                if let thread {
+                    return .threadWallpaperImage(threadRowId: thread.threadRowId)
+                } else {
+                    return .globalThreadWallpaperImage
+                }
+            }())
+
+        let errors = attachmentManager.createAttachmentPointers(
+            from: [ownedAttachment],
+            uploadEra: uploadEra,
+            tx: context.tx
+        )
+
+        guard errors.isEmpty else {
+            // Treat attachment failures as non-catastrophic; a thread without
+            // a wallpaper still works.
+            return .partialRestore(errors.map { error in
+                return .restoreFrameError(
+                    .fromAttachmentCreationError(error),
+                    errorId
+                )
+            })
+        }
+
+        let results = attachmentStore.fetchReferences(owners: [ownedAttachment.owner.id], tx: context.tx)
+        if results.isEmpty {
+            return .partialRestore([.restoreFrameError(
+                .failedToCreateAttachment,
+                errorId
+            )])
+        }
+
+        do {
+            try results.forEach {
+                try backupAttachmentDownloadStore.enqueue($0, tx: context.tx)
+            }
+        } catch {
+            return .partialRestore([.restoreFrameError(
+                .failedToEnqueueAttachmentDownload(error),
+                errorId
+            )])
         }
 
         return .success

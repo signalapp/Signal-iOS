@@ -896,6 +896,9 @@ public class AppSetup {
         let reactionStore: any ReactionStore = ReactionStoreImpl()
 
         let messageBackupChatStyleArchiver = MessageBackupChatStyleArchiver(
+            attachmentManager: attachmentManager,
+            attachmentStore: attachmentStore,
+            backupAttachmentDownloadStore: backupAttachmentDownloadStore,
             chatColorSettingStore: chatColorSettingStore,
             dateProvider: dateProvider,
             wallpaperStore: wallpaperStore

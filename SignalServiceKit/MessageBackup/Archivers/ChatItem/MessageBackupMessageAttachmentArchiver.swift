@@ -241,17 +241,27 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
         )
     }
 
+    internal static func uploadEra() throws -> String {
+        // TODO: [Backups] use actual subscription id. For now use a fixed,
+        // arbitrary id, so that it never changes.
+        let backupSubscriptionId = Data(repeating: 5, count: 32)
+        return try Attachment.uploadEra(backupSubscriptionId: backupSubscriptionId)
+    }
+
+    internal static func isFreeTierBackup() -> Bool {
+        // TODO: [Backups] need a way to check if we are a free tier user;
+        // if so we only use the AttachmentLocator instead of BackupLocator.
+        return false
+    }
+
     private func restoreAttachments(
         _ attachments: [OwnedAttachmentBackupPointerProto],
         chatItemId: MessageBackup.ChatItemId,
         context: MessageBackup.RestoringContext
     ) -> MessageBackup.RestoreInteractionResult<Void> {
-        // TODO[Backups]: use actual subscription id. For now use a fixed,
-        // arbitrary id, so that it never changes.
-        let backupSubscriptionId = Data(repeating: 5, count: 32)
         let uploadEra: String
         do {
-            uploadEra = try Attachment.uploadEra(backupSubscriptionId: backupSubscriptionId)
+            uploadEra = try Self.uploadEra()
         } catch {
             return .messageFailure([.restoreFrameError(
                 .uploadEraDerivationFailed(error),
@@ -270,7 +280,7 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
             // might have _only_ attachments and without them its invalid.
             return .messageFailure(errors.map {
                 return .restoreFrameError(
-                    $0.asRestoreFrameError,
+                    .fromAttachmentCreationError($0),
                     chatItemId
                 )
             })
@@ -315,10 +325,12 @@ extension BackupProto_MessageAttachment.Flag {
     }
 }
 
-extension OwnedAttachmentBackupPointerProto.CreationError {
+extension MessageBackup.RestoreFrameError.ErrorType {
 
-    fileprivate var asRestoreFrameError: MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>.ErrorType {
-        switch self {
+    internal static func fromAttachmentCreationError(
+        _ error: OwnedAttachmentBackupPointerProto.CreationError
+    ) -> Self {
+        switch error {
         case .missingLocator:
             return .invalidProtoData(.filePointerMissingLocator)
         case .missingTransitCdnNumber:
