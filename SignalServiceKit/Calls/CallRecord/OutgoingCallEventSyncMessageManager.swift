@@ -11,7 +11,6 @@ enum OutgoingCallEventSyncMessageEvent {
 }
 
 protocol OutgoingCallEventSyncMessageManager {
-    typealias ConversationId = CallSyncMessageConversationId
     typealias CallEvent = OutgoingCallEventSyncMessageEvent
 
     /// Send a sync message with the state on the given call record.
@@ -19,7 +18,7 @@ protocol OutgoingCallEventSyncMessageManager {
     /// - Parameter callEventTimestamp
     /// The time at which the event that triggered this sync message occurred.
     func sendSyncMessage(
-        conversationId: ConversationId,
+        conversation: CallEventConversation,
         callRecord: CallRecord,
         callEvent: CallEvent,
         callEventTimestamp: UInt64,
@@ -43,7 +42,7 @@ extension OutgoingCallEventSyncMessageManager {
         tx: DBWriteTransaction
     ) {
         sendSyncMessage(
-            conversationId: .group(groupId: groupThread.groupId),
+            conversation: .groupThread(groupId: groupThread.groupId),
             callRecord: callRecord,
             callEvent: callEvent,
             callEventTimestamp: callEventTimestamp,
@@ -82,6 +81,17 @@ final class OutgoingCallEventSyncMessageManagerImpl: OutgoingCallEventSyncMessag
             return
         }
 
+        let isVideo: Bool
+        switch callRecord.callType {
+        case .audioCall:
+            isVideo = false
+        case .videoCall:
+            isVideo = true
+        case .groupCall:
+            owsFailDebug("Can't send individual sync message for group call.")
+            return
+        }
+
         // [Calls] TODO: pass through the "call event timestamp" for 1:1 call events
         //
         // We currently use the timestamp of the call record when sending all
@@ -96,7 +106,7 @@ final class OutgoingCallEventSyncMessageManagerImpl: OutgoingCallEventSyncMessag
         // with it for now.
 
         sendSyncMessage(
-            conversationId: .individual(contactServiceId: contactServiceId),
+            conversation: .individualThread(serviceId: contactServiceId, isVideo: isVideo),
             callRecord: callRecord,
             callEvent: callEvent,
             callEventTimestamp: callRecord.callBeganTimestamp,
@@ -105,7 +115,7 @@ final class OutgoingCallEventSyncMessageManagerImpl: OutgoingCallEventSyncMessag
     }
 
     func sendSyncMessage(
-        conversationId: ConversationId,
+        conversation: CallEventConversation,
         callRecord: CallRecord,
         callEvent: CallEvent,
         callEventTimestamp: UInt64,
@@ -119,14 +129,21 @@ final class OutgoingCallEventSyncMessageManagerImpl: OutgoingCallEventSyncMessag
                 return OutgoingCallEvent.EventType(callRecord.callStatus)
             }
         }()
+        guard let outgoingCallEventType else {
+            return
+        }
 
-        guard let outgoingCallEventType else { return }
+        let callType = OutgoingCallEvent.CallType(callRecord.callType)
+        guard callType.rawValue == conversation.type.rawValue else {
+            owsFailDebug("Can't send call event sync message with wrong type.")
+            return
+        }
 
         let outgoingCallEvent = OutgoingCallEvent(
             timestamp: callEventTimestamp,
-            conversationId: conversationId,
+            conversationId: conversation.id,
             callId: callRecord.callId,
-            callType: OutgoingCallEvent.CallType(callRecord.callType),
+            callType: callType,
             eventDirection: OutgoingCallEvent.EventDirection(callRecord.callDirection),
             eventType: outgoingCallEventType
         )

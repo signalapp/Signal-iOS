@@ -31,7 +31,7 @@ final class OutgoingCallLogEventSyncMessageTest: XCTestCase {
                 .init(
                     eventType: eventType,
                     callId: .maxRandom,
-                    conversationId: .individual(contactServiceId: Aci.randomForTesting()),
+                    conversationId: Aci.randomForTesting().serviceIdBinary.asData,
                     timestamp: UInt64(idx * 100)
                 ),
                 .init(
@@ -66,8 +66,8 @@ final class OutgoingCallLogEventSyncMessageTest: XCTestCase {
                     deserializedSyncMessageEvent.callId
                 )
                 XCTAssertEqual(
-                    syncMessageEvent.conversationId?.asData,
-                    deserializedSyncMessageEvent.conversationId?.asData
+                    syncMessageEvent.conversationId,
+                    deserializedSyncMessageEvent.conversationId
                 )
                 XCTAssertEqual(
                     syncMessageEvent.timestamp,

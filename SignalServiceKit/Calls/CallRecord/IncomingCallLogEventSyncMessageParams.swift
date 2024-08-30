@@ -23,10 +23,8 @@ struct IncomingCallLogEventSyncMessageParams {
     }
 
     struct CallIdentifiers {
-        typealias ConversationId = CallSyncMessageConversationId
-
         let callId: UInt64
-        let conversationId: ConversationId
+        let conversationId: Data
     }
 
     let eventType: EventType
@@ -63,15 +61,11 @@ struct IncomingCallLogEventSyncMessageParams {
         /// Sync messages from old devices may not contain a `callId` or
         /// `conversationId`, which we use in newer messages to identify the
         /// call this sync message is referencing.
-        let callIdentifiers: CallIdentifiers? = try {
+        let callIdentifiers = { () -> CallIdentifiers? in
             guard
-                let protoConversationId = callLogEvent.conversationID,
+                let conversationId = callLogEvent.conversationID,
                 callLogEvent.hasCallID
             else { return nil }
-
-            guard let conversationId = CallIdentifiers.ConversationId.from(
-                data: protoConversationId
-            ) else { throw ParseError.missingOrInvalidParams }
 
             return CallIdentifiers(
                 callId: callLogEvent.callID,

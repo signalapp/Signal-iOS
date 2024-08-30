@@ -56,16 +56,16 @@ final class IncomingCallEventSyncMessageManagerImpl: IncomingCallEventSyncMessag
     ) {
         let callId: UInt64 = syncMessage.callId
         let callDirection: CallRecord.CallDirection = syncMessage.callDirection
-        let callType: CallRecord.CallType = syncMessage.callType
+        let callType: CallRecord.CallType = syncMessage.conversation.type
         let callTimestamp: UInt64 = syncMessage.callTimestamp
 
-        let syncMessageConversationId = syncMessage.conversationId
+        let syncMessageConversation = syncMessage.conversation
         let syncMessageEvent = syncMessage.callEvent
 
         let logger = CallRecordLogger.shared.suffixed(with: "\(callDirection), \(syncMessageEvent)")
 
-        switch syncMessageConversationId {
-        case let .individual(contactServiceId):
+        switch syncMessageConversation {
+        case let .individualThread(contactServiceId, _):
             guard
                 let contactThread = fetchThread(contactServiceId: contactServiceId, tx: tx),
                 let contactThreadRowId = contactThread.sqliteRowId
@@ -142,7 +142,7 @@ final class IncomingCallEventSyncMessageManagerImpl: IncomingCallEventSyncMessag
                     tx: tx
                 )
             }
-        case let .group(groupId):
+        case let .groupThread(groupId):
             guard
                 let groupThread = fetchThread(groupId: groupId, tx: tx),
                 let groupThreadRowId = groupThread.sqliteRowId

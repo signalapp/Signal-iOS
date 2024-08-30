@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
+
 /// Responsible for deleting ``CallRecord``s.
 ///
 /// We want to take special steps when a ``CallRecord`` is deleted, beyond

@@ -606,10 +606,11 @@ public final class MessageReceiver: Dependencies {
                 tx: tx.asV2Write
             )
         } else if let callEvent = syncMessage.callEvent {
-            guard let incomingCallEvent = try? IncomingCallEventSyncMessageParams.parse(
-                callEventProto: callEvent
-            ) else {
-                CallRecordLogger.shared.warn("Failed to parse incoming call event protobuf!")
+            let incomingCallEvent: IncomingCallEventSyncMessageParams
+            do {
+                incomingCallEvent = try IncomingCallEventSyncMessageParams.parse(callEventProto: callEvent)
+            } catch {
+                CallRecordLogger.shared.warn("Failed to parse incoming call event protobuf: \(error)")
                 return
             }
 
@@ -627,12 +628,11 @@ public final class MessageReceiver: Dependencies {
                 self.handleCallLinkUpdate(callLinkUpdate)
             }
         } else if let callLogEvent = syncMessage.callLogEvent {
-            guard
-                let incomingCallLogEvent = try? IncomingCallLogEventSyncMessageParams.parse(
-                    callLogEvent: callLogEvent
-                )
-            else {
-                CallRecordLogger.shared.warn("Failed to parse incoming call log event protobuf!")
+            let incomingCallLogEvent: IncomingCallLogEventSyncMessageParams
+            do {
+                incomingCallLogEvent = try IncomingCallLogEventSyncMessageParams.parse(callLogEvent: callLogEvent)
+            } catch {
+                CallRecordLogger.shared.warn("Failed to parse incoming call log event protobuf: \(error)")
                 return
             }
 

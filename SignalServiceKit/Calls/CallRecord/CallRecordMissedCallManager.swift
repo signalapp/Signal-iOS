@@ -235,11 +235,11 @@ class CallRecordMissedCallManagerImpl: CallRecordMissedCallManager {
         eventType: OutgoingCallLogEventSyncMessage.CallLogEvent.EventType,
         tx: DBWriteTransaction
     ) {
-        typealias ConversationId = OutgoingCallLogEventSyncMessage.CallLogEvent.ConversationId
-        guard let conversationId: ConversationId = callRecordConversationIdAdapter.getConversationId(
+        guard let conversationId = callRecordConversationIdAdapter.getConversationId(
             callRecord: callRecord, tx: tx
-        ) else { return }
-
+        ) else {
+            return
+        }
         syncMessageSender.sendCallLogEventSyncMessage(
             eventType: eventType,
             callId: callRecord.callId,
@@ -266,7 +266,7 @@ protocol _CallRecordMissedCallManagerImpl_SyncMessageSender_Shim {
     func sendCallLogEventSyncMessage(
         eventType: OutgoingCallLogEventSyncMessage.CallLogEvent.EventType,
         callId: UInt64,
-        conversationId: OutgoingCallLogEventSyncMessage.CallLogEvent.ConversationId,
+        conversationId: Data,
         timestamp: UInt64,
         tx: DBWriteTransaction
     )
@@ -282,7 +282,7 @@ class _CallRecordMissedCallManagerImpl_SyncMessageSender_Wrapper: _CallRecordMis
     func sendCallLogEventSyncMessage(
         eventType: OutgoingCallLogEventSyncMessage.CallLogEvent.EventType,
         callId: UInt64,
-        conversationId: OutgoingCallLogEventSyncMessage.CallLogEvent.ConversationId,
+        conversationId: Data,
         timestamp: UInt64,
         tx: DBWriteTransaction
     ) {

@@ -51,7 +51,7 @@ public class OutgoingCallLogEventSyncMessage: OWSOutgoingSyncMessage {
         }
 
         if let conversationId = callLogEvent.conversationId {
-            callLogEventBuilder.setConversationID(conversationId.asData)
+            callLogEventBuilder.setConversationID(conversationId)
         }
 
         let builder = SSKProtoSyncMessage.builder()
@@ -65,8 +65,6 @@ public class OutgoingCallLogEventSyncMessage: OWSOutgoingSyncMessage {
 public extension OutgoingCallLogEventSyncMessage {
     @objc(OutgoingCallLogEvent)
     class CallLogEvent: NSObject, NSCoding {
-        typealias ConversationId = CallSyncMessageConversationId
-
         public enum EventType: UInt, CaseIterable {
             /// Indicates we cleared our call log in its entirety.
             ///
@@ -88,13 +86,13 @@ public extension OutgoingCallLogEventSyncMessage {
 
         let eventType: EventType
         let callId: UInt64?
-        let conversationId: ConversationId?
+        let conversationId: Data?
         let timestamp: UInt64
 
         init(
             eventType: EventType,
             callId: UInt64?,
-            conversationId: ConversationId?,
+            conversationId: Data?,
             timestamp: UInt64
         ) {
             self.eventType = eventType
@@ -127,9 +125,7 @@ public extension OutgoingCallLogEventSyncMessage {
 
             if
                 let callId = coder.decodeObject(of: NSNumber.self, forKey: Keys.callId) as? UInt64,
-                let conversationId: ConversationId = coder.decodeObject(
-                    of: NSData.self, forKey: Keys.conversationId
-                ).flatMap({ .from(data: $0 as Data) })
+                let conversationId = coder.decodeObject(of: NSData.self, forKey: Keys.conversationId) as Data?
             {
                 self.callId = callId
                 self.conversationId = conversationId
@@ -143,12 +139,9 @@ public extension OutgoingCallLogEventSyncMessage {
             coder.encode(NSNumber(value: eventType.rawValue), forKey: Keys.eventType)
             coder.encode(NSNumber(value: timestamp), forKey: Keys.timestamp)
 
-            if
-                let callId,
-                let conversationId
-            {
+            if let callId, let conversationId {
                 coder.encode(NSNumber(value: callId), forKey: Keys.callId)
-                coder.encode(conversationId.asData as NSData, forKey: Keys.conversationId)
+                coder.encode(conversationId as NSData, forKey: Keys.conversationId)
             }
         }
     }

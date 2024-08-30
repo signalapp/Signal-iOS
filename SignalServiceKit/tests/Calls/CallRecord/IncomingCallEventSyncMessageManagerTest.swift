@@ -66,11 +66,10 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
 
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
                 incomingSyncMessage: IncomingCallEventSyncMessageParams(
-                    conversationId: .individual(contactServiceId: contactServiceId),
+                    conversation: .individualThread(serviceId: contactServiceId, isVideo: false),
                     callId: callId.adjacent,
                     callTimestamp: .maxRandom,
                     callEvent: .deleted,
-                    callType: .audioCall,
                     callDirection: .outgoing
                 ),
                 syncMessageTimestamp: .maxRandom,
@@ -88,11 +87,10 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
 
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
                 incomingSyncMessage: IncomingCallEventSyncMessageParams(
-                    conversationId: .individual(contactServiceId: contactServiceId),
+                    conversation: .individualThread(serviceId: contactServiceId, isVideo: false),
                     callId: callId,
                     callTimestamp: .maxRandom,
                     callEvent: .deleted,
-                    callType: .audioCall,
                     callDirection: .outgoing
                 ),
                 syncMessageTimestamp: .maxRandom,
@@ -112,11 +110,10 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
 
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
                 incomingSyncMessage: IncomingCallEventSyncMessageParams(
-                    conversationId: .individual(contactServiceId: contactServiceId),
+                    conversation: .individualThread(serviceId: contactServiceId, isVideo: false),
                     callId: callId.adjacent,
                     callTimestamp: .maxRandom,
                     callEvent: .deleted,
-                    callType: .audioCall,
                     callDirection: .outgoing
                 ),
                 syncMessageTimestamp: .maxRandom,
@@ -141,11 +138,10 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
 
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
                 incomingSyncMessage: IncomingCallEventSyncMessageParams(
-                    conversationId: .group(groupId: groupId),
+                    conversation: .groupThread(groupId: groupId),
                     callId: existingCallRecord.callId.adjacent,
                     callTimestamp: .maxRandom,
                     callEvent: .deleted,
-                    callType: .audioCall,
                     callDirection: .outgoing
                 ),
                 syncMessageTimestamp: .maxRandom,
@@ -163,11 +159,10 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
 
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
                 incomingSyncMessage: IncomingCallEventSyncMessageParams(
-                    conversationId: .group(groupId: groupId),
+                    conversation: .groupThread(groupId: groupId),
                     callId: existingCallRecord.callId,
                     callTimestamp: .maxRandom,
                     callEvent: .deleted,
-                    callType: .audioCall,
                     callDirection: .outgoing
                 ),
                 syncMessageTimestamp: .maxRandom,
@@ -187,11 +182,10 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
 
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
                 incomingSyncMessage: IncomingCallEventSyncMessageParams(
-                    conversationId: .group(groupId: groupId),
+                    conversation: .groupThread(groupId: groupId),
                     callId: existingCallRecord.callId.adjacent,
                     callTimestamp: .maxRandom,
                     callEvent: .deleted,
-                    callType: .audioCall,
                     callDirection: .outgoing
                 ),
                 syncMessageTimestamp: .maxRandom,
@@ -253,11 +247,10 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
         mockDB.write { tx in
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
                 incomingSyncMessage: IncomingCallEventSyncMessageParams(
-                    conversationId: .individual(contactServiceId: contactServiceId),
+                    conversation: .individualThread(serviceId: contactServiceId, isVideo: false),
                     callId: callId,
                     callTimestamp: .maxRandom,
                     callEvent: .accepted,
-                    callType: .audioCall,
                     callDirection: .outgoing
                 ),
                 syncMessageTimestamp: .maxRandom,
@@ -292,11 +285,10 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
         mockDB.write { tx in
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
                 incomingSyncMessage: IncomingCallEventSyncMessageParams(
-                    conversationId: .individual(contactServiceId: contactServiceId),
+                    conversation: .individualThread(serviceId: contactServiceId, isVideo: false),
                     callId: callId,
                     callTimestamp: .maxRandom,
                     callEvent: .accepted,
-                    callType: .audioCall,
                     callDirection: .outgoing
                 ),
                 syncMessageTimestamp: .maxRandom,
@@ -332,11 +324,10 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
         mockDB.write { tx in
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
                 incomingSyncMessage: IncomingCallEventSyncMessageParams(
-                    conversationId: .individual(contactServiceId: contactServiceId),
+                    conversation: .individualThread(serviceId: contactServiceId, isVideo: false),
                     callId: .maxRandom,
                     callTimestamp: .maxRandom,
                     callEvent: .accepted,
-                    callType: .audioCall,
                     callDirection: .outgoing
                 ),
                 syncMessageTimestamp: .maxRandom,
@@ -400,11 +391,10 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
         mockDB.write { tx in
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
                 incomingSyncMessage: IncomingCallEventSyncMessageParams(
-                    conversationId: .group(groupId: groupId),
+                    conversation: .groupThread(groupId: groupId),
                     callId: existingCallRecord.callId,
                     callTimestamp: existingCallRecord.callBeganTimestamp - 5,
                     callEvent: .accepted,
-                    callType: .groupCall,
                     callDirection: .incoming
                 ),
                 syncMessageTimestamp: .maxRandom,
@@ -416,11 +406,10 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
         mockDB.write { tx in
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
                 incomingSyncMessage: IncomingCallEventSyncMessageParams(
-                    conversationId: .group(groupId: groupId),
+                    conversation: .groupThread(groupId: groupId),
                     callId: existingCallRecord.callId,
                     callTimestamp: existingCallRecord.callBeganTimestamp - 5,
                     callEvent: .accepted,
-                    callType: .groupCall,
                     callDirection: .incoming
                 ),
                 syncMessageTimestamp: .maxRandom,
@@ -451,11 +440,10 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
         mockDB.write { tx in
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
                 incomingSyncMessage: IncomingCallEventSyncMessageParams(
-                    conversationId: .group(groupId: missedGroupId),
+                    conversation: .groupThread(groupId: missedGroupId),
                     callId: missedCallRecord.callId,
                     callTimestamp: missedCallRecord.callBeganTimestamp - 5,
                     callEvent: .accepted,
-                    callType: .groupCall,
                     callDirection: .incoming
                 ),
                 syncMessageTimestamp: .maxRandom,
@@ -467,11 +455,10 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
         mockDB.write { tx in
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
                 incomingSyncMessage: IncomingCallEventSyncMessageParams(
-                    conversationId: .group(groupId: declinedGroupId),
+                    conversation: .groupThread(groupId: declinedGroupId),
                     callId: declinedCallRecord.callId,
                     callTimestamp: declinedCallRecord.callBeganTimestamp - 5,
                     callEvent: .accepted,
-                    callType: .groupCall,
                     callDirection: .incoming
                 ),
                 syncMessageTimestamp: .maxRandom,
@@ -483,11 +470,10 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
         mockDB.write { tx in
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
                 incomingSyncMessage: IncomingCallEventSyncMessageParams(
-                    conversationId: .group(groupId: declinedGroupId),
+                    conversation: .groupThread(groupId: declinedGroupId),
                     callId: declinedCallRecord.callId,
                     callTimestamp: declinedCallRecord.callBeganTimestamp - 5,
                     callEvent: .accepted,
-                    callType: .groupCall,
                     callDirection: .incoming
                 ),
                 syncMessageTimestamp: .maxRandom,
@@ -518,11 +504,10 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
         mockDB.write { tx in
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
                 incomingSyncMessage: IncomingCallEventSyncMessageParams(
-                    conversationId: .group(groupId: genericGroupId),
+                    conversation: .groupThread(groupId: genericGroupId),
                     callId: genericCallRecord.callId,
                     callTimestamp: genericCallRecord.callBeganTimestamp - 5,
                     callEvent: .notAccepted,
-                    callType: .groupCall,
                     callDirection: .incoming
                 ),
                 syncMessageTimestamp: .maxRandom,
@@ -534,11 +519,10 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
         mockDB.write { tx in
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
                 incomingSyncMessage: IncomingCallEventSyncMessageParams(
-                    conversationId: .group(groupId: missedGroupId),
+                    conversation: .groupThread(groupId: missedGroupId),
                     callId: missedCallRecord.callId,
                     callTimestamp: missedCallRecord.callBeganTimestamp - 5,
                     callEvent: .notAccepted,
-                    callType: .groupCall,
                     callDirection: .incoming
                 ),
                 syncMessageTimestamp: .maxRandom,
@@ -550,11 +534,10 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
         mockDB.write { tx in
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
                 incomingSyncMessage: IncomingCallEventSyncMessageParams(
-                    conversationId: .group(groupId: missedGroupId),
+                    conversation: .groupThread(groupId: missedGroupId),
                     callId: missedCallRecord.callId,
                     callTimestamp: missedCallRecord.callBeganTimestamp - 5,
                     callEvent: .notAccepted,
-                    callType: .groupCall,
                     callDirection: .incoming
                 ),
                 syncMessageTimestamp: .maxRandom,
@@ -585,11 +568,10 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
         mockDB.write { tx in
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
                 incomingSyncMessage: IncomingCallEventSyncMessageParams(
-                    conversationId: .group(groupId: joinedGroupId),
+                    conversation: .groupThread(groupId: joinedGroupId),
                     callId: joinedCallRecord.callId,
                     callTimestamp: joinedCallRecord.callBeganTimestamp - 5,
                     callEvent: .notAccepted,
-                    callType: .groupCall,
                     callDirection: .incoming
                 ),
                 syncMessageTimestamp: .maxRandom,
@@ -601,11 +583,10 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
         mockDB.write { tx in
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
                 incomingSyncMessage: IncomingCallEventSyncMessageParams(
-                    conversationId: .group(groupId: acceptedGroupId),
+                    conversation: .groupThread(groupId: acceptedGroupId),
                     callId: acceptedCallRecord.callId,
                     callTimestamp: acceptedCallRecord.callBeganTimestamp - 5,
                     callEvent: .notAccepted,
-                    callType: .groupCall,
                     callDirection: .incoming
                 ),
                 syncMessageTimestamp: .maxRandom,
@@ -637,11 +618,10 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
         mockDB.write { tx in
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
                 incomingSyncMessage: IncomingCallEventSyncMessageParams(
-                    conversationId: .group(groupId: genericGroupId),
+                    conversation: .groupThread(groupId: genericGroupId),
                     callId: genericCallRecord.callId,
                     callTimestamp: genericCallRecord.callBeganTimestamp - 5,
                     callEvent: .accepted,
-                    callType: .groupCall,
                     callDirection: .outgoing
                 ),
                 syncMessageTimestamp: .maxRandom,
@@ -653,11 +633,10 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
         mockDB.write { tx in
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
                 incomingSyncMessage: IncomingCallEventSyncMessageParams(
-                    conversationId: .group(groupId: joinedGroupId),
+                    conversation: .groupThread(groupId: joinedGroupId),
                     callId: joinedCallRecord.callId,
                     callTimestamp: joinedCallRecord.callBeganTimestamp - 5,
                     callEvent: .accepted,
-                    callType: .groupCall,
                     callDirection: .outgoing
                 ),
                 syncMessageTimestamp: .maxRandom,
@@ -685,11 +664,10 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
         mockDB.write { tx in
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
                 incomingSyncMessage: IncomingCallEventSyncMessageParams(
-                    conversationId: .group(groupId: groupId),
+                    conversation: .groupThread(groupId: groupId),
                     callId: callRecord.callId,
                     callTimestamp: callRecord.callBeganTimestamp - 5,
                     callEvent: .notAccepted,
-                    callType: .groupCall,
                     callDirection: .outgoing
                 ),
                 syncMessageTimestamp: .maxRandom,
@@ -710,11 +688,10 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
         mockDB.write { tx in
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
                 incomingSyncMessage: IncomingCallEventSyncMessageParams(
-                    conversationId: .group(groupId: Data()),
+                    conversation: .groupThread(groupId: Data()),
                     callId: .maxRandom,
                     callTimestamp: .maxRandom,
                     callEvent: .notAccepted,
-                    callType: .groupCall,
                     callDirection: .outgoing
                 ),
                 syncMessageTimestamp: .maxRandom,
@@ -736,11 +713,10 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
             mockDB.write { tx in
                 incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
                     incomingSyncMessage: IncomingCallEventSyncMessageParams(
-                        conversationId: .group(groupId: groupThread.groupId),
+                        conversation: .groupThread(groupId: groupThread.groupId),
                         callId: .maxRandom,
                         callTimestamp: .maxRandom,
                         callEvent: event,
-                        callType: .groupCall,
                         callDirection: direction
                     ),
                     syncMessageTimestamp: .maxRandom,

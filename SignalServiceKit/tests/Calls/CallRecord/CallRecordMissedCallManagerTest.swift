@@ -247,12 +247,12 @@ private extension CallRecord {
 }
 
 private class MockConversationIdAdapter: CallRecordSyncMessageConversationIdAdapter {
-    func hydrate(callId: UInt64, conversationId: CallSyncMessageConversationId, tx: DBReadTransaction) -> CallRecord? {
+    func hydrate(conversationId: Data, callId: UInt64, tx: DBReadTransaction) -> CallRecord? {
         owsFail("Not implemented!")
     }
 
-    func getConversationId(callRecord: CallRecord, tx: DBReadTransaction) -> CallSyncMessageConversationId? {
-        return .individual(contactServiceId: Aci.randomForTesting())
+    func getConversationId(callRecord: CallRecord, tx: DBReadTransaction) -> Data? {
+        return Aci.randomForTesting().serviceIdBinary.asData
     }
 }
 
@@ -264,7 +264,7 @@ private class MockSyncMessageSender: CallRecordMissedCallManagerImpl.Shims.SyncM
     func sendCallLogEventSyncMessage(
         eventType: OutgoingCallLogEventSyncMessage.CallLogEvent.EventType,
         callId: UInt64,
-        conversationId: OutgoingCallLogEventSyncMessage.CallLogEvent.ConversationId,
+        conversationId: Data,
         timestamp: UInt64,
         tx: DBWriteTransaction
     ) {

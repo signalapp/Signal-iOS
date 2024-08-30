@@ -43,8 +43,8 @@ class IncomingCallLogEventSyncMessageManagerImpl: IncomingCallLogEventSyncMessag
             if
                 let callIdentifiers = incomingSyncMessage.anchorCallIdentifiers,
                 let referencedCallRecord: CallRecord = callRecordConversationIdAdapter.hydrate(
-                    callId: callIdentifiers.callId,
                     conversationId: callIdentifiers.conversationId,
+                    callId: callIdentifiers.callId,
                     tx: tx
                 )
             {

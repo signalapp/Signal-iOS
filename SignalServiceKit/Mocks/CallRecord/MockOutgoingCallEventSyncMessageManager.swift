@@ -10,7 +10,7 @@ class MockOutgoingCallEventSyncMessageManager: OutgoingCallEventSyncMessageManag
     var syncMessageSendCount: UInt = 0
 
     func sendSyncMessage(
-        conversationId: ConversationId,
+        conversation: CallEventConversation,
         callRecord: CallRecord,
         callEvent: CallEvent,
         callEventTimestamp: UInt64,

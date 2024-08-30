@@ -54,7 +54,7 @@ final class IncomingCallLogEventSyncMessageManagerTest: XCTestCase {
             eventType: .cleared,
             anchorCallIdentifiers: CallIdentifiers(
                 callId: callId,
-                conversationId: .group(groupId: Data())
+                conversationId: Data()
             ),
             anchorTimestamp: timestamp + 1
         ))
@@ -73,7 +73,7 @@ final class IncomingCallLogEventSyncMessageManagerTest: XCTestCase {
             eventType: .cleared,
             anchorCallIdentifiers: CallIdentifiers(
                 callId: .maxRandom,
-                conversationId: .group(groupId: Data())
+                conversationId: Data()
             ),
             anchorTimestamp: timestamp
         ))
@@ -105,7 +105,7 @@ final class IncomingCallLogEventSyncMessageManagerTest: XCTestCase {
             eventType: .markedAsRead,
             anchorCallIdentifiers: CallIdentifiers(
                 callId: callId,
-                conversationId: .group(groupId: Data())
+                conversationId: Data()
             ),
             anchorTimestamp: timestamp + 1
         ))
@@ -124,7 +124,7 @@ final class IncomingCallLogEventSyncMessageManagerTest: XCTestCase {
             eventType: .markedAsRead,
             anchorCallIdentifiers: CallIdentifiers(
                 callId: .maxRandom,
-                conversationId: .group(groupId: Data())
+                conversationId: Data()
             ),
             anchorTimestamp: timestamp
         ))

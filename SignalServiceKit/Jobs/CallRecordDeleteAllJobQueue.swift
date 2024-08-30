@@ -71,10 +71,10 @@ public class CallRecordDeleteAllJobQueue {
 
         switch deleteAllBefore {
         case .callRecord(let callRecord):
-            guard
-                let conversationId: CallRecordDeleteAllJobRecord.ConversationId = callRecordConversationIdAdapter
-                    .getConversationId(callRecord: callRecord, tx: tx.asV2Read)
-            else { return }
+            let conversationId = callRecordConversationIdAdapter.getConversationId(callRecord: callRecord, tx: tx.asV2Read)
+            guard let conversationId else {
+                return
+            }
 
             jobRecord = CallRecordDeleteAllJobRecord(
                 sendDeleteAllSyncMessage: sendDeleteAllSyncMessage,
@@ -173,8 +173,8 @@ private class CallRecordDeleteAllJobRunner: JobRunner {
                 let conversationId = jobRecord.deleteAllBeforeConversationId,
                 let referencedCallRecord: CallRecord = db.read(block: { tx -> CallRecord? in
                     return callRecordConversationIdAdapter.hydrate(
-                        callId: callId,
                         conversationId: conversationId,
+                        callId: callId,
                         tx: tx
                     )
                 })
@@ -262,7 +262,7 @@ private class CallRecordDeleteAllJobRunner: JobRunner {
 
     private func sendClearCallLogSyncMessage(
         callId: UInt64?,
-        conversationId: CallRecordDeleteAllJobRecord.ConversationId?,
+        conversationId: Data?,
         beforeTimestamp: UInt64,
         tx: SDSAnyWriteTransaction
     ) {

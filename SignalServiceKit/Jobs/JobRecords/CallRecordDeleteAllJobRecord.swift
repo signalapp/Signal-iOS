@@ -4,8 +4,6 @@
 //
 
 public final class CallRecordDeleteAllJobRecord: JobRecord, FactoryInitializableFromRecordType {
-    typealias ConversationId = CallSyncMessageConversationId
-
     override class var jobRecordType: JobRecord.JobRecordType { .callRecordDeleteAll }
 
     /// Whether this job should send a "delete all" `CallLogEvent` sync message.
@@ -38,7 +36,7 @@ public final class CallRecordDeleteAllJobRecord: JobRecord, FactoryInitializable
     /// This property will be `nil` for legacy job records, or jobs enqueued
     /// based on a legacy sync message, in which case we will fall back to
     /// `deleteAllBeforeTimestamp`.
-    let deleteAllBeforeConversationId: ConversationId?
+    let deleteAllBeforeConversationId: Data?
 
     /// A "call began" timestamp before (and at) which all earlier calls should
     /// be deleted.
@@ -47,7 +45,7 @@ public final class CallRecordDeleteAllJobRecord: JobRecord, FactoryInitializable
     init(
         sendDeleteAllSyncMessage: Bool,
         deleteAllBeforeCallId: UInt64?,
-        deleteAllBeforeConversationId: CallSyncMessageConversationId?,
+        deleteAllBeforeConversationId: Data?,
         deleteAllBeforeTimestamp: UInt64,
         exclusiveProcessIdentifier: String? = nil,
         failureCount: UInt = 0,
@@ -73,8 +71,7 @@ public final class CallRecordDeleteAllJobRecord: JobRecord, FactoryInitializable
 
         if
             let callIdString = try container.decodeIfPresent(String.self, forKey: .deleteAllBeforeCallId),
-            let conversationId: ConversationId = try container.decodeIfPresent(Data.self, forKey: .deleteAllBeforeConversationId)
-                .flatMap({ .from(data: $0) })
+            let conversationId = try container.decodeIfPresent(Data.self, forKey: .deleteAllBeforeConversationId)
         {
             _deleteAllBeforeCallIdString = callIdString
             deleteAllBeforeConversationId = conversationId
@@ -94,12 +91,9 @@ public final class CallRecordDeleteAllJobRecord: JobRecord, FactoryInitializable
         try container.encode(sendDeleteAllSyncMessage, forKey: .sendDeleteAllSyncMessage)
         try container.encode(deleteAllBeforeTimestamp, forKey: .deleteAllBeforeTimestamp)
 
-        if
-            let _deleteAllBeforeCallIdString,
-            let deleteAllBeforeConversationId
-        {
+        if let _deleteAllBeforeCallIdString, let deleteAllBeforeConversationId {
             try container.encode(_deleteAllBeforeCallIdString, forKey: .deleteAllBeforeCallId)
-            try container.encode(deleteAllBeforeConversationId.asData, forKey: .deleteAllBeforeConversationId)
+            try container.encode(deleteAllBeforeConversationId, forKey: .deleteAllBeforeConversationId)
         }
     }
 }

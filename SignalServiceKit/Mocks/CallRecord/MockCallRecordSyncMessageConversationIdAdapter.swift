@@ -8,18 +8,18 @@
 class MockCallRecordSyncMessageConversationIdAdapter: CallRecordSyncMessageConversationIdAdapter {
     var mockHydratedCallRecord: CallRecord?
     func hydrate(
+        conversationId: Data,
         callId: UInt64,
-        conversationId: CallSyncMessageConversationId,
         tx: DBReadTransaction
     ) -> CallRecord? {
         return mockHydratedCallRecord
     }
 
-    var mockConversationId: CallSyncMessageConversationId?
+    var mockConversationId: Data?
     func getConversationId(
         callRecord: CallRecord,
         tx: DBReadTransaction
-    ) -> CallSyncMessageConversationId? {
+    ) -> Data? {
         return mockConversationId
     }
 }

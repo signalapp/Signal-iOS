@@ -13,8 +13,6 @@ import LibSignalClient
 /// - SeeAlso ``IncomingCallEventSyncMessageManager``
 /// - SeeAlso ``IncomingCallLogEventSyncMessageParams``
 public struct IncomingCallEventSyncMessageParams {
-    typealias ConversationId = CallSyncMessageConversationId
-
     enum CallEvent {
         case accepted
         case notAccepted
@@ -30,28 +28,23 @@ public struct IncomingCallEventSyncMessageParams {
         }
     }
 
-    let conversationId: ConversationId
+    let conversation: CallEventConversation
     let callId: UInt64
     let callTimestamp: UInt64
-
     let callEvent: CallEvent
-    let callType: CallRecord.CallType
     let callDirection: CallRecord.CallDirection
 
     init(
-        conversationId: ConversationId,
+        conversation: CallEventConversation,
         callId: UInt64,
         callTimestamp: UInt64,
         callEvent: CallEvent,
-        callType: CallRecord.CallType,
         callDirection: CallRecord.CallDirection
     ) {
-        self.conversationId = conversationId
+        self.conversation = conversation
         self.callId = callId
         self.callTimestamp = callTimestamp
-
         self.callEvent = callEvent
-        self.callType = callType
         self.callDirection = callDirection
     }
 
@@ -60,13 +53,10 @@ public struct IncomingCallEventSyncMessageParams {
     ) throws -> Self {
         enum ParseError: Error {
             case missingOrInvalidParameters
-            case notImplementedYet
         }
 
-        let logger = CallRecordLogger.shared
-
         guard
-            let protoConversationId = callEventProto.conversationID,
+            let conversationId = callEventProto.conversationID,
             let protoCallEvent = callEventProto.event,
             let callEvent = CallEvent(protoCallEvent: protoCallEvent),
             let callType = CallRecord.CallType(protoCallType: callEventProto.type),
@@ -75,12 +65,6 @@ public struct IncomingCallEventSyncMessageParams {
             callEventProto.hasTimestamp,
             SDS.fitsInInt64(callEventProto.timestamp)
         else {
-            logger.warn("Call event sync message with missing or invalid parameters!")
-            throw ParseError.missingOrInvalidParameters
-        }
-
-        guard let conversationId = ConversationId.from(data: protoConversationId) else {
-            logger.warn("Failed to parse conversation ID!")
             throw ParseError.missingOrInvalidParameters
         }
 
@@ -88,11 +72,10 @@ public struct IncomingCallEventSyncMessageParams {
         let callTimestamp = callEventProto.timestamp
 
         return IncomingCallEventSyncMessageParams(
-            conversationId: conversationId,
+            conversation: try CallEventConversation(type: callType, conversationId: conversationId),
             callId: callId,
             callTimestamp: callTimestamp,
             callEvent: callEvent,
-            callType: callType,
             callDirection: callDirection
         )
     }

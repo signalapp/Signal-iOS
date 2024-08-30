@@ -629,7 +629,7 @@ extension CallRecordDeleteAllJobRecord: ValidatableModel {
             CallRecordDeleteAllJobRecord(
                 sendDeleteAllSyncMessage: true,
                 deleteAllBeforeCallId: 6789,
-                deleteAllBeforeConversationId: .individual(contactServiceId: Aci.constantForTesting("E84A2412-09CB-4EFB-9B1D-3BEB65C14481")),
+                deleteAllBeforeConversationId: Aci.constantForTesting("E84A2412-09CB-4EFB-9B1D-3BEB65C14481").serviceIdBinary.asData,
                 deleteAllBeforeTimestamp: 1234,
                 exclusiveProcessIdentifier: "blorp",
                 failureCount: 19,
@@ -641,7 +641,7 @@ extension CallRecordDeleteAllJobRecord: ValidatableModel {
             CallRecordDeleteAllJobRecord(
                 sendDeleteAllSyncMessage: true,
                 deleteAllBeforeCallId: 6789,
-                deleteAllBeforeConversationId: .group(groupId: Data(repeating: 5, count: 32)),
+                deleteAllBeforeConversationId: Data(repeating: 5, count: 32),
                 deleteAllBeforeTimestamp: 1234,
                 exclusiveProcessIdentifier: "blorp",
                 failureCount: 19,
