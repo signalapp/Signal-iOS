@@ -93,19 +93,13 @@ public class UserNotificationConfig {
 // MARK: -
 
 class UserNotificationPresenter: Dependencies {
-    typealias NotificationActionCompletion = () -> Void
-    typealias NotificationReplaceCompletion = (Bool) -> Void
-
     private static var notificationCenter: UNUserNotificationCenter { UNUserNotificationCenter.current() }
 
     // Delay notification of incoming messages when it's likely to be read by a linked device to
     // avoid notifying a user on their phone while a conversation is actively happening on desktop.
     let kNotificationDelayForRemoteRead: TimeInterval = 20
 
-    private let notifyQueue: DispatchQueue
-
-    init(notifyQueue: DispatchQueue) {
-        self.notifyQueue = notifyQueue
+    init() {
         SwiftSingletons.register(self)
     }
 
@@ -140,26 +134,29 @@ class UserNotificationPresenter: Dependencies {
         sound: Sound?,
         replacingIdentifier: String? = nil,
         forceBeforeRegistered: Bool = false,
-        completion: NotificationActionCompletion?
-    ) {
-        dispatchPrecondition(condition: .onQueue(notifyQueue))
-
-        guard forceBeforeRegistered || DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
+        isMainAppAndActive: Bool,
+        notificationSuppressionRule: NotificationSuppressionRule
+    ) async {
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        // TODO: It might make sense to have the callers check this instead. Further investigation is required.
+        guard forceBeforeRegistered || tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
             Logger.info("suppressing notification since user hasn't yet completed registration.")
-            completion?()
+            return
+        }
+        // TODO: It might make sense to have the callers check this instead. Further investigation is required.
+        if case .incomingGroupStoryReply = category, !StoryManager.areStoriesEnabled {
             return
         }
 
         let content = UNMutableNotificationContent()
         content.categoryIdentifier = category.identifier
         content.userInfo = userInfo
-        let isAppActive = CurrentAppContext().isMainAppAndActive
         if let sound, sound != .standard(.none) {
-            content.sound = sound.notificationSound(isQuiet: isAppActive)
+            content.sound = sound.notificationSound(isQuiet: isMainAppAndActive)
         }
 
         var notificationIdentifier: String = UUID().uuidString
-        if let replacingIdentifier = replacingIdentifier {
+        if let replacingIdentifier {
             notificationIdentifier = replacingIdentifier
             Logger.debug("replacing notification with identifier: \(notificationIdentifier)")
             cancelNotificationSync(identifier: notificationIdentifier)
@@ -180,7 +177,7 @@ class UserNotificationPresenter: Dependencies {
             trigger = nil
         }
 
-        if shouldPresentNotification(category: category, userInfo: userInfo) {
+        if shouldPresentNotification(category: category, userInfo: userInfo, notificationSuppressionRule: notificationSuppressionRule) {
             if let displayableTitle = title?.filterForDisplay {
                 content.title = displayableTitle
             }
@@ -195,16 +192,15 @@ class UserNotificationPresenter: Dependencies {
 
         var contentToUse: UNNotificationContent = content
         if let interaction {
-            interaction.donate(completion: { error in
-                if let error = error {
-                    owsFailDebug("Failed to donate incoming message intent \(error)")
-                    return
-                }
-            })
+            do {
+                try await interaction.donate()
+            } catch {
+                owsFailDebug("Failed to donate incoming message intent \(error)")
+            }
 
             if let intent = interaction.intent as? UNNotificationContentProviding {
                 do {
-                    try contentToUse = content.updating(from: intent)
+                    contentToUse = try content.updating(from: intent)
                 } catch {
                     owsFailDebug("Failed to update UNNotificationContent for comm style notification")
                 }
@@ -213,11 +209,10 @@ class UserNotificationPresenter: Dependencies {
 
         let request = UNNotificationRequest(identifier: notificationIdentifier, content: contentToUse, trigger: trigger)
 
-        Self.notificationCenter.add(request) { (error: Error?) in
-            if let error = error {
-                owsFailDebug("Error presenting notification with identifier \(notificationIdentifier): \(error)")
-            }
-            completion?()
+        do {
+            try await Self.notificationCenter.add(request)
+        } catch {
+            owsFailDebug("Error presenting notification with identifier \(notificationIdentifier): \(error)")
         }
     }
 
@@ -243,7 +238,11 @@ class UserNotificationPresenter: Dependencies {
         Logger.info("Presented notification with identifier \(notificationIdentifier)")
     }
 
-    private func shouldPresentNotification(category: AppNotificationCategory, userInfo: [AnyHashable: Any]) -> Bool {
+    private func shouldPresentNotification(
+        category: AppNotificationCategory,
+        userInfo: [AnyHashable: Any],
+        notificationSuppressionRule: NotificationSuppressionRule
+    ) -> Bool {
         switch category {
         case .incomingMessageFromNoLongerVerifiedIdentity,
              .missedCallWithActions,
@@ -253,98 +252,81 @@ class UserNotificationPresenter: Dependencies {
              .deregistration:
             // Always show these notifications
             return true
+
         case .internalError:
             // Only show errors alerts on builds run by a test population (beta, internal, etc.)
             return DebugFlags.testPopulationErrorAlerts
+
         case .incomingMessageWithActions_CanReply,
              .incomingMessageWithActions_CannotReply,
              .incomingMessageWithoutActions,
              .incomingReactionWithActions_CanReply,
              .incomingReactionWithActions_CannotReply,
              .infoOrErrorMessage:
-            // Only show these notification if:
-            // - The app is not foreground
-            // - The app is foreground, but the corresponding conversation is not open
-            guard CurrentAppContext().isMainAppAndActive else { return true }
-            guard let notificationThreadId = userInfo[AppNotificationUserInfoKey.threadId] as? String else {
-                owsFailDebug("threadId was unexpectedly nil")
-                return true
+            // Don't show these notifications when the thread is visible.
+            if
+                let notificationThreadUniqueId = userInfo[AppNotificationUserInfoKey.threadId] as? String,
+                case .messagesInThread(let suppressedThreadUniqueId) = notificationSuppressionRule,
+                suppressedThreadUniqueId == notificationThreadUniqueId
+            {
+                return false
             }
+            return true
 
-            guard let conversationSplitVC = CurrentAppContext().frontmostViewController() as? ConversationSplit else {
-                return true
-            }
-
-            // Show notifications for any *other* thread than the currently selected thread
-            return conversationSplitVC.visibleThread?.uniqueId != notificationThreadId
         case .incomingGroupStoryReply:
-            guard StoryManager.areStoriesEnabled else { return false }
-
-            guard CurrentAppContext().isMainAppAndActive else { return true }
-
-            guard let notificationThreadId = userInfo[AppNotificationUserInfoKey.threadId] as? String else {
-                owsFailDebug("threadId was unexpectedly nil")
-                return true
-            }
-
-            guard let notificationStoryTimestamp = userInfo[AppNotificationUserInfoKey.storyTimestamp] as? UInt64 else {
-                owsFailDebug("storyTimestamp was unexpectedly nil")
-                return true
-            }
-
-            guard let storyGroupReply = CurrentAppContext().frontmostViewController() as? StoryGroupReplier else {
-                return true
-            }
-
             // Show notifications any time we're not currently showing the group reply sheet for that story
-            return notificationStoryTimestamp != storyGroupReply.storyMessage.timestamp
-                || notificationThreadId != storyGroupReply.threadUniqueId
+            if
+                let notificationThreadUniqueId = userInfo[AppNotificationUserInfoKey.threadId] as? String,
+                let notificationStoryTimestamp = userInfo[AppNotificationUserInfoKey.storyTimestamp] as? UInt64,
+                case .groupStoryReplies(let suppressedThreadUniqueId, let suppressedStoryTimestamp) = notificationSuppressionRule,
+                suppressedThreadUniqueId == notificationThreadUniqueId,
+                suppressedStoryTimestamp == notificationStoryTimestamp
+            {
+                return false
+            }
+            return true
+
         case .failedStorySend:
-            guard StoryManager.areStoriesEnabled else { return false }
+            if case .failedStorySends = notificationSuppressionRule {
+                return false
+            }
+            return true
 
-            guard CurrentAppContext().isMainAppAndActive else { return true }
-
-            // Show notifications any time we're not currently showing the my stories screen.
-            return !(CurrentAppContext().frontmostViewController() is FailedStorySendDisplayController)
         case .incomingMessageGeneric:
             owsFailDebug(".incomingMessageGeneric should never check shouldPresentNotification().")
             return true
-
         }
     }
 
     // MARK: - Replacement
 
-    func replaceNotification(messageId: String, completion: @escaping NotificationReplaceCompletion) {
-        getNotificationsRequests { requests in
-            let didFindNotification = self.cancelSync(
-                notificationRequests: requests,
-                matching: .messageIds([messageId])
-            )
-            completion(didFindNotification)
-        }
+    func replaceNotification(messageId: String) async -> Bool {
+        return self.cancelSync(
+            notificationRequests: await getNotificationsRequests(),
+            matching: .messageIds([messageId])
+        )
     }
 
     // MARK: - Cancellation
 
-    func cancelNotifications(threadId: String, completion: @escaping NotificationActionCompletion) {
-        cancel(cancellation: .threadId(threadId), completion: completion)
+    func cancelNotifications(threadId: String) async {
+        await cancel(cancellation: .threadId(threadId))
     }
 
-    func cancelNotifications(messageIds: [String], completion: @escaping NotificationActionCompletion) {
-        cancel(cancellation: .messageIds(Set(messageIds)), completion: completion)
+    func cancelNotifications(messageIds: [String]) async {
+        await cancel(cancellation: .messageIds(Set(messageIds)))
     }
 
-    func cancelNotifications(reactionId: String, completion: @escaping NotificationActionCompletion) {
-        cancel(cancellation: .reactionId(reactionId), completion: completion)
+    func cancelNotifications(reactionId: String) async {
+        await cancel(cancellation: .reactionId(reactionId))
     }
 
-    func cancelNotificationsForMissedCalls(withThreadUniqueId threadId: String, completion: @escaping NotificationActionCompletion) {
-        cancel(cancellation: .missedCalls(inThreadWithUniqueId: threadId), completion: completion)
+    func cancelNotificationsForMissedCalls(withThreadUniqueId threadId: String) async {
+        await cancel(cancellation: .missedCalls(inThreadWithUniqueId: threadId))
     }
 
-    func cancelNotificationsForStoryMessage(withUniqueId storyMessageUniqueId: String, completion: @escaping NotificationActionCompletion) {
-        cancel(cancellation: .storyMessage(storyMessageUniqueId), completion: completion)
+    func cancelNotificationsForStoryMessage(withUniqueId storyMessageUniqueId: String) async {
+        await cancel(cancellation: .storyMessage(storyMessageUniqueId))
     }
 
     func clearAllNotifications() {
@@ -362,22 +344,15 @@ class UserNotificationPresenter: Dependencies {
         case storyMessage(String)
     }
 
-    private func getNotificationsRequests(completion: @escaping ([UNNotificationRequest]) -> Void) {
-        Self.notificationCenter.getDeliveredNotifications { delivered in
-            Self.notificationCenter.getPendingNotificationRequests { pending in
-                completion(delivered.map { $0.request } + pending)
-            }
-        }
+    private func getNotificationsRequests() async -> [UNNotificationRequest] {
+        return await (
+            Self.notificationCenter.deliveredNotifications().map({ $0.request })
+            + Self.notificationCenter.pendingNotificationRequests()
+        )
     }
 
-    private func cancel(
-        cancellation: CancellationType,
-        completion: @escaping NotificationActionCompletion
-    ) {
-        getNotificationsRequests { requests in
-            self.cancelSync(notificationRequests: requests, matching: cancellation)
-            completion()
-        }
+    private func cancel(cancellation: CancellationType) async {
+        self.cancelSync(notificationRequests: await getNotificationsRequests(), matching: cancellation)
     }
 
     @discardableResult

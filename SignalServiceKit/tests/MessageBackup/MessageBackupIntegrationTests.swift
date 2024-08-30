@@ -318,7 +318,7 @@ private enum CrashyMocks {
         func notifyUser(forPreviewableInteraction: any TSInteraction & OWSPreviewText, thread: TSThread, wantsSound: Bool, transaction: SDSAnyWriteTransaction) { failTest(Self.self) }
         func notifyTestPopulation(ofErrorMessage errorString: String) { failTest(Self.self) }
         func notifyUser(forFailedStorySend: StoryMessage, to: TSThread, transaction: SDSAnyWriteTransaction) { failTest(Self.self) }
-        func notifyUserToRelaunchAfterTransfer(completion: (() -> Void)?) { failTest(Self.self) }
+        func notifyUserToRelaunchAfterTransfer(completion: @escaping () -> Void) { failTest(Self.self) }
         func notifyUserOfDeregistration(transaction: SDSAnyWriteTransaction) { failTest(Self.self) }
         func clearAllNotifications() { failTest(Self.self) }
         func cancelNotifications(threadId: String) { failTest(Self.self) }

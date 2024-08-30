@@ -59,7 +59,7 @@ public class NoopNotificationPresenterImpl: NotificationPresenter {
         Logger.warn("skipping failed story send notification")
     }
 
-    public func notifyUserToRelaunchAfterTransfer(completion: (() -> Void)? = nil) {
+    public func notifyUserToRelaunchAfterTransfer(completion: @escaping () -> Void) {
         Logger.warn("skipping transfer relaunch notification")
     }
 
