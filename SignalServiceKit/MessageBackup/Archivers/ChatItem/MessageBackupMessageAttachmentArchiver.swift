@@ -49,6 +49,18 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
         )
     }
 
+    public func archiveLinkPreviewAttachment(
+        messageRowId: Int64,
+        messageId: MessageBackup.InteractionUniqueId,
+        context: MessageBackup.ArchivingContext
+    ) -> MessageBackup.ArchiveInteractionResult<BackupProto_FilePointer?> {
+        return self.archiveSingleAttachment(
+            ownerType: .linkPreview,
+            messageRowId: messageRowId,
+            context: context
+        )
+    }
+
     // MARK: Restoring
 
     public func restoreBodyAttachments(

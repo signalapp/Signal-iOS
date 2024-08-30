@@ -62,6 +62,9 @@ extension MessageBackup {
             /// causing the containing message to be skipped.
             case invalidQuoteAuthor
 
+            /// A link preview is missing its url
+            case linkPreviewMissingUrl
+
             /// A reaction has an invalid or missing author address information, causing the
             /// reaction to be skipped.
             case invalidReactionAddress
@@ -226,6 +229,7 @@ extension MessageBackup {
                     .invalidIncomingMessageAuthor,
                     .invalidOutgoingMessageRecipient,
                     .invalidQuoteAuthor,
+                    .linkPreviewMissingUrl,
                     .invalidReactionAddress,
                     .emptyGroupUpdate,
                     .missingLocalProfile,

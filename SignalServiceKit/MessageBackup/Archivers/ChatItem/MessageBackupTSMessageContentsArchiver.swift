@@ -298,6 +298,21 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             standardMessage.quote = quote
         }
 
+        if let linkPreview = message.linkPreview {
+            let linkPreviewResult = self.archiveLinkPreview(
+                linkPreview,
+                interactionUniqueId: message.uniqueInteractionId,
+                context: context,
+                messageRowId: messageRowId
+            )
+            switch linkPreviewResult.bubbleUp(ChatItemType.self, partialErrors: &partialErrors) {
+            case .continue(let linkPreviewProto):
+                standardMessage.linkPreview = [linkPreviewProto].compacted()
+            case .bubbleUpError(let errorResult):
+                return errorResult
+            }
+        }
+
         let reactions: [BackupProto_Reaction]
         let reactionsResult = reactionArchiver.archiveReactions(
             message,
@@ -405,6 +420,47 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         // TODO: [Backups] Set attachments on the quote
 
         return .success(quote)
+    }
+
+    private func archiveLinkPreview(
+        _ linkPreview: OWSLinkPreview,
+        interactionUniqueId: MessageBackup.InteractionUniqueId,
+        context: MessageBackup.RecipientArchivingContext,
+        messageRowId: Int64
+    ) -> ArchiveInteractionResult<BackupProto_LinkPreview?> {
+        var partialErrors = [ArchiveFrameError]()
+
+        guard let url = linkPreview.urlString else {
+            // If we have no url, consider this a partial failure. The message
+            // without the link preview is still valid, so just don't set a link preview
+            // by returning nil.
+            partialErrors.append(.archiveFrameError(
+                .linkPreviewMissingUrl,
+                interactionUniqueId
+            ))
+            return .partialFailure(nil, partialErrors)
+        }
+
+        var proto = BackupProto_LinkPreview()
+        proto.url = url
+        linkPreview.title.map { proto.title = $0 }
+        linkPreview.previewDescription.map { proto.description_p = $0 }
+        linkPreview.date.map { proto.date = $0.ows_millisecondsSince1970 }
+
+        // Returns nil if no link preview image; this is both how we check presence and how we archive.
+        let imageResult = attachmentsArchiver.archiveLinkPreviewAttachment(
+            messageRowId: messageRowId,
+            messageId: interactionUniqueId,
+            context: context
+        )
+        switch imageResult.bubbleUp(Optional<BackupProto_LinkPreview>.self, partialErrors: &partialErrors) {
+        case .continue(let pointerProto):
+            pointerProto.map { proto.image = $0 }
+        case .bubbleUpError(let archiveInteractionResult):
+            return archiveInteractionResult
+        }
+
+        return .success(proto)
     }
 
     // MARK: -
