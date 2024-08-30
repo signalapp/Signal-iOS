@@ -646,7 +646,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 tx: transaction
             )
         default:
-            owsFailDebug("Could not decrypt UD message: \(error), source: \(String(describing: unsealedEnvelope?.sourceAci)), envelope: \(description(for: validatedEnvelope.envelope))")
+            owsFailDebug("Could not decrypt UD message: \(error), source: \(String(describing: unsealedEnvelope?.sourceAci)), envelope: \(Self.description(for: validatedEnvelope.envelope))")
             return error
         }
     }
