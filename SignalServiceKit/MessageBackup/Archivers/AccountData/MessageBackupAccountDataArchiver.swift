@@ -235,7 +235,6 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
         accountSettings.phoneNumberSharingMode = phoneNumberSharingMode
         accountSettings.preferredReactionEmoji = reactionManager.customEmojiSet(tx: context.tx) ?? []
         accountSettings.storyViewReceiptsEnabled = storyManager.areViewReceiptsEnabled(tx: context.tx)
-        // TODO: [Backups] Archive default chat style
 
         let customChatColorsResult = chatStyleArchiver.archiveCustomChatColors(
             context: context
@@ -245,6 +244,20 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
             accountSettings.customChatColors = customChatColors
         case .failure(let error):
             return .failure(error)
+        }
+
+        // This has to happen _after_ we archive custom chat colors, because
+        // the default chat style might use a custom chat color.
+        let defaultChatStyleResult = chatStyleArchiver.archiveDefaultChatStyle(
+            context: context
+        )
+        switch defaultChatStyleResult {
+        case .success(let chatStyleProto):
+            if let chatStyleProto {
+                accountSettings.defaultChatStyle = chatStyleProto
+            }
+        case .failure(let archiveFrameError):
+            return .failure(archiveFrameError)
         }
 
         return .success(accountSettings)
@@ -330,8 +343,6 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
                 tx: context.tx
             )
 
-            // TODO: [Backups] Restore default chat style
-
             let customChatColorsResult = chatStyleArchiver.restoreCustomChatColors(
                 settings.customChatColors,
                 context: context
@@ -344,6 +355,27 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
             case .failure(let errors):
                 partialErrors.append(contentsOf: errors)
                 return .failure(partialErrors)
+            }
+
+            // This has to happen _after_ we restore custom chat colors, because
+            // the default chat style might use a custom chat color.
+            let defaultChatStyleToRestore: BackupProto_ChatStyle?
+            if settings.hasDefaultChatStyle {
+                defaultChatStyleToRestore = settings.defaultChatStyle
+            } else {
+                defaultChatStyleToRestore = nil
+            }
+            let defaultChatStyleResult = chatStyleArchiver.restoreDefaultChatStyle(
+                defaultChatStyleToRestore,
+                context: context
+            )
+            switch defaultChatStyleResult {
+            case .success:
+                break
+            case .partialRestore(let errors):
+                partialErrors.append(contentsOf: errors)
+            case .failure(let errors):
+                return .failure(errors)
             }
         }
 

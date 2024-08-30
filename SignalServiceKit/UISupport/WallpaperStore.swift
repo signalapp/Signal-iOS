@@ -107,6 +107,10 @@ public class WallpaperStore {
         postWallpaperDidChangeNotification(for: threadUniqueId, tx: tx)
     }
 
+    public func fetchOptionalDimInDarkMode(for threadUniqueId: String?, tx: DBReadTransaction) -> Bool? {
+        return dimmingStore.getBool(Self.persistenceKey(for: threadUniqueId), transaction: tx)
+    }
+
     public func fetchDimInDarkMode(for threadUniqueId: String?, tx: DBReadTransaction) -> Bool {
         return dimmingStore.getBool(Self.persistenceKey(for: threadUniqueId), transaction: tx) ?? true
     }

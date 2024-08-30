@@ -147,6 +147,165 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
             return .partialRestore(partialErrors)
         }
     }
+
+    // MARK: - Chat Style
+
+    /// Returns a nil result if no field has been explicitly set and therefore the default chat style
+    /// should be _unset_ on the settings proto.
+    func archiveDefaultChatStyle(
+        context: MessageBackup.CustomChatColorArchivingContext
+    ) -> MessageBackup.ArchiveSingleFrameResult<BackupProto_ChatStyle?, MessageBackup.AccountDataId> {
+        var proto = BackupProto_ChatStyle()
+
+        // If none of the things that feed the fields of the chat style are
+        // _explicitly_ set, don't generate a chat style.
+        var hasAnExplicitlySetField = false
+
+        let hasBubbleStyle = chatColorSettingStore.hasChatColorSetting(
+            for: nil,
+            tx: context.tx
+        )
+        if hasBubbleStyle {
+            hasAnExplicitlySetField = true
+            let bubbleStyle = chatColorSettingStore.chatColorSetting(
+                for: nil,
+                tx: context.tx
+            )
+            switch bubbleStyle {
+            case .auto:
+                proto.bubbleColor = .autoBubbleColor(BackupProto_ChatStyle.AutomaticBubbleColor())
+            case .builtIn(let paletteChatColor):
+                proto.bubbleColor = .bubbleColorPreset(paletteChatColor.asBackupProto())
+            case .custom(let key, _):
+                guard let customColorId = context[key] else {
+                    return .failure(.archiveFrameError(
+                        .referencedCustomChatColorMissing(key),
+                        .localUser
+                    ))
+                }
+                proto.bubbleColor = .customColorID(customColorId.value)
+            }
+        }
+
+        let dimWallpaperInDarkMode = wallpaperStore.fetchOptionalDimInDarkMode(for: nil, tx: context.tx)
+        if let dimWallpaperInDarkMode {
+            hasAnExplicitlySetField = true
+            proto.dimWallpaperInDarkMode = dimWallpaperInDarkMode
+        }
+
+        if let wallpaper = wallpaperStore.fetchWallpaper(for: nil, tx: context.tx) {
+            hasAnExplicitlySetField = true
+            if let preset = wallpaper.asBackupProto() {
+                proto.wallpaper = .wallpaperPreset(preset)
+            } else if wallpaper == .photo {
+                // TODO: [Backups] archive wallpaper image
+                proto.wallpaper = .none
+            } else {
+                return .failure(.archiveFrameError(
+                    .unknownWallpaper,
+                    .localUser
+                ))
+            }
+        }
+
+        if hasAnExplicitlySetField {
+            return .success(proto)
+        } else {
+            return .success(nil)
+        }
+    }
+
+    func restoreDefaultChatStyle(
+        _ chatStyleProto: BackupProto_ChatStyle?,
+        context: MessageBackup.CustomChatColorRestoringContext
+    ) -> MessageBackup.RestoreFrameResult<MessageBackup.AccountDataId> {
+        if let chatStyleProto {
+            switch chatStyleProto.bubbleColor {
+            case .none:
+                // We can't differentiate between unset bubble color
+                // and an unknown type of bubble color oneof case. In
+                // either case, treat it as auto.
+                fallthrough
+            case .autoBubbleColor:
+                // Nothing to do! Auto is the default.
+                break
+            case .bubbleColorPreset(let bubbleColorPreset):
+                guard let palette = bubbleColorPreset.asPaletteChatColor() else {
+                    return .failure([.restoreFrameError(
+                        .invalidProtoData(.unrecognizedChatStyleBubbleColorPreset),
+                        .localUser
+                    )])
+                }
+                chatColorSettingStore.setChatColorSetting(
+                    ChatColorSetting.builtIn(palette),
+                    for: nil,
+                    tx: context.tx
+                )
+            case .customColorID(let customColorIdRaw):
+                let customColorId = MessageBackup.CustomChatColorId(value: customColorIdRaw)
+                guard let customColorKey = context[customColorId] else {
+                    return .failure([.restoreFrameError(
+                        .invalidProtoData(.customChatColorNotFound(customColorId)),
+                        .localUser
+                    )])
+                }
+                guard
+                    let customColor = chatColorSettingStore.fetchCustomValue(
+                        for: customColorKey,
+                        tx: context.tx
+                    )
+                else {
+                    return .failure([.restoreFrameError(
+                        .referencedCustomChatColorNotFound(customColorKey),
+                        .localUser
+                    )])
+                }
+                chatColorSettingStore.setChatColorSetting(
+                    ChatColorSetting.custom(
+                        customColorKey,
+                        customColor
+                    ),
+                    for: nil,
+                    tx: context.tx
+                )
+            }
+        }
+
+        if let chatStyleProto {
+            wallpaperStore.setDimInDarkMode(
+                chatStyleProto.dimWallpaperInDarkMode,
+                for: nil,
+                tx: context.tx
+            )
+        }
+
+        if let chatStyleProto {
+            switch chatStyleProto.wallpaper {
+            case .none:
+                // We can't differentiate between unset wallpaper
+                // and an unknown type of wallpaper oneof case. In
+                // either case, leave the wallpaper unset.
+                break
+            case .wallpaperPreset(let wallpaperPreset):
+                guard let wallpaper = wallpaperPreset.asWallpaper() else {
+                    return .failure([.restoreFrameError(
+                        .invalidProtoData(.unrecognizedChatStyleWallpaperPreset),
+                        .localUser
+                    )])
+                }
+                wallpaperStore.setWallpaperType(
+                    wallpaper,
+                    for: nil,
+                    tx: context.tx
+                )
+            case .wallpaperPhoto:
+                // TODO: [Backups] Restore wallpaper image
+                break
+            }
+        }
+
+        return .success
+    }
 }
 
 // MARK: - Converters
@@ -193,6 +352,7 @@ fileprivate extension BackupProto_ChatStyle.WallpaperPreset {
         // the iOS enum names were defined this way. They're persisted to the
         // db now, so we just gotta keep the mapping.
         return switch self {
+        // NOTE: This should only return nil for unrecognized/unknown cases.
         case .unknownWallpaperPreset: nil
         case .UNRECOGNIZED: nil
         case .solidBlush: .blush
@@ -256,6 +416,7 @@ fileprivate extension BackupProto_ChatStyle.BubbleColorPreset {
 
     func asPaletteChatColor() -> PaletteChatColor? {
         return switch self {
+        // NOTE: This should only return nil for unrecognized/unknown cases.
         case .unknownBubbleColorPreset: nil
         case .UNRECOGNIZED: nil
         case .solidUltramarine: .ultramarine

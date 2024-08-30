@@ -146,6 +146,11 @@ public class ChatColorSettingStore {
         return Constants.defaultColor.colorSetting
     }
 
+    public func hasChatColorSetting(for thread: TSThread?, tx: DBReadTransaction) -> Bool {
+        let persistenceKey: String = thread?.uniqueId ?? Constants.globalKey
+        return self.fetchRawSetting(for: persistenceKey, tx: tx) != nil
+    }
+
     /// The currently-chosen setting for a particular scope.
     ///
     /// This doesn't always contain enough information to render a color on the

@@ -33,6 +33,11 @@ extension MessageBackup {
             /// e.g. we try to archive a message to a thread, but that group has no ``MessageBackup.ChatId``.
             case referencedThreadIdMissing(ThreadUniqueId)
 
+            /// The object we are archiving references a custom chat color that should already have an id assigned
+            /// from having been archived, but does not.
+            /// e.g. we try to archive the chat style of a thread, but there is no ``MessageBackup.CustomChatColorId``.
+            case referencedCustomChatColorMissing(CustomChatColor.Key)
+
             /// An error generating the master key for a group, causing the group to be skipped.
             case groupMasterKeyError(RawError)
 
@@ -43,6 +48,9 @@ extension MessageBackup {
             /// Custom chat colors should never have light/dark theme. The UI
             /// disallows it and the proto cannot represent it.
             case themedCustomChatColor
+            /// An unknown type of wallpaper was found that we couldn't translate to proto,
+            /// causing the wallpaper to be skipped.
+            case unknownWallpaper
 
             /// An incoming message has an invalid or missing author address information,
             /// causing the message to be skipped.
@@ -202,9 +210,9 @@ extension MessageBackup {
                 // We don't want to re-log every instance of this we see.
                 // Collapse them by the raw error itself.
                 return "\(rawError)"
-            case .referencedRecipientIdMissing, .referencedThreadIdMissing:
+            case .referencedRecipientIdMissing, .referencedThreadIdMissing, .referencedCustomChatColorMissing:
                 // Collapse these by the id they refer to, which is in the "type".
-                return typeLogString
+                return idLogString
             case
                     .distributionListMissingDeletionTimestamp,
                     .distributionListMissingRecipients,
@@ -213,6 +221,7 @@ extension MessageBackup {
                     .groupMasterKeyError,
                     .contactThreadMissingAddress,
                     .themedCustomChatColor,
+                    .unknownWallpaper,
                     .invalidDistributionListMemberAddress,
                     .invalidIncomingMessageAuthor,
                     .invalidOutgoingMessageRecipient,
@@ -344,10 +353,16 @@ extension MessageBackup {
                 /// it is registered.
                 case contactWithoutRegistrationInfo
 
+                /// A ``BackupProto_ChatStyle/BubbleColorPreset`` had an unrecognized case.
+                case unrecognizedChatStyleBubbleColorPreset
+                /// Some custom chat color identifier being referenced was not present earlier in the backup file.
+                case customChatColorNotFound(CustomChatColorId)
                 /// A ``BackupProto_ChatStyle/CustomChatColor`` had an unrecognized color oneof.
                 case unrecognizedCustomChatStyleColor
                 /// A ``BackupProto_ChatStyle/Gradient`` had less than two colors.
                 case chatStyleGradientSingleOrNoColors
+                /// A ``BackupProto_ChatStyle/WallpaperPreset`` had an unrecognized case.
+                case unrecognizedChatStyleWallpaperPreset
 
                 /// A ``BackupProto/ChatItem`` was missing directional details.
                 case chatItemMissingDirectionalDetails
@@ -568,6 +583,9 @@ extension MessageBackup {
             /// The overlap with referencedChatThreadNotFound is confusing, but this is for restoring group-specific metadata.
             case referencedGroupThreadNotFound(GroupId)
 
+            /// The object being inserted depended on a CustomChatColor that should have been created earlier but was not.
+            case referencedCustomChatColorNotFound(CustomChatColor.Key)
+
             case databaseModelMissingRowId(modelClass: AnyClass)
 
             case databaseInsertionFailed(RawError)
@@ -630,6 +648,8 @@ extension MessageBackup {
                 case .recipientIdNotFound, .chatIdNotFound:
                     // Collapse these by the id they refer to, which is in the "type".
                     return typeLogString
+                case .customChatColorNotFound(let id):
+                    return id.idLogString
                 case
                         .invalidAci,
                         .invalidPni,
@@ -644,8 +664,10 @@ extension MessageBackup {
                         .chatItemMissingDirectionalDetails,
                         .chatItemMissingItem,
                         .chatItemInvalidDateSent,
+                        .unrecognizedChatStyleBubbleColorPreset,
                         .unrecognizedCustomChatStyleColor,
                         .chatStyleGradientSingleOrNoColors,
+                        .unrecognizedChatStyleWallpaperPreset,
                         .directionlessChatItemNotUpdateMessage,
                         .incomingMessageNotFromAciOrE164,
                         .outgoingNonContactMessageRecipient,
@@ -723,6 +745,9 @@ extension MessageBackup {
             case .referencedChatThreadNotFound, .referencedGroupThreadNotFound, .failedToCreateAttachment:
                 // Collapse these by the id they refer to, which is in the "type".
                 return typeLogString
+            case .referencedCustomChatColorNotFound(let key):
+                // Collapse these by the key that isn't found.
+                return key.rawValue
             case .databaseModelMissingRowId(let modelClass):
                 // Collapse these by the relevant class.
                 return "\(modelClass)"
