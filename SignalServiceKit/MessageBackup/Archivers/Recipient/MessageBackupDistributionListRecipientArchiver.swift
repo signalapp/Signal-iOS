@@ -29,29 +29,26 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
 
     func archiveAllDistributionListRecipients(
         stream: MessageBackupProtoOutputStream,
-        context: MessageBackup.RecipientArchivingContext,
-        tx: DBReadTransaction
+        context: MessageBackup.RecipientArchivingContext
     ) -> ArchiveMultiFrameResult {
         var errors = [ArchiveFrameError]()
 
         do {
             // enumerate deleted threads
-            for item in privateStoryThreadDeletionManager.allDeletedIdentifiers(tx: tx) {
+            for item in privateStoryThreadDeletionManager.allDeletedIdentifiers(tx: context.tx) {
                 self.archiveDeletedStoryList(
                     distributionId: item,
                     stream: stream,
                     context: context,
-                    errors: &errors,
-                    tx: tx
+                    errors: &errors
                 )
             }
-            try threadStore.enumerateStoryThreads(tx: tx) { storyThread in
+            try threadStore.enumerateStoryThreads(tx: context.tx) { storyThread in
                 self.archiveStoryThread(
                     storyThread,
                     stream: stream,
                     context: context,
-                    errors: &errors,
-                    tx: tx
+                    errors: &errors
                 )
 
                 return true
@@ -72,8 +69,7 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
         _ storyThread: TSPrivateStoryThread,
         stream: MessageBackupProtoOutputStream,
         context: MessageBackup.RecipientArchivingContext,
-        errors: inout [ArchiveFrameError],
-        tx: DBReadTransaction
+        errors: inout [ArchiveFrameError]
     ) {
         // Skip deleted distribution lists
         guard storyThread.storyViewMode != .disabled else { return }
@@ -158,14 +154,13 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
         distributionId: Data,
         stream: MessageBackupProtoOutputStream,
         context: MessageBackup.RecipientArchivingContext,
-        errors: inout [ArchiveFrameError],
-        tx: DBReadTransaction
+        errors: inout [ArchiveFrameError]
     ) {
         let distributionListAppId: RecipientAppId = .distributionList(distributionId)
 
         guard let deletionTimestamp = privateStoryThreadDeletionManager.deletedAtTimestamp(
             forDistributionListIdentifier: distributionId,
-            tx: tx
+            tx: context.tx
         ) else {
             errors.append(.archiveFrameError(.distributionListMissingDeletionTimestamp, distributionListAppId))
             return
@@ -191,8 +186,7 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
     func restoreDistributionListRecipientProto(
         _ distributionListItemProto: BackupProto_DistributionListItem,
         recipient: BackupProto_Recipient,
-        context: MessageBackup.RecipientRestoringContext,
-        tx: any DBWriteTransaction
+        context: MessageBackup.RecipientRestoringContext
     ) -> RestoreFrameResult {
         func restoreFrameError(
             _ error: RestoreFrameError.ErrorType,
@@ -219,7 +213,7 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
                 privateStoryThreadDeletionManager.recordDeletedAtTimestamp(
                     deletionTimestamp,
                     forDistributionListIdentifier: distributionId.data,
-                    tx: tx
+                    tx: context.tx
                 )
                 result = .success
             } else {
@@ -230,8 +224,7 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
                 from: distributionListItemProto,
                 distributionId: distributionId,
                 recipientId: recipient.recipientId,
-                context: context,
-                tx: tx
+                context: context
             )
         case nil:
             result = restoreFrameError(.invalidProtoData(.distributionListItemMissingItem))
@@ -245,8 +238,7 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
         from distributionListProto: BackupProto_DistributionList,
         distributionId: UUID,
         recipientId: MessageBackup.RecipientId,
-        context: MessageBackup.RecipientRestoringContext,
-        tx: any DBWriteTransaction
+        context: MessageBackup.RecipientRestoringContext
     ) -> RestoreFrameResult {
         var error: RestoreFrameResult?
 
@@ -305,7 +297,7 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
         // But to guard against any future changes, call getOrCreateMyStory() to ensure
         // it is present before updating with the incoming data.
         if TSPrivateStoryThread.myStoryUniqueId == distributionId.uuidString {
-            let myStory = storyStore.getOrCreateMyStory(tx: tx)
+            let myStory = storyStore.getOrCreateMyStory(tx: context.tx)
             storyStore.update(
                 storyThread: myStory,
                 name: distributionListProto.name,
@@ -314,7 +306,7 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
                 addresses: addresses,
                 updateStorageService: false,
                 updateHasSetMyStoryPrivacyIfNeeded: false,
-                tx: tx
+                tx: context.tx
             )
         } else {
             let storyThread = TSPrivateStoryThread(
@@ -324,7 +316,7 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
                 addresses: addresses,
                 viewMode: viewMode
             )
-            storyStore.insert(storyThread: storyThread, tx: tx)
+            storyStore.insert(storyThread: storyThread, tx: context.tx)
         }
 
         return .success

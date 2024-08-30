@@ -24,12 +24,11 @@ final class MessageBackupIndividualCallArchiver {
 
     func archiveIndividualCall(
         _ individualCallInteraction: TSCall,
-        context: MessageBackup.ChatArchivingContext,
-        tx: DBReadTransaction
+        context: MessageBackup.ChatArchivingContext
     ) -> ArchiveChatUpdateMessageResult {
         let associatedCallRecord: CallRecord? = callRecordStore.fetch(
             interactionRowId: individualCallInteraction.sqliteRowId!,
-            tx: tx
+            tx: context.tx
         )
 
         var individualCallUpdate = BackupProto_IndividualCall()
@@ -112,8 +111,7 @@ final class MessageBackupIndividualCallArchiver {
         _ individualCall: BackupProto_IndividualCall,
         chatItem: BackupProto_ChatItem,
         chatThread: MessageBackup.ChatThread,
-        context: MessageBackup.ChatRestoringContext,
-        tx: DBWriteTransaction
+        context: MessageBackup.ChatRestoringContext
     ) -> RestoreChatUpdateMessageResult {
         let contactThread: TSContactThread
         switch chatThread.threadType {
@@ -183,7 +181,7 @@ final class MessageBackupIndividualCallArchiver {
             thread: contactThread,
             sentAtTimestamp: individualCall.startedCallTimestamp
         )
-        interactionStore.insertInteraction(individualCallInteraction, tx: tx)
+        interactionStore.insertInteraction(individualCallInteraction, tx: context.tx)
 
         if individualCall.hasCallID {
             let callRecord = individualCallRecordManager.createRecordForInteraction(
@@ -196,11 +194,11 @@ final class MessageBackupIndividualCallArchiver {
                 callDirection: callRecordDirection,
                 individualCallStatus: callRecordStatus,
                 shouldSendSyncMessage: false,
-                tx: tx
+                tx: context.tx
             )
 
             if individualCall.read {
-                callRecordStore.markAsRead(callRecord: callRecord, tx: tx)
+                callRecordStore.markAsRead(callRecord: callRecord, tx: context.tx)
             }
         }
 

@@ -26,12 +26,11 @@ final class MessageBackupGroupCallArchiver {
 
     func archiveGroupCall(
         _ groupCallInteraction: OWSGroupCallMessage,
-        context: MessageBackup.ChatArchivingContext,
-        tx: DBReadTransaction
+        context: MessageBackup.ChatArchivingContext
     ) -> ArchiveChatUpdateMessageResult {
         let associatedCallRecord: CallRecord? = callRecordStore.fetch(
             interactionRowId: groupCallInteraction.sqliteRowId!,
-            tx: tx
+            tx: context.tx
         )
 
         let groupCallState: BackupProto_GroupCall.State
@@ -117,8 +116,7 @@ final class MessageBackupGroupCallArchiver {
         _ groupCall: BackupProto_GroupCall,
         chatItem: BackupProto_ChatItem,
         chatThread: MessageBackup.ChatThread,
-        context: MessageBackup.ChatRestoringContext,
-        tx: DBWriteTransaction
+        context: MessageBackup.ChatRestoringContext
     ) -> RestoreChatUpdateMessageResult {
         let groupThread: TSGroupThread
         switch chatThread.threadType {
@@ -150,7 +148,7 @@ final class MessageBackupGroupCallArchiver {
             thread: groupThread,
             sentAtTimestamp: groupCall.startedCallTimestamp
         )
-        interactionStore.insertInteraction(groupCallInteraction, tx: tx)
+        interactionStore.insertInteraction(groupCallInteraction, tx: context.tx)
 
         if groupCall.hasCallID {
             let callDirection: CallRecord.CallDirection
@@ -205,11 +203,11 @@ final class MessageBackupGroupCallArchiver {
                 groupCallRingerAci: groupCallRingerAci,
                 callEventTimestamp: groupCall.startedCallTimestamp,
                 shouldSendSyncMessage: false,
-                tx: tx
+                tx: context.tx
             )
 
             if groupCall.read {
-                callRecordStore.markAsRead(callRecord: callRecord, tx: tx)
+                callRecordStore.markAsRead(callRecord: callRecord, tx: context.tx)
             }
         }
 

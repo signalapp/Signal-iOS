@@ -23,8 +23,7 @@ public class MessageBackupReleaseNotesRecipientArchiver: MessageBackupProtoArchi
 
     func archiveReleaseNotesRecipient(
         stream: any MessageBackupProtoOutputStream,
-        context: MessageBackup.RecipientArchivingContext,
-        tx: any DBReadTransaction
+        context: MessageBackup.RecipientArchivingContext
     ) -> ArchiveFrameResult {
         let releaseNotesAppId: RecipientAppId = .releaseNotesChannel
         let recipientId = context.assignRecipientId(to: releaseNotesAppId)
@@ -55,8 +54,7 @@ public class MessageBackupReleaseNotesRecipientArchiver: MessageBackupProtoArchi
     func restoreReleaseNotesRecipientProto(
         _ releaseNotesRecipientProto: BackupProto_ReleaseNotes,
         recipient: BackupProto_Recipient,
-        context: MessageBackup.RecipientRestoringContext,
-        tx: any DBWriteTransaction
+        context: MessageBackup.RecipientRestoringContext
     ) -> RestoreFrameResult {
         context[recipient.recipientId] = .releaseNotesChannel
 

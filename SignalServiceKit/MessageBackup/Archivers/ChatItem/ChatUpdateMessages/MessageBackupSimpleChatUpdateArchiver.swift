@@ -26,8 +26,7 @@ final class MessageBackupSimpleChatUpdateArchiver {
     func archiveSimpleChatUpdate(
         infoMessage: TSInfoMessage,
         thread: TSThread,
-        context: MessageBackup.ChatArchivingContext,
-        tx: any DBReadTransaction
+        context: MessageBackup.ChatArchivingContext
     ) -> ArchiveChatUpdateMessageResult {
         func messageFailure(
             _ error: ArchiveFrameError.ErrorType,
@@ -244,8 +243,7 @@ final class MessageBackupSimpleChatUpdateArchiver {
     func archiveSimpleChatUpdate(
         errorMessage: TSErrorMessage,
         thread: TSThread,
-        context: MessageBackup.ChatArchivingContext,
-        tx: any DBReadTransaction
+        context: MessageBackup.ChatArchivingContext
     ) -> ArchiveChatUpdateMessageResult {
         func messageFailure(
             _ error: ArchiveFrameError.ErrorType,
@@ -342,8 +340,7 @@ final class MessageBackupSimpleChatUpdateArchiver {
         _ simpleChatUpdate: BackupProto_SimpleChatUpdate,
         chatItem: BackupProto_ChatItem,
         chatThread: MessageBackup.ChatThread,
-        context: MessageBackup.ChatRestoringContext,
-        tx: any DBWriteTransaction
+        context: MessageBackup.ChatRestoringContext
     ) -> RestoreChatUpdateMessageResult {
         func invalidProtoData(
             _ error: RestoreFrameError.ErrorType.InvalidProtoDataError,
@@ -553,7 +550,7 @@ final class MessageBackupSimpleChatUpdateArchiver {
 
         interactionStore.insertInteraction(
             interactionToInsert,
-            tx: tx
+            tx: context.tx
         )
 
         return .success(())

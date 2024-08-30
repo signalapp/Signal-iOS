@@ -54,15 +54,14 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
 
     func archiveAllContactRecipients(
         stream: MessageBackupProtoOutputStream,
-        context: MessageBackup.RecipientArchivingContext,
-        tx: DBReadTransaction
+        context: MessageBackup.RecipientArchivingContext
     ) -> ArchiveMultiFrameResult {
-        let whitelistedAddresses = Set(profileManager.allWhitelistedAddresses(tx: tx))
-        let blockedAddresses = blockingManager.blockedAddresses(tx: tx)
+        let whitelistedAddresses = Set(profileManager.allWhitelistedAddresses(tx: context.tx))
+        let blockedAddresses = blockingManager.blockedAddresses(tx: context.tx)
 
         var errors = [ArchiveFrameError]()
 
-        recipientDatabaseTable.enumerateAll(tx: tx) { recipient in
+        recipientDatabaseTable.enumerateAll(tx: context.tx) { recipient in
             guard
                 let contactAddress = MessageBackup.ContactAddress(
                     aci: recipient.aci,
@@ -88,15 +87,15 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
 
             let recipientId = context.assignRecipientId(to: recipientAddress)
 
-            let storyContext = recipient.aci.map { self.storyStore.getOrCreateStoryContextAssociatedData(for: $0, tx: tx) }
+            let storyContext = recipient.aci.map { self.storyStore.getOrCreateStoryContextAssociatedData(for: $0, tx: context.tx) }
 
             var contact = BackupProto_Contact()
             contact.blocked = blockedAddresses.contains(recipient.address)
             contact.visibility = { () -> BackupProto_Contact.Visibility in
-                if self.recipientHidingManager.isHiddenRecipient(recipient, tx: tx) {
+                if self.recipientHidingManager.isHiddenRecipient(recipient, tx: context.tx) {
                     if
-                        let contactThread = threadStore.fetchContactThread(recipient: recipient, tx: tx),
-                        threadStore.hasPendingMessageRequest(thread: contactThread, tx: tx)
+                        let contactThread = threadStore.fetchContactThread(recipient: recipient, tx: context.tx),
+                        threadStore.hasPendingMessageRequest(thread: contactThread, tx: context.tx)
                     {
                         return .hiddenMessageRequest
                     }
@@ -122,7 +121,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
             if let aci = recipient.aci {
                 contact.aci = aci.rawUUID.data
 
-                if let username = usernameLookupManager.fetchUsername(forAci: aci, transaction: tx) {
+                if let username = usernameLookupManager.fetchUsername(forAci: aci, transaction: context.tx) {
                     contact.username = username
                 }
             }
@@ -136,7 +135,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
                 contact.e164 = phoneNumberUInt
             }
 
-            let userProfile = self.profileManager.getUserProfile(for: recipient.address, tx: tx)
+            let userProfile = self.profileManager.getUserProfile(for: recipient.address, tx: context.tx)
             if let profileKey = userProfile?.profileKey {
                 contact.profileKey = profileKey.keyData
             }
@@ -172,8 +171,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
     func restoreContactRecipientProto(
         _ contactProto: BackupProto_Contact,
         recipient: BackupProto_Recipient,
-        context: MessageBackup.RecipientRestoringContext,
-        tx: DBWriteTransaction
+        context: MessageBackup.RecipientRestoringContext
     ) -> RestoreFrameResult {
         func restoreFrameError(
             _ error: RestoreFrameError.ErrorType,
@@ -273,26 +271,26 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
             break
         }
 
-        recipientDatabaseTable.insertRecipient(recipient, transaction: tx)
+        recipientDatabaseTable.insertRecipient(recipient, transaction: context.tx)
         /// No Backup code should be relying on the SSA cache, but once we've
         /// finished restoring and launched we want the cache to have accurate
         /// mappings based on the recipients we just restored.
-        signalServiceAddressCache.updateRecipient(recipient, tx: tx)
+        signalServiceAddressCache.updateRecipient(recipient, tx: context.tx)
 
         if
             let aci = recipient.aci,
             contactProto.hasUsername
         {
-            usernameLookupManager.saveUsername(contactProto.username, forAci: aci, transaction: tx)
+            usernameLookupManager.saveUsername(contactProto.username, forAci: aci, transaction: context.tx)
         }
 
         if contactProto.profileSharing {
             // Add to the whitelist.
-            profileManager.addToWhitelist(recipient.address, tx: tx)
+            profileManager.addToWhitelist(recipient.address, tx: context.tx)
         }
 
         if contactProto.blocked {
-            blockingManager.addBlockedAddress(recipient.address, tx: tx)
+            blockingManager.addBlockedAddress(recipient.address, tx: context.tx)
         }
 
         switch contactProto.visibility {
@@ -302,7 +300,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
             /// and the most-recent interactions in their 1:1 chat. So, for both
             /// of these cases all we need to do is hide the recipient.
             do {
-                try recipientHidingManager.addHiddenRecipient(recipient, wasLocallyInitiated: false, tx: tx)
+                try recipientHidingManager.addHiddenRecipient(recipient, wasLocallyInitiated: false, tx: context.tx)
             } catch let error {
                 return restoreFrameError(.databaseInsertionFailed(error))
             }
@@ -312,8 +310,8 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
 
         // We only need to active hide, since unhidden is the default.
         if contactProto.hideStory, let aci = backupContactAddress.aci {
-            let storyContext = storyStore.getOrCreateStoryContextAssociatedData(for: aci, tx: tx)
-            storyStore.updateStoryContext(storyContext, updateStorageService: false, isHidden: true, tx: tx)
+            let storyContext = storyStore.getOrCreateStoryContextAssociatedData(for: aci, tx: context.tx)
+            storyStore.updateStoryContext(storyContext, updateStorageService: false, isHidden: true, tx: context.tx)
         }
 
         profileManager.upsertOtherUserProfile(
@@ -321,7 +319,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
             givenName: contactProto.profileGivenName.nilIfEmpty,
             familyName: contactProto.profileFamilyName.nilIfEmpty,
             profileKey: profileKey,
-            tx: tx
+            tx: context.tx
         )
 
         // TODO: [Backups] Enqueue a fetch of this contact's profile and download of their avatar (even if we have no profile key).

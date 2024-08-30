@@ -22,8 +22,7 @@ final class MessageBackupThreadMergeChatUpdateArchiver {
     func archiveThreadMergeChatUpdate(
         infoMessage: TSInfoMessage,
         thread: TSThread,
-        context: MessageBackup.ChatArchivingContext,
-        tx: any DBReadTransaction
+        context: MessageBackup.ChatArchivingContext
     ) -> ArchiveChatUpdateMessageResult {
         func messageFailure(
             _ errorType: ArchiveFrameError.ErrorType,
@@ -76,8 +75,7 @@ final class MessageBackupThreadMergeChatUpdateArchiver {
         _ threadMergeUpdateProto: BackupProto_ThreadMergeChatUpdate,
         chatItem: BackupProto_ChatItem,
         chatThread: MessageBackup.ChatThread,
-        context: MessageBackup.ChatRestoringContext,
-        tx: any DBWriteTransaction
+        context: MessageBackup.ChatRestoringContext
     ) -> RestoreChatUpdateMessageResult {
         func invalidProtoData(
             _ error: RestoreFrameError.ErrorType.InvalidProtoDataError,
@@ -103,7 +101,7 @@ final class MessageBackupThreadMergeChatUpdateArchiver {
             timestamp: chatItem.dateSent,
             previousE164: previousE164.stringValue
         )
-        interactionStore.insertInteraction(threadMergeInfoMessage, tx: tx)
+        interactionStore.insertInteraction(threadMergeInfoMessage, tx: context.tx)
 
         return .success(())
     }

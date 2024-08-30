@@ -30,8 +30,7 @@ final class MessageBackupGroupUpdateMessageArchiver {
 
     func archiveGroupUpdate(
         infoMessage: TSInfoMessage,
-        context: MessageBackup.ChatArchivingContext,
-        tx: DBReadTransaction
+        context: MessageBackup.ChatArchivingContext
     ) -> ArchiveChatUpdateMessageResult {
         let groupUpdateItems: [TSInfoMessage.PersistableGroupUpdateItem]
         switch infoMessage.groupUpdateMetadata(
@@ -50,7 +49,7 @@ final class MessageBackupGroupUpdateMessageArchiver {
                 newDisappearingMessageToken: groupModel.dmToken,
                 localIdentifiers: context.recipientContext.localIdentifiers,
                 groupUpdateSource: updateMetadata.source,
-                tx: tx
+                tx: context.tx
             )
         case .modelDiff(let old, let new, let updateMetadata):
             groupUpdateItems = groupUpdateBuilder.precomputedUpdateItemsByDiffingModels(
@@ -60,7 +59,7 @@ final class MessageBackupGroupUpdateMessageArchiver {
                 newDisappearingMessageToken: new.dmToken,
                 localIdentifiers: context.recipientContext.localIdentifiers,
                 groupUpdateSource: updateMetadata.source,
-                tx: tx
+                tx: context.tx
             )
         case .precomputed(let persistableGroupUpdateItemsWrapper):
             groupUpdateItems = persistableGroupUpdateItemsWrapper.updateItems
@@ -161,8 +160,7 @@ final class MessageBackupGroupUpdateMessageArchiver {
         _ groupUpdate: BackupProto_GroupChangeChatUpdate,
         chatItem: BackupProto_ChatItem,
         chatThread: MessageBackup.ChatThread,
-        context: MessageBackup.ChatRestoringContext,
-        tx: DBWriteTransaction
+        context: MessageBackup.ChatRestoringContext
     ) -> RestoreChatUpdateMessageResult {
         let groupThread: TSGroupThread
         switch chatThread.threadType {
@@ -205,7 +203,7 @@ final class MessageBackupGroupUpdateMessageArchiver {
             updates: &persistableUpdates,
             localIdentifiers: context.recipientContext.localIdentifiers,
             groupThread: groupThread,
-            tx: tx
+            tx: context.tx
         )
 
         guard persistableUpdates.isEmpty.negated else {
@@ -224,7 +222,7 @@ final class MessageBackupGroupUpdateMessageArchiver {
             groupThread: groupThread,
             updateItems: persistableUpdates
         )
-        interactionStore.insertInteraction(infoMessage, tx: tx)
+        interactionStore.insertInteraction(infoMessage, tx: context.tx)
 
         if partialErrors.isEmpty {
             return .success(())

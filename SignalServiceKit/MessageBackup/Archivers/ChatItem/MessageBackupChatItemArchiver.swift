@@ -43,8 +43,7 @@ public protocol MessageBackupChatItemArchiver: MessageBackupProtoArchiver {
     /// and should be used if some critical or category-wide failure occurs.
     func archiveInteractions(
         stream: MessageBackupProtoOutputStream,
-        context: MessageBackup.ChatArchivingContext,
-        tx: DBReadTransaction
+        context: MessageBackup.ChatArchivingContext
     ) -> ArchiveMultiFrameResult
 
     /// Restore a single ``BackupProto_ChatItem`` frame.
@@ -54,7 +53,6 @@ public protocol MessageBackupChatItemArchiver: MessageBackupProtoArchiver {
     /// but typically an error will be shown to the user, but the restore will be allowed to proceed.
     func restore(
         _ chatItem: BackupProto_ChatItem,
-        context: MessageBackup.ChatRestoringContext,
-        tx: DBWriteTransaction
+        context: MessageBackup.ChatRestoringContext
     ) -> RestoreFrameResult
 }

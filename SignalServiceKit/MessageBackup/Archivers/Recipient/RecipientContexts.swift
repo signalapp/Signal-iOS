@@ -52,7 +52,7 @@ extension MessageBackup {
      * for that recipient, we will need to add the corresponding ``BackupRecipientId``, which we look up
      * using the contact's Aci/Pni/e164, from the map this context keeps.
      */
-    public class RecipientArchivingContext {
+    public class RecipientArchivingContext: ArchivingContext {
         public enum Address {
             case releaseNotesChannel
             case contact(ContactAddress)
@@ -73,7 +73,8 @@ extension MessageBackup {
 
         init(
             localIdentifiers: LocalIdentifiers,
-            localRecipientId: RecipientId
+            localRecipientId: RecipientId,
+            tx: DBWriteTransaction
         ) {
             self.localIdentifiers = localIdentifiers
             self.localRecipientId = localRecipientId
@@ -90,6 +91,8 @@ extension MessageBackup {
             if let e164 = E164(localIdentifiers.phoneNumber) {
                 contactE164ap[e164] = currentRecipientId
             }
+
+            super.init(tx: tx)
         }
 
         func assignRecipientId(to address: Address) -> RecipientId {
@@ -144,7 +147,7 @@ extension MessageBackup {
         }
     }
 
-    public class RecipientRestoringContext {
+    public class RecipientRestoringContext: RestoringContext {
         public enum Address {
             case localAddress
             case releaseNotesChannel
@@ -157,8 +160,12 @@ extension MessageBackup {
 
         private let map = SharedMap<RecipientId, Address>()
 
-        init(localIdentifiers: LocalIdentifiers) {
+        init(
+            localIdentifiers: LocalIdentifiers,
+            tx: DBWriteTransaction
+        ) {
             self.localIdentifiers = localIdentifiers
+            super.init(tx: tx)
         }
 
         subscript(_ id: RecipientId) -> Address? {

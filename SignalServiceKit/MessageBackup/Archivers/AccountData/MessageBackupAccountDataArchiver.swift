@@ -29,12 +29,12 @@ extension MessageBackup {
 public protocol MessageBackupAccountDataArchiver: MessageBackupProtoArchiver {
     func archiveAccountData(
         stream: MessageBackupProtoOutputStream,
-        tx: DBReadTransaction
+        context: MessageBackup.ArchivingContext
     ) -> MessageBackup.ArchiveAccountDataResult
 
     func restore(
         _ accountData: BackupProto_AccountData,
-        tx: DBWriteTransaction
+        context: MessageBackup.RestoringContext
     ) -> MessageBackup.RestoreAccountDataResult
 }
 
@@ -92,10 +92,10 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
 
     public func archiveAccountData(
         stream: MessageBackupProtoOutputStream,
-        tx: DBReadTransaction
+        context: MessageBackup.ArchivingContext
     ) -> MessageBackup.ArchiveAccountDataResult {
 
-        guard let localProfile = profileManager.getUserProfileForLocalUser(tx: tx) else {
+        guard let localProfile = profileManager.getUserProfileForLocalUser(tx: context.tx) else {
             return .failure(.archiveFrameError(.missingLocalProfile, .localUser))
         }
         guard let profileKeyData = localProfile.profileKey?.keyData else {
@@ -108,21 +108,21 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
         accountData.familyName = localProfile.familyName ?? ""
         accountData.avatarURLPath = localProfile.avatarUrlPath ?? ""
 
-        if let donationSubscriberId = subscriptionManager.getSubscriberID(tx: tx) {
+        if let donationSubscriberId = subscriptionManager.getSubscriberID(tx: context.tx) {
             var donationSubscriberData = BackupProto_AccountData.SubscriberData()
             donationSubscriberData.subscriberID = donationSubscriberId
-            donationSubscriberData.currencyCode = subscriptionManager.getSubscriberCurrencyCode(tx: tx) ?? ""
-            donationSubscriberData.manuallyCancelled = subscriptionManager.userManuallyCancelledSubscription(tx: tx)
+            donationSubscriberData.currencyCode = subscriptionManager.getSubscriberCurrencyCode(tx: context.tx) ?? ""
+            donationSubscriberData.manuallyCancelled = subscriptionManager.userManuallyCancelledSubscription(tx: context.tx)
 
             accountData.donationSubscriberData = donationSubscriberData
         }
 
-        if let result = buildUsernameLinkProto(tx: tx) {
+        if let result = buildUsernameLinkProto(context: context) {
             accountData.username = result.username
             accountData.usernameLink = result.usernameLink
         }
 
-        accountData.accountSettings = buildAccountSettingsProto(tx: tx)
+        accountData.accountSettings = buildAccountSettingsProto(context: context)
 
         let error = Self.writeFrameToStream(stream, objectId: MessageBackup.AccountDataId.localUser) {
             var frame = BackupProto_Frame()
@@ -137,41 +137,48 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
         }
     }
 
-    private func buildUsernameLinkProto(tx: DBReadTransaction) -> (username: String, usernameLink: BackupProto_AccountData.UsernameLink)? {
-        switch self.localUsernameManager.usernameState(tx: tx) {
+    private func buildUsernameLinkProto(
+        context: MessageBackup.ArchivingContext
+    ) -> (username: String, usernameLink: BackupProto_AccountData.UsernameLink)? {
+        switch self.localUsernameManager.usernameState(tx: context.tx) {
         case .unset, .linkCorrupted, .usernameAndLinkCorrupted:
             return nil
         case .available(let username, let usernameLink):
             var usernameLinkProto = BackupProto_AccountData.UsernameLink()
             usernameLinkProto.entropy = usernameLink.entropy
             usernameLinkProto.serverID = usernameLink.handle.data
-            usernameLinkProto.color = localUsernameManager.usernameLinkQRCodeColor(tx: tx).backupProtoColor
+            usernameLinkProto.color = localUsernameManager.usernameLinkQRCodeColor(tx: context.tx).backupProtoColor
 
             return (username, usernameLinkProto)
         }
     }
 
-    private func buildAccountSettingsProto(tx: DBReadTransaction) -> BackupProto_AccountData.AccountSettings {
+    private func buildAccountSettingsProto(
+        context: MessageBackup.ArchivingContext
+    ) -> BackupProto_AccountData.AccountSettings {
 
         // Fetch all the account settings
-        let readReceipts = receiptManager.areReadReceiptsEnabled(tx: tx)
-        let sealedSenderIndicators = preferences.shouldShowUnidentifiedDeliveryIndicators(tx: tx)
+        let readReceipts = receiptManager.areReadReceiptsEnabled(tx: context.tx)
+        let sealedSenderIndicators = preferences.shouldShowUnidentifiedDeliveryIndicators(tx: context.tx)
         let typingIndicatorsEnabled = typingIndicators.areTypingIndicatorsEnabled()
-        let linkPreviews = linkPreviewSettingStore.areLinkPreviewsEnabled(tx: tx)
-        let notDiscoverableByPhoneNumber = switch phoneNumberDiscoverabilityManager.phoneNumberDiscoverability(tx: tx) {
+        let linkPreviews = linkPreviewSettingStore.areLinkPreviewsEnabled(tx: context.tx)
+        let notDiscoverableByPhoneNumber = switch phoneNumberDiscoverabilityManager.phoneNumberDiscoverability(tx: context.tx) {
         case .everybody: false
         case .nobody, .none: true
         }
-        let preferContactAvatars = sskPreferences.preferContactAvatars(tx: tx)
-        let universalExpireTimerSeconds = disappearingMessageConfigurationStore.fetchOrBuildDefault(for: .universal, tx: tx).durationSeconds
-        let displayBadgesOnProfile = subscriptionManager.displayBadgesOnProfile(tx: tx)
-        let keepMutedChatsArchived = sskPreferences.shouldKeepMutedChatsArchived(tx: tx)
-        let hasSetMyStoriesPrivacy = storyManager.hasSetMyStoriesPrivacy(tx: tx)
-        let hasViewedOnboardingStory = systemStoryManager.isOnboardingStoryViewed(tx: tx)
-        let storiesDisabled = storyManager.areStoriesEnabled(tx: tx).negated
-        let hasSeenGroupStoryEducationSheet = systemStoryManager.hasSeenGroupStoryEducationSheet(tx: tx)
-        let hasCompletedUsernameOnboarding = usernameEducationManager.shouldShowUsernameEducation(tx: tx).negated
-        let phoneNumberSharingMode: BackupProto_AccountData.PhoneNumberSharingMode = switch udManager.phoneNumberSharingMode(tx: tx) {
+        let preferContactAvatars = sskPreferences.preferContactAvatars(tx: context.tx)
+        let universalExpireTimerSeconds = disappearingMessageConfigurationStore.fetchOrBuildDefault(
+            for: .universal,
+            tx: context.tx
+        ).durationSeconds
+        let displayBadgesOnProfile = subscriptionManager.displayBadgesOnProfile(tx: context.tx)
+        let keepMutedChatsArchived = sskPreferences.shouldKeepMutedChatsArchived(tx: context.tx)
+        let hasSetMyStoriesPrivacy = storyManager.hasSetMyStoriesPrivacy(tx: context.tx)
+        let hasViewedOnboardingStory = systemStoryManager.isOnboardingStoryViewed(tx: context.tx)
+        let storiesDisabled = storyManager.areStoriesEnabled(tx: context.tx).negated
+        let hasSeenGroupStoryEducationSheet = systemStoryManager.hasSeenGroupStoryEducationSheet(tx: context.tx)
+        let hasCompletedUsernameOnboarding = usernameEducationManager.shouldShowUsernameEducation(tx: context.tx).negated
+        let phoneNumberSharingMode: BackupProto_AccountData.PhoneNumberSharingMode = switch udManager.phoneNumberSharingMode(tx: context.tx) {
         case .everybody: .everybody
         case .nobody: .nobody
         case .none: .unknown
@@ -194,8 +201,8 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
         accountSettings.hasSeenGroupStoryEducationSheet_p = hasSeenGroupStoryEducationSheet
         accountSettings.hasCompletedUsernameOnboarding_p = hasCompletedUsernameOnboarding
         accountSettings.phoneNumberSharingMode = phoneNumberSharingMode
-        accountSettings.preferredReactionEmoji = reactionManager.customEmojiSet(tx: tx) ?? []
-        accountSettings.storyViewReceiptsEnabled = storyManager.areViewReceiptsEnabled(tx: tx)
+        accountSettings.preferredReactionEmoji = reactionManager.customEmojiSet(tx: context.tx) ?? []
+        accountSettings.storyViewReceiptsEnabled = storyManager.areViewReceiptsEnabled(tx: context.tx)
         // TODO: [Backups] Archive default chat style
         // TODO: [Backups] Archive custom chat colors
 
@@ -204,7 +211,7 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
 
     public func restore(
         _ accountData: BackupProto_AccountData,
-        tx: DBWriteTransaction
+        context: MessageBackup.RestoringContext
     ) -> MessageBackup.RestoreAccountDataResult {
         guard let profileKey = Aes256Key(data: accountData.profileKey) else {
             return .failure([.restoreFrameError(
@@ -220,52 +227,52 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
             familyName: accountData.familyName.nilIfEmpty,
             avatarUrlPath: accountData.avatarURLPath.nilIfEmpty,
             profileKey: profileKey,
-            tx: tx
+            tx: context.tx
         )
 
         // Restore donation subscription data, if present.
         if accountData.hasDonationSubscriberData {
             let donationSubscriberData = accountData.donationSubscriberData
-            subscriptionManager.setSubscriberID(subscriberID: donationSubscriberData.subscriberID, tx: tx)
-            subscriptionManager.setSubscriberCurrencyCode(currencyCode: donationSubscriberData.currencyCode, tx: tx)
-            subscriptionManager.setUserManuallyCancelledSubscription(value: donationSubscriberData.manuallyCancelled, tx: tx)
+            subscriptionManager.setSubscriberID(subscriberID: donationSubscriberData.subscriberID, tx: context.tx)
+            subscriptionManager.setSubscriberCurrencyCode(currencyCode: donationSubscriberData.currencyCode, tx: context.tx)
+            subscriptionManager.setUserManuallyCancelledSubscription(value: donationSubscriberData.manuallyCancelled, tx: context.tx)
         }
 
         // Restore local settings
         if accountData.hasAccountSettings {
             let settings = accountData.accountSettings
-            receiptManager.setAreReadReceiptsEnabled(value: settings.readReceipts, tx: tx)
-            preferences.setShouldShowUnidentifiedDeliveryIndicators(value: settings.sealedSenderIndicators, tx: tx)
-            typingIndicators.setTypingIndicatorsEnabled(value: settings.typingIndicators, tx: tx)
-            linkPreviewSettingStore.setAreLinkPreviewsEnabled(settings.linkPreviews, tx: tx)
+            receiptManager.setAreReadReceiptsEnabled(value: settings.readReceipts, tx: context.tx)
+            preferences.setShouldShowUnidentifiedDeliveryIndicators(value: settings.sealedSenderIndicators, tx: context.tx)
+            typingIndicators.setTypingIndicatorsEnabled(value: settings.typingIndicators, tx: context.tx)
+            linkPreviewSettingStore.setAreLinkPreviewsEnabled(settings.linkPreviews, tx: context.tx)
             phoneNumberDiscoverabilityManager.setPhoneNumberDiscoverability(
                 settings.notDiscoverableByPhoneNumber ? .nobody : .everybody,
                 updateAccountAttributes: false, // This should be updated later, similar to storage service
                 updateStorageService: false,
                 authedAccount: .implicit(),
-                tx: tx
+                tx: context.tx
             )
-            sskPreferences.setPreferContactAvatars(value: settings.preferContactAvatars, tx: tx)
+            sskPreferences.setPreferContactAvatars(value: settings.preferContactAvatars, tx: context.tx)
             disappearingMessageConfigurationStore.setUniversalTimer(
                 token: DisappearingMessageToken(
                     isEnabled: settings.universalExpireTimerSeconds > 0,
                     durationSeconds: settings.universalExpireTimerSeconds
                 ),
-                tx: tx
+                tx: context.tx
             )
             if settings.preferredReactionEmoji.count > 0 {
-                reactionManager.setCustomEmojiSet(emojis: settings.preferredReactionEmoji, tx: tx)
+                reactionManager.setCustomEmojiSet(emojis: settings.preferredReactionEmoji, tx: context.tx)
             }
-            subscriptionManager.setDisplayBadgesOnProfile(value: settings.displayBadgesOnProfile, tx: tx)
-            sskPreferences.setShouldKeepMutedChatsArchived(value: settings.keepMutedChatsArchived, tx: tx)
-            storyManager.setHasSetMyStoriesPrivacy(value: settings.hasSetMyStoriesPrivacy_p, tx: tx)
-            systemStoryManager.setHasViewedOnboardingStory(value: settings.hasViewedOnboardingStory_p, tx: tx)
-            storyManager.setAreStoriesEnabled(value: settings.storiesDisabled.negated, tx: tx)
+            subscriptionManager.setDisplayBadgesOnProfile(value: settings.displayBadgesOnProfile, tx: context.tx)
+            sskPreferences.setShouldKeepMutedChatsArchived(value: settings.keepMutedChatsArchived, tx: context.tx)
+            storyManager.setHasSetMyStoriesPrivacy(value: settings.hasSetMyStoriesPrivacy_p, tx: context.tx)
+            systemStoryManager.setHasViewedOnboardingStory(value: settings.hasViewedOnboardingStory_p, tx: context.tx)
+            storyManager.setAreStoriesEnabled(value: settings.storiesDisabled.negated, tx: context.tx)
             if settings.hasStoryViewReceiptsEnabled {
-                storyManager.setAreViewReceiptsEnabled(value: settings.storyViewReceiptsEnabled, tx: tx)
+                storyManager.setAreViewReceiptsEnabled(value: settings.storyViewReceiptsEnabled, tx: context.tx)
             }
-            systemStoryManager.setHasSeenGroupStoryEducationSheet(value: settings.hasSeenGroupStoryEducationSheet_p, tx: tx)
-            usernameEducationManager.setShouldShowUsernameEducation(settings.hasCompletedUsernameOnboarding_p.negated, tx: tx)
+            systemStoryManager.setHasSeenGroupStoryEducationSheet(value: settings.hasSeenGroupStoryEducationSheet_p, tx: context.tx)
+            usernameEducationManager.setShouldShowUsernameEducation(settings.hasCompletedUsernameOnboarding_p.negated, tx: context.tx)
             udManager.setPhoneNumberSharingMode(
                 mode: { () -> PhoneNumberSharingMode in
                     switch settings.phoneNumberSharingMode {
@@ -277,8 +284,9 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
                         return .nobody
                     }
                 }(),
-                tx: tx
+                tx: context.tx
             )
+
             // TODO: [Backups] Restore default chat style
             // TODO: [Backups] Restore custom chat colors
         }
@@ -292,12 +300,12 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
                 let handle = UUID(data: usernameLink.serverID),
                 let linkData = Usernames.UsernameLink(handle: handle, entropy: usernameLink.entropy)
             {
-                localUsernameManager.setLocalUsername(username: username, usernameLink: linkData, tx: tx)
+                localUsernameManager.setLocalUsername(username: username, usernameLink: linkData, tx: context.tx)
             } else {
                 return .failure([.restoreFrameError(.invalidProtoData(.invalidLocalUsernameLink), .localUser)])
             }
 
-            localUsernameManager.setUsernameLinkQRCodeColor(color: usernameLink.color.qrCodeColor, tx: tx)
+            localUsernameManager.setUsernameLinkQRCodeColor(color: usernameLink.color.qrCodeColor, tx: context.tx)
         }
 
         return .success

@@ -48,8 +48,7 @@ public class MessageBackupLocalRecipientArchiver: MessageBackupProtoArchiver {
     public func restoreSelfRecipient(
         _ selfRecipientProto: BackupProto_Self,
         recipient: BackupProto_Recipient,
-        context: MessageBackup.RecipientRestoringContext,
-        tx: DBWriteTransaction
+        context: MessageBackup.RecipientRestoringContext
     ) -> MessageBackup.RestoreLocalRecipientResult {
         context[recipient.recipientId] = .localAddress
         return .success

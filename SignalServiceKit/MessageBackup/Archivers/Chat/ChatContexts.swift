@@ -85,15 +85,19 @@ extension MessageBackup {
      * we will need to add the corresponding ``MessageBackup/ChatId``, which we look up using the thread id
      * this context keeps.
      */
-    public class ChatArchivingContext {
+    public class ChatArchivingContext: ArchivingContext {
 
         public let recipientContext: RecipientArchivingContext
 
         private var currentChatId = ChatId(value: 1)
         private let map = SharedMap<ThreadUniqueId, ChatId>()
 
-        internal init(recipientContext: RecipientArchivingContext) {
+        internal init(
+            recipientContext: RecipientArchivingContext,
+            tx: DBWriteTransaction
+        ) {
             self.recipientContext = recipientContext
+            super.init(tx: tx)
         }
 
         internal func assignChatId(to threadUniqueId: ThreadUniqueId) -> ChatId {
@@ -110,15 +114,19 @@ extension MessageBackup {
         }
     }
 
-    public class ChatRestoringContext {
+    public class ChatRestoringContext: RestoringContext {
 
         public let recipientContext: RecipientRestoringContext
 
         private let map = SharedMap<ChatId, ThreadUniqueId>()
         private let pinnedThreadIndexMap = SharedMap<ThreadUniqueId, UInt32>()
 
-        internal init(recipientContext: RecipientRestoringContext) {
+        internal init(
+            recipientContext: RecipientRestoringContext,
+            tx: DBWriteTransaction
+        ) {
             self.recipientContext = recipientContext
+            super.init(tx: tx)
         }
 
         internal subscript(_ chatId: ChatId) -> ThreadUniqueId? {

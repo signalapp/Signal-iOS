@@ -100,8 +100,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
 
     public func archiveInteractions(
         stream: MessageBackupProtoOutputStream,
-        context: MessageBackup.ChatArchivingContext,
-        tx: DBReadTransaction
+        context: MessageBackup.ChatArchivingContext
     ) -> ArchiveMultiFrameResult {
         var completeFailureError: MessageBackup.FatalArchivingError?
         var partialFailures = [ArchiveFrameError]()
@@ -112,8 +111,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
             let result = self.archiveInteraction(
                 interaction,
                 stream: stream,
-                context: context,
-                tx: tx
+                context: context
             )
             switch result {
             case .success:
@@ -130,7 +128,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
 
         do {
             try interactionStore.enumerateAllInteractions(
-                tx: tx,
+                tx: context.tx,
                 block: archiveInteraction(_:)
             )
         } catch let error {
@@ -151,14 +149,13 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
     private func archiveInteraction(
         _ interaction: TSInteraction,
         stream: MessageBackupProtoOutputStream,
-        context: MessageBackup.ChatArchivingContext,
-        tx: DBReadTransaction
+        context: MessageBackup.ChatArchivingContext
     ) -> ArchiveMultiFrameResult {
         var partialErrors = [ArchiveFrameError]()
 
         guard
             let chatId = context[interaction.uniqueThreadIdentifier],
-            let thread = threadStore.fetchThreadForInteraction(interaction, tx: tx)
+            let thread = threadStore.fetchThreadForInteraction(interaction, tx: context.tx)
         else {
             partialErrors.append(.archiveFrameError(
                 .referencedThreadIdMissing(interaction.uniqueThreadIdentifier),
@@ -181,42 +178,36 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
             archiveInteractionResult = incomingMessageArchiver.archiveIncomingMessage(
                 incomingMessage,
                 thread: thread,
-                context: context,
-                tx: tx
+                context: context
             )
         } else if let outgoingMessage = interaction as? TSOutgoingMessage {
             archiveInteractionResult = outgoingMessageArchiver.archiveOutgoingMessage(
                 outgoingMessage,
                 thread: thread,
-                context: context,
-                tx: tx
+                context: context
             )
         } else if let individualCallInteraction = interaction as? TSCall {
             archiveInteractionResult = chatUpdateMessageArchiver.archiveIndividualCall(
                 individualCallInteraction,
-                context: context,
-                tx: tx
+                context: context
             )
         } else if let groupCallInteraction = interaction as? OWSGroupCallMessage {
             archiveInteractionResult = chatUpdateMessageArchiver.archiveGroupCall(
                 groupCallInteraction,
                 thread: thread,
-                context: context,
-                tx: tx
+                context: context
             )
         } else if let errorMessage = interaction as? TSErrorMessage {
             archiveInteractionResult = chatUpdateMessageArchiver.archiveErrorMessage(
                 errorMessage,
                 thread: thread,
-                context: context,
-                tx: tx
+                context: context
             )
         } else if let infoMessage = interaction as? TSInfoMessage {
             archiveInteractionResult = chatUpdateMessageArchiver.archiveInfoMessage(
                 infoMessage,
                 thread: thread,
-                context: context,
-                tx: tx
+                context: context
             )
         } else {
             /// Any interactions that landed us here will be legacy messages we
@@ -309,8 +300,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
 
     public func restore(
         _ chatItem: BackupProto_ChatItem,
-        context: MessageBackup.ChatRestoringContext,
-        tx: DBWriteTransaction
+        context: MessageBackup.ChatRestoringContext
     ) -> RestoreFrameResult {
         func restoreFrameError(
             _ error: MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>.ErrorType,
@@ -335,7 +325,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         }
 
         guard
-            let threadRaw = threadStore.fetchThread(uniqueId: threadUniqueId.value, tx: tx),
+            let threadRaw = threadStore.fetchThread(uniqueId: threadUniqueId.value, tx: context.tx),
             let threadRowId = threadRaw.sqliteRowId
         else {
             return restoreFrameError(.referencedChatThreadNotFound(threadUniqueId))
@@ -369,15 +359,13 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
             restoreInteractionResult = incomingMessageArchiver.restoreIncomingChatItem(
                 chatItem,
                 chatThread: thread,
-                context: context,
-                tx: tx
+                context: context
             )
         case .outgoing:
             restoreInteractionResult = outgoingMessageArchiver.restoreChatItem(
                 chatItem,
                 chatThread: thread,
-                context: context,
-                tx: tx
+                context: context
             )
         case .directionless:
             switch chatItem.item {
@@ -389,8 +377,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
                 restoreInteractionResult = chatUpdateMessageArchiver.restoreChatItem(
                     chatItem,
                     chatThread: thread,
-                    context: context,
-                    tx: tx
+                    context: context
                 )
             }
         }

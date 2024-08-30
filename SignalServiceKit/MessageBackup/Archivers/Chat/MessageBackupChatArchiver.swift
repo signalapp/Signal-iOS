@@ -24,8 +24,7 @@ public protocol MessageBackupChatArchiver: MessageBackupProtoArchiver {
     /// and should be used if some critical or category-wide failure occurs.
     func archiveChats(
         stream: MessageBackupProtoOutputStream,
-        context: MessageBackup.ChatArchivingContext,
-        tx: DBReadTransaction
+        context: MessageBackup.ChatArchivingContext
     ) -> ArchiveMultiFrameResult
 
     /// Restore a single ``BackupProto_Chat`` frame.
@@ -35,8 +34,7 @@ public protocol MessageBackupChatArchiver: MessageBackupProtoArchiver {
     /// but typically an error will be shown to the user, but the restore will be allowed to proceed.
     func restore(
         _ chat: BackupProto_Chat,
-        context: MessageBackup.ChatRestoringContext,
-        tx: DBWriteTransaction
+        context: MessageBackup.ChatRestoringContext
     ) -> RestoreFrameResult
 }
 
@@ -61,8 +59,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
 
     public func archiveChats(
         stream: MessageBackupProtoOutputStream,
-        context: MessageBackup.ChatArchivingContext,
-        tx: DBReadTransaction
+        context: MessageBackup.ChatArchivingContext
     ) -> ArchiveMultiFrameResult {
         var completeFailureError: MessageBackup.FatalArchivingError?
         var partialErrors = [ArchiveFrameError]()
@@ -75,23 +72,20 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
                     result = self.archiveNoteToSelfThread(
                         thread,
                         stream: stream,
-                        context: context,
-                        tx: tx
+                        context: context
                     )
                 } else {
                     result = self.archiveContactThread(
                         thread,
                         stream: stream,
-                        context: context,
-                        tx: tx
+                        context: context
                     )
                 }
             } else if let thread = thread as? TSGroupThread, thread.isGroupV2Thread {
                 result = self.archiveGroupV2Thread(
                     thread,
                     stream: stream,
-                    context: context,
-                    tx: tx
+                    context: context
                 )
             } else {
                 result = .completeFailure(.fatalArchiveError(.unrecognizedThreadType))
@@ -111,7 +105,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         }
 
         do {
-            try threadStore.enumerateNonStoryThreads(tx: tx, block: archiveThread(_:))
+            try threadStore.enumerateNonStoryThreads(tx: context.tx, block: archiveThread(_:))
         } catch let error {
             return .completeFailure(.fatalArchiveError(.threadIteratorError(error)))
         }
@@ -128,8 +122,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
     private func archiveNoteToSelfThread(
         _ thread: TSContactThread,
         stream: MessageBackupProtoOutputStream,
-        context: MessageBackup.ChatArchivingContext,
-        tx: DBReadTransaction
+        context: MessageBackup.ChatArchivingContext
     ) -> ArchiveMultiFrameResult {
         let chatId = context.assignChatId(to: MessageBackup.ThreadUniqueId(thread: thread))
 
@@ -138,16 +131,14 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
             chatId: chatId,
             recipientId: context.recipientContext.localRecipientId,
             stream: stream,
-            context: context,
-            tx: tx
+            context: context
         )
     }
 
     private func archiveContactThread(
         _ thread: TSContactThread,
         stream: MessageBackupProtoOutputStream,
-        context: MessageBackup.ChatArchivingContext,
-        tx: DBReadTransaction
+        context: MessageBackup.ChatArchivingContext
     ) -> ArchiveMultiFrameResult {
         let chatId = context.assignChatId(to: MessageBackup.ThreadUniqueId(thread: thread))
 
@@ -176,16 +167,14 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
             chatId: chatId,
             recipientId: recipientId,
             stream: stream,
-            context: context,
-            tx: tx
+            context: context
         )
     }
 
     private func archiveGroupV2Thread(
         _ thread: TSGroupThread,
         stream: MessageBackupProtoOutputStream,
-        context: MessageBackup.ChatArchivingContext,
-        tx: DBReadTransaction
+        context: MessageBackup.ChatArchivingContext
     ) -> ArchiveMultiFrameResult {
         let chatId = context.assignChatId(to: MessageBackup.ThreadUniqueId(thread: thread))
 
@@ -202,8 +191,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
             chatId: chatId,
             recipientId: recipientId,
             stream: stream,
-            context: context,
-            tx: tx
+            context: context
         )
     }
 
@@ -212,13 +200,12 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         chatId: ChatId,
         recipientId: MessageBackup.RecipientId,
         stream: MessageBackupProtoOutputStream,
-        context: MessageBackup.ChatArchivingContext,
-        tx: DBReadTransaction
+        context: MessageBackup.ChatArchivingContext
     ) -> ArchiveMultiFrameResult {
-        let threadAssociatedData = threadStore.fetchOrDefaultAssociatedData(for: thread, tx: tx)
+        let threadAssociatedData = threadStore.fetchOrDefaultAssociatedData(for: thread, tx: context.tx)
 
         let thisThreadPinnedOrder: UInt32
-        let pinnedThreadIds = pinnedThreadManager.pinnedThreadIds(tx: tx)
+        let pinnedThreadIds = pinnedThreadManager.pinnedThreadIds(tx: context.tx)
         if let pinnedThreadIndex: Int = pinnedThreadIds.firstIndex(of: thread.uniqueId) {
             // Add one so we don't start at 0.
             thisThreadPinnedOrder = UInt32(clamping: pinnedThreadIndex + 1)
@@ -227,7 +214,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
             thisThreadPinnedOrder = 0
         }
 
-        let expirationTimerSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: tx)
+        let expirationTimerSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: context.tx)
 
         let dontNotifyForMentionsIfMuted: Bool
         switch thread.mentionNotificationMode {
@@ -266,8 +253,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
 
     public func restore(
         _ chat: BackupProto_Chat,
-        context: MessageBackup.ChatRestoringContext,
-        tx: DBWriteTransaction
+        context: MessageBackup.ChatRestoringContext
     ) -> RestoreFrameResult {
         let chatThread: MessageBackup.ChatThread
         switch context.recipientContext[chat.typedRecipientId] {
@@ -279,7 +265,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         case .localAddress:
             let noteToSelfThread = threadStore.getOrCreateContactThread(
                 with: context.recipientContext.localIdentifiers.aciAddress,
-                tx: tx
+                tx: context.tx
             )
             guard let noteToSelfRowId = noteToSelfThread.sqliteRowId else {
                 return .failure([.restoreFrameError(
@@ -298,7 +284,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
             // We don't create the group thread here; that happened when parsing the Group Recipient.
             // Instead, just set metadata.
             guard
-                let groupThread = threadStore.fetchGroupThread(groupId: groupId, tx: tx),
+                let groupThread = threadStore.fetchGroupThread(groupId: groupId, tx: context.tx),
                 groupThread.isGroupV2Thread
             else {
                 return .failure([.restoreFrameError(
@@ -317,7 +303,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
                 threadRowId: groupThreadRowId
             )
         case .contact(let address):
-            let contactThread = threadStore.getOrCreateContactThread(with: address.asInteropAddress(), tx: tx)
+            let contactThread = threadStore.getOrCreateContactThread(with: address.asInteropAddress(), tx: context.tx)
             guard let contactThreadRowId = contactThread.sqliteRowId else {
                 return .failure([.restoreFrameError(
                     .databaseModelMissingRowId(modelClass: TSContactThread.self),
@@ -357,14 +343,14 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         }
 
         if associatedDataNeedsUpdate {
-            let threadAssociatedData = threadStore.fetchOrDefaultAssociatedData(for: chatThread.tsThread, tx: tx)
+            let threadAssociatedData = threadStore.fetchOrDefaultAssociatedData(for: chatThread.tsThread, tx: context.tx)
             threadStore.updateAssociatedData(
                 threadAssociatedData,
                 isArchived: isArchived,
                 isMarkedUnread: isMarkedUnread,
                 mutedUntilTimestamp: mutedUntilTimestamp,
                 updateStorageService: false,
-                tx: tx
+                tx: context.tx
             )
         }
 
@@ -373,7 +359,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
                 newPinnedThreadId: MessageBackup.ThreadUniqueId(chatThread: chatThread),
                 newPinnedThreadIndex: chat.pinnedOrder
             )
-            pinnedThreadManager.updatePinnedThreadIds(newPinnedThreadIds.map(\.value), updateStorageService: false, tx: tx)
+            pinnedThreadManager.updatePinnedThreadIds(newPinnedThreadIds.map(\.value), updateStorageService: false, tx: context.tx)
         }
 
         if chat.expirationTimerMs != 0 {
@@ -385,7 +371,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
                     version: nil
                 ),
                 for: .thread(chatThread.tsThread),
-                tx: tx
+                tx: context.tx
             )
         }
 
@@ -396,7 +382,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
                 withMentionNotificationMode: .never,
                 // Don't trigger a storage service update.
                 wasLocallyInitiated: false,
-                tx: tx
+                tx: context.tx
             )
         }
 

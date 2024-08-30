@@ -46,19 +46,17 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
 
     func archiveAllGroupRecipients(
         stream: MessageBackupProtoOutputStream,
-        context: MessageBackup.RecipientArchivingContext,
-        tx: DBReadTransaction
+        context: MessageBackup.RecipientArchivingContext
     ) -> ArchiveMultiFrameResult {
         var errors = [ArchiveFrameError]()
 
         do {
-            try threadStore.enumerateGroupThreads(tx: tx) { groupThread in
+            try threadStore.enumerateGroupThreads(tx: context.tx) { groupThread in
                 self.archiveGroupThread(
                     groupThread,
                     stream: stream,
                     context: context,
-                    errors: &errors,
-                    tx: tx
+                    errors: &errors
                 )
 
                 return true
@@ -79,8 +77,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
         _ groupThread: TSGroupThread,
         stream: MessageBackupProtoOutputStream,
         context: MessageBackup.RecipientArchivingContext,
-        errors: inout [ArchiveFrameError],
-        tx: DBReadTransaction
+        errors: inout [ArchiveFrameError]
     ) {
         guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
             logger.warn("Skipping archive of V1 group.")
@@ -105,10 +102,10 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
         var group = BackupProto_Group()
         group.masterKey = groupMasterKey
         group.whitelisted = profileManager.isThread(
-            inProfileWhitelist: groupThread, tx: tx
+            inProfileWhitelist: groupThread, tx: context.tx
         )
         group.hideStory = storyStore.getOrCreateStoryContextAssociatedData(
-            forGroupThread: groupThread, tx: tx
+            forGroupThread: groupThread, tx: context.tx
         ).isHidden
         group.storySendMode = { () -> BackupProto_Group.StorySendMode in
             switch groupThread.storyViewMode {
@@ -130,7 +127,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
                 groupSnapshot.description_p = .buildDescriptionText(groupDescription)
             }
             groupSnapshot.disappearingMessagesTimer = { () -> BackupProto_Group.GroupAttributeBlob in
-                let durationSeconds = disappearingMessageConfigStore.durationSeconds(for: groupThread, tx: tx)
+                let durationSeconds = disappearingMessageConfigStore.durationSeconds(for: groupThread, tx: context.tx)
                 return .buildDisappearingMessageTimer(durationSeconds)
             }()
             groupSnapshot.accessControl = groupModel.access.asBackupProtoAccessControl
@@ -138,7 +135,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
                 guard
                     let aci = address.aci,
                     let role = groupMembership.role(for: address),
-                    let profileKey = profileManager.getProfileKeyData(for: address, tx: tx)
+                    let profileKey = profileManager.getProfileKeyData(for: address, tx: context.tx)
                 else {
                     errors.append(.archiveFrameError(.missingRequiredGroupMemberParams, groupAppId))
                     return nil
@@ -171,7 +168,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
             groupSnapshot.membersPendingAdminApproval = groupMembership.requestingMembers.compactMap { address -> BackupProto_Group.MemberPendingAdminApproval? in
                 guard
                     let aci = address.aci,
-                    let profileKey = profileManager.getProfileKeyData(for: address, tx: tx)
+                    let profileKey = profileManager.getProfileKeyData(for: address, tx: context.tx)
                 else {
                     errors.append(.archiveFrameError(.missingRequiredGroupMemberParams, groupAppId))
                     return nil
@@ -215,8 +212,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
     func restoreGroupRecipientProto(
         _ groupProto: BackupProto_Group,
         recipient: BackupProto_Recipient,
-        context: MessageBackup.RecipientRestoringContext,
-        tx: DBWriteTransaction
+        context: MessageBackup.RecipientRestoringContext
     ) -> RestoreFrameResult {
         func restoreFrameError(
             _ error: RestoreFrameError.ErrorType,
@@ -258,7 +254,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
                     profileKey,
                     forAci: aci,
                     localIdentifiers: context.localIdentifiers,
-                    tx: tx
+                    tx: context.tx
                 )
             }
         }
@@ -297,7 +293,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
                     profileKey,
                     forAci: aci,
                     localIdentifiers: context.localIdentifiers,
-                    tx: tx
+                    tx: context.tx
                 )
             }
         }
@@ -334,7 +330,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
         // MARK: Use the group model to create a group thread
 
         let groupThread = threadStore.createGroupThread(
-            groupModel: groupModel, tx: tx
+            groupModel: groupModel, tx: context.tx
         )
 
         // MARK: Store group properties that live outside the group model
@@ -344,11 +340,11 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
                 forProtoExpireTimerSeconds: groupSnapshot.extractDisappearingMessageTimer
             ),
             for: groupThread,
-            tx: tx
+            tx: context.tx
         )
 
         if groupProto.whitelisted {
-            profileManager.addToWhitelist(groupThread, tx: tx)
+            profileManager.addToWhitelist(groupThread, tx: context.tx)
         }
 
         let isStorySendEnabled: Bool? = {
@@ -367,15 +363,15 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
                 groupThread: groupThread,
                 withStorySendEnabled: isStorySendEnabled,
                 updateStorageService: false,
-                tx: tx
+                tx: context.tx
             )
         }
         if groupProto.hideStory {
             // We only need to actively hide, since unhidden is the default.
             let storyContext = storyStore.getOrCreateStoryContextAssociatedData(
-                forGroupThread: groupThread, tx: tx
+                forGroupThread: groupThread, tx: context.tx
             )
-            storyStore.updateStoryContext(storyContext, isHidden: true, tx: tx)
+            storyStore.updateStoryContext(storyContext, isHidden: true, tx: context.tx)
         }
 
         if groupModel.avatarUrlPath != nil {

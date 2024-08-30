@@ -30,8 +30,7 @@ class MessageBackupTSOutgoingMessageArchiver {
     func archiveOutgoingMessage(
         _ outgoingMessage: TSOutgoingMessage,
         thread: TSThread,
-        context: MessageBackup.ChatArchivingContext,
-        tx: DBReadTransaction
+        context: MessageBackup.ChatArchivingContext
     ) -> MessageBackup.ArchiveInteractionResult<Details> {
         var partialErrors = [ArchiveFrameError]()
 
@@ -40,8 +39,7 @@ class MessageBackupTSOutgoingMessageArchiver {
             outgoingMessage,
             thread: thread,
             context: context,
-            builder: self,
-            tx: tx
+            builder: self
         ).bubbleUp(Details.self, partialErrors: &partialErrors) {
         case .continue(let _outgoingMessageDetails):
             outgoingMessageDetails = _outgoingMessageDetails
@@ -61,8 +59,7 @@ class MessageBackupTSOutgoingMessageArchiver {
     func restoreChatItem(
         _ topLevelChatItem: BackupProto_ChatItem,
         chatThread: MessageBackup.ChatThread,
-        context: MessageBackup.ChatRestoringContext,
-        tx: DBWriteTransaction
+        context: MessageBackup.ChatRestoringContext
     ) -> MessageBackup.RestoreInteractionResult<Void> {
         var partialErrors = [RestoreFrameError]()
 
@@ -71,8 +68,7 @@ class MessageBackupTSOutgoingMessageArchiver {
                 topLevelChatItem,
                 chatThread: chatThread,
                 context: context,
-                builder: self,
-                tx: tx
+                builder: self
             ).unwrap(partialErrors: &partialErrors)
         else {
             return .messageFailure(partialErrors)
@@ -136,8 +132,7 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
     func buildMessageArchiveDetails(
         message outgoingMessage: EditHistoryMessageType,
         editRecord: EditRecord?,
-        context: MessageBackup.ChatArchivingContext,
-        tx: any DBReadTransaction
+        context: MessageBackup.ChatArchivingContext
     ) -> MessageBackup.ArchiveInteractionResult<Details> {
         var partialErrors = [ArchiveFrameError]()
 
@@ -157,8 +152,7 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
         let chatItemType: MessageBackup.InteractionArchiveDetails.ChatItemType
         switch contentsArchiver.archiveMessageContents(
             outgoingMessage,
-            context: context.recipientContext,
-            tx: tx
+            context: context.recipientContext
         ).bubbleUp(Details.self, partialErrors: &partialErrors) {
         case .continue(let t):
             chatItemType = t
@@ -297,8 +291,7 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
         isPastRevision: Bool,
         hasPastRevisions: Bool,
         chatThread: MessageBackup.ChatThread,
-        context: MessageBackup.ChatRestoringContext,
-        tx: any DBWriteTransaction
+        context: MessageBackup.ChatRestoringContext
     ) -> MessageBackup.RestoreInteractionResult<EditHistoryMessageType> {
         guard let chatItemType = chatItem.item else {
             // Unrecognized item type!
@@ -326,8 +319,7 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
                 chatItemType,
                 chatItemId: chatItem.id,
                 chatThread: chatThread,
-                context: context,
-                tx: tx
+                context: context
             ).unwrap(partialErrors: &partialErrors)
         else {
             return .messageFailure(partialErrors)
@@ -351,8 +343,7 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
                 outgoingDetails: outgoingDetails,
                 editState: editState,
                 context: context,
-                chatThread: chatThread,
-                tx: tx
+                chatThread: chatThread
             ).unwrap(partialErrors: &partialErrors)
         else {
             return .messageFailure(partialErrors)
@@ -364,8 +355,7 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
                 thread: chatThread,
                 chatItemId: chatItem.id,
                 restoredContents: contents,
-                context: context,
-                tx: tx
+                context: context
             ).unwrap(partialErrors: &partialErrors)
         else {
             return .messageFailure(partialErrors)
@@ -384,8 +374,7 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
         outgoingDetails: BackupProto_ChatItem.OutgoingMessageDetails,
         editState: TSEditState,
         context: MessageBackup.ChatRestoringContext,
-        chatThread: MessageBackup.ChatThread,
-        tx: DBWriteTransaction
+        chatThread: MessageBackup.ChatThread
     ) -> MessageBackup.RestoreInteractionResult<TSOutgoingMessage> {
         guard SDS.fitsInInt64(chatItem.dateSent), chatItem.dateSent > 0 else {
             return .messageFailure([.restoreFrameError(
@@ -511,7 +500,7 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
             )
         }()
 
-        interactionStore.insertInteraction(outgoingMessage, tx: tx)
+        interactionStore.insertInteraction(outgoingMessage, tx: context.tx)
         guard outgoingMessage.sqliteRowId != nil else {
             // Failed insert!
             return .messageFailure(partialErrors + [.restoreFrameError(

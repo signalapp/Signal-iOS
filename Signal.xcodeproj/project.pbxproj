@@ -1238,6 +1238,7 @@
 		66FC638E29EDABAC00F00DAC /* SearchDisplayConfigurations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC638D29EDABAC00F00DAC /* SearchDisplayConfigurations.swift */; };
 		66FC639029EDC1E600F00DAC /* ContactSupportAlert+Registration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC638F29EDC1E600F00DAC /* ContactSupportAlert+Registration.swift */; };
 		66FF4D302BE2FA3400106033 /* AttachmentSharing+TSResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FF4D2E2BE2E15900106033 /* AttachmentSharing+TSResource.swift */; };
+		66FFDADC2C823C270079C0E7 /* MessageBackupContexts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FFDADB2C823C270079C0E7 /* MessageBackupContexts.swift */; };
 		720547F22B9C8F9900E2CF2F /* AvatarModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 883A7FD1269F642F00841DF9 /* AvatarModel.swift */; };
 		720547F52B9C97EC00E2CF2F /* APNSRotationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6675F64C2925C012007A311E /* APNSRotationStore.swift */; };
 		720547F62B9C985300E2CF2F /* RefreshEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3406D31D25DBF70400885B14 /* RefreshEvent.swift */; };
@@ -4308,6 +4309,7 @@
 		66FC638D29EDABAC00F00DAC /* SearchDisplayConfigurations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchDisplayConfigurations.swift; sourceTree = "<group>"; };
 		66FC638F29EDC1E600F00DAC /* ContactSupportAlert+Registration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ContactSupportAlert+Registration.swift"; sourceTree = "<group>"; };
 		66FF4D2E2BE2E15900106033 /* AttachmentSharing+TSResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AttachmentSharing+TSResource.swift"; sourceTree = "<group>"; };
+		66FFDADB2C823C270079C0E7 /* MessageBackupContexts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupContexts.swift; sourceTree = "<group>"; };
 		67391FF368D9A60FC8B73F0E /* Pods-Signal.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.profiling.xcconfig"; path = "Target Support Files/Pods-Signal/Pods-Signal.profiling.xcconfig"; sourceTree = "<group>"; };
 		675486AB8F0612FF2C717BAE /* Pods_SignalUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6BB92957776B3173894CD3E9 /* Pods-SignalServiceKit.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalServiceKit.app store release.xcconfig"; path = "Target Support Files/Pods-SignalServiceKit/Pods-SignalServiceKit.app store release.xcconfig"; sourceTree = "<group>"; };
@@ -7912,6 +7914,7 @@
 				667BB2042C58073600E79B57 /* Attachments */,
 				66CD25732B08079C00139E17 /* FileStreams */,
 				66CD25902B0EC20800139E17 /* MessageBackupConstants.swift */,
+				66FFDADB2C823C270079C0E7 /* MessageBackupContexts.swift */,
 				D90D4D832BBB61680097C573 /* MessageBackupEmptyFrameId.swift */,
 				C1A0F79C2B9F57340009DC0D /* MessageBackupKeyMaterial.swift */,
 				C1A0F79E2B9F59920009DC0D /* MessageBackupKeyMaterialImpl.swift */,
@@ -14527,6 +14530,7 @@
 				6619A1CB2B2D176E004B38FE /* MessageBackupContactAddress.swift in Sources */,
 				66F6D69E2C77E4C500EFAF75 /* MessageBackupContactAttachmentArchiver.swift in Sources */,
 				66CD256E2B06E14F00139E17 /* MessageBackupContactRecipientArchiver.swift in Sources */,
+				66FFDADC2C823C270079C0E7 /* MessageBackupContexts.swift in Sources */,
 				C1CA5F8E2BE2F21C00D733CA /* MessageBackupDistributionListRecipientArchiver.swift in Sources */,
 				D90D4D842BBB61680097C573 /* MessageBackupEmptyFrameId.swift in Sources */,
 				662590D12B5B525E001FDCDD /* MessageBackupErrors.swift in Sources */,

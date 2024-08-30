@@ -34,8 +34,7 @@ final class MessageBackupExpirationTimerChatUpdateArchiver {
     func archiveExpirationTimerChatUpdate(
         infoMessage: TSInfoMessage,
         thread: TSThread,
-        context: MessageBackup.ChatArchivingContext,
-        tx: any DBReadTransaction
+        context: MessageBackup.ChatArchivingContext
     ) -> ArchiveChatUpdateMessageResult {
         func messageFailure(
             _ errorType: ArchiveFrameError.ErrorType,
@@ -102,8 +101,7 @@ final class MessageBackupExpirationTimerChatUpdateArchiver {
         _ expirationTimerChatUpdate: BackupProto_ExpirationTimerChatUpdate,
         chatItem: BackupProto_ChatItem,
         chatThread: MessageBackup.ChatThread,
-        context: MessageBackup.ChatRestoringContext,
-        tx: any DBWriteTransaction
+        context: MessageBackup.ChatRestoringContext
     ) -> RestoreChatUpdateMessageResult {
         func invalidProtoData(
             _ error: RestoreFrameError.ErrorType.InvalidProtoDataError,
@@ -136,7 +134,7 @@ final class MessageBackupExpirationTimerChatUpdateArchiver {
         case .localAddress:
             createdByRemoteName = nil
         default:
-            createdByRemoteName = contactManager.displayName(contactThread.contactAddress, tx: tx)
+            createdByRemoteName = contactManager.displayName(contactThread.contactAddress, tx: context.tx)
         }
 
         let dmUpdateInfoMessage = OWSDisappearingConfigurationUpdateInfoMessage(
@@ -146,7 +144,7 @@ final class MessageBackupExpirationTimerChatUpdateArchiver {
             configurationDurationSeconds: UInt32(clamping: expiresInSeconds), // Safe to clamp, we checked for overflow above
             createdByRemoteName: createdByRemoteName
         )
-        interactionStore.insertInteraction(dmUpdateInfoMessage, tx: tx)
+        interactionStore.insertInteraction(dmUpdateInfoMessage, tx: context.tx)
 
         return .success(())
     }

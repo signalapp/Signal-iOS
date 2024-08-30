@@ -19,10 +19,9 @@ internal class MessageBackupReactionArchiver: MessageBackupProtoArchiver {
 
     func archiveReactions(
         _ message: TSMessage,
-        context: MessageBackup.RecipientArchivingContext,
-        tx: DBReadTransaction
+        context: MessageBackup.RecipientArchivingContext
     ) -> MessageBackup.ArchiveInteractionResult<[BackupProto_Reaction]> {
-        let reactions = reactionStore.allReactions(messageId: message.uniqueId, tx: tx)
+        let reactions = reactionStore.allReactions(messageId: message.uniqueId, tx: context.tx)
 
         var errors = [ArchiveFrameError]()
         var reactionProtos = [BackupProto_Reaction]()
@@ -69,8 +68,7 @@ internal class MessageBackupReactionArchiver: MessageBackupProtoArchiver {
         _ reactions: [BackupProto_Reaction],
         chatItemId: MessageBackup.ChatItemId,
         message: TSMessage,
-        context: MessageBackup.RecipientRestoringContext,
-        tx: DBWriteTransaction
+        context: MessageBackup.RecipientRestoringContext
     ) -> MessageBackup.RestoreInteractionResult<Void> {
         var reactionErrors = [MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>]()
         for reaction in reactions {
@@ -84,7 +82,7 @@ internal class MessageBackupReactionArchiver: MessageBackupProtoArchiver {
                     reactorAci: context.localIdentifiers.aci,
                     sentAtTimestamp: reaction.sentTimestamp,
                     sortOrder: reaction.sortOrder,
-                    tx: tx
+                    tx: context.tx
                 )
             case .contact(let address):
                 if let aci = address.aci {
@@ -94,7 +92,7 @@ internal class MessageBackupReactionArchiver: MessageBackupProtoArchiver {
                         reactorAci: aci,
                         sentAtTimestamp: reaction.sentTimestamp,
                         sortOrder: reaction.sortOrder,
-                        tx: tx
+                        tx: context.tx
                     )
                 } else if let e164 = address.e164 {
                     reactionStore.createReactionFromRestoredBackup(
@@ -103,7 +101,7 @@ internal class MessageBackupReactionArchiver: MessageBackupProtoArchiver {
                         reactorE164: e164,
                         sentAtTimestamp: reaction.sentTimestamp,
                         sortOrder: reaction.sortOrder,
-                        tx: tx
+                        tx: context.tx
                     )
                 } else {
                     reactionErrors.append(.restoreFrameError(

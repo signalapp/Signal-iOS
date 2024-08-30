@@ -22,8 +22,7 @@ final class MessageBackupProfileChangeChatUpdateArchiver {
     func archive(
         infoMessage: TSInfoMessage,
         thread: TSThread,
-        context: MessageBackup.ChatArchivingContext,
-        tx: any DBReadTransaction
+        context: MessageBackup.ChatArchivingContext
     ) -> ArchiveChatUpdateMessageResult {
         func messageFailure(
             _ errorType: ArchiveFrameError.ErrorType,
@@ -77,8 +76,7 @@ final class MessageBackupProfileChangeChatUpdateArchiver {
         _ profileChangeChatUpdateProto: BackupProto_ProfileChangeChatUpdate,
         chatItem: BackupProto_ChatItem,
         chatThread: MessageBackup.ChatThread,
-        context: MessageBackup.ChatRestoringContext,
-        tx: any DBWriteTransaction
+        context: MessageBackup.ChatRestoringContext
     ) -> RestoreChatUpdateMessageResult {
         func invalidProtoData(
             _ error: RestoreFrameError.ErrorType.InvalidProtoDataError,
@@ -114,7 +112,7 @@ final class MessageBackupProfileChangeChatUpdateArchiver {
                 newNameLiteral: newName
             )
         )
-        interactionStore.insertInteraction(profileChangeInfoMessage, tx: tx)
+        interactionStore.insertInteraction(profileChangeInfoMessage, tx: context.tx)
 
         return .success(())
     }

@@ -27,8 +27,7 @@ protocol MessageBackupTSMessageEditHistoryBuilder<EditHistoryMessageType>: AnyOb
     func buildMessageArchiveDetails(
         message: EditHistoryMessageType,
         editRecord: EditRecord?,
-        context: MessageBackup.ChatArchivingContext,
-        tx: DBReadTransaction
+        context: MessageBackup.ChatArchivingContext
     ) -> MessageBackup.ArchiveInteractionResult<Details>
 
     /// Restore a message from the given chat item.
@@ -44,8 +43,7 @@ protocol MessageBackupTSMessageEditHistoryBuilder<EditHistoryMessageType>: AnyOb
         isPastRevision: Bool,
         hasPastRevisions: Bool,
         chatThread: MessageBackup.ChatThread,
-        context: MessageBackup.ChatRestoringContext,
-        tx: DBWriteTransaction
+        context: MessageBackup.ChatRestoringContext
     ) -> MessageBackup.RestoreInteractionResult<EditHistoryMessageType>
 }
 
@@ -92,8 +90,7 @@ final class MessageBackupTSMessageEditHistoryArchiver<MessageType: TSMessage>
         _ message: MessageType,
         thread _: TSThread,
         context: MessageBackup.ChatArchivingContext,
-        builder: Builder,
-        tx: DBReadTransaction
+        builder: Builder
     ) -> MessageBackup.ArchiveInteractionResult<Details>
     {
         var partialErrors = [ArchiveFrameError]()
@@ -115,8 +112,7 @@ final class MessageBackupTSMessageEditHistoryArchiver<MessageType: TSMessage>
         switch builder.buildMessageArchiveDetails(
             message: message,
             editRecord: nil,
-            context: context,
-            tx: tx
+            context: context
         ).bubbleUp(Details.self, partialErrors: &partialErrors) {
         case .continue(let _messageDetails):
             messageDetails = _messageDetails
@@ -129,8 +125,7 @@ final class MessageBackupTSMessageEditHistoryArchiver<MessageType: TSMessage>
                 toLatestRevisionArchiveDetails: &messageDetails,
                 latestRevisionMessage: message,
                 context: context,
-                builder: builder,
-                tx: tx
+                builder: builder
             ).bubbleUp(Details.self, partialErrors: &partialErrors) {
             case .continue:
                 break
@@ -155,8 +150,7 @@ final class MessageBackupTSMessageEditHistoryArchiver<MessageType: TSMessage>
         toLatestRevisionArchiveDetails latestRevisionDetails: inout Details,
         latestRevisionMessage: MessageType,
         context: MessageBackup.ChatArchivingContext,
-        builder: Builder,
-        tx: DBReadTransaction
+        builder: Builder
     ) -> MessageBackup.ArchiveInteractionResult<Void> {
         var partialErrors = [ArchiveFrameError]()
 
@@ -167,7 +161,7 @@ final class MessageBackupTSMessageEditHistoryArchiver<MessageType: TSMessage>
         do {
             editHistory = try editMessageStore.findEditHistory(
                 for: latestRevisionMessage,
-                tx: tx
+                tx: context.tx
             ).reversed()
         } catch {
             return .messageFailure([.archiveFrameError(
@@ -189,8 +183,7 @@ final class MessageBackupTSMessageEditHistoryArchiver<MessageType: TSMessage>
             switch builder.buildMessageArchiveDetails(
                 message: pastRevisionMessage,
                 editRecord: editRecord,
-                context: context,
-                tx: tx
+                context: context
             ) {
             case .success(let _pastRevisionDetails):
                 pastRevisionDetails = _pastRevisionDetails
@@ -239,8 +232,7 @@ final class MessageBackupTSMessageEditHistoryArchiver<MessageType: TSMessage>
         _ topLevelChatItem: BackupProto_ChatItem,
         chatThread: MessageBackup.ChatThread,
         context: MessageBackup.ChatRestoringContext,
-        builder: Builder,
-        tx: DBWriteTransaction
+        builder: Builder
     ) -> MessageBackup.RestoreInteractionResult<Void> {
         var partialErrors = [RestoreFrameError]()
 
@@ -250,8 +242,7 @@ final class MessageBackupTSMessageEditHistoryArchiver<MessageType: TSMessage>
                 isPastRevision: false,
                 hasPastRevisions: topLevelChatItem.revisions.count > 0,
                 chatThread: chatThread,
-                context: context,
-                tx: tx
+                context: context
             ).unwrap(partialErrors: &partialErrors)
         else {
             return .messageFailure(partialErrors)
@@ -269,8 +260,7 @@ final class MessageBackupTSMessageEditHistoryArchiver<MessageType: TSMessage>
                     isPastRevision: true,
                     hasPastRevisions: false, // Past revisions can't have their own past revisions!
                     chatThread: chatThread,
-                    context: context,
-                    tx: tx
+                    context: context
                 ).unwrap(partialErrors: &partialErrors)
             else {
                 /// This means we won't attempt to restore any later revisions,
@@ -296,7 +286,7 @@ final class MessageBackupTSMessageEditHistoryArchiver<MessageType: TSMessage>
                 read: wasRead
             )
 
-            editMessageStore.insert(editRecord, tx: tx)
+            editMessageStore.insert(editRecord, tx: context.tx)
         }
 
         if partialErrors.isEmpty {

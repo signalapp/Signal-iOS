@@ -45,7 +45,7 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
         messageRowId: Int64,
         message: TSMessage,
         thread: MessageBackup.ChatThread,
-        tx: DBWriteTransaction
+        context: MessageBackup.RestoringContext
     ) -> MessageBackup.RestoreInteractionResult<Void> {
         var uuidErrors = [MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>.ErrorType.InvalidProtoDataError]()
         let withUnwrappedUUIDs: [(BackupProto_MessageAttachment, UUID?)]
@@ -82,7 +82,7 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
         return restoreAttachments(
             ownedAttachments,
             chatItemId: chatItemId,
-            tx: tx
+            context: context
         )
     }
 
@@ -92,7 +92,7 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
         messageRowId: Int64,
         message: TSMessage,
         thread: MessageBackup.ChatThread,
-        tx: DBWriteTransaction
+        context: MessageBackup.RestoringContext
     ) -> MessageBackup.RestoreInteractionResult<Void> {
         let ownedAttachment = OwnedAttachmentBackupPointerProto(
             proto: attachment,
@@ -110,7 +110,7 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
         return restoreAttachments(
             [ownedAttachment],
             chatItemId: chatItemId,
-            tx: tx
+            context: context
         )
     }
 
@@ -120,7 +120,7 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
         messageRowId: Int64,
         message: TSMessage,
         thread: MessageBackup.ChatThread,
-        tx: DBWriteTransaction
+        context: MessageBackup.RestoringContext
     ) -> MessageBackup.RestoreInteractionResult<Void> {
         let clientUUID: UUID?
         if attachment.hasClientUuid {
@@ -149,7 +149,7 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
         return restoreAttachments(
             [ownedAttachment],
             chatItemId: chatItemId,
-            tx: tx
+            context: context
         )
     }
 
@@ -159,7 +159,7 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
         messageRowId: Int64,
         message: TSMessage,
         thread: MessageBackup.ChatThread,
-        tx: DBWriteTransaction
+        context: MessageBackup.RestoringContext
     ) -> MessageBackup.RestoreInteractionResult<Void> {
         let ownedAttachment = OwnedAttachmentBackupPointerProto(
             proto: attachment,
@@ -177,7 +177,7 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
         return restoreAttachments(
             [ownedAttachment],
             chatItemId: chatItemId,
-            tx: tx
+            context: context
         )
     }
 
@@ -187,7 +187,7 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
         messageRowId: Int64,
         message: TSMessage,
         thread: MessageBackup.ChatThread,
-        tx: DBWriteTransaction
+        context: MessageBackup.RestoringContext
     ) -> MessageBackup.RestoreInteractionResult<Void> {
         let ownedAttachment = OwnedAttachmentBackupPointerProto(
             proto: attachment,
@@ -205,7 +205,7 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
         return restoreAttachments(
             [ownedAttachment],
             chatItemId: chatItemId,
-            tx: tx
+            context: context
         )
     }
 
@@ -217,7 +217,7 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
         messageRowId: Int64,
         message: TSMessage,
         thread: MessageBackup.ChatThread,
-        tx: DBWriteTransaction
+        context: MessageBackup.RestoringContext
     ) -> MessageBackup.RestoreInteractionResult<Void> {
         let ownedAttachment = OwnedAttachmentBackupPointerProto(
             proto: attachment,
@@ -237,14 +237,14 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
         return restoreAttachments(
             [ownedAttachment],
             chatItemId: chatItemId,
-            tx: tx
+            context: context
         )
     }
 
     private func restoreAttachments(
         _ attachments: [OwnedAttachmentBackupPointerProto],
         chatItemId: MessageBackup.ChatItemId,
-        tx: DBWriteTransaction
+        context: MessageBackup.RestoringContext
     ) -> MessageBackup.RestoreInteractionResult<Void> {
         // TODO[Backups]: use actual subscription id. For now use a fixed,
         // arbitrary id, so that it never changes.
@@ -262,7 +262,7 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
         let errors = attachmentManager.createAttachmentPointers(
             from: attachments,
             uploadEra: uploadEra,
-            tx: tx
+            tx: context.tx
         )
 
         guard errors.isEmpty else {
@@ -276,7 +276,7 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
             })
         }
 
-        let results = attachmentStore.fetchReferences(owners: attachments.map(\.owner.id), tx: tx)
+        let results = attachmentStore.fetchReferences(owners: attachments.map(\.owner.id), tx: context.tx)
         if results.isEmpty && !attachments.isEmpty {
             return .messageFailure([.restoreFrameError(
                 .failedToCreateAttachment,
@@ -286,7 +286,7 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
 
         do {
             try results.forEach {
-                try backupAttachmentDownloadStore.enqueue($0, tx: tx)
+                try backupAttachmentDownloadStore.enqueue($0, tx: context.tx)
             }
         } catch {
             return .partialRestore((), [.restoreFrameError(

@@ -210,7 +210,11 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     ) throws {
         try writeHeader(stream: stream, tx: tx)
 
-        let accountDataResult = accountDataArchiver.archiveAccountData(stream: stream, tx: tx)
+        let context = MessageBackup.ArchivingContext(tx: tx)
+        let accountDataResult = accountDataArchiver.archiveAccountData(
+            stream: stream,
+            context: context
+        )
         switch accountDataResult {
         case .success:
             break
@@ -233,13 +237,13 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
         let recipientArchivingContext = MessageBackup.RecipientArchivingContext(
             localIdentifiers: localIdentifiers,
-            localRecipientId: localRecipientId
+            localRecipientId: localRecipientId,
+            tx: tx
         )
 
         switch releaseNotesRecipientArchiver.archiveReleaseNotesRecipient(
             stream: stream,
-            context: recipientArchivingContext,
-            tx: tx
+            context: recipientArchivingContext
         ) {
         case .success:
             break
@@ -250,8 +254,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
         switch contactRecipientArchiver.archiveAllContactRecipients(
             stream: stream,
-            context: recipientArchivingContext,
-            tx: tx
+            context: recipientArchivingContext
         ) {
         case .success:
             break
@@ -263,8 +266,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
         switch groupRecipientArchiver.archiveAllGroupRecipients(
             stream: stream,
-            context: recipientArchivingContext,
-            tx: tx
+            context: recipientArchivingContext
         ) {
         case .success:
             break
@@ -276,8 +278,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
         switch distributionListRecipientArchiver.archiveAllDistributionListRecipients(
             stream: stream,
-            context: recipientArchivingContext,
-            tx: tx
+            context: recipientArchivingContext
         ) {
         case .success:
             break
@@ -290,12 +291,12 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         // TODO: [Backups] Archive call link recipients.
 
         let chatArchivingContext = MessageBackup.ChatArchivingContext(
-            recipientContext: recipientArchivingContext
+            recipientContext: recipientArchivingContext,
+            tx: tx
         )
         let chatArchiveResult = chatArchiver.archiveChats(
             stream: stream,
-            context: chatArchivingContext,
-            tx: tx
+            context: chatArchivingContext
         )
         switch chatArchiveResult {
         case .success:
@@ -308,8 +309,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
         let chatItemArchiveResult = chatItemArchiver.archiveInteractions(
             stream: stream,
-            context: chatArchivingContext,
-            tx: tx
+            context: chatArchivingContext
         )
         switch chatItemArchiveResult {
         case .success:
@@ -447,9 +447,14 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             throw BackupVersionNotSupportedError()
         }
 
-        let recipientContext = MessageBackup.RecipientRestoringContext(localIdentifiers: localIdentifiers)
+        let context = MessageBackup.RestoringContext(tx: tx)
+        let recipientContext = MessageBackup.RecipientRestoringContext(
+            localIdentifiers: localIdentifiers,
+            tx: tx
+        )
         let chatContext = MessageBackup.ChatRestoringContext(
-            recipientContext: recipientContext
+            recipientContext: recipientContext,
+            tx: tx
         )
 
         while hasMoreFrames {
@@ -479,36 +484,31 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                     recipientResult = localRecipientArchiver.restoreSelfRecipient(
                         selfRecipientProto,
                         recipient: recipient,
-                        context: recipientContext,
-                        tx: tx
+                        context: recipientContext
                     )
                 case .contact(let contactRecipientProto):
                     recipientResult = contactRecipientArchiver.restoreContactRecipientProto(
                         contactRecipientProto,
                         recipient: recipient,
-                        context: recipientContext,
-                        tx: tx
+                        context: recipientContext
                     )
                 case .group(let groupRecipientProto):
                     recipientResult = groupRecipientArchiver.restoreGroupRecipientProto(
                         groupRecipientProto,
                         recipient: recipient,
-                        context: recipientContext,
-                        tx: tx
+                        context: recipientContext
                     )
                 case .distributionList(let distributionListRecipientProto):
                     recipientResult = distributionListRecipientArchiver.restoreDistributionListRecipientProto(
                         distributionListRecipientProto,
                         recipient: recipient,
-                        context: recipientContext,
-                        tx: tx
+                        context: recipientContext
                     )
                 case .releaseNotes(let releaseNotesRecipientProto):
                     recipientResult = releaseNotesRecipientArchiver.restoreReleaseNotesRecipientProto(
                         releaseNotesRecipientProto,
                         recipient: recipient,
-                        context: recipientContext,
-                        tx: tx
+                        context: recipientContext
                     )
                 case .callLink(_):
                     // TODO: [Backups] Restore call link recipients.
@@ -526,8 +526,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             case .chat(let chat):
                 let chatResult = chatArchiver.restore(
                     chat,
-                    context: chatContext,
-                    tx: tx
+                    context: chatContext
                 )
                 switch chatResult {
                 case .success:
@@ -540,8 +539,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             case .chatItem(let chatItem):
                 let chatItemResult = chatItemArchiver.restore(
                     chatItem,
-                    context: chatContext,
-                    tx: tx
+                    context: chatContext
                 )
                 switch chatItemResult {
                 case .success:
@@ -552,7 +550,10 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                     try processRestoreFrameErrors(errors: errors)
                 }
             case .account(let backupProtoAccountData):
-                let accountDataResult = accountDataArchiver.restore(backupProtoAccountData, tx: tx)
+                let accountDataResult = accountDataArchiver.restore(
+                    backupProtoAccountData,
+                    context: context
+                )
                 switch accountDataResult {
                 case .success:
                     continue

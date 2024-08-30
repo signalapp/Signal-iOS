@@ -22,8 +22,7 @@ final class MessageBackupSessionSwitchoverChatUpdateArchiver {
     func archiveSessionSwitchoverChatUpdate(
         infoMessage: TSInfoMessage,
         thread: TSThread,
-        context: MessageBackup.ChatArchivingContext,
-        tx: any DBReadTransaction
+        context: MessageBackup.ChatArchivingContext
     ) -> ArchiveChatUpdateMessageResult {
         func messageFailure(
             _ errorType: ArchiveFrameError.ErrorType,
@@ -76,8 +75,7 @@ final class MessageBackupSessionSwitchoverChatUpdateArchiver {
         _ sessionSwitchoverUpdateProto: BackupProto_SessionSwitchoverChatUpdate,
         chatItem: BackupProto_ChatItem,
         chatThread: MessageBackup.ChatThread,
-        context: MessageBackup.ChatRestoringContext,
-        tx: any DBWriteTransaction
+        context: MessageBackup.ChatRestoringContext
     ) -> RestoreChatUpdateMessageResult {
         func invalidProtoData(
             _ error: RestoreFrameError.ErrorType.InvalidProtoDataError,
@@ -103,7 +101,7 @@ final class MessageBackupSessionSwitchoverChatUpdateArchiver {
             timestamp: chatItem.dateSent,
             phoneNumber: e164.stringValue
         )
-        interactionStore.insertInteraction(sessionSwitchoverInfoMessage, tx: tx)
+        interactionStore.insertInteraction(sessionSwitchoverInfoMessage, tx: context.tx)
 
         return .success(())
     }

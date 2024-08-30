@@ -67,49 +67,42 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupProtoArchiver {
 
     func archiveIndividualCall(
         _ individualCallInteraction: TSCall,
-        context: MessageBackup.ChatArchivingContext,
-        tx: any DBReadTransaction
+        context: MessageBackup.ChatArchivingContext
     ) -> ArchiveChatUpdateMessageResult {
         return individualCallArchiver.archiveIndividualCall(
             individualCallInteraction,
-            context: context,
-            tx: tx
+            context: context
         )
     }
 
     func archiveGroupCall(
         _ groupCallInteraction: OWSGroupCallMessage,
         thread: TSThread,
-        context: MessageBackup.ChatArchivingContext,
-        tx: any DBReadTransaction
+        context: MessageBackup.ChatArchivingContext
     ) -> ArchiveChatUpdateMessageResult {
         return groupCallArchiver.archiveGroupCall(
             groupCallInteraction,
-            context: context,
-            tx: tx
+            context: context
         )
     }
 
     func archiveErrorMessage(
         _ errorMessage: TSErrorMessage,
         thread: TSThread,
-        context: MessageBackup.ChatArchivingContext,
-        tx: any DBReadTransaction
+        context: MessageBackup.ChatArchivingContext
     ) -> ArchiveChatUpdateMessageResult {
         /// All `TSErrorMessage`s map to simple chat updates.
         return simpleChatUpdateArchiver.archiveSimpleChatUpdate(
             errorMessage: errorMessage,
             thread: thread,
-            context: context,
-            tx: tx
+            context: context
         )
     }
 
     func archiveInfoMessage(
         _ infoMessage: TSInfoMessage,
         thread: TSThread,
-        context: MessageBackup.ChatArchivingContext,
-        tx: any DBReadTransaction
+        context: MessageBackup.ChatArchivingContext
     ) -> ArchiveChatUpdateMessageResult {
         switch infoMessage.groupUpdateMetadata(
             localIdentifiers: context.recipientContext.localIdentifiers
@@ -120,8 +113,7 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupProtoArchiver {
         case .precomputed, .modelDiff, .newGroup:
             return groupUpdateMessageArchiver.archiveGroupUpdate(
                 infoMessage: infoMessage,
-                context: context,
-                tx: tx
+                context: context
             )
         case .nonGroupUpdate:
             break
@@ -165,43 +157,37 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupProtoArchiver {
             return simpleChatUpdateArchiver.archiveSimpleChatUpdate(
                 infoMessage: infoMessage,
                 thread: thread,
-                context: context,
-                tx: tx
+                context: context
             )
         case .profileUpdate:
             return profileChangeChatUpdateArchiver.archive(
                 infoMessage: infoMessage,
                 thread: thread,
-                context: context,
-                tx: tx
+                context: context
             )
         case .typeDisappearingMessagesUpdate:
             return expirationTimerChatUpdateArchiver.archiveExpirationTimerChatUpdate(
                 infoMessage: infoMessage,
                 thread: thread,
-                context: context,
-                tx: tx
+                context: context
             )
         case .threadMerge:
             return threadMergeChatUpdateArchiver.archiveThreadMergeChatUpdate(
                 infoMessage: infoMessage,
                 thread: thread,
-                context: context,
-                tx: tx
+                context: context
             )
         case .sessionSwitchover:
             return sessionSwitchoverChatUpdateArchiver.archiveSessionSwitchoverChatUpdate(
                 infoMessage: infoMessage,
                 thread: thread,
-                context: context,
-                tx: tx
+                context: context
             )
         case .learnedProfileName:
             return learnedProfileChatUpdateArchiver.archiveLearnedProfileChatUpdate(
                 infoMessage: infoMessage,
                 thread: thread,
-                context: context,
-                tx: tx
+                context: context
             )
         }
     }
@@ -211,8 +197,7 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupProtoArchiver {
     func restoreChatItem(
         _ chatItem: BackupProto_ChatItem,
         chatThread: MessageBackup.ChatThread,
-        context: MessageBackup.ChatRestoringContext,
-        tx: any DBWriteTransaction
+        context: MessageBackup.ChatRestoringContext
     ) -> RestoreChatUpdateMessageResult {
         let chatUpdateMessage: BackupProto_ChatUpdateMessage
         do {
@@ -238,72 +223,63 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupProtoArchiver {
                 groupChangeChatUpdateProto,
                 chatItem: chatItem,
                 chatThread: chatThread,
-                context: context,
-                tx: tx
+                context: context
             )
         case .individualCall(let individualCallProto):
             return individualCallArchiver.restoreIndividualCall(
                 individualCallProto,
                 chatItem: chatItem,
                 chatThread: chatThread,
-                context: context,
-                tx: tx
+                context: context
             )
         case .groupCall(let groupCallProto):
             return groupCallArchiver.restoreGroupCall(
                 groupCallProto,
                 chatItem: chatItem,
                 chatThread: chatThread,
-                context: context,
-                tx: tx
+                context: context
             )
         case .simpleUpdate(let simpleChatUpdateProto):
             return simpleChatUpdateArchiver.restoreSimpleChatUpdate(
                 simpleChatUpdateProto,
                 chatItem: chatItem,
                 chatThread: chatThread,
-                context: context,
-                tx: tx
+                context: context
             )
         case .expirationTimerChange(let expirationTimerUpdateProto):
             return expirationTimerChatUpdateArchiver.restoreExpirationTimerChatUpdate(
                 expirationTimerUpdateProto,
                 chatItem: chatItem,
                 chatThread: chatThread,
-                context: context,
-                tx: tx
+                context: context
             )
         case .profileChange(let profileChangeUpdateProto):
             return profileChangeChatUpdateArchiver.restoreProfileChangeChatUpdate(
                 profileChangeUpdateProto,
                 chatItem: chatItem,
                 chatThread: chatThread,
-                context: context,
-                tx: tx
+                context: context
             )
         case .threadMerge(let threadMergeUpdateProto):
             return threadMergeChatUpdateArchiver.restoreThreadMergeChatUpdate(
                 threadMergeUpdateProto,
                 chatItem: chatItem,
                 chatThread: chatThread,
-                context: context,
-                tx: tx
+                context: context
             )
         case .sessionSwitchover(let sessionSwitchoverUpdateProto):
             return sessionSwitchoverChatUpdateArchiver.restoreSessionSwitchoverChatUpdate(
                 sessionSwitchoverUpdateProto,
                 chatItem: chatItem,
                 chatThread: chatThread,
-                context: context,
-                tx: tx
+                context: context
             )
         case .learnedProfileChange(let learnedProfileChangeProto):
             return learnedProfileChatUpdateArchiver.restoreLearnedProfileChatUpdate(
                 learnedProfileChangeProto,
                 chatItem: chatItem,
                 chatThread: chatThread,
-                context: context,
-                tx: tx
+                context: context
             )
         }
     }
