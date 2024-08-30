@@ -41,15 +41,18 @@ public protocol MessageBackupChatArchiver: MessageBackupProtoArchiver {
 public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
     private typealias ArchiveFrameError = MessageBackup.ArchiveFrameError<MessageBackup.ThreadUniqueId>
 
+    private let chatStyleArchiver: MessageBackupChatStyleArchiver
     private let dmConfigurationStore: DisappearingMessagesConfigurationStore
     private let pinnedThreadManager: PinnedThreadManager
     private let threadStore: ThreadStore
 
     public init(
+        chatStyleArchiver: MessageBackupChatStyleArchiver,
         dmConfigurationStore: DisappearingMessagesConfigurationStore,
         pinnedThreadManager: PinnedThreadManager,
         threadStore: ThreadStore
     ) {
+        self.chatStyleArchiver = chatStyleArchiver
         self.dmConfigurationStore = dmConfigurationStore
         self.pinnedThreadManager = pinnedThreadManager
         self.threadStore = threadStore
@@ -126,8 +129,14 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
     ) -> ArchiveMultiFrameResult {
         let chatId = context.assignChatId(to: MessageBackup.ThreadUniqueId(thread: thread))
 
+        guard let threadRowId = thread.sqliteRowId else {
+            return .completeFailure(.fatalArchiveError(
+                .threadIteratorError(OWSAssertionError("Missing thread row id"))
+            ))
+        }
+
         return archiveThread(
-            thread,
+            .init(threadType: .contact(thread), threadRowId: threadRowId),
             chatId: chatId,
             recipientId: context.recipientContext.localRecipientId,
             stream: stream,
@@ -162,8 +171,14 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
             )])
         }
 
+        guard let threadRowId = thread.sqliteRowId else {
+            return .completeFailure(.fatalArchiveError(
+                .threadIteratorError(OWSAssertionError("Missing thread row id"))
+            ))
+        }
+
         return archiveThread(
-            thread,
+            .init(threadType: .contact(thread), threadRowId: threadRowId),
             chatId: chatId,
             recipientId: recipientId,
             stream: stream,
@@ -186,8 +201,14 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
             )])
         }
 
+        guard let threadRowId = thread.sqliteRowId else {
+            return .completeFailure(.fatalArchiveError(
+                .threadIteratorError(OWSAssertionError("Missing thread row id"))
+            ))
+        }
+
         return archiveThread(
-            thread,
+            .init(threadType: .groupV2(thread), threadRowId: threadRowId),
             chatId: chatId,
             recipientId: recipientId,
             stream: stream,
@@ -195,18 +216,20 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         )
     }
 
-    private func archiveThread<T: TSThread>(
-        _ thread: T,
+    private func archiveThread(
+        _ thread: MessageBackup.ChatThread,
         chatId: ChatId,
         recipientId: MessageBackup.RecipientId,
         stream: MessageBackupProtoOutputStream,
         context: MessageBackup.ChatArchivingContext
     ) -> ArchiveMultiFrameResult {
-        let threadAssociatedData = threadStore.fetchOrDefaultAssociatedData(for: thread, tx: context.tx)
+        var partialErrors = [ArchiveFrameError]()
+
+        let threadAssociatedData = threadStore.fetchOrDefaultAssociatedData(for: thread.tsThread, tx: context.tx)
 
         let thisThreadPinnedOrder: UInt32
         let pinnedThreadIds = pinnedThreadManager.pinnedThreadIds(tx: context.tx)
-        if let pinnedThreadIndex: Int = pinnedThreadIds.firstIndex(of: thread.uniqueId) {
+        if let pinnedThreadIndex: Int = pinnedThreadIds.firstIndex(of: thread.tsThread.uniqueId) {
             // Add one so we don't start at 0.
             thisThreadPinnedOrder = UInt32(clamping: pinnedThreadIndex + 1)
         } else {
@@ -214,10 +237,10 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
             thisThreadPinnedOrder = 0
         }
 
-        let expirationTimerSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: context.tx)
+        let expirationTimerSeconds = dmConfigurationStore.durationSeconds(for: thread.tsThread, tx: context.tx)
 
         let dontNotifyForMentionsIfMuted: Bool
-        switch thread.mentionNotificationMode {
+        switch thread.tsThread.mentionNotificationMode {
         case .default, .always:
             dontNotifyForMentionsIfMuted = false
         case .never:
@@ -234,18 +257,37 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         chat.markedUnread = threadAssociatedData.isMarkedUnread
         chat.dontNotifyForMentionsIfMuted = dontNotifyForMentionsIfMuted
 
+        let chatStyleResult = chatStyleArchiver.archiveChatStyle(
+            thread: thread,
+            chatId: chatId,
+            context: context.customChatColorContext
+        )
+        switch chatStyleResult {
+        case .success(let chatStyleProto):
+            if let chatStyleProto {
+                chat.style = chatStyleProto
+            }
+        case .failure(let error):
+            partialErrors.append(error)
+        }
+
         let error = Self.writeFrameToStream(
             stream,
-            objectId: thread.uniqueThreadIdentifier
+            objectId: thread.tsThread.uniqueThreadIdentifier
         ) {
             var frame = BackupProto_Frame()
             frame.item = .chat(chat)
             return frame
         }
+
         if let error {
-            return .partialSuccess([error])
-        } else {
+            partialErrors.append(error)
+        }
+
+        if partialErrors.isEmpty {
             return .success
+        } else {
+            return .partialSuccess(partialErrors)
         }
     }
 
@@ -255,6 +297,8 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         _ chat: BackupProto_Chat,
         context: MessageBackup.ChatRestoringContext
     ) -> RestoreFrameResult {
+        var partialErrors = [MessageBackup.RestoreFrameError<ChatId>]()
+
         let chatThread: MessageBackup.ChatThread
         switch context.recipientContext[chat.typedRecipientId] {
         case .none:
@@ -386,6 +430,32 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
             )
         }
 
-        return .success
+        let chatStyleToRestore: BackupProto_ChatStyle?
+        if chat.hasStyle {
+            chatStyleToRestore = chat.style
+        } else {
+            chatStyleToRestore = nil
+        }
+        let chatStyleResult = chatStyleArchiver.restoreChatStyle(
+            chatStyleToRestore,
+            thread: chatThread,
+            chatId: chat.chatId,
+            context: context.customChatColorContext
+        )
+        switch chatStyleResult {
+        case .success:
+            break
+        case .partialRestore(let errors):
+            partialErrors.append(contentsOf: errors)
+        case .failure(let errors):
+            partialErrors.append(contentsOf: errors)
+            return .failure(partialErrors)
+        }
+
+        if partialErrors.isEmpty {
+            return .success
+        } else {
+            return .partialRestore(partialErrors)
+        }
     }
 }

@@ -924,6 +924,7 @@ public class AppSetup {
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
             backupRequestManager: messageBackupRequestManager,
             chatArchiver: MessageBackupChatArchiverImpl(
+                chatStyleArchiver: messageBackupChatStyleArchiver,
                 dmConfigurationStore: disappearingMessagesConfigurationStore,
                 pinnedThreadManager: pinnedThreadManager,
                 threadStore: threadStore

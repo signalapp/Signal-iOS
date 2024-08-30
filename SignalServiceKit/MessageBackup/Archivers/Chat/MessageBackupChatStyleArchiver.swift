@@ -155,6 +155,31 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
     func archiveDefaultChatStyle(
         context: MessageBackup.CustomChatColorArchivingContext
     ) -> MessageBackup.ArchiveSingleFrameResult<BackupProto_ChatStyle?, MessageBackup.AccountDataId> {
+        return _archiveChatStyle(
+            thread: nil,
+            context: context,
+            errorId: .localUser
+        )
+    }
+
+    func archiveChatStyle(
+        thread: MessageBackup.ChatThread,
+        chatId: MessageBackup.ChatId,
+        context: MessageBackup.CustomChatColorArchivingContext
+    ) -> MessageBackup.ArchiveSingleFrameResult<BackupProto_ChatStyle?, MessageBackup.ThreadUniqueId> {
+        return _archiveChatStyle(
+            thread: thread,
+            context: context,
+            errorId: thread.tsThread.uniqueThreadIdentifier
+        )
+    }
+
+    /// thread = nil for the default global setting
+    private func _archiveChatStyle<IDType>(
+        thread: MessageBackup.ChatThread?,
+        context: MessageBackup.CustomChatColorArchivingContext,
+        errorId: IDType
+    ) -> MessageBackup.ArchiveSingleFrameResult<BackupProto_ChatStyle?, IDType> {
         var proto = BackupProto_ChatStyle()
 
         // If none of the things that feed the fields of the chat style are
@@ -162,13 +187,13 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
         var hasAnExplicitlySetField = false
 
         let hasBubbleStyle = chatColorSettingStore.hasChatColorSetting(
-            for: nil,
+            for: thread?.tsThread,
             tx: context.tx
         )
         if hasBubbleStyle {
             hasAnExplicitlySetField = true
             let bubbleStyle = chatColorSettingStore.chatColorSetting(
-                for: nil,
+                for: thread?.tsThread,
                 tx: context.tx
             )
             switch bubbleStyle {
@@ -180,20 +205,23 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
                 guard let customColorId = context[key] else {
                     return .failure(.archiveFrameError(
                         .referencedCustomChatColorMissing(key),
-                        .localUser
+                        errorId
                     ))
                 }
                 proto.bubbleColor = .customColorID(customColorId.value)
             }
         }
 
-        let dimWallpaperInDarkMode = wallpaperStore.fetchOptionalDimInDarkMode(for: nil, tx: context.tx)
+        let dimWallpaperInDarkMode = wallpaperStore.fetchOptionalDimInDarkMode(
+            for: thread?.tsThread.uniqueId,
+            tx: context.tx
+        )
         if let dimWallpaperInDarkMode {
             hasAnExplicitlySetField = true
             proto.dimWallpaperInDarkMode = dimWallpaperInDarkMode
         }
 
-        if let wallpaper = wallpaperStore.fetchWallpaper(for: nil, tx: context.tx) {
+        if let wallpaper = wallpaperStore.fetchWallpaper(for: thread?.tsThread.uniqueId, tx: context.tx) {
             hasAnExplicitlySetField = true
             if let preset = wallpaper.asBackupProto() {
                 proto.wallpaper = .wallpaperPreset(preset)
@@ -203,7 +231,7 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
             } else {
                 return .failure(.archiveFrameError(
                     .unknownWallpaper,
-                    .localUser
+                    errorId
                 ))
             }
         }
@@ -215,10 +243,42 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
         }
     }
 
+    /// - parameter chatStyleProto: Nil if unset in the parent proto (hasFoo is false)
     func restoreDefaultChatStyle(
         _ chatStyleProto: BackupProto_ChatStyle?,
         context: MessageBackup.CustomChatColorRestoringContext
     ) -> MessageBackup.RestoreFrameResult<MessageBackup.AccountDataId> {
+        return _restoreChatStyle(
+            chatStyleProto,
+            thread: nil,
+            context: context,
+            errorId: .localUser
+        )
+    }
+
+    /// - parameter chatStyleProto: Nil if unset in the parent proto (hasFoo is false)
+    func restoreChatStyle(
+        _ chatStyleProto: BackupProto_ChatStyle?,
+        thread: MessageBackup.ChatThread,
+        chatId: MessageBackup.ChatId,
+        context: MessageBackup.CustomChatColorRestoringContext
+    ) -> MessageBackup.RestoreFrameResult<MessageBackup.ChatId> {
+        return _restoreChatStyle(
+            chatStyleProto,
+            thread: thread,
+            context: context,
+            errorId: chatId
+        )
+    }
+
+    /// - parameter chatStyleProto: Nil if unset in the parent proto (hasFoo is false)
+    /// - parameter thread: Nil for the default global setting
+    private func _restoreChatStyle<IDType>(
+        _ chatStyleProto: BackupProto_ChatStyle?,
+        thread: MessageBackup.ChatThread?,
+        context: MessageBackup.CustomChatColorRestoringContext,
+        errorId: IDType
+    ) -> MessageBackup.RestoreFrameResult<IDType> {
         if let chatStyleProto {
             switch chatStyleProto.bubbleColor {
             case .none:
@@ -233,12 +293,12 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
                 guard let palette = bubbleColorPreset.asPaletteChatColor() else {
                     return .failure([.restoreFrameError(
                         .invalidProtoData(.unrecognizedChatStyleBubbleColorPreset),
-                        .localUser
+                        errorId
                     )])
                 }
                 chatColorSettingStore.setChatColorSetting(
                     ChatColorSetting.builtIn(palette),
-                    for: nil,
+                    for: thread?.tsThread,
                     tx: context.tx
                 )
             case .customColorID(let customColorIdRaw):
@@ -246,7 +306,7 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
                 guard let customColorKey = context[customColorId] else {
                     return .failure([.restoreFrameError(
                         .invalidProtoData(.customChatColorNotFound(customColorId)),
-                        .localUser
+                        errorId
                     )])
                 }
                 guard
@@ -257,7 +317,7 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
                 else {
                     return .failure([.restoreFrameError(
                         .referencedCustomChatColorNotFound(customColorKey),
-                        .localUser
+                        errorId
                     )])
                 }
                 chatColorSettingStore.setChatColorSetting(
@@ -265,7 +325,7 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
                         customColorKey,
                         customColor
                     ),
-                    for: nil,
+                    for: thread?.tsThread,
                     tx: context.tx
                 )
             }
@@ -274,7 +334,7 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
         if let chatStyleProto {
             wallpaperStore.setDimInDarkMode(
                 chatStyleProto.dimWallpaperInDarkMode,
-                for: nil,
+                for: thread?.tsThread.uniqueId,
                 tx: context.tx
             )
         }
@@ -290,12 +350,12 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
                 guard let wallpaper = wallpaperPreset.asWallpaper() else {
                     return .failure([.restoreFrameError(
                         .invalidProtoData(.unrecognizedChatStyleWallpaperPreset),
-                        .localUser
+                        errorId
                     )])
                 }
                 wallpaperStore.setWallpaperType(
                     wallpaper,
-                    for: nil,
+                    for: thread?.tsThread.uniqueId,
                     tx: context.tx
                 )
             case .wallpaperPhoto:
