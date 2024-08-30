@@ -30,12 +30,12 @@ jobs:
 
     strategy:
       matrix:
-        xcode: ["15.4", "16_beta_6"]
+        xcode: ["Xcode_15.4", "Xcode_16_beta_6"]
 
     steps:
       - name: Set Xcode version
         run: |
-          echo DEVELOPER_DIR=/Applications/Xcode_${{matrix.xcode}}.app >> "$GITHUB_ENV"
+          echo DEVELOPER_DIR=/Applications/${{matrix.xcode}}.app >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
       - uses: ./.github/actions/clone-everything
         with:
