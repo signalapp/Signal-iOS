@@ -340,8 +340,6 @@ struct GroupAvatar {
     }
 }
 
-// MARK: 
-
 extension GroupAttributesEditorHelper: UITextFieldDelegate {
     public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString: String) -> Bool {
         // Truncate the replacement to fit.

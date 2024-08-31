@@ -208,8 +208,6 @@ struct AppStoreRecord: Codable {
 
 class AppStoreVersionService: NSObject {
 
-    // MARK: 
-
     func fetchLatestVersion(lookupURL: URL) -> Promise<AppStoreRecord> {
         Logger.debug("lookupURL:\(lookupURL)")
 

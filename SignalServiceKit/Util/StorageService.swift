@@ -70,8 +70,6 @@ public struct StorageService: Dependencies {
         case itemProtoDeserializationFailed(identifier: StorageIdentifier)
         case networkError(statusCode: Int, underlyingError: Error)
 
-        // MARK: 
-
         public var isRetryableProvider: Bool {
             switch self {
             case .assertion:

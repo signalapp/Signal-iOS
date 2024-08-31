@@ -157,8 +157,6 @@ public class SignalAttachment: NSObject {
     public static let kMaxFileSizeAudio = OWSMediaUtils.kMaxFileSizeAudio
     public static let kMaxFileSizeGeneric = OWSMediaUtils.kMaxFileSizeGeneric
 
-    // MARK: 
-
     public static let maxAttachmentsAllowed: Int = 32
 
     // MARK: Constructor

@@ -45,8 +45,6 @@ public class ProvisioningCipher {
         return "TextSecure Provisioning Message"
     }
 
-    // MARK: 
-
     public func decrypt(envelope: ProvisioningProtoProvisionEnvelope) throws -> ProvisionMessage {
         let primaryDeviceEphemeralPublicKey = try PublicKey(envelope.publicKey)
         let bytes = [UInt8](envelope.body)

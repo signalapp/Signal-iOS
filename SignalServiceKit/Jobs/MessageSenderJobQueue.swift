@@ -33,8 +33,6 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
         }
     }
 
-    // MARK: 
-
     public func add(
         message: PreparedOutgoingMessage,
         limitToCurrentProcessLifetime: Bool = false,

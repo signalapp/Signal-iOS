@@ -101,8 +101,6 @@ public class GalleryRailCellView: UIView {
         delegate?.didTapGalleryRailCellView(self)
     }
 
-    // MARK: 
-
     var item: GalleryRailItem?
 
     func configure(item: GalleryRailItem, delegate: GalleryRailCellViewDelegate) {

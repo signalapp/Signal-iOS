@@ -38,8 +38,6 @@ public class SMKUDAccessKey: NSObject {
         return .init(keyData: Data(xoredBytes))
     }
 
-    // MARK: 
-
     override public func isEqual(_ object: Any?) -> Bool {
         guard let other = object as? SMKUDAccessKey else { return false }
         return self.keyData == other.keyData

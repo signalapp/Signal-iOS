@@ -258,8 +258,6 @@ public class SearchResultsBar: UIView {
 
     var currentIndex: Int?
 
-    // MARK: 
-
     func updateResults(resultSet: ConversationScreenSearchResultSet?) {
         if let resultSet = resultSet {
             if resultSet.messages.count > 0 {

@@ -154,8 +154,6 @@ class AttachmentApprovalToolbar: UIView {
 
     var opaqueAreaHeight: CGFloat { opaqueContentView.height }
 
-    // MARK: 
-
     private func updateContents(animated: Bool) {
         // Show/hide Gallery Rail.
         let isGalleryRailViewVisible = configuration.isMediaStripVisible && !isEditingMediaMessage
@@ -246,8 +244,6 @@ class AttachmentApprovalToolbar: UIView {
 
         updateContents(animated: animated)
     }
-
-    // MARK: 
 
     // Since we have `self.autoresizingMask = UIViewAutoresizingFlexibleHeight`, we must specify
     // an intrinsicContentSize. Specifying CGSize.zero causes the height to be determined by autolayout.

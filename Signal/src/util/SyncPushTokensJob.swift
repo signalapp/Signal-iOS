@@ -100,8 +100,6 @@ class SyncPushTokensJob: NSObject {
         }
     }
 
-    // MARK: 
-
     private func recordPushTokensLocally(pushToken: String) async {
         assert(!Thread.isMainThread)
 

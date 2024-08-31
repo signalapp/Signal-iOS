@@ -11,8 +11,6 @@ class MessageSenderJobQueueTest: SSKBaseTest {
         SSKEnvironment.shared.messageSenderRef as! FakeMessageSender
     }
 
-    // MARK: 
-
     func test_messageIsSent() async throws {
         let jobQueue = MessageSenderJobQueue()
         let (message, promise) = try await databaseStorage.awaitableWrite { tx in

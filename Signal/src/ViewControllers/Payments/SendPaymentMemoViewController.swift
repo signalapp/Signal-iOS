@@ -157,8 +157,6 @@ public class SendPaymentMemoViewController: OWSViewController {
     }
 }
 
-// MARK: 
-
 extension SendPaymentMemoViewController: UITextFieldDelegate {
     public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString: String) -> Bool {
         // Truncate the replacement to fit.

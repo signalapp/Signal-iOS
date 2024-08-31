@@ -153,8 +153,6 @@ public class LoadingViewController: UIViewController {
         return UIDevice.current.isIPad ? .all : .portrait
     }
 
-    // MARK: 
-
     private func buildLabel() -> UILabel {
         let label = UILabel()
 

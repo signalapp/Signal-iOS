@@ -92,8 +92,6 @@ public struct AttachmentApprovalItem: Hashable {
         }
     }
 
-    // MARK: 
-
     func getThumbnailImage() -> UIImage? {
         return self.attachment.staticThumbnail()
     }

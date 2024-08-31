@@ -20,7 +20,6 @@ disabled_rules:
 - function_parameter_count
 - identifier_name
 - line_length
-- mark
 - multiple_closures_with_trailing_closure
 - nesting
 - no_fallthrough_only

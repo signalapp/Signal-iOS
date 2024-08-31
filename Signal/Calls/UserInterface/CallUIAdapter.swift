@@ -66,8 +66,6 @@ public class CallUIAdapter: NSObject {
         // We cannot assert singleton here, because this class gets rebuilt when the user changes relevant call settings
     }
 
-    // MARK: 
-
     internal func reportIncomingCall(_ call: SignalCall) {
         AssertIsOnMainThread()
 

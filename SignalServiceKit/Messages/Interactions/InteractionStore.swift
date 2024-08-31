@@ -199,7 +199,7 @@ public class InteractionStoreImpl: InteractionStore {
         }
     }
 
-    // MARK: 
+    // MARK: -
 
     public func buildOutgoingMessage(
         builder: TSOutgoingMessageBuilder,

@@ -54,8 +54,6 @@ public class AudioActivity: NSObject {
         audioSession.ensureAudioState()
     }
 
-    // MARK: 
-
     override public var description: String {
         return "<AudioActivity: \"\(audioDescription)\">"
     }

@@ -14,8 +14,6 @@ class SimulatorCallUIAdaptee: NSObject, CallUIAdaptee {
     required init(showNamesOnCallScreen: Bool, useSystemCallLog: Bool) {
     }
 
-    // MARK: 
-
     func startOutgoingCall(call: SignalCall) {
         AssertIsOnMainThread()
 

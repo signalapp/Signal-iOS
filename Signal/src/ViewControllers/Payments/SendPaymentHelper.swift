@@ -208,8 +208,6 @@ class SendPaymentHelper: Dependencies {
     }
 }
 
-// MARK: 
-
 extension SendPaymentHelperDelegate {
     var minTopVSpacing: CGFloat { SendPaymentHelper.minTopVSpacing }
 
