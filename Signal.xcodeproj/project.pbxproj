@@ -1024,8 +1024,8 @@
 		668A28AF2BF703E100BB29B3 /* CreateV2AttachmentTablesMigrationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668A28AE2BF703E100BB29B3 /* CreateV2AttachmentTablesMigrationTest.swift */; };
 		668B24182BBB663400EB60C4 /* MockAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668B24172BBB663400EB60C4 /* MockAttachment.swift */; };
 		668B30092BBDD9A20001FD25 /* EditManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668B30082BBDD9A20001FD25 /* EditManagerImpl.swift */; };
-		668B5BFC2C7E46D30018CF36 /* PaletteChatColor+Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668B5BFB2C7E46D30018CF36 /* PaletteChatColor+Constants.swift */; };
 		668B5BFA2C7E420E0018CF36 /* MessageBackupChatStyleArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668B5BF92C7E420E0018CF36 /* MessageBackupChatStyleArchiver.swift */; };
+		668B5BFC2C7E46D30018CF36 /* PaletteChatColor+Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668B5BFB2C7E46D30018CF36 /* PaletteChatColor+Constants.swift */; };
 		668CAB3E289983520085A2C3 /* AudioMessagePlaybackRateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668CAB3D289983520085A2C3 /* AudioMessagePlaybackRateView.swift */; };
 		668E403C2BE43752004B6730 /* YYImage+Attachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668E403B2BE43752004B6730 /* YYImage+Attachment.swift */; };
 		668FE09B28B923A4008B9071 /* Bool+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668FE09A28B923A4008B9071 /* Bool+SSK.swift */; };
@@ -2497,7 +2497,6 @@
 		F9C5CCA9289453B300548EEE /* AccountServiceClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9BF289453B100548EEE /* AccountServiceClient.swift */; };
 		F9C5CCAC289453B300548EEE /* PreKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9C2289453B100548EEE /* PreKeyManager.swift */; };
 		F9C5CCB0289453B300548EEE /* RemoteAttestation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9C7289453B100548EEE /* RemoteAttestation.swift */; };
-		F9C5CCB5289453B300548EEE /* Contact.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9CD289453B100548EEE /* Contact.m */; };
 		F9C5CCB9289453B300548EEE /* OWSDisappearingMessagesConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C9D1289453B100548EEE /* OWSDisappearingMessagesConfiguration.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CCBA289453B300548EEE /* TSThread.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C9D2289453B100548EEE /* TSThread.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CCC0289453B300548EEE /* ContactDiscoveryTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9D9289453B100548EEE /* ContactDiscoveryTask.swift */; };
@@ -2505,7 +2504,6 @@
 		F9C5CCC4289453B300548EEE /* OWSDisappearingMessagesConfiguration+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9DD289453B100548EEE /* OWSDisappearingMessagesConfiguration+SDS.swift */; };
 		F9C5CCC5289453B300548EEE /* SignalAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9DE289453B100548EEE /* SignalAccount.swift */; };
 		F9C5CCC8289453B300548EEE /* SignalRecipient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9E1289453B100548EEE /* SignalRecipient.swift */; };
-		F9C5CCC9289453B300548EEE /* Contact.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C9E2289453B100548EEE /* Contact.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CCCA289453B300548EEE /* TSPrivateStoryThread+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9E4289453B100548EEE /* TSPrivateStoryThread+SDS.swift */; };
 		F9C5CCCB289453B300548EEE /* TSPrivateStoryThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9E5289453B100548EEE /* TSPrivateStoryThread.swift */; };
 		F9C5CCCC289453B300548EEE /* TSPrivateStoryThread.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C9E6289453B100548EEE /* TSPrivateStoryThread.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -4085,8 +4083,8 @@
 		668AB0CB28AD610600B31984 /* StoryUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryUtil.swift; sourceTree = "<group>"; };
 		668B24172BBB663400EB60C4 /* MockAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAttachment.swift; sourceTree = "<group>"; };
 		668B30082BBDD9A20001FD25 /* EditManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditManagerImpl.swift; sourceTree = "<group>"; };
-		668B5BFB2C7E46D30018CF36 /* PaletteChatColor+Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PaletteChatColor+Constants.swift"; sourceTree = "<group>"; };
 		668B5BF92C7E420E0018CF36 /* MessageBackupChatStyleArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupChatStyleArchiver.swift; sourceTree = "<group>"; };
+		668B5BFB2C7E46D30018CF36 /* PaletteChatColor+Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PaletteChatColor+Constants.swift"; sourceTree = "<group>"; };
 		668CAB3D289983520085A2C3 /* AudioMessagePlaybackRateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioMessagePlaybackRateView.swift; sourceTree = "<group>"; };
 		668E403B2BE43752004B6730 /* YYImage+Attachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "YYImage+Attachment.swift"; sourceTree = "<group>"; };
 		668FE09A28B923A4008B9071 /* Bool+SSK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bool+SSK.swift"; sourceTree = "<group>"; };
@@ -5596,7 +5594,6 @@
 		F9C5C9BF289453B100548EEE /* AccountServiceClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountServiceClient.swift; sourceTree = "<group>"; };
 		F9C5C9C2289453B100548EEE /* PreKeyManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreKeyManager.swift; sourceTree = "<group>"; };
 		F9C5C9C7289453B100548EEE /* RemoteAttestation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteAttestation.swift; sourceTree = "<group>"; };
-		F9C5C9CD289453B100548EEE /* Contact.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Contact.m; sourceTree = "<group>"; };
 		F9C5C9D1289453B100548EEE /* OWSDisappearingMessagesConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSDisappearingMessagesConfiguration.h; sourceTree = "<group>"; };
 		F9C5C9D2289453B100548EEE /* TSThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSThread.h; sourceTree = "<group>"; };
 		F9C5C9D9289453B100548EEE /* ContactDiscoveryTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryTask.swift; sourceTree = "<group>"; };
@@ -5604,7 +5601,6 @@
 		F9C5C9DD289453B100548EEE /* OWSDisappearingMessagesConfiguration+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSDisappearingMessagesConfiguration+SDS.swift"; sourceTree = "<group>"; };
 		F9C5C9DE289453B100548EEE /* SignalAccount.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalAccount.swift; sourceTree = "<group>"; };
 		F9C5C9E1289453B100548EEE /* SignalRecipient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalRecipient.swift; sourceTree = "<group>"; };
-		F9C5C9E2289453B100548EEE /* Contact.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Contact.h; sourceTree = "<group>"; };
 		F9C5C9E4289453B100548EEE /* TSPrivateStoryThread+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TSPrivateStoryThread+SDS.swift"; sourceTree = "<group>"; };
 		F9C5C9E5289453B100548EEE /* TSPrivateStoryThread.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSPrivateStoryThread.swift; sourceTree = "<group>"; };
 		F9C5C9E6289453B100548EEE /* TSPrivateStoryThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSPrivateStoryThread.h; sourceTree = "<group>"; };
@@ -11376,8 +11372,6 @@
 				50D2FC7C2AEB134C002E4589 /* AuthorMergeHelper.swift */,
 				500AEE082A4E09AD00371F05 /* AuthorMergeObserver.swift */,
 				5020EFA12BA8A5390038C2D5 /* CanonicalPhoneNumber.swift */,
-				F9C5C9E2289453B100548EEE /* Contact.h */,
-				F9C5C9CD289453B100548EEE /* Contact.m */,
 				F9C5C9FE289453B100548EEE /* Contact.swift */,
 				5096BE682AF37A9900668F9F /* ContactOutputStream.swift */,
 				5096BE642AF3514800668F9F /* ContactSyncAttachmentBuilder.swift */,
@@ -12056,7 +12050,6 @@
 				F9C5CE25289453B400548EEE /* AppReadiness.h in Headers */,
 				F9C5CD39289453B300548EEE /* AxolotlExceptions.h in Headers */,
 				F9C5CD77289453B300548EEE /* BaseModel.h in Headers */,
-				F9C5CCC9289453B300548EEE /* Contact.h in Headers */,
 				F9C5CE27289453B400548EEE /* DarwinNotificationCenter.h in Headers */,
 				668A00E02C2B5ECF007B8808 /* DebuggerUtils.h in Headers */,
 				F9C5CE3F289453B400548EEE /* FunctionalUtil.h in Headers */,
@@ -14236,7 +14229,6 @@
 				66D7B92F2B98ECB00005C98B /* ConcreteTSResourceReference.swift in Sources */,
 				D958E2AF2B58696700EE9831 /* ConsumableMockGuarantee.swift in Sources */,
 				D990CACD2B4DCD83000A99A2 /* ConsumableMockPromise.swift in Sources */,
-				F9C5CCB5289453B300548EEE /* Contact.m in Sources */,
 				F9C5CCE4289453B300548EEE /* Contact.swift in Sources */,
 				506A924F28FA232100A2EFC2 /* ContactDiscoveryManager.swift in Sources */,
 				F9C5CCC3289453B300548EEE /* ContactDiscoveryOperation.swift in Sources */,

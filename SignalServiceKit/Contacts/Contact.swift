@@ -5,6 +5,42 @@
 
 import Foundation
 
+@objc(Contact)
+public class Contact: NSObject, NSSecureCoding {
+    public static var supportsSecureCoding: Bool { true }
+
+    public let cnContactId: String?
+    public let firstName: String
+    public let lastName: String
+    public let nickname: String
+    public let fullName: String
+    public var isFromLocalAddressBook: Bool { cnContactId != nil }
+
+    public init(cnContactId: String?, firstName: String, lastName: String, nickname: String, fullName: String) {
+        self.cnContactId = cnContactId
+        self.firstName = firstName
+        self.lastName = lastName
+        self.nickname = nickname
+        self.fullName = fullName
+    }
+
+    public required init?(coder: NSCoder) {
+        self.cnContactId = coder.decodeObject(of: NSString.self, forKey: "cnContactId") as String?
+        self.firstName = coder.decodeObject(of: NSString.self, forKey: "firstName") as String? ?? ""
+        self.lastName = coder.decodeObject(of: NSString.self, forKey: "lastName") as String? ?? ""
+        self.fullName = coder.decodeObject(of: NSString.self, forKey: "fullName") as String? ?? ""
+        self.nickname = coder.decodeObject(of: NSString.self, forKey: "nickname") as String? ?? ""
+    }
+
+    public func encode(with coder: NSCoder) {
+        coder.encode(cnContactId, forKey: "cnContactId")
+        coder.encode(firstName, forKey: "firstName")
+        coder.encode(lastName, forKey: "lastName")
+        coder.encode(fullName, forKey: "fullName")
+        coder.encode(nickname, forKey: "nickname")
+    }
+}
+
 extension Contact {
 
     // MARK: - Phone Numbers
