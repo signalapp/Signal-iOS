@@ -619,11 +619,11 @@ class PlayerProgressView: UIView {
 
     // MARK: Render cycle
 
-    private static var formatter: DateComponentsFormatter = {
+    private static let formatter: DateComponentsFormatter = {
         let formatter = DateComponentsFormatter()
         formatter.unitsStyle = .positional
-        formatter.allowedUnits = [.minute, .second ]
-        formatter.zeroFormattingBehavior = [ .pad ]
+        formatter.allowedUnits = [.minute, .second]
+        formatter.zeroFormattingBehavior = .pad
         return formatter
     }()
 
@@ -639,14 +639,11 @@ class PlayerProgressView: UIView {
         }
 
         let position = avPlayer.currentTime()
-        let positionSeconds: Float64 = CMTimeGetSeconds(position)
-        positionLabel.text = Self.formatter.string(from: positionSeconds)
+        positionLabel.text = Self.formatter.string(from: position.seconds)
+        slider.setValue(Float(position.seconds), animated: false)
 
-        let duration: CMTime = item.asset.duration
-        let remainingTime = duration - position
-        let remainingSeconds = CMTimeGetSeconds(remainingTime)
-
-        guard let remainingString = Self.formatter.string(from: remainingSeconds) else {
+        let timeRangeRemaining = CMTimeRange(start: avPlayer.currentTime(), duration: item.asset.duration)
+        guard timeRangeRemaining.isValid, let remainingString = Self.formatter.string(from: timeRangeRemaining.duration.seconds) else {
             owsFailDebug("unable to format time remaining")
             remainingLabel.text = "0:00"
             return
@@ -654,14 +651,11 @@ class PlayerProgressView: UIView {
 
         // show remaining time as negative
         remainingLabel.text = "-\(remainingString)"
-
-        slider.setValue(Float(positionSeconds), animated: false)
     }
 
     // Allows the user to tap anywhere on the slider to set it's position,
     // without first having to grab the thumb.
     private class TrackingSlider: UISlider {
-
         override func beginTracking(_ touch: UITouch, with event: UIEvent?) -> Bool {
             return true
         }
