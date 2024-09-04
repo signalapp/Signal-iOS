@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SwiftUI
 import LibSignalClient
 import SignalRingRTC
 import SignalServiceKit
@@ -68,10 +69,62 @@ class GroupCallViewController: UIViewController {
         }
     }
 
+    /// A container view which allows taps on the child view's subviews, but
+    /// passes through taps on the child view itself.
+    ///
+    /// - Add the child view using `add(passthroughView:)`
+    /// - Pins the child view edges to this view's edges
+    /// - Used with a `UIHostingController`, it passes touches on the background
+    /// through while still allowing interaction with the SwiftUI content
+    private class PassthroughContainerView: UIView {
+        private weak var passthroughView: UIView?
+
+        func add(passthroughView: UIView) {
+            self.passthroughView = passthroughView
+            self.addSubview(passthroughView)
+            passthroughView.autoPinEdgesToSuperviewEdges()
+        }
+
+        override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+            let view = super.hitTest(point, with: event)
+            if view == passthroughView {
+                return nil
+            }
+            return view
+        }
+    }
+
     private let bottomVStack = PassthroughStackView()
     private let videoOverflowContainer = UIView()
     private let raisedHandsToastContainer = UIView()
     private lazy var raisedHandsToast = RaisedHandsToast(call: self.groupCall)
+
+    private lazy var approvalStackViewModel = ApprovalRequestStack.ViewModel()
+    /// The `UIHostingController` with the approval request views in a stack.
+    private lazy var approvalStack = UIHostingController(rootView: VStack {
+        Spacer()
+        ApprovalRequestStack(
+            viewModel: self.approvalStackViewModel,
+            openProfileDetails: { _ in
+                // [CallLink] TODO: Display profile details
+            },
+            didApprove: { [weak self] request in
+                self?.ringRtcCall.approveUser(request.aci.rawUUID)
+            },
+            didDeny: { [weak self] request in
+                self?.ringRtcCall.denyUser(request.aci.rawUUID)
+            },
+            didTapMore: {
+                // [CallLink] TODO: Display approvals sheet
+            },
+            didChangeHeight: { [weak self] height in
+                self?.approvalStackHeightConstraint?.constant = height
+                self?.updateCallUI(shouldAnimateViewFrames: true)
+            }
+        )
+    })
+    /// A view used in `bottomVStack` that takes the height of the approval stack. Does not actually hold any content.
+    private let approvalStackHeightView = UIView()
 
     private lazy var videoGrid: GroupCallVideoGrid = {
         let result = GroupCallVideoGrid(call: call, groupCall: groupCall)
@@ -144,6 +197,7 @@ class GroupCallViewController: UIViewController {
     private lazy var tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTouchRootView))
     private lazy var bottomVStackTopConstraint = self.bottomVStack.autoPinEdge(.bottom, to: .top, of: self.view)
     private lazy var videoOverflowTrailingConstraint = videoOverflow.autoPinEdge(toSuperviewEdge: .trailing)
+    private var approvalStackHeightConstraint: NSLayoutConstraint?
 
     private lazy var bottomSheetStateManager: GroupCallBottomSheetStateManager = {
         return GroupCallBottomSheetStateManager(delegate: self)
@@ -317,7 +371,32 @@ class GroupCallViewController: UIViewController {
         view.addSubview(self.bottomVStack)
         self.bottomVStack.autoPinWidthToSuperview()
         self.bottomVStack.axis = .vertical
+        self.bottomVStack.spacing = Constants.bottomVStackSpacing
         self.bottomVStack.preservesSuperviewLayoutMargins = true
+
+        switch groupCall.concreteType {
+        case .groupThread:
+            break
+        case .callLink:
+            self.addChild(self.approvalStack)
+
+            let passthroughView = PassthroughContainerView()
+            passthroughView.add(passthroughView: self.approvalStack.view)
+            self.view.addSubview(passthroughView)
+            self.approvalStack.view.backgroundColor = .clear
+            self.approvalStack.didMove(toParent: self)
+
+            // If passthroughView changed height to match the height of its content,
+            // the SwiftUI content would jump around as the UIView's height changes,
+            // so instead, make it taller than it needs, and pin its bottom to a
+            // placeholder view that adjusts height based on the content.
+            self.bottomVStack.addArrangedSubview(self.approvalStackHeightView)
+            self.approvalStackHeightConstraint = self.approvalStackHeightView
+                .autoSetDimension(.height, toSize: 0)
+            passthroughView.autoPinWidthToSuperviewMargins()
+            passthroughView.autoSetDimension(.height, toSize: 300)
+            passthroughView.autoPinEdge(.bottom, to: .bottom, of: self.approvalStackHeightView)
+        }
 
         videoOverflowContainer.addSubview(self.videoOverflow)
         self.bottomVStack.addArrangedSubview(videoOverflowContainer)
@@ -590,35 +669,67 @@ class GroupCallViewController: UIViewController {
     }
 
     private func updateBottomVStackItems() {
-        self.raisedHandsToastContainer.isHiddenInStackView = self.raisedHandsToast.raisedHands.isEmpty
+        let hasRaisedHands = !self.raisedHandsToast.raisedHands.isEmpty
+        self.raisedHandsToastContainer.isHiddenInStackView = !hasRaisedHands
 
-        func moveToTopIfNotAlready(_ view: UIView) {
-            guard self.bottomVStack.arrangedSubviews.last == view else { return }
-            self.bottomVStack.removeArrangedSubview(view)
-            self.bottomVStack.insertArrangedSubview(view, at: 0)
+        /// If there are no approval requests, `approvalStackViewModel`'s height
+        /// will be zero, but we don't want to hide it because the approval view
+        /// itself is pinned to it, and we want it to retain its position when
+        /// the last item animates out.
+        let hasApprovalRequests: Bool = switch self.groupCall.concreteType {
+        case .groupThread: false
+        case .callLink: !self.approvalStackViewModel.requests.isEmpty
         }
 
-        let hasOverflowMembers = !self.videoOverflow.overflowedRemoteDeviceStates.isEmpty
-
+        let hasOverflowMembers = self.videoOverflow.hasOverflowMembers
         if hasOverflowMembers {
-            moveToTopIfNotAlready(self.raisedHandsToastContainer)
+            // Move video overflow to bottom
+            if self.bottomVStack.arrangedSubviews.last != self.videoOverflowContainer {
+                self.bottomVStack.removeArrangedSubview(self.videoOverflowContainer)
+                self.bottomVStack.addArrangedSubview(self.videoOverflowContainer)
+            }
         } else {
-            moveToTopIfNotAlready(self.videoOverflowContainer)
+            // Move video overflow to top
+            if self.bottomVStack.arrangedSubviews.first != self.videoOverflowContainer {
+                self.bottomVStack.removeArrangedSubview(self.videoOverflowContainer)
+                self.bottomVStack.insertArrangedSubview(self.videoOverflowContainer, at: 0)
+            }
         }
 
-        if
-            hasOverflowMembers,
-            self.page == .grid
-        {
-            self.bottomVStack.spacing = 24
-        } else {
-            self.bottomVStack.spacing = 12
+        enum Item { case raisedHands, approvals }
+        func setSpacing(_ spacing: CGFloat, after item: Item) {
+            let view: UIView = switch item {
+            case .raisedHands: self.raisedHandsToastContainer
+            case .approvals: self.approvalStackHeightView
+            }
+            self.bottomVStack.setCustomSpacing(spacing, after: view)
+        }
+
+        let overflowNeedsPadding = hasOverflowMembers && self.page == .grid
+        switch (overflowNeedsPadding, hasRaisedHands, hasApprovalRequests) {
+        case (false, _, true):
+            setSpacing(Constants.bottomVStackSpacing, after: .raisedHands)
+            setSpacing(Constants.bottomVStackSpacing, after: .approvals)
+        case (false, _, false):
+            setSpacing(Constants.bottomVStackSpacing, after: .raisedHands)
+            setSpacing(0, after: .approvals)
+        case (true, _, true):
+            setSpacing(Constants.bottomVStackSpacing, after: .raisedHands)
+            setSpacing(Constants.videoOverflowExtraSpacing, after: .approvals)
+        case (true, true, false):
+            setSpacing(Constants.videoOverflowExtraSpacing, after: .raisedHands)
+            setSpacing(0, after: .approvals)
+        case (true, false, false):
+            // Raised hands view is hidden
+            setSpacing(0, after: .approvals)
         }
     }
 
     private enum Constants {
         static let spacingTopRaiseHandToastToBottomLocalPip: CGFloat = 12
         static let flipCamButtonTrailingToSuperviewEdgePadding: CGFloat = 34
+        static let bottomVStackSpacing: CGFloat = 8
+        static let videoOverflowExtraSpacing: CGFloat = 24
     }
 
     private func updateMemberViewFrames(
@@ -686,7 +797,7 @@ class GroupCallViewController: UIViewController {
                 // Special case necessary because when the pip is
                 // expanded, the pip height does not follow along
                 // with that of the video overflow, which is tiny.
-                if self.raisedHandsToastContainer.isHiddenInStackView || (!self.videoOverflow.overflowedRemoteDeviceStates.isEmpty && self.page == .grid) {
+                if self.raisedHandsToastContainer.isHiddenInStackView || (self.videoOverflow.hasOverflowMembers && self.page == .grid) {
                     // Bottom of pip should align with bottom of overflow (whether the overflow is hidden or not).
                     y = yMax - pipSize.height
                 } else {
@@ -1013,6 +1124,7 @@ class GroupCallViewController: UIViewController {
 
         bottomSheetStateManager.submitState(.callControls)
         self.raisedHandsToast.raisedHands.removeAll()
+        self.approvalStackViewModel.loadRequestsWithSneakyTransaction(for: [])
 
         guard
             let splitViewSnapshot = SignalApp.shared.snapshotSplitViewController(afterScreenUpdates: false),
@@ -1401,6 +1513,14 @@ extension GroupCallViewController: GroupCallObserver {
         owsPrecondition(self.groupCall === call)
         guard self.isReadyToHandleObserver else {
             return
+        }
+
+        switch call.concreteType {
+        case .groupThread:
+            break
+        case .callLink:
+            let requests = call.ringRtcCall.peekInfo?.pendingUsers ?? []
+            self.approvalStackViewModel.loadRequestsWithSneakyTransaction(for: requests)
         }
 
         updateCallUI()

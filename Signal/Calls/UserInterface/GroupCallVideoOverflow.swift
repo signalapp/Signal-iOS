@@ -169,7 +169,15 @@ extension GroupCallVideoOverflow: UICollectionViewDelegate {
 }
 
 extension GroupCallVideoOverflow: UICollectionViewDataSource {
-    var overflowedRemoteDeviceStates: [RemoteDeviceState] {
+    var hasOverflowMembers: Bool { overflowRemoteDeviceCount != 0 }
+
+    private var overflowRemoteDeviceCount: Int {
+        guard let firstOverflowMemberIndex = overflowDelegate?.firstOverflowMemberIndex else { return 0 }
+        let joinedRemoteDeviceStates = ringRtcCall.remoteDeviceStates
+        return max(0, joinedRemoteDeviceStates.count - firstOverflowMemberIndex)
+    }
+
+    private var overflowedRemoteDeviceStates: [RemoteDeviceState] {
         guard let firstOverflowMemberIndex = overflowDelegate?.firstOverflowMemberIndex else { return [] }
 
         let joinedRemoteDeviceStates = ringRtcCall.remoteDeviceStates.sortedBySpeakerTime
@@ -181,7 +189,7 @@ extension GroupCallVideoOverflow: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return overflowedRemoteDeviceStates.count
+        return overflowRemoteDeviceCount
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {

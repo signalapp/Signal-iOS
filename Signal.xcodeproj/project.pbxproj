@@ -1681,6 +1681,7 @@
 		B95A765C2B76C5BB00AA7E97 /* AvatarViewPresentationContextProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95A765B2B76C5BB00AA7E97 /* AvatarViewPresentationContextProvider.swift */; };
 		B95A765E2B76E93500AA7E97 /* FindByUsernameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95A765D2B76E93500AA7E97 /* FindByUsernameViewController.swift */; };
 		B96D6D792B9F83270039EB99 /* SignalSymbols-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = B96D6D782B9F83270039EB99 /* SignalSymbols-Regular.otf */; };
+		B9754F542C73AD49000000E4 /* ConversationAvatarView+SwiftUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9754F532C73AD49000000E4 /* ConversationAvatarView+SwiftUI.swift */; };
 		B982ACFF2BA8FD2A00AD7E81 /* SignalSymbols-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = B982ACFE2BA8FD2A00AD7E81 /* SignalSymbols-Bold.otf */; };
 		B982AD012BA8FD3200AD7E81 /* SignalSymbols-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = B982AD002BA8FD3100AD7E81 /* SignalSymbols-Light.otf */; };
 		B98D246A2B8D2A2A00B1A8CC /* CallStarter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98D24692B8D2A2A00B1A8CC /* CallStarter.swift */; };
@@ -1691,8 +1692,10 @@
 		B9B2AA942BC598B60060B56C /* ContactNoteSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B2AA932BC598B60060B56C /* ContactNoteSheet.swift */; };
 		B9B89EEB2BFFD3430093A2FA /* RaisedHandsToast.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B89EEA2BFFD3430093A2FA /* RaisedHandsToast.swift */; };
 		B9B89EED2C064E760093A2FA /* notification_simple-01.caf in Resources */ = {isa = PBXBuildFile; fileRef = B9B89EEC2C064E700093A2FA /* notification_simple-01.caf */; };
+		B9C0A96D2C6D3F63001FD0AA /* CallLinkApprovalRequestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C0A96C2C6D3F63001FD0AA /* CallLinkApprovalRequestView.swift */; };
 		B9D413742BCDDE66006D4E48 /* Tooltip.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D413732BCDDE66006D4E48 /* Tooltip.swift */; };
 		B9D65E532BAE1DA70067322A /* NicknameEditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D65E522BAE1DA70067322A /* NicknameEditorViewController.swift */; };
+		B9D721762C87B8EB007EDA85 /* SwiftUI+Animations.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D721752C87B8EB007EDA85 /* SwiftUI+Animations.swift */; };
 		B9DB91702AF46B9A0051A3FD /* BankTransferMandateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DB916F2AF46B9A0051A3FD /* BankTransferMandateViewController.swift */; };
 		B9EB5ABD1884C002007CBB57 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		B9F2155D2A93C9E8002DCAE0 /* StickerPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F2155C2A93C9E8002DCAE0 /* StickerPickerSheet.swift */; };
@@ -4739,6 +4742,7 @@
 		B95A765D2B76E93500AA7E97 /* FindByUsernameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindByUsernameViewController.swift; sourceTree = "<group>"; };
 		B95BBAC12BB36025009EFB4A /* ProfileName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileName.swift; sourceTree = "<group>"; };
 		B96D6D782B9F83270039EB99 /* SignalSymbols-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SignalSymbols-Regular.otf"; sourceTree = "<group>"; };
+		B9754F532C73AD49000000E4 /* ConversationAvatarView+SwiftUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationAvatarView+SwiftUI.swift"; sourceTree = "<group>"; };
 		B982ACFE2BA8FD2A00AD7E81 /* SignalSymbols-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SignalSymbols-Bold.otf"; sourceTree = "<group>"; };
 		B982AD002BA8FD3100AD7E81 /* SignalSymbols-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SignalSymbols-Light.otf"; sourceTree = "<group>"; };
 		B98D24692B8D2A2A00B1A8CC /* CallStarter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallStarter.swift; sourceTree = "<group>"; };
@@ -4749,8 +4753,10 @@
 		B9B2AA932BC598B60060B56C /* ContactNoteSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactNoteSheet.swift; sourceTree = "<group>"; };
 		B9B89EEA2BFFD3430093A2FA /* RaisedHandsToast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaisedHandsToast.swift; sourceTree = "<group>"; };
 		B9B89EEC2C064E700093A2FA /* notification_simple-01.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "notification_simple-01.caf"; sourceTree = "<group>"; };
+		B9C0A96C2C6D3F63001FD0AA /* CallLinkApprovalRequestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallLinkApprovalRequestView.swift; sourceTree = "<group>"; };
 		B9D413732BCDDE66006D4E48 /* Tooltip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tooltip.swift; sourceTree = "<group>"; };
 		B9D65E522BAE1DA70067322A /* NicknameEditorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NicknameEditorViewController.swift; sourceTree = "<group>"; };
+		B9D721752C87B8EB007EDA85 /* SwiftUI+Animations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwiftUI+Animations.swift"; sourceTree = "<group>"; };
 		B9DB916F2AF46B9A0051A3FD /* BankTransferMandateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BankTransferMandateViewController.swift; sourceTree = "<group>"; };
 		B9EB5ABC1884C002007CBB57 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		B9F2155C2A93C9E8002DCAE0 /* StickerPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerPickerSheet.swift; sourceTree = "<group>"; };
@@ -6504,6 +6510,7 @@
 				34A955A0271B510500B05242 /* Sending */,
 				34A9556D271B510500B05242 /* Stickers */,
 				B99B155B2A71B9F300E26DAC /* Stories */,
+				B9D721742C87B8CB007EDA85 /* SwiftUIExtensions */,
 				34A954E9271B4FB000B05242 /* UIKitExtensions */,
 				D9A3E22E2A0DABC000E2A8B5 /* Usernames */,
 				34A95502271B510400B05242 /* Utils */,
@@ -6579,6 +6586,7 @@
 				D925F5502983399D00158EE4 /* CircleButton.swift */,
 				34A9553F271B510400B05242 /* CircleView.swift */,
 				76A2EB1128B57AEE00A29C24 /* ColorPickerBar.swift */,
+				B9754F532C73AD49000000E4 /* ConversationAvatarView+SwiftUI.swift */,
 				34A95543271B510400B05242 /* ConversationAvatarView.swift */,
 				34A9553A271B510400B05242 /* CustomKeyboard.swift */,
 				34A95526271B510400B05242 /* DirectionalPanGestureRecognizer.swift */,
@@ -9473,6 +9481,7 @@
 				C1FA1DAE2C40829100999B11 /* CallDrawerSheetDataSource.swift */,
 				88ABB8B42534070400229EAA /* CallHeader.swift */,
 				88D23D1B23CEC0C700B0E74B /* CallKitCallUIAdaptee.swift */,
+				B9C0A96C2C6D3F63001FD0AA /* CallLinkApprovalRequestView.swift */,
 				E1E78CAE2B573BD100B6FC2D /* CallMemberCameraOffView.swift */,
 				E1E78CAC2B573B5800B6FC2D /* CallMemberChromeOverlayView.swift */,
 				E1E78CB32B575C2700B6FC2D /* CallMemberVideoView.swift */,
@@ -9647,6 +9656,14 @@
 				88F5FA9228EBD484007AA1BF /* StorySharing.swift */,
 			);
 			path = Stories;
+			sourceTree = "<group>";
+		};
+		B9D721742C87B8CB007EDA85 /* SwiftUIExtensions */ = {
+			isa = PBXGroup;
+			children = (
+				B9D721752C87B8EB007EDA85 /* SwiftUI+Animations.swift */,
+			);
+			path = SwiftUIExtensions;
 			sourceTree = "<group>";
 		};
 		C182C4BC29E45D64007F7A7C /* Edit */ = {
@@ -13065,6 +13082,7 @@
 				3402AA63271D9DEC0084CBAE /* ContactShareViewModel.swift in Sources */,
 				3402AA7C271D9E180084CBAE /* ContactsViewHelper.swift in Sources */,
 				3402AAB2271D9E180084CBAE /* ContactTableViewCell.swift in Sources */,
+				B9754F542C73AD49000000E4 /* ConversationAvatarView+SwiftUI.swift in Sources */,
 				3402AA75271D9E180084CBAE /* ConversationAvatarView.swift in Sources */,
 				3402AA37271D9DCD0084CBAE /* ConversationItem.swift in Sources */,
 				3402AA33271D9DCD0084CBAE /* ConversationPicker.swift in Sources */,
@@ -13223,6 +13241,7 @@
 				88B6D674280770C4005D86EC /* StoryMessage+SignalUI.swift in Sources */,
 				88F5FA9428EBD4CF007AA1BF /* StorySharing.swift in Sources */,
 				3402A9DA271D953B0084CBAE /* SUIEnvironment.swift in Sources */,
+				B9D721762C87B8EB007EDA85 /* SwiftUI+Animations.swift in Sources */,
 				3402AA7E271D9E180084CBAE /* TappableStackView.swift in Sources */,
 				3402AA80271D9E180084CBAE /* TappableView.swift in Sources */,
 				3402AA31271D9DCD0084CBAE /* TextApprovalViewController.swift in Sources */,
@@ -13383,6 +13402,7 @@
 				88D23D2423CEC0C700B0E74B /* CallKitCallManager.swift in Sources */,
 				88D23D2523CEC0C700B0E74B /* CallKitCallUIAdaptee.swift in Sources */,
 				50EF680D2C1A353D00BEB3B5 /* CallKitIdStore.swift in Sources */,
+				B9C0A96D2C6D3F63001FD0AA /* CallLinkApprovalRequestView.swift in Sources */,
 				50A7830E2C0128D70008030E /* CallLinkCall.swift in Sources */,
 				50733B1E2BAD038D00CEEC1F /* CallLinkManager.swift in Sources */,
 				E1E78CAF2B573BD100B6FC2D /* CallMemberCameraOffView.swift in Sources */,
