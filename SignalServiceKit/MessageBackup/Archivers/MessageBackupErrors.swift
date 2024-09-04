@@ -564,10 +564,6 @@ extension MessageBackup {
                 /// directionality as their parent.)
                 case revisionOfOutgoingMessageMissingOutgoingDetails
 
-                /// A ``BackupProto_FilePointer`` had no known ``BackupProto_FilePointer/OneOf_Locator``.
-                case filePointerMissingLocator
-                /// A ``BackupProto_FilePointer/AttachmentLocator`` was missing its cdn number.
-                case filePointerMissingTransitCdnNumber
                 /// A ``BackupProto_FilePointer/AttachmentLocator`` was missing its cdn key.
                 case filePointerMissingTransitCdnKey
                 /// A ``BackupProto_FilePointer/BackupLocator`` was missing its media name.
@@ -746,8 +742,6 @@ extension MessageBackup {
                         .learnedProfileUpdateNotFromContact,
                         .revisionOfIncomingMessageMissingIncomingDetails,
                         .revisionOfOutgoingMessageMissingOutgoingDetails,
-                        .filePointerMissingLocator,
-                        .filePointerMissingTransitCdnNumber,
                         .filePointerMissingTransitCdnKey,
                         .filePointerMissingMediaName,
                         .filePointerMissingEncryptionKey,

@@ -477,10 +477,6 @@ extension MessageBackup.RestoreFrameError.ErrorType {
         _ error: OwnedAttachmentBackupPointerProto.CreationError
     ) -> Self {
         switch error {
-        case .missingLocator:
-            return .invalidProtoData(.filePointerMissingLocator)
-        case .missingTransitCdnNumber:
-            return .invalidProtoData(.filePointerMissingTransitCdnNumber)
         case .missingTransitCdnKey:
             return .invalidProtoData(.filePointerMissingTransitCdnKey)
         case .missingMediaName:
@@ -528,6 +524,11 @@ extension ReferencedAttachment {
                 proto.width = UInt32(mediaSize.width)
                 proto.height = UInt32(mediaSize.height)
             }
+        }
+
+        if let incrementalMacInfo = attachment.incrementalMacInfo {
+            proto.incrementalMac = incrementalMacInfo.mac
+            proto.incrementalMacChunkSize = incrementalMacInfo.chunkSize
         }
 
         let locator: BackupProto_FilePointer.OneOf_Locator

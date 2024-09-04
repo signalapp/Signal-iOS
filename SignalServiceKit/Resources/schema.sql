@@ -1552,6 +1552,8 @@ CREATE
                 ,"transitUnencryptedByteCount" INTEGER
                 ,"mediaTierUnencryptedByteCount" INTEGER
                 ,"mediaTierDigestSHA256Ciphertext" BLOB
+                ,"incrementalMac" BLOB
+                ,"incrementalMacChunkSize" INTEGER
 )
 ;
 
@@ -1985,18 +1987,14 @@ CREATE
 
 CREATE
     INDEX "index_TSAttachmentMigration_on_interactionRowId"
-        ON "TSAttachmentMigration" (
-        "interactionRowId"
-    )
+        ON "TSAttachmentMigration" ("interactionRowId")
 WHERE
     "interactionRowId" IS NOT NULL
 ;
 
 CREATE
     INDEX "index_TSAttachmentMigration_on_storyMessageRowId"
-        ON "TSAttachmentMigration" (
-        "storyMessageRowId"
-    )
+        ON "TSAttachmentMigration" ("storyMessageRowId")
 WHERE
     "storyMessageRowId" IS NOT NULL
 ;

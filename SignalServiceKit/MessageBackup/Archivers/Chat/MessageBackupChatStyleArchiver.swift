@@ -51,7 +51,7 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
                 ))
                 fallthrough
             case .solidColor(let color):
-                protoColor = .solid(color.asRGBHex())
+                protoColor = .solid(color.asARGBHex())
 
             case .themedGradient(let gradientColor1, let gradientColor2, _, _, let angleRadians):
                 // Themes should be impossible with custom chat colors; add an error
@@ -63,11 +63,17 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
                 fallthrough
             case .gradient(let gradientColor1, let gradientColor2, let angleRadians):
                 var gradient = BackupProto_ChatStyle.Gradient()
-                // Convert radians to degrees.
-                gradient.angle = UInt32(angleRadians * 180 / .pi)
-                gradient.colors = [gradientColor1.asRGBHex(), gradientColor2.asRGBHex()]
-                // iOS only supports 2 "positions"; hardcode them.
+
+                /// Convert radians to degrees. We manually round since the
+                /// float math is slightly lossy and sometimes gives back
+                /// `N.99999999999`; we want to return `N+1`, but the `UInt32`
+                /// conversion always rounds down.
+                gradient.angle = UInt32(round(angleRadians * 180 / .pi))
+
+                /// iOS only supports 2 "positions"; hardcode them.
                 gradient.positions = [0, 1]
+                gradient.colors = [gradientColor1.asARGBHex(), gradientColor2.asARGBHex()]
+
                 protoColor = .gradient(gradient)
             }
 
@@ -92,6 +98,14 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
     ) -> MessageBackup.RestoreFrameResult<MessageBackup.AccountDataId> {
         var partialErrors = [MessageBackup.RestoreFrameError<MessageBackup.AccountDataId>]()
 
+        /// We track a `creationTimestamp` for custom chat colors. In practice
+        /// that value isn't used for anything beyond sorting; however, because
+        /// we want the persisted sort order to be consistent with the ordering
+        /// in the Backup, we can't use the same timestamp for all colors. To
+        /// that end, we'll start with "now" and increment as we create more
+        /// colors.
+        var chatColorCreationTimestamp = dateProvider().ows_millisecondsSince1970
+
         for chatColorProto in chatColorProtos {
             let customChatColorId = MessageBackup.CustomChatColorId(value: chatColorProto.id)
 
@@ -103,17 +117,17 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
                     .forCustomChatColorError(chatColorId: customChatColorId)
                 ))
                 continue
-            case .solid(let colorRGBHex):
+            case .solid(let colorARGBHex):
                 colorOrGradientSetting = .solidColor(
-                    color: OWSColor.fromRGBHex(colorRGBHex)
+                    color: OWSColor.fromARGBHex(colorARGBHex)
                 )
             case .gradient(let gradient):
                 // iOS only supports 2 "positions". We take the first
                 // and the last colors and call it a day.
                 guard
                     gradient.colors.count > 0,
-                    let firstColorRGBHex = gradient.colors.first,
-                    let lastColorRGBHex = gradient.colors.last
+                    let firstColorARGBHex = gradient.colors.first,
+                    let lastColorARGBHex = gradient.colors.last
                 else {
                     partialErrors.append(.restoreFrameError(
                         .invalidProtoData(.chatStyleGradientSingleOrNoColors),
@@ -124,8 +138,8 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
                 // Angle is in degrees; convert to radians.
                 let angleRadians = CGFloat(gradient.angle) * .pi / 180
                 colorOrGradientSetting = .gradient(
-                    gradientColor1: OWSColor.fromRGBHex(firstColorRGBHex),
-                    gradientColor2: OWSColor.fromRGBHex(lastColorRGBHex),
+                    gradientColor1: OWSColor.fromARGBHex(firstColorARGBHex),
+                    gradientColor2: OWSColor.fromARGBHex(lastColorARGBHex),
                     angleRadians: angleRadians
                 )
             }
@@ -138,7 +152,11 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
                     // These dates don't really matter for anything other than sorting;
                     // they're not in the proto so just use the current date which is
                     // just as well.
-                    creationTimestamp: dateProvider().ows_millisecondsSince1970
+                    creationTimestamp: {
+                        let retVal = chatColorCreationTimestamp
+                        chatColorCreationTimestamp += 1
+                        return retVal
+                    }()
                 ),
                 for: customChatColorKey,
                 tx: context.tx
@@ -195,6 +213,42 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
         // _explicitly_ set, don't generate a chat style.
         var hasAnExplicitlySetField = false
 
+        if let wallpaper = wallpaperStore.fetchWallpaper(for: thread?.tsThread.uniqueId, tx: context.tx) {
+            var protoWallpaper: BackupProto_ChatStyle.OneOf_Wallpaper?
+
+            if let preset = wallpaper.asBackupProto() {
+                protoWallpaper = .wallpaperPreset(preset)
+            } else if wallpaper == .photo {
+                switch self.archiveWallpaperAttachment(
+                    thread: thread,
+                    errorId: errorId,
+                    context: context
+                ) {
+                case .success(.some(let wallpaperAttachmentProto)):
+                    protoWallpaper = .wallpaperPhoto(wallpaperAttachmentProto)
+                case .success(nil):
+                    // No wallpaper found; don't set.
+                    break
+                case .failure(let error):
+                    return .failure(error)
+                }
+            } else {
+                return .failure(.archiveFrameError(
+                    .unknownWallpaper,
+                    errorId
+                ))
+            }
+
+            if let protoWallpaper {
+                hasAnExplicitlySetField = true
+
+                proto.wallpaper = protoWallpaper
+                /// We'll set this to `.auto` for now, so it's never unset. If
+                /// we have an explicit bubble color we'll overwrite this below.
+                proto.bubbleColor = .autoBubbleColor(BackupProto_ChatStyle.AutomaticBubbleColor())
+            }
+        }
+
         let hasBubbleStyle = chatColorSettingStore.hasChatColorSetting(
             for: thread?.tsThread,
             tx: context.tx
@@ -228,36 +282,6 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
         if let dimWallpaperInDarkMode {
             hasAnExplicitlySetField = true
             proto.dimWallpaperInDarkMode = dimWallpaperInDarkMode
-        }
-
-        if let wallpaper = wallpaperStore.fetchWallpaper(for: thread?.tsThread.uniqueId, tx: context.tx) {
-            hasAnExplicitlySetField = true
-            if let preset = wallpaper.asBackupProto() {
-                proto.wallpaper = .wallpaperPreset(preset)
-            } else if wallpaper == .photo {
-                let result = self.archiveWallpaperAttachment(
-                    thread: thread,
-                    errorId: errorId,
-                    context: context
-                )
-                switch result {
-                case .success(let wallpaperAttachmentProto):
-                    if let wallpaperAttachmentProto {
-                        hasAnExplicitlySetField = true
-                        proto.wallpaper = .wallpaperPhoto(wallpaperAttachmentProto)
-                    } else {
-                        // No wallpaper found; don't set.
-                        break
-                    }
-                case .failure(let error):
-                    return .failure(error)
-                }
-            } else {
-                return .failure(.archiveFrameError(
-                    .unknownWallpaper,
-                    errorId
-                ))
-            }
         }
 
         if hasAnExplicitlySetField {
@@ -651,13 +675,21 @@ fileprivate extension BackupProto_ChatStyle.BubbleColorPreset {
 
 // MARK: OWSColor
 
-extension OWSColor {
+private extension OWSColor {
 
-    func asRGBHex() -> UInt32 {
-        return UInt32(red * 255) << 16 | UInt32(green * 255) << 8 | UInt32(blue * 255) << 0
+    /// Returns this color as an `0xAARRGGBB` hex value.
+    func asARGBHex() -> UInt32 {
+        let alphaComponent = UInt32(255) << 24
+        let redComponent = UInt32(red * 255) << 16
+        let greenComponent = UInt32(green * 255) << 8
+        let blueComponent = UInt32(blue * 255) << 0
+
+        return alphaComponent | redComponent | greenComponent | blueComponent
     }
 
-    static func fromRGBHex(_ value: UInt32) -> OWSColor {
+    /// Builds a color from an `0xAARRGGBB` hex value.
+    static func fromARGBHex(_ value: UInt32) -> OWSColor {
+        // let alpha = CGFloat(((value >> 24) & 0xff)) / 255.0
         let red = CGFloat(((value >> 16) & 0xff)) / 255.0
         let green = CGFloat(((value >> 8) & 0xff)) / 255.0
         let blue = CGFloat(((value >> 0) & 0xff)) / 255.0

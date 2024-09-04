@@ -45,6 +45,8 @@ extension Attachment {
         let audioWaveformRelativeFilePath: String?
         let videoStillFrameRelativeFilePath: String?
         let originalAttachmentIdForQuotedReply: Int64?
+        let incrementalMac: Data?
+        let incrementalMacChunkSize: UInt32?
 
         // MARK: - Coding Keys
 
@@ -83,6 +85,8 @@ extension Attachment {
             case audioWaveformRelativeFilePath
             case videoStillFrameRelativeFilePath
             case originalAttachmentIdForQuotedReply
+            case incrementalMac
+            case incrementalMacChunkSize
         }
 
         // MARK: - UInt64SafeRecord
@@ -142,7 +146,9 @@ extension Attachment {
             cachedVideoDurationSeconds: Double?,
             audioWaveformRelativeFilePath: String?,
             videoStillFrameRelativeFilePath: String?,
-            originalAttachmentIdForQuotedReply: Int64?
+            originalAttachmentIdForQuotedReply: Int64?,
+            incrementalMac: Data?,
+            incrementalMacChunkSize: UInt32?
         ) {
             self.sqliteId = sqliteId
             self.blurHash = blurHash
@@ -178,6 +184,8 @@ extension Attachment {
             self.audioWaveformRelativeFilePath = audioWaveformRelativeFilePath
             self.videoStillFrameRelativeFilePath = videoStillFrameRelativeFilePath
             self.originalAttachmentIdForQuotedReply = originalAttachmentIdForQuotedReply
+            self.incrementalMac = incrementalMac
+            self.incrementalMacChunkSize = incrementalMacChunkSize
         }
 
         internal init(attachment: Attachment) {
@@ -192,7 +200,8 @@ extension Attachment {
                 transitTierInfo: attachment.transitTierInfo,
                 mediaTierInfo: attachment.mediaTierInfo,
                 thumbnailMediaTierInfo: attachment.thumbnailMediaTierInfo,
-                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply
+                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply,
+                incrementalMacInfo: attachment.incrementalMacInfo
             )
         }
 
@@ -208,7 +217,8 @@ extension Attachment {
                 transitTierInfo: params.transitTierInfo,
                 mediaTierInfo: params.mediaTierInfo,
                 thumbnailMediaTierInfo: params.thumbnailMediaTierInfo,
-                originalAttachmentIdForQuotedReply: params.originalAttachmentIdForQuotedReply
+                originalAttachmentIdForQuotedReply: params.originalAttachmentIdForQuotedReply,
+                incrementalMacInfo: params.incrementalMacInfo
             )
         }
 
@@ -223,7 +233,8 @@ extension Attachment {
             transitTierInfo: Attachment.TransitTierInfo?,
             mediaTierInfo: Attachment.MediaTierInfo?,
             thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo?,
-            originalAttachmentIdForQuotedReply: Int64?
+            originalAttachmentIdForQuotedReply: Int64?,
+            incrementalMacInfo: Attachment.IncrementalMacInfo?
         ) {
             self.init(
                 optionalSqliteId: sqliteId,
@@ -236,7 +247,8 @@ extension Attachment {
                 transitTierInfo: transitTierInfo,
                 mediaTierInfo: mediaTierInfo,
                 thumbnailMediaTierInfo: thumbnailMediaTierInfo,
-                originalAttachmentIdForQuotedReply: originalAttachmentIdForQuotedReply
+                originalAttachmentIdForQuotedReply: originalAttachmentIdForQuotedReply,
+                incrementalMacInfo: incrementalMacInfo
             )
         }
 
@@ -252,7 +264,8 @@ extension Attachment {
             transitTierInfo: Attachment.TransitTierInfo?,
             mediaTierInfo: Attachment.MediaTierInfo?,
             thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo?,
-            originalAttachmentIdForQuotedReply: Int64?
+            originalAttachmentIdForQuotedReply: Int64?,
+            incrementalMacInfo: Attachment.IncrementalMacInfo?
         ) {
             self.sqliteId = optionalSqliteId
             self.blurHash = blurHash
@@ -282,6 +295,8 @@ extension Attachment {
             self.localRelativeFilePath = streamInfo?.localRelativeFilePath
             self.localRelativeFilePathThumbnail = localRelativeFilePathThumbnail
             self.originalAttachmentIdForQuotedReply = originalAttachmentIdForQuotedReply
+            self.incrementalMac = incrementalMacInfo?.mac
+            self.incrementalMacChunkSize = incrementalMacInfo?.chunkSize
 
             let cachedAudioDurationSeconds: TimeInterval?
             let cachedMediaSizePixels: CGSize?

@@ -9,6 +9,18 @@ import Foundation
 
 // MARK: - Infos
 
+extension Attachment.IncrementalMacInfo {
+    public static func mock(
+        mac: Data? = nil,
+        chunkSize: UInt32? = nil
+    ) -> Attachment.IncrementalMacInfo {
+        return Attachment.IncrementalMacInfo(
+            mac: mac ?? Data(),
+            chunkSize: chunkSize ?? 0
+        )
+    }
+}
+
 extension Attachment.StreamInfo {
     public static func mock(
         sha256ContentHash: Data? = nil,
@@ -91,13 +103,15 @@ extension Attachment.ConstructionParams {
         blurHash: String? = UUID().uuidString,
         mimeType: String = MimeType.imageJpeg.rawValue,
         encryptionKey: Data = UUID().data,
-        transitTierInfo: Attachment.TransitTierInfo = .mock()
+        transitTierInfo: Attachment.TransitTierInfo = .mock(),
+        incrementalMacInfo: Attachment.IncrementalMacInfo = .mock()
     ) -> Attachment.ConstructionParams {
         return Attachment.ConstructionParams.fromPointer(
             blurHash: blurHash,
             mimeType: mimeType,
             encryptionKey: encryptionKey,
-            transitTierInfo: transitTierInfo
+            transitTierInfo: transitTierInfo,
+            incrementalMacInfo: incrementalMacInfo
         )
     }
 
@@ -132,7 +146,8 @@ public class MockAttachment: Attachment {
         mediaTierInfo: Attachment.MediaTierInfo? = nil,
         thumbnailInfo: Attachment.ThumbnailMediaTierInfo? = nil,
         localRelativeFilePathThumbnail: String? = nil,
-        originalAttachmentIdForQuotedReply: Attachment.IDType? = nil
+        originalAttachmentIdForQuotedReply: Attachment.IDType? = nil,
+        incrementalMacInfo: Attachment.IncrementalMacInfo? = nil
     ) -> MockAttachment {
         let record = Attachment.Record(
            sqliteId: .random(in: 0..<(.max)),
@@ -145,7 +160,8 @@ public class MockAttachment: Attachment {
            transitTierInfo: transitTierInfo,
            mediaTierInfo: mediaTierInfo,
            thumbnailMediaTierInfo: thumbnailInfo,
-           originalAttachmentIdForQuotedReply: originalAttachmentIdForQuotedReply
+           originalAttachmentIdForQuotedReply: originalAttachmentIdForQuotedReply,
+           incrementalMacInfo: incrementalMacInfo
        )
 
         return try! MockAttachment(record: record)

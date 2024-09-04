@@ -33,33 +33,89 @@ class MessageBackupIntegrationTests: XCTestCase {
     /// development, for more thorough inspection of the failure case.
     private let preferredFailureLogOutput: LibSignalComparisonFailureLogOutput = .minimalDiff
 
+    // MARK: -
+
+    private enum WhichIntegrationTestCases {
+        case specific(names: [String])
+        case all
+    }
+
+    /// Specifies which integration test cases to run.
+    ///
+    /// Set by default to `.all`. Toggle to `.specific` during local development
+    /// to run only on a subset of test cases, for debugging purposes.
+    private let whichIntegrationTestCases: WhichIntegrationTestCases = .all
+
+    // MARK: -
+
     /// Performs a round-trip import/export test on all `.binproto` integration
     /// test cases.
     func testAllIntegrationTestCases() async throws {
-        guard
-            let allBinprotoFileUrls = Bundle(for: type(of: self)).urls(
-                forResourcesWithExtension: "binproto",
-                subdirectory: nil
-            )
-        else {
+        let binProtoFileUrls: [URL] = {
+            let bundle = Bundle(for: type(of: self))
+
+            switch whichIntegrationTestCases {
+            case .specific(let names):
+                return names.compactMap { name in
+                    return bundle.url(
+                        forResource: name,
+                        withExtension: "binproto"
+                    )
+                }
+            case .all:
+                return Bundle(for: type(of: self)).urls(
+                    forResourcesWithExtension: "binproto",
+                    subdirectory: nil
+                ) ?? []
+            }
+        }()
+
+        guard binProtoFileUrls.count > 0 else {
             XCTFail("Failed to find binprotos in test bundle!")
             return
         }
 
-        for binprotoFileUrl in allBinprotoFileUrls {
+        for binprotoFileUrl in binProtoFileUrls {
             let filename = binprotoFileUrl
                 .lastPathComponent
                 .filenameWithoutExtension
 
-            try await runRoundTripTest(
-                testCaseName: filename,
-                testCaseFileUrl: binprotoFileUrl,
-                failureLogOutput: preferredFailureLogOutput
-            )
+            do {
+                try await runRoundTripTest(
+                    testCaseFileUrl: binprotoFileUrl,
+                    failureLogOutput: preferredFailureLogOutput
+                )
+            } catch TestError.failure(let message) {
+                XCTFail("""
+
+                ------------
+
+                Test case failed: \(filename)!
+
+                \(message)
+
+                ------------
+                """)
+            } catch let error {
+                XCTFail("""
+
+                ------------
+
+                Test case failed with unexpected error: \(filename)!
+
+                \(error)
+
+                ------------
+                """)
+            }
         }
     }
 
     // MARK: -
+
+    private enum TestError: Error {
+        case failure(String)
+    }
 
     private var deps: DependenciesBridge { .shared }
 
@@ -72,7 +128,6 @@ class MessageBackupIntegrationTests: XCTestCase {
     /// some data was dropped or modified as part of the import/export process,
     /// which should be idempotent.
     private func runRoundTripTest(
-        testCaseName: String,
         testCaseFileUrl: URL,
         failureLogOutput: LibSignalComparisonFailureLogOutput
     ) async throws {
@@ -109,7 +164,6 @@ class MessageBackupIntegrationTests: XCTestCase {
             .exportPlaintextBackup(localIdentifiers: localIdentifiers)
 
         try compareViaLibsignal(
-            testCaseName: testCaseName,
             sharedTestCaseBackupUrl: testCaseFileUrl,
             exportedBackupUrl: exportedBackupUrl,
             failureLogOutput: failureLogOutput
@@ -123,7 +177,6 @@ class MessageBackupIntegrationTests: XCTestCase {
     /// If there are errors reading or validating either Backup, or if the
     /// Backups' canonical representations are not equal.
     private func compareViaLibsignal(
-        testCaseName: String,
         sharedTestCaseBackupUrl: URL,
         exportedBackupUrl: URL,
         failureLogOutput: LibSignalComparisonFailureLogOutput
@@ -132,8 +185,7 @@ class MessageBackupIntegrationTests: XCTestCase {
         let exportedBackup = try ComparableBackup(url: exportedBackupUrl)
 
         guard sharedTestCaseBackup.unknownFields.fields.isEmpty else {
-            XCTFail("Test \(testCaseName) had unknown fields: \(sharedTestCaseBackup.unknownFields)!")
-            return
+            throw TestError.failure("Unknown fields: \(sharedTestCaseBackup.unknownFields)!")
         }
 
         let sharedTestCaseBackupString = sharedTestCaseBackup.comparableString()
@@ -145,16 +197,11 @@ class MessageBackupIntegrationTests: XCTestCase {
         if sharedTestCaseBackupString != exportedBackupString {
             switch failureLogOutput {
             case .fullLibSignalJSON:
-                XCTFail("""
-
-                ------------
-
-                Test case failed: \(testCaseName). Copy the JSON lines below and run `pbpaste | parse-libsignal-comparator-failure.py`.
+                throw TestError.failure("""
+                Copy the JSON lines below and run `pbpaste | parse-libsignal-comparator-failure.py`.
 
                 \(sharedTestCaseBackupString.removeCharacters(characterSet: .whitespacesAndNewlines))
                 \(exportedBackupString.removeCharacters(characterSet: .whitespacesAndNewlines))
-
-                ------------
                 """)
             case .minimalDiff:
                 let jsonStringDiff: LineByLineStringDiff = .diffing(
@@ -168,15 +215,10 @@ class MessageBackupIntegrationTests: XCTestCase {
                     diffGroupDivider: "************"
                 )
 
-                XCTFail("""
-
-                ------------
-
-                Test case failed: \(testCaseName). JSON diff:
+                throw TestError.failure("""
+                JSON diff:
 
                 \(prettyDiff)
-
-                ------------
                 """)
             }
         }
@@ -196,11 +238,11 @@ class MessageBackupIntegrationTests: XCTestCase {
         case .success(let _stream, _):
             stream = _stream
         case .fileNotFound:
-            throw OWSAssertionError("Missing test case backup file!")
+            throw TestError.failure("Missing test case backup file!")
         case .unableToOpenFileStream:
-            throw OWSAssertionError("Failed to open test case backup file!")
+            throw TestError.failure("Failed to open test case backup file!")
         case .hmacValidationFailedOnEncryptedFile:
-            throw OWSAssertionError("Impossible – this is a plaintext stream!")
+            throw TestError.failure("Impossible – this is a plaintext stream!")
         }
 
         let backupInfo: BackupProto_BackupInfo
@@ -208,9 +250,9 @@ class MessageBackupIntegrationTests: XCTestCase {
         case .success(let _backupInfo, _):
             backupInfo = _backupInfo
         case .invalidByteLengthDelimiter:
-            throw OWSAssertionError("Invalid byte length delimiter!")
+            throw TestError.failure("Invalid byte length delimiter!")
         case .protoDeserializationError(let error):
-            throw OWSAssertionError("Proto deserialization error: \(error)!")
+            throw TestError.failure("Proto deserialization error: \(error)!")
         }
 
         return backupInfo.backupTimeMs
