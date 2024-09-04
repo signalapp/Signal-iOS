@@ -1610,7 +1610,7 @@
 "COUNTRYCODE_SELECT_TITLE" = "Roghnaigh Cód Tíre";
 
 /* Label for button that enables you to make a new call link. */
-"CREATE_CALL_LINK_LABEL" = "Create a Call Link";
+"CREATE_CALL_LINK_LABEL" = "Cruthaigh Nasc Glao";
 
 /* Body text for an interactive in-app prompt to set up a Signal username. */
 "CREATE_USERNAME_MEGAPHONE_BODY" = "Tús eolais ar phríobháideacht ar uimhreacha gutháin, ainmneacha úsáideora roghnacha agus naisc.";

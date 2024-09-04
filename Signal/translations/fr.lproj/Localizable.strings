@@ -98,7 +98,7 @@
 "ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "Ajouter au groupe";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {contact name, group name} */
-"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Ajouter %1$@ à %2$@ ?";
+"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Ajouter %1$@ à \"%2$@\" ?";
 
 /* The title on the 'add to group' confirmation action sheet. */
 "ADD_TO_GROUP_ACTION_SHEET_TITLE" = "Ajouter un nouveau membre";
@@ -887,7 +887,7 @@
 "CALLS_TAB_RETURN_TO_CALL_BUTTON_TITLE" = "Revenir";
 
 /* Label for a view explaining that no search results were found in the Calls Tab. Embeds {{ the search term }}. */
-"CALLS_TAB_SEARCH_NO_RESULTS_FOUND_LABEL_FORMAT" = "« %1$@ » est introuvable.";
+"CALLS_TAB_SEARCH_NO_RESULTS_FOUND_LABEL_FORMAT" = "\"%1$@\" est introuvable.";
 
 /* Title for a long-press context menu action to select a call, triggered from a call in the Calls Tab. */
 "CALLS_TAB_SELECT_CALL_ACTION_TITLE" = "Sélectionner";
@@ -1139,7 +1139,7 @@
 "CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Invitation par message en attente";
 
 /* Message for a tooltip that appears above a parenthesized name for another user, indicating that that name is the name the other user set for themself. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_SECONDARY_NAME_TOOLTIP_MESSAGE" = "« %1$@ » est le nom de profil que cette personne s’est attribué dans Signal.";
+"CONTACT_ABOUT_SHEET_SECONDARY_NAME_TOOLTIP_MESSAGE" = "\"%1$@\" est le nom de profil que cette personne s’est attribué dans Signal.";
 
 /* A label indicating a user is a signal connection. */
 "CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Contact Signal";
@@ -1187,7 +1187,7 @@
 "CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Pour voir le nom et la photo des contacts dans vos conversations :";
 
 /* First step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Touchez « Aller dans Réglages » ci-dessous";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Touchez \"Accéder aux réglages\" ci-dessous.";
 
 /* Third step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Activez « Contacts »";
@@ -1610,7 +1610,7 @@
 "COUNTRYCODE_SELECT_TITLE" = "Sélectionner l’indicatif de pays";
 
 /* Label for button that enables you to make a new call link. */
-"CREATE_CALL_LINK_LABEL" = "Create a Call Link";
+"CREATE_CALL_LINK_LABEL" = "Générer un lien d’appel";
 
 /* Body text for an interactive in-app prompt to set up a Signal username. */
 "CREATE_USERNAME_MEGAPHONE_BODY" = "Protégez la confidentialité de votre numéro de téléphone, choisissez un nom d’utilisateur facultatif et découvrez les liens de conversation.";
@@ -2471,7 +2471,7 @@
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Bonjour,\n\nJ’ai récemment installé Signal sur mon iPhone pour assurer la confidentialité de mes conversations. Et si vous l’installiez aussi ? Nous serions ainsi sûrs que nos messages et nos appels restent privés.\n\nL’application Signal est disponible sur iPhone et sur Android. Vous pouvez la télécharger ici : %1$@\n\nComme toutes les applications de messagerie, Signal permet d’envoyer des photos et des vidéos, de passer des appels et de lancer des conversations de groupe. Ce qui la différencie des autres ? C’est qu’absolument personne ne peut accéder aux contenus que vous partagez avec vos amis. Pas même les créateurs de Signal.\n\nPour en savoir plus sur « Open Whisper Systems », autrement dit, sur les créateurs de Signal, c’est par ici : %2$@.";
+"EMAIL_INVITE_BODY" = "Bonjour,\n\nJ'ai récemment installé Signal sur mon iPhone pour assurer la confidentialité de mes conversations. Et si vous l'installiez aussi ? Nous serions ainsi sûrs que nos messages et nos appels restent privés.\n\nL'application Signal est disponible sur iPhone et sur Android. Vous pouvez la télécharger ici : %1$@\n\nComme toutes les applications de messagerie, Signal permet d'envoyer des photos et des vidéos, de passer des appels et de lancer des conversations de groupe. Ce qui la différencie des autres ? C’est qu'absolument personne ne peut accéder aux contenus que vous partagez avec vos amis. Pas même les créateurs de Signal.\n\nPour en savoir plus sur \"Open Whisper Systems\", autrement dit, sur les créateurs de Signal, c'est par ici : %2$@.";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Passons à Signal";
@@ -2714,7 +2714,7 @@
 "FINISH_GROUP_CREATION_LABEL" = "Achever la création du groupe";
 
 /* Tooltip notifying users that the flip camera button moved to the picture-in-picture view of themselves in a call */
-"FLIP_CAMERA_BUTTON_MOVED_TO_PIP_TOOLTIP" = "L’icône « Changer de caméra » se trouve désormais ici. Touchez la vidéo pour l’essayer.";
+"FLIP_CAMERA_BUTTON_MOVED_TO_PIP_TOOLTIP" = "L'icône \"Changer de caméra\" se trouve désormais ici. Touchez la vidéo pour l'essayer.";
 
 /* Label and title for 'contact forwarding' views. */
 "FORWARD_CONTACT" = "Transférer un contact";
@@ -2801,7 +2801,7 @@
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ a défini l'autorisation de modifier les informations du groupe sur \"%2$@\".";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Les informations du groupe peuvent être modifiées par \"%1$@\".";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Les informations du groupe peuvent être modifiées par %1$@.";
 
 /* Description of the 'admins only' access level. */
 "GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Les administrateurs";
@@ -3377,7 +3377,7 @@
 "GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Voulez-vous vraiment supprimer « %1$@ » ?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Les membres de la conversation de groupe « %1$@ » peuvent afficher cette story et y réagir. Vous pouvez ajouter ou retirer des spectateurs depuis les paramètres du groupe.";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Les membres de la conversation de groupe \"%1$@\" peuvent afficher cette story et y réagir. Vous pouvez ajouter ou retirer des spectateurs depuis les paramètres du groupe.";
 
 /* Section header for the 'viewers' section on the 'group story settings' view */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Qui peut voir cette story ?";
@@ -4355,7 +4355,7 @@
 "MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_BLOCK_ACTION" = "Bloquer ce contact dans Signal également";
 
 /* Message for sheet shown when the user taps a missed call from a contact blocked in iOS settings. */
-"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_MESSAGE" = "Vous avez manqué l’appel de cette personne car elle est bloquée dans les paramètres de votre téléphone. Pour gérer les contacts bloqués, rendez-vous dans Paramètres > Téléphone et appuyez sur Contacts bloqués.";
+"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_MESSAGE" = "Vous avez manqué cet appel, car ce contact est bloqué dans les paramètres de votre téléphone. Pour gérer les contacts bloqués, accédez à Paramètres > Téléphone > Contacts bloqués.";
 
 /* Title for sheet shown when the user taps a missed call from a contact blocked in iOS settings. Embeds {{ Contact's name }} */
 "MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_TITLE" = "%1$@ est bloqué(e) dans les paramètres de votre téléphone";
@@ -4604,7 +4604,7 @@
 "NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "Pour recevoir des notifications de nouveaux messages :";
 
 /* First step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Touchez « Aller dans Réglages » ci-dessous";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Touchez \"Accéder aux réglages\" ci-dessous.";
 
 /* Third step for notification permission action sheet */
 "NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "Activez « Autoriser les notifications »";
@@ -4694,7 +4694,7 @@
 "ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Toucher « Inscrire l’iPad », vous permettra de créer un tout nouveau compte Signal ou de transférer un compte existant vers cet iPad. Cela désactivera Signal sur tout autre appareil actuellement inscrit avec le même numéro de téléphone.";
 
 /* explanation to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "L’option « Associer l’iPhone », vous permet d’associer votre téléphone à un compte existant. Il n’est généralement pas recommandé d’associer le téléphone : cela limite certaines fonctionnalités, telles que les appels.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "L'option \"Associer l’iPhone\" vous permet d'associer votre téléphone à un compte existant. Il n'est généralement pas recommandé d'associer le téléphone : cela limite certaines fonctionnalités, telles que les appels.";
 
 /* header text indicating to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "Inscrire cet iPad";
@@ -5165,7 +5165,7 @@
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "Révoquer l’invitation";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Révoquer l’invitation au groupe pour « %1$@ » ?";
+"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Annuler l'invitation envoyée à %1$@ ?";
 
 /* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Lorsque des membres du groupe invitent des utilisateurs, nous n’affichons aucune info sur ces derniers. Ces informations ne sont communiquées au groupe que si les invités choisissent de le rejoindre. De même, les invités n’ont pas accès aux messages du groupe tant qu’ils ne l’ont pas rejoint.";
@@ -5501,7 +5501,7 @@
 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Supprimer la story personnalisée";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Voulez-vous vraiment supprimer « %1$@ » ? Les contenus ajoutés à cette story seront aussi supprimés.";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Voulez-vous vraiment supprimer \"%1$@ ? Les contenus ajoutés à cette story seront aussi supprimés.";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Retirer";
@@ -5570,7 +5570,7 @@
 "PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_FIX_ACTION_TITLE" = "Résoudre";
 
 /* A message asking the user if they are sure they want to remove their username and explaining what will happen. Embeds {{ the user's current username }}. */
-"PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "Cette action supprime votre nom d’utilisateur et désactive votre lien et code QR. « %1$@ » pourra ensuite être utilisé par un autre utilisateur. Êtes-vous sûr de vouloir continuer ?";
+"PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "Vous allez supprimer votre nom d'utilisateur et désactiver votre lien et votre code QR. \"%1$@\" sera disponible et d'autres personnes pourront l'utiliser. Voulez-vous vraiment continuer ?";
 
 /* The title of an action sheet button that will delete a user's username. */
 "PROFILE_SETTINGS_USERNAME_DELETION_USERNAME_ACTION_TITLE" = "Supprimer le nom d’utilisateur";
@@ -5720,7 +5720,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "a réagi par %1$@ à votre sticker";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "a réagi par %1$@ à : « %2$@ »";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "a réagi par %1$@ à : \"%2$@\"";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "a réagi par %1$@ à votre vidéo";
@@ -6044,7 +6044,7 @@
 "SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Précédent";
 
 /* Message contents for the vague message safety tip. */
-"SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "Pour attirer votre attention, les spammeurs commencent souvent par un simple « Salut » par exemple. Si vous répondez, ils risquent de continuer la conversation.";
+"SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "Pour attirer votre attention, les spammeurs commencent souvent par un simple \"Salut\" par exemple. Si vous répondez, ils risquent de poursuivre la conversation.";
 
 /* Message title describing the safety tip about vague messages. */
 "SAFETY_TIPS_VAGUE_MESSAGE_TITLE" = "Messages au contenu vague ou insignifiant";
@@ -6158,7 +6158,7 @@
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Installer Signal sur votre téléphone";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Sur votre téléphone, touchez votre image de profil pour accéder aux paramètres Signal, puis sélectionnez « Appareils associés » et « Associer un nouvel appareil  ». Vous pouvez ensuite scanner ce code avec votre téléphone :";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Sur votre téléphone, touchez votre image de profil pour accéder aux paramètres Signal, puis sélectionnez \"Appareils associés\" et \"Associer un nouvel appareil \". Vous pouvez ensuite scanner ce code avec votre téléphone :";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Obtenez de l’aide ici pour relier votre iPad";
@@ -7037,10 +7037,10 @@
 "SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "L’adresse de votre portefeuille";
 
 /* A toast that displays when the user attempts to set discoverability to 'nobody' when their phone number sharing is set to 'everybody', which is not allowed. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "Pour changer ce paramètre, réglez l’option « Qui peut voir mon numéro » sur « Personne ».";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "Pour modifier ce paramètre, définissez l'option \"Qui peut voir mon numéro\" sur \"Personne\".";
 
 /* The description for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "Si vous définissez le paramètre « Qui peut me trouver grâce à mon numéro de téléphone » sur « Personne », les autres utilisateurs auront plus de difficulté à vous trouver sur Signal.";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "Si vous définissez le paramètre \"Qui peut me trouver grâce à mon numéro de téléphone\" sur \"Personne\", les autres utilisateurs auront plus de difficulté à vous trouver sur Signal.";
 
 /* The title for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE" = "Voulez-vous vraiment continuer ?";

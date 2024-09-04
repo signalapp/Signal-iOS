@@ -29,9 +29,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Groepslid toevoegen</string>
+			<string>Lid toevoegen</string>
 			<key>other</key>
-			<string>Groepsleden toevoegen</string>
+			<string>Leden toevoegen</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_%d</key>
@@ -45,9 +45,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Contact aan de groep ‘%2$@’ toevoegen?</string>
+			<string>Lid aan de groep ‘%2$@’ toevoegen?</string>
 			<key>other</key>
-			<string>%1$d contacten aan de groep ‘%2$@’ toevoegen?</string>
+			<string>%1$d leden aan de groep ‘%2$@’ toevoegen?</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_%d</key>
@@ -392,7 +392,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Bellen naar %2$@, %3$@ en %1$d ander…</string>
+			<string>Bellen naar %2$@, %3$@ en %1$d…</string>
 			<key>other</key>
 			<string>Bellen naar %2$@, %3$@ en %1$d anderen…</string>
 		</dict>
@@ -584,9 +584,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Er is %1$d naamconflict gevonden in deze groep. Vergelijk deze groepsleden hieronder en onderneem actie indien je denkt dat een van hen zich probeert voor te doen als de ander.</string>
+			<string>Er is %1$d naamconflict gevonden in deze groep. Vergelijk de leden hieronder en onderneem actie indien je denkt dat een van hen zich probeert voor te doen als de ander.</string>
 			<key>other</key>
-			<string>Er zijn %1$d naamconflicten gevonden in deze groep. Vergelijk deze groepsleden hieronder en onderneem actie indien je denkt dat een van hen zich probeert voor te doen als iemand anders.</string>
+			<string>Er zijn %1$d naamconflicten gevonden in deze groep. Vergelijk de leden hieronder en onderneem actie indien je denkt dat een van hen zich probeert voor te doen als iemand anders.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -600,9 +600,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d groepslid heeft dezelfde naam. Vergelijk deze groepsleden hieronder en onderneem actie indien je denkt dat een van hen zich probeert voor te doen als de ander.</string>
+			<string>%1$d groepslid heeft dezelfde naam. Vergelijk de leden hieronder en onderneem actie indien je denkt dat een van hen zich probeert voor te doen als de ander.</string>
 			<key>other</key>
-			<string>%1$d groepsleden hebben dezelfde naam. Vergelijk deze groepsleden hieronder en onderneem actie indien je denkt dat een van hen zich probeert voor te doen als iemand anders.</string>
+			<string>%1$d groepsleden hebben dezelfde naam. Vergelijk de leden hieronder en onderneem actie indien je denkt dat een van hen zich probeert voor te doen als iemand anders.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>

@@ -1610,7 +1610,7 @@
 "COUNTRYCODE_SELECT_TITLE" = "دۆلەت كودى تاللاڭ";
 
 /* Label for button that enables you to make a new call link. */
-"CREATE_CALL_LINK_LABEL" = "Create a Call Link";
+"CREATE_CALL_LINK_LABEL" = "چاقىرىق ئۇلانمىسى قۇرۇش";
 
 /* Body text for an interactive in-app prompt to set up a Signal username. */
 "CREATE_USERNAME_MEGAPHONE_BODY" = "تېلېفون نومۇر مەخپىيەتلىكى، تاللانما ئىشلەتكۈچى نامى ۋە ئۇلانمىسى كىرگۈزۈلدى.";

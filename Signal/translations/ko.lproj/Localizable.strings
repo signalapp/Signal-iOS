@@ -1610,7 +1610,7 @@
 "COUNTRYCODE_SELECT_TITLE" = "국가 코드 선택";
 
 /* Label for button that enables you to make a new call link. */
-"CREATE_CALL_LINK_LABEL" = "Create a Call Link";
+"CREATE_CALL_LINK_LABEL" = "통화 링크 만들기";
 
 /* Body text for an interactive in-app prompt to set up a Signal username. */
 "CREATE_USERNAME_MEGAPHONE_BODY" = "전화번호 개인 정보 보호와 선택적 사용자 이름 및 링크를 소개합니다.";
