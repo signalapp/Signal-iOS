@@ -89,64 +89,7 @@ extension TSAttachmentMigration {
         /// The maximum duration asset that we will display waveforms for.
         /// It's too intensive to sample a waveform for really long audio files.
         private static let maximumDuration: TimeInterval = 15 * kMinuteInterval
-        private static let silenceThreshold: Float = -50
         private static let sampleCount = 100
-
-        private static func downsample(samples: [Float], toSampleCount sampleCount: Int) -> [Float] {
-            // Do nothing if the number of requested samples is less than 1
-            guard sampleCount > 0 else { return [] }
-
-            // If the requested sample count is equal to the sample count, just return the samples
-            guard samples.count != sampleCount else { return samples }
-
-            // Calculate the number of samples each downsampled value should take into account
-            let sampleDistribution = Float(samples.count) / Float(sampleCount)
-
-            // Calculate the number of samples we need to factor in when downsampling. Since there
-            // is no such thing as a fractional sample, we need to round this up to the nearest Int.
-            // When we calculated the distribution later, it will factor in that some of these samples
-            // are weighted differently than others in the resulting output.
-            let sampleLength = Int(ceil(sampleDistribution))
-
-            // Calculate the weight of each sample in the downsampled group.
-            // For whole number `sampleDistribution` the distribution is always
-            // equivalent across all of the samples. If the sampleDistribution
-            // is _not_ a whole number, we factor the bookending values in
-            // relative to remainder proportion
-            let distribution: [Float] = {
-                let averageProportion = 1 / sampleDistribution
-
-                var array = [Float](repeating: averageProportion, count: sampleLength)
-
-                if samples.count % sampleCount != 0 {
-                    // Calculate the proportion that the partial sample should be weighted at
-                    let remainderProportion = (sampleDistribution.truncatingRemainder(dividingBy: 1)) * averageProportion
-
-                    // The partial sample is factored into the "bookends" (first and last element of the distribution)
-                    // by averaging the average distribution and the remainder distribution together.
-                    // This provides a lightweight "anti-aliasing" effect.
-                    let bookEndProportions = (averageProportion + remainderProportion) / 2
-
-                    array[0] = bookEndProportions
-                    array[sampleLength - 1] = bookEndProportions
-                }
-
-                return array
-            }()
-
-            // If we can ever guarantee that `samples.count` is always a multiple of `sampleCount`, we should
-            // switch to using the faster `vDSP_desamp`. For now, we can't use it since it only supports the
-            // integer stride lengths. This should be okay, since this should only be operating on already
-            // downsampled data (~100 points) rather than the original millions of points.
-            let result: [Float] = (0..<sampleCount).map { downsampledIndex in
-                let sampleStart = Int(floor(Float(downsampledIndex) * sampleDistribution))
-                return samples[sampleStart..<sampleStart + sampleLength].enumerated().reduce(0) { result, value in
-                    return result + distribution[value.offset] * value.element
-                }
-            }
-
-            return result
-        }
 
         private static func sampleWaveform(asset: AVAsset) throws -> TSAttachmentMigration.AudioWaveform {
             let assetReader = try AVAssetReader(asset: asset)
@@ -174,10 +117,10 @@ extension TSAttachmentMigration {
         }
 
         private static func readDecibels(from assetReader: AVAssetReader) throws -> [Float] {
-            var outputSamples = [Float]()
-            var readBuffer = Data()
-
-            let samplesToGroup = max(1, sampleCount(from: assetReader) / Self.sampleCount)
+            let sampler = AudioWaveformSampler(
+                inputCount: sampleCount(from: assetReader),
+                outputCount: Self.sampleCount
+            )
 
             assetReader.startReading()
             while assetReader.status == .reading {
@@ -186,36 +129,33 @@ extension TSAttachmentMigration {
                 }
 
                 // Process any newly read data.
-                guard let nextSampleBuffer = trackOutput.copyNextSampleBuffer(),
-                    let blockBuffer = CMSampleBufferGetDataBuffer(nextSampleBuffer) else {
-                        // There is no more data to read, break
-                        break
+                guard
+                    let nextSampleBuffer = trackOutput.copyNextSampleBuffer(),
+                    let blockBuffer = CMSampleBufferGetDataBuffer(nextSampleBuffer)
+                else {
+                    // There is no more data to read, break
+                    break
                 }
 
-                var readBufferLength = 0
-                var readBufferPointer: UnsafeMutablePointer<Int8>?
-                CMBlockBufferGetDataPointer(
+                var lengthAtOffset = 0
+                var dataPointer: UnsafeMutablePointer<Int8>?
+                let result = CMBlockBufferGetDataPointer(
                     blockBuffer,
                     atOffset: 0,
-                    lengthAtOffsetOut: &readBufferLength,
+                    lengthAtOffsetOut: &lengthAtOffset,
                     totalLengthOut: nil,
-                    dataPointerOut: &readBufferPointer
+                    dataPointerOut: &dataPointer
                 )
-                readBuffer.append(UnsafeBufferPointer(start: readBufferPointer, count: readBufferLength))
-                CMSampleBufferInvalidate(nextSampleBuffer)
-
-                // Try and process any pending samples, we may not have read enough data yet to do this.
-                let processedSamples = convertToDecibels(fromAmplitudes: readBuffer, from: assetReader, groupSize: samplesToGroup)
-                outputSamples += processedSamples
-
-                // If we successfully processed samples, remove any processed samples
-                // from the read buffer.
-                if processedSamples.count > 0 {
-                    readBuffer.removeFirst(processedSamples.count * samplesToGroup * MemoryLayout<Int16>.size)
+                guard result == kCMBlockBufferNoErr else {
+                    owsFailDebug("track data unexpectedly inaccessible")
+                    throw AudioWaveformError.invalidAudioFile
                 }
+                let bufferPointer = UnsafeBufferPointer(start: dataPointer, count: lengthAtOffset)
+                bufferPointer.withMemoryRebound(to: Int16.self) { sampler.update($0) }
+                CMSampleBufferInvalidate(nextSampleBuffer)
             }
 
-            return outputSamples
+            return sampler.finalize()
         }
 
         private static func sampleCount(from assetReader: AVAssetReader) -> Int {
@@ -228,50 +168,139 @@ extension TSAttachmentMigration {
         }
 
         private static func channelCount(from assetReader: AVAssetReader) -> Int {
-            guard let output = assetReader.outputs.first as? AVAssetReaderTrackOutput,
-                let formatDescriptions = output.track.formatDescriptions as? [CMFormatDescription] else { return 0 }
+            guard
+                let output = assetReader.outputs.first as? AVAssetReaderTrackOutput,
+                let formatDescriptions = output.track.formatDescriptions as? [CMFormatDescription]
+            else {
+                return 0
+            }
 
             var channelCount = 0
 
             for description in formatDescriptions {
-                guard let basicDescription = CMAudioFormatDescriptionGetStreamBasicDescription(description) else { continue }
+                guard let basicDescription = CMAudioFormatDescriptionGetStreamBasicDescription(description) else {
+                    continue
+                }
                 channelCount = Int(basicDescription.pointee.mChannelsPerFrame)
             }
 
             return channelCount
         }
+    }
 
-        private static func convertToDecibels(fromAmplitudes sampleBuffer: Data, from assetReader: AVAssetReader, groupSize: Int) -> [Float] {
-            var downSampledData = [Float]()
+    private class AudioWaveformSampler {
+        private static let silenceThreshold: Float = -50
 
-            sampleBuffer.withUnsafeBytes { samples in
-                let sampleLength = sampleBuffer.count / MemoryLayout<Int16>.size
-                var decibelSamples = [Float](repeating: 0.0, count: sampleLength)
+        private let inputCount: Int
+        private let outputCount: Int
 
-                // maximum amplitude storable in Int16 = 0 dB (loudest)
-                var zeroDecibelEquivalent: Float = Float(Int16.max)
+        /// The number of input samples that feed each output sample (rounded down).
+        private let segmentLength: Int
 
-                var loudestClipValue: Float = 0.0
-                var quietestClipValue = Self.silenceThreshold
-                let samplesToProcess = vDSP_Length(sampleLength)
+        /// The number of samples that don't evenly divide into `outputCount`. These
+        /// extra samples are spread across the output samples.
+        private let segmentRemainder: Int
 
-                // convert 16bit int amplitudes to float representation
-                vDSP_vflt16([Int16](samples.bindMemory(to: Int16.self)), 1, &decibelSamples, 1, samplesToProcess)
+        /// The number of samples in this segment. Either `segmentLength` or
+        /// `segmentLength + 1`.
+        private var currentSegmentCount: Int
 
-                // take the absolute amplitude value
-                vDSP_vabs(decibelSamples, 1, &decibelSamples, 1, samplesToProcess)
+        /// The number of samples remaining in this segment.
+        private var currentSegmentRemainingCount: Int
 
-                // convert to dB
-                vDSP_vdbcon(decibelSamples, 1, &zeroDecibelEquivalent, &decibelSamples, 1, samplesToProcess, 1)
+        /// Tracks the cumulative average when a segment spans multiple batches.
+        private var currentSegmentAverage: Float
 
-                // clip between loudest + quietest
-                vDSP_vclip(decibelSamples, 1, &quietestClipValue, &loudestClipValue, &decibelSamples, 1, samplesToProcess)
+        /// Tracks when a segment needs an extra sample (because outputCount may not
+        /// evenly divide inputCount).
+        private var overflowCounter: Int
 
-                let sampleCount = sampleLength / groupSize
-                downSampledData = downsample(samples: decibelSamples, toSampleCount: sampleCount)
+        private var buffer = [Float]()
+        private var output = [Float]()
+
+        init(inputCount: Int, outputCount: Int) {
+            self.inputCount = inputCount
+            self.outputCount = outputCount
+            if inputCount < outputCount {
+                // If we don't have enough samples, just use every sample that's provided.
+                // This will result in fewer than outputCount samples, but that is fine.
+                (self.segmentLength, self.segmentRemainder) = (1, 0)
+            } else {
+                (self.segmentLength, self.segmentRemainder) = inputCount.quotientAndRemainder(dividingBy: outputCount)
+            }
+            self.currentSegmentAverage = 0
+            // The first segment is always segmentLength because segmentRemainder is
+            // less than outputCount (it's the remainder when dividing by outputCount).
+            self.currentSegmentCount = self.segmentLength
+            self.currentSegmentRemainingCount = self.segmentLength
+            self.overflowCounter = self.outputCount - self.segmentRemainder
+        }
+
+        func update(_ samples: UnsafeBufferPointer<Int16>) {
+            let sampleCount = samples.count
+            if self.buffer.count < sampleCount {
+                self.buffer.append(contentsOf: Array(repeating: 0, count: sampleCount - self.buffer.count))
             }
 
-            return downSampledData
+            // convert UInt16 amplitudes to Float representation
+            vDSP_vflt16(samples.baseAddress!, 1, &self.buffer, 1, vDSP_Length(sampleCount))
+
+            // take the absolute amplitude value
+            vDSP_vabs(self.buffer, 1, &self.buffer, 1, vDSP_Length(sampleCount))
+
+            // convert to dB
+            // maximum amplitude storable in Int16 = 0 dB (loudest)
+            // (remember decibels are often negative)
+            var zeroDecibelEquivalent: Float = Float(Int16.max)
+            vDSP_vdbcon(self.buffer, 1, &zeroDecibelEquivalent, &self.buffer, 1, vDSP_Length(sampleCount), 1)
+
+            // clip between loudest + quietest
+            var loudestClipValue: Float = 0.0
+            var quietestClipValue = AudioWaveformSampler.silenceThreshold
+            vDSP_vclip(self.buffer, 1, &quietestClipValue, &loudestClipValue, &self.buffer, 1, vDSP_Length(sampleCount))
+
+            self.reduce(sampleCount: sampleCount)
+        }
+
+        private func reduce(sampleCount: Int) {
+            self.buffer.withUnsafeBufferPointer { bufferPtr in
+                var remainingCount = sampleCount
+                while remainingCount > 0 {
+                    let chunkCount = min(remainingCount, self.currentSegmentRemainingCount)
+                    assert(chunkCount > 0)  // because currentSegmentRemainingCount starts > 0 and is checked on each iteration
+                    var chunkAverage: Float = 0
+                    vDSP_meanv(bufferPtr.baseAddress!.advanced(by: sampleCount - remainingCount), 1, &chunkAverage, vDSP_Length(chunkCount))
+                    remainingCount -= chunkCount
+                    self.currentSegmentRemainingCount -= chunkCount
+
+                    // Add the new average to the running average for this segment.
+                    let totalChunkCount = self.currentSegmentCount - self.currentSegmentRemainingCount
+                    assert(totalChunkCount > 0)  // because chunkCount > 0
+                    let newChunkWeight = Float(chunkCount) / Float(totalChunkCount)
+                    let oldChunkWeight = 1 - newChunkWeight
+                    self.currentSegmentAverage *= oldChunkWeight
+                    self.currentSegmentAverage += chunkAverage * newChunkWeight
+
+                    // If we reached the end of the chunk, add it to the output.
+                    if self.currentSegmentRemainingCount <= 0 {
+                        self.output.append(self.currentSegmentAverage)
+                        self.currentSegmentAverage = 0  // technically redundant
+
+                        self.currentSegmentCount = self.segmentLength
+                        self.overflowCounter -= self.segmentRemainder
+                        if self.overflowCounter <= 0 {
+                            self.currentSegmentCount += 1
+                            self.overflowCounter += self.segmentLength
+                        }
+                        self.currentSegmentRemainingCount = self.currentSegmentCount
+                    }
+                }
+            }
+        }
+
+        func finalize() -> [Float] {
+            assert(self.output.count <= self.outputCount)
+            return self.output
         }
     }
 }

@@ -689,6 +689,8 @@
 		50B6BCB62AEC68940010FB3B /* AuthorMergeHelperTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50B6BCB52AEC68940010FB3B /* AuthorMergeHelperTest.swift */; };
 		50B815862A5E15390009D42D /* OWSIdentity.h in Headers */ = {isa = PBXBuildFile; fileRef = 50B815852A5E14FF0009D42D /* OWSIdentity.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		50BD86AF2A3CFF89005B6AC1 /* ResendMessagePromptBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50BD86AE2A3CFF89005B6AC1 /* ResendMessagePromptBuilder.swift */; };
+		50BDC3682C88B7FA002294D0 /* AudioWaveformSampler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50BDC3672C88B7FA002294D0 /* AudioWaveformSampler.swift */; };
+		50BDC36A2C88C2C8002294D0 /* AudioWaveformSamplerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50BDC3692C88C2C8002294D0 /* AudioWaveformSamplerTest.swift */; };
 		50BF51022BB1FACA00C2C309 /* ShareViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A954CA271B4BE600B05242 /* ShareViewDelegate.swift */; };
 		50BF51042BB1FE5D00C2C309 /* NameCollisionFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955BC271B560000B05242 /* NameCollisionFinder.swift */; };
 		50BF51052BB1FE7E00C2C309 /* TSInteraction+DeleteActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C980D327F3AD2C009750C0 /* TSInteraction+DeleteActionSheet.swift */; };
@@ -3769,6 +3771,8 @@
 		50B6BCB52AEC68940010FB3B /* AuthorMergeHelperTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorMergeHelperTest.swift; sourceTree = "<group>"; };
 		50B815852A5E14FF0009D42D /* OWSIdentity.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OWSIdentity.h; sourceTree = "<group>"; };
 		50BD86AE2A3CFF89005B6AC1 /* ResendMessagePromptBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResendMessagePromptBuilder.swift; sourceTree = "<group>"; };
+		50BDC3672C88B7FA002294D0 /* AudioWaveformSampler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioWaveformSampler.swift; sourceTree = "<group>"; };
+		50BDC3692C88C2C8002294D0 /* AudioWaveformSamplerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioWaveformSamplerTest.swift; sourceTree = "<group>"; };
 		50C38CAC2A8EB2610030A731 /* TimeGatedBatchTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeGatedBatchTest.swift; sourceTree = "<group>"; };
 		50C831752BAA3A8000BEBF25 /* CallMessageHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallMessageHandler.swift; sourceTree = "<group>"; };
 		50C98A402B69D9340065BD2E /* PhoneNumberVisibilityFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberVisibilityFetcher.swift; sourceTree = "<group>"; };
@@ -8304,6 +8308,8 @@
 				669A2FCB2BD9D32400166DB6 /* AudioWaveformManager.swift */,
 				F9C5CB62289453B200548EEE /* AudioWaveformManagerImpl.swift */,
 				669A2FCF2BDB068200166DB6 /* AudioWaveformManagerMock.swift */,
+				50BDC3672C88B7FA002294D0 /* AudioWaveformSampler.swift */,
+				50BDC3692C88C2C8002294D0 /* AudioWaveformSamplerTest.swift */,
 			);
 			path = AudioWaveform;
 			sourceTree = "<group>";
@@ -14229,6 +14235,7 @@
 				669A2FCC2BD9D32400166DB6 /* AudioWaveformManager.swift in Sources */,
 				F9C5CE34289453B400548EEE /* AudioWaveformManagerImpl.swift in Sources */,
 				669A2FD02BDB068200166DB6 /* AudioWaveformManagerMock.swift in Sources */,
+				50BDC3682C88B7FA002294D0 /* AudioWaveformSampler.swift in Sources */,
 				50552C2A2BAB8E7D00815474 /* AuthCredentialManager.swift in Sources */,
 				50552C2C2BAB8E8500815474 /* AuthCredentialStore.swift in Sources */,
 				66533E3C29BA8BB200E8D928 /* AuthedAccount.swift in Sources */,
@@ -15406,6 +15413,7 @@
 				66C1A8852BB77EE00076C65A /* AttachmentUploadManagerTestHelper.swift in Sources */,
 				66C1A8862BB77EE30076C65A /* AttachmentUploadManagerTestMocks.swift in Sources */,
 				66C1A8802BB77EA50076C65A /* AttachmentUploadManagerTests.swift in Sources */,
+				50BDC36A2C88C2C8002294D0 /* AudioWaveformSamplerTest.swift in Sources */,
 				50B6BCB62AEC68940010FB3B /* AuthorMergeHelperTest.swift in Sources */,
 				66681CDF2C58174F00E50136 /* BackupAttachmentDownloadStoreTests.swift in Sources */,
 				F9426273289B1B5500460798 /* BlockingManagerStateTests.swift in Sources */,
