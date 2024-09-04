@@ -127,51 +127,6 @@ NS_ASSUME_NONNULL_BEGIN
     return nil;
 }
 
-+ (nullable NSError *)moveAppFilePath:(NSString *)oldFilePath sharedDataFilePath:(NSString *)newFilePath
-{
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    if (![fileManager fileExistsAtPath:oldFilePath]) {
-        return nil;
-    }
-
-    OWSLogInfo(@"Moving file or directory from: %@ to: %@", oldFilePath, newFilePath);
-
-    if ([fileManager fileExistsAtPath:newFilePath]) {
-        // If a file/directory already exists at the destination,
-        // try to move it "aside" by renaming it with an extension.
-        NSError *_Nullable error = [self renameFilePathUsingRandomExtension:newFilePath];
-        if (error) {
-            return error;
-        }
-    }
-
-    if ([fileManager fileExistsAtPath:newFilePath]) {
-        OWSFailDebug(@"Can't move file or directory; destination already exists.");
-        return [OWSError withError:OWSErrorCodeMoveFileToSharedDataContainerError
-                       description:@"Can't move file; destination already exists."
-                       isRetryable:NO];
-    }
-
-    NSDate *startDate = [NSDate new];
-
-    NSError *_Nullable error;
-    BOOL success = [fileManager moveItemAtPath:oldFilePath toPath:newFilePath error:&error];
-    if (!success || error) {
-        OWSFailDebug(@"Could not move file or directory with error: %@", error);
-        return error;
-    }
-
-    OWSLogInfo(@"Moved file or directory in: %f", fabs([startDate timeIntervalSinceNow]));
-
-    // Ensure all files moved have the proper data protection class.
-    // On large directories this can take a while, so we dispatch async
-    // since we're in the launch path.
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-        ^{ [self protectRecursiveContentsAtPath:newFilePath]; });
-
-    return nil;
-}
-
 + (BOOL)moveFilePath:(NSString *)oldFilePath toFilePath:(NSString *)newFilePath error:(NSError **)error
 {
     NSFileManager *fileManager = [NSFileManager defaultManager];
