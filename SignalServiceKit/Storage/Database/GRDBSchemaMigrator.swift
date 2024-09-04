@@ -288,6 +288,7 @@ public class GRDBSchemaMigrator: NSObject {
         case initializeDMTimerVersion
         case attachmentAddMediaTierDigest
         case removeVoIPToken
+        case reorderMediaTierDigestColumn
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -349,7 +350,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 84
+    public static let grdbSchemaVersionLatest: UInt = 85
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -3378,6 +3379,41 @@ public class GRDBSchemaMigrator: NSObject {
             try tx.database.execute(sql: """
             DELETE FROM "keyvalue" WHERE "collection" = 'SignalPreferences' AND "key" = 'LastRecordedVoipToken'
             """)
+            return .success(())
+        }
+
+        /// The migration that adds `Attachment.mediaTierDigestSHA256Ciphertext`
+        /// will add that column to the end of the `Attachment` table's columns.
+        /// However, in `schema.sql` that column was added in the middle of the
+        /// existing columns. That means that users who did a fresh install with
+        /// that `schema.sql` will have a different column order than those who
+        /// migrated an existing install.
+        ///
+        /// This migration drops the column, which is not yet used (it will
+        /// eventually be used for Backups-related attachment business), and
+        /// re-adds it so that all users will have the column in the same
+        /// location. To avoid rewriting data for users whose column is already
+        /// at the end of the column list, we check first that the user has the
+        /// column in the middle of the list.
+        migrator.registerMigration(.reorderMediaTierDigestColumn) { tx in
+            let digestColumn = "mediaTierDigestSHA256Ciphertext"
+
+            let existingColumns = try tx.database.columns(in: "Attachment")
+            guard let lastColumn = existingColumns.last else {
+                throw OWSAssertionError("Missing columns for Attachment table!")
+            }
+
+            if lastColumn.name == digestColumn {
+                // No need to drop and re-add! The column is at the end, so this
+                // must be a migrated (not fresh-installed) database.
+                return .success(())
+            }
+
+            try tx.database.alter(table: "Attachment") { table in
+                table.drop(column: digestColumn)
+                table.add(column: digestColumn, .blob)
+            }
+
             return .success(())
         }
 

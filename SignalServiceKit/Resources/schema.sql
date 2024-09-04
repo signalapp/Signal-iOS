@@ -1532,7 +1532,6 @@ CREATE
             ,"transitDigestSHA256Ciphertext" BLOB
             ,"lastTransitDownloadAttemptTimestamp" INTEGER
             ,"mediaTierCdnNumber" INTEGER
-            ,"mediaTierDigestSHA256Ciphertext" BLOB
             ,"mediaTierUploadEra" TEXT
             ,"lastMediaTierDownloadAttemptTimestamp" INTEGER
             ,"thumbnailCdnNumber" INTEGER
@@ -1552,6 +1551,7 @@ CREATE
                 NULL
                 ,"transitUnencryptedByteCount" INTEGER
                 ,"mediaTierUnencryptedByteCount" INTEGER
+                ,"mediaTierDigestSHA256Ciphertext" BLOB
 )
 ;
 
