@@ -192,21 +192,4 @@ private extension URL {
         components.scheme = prefix + scheme
         return components.url
     }
-
-    func convertFromAVAssetRedirectURL(prefix: String) -> URL? {
-        guard
-            var components = URLComponents(
-                url: self,
-                resolvingAgainstBaseURL: false
-            ),
-            let scheme = components.scheme,
-            scheme.hasPrefix(prefix),
-            let replacementRange = scheme.range(of: prefix)
-        else {
-            return nil
-        }
-
-        components.scheme = scheme.replacingCharacters(in: replacementRange, with: "")
-        return components.url
-    }
 }
