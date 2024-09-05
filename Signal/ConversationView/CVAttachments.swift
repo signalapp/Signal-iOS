@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import AVFoundation
 import Foundation
 import SignalServiceKit
 
@@ -66,8 +67,12 @@ public class AudioAttachment {
         let audioDurationSeconds: TimeInterval
         switch attachmentStream.attachmentStream.computeContentType() {
         case .audio(let duration):
-            let duration = duration.compute()
-            guard duration > 0 else {
+            var duration = duration.compute()
+            // TODO: Remove & replace with a full fix to recompute the duration for invalid files.
+            if duration <= 0, case .v2(let attachment) = attachmentStream.attachmentStream.concreteStreamType {
+                duration = Self.cachedAudioDuration(forAttachment: attachment, sourceFilenameIfAudio: attachmentStream.reference.sourceFilename)
+            }
+            if duration <= 0 {
                 fallthrough
             }
             audioDurationSeconds = duration
@@ -103,6 +108,32 @@ public class AudioAttachment {
         }
         self.receivedAtDate = receivedAtDate
         self.owningMessage = owningMessage
+    }
+
+    private static let cachedAttachmentDurations = AtomicDictionary<Int64, TimeInterval>([:], lock: .init())
+    private static func cachedAudioDuration(forAttachment attachmentStream: AttachmentStream, sourceFilenameIfAudio: String?) -> TimeInterval {
+        let attachmentId = attachmentStream.attachment.id
+        if let cachedDuration = cachedAttachmentDurations[attachmentId] {
+            return cachedDuration
+        }
+        let computedDuration: TimeInterval
+        do {
+            var asset = try attachmentStream.decryptedAVAsset(sourceFilenameIfAudio: sourceFilenameIfAudio)
+            if
+                !asset.isReadable,
+                let sourceFilenameIfAudio,
+                let extensionOverride = MimeTypeUtil.alternativeAudioFileExtension(fileExtension: (sourceFilenameIfAudio as NSString).pathExtension),
+                let sourceFilenameWithExtensionOverride = (sourceFilenameIfAudio as NSString).appendingPathExtension(extensionOverride)
+            {
+                asset = try attachmentStream.decryptedAVAsset(sourceFilenameIfAudio: sourceFilenameWithExtensionOverride)
+            }
+            computedDuration = asset.duration.seconds
+        } catch {
+            Logger.warn("Couldn't compute fallback duration: \(error)")
+            computedDuration = 0
+        }
+        cachedAttachmentDurations[attachmentId] = computedDuration
+        return computedDuration
     }
 }
 
