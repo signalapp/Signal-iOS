@@ -189,12 +189,12 @@ public class AttachmentStream {
         }
     }
 
-    public func decryptedAVAsset() throws -> AVAsset {
+    public func decryptedAVAsset(sourceFilenameIfAudio: String?) throws -> AVAsset {
         switch contentType {
         case .file, .invalid, .image, .animatedImage:
             throw OWSAssertionError("Requesting AVAsset from incompatible attachment")
         case .video, .audio:
-            return try AVAsset.from(self)
+            return try AVAsset.from(self, sourceFilenameIfAudio: sourceFilenameIfAudio)
         }
     }
 

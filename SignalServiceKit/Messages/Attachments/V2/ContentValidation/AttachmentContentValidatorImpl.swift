@@ -98,6 +98,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
 
         let input = Input.encryptedFile(
             fileUrl,
+            sourceFilenameIfAudio: sourceFilename,
             encryptionKey: encryptionKey,
             plaintextLength: plaintextLength,
             digestSHA256Ciphertext: digestSHA256Ciphertext
@@ -142,6 +143,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
 
         let input = Input.encryptedFile(
             fileUrl,
+            sourceFilenameIfAudio: sourceFilename,
             encryptionKey: encryptionKey,
             plaintextLength: plaintextLength,
             digestSHA256Ciphertext: nil
@@ -242,6 +244,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         case unencryptedFile(URL)
         case encryptedFile(
             URL,
+            sourceFilenameIfAudio: String?,
             encryptionKey: Data,
             plaintextLength: UInt32,
             digestSHA256Ciphertext: Data?
@@ -410,7 +413,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 return data
             case .unencryptedFile(let fileUrl):
                 return try FileHandleImageSource(fileUrl: fileUrl)
-            case let .encryptedFile(fileUrl, encryptionKey, plaintextLength, _):
+            case let .encryptedFile(fileUrl, _, encryptionKey, plaintextLength, _):
                 return try EncryptedFileHandleImageSource(
                     encryptedFileUrl: fileUrl,
                     encryptionKey: encryptionKey,
@@ -461,7 +464,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                     return nil
                 }
                 return try? BlurHash.computeBlurHashSync(for: image)
-            case .encryptedFile(let fileUrl, let encryptionKey, let plaintextLength, _):
+            case .encryptedFile(let fileUrl, _, let encryptionKey, let plaintextLength, _):
                 guard
                     let image = try? UIImage.fromEncryptedFile(
                         at: fileUrl,
@@ -496,7 +499,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 return data.count
             case .unencryptedFile(let fileUrl):
                 return OWSFileSystem.fileSize(of: fileUrl)?.intValue ?? 0
-            case .encryptedFile(_, _, let plaintextLength, _):
+            case .encryptedFile(_, _, _, let plaintextLength, _):
                 return Int(plaintextLength)
             }
         }()
@@ -516,9 +519,10 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 return AVAsset(url: tmpFile)
             case .unencryptedFile(let fileUrl):
                 return AVAsset(url: fileUrl)
-            case let .encryptedFile(fileUrl, encryptionKey, plaintextLength, _):
+            case let .encryptedFile(fileUrl, sourceFilenameIfAudio, encryptionKey, plaintextLength, _):
                 return try AVAsset.fromEncryptedFile(
                     at: fileUrl,
+                    sourceFilenameIfAudio: sourceFilenameIfAudio,
                     encryptionKey: encryptionKey,
                     plaintextLength: plaintextLength,
                     mimeType: mimeType
@@ -618,11 +622,12 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             let player = try AVAudioPlayer(contentsOf: fileUrl)
             player.prepareToPlay()
             return player.duration
-        case let .encryptedFile(fileUrl, encryptionKey, plaintextLength, _):
+        case let .encryptedFile(fileUrl, sourceFilenameIfAudio, encryptionKey, plaintextLength, _):
             // We can't load an AVAudioPlayer for encrypted files.
             // Use AVAsset instead.
             let asset = try AVAsset.fromEncryptedFile(
                 at: fileUrl,
+                sourceFilenameIfAudio: sourceFilenameIfAudio,
                 encryptionKey: encryptionKey,
                 plaintextLength: plaintextLength,
                 mimeType: mimeType
@@ -655,9 +660,10 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
 
         case .unencryptedFile(let fileUrl):
             waveform = try audioWaveformManager.audioWaveformSync(forAudioPath: fileUrl.path)
-        case let .encryptedFile(fileUrl, encryptionKey, plaintextLength, _):
+        case let .encryptedFile(fileUrl, sourceFilenameIfAudio, encryptionKey, plaintextLength, _):
             waveform = try audioWaveformManager.audioWaveformSync(
                 forEncryptedAudioFileAtPath: fileUrl.path,
+                sourceFilenameIfAudio: sourceFilenameIfAudio,
                 encryptionKey: encryptionKey,
                 plaintextDataLength: plaintextLength,
                 mimeType: mimeType
@@ -769,7 +775,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             return Data(SHA256.hash(data: data))
         case .unencryptedFile(let fileUrl):
             return try Cryptography.computeSHA256DigestOfFile(at: fileUrl)
-        case .encryptedFile(let fileUrl, let encryptionKey, let plaintextLength, _):
+        case .encryptedFile(let fileUrl, _, let encryptionKey, let plaintextLength, _):
             let fileHandle = try Cryptography.encryptedAttachmentFileHandle(
                 at: fileUrl,
                 plaintextLength: plaintextLength,
@@ -829,7 +835,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 ),
                 encryptionMetadata
             )
-        case .encryptedFile(let fileUrl, _, let plaintextLength, let digestParam):
+        case .encryptedFile(let fileUrl, _, _, let plaintextLength, let digestParam):
             // Already encrypted, so nothing to encrypt.
             // Just compute the digest if we don't already have it.
 

@@ -25,6 +25,7 @@ public protocol AudioWaveformManager {
 
     func audioWaveform(
         forEncryptedAudioFileAtPath filePath: String,
+        sourceFilenameIfAudio: String?,
         encryptionKey: Data,
         plaintextDataLength: UInt32,
         mimeType: String,
@@ -41,6 +42,7 @@ public protocol AudioWaveformManager {
     /// Generates an audio waveform synchronously, blocking on file I/O operations.
     func audioWaveformSync(
         forEncryptedAudioFileAtPath filePath: String,
+        sourceFilenameIfAudio: String?,
         encryptionKey: Data,
         plaintextDataLength: UInt32,
         mimeType: String

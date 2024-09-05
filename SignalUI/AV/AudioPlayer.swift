@@ -52,13 +52,13 @@ public class AudioPlayer: NSObject {
 
     private enum Source {
         case decryptedFile(URL)
-        case attachment(TSResourceStream)
+        case attachment(TSResourceStream, sourceFilenameIfAudio: String?)
 
         var description: String {
             switch self {
             case .decryptedFile(let url):
                 return url.absoluteString
-            case .attachment(let attachment):
+            case .attachment(let attachment, _):
                 return attachment.mimeType
             }
         }
@@ -83,8 +83,8 @@ public class AudioPlayer: NSObject {
         self.init(source: .decryptedFile(url), audioBehavior: audioBehavior)
     }
 
-    public convenience init(attachment: TSResourceStream, audioBehavior: AudioBehavior) {
-        self.init(source: .attachment(attachment), audioBehavior: audioBehavior)
+    public convenience init(attachment: TSResourceStream, sourceFilenameIfAudio: String?, audioBehavior: AudioBehavior) {
+        self.init(source: .attachment(attachment, sourceFilenameIfAudio: sourceFilenameIfAudio), audioBehavior: audioBehavior)
     }
 
     private init(source: Source, audioBehavior: AudioBehavior) {
@@ -224,8 +224,16 @@ public class AudioPlayer: NSObject {
             switch source {
             case .decryptedFile(let url):
                 audioPlayer = try makeAudioPlayer(mediaUrl: url)
-            case .attachment(let attachment):
-                let asset = try attachment.decryptedAVAsset()
+            case .attachment(let attachment, let sourceFilenameIfAudio):
+                var asset = try attachment.decryptedAVAsset(sourceFilenameIfAudio: sourceFilenameIfAudio)
+                if
+                    !asset.isReadable,
+                    let sourceFilenameIfAudio,
+                    let extensionOverride = MimeTypeUtil.alternativeAudioFileExtension(fileExtension: (sourceFilenameIfAudio as NSString).pathExtension),
+                    let sourceFilenameWithExtensionOverride = (sourceFilenameIfAudio as NSString).appendingPathExtension(extensionOverride)
+                {
+                    asset = try attachment.decryptedAVAsset(sourceFilenameIfAudio: sourceFilenameWithExtensionOverride)
+                }
                 audioPlayer = .init(playerItem: .init(asset: asset))
             }
         } catch let error as NSError {
