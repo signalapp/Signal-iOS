@@ -478,6 +478,8 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
         if bottomBar.isContentTypeSelectionControlAvailable {
             bottomBar.contentTypeSelectionControl.selectedSegmentIndex = 0
             bottomBar.contentTypeSelectionControl.addTarget(self, action: #selector(contentTypeChanged), for: .valueChanged)
+
+            bottomBar.contentTypeSelectionControl.accessibilityTraits = .button
         }
         bottomBar.autoPinWidthToSuperview()
         if bottomBar.isCompactHeightLayout {
@@ -1198,6 +1200,9 @@ extension PhotoCaptureViewController {
 
     private func setupPhotoCapture() {
         bottomBar.captureControl.delegate = cameraCaptureSession
+
+        bottomBar.captureControl.accessibilityTraits = .button
+
         if let sideBar = sideBar {
             sideBar.cameraCaptureControl.delegate = cameraCaptureSession
         }
