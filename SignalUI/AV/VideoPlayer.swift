@@ -69,7 +69,7 @@ public class VideoPlayer: Dependencies {
         shouldMixAudioWithOthers: Bool,
         audioDescription: String?
     ) throws {
-        let asset = try attachment.decryptedAVAsset()
+        let asset = try attachment.decryptedAVAsset(sourceFilenameIfAudio: nil)
         let playerItem = AVPlayerItem(asset: asset)
         let avPlayer = AVPlayer(playerItem: playerItem)
         self.init(

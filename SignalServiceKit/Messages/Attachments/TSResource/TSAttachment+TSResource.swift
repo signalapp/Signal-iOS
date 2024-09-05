@@ -138,7 +138,7 @@ extension TSAttachmentStream: TSResourceStream {
         return image
     }
 
-    public func decryptedAVAsset() throws -> AVAsset {
+    public func decryptedAVAsset(sourceFilenameIfAudio: String?) throws -> AVAsset {
         return try AVAsset.from(self)
     }
 
