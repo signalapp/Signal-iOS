@@ -174,15 +174,23 @@ extension ThreadSwipeHandler where Self: UIViewController {
 
             closeConversationBlock?()
 
-            databaseStorage.write { transaction in
-                threadSoftDeleteManager.softDelete(
-                    threads: [threadViewModel.threadRecord],
-                    sendDeleteForMeSyncMessage: true,
-                    tx: transaction.asV2Write
-                )
-            }
+            ModalActivityIndicatorViewController.present(
+                fromViewController: self
+            ) { [weak self] modal in
+                guard let self else { return }
 
-            updateUIAfterSwipeAction()
+                await self.databaseStorage.awaitableWrite { tx in
+                    threadSoftDeleteManager.softDelete(
+                        threads: [threadViewModel.threadRecord],
+                        sendDeleteForMeSyncMessage: true,
+                        tx: tx.asV2Write
+                    )
+                }
+
+                modal.dismiss {
+                    self.updateUIAfterSwipeAction()
+                }
+            }
         })
         alert.addAction(OWSActionSheets.cancelAction)
 
