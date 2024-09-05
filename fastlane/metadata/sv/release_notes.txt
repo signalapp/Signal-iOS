@@ -1,2 +1,1 @@
-• Nu kan du växla mellan den främre och bakre kameran i ett gruppsamtal även om andra personer inte har anslutit till samtalet ännu. 
-• Vi har åtgärdat en bugg som hindrade vissa användare från att gå med i en ny grupp eller att gå med i en befintlig grupp igen. Vi har också åtgärdat en bugg som gjorde det svårare att bläddra mellan vyerna under gruppsamtal när en hand var uppräckt. 
+• We added support for the new app icon customization features that are coming in iOS 18. Now when you configure your iOS Home Screen to use dark or tinted icons, Signal will adapt accordingly. Go completely monochrome or pick a scheme that matches your colorful imagination.

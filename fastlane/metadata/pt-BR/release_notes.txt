@@ -1,2 +1,1 @@
-• Agora você pode trocar de câmera mesmo estando sozinho em uma chamada em grupo. Quer mostrar o que está ao seu redor? Use a câmera traseira! Quer voltar a aparecer? É só mudar para a câmera frontal e continuar a conversa. 
-• Corrigimos um erro que impedia alguns usuários de entrar em novos grupos ou reingressar em grupos existentes. Também resolvemos um problema que dificultava a navegação entre as telas durante chamadas em grupo quando uma mão estava levantada. 
+• We added support for the new app icon customization features that are coming in iOS 18. Now when you configure your iOS Home Screen to use dark or tinted icons, Signal will adapt accordingly. Go completely monochrome or pick a scheme that matches your colorful imagination.

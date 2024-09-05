@@ -1,2 +1,1 @@
-• พัฒนาอีกขั้นเพื่อให้คุณสามารถสลับกล้องหน้า-หลังในสายโทรกลุ่มได้ทันที ไม่ต้องมัวรอให้สมาชิกคนอื่นมาเข้าร่วมการโทรก่อนอีกต่อไป 
-• เราแก้ไขบั๊กที่อาจเคยทำให้ผู้ใช้บางคนไม่สามารถเข้าร่วมกลุ่มใหม่หรือเข้าร่วมกลุ่มเดิมที่เคยเป็นสมาชิกอยู่ รวมถึงบั๊กที่เป็นอุปสรรคในการเลื่อนดูข้อมูลในสายโทรกลุ่มระหว่างที่มีคนยกมือ 
+• We added support for the new app icon customization features that are coming in iOS 18. Now when you configure your iOS Home Screen to use dark or tinted icons, Signal will adapt accordingly. Go completely monochrome or pick a scheme that matches your colorful imagination.

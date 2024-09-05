@@ -1,2 +1,1 @@
-• يُمكنك الآن الاختيار بين الكاميرا الأمامية والخلفية في المكالمات الجماعية حتى قبل انضمام الآخرين إلى المكالمة. 
-• لقد أصلحنا خطأ كان يحول دون انضمام بعض المستخدمين إلى مجموعة جديدة أو الانضمام من جديد إلى مجموعة قائمة، كما أصلحنا خطأ كان يصعّب عملية التمرير بين المشاهدات خلال المكالمات الجماعية عندما تكون يد مرفوعة. 
+• We added support for the new app icon customization features that are coming in iOS 18. Now when you configure your iOS Home Screen to use dark or tinted icons, Signal will adapt accordingly. Go completely monochrome or pick a scheme that matches your colorful imagination.

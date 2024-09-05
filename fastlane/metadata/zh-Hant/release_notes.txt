@@ -1,2 +1,1 @@
-• 現在，即使其他人還未加入群組通話，你也可以切換鏡頭。切換到後置鏡頭，給大家看看搖滾區視野，或是在你準備好對話時切換回前置鏡頭。 
-• 我們修正了一個錯誤，該錯誤會導致某些用戶無法加入新群組或重新加入現有群組，另外我們還修正了在群組通話期間舉手卻很難在視窗之間捲動的錯誤。 
+• We added support for the new app icon customization features that are coming in iOS 18. Now when you configure your iOS Home Screen to use dark or tinted icons, Signal will adapt accordingly. Go completely monochrome or pick a scheme that matches your colorful imagination.

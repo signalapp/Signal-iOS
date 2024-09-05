@@ -1,2 +1,1 @@
-• Kini Anda dapat beralih antara kamera depan dan belakang dalam panggilan grup meski belum ada yang bergabung dalam panggilan tersebut. 
-• Kami memperbaiki bug yang membuat beberapa pengguna tidak bisa gabung ke grup baru atau bergabung kembali ke grup yang sudah ada. Kami juga memperbaiki bug yang membuat proses pengguliran antartampilan lebih sulit dilakukan selama panggilan grup saat ada yang angkat tangan. 
+• We added support for the new app icon customization features that are coming in iOS 18. Now when you configure your iOS Home Screen to use dark or tinted icons, Signal will adapt accordingly. Go completely monochrome or pick a scheme that matches your colorful imagination.

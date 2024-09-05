@@ -1,2 +1,1 @@
-• Artık bir grup görüşmesinde tek başınayken bile kamerayı çevirebilirsin. Görüşmedeyken, arka kameraya geçerek veya ön kameraya geri dönerek gruptakilerle karşılıklı konuşabilirsin. 
-• Bazı kullanıcıların yeni bir gruba katılmasını veya mevcut bir gruba yeniden katılmasını engelleyen bir hatanın yanı sıra, grup görüşmeleri sırasında birisi el kaldırdığında, görünümler arasında gezinmeyi zorlaştıran bir hatayı da düzelttik. Bu bahsettiklerimiz bu sürümdeki en sevdiğimiz hata düzeltmeleridir. 
+• We added support for the new app icon customization features that are coming in iOS 18. Now when you configure your iOS Home Screen to use dark or tinted icons, Signal will adapt accordingly. Go completely monochrome or pick a scheme that matches your colorful imagination.

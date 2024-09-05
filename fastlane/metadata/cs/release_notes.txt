@@ -1,2 +1,1 @@
-• Nyní můžete ve skupinovém hovoru přepínat mezi přední a zadní kamerou, i když se k hovoru ještě nepřipojili další lidé. 
-• Opravili jsme chybu, která bránila některým uživatelům připojit se k nové skupině nebo se znovu připojit ke stávající skupině. Také jsme opravili chybu, která ztěžovala skrolování mezi náhledy během hovorů, když byla zvednutá ruka. 
+• We added support for the new app icon customization features that are coming in iOS 18. Now when you configure your iOS Home Screen to use dark or tinted icons, Signal will adapt accordingly. Go completely monochrome or pick a scheme that matches your colorful imagination.

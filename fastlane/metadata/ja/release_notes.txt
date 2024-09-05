@@ -1,2 +1,1 @@
-• グループ通話で、他のユーザーがまだ通話に参加していなくても、フロントカメラとバックカメラを切り替えられるようになりました。 
-• ユーザーが新しいグループに参加したり、元々入っていたグループに再参加できない不具合を修正しました。また、グループ通話中に手を挙げている間、ビュー間を移動しにくくなっていた不具合も修正しました。 
+• We added support for the new app icon customization features that are coming in iOS 18. Now when you configure your iOS Home Screen to use dark or tinted icons, Signal will adapt accordingly. Go completely monochrome or pick a scheme that matches your colorful imagination.

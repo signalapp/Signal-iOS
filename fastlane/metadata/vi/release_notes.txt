@@ -1,2 +1,1 @@
-• Giờ đây bạn có thể chuyển đổi giữa camera trước và sau trong một cuộc gọi nhóm kể cả khi mọi người chưa tham gia cuộc gọi. 
-• Chúng tôi đã sửa lỗi khiến một số người dùng không thể tham gia nhóm mới hoặc tham gia lại nhóm đang tồn tại, và lỗi khó cuộn giữa các chế độ hiển thị trong các cuộc gọi nhóm khi có người giơ tay cũng đã được sửa. 
+• We added support for the new app icon customization features that are coming in iOS 18. Now when you configure your iOS Home Screen to use dark or tinted icons, Signal will adapt accordingly. Go completely monochrome or pick a scheme that matches your colorful imagination.

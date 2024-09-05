@@ -1,2 +1,1 @@
-• 现在您可以在群组通话中切换前置或后置摄像头，其他用户未加入通话也不受影响。 
-• 我们修复了一个妨碍一些用户加入新群组或重新加入已有群组的漏洞；我们还修复了另一个漏洞，在群组通话中，该漏洞会在有人举手时导致用户难以在视图间滚动屏幕。 
+• We added support for the new app icon customization features that are coming in iOS 18. Now when you configure your iOS Home Screen to use dark or tinted icons, Signal will adapt accordingly. Go completely monochrome or pick a scheme that matches your colorful imagination.

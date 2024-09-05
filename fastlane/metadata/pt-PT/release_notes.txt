@@ -1,2 +1,1 @@
-• Agora pode alternar entre a câmara frontal e traseira numa chamada de grupo, mesmo que outras pessoas ainda não se tenham juntado. 
-• Corrigimos um erro que impedia alguns utilizadores de se juntarem a um novo grupo ou a voltarem a juntar-se a um grupo existente. Também corrigimos um erro que tornava mais difícil fazer scroll entre visualizações durante chamadas de grupo enquanto uma mão estivesse levantada. 
+• We added support for the new app icon customization features that are coming in iOS 18. Now when you configure your iOS Home Screen to use dark or tinted icons, Signal will adapt accordingly. Go completely monochrome or pick a scheme that matches your colorful imagination.
