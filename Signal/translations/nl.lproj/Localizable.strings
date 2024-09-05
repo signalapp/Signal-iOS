@@ -83,7 +83,7 @@
 "ACTION_VOICE_CALL" = "Signal-oproep";
 
 /* The title for the 'add group members' view. */
-"ADD_GROUP_MEMBERS_VIEW_TITLE" = "Groepsleden toevoegen";
+"ADD_GROUP_MEMBERS_VIEW_TITLE" = "Leden toevoegen";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
 "ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Wil je jouw profiel voor deze groep zichtbaar maken?";
@@ -98,7 +98,7 @@
 "ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "Aan groep toevoegen?";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {contact name, group name} */
-"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "‘%1$@’ aan de groep ‘%2$@’ toevoegen?";
+"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "%1$@ toevoegen aan de groep ‘%2$@’?";
 
 /* The title on the 'add to group' confirmation action sheet. */
 "ADD_TO_GROUP_ACTION_SHEET_TITLE" = "Nieuw lid toevoegen";
@@ -110,7 +110,7 @@
 "ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%1$@ is al lid van de groep ‘%2$@’";
 
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%1$@ is aan de groep ‘%2$@’ toegevoegd";
+"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%1$@ is toegevoegd aan de groep ‘%2$@’ ";
 
 /* Title of the 'add to group' view. */
 "ADD_TO_GROUP_TITLE" = "Aan een groep toevoegen";
@@ -131,7 +131,7 @@
 "ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Een bericht, media, sticker, emoji-reactie, of leesbevestiging van %1$@ kon niet aan jou worden afgeleverd. Het kan zijn dat deze persoon iets naar je probeerde te verzenden in een één-op-één-chat of in een groepschat.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
-"ALERT_DISCARD_BUTTON" = "Verwerpen";
+"ALERT_DISCARD_BUTTON" = "Verwijderen";
 
 /* The label for the 'don't save' button in action sheets. */
 "ALERT_DONT_SAVE" = "Niet opslaan";
@@ -461,7 +461,7 @@
 "AVATAR_SETTINGS_VIEW_PHOTO_BUTTON" = "galerij";
 
 /* Title for the previously used and preset avatar section. */
-"AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR" = "Kies een profielafbeelding";
+"AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR" = "Reeds beschikbare afbeeldingen";
 
 /* Text indicating the user can create a new avatar with text */
 "AVATAR_SETTINGS_VIEW_TEXT_BUTTON" = "tekst";
@@ -494,7 +494,7 @@
 "BADGE_EXPIRED_DONATE_BUTTON" = "Doneren";
 
 /* Text for the 'learn more' link in a sheet explaining there's been an issue with your badge. */
-"BADGE_EXPIRED_LEARN_MORE_LINK" = "Meer informatie.";
+"BADGE_EXPIRED_LEARN_MORE_LINK" = "Meer informatie";
 
 /* Title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Maandelijkse donatie stopgezet";
@@ -575,10 +575,10 @@
 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Jullie zullen weer berichten naar elkaar kunnen sturen en met elkaar kunnen bellen.";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Huidige leden van de groep zullen jou weer aan de groep kunnen toevoegen.";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Huidige leden van de groep zullen jou weer kunnen toevoegen aan de groep.";
 
 /* An explanation of what unblocking a group means. */
-"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Groepsleden zullen je weer aan deze groep kunnen toevoegen.";
+"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Groepsleden zullen je weer kunnen toevoegen aan deze groep.";
 
 /* Action sheet title when confirming you want to unblock a group. */
 "BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Deze groep deblokkeren?";
@@ -608,7 +608,7 @@
 "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%1$@ is gedeblokkeerd.";
 
 /* Alert body after unblocking a group. */
-"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Bestaande leden kunnen je nu opnieuw aan de groep toevoegen.";
+"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Bestaande leden kunnen je nu opnieuw toevoegen aan de groep.";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Geblokkeerde personen kunnen je niet bellen en geen berichten sturen.";
@@ -725,7 +725,7 @@
 "CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "Gebruik deze link om deel te nemen aan een Signal-oproep";
 
 /* Name of a toggle switch to enable/disable admin approval for joining a Call Link. */
-"CALL_LINK_REQUIRE_APPROVAL" = "Alle deelnemers goedkeuren";
+"CALL_LINK_REQUIRE_APPROVAL" = "Require Admin Approval";
 
 /* Button to open UI to share a Call Link with someone on Signal. */
 "CALL_LINK_SHARE_VIA_SIGNAL" = "Link delen via Signal";
@@ -1013,7 +1013,7 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Selecteer land";
 
 /* Button label to allow user to change avatar */
-"CHANGE_AVATAR_BUTTON_LABEL" = "Foto bewerken";
+"CHANGE_AVATAR_BUTTON_LABEL" = "Profielfoto bewerken";
 
 /* Error indicating that the user's old and new phone numbers are identical. */
 "CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Je nieuwe telefoonnummer kan niet dezelfde zijn als je oude telefoonnummer. Voer een nieuw nummer in om je telefoonnummer te wijzigen.";
@@ -1184,12 +1184,27 @@
 "CONTACT_NOTE_TITLE" = "Notitie";
 
 /* Body for contact permission action sheet */
+"CONTACT_PERMISSION_ACTION_SHEET_2_BODY" = "To find people you know on Signal:";
+
+/* First step for contact permission action sheet */
+"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_ONE" = "Tap “Go to Settings” below";
+
+/* Third step for contact permission action sheet */
+"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_THREE" = "Allow the permission";
+
+/* Second step for contact permission action sheet */
+"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_TWO" = "Tap “Contacts”";
+
+/* Title for contact permission action sheet */
+"CONTACT_PERMISSION_ACTION_SHEET_2_TITLE" = "Allow access to Contacts";
+
+/* Body for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Om de namen en profielfoto's van je contacten weer te geven in jouw chats:";
 
 /* First step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tik op ‘Naar instellingen’ hieronder";
 
-/* Third step for contact permission action sheet */
+/* Second step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Schakel ‘Contacten’ in";
 
 /* Title for contact permission action sheet */
@@ -1199,13 +1214,13 @@
 "CONTACT_PERMISSION_NOT_NOW_ACTION" = "Niet nu";
 
 /* Action text for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Inschakelen";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Allow Access";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Om de namen en profielfoto's van je contacten weer te geven in jouw chats.";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Allow access to your contacts to quickly find them on Signal.";
 
 /* Title for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Contacten inschakelen?";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Find contacts on Signal";
 
 /* Label for a contact's phone number. */
 "CONTACT_PHONE" = "Telefoon";
@@ -1394,7 +1409,7 @@
 "CONVERSATION_SETTINGS" = "Chatinstellingen";
 
 /* Label for 'add members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_MEMBERS" = "Groepsleden toevoegen";
+"CONVERSATION_SETTINGS_ADD_MEMBERS" = "Leden toevoegen";
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Aan bestaand contact toevoegen";
@@ -1445,10 +1460,10 @@
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Uitsluitend beheerders";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Alle groepsleden";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Alle leden";
 
 /* Label for 'edit membership access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Groepsleden toevoegen";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Leden toevoegen";
 
 /* Description for the 'edit membership access'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_FOOTER" = "Kies wie het groepslidmaatschap mogen bewerken.";
@@ -1538,7 +1553,7 @@
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "Uit de groep verwijderen";
 
 /* Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}. */
-"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "%1$@ uit de groep verwijderen?";
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "%1$@ verwijderen uit de groep?";
 
 /* Label for 'report spam' action in conversation settings view. */
 "CONVERSATION_SETTINGS_REPORT_SPAM" = "Spam melden";
@@ -1553,7 +1568,7 @@
 "CONVERSATION_SETTINGS_SEARCH_BUTTON" = "Zoeken";
 
 /* Label for button that sets 'send messages permission' for a group to 'all members'. */
-"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ALL_MEMBERS" = "Alle groepsleden";
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ALL_MEMBERS" = "Alle leden";
 
 /* Footer for the 'send messages' section in conversation settings permissions view. */
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "Kies wie berichten aan deze groep mogen verzenden en oproepen mogen beginnen.";
@@ -1610,7 +1625,7 @@
 "COUNTRYCODE_SELECT_TITLE" = "Selecteer landcode";
 
 /* Label for button that enables you to make a new call link. */
-"CREATE_CALL_LINK_LABEL" = "Create a Call Link";
+"CREATE_CALL_LINK_LABEL" = "Oproeplink maken";
 
 /* Body text for an interactive in-app prompt to set up a Signal username. */
 "CREATE_USERNAME_MEGAPHONE_BODY" = "Ontdek telefoonnummerprivacy, optionele gebruikersnamen en links.";
@@ -2300,7 +2315,7 @@
 "DONATION_RECEIPT_TITLE" = "Donatie-afschrift";
 
 /* Section title for donation type on receipts */
-"DONATION_RECEIPT_TYPE" = "Donatie-type";
+"DONATION_RECEIPT_TYPE" = "Donatietype";
 
 /* Title of view where you can see all of your donation receipts, or button to take you there */
 "DONATION_RECEIPTS" = "Donatie-afschriften";
@@ -2519,7 +2534,7 @@
 "EMPTY_CONTACTS_LABEL_LINE2" = "Waarom nodig je niet iemand uit?";
 
 /* Call setup status label */
-"END_CALL_RESPONDER_IS_BUSY" = "bezet";
+"END_CALL_RESPONDER_IS_BUSY" = "Bezet";
 
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "Oproep mislukt";
@@ -2810,7 +2825,7 @@
 "GROUP_ACCESS_LEVEL_ANY" = "Iedereen";
 
 /* Description of the 'all members' access level. */
-"GROUP_ACCESS_LEVEL_MEMBER" = "Alle groepsleden";
+"GROUP_ACCESS_LEVEL_MEMBER" = "Alle leden";
 
 /* Description of the 'unknown' access level. */
 "GROUP_ACCESS_LEVEL_UNKNOWN" = "Onbekend";
@@ -2867,7 +2882,7 @@
 "GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "Bellen naar %1$@…";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "Bellen naar %1$@ en %2$@…";
+"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "Bellen naar %1$@ en %2$@ …";
 
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "Aan oproep deelnemen";
@@ -2919,6 +2934,18 @@
 
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
 "GROUP_CALL_RECONNECTING" = "Opnieuw verbinden";
+
+/* The title of an alert when you've been removed from a group call. */
+"GROUP_CALL_REMOVED" = "Verwijderd uit oproep";
+
+/* The message of an alert when you've been removed from a group call. */
+"GROUP_CALL_REMOVED_MESSAGE" = "Iemand heeft je uit de oproep verwijderd.";
+
+/* The title of an alert when tried to join a call using a link but the admin rejected your request. */
+"GROUP_CALL_REQUEST_DENIED" = "Deelnameverzoek afgewezen";
+
+/* The message of an alert when tried to join a call using a link but the admin rejected your request. */
+"GROUP_CALL_REQUEST_DENIED_MESSAGE" = "Je verzoek om deel te nemen aan deze oproep is afgewezen.";
 
 /* notification body when you join a group call and an already-joined participant has an untrusted safety number */
 "GROUP_CALL_SAFETY_NUMBER_CHANGE_AT_JOIN_BODY" = "Het veiligheidsnummer van een gespreksdeelnemer is veranderd. Tik om te bekijken.";
@@ -2981,7 +3008,7 @@
 "GROUP_CREATED_BY_UNKNOWN_USER" = "De groep is aangemaakt.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
-"GROUP_CREATION_FAILED" = "Niet alle leden konden aan de groep worden toegevoegd. Tik om opnieuw te proberen.";
+"GROUP_CREATION_FAILED" = "Niet alle leden konden worden toegevoegd aan de groep. Tik om opnieuw te proberen.";
 
 /* Text indication the user can tap to view the full group description */
 "GROUP_DESCRIPTION_MORE" = "meer";
@@ -3053,19 +3080,19 @@
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ heeft beheerdersgoedkeuring van nieuwe leden ingeschakeld voor de groepslink.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the name of the member. }} */
-"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%1$@ personen kunnen door jou niet direct aan de groep worden toegevoegd. Ze zijn uitgenodigd om lid te worden van de groep, en ze zullen geen groepsberichten ontvangen totdat ze de uitnodiging geaccepteerd hebben.";
+"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%1$@ personen kunnen door jou niet direct worden toegevoegd aan de groep. Ze zijn uitgenodigd om lid te worden van de groep, en ze zullen geen groepsberichten ontvangen totdat ze de uitnodiging hebben geaccepteerd.";
 
 /* Message for an alert indicating that some members were invited to a group. */
-"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Deze personen kunnen door jou niet direct aan de groep worden toegevoegd. Ze zijn uitgenodigd om lid te worden van de groep, en ze zullen geen groepsberichten ontvangen totdat ze de uitnodiging geaccepteerd hebben.";
+"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Deze personen kunnen door jou niet direct worden toegevoegd aan de groep. Ze zijn uitgenodigd om lid te worden van de groep, en ze zullen geen groepsberichten ontvangen totdat ze de uitnodiging hebben geaccepteerd.";
 
 /* Message indicating that 'announcement-only' mode was disabled. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "De groepsinstellingen zijn aangepast zodat alle groepsleden berichten kunnen verzenden en oproepen kunnen beginnen.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "De groepsinstellingen zijn aangepast zodat alle leden berichten kunnen verzenden en oproepen kunnen beginnen.";
 
 /* Message indicating that 'announcement-only' mode was disabled by the local user. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "Je hebt de groepsinstellingen aangepast zodat alle groepsleden berichten kunnen verzenden en oproepen kunnen beginnen.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "Je hebt de groepsinstellingen aangepast zodat alle leden berichten kunnen verzenden en oproepen kunnen beginnen.";
 
 /* Message indicating that 'announcement-only' mode was disabled by a remote user. Embeds {{ user who disabled 'announcement-only' mode }}. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%1$@ heeft de groepsinstellingen aangepast zodat alle groepsleden berichten kunnen verzenden en oproepen kunnen beginnen.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%1$@ heeft de groepsinstellingen aangepast zodat alle leden berichten kunnen verzenden en oproepen kunnen beginnen.";
 
 /* Message indicating that 'announcement-only' mode was enabled. */
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "De groepsinstellingen zijn aangepast zodat uitsluitend beheerders berichten kunnen verzenden en oproepen kunnen beginnen.";
@@ -3107,7 +3134,7 @@
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "Dit is geen geldige groepslink. Ga na dat je de volledige link gebruikt met de juiste karakters voordat je probeert lid te worden van de groep.";
 
 /* Title for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Link ongeldig";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Ongeldige link";
 
 /* Error message indicating that the local user does not support groups v2. */
 "GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Je moet Signal op dit apparaat bijwerken om te kunnen deelnemen aan deze groep.";
@@ -3179,7 +3206,7 @@
 "GROUP_LINK_VIEW_TITLE" = "Groepslink";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ heeft je aan de groep toegevoegd.";
+"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ heeft je toegevoegd aan de groep.";
 
 /* Message indicating that the local user was granted administrator role. */
 "GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "Je bent nu een beheerder.";
@@ -3245,7 +3272,7 @@
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ heeft je beheerdersbevoegdheden ingetrokken.";
 
 /* Message indicating that the local user was added to the group. */
-"GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP" = "Een groepslid heeft je aan de groep toegevoegd.";
+"GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP" = "Een groepslid heeft je toegevoegd aan de groep.";
 
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "Beheerder";
@@ -3257,7 +3284,7 @@
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Leden";
 
 /* A title string for a view that allows a user to review name collisions in group membership */
-"GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Groepsleden vergelijken";
+"GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Leden vergelijken";
 
 /* Placeholder text for 'group name' field. */
 "GROUP_NAME_PLACEHOLDER" = "Groepsnaam (vereist)";
@@ -3320,19 +3347,19 @@
 "GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "Je hebt %1$@ verwijderd.";
 
 /* Message indicating that a remote user was removed from the group by an unknown user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REMOVED_BY_UNKNOWN_USER_FORMAT" = "%1$@ is geen lid meer van de groep";
+"GROUP_REMOTE_USER_REMOVED_BY_UNKNOWN_USER_FORMAT" = "%1$@ is geen lid meer van deze groep";
 
 /* Message indicating that the remote user was removed from the group. Embeds {{ %1$@ user who removed the user, %2$@ user who was removed}}. */
 "GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ heeft %2$@ verwijderd.";
 
 /* Message indicating that a remote user's request to join the group was approved by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "Je hebt het verzoek van %1$@ om lid te worden van de groep gehonoreerd.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "Je hebt het verzoek van %1$@ om lid te worden van de groep goedgekeurd.";
 
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ heeft het verzoek van %1$@ om lid te worden van de groep gehonoreerd.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ heeft het verzoek van %1$@ om lid te worden van de groep goedgekeurd.";
 
 /* Message indicating that a remote user's request to join the group was approved by an unknown user. Embeds {{ %1$@ requesting user name }}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_UNKNOWN_USER_FORMAT" = "Een verzoek van %1$@ om lid te worden van de groep is gehonoreerd.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_UNKNOWN_USER_FORMAT" = "Een verzoek van %1$@ om lid te worden van de groep is goedgekeurd.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
 "GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%1$@ heeft het verzoek om lid te worden van de groep ingetrokken.";
@@ -3470,7 +3497,7 @@
 "GROUPS_BLOCK_REQUEST_SHEET_BLOCK_BUTTON" = "Verzoek blokkeren";
 
 /* Message for sheet offering to let the user block a request to join the group. Embeds {{ the requester's name }}. */
-"GROUPS_BLOCK_REQUEST_SHEET_MESSAGE" = "%1$@ zal niet langer via de groepslink lid kunnen worden of kunnen verzoeken om lid te worden van deze groep. Deze persoon kan nog wel handmatig door een beheerder aan de groep worden toegevoegd.";
+"GROUPS_BLOCK_REQUEST_SHEET_MESSAGE" = "%1$@ zal niet langer via de groepslink lid kunnen worden of kunnen verzoeken om lid te worden van deze groep. Deze persoon kan nog wel handmatig door een beheerder worden toegevoegd aan de groep.";
 
 /* Title for sheet asking if the user wants to block a request to join the group. */
 "GROUPS_BLOCK_REQUEST_SHEET_TITLE" = "Verzoek blokkeren?";
@@ -3512,7 +3539,7 @@
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "Het aanbevolen ledenlimiet is bereikt";
 
 /* Message asking the user to confirm that they want to add a member to the group. */
-"GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "Verder groepsleden toevoegen?";
+"GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "Lid toch toevoegen?";
 
 /* Label for button that lets the user view the request to join the group. */
 "GROUPS_VIEW_REQUEST_BUTTON" = "Lidmaatschapsverzoek weergeven";
@@ -3578,7 +3605,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Begin je eerste chat hier.";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
-"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%1$@ heeft je aan de groep toegevoegd";
+"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%1$@ heeft je toegevoegd aan de groep";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
 "HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Gespreksverzoek";
@@ -3623,7 +3650,7 @@
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Bijlage selecteren mislukt.";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "verbinden…";
+"IN_CALL_CONNECTING" = "Verbinden…";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
 "IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Beantwoord vanaf een ander apparaat";
@@ -3635,10 +3662,10 @@
 "IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Geweigerd vanaf een ander apparaat";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "opnieuw verbinden…";
+"IN_CALL_RECONNECTING" = "Opnieuw verbinden…";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "gaat over…";
+"IN_CALL_RINGING" = "Gaat over…";
 
 /* Call setup status label */
 "IN_CALL_RINGING_AUDIO" = "Spraakoproep…";
@@ -3647,7 +3674,7 @@
 "IN_CALL_RINGING_VIDEO" = "Video-oproep…";
 
 /* Call setup status label */
-"IN_CALL_SECURING" = "beantwoord. Aan het beveiligen…";
+"IN_CALL_SECURING" = "Beantwoord. Aan het beveiligen…";
 
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "Oproep beëindigd";
@@ -3866,7 +3893,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "Koppelen van apparaat mislukt";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Dit apparaat zal je groepen en contacten kunnen inzien, toegang krijgen tot je chats en berichten in jouw naam kunnen versturen.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Dit apparaat zal je groepen en contacten kunnen inzien, toegang krijgen tot je chats en berichten uit jouw naam kunnen versturen.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Dit apparaat koppelen?";
@@ -3953,7 +3980,7 @@
 "MEDIA_EDITOR_DISCARD_ALL_BUTTON" = "Wijzigingen verwijderen";
 
 /* Media Editor: Message for the 'Discard Changes' confirmation prompt. */
-"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_MESSAGE" = "Je verliest alle wijzigingen die je in deze foto hebt aangebracht";
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_MESSAGE" = "Alle wijzigingen die je in deze afbeelding hebt aangebracht zullen verloren gaan";
 
 /* Media Editor: Title for the 'Discard Changes' confirmation prompt. */
 "MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_TITLE" = "Wijzigingen verwijderen?";
@@ -4322,7 +4349,7 @@
 "MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Overgeslagen";
 
 /* Label indicating that a message failed to send. */
-"MESSAGE_STATUS_SEND_FAILED" = "Verzenden mislukt";
+"MESSAGE_STATUS_SEND_FAILED" = "Verzenden is mislukt";
 
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "Bezig met verzenden…";
@@ -4430,7 +4457,7 @@
 "MY_STORY_TAP_TO_ADD" = "Tik om toe te voegen";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current name, which may be a profile name or an address book name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ heeft recent diens profielnaam gewijzigd van %2$@ naar %3$@";
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ heeft recent diens profielnaam gewijzigd van ‘%2$@’ naar ‘%3$@’";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Overslaan";
@@ -4673,7 +4700,7 @@
 "ONBOARDING_2FA_INVALID_PIN" = "Onjuiste pincode";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view, and you only have one more attempt */
-"ONBOARDING_2FA_INVALID_PIN_LAST_ATTEMPT" = "Pincode incorrect. Je hebt nog één poging.";
+"ONBOARDING_2FA_INVALID_PIN_LAST_ATTEMPT" = "Onjuiste pincode. Je hebt nog één poging.";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Overslaan en nieuwe pincode aanmaken";
@@ -4910,6 +4937,9 @@
 "PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_FACEID" = "Voeg een extra beveiligingslaag toe en vereis verificatie via Face ID om geld te versturen.";
 
 /* First time payments suggest payments lock message */
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_OPTICID" = "Add an additional layer of security and require Optic ID to send funds.";
+
+/* First time payments suggest payments lock message */
 "PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_PASSCODE" = "Voeg een extra beveiligingslaag toe en vereis je toegangscode om geld te versturen.";
 
 /* First time payments suggest payments lock message */
@@ -4923,6 +4953,9 @@
 
 /* Affirmative action title to enable payments lock */
 "PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_FACEID" = "Vereis Face ID om te versturen";
+
+/* Affirmative action title to enable payments lock */
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_OPTICID" = "Require Optic ID to Send";
 
 /* Affirmative action title to enable payments lock */
 "PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_PASSCODE" = "Vereis de toegangscode van je telefoon om te versturen";
@@ -5129,7 +5162,7 @@
 "PAYMENTS_UNKNOWN_PAYMENT" = "Betaling ongeldig";
 
 /* The alert message if user tries to exit a task without saving changes. */
-"PENDING_CHANGES_ACTION_SHEET_MESSAGE" = "Wil je de wijzigingen verwerpen?";
+"PENDING_CHANGES_ACTION_SHEET_MESSAGE" = "Wil je de wijzigingen verwijderen?";
 
 /* The alert title if user tries to exit a task without saving changes. */
 "PENDING_CHANGES_ACTION_SHEET_TITLE" = "Niet-opgeslagen wijzigingen";
@@ -5138,7 +5171,7 @@
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "Aan groep toevoegen?";
 
 /* Title of 'accept member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "‘%1$@’ toevoegen aan de groep?";
+"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "%1$@ toevoegen aan de groep?";
 
 /* Title of 'deny member request to join group' button. */
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "Verzoek afwijzen";
@@ -5156,7 +5189,7 @@
 "PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "‘%1$@’ toegevoegd.";
 
 /* Label for the 'view requests' button in the pending member requests banner. */
-"PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "Zie lidmaatschapsverzoeken";
+"PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "Verzoeken weergeven";
 
 /* Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}. */
 "PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "‘%1$@’ afgewezen.";
@@ -5408,7 +5441,7 @@
 "PIN_REMINDER_FORGOT_PIN" = "Pincode vergeten?";
 
 /* Action text for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_ACTION" = "Pincode verifiëren";
+"PIN_REMINDER_MEGAPHONE_ACTION" = "Pincode bevestigen";
 
 /* Body for PIN reminder megaphone */
 "PIN_REMINDER_MEGAPHONE_BODY" = "We vragen je af en toe om je pincode te bevestigen, zodat je je pincode goed onthoudt.";
@@ -5417,7 +5450,7 @@
 "PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "We zullen het over een paar dagen opnieuw vragen.";
 
 /* Title for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_TITLE" = "Verifieer je Signal-pincode";
+"PIN_REMINDER_MEGAPHONE_TITLE" = "Weet je je Signal-pincode nog?";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow. */
 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "We zullen het morgen opnieuw vragen.";
@@ -6158,7 +6191,7 @@
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Installeer Signal op je telefoon";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Tik in de Signal-app op je telefoon op je profielafbeelding om de instellingen te openen. Tik vervolgens op ‘Gekoppelde apparaten’ en ‘Nieuw apparaat koppelen’ om deze QR-code met je telefoon te scannen:";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Tik in de Signal-app op je telefoon op je profielfoto om de instellingen te openen. Tik vervolgens op ‘Gekoppelde apparaten’ en ‘Nieuw apparaat koppelen’ om deze QR-code met je telefoon te scannen:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Vind hier hulp met het koppelen van je iPad";
@@ -6188,7 +6221,7 @@
 "SEND_INVITE_FAILURE" = "Uitnodiging sturen mislukt, probeer het later opnieuw.";
 
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
-"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Verwerp media";
+"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Media verwerpen";
 
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "Terug naar camera";
@@ -6802,6 +6835,9 @@
 /* Double reminder action sheet title in Payments Lock Prompt view for Face ID. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_FACEID" = "Face ID aanzetten overslaan?";
 
+/* Double reminder action sheet title in Payments Lock Prompt view for Optic ID. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_OPTICID" = "Skip Enabling Optic ID?";
+
 /* Double reminder action sheet title in Payments Lock Prompt view for Passcode. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_PASSCODE" = "Toegangscode aanzetten overslaan?";
 
@@ -6811,6 +6847,9 @@
 /* Enable Button title in Payments Lock Prompt view for Face ID. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_FACEID" = "Gebruik Face ID";
 
+/* Enable Button title in Payments Lock Prompt view for Optic ID. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_OPTICID" = "Use Optic ID";
+
 /* Enable Button title in Payments Lock Prompt view for Passcode. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_PASSCODE" = "Gebruik toegangscode";
 
@@ -6819,6 +6858,9 @@
 
 /* Explanation of 'payments lock' with Face ID in the 'payments lock prompt' view shown after payments activation. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_FACEID" = "Help voorkomen dat iemand met je telefoon toegang heeft tot jouw geld door Face ID aan te zetten. In instellingen kun je deze optie uitzetten.";
+
+/* Explanation of 'payments lock' with Optic ID in the 'payments lock prompt' view shown after payments activation. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_OPTICID" = "Help prevent a person with your phone from accessing your funds by enabling Optic ID. You can disable this option in Settings.";
 
 /* Explanation of 'payments lock' with passcode in the 'payments lock prompt' view shown after payments activation. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_PASSCODE" = "Help voorkomen dat iemand met jouw telefoon toegang heeft tot jouw geld door je toegangscode te gebruiken. In instellingen kun je deze optie uitzetten.";
@@ -6933,6 +6975,9 @@
 
 /* Caption for footer label beneath the payments lock privacy toggle for faceid biometry. */
 "SETTINGS_PAYMENTS_SECURITY_DETAIL_FACEID" = "Vereis Face ID om geld over te maken.";
+
+/* Caption for footer label beneath the payments lock privacy toggle for opticid biometry */
+"SETTINGS_PAYMENTS_SECURITY_DETAIL_OPTICID" = "Require Optic ID to transfer funds.";
 
 /* Caption for footer label beneath the payments lock privacy toggle for a biometry type that is a passcode. */
 "SETTINGS_PAYMENTS_SECURITY_DETAIL_PASSCODE" = "Vereis de toegangscode van je telefoon om geld over te maken.";
@@ -7064,7 +7109,7 @@
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Zorg ervoor dat je je Signal-pincode onthoudt of op een goed beveiligde manier opslaat, want je kunt je pincode niet herstellen. Als je je pincode toch vergeet, dan verlies je mogelijk gegevens bij het opnieuw registreren van je Signal-account.";
 
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Je Signal-pincode bevestigen";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Bevestig je Signal-pincode";
 
 /* Label for the 'pin reminder' switch of the privacy settings. */
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "Pincode-herinneringen";
@@ -7140,6 +7185,9 @@
 
 /* Section footer */
 "SETTINGS_SECURITY_DETAIL_FACEID" = "Gebruik Face ID om Signal te ontgrendelen.";
+
+/* Section footer */
+"SETTINGS_SECURITY_DETAIL_OPTICID" = "Use Optic ID to unlock Signal.";
 
 /* Section footer */
 "SETTINGS_SECURITY_DETAIL_PASSCODE" = "Het wachtwoord voor je apparaat gebruiken om Signal te ontgrendelen.";
@@ -7352,7 +7400,7 @@
 "STORIES_GO_TO_CHAT_ACTION" = "Chat openen";
 
 /* Text indicating you can't reply to a group story because you're not a member of the group */
-"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "Je kunt niet reageren op dit verhaal, omdat je geen lid van deze groep meer bent.";
+"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "Je kunt niet reageren op dit verhaal, omdat je geen lid meer bent van deze groep.";
 
 /* Header for the hidden stories section of the stories list */
 "STORIES_HIDDEN_SECTION_HEADER" = "Verborgen verhalen";
@@ -7400,7 +7448,7 @@
 "STORIES_REPLIES_TAB" = "Reacties";
 
 /* alert notifying that the 'save' operation failed */
-"STORIES_SAVE_FAILED" = "Verhaal opslaan mislukt";
+"STORIES_SAVE_FAILED" = "Verhaal opslaan is mislukt";
 
 /* Context menu action to save the selected story */
 "STORIES_SAVE_STORY_ACTION" = "Opslaan";
@@ -8150,7 +8198,7 @@
 "VIEW_CONTACT_BUTTON" = "Contact bekijken";
 
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
-"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Je hebt dit bericht al weergegeven.";
+"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Je hebt dit bericht al bekeken.";
 
 /* Tooltip highlighting the view once messages button. */
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "Tik hier om ervoor te zorgen dat dit bericht wordt verwijderd nadat het is gezien.";

@@ -725,7 +725,7 @@
 "CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "Signal কলে যোগ দিতে এই লিংকটি ব্যবহার করুন";
 
 /* Name of a toggle switch to enable/disable admin approval for joining a Call Link. */
-"CALL_LINK_REQUIRE_APPROVAL" = "সকল সদস্যকে অনুমোদন দিন";
+"CALL_LINK_REQUIRE_APPROVAL" = "Require Admin Approval";
 
 /* Button to open UI to share a Call Link with someone on Signal. */
 "CALL_LINK_SHARE_VIA_SIGNAL" = "Signal-এর মাধ্যমে লিংক শেয়ার করুন";
@@ -1184,12 +1184,27 @@
 "CONTACT_NOTE_TITLE" = "নোট";
 
 /* Body for contact permission action sheet */
+"CONTACT_PERMISSION_ACTION_SHEET_2_BODY" = "To find people you know on Signal:";
+
+/* First step for contact permission action sheet */
+"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_ONE" = "Tap “Go to Settings” below";
+
+/* Third step for contact permission action sheet */
+"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_THREE" = "Allow the permission";
+
+/* Second step for contact permission action sheet */
+"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_TWO" = "Tap “Contacts”";
+
+/* Title for contact permission action sheet */
+"CONTACT_PERMISSION_ACTION_SHEET_2_TITLE" = "Allow access to Contacts";
+
+/* Body for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_BODY" = "আপনার চ্যাটে থাকা কন্টাক্টের নাম ও ছবি দেখতে:";
 
 /* First step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "নিচের “সেটিংস-এ যান” অপশনে ট্যাপ করুন";
 
-/* Third step for contact permission action sheet */
+/* Second step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "“কন্ট্যাক্ট” চালু করুন";
 
 /* Title for contact permission action sheet */
@@ -1199,13 +1214,13 @@
 "CONTACT_PERMISSION_NOT_NOW_ACTION" = "এখন নয়";
 
 /* Action text for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "চালু করুন";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Allow Access";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "আপনার চ্যাটে থাকা কন্টাক্টের নাম ও ছবি দেখুন।";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Allow access to your contacts to quickly find them on Signal.";
 
 /* Title for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "কন্ট্যাক্ট চালু করবেন?";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Find contacts on Signal";
 
 /* Label for a contact's phone number. */
 "CONTACT_PHONE" = "ফোন";
@@ -1610,7 +1625,7 @@
 "COUNTRYCODE_SELECT_TITLE" = "দেশ কোড নির্বাচন করুন";
 
 /* Label for button that enables you to make a new call link. */
-"CREATE_CALL_LINK_LABEL" = "Create a Call Link";
+"CREATE_CALL_LINK_LABEL" = "কলের একটি লিংক তৈরি করুন";
 
 /* Body text for an interactive in-app prompt to set up a Signal username. */
 "CREATE_USERNAME_MEGAPHONE_BODY" = "ফোন নম্বরের গোপনীয়তা, ঐচ্ছিক ব্যবহারকারীর নাম ও লিংক চালু হচ্ছে।";
@@ -2919,6 +2934,18 @@
 
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
 "GROUP_CALL_RECONNECTING" = "পুনঃসংযুক্ত হচ্ছে";
+
+/* The title of an alert when you've been removed from a group call. */
+"GROUP_CALL_REMOVED" = "কল থেকে সরানো হয়েছে";
+
+/* The message of an alert when you've been removed from a group call. */
+"GROUP_CALL_REMOVED_MESSAGE" = "কেউ আপনাকে কল থেকে সরিয়ে দিয়েছেন।";
+
+/* The title of an alert when tried to join a call using a link but the admin rejected your request. */
+"GROUP_CALL_REQUEST_DENIED" = "যোগ দেওয়ার অনুরোধ প্রত্যাখ্যান করা হয়েছে";
+
+/* The message of an alert when tried to join a call using a link but the admin rejected your request. */
+"GROUP_CALL_REQUEST_DENIED_MESSAGE" = "এই কলে যোগ দেওয়ার জন্য আপনার অনুরোধ প্রত্যাখ্যান করা হয়েছে।";
 
 /* notification body when you join a group call and an already-joined participant has an untrusted safety number */
 "GROUP_CALL_SAFETY_NUMBER_CHANGE_AT_JOIN_BODY" = "কলে অংশগ্রহণকারী একজন নিরাপত্তা নম্বর পরিবর্তন হয়ে গেছে। দেখতে ট্যাপ করুন।";
@@ -4910,6 +4937,9 @@
 "PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_FACEID" = "নিরাপত্তার একটি অতিরিক্ত স্তর যোগ করুন এবং ফান্ড পাঠাতে ফেইস আইডি'র প্রয়োজনীয়তা যোগ করুন।";
 
 /* First time payments suggest payments lock message */
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_OPTICID" = "Add an additional layer of security and require Optic ID to send funds.";
+
+/* First time payments suggest payments lock message */
 "PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_PASSCODE" = "নিরাপত্তার একটি অতিরিক্ত স্তর যোগ করুন এবং ফান্ড পাঠাতে পাসকোডের আবশ্যকতা যোগ করুন।";
 
 /* First time payments suggest payments lock message */
@@ -4923,6 +4953,9 @@
 
 /* Affirmative action title to enable payments lock */
 "PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_FACEID" = "পাঠাতে ফেইস আইডি প্রয়োজন";
+
+/* Affirmative action title to enable payments lock */
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_OPTICID" = "Require Optic ID to Send";
 
 /* Affirmative action title to enable payments lock */
 "PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_PASSCODE" = "পাঠাতে আপনার ফোনের পাসকোড প্রয়োজন";
@@ -6802,6 +6835,9 @@
 /* Double reminder action sheet title in Payments Lock Prompt view for Face ID. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_FACEID" = "ফেইস আইডি সচল না করে এড়িয়ে যাবেন?";
 
+/* Double reminder action sheet title in Payments Lock Prompt view for Optic ID. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_OPTICID" = "Skip Enabling Optic ID?";
+
 /* Double reminder action sheet title in Payments Lock Prompt view for Passcode. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_PASSCODE" = "পাসকোড সচল না করে এড়িয়ে যাবেন?";
 
@@ -6811,6 +6847,9 @@
 /* Enable Button title in Payments Lock Prompt view for Face ID. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_FACEID" = "ফেইস আইডি ব্যবহার করুন";
 
+/* Enable Button title in Payments Lock Prompt view for Optic ID. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_OPTICID" = "Use Optic ID";
+
 /* Enable Button title in Payments Lock Prompt view for Passcode. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_PASSCODE" = "পাসকোড ব্যবহার করুন";
 
@@ -6819,6 +6858,9 @@
 
 /* Explanation of 'payments lock' with Face ID in the 'payments lock prompt' view shown after payments activation. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_FACEID" = "আপনার ফোনের ফেইস আইডি ব্যবহার করে কোনো ব্যক্তিকে আপনার ফান্ড অ্যাক্সেস করা থেকে প্রতিহত করতে সহায়তা করুন। আপনি সেটিংসে এই অপশনটি নিষ্ক্রিয় করতে পারবেন।";
+
+/* Explanation of 'payments lock' with Optic ID in the 'payments lock prompt' view shown after payments activation. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_OPTICID" = "Help prevent a person with your phone from accessing your funds by enabling Optic ID. You can disable this option in Settings.";
 
 /* Explanation of 'payments lock' with passcode in the 'payments lock prompt' view shown after payments activation. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_PASSCODE" = "আপনার ফোনের পাসকোড ব্যবহার করে কোনো ব্যক্তিকে আপনার ফান্ড অ্যাক্সেস করা থেকে প্রতিহত করতে সহায়তা করুন। আপনি সেটিংসে এই অপশনটি নিষ্ক্রিয় করতে পারবেন।";
@@ -6933,6 +6975,9 @@
 
 /* Caption for footer label beneath the payments lock privacy toggle for faceid biometry. */
 "SETTINGS_PAYMENTS_SECURITY_DETAIL_FACEID" = "ফান্ড স্থানান্তর করতে ফেইস আইডি প্রয়োজন।";
+
+/* Caption for footer label beneath the payments lock privacy toggle for opticid biometry */
+"SETTINGS_PAYMENTS_SECURITY_DETAIL_OPTICID" = "Require Optic ID to transfer funds.";
 
 /* Caption for footer label beneath the payments lock privacy toggle for a biometry type that is a passcode. */
 "SETTINGS_PAYMENTS_SECURITY_DETAIL_PASSCODE" = "ফান্ড স্থানান্তর করতে আপনার ফোনের পাসকোড প্রয়োজন।";
@@ -7140,6 +7185,9 @@
 
 /* Section footer */
 "SETTINGS_SECURITY_DETAIL_FACEID" = "Signal আনলক করতে ফেস ID ব্যবহার করুন।";
+
+/* Section footer */
+"SETTINGS_SECURITY_DETAIL_OPTICID" = "Use Optic ID to unlock Signal.";
 
 /* Section footer */
 "SETTINGS_SECURITY_DETAIL_PASSCODE" = "Signal আনলক করতে আপনার ডিভাইসের পাসকোড ব্যবহার করুন।";

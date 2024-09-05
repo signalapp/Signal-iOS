@@ -1306,7 +1306,7 @@
 			<key>one</key>
 			<string>%1$d Aufruf</string>
 			<key>other</key>
-			<string>%1$d Aufruf</string>
+			<string>%1$d Aufrufe</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_COUNT_%d</key>
