@@ -5,8 +5,8 @@
 
 import Foundation
 
-@objc
 public extension OWSFileSystem {
+    @objc
     class func fileOrFolderExists(atPath filePath: String) -> Bool {
         FileManager.default.fileExists(atPath: filePath)
     }
@@ -31,6 +31,7 @@ public extension OWSFileSystem {
     }
 
     @discardableResult
+    @objc
     class func deleteFileIfExists(_ filePath: String) -> Bool {
         return deleteFile(filePath, ignoreIfMissing: true)
     }
@@ -96,6 +97,7 @@ public extension OWSFileSystem {
         #endif
     }
 
+    @objc
     class func recursiveFilesInDirectory(_ dirPath: String) throws -> [String] {
         owsAssertDebug(!dirPath.isEmpty)
 
@@ -116,7 +118,6 @@ public extension OWSFileSystem {
 
 // MARK: - Temporary Files
 
-@objc
 public extension OWSFileSystem {
 
     class func temporaryFileUrl(
@@ -178,7 +179,6 @@ public extension OWSFileSystem {
 // MARK: -
 
 public extension OWSFileSystem {
-    @objc
     class func deleteFile(_ filePath: String, ignoreIfMissing: Bool = false) -> Bool {
         do {
             try FileManager.default.removeItem(atPath: filePath)
