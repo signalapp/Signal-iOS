@@ -296,11 +296,15 @@ public class SystemContactsFetcher: NSObject {
             completion(error)
             return
         }
-        guard rawAuthorizationStatus == .authorized else {
+
+        switch rawAuthorizationStatus {
+        case .notDetermined, .denied, .restricted:
             owsFailDebug("should have already requested contact access")
             self.delegate?.systemContactsFetcher(self, hasAuthorizationStatus: rawAuthorizationStatus)
             completion(nil)
             return
+        case .limited, .authorized:
+            break
         }
 
         updateContacts(isUserRequested: true, completion: completion)

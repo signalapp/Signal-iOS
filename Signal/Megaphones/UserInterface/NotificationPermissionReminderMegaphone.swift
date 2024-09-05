@@ -94,18 +94,20 @@ class TurnOnPermissionView: UIStackView {
 
         addBackgroundView(withBackgroundColor: Theme.actionSheetBackgroundColor)
         axis = .vertical
-        spacing = 2
         isLayoutMarginsRelativeArrangement = true
-        layoutMargins = UIEdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16)
+        layoutMargins = UIEdgeInsets(top: 32, leading: 32, bottom: 16, trailing: 32)
 
         addArrangedSubview(titleLabel(text: title))
+        addArrangedSubview(.spacer(withHeight: 8))
         addArrangedSubview(explanationLabel(explanationText: message))
 
-        addArrangedSubview(.spacer(withHeight: 30))
+        addArrangedSubview(.spacer(withHeight: 32))
 
         for (index, step) in steps.enumerated() {
             addStepStack(step: step, number: index + 1)
         }
+
+        addArrangedSubview(.spacer(withHeight: 8))
 
         let button = button ?? self.button(title: CommonStrings.goToSettingsButton, selector: #selector(goToSettings))
 
@@ -163,7 +165,7 @@ class TurnOnPermissionView: UIStackView {
         stepStack.spacing = 8
 
         addArrangedSubview(stepStack)
-        addArrangedSubview(.spacer(withHeight: 30))
+        addArrangedSubview(.spacer(withHeight: 24))
 
         let numberLabel = UILabel()
         numberLabel.text = "\(number)" + "."
@@ -191,8 +193,7 @@ class TurnOnPermissionView: UIStackView {
             iconViewContainer.addSubview(iconView)
             iconView.autoPinWidthToSuperview()
             iconView.autoPinEdge(toSuperviewEdge: .top)
-            iconView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 0, relation: .lessThanOrEqual)
-            iconView.autoSetDimensions(to: CGSize(square: 32))
+            iconView.autoSetDimensions(to: CGSize(square: icon.size.width))
 
             stepStack.addArrangedSubview(iconViewContainer)
         }
