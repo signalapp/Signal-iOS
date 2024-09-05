@@ -149,12 +149,12 @@ extension IncrementalMessageTSAttachmentMigrator {
                 guard CurrentAppContext().isMainAppAndActive else {
                     // If the main app goes into the background, we shouldn't be
                     // grabbing the sql write lock. Stop.
-                    Logger.info("Stopping when backgrounding app")
+                    Logger.info("Stopping when backgrounding app after \(batchCount) batches")
                     return
                 }
 
                 // Add a small delay between each batch to avoid locking the db write queue.
-                try await Task.sleep(nanoseconds: 300 * NSEC_PER_MSEC)
+                try await Task.sleep(nanoseconds: 3 * NSEC_PER_SEC)
 
                 didFinish = try await self.runNextBatch()
                 batchCount += 1
