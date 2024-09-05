@@ -126,12 +126,15 @@ extension IncrementalMessageTSAttachmentMigrator {
         case .started:
             // Don't _start_ in the main app, but continue making progress if we already started.
 
-            if isRunningInMainApp.get() {
+            guard isRunningInMainApp.tryToSetFlag() else {
                 return
             }
 
             Logger.info("Continuing migration in main app")
             Task {
+                defer {
+                    isRunningInMainApp.set(false)
+                }
                 await runInMainAppBackground()
             }
         }
@@ -140,10 +143,6 @@ extension IncrementalMessageTSAttachmentMigrator {
     private func runInMainAppBackground() async {
         var batchCount = 0
         var didFinish = false
-        isRunningInMainApp.set(true)
-        defer {
-            isRunningInMainApp.set(false)
-        }
         while !didFinish {
             do {
                 guard CurrentAppContext().isMainAppAndActive else {
