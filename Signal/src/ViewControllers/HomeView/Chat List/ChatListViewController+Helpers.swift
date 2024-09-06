@@ -30,8 +30,20 @@ public extension ChatListViewController {
 
     func updateLastViewedThread(_ thread: TSThread, animated: Bool) {
         lastViewedThread = thread
+
+        // First ensure that the given thread is selected in the current state
+        // of the table. This will update the view state and set a flag
+        // indicating whether a load is necessary.
         ensureSelectedThread(thread, animated: animated)
+
+        // Schedule a load if necessary.
         loadCoordinator.loadIfNecessary(suppressAnimations: !animated)
+
+        // The chat list render state may now be changed, invalidating the
+        // just-selected index path, so update the selection once more to
+        // reflect the loaded data.
+        ensureSelectedThread(thread, animated: animated)
+
         tableView.scrollToNearestSelectedRow(at: .none, animated: animated)
     }
 
