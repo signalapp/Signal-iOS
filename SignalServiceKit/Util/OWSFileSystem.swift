@@ -39,13 +39,11 @@ private func ClearOldTemporaryDirectoriesSync() {
 
     let thresholdDate = CurrentAppContext().appLaunchTime
     let dirPath = NSTemporaryDirectory()
-    var fileNames: [String]?
+    let fileNames: [String]
     do {
         fileNames = try FileManager.default.contentsOfDirectory(atPath: dirPath)
     } catch {
         owsFailDebug("contentsOfDirectoryAtPath error: \(error)")
-    }
-    guard let fileNames else {
         return
     }
     for fileName in fileNames {
@@ -83,6 +81,145 @@ private func ClearOldTemporaryDirectoriesSync() {
             // Clean up will occur when app becomes active.
             Logger.warn("Could not delete old temp directory: \(filePath)")
         }
+    }
+}
+
+// TODO: Convert to enum after eliminating objc callers
+@objc
+public class OWSFileSystem: NSObject {
+
+    override private init() {}
+
+    @discardableResult
+    private static func protectRecursiveContents(atPath path: String) -> Bool {
+        var isDirectory = ObjCBool(false)
+        guard FileManager.default.fileExists(atPath: path, isDirectory: &isDirectory) else {
+            return false
+        }
+        if !isDirectory.boolValue {
+            return Self.protectFileOrFolder(atPath: path)
+        }
+        let dirPath = path
+        guard let directoryEnumerator = FileManager.default.enumerator(atPath: dirPath) else {
+            return true
+        }
+
+        var success = true
+        for relativePath in directoryEnumerator {
+            guard let relativePath = relativePath as? String else {
+                owsFail("type of elements from FileManager.enumerator was not String")
+            }
+            let filePath = dirPath.appendingPathComponent(relativePath)
+            success = Self.protectFileOrFolder(atPath: filePath) && success
+        }
+        return success
+    }
+
+    @discardableResult
+    public static func protectFileOrFolder(atPath path: String, fileProtectionType: FileProtectionType = .completeUntilFirstUserAuthentication) -> Bool {
+        do {
+            try FileManager.default.setAttributes([.protectionKey: fileProtectionType], ofItemAtPath: path)
+        } catch CocoaError.fileReadNoSuchFile, CocoaError.fileNoSuchFile {
+            return false
+        } catch {
+            owsFailDebug("Could not protect file or folder: \(error)")
+            return false
+        }
+
+        var resourceAttrs = URLResourceValues()
+        resourceAttrs.isExcludedFromBackup = true
+        var resourceUrl = URL(fileURLWithPath: path)
+        do {
+            try resourceUrl.setResourceValues(resourceAttrs)
+        } catch CocoaError.fileReadNoSuchFile, CocoaError.fileNoSuchFile {
+            return false
+        } catch {
+            owsFailDebug("Could not protect file or folder: \(error)")
+            return false
+        }
+
+        return true
+    }
+
+    public static func appLibraryDirectoryPath() -> String {
+        guard let last = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).last else {
+            owsFail("no urls returned for the user library directory")
+        }
+        return last.path
+    }
+
+    @objc
+    public static func appDocumentDirectoryPath() -> String {
+        CurrentAppContext().appDocumentDirectoryPath()
+    }
+
+    public static func appSharedDataDirectoryURL() -> URL {
+        URL(fileURLWithPath: Self.appSharedDataDirectoryPath())
+    }
+
+    @objc
+    public static func appSharedDataDirectoryPath() -> String {
+        CurrentAppContext().appSharedDataDirectoryPath()
+    }
+
+    private static let cachesDirectoryPathPrecomputed: String = {
+        guard let result = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first else {
+            owsFail("no search paths returned for user caches directories")
+        }
+        return result
+    }()
+    @objc
+    public static func cachesDirectoryPath() -> String {
+        return cachesDirectoryPathPrecomputed
+    }
+
+    public static func moveFilePath(_ oldFilePath: String, toFilePath newFilePath: String) throws {
+        try FileManager.default.moveItem(atPath: oldFilePath, toPath: newFilePath)
+
+        // Ensure all files moved have the proper data protection class.
+        // On large directories this can take a while, so we dispatch async
+        // since we're in the launch path.
+        DispatchQueue.global().async {
+            _ = Self.protectRecursiveContents(atPath: newFilePath)
+        }
+    }
+
+    public static func ensureFileExists(_ filePath: String) -> Bool {
+        if FileManager.default.fileExists(atPath: filePath) || FileManager.default.createFile(atPath: filePath, contents: nil){
+            return Self.protectFileOrFolder(atPath: filePath)
+        }
+
+        owsFailDebug("Failed to create file.")
+        return false
+    }
+
+    @objc
+    public static func deleteContents(ofDirectory dirPath: String) {
+        do {
+            let filePaths = try Self.recursiveFilesInDirectory(dirPath)
+            for filePath in filePaths {
+                Self.deleteFileIfExists(filePath)
+            }
+        } catch {
+            owsFailDebug("Could not retrieve files in directory.")
+        }
+    }
+
+    public static func fileSize(ofPath filePath: String) -> NSNumber? {
+        do {
+            let attrs = try FileManager.default.attributesOfItem(atPath: filePath)
+            guard let result = attrs[.size] as? NSNumber else {
+                owsFail("file size attribute was not NSNumber")
+            }
+            return result
+        } catch {
+            Logger.error("Couldn't fetch file size: \(error)")
+            return nil
+        }
+    }
+
+    public static func fileSize(of fileUrl: URL) -> NSNumber? {
+        Self.fileSize(ofPath: fileUrl.path)
     }
 }
 
@@ -198,7 +335,6 @@ public extension OWSFileSystem {
         #endif
     }
 
-    @objc
     class func recursiveFilesInDirectory(_ dirPath: String) throws -> [String] {
         owsAssertDebug(!dirPath.isEmpty)
 

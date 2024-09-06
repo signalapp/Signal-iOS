@@ -2708,7 +2708,6 @@
 		F9C5CDC6289453B400548EEE /* OWSURLSessionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAF3289453B200548EEE /* OWSURLSessionProtocol.swift */; };
 		F9C5CDC8289453B400548EEE /* MessageSenderJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAF5289453B200548EEE /* MessageSenderJobQueue.swift */; };
 		F9C5CDCA289453B400548EEE /* ContentProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAF7289453B200548EEE /* ContentProxy.swift */; };
-		F9C5CDCC289453B400548EEE /* OWSFileSystem.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAFA289453B200548EEE /* OWSFileSystem.m */; };
 		F9C5CDCD289453B400548EEE /* ParamParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAFB289453B200548EEE /* ParamParser.swift */; };
 		F9C5CDD0289453B400548EEE /* OWSUserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAFE289453B200548EEE /* OWSUserProfile.swift */; };
 		F9C5CDD3289453B400548EEE /* OWSOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB01289453B200548EEE /* OWSOperation.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -2760,7 +2759,6 @@
 		F9C5CE18289453B400548EEE /* Refinery.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB46289453B200548EEE /* Refinery.swift */; };
 		F9C5CE19289453B400548EEE /* SSKPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB47289453B200548EEE /* SSKPreferences.swift */; };
 		F9C5CE1A289453B400548EEE /* OWSFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB48289453B200548EEE /* OWSFormat.swift */; };
-		F9C5CE1B289453B400548EEE /* OWSFileSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB49289453B200548EEE /* OWSFileSystem.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE1E289453B400548EEE /* OrderedSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB4C289453B200548EEE /* OrderedSet.swift */; };
 		F9C5CE1F289453B400548EEE /* UIImage+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB4D289453B200548EEE /* UIImage+OWS.swift */; };
 		F9C5CE20289453B400548EEE /* PendingTasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB4E289453B200548EEE /* PendingTasks.swift */; };
@@ -5842,7 +5840,6 @@
 		F9C5CAF3289453B200548EEE /* OWSURLSessionProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSURLSessionProtocol.swift; sourceTree = "<group>"; };
 		F9C5CAF5289453B200548EEE /* MessageSenderJobQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageSenderJobQueue.swift; sourceTree = "<group>"; };
 		F9C5CAF7289453B200548EEE /* ContentProxy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentProxy.swift; sourceTree = "<group>"; };
-		F9C5CAFA289453B200548EEE /* OWSFileSystem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSFileSystem.m; sourceTree = "<group>"; };
 		F9C5CAFB289453B200548EEE /* ParamParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParamParser.swift; sourceTree = "<group>"; };
 		F9C5CAFE289453B200548EEE /* OWSUserProfile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSUserProfile.swift; sourceTree = "<group>"; };
 		F9C5CB01289453B200548EEE /* OWSOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSOperation.h; sourceTree = "<group>"; };
@@ -5894,7 +5891,6 @@
 		F9C5CB46289453B200548EEE /* Refinery.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Refinery.swift; sourceTree = "<group>"; };
 		F9C5CB47289453B200548EEE /* SSKPreferences.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSKPreferences.swift; sourceTree = "<group>"; };
 		F9C5CB48289453B200548EEE /* OWSFormat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSFormat.swift; sourceTree = "<group>"; };
-		F9C5CB49289453B200548EEE /* OWSFileSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSFileSystem.h; sourceTree = "<group>"; };
 		F9C5CB4C289453B200548EEE /* OrderedSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderedSet.swift; sourceTree = "<group>"; };
 		F9C5CB4D289453B200548EEE /* UIImage+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+OWS.swift"; sourceTree = "<group>"; };
 		F9C5CB4E289453B200548EEE /* PendingTasks.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PendingTasks.swift; sourceTree = "<group>"; };
@@ -12003,8 +11999,6 @@
 				F9C5CB80289453B200548EEE /* OWSError.m */,
 				F9C5CB78289453B200548EEE /* OWSError.swift */,
 				F937EDA329746DA20003AF3F /* OWSFail.swift */,
-				F9C5CB49289453B200548EEE /* OWSFileSystem.h */,
-				F9C5CAFA289453B200548EEE /* OWSFileSystem.m */,
 				F9C5CB05289453B200548EEE /* OWSFileSystem.swift */,
 				F9C5CB48289453B200548EEE /* OWSFormat.swift */,
 				668A00E32C2B5F35007B8808 /* OWSLocalizedString.swift */,
@@ -12197,7 +12191,6 @@
 				F9C5CBE6289453B300548EEE /* OWSDynamicOutgoingMessage.h in Headers */,
 				F9C5CBFF289453B300548EEE /* OWSEndSessionMessage.h in Headers */,
 				F9C5CE01289453B400548EEE /* OWSError.h in Headers */,
-				F9C5CE1B289453B400548EEE /* OWSFileSystem.h in Headers */,
 				F9C5CC36289453B300548EEE /* OWSGroupCallMessage.h in Headers */,
 				F9C5CE6C289453B400548EEE /* OWSHTTPSecurityPolicy.h in Headers */,
 				50B815862A5E15390009D42D /* OWSIdentity.h in Headers */,
@@ -14845,7 +14838,6 @@
 				F9C5CE49289453B400548EEE /* OWSError.swift in Sources */,
 				F937EDA429746DA20003AF3F /* OWSFail.swift in Sources */,
 				503BD28B2B44DA64009624FC /* OWSFakeProfileManager.swift in Sources */,
-				F9C5CDCC289453B400548EEE /* OWSFileSystem.m in Sources */,
 				F9C5CDD7289453B400548EEE /* OWSFileSystem.swift in Sources */,
 				667664362A43BBCD00716B84 /* OWSFingerprint.swift in Sources */,
 				667664382A44B6C200716B84 /* OWSFingerprintBuilder.swift in Sources */,

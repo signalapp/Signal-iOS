@@ -5,7 +5,6 @@
 
 #import "TSAttachmentStream.h"
 #import "OWSError.h"
-#import "OWSFileSystem.h"
 #import "TSAttachmentPointer.h"
 #import <AVFoundation/AVFoundation.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
