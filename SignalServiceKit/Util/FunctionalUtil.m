@@ -7,40 +7,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface FUBadArgument : NSException
-
-+ (FUBadArgument *)new:(NSString *)reason;
-+ (void)raise:(NSString *)message;
-
-@end
-
-@implementation FUBadArgument
-
-+ (FUBadArgument *)new:(NSString *)reason
-{
-    return [[FUBadArgument alloc] initWithName:@"Invalid Argument" reason:reason userInfo:nil];
-}
-+ (void)raise:(NSString *)message
-{
-    [FUBadArgument raise:@"Invalid Argument" format:@"%@", message];
-}
-
-@end
-
-#define tskit_require(expr)                                                                                            \
-    if (!(expr)) {                                                                                                     \
-        NSString *reason =                                                                                             \
-            [NSString stringWithFormat:@"require %@ (in %s at line %d)", (@ #expr), __FILE__, __LINE__];               \
-        OWSLogError(@"%@", reason);                                                                                    \
-        [FUBadArgument raise:reason];                                                                                  \
-    };
-
-
 @implementation NSArray (FunctionalUtil)
 
 - (NSArray *)map:(id (^)(id item))projection
 {
-    tskit_require(projection != nil);
+    OWSPrecondition(projection != nil);
 
     NSMutableArray *r = [NSMutableArray arrayWithCapacity:self.count];
     for (id e in self) {
@@ -51,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSArray *)filter:(BOOL (^)(id item))predicate
 {
-    tskit_require(predicate != nil);
+    OWSPrecondition(predicate != nil);
 
     NSMutableArray *r = [NSMutableArray array];
     for (id e in self) {

@@ -236,16 +236,16 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
                                           usingBlock:^(TSInteraction *interaction) {
                                               if ([interaction isKindOfClass:[TSInvalidIdentityKeyReceivingErrorMessage
                                                                                  class]]) {
-                                                  TSInvalidIdentityKeyReceivingErrorMessage *error
+                                                  TSInvalidIdentityKeyReceivingErrorMessage *errorMessage
                                                       = (TSInvalidIdentityKeyReceivingErrorMessage *)interaction;
-                                                  @try {
-                                                      if ([[error throws_newIdentityKey] isEqualToData:key]) {
-                                                          [errorMessages
-                                                              addObject:(TSInvalidIdentityKeyReceivingErrorMessage *)
-                                                                            interaction];
+                                                  NSError *error;
+                                                  NSData *newIdentityKey = [errorMessage newIdentityKey:&error];
+                                                  if (newIdentityKey != nil) {
+                                                      if ([newIdentityKey isEqualToData:key]) {
+                                                          [errorMessages addObject:errorMessage];
                                                       }
-                                                  } @catch (NSException *exception) {
-                                                      OWSFailDebug(@"exception: %@", exception);
+                                                  } else {
+                                                      OWSFailDebug(@"error: %@", error);
                                                   }
                                               }
                                           }];

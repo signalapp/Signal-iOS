@@ -4,7 +4,6 @@
 //
 
 #import "SSKSignedPreKeyStore.h"
-#import "AxolotlExceptions.h"
 #import "SDSKeyValueStore+ObjC.h"
 #import "SSKPreKeyStore.h"
 #import "SignedPrekeyRecord.h"

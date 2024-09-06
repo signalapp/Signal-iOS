@@ -8,7 +8,7 @@ import LibSignalClient
 
 extension TSInvalidIdentityKeyReceivingErrorMessage {
     @objc(identityKeyFromEncodedPreKeySignalMessage:error:)
-    private func identityKey(from encodedPreKeySignalMessage: Data) throws -> Data {
+    func identityKey(from encodedPreKeySignalMessage: Data) throws -> Data {
         return Data(try PreKeySignalMessage(bytes: encodedPreKeySignalMessage).identityKey.keyBytes)
     }
 

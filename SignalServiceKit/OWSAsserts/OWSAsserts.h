@@ -143,14 +143,6 @@ __attribute__((annotate("returns_localized_nsstring"))) static inline NSString *
     return s;
 }
 
-#define OWSRaiseException(name, formatParam, ...)                                                                      \
-    do {                                                                                                               \
-        OWSLogWarn(@"Exception: %@ %@", name, [NSString stringWithFormat:formatParam, ##__VA_ARGS__]);                 \
-        @throw [NSException exceptionWithName:name                                                                     \
-                                       reason:[NSString stringWithFormat:formatParam, ##__VA_ARGS__]                   \
-                                     userInfo:nil];                                                                    \
-    } while (NO)
-
 #pragma mark - Overflow Math
 
 #define ows_add_overflow(a, b, resultRef)                                                                              \

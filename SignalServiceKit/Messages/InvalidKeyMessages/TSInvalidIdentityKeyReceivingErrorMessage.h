@@ -97,7 +97,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 // --- CODE GENERATION MARKER
 
 - (BOOL)acceptNewIdentityKeyWithError:(NSError **)error;
-- (nullable NSData *)throws_newIdentityKey NS_SWIFT_UNAVAILABLE("throws objc exceptions");
+- (nullable NSData *)newIdentityKey:(NSError **)error;
 
 @end
 

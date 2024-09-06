@@ -4,7 +4,6 @@
 //
 
 #import "TSInvalidIdentityKeyReceivingErrorMessage.h"
-#import "AxolotlExceptions.h"
 #import "TSContactThread.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
@@ -19,10 +18,6 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 #pragma mark -
-
-@interface TSInvalidIdentityKeyReceivingErrorMessage (ImplementedInSwift)
-- (nullable NSData *)identityKeyFromEncodedPreKeySignalMessage:(NSData *)pksmBytes error:(NSError **)error;
-@end
 
 @implementation TSInvalidIdentityKeyReceivingErrorMessage {
     // Not using a property declaration in order to exclude from DB serialization
@@ -140,34 +135,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)acceptNewIdentityKeyWithError:(NSError **)error
 {
-    @try {
-        [self throws_acceptNewIdentityKey];
-        return YES;
-    } @catch (NSException *exception) {
-        *error = OWSErrorMakeAssertionError(@"Error: %@", exception.debugDescription);
-        return NO;
-    }
-}
-
-- (void)throws_acceptNewIdentityKey
-{
     OWSAssertIsOnMainThread();
 
     if (self.errorType != TSErrorMessageWrongTrustedIdentityKey) {
         OWSLogError(@"Refusing to accept identity key for anything but a Key error.");
-        return;
+        return YES;
     }
 
-    NSData *_Nullable newKey = [self throws_newIdentityKey];
+    NSData *_Nullable newKey = [self newIdentityKey:error];
     if (!newKey) {
         OWSFailDebug(@"Couldn't extract identity key to accept");
-        return;
+        return NO;
     }
 
     ServiceIdObjC *_Nullable serviceId = self.envelope.sourceAddress.serviceIdObjC;
     if (!serviceId) {
         OWSFailDebug(@"Couldn't extract ServiceId to accept");
-        return;
+        return YES;
     }
 
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *tx) {
@@ -181,9 +165,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Decrypt this and any old messages for the newly accepted key
     [self decryptWithMessagesToDecrypt:messagesToDecrypt];
+    return YES;
 }
 
-- (nullable NSData *)throws_newIdentityKey
+- (nullable NSData *)newIdentityKey:(NSError **)error
 {
     if (!self.envelope) {
         OWSLogError(@"Error message had no envelope data to extract key from");
@@ -204,12 +189,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    NSError *_Nullable error;
-    NSData *_Nullable result = [[self class] identityKeyFromEncodedPreKeySignalMessage:pkwmData error:&error];
-    if (!result) {
-        OWSRaiseException(InvalidMessageException, @"%@", error.userErrorDescription);
-    }
-    return result;
+    return [[self class] identityKeyFromEncodedPreKeySignalMessage:pkwmData error:error];
 }
 
 - (SignalServiceAddress *)theirSignalAddress

@@ -2623,7 +2623,6 @@
 		F9C5CD36289453B300548EEE /* SSKSignedPreKeyStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA58289453B100548EEE /* SSKSignedPreKeyStore.m */; };
 		F9C5CD37289453B300548EEE /* SenderKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA59289453B100548EEE /* SenderKeyStore.swift */; };
 		F9C5CD38289453B300548EEE /* SSKPreKeyStore.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA5A289453B100548EEE /* SSKPreKeyStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CD39289453B300548EEE /* AxolotlExceptions.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA5B289453B100548EEE /* AxolotlExceptions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CD3C289453B300548EEE /* SSKSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA5E289453B100548EEE /* SSKSessionStore.swift */; };
 		F9C5CD3D289453B300548EEE /* LegacySendingChain.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA60289453B100548EEE /* LegacySendingChain.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CD3E289453B300548EEE /* LegacyRootKey.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA61289453B100548EEE /* LegacyRootKey.m */; };
@@ -5757,7 +5756,6 @@
 		F9C5CA58289453B100548EEE /* SSKSignedPreKeyStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSKSignedPreKeyStore.m; sourceTree = "<group>"; };
 		F9C5CA59289453B100548EEE /* SenderKeyStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SenderKeyStore.swift; sourceTree = "<group>"; };
 		F9C5CA5A289453B100548EEE /* SSKPreKeyStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSKPreKeyStore.h; sourceTree = "<group>"; };
-		F9C5CA5B289453B100548EEE /* AxolotlExceptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AxolotlExceptions.h; sourceTree = "<group>"; };
 		F9C5CA5E289453B100548EEE /* SSKSessionStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSKSessionStore.swift; sourceTree = "<group>"; };
 		F9C5CA60289453B100548EEE /* LegacySendingChain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LegacySendingChain.h; sourceTree = "<group>"; };
 		F9C5CA61289453B100548EEE /* LegacyRootKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LegacyRootKey.m; sourceTree = "<group>"; };
@@ -11709,7 +11707,6 @@
 			isa = PBXGroup;
 			children = (
 				F9C5CA5F289453B100548EEE /* Model */,
-				F9C5CA5B289453B100548EEE /* AxolotlExceptions.h */,
 				5050A8782B76E2E100E9BFA4 /* PreKeyId.swift */,
 				F9C5CA59289453B100548EEE /* SenderKeyStore.swift */,
 				F9C5CA57289453B100548EEE /* SessionRecordMigration.swift */,
@@ -12167,7 +12164,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F9C5CE25289453B400548EEE /* AppReadiness.h in Headers */,
-				F9C5CD39289453B300548EEE /* AxolotlExceptions.h in Headers */,
 				F9C5CD77289453B300548EEE /* BaseModel.h in Headers */,
 				F9C5CE27289453B400548EEE /* DarwinNotificationCenter.h in Headers */,
 				668A00E02C2B5ECF007B8808 /* DebuggerUtils.h in Headers */,

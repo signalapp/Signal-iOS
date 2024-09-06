@@ -12,7 +12,6 @@ FOUNDATION_EXPORT double SignalServiceKitVersionNumber;
 FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 
 #import <SignalServiceKit/AppReadiness.h>
-#import <SignalServiceKit/AxolotlExceptions.h>
 #import <SignalServiceKit/BaseModel.h>
 #import <SignalServiceKit/DarwinNotificationCenter.h>
 #import <SignalServiceKit/DebuggerUtils.h>
