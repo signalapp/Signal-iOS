@@ -144,26 +144,6 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
-+ (BOOL)ensureDirectoryExists:(NSString *)dirPath
-{
-    return [self ensureDirectoryExists:dirPath fileProtectionType:NSFileProtectionCompleteUntilFirstUserAuthentication];
-}
-
-+ (BOOL)ensureDirectoryExists:(NSString *)dirPath fileProtectionType:(NSFileProtectionType)fileProtectionType
-{
-    NSError *error = nil;
-    BOOL success = [[NSFileManager defaultManager] createDirectoryAtPath:dirPath
-                                             withIntermediateDirectories:YES
-                                                              attributes:nil
-                                                                   error:&error];
-    if (!success) {
-        OWSFailDebug(@"Failed to create directory: %@, error: %@", dirPath, [error shortDescription]);
-        return NO;
-    }
-
-    return [self protectFileOrFolderAtPath:dirPath fileProtectionType:fileProtectionType];
-}
-
 + (BOOL)ensureFileExists:(NSString *)filePath
 {
     BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:filePath];
@@ -211,94 +191,5 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 @end
-
-#pragma mark -
-
-NSString *OWSTemporaryDirectory(void)
-{
-    static NSString *dirPath;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        NSString *dirName = [NSString stringWithFormat:@"ows_temp_%@", NSUUID.UUID.UUIDString];
-        dirPath = [NSTemporaryDirectory() stringByAppendingPathComponent:dirName];
-        BOOL success = [OWSFileSystem ensureDirectoryExists:dirPath fileProtectionType:NSFileProtectionComplete];
-        OWSCPrecondition(success);
-    });
-    return dirPath;
-}
-
-NSString *OWSTemporaryDirectoryAccessibleAfterFirstAuth(void)
-{
-    NSString *dirPath = NSTemporaryDirectory();
-    BOOL success = [OWSFileSystem ensureDirectoryExists:dirPath
-                                     fileProtectionType:NSFileProtectionCompleteUntilFirstUserAuthentication];
-    OWSCPrecondition(success);
-    return dirPath;
-}
-
-static void ClearOldTemporaryDirectoriesSync(void)
-{
-    // Ignore the "current" temp directory.
-    NSString *currentTempDirName = OWSTemporaryDirectory().lastPathComponent;
-
-    NSDate *thresholdDate = AppContextObjCBridge.shared.appLaunchTime;
-    NSString *dirPath = NSTemporaryDirectory();
-    NSError *error;
-    NSArray<NSString *> *fileNames = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:dirPath error:&error];
-    if (error) {
-        OWSCFailDebug(@"contentsOfDirectoryAtPath error: %@", error);
-        return;
-    }
-    NSUInteger fileCount = 0;
-    for (NSString *fileName in fileNames) {
-        if ([fileName isEqualToString:currentTempDirName]) {
-            continue;
-        }
-
-        NSString *filePath = [dirPath stringByAppendingPathComponent:fileName];
-
-        // Delete files with either:
-        //
-        // a) "ows_temp" name prefix.
-        // b) modified time before app launch time.
-        if (![fileName hasPrefix:@"ows_temp"]) {
-            NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error];
-            if (!attributes || error) {
-                // This is fine; the file may have been deleted since we found it.
-                OWSLogError(@"Could not get attributes of file or directory at: %@", filePath);
-                continue;
-            }
-            // Don't delete files which were created in the last N minutes.
-            NSDate *creationDate = attributes.fileModificationDate;
-            if ([creationDate isAfterDate:thresholdDate]) {
-                continue;
-            }
-        }
-
-        fileCount++;
-        if (![OWSFileSystem deleteFileIfExists:filePath]) {
-            // This can happen if the app launches before the phone is unlocked.
-            // Clean up will occur when app becomes active.
-            OWSLogWarn(@"Could not delete old temp directory: %@", filePath);
-        }
-    }
-}
-
-// NOTE: We need to call this method on launch _and_ every time the app becomes active,
-//       since file protection may prevent it from succeeding in the background.
-void ClearOldTemporaryDirectories(void)
-{
-    static dispatch_queue_t serialQueue;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        serialQueue = dispatch_queue_create("org.signal.clean-tmp",
-            dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_UTILITY, 0));
-    });
-    // We use the lowest priority queue for this, and wait N seconds
-    // to avoid interfering with app startup.
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.f * NSEC_PER_SEC)), serialQueue, ^{
-        ClearOldTemporaryDirectoriesSync();
-    });
-}
 
 NS_ASSUME_NONNULL_END

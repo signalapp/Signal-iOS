@@ -5,13 +5,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// Use instead of NSTemporaryDirectory()
-// prefer the more restrictice OWSTemporaryDirectory,
-// unless the temp data may need to be accessed while the device is locked.
-NSString *OWSTemporaryDirectory(void);
-NSString *OWSTemporaryDirectoryAccessibleAfterFirstAuth(void);
-void ClearOldTemporaryDirectories(void);
-
 @interface OWSFileSystem : NSObject
 
 + (instancetype)new NS_UNAVAILABLE;
@@ -34,9 +27,6 @@ void ClearOldTemporaryDirectories(void);
 + (nullable NSError *)renameFilePathUsingRandomExtension:(NSString *)oldFilePath;
 
 + (BOOL)moveFilePath:(NSString *)oldFilePath toFilePath:(NSString *)newFilePath error:(NSError **)error;
-
-// Returns NO IFF the directory does not exist and could not be created.
-+ (BOOL)ensureDirectoryExists:(NSString *)dirPath;
 
 + (BOOL)ensureFileExists:(NSString *)filePath;
 

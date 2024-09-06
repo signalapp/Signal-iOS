@@ -5,6 +5,107 @@
 
 import Foundation
 
+private let owsTempDir = {
+    let dirPath = NSTemporaryDirectory().appendingPathComponent("ows_temp_\(UUID())")
+    owsPrecondition(OWSFileSystem.ensureDirectoryExists(dirPath, fileProtectionType: .complete))
+    return dirPath
+}()
+/// Use instead of NSTemporaryDirectory()
+/// prefer the more restrictice OWSTemporaryDirectory,
+/// unless the temp data may need to be accessed while the device is locked.
+public func OWSTemporaryDirectory() -> String {
+    return owsTempDir
+}
+
+public func OWSTemporaryDirectoryAccessibleAfterFirstAuth() -> String {
+    let dirPath = NSTemporaryDirectory()
+    owsPrecondition(OWSFileSystem.ensureDirectoryExists(dirPath, fileProtectionType: .completeUntilFirstUserAuthentication))
+    return dirPath
+}
+
+private let cleanTmpDispatchQueue = DispatchQueue(label: "org.signal.clean-tmp", qos: .utility)
+/// > NOTE: We need to call this method on launch _and_ every time the app becomes active,
+/// >       since file protection may prevent it from succeeding in the background.
+public func ClearOldTemporaryDirectories() {
+    let dispatchTime = DispatchTime.now() + .seconds(3)
+    cleanTmpDispatchQueue.asyncAfter(deadline: dispatchTime, execute: DispatchWorkItem(block: {
+        ClearOldTemporaryDirectoriesSync()
+    }))
+}
+
+private func ClearOldTemporaryDirectoriesSync() {
+    // Ignore the "current" temp directory.
+    let currentTempDirName = (OWSTemporaryDirectory() as NSString).lastPathComponent
+
+    let thresholdDate = CurrentAppContext().appLaunchTime
+    let dirPath = NSTemporaryDirectory()
+    var fileNames: [String]?
+    do {
+        fileNames = try FileManager.default.contentsOfDirectory(atPath: dirPath)
+    } catch {
+        owsFailDebug("contentsOfDirectoryAtPath error: \(error)")
+    }
+    guard let fileNames else {
+        return
+    }
+    for fileName in fileNames {
+        if fileName == currentTempDirName {
+            continue
+        }
+
+        let filePath = dirPath.appendingPathComponent(fileName)
+
+        // Delete files with either:
+        //
+        // a) "ows_temp" name prefix.
+        // b) modified time before app launch time.
+        if !fileName.hasPrefix("ows_temp") {
+            do {
+                let attributes = try FileManager.default.attributesOfItem(atPath: filePath)
+                // Don't delete files which were created in the last N minutes.
+                let mtime = attributes[.modificationDate] as? Date
+                guard let mtime else {
+                    Logger.error("failed to get a modification date for file or directory at: \(filePath)")
+                    continue
+                }
+                if mtime.isAfter(thresholdDate) {
+                    continue
+                }
+            } catch {
+                // This is fine; the file may have been deleted since we found it.
+                Logger.error("Could not get attributes of file or directory at: \(filePath)")
+                continue
+            }
+        }
+
+        if !OWSFileSystem.deleteFileIfExists(filePath) {
+            // This can happen if the app launches before the phone is unlocked.
+            // Clean up will occur when app becomes active.
+            Logger.warn("Could not delete old temp directory: \(filePath)")
+        }
+    }
+}
+
+extension OWSFileSystem {
+
+    /// - Returns: false iff the directory does not exist and could not be created or setting the file protection type fails
+    @discardableResult
+    @objc
+    public static func ensureDirectoryExists(_ dirPath: String) -> Bool {
+        ensureDirectoryExists(dirPath, fileProtectionType: .completeUntilFirstUserAuthentication)
+    }
+
+    fileprivate static func ensureDirectoryExists(_ dirPath: String, fileProtectionType: FileProtectionType) -> Bool {
+        do {
+            try FileManager.default.createDirectory(atPath: dirPath, withIntermediateDirectories: true)
+            return protectFileOrFolder(atPath: dirPath, fileProtectionType: fileProtectionType)
+        } catch {
+            owsFailDebug("Failed to create directory: \(dirPath), error: \(error)")
+            return false
+        }
+    }
+}
+
 public extension OWSFileSystem {
     @objc
     class func fileOrFolderExists(atPath filePath: String) -> Bool {
