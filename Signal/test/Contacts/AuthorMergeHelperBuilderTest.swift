@@ -12,8 +12,6 @@ import XCTest
 
 final class AuthorMergeHelperBuilderTest: XCTestCase {
     func testBuildTableIfNeeded() async {
-        await MainActor.run { _ = OWSBackgroundTaskManager.shared() }
-
         let appContext = TestAppContext()
         let authorMergeHelper = AuthorMergeHelper(keyValueStoreFactory: InMemoryKeyValueStoreFactory())
         let inMemoryDb = InMemoryDB()

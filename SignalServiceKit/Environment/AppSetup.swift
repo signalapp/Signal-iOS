@@ -115,7 +115,7 @@ public class AppSetup {
         //
         // All of these "singletons" should have any dependencies used in their
         // initializers injected.
-        OWSBackgroundTaskManager.shared().observeNotifications()
+        OWSBackgroundTaskManager.shared.observeNotifications()
 
         let appVersion = AppVersionImpl.shared
         let webSocketFactory = testDependencies.webSocketFactory ?? WebSocketFactoryNative()

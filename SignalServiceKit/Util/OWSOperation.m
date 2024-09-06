@@ -4,7 +4,6 @@
 //
 
 #import "OWSOperation.h"
-#import "OWSBackgroundTask.h"
 #import "OWSError.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
@@ -36,7 +35,7 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
     }
 
     _operationState = OWSOperationStateNew;
-    _backgroundTask = [OWSBackgroundTask backgroundTaskWithLabel:self.logTag];
+    _backgroundTask = [[OWSBackgroundTask alloc] initWithLabel:self.logTag];
 
     // Operations are not retryable by default.
     _remainingRetries = 0;

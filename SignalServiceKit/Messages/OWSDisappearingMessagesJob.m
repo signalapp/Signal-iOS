@@ -5,7 +5,6 @@
 
 #import "OWSDisappearingMessagesJob.h"
 #import "AppReadiness.h"
-#import "OWSBackgroundTask.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "TSIncomingMessage.h"
 #import "TSMessage.h"

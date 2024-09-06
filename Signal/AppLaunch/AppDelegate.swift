@@ -251,11 +251,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             launchStartedAt: launchStartedAt
         )
 
-        // Ensure this exists on the main thread before attempting database
-        // restore. Otherwise it may try to access it for the first time in the
-        // background and crash.
-        _ = OWSBackgroundTaskManager.shared()
-
         // We need to do this _after_ we set up logging, when the keychain is unlocked,
         // but before we access the database or files on disk.
         let preflightError = checkIfAllowedToLaunch(
