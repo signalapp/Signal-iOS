@@ -269,8 +269,8 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
         }
     }
 
-    override public func retryInterval() -> TimeInterval {
-        return OWSOperation.retryIntervalForExponentialBackoff(failureCount: jobRecord.failureCount)
+    override public var retryInterval: TimeInterval {
+        OWSOperation.retryIntervalForExponentialBackoff(failureCount: jobRecord.failureCount)
     }
 
     override public func didFail(error: Error) {

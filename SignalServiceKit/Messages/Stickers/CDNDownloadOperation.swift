@@ -89,8 +89,8 @@ open class CDNDownloadOperation: OWSOperation {
         }
     }
 
-    override public func retryInterval() -> TimeInterval {
-        return OWSOperation.retryIntervalForExponentialBackoff(failureCount: errorCount)
+    override public var retryInterval: TimeInterval {
+        OWSOperation.retryIntervalForExponentialBackoff(failureCount: errorCount)
     }
 
     // MARK: - Corrupt Data
