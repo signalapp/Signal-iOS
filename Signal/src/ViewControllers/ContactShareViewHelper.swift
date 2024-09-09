@@ -251,7 +251,7 @@ private class AddContactShareToContactsFlow {
         var existingEmailAddresses = Set(oldContact.emailAddresses)
         var mergedEmailAddresses = mergedCNContact.emailAddresses
         for labeledEmailAddress in newCNContact.emailAddresses {
-            let emailAddress = labeledEmailAddress.value.ows_stripped()
+            let emailAddress = (labeledEmailAddress.value as String).ows_stripped()
             guard existingEmailAddresses.insert(emailAddress).inserted else {
                 continue
             }

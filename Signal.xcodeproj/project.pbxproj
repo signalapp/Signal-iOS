@@ -986,10 +986,8 @@
 		668A00F42C2B5F81007B8808 /* NSDate+OWS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 668A00EC2C2B5F80007B8808 /* NSDate+OWS.mm */; };
 		668A00F52C2B5F81007B8808 /* NSObject+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = 668A00ED2C2B5F80007B8808 /* NSObject+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		668A00F62C2B5F81007B8808 /* NSData+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 668A00EE2C2B5F81007B8808 /* NSData+OWS.m */; };
-		668A00F72C2B5F81007B8808 /* NSString+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 668A00EF2C2B5F81007B8808 /* NSString+OWS.m */; };
 		668A00F82C2B5F81007B8808 /* NSDate+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = 668A00F02C2B5F81007B8808 /* NSDate+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		668A00F92C2B5F81007B8808 /* NSObject+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 668A00F12C2B5F81007B8808 /* NSObject+OWS.m */; };
-		668A00FA2C2B5F81007B8808 /* NSString+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = 668A00F22C2B5F81007B8808 /* NSString+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		668A00FB2C2B5F81007B8808 /* NSData+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = 668A00F32C2B5F81007B8808 /* NSData+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		668A01002C2B5FC8007B8808 /* OWSSwiftUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668A00FD2C2B5FC8007B8808 /* OWSSwiftUtils.swift */; };
 		668A01012C2B5FC8007B8808 /* OWSAsserts.h in Headers */ = {isa = PBXBuildFile; fileRef = 668A00FE2C2B5FC8007B8808 /* OWSAsserts.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1021,7 +1019,6 @@
 		668A013D2C2B60A1007B8808 /* PromiseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668A013B2C2B60A0007B8808 /* PromiseTests.swift */; };
 		668A013E2C2B60A1007B8808 /* AnyPromiseTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 668A013C2C2B60A0007B8808 /* AnyPromiseTests.m */; };
 		668A01402C2B60B0007B8808 /* NSObjectTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668A013F2C2B60B0007B8808 /* NSObjectTest.swift */; };
-		668A01422C2B6101007B8808 /* SCKStringTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 668A01412C2B6101007B8808 /* SCKStringTests.m */; };
 		668A01442C2B6117007B8808 /* StringSanitizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668A01432C2B6117007B8808 /* StringSanitizerTests.swift */; };
 		668A28AF2BF703E100BB29B3 /* CreateV2AttachmentTablesMigrationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668A28AE2BF703E100BB29B3 /* CreateV2AttachmentTablesMigrationTest.swift */; };
 		668B24182BBB663400EB60C4 /* MockAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668B24172BBB663400EB60C4 /* MockAttachment.swift */; };
@@ -1245,6 +1242,7 @@
 		720547F52B9C97EC00E2CF2F /* APNSRotationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6675F64C2925C012007A311E /* APNSRotationStore.swift */; };
 		720547F62B9C985300E2CF2F /* RefreshEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3406D31D25DBF70400885B14 /* RefreshEvent.swift */; };
 		720547F72B9C98C600E2CF2F /* ProximityMonitoringManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB93DC12180FF07004B9764 /* ProximityMonitoringManager.swift */; };
+		720570202C8E860300826421 /* StringExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7205701F2C8E860300826421 /* StringExtensionTests.swift */; };
 		721BC7EC2BC8253600648981 /* MimeTypeUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 721BC7EB2BC8253600648981 /* MimeTypeUtil.swift */; };
 		72328C872C6C3E6D000EA728 /* OWSMultipart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72328C862C6C3E6D000EA728 /* OWSMultipart.swift */; };
 		72328C892C6C6733000EA728 /* OWSCountryMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72328C882C6C6733000EA728 /* OWSCountryMetadata.swift */; };
@@ -1352,6 +1350,7 @@
 		72C9058E2B9AC8E600E586B8 /* CallMessageRelay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D7BA9D266809F50088D1C2 /* CallMessageRelay.swift */; };
 		72C905912B9ACA3D00E586B8 /* ScreenLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34641E172088D7E900E2EDE5 /* ScreenLock.swift */; };
 		72D12EB72C802833001DAD29 /* OWSProfileSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72D12EB62C802833001DAD29 /* OWSProfileSnapshot.swift */; };
+		72DB95AE2C8C7C7B00FD2266 /* String+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72DB95AD2C8C7C7B00FD2266 /* String+OWS.swift */; };
 		76057C4B29D268A800C9EDBD /* VideoPlaybackControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76057C4A29D268A800C9EDBD /* VideoPlaybackControls.swift */; };
 		760981882936DE90008F8300 /* BezierPathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 760981872936DE90008F8300 /* BezierPathView.swift */; };
 		7609818A2936EC8D008F8300 /* OWSTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 760981892936EC8D008F8300 /* OWSTextView.swift */; };
@@ -4075,10 +4074,8 @@
 		668A00EC2C2B5F80007B8808 /* NSDate+OWS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSDate+OWS.mm"; sourceTree = "<group>"; };
 		668A00ED2C2B5F80007B8808 /* NSObject+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+OWS.h"; sourceTree = "<group>"; };
 		668A00EE2C2B5F81007B8808 /* NSData+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+OWS.m"; sourceTree = "<group>"; };
-		668A00EF2C2B5F81007B8808 /* NSString+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+OWS.m"; sourceTree = "<group>"; };
 		668A00F02C2B5F81007B8808 /* NSDate+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+OWS.h"; sourceTree = "<group>"; };
 		668A00F12C2B5F81007B8808 /* NSObject+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+OWS.m"; sourceTree = "<group>"; };
-		668A00F22C2B5F81007B8808 /* NSString+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+OWS.h"; sourceTree = "<group>"; };
 		668A00F32C2B5F81007B8808 /* NSData+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+OWS.h"; sourceTree = "<group>"; };
 		668A00FD2C2B5FC8007B8808 /* OWSSwiftUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSSwiftUtils.swift; sourceTree = "<group>"; };
 		668A00FE2C2B5FC8007B8808 /* OWSAsserts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSAsserts.h; sourceTree = "<group>"; };
@@ -4110,7 +4107,6 @@
 		668A013B2C2B60A0007B8808 /* PromiseTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PromiseTests.swift; sourceTree = "<group>"; };
 		668A013C2C2B60A0007B8808 /* AnyPromiseTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AnyPromiseTests.m; sourceTree = "<group>"; };
 		668A013F2C2B60B0007B8808 /* NSObjectTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSObjectTest.swift; sourceTree = "<group>"; };
-		668A01412C2B6101007B8808 /* SCKStringTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCKStringTests.m; sourceTree = "<group>"; };
 		668A01432C2B6117007B8808 /* StringSanitizerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringSanitizerTests.swift; sourceTree = "<group>"; };
 		668A28AE2BF703E100BB29B3 /* CreateV2AttachmentTablesMigrationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateV2AttachmentTablesMigrationTest.swift; sourceTree = "<group>"; };
 		668AB0CB28AD610600B31984 /* StoryUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryUtil.swift; sourceTree = "<group>"; };
@@ -4339,6 +4335,7 @@
 		675486AB8F0612FF2C717BAE /* Pods_SignalUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6BB92957776B3173894CD3E9 /* Pods-SignalServiceKit.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalServiceKit.app store release.xcconfig"; path = "Target Support Files/Pods-SignalServiceKit/Pods-SignalServiceKit.app store release.xcconfig"; sourceTree = "<group>"; };
 		70377AAA1918450100CAF501 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		7205701F2C8E860300826421 /* StringExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtensionTests.swift; sourceTree = "<group>"; };
 		721BC7EB2BC8253600648981 /* MimeTypeUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MimeTypeUtil.swift; sourceTree = "<group>"; };
 		72328C862C6C3E6D000EA728 /* OWSMultipart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSMultipart.swift; sourceTree = "<group>"; };
 		72328C882C6C6733000EA728 /* OWSCountryMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSCountryMetadata.swift; sourceTree = "<group>"; };
@@ -4359,6 +4356,7 @@
 		72B4819C2BD60FDF008B8BA1 /* OWSMath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSMath.swift; sourceTree = "<group>"; };
 		72B994DA2BE950DB000CBBFD /* TestAppContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestAppContext.swift; sourceTree = "<group>"; };
 		72D12EB62C802833001DAD29 /* OWSProfileSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSProfileSnapshot.swift; sourceTree = "<group>"; };
+		72DB95AD2C8C7C7B00FD2266 /* String+OWS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+OWS.swift"; sourceTree = "<group>"; };
 		741B66EF7DCE5EF90200211D /* Pods-SignalShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.debug.xcconfig"; path = "Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		76057C4A29D268A800C9EDBD /* VideoPlaybackControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlaybackControls.swift; sourceTree = "<group>"; };
 		760981872936DE90008F8300 /* BezierPathView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezierPathView.swift; sourceTree = "<group>"; };
@@ -10710,6 +10708,7 @@
 				6605B9892B211BD500E8A68A /* SerialTaskQueueTest.swift */,
 				F9613CDD2981F15700894B55 /* SqliteUtilTest.swift */,
 				C14EC1A82BAA4B5F00A4D064 /* StreamTransformTests.swift */,
+				7205701F2C8E860300826421 /* StringExtensionTests.swift */,
 				F9CAC77E29199B9200EEC1DE /* StringTest.swift */,
 				C1F09B9E2BB307E100F9E7F5 /* TransformingInputStreamTests.swift */,
 				C1E307412BA4D388009F015B /* TransformingOutputStreamTests.swift */,
@@ -11977,8 +11976,6 @@
 				668A00F12C2B5F81007B8808 /* NSObject+OWS.m */,
 				668A013F2C2B60B0007B8808 /* NSObjectTest.swift */,
 				F9C5CB1F289453B200548EEE /* NSRegularExpression+SSK.swift */,
-				668A00F22C2B5F81007B8808 /* NSString+OWS.h */,
-				668A00EF2C2B5F81007B8808 /* NSString+OWS.m */,
 				72976BF12BDCF00C0054FAC2 /* NSTimer+OWS.swift */,
 				F9C5CB44289453B200548EEE /* OffMainThreadTimer.swift */,
 				F9C5CB72289453B200548EEE /* OrderedDictionary.swift */,
@@ -12012,7 +12009,6 @@
 				F9C5CB45289453B200548EEE /* RemoteConfigManager.swift */,
 				502C69732B06F0A400012867 /* Result.swift */,
 				F9C5CB26289453B200548EEE /* ReverseDispatchQueue.swift */,
-				668A01412C2B6101007B8808 /* SCKStringTests.m */,
 				34641E172088D7E900E2EDE5 /* ScreenLock.swift */,
 				F9C5CB1C289453B200548EEE /* SDS+SSK.swift */,
 				F9C5CB7B289453B200548EEE /* Sequence+OWS.swift */,
@@ -12022,6 +12018,7 @@
 				F9C5CB71289453B200548EEE /* SSKAsserts.h */,
 				F9C5CB47289453B200548EEE /* SSKPreferences.swift */,
 				F9C5CB12289453B200548EEE /* StorageService.swift */,
+				72DB95AD2C8C7C7B00FD2266 /* String+OWS.swift */,
 				F9C5CB09289453B200548EEE /* String+SSK.swift */,
 				F9C5CB5D289453B200548EEE /* SwiftSingletons.swift */,
 				F9C5CB32289453B200548EEE /* SyncManagerProtocol.swift */,
@@ -12166,7 +12163,6 @@
 				668A00FB2C2B5F81007B8808 /* NSData+OWS.h in Headers */,
 				668A00F82C2B5F81007B8808 /* NSDate+OWS.h in Headers */,
 				668A00F52C2B5F81007B8808 /* NSObject+OWS.h in Headers */,
-				668A00FA2C2B5F81007B8808 /* NSString+OWS.h in Headers */,
 				F9C5CBC6289453B300548EEE /* OutgoingPaymentSyncMessage.h in Headers */,
 				F9C5CE2C289453B400548EEE /* OWS2FAManager.h in Headers */,
 				F9C5CC1E289453B300548EEE /* OWSAddToContactsOfferMessage.h in Headers */,
@@ -14761,7 +14757,6 @@
 				668A00F92C2B5F81007B8808 /* NSObject+OWS.m in Sources */,
 				66F2CE212A3CBE4A00519342 /* NSRangedValue.swift in Sources */,
 				F9C5CDF1289453B400548EEE /* NSRegularExpression+SSK.swift in Sources */,
-				668A00F72C2B5F81007B8808 /* NSString+OWS.m in Sources */,
 				72976BF22BDCF00C0054FAC2 /* NSTimer+OWS.swift in Sources */,
 				F9C5CD1C289453B300548EEE /* ObservedDatabaseChanges.swift in Sources */,
 				F9C5CE16289453B400548EEE /* OffMainThreadTimer.swift in Sources */,
@@ -15180,6 +15175,7 @@
 				6619A1972B27CA5F004B38FE /* StoryStore.swift in Sources */,
 				C1DD78AD2BB1CF110020F064 /* Streamable.swift in Sources */,
 				C1BF1F712BA0D7CC0004B112 /* StreamTransform.swift in Sources */,
+				72DB95AE2C8C7C7B00FD2266 /* String+OWS.swift in Sources */,
 				F9C5CDDB289453B400548EEE /* String+SSK.swift in Sources */,
 				668A010B2C2B602F007B8808 /* StringSanitizer.swift in Sources */,
 				7254654A2BA01FCC00EABFD2 /* Stripe+3DSecure.swift in Sources */,
@@ -15598,7 +15594,6 @@
 				6600F367298D9D1100B1EDB7 /* RegistrationSessionManagerTest.swift in Sources */,
 				F9426259289B1B5500460798 /* RemoteConfigManagerTests.swift in Sources */,
 				F945FE4D298481EA00C835C7 /* RingrtcFieldTrialsTest.swift in Sources */,
-				668A01422C2B6101007B8808 /* SCKStringTests.m in Sources */,
 				F942624E289B1B5500460798 /* SDSDatabaseStorageObservationTest.swift in Sources */,
 				F942624B289B1B5500460798 /* SDSDatabaseStorageTest.swift in Sources */,
 				F942624A289B1B5500460798 /* SDSKeyValueStoreTest.swift in Sources */,
@@ -15628,6 +15623,7 @@
 				7254655E2BA032A900EABFD2 /* StorageServiceContactTest.swift in Sources */,
 				884BF73E28D37D5F00D94636 /* StoryManagerTest.swift in Sources */,
 				C14EC1A92BAA4B5F00A4D064 /* StreamTransformTests.swift in Sources */,
+				720570202C8E860300826421 /* StringExtensionTests.swift in Sources */,
 				668A01442C2B6117007B8808 /* StringSanitizerTests.swift in Sources */,
 				F9CAC77F29199B9200EEC1DE /* StringTest.swift in Sources */,
 				7254654B2BA0268B00EABFD2 /* StripeTest.swift in Sources */,

@@ -43,7 +43,7 @@ public class TextFieldFormatting: Dependencies {
         }
 
         let originalText = textField.text ?? ""
-        let trimmedText = originalText.digitsOnly.phoneNumberTrimmedToMaxLength
+        let trimmedText = originalText.digitsOnly().phoneNumberTrimmedToMaxLength
         let updatedText = PhoneNumber.bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(trimmedText, countryCodeString: callingCode)
 
         let updatedCursorOffset = PhoneNumberUtil.translateCursorPosition(
@@ -90,11 +90,11 @@ public class TextFieldFormatting: Dependencies {
         // Construct the new contents of the text field by:
         // 1. Determining the "left" substring: the contents of the old text _before_ the deletion range.
         //    Filtering will remove non-decimal digit characters like hyphen "-".
-        var left = (oldText as NSString).substring(to: range.location).digitsOnly
+        var left = (oldText as NSString).substring(to: range.location).digitsOnly()
         // 2. Determining the "right" substring: the contents of the old text _after_ the deletion range.
-        let right = (oldText as NSString).substring(from: range.location + range.length).digitsOnly
+        let right = (oldText as NSString).substring(from: range.location + range.length).digitsOnly()
         // 3. Determining the "center" substring: the contents of the new insertion text.
-        let center = insertionText.digitsOnly
+        let center = insertionText.digitsOnly()
 
         // 3a. If user hits backspace, they should always delete a _digit_ to the
         //     left of the cursor, even if the text _immediately_ to the left of
@@ -103,7 +103,7 @@ public class TextFieldFormatting: Dependencies {
         let isJustDeletion = insertionText.isEmpty
         if isJustDeletion {
             let deletedText = (oldText as NSString).substring(with: range)
-            let didDeleteFormatting = deletedText.count == 1 && deletedText.digitsOnly.isEmpty
+            let didDeleteFormatting = deletedText.count == 1 && deletedText.digitsOnly().isEmpty
             if didDeleteFormatting && !left.isEmpty {
                 left = String(left.dropLast())
             }
@@ -152,11 +152,11 @@ public class TextFieldFormatting: Dependencies {
         // Construct the new contents of the text field by:
         // 1. Determining the "left" substring: the contents of the old text _before_ the deletion range.
         //    Filtering will remove non-decimal digit characters.
-        let left = (oldText as NSString).substring(to: range.location).digitsOnly
+        let left = (oldText as NSString).substring(to: range.location).digitsOnly()
         // 2. Determining the "right" substring: the contents of the old text _after_ the deletion range.
-        let right = (oldText as NSString).substring(from: range.location + range.length).digitsOnly
+        let right = (oldText as NSString).substring(from: range.location + range.length).digitsOnly()
         // 3. Determining the "center" substring: the contents of the new insertion text.
-        let center = insertionText.digitsOnly
+        let center = insertionText.digitsOnly()
         // 4. Construct the "raw" new text by concatenating left, center and right.
         let textAfterChange = left.appending(center).appending(right)
         // 5. Ensure we don't exceed the maximum length for a PIN.

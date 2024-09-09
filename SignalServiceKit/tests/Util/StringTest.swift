@@ -8,13 +8,13 @@ import SignalServiceKit
 
 final class StringTest: XCTestCase {
     func test_digitsOnly() {
-        XCTAssertEqual("".digitsOnly, "")
-        XCTAssertEqual("abc".digitsOnly, "")
-        XCTAssertEqual("123".digitsOnly, "123")
-        XCTAssertEqual("-1.23".digitsOnly, "123")
-        XCTAssertEqual("1x2 3".digitsOnly, "123")
-        XCTAssertEqual("١23".digitsOnly, "١23")
-        XCTAssertEqual("1️⃣23".digitsOnly, "123")
+        XCTAssertEqual("".digitsOnly(), "")
+        XCTAssertEqual("abc".digitsOnly(), "")
+        XCTAssertEqual("123".digitsOnly(), "123")
+        XCTAssertEqual("-1.23".digitsOnly(), "123")
+        XCTAssertEqual("1x2 3".digitsOnly(), "123")
+        XCTAssertEqual("١23".digitsOnly(), "١23")
+        XCTAssertEqual("1️⃣23".digitsOnly(), "123")
     }
 
     func test_asciiDigitsOnly() {

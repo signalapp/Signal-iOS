@@ -27,31 +27,28 @@ public class StringSanitizer: NSObject {
     /// Indicates if the string needs to be modified. This is slightly cheaper than calling `sanitized`.
     @objc
     private(set) public lazy var needsSanitization: Bool = {
-        return string.contains {
-            $0.unicodeScalars.count > Self.maxCodePoints
-        }
+        return string.contains(where: Self.isExtremelyLongGraphemeCluster)
     }()
 
     /// Returns a modified version of the string if sanitization is needed, or the original string otherwise.
     @objc
     private(set) public lazy var sanitized: String = {
-        if !needsSanitization {
-            return string
-        }
-        precondition(!string.isEmpty)
-        return sanitize(string)
+        return Self.sanitize(string)
     }()
 
-    private func isBad(_ c: Character) -> Bool {
+    public static func isExtremelyLongGraphemeCluster(_ c: Character) -> Bool {
         return c.unicodeScalars.count > Self.maxCodePoints
     }
 
-    private func sanitize(_ original: String) -> String {
+    public static func sanitize(_ original: String, shouldRemove: (Character) -> Bool = isExtremelyLongGraphemeCluster) -> String {
+        guard original.contains(where: shouldRemove) else {
+            return original
+        }
         var remaining = original[...]
         var result = ""
         // An overestimate, because we will shorten at least one Character.
         result.reserveCapacity(original.utf8.count)
-        while let nextBadCharIndex = remaining.firstIndex(where: isBad) {
+        while let nextBadCharIndex = remaining.firstIndex(where: shouldRemove) {
             result.append(contentsOf: remaining[..<nextBadCharIndex])
             result.append("\u{FFFD}")
             remaining = remaining[nextBadCharIndex...].dropFirst()

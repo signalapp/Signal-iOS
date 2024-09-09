@@ -334,7 +334,7 @@ extension ProfileBioViewController: UITextFieldDelegate {
         TextFieldHelper.textField(
             textField,
             shouldChangeCharactersInRange: range,
-            replacementString: string.withoutBidiControlCharacters,
+            replacementString: string.withoutBidiControlCharacters(),
             maxByteCount: OWSUserProfile.Constants.maxBioLengthBytes,
             maxGlyphCount: OWSUserProfile.Constants.maxBioLengthGlyphs
         )

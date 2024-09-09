@@ -129,11 +129,7 @@ public class DataSourceValue: DataSource {
         }
         set {
             owsAssertDebug(!isConsumed)
-            if let newValue {
-                _sourceFilename = (newValue as NSString).filterFilename()
-            } else {
-                _sourceFilename = nil
-            }
+            _sourceFilename = newValue?.filterFilename()
         }
     }
 
@@ -291,11 +287,7 @@ public class DataSourcePath: DataSource {
         }
         set {
             owsAssertDebug(!isConsumed)
-            if let newValue {
-                _sourceFilename = (newValue as NSString).filterFilename()
-            } else {
-                _sourceFilename = nil
-            }
+            _sourceFilename = newValue?.filterFilename()
         }
     }
 

@@ -13,7 +13,6 @@
 #import "TSInvalidIdentityKeyReceivingErrorMessage.h"
 #import "TSOutgoingMessage.h"
 #import <SignalServiceKit/NSDate+OWS.h>
-#import <SignalServiceKit/NSString+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 @import Intents;

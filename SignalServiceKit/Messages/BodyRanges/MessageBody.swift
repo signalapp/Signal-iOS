@@ -85,7 +85,7 @@ public class MessageBody: NSObject, NSCopying, NSSecureCoding {
     // preserving ranges.
     public func filterStringForDisplay() -> MessageBody {
         let originalText = text as NSString
-        let filteredText = originalText.filterStringForDisplay() as NSString
+        let filteredText = text.filterStringForDisplay() as NSString
 
         guard filteredText.length != originalText.length else {
             // if we didn't strip anything, nothing needs to change.

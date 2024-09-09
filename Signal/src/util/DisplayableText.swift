@@ -154,11 +154,11 @@ public class DisplayableText: NSObject {
                 return false
             }
 
-            let strippedHost = hostText.replacingOccurrences(of: ".", with: "") as NSString
+            let strippedHost = hostText.replacingOccurrences(of: ".", with: "")
 
-            if strippedHost.isOnlyASCII {
+            if strippedHost.isOnlyASCII() {
                 return true
-            } else if strippedHost.hasAnyASCII {
+            } else if strippedHost.hasAnyASCII() {
                 // mix of ascii and non-ascii is invalid
                 return false
             } else {

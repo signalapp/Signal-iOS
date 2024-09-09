@@ -6,18 +6,23 @@
 import Foundation
 import NaturalLanguage
 
-@objc
-public extension NSString {
-    func ows_truncated(toByteCount byteCount: UInt) -> NSString? {
-        return (self as String).truncated(toByteCount: byteCount) as NSString?
-    }
-
-    var ows_nilIfEmpty: NSString? {
+extension NSString {
+    @objc
+    @available(swift, obsoleted: 1)
+    internal var ows_nilIfEmpty: NSString? {
         (length == 0) ? nil : self
     }
 
-    var ows_strippedOrNil: NSString? {
-        ows_stripped().ows_nilIfEmpty
+    @objc
+    @available(swift, obsoleted: 1)
+    internal var filterStringForDisplay: NSString {
+        (self as String).filterStringForDisplay() as NSString
+    }
+
+    @objc
+    @available(swift, obsoleted: 1)
+    internal var filterFilename: NSString {
+        (self as String).filterFilename() as NSString
     }
 }
 
@@ -25,7 +30,7 @@ public extension NSString {
 
 public extension String {
     var stripped: String {
-        return (self as NSString).ows_stripped()
+        ows_stripped()
     }
 
     var strippedOrNil: String? {
@@ -37,7 +42,7 @@ public extension String {
     }
 
     var filterForDisplay: String {
-        return (self as NSString).filterStringForDisplay()
+        filterStringForDisplay()
     }
 
     // There appears to be a bug in NSBigMutableString that causes a
@@ -142,22 +147,6 @@ extension Optional where Wrapped == String {
 }
 
 public extension String {
-    /// A version of the string that only contains digits.
-    ///
-    /// Handles non-ASCII digits. If you only want ASCII digits, see `asciiDigitsOnly`.
-    ///
-    /// ```
-    /// "1x2x3".digitsOnly
-    /// // => "123"
-    /// "١23".digitsOnly
-    /// // => "١23"
-    /// "1️⃣23".digitsOnly
-    /// // => "123"
-    /// ```
-    var digitsOnly: String {
-        return (self as NSString).digitsOnly()
-    }
-
     /// A version of the string that only contains ASCII digits.
     ///
     /// If you want to include non-ASCII digits, see `digitsOnly`.

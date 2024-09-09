@@ -170,10 +170,10 @@ extension OneTimeDonationCustomAmountTextField: UITextFieldDelegate {
         guard let string = string else { return nil }
 
         let isZeroDecimalCurrency = DonationUtilities.zeroDecimalCurrencyCodes.contains(currencyCode)
-        guard !isZeroDecimalCurrency else { return string.digitsOnly }
+        guard !isZeroDecimalCurrency else { return string.digitsOnly() }
 
         let decimalSeparator = Locale.current.decimalSeparator ?? "."
-        let components = string.components(separatedBy: decimalSeparator).compactMap { $0.digitsOnly.nilIfEmpty }
+        let components = string.components(separatedBy: decimalSeparator).compactMap { $0.digitsOnly().nilIfEmpty }
 
         guard let integralString = components.first else {
             if string.contains(decimalSeparator) {

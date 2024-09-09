@@ -346,7 +346,7 @@ extension GroupAttributesEditorHelper: UITextFieldDelegate {
         return TextFieldHelper.textField(
             textField,
             shouldChangeCharactersInRange: range,
-            replacementString: replacementString.withoutBidiControlCharacters,
+            replacementString: replacementString.withoutBidiControlCharacters(),
             maxGlyphCount: GroupManager.maxGroupNameGlyphCount
         )
     }
