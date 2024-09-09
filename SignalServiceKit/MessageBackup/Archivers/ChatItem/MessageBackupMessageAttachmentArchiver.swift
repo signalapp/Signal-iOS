@@ -551,10 +551,24 @@ extension ReferencedAttachment {
             if let cdnNumber = attachment.mediaTierInfo?.cdnNumber {
                 backupLocator.cdnNumber = cdnNumber
             }
-            if let transitTierInfo = attachment.transitTierInfo {
+
+            // Include the transit tier cdn info as a fallback, but only
+            // if the encryption key matches.
+            // When we need this: we create a backup and don't get to copy to
+            // media tier before the device dies; on restore the restoring device
+            // can't find the attachment on the media tier but its on the transit
+            // tier if its been less than 30 days.
+            // When encryption keys don't match: if we reupload (e.g. forward) an
+            // attachment after 3+ days, we rotate to a new encryption key; transit
+            // tier info uses this new random key and can't be the fallback here.
+            if
+                let transitTierInfo = attachment.transitTierInfo,
+                transitTierInfo.encryptionKey == attachment.encryptionKey
+            {
                 backupLocator.transitCdnKey = transitTierInfo.cdnKey
                 backupLocator.transitCdnNumber = transitTierInfo.cdnNumber
             }
+
             locator = .backupLocator(backupLocator)
             incrementalMacInfo = attachment.mediaTierInfo?.incrementalMacInfo
         } else if
