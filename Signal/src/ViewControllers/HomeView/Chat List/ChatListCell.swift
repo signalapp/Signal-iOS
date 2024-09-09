@@ -632,15 +632,10 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
         messageStatusIconView.image = token.image.withRenderingMode(.alwaysTemplate)
         messageStatusIconView.tintColor = token.tintColor
 
-        if token.shouldAnimateStatusIcon {
-            let animation = CABasicAnimation(keyPath: "transform.rotation.z")
-            animation.toValue = NSNumber(value: Double.pi * 2)
-            animation.duration = kSecondInterval * 1
-            animation.isCumulative = true
-            animation.repeatCount = .greatestFiniteMagnitude
-            messageStatusIconView.layer.add(animation, forKey: "animation")
+        if token.shouldAnimateStatusIcon || SpinningCheckmarks.shouldSpin {
+            messageStatusIconView.startSpinning()
         } else {
-            messageStatusIconView.layer.removeAllAnimations()
+            messageStatusIconView.stopSpinning()
         }
 
         return messageStatusIconView

@@ -168,6 +168,11 @@ class InternalSettingsViewController: OWSTableViewController2 {
         let otherSection = OWSTableSection(title: "Other")
         otherSection.add(.copyableItem(label: "CC?", value: self.signalService.isCensorshipCircumventionActive ? "Yes" : "No"))
         otherSection.add(.copyableItem(label: "Audio Category", value: AVAudioSession.sharedInstance().category.rawValue.replacingOccurrences(of: "AVAudioSessionCategory", with: "")))
+        otherSection.add(.switch(
+            withText: "Spinning checkmarks",
+            isOn: { SpinningCheckmarks.shouldSpin },
+            target: self,
+            selector: #selector(spinCheckmarks(_:))))
         contents.add(otherSection)
 
         let paymentsSection = OWSTableSection(title: "Payments")
@@ -190,7 +195,30 @@ class InternalSettingsViewController: OWSTableViewController2 {
 
 // MARK: -
 
+public enum SpinningCheckmarks {
+    static var shouldSpin = false
+}
+
 private extension InternalSettingsViewController {
+
+    @objc
+    func spinCheckmarks(_ sender: Any) {
+        let wasSpinning = SpinningCheckmarks.shouldSpin
+        if let view = sender as? UIView {
+            if wasSpinning {
+                view.layer.removeAnimation(forKey: "spin")
+            } else {
+                let animation = CABasicAnimation(keyPath: "transform.rotation.z")
+                animation.toValue = NSNumber(value: Double.pi * 2)
+                animation.duration = kSecondInterval * 1
+                animation.isCumulative = true
+                animation.repeatCount = .greatestFiniteMagnitude
+                view.layer.add(animation, forKey: "spin")
+            }
+        }
+        SpinningCheckmarks.shouldSpin = !wasSpinning
+    }
+
     func exportMessageBackupProto() {
         let messageBackupManager = DependenciesBridge.shared.messageBackupManager
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager

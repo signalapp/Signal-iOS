@@ -4,6 +4,7 @@
 //
 
 import SignalServiceKit
+import UIKit
 import YYImage
 
 public class CVUtils {
@@ -84,6 +85,17 @@ open class CVButton: OWSButton, CVView {
 // MARK: -
 
 open class CVImageView: UIImageView, CVView {
+
+    // MARK: - Properties
+
+    public typealias LayoutBlock = (UIView) -> Void
+
+    private var layoutBlocks = [LayoutBlock]()
+
+    private var spinningAnimation: UIViewPropertyAnimator?
+
+    // MARK: -
+
     public override func updateConstraints() {
         super.updateConstraints()
 
@@ -92,13 +104,10 @@ open class CVImageView: UIImageView, CVView {
 
     public func reset() {
         self.image = nil
+        stopSpinning()
     }
 
     // MARK: - Layout
-
-    public typealias LayoutBlock = (UIView) -> Void
-
-    private var layoutBlocks = [LayoutBlock]()
 
     public func addLayoutBlock(_ layoutBlock: @escaping LayoutBlock) {
         layoutBlocks.append(layoutBlock)
@@ -154,6 +163,37 @@ open class CVImageView: UIImageView, CVView {
             view.layer.cornerRadius = min(view.width, view.height) * 0.5
         }
         return result
+    }
+
+    // MARK: - Animation
+
+    public func startSpinning() {
+        if spinningAnimation != nil {
+            stopSpinning()
+        }
+        spinningAnimation = UIViewPropertyAnimator(duration: 1, curve: .linear) { [weak self] in
+            self?.transform = .init(rotationAngle: .pi)
+        }
+        // UIViewPropertyAnimator aggressively drops animations it thinks aren't needed;
+        // if we animate to 2pi it won't spin because 2pi == 0, we have to do half
+        // and half in two parts to get it to animate at all.
+        spinningAnimation?.addAnimations  { [weak self] in
+            self?.transform = .init(rotationAngle: .pi * 2)
+        }
+        spinningAnimation?.addCompletion { [weak self] _ in
+            self?.transform = .identity
+            self?.startSpinning()
+        }
+        spinningAnimation?.startAnimation()
+    }
+
+    public func stopSpinning() {
+        guard let animation = spinningAnimation else {
+            return
+        }
+        self.spinningAnimation = nil
+        animation.stopAnimation(true)
+        self.transform = .identity
     }
 }
 
