@@ -594,13 +594,8 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         Logger.info("")
 
-        guard let gridCell = self.collectionView(collectionView, cellForItemAt: indexPath) as? Cell else {
+        guard let galleryItem = galleryItem(at: indexPath) else {
             owsFailDebug("galleryCell was unexpectedly nil")
-            return
-        }
-
-        guard let attachmentStream = gridCell.item?.attachmentStream else {
-            owsFailDebug("galleryItem was unexpectedly nil")
             return
         }
 
@@ -610,7 +605,7 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
             collectionView.deselectItem(at: indexPath, animated: true)
 
             guard let pageVC = MediaPageViewController(
-                initialMediaAttachment: attachmentStream,
+                initialMediaAttachment: galleryItem.attachmentStream,
                 mediaGallery: mediaGallery,
                 spoilerState: spoilerState
             ) else {
