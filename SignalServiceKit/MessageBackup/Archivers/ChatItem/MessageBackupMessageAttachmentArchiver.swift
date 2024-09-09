@@ -526,12 +526,8 @@ extension ReferencedAttachment {
             }
         }
 
-        if let incrementalMacInfo = attachment.incrementalMacInfo {
-            proto.incrementalMac = incrementalMacInfo.mac
-            proto.incrementalMacChunkSize = incrementalMacInfo.chunkSize
-        }
-
         let locator: BackupProto_FilePointer.OneOf_Locator
+        let incrementalMacInfo: Attachment.IncrementalMacInfo?
         if
             // We only create the backup locator for non-free tier backups.
             !isFreeTierBackup,
@@ -560,6 +556,7 @@ extension ReferencedAttachment {
                 backupLocator.transitCdnNumber = transitTierInfo.cdnNumber
             }
             locator = .backupLocator(backupLocator)
+            incrementalMacInfo = attachment.mediaTierInfo?.incrementalMacInfo
         } else if
             let transitTierInfo = attachment.transitTierInfo
         {
@@ -573,11 +570,18 @@ extension ReferencedAttachment {
                 transitTierLocator.size = unencryptedByteCount
             }
             locator = .attachmentLocator(transitTierLocator)
+            incrementalMacInfo = transitTierInfo.incrementalMacInfo
         } else {
             locator = .invalidAttachmentLocator(BackupProto_FilePointer.InvalidAttachmentLocator())
+            incrementalMacInfo = nil
         }
 
         proto.locator = locator
+
+        if let incrementalMacInfo {
+            proto.incrementalMac = incrementalMacInfo.mac
+            proto.incrementalMacChunkSize = incrementalMacInfo.chunkSize
+        }
 
         // Notes:
         // * incrementalMac and incrementalMacChunkSize unsupported by iOS

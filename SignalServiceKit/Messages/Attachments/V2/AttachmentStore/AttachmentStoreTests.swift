@@ -570,6 +570,7 @@ class AttachmentStoreTests: XCTestCase {
             encryptionKey: UUID().data,
             unencryptedByteCount: 100,
             digestSHA256Ciphertext: UUID().data,
+            incrementalMacInfo: nil,
             lastDownloadAttemptTimestamp: nil
         )
 

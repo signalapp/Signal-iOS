@@ -290,6 +290,7 @@ public class GRDBSchemaMigrator: NSObject {
         case removeVoIPToken
         case reorderMediaTierDigestColumn
         case addIncrementalMacParamsToAttachment
+        case splitIncrementalMacAttachmentColumns
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -351,7 +352,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 86
+    public static let grdbSchemaVersionLatest: UInt = 87
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -3422,6 +3423,18 @@ public class GRDBSchemaMigrator: NSObject {
             try tx.database.alter(table: "Attachment") { table in
                 table.add(column: "incrementalMac", .blob)
                 table.add(column: "incrementalMacChunkSize", .integer)
+            }
+
+            return .success(())
+        }
+
+        migrator.registerMigration(.splitIncrementalMacAttachmentColumns) { tx in
+
+            try tx.database.alter(table: "Attachment") { table in
+                table.rename(column: "incrementalMac", to: "mediaTierIncrementalMac")
+                table.rename(column: "incrementalMacChunkSize", to: "mediaTierIncrementalMacChunkSize")
+                table.add(column: "transitTierIncrementalMac", .blob)
+                table.add(column: "transitTierIncrementalMacChunkSize", .integer)
             }
 
             return .success(())

@@ -1552,8 +1552,10 @@ CREATE
                 ,"transitUnencryptedByteCount" INTEGER
                 ,"mediaTierUnencryptedByteCount" INTEGER
                 ,"mediaTierDigestSHA256Ciphertext" BLOB
-                ,"incrementalMac" BLOB
-                ,"incrementalMacChunkSize" INTEGER
+                ,"mediaTierIncrementalMac" BLOB
+                ,"mediaTierIncrementalMacChunkSize" INTEGER
+                ,"transitTierIncrementalMac" BLOB
+                ,"transitTierIncrementalMacChunkSize" INTEGER
 )
 ;
 

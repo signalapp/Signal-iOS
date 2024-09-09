@@ -49,6 +49,7 @@ extension Attachment.TransitTierInfo {
         encryptionKey: Data? = nil,
         unencryptedByteCount: UInt32? = nil,
         digestSHA256Ciphertext: Data? = nil,
+        incrementalMacInfo: Attachment.IncrementalMacInfo? = nil,
         lastDownloadAttemptTimestamp: UInt64? = nil
     ) -> Attachment.TransitTierInfo {
         return Attachment.TransitTierInfo(
@@ -58,6 +59,7 @@ extension Attachment.TransitTierInfo {
             encryptionKey: encryptionKey ?? UInt64.random(in: 0..<(.max)).bigEndianData,
             unencryptedByteCount: unencryptedByteCount ?? UInt32.random(in: 0..<(UInt32(OWSMediaUtils.kMaxFileSizeGeneric))),
             digestSHA256Ciphertext: digestSHA256Ciphertext ?? UInt64.random(in: 0..<(.max)).bigEndianData,
+            incrementalMacInfo: incrementalMacInfo,
             lastDownloadAttemptTimestamp: lastDownloadAttemptTimestamp
         )
     }
@@ -68,6 +70,7 @@ extension Attachment.MediaTierInfo {
         cdnNumber: UInt32? = nil,
         unencryptedByteCount: UInt32? = nil,
         digestSHA256Ciphertext: Data? = nil,
+        incrementalMacInfo: Attachment.IncrementalMacInfo? = nil,
         uploadEra: String? = nil,
         lastDownloadAttemptTimestamp: UInt64? = nil
     ) -> Attachment.MediaTierInfo {
@@ -75,6 +78,7 @@ extension Attachment.MediaTierInfo {
             cdnNumber: cdnNumber ?? 3,
             unencryptedByteCount: unencryptedByteCount ?? 16,
             digestSHA256Ciphertext: digestSHA256Ciphertext ?? UInt64.random(in: 0..<(.max)).bigEndianData,
+            incrementalMacInfo: incrementalMacInfo,
             uploadEra: uploadEra ?? "1",
             lastDownloadAttemptTimestamp: lastDownloadAttemptTimestamp
         )
@@ -103,15 +107,13 @@ extension Attachment.ConstructionParams {
         blurHash: String? = UUID().uuidString,
         mimeType: String = MimeType.imageJpeg.rawValue,
         encryptionKey: Data = UUID().data,
-        transitTierInfo: Attachment.TransitTierInfo = .mock(),
-        incrementalMacInfo: Attachment.IncrementalMacInfo = .mock()
+        transitTierInfo: Attachment.TransitTierInfo = .mock()
     ) -> Attachment.ConstructionParams {
         return Attachment.ConstructionParams.fromPointer(
             blurHash: blurHash,
             mimeType: mimeType,
             encryptionKey: encryptionKey,
-            transitTierInfo: transitTierInfo,
-            incrementalMacInfo: incrementalMacInfo
+            transitTierInfo: transitTierInfo
         )
     }
 
@@ -146,8 +148,7 @@ public class MockAttachment: Attachment {
         mediaTierInfo: Attachment.MediaTierInfo? = nil,
         thumbnailInfo: Attachment.ThumbnailMediaTierInfo? = nil,
         localRelativeFilePathThumbnail: String? = nil,
-        originalAttachmentIdForQuotedReply: Attachment.IDType? = nil,
-        incrementalMacInfo: Attachment.IncrementalMacInfo? = nil
+        originalAttachmentIdForQuotedReply: Attachment.IDType? = nil
     ) -> MockAttachment {
         let record = Attachment.Record(
            sqliteId: .random(in: 0..<(.max)),
@@ -160,8 +161,7 @@ public class MockAttachment: Attachment {
            transitTierInfo: transitTierInfo,
            mediaTierInfo: mediaTierInfo,
            thumbnailMediaTierInfo: thumbnailInfo,
-           originalAttachmentIdForQuotedReply: originalAttachmentIdForQuotedReply,
-           incrementalMacInfo: incrementalMacInfo
+           originalAttachmentIdForQuotedReply: originalAttachmentIdForQuotedReply
        )
 
         return try! MockAttachment(record: record)

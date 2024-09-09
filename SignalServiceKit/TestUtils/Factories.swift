@@ -461,6 +461,8 @@ public class ConversationFactory: NSObject {
                     encryptionKey: Randomness.generateRandomBytes(16),
                     unencryptedByteCount: 16,
                     digestSHA256Ciphertext: Randomness.generateRandomBytes(16),
+                    // TODO: [Attachment Streaming] support incremental mac
+                    incrementalMacInfo: nil,
                     lastDownloadAttemptTimestamp: nil
                 )
                 try! (DependenciesBridge.shared.tsResourceStore as? TSResourceUploadStore)?.updateAsUploaded(

@@ -224,6 +224,8 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                 cdnNumber: cdnNumber,
                 unencryptedByteCount: result.localUploadMetadata.plaintextDataLength,
                 digestSHA256Ciphertext: result.localUploadMetadata.digest,
+                // TODO: [Attachment Streaming] support incremental mac
+                incrementalMacInfo: nil,
                 uploadEra: uploadEra,
                 lastDownloadAttemptTimestamp: nil
             )
@@ -594,6 +596,8 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             encryptionKey: result.localUploadMetadata.key,
             unencryptedByteCount: result.localUploadMetadata.plaintextDataLength,
             digestSHA256Ciphertext: result.localUploadMetadata.digest,
+            // TODO: [Attachment Streaming] support incremental mac
+            incrementalMacInfo: nil,
             lastDownloadAttemptTimestamp: nil
         )
 

@@ -183,6 +183,7 @@ public actor TSAttachmentUploadManagerImpl: TSAttachmentUploadManager {
                 encryptionKey: result.localUploadMetadata.key,
                 unencryptedByteCount: result.localUploadMetadata.plaintextDataLength,
                 digestSHA256Ciphertext: result.localUploadMetadata.digest,
+                incrementalMacInfo: nil,
                 lastDownloadAttemptTimestamp: nil
             )
             try self.tsResourceStore.updateAsUploaded(

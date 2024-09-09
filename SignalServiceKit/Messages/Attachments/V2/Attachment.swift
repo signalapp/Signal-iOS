@@ -31,6 +31,11 @@ public class Attachment {
     /// If outgoing, we generate the key ourselves when we create the attachment.
     public let encryptionKey: Data
 
+    public let streamInfo: StreamInfo?
+
+    /// Information for the transit tier upload, if known to be uploaded.
+    public let transitTierInfo: TransitTierInfo?
+
     /// Used for quoted reply thumbnail attachments.
     /// The id of the quoted reply's target message's attachment that is to be thumbnail'ed.
     /// Only relevant for non-streams. At "download" time instead of using the transit tier info
@@ -42,20 +47,28 @@ public class Attachment {
     /// Nonnull if downloaded OR if restored from a backup.
     public let mediaName: String?
 
+    /// If null, the resource has not been uploaded to the media tier.
+    public let mediaTierInfo: MediaTierInfo?
+
+    /// Not to be confused with thumbnails used for rendering, or those created for quoted message replies.
+    /// This thumbnail is exclusively used for backup purposes.
+    /// If null, the thumbnail resource has not been uploaded to the media tier.
+    public let thumbnailMediaTierInfo: ThumbnailMediaTierInfo?
+
     /// Filepath to the encrypted thumbnail file on local disk.
     /// Not to be confused with thumbnails used for rendering, or those created for quoted message replies.
     /// This thumbnail is exclusively used for backup purposes.
     public let localRelativeFilePathThumbnail: String?
 
+    // MARK: - Inner structs
+
     /// Information supporting "streaming" video, which requires computing an
     /// "incremental" MAC rather than one big HMAC verification on the
     /// fully-downloaded file.
-    public struct IncrementalMacInfo {
+    public struct IncrementalMacInfo: Equatable {
         public let mac: Data
         public let chunkSize: UInt32
     }
-
-    public let incrementalMacInfo: IncrementalMacInfo?
 
     /// Information for the "stream" (the attachment downloaded and locally available).
     public struct StreamInfo {
@@ -83,8 +96,6 @@ public class Attachment {
         /// Filepath to the encrypted fullsize media file on local disk.
         public let localRelativeFilePath: String
     }
-
-    public let streamInfo: StreamInfo?
 
     public struct TransitTierInfo: Equatable {
         /// CDN number for the upload in the transit tier (or nil if not uploaded).
@@ -114,13 +125,13 @@ public class Attachment {
         /// For incoming attachments, taken off the service proto. If validation fails, the download is rejected.
         public let digestSHA256Ciphertext: Data
 
+        /// Incremental mac info used for streaming, if available. Only set for streamable types.
+        public let incrementalMacInfo: IncrementalMacInfo?
+
         /// Timestamp we last tried (and failed) to download from the transit tier.
         /// Nil if we have not tried or have successfully downloaded.
         public let lastDownloadAttemptTimestamp: UInt64?
     }
-
-    /// Information for the transit tier upload, if known to be uploaded.
-    public let transitTierInfo: TransitTierInfo?
 
     public struct MediaTierInfo {
         /// CDN number for the fullsize upload in the media tier.
@@ -141,6 +152,9 @@ public class Attachment {
         /// if the rest of `StreamInfo` is unavailable (e.g. after a restore).
         public let digestSHA256Ciphertext: Data
 
+        /// Incremental mac info used for streaming, if available. Only set for streamable mime types.
+        public let incrementalMacInfo: IncrementalMacInfo?
+
         /// If the value in this column doesn’t match the current Backup Subscription Era,
         /// it should also be considered un-uploaded.
         /// Set to the current era when uploaded.
@@ -150,9 +164,6 @@ public class Attachment {
         /// Nil if we have not tried or have successfully downloaded.
         public let lastDownloadAttemptTimestamp: UInt64?
     }
-
-    /// If null, the resource has not been uploaded to the media tier.
-    public let mediaTierInfo: MediaTierInfo?
 
     public struct ThumbnailMediaTierInfo {
         /// CDN number for the thumbnail upload in the media tier.
@@ -171,10 +182,7 @@ public class Attachment {
         public let lastDownloadAttemptTimestamp: UInt64?
     }
 
-    /// Not to be confused with thumbnails used for rendering, or those created for quoted message replies.
-    /// This thumbnail is exclusively used for backup purposes.
-    /// If null, the thumbnail resource has not been uploaded to the media tier.
-    public let thumbnailMediaTierInfo: ThumbnailMediaTierInfo?
+    // MARK: - Init
 
     internal init(record: Attachment.Record) throws {
         guard let id = record.sqliteId else {
@@ -199,10 +207,6 @@ public class Attachment {
         self.mediaName = record.mediaName
         self.localRelativeFilePathThumbnail = record.localRelativeFilePathThumbnail
 
-        self.incrementalMacInfo = IncrementalMacInfo(
-            mac: record.incrementalMac,
-            chunkSize: record.incrementalMacChunkSize
-        )
         self.streamInfo = StreamInfo(
             sha256ContentHash: record.sha256ContentHash,
             encryptedByteCount: record.encryptedByteCount,
@@ -218,14 +222,18 @@ public class Attachment {
             encryptionKey: record.transitEncryptionKey,
             unencryptedByteCount: record.transitUnencryptedByteCount,
             digestSHA256Ciphertext: record.transitDigestSHA256Ciphertext,
-            lastDownloadAttemptTimestamp: record.lastTransitDownloadAttemptTimestamp
+            lastDownloadAttemptTimestamp: record.lastTransitDownloadAttemptTimestamp,
+            incrementalMac: record.transitTierIncrementalMac,
+            incrementalMacChunkSize: record.transitTierIncrementalMacChunkSize
         )
         self.mediaTierInfo = MediaTierInfo(
             cdnNumber: record.mediaTierCdnNumber,
             unencryptedByteCount: record.mediaTierUnencryptedByteCount ?? record.unencryptedByteCount,
             digestSHA256Ciphertext: record.mediaTierDigestSHA256Ciphertext ?? record.digestSHA256Ciphertext,
             uploadEra: record.mediaTierUploadEra,
-            lastDownloadAttemptTimestamp: record.lastMediaTierDownloadAttemptTimestamp
+            lastDownloadAttemptTimestamp: record.lastMediaTierDownloadAttemptTimestamp,
+            incrementalMac: record.mediaTierIncrementalMac,
+            incrementalMacChunkSize: record.mediaTierIncrementalMacChunkSize
         )
         self.thumbnailMediaTierInfo = ThumbnailMediaTierInfo(
             cdnNumber: record.thumbnailCdnNumber,
@@ -361,7 +369,9 @@ private extension Attachment.TransitTierInfo {
         encryptionKey: Data?,
         unencryptedByteCount: UInt32?,
         digestSHA256Ciphertext: Data?,
-        lastDownloadAttemptTimestamp: UInt64?
+        lastDownloadAttemptTimestamp: UInt64?,
+        incrementalMac: Data?,
+        incrementalMacChunkSize: UInt32?
     ) {
         guard
             let cdnNumber,
@@ -389,6 +399,15 @@ private extension Attachment.TransitTierInfo {
         self.encryptionKey = encryptionKey
         self.unencryptedByteCount = unencryptedByteCount
         self.digestSHA256Ciphertext = digestSHA256Ciphertext
+        if let incrementalMac, let incrementalMacChunkSize {
+            self.incrementalMacInfo = .init(mac: incrementalMac, chunkSize: incrementalMacChunkSize)
+        } else {
+            owsAssertDebug(
+                incrementalMac == nil && incrementalMacChunkSize == nil,
+                "Have partial transit tier incremental mac info!"
+            )
+            self.incrementalMacInfo = nil
+        }
     }
 }
 
@@ -398,7 +417,9 @@ private extension Attachment.MediaTierInfo {
         unencryptedByteCount: UInt32?,
         digestSHA256Ciphertext: Data?,
         uploadEra: String?,
-        lastDownloadAttemptTimestamp: UInt64?
+        lastDownloadAttemptTimestamp: UInt64?,
+        incrementalMac: Data?,
+        incrementalMacChunkSize: UInt32?
     ) {
         guard
             let uploadEra,
@@ -416,6 +437,15 @@ private extension Attachment.MediaTierInfo {
         self.digestSHA256Ciphertext = digestSHA256Ciphertext
         self.uploadEra = uploadEra
         self.lastDownloadAttemptTimestamp = lastDownloadAttemptTimestamp
+        if let incrementalMac, let incrementalMacChunkSize {
+            self.incrementalMacInfo = .init(mac: incrementalMac, chunkSize: incrementalMacChunkSize)
+        } else {
+            owsAssertDebug(
+                incrementalMac == nil && incrementalMacChunkSize == nil,
+                "Have partial media tier incremental mac info!"
+            )
+            self.incrementalMacInfo = nil
+        }
     }
 }
 

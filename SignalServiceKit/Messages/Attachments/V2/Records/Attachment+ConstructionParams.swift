@@ -25,7 +25,6 @@ extension Attachment {
         public let thumbnailMediaTierInfo: ThumbnailMediaTierInfo?
         public let localRelativeFilePathThumbnail: String?
         public let originalAttachmentIdForQuotedReply: Attachment.IDType?
-        public let incrementalMacInfo: IncrementalMacInfo?
 
         private init(
             blurHash: String?,
@@ -37,8 +36,7 @@ extension Attachment {
             mediaTierInfo: MediaTierInfo?,
             thumbnailMediaTierInfo: ThumbnailMediaTierInfo?,
             localRelativeFilePathThumbnail: String?,
-            originalAttachmentIdForQuotedReply: Attachment.IDType?,
-            incrementalMacInfo: IncrementalMacInfo?
+            originalAttachmentIdForQuotedReply: Attachment.IDType?
         ) {
             self.blurHash = blurHash
             self.mimeType = mimeType
@@ -50,15 +48,13 @@ extension Attachment {
             self.thumbnailMediaTierInfo = thumbnailMediaTierInfo
             self.localRelativeFilePathThumbnail = localRelativeFilePathThumbnail
             self.originalAttachmentIdForQuotedReply = originalAttachmentIdForQuotedReply
-            self.incrementalMacInfo = incrementalMacInfo
         }
 
         public static func fromPointer(
             blurHash: String?,
             mimeType: String,
             encryptionKey: Data,
-            transitTierInfo: TransitTierInfo,
-            incrementalMacInfo: IncrementalMacInfo?
+            transitTierInfo: TransitTierInfo
         ) -> ConstructionParams {
             return .init(
                 blurHash: blurHash,
@@ -70,8 +66,7 @@ extension Attachment {
                 mediaTierInfo: nil,
                 thumbnailMediaTierInfo: nil,
                 localRelativeFilePathThumbnail: nil,
-                originalAttachmentIdForQuotedReply: nil,
-                incrementalMacInfo: incrementalMacInfo
+                originalAttachmentIdForQuotedReply: nil
             )
         }
 
@@ -92,8 +87,7 @@ extension Attachment {
                 mediaTierInfo: nil,
                 thumbnailMediaTierInfo: nil,
                 localRelativeFilePathThumbnail: nil,
-                originalAttachmentIdForQuotedReply: nil,
-                incrementalMacInfo: nil
+                originalAttachmentIdForQuotedReply: nil
             )
         }
 
@@ -104,8 +98,7 @@ extension Attachment {
             transitTierInfo: TransitTierInfo?,
             mediaName: String,
             mediaTierInfo: MediaTierInfo?,
-            thumbnailMediaTierInfo: ThumbnailMediaTierInfo?,
-            incrementalMacInfo: IncrementalMacInfo?
+            thumbnailMediaTierInfo: ThumbnailMediaTierInfo?
         ) -> ConstructionParams {
             return .init(
                 blurHash: blurHash,
@@ -117,15 +110,13 @@ extension Attachment {
                 mediaTierInfo: mediaTierInfo,
                 thumbnailMediaTierInfo: thumbnailMediaTierInfo,
                 localRelativeFilePathThumbnail: nil,
-                originalAttachmentIdForQuotedReply: nil,
-                incrementalMacInfo: incrementalMacInfo
+                originalAttachmentIdForQuotedReply: nil
             )
         }
 
         public static func forInvalidBackupAttachment(
             blurHash: String?,
-            mimeType: String,
-            incrementalMacInfo: IncrementalMacInfo?
+            mimeType: String
         ) -> ConstructionParams {
             return .init(
                 blurHash: blurHash,
@@ -139,8 +130,7 @@ extension Attachment {
                 mediaTierInfo: nil,
                 thumbnailMediaTierInfo: nil,
                 localRelativeFilePathThumbnail: nil,
-                originalAttachmentIdForQuotedReply: nil,
-                incrementalMacInfo: incrementalMacInfo
+                originalAttachmentIdForQuotedReply: nil
             )
         }
 
@@ -161,8 +151,7 @@ extension Attachment {
                 mediaTierInfo: nil,
                 thumbnailMediaTierInfo: nil,
                 localRelativeFilePathThumbnail: nil,
-                originalAttachmentIdForQuotedReply: originalAttachment.id,
-                incrementalMacInfo: nil
+                originalAttachmentIdForQuotedReply: originalAttachment.id
             )
         }
 
@@ -180,6 +169,7 @@ extension Attachment {
                     encryptionKey: $0.encryptionKey,
                     unencryptedByteCount: $0.unencryptedByteCount,
                     digestSHA256Ciphertext: $0.digestSHA256Ciphertext,
+                    incrementalMacInfo: $0.incrementalMacInfo,
                     // Wipe the last download attempt time; its now succeeded.
                     lastDownloadAttemptTimestamp: nil
                 )
@@ -194,8 +184,7 @@ extension Attachment {
                 mediaTierInfo: attachment.mediaTierInfo,
                 thumbnailMediaTierInfo: attachment.thumbnailMediaTierInfo,
                 localRelativeFilePathThumbnail: attachment.localRelativeFilePathThumbnail,
-                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply,
-                incrementalMacInfo: nil
+                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply
             )
         }
 
@@ -211,6 +200,7 @@ extension Attachment {
                     encryptionKey: $0.encryptionKey,
                     unencryptedByteCount: $0.unencryptedByteCount,
                     digestSHA256Ciphertext: $0.digestSHA256Ciphertext,
+                    incrementalMacInfo: $0.incrementalMacInfo,
                     lastDownloadAttemptTimestamp: timestamp
                 )
             }
@@ -224,8 +214,7 @@ extension Attachment {
                 mediaTierInfo: attachment.mediaTierInfo,
                 thumbnailMediaTierInfo: attachment.thumbnailMediaTierInfo,
                 localRelativeFilePathThumbnail: attachment.localRelativeFilePathThumbnail,
-                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply,
-                incrementalMacInfo: nil
+                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply
             )
         }
 
@@ -240,6 +229,7 @@ extension Attachment {
                     cdnNumber: $0.cdnNumber,
                     unencryptedByteCount: $0.unencryptedByteCount,
                     digestSHA256Ciphertext: $0.digestSHA256Ciphertext,
+                    incrementalMacInfo: $0.incrementalMacInfo,
                     uploadEra: $0.uploadEra,
                     // Wipe the last download attempt time; its now succeeded.
                     lastDownloadAttemptTimestamp: nil
@@ -255,8 +245,7 @@ extension Attachment {
                 mediaTierInfo: mediaTierInfo,
                 thumbnailMediaTierInfo: attachment.thumbnailMediaTierInfo,
                 localRelativeFilePathThumbnail: attachment.localRelativeFilePathThumbnail,
-                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply,
-                incrementalMacInfo: attachment.incrementalMacInfo
+                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply
             )
         }
 
@@ -269,6 +258,7 @@ extension Attachment {
                     cdnNumber: $0.cdnNumber,
                     unencryptedByteCount: $0.unencryptedByteCount,
                     digestSHA256Ciphertext: $0.digestSHA256Ciphertext,
+                    incrementalMacInfo: $0.incrementalMacInfo,
                     uploadEra: $0.uploadEra,
                     lastDownloadAttemptTimestamp: timestamp
                 )
@@ -283,8 +273,7 @@ extension Attachment {
                 mediaTierInfo: mediaTierInfo,
                 thumbnailMediaTierInfo: attachment.thumbnailMediaTierInfo,
                 localRelativeFilePathThumbnail: attachment.localRelativeFilePathThumbnail,
-                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply,
-                incrementalMacInfo: attachment.incrementalMacInfo
+                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply
             )
         }
 
@@ -312,8 +301,7 @@ extension Attachment {
                 mediaTierInfo: attachment.mediaTierInfo,
                 thumbnailMediaTierInfo: thumbnailMediaTierInfo,
                 localRelativeFilePathThumbnail: streamInfo.localRelativeFilePath,
-                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply,
-                incrementalMacInfo: attachment.incrementalMacInfo
+                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply
             )
         }
 
@@ -338,8 +326,7 @@ extension Attachment {
                 mediaTierInfo: attachment.mediaTierInfo,
                 thumbnailMediaTierInfo: thumbnailMediaTierInfo,
                 localRelativeFilePathThumbnail: attachment.localRelativeFilePathThumbnail,
-                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply,
-                incrementalMacInfo: attachment.incrementalMacInfo
+                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply
             )
         }
     }
