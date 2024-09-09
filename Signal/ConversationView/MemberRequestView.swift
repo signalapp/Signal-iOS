@@ -17,7 +17,7 @@ class MemberRequestView: UIStackView {
     init(threadViewModel: ThreadViewModel, fromViewController: UIViewController) {
         let thread = threadViewModel.threadRecord
         self.thread = thread
-        owsAssertDebug(thread as? TSGroupThread != nil)
+        owsAssertDebug(thread is TSGroupThread)
         self.fromViewController = fromViewController
 
         super.init(frame: .zero)

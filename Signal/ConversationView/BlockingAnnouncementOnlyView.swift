@@ -19,7 +19,7 @@ class BlockingAnnouncementOnlyView: UIStackView {
 
     init(thread: TSThread, fromViewController: UIViewController, forceDarkMode: Bool = false) {
         self.thread = thread
-        owsAssertDebug(thread as? TSGroupThread != nil)
+        owsAssertDebug(thread is TSGroupThread)
         self.fromViewController = fromViewController
         self.forceDarkMode = forceDarkMode
 

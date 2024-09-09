@@ -9,10 +9,10 @@ import LibSignalClient
 public extension TSMessage {
 
     @objc
-    var isIncoming: Bool { self as? TSIncomingMessage != nil }
+    var isIncoming: Bool { self is TSIncomingMessage }
 
     @objc
-    var isOutgoing: Bool { self as? TSOutgoingMessage != nil }
+    var isOutgoing: Bool { self is TSOutgoingMessage }
 
     // MARK: - Attachments
 

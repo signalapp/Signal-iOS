@@ -62,7 +62,7 @@ public class ReusableMediaView: NSObject {
     }
 
     var isVideo: Bool {
-        mediaViewAdapter as? MediaViewAdapterVideo != nil
+        mediaViewAdapter is MediaViewAdapterVideo
     }
 
     // MARK: - LoadState

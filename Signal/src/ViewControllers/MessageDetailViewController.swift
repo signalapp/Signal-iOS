@@ -28,7 +28,7 @@ class MessageDetailViewController: OWSTableViewController2 {
     public let spoilerState: SpoilerRenderState
     private let editManager: EditManager
     private var wasDeleted: Bool = false
-    private var isIncoming: Bool { message as? TSIncomingMessage != nil }
+    private var isIncoming: Bool { message is TSIncomingMessage }
     private var expires: Bool { message.expiresInSeconds > 0 }
 
     private struct MessageRecipientModel {

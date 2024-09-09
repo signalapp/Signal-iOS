@@ -193,7 +193,7 @@ public class ContextMenuInteraction: NSObject, UIInteraction {
         return accessory
     }
 
-    public func dismissMenu(animated: Bool, completion: @escaping() -> Void ) {
+    public func dismissMenu(animated: Bool, completion: @escaping () -> Void ) {
         guard let configuration = self.configuration else {
             return
         }

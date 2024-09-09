@@ -619,11 +619,11 @@ public class CVComponentState: Equatable, Dependencies {
         // MARK: -
 
         lazy var isIncoming: Bool = {
-            interaction as? TSIncomingMessage != nil
+            interaction is TSIncomingMessage
         }()
 
         lazy var isOutgoing: Bool = {
-            interaction as? TSOutgoingMessage != nil
+            interaction is TSOutgoingMessage
         }()
 
         lazy var messageCellType: CVMessageCellType = {
@@ -1088,7 +1088,7 @@ fileprivate extension CVComponentState.Builder {
 fileprivate extension CVComponentState.Builder {
 
     mutating func buildThreadDetails() -> ThreadDetails {
-        owsAssertDebug(interaction as? ThreadDetailsInteraction != nil)
+        owsAssertDebug(interaction is ThreadDetailsInteraction)
 
         return CVComponentThreadDetails.buildComponentState(thread: thread,
                                                             transaction: transaction,

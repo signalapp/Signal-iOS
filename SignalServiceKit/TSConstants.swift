@@ -143,7 +143,7 @@ public struct MrEnclave: Equatable {
     public let stringValue: String
 
     init(_ stringValue: StaticString) {
-        self.stringValue = stringValue.withUTF8Buffer { String(decoding: $0, as: UTF8.self) }
+        self.stringValue = String(describing: stringValue)
         // This is a constant -- it should never fail to parse.
         self.dataValue = Data.data(fromHex: self.stringValue)!
         // All of our MrEnclave values are currently 32 bytes.

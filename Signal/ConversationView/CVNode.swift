@@ -78,11 +78,11 @@ extension CVNode {
     var interactionType: OWSInteractionType { interaction.interactionType }
 
     var isIncoming: Bool {
-        interaction as? TSIncomingMessage != nil
+        interaction is TSIncomingMessage
     }
 
     var isOutgoing: Bool {
-        interaction as? TSOutgoingMessage != nil
+        interaction is TSOutgoingMessage
     }
 
     var wasNotCreatedLocally: Bool {

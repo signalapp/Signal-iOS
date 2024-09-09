@@ -478,7 +478,7 @@ extension StoryContextMenuGenerator {
         _ message: StoryMessage,
         in thread: TSThread,
         from presentingController: UIViewController,
-        willDelete: @escaping(@escaping () -> Void) -> Void,
+        willDelete: @escaping (@escaping () -> Void) -> Void,
         didDelete: @escaping (Bool) -> Void
     ) {
         let actionSheet = ActionSheetController(
