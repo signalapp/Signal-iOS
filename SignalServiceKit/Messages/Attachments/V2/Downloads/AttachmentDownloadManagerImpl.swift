@@ -366,6 +366,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
         private func didFailToDownload(
             _ record: QueuedAttachmentDownloadRecord,
+            _ attachment: Attachment,
             isRetryable: Bool
         ) async {
             Logger.error("Failed download of attachment \(record.attachmentId)")
@@ -379,7 +380,13 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     )
                 }
             } else {
-                // Not retrying; just delete.
+                // If we tried to download as media tier, and failed, and we have
+                // a transit tier fallback available, try downloading from that.
+                let shouldReEnqueueAsTransitTier =
+                    record.sourceType == .mediaTierFullsize
+                    && attachment.transitTierInfo != nil
+
+                // Not retrying; just delete the enqueued download
                 await db.awaitableWrite { tx in
                     try? self.attachmentDownloadStore.removeAttachmentFromQueue(
                         withId: record.attachmentId,
@@ -392,6 +399,14 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         timestamp: self.dateProvider().ows_millisecondsSince1970,
                         tx: tx
                     )
+                    if shouldReEnqueueAsTransitTier {
+                        try? self.attachmentDownloadStore.enqueueDownloadOfAttachment(
+                            withId: record.attachmentId,
+                            source: .transitTier,
+                            priority: record.priority,
+                            tx: tx
+                        )
+                    }
 
                     tx.addAsyncCompletion(on: SyncScheduler()) { [weak self] in
                         guard let self else { return }
@@ -464,17 +479,17 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             case .blockedByActiveCall:
                 // This is a temporary setback; retry in a bit if the source allows it.
                 Logger.info("Skipping attachment download due to active call \(record.attachmentId)")
-                await self.didFailToDownload(record, isRetryable: true)
+                await self.didFailToDownload(record, attachment, isRetryable: true)
                 return
             case .blockedByPendingMessageRequest:
                 Logger.info("Skipping attachment download due to pending message request \(record.attachmentId)")
                 // These can only be resolved by user action; cancel the enqueued download.
-                await self.didFailToDownload(record, isRetryable: false)
+                await self.didFailToDownload(record, attachment, isRetryable: false)
                 return
             case .blockedByAutoDownloadSettings:
                 Logger.info("Skipping attachment download due to auto download settings \(record.attachmentId)")
                 // These can only be resolved by user action; cancel the enqueued download.
-                await self.didFailToDownload(record, isRetryable: false)
+                await self.didFailToDownload(record, attachment, isRetryable: false)
                 return
             }
 
@@ -506,7 +521,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 // 2. Local installed sticker for a sticker message
                 // If we were trying for either of these and got this far,
                 // we failed to use the local data, so just fail the whole thing.
-                await self.didFailToDownload(record, isRetryable: false)
+                await self.didFailToDownload(record, attachment, isRetryable: false)
                 return
             }
 
@@ -585,7 +600,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             guard let downloadMetadata else {
                 owsFailDebug("Attempting to download an attachment without cdn info")
                 // Remove the download.
-                await self.didFailToDownload(record, isRetryable: false)
+                await self.didFailToDownload(record, attachment, isRetryable: false)
                 return
             }
 
@@ -603,7 +618,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 // The other type of error that can be expected here is if CDN
                 // credentials expire between enqueueing the download and the download
                 // excuting. The outcome is the same: fail the current download and retry.
-                await self.didFailToDownload(record, isRetryable: true)
+                await self.didFailToDownload(record, attachment, isRetryable: true)
                 return
             }
 
@@ -615,7 +630,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 )
             } catch let error {
                 Logger.error("Failed to validate: \(error)")
-                await self.didFailToDownload(record, isRetryable: false)
+                await self.didFailToDownload(record, attachment, isRetryable: false)
                 return
             }
 
@@ -628,7 +643,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 )
             } catch let error {
                 Logger.error("Failed to update attachment: \(error)")
-                await self.didFailToDownload(record, isRetryable: true)
+                await self.didFailToDownload(record, attachment, isRetryable: true)
                 return
             }
 
