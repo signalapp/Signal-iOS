@@ -181,6 +181,7 @@ class MessageBackupIntegrationTests: XCTestCase {
         exportedBackupUrl: URL,
         failureLogOutput: LibSignalComparisonFailureLogOutput
     ) throws {
+#if targetEnvironment(simulator)
         let sharedTestCaseBackup = try ComparableBackup(url: sharedTestCaseBackupUrl)
         let exportedBackup = try ComparableBackup(url: exportedBackupUrl)
 
@@ -222,6 +223,9 @@ class MessageBackupIntegrationTests: XCTestCase {
                 """)
             }
         }
+#else
+        throw XCTSkip("LibSignalClient.ComparableBackup is only available in the simulator.")
+#endif
     }
 
     // MARK: -
@@ -300,6 +304,7 @@ class MessageBackupIntegrationTests: XCTestCase {
 
 // MARK: -
 
+#if targetEnvironment(simulator)
 private extension LibSignalClient.ComparableBackup {
     convenience init(url: URL) throws {
         let fileHandle = try FileHandle(forReadingFrom: url)
@@ -313,6 +318,7 @@ private extension LibSignalClient.ComparableBackup {
         )
     }
 }
+#endif
 
 // MARK: - CrashyMocks
 
