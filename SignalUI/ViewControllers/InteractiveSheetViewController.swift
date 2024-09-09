@@ -137,6 +137,17 @@ open class InteractiveSheetViewController: OWSViewController {
         }
     }
 
+    private var maxWidthConstraint: NSLayoutConstraint?
+    open override func viewWillTransition(to size: CGSize, with coordinator: any UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+
+        maxWidthConstraint?.autoRemove()
+        let minScreenDimension = min(CurrentAppContext().frame.width, CurrentAppContext().frame.height)
+        if minScreenDimension <= maxWidth {
+            maxWidthConstraint = sheetContainerView.autoSetDimension(.width, toSize: minScreenDimension)
+        }
+    }
+
     public override func loadView() {
         let sheetView = SheetView(
             canInteractWithParent: self.canInteractWithParent,
@@ -153,10 +164,7 @@ open class InteractiveSheetViewController: OWSViewController {
         // Prefer to be full width, but don't exceed the maximum width
         sheetContainerView.autoSetDimension(.width, toSize: maxWidth, relation: .lessThanOrEqual)
         sheetContainerView.autoPinWidthToSuperview(relation: .lessThanOrEqual)
-        let minScreenDimension = min(CurrentAppContext().frame.width, CurrentAppContext().frame.height)
-        if minScreenDimension <= maxWidth {
-            sheetContainerView.autoSetDimension(.width, toSize: minScreenDimension)
-        }
+
         NSLayoutConstraint.autoSetPriority(.defaultHigh) {
             sheetContainerView.autoPinWidthToSuperview()
         }

@@ -39,15 +39,11 @@ class GroupCallViewController: UIViewController {
             sheetPanDelegate: self
         )
     }()
-    private lazy var fullscreenLocalMemberAddOnsView: SupplementalCallControlsForFullscreenLocalMember = {
-        let view = SupplementalCallControlsForFullscreenLocalMember(
-            call: call,
-            groupCall: groupCall,
-            callService: callService
-        )
-        view.isHidden = true
-        return view
-    }()
+    private lazy var fullscreenLocalMemberAddOnsView = SupplementalCallControlsForFullscreenLocalMember(
+        call: call,
+        groupCall: groupCall,
+        callService: callService
+    )
     private lazy var callControlsConfirmationToastContainerView = UIView()
     private var callService: CallService { AppEnvironment.shared.callService }
     private var incomingCallControls: IncomingCallControls?
@@ -373,6 +369,8 @@ class GroupCallViewController: UIViewController {
         self.bottomVStack.axis = .vertical
         self.bottomVStack.spacing = Constants.bottomVStackSpacing
         self.bottomVStack.preservesSuperviewLayoutMargins = true
+        self.bottomVStack.alignment = .center
+        self.bottomVStack.ignoredViews.append(fullscreenLocalMemberAddOnsView)
 
         switch groupCall.concreteType {
         case .groupThread:
@@ -393,7 +391,8 @@ class GroupCallViewController: UIViewController {
             self.bottomVStack.addArrangedSubview(self.approvalStackHeightView)
             self.approvalStackHeightConstraint = self.approvalStackHeightView
                 .autoSetDimension(.height, toSize: 0)
-            passthroughView.autoPinWidthToSuperviewMargins()
+            self.pinWidthWithBottomSheetMaxWidth(passthroughView)
+            passthroughView.autoHCenterInSuperview()
             passthroughView.autoSetDimension(.height, toSize: 300)
             passthroughView.autoPinEdge(.bottom, to: .bottom, of: self.approvalStackHeightView)
         }
@@ -401,17 +400,9 @@ class GroupCallViewController: UIViewController {
         videoOverflowContainer.addSubview(self.videoOverflow)
         self.bottomVStack.addArrangedSubview(videoOverflowContainer)
         self.bottomVStack.ignoredViews.append(videoOverflowContainer)
+        self.videoOverflowContainer.autoPinWidthToSuperview()
         self.videoOverflow.autoPinHeightToSuperview()
         self.videoOverflow.autoPinEdge(toSuperviewEdge: .leading)
-
-        // bottomVStack
-        // ↳ raisedHandsToastContainer
-        //     - Always full-width
-        //   ↳ raisedHandsToastInnerContainer
-        //       - Centered horizontally. Limited to 540px width on iPad
-        //     ↳ raisedHandsToast
-        //         - Pinned to right edge when collapsed.
-        //         - Pinned to both edges when expanded.
 
         self.bottomVStack.insertArrangedSubview(raisedHandsToastContainer, at: 0)
         self.bottomVStack.ignoredViews.append(raisedHandsToastContainer)
@@ -420,23 +411,8 @@ class GroupCallViewController: UIViewController {
         raisedHandsToastContainer.preservesSuperviewLayoutMargins = true
         raisedHandsToastContainer.isHiddenInStackView = true
 
-        let raisedHandsToastInnerContainer = UIView()
-        raisedHandsToastInnerContainer.layoutMargins = .init(margin: 0)
-        raisedHandsToastInnerContainer.preservesSuperviewLayoutMargins = true
-        raisedHandsToastInnerContainer.addSubview(raisedHandsToast)
-        raisedHandsToastContainer.addSubview(raisedHandsToastInnerContainer)
-        self.bottomVStack.ignoredViews.append(raisedHandsToastInnerContainer)
-
-        raisedHandsToastInnerContainer.autoPinVerticalEdges(toEdgesOf: raisedHandsToastContainer)
-        if UIDevice.current.isIPad {
-            raisedHandsToastInnerContainer.autoHCenterInSuperview()
-            raisedHandsToastInnerContainer.widthAnchor.constraint(lessThanOrEqualToConstant: bottomSheet.maxWidth).isActive = true
-        } else {
-            raisedHandsToastInnerContainer.autoPinWidthToSuperview()
-        }
-        raisedHandsToastInnerContainer.autoPinHorizontalEdges(toEdgesOf: raisedHandsToastContainer)
-            // Prioritize the 540px limit
-            .forEach { $0.priority = .defaultHigh }
+        raisedHandsToastContainer.addSubview(raisedHandsToast)
+        self.pinWidthWithBottomSheetMaxWidth(raisedHandsToastContainer)
 
         raisedHandsToast.autoPinEdges(toSuperviewMarginsExcludingEdge: .leading)
         raisedHandsToast.autoPinEdge(toSuperviewMargin: .leading, relation: .greaterThanOrEqual)
@@ -457,19 +433,6 @@ class GroupCallViewController: UIViewController {
         swipeToastView.autoHCenterInSuperview()
         swipeToastView.autoPinEdge(toSuperviewMargin: .leading, relation: .greaterThanOrEqual)
         swipeToastView.autoPinEdge(toSuperviewMargin: .trailing, relation: .greaterThanOrEqual)
-
-        view.addSubview(fullscreenLocalMemberAddOnsView)
-        fullscreenLocalMemberAddOnsView.autoPinLeadingToSuperviewMargin()
-        fullscreenLocalMemberAddOnsView.autoPinTrailingToSuperviewMargin()
-        if !UIDevice.current.isIPad {
-            fullscreenLocalMemberAddOnsView.autoPinEdge(
-                .bottom,
-                to: .bottom,
-                of: bottomVStack
-            )
-        } else {
-            fullscreenLocalMemberAddOnsView.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: Constants.flipCamButtonTrailingToSuperviewEdgePadding)
-        }
 
         view.addSubview(callControlsConfirmationToastContainerView)
         callControlsConfirmationToastContainerView.autoHCenterInSuperview()
@@ -585,9 +548,7 @@ class GroupCallViewController: UIViewController {
             return
         }
         bottomSheet.setBottomSheetMinimizedHeight()
-        present(self.bottomSheet, animated: true) {
-            self.fullscreenLocalMemberAddOnsView.isHidden = false
-        }
+        present(self.bottomSheet, animated: true)
     }
 
     private func dismissBottomSheet(animated: Bool = true) {
@@ -668,9 +629,59 @@ class GroupCallViewController: UIViewController {
         view.layoutIfNeeded()
     }
 
+    @discardableResult
+    private func pinWidthWithBottomSheetMaxWidth(_ view: UIView) -> [NSLayoutConstraint] {
+        let maxWidthConstraint = view.autoSetDimension(
+            .width,
+            toSize: bottomSheet.maxWidth,
+            relation: .lessThanOrEqual
+        )
+        let edgesConstraints = view.autoPinWidthToSuperviewMargins(relation: .lessThanOrEqual)
+        let edgesConstraints2 = view.autoPinWidthToSuperviewMargins(relation: .equal)
+        edgesConstraints2.forEach { $0.priority = .defaultHigh }
+        return [maxWidthConstraint] + edgesConstraints + edgesConstraints2
+    }
+
+    private var addOnsConstraints: [NSLayoutConstraint]?
+    private func constrainAddOnsOutsideBottomVStack() {
+        addOnsConstraints.map(fullscreenLocalMemberAddOnsView.removeConstraints(_:))
+        addOnsConstraints = [
+            fullscreenLocalMemberAddOnsView.autoPinLeadingToSuperviewMargin(),
+            fullscreenLocalMemberAddOnsView.autoPinTrailingToSuperviewMargin(),
+            fullscreenLocalMemberAddOnsView.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: Constants.flipCamButtonTrailingToSuperviewEdgePadding),
+        ]
+    }
+    private func constrainAddOnsInsideBottomVStack() {
+        addOnsConstraints.map(fullscreenLocalMemberAddOnsView.removeConstraints(_:))
+        addOnsConstraints = pinWidthWithBottomSheetMaxWidth(fullscreenLocalMemberAddOnsView)
+    }
+    private func updateAddOnsViewPosition() {
+        let canFitNextToDrawer = view.width >= bottomSheet.maxWidth + view.layoutMargins.totalWidth + view.layoutMargins.trailing + 48
+
+        if canFitNextToDrawer {
+            guard fullscreenLocalMemberAddOnsView.superview != view else { return }
+
+            bottomVStack.removeArrangedSubview(fullscreenLocalMemberAddOnsView)
+            view.addSubview(fullscreenLocalMemberAddOnsView)
+            constrainAddOnsOutsideBottomVStack()
+        } else {
+            guard fullscreenLocalMemberAddOnsView.superview != bottomVStack else { return }
+
+            fullscreenLocalMemberAddOnsView.removeFromSuperview()
+            bottomVStack.addArrangedSubview(fullscreenLocalMemberAddOnsView)
+            constrainAddOnsInsideBottomVStack()
+        }
+    }
+
+    private var shouldHideAddOnsView: Bool {
+        !groupCall.isJustMe || (groupCall.isJustMe && call.isOutgoingVideoMuted) || hasDismissed
+    }
+
     private func updateBottomVStackItems() {
         let hasRaisedHands = !self.raisedHandsToast.raisedHands.isEmpty
         self.raisedHandsToastContainer.isHiddenInStackView = !hasRaisedHands
+        self.fullscreenLocalMemberAddOnsView.isHiddenInStackView = self.shouldHideAddOnsView
+        self.updateAddOnsViewPosition()
 
         /// If there are no approval requests, `approvalStackViewModel`'s height
         /// will be zero, but we don't want to hide it because the approval view
@@ -1120,11 +1131,9 @@ class GroupCallViewController: UIViewController {
             return
         }
 
-        fullscreenLocalMemberAddOnsView.isHidden = true
-
         bottomSheetStateManager.submitState(.callControls)
         self.raisedHandsToast.raisedHands.removeAll()
-        self.approvalStackViewModel.loadRequestsWithSneakyTransaction(for: [])
+        self.approvalStackViewModel.requests.removeAll()
 
         guard
             let splitViewSnapshot = SignalApp.shared.snapshotSplitViewController(afterScreenUpdates: false),
@@ -1481,7 +1490,10 @@ extension GroupCallViewController: GroupCallObserver {
             return
         }
 
-        updateCallUI()
+        // It would be nice to animate more device state changes, but some
+        // can cause unwanted animations, so only add them as tested.
+        let addOnsViewVisibilityWillChange = shouldHideAddOnsView != fullscreenLocalMemberAddOnsView.isHiddenInStackView
+        updateCallUI(shouldAnimateViewFrames: addOnsViewVisibilityWillChange)
 
         switch ringRtcCall.localDeviceState.joinState {
         case .joined:

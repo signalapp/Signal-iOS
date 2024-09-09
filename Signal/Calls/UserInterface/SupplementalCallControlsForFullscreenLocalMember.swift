@@ -68,6 +68,10 @@ class SupplementalCallControlsForFullscreenLocalMember: UIView {
     private let groupCall: GroupCall
     private let callService: CallService
 
+    private enum Constants {
+        static let trailingPadding: CGFloat = 16
+    }
+
     init(
         call: SignalCall,
         groupCall: GroupCall,
@@ -79,20 +83,8 @@ class SupplementalCallControlsForFullscreenLocalMember: UIView {
         super.init(frame: .zero)
         self.translatesAutoresizingMaskIntoConstraints = false
 
-        groupCall.addObserver(self)
-
-        flipCameraButton.translatesAutoresizingMaskIntoConstraints = false
         addSubview(flipCameraButton)
-        NSLayoutConstraint.activate([
-            flipCameraButton.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-            flipCameraButton.topAnchor.constraint(equalTo: self.topAnchor),
-            flipCameraButton.bottomAnchor.constraint(equalTo: self.bottomAnchor)
-        ])
-        updateView()
-    }
-
-    private func updateView() {
-        flipCameraButton.isHidden = !groupCall.isJustMe || call.isOutgoingVideoMuted
+        flipCameraButton.autoPinEdges(toSuperviewEdgesExcludingEdge: .leading)
     }
 
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
@@ -107,15 +99,5 @@ class SupplementalCallControlsForFullscreenLocalMember: UIView {
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-}
-
-extension SupplementalCallControlsForFullscreenLocalMember: GroupCallObserver {
-    func groupCallLocalDeviceStateChanged(_ call: GroupCall) {
-        updateView()
-    }
-
-    func groupCallRemoteDeviceStatesChanged(_ call: GroupCall) {
-        updateView()
     }
 }
