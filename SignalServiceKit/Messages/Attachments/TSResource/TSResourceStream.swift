@@ -29,7 +29,7 @@ public protocol TSResourceStream: TSResource {
 
     /// Interprets the data on disk as an AVAsset (video or audio).
     /// Throws an error if reading/decrypting the file fails or the data is incompatible with AVAsset.
-    func decryptedAVAsset(sourceFilenameIfAudio: String?) throws -> AVAsset
+    func decryptedAVAsset() throws -> AVAsset
 
     var concreteStreamType: ConcreteTSResourceStream { get }
 

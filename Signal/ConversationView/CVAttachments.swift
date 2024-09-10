@@ -70,7 +70,7 @@ public class AudioAttachment {
             var duration = duration.compute()
             // TODO: Remove & replace with a full fix to recompute the duration for invalid files.
             if duration <= 0, case .v2(let attachment) = attachmentStream.attachmentStream.concreteStreamType {
-                duration = Self.cachedAudioDuration(forAttachment: attachment, sourceFilenameIfAudio: attachmentStream.reference.sourceFilename)
+                duration = Self.cachedAudioDuration(forAttachment: attachment)
             }
             if duration <= 0 {
                 fallthrough
@@ -111,22 +111,14 @@ public class AudioAttachment {
     }
 
     private static let cachedAttachmentDurations = AtomicDictionary<Int64, TimeInterval>([:], lock: .init())
-    private static func cachedAudioDuration(forAttachment attachmentStream: AttachmentStream, sourceFilenameIfAudio: String?) -> TimeInterval {
+    private static func cachedAudioDuration(forAttachment attachmentStream: AttachmentStream) -> TimeInterval {
         let attachmentId = attachmentStream.attachment.id
         if let cachedDuration = cachedAttachmentDurations[attachmentId] {
             return cachedDuration
         }
         let computedDuration: TimeInterval
         do {
-            var asset = try attachmentStream.decryptedAVAsset(sourceFilenameIfAudio: sourceFilenameIfAudio)
-            if
-                !asset.isReadable,
-                let sourceFilenameIfAudio,
-                let extensionOverride = MimeTypeUtil.alternativeAudioFileExtension(fileExtension: (sourceFilenameIfAudio as NSString).pathExtension),
-                let sourceFilenameWithExtensionOverride = (sourceFilenameIfAudio as NSString).appendingPathExtension(extensionOverride)
-            {
-                asset = try attachmentStream.decryptedAVAsset(sourceFilenameIfAudio: sourceFilenameWithExtensionOverride)
-            }
+            let asset = try attachmentStream.decryptedAVAsset()
             computedDuration = asset.duration.seconds
         } catch {
             Logger.warn("Couldn't compute fallback duration: \(error)")

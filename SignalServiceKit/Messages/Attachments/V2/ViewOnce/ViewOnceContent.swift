@@ -84,7 +84,6 @@ public class ViewOnceContent {
     public func loadAVAsset() throws -> AVAsset {
         return try AVAsset.fromEncryptedFile(
             at: fileUrl,
-            sourceFilenameIfAudio: nil,
             encryptionKey: encryptionKey,
             plaintextLength: plaintextLength,
             mimeType: mimeType

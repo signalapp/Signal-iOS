@@ -384,11 +384,7 @@ private class CVAudioPlayback: NSObject, AudioPlayerDelegate {
         }
         self.attachmentId = attachmentStream.attachmentStream.resourceId
 
-        audioPlayer = AudioPlayer(
-            attachment: attachmentStream.attachmentStream,
-            sourceFilenameIfAudio: attachmentStream.reference.sourceFilename,
-            audioBehavior: .audioMessagePlayback
-        )
+        audioPlayer = AudioPlayer(attachment: attachmentStream.attachmentStream, audioBehavior: .audioMessagePlayback)
         uniqueThreadId = attachment.owningMessage?.uniqueThreadId
 
         super.init()

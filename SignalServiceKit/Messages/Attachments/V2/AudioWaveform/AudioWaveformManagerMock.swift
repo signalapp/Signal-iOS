@@ -25,7 +25,6 @@ public class AudioWaveformManagerMock: AudioWaveformManager {
 
     public func audioWaveform(
         forEncryptedAudioFileAtPath filePath: String,
-        sourceFilenameIfAudio: String?,
         encryptionKey: Data,
         plaintextDataLength: UInt32,
         mimeType: String,
@@ -42,7 +41,6 @@ public class AudioWaveformManagerMock: AudioWaveformManager {
 
     public func audioWaveformSync(
         forEncryptedAudioFileAtPath filePath: String,
-        sourceFilenameIfAudio: String?,
         encryptionKey: Data,
         plaintextDataLength: UInt32,
         mimeType: String

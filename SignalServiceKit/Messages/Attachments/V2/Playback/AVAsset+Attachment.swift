@@ -9,12 +9,10 @@ import Foundation
 extension AVAsset {
 
     public static func from(
-        _ attachment: AttachmentStream,
-        sourceFilenameIfAudio: String?
+        _ attachment: AttachmentStream
     ) throws -> AVAsset {
         return try .fromEncryptedFile(
             at: attachment.fileURL,
-            sourceFilenameIfAudio: sourceFilenameIfAudio,
             encryptionKey: attachment.attachment.encryptionKey,
             plaintextLength: attachment.info.unencryptedByteCount,
             mimeType: attachment.mimeType
@@ -23,7 +21,6 @@ extension AVAsset {
 
     public static func fromEncryptedFile(
         at fileURL: URL,
-        sourceFilenameIfAudio: String?,
         encryptionKey: Data,
         plaintextLength: UInt32,
         mimeType: String
@@ -31,7 +28,6 @@ extension AVAsset {
         func createAsset(mimeTypeOverride: String? = nil) throws -> AVAsset {
             return try AVAsset._fromEncryptedFile(
                 at: fileURL,
-                sourceFilenameIfAudio: sourceFilenameIfAudio,
                 encryptionKey: encryptionKey,
                 plaintextLength: plaintextLength,
                 mimeType: mimeTypeOverride ?? mimeType
@@ -55,7 +51,6 @@ extension AVAsset {
 
     private static func _fromEncryptedFile(
         at fileURL: URL,
-        sourceFilenameIfAudio: String?,
         encryptionKey: Data,
         plaintextLength: UInt32,
         mimeType: String
@@ -75,8 +70,16 @@ extension AVAsset {
             fileHandle: fileHandle
         )
 
+        // AVAsset cares about the file extension. It shouldn't, but it does.
+        // If we can map the mime type to a file extension, do so for the
+        // url we give the AVAsset so it reads things correctly.
         let fileURLWithFakeExtension: URL
-        if let pathExtension = (sourceFilenameIfAudio as NSString?)?.pathExtension.nilIfEmpty {
+        if
+            let pathExtension =
+                // Prioritize audio extensions; note these mappings differ from the
+                // generic "fileExtensionForMimeType" because reasons.
+                MimeTypeUtil.getSupportedExtensionFromAudioMimeType(mimeType)
+                ?? MimeTypeUtil.fileExtensionForMimeType(mimeType) {
             fileURLWithFakeExtension = fileURL.appendingPathExtension(pathExtension)
         } else {
             fileURLWithFakeExtension = fileURL

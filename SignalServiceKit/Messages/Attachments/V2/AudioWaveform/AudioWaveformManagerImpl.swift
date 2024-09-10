@@ -105,7 +105,6 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
 
     public func audioWaveform(
         forEncryptedAudioFileAtPath filePath: String,
-        sourceFilenameIfAudio: String?,
         encryptionKey: Data,
         plaintextDataLength: UInt32,
         mimeType: String,
@@ -114,7 +113,6 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
         let task = buildAudioWaveForm(
             source: .encryptedFile(
                 path: filePath,
-                sourceFilenameIfAudio: sourceFilenameIfAudio,
                 encryptionKey: encryptionKey,
                 plaintextDataLength: plaintextDataLength,
                 mimeType: mimeType
@@ -138,7 +136,6 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
 
     public func audioWaveformSync(
         forEncryptedAudioFileAtPath filePath: String,
-        sourceFilenameIfAudio: String?,
         encryptionKey: Data,
         plaintextDataLength: UInt32,
         mimeType: String
@@ -146,7 +143,6 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
         return try _buildAudioWaveForm(
             source: .encryptedFile(
                 path: filePath,
-                sourceFilenameIfAudio: sourceFilenameIfAudio,
                 encryptionKey: encryptionKey,
                 plaintextDataLength: plaintextDataLength,
                 mimeType: mimeType
@@ -159,7 +155,6 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
         case unencryptedFile(path: String)
         case encryptedFile(
             path: String,
-            sourceFilenameIfAudio: String?,
             encryptionKey: Data,
             plaintextDataLength: UInt32,
             mimeType: String
@@ -237,10 +232,9 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
         switch source {
         case .unencryptedFile(let path):
             asset = try assetFromUnencryptedAudioFile(atAudioPath: path)
-        case let .encryptedFile(path, sourceFilenameIfAudio, encryptionKey, plaintextDataLength, mimeType):
+        case let .encryptedFile(path, encryptionKey, plaintextDataLength, mimeType):
             asset = try assetFromEncryptedAudioFile(
                 atPath: path,
-                sourceFilenameIfAudio: sourceFilenameIfAudio,
                 encryptionKey: encryptionKey,
                 plaintextDataLength: plaintextDataLength,
                 mimeType: mimeType
@@ -265,7 +259,7 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
                     switch source {
                     case .unencryptedFile:
                         try waveform.write(toFile: waveformPath, atomically: true)
-                    case .encryptedFile(_, _, let encryptionKey, _, _):
+                    case .encryptedFile(_, let encryptionKey, _, _):
                         let waveformData = try waveform.archive()
                         let (encryptedWaveform, _) = try Cryptography.encrypt(waveformData, encryptionKey: encryptionKey)
                         try encryptedWaveform.write(to: URL(fileURLWithPath: waveformPath), options: .atomicWrite)
@@ -311,36 +305,17 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
 
     private func assetFromEncryptedAudioFile(
         atPath filePath: String,
-        sourceFilenameIfAudio: String?,
         encryptionKey: Data,
         plaintextDataLength: UInt32,
         mimeType: String
     ) throws -> AVAsset {
         let audioUrl = URL(fileURLWithPath: filePath)
-        var asset = try AVAsset.fromEncryptedFile(
+        return try AVAsset.fromEncryptedFile(
             at: audioUrl,
-            sourceFilenameIfAudio: sourceFilenameIfAudio,
             encryptionKey: encryptionKey,
             plaintextLength: plaintextDataLength,
             mimeType: mimeType
         )
-
-        if
-            !asset.isReadable,
-            let sourceFilenameIfAudio,
-            let extensionOverride = MimeTypeUtil.alternativeAudioFileExtension(fileExtension: (sourceFilenameIfAudio as NSString).pathExtension),
-            let sourceFilenameWithExtensionOverride = (sourceFilenameIfAudio as NSString).appendingPathExtension(extensionOverride)
-        {
-            asset = try AVAsset.fromEncryptedFile(
-                at: audioUrl,
-                sourceFilenameIfAudio: sourceFilenameWithExtensionOverride,
-                encryptionKey: encryptionKey,
-                plaintextLength: plaintextDataLength,
-                mimeType: mimeType
-            )
-        }
-
-        return asset
     }
 
     // MARK: - Sampling

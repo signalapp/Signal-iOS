@@ -130,7 +130,6 @@ public class TSViewOnceContent {
         case .encrypted(let url, let encryptionKey, let plaintextLength):
             return try AVAsset.fromEncryptedFile(
                 at: url,
-                sourceFilenameIfAudio: nil,
                 encryptionKey: encryptionKey,
                 plaintextLength: plaintextLength,
                 mimeType: mimeType

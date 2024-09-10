@@ -27,7 +27,7 @@ public class LoopingVideo: NSObject {
             }
             self.init(decryptedLocalFileUrl: url)
         case .v2(let attachmentStream):
-            guard let asset = try? attachmentStream.decryptedAVAsset(sourceFilenameIfAudio: nil) else {
+            guard let asset = try? attachmentStream.decryptedAVAsset() else {
                 return nil
             }
             self.init(asset: asset)

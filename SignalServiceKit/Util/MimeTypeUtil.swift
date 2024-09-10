@@ -150,7 +150,7 @@ public class MimeTypeUtil: NSObject {
     fileprivate static func getSupportedExtensionFromVideoMimeType(_ supportedMimeType: String) -> String? {
         supportedVideoMimeTypesToExtensionTypes[supportedMimeType]
     }
-    fileprivate static func getSupportedExtensionFromAudioMimeType(_ supportedMimeType: String) -> String? {
+    static func getSupportedExtensionFromAudioMimeType(_ supportedMimeType: String) -> String? {
         supportedAudioMimeTypesToExtensionTypes[supportedMimeType]
     }
     fileprivate static func getSupportedExtensionFromImageMimeType(_ supportedMimeType: String) -> String? {
