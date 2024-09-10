@@ -209,6 +209,13 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
             )])
         }
 
+        guard let expiresInSeconds: UInt32 = .msToSecs(chatItem.expiresInMs) else {
+            return .messageFailure([.restoreFrameError(
+                .invalidProtoData(.expirationTimerOverflowedLocalType),
+                chatItem.id
+            )])
+        }
+
         let editState: TSEditState = {
             if isPastRevision {
                 return .pastRevision
@@ -248,7 +255,7 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
                 messageBody: nil,
                 bodyRanges: nil,
                 editState: editState,
-                expiresInSeconds: UInt32(chatItem.expiresInMs / 1000),
+                expiresInSeconds: expiresInSeconds,
                 // Backed up messages don't set the chat timer; version is irrelevant.
                 expireTimerVersion: nil,
                 expireStartedAt: chatItem.expireStartDate,

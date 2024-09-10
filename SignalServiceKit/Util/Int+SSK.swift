@@ -5,6 +5,25 @@
 
 import Foundation
 
+public extension UInt32 {
+    /// Convert the given millisecond time to seconds.
+    ///
+    /// - Returns
+    /// The millisecond time in seconds, or `nil` if the resulting value would
+    /// overflow `UInt32`.
+    static func msToSecs(_ millis: UInt64) -> UInt32? {
+        let secs: UInt64 = millis / kSecondInMs
+
+        if secs <= UInt32.max {
+            return UInt32(secs)
+        } else {
+            return nil
+        }
+    }
+}
+
+// MARK: -
+
 public extension Int {
     var abbreviatedString: String {
         let value: Double

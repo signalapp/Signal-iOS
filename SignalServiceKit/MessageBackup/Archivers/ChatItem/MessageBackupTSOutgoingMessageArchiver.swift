@@ -384,11 +384,12 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
             )])
         }
 
-        let expirationToken: VersionedDisappearingMessageToken = .token(
-            forProtoExpireTimerMillis: chatItem.expiresInMs,
-            // TODO: [Backups] add DM timer version to backups
-            version: nil
-        )
+        guard let expiresInSeconds: UInt32 = .msToSecs(chatItem.expiresInMs) else {
+            return .messageFailure([.restoreFrameError(
+                .invalidProtoData(.expirationTimerOverflowedLocalType),
+                chatItem.id
+            )])
+        }
 
         var partialErrors = [RestoreFrameError]()
 
@@ -444,7 +445,7 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
                 messageBody: nil,
                 bodyRanges: nil,
                 editState: editState,
-                expiresInSeconds: expirationToken.durationSeconds,
+                expiresInSeconds: expiresInSeconds,
                 // Backed up messages don't set the chat timer; version is irrelevant.
                 expireTimerVersion: nil,
                 expireStartedAt: chatItem.expireStartDate,

@@ -122,9 +122,8 @@ final class MessageBackupExpirationTimerChatUpdateArchiver {
             return invalidProtoData(.expirationTimerUpdateNotInContactThread)
         }
 
-        let expiresInSeconds: UInt64 = expirationTimerChatUpdate.expiresInMs / kSecondInMs
-        guard expiresInSeconds <= UInt32.max else {
-            return invalidProtoData(.expirationTimerUpdateOverflowedLocalType)
+        guard let expiresInSeconds: UInt32 = .msToSecs(expirationTimerChatUpdate.expiresInMs) else {
+            return invalidProtoData(.expirationTimerOverflowedLocalType)
         }
 
         let createdByRemoteName: String?

@@ -57,16 +57,6 @@ public struct VersionedDisappearingMessageToken {
     }
 
     public static func token(
-        forProtoExpireTimerMillis expireTimerMillis: UInt64?,
-        version: UInt32?
-    ) -> Self {
-        return .token(
-            forProtoExpireTimerSeconds: expireTimerMillis.map { UInt32($0 / 1000) },
-            version: version
-        )
-    }
-
-    public static func token(
         forProtoExpireTimerSeconds expireTimerSeconds: UInt32?,
         version: UInt32?
     ) -> Self {

@@ -252,7 +252,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         chat.recipientID = recipientId.value
         chat.archived = threadAssociatedData.isArchived
         chat.pinnedOrder = thisThreadPinnedOrder
-        chat.expirationTimerMs = UInt64(expirationTimerSeconds * 1000)
+        chat.expirationTimerMs = UInt64(expirationTimerSeconds) * 1000
         chat.muteUntilMs = threadAssociatedData.mutedUntilTimestamp
         chat.markedUnread = threadAssociatedData.isMarkedUnread
         chat.dontNotifyForMentionsIfMuted = dontNotifyForMentionsIfMuted
@@ -406,11 +406,18 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
             pinnedThreadManager.updatePinnedThreadIds(newPinnedThreadIds.map(\.value), updateStorageService: false, tx: context.tx)
         }
 
-        if chat.expirationTimerMs != 0 {
+        if chat.expirationTimerMs > 0 {
+            guard let expiresInSeconds: UInt32 = .msToSecs(chat.expirationTimerMs) else {
+                return .failure([.restoreFrameError(
+                    .invalidProtoData(.expirationTimerOverflowedLocalType),
+                    chat.chatId
+                )])
+            }
+
             dmConfigurationStore.set(
                 token: .init(
                     isEnabled: true,
-                    durationSeconds: UInt32(chat.expirationTimerMs / 1000),
+                    durationSeconds: expiresInSeconds,
                     // TODO: [Backups] add DM timer version to backups
                     version: nil
                 ),

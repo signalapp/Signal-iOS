@@ -533,9 +533,10 @@ extension MessageBackup {
                 /// Expiration timer updates for group threads are handled via
                 /// a separate "group expiration timer update" proto.
                 case expirationTimerUpdateNotInContactThread
-                /// An "expiration timer update" contained an expiration timer
-                /// that overflowed the local type for timer updates.
-                case expirationTimerUpdateOverflowedLocalType
+
+                /// An "expiration timer" field contained a value that
+                /// overflowed the local type for expiration timers.
+                case expirationTimerOverflowedLocalType
 
                 /// A "profile change update" contained invalid before/after
                 /// profile names.
@@ -733,7 +734,7 @@ extension MessageBackup {
                         .unrecognizedPaymentTransaction,
                         .unsupportedProtocolVersionNotFromAci,
                         .expirationTimerUpdateNotInContactThread,
-                        .expirationTimerUpdateOverflowedLocalType,
+                        .expirationTimerOverflowedLocalType,
                         .profileChangeUpdateInvalidNames,
                         .profileChangeUpdateNotFromContact,
                         .threadMergeUpdateNotFromContact,
