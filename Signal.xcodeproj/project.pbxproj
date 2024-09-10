@@ -1861,6 +1861,12 @@
 		D93830812A7065C7006CDCDE /* UsernameValidationManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C182BEF529ACFCB200E8E1E2 /* UsernameValidationManagerTests.swift */; };
 		D93830832A708E95006CDCDE /* UsernameChangeDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93830822A708E95006CDCDE /* UsernameChangeDelegate.swift */; };
 		D93830852A784210006CDCDE /* UsernameApiClientImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93830842A784210006CDCDE /* UsernameApiClientImpl.swift */; };
+		D93975702C8B934700B1AFF9 /* chat_item_expiration_timer_update_00.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D939756A2C8B934600B1AFF9 /* chat_item_expiration_timer_update_00.binproto */; };
+		D93975712C8B934700B1AFF9 /* chat_item_expiration_timer_update_01.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D939756B2C8B934600B1AFF9 /* chat_item_expiration_timer_update_01.txtproto */; };
+		D93975722C8B934700B1AFF9 /* chat_item_expiration_timer_update_00.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D939756C2C8B934600B1AFF9 /* chat_item_expiration_timer_update_00.txtproto */; };
+		D93975732C8B934700B1AFF9 /* chat_item_expiration_timer_update_02.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D939756D2C8B934600B1AFF9 /* chat_item_expiration_timer_update_02.binproto */; };
+		D93975742C8B934700B1AFF9 /* chat_item_expiration_timer_update_01.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D939756E2C8B934600B1AFF9 /* chat_item_expiration_timer_update_01.binproto */; };
+		D93975752C8B934700B1AFF9 /* chat_item_expiration_timer_update_02.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D939756F2C8B934600B1AFF9 /* chat_item_expiration_timer_update_02.txtproto */; };
 		D93CE1242A5C84F600D916B7 /* OWSSyncRequestMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93CE1232A5C84F600D916B7 /* OWSSyncRequestMessage.swift */; };
 		D93EA11F2A057FD600579C6F /* LearnMyOwnPniManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93EA11E2A057FD600579C6F /* LearnMyOwnPniManager.swift */; };
 		D93EA1212A0596E400579C6F /* LearnMyOwnPniManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93EA1202A0596E400579C6F /* LearnMyOwnPniManagerTest.swift */; };
@@ -5059,6 +5065,12 @@
 		D93830822A708E95006CDCDE /* UsernameChangeDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameChangeDelegate.swift; sourceTree = "<group>"; };
 		D93830842A784210006CDCDE /* UsernameApiClientImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameApiClientImpl.swift; sourceTree = "<group>"; };
 		D938CD5F29283402006FB16A /* Paypal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Paypal.swift; sourceTree = "<group>"; };
+		D939756A2C8B934600B1AFF9 /* chat_item_expiration_timer_update_00.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_expiration_timer_update_00.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_expiration_timer_update_00.binproto"; sourceTree = "<group>"; };
+		D939756B2C8B934600B1AFF9 /* chat_item_expiration_timer_update_01.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_expiration_timer_update_01.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_expiration_timer_update_01.txtproto"; sourceTree = "<group>"; };
+		D939756C2C8B934600B1AFF9 /* chat_item_expiration_timer_update_00.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_expiration_timer_update_00.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_expiration_timer_update_00.txtproto"; sourceTree = "<group>"; };
+		D939756D2C8B934600B1AFF9 /* chat_item_expiration_timer_update_02.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_expiration_timer_update_02.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_expiration_timer_update_02.binproto"; sourceTree = "<group>"; };
+		D939756E2C8B934600B1AFF9 /* chat_item_expiration_timer_update_01.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_expiration_timer_update_01.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_expiration_timer_update_01.binproto"; sourceTree = "<group>"; };
+		D939756F2C8B934600B1AFF9 /* chat_item_expiration_timer_update_02.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_expiration_timer_update_02.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_expiration_timer_update_02.txtproto"; sourceTree = "<group>"; };
 		D93CE1232A5C84F600D916B7 /* OWSSyncRequestMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSSyncRequestMessage.swift; sourceTree = "<group>"; };
 		D93EA11E2A057FD600579C6F /* LearnMyOwnPniManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearnMyOwnPniManager.swift; sourceTree = "<group>"; };
 		D93EA1202A0596E400579C6F /* LearnMyOwnPniManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearnMyOwnPniManagerTest.swift; sourceTree = "<group>"; };
@@ -10338,6 +10350,19 @@
 			path = Links;
 			sourceTree = "<group>";
 		};
+		D93975692C8B933400B1AFF9 /* ExpirationTimerUpdate */ = {
+			isa = PBXGroup;
+			children = (
+				D939756A2C8B934600B1AFF9 /* chat_item_expiration_timer_update_00.binproto */,
+				D939756C2C8B934600B1AFF9 /* chat_item_expiration_timer_update_00.txtproto */,
+				D939756E2C8B934600B1AFF9 /* chat_item_expiration_timer_update_01.binproto */,
+				D939756B2C8B934600B1AFF9 /* chat_item_expiration_timer_update_01.txtproto */,
+				D939756D2C8B934600B1AFF9 /* chat_item_expiration_timer_update_02.binproto */,
+				D939756F2C8B934600B1AFF9 /* chat_item_expiration_timer_update_02.txtproto */,
+			);
+			name = ExpirationTimerUpdate;
+			sourceTree = "<group>";
+		};
 		D962346E2C0E99CE00DAF6CB /* DeleteForMe */ = {
 			isa = PBXGroup;
 			children = (
@@ -10835,6 +10860,7 @@
 			isa = PBXGroup;
 			children = (
 				D9FB78442C89335900B5DA73 /* ContactMessage */,
+				D93975692C8B933400B1AFF9 /* ExpirationTimerUpdate */,
 			);
 			name = ChatItem;
 			sourceTree = "<group>";
@@ -13276,6 +13302,12 @@
 				D9FB78672C89337000B5DA73 /* chat_item_contact_message_13.txtproto in Resources */,
 				D9FB78692C89337000B5DA73 /* chat_item_contact_message_14.binproto in Resources */,
 				D9FB787D2C89337000B5DA73 /* chat_item_contact_message_14.txtproto in Resources */,
+				D93975702C8B934700B1AFF9 /* chat_item_expiration_timer_update_00.binproto in Resources */,
+				D93975722C8B934700B1AFF9 /* chat_item_expiration_timer_update_00.txtproto in Resources */,
+				D93975742C8B934700B1AFF9 /* chat_item_expiration_timer_update_01.binproto in Resources */,
+				D93975712C8B934700B1AFF9 /* chat_item_expiration_timer_update_01.txtproto in Resources */,
+				D93975732C8B934700B1AFF9 /* chat_item_expiration_timer_update_02.binproto in Resources */,
+				D93975752C8B934700B1AFF9 /* chat_item_expiration_timer_update_02.txtproto in Resources */,
 				F942628B289B1B5600460798 /* sample-sticker.encrypted in Resources */,
 				F942628C289B1B5600460798 /* sample-sticker.webp in Resources */,
 				F908AA7D28CE629700472E68 /* test-apng.png in Resources */,
