@@ -945,9 +945,9 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         }
 
         return .success(.archivedPayment(MessageBackup.RestoredMessageContents.Payment(
-            amount: paymentNotification.amountMob,
-            fee: paymentNotification.feeMob,
-            note: paymentNotification.note,
+            amount: paymentNotification.hasAmountMob ? paymentNotification.amountMob : nil,
+            fee: paymentNotification.hasFeeMob ? paymentNotification.feeMob : nil,
+            note: paymentNotification.hasNote ? paymentNotification.note : nil,
             status: status,
             payment: paymentTransaction
         )))

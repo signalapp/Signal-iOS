@@ -160,7 +160,7 @@ extension ArchivedPayment {
 
             if let timestamp { transaction.timestamp = timestamp }
             if let blockIndex { transaction.blockIndex = blockIndex }
-            if let blockTimestamp { transaction.blockIndex = blockTimestamp }
+            if let blockTimestamp { transaction.blockTimestamp = blockTimestamp }
             if let _transaction = self.transaction { transaction.transaction = _transaction }
             if let receipt { transaction.receipt = receipt }
 

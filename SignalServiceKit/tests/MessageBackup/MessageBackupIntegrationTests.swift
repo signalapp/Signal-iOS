@@ -47,6 +47,11 @@ class MessageBackupIntegrationTests: XCTestCase {
         case chatItemGiftBadge
         case chatItemGroupCall
         case chatItemIndividualCall
+        case chatItemLearnedProfile
+        case chatItemPaymentNotification
+        case chatItemProfileChange
+        case chatItemRemoteDeleteTombstone
+        case chatItemSessionSwitchover
     }
 
     /// Specifies which integration test cases to run.
@@ -93,6 +98,16 @@ class MessageBackupIntegrationTests: XCTestCase {
                     return binprotoName.contains("chat_item_group_call_update_")
                 case .chatItemIndividualCall:
                     return binprotoName.contains("chat_item_individual_call_update_")
+                case .chatItemLearnedProfile:
+                    return binprotoName.contains("chat_item_learned_profile_update_")
+                case .chatItemPaymentNotification:
+                    return binprotoName.contains("chat_item_payment_notification_")
+                case .chatItemProfileChange:
+                    return binprotoName.contains("chat_item_profile_change_")
+                case .chatItemRemoteDeleteTombstone:
+                    return binprotoName.contains("chat_item_remote_delete_")
+                case .chatItemSessionSwitchover:
+                    return binprotoName.contains("chat_item_session_switchover_update_")
                 }
             }
         }()
