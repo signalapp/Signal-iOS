@@ -328,9 +328,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Solo se puede hacer %1$d cambio en este mensaje de texto.</string>
+			<string>Solo se puede hacer %1$d cambio en este mensaje.</string>
 			<key>other</key>
-			<string>Solo se pueden hacer %1$d cambios en este mensaje de texto.</string>
+			<string>Solo se pueden hacer %1$d cambios en este mensaje.</string>
 		</dict>
 	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>

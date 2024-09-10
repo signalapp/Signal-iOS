@@ -725,7 +725,7 @@
 "CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "Χρησιμοποίησε αυτόν τον σύνδεσμο για να μπεις σε μία κλήση Signal";
 
 /* Name of a toggle switch to enable/disable admin approval for joining a Call Link. */
-"CALL_LINK_REQUIRE_APPROVAL" = "Require Admin Approval";
+"CALL_LINK_REQUIRE_APPROVAL" = "Απαιτείται έγκριση διαχειριστή";
 
 /* Button to open UI to share a Call Link with someone on Signal. */
 "CALL_LINK_SHARE_VIA_SIGNAL" = "Κοινοποίηση συνδέσμου μέσω Signal";
@@ -1184,19 +1184,19 @@
 "CONTACT_NOTE_TITLE" = "Σημείωση";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_2_BODY" = "To find people you know on Signal:";
+"CONTACT_PERMISSION_ACTION_SHEET_2_BODY" = "Για να βρεις άτομα που γνωρίζεις στο Signal:";
 
 /* First step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_ONE" = "Tap “Go to Settings” below";
+"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_ONE" = "Πάτησε \"Πήγαινε στις Ρυθμίσεις\" παρακάτω";
 
 /* Third step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_THREE" = "Allow the permission";
+"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_THREE" = "Να δοθούν δικαιώματα";
 
 /* Second step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_TWO" = "Tap “Contacts”";
+"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_TWO" = "Πάτα \"Επαφές\"";
 
 /* Title for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_2_TITLE" = "Allow access to Contacts";
+"CONTACT_PERMISSION_ACTION_SHEET_2_TITLE" = "Να δοθεί πρόσβαση στις επαφές";
 
 /* Body for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Για να δεις τα ονόματα επαφών και φωτογραφίες στις συνομιλίες σου:";
@@ -1214,13 +1214,13 @@
 "CONTACT_PERMISSION_NOT_NOW_ACTION" = "Όχι τώρα";
 
 /* Action text for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Allow Access";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Να δοθεί πρόσβαση";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Allow access to your contacts to quickly find them on Signal.";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Να επιτρέπεται η πρόσβαση στις επαφές σου για γρήγορη αναζήτηση στο Signal.";
 
 /* Title for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Find contacts on Signal";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Αναζήτηση επαφών στο Signal";
 
 /* Label for a contact's phone number. */
 "CONTACT_PHONE" = "Τηλέφωνο";
@@ -4937,7 +4937,7 @@
 "PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_FACEID" = "Πρόσθεσε ένα επιπλέον επίπεδο ασφάλειας και απαίτησε Face ID για την αποστολή χρημάτων.";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_OPTICID" = "Add an additional layer of security and require Optic ID to send funds.";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_OPTICID" = "Πρόσθεσε ένα επιπλέον επίπεδο ασφάλειας και απαίτησε Optic ID για την αποστολή χρημάτων.";
 
 /* First time payments suggest payments lock message */
 "PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_PASSCODE" = "Πρόσθεσε ένα επιπλέον επίπεδο ασφάλειας και απαίτησε κωδικό πρόσβασης για αποστολή χρημάτων.";
@@ -4955,7 +4955,7 @@
 "PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_FACEID" = "Απαιτείται Face ID για αποστολή";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_OPTICID" = "Require Optic ID to Send";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_OPTICID" = "Απαιτείται Optic ID για αποστολή";
 
 /* Affirmative action title to enable payments lock */
 "PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_PASSCODE" = "Απαιτείται ο κωδικός πρόσβασης του τηλεφώνου σου για αποστολή";
@@ -6836,7 +6836,7 @@
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_FACEID" = "Παράλειψη ενεργοποίησης Face ID;";
 
 /* Double reminder action sheet title in Payments Lock Prompt view for Optic ID. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_OPTICID" = "Skip Enabling Optic ID?";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_OPTICID" = "Παράλειψη ενεργοποίησης Optic ID;";
 
 /* Double reminder action sheet title in Payments Lock Prompt view for Passcode. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_PASSCODE" = "Παράλειψη ενεργοποίησης κωδικού πρόσβασης;";
@@ -6848,7 +6848,7 @@
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_FACEID" = "Χρήση Face ID";
 
 /* Enable Button title in Payments Lock Prompt view for Optic ID. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_OPTICID" = "Use Optic ID";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_OPTICID" = "Χρήση Optic ID";
 
 /* Enable Button title in Payments Lock Prompt view for Passcode. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_PASSCODE" = "Χρήση κωδικού πρόσβασης";
@@ -6860,7 +6860,7 @@
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_FACEID" = "Ενεργοποίησε το Face ID για να αποτρέπεις την πρόσβαση ατόμων στα χρήματα στο τηλέφωνό σου. Μπορείς να απενεργοποιήσεις αυτήν την επιλογή στις Ρυθμίσεις.";
 
 /* Explanation of 'payments lock' with Optic ID in the 'payments lock prompt' view shown after payments activation. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_OPTICID" = "Help prevent a person with your phone from accessing your funds by enabling Optic ID. You can disable this option in Settings.";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_OPTICID" = "Ενεργοποίησε το Optic ID για να αποτρέπεις την πρόσβαση ατόμων στα χρήματα στο τηλέφωνό σου. Μπορείς να απενεργοποιήσεις αυτή την επιλογή στις Ρυθμίσεις.";
 
 /* Explanation of 'payments lock' with passcode in the 'payments lock prompt' view shown after payments activation. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_PASSCODE" = "Χρησιμοποίησε τον κωδικό σου για να αποτρέπεις την πρόσβαση ατόμων στα χρήματα στο τηλέφωνό σου. Μπορείς να απενεργοποιήσεις αυτή την επιλογή στις Ρυθμίσεις.";
@@ -6977,7 +6977,7 @@
 "SETTINGS_PAYMENTS_SECURITY_DETAIL_FACEID" = "Απαιτείται Face ID για μεταφορά χρημάτων.";
 
 /* Caption for footer label beneath the payments lock privacy toggle for opticid biometry */
-"SETTINGS_PAYMENTS_SECURITY_DETAIL_OPTICID" = "Require Optic ID to transfer funds.";
+"SETTINGS_PAYMENTS_SECURITY_DETAIL_OPTICID" = "Απαιτείται Optic ID για μεταφορά χρημάτων.";
 
 /* Caption for footer label beneath the payments lock privacy toggle for a biometry type that is a passcode. */
 "SETTINGS_PAYMENTS_SECURITY_DETAIL_PASSCODE" = "Απαιτείται ο κωδικός πρόσβασης του κινητού σου για μεταφορά χρημάτων.";
@@ -7187,7 +7187,7 @@
 "SETTINGS_SECURITY_DETAIL_FACEID" = "Χρήση Face ID για ξεκλείδωμα του Signal.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_OPTICID" = "Use Optic ID to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL_OPTICID" = "Χρήση Optic ID για ξεκλείδωμα Signal.";
 
 /* Section footer */
 "SETTINGS_SECURITY_DETAIL_PASSCODE" = "Χρήση του κωδικού της συσκευής για ξεκλείδωμα του Signal.";

@@ -725,7 +725,7 @@
 "CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "Signal কলে যোগ দিতে এই লিংকটি ব্যবহার করুন";
 
 /* Name of a toggle switch to enable/disable admin approval for joining a Call Link. */
-"CALL_LINK_REQUIRE_APPROVAL" = "Require Admin Approval";
+"CALL_LINK_REQUIRE_APPROVAL" = "অ্যাডমিনের অনুমোদন প্রয়োজন";
 
 /* Button to open UI to share a Call Link with someone on Signal. */
 "CALL_LINK_SHARE_VIA_SIGNAL" = "Signal-এর মাধ্যমে লিংক শেয়ার করুন";
@@ -1184,19 +1184,19 @@
 "CONTACT_NOTE_TITLE" = "নোট";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_2_BODY" = "To find people you know on Signal:";
+"CONTACT_PERMISSION_ACTION_SHEET_2_BODY" = "Signal-এ আপনার পরিচিত লোকদের খুঁজে পেতে:";
 
 /* First step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_ONE" = "Tap “Go to Settings” below";
+"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_ONE" = "নিচের “সেটিংস-এ যান” অপশনে ট্যাপ করুন";
 
 /* Third step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_THREE" = "Allow the permission";
+"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_THREE" = "অনুমতি দিন";
 
 /* Second step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_TWO" = "Tap “Contacts”";
+"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_TWO" = "\"কন্টাক্ট\" ট্যাপ করুন";
 
 /* Title for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_2_TITLE" = "Allow access to Contacts";
+"CONTACT_PERMISSION_ACTION_SHEET_2_TITLE" = "কন্টাক্টে অ্যাক্সেসের অনুমতি দিন";
 
 /* Body for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_BODY" = "আপনার চ্যাটে থাকা কন্টাক্টের নাম ও ছবি দেখতে:";
@@ -1214,13 +1214,13 @@
 "CONTACT_PERMISSION_NOT_NOW_ACTION" = "এখন নয়";
 
 /* Action text for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Allow Access";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "অ্যাক্সেসের অনুমতি দিন";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Allow access to your contacts to quickly find them on Signal.";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Signal-এ কন্টাক্ট দ্রুত খুঁজে পেতে আপনার কন্টাক্টে অ্যাক্সেসের অনুমতি দিন।";
 
 /* Title for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Find contacts on Signal";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Signal-এ কন্টাক্ট খুঁজুন";
 
 /* Label for a contact's phone number. */
 "CONTACT_PHONE" = "ফোন";
@@ -4937,7 +4937,7 @@
 "PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_FACEID" = "নিরাপত্তার একটি অতিরিক্ত স্তর যোগ করুন এবং ফান্ড পাঠাতে ফেইস আইডি'র প্রয়োজনীয়তা যোগ করুন।";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_OPTICID" = "Add an additional layer of security and require Optic ID to send funds.";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_OPTICID" = "নিরাপত্তার একটি অতিরিক্ত স্তর যোগ করুন এবং ফান্ড পাঠাতে অপটিক আইডি-র আবশ্যকতা যোগ করুন।";
 
 /* First time payments suggest payments lock message */
 "PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_PASSCODE" = "নিরাপত্তার একটি অতিরিক্ত স্তর যোগ করুন এবং ফান্ড পাঠাতে পাসকোডের আবশ্যকতা যোগ করুন।";
@@ -4955,7 +4955,7 @@
 "PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_FACEID" = "পাঠাতে ফেইস আইডি প্রয়োজন";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_OPTICID" = "Require Optic ID to Send";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_OPTICID" = "পাঠাতে অপটিক আইডি প্রয়োজন";
 
 /* Affirmative action title to enable payments lock */
 "PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_PASSCODE" = "পাঠাতে আপনার ফোনের পাসকোড প্রয়োজন";
@@ -6836,7 +6836,7 @@
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_FACEID" = "ফেইস আইডি সচল না করে এড়িয়ে যাবেন?";
 
 /* Double reminder action sheet title in Payments Lock Prompt view for Optic ID. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_OPTICID" = "Skip Enabling Optic ID?";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_OPTICID" = "অপটিক আইডি চালু করবেন না?";
 
 /* Double reminder action sheet title in Payments Lock Prompt view for Passcode. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_PASSCODE" = "পাসকোড সচল না করে এড়িয়ে যাবেন?";
@@ -6848,7 +6848,7 @@
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_FACEID" = "ফেইস আইডি ব্যবহার করুন";
 
 /* Enable Button title in Payments Lock Prompt view for Optic ID. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_OPTICID" = "Use Optic ID";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_OPTICID" = "অপটিক আইডি ব্যবহার করুন";
 
 /* Enable Button title in Payments Lock Prompt view for Passcode. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_PASSCODE" = "পাসকোড ব্যবহার করুন";
@@ -6860,7 +6860,7 @@
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_FACEID" = "আপনার ফোনের ফেইস আইডি ব্যবহার করে কোনো ব্যক্তিকে আপনার ফান্ড অ্যাক্সেস করা থেকে প্রতিহত করতে সহায়তা করুন। আপনি সেটিংসে এই অপশনটি নিষ্ক্রিয় করতে পারবেন।";
 
 /* Explanation of 'payments lock' with Optic ID in the 'payments lock prompt' view shown after payments activation. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_OPTICID" = "Help prevent a person with your phone from accessing your funds by enabling Optic ID. You can disable this option in Settings.";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_OPTICID" = "আপনার ফোনের অপটিক আইডি ব্যবহার করে কোনো ব্যক্তিকে আপনার ফান্ড অ্যাক্সেস করা থেকে প্রতিহত করতে সাহায্য করুন। আপনি সেটিংস থেকে এই অপশনটি নিষ্ক্রিয় করতে পারবেন।";
 
 /* Explanation of 'payments lock' with passcode in the 'payments lock prompt' view shown after payments activation. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_PASSCODE" = "আপনার ফোনের পাসকোড ব্যবহার করে কোনো ব্যক্তিকে আপনার ফান্ড অ্যাক্সেস করা থেকে প্রতিহত করতে সহায়তা করুন। আপনি সেটিংসে এই অপশনটি নিষ্ক্রিয় করতে পারবেন।";
@@ -6977,7 +6977,7 @@
 "SETTINGS_PAYMENTS_SECURITY_DETAIL_FACEID" = "ফান্ড স্থানান্তর করতে ফেইস আইডি প্রয়োজন।";
 
 /* Caption for footer label beneath the payments lock privacy toggle for opticid biometry */
-"SETTINGS_PAYMENTS_SECURITY_DETAIL_OPTICID" = "Require Optic ID to transfer funds.";
+"SETTINGS_PAYMENTS_SECURITY_DETAIL_OPTICID" = "ফান্ড স্থানান্তর করতে অপটিক আইডি প্রয়োজন।";
 
 /* Caption for footer label beneath the payments lock privacy toggle for a biometry type that is a passcode. */
 "SETTINGS_PAYMENTS_SECURITY_DETAIL_PASSCODE" = "ফান্ড স্থানান্তর করতে আপনার ফোনের পাসকোড প্রয়োজন।";
@@ -7187,7 +7187,7 @@
 "SETTINGS_SECURITY_DETAIL_FACEID" = "Signal আনলক করতে ফেস ID ব্যবহার করুন।";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_OPTICID" = "Use Optic ID to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL_OPTICID" = "Signal আনলক করতে অপটিক আইডি ব্যবহার করুন।";
 
 /* Section footer */
 "SETTINGS_SECURITY_DETAIL_PASSCODE" = "Signal আনলক করতে আপনার ডিভাইসের পাসকোড ব্যবহার করুন।";

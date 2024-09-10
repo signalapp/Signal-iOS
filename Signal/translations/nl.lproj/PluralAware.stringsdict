@@ -392,7 +392,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Bellen naar %2$@, %3$@ en %1$d…</string>
+			<string>Bellen naar %2$@, %3$@ en %1$d ander…</string>
 			<key>other</key>
 			<string>Bellen naar %2$@, %3$@ en %1$d anderen…</string>
 		</dict>
@@ -440,9 +440,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ en %1$d ander nemen deel aan de oproep</string>
+			<string>%2$@, %3$@ en %1$d ander nemen nu deel aan de oproep</string>
 			<key>other</key>
-			<string>%2$@, %3$@ en %1$d anderen nemen deel aan de oproep</string>
+			<string>%2$@, %3$@ en %1$d anderen nemen nu deel aan de oproep</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_LEFT_%d</key>
@@ -488,7 +488,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ en %1$d ander zal een melding krijgen</string>
+			<string>%2$@, %3$@ en %1$d ander zullen een melding krijgen</string>
 			<key>other</key>
 			<string>%2$@, %3$@ en %1$d anderen zullen een melding krijgen</string>
 		</dict>
@@ -1160,9 +1160,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Groepsuitnodiging van ‘%2$@’ intrekken?</string>
+			<string>Wil je de uitnodiging die door %2$@ is verstuurd intrekken?</string>
 			<key>other</key>
-			<string>%1$d uitnodigingen van ‘%2$@’ intrekken?</string>
+			<string>Wil je %1$d uitnodigingen die door %2$@ zijn verstuurd intrekken?</string>
 		</dict>
 	</dict>
 	<key>PRIVATE_STORY_VIEWERS_%d</key>

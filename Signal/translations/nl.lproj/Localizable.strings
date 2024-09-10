@@ -86,7 +86,7 @@
 "ADD_GROUP_MEMBERS_VIEW_TITLE" = "Leden toevoegen";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
-"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Wil je jouw profiel voor deze groep zichtbaar maken?";
+"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Wil je jouw profiel met deze groep delen?";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "ADD_TO_CONTACTS_OFFER" = "Wil je deze persoon aan je contactenlijst toevoegen?";
@@ -116,7 +116,7 @@
 "ADD_TO_GROUP_TITLE" = "Aan een groep toevoegen";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Wil je jouw profiel voor deze persoon zichtbaar maken?";
+"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Wil je jouw profiel met deze persoon delen?";
 
 /* generic button text to acknowledge that the corresponding text was read. */
 "ALERT_ACTION_ACKNOWLEDGE" = "Begrepen";
@@ -257,7 +257,7 @@
 "APPLE_PAY_DONATION_ERROR_AUTHENTICATION_REQUIRED" = "Probeer het via een andere betalingsmethode of neem contact op met je bank voor meer informatie.";
 
 /* Apple Pay donation error for decline failures where the user may need to contact their card or bank. */
-"APPLE_PAY_DONATION_ERROR_CALL_ISSUER" = "Ga na dat je betalingsmethode nog steeds juist is. Werk je betalingsinformatie bij in Apple Pay als dat nodig is. Probeer het daarna opnieuw. Neem contact op met je bank om hen om meer informatie te vragen als dit probleem aanhoud.";
+"APPLE_PAY_DONATION_ERROR_CALL_ISSUER" = "Controleer of je betalingsmethode nog steeds juist is. Werk je betalingsinformatie bij in Apple Pay als dat nodig is. Probeer het daarna opnieuw. Neem contact op met je bank om hen om meer informatie te vragen als dit probleem aanhoud.";
 
 /* Apple Pay donation error for decline failures where the card is not supported. */
 "APPLE_PAY_DONATION_ERROR_CARD_NOT_SUPPORTED" = "Je betaalkaart ondersteunt dit type betaling niet. Probeer het via een andere betalingsmethode of neem contact op met je bank voor meer informatie.";
@@ -290,7 +290,7 @@
 "APPLE_PAY_DONATION_ERROR_OTHER" = "Probeer het via een andere betalingsmethode of neem contact op met je bank voor meer informatie.";
 
 /* Apple Pay donation error for decline failures where the payment cannot be authorized. */
-"APPLE_PAY_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Ga na dat de betalingsinformatie juist in ingevoerd in Apple Pay. Zo niet, pas het aan en probeer het daarna opnieuw.";
+"APPLE_PAY_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Controleer of je betalingsmethode nog steeds juist is in Apple Pay. Zo niet, pas het aan en probeer het daarna opnieuw.";
 
 /* On the iOS home screen, if you tap and hold the Signal icon, this shortcut will appear. Tapping it will let users send a new message. You may want to refer to similar behavior in other iOS apps, such as Messages, for equivalent strings. */
 "APPLICATION_SHORTCUT_NEW_MESSAGE" = "Nieuw bericht";
@@ -695,7 +695,7 @@
 "CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Gemiste spraakoproep op %1$@";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "Je kunt microfoontoegang inschakelen in de iOS-instellingenapp om te kunnen bellen en spraakberichten te kunnen opnemen met Signal.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Je kunt toegang tot de microfoon inschakelen in de iOS-instellingenapp om te kunnen bellen en spraakberichten te kunnen opnemen met Signal.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Toegang vereist tot microfoon";
@@ -725,7 +725,7 @@
 "CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "Gebruik deze link om deel te nemen aan een Signal-oproep";
 
 /* Name of a toggle switch to enable/disable admin approval for joining a Call Link. */
-"CALL_LINK_REQUIRE_APPROVAL" = "Require Admin Approval";
+"CALL_LINK_REQUIRE_APPROVAL" = "Alle deelnemers goedkeuren";
 
 /* Button to open UI to share a Call Link with someone on Signal. */
 "CALL_LINK_SHARE_VIA_SIGNAL" = "Link delen via Signal";
@@ -1100,7 +1100,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "Instellingen openen";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Je kunt toegang tot contacten inschakelen in de iOS-instellingen-app om te zien welke van je contacten Signal gebruiken.";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Je kunt toegang tot contacten inschakelen in de iOS-instellingen-app om te zien wie van je contacten Signal gebruikt.";
 
 /* Configure reactions title text */
 "CONFIGURE_REACTIONS" = "Emoji-reactiebalk instellen";
@@ -1184,19 +1184,19 @@
 "CONTACT_NOTE_TITLE" = "Notitie";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_2_BODY" = "To find people you know on Signal:";
+"CONTACT_PERMISSION_ACTION_SHEET_2_BODY" = "Om mensen die je kent te vinden op Signal:";
 
 /* First step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_ONE" = "Tap “Go to Settings” below";
+"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_ONE" = "Tik op ‘Naar instellingen’ hieronder";
 
 /* Third step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_THREE" = "Allow the permission";
+"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_THREE" = "Geef toestemming";
 
 /* Second step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_TWO" = "Tap “Contacts”";
+"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_TWO" = "Tik op ‘Contacten’";
 
 /* Title for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_2_TITLE" = "Allow access to Contacts";
+"CONTACT_PERMISSION_ACTION_SHEET_2_TITLE" = "Toegang tot contacten toestaan";
 
 /* Body for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Om de namen en profielfoto's van je contacten weer te geven in jouw chats:";
@@ -1214,13 +1214,13 @@
 "CONTACT_PERMISSION_NOT_NOW_ACTION" = "Niet nu";
 
 /* Action text for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Allow Access";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Toegang geven";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Allow access to your contacts to quickly find them on Signal.";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Geef toegang tot je contacten, zodat je ze in Signal snel terug kunt vinden.";
 
 /* Title for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Find contacts on Signal";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Vind je contacten op Signal";
 
 /* Label for a contact's phone number. */
 "CONTACT_PHONE" = "Telefoon";
@@ -1484,7 +1484,7 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Geef me altijd een melding";
 
 /* label for 'never' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Geen melding geven als gedempt";
+"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Geen meldingen als gedempt";
 
 /* Title of the 'mention notification mode' action sheet. */
 "CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Wil je meldingen ontvangen als iemand je vermeldt in een gedempte chat?";
@@ -1571,7 +1571,7 @@
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ALL_MEMBERS" = "Alle leden";
 
 /* Footer for the 'send messages' section in conversation settings permissions view. */
-"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "Kies wie berichten aan deze groep mogen verzenden en oproepen mogen beginnen.";
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "Kies wie in deze groep berichten mogen verzenden en oproepen mogen beginnen.";
 
 /* Label for 'send messages' action in conversation settings permissions view. */
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_HEADER" = "Berichten verzenden & oproepen beginnen";
@@ -1757,7 +1757,7 @@
 "DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Kon logs niet inpakken.";
 
 /* Error indicating that a debug log could not be uploaded. */
-"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Kon logs niet uploaden.";
+"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Logs uploaden is mislukt.";
 
 /* Message of the debug log alert. */
 "DEBUG_LOG_ALERT_MESSAGE" = "Wat wil je doen met de link naar je foutopsporingslog?";
@@ -1811,7 +1811,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Account aan het verwijderen…";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "Geen internetverbinding. Ga na dat wifi of mobiele data is ingeschakeld en probeer het daarna opnieuw.";
+"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "Geen internetverbinding. Controleer of wifi of mobiele data is ingeschakeld en probeer het daarna opnieuw.";
 
 /* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "Telefoonnummer";
@@ -2297,10 +2297,10 @@
 "DONATION_RECEIPT_DETAILS" = "Details";
 
 /* Text on the button that exports the receipt */
-"DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "Afschrift delen";
+"DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "Donatiebewijs delen";
 
 /* Footer text at the bottom of donation receipts */
-"DONATION_RECEIPT_FOOTER" = "Bedankt dat je Signal steunt. Jouw bijdrage helpt bij het voortzetten van onze missie om opensource privacytechnologie te ontwikkelen waarmee van miljoenen mensen de vrijheid van expressie wordt gewaarborgd en waarmee beveiligde communicatie over de hele wereld mogelijk wordt gemaakt. Bewaar dit afschrift als je een inwoner bent van de Verenigde Staten van Amerika, zodat je je donatie kunt opgeven bij je belastingaangifte. Signal Technology Foundation is een van belasting uitgezonderde organisatie zonder winstoogmerk volgens sectie 501c3 van het Internal Revenue Code (het Amerikaanse belastingreglement). Ons federale-belasting-ID is 82-4506840.";
+"DONATION_RECEIPT_FOOTER" = "Bedankt dat je Signal steunt. Jouw bijdrage helpt bij het voortzetten van onze missie om opensource privacytechnologie te ontwikkelen waarmee van miljoenen mensen de vrijheid van expressie wordt gewaarborgd en waarmee beveiligde communicatie over de hele wereld mogelijk wordt gemaakt. Bewaar dit donatiebewijs als je een inwoner bent van de Verenigde Staten van Amerika, zodat je je donatie kunt opgeven bij je belastingaangifte. Signal Technology Foundation is een van belasting uitgezonderde organisatie zonder winstoogmerk volgens sectie 501c3 van het Internal Revenue Code (het Amerikaanse belastingreglement). Ons federale-belasting-ID is 82-4506840.";
 
 /* Title for receipts for donations given on a friend's behalf */
 "DONATION_RECEIPT_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "Donatie namens een vriend(in)";
@@ -2312,16 +2312,16 @@
 "DONATION_RECEIPT_RECURRING" = "Maandelijks";
 
 /* Title on donation receipts */
-"DONATION_RECEIPT_TITLE" = "Donatie-afschrift";
+"DONATION_RECEIPT_TITLE" = "Donatiebewijs";
 
 /* Section title for donation type on receipts */
 "DONATION_RECEIPT_TYPE" = "Donatietype";
 
 /* Title of view where you can see all of your donation receipts, or button to take you there */
-"DONATION_RECEIPTS" = "Donatie-afschriften";
+"DONATION_RECEIPTS" = "Donatiebewijzen";
 
 /* Text at the bottom of the donation receipts list, telling users that receipts might not be available */
-"DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "Als je de Signal-app opnieuw hebt geïnstalleerd dan zijn afschriften van eerdere donaties niet beschikbaar.";
+"DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "Als je de Signal-app opnieuw hebt geïnstalleerd, zijn donatiebewijzen van eerdere donaties niet beschikbaar.";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the user cancels the webview before authrizing the payment. */
 "DONATION_REDIRECT_ERROR_CANCELLED_MESSAGE" = "Betaling geannuleerd. Probeer het opnieuw.";
@@ -2459,7 +2459,7 @@
 "EDIT_GROUP_DEFAULT_TITLE" = "Groep bewerken";
 
 /* Error message indicating the a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Deze persoon kan niet worden toegevoegd aan de groep voordat die Signal naar een nieuwe versie heeft opgewaardeerd.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Deze persoon kan niet worden toegevoegd aan de groep voordat die Signal naar een nieuwe versie heeft bijgewerkt.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Ongeldige groepsafbeelding.";
@@ -2816,7 +2816,7 @@
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ heeft de instelling voor wie de groepsinformatie kan bewerken op ‘%2$@’ ingesteld.";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "De groepsinformatie kan vanaf nu door %1$@ worden gewijzigd.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "De groepsinformatie kan vanaf nu door %1$@ worden bewerkt.";
 
 /* Description of the 'admins only' access level. */
 "GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Uitsluitend beheerders";
@@ -2882,7 +2882,7 @@
 "GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "Bellen naar %1$@…";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "Bellen naar %1$@ en %2$@ …";
+"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "Bellen naar %1$@ en %2$@…";
 
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "Aan oproep deelnemen";
@@ -2915,13 +2915,13 @@
 "GROUP_CALL_NO_ONE_HERE" = "Er is niemand hier";
 
 /* Copy explaining that a user has joined the group call. Embeds {member name} */
-"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%1$@ neemt deel aan de oproep";
+"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%1$@ neemt nu deel aan de oproep";
 
 /* Copy explaining that a user has left the group call. Embeds {member name} */
 "GROUP_CALL_NOTIFICATION_ONE_LEFT_FORMAT" = "%1$@ heeft de oproep verlaten";
 
 /* Copy explaining that two users have joined the group call. Embeds {first member name}, {second member name} */
-"GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT" = "%1$@ en %2$@ nemen deel aan de oproep";
+"GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT" = "%1$@ en %2$@ nemen nu deel aan de oproep";
 
 /* Copy explaining that two users have left the group call. Embeds {first member name}, {second member name} */
 "GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "%1$@ en %2$@ hebben de oproep verlaten";
@@ -2978,7 +2978,7 @@
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ en %2$@ zijn in deze oproep aanwezig";
 
 /* An error displayed to the user when the group call unexpectedly ends. */
-"GROUP_CALL_UNEXPECTEDLY_ENDED" = "Je hebt de verbinding met de oproep verloren. Controleer je internetverbinding en probeer het opnieuw.";
+"GROUP_CALL_UNEXPECTEDLY_ENDED" = "De verbinding met de oproep is verbroken. Controleer je internetverbinding en probeer het opnieuw.";
 
 /* Text shown before the user starts a group call if the user has not enabled ringing and there is one other person in the group. Embeds {member name} */
 "GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT" = "%1$@ zal een melding krijgen";
@@ -3122,7 +3122,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Aan het laden…";
 
 /* Message text for the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Wil je lid worden van deze groep en je naam en profielfoto met de andere leden delen?";
+"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Wil je lid worden van deze groep en je profielnaam, -foto en -omschrijving met de andere leden delen?";
 
 /* Error message the attempt to request to join the group failed due to network connectivity. */
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "Controleer of je met internet verbonden bent en probeer het opnieuw.";
@@ -3131,7 +3131,7 @@
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "Probeer het opnieuw.";
 
 /* Message for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "Dit is geen geldige groepslink. Ga na dat je de volledige link gebruikt met de juiste karakters voordat je probeert lid te worden van de groep.";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "Dit is geen geldige groepslink. Zorg dat je de volledige link gebruikt met de juiste karakters voordat je probeert lid te worden van de groep.";
 
 /* Title for the 'invalid group invite link' alert. */
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Ongeldige link";
@@ -3254,7 +3254,7 @@
 "GROUP_LOCAL_USER_REQUEST_APPROVED" = "Je verzoek om lid te worden van de groep is goedgekeurd.";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the request }}. */
-"GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%1$@ heeft je verzoek om lid te worden van de groep toegestaan.";
+"GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%1$@ heeft je verzoek om lid te worden van de groep goedgekeurd.";
 
 /* Message indicating that the local user cancelled their request to join the group. */
 "GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "Je hebt je verzoek om lid te worden van de groep ingetrokken.";
@@ -3434,7 +3434,7 @@
 "GROUP_UPDATED_BY_LOCAL_USER" = "Je hebt de groep aangepast.";
 
 /* Info message indicating that the group was updated by another user. Embeds {{remote user name}}. */
-"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ heeft de groep bijgewerkt.";
+"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ heeft de groep aangepast.";
 
 /* Message indicating that the group's description was removed. */
 "GROUP_UPDATED_DESCRIPTION_REMOVED" = "De groepsomschrijving is verwijderd.";
@@ -3578,7 +3578,7 @@
 "HIDE_RECIPIENT_IMPASS_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_TITLE" = "Kan %1$@ niet verwijderen";
 
 /* An explanation of why the user cannot be removed on a linked device. */
-"HIDE_RECIPIENT_IMPOSSIBLE_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_EXPLANATION" = "Deze persoon is opgeslagen in de contactenlijst van je apparaat. Verwijder hem of haar uit Contacten op je telefoon en probeer het opnieuw.";
+"HIDE_RECIPIENT_IMPOSSIBLE_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_EXPLANATION" = "Deze persoon is opgeslagen in de contactenlijst van je apparaat. Verwijder deze persoon uit Contacten op je telefoon en probeer het opnieuw.";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Gearchiveerde chats";
@@ -3869,7 +3869,7 @@
 "LEAVE_GROUP_ACTION" = "Groep verlaten";
 
 /* Error indicating that a group could not be left. */
-"LEAVE_GROUP_FAILED" = "Het verlaten van de groep is mislukt omdat er iets is misgegaan.";
+"LEAVE_GROUP_FAILED" = "Er is een fout opgetreden bij het verlaten van de groep.";
 
 /* Text in a sheet explaining details about 'Legacy Groups'. */
 "LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "‘Verouderde groepen’ zijn groepen die functies zoals @vermeldingen en beheerders niet ondersteunen. De meeste verouderde groepen zijn automatisch of handmatig geüpgraded naar ‘Nieuwe groepen’. Vanwege een lange periode van inactiviteit kan deze groep niet meer worden geüpgraded.\n\nOm door te gaan met deze chat, moet je een nieuwe groep maken.";
@@ -4271,10 +4271,10 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Blokkeren";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Wil je berichten van %1$@ ontvangen, en sta je toe dat diegene je profielnaam, -foto en -omschrijving kan zien? Totdat je deze persoon hebt gedeblokkeerd, zul je geen berichten ontvangen.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Wil je berichten van %1$@ ontvangen en je profielnaam, -foto en -omschrijving met diegene delen? Totdat je deze persoon hebt gedeblokkeerd, zul je geen berichten ontvangen.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Wil je deze groep deblokkeren en toestaan dat leden je profielnaam, -foto en -omschrijving kunnen zien? Totdat je de groep hebt gedeblokkeerd, zul je geen berichten ontvangen.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Wil je deze groep deblokkeren en je profielnaam, -foto en -omschrijving met de leden delen? Totdat je de groep hebt gedeblokkeerd, zul je geen berichten ontvangen.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
 "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Deze groep deblokkeren? Ze kunnen pas zien dat je hun berichten hebt gelezen als je ze deblokkeert.";
@@ -4286,22 +4286,22 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Verwijderen";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Wil je je profielnaam, -foto en -omschrijving voor je chatpartner zichtbaar maken om je chat met %1$@ voort te kunnen zetten?";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Wil je je profielnaam, -foto en -omschrijving met je gesprekspartner delen om je chat met %1$@ voort te kunnen zetten?";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Wil je je profielnaam, -foto en -omschrijving voor deze groep zichtbaar maken om je chat met de groep voort te kunnen zetten?";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Wil je je profielnaam, -foto en -omschrijving met de andere leden delen om je chat met de groep voort te kunnen zetten?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Wil je berichten van %1$@ ontvangen, en sta je toe dat diegene je profielnaam, -foto en -omschrijving kan zien? Personen weten niet dat je hun berichten hebt gezien totdat je het gespreksverzoek hebt geaccepteerd.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Wil je berichten van %1$@ ontvangen en je profielnaam, -foto en -omschrijving met diegene delen? Personen weten niet dat je hun berichten hebt gezien totdat je het gespreksverzoek hebt geaccepteerd.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Wil je lid worden van deze groep, en sta je toe dat alle leden van de groep je profielnaam, -foto en -omschrijving kunnen zien? Leden van de groep weten niet dat je hun berichten hebt gezien totdat je het gespreksverzoek hebt geaccepteerd.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Wil je lid worden van deze groep en je profielnaam, -foto en -omschrijving met de andere leden delen? Leden van de groep weten niet dat je hun berichten hebt gezien totdat je het gespreksverzoek hebt geaccepteerd.";
 
 /* A prompt asking if the user wants to accept a group invite. */
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Wil je lid worden van deze groep? Leden van de groep weten niet dat je hun berichten hebt gezien totdat je het gespreksverzoek hebt geaccepteerd.";
 
 /* A prompt asking if the user wants to accept a conversation invite from a person whom they previously removed. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "Wil je berichten van %1$@ ontvangen, en sta je toe dat diegene je profielnaam, -foto en -omschrijving kan zien? Je hebt deze persoon in het verleden verwijderd.";
+"MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "Wil je berichten van %1$@ ontvangen en je profielnaam, -foto en -omschrijving met diegene delen? Je hebt deze persoon in het verleden verwijderd.";
 
 /* incoming message request button text which reports a conversation as spam */
 "MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Rapporteren";
@@ -4397,7 +4397,7 @@
 "MISSED_VOICE_CALL" = "Gemiste spraakoproep";
 
 /* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Je kunt toegang verlenen tot de camera in de iOS-instellingenapp om video-oproepen te kunnen maken met Signal.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Je kunt toegang tot de camera inschakelen in de iOS-instellingenapp om video-oproepen te kunnen maken met Signal.";
 
 /* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal heeft toegang tot je camera nodig.";
@@ -4796,7 +4796,7 @@
 "ONBOARDING_VERIFICATION_HELP_BULLET_2" = "Controleer of je een telefoonoproep kunt ontvangen op dat telefoonnummer";
 
 /* Third bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_3" = "Ga na of je het telefoonnummer juist hebt ingevuld";
+"ONBOARDING_VERIFICATION_HELP_BULLET_3" = "Controleer of je het telefoonnummer juist hebt ingevuld";
 
 /* Label for a button to get help entering a verification code when registering. */
 "ONBOARDING_VERIFICATION_HELP_LINK" = "Problemen met registreren?";
@@ -4808,7 +4808,7 @@
 "ONBOARDING_VERIFICATION_RESEND_CODE_COUNTDOWN_FORMAT" = "Stuur code opnieuw (beschikbaar over %1$@)";
 
 /* Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}. */
-"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "Voer de code in die we per sms naar %1$@ hebben verzonden";
+"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "Vul de code in die we per sms naar %1$@ hebben verzonden";
 
 /* Title label for the onboarding verification page */
 "ONBOARDING_VERIFICATION_TITLE_LABEL" = "Verificatiecode";
@@ -4937,7 +4937,7 @@
 "PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_FACEID" = "Voeg een extra beveiligingslaag toe en vereis verificatie via Face ID om geld te versturen.";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_OPTICID" = "Add an additional layer of security and require Optic ID to send funds.";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_OPTICID" = "Voeg een extra beveiligingslaag toe en vereis verificatie via Optic ID om geld te versturen.";
 
 /* First time payments suggest payments lock message */
 "PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_PASSCODE" = "Voeg een extra beveiligingslaag toe en vereis je toegangscode om geld te versturen.";
@@ -4955,7 +4955,7 @@
 "PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_FACEID" = "Vereis Face ID om te versturen";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_OPTICID" = "Require Optic ID to Send";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_OPTICID" = "Vereis Optic ID om te versturen";
 
 /* Affirmative action title to enable payments lock */
 "PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_PASSCODE" = "Vereis de toegangscode van je telefoon om te versturen";
@@ -5141,7 +5141,7 @@
 "PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_BUTTON" = "Stuur verzoek";
 
 /* Message for error alert indicating that a given user cannot receive payments because they have not enabled payments. */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "Wil je hem of haar een verzoek sturen om Betalingen te activeren?";
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "Wil je deze persoon een verzoek sturen om Betalingen te activeren?";
 
 /* Title for error alert indicating that a given user cannot receive payments because they have not enabled payments. Embeds {{ the contact's name }} */
 "PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "%1$@ heeft Betalingen niet geactiveerd";
@@ -6083,7 +6083,7 @@
 "SAFETY_TIPS_VAGUE_MESSAGE_TITLE" = "Vage of irrelevante berichten";
 
 /* label presented once scanning (camera) view is visible. */
-"SCAN_CODE_INSTRUCTIONS" = "Scan de QR-code op het apparaat van je gesprekspartner.";
+"SCAN_CODE_INSTRUCTIONS" = "Scan de QR-code op het apparaat van je contact.";
 
 /* Title for the 'scan QR code' view. */
 "SCAN_QR_CODE_VIEW_TITLE" = "QR-code scannen";
@@ -6170,7 +6170,7 @@
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Kies een naam voor dit apparaat";
 
 /* label text */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "Je zult dit apparaat zien in het menu ‘Gekoppelde apparaten’.";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "Je zult deze naam zien in het menu ‘Gekoppelde apparaten’.";
 
 /* text field placeholder */
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "Kies een naam";
@@ -6203,7 +6203,7 @@
 "SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "Open de Signal-app op je oude iPad om je Signal-account over te zetten";
 
 /* No comment provided by engineer. */
-"SECURE_SESSION_RESET" = "Je beveiligde sessie werd opnieuw ingesteld.";
+"SECURE_SESSION_RESET" = "Je beveiligde sessie is opnieuw ingesteld.";
 
 /* Label for the 'see all' button. */
 "SEE_ALL_BUTTON" = "Alles weergeven";
@@ -6836,7 +6836,7 @@
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_FACEID" = "Face ID aanzetten overslaan?";
 
 /* Double reminder action sheet title in Payments Lock Prompt view for Optic ID. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_OPTICID" = "Skip Enabling Optic ID?";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_OPTICID" = "Optic ID aanzetten overslaan?";
 
 /* Double reminder action sheet title in Payments Lock Prompt view for Passcode. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_PASSCODE" = "Toegangscode aanzetten overslaan?";
@@ -6848,7 +6848,7 @@
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_FACEID" = "Gebruik Face ID";
 
 /* Enable Button title in Payments Lock Prompt view for Optic ID. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_OPTICID" = "Use Optic ID";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_OPTICID" = "Gebruik Optic ID";
 
 /* Enable Button title in Payments Lock Prompt view for Passcode. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_PASSCODE" = "Gebruik toegangscode";
@@ -6860,7 +6860,7 @@
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_FACEID" = "Help voorkomen dat iemand met je telefoon toegang heeft tot jouw geld door Face ID aan te zetten. In instellingen kun je deze optie uitzetten.";
 
 /* Explanation of 'payments lock' with Optic ID in the 'payments lock prompt' view shown after payments activation. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_OPTICID" = "Help prevent a person with your phone from accessing your funds by enabling Optic ID. You can disable this option in Settings.";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_OPTICID" = "Help voorkomen dat iemand met je telefoon toegang heeft tot jouw geld door Optic ID aan te zetten. In instellingen kun je deze optie uitzetten.";
 
 /* Explanation of 'payments lock' with passcode in the 'payments lock prompt' view shown after payments activation. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_PASSCODE" = "Help voorkomen dat iemand met jouw telefoon toegang heeft tot jouw geld door je toegangscode te gebruiken. In instellingen kun je deze optie uitzetten.";
@@ -6908,7 +6908,7 @@
 "SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "Betalingsaccount herstellen";
 
 /* Explanation of the 'review payments passphrase' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION" = "Ga na dat je de zin juist hebt ingevuld.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION" = "Zorg ervoor dat je je zin juist hebt ingevuld.";
 
 /* Title for the 'review payments passphrase' step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TITLE" = "Bevestig je herstelzin";
@@ -6977,7 +6977,7 @@
 "SETTINGS_PAYMENTS_SECURITY_DETAIL_FACEID" = "Vereis Face ID om geld over te maken.";
 
 /* Caption for footer label beneath the payments lock privacy toggle for opticid biometry */
-"SETTINGS_PAYMENTS_SECURITY_DETAIL_OPTICID" = "Require Optic ID to transfer funds.";
+"SETTINGS_PAYMENTS_SECURITY_DETAIL_OPTICID" = "Vereis Optic ID om geld over te maken.";
 
 /* Caption for footer label beneath the payments lock privacy toggle for a biometry type that is a passcode. */
 "SETTINGS_PAYMENTS_SECURITY_DETAIL_PASSCODE" = "Vereis de toegangscode van je telefoon om geld over te maken.";
@@ -7007,7 +7007,7 @@
 "SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "Je kunt MobileCoin overschrijven door een deel van je krediet te sturen naar het adres van de portemonnee die je via de beurs hebt gekregen. Dat adres bestaat uit nummers en letters en je vindt het meestal onder de QR-code.";
 
 /* Error indicating that MobileCoin public address is not valid. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "Ga na dat het portemonnee-adres waarnaar je probeert over te schrijven juist is en probeer het opnieuw.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "Controleer of het portemonnee-adres waarnaar je probeert over te schrijven juist is en probeer het opnieuw.";
 
 /* Title for error alert indicating that MobileCoin public address is not valid. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE" = "Adres is niet juist";
@@ -7163,7 +7163,7 @@
 "SETTINGS_REREGISTER_BUTTON" = "Opnieuw registreren";
 
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Appvergrendeling-tijdsspanne";
+"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Inactiviteitsduur voor appvergrendeling";
 
 /* Label for the 'enable screen lock' switch of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Appvergrendeling";
@@ -7187,7 +7187,7 @@
 "SETTINGS_SECURITY_DETAIL_FACEID" = "Gebruik Face ID om Signal te ontgrendelen.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_OPTICID" = "Use Optic ID to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL_OPTICID" = "Gebruik Optic ID om Signal te ontgrendelen.";
 
 /* Section footer */
 "SETTINGS_SECURITY_DETAIL_PASSCODE" = "Het wachtwoord voor je apparaat gebruiken om Signal te ontgrendelen.";
@@ -7196,7 +7196,7 @@
 "SETTINGS_SECURITY_DETAIL_TOUCHID" = "Gebruik Touch ID om Signal te ontgrendelen.";
 
 /* Section header */
-"SETTINGS_SECURITY_TITLE" = "Meekijkpreventie";
+"SETTINGS_SECURITY_TITLE" = "App-beveiliging";
 
 /* The footer for the photos and videos section in the sent media quality settings. */
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Als je media in hoge kwaliteit verzendt, verbruik je meer data.";
@@ -7337,7 +7337,7 @@
 "STICKER_MESSAGE_PREVIEW" = "Stickerbericht";
 
 /* Label for the 'install sticker pack' button. */
-"STICKERS_INSTALL_BUTTON" = "Installeer";
+"STICKERS_INSTALL_BUTTON" = "Stickerpakket installeren";
 
 /* Title for the 'available built-in stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Signals eigen stickerpakketten";
@@ -7373,7 +7373,7 @@
 "STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Laden van stickerpakket is mislukt";
 
 /* Label for the 'uninstall sticker pack' button. */
-"STICKERS_UNINSTALL_BUTTON" = "Deïnstalleer";
+"STICKERS_UNINSTALL_BUTTON" = "Stickerpakket verwijderen";
 
 /* Text indication a story caption can be tapped to read more. */
 "STORIES_CAPTION_READ_MORE" = "Meer lezen";
@@ -7790,7 +7790,7 @@
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Je hebt geen gemeenschappelijke groepen met deze persoon. Beoordeel dit gespreksverzoek zorgvuldig.";
 
 /* Indicator warning about an unknown group thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "In deze groep zit niemand met wie je eerder een gesprek hebt gevoerd, overweeg daarom zorgvuldig of je wel lid wilt worden.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "In deze groep zit niemand met wie je eerder een gesprek hebt gevoerd. Beoordeel dit gespreksverzoek zorgvuldig.";
 
 /* Tap to Replace Emoji string for reaction configuration */
 "TAP_REPLACE_EMOJI" = "Tik op een emoji om die te vervangen";
@@ -7853,7 +7853,7 @@
 "THREAD_MERGE_LEARN_MORE" = "Na het uitwisselen van berichten met %1$@ weet je dat dit nummer van %2$@ is. Dit nummer is privé.\n\nJe chatgeschiedenis voor beide chats is hier samengevoegd.";
 
 /* A system event shown in a conversation when multiple conversations for the same person have been merged into one. The parameter is replaced with the contact's name (eg John Doe). */
-"THREAD_MERGE_NO_PHONE_NUMBER" = "Je chatgeschiedenis met %1$@ en een andere chat met hem of haar zijn samengevoegd.";
+"THREAD_MERGE_NO_PHONE_NUMBER" = "Je chatgeschiedenis met %1$@ en een andere chat met deze persoon zijn samengevoegd.";
 
 /* A system event shown in a conversation when multiple conversations for the same person have been merged into one. The parameters are replaced with the contact's name (eg John Doe) and their phone number (eg +1 650 555 0100). */
 "THREAD_MERGE_PHONE_NUMBER" = "Je chatgeschiedenis met %1$@ en diens nummer %2$@ zijn samengevoegd.";
@@ -7967,7 +7967,7 @@
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "‘%1$@’ ontkoppelen?";
 
 /* Label warning the user that they have been unlinked from their primary device. */
-"UNLINKED_WARNING" = "Dit apparaat is niet meer gekoppeld. Koppel Signal opnieuw met je telefoon om door te gaan met berichten sturen.";
+"UNLINKED_WARNING" = "Dit apparaat is niet meer gekoppeld. Koppel Signal opnieuw met je telefoon om door te gaan met het verzenden van berichten.";
 
 /* If this device has become unlinked from their primary device, they'll see a warning. This is the call to action on that warning. */
 "UNLINKED_WARNING_ACTION_TITLE" = "Apparaat opnieuw koppelen";
@@ -8003,10 +8003,10 @@
 "UPDATE_CONTACT_ACTION" = "Contact bijwerken";
 
 /* Error indicating that a group could not be updated. */
-"UPDATE_GROUP_FAILED" = "De groep kan niet worden bijgewerkt.";
+"UPDATE_GROUP_FAILED" = "De groep kan niet worden aangepast.";
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
-"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "De groep kon niet worden bijgewerkt. Controleer je internetverbinding en probeer het opnieuw.";
+"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "De groep kon niet worden aangepast. Controleer je internetverbinding en probeer het opnieuw.";
 
 /* Button to activate the signal proxy */
 "USE_PROXY_BUTTON" = "Proxy gebruiken";
