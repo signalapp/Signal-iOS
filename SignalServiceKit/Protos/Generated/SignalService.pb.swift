@@ -1556,15 +1556,6 @@ struct SignalServiceProtos_DataMessage {
       /// Clears the value of `middleName`. Subsequent reads from it will return its default value.
       mutating func clearMiddleName() {self._middleName = nil}
 
-      var displayName: String {
-        get {return _displayName ?? String()}
-        set {_displayName = newValue}
-      }
-      /// Returns true if `displayName` has been explicitly set.
-      var hasDisplayName: Bool {return self._displayName != nil}
-      /// Clears the value of `displayName`. Subsequent reads from it will return its default value.
-      mutating func clearDisplayName() {self._displayName = nil}
-
       var unknownFields = SwiftProtobuf.UnknownStorage()
 
       init() {}
@@ -1574,7 +1565,6 @@ struct SignalServiceProtos_DataMessage {
       fileprivate var _prefix: String? = nil
       fileprivate var _suffix: String? = nil
       fileprivate var _middleName: String? = nil
-      fileprivate var _displayName: String? = nil
     }
 
     struct Phone {
@@ -6482,7 +6472,6 @@ extension SignalServiceProtos_DataMessage.Contact.Name: SwiftProtobuf.Message, S
     3: .same(proto: "prefix"),
     4: .same(proto: "suffix"),
     5: .same(proto: "middleName"),
-    6: .same(proto: "displayName"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -6496,7 +6485,6 @@ extension SignalServiceProtos_DataMessage.Contact.Name: SwiftProtobuf.Message, S
       case 3: try { try decoder.decodeSingularStringField(value: &self._prefix) }()
       case 4: try { try decoder.decodeSingularStringField(value: &self._suffix) }()
       case 5: try { try decoder.decodeSingularStringField(value: &self._middleName) }()
-      case 6: try { try decoder.decodeSingularStringField(value: &self._displayName) }()
       default: break
       }
     }
@@ -6522,9 +6510,6 @@ extension SignalServiceProtos_DataMessage.Contact.Name: SwiftProtobuf.Message, S
     try { if let v = self._middleName {
       try visitor.visitSingularStringField(value: v, fieldNumber: 5)
     } }()
-    try { if let v = self._displayName {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 6)
-    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -6534,7 +6519,6 @@ extension SignalServiceProtos_DataMessage.Contact.Name: SwiftProtobuf.Message, S
     if lhs._prefix != rhs._prefix {return false}
     if lhs._suffix != rhs._suffix {return false}
     if lhs._middleName != rhs._middleName {return false}
-    if lhs._displayName != rhs._displayName {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

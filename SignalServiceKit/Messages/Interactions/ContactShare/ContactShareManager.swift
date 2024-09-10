@@ -215,7 +215,6 @@ public class ContactShareManagerImpl: ContactShareManager {
         if let organizationName = contactShare.name.organizationName?.strippedOrNil {
             contactBuilder.setOrganization(organizationName)
         }
-        nameBuilder.setDisplayName(contactShare.name.displayName)
 
         contactBuilder.setName(nameBuilder.buildInfallibly())
 

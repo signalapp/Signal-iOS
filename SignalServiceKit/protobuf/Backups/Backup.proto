@@ -480,7 +480,6 @@ message ContactAttachment {
     optional string prefix = 3;
     optional string suffix = 4;
     optional string middleName = 5;
-    optional string displayName = 6;
   }
 
   message Phone {

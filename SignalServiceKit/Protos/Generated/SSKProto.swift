@@ -4159,18 +4159,6 @@ public class SSKProtoDataMessageContactName: NSObject, Codable, NSSecureCoding {
         return proto.hasMiddleName
     }
 
-    @objc
-    public var displayName: String? {
-        guard hasDisplayName else {
-            return nil
-        }
-        return proto.displayName
-    }
-    @objc
-    public var hasDisplayName: Bool {
-        return proto.hasDisplayName
-    }
-
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -4259,9 +4247,6 @@ extension SSKProtoDataMessageContactName {
         if let _value = middleName {
             builder.setMiddleName(_value)
         }
-        if let _value = displayName {
-            builder.setDisplayName(_value)
-        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -4330,17 +4315,6 @@ public class SSKProtoDataMessageContactNameBuilder: NSObject {
 
     public func setMiddleName(_ valueParam: String) {
         proto.middleName = valueParam
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func setDisplayName(_ valueParam: String?) {
-        guard let valueParam = valueParam else { return }
-        proto.displayName = valueParam
-    }
-
-    public func setDisplayName(_ valueParam: String) {
-        proto.displayName = valueParam
     }
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

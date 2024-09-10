@@ -599,7 +599,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
         // TODO: [Backups] enqueue download of transit tier attachments where backup tier unavailable
         // and wasDownloaded=true.
-        let nowMs = dateProvider().ows_millisecondsSince1970
+        let nowDate = dateProvider()
         let shouldDownloadAllFullsize = backupAttachmentDownloadStore.getShouldStoreAllMediaLocally(tx: tx)
         try backupAttachmentDownloadStore.dequeueAndClearTable(tx: tx) { backupDownload in
             // Every backup attachment gets enqueued for thumbnail download at lower priority.
@@ -615,16 +615,14 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             // If its recent media, also download fullsize at higher priority.
             // Or if "optimize media" is off, download fullsize everything
             // regardless of date.
-            let isRecentAttachment =
-                backupDownload.timestamp == nil
-                || nowMs - backupDownload.timestamp! <= (kDayInMs * 30)
+            let isRecentMedia = backupDownload.isRecentMedia(now: nowDate)
             if
                 shouldDownloadAllFullsize
-                || isRecentAttachment
+                    || isRecentMedia
             {
                 attachmentDownloadManager.enqueueDownloadOfAttachment(
                     id: backupDownload.attachmentRowId,
-                    priority: isRecentAttachment ? .backupRestoreHigh : .backupRestoreLow,
+                    priority: isRecentMedia ? .backupRestoreHigh : .backupRestoreLow,
                     source: .mediaTierFullsize,
                     tx: tx
                 )

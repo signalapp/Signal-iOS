@@ -206,6 +206,11 @@ if __name__ == "__main__":
         metavar="commit-sha",
         help="process paths that have changed since this commit",
     )
+    parser.add_argument(
+        "--skip-xcode-sort",
+        action='store_true',
+        help="skip sorting the Xcode project",
+    )
     ns = parser.parse_args()
 
     if len(ns.path) > 0:
@@ -232,10 +237,13 @@ if __name__ == "__main__":
         process(file_path)
     print("")
 
-    print("Sorting Xcode project...", flush=True)
-    proc = subprocess.run(["Scripts/sort-Xcode-project-file", "Signal.xcodeproj"])
-    if proc.returncode != 0:
-        result = False
+    if ns.skip_xcode_sort:
+        print("Skipping Xcode project sort!", flush=True)
+    else:
+        print("Sorting Xcode project...", flush=True)
+        proc = subprocess.run(["Scripts/sort-Xcode-project-file", "Signal.xcodeproj"])
+        if proc.returncode != 0:
+            result = False
     print("")
 
     print("Running clang-format...", flush=True)

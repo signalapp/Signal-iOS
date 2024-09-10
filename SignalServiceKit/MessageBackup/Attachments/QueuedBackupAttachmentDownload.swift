@@ -45,6 +45,17 @@ public struct QueuedBackupAttachmentDownload: Codable, FetchableRecord, MutableP
         self.timestamp = timestamp
     }
 
+    public func isRecentMedia(now nowDate: Date) -> Bool {
+        guard let timestampDate = timestamp.map({ Date(millisecondsSince1970: $0) }) else {
+            /// If we have no `timestamp` then we're not owned by a message,
+            /// so by default we're not "recent" media.
+            return false
+        }
+
+        /// We're "recent" if our newest owning message is from the last month.
+        return timestampDate.addingTimeInterval(kMonthInterval).isAfter(nowDate)
+    }
+
     // MARK: FetchableRecord
 
     public static var databaseTableName: String { "BackupAttachmentDownloadQueue" }

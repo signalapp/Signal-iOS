@@ -36,14 +36,20 @@ class MessageBackupIntegrationTests: XCTestCase {
     // MARK: -
 
     private enum WhichIntegrationTestCases {
-        case specific(names: [String])
         case all
+        case specific(names: Set<String>)
+
+        case accountData
+        case chat
+        case chatItem
+        case chatItemContactMessage
     }
 
     /// Specifies which integration test cases to run.
     ///
-    /// Set by default to `.all`. Toggle to `.specific` during local development
-    /// to run only on a subset of test cases, for debugging purposes.
+    /// Set by default to `.all`. May be toggled to a subset of tests during
+    /// local development for debugging purposes, but should never be committed
+    /// to `main` as anything other than `.all`.
     private let whichIntegrationTestCases: WhichIntegrationTestCases = .all
 
     // MARK: -
@@ -52,21 +58,30 @@ class MessageBackupIntegrationTests: XCTestCase {
     /// test cases.
     func testAllIntegrationTestCases() async throws {
         let binProtoFileUrls: [URL] = {
-            let bundle = Bundle(for: type(of: self))
+            let allBinprotoUrls = Bundle(for: type(of: self)).urls(
+                forResourcesWithExtension: "binproto",
+                subdirectory: nil
+            ) ?? []
 
-            switch whichIntegrationTestCases {
-            case .specific(let names):
-                return names.compactMap { name in
-                    return bundle.url(
-                        forResource: name,
-                        withExtension: "binproto"
-                    )
+            return allBinprotoUrls.filter { binprotoUrl in
+                let binprotoName = binprotoUrl
+                    .lastPathComponent
+                    .filenameWithoutExtension
+
+                switch whichIntegrationTestCases {
+                case .all:
+                    return true
+                case .specific(let names):
+                    return names.contains(binprotoName)
+                case .accountData:
+                    return binprotoName.contains("account_data_")
+                case .chat:
+                    return binprotoName.contains("chat_")
+                case .chatItem:
+                    return binprotoName.contains("chat_item_")
+                case .chatItemContactMessage:
+                    return binprotoName.contains("chat_item_contact_message")
                 }
-            case .all:
-                return Bundle(for: type(of: self)).urls(
-                    forResourcesWithExtension: "binproto",
-                    subdirectory: nil
-                ) ?? []
             }
         }()
 

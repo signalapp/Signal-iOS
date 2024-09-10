@@ -112,7 +112,6 @@ internal class MessageBackupContactAttachmentArchiver: MessageBackupProtoArchive
         if let middleName = contactName.middleName {
             nameProto.middleName = middleName
         }
-        nameProto.displayName = contactName.displayName
         return .success(nameProto)
     }
 
@@ -319,7 +318,7 @@ internal class MessageBackupContactAttachmentArchiver: MessageBackupProtoArchive
 
         return .success(OWSContactPhoneNumber(
             type: type,
-            label: proto.label.strippedOrNil,
+            label: proto.hasLabel ? proto.label.stripped : nil,
             phoneNumber: phoneNumber
         ))
     }
@@ -357,7 +356,7 @@ internal class MessageBackupContactAttachmentArchiver: MessageBackupProtoArchive
 
         return .success(OWSContactEmail(
             type: type,
-            label: proto.label.strippedOrNil,
+            label: proto.hasLabel ? proto.label.stripped : nil,
             email: email
         ))
     }
@@ -383,14 +382,14 @@ internal class MessageBackupContactAttachmentArchiver: MessageBackupProtoArchive
 
         let address = OWSContactAddress(
             type: type,
-            label: proto.label.strippedOrNil,
-            street: proto.street.strippedOrNil,
-            pobox: proto.pobox.strippedOrNil,
-            neighborhood: proto.neighborhood.strippedOrNil,
-            city: proto.city.strippedOrNil,
-            region: proto.region.strippedOrNil,
-            postcode: proto.postcode.strippedOrNil,
-            country: proto.country.strippedOrNil
+            label: proto.hasLabel ? proto.label.stripped : nil,
+            street: proto.hasStreet ? proto.street.stripped : nil,
+            pobox: proto.hasPobox ? proto.pobox.stripped : nil,
+            neighborhood: proto.hasNeighborhood ? proto.neighborhood.stripped : nil,
+            city: proto.hasCity ? proto.city.stripped : nil,
+            region: proto.hasRegion ? proto.region.stripped : nil,
+            postcode: proto.hasPostcode ? proto.postcode.stripped : nil,
+            country: proto.hasCountry ? proto.country.stripped : nil
         )
 
         guard

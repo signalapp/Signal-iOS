@@ -224,6 +224,11 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         source: QueuedAttachmentDownloadRecord.SourceType,
         tx: DBWriteTransaction
     ) {
+        if CurrentAppContext().isRunningTests {
+            // No need to enqueue downloads if we're running tests.
+            return
+        }
+
         try? attachmentDownloadStore.enqueueDownloadOfAttachment(
             withId: id,
             source: source,
