@@ -17,14 +17,14 @@ protocol CallLinkManager {
         rootKey: CallLinkRootKey,
         adminPasskey: Data,
         authCredential: SignalServiceKit.CallLinkAuthCredential
-    ) async throws -> SignalUI.CallLinkState
+    ) async throws -> SignalServiceKit.CallLinkState
 
     func updateCallLinkRestrictions(
         requiresAdminApproval: Bool,
         rootKey: CallLinkRootKey,
         adminPasskey: Data,
         authCredential: SignalServiceKit.CallLinkAuthCredential
-    ) async throws -> SignalUI.CallLinkState
+    ) async throws -> SignalServiceKit.CallLinkState
 }
 
 class CallLinkManagerImpl: CallLinkManager {
@@ -75,7 +75,7 @@ class CallLinkManagerImpl: CallLinkManager {
 
     struct CreateResult {
         var adminPasskey: Data
-        var callLinkState: SignalUI.CallLinkState
+        var callLinkState: SignalServiceKit.CallLinkState
     }
 
     func createCallLink(rootKey: CallLinkRootKey) async throws -> CreateResult {
@@ -103,11 +103,11 @@ class CallLinkManagerImpl: CallLinkManager {
         rootKey: CallLinkRootKey,
         adminPasskey: Data,
         authCredential: SignalServiceKit.CallLinkAuthCredential
-    ) async throws -> SignalUI.CallLinkState {
+    ) async throws -> SignalServiceKit.CallLinkState {
         let sfuUrl = DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL
         let secretParams = CallLinkSecretParams.deriveFromRootKey(rootKey.bytes)
         let authCredentialPresentation = authCredential.present(callLinkParams: secretParams)
-        return SignalUI.CallLinkState(try await self.sfuClient.updateCallLinkName(
+        return SignalServiceKit.CallLinkState(try await self.sfuClient.updateCallLinkName(
             sfuUrl: sfuUrl,
             authCredentialPresentation: authCredentialPresentation.serialize(),
             linkRootKey: rootKey,
@@ -121,11 +121,11 @@ class CallLinkManagerImpl: CallLinkManager {
         rootKey: CallLinkRootKey,
         adminPasskey: Data,
         authCredential: SignalServiceKit.CallLinkAuthCredential
-    ) async throws -> SignalUI.CallLinkState {
+    ) async throws -> SignalServiceKit.CallLinkState {
         let sfuUrl = DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL
         let secretParams = CallLinkSecretParams.deriveFromRootKey(rootKey.bytes)
         let authCredentialPresentation = authCredential.present(callLinkParams: secretParams)
-        return SignalUI.CallLinkState(try await self.sfuClient.updateCallLinkRestrictions(
+        return SignalServiceKit.CallLinkState(try await self.sfuClient.updateCallLinkRestrictions(
             sfuUrl: sfuUrl,
             authCredentialPresentation: authCredentialPresentation.serialize(),
             linkRootKey: rootKey,

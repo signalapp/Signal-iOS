@@ -4,12 +4,13 @@
 //
 
 import Foundation
-import SignalServiceKit
 import SignalRingRTC
 
 public struct CallLinkState {
     public let name: String?
     public let requiresAdminApproval: Bool
+    public let revoked: Bool
+    public let expiration: Date
 
     public init(_ rawValue: SignalRingRTC.CallLinkState) {
         self.name = rawValue.name.nilIfEmpty
@@ -19,6 +20,8 @@ public struct CallLinkState {
             case .none, .unknown: return false
             }
         }()
+        self.revoked = rawValue.revoked
+        self.expiration = rawValue.expiration
     }
 
     public var localizedName: String {

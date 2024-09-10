@@ -11,12 +11,12 @@ import SignalUI
 final class CallLinkCall: Signal.GroupCall {
     let callLink: CallLink
     let adminPasskey: Data?
-    let callLinkState: SignalUI.CallLinkState
+    let callLinkState: SignalServiceKit.CallLinkState
 
     init(
         callLink: CallLink,
         adminPasskey: Data?,
-        callLinkState: SignalUI.CallLinkState,
+        callLinkState: SignalServiceKit.CallLinkState,
         ringRtcCall: SignalRingRTC.GroupCall,
         videoCaptureController: VideoCaptureController
     ) {
