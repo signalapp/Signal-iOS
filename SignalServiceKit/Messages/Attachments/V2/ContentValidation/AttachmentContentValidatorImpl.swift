@@ -537,7 +537,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             }
         }()
 
-        guard OWSMediaUtils.isValidVideo(asset: asset) else {
+        guard asset.isReadable, OWSMediaUtils.isValidVideo(asset: asset) else {
             return (.invalid, nil, nil)
         }
 
@@ -599,6 +599,9 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 // These say the audio file is invalid.
                 // Eat them and return invalid instead of throwing
                 return (.invalid, nil)
+            } else if error is UnreadableAudioFileError {
+                // Treat this as an invalid audio file
+                return (.invalid, nil)
             } else {
                 throw error
             }
@@ -616,6 +619,8 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             waveformFile
         )
     }
+
+    private struct UnreadableAudioFileError: Error {}
 
     // TODO someday: this loads an AVAsset (sometimes), and so does the audio waveform
     // computation. We can combine them so we don't waste effort.
@@ -639,6 +644,9 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 plaintextLength: plaintextLength,
                 mimeType: mimeType
             )
+            guard asset.isReadable else {
+                throw UnreadableAudioFileError()
+            }
             return asset.duration.seconds
         }
     }
