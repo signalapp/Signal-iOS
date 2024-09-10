@@ -36,6 +36,7 @@ public protocol IndividualCallRecordManager {
         callType: CallRecord.CallType,
         callDirection: CallRecord.CallDirection,
         individualCallStatus: CallRecord.CallStatus.IndividualCallStatus,
+        callEventTimestamp: UInt64,
         shouldSendSyncMessage: Bool,
         tx: DBWriteTransaction
     ) -> CallRecord
@@ -153,6 +154,7 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
                 callType: CallRecord.CallType(individualCallOfferTypeType: individualCallInteraction.offerType),
                 callDirection: callDirection,
                 individualCallStatus: individualCallStatus,
+                callEventTimestamp: individualCallInteraction.timestamp,
                 shouldSendSyncMessage: true,
                 tx: tx
             )
@@ -168,6 +170,7 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
         callType: CallRecord.CallType,
         callDirection: CallRecord.CallDirection,
         individualCallStatus: CallRecord.CallStatus.IndividualCallStatus,
+        callEventTimestamp: UInt64,
         shouldSendSyncMessage: Bool,
         tx: DBWriteTransaction
     ) -> CallRecord {
@@ -180,7 +183,7 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
             callType: callType,
             callDirection: callDirection,
             callStatus: .individual(individualCallStatus),
-            callBeganTimestamp: individualCallInteraction.timestamp
+            callBeganTimestamp: callEventTimestamp
         )
 
         callRecordStore.insert(callRecord: callRecord, tx: tx)

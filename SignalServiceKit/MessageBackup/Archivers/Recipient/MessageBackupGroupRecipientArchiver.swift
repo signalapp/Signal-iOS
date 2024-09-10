@@ -126,10 +126,10 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
             if let groupDescription = groupModel.descriptionText?.nilIfEmpty {
                 groupSnapshot.description_p = .buildDescriptionText(groupDescription)
             }
-            groupSnapshot.disappearingMessagesTimer = { () -> BackupProto_Group.GroupAttributeBlob in
-                let durationSeconds = disappearingMessageConfigStore.durationSeconds(for: groupThread, tx: context.tx)
-                return .buildDisappearingMessageTimer(durationSeconds)
-            }()
+            if let dmConfiguration = disappearingMessageConfigStore.fetch(for: .thread(groupThread), tx: context.tx) {
+                let durationSeconds = dmConfiguration.durationSeconds
+                groupSnapshot.disappearingMessagesTimer = .buildDisappearingMessageTimer(durationSeconds)
+            }
             groupSnapshot.accessControl = groupModel.access.asBackupProtoAccessControl
             groupSnapshot.members = groupMembership.fullMembers.compactMap { address -> BackupProto_Group.Member? in
                 guard
@@ -316,7 +316,8 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
         groupModelBuilder.groupV2Revision = groupSnapshot.version
         groupModelBuilder.name = groupSnapshot.extractTitle
         groupModelBuilder.descriptionText = groupSnapshot.extractDescriptionText
-        groupModelBuilder.avatarData = nil
+        // We'll try and download the avatar later. For now, put in dummy data.
+        groupModelBuilder.avatarData = Data()
         groupModelBuilder.avatarUrlPath = groupSnapshot.avatarURL.nilIfEmpty
         groupModelBuilder.groupMembership = groupMembershipBuilder.build()
         groupModelBuilder.groupAccess = GroupAccess(backupProtoAccessControl: groupSnapshot.accessControl)
@@ -335,13 +336,15 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
 
         // MARK: Store group properties that live outside the group model
 
-        disappearingMessageConfigStore.set(
-            token: .token(
-                forProtoExpireTimerSeconds: groupSnapshot.extractDisappearingMessageTimer
-            ),
-            for: groupThread,
-            tx: context.tx
-        )
+        if let disappearingMessageTimer = groupSnapshot.extractDisappearingMessageTimer {
+            disappearingMessageConfigStore.set(
+                token: .token(
+                    forProtoExpireTimerSeconds: disappearingMessageTimer
+                ),
+                for: groupThread,
+                tx: context.tx
+            )
+        }
 
         if groupProto.whitelisted {
             profileManager.addToWhitelist(groupThread, tx: context.tx)

@@ -291,6 +291,7 @@ public class GRDBSchemaMigrator: NSObject {
         case reorderMediaTierDigestColumn
         case addIncrementalMacParamsToAttachment
         case splitIncrementalMacAttachmentColumns
+        case addCallEndedTimestampToCallRecord
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -3435,6 +3436,16 @@ public class GRDBSchemaMigrator: NSObject {
                 table.rename(column: "incrementalMacChunkSize", to: "mediaTierIncrementalMacChunkSize")
                 table.add(column: "transitTierIncrementalMac", .blob)
                 table.add(column: "transitTierIncrementalMacChunkSize", .integer)
+            }
+
+            return .success(())
+        }
+
+        migrator.registerMigration(.addCallEndedTimestampToCallRecord) { tx in
+            try tx.database.alter(table: "CallRecord") { table in
+                table.add(column: "callEndedTimestamp", .integer)
+                    .notNull()
+                    .defaults(to: 0)
             }
 
             return .success(())

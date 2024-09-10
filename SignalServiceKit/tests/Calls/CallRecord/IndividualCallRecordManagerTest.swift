@@ -180,6 +180,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
                 callType: .audioCall,
                 callDirection: .incoming,
                 individualCallStatus: .accepted,
+                callEventTimestamp: interaction.timestamp,
                 shouldSendSyncMessage: false,
                 tx: tx
             )
@@ -202,6 +203,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
                 callType: .audioCall,
                 callDirection: .incoming,
                 individualCallStatus: .accepted,
+                callEventTimestamp: interaction.timestamp,
                 shouldSendSyncMessage: true,
                 tx: tx
             )
@@ -309,9 +311,9 @@ private class SnoopingIndividualCallRecordManagerImpl: IndividualCallRecordManag
     var didAskToCreateRecord: CallRecord.CallStatus.IndividualCallStatus?
     var didAskToUpdateRecord: CallRecord.CallStatus.IndividualCallStatus?
 
-    override func createRecordForInteraction(individualCallInteraction: TSCall, individualCallInteractionRowId: Int64, contactThread: TSContactThread, contactThreadRowId: Int64, callId: UInt64, callType: CallRecord.CallType, callDirection: CallRecord.CallDirection, individualCallStatus: CallRecord.CallStatus.IndividualCallStatus, shouldSendSyncMessage: Bool, tx: DBWriteTransaction) -> CallRecord {
+    override func createRecordForInteraction(individualCallInteraction: TSCall, individualCallInteractionRowId: Int64, contactThread: TSContactThread, contactThreadRowId: Int64, callId: UInt64, callType: CallRecord.CallType, callDirection: CallRecord.CallDirection, individualCallStatus: CallRecord.CallStatus.IndividualCallStatus, callEventTimestamp: UInt64, shouldSendSyncMessage: Bool, tx: DBWriteTransaction) -> CallRecord {
         didAskToCreateRecord = individualCallStatus
-        return super.createRecordForInteraction(individualCallInteraction: individualCallInteraction, individualCallInteractionRowId: individualCallInteractionRowId, contactThread: contactThread, contactThreadRowId: contactThreadRowId, callId: callId, callType: callType, callDirection: callDirection, individualCallStatus: individualCallStatus, shouldSendSyncMessage: shouldSendSyncMessage, tx: tx)
+        return super.createRecordForInteraction(individualCallInteraction: individualCallInteraction, individualCallInteractionRowId: individualCallInteractionRowId, contactThread: contactThread, contactThreadRowId: contactThreadRowId, callId: callId, callType: callType, callDirection: callDirection, individualCallStatus: individualCallStatus, callEventTimestamp: callEventTimestamp, shouldSendSyncMessage: shouldSendSyncMessage, tx: tx)
     }
 
     override func updateRecord(contactThread: TSContactThread, existingCallRecord: CallRecord, newIndividualCallStatus: CallRecord.CallStatus.IndividualCallStatus, shouldSendSyncMessage: Bool, tx: DBWriteTransaction) {

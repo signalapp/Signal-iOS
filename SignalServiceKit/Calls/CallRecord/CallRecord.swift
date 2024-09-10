@@ -58,9 +58,10 @@ public final class CallRecord: Codable, PersistableRecord, FetchableRecord {
         case callType = "type"
         case callDirection = "direction"
         case callStatus = "status"
+        case unreadStatus = "unreadStatus"
         case _groupCallRingerAci = "groupCallRingerAci"
         case callBeganTimestamp = "timestamp"
-        case unreadStatus = "unreadStatus"
+        case callEndedTimestamp
     }
 
     /// This record's SQLite row ID, if it represents a record that has already
@@ -135,7 +136,7 @@ public final class CallRecord: Codable, PersistableRecord, FetchableRecord {
     /// Does this record represent a group ring?
     private var isGroupRing: Bool {
         switch callStatus {
-        case .group(.ringing), .group(.ringingAccepted), .group(.ringingDeclined), .group(.ringingMissed):
+        case .group(.ringing), .group(.ringingAccepted), .group(.ringingDeclined), .group(.ringingMissed), .group(.ringingMissedNotificationProfile):
             return true
         case .individual, .group(.generic), .group(.joined):
             return false
@@ -173,6 +174,14 @@ public final class CallRecord: Codable, PersistableRecord, FetchableRecord {
     /// - SeeAlso ``callBeganTimestamp``
     public var callBeganDate: Date { Date(millisecondsSince1970: callBeganTimestamp) }
 
+    /// The timestamp at which we believe the call ended, or `0` if unknown.
+    ///
+    /// - Note
+    /// At the time of writing this is only used for group calls in Backups. In
+    /// the future, iOS should track this explicitly for both 1:1 and group
+    /// calls.
+    public internal(set) var callEndedTimestamp: UInt64
+
     /// Creates a ``CallRecord`` with the given parameters.
     ///
     /// - Note
@@ -186,7 +195,8 @@ public final class CallRecord: Codable, PersistableRecord, FetchableRecord {
         callDirection: CallDirection,
         callStatus: CallStatus,
         groupCallRingerAci: Aci? = nil,
-        callBeganTimestamp: UInt64
+        callBeganTimestamp: UInt64,
+        callEndedTimestamp: UInt64 = 0
     ) {
         self.callIdString = String(callId)
         self.interactionRowId = interactionRowId
@@ -196,6 +206,7 @@ public final class CallRecord: Codable, PersistableRecord, FetchableRecord {
         self.callStatus = callStatus
         self.unreadStatus = CallUnreadStatus(callStatus: callStatus)
         self.callBeganTimestamp = callBeganTimestamp
+        self.callEndedTimestamp = callEndedTimestamp
 
         if let groupCallRingerAci, isGroupRing {
             self.groupCallRingerAci = groupCallRingerAci
@@ -265,9 +276,10 @@ extension CallRecord {
             callType == other.callType,
             callDirection == other.callDirection,
             callStatus == other.callStatus,
+            unreadStatus == other.unreadStatus,
             groupCallRingerAci == other.groupCallRingerAci,
             callBeganTimestamp == other.callBeganTimestamp,
-            unreadStatus == other.unreadStatus
+            callEndedTimestamp == other.callEndedTimestamp
         {
             return true
         }

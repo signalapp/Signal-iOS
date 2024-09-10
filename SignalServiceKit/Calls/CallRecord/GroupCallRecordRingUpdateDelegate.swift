@@ -109,7 +109,7 @@ public final class GroupCallRecordRingUpdateHandler: GroupCallRecordRingUpdateDe
                 case .joined:
                     // We had already joined, and learned late about the ring.
                     newGroupCallStatus = .ringingAccepted
-                case .ringing, .ringingAccepted, .ringingDeclined, .ringingMissed:
+                case .ringing, .ringingAccepted, .ringingDeclined, .ringingMissed, .ringingMissedNotificationProfile:
                     logger.warn("Received ring request, but we already knew about the ringing!")
                     return
                 }
@@ -121,7 +121,7 @@ public final class GroupCallRecordRingUpdateHandler: GroupCallRecordRingUpdateDe
                     // We're learning about ringing via the ring expiration,
                     // rather than the ring request. Weird, but not a problem.
                     newGroupCallStatus = .ringingAccepted
-                case .ringingAccepted, .ringingDeclined, .ringingMissed:
+                case .ringingAccepted, .ringingDeclined, .ringingMissed, .ringingMissedNotificationProfile:
                     return
                 }
             case .busyLocally, .busyOnAnotherDevice:
@@ -132,13 +132,13 @@ public final class GroupCallRecordRingUpdateHandler: GroupCallRecordRingUpdateDe
                     // We're learning about ringing via this busy message,
                     // rather than the ring request. Weird, but not a problem.
                     newGroupCallStatus = .ringingAccepted
-                case .ringingAccepted, .ringingDeclined, .ringingMissed:
+                case .ringingAccepted, .ringingDeclined, .ringingMissed, .ringingMissedNotificationProfile:
                     logger.warn("Ring canceled due to busy, but we're preferring preexisting state.")
                     return
                 }
             case .acceptedOnAnotherDevice:
                 switch existingGroupCallStatus {
-                case .generic, .joined, .ringing, .ringingDeclined, .ringingMissed:
+                case .generic, .joined, .ringing, .ringingDeclined, .ringingMissed, .ringingMissedNotificationProfile:
                     newGroupCallStatus = .ringingAccepted
                 case .ringingAccepted:
                     return
@@ -153,7 +153,7 @@ public final class GroupCallRecordRingUpdateHandler: GroupCallRecordRingUpdateDe
                 // because otherwise we'd have marked this record as ringing
                 // already.
                 switch existingGroupCallStatus {
-                case .ringing, .ringingMissed, .generic:
+                case .ringing, .ringingMissed, .ringingMissedNotificationProfile, .generic:
                     newGroupCallStatus = .ringingDeclined
                 case .joined:
                     newGroupCallStatus = .ringingAccepted

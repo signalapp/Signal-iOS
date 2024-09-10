@@ -103,6 +103,23 @@ extension CallRecord {
             /// record them as accepted when we start the ring. Consequently,
             /// only incoming rings should be in this state.
             case ringingMissed = 8
+
+            /// This call involved ringing, but the ring was auto-declined due
+            /// to the user's Do Not Disturb settings.
+            ///
+            /// A missed call is contrasted with an actively-declined one, which
+            /// would fall under ``ringingNotAccepted`` above.
+            ///
+            /// - Note
+            /// At the time of writing, the iOS app does not set this status for
+            /// any group calls. However, we might encounter calls with this
+            /// status when restoring from a Backup.
+            ///
+            /// - Note
+            /// We do not track the state of outgoing group rings and instead
+            /// record them as accepted when we start the ring. Consequently,
+            /// only incoming rings should be in this state.
+            case ringingMissedNotificationProfile = 10
         }
 
         // MARK: Codable
@@ -165,7 +182,8 @@ public extension CallRecord.CallStatus {
     static var missedCalls: [CallRecord.CallStatus] {
         return [
             .individual(.incomingMissed),
-            .group(.ringingMissed)
+            .group(.ringingMissed),
+            .group(.ringingMissedNotificationProfile),
         ]
     }
 

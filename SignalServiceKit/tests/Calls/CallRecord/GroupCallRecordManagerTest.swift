@@ -327,7 +327,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
             )
         }
 
-        XCTAssertEqual(mockCallRecordStore.askedToUpdateTimestampTo, callRecord.callBeganTimestamp - 5)
+        XCTAssertEqual(mockCallRecordStore.askedToUpdateCallBeganTimestampTo, callRecord.callBeganTimestamp - 5)
     }
 
     // MARK: - Update call began timestamp
@@ -353,7 +353,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
             )
         }
 
-        XCTAssertNil(mockCallRecordStore.askedToUpdateTimestampTo)
+        XCTAssertNil(mockCallRecordStore.askedToUpdateCallBeganTimestampTo)
 
         mockDB.write { tx in
             groupCallRecordManager.updateCallBeganTimestampIfEarlier(
@@ -363,7 +363,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
             )
         }
 
-        XCTAssertEqual(mockCallRecordStore.askedToUpdateTimestampTo, 9)
+        XCTAssertEqual(mockCallRecordStore.askedToUpdateCallBeganTimestampTo, 9)
     }
 }
 // MARK: - SnoopingGroupCallRecordManagerImpl

@@ -82,7 +82,13 @@ final class MessageBackupIndividualCallArchiver {
                 return .unknownState
             }
         }()
-        individualCallUpdate.startedCallTimestamp = individualCallInteraction.timestamp
+
+        /// Prefer the call record timestamp if available, since it'll have the
+        /// more accurate timestamp. (In practice this won't matter, since for
+        /// 1:1 calls the call record takes the same "call started" timestamp as
+        /// the interaction: when the call offer message arrives.)
+        individualCallUpdate.startedCallTimestamp = associatedCallRecord?.callBeganTimestamp ?? individualCallInteraction.timestamp
+
         if let associatedCallRecord {
             individualCallUpdate.callID = associatedCallRecord.callId
             individualCallUpdate.read = switch associatedCallRecord.unreadStatus {
@@ -179,7 +185,7 @@ final class MessageBackupIndividualCallArchiver {
             callType: callInteractionType,
             offerType: callInteractionOfferType,
             thread: contactThread,
-            sentAtTimestamp: individualCall.startedCallTimestamp
+            sentAtTimestamp: chatItem.dateSent
         )
         interactionStore.insertInteraction(individualCallInteraction, tx: context.tx)
 
@@ -193,6 +199,7 @@ final class MessageBackupIndividualCallArchiver {
                 callType: callRecordType,
                 callDirection: callRecordDirection,
                 individualCallStatus: callRecordStatus,
+                callEventTimestamp: individualCall.startedCallTimestamp,
                 shouldSendSyncMessage: false,
                 tx: context.tx
             )

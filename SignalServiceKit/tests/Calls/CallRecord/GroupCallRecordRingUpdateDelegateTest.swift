@@ -94,11 +94,13 @@ final class GroupCallRecordRingUpdateDelegateTest: XCTestCase {
             Premise(.acceptedOnAnotherDevice, .ringing): Result(.ringingAccepted, false),
             Premise(.acceptedOnAnotherDevice, .ringingDeclined): Result(.ringingAccepted, false),
             Premise(.acceptedOnAnotherDevice, .ringingMissed): Result(.ringingAccepted, false),
+            Premise(.acceptedOnAnotherDevice, .ringingMissedNotificationProfile): Result(.ringingAccepted, false),
 
             Premise(.declinedOnAnotherDevice, .generic): Result(.ringingDeclined, false),
             Premise(.declinedOnAnotherDevice, .joined): Result(.ringingAccepted, false),
             Premise(.declinedOnAnotherDevice, .ringing): Result(.ringingDeclined, false),
             Premise(.declinedOnAnotherDevice, .ringingMissed): Result(.ringingDeclined, false),
+            Premise(.declinedOnAnotherDevice, .ringingMissedNotificationProfile): Result(.ringingDeclined, false),
         ]
 
         var allPossiblePremises = [(Int64, Premise)]()

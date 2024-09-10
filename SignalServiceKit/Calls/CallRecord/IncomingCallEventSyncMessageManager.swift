@@ -196,7 +196,7 @@ final class IncomingCallEventSyncMessageManagerImpl: IncomingCallEventSyncMessag
                         switch existingCallStatus {
                         case .generic, .joined:
                             newGroupCallStatus = .joined
-                        case .ringing, .ringingAccepted, .ringingDeclined, .ringingMissed:
+                        case .ringing, .ringingAccepted, .ringingDeclined, .ringingMissed, .ringingMissedNotificationProfile:
                             newGroupCallStatus = .ringingAccepted
                         }
                     case .outgoing:
@@ -216,7 +216,7 @@ final class IncomingCallEventSyncMessageManagerImpl: IncomingCallEventSyncMessag
                         case .generic, .joined:
                             newCallDirection = .outgoing
                             newGroupCallStatus = .ringingAccepted
-                        case .ringing, .ringingAccepted, .ringingDeclined, .ringingMissed:
+                        case .ringing, .ringingAccepted, .ringingDeclined, .ringingMissed, .ringingMissedNotificationProfile:
                             logger.warn("How did we have a ringing call event for a call we started on another device?")
                             newGroupCallStatus = .ringingAccepted
                         }
@@ -227,7 +227,7 @@ final class IncomingCallEventSyncMessageManagerImpl: IncomingCallEventSyncMessag
                         // We declined on another device. If we joined the call
                         // on this device, we'll prefer the join.
                         switch existingCallStatus {
-                        case .generic, .ringing, .ringingMissed, .ringingDeclined:
+                        case .generic, .ringing, .ringingMissed, .ringingMissedNotificationProfile, .ringingDeclined:
                             newGroupCallStatus = .ringingDeclined
                         case .joined, .ringingAccepted:
                             newGroupCallStatus = .ringingAccepted
@@ -392,6 +392,8 @@ private extension IncomingCallEventSyncMessageManagerImpl {
             callType: callType,
             callDirection: callDirection,
             individualCallStatus: individualCallStatus,
+            // The interaction's timestamp is the call event's timestamp.
+            callEventTimestamp: newIndividualCallInteraction.timestamp,
             shouldSendSyncMessage: false,
             tx: tx
         )

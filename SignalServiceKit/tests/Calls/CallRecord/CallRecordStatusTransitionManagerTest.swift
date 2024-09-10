@@ -55,16 +55,20 @@ final class GroupCallRecordStatusTransitionManagerTest: XCTestCase {
             [.generic, .joined],
             [.generic, .ringing],
             [.generic, .ringingMissed],
+            [.generic, .ringingMissedNotificationProfile],
             [.generic, .ringingDeclined],
             [.generic, .ringingAccepted],
             [.joined, .ringingAccepted],
             [.ringing, .joined], // This indicates something is wrong, but if something is we don't want this manager to give us trouble.
             [.ringing, .ringingMissed],
+            [.ringing, .ringingMissedNotificationProfile],
             [.ringing, .ringingDeclined],
             [.ringing, .ringingAccepted],
             [.ringingDeclined, .ringingAccepted],
             [.ringingMissed, .ringingDeclined],
             [.ringingMissed, .ringingAccepted],
+            [.ringingMissedNotificationProfile, .ringingDeclined],
+            [.ringingMissedNotificationProfile, .ringingAccepted],
         ]
 
         for transition in GroupStatusTransition.all {

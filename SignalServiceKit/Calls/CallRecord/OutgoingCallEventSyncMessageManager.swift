@@ -240,7 +240,8 @@ private extension OutgoingCallEvent.EventType {
                 .individual(.incomingMissed),
                 .group(.generic),
                 .group(.ringing),
-                .group(.ringingMissed):
+                .group(.ringingMissed),
+                .group(.ringingMissedNotificationProfile):
             // Local-only statuses
             return nil
         case

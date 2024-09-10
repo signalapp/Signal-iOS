@@ -157,8 +157,8 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
         mockCallRecordLoader.callRecords = [
             /// Yes coalescing if inside time window, same thread, same direction, same missed-call status.
             .fixture(callId: 99, timestamp: timestamp.uncoalescable(), threadRowId: 0, direction: .incoming, status: .group(.ringingMissed)),
-            .fixture(callId: 98, timestamp: timestamp.coalescable(), threadRowId: 0, direction: .incoming, status: .group(.ringingMissed)),
-            .fixture(callId: 97, timestamp: timestamp.coalescable(), threadRowId: 0, direction: .incoming, status: .group(.ringingMissed)),
+            .fixture(callId: 98, timestamp: timestamp.coalescable(), threadRowId: 0, direction: .incoming, status: .group(.ringingMissedNotificationProfile)),
+            .fixture(callId: 97, timestamp: timestamp.coalescable(), threadRowId: 0, direction: .incoming, status: .group(.ringingMissedNotificationProfile)),
             .fixture(callId: 96, timestamp: timestamp.coalescable(), threadRowId: 0, direction: .incoming, status: .group(.ringingMissed)),
             .fixture(callId: 95, timestamp: timestamp.coalescable(), threadRowId: 1, direction: .outgoing, status: .group(.ringingAccepted)),
             .fixture(callId: 94, timestamp: timestamp.coalescable(), threadRowId: 1, direction: .outgoing, status: .group(.ringingAccepted)),

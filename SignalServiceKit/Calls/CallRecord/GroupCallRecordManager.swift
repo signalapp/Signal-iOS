@@ -295,9 +295,9 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
             return
         }
 
-        callRecordStore.updateTimestamp(
+        callRecordStore.updateCallBeganTimestamp(
             callRecord: existingCallRecord,
-            newCallBeganTimestamp: callEventTimestamp,
+            callBeganTimestamp: callEventTimestamp,
             tx: tx
         )
     }
@@ -331,7 +331,7 @@ class GroupCallRecordStatusTransitionManager {
             case .joined:
                 // User joined a call started without ringing.
                 return .allowed
-            case .ringing, .ringingAccepted, .ringingDeclined, .ringingMissed:
+            case .ringing, .ringingAccepted, .ringingDeclined, .ringingMissed, .ringingMissedNotificationProfile:
                 // This probably indicates a race between us opportunistically
                 // learning about a call (e.g., by peeking), and receiving a
                 // ring for that call. That's fine, but we prefer the
@@ -344,7 +344,7 @@ class GroupCallRecordStatusTransitionManager {
             case .generic:
                 // Prefer the fact that we joined somewhere.
                 return .notAllowed
-            case .ringing, .ringingDeclined, .ringingMissed:
+            case .ringing, .ringingDeclined, .ringingMissed, .ringingMissedNotificationProfile:
                 // We know it's a ringing call, and we joined it, so we'll treat
                 // it as ringing accepted. This may indicate a race between a
                 // ring-related event (e.g., a canceled ring, or declining on
@@ -367,13 +367,13 @@ class GroupCallRecordStatusTransitionManager {
                 // accepted" rather than joined, but if something weird is
                 // happening we should prefer the joined status.
                 fallthrough
-            case .ringingAccepted, .ringingDeclined, .ringingMissed:
+            case .ringingAccepted, .ringingDeclined, .ringingMissed, .ringingMissedNotificationProfile:
                 return .allowed
             }
         case .ringingAccepted:
             switch toGroupCallStatus {
             case .ringingAccepted: return .notAllowed
-            case .generic, .joined, .ringing, .ringingDeclined, .ringingMissed:
+            case .generic, .joined, .ringing, .ringingDeclined, .ringingMissed, .ringingMissedNotificationProfile:
                 // Prefer the fact that we accepted the ring somewhere.
                 return .notAllowed
             }
@@ -387,16 +387,16 @@ class GroupCallRecordStatusTransitionManager {
                 // status, but if we joined a call for which we declined a ring
                 // we can treat it as an accepted ring instead.
                 return .preferAlternateStatus(.ringingAccepted)
-            case .ringing, .ringingMissed:
+            case .ringing, .ringingMissed, .ringingMissedNotificationProfile:
                 // Prefer the more specific status.
                 return .notAllowed
             case .ringingAccepted:
                 // Prefer the fact that we accepted the ring somewhere.
                 return .allowed
             }
-        case .ringingMissed:
+        case .ringingMissed, .ringingMissedNotificationProfile:
             switch toGroupCallStatus {
-            case .ringingMissed: return .notAllowed
+            case .ringingMissed, .ringingMissedNotificationProfile: return .notAllowed
             case .generic:
                 // Prefer the ring-related status.
                 return .notAllowed

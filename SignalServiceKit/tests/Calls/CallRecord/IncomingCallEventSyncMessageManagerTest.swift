@@ -827,12 +827,13 @@ private class MockIndividualCallRecordManager: IndividualCallRecordManager {
         callType: CallRecord.CallType,
         callDirection: CallRecord.CallDirection,
         individualCallStatus: CallRecord.CallStatus.IndividualCallStatus,
+        callEventTimestamp: UInt64,
         shouldSendSyncMessage: Bool,
         tx: DBWriteTransaction
     ) -> CallRecord {
         createdRecords.append(callId)
 
-        return CallRecord(callId: callId, interactionRowId: individualCallInteractionRowId, threadRowId: contactThreadRowId, callType: callType, callDirection: callDirection, callStatus: .individual(individualCallStatus), callBeganTimestamp: individualCallInteraction.timestamp)
+        return CallRecord(callId: callId, interactionRowId: individualCallInteractionRowId, threadRowId: contactThreadRowId, callType: callType, callDirection: callDirection, callStatus: .individual(individualCallStatus), callBeganTimestamp: callEventTimestamp)
     }
 
     func updateRecord(

@@ -57,9 +57,14 @@ class MockCallRecordStore: CallRecordStore {
         askedToUpdateGroupCallRingerAciTo = newGroupCallRingerAci
     }
 
-    var askedToUpdateTimestampTo: UInt64?
-    func updateTimestamp(callRecord: CallRecord, newCallBeganTimestamp: UInt64, tx: DBWriteTransaction) {
-        askedToUpdateTimestampTo = newCallBeganTimestamp
+    var askedToUpdateCallBeganTimestampTo: UInt64?
+    func updateCallBeganTimestamp(callRecord: CallRecord, callBeganTimestamp: UInt64, tx: DBWriteTransaction) {
+        askedToUpdateCallBeganTimestampTo = callBeganTimestamp
+    }
+
+    var askedToUpdateCallEndedTimestampTo: UInt64?
+    func updateCallEndedTimestamp(callRecord: CallRecord, callEndedTimestamp: UInt64, tx: any DBWriteTransaction) {
+        askedToUpdateCallEndedTimestampTo = callEndedTimestamp
     }
 
     var askedToMergeThread: (from: Int64, into: Int64)?

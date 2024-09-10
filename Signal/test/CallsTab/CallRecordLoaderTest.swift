@@ -98,7 +98,7 @@ final class CallRecordLoaderTest: XCTestCase {
             .fixture(callId: 5, threadRowId: 2, callStatus: .individual(.accepted)),
             .fixture(callId: 6, threadRowId: 2, callStatus: .individual(.incomingMissed)),
             .fixture(callId: 7, threadRowId: 2, callStatus: .individual(.incomingMissed)),
-            .fixture(callId: 8, threadRowId: 1, callStatus: .group(.ringingMissed)),
+            .fixture(callId: 8, threadRowId: 1, callStatus: .group(.ringingMissedNotificationProfile)),
             .fixture(callId: 9),
         ]
 
@@ -114,14 +114,14 @@ final class CallRecordLoaderTest: XCTestCase {
             .fixture(callId: 1),
             .fixture(callId: 2, threadRowId: 1, callStatus: .group(.ringingMissed)),
             .fixture(callId: 3, threadRowId: 1),
-            .fixture(callId: 4, threadRowId: 1, callStatus: .group(.ringingMissed)),
+            .fixture(callId: 4, threadRowId: 1, callStatus: .group(.ringingMissedNotificationProfile)),
             .fixture(callId: 5, threadRowId: 2, callStatus: .individual(.incomingMissed)),
             .fixture(callId: 6, threadRowId: 1, callStatus: .group(.ringingMissed)),
             .fixture(callId: 7, threadRowId: 1, callStatus: .group(.joined)),
             .fixture(callId: 8, threadRowId: 2, callStatus: .individual(.accepted)),
             .fixture(callId: 9, threadRowId: 2, callStatus: .individual(.incomingMissed)),
             .fixture(callId: 10, threadRowId: 2, callStatus: .individual(.incomingMissed)),
-            .fixture(callId: 11, threadRowId: 1, callStatus: .group(.ringingMissed)),
+            .fixture(callId: 11, threadRowId: 1, callStatus: .group(.ringingMissedNotificationProfile)),
             .fixture(callId: 12),
             .fixture(callId: 13, callStatus: .group(.ringingMissed)),
         ]
@@ -176,7 +176,7 @@ final class CallRecordLoaderTest: XCTestCase {
             .fixture(callId: 5, threadRowId: 2, callStatus: .individual(.accepted)),
             .fixture(callId: 6, threadRowId: 2, callStatus: .individual(.incomingMissed)),
             .fixture(callId: 7, threadRowId: 2, callStatus: .individual(.incomingMissed)),
-            .fixture(callId: 8, threadRowId: 1, callStatus: .group(.ringingMissed)),
+            .fixture(callId: 8, threadRowId: 1, callStatus: .group(.ringingMissedNotificationProfile)),
             .fixture(callId: 9),
         ]
 
@@ -192,14 +192,14 @@ final class CallRecordLoaderTest: XCTestCase {
             .fixture(callId: 1),
             .fixture(callId: 2, threadRowId: 1, callStatus: .group(.ringingMissed)),
             .fixture(callId: 3, threadRowId: 1),
-            .fixture(callId: 4, threadRowId: 1, callStatus: .group(.ringingMissed)),
+            .fixture(callId: 4, threadRowId: 1, callStatus: .group(.ringingMissedNotificationProfile)),
             .fixture(callId: 5, threadRowId: 2, callStatus: .individual(.incomingMissed)),
             .fixture(callId: 6, threadRowId: 1, callStatus: .group(.ringingMissed)),
             .fixture(callId: 7, threadRowId: 1, callStatus: .group(.joined)),
             .fixture(callId: 8, threadRowId: 2, callStatus: .individual(.accepted)),
             .fixture(callId: 9, threadRowId: 2, callStatus: .individual(.incomingMissed)),
             .fixture(callId: 10, threadRowId: 2, callStatus: .individual(.incomingMissed)),
-            .fixture(callId: 11, threadRowId: 1, callStatus: .group(.ringingMissed)),
+            .fixture(callId: 11, threadRowId: 1, callStatus: .group(.ringingMissedNotificationProfile)),
             .fixture(callId: 12),
             .fixture(callId: 13, callStatus: .group(.ringingMissed)),
         ]

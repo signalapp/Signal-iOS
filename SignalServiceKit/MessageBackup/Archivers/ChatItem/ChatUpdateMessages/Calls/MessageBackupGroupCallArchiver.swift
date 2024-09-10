@@ -46,6 +46,7 @@ final class MessageBackupGroupCallArchiver {
                 }
             case .group(.ringingDeclined): groupCallState = .declined
             case .group(.ringingMissed): groupCallState = .missed
+            case .group(.ringingMissedNotificationProfile): groupCallState = .missedNotificationProfile
             case .individual:
                 return .messageFailure([.archiveFrameError(
                     .groupCallRecordHadIndividualCallStatus,
@@ -63,19 +64,16 @@ final class MessageBackupGroupCallArchiver {
         /// record, though, we can fall back to the interaction.
         let startedCallTimestamp: UInt64 = associatedCallRecord?.callBeganTimestamp ?? groupCallInteraction.timestamp
 
-        /// iOS doesn't currently track this, so we'll default-populate it.
-        let endedCallTimestamp: UInt64 = 0
-
         var groupCallUpdate = BackupProto_GroupCall()
         groupCallUpdate.state = groupCallState
         groupCallUpdate.startedCallTimestamp = startedCallTimestamp
-        groupCallUpdate.endedCallTimestamp = endedCallTimestamp
         if let associatedCallRecord {
             groupCallUpdate.callID = associatedCallRecord.callId
             groupCallUpdate.read = switch associatedCallRecord.unreadStatus {
             case .read: true
             case .unread: false
             }
+            groupCallUpdate.endedCallTimestamp = associatedCallRecord.callEndedTimestamp
         }
 
         if let ringerAci = associatedCallRecord?.groupCallRingerAci {
@@ -146,7 +144,7 @@ final class MessageBackupGroupCallArchiver {
             joinedMemberAcis: [],
             creatorAci: startedCallAci.map { AciObjC($0) },
             thread: groupThread,
-            sentAtTimestamp: groupCall.startedCallTimestamp
+            sentAtTimestamp: chatItem.dateSent
         )
         interactionStore.insertInteraction(groupCallInteraction, tx: context.tx)
 
@@ -171,9 +169,12 @@ final class MessageBackupGroupCallArchiver {
             case .declined:
                 callDirection = .incoming
                 callStatus = .ringingDeclined
-            case .missed, .missedNotificationProfile:
+            case .missed:
                 callDirection = .incoming
                 callStatus = .ringingMissed
+            case .missedNotificationProfile:
+                callDirection = .incoming
+                callStatus = .ringingMissedNotificationProfile
             case .outgoingRing:
                 callDirection = .outgoing
                 callStatus = .ringingAccepted
@@ -203,6 +204,11 @@ final class MessageBackupGroupCallArchiver {
                 groupCallRingerAci: groupCallRingerAci,
                 callEventTimestamp: groupCall.startedCallTimestamp,
                 shouldSendSyncMessage: false,
+                tx: context.tx
+            )
+            callRecordStore.updateCallEndedTimestamp(
+                callRecord: callRecord,
+                callEndedTimestamp: groupCall.endedCallTimestamp,
                 tx: context.tx
             )
 

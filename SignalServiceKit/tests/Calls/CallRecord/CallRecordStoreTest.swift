@@ -222,6 +222,7 @@ final class CallRecordStoreTest: XCTestCase {
             (.individual(.incomingMissed), .unread, .individual(.notAccepted), .read),
 
             (.group(.generic), .read, .group(.ringingMissed), .unread),
+            (.group(.generic), .read, .group(.ringingMissedNotificationProfile), .unread),
             (.group(.ringingMissed), .unread, .group(.generic), .read),
             (.group(.ringingMissed), .unread, .group(.joined), .read),
             (.group(.ringingMissed), .unread, .group(.ringing), .read),
@@ -384,6 +385,8 @@ final class CallRecordStoreTest: XCTestCase {
         let (interaction2, thread2) = insertThreadAndInteraction()
         let (interaction3, thread3) = insertThreadAndInteraction()
         let (interaction4, thread4) = insertThreadAndInteraction()
+        let (interaction5, thread5) = insertThreadAndInteraction()
+        let (interaction6, thread6) = insertThreadAndInteraction()
 
         try inMemoryDB.write { tx in
             try InMemoryDB.shimOnlyBridge(tx).db.execute(sql: """
@@ -405,6 +408,16 @@ final class CallRecordStoreTest: XCTestCase {
             """)
         }
 
+        try inMemoryDB.write { tx in
+            try InMemoryDB.shimOnlyBridge(tx).db.execute(sql: """
+                INSERT INTO "CallRecord"
+                ( "id", "callId", "interactionRowId", "threadRowId", "type", "direction", "status", "timestamp", "groupCallRingerAci", "unreadStatus", "callEndedTimestamp" )
+                VALUES
+                ( 5, 1234567, \(interaction5), \(thread5), 2, 0, 6, 1701300003, X'c2459e888a6a474b80fd51a79923fd50', 0, 1701300004 ),
+                ( 6, 12345678, \(interaction6), \(thread6), 2, 0, 6, 1701300005, X'227a8eefe8dd45f2a18c3276dc2da653', 0, 1701300006 );
+            """)
+        }
+
         let expectedRecords: [CallRecord] = [
             .fixture(
                 id: 1,
@@ -414,7 +427,9 @@ final class CallRecordStoreTest: XCTestCase {
                 callType: .audioCall,
                 callDirection: .incoming,
                 callStatus: .individual(.pending),
-                callBeganTimestamp: 1701299999
+                groupCallRingerAci: nil,
+                callBeganTimestamp: 1701299999,
+                callEndedTimestamp: 0
             ),
             .fixture(
                 id: 2,
@@ -424,7 +439,9 @@ final class CallRecordStoreTest: XCTestCase {
                 callType: .groupCall,
                 callDirection: .outgoing,
                 callStatus: .group(.ringingAccepted),
-                callBeganTimestamp: 1701300000
+                groupCallRingerAci: nil,
+                callBeganTimestamp: 1701300000,
+                callEndedTimestamp: 0
             ),
             {
                 /// A call record's unread status is set during init, based on
@@ -440,7 +457,8 @@ final class CallRecordStoreTest: XCTestCase {
                     callDirection: .incoming,
                     callStatus: .group(.ringingMissed),
                     groupCallRingerAci: Aci.constantForTesting("C2459E88-8A6A-474B-80FD-51A79923FD50"),
-                    callBeganTimestamp: 1701300001
+                    callBeganTimestamp: 1701300001,
+                    callEndedTimestamp: 0
                 )
                 fixture.unreadStatus = .read
                 return fixture
@@ -454,7 +472,32 @@ final class CallRecordStoreTest: XCTestCase {
                 callDirection: .incoming,
                 callStatus: .group(.ringingMissed),
                 groupCallRingerAci: Aci.constantForTesting("227A8EEF-E8DD-45F2-A18C-3276DC2DA653"),
-                callBeganTimestamp: 1701300002
+                callBeganTimestamp: 1701300002,
+                callEndedTimestamp: 0
+            ),
+            .fixture(
+                id: 5,
+                callId: 1234567,
+                interactionRowId: interaction5,
+                threadRowId: thread5,
+                callType: .groupCall,
+                callDirection: .incoming,
+                callStatus: .group(.ringingAccepted),
+                groupCallRingerAci: Aci.constantForTesting("C2459E88-8A6A-474B-80FD-51A79923FD50"),
+                callBeganTimestamp: 1701300003,
+                callEndedTimestamp: 1701300004
+            ),
+            .fixture(
+                id: 6,
+                callId: 12345678,
+                interactionRowId: interaction6,
+                threadRowId: thread6,
+                callType: .groupCall,
+                callDirection: .incoming,
+                callStatus: .group(.ringingAccepted),
+                groupCallRingerAci: Aci.constantForTesting("227A8EEF-E8DD-45F2-A18C-3276DC2DA653"),
+                callBeganTimestamp: 1701300005,
+                callEndedTimestamp: 1701300006
             ),
         ]
 
@@ -464,7 +507,8 @@ final class CallRecordStoreTest: XCTestCase {
 
             for (idx, actualCallRecord) in actualCallRecords.enumerated() {
                 XCTAssertTrue(
-                    actualCallRecord.matches(expectedRecords[idx])
+                    actualCallRecord.matches(expectedRecords[idx]),
+                    "Fixture at index \(idx) failed to compare!"
                 )
             }
         }
@@ -493,8 +537,9 @@ private extension CallRecord {
         callType: CallType,
         callDirection: CallDirection,
         callStatus: CallStatus,
-        groupCallRingerAci: Aci? = nil,
-        callBeganTimestamp: UInt64
+        groupCallRingerAci: Aci?,
+        callBeganTimestamp: UInt64,
+        callEndedTimestamp: UInt64
     ) -> CallRecord {
         let record = CallRecord(
             callId: callId,
@@ -504,7 +549,8 @@ private extension CallRecord {
             callDirection: callDirection,
             callStatus: callStatus,
             groupCallRingerAci: groupCallRingerAci,
-            callBeganTimestamp: callBeganTimestamp
+            callBeganTimestamp: callBeganTimestamp,
+            callEndedTimestamp: callEndedTimestamp
         )
         record.sqliteRowId = id
 

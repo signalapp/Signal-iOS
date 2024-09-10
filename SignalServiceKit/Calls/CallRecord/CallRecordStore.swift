@@ -101,9 +101,16 @@ public protocol CallRecordStore {
     )
 
     /// Update the call-began timestamp of the given call record.
-    func updateTimestamp(
+    func updateCallBeganTimestamp(
         callRecord: CallRecord,
-        newCallBeganTimestamp: UInt64,
+        callBeganTimestamp: UInt64,
+        tx: DBWriteTransaction
+    )
+
+    /// Update the call-ended timestamp of the given call record.
+    func updateCallEndedTimestamp(
+        callRecord: CallRecord,
+        callEndedTimestamp: UInt64,
         tx: DBWriteTransaction
     )
 
@@ -216,14 +223,26 @@ class CallRecordStoreImpl: CallRecordStore {
         )
     }
 
-    func updateTimestamp(
+    func updateCallBeganTimestamp(
         callRecord: CallRecord,
-        newCallBeganTimestamp: UInt64,
+        callBeganTimestamp: UInt64,
         tx: DBWriteTransaction
     ) {
-        updateTimestamp(
+        updateCallBeganTimestamp(
             callRecord: callRecord,
-            newCallBeganTimestamp: newCallBeganTimestamp,
+            callBeganTimestamp: callBeganTimestamp,
+            db: SDSDB.shimOnlyBridge(tx).database
+        )
+    }
+
+    func updateCallEndedTimestamp(
+        callRecord: CallRecord,
+        callEndedTimestamp: UInt64,
+        tx: DBWriteTransaction
+    ) {
+        updateCallEndedTimestamp(
+            callRecord: callRecord,
+            callEndedTimestamp: callEndedTimestamp,
             db: SDSDB.shimOnlyBridge(tx).database
         )
     }
@@ -342,12 +361,25 @@ class CallRecordStoreImpl: CallRecordStore {
         }
     }
 
-    func updateTimestamp(
+    func updateCallBeganTimestamp(
         callRecord: CallRecord,
-        newCallBeganTimestamp: UInt64,
+        callBeganTimestamp: UInt64,
         db: Database
     ) {
-        callRecord.callBeganTimestamp = newCallBeganTimestamp
+        callRecord.callBeganTimestamp = callBeganTimestamp
+        do {
+            try callRecord.update(db)
+        } catch let error {
+            owsFailBeta("Failed to update call record: \(error)")
+        }
+    }
+
+    func updateCallEndedTimestamp(
+        callRecord: CallRecord,
+        callEndedTimestamp: UInt64,
+        db: Database
+    ) {
+        callRecord.callEndedTimestamp = callEndedTimestamp
         do {
             try callRecord.update(db)
         } catch let error {

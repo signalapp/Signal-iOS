@@ -1296,6 +1296,7 @@ CREATE
         ,"timestamp" INTEGER NOT NULL
         ,"groupCallRingerAci" BLOB
         ,"unreadStatus" INTEGER NOT NULL DEFAULT 0
+        ,"callEndedTimestamp" INTEGER NOT NULL DEFAULT 0
 )
 ;
 

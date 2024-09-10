@@ -51,8 +51,6 @@ NSUInteger const TSGroupModelSchemaVersion = 2;
                         members:(NSArray<SignalServiceAddress *> *)members
                  addedByAddress:(nullable SignalServiceAddress *)addedByAddress
 {
-    OWSAssertDebug(!avatarData || [[self class] isValidGroupAvatarData:avatarData]);
-
     self = [super init];
     if (!self) {
         return self;
