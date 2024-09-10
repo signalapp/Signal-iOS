@@ -17,15 +17,15 @@ public protocol TSAttachmentUploadManager {
 
 public actor TSAttachmentUploadManagerImpl: TSAttachmentUploadManager {
 
-    private let db: any DB
-    private let interactionStore: InteractionStore
-    private let networkManager: NetworkManager
-    private let chatConnectionManager: ChatConnectionManager
-    private let signalService: OWSSignalServiceProtocol
-    private let attachmentEncrypter: Upload.Shims.AttachmentEncrypter
-    private let blurHash: TSAttachmentUpload.Shims.BlurHash
-    private let fileSystem: Upload.Shims.FileSystem
-    private let tsResourceStore: TSResourceUploadStore
+    private nonisolated let db: any DB
+    private nonisolated let interactionStore: InteractionStore
+    private nonisolated let networkManager: NetworkManager
+    private nonisolated let chatConnectionManager: ChatConnectionManager
+    private nonisolated let signalService: OWSSignalServiceProtocol
+    private nonisolated let attachmentEncrypter: Upload.Shims.AttachmentEncrypter
+    private nonisolated let blurHash: TSAttachmentUpload.Shims.BlurHash
+    private nonisolated let fileSystem: Upload.Shims.FileSystem
+    private nonisolated let tsResourceStore: TSResourceUploadStore
 
     public init(
         db: any DB,
