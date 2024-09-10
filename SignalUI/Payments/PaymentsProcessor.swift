@@ -120,7 +120,7 @@ public class PaymentsProcessor: NSObject {
         // Create a new operation for any payment that needs to be
         // processed that we're not already processing.
         let delegate: PaymentProcessingOperationDelegate = self
-        Self.unfairLock.withLock {
+        Self.unfairLock.withLock { [paymentModels] in
             for paymentModel in paymentModels {
                 let paymentId = paymentModel.uniqueId
                 // Don't add an operation if we're already processing this payment model.

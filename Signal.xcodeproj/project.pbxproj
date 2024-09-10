@@ -986,7 +986,7 @@
 		668A00E02C2B5ECF007B8808 /* DebuggerUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 668A00DE2C2B5ECF007B8808 /* DebuggerUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		668A00E22C2B5F0C007B8808 /* OWSAssertionError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668A00E12C2B5F0C007B8808 /* OWSAssertionError.swift */; };
 		668A00E42C2B5F35007B8808 /* OWSLocalizedString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668A00E32C2B5F35007B8808 /* OWSLocalizedString.swift */; };
-		668A00E92C2B5F59007B8808 /* UnfairLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668A00E62C2B5F58007B8808 /* UnfairLock.swift */; };
+		668A00E92C2B5F59007B8808 /* TSMutex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668A00E62C2B5F58007B8808 /* TSMutex.swift */; };
 		668A00F42C2B5F81007B8808 /* NSDate+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 668A00EC2C2B5F80007B8808 /* NSDate+OWS.m */; };
 		668A00F52C2B5F81007B8808 /* NSObject+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = 668A00ED2C2B5F80007B8808 /* NSObject+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		668A00F82C2B5F81007B8808 /* NSDate+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = 668A00F02C2B5F81007B8808 /* NSDate+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -4820,7 +4820,7 @@
 		668A00DE2C2B5ECF007B8808 /* DebuggerUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebuggerUtils.h; sourceTree = "<group>"; };
 		668A00E12C2B5F0C007B8808 /* OWSAssertionError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSAssertionError.swift; sourceTree = "<group>"; };
 		668A00E32C2B5F35007B8808 /* OWSLocalizedString.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSLocalizedString.swift; sourceTree = "<group>"; };
-		668A00E62C2B5F58007B8808 /* UnfairLock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnfairLock.swift; sourceTree = "<group>"; };
+		668A00E62C2B5F58007B8808 /* TSMutex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSMutex.swift; sourceTree = "<group>"; };
 		668A00EC2C2B5F80007B8808 /* NSDate+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDate+OWS.m"; sourceTree = "<group>"; };
 		668A00ED2C2B5F80007B8808 /* NSObject+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+OWS.h"; sourceTree = "<group>"; };
 		668A00F02C2B5F81007B8808 /* NSDate+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+OWS.h"; sourceTree = "<group>"; };
@@ -9690,7 +9690,7 @@
 		668A00E52C2B5F49007B8808 /* Locking */ = {
 			isa = PBXGroup;
 			children = (
-				668A00E62C2B5F58007B8808 /* UnfairLock.swift */,
+				668A00E62C2B5F58007B8808 /* TSMutex.swift */,
 			);
 			path = Locking;
 			sourceTree = "<group>";
@@ -18329,6 +18329,7 @@
 				F9C5CBD4289453B300548EEE /* TSMessage+SDS.swift in Sources */,
 				F9C5CBF7289453B300548EEE /* TSMessage.m in Sources */,
 				F9C5CBF4289453B300548EEE /* TSMessage.swift in Sources */,
+				668A00E92C2B5F59007B8808 /* TSMutex.swift in Sources */,
 				F9C5CBF3289453B300548EEE /* TSOutgoingDeleteMessage.m in Sources */,
 				D93086272C616391008E3A27 /* TSOutgoingMessage+Builder.swift in Sources */,
 				F9C5CBF6289453B300548EEE /* TSOutgoingMessage+SDS.swift in Sources */,
@@ -18390,7 +18391,6 @@
 				F9C5CE1F289453B400548EEE /* UIImage+OWS.swift in Sources */,
 				663D02DD2C06717900350632 /* UInt64SafeRecord.swift in Sources */,
 				7255A4CB2B98E04900E95368 /* UIView+OWS.swift in Sources */,
-				668A00E92C2B5F59007B8808 /* UnfairLock.swift in Sources */,
 				50D6A93F2AA9167400B7F093 /* UniqueObjectRecipientMerger.swift in Sources */,
 				6600F34C298C81CD00B1EDB7 /* UnknownEnumCodable.swift in Sources */,
 				664BA8472BB5CE1A005638E0 /* UnpreparedOutgoingMessage.swift in Sources */,
