@@ -90,7 +90,8 @@ extension TSInteraction {
                     return true
                 }
                 return updates.contains { $0.shouldAppearInInbox }
-            case .typeSessionDidEnd: return true
+            case .typeLocalUserEndedSession: return true
+            case .typeRemoteUserEndedSession: return true
             case .userNotRegistered: return true
             case .typeUnsupportedMessage: return true
             case .typeGroupQuit: return true

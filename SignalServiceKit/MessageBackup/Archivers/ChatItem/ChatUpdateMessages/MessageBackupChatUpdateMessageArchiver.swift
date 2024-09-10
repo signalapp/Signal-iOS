@@ -141,7 +141,8 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupProtoArchiver {
             return .skippableChatUpdate(.contactHiddenInfoMessage)
         case
                 .verificationStateChange,
-                .typeSessionDidEnd,
+                .typeLocalUserEndedSession,
+                .typeRemoteUserEndedSession,
                 .unknownProtocolVersion,
                 .userJoinedSignal,
                 .phoneNumberChange,

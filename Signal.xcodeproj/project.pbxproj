@@ -2103,6 +2103,36 @@
 		D9B95A9829E8906200D7CB95 /* OWSDeviceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B95A9729E8906200D7CB95 /* OWSDeviceTest.swift */; };
 		D9B95A9B29E8923B00D7CB95 /* InMemoryDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B95A9929E8918200D7CB95 /* InMemoryDB.swift */; };
 		D9B95A9D29E894A600D7CB95 /* ValidatableModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B95A9C29E894A600D7CB95 /* ValidatableModel.swift */; };
+		D9BE25DB2C8F99820083379A /* chat_item_simple_updates_02.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9BE25BB2C8F997E0083379A /* chat_item_simple_updates_02.txtproto */; };
+		D9BE25DD2C8F99820083379A /* chat_item_simple_updates_13.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9BE25BD2C8F997E0083379A /* chat_item_simple_updates_13.binproto */; };
+		D9BE25DE2C8F99820083379A /* chat_item_simple_updates_11.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9BE25BE2C8F997E0083379A /* chat_item_simple_updates_11.txtproto */; };
+		D9BE25DF2C8F99820083379A /* chat_item_simple_updates_02.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9BE25BF2C8F997F0083379A /* chat_item_simple_updates_02.binproto */; };
+		D9BE25E02C8F99820083379A /* chat_item_simple_updates_03.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9BE25C02C8F997F0083379A /* chat_item_simple_updates_03.binproto */; };
+		D9BE25E12C8F99820083379A /* chat_item_simple_updates_03.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9BE25C12C8F997F0083379A /* chat_item_simple_updates_03.txtproto */; };
+		D9BE25E22C8F99820083379A /* chat_item_simple_updates_07.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9BE25C22C8F997F0083379A /* chat_item_simple_updates_07.binproto */; };
+		D9BE25E32C8F99820083379A /* chat_item_simple_updates_12.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9BE25C32C8F997F0083379A /* chat_item_simple_updates_12.binproto */; };
+		D9BE25E42C8F99820083379A /* chat_item_simple_updates_09.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9BE25C42C8F997F0083379A /* chat_item_simple_updates_09.txtproto */; };
+		D9BE25E62C8F99820083379A /* chat_item_simple_updates_13.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9BE25C62C8F997F0083379A /* chat_item_simple_updates_13.txtproto */; };
+		D9BE25E72C8F99820083379A /* chat_item_simple_updates_15.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9BE25C72C8F997F0083379A /* chat_item_simple_updates_15.binproto */; };
+		D9BE25E82C8F99820083379A /* chat_item_simple_updates_01.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9BE25C82C8F99800083379A /* chat_item_simple_updates_01.binproto */; };
+		D9BE25E92C8F99820083379A /* chat_item_simple_updates_06.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9BE25C92C8F99800083379A /* chat_item_simple_updates_06.txtproto */; };
+		D9BE25EA2C8F99820083379A /* chat_item_simple_updates_00.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9BE25CA2C8F99800083379A /* chat_item_simple_updates_00.txtproto */; };
+		D9BE25EB2C8F99820083379A /* chat_item_simple_updates_04.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9BE25CB2C8F99800083379A /* chat_item_simple_updates_04.txtproto */; };
+		D9BE25EC2C8F99820083379A /* chat_item_simple_updates_12.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9BE25CC2C8F99800083379A /* chat_item_simple_updates_12.txtproto */; };
+		D9BE25ED2C8F99820083379A /* chat_item_simple_updates_08.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9BE25CD2C8F99800083379A /* chat_item_simple_updates_08.txtproto */; };
+		D9BE25EE2C8F99820083379A /* chat_item_simple_updates_00.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9BE25CE2C8F99800083379A /* chat_item_simple_updates_00.binproto */; };
+		D9BE25EF2C8F99820083379A /* chat_item_simple_updates_15.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9BE25CF2C8F99810083379A /* chat_item_simple_updates_15.txtproto */; };
+		D9BE25F02C8F99820083379A /* chat_item_simple_updates_10.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9BE25D02C8F99810083379A /* chat_item_simple_updates_10.txtproto */; };
+		D9BE25F12C8F99820083379A /* chat_item_simple_updates_14.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9BE25D12C8F99810083379A /* chat_item_simple_updates_14.txtproto */; };
+		D9BE25F22C8F99820083379A /* chat_item_simple_updates_08.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9BE25D22C8F99810083379A /* chat_item_simple_updates_08.binproto */; };
+		D9BE25F32C8F99820083379A /* chat_item_simple_updates_10.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9BE25D32C8F99810083379A /* chat_item_simple_updates_10.binproto */; };
+		D9BE25F42C8F99820083379A /* chat_item_simple_updates_07.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9BE25D42C8F99810083379A /* chat_item_simple_updates_07.txtproto */; };
+		D9BE25F52C8F99820083379A /* chat_item_simple_updates_14.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9BE25D52C8F99810083379A /* chat_item_simple_updates_14.binproto */; };
+		D9BE25F62C8F99820083379A /* chat_item_simple_updates_06.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9BE25D62C8F99810083379A /* chat_item_simple_updates_06.binproto */; };
+		D9BE25F72C8F99820083379A /* chat_item_simple_updates_09.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9BE25D72C8F99810083379A /* chat_item_simple_updates_09.binproto */; };
+		D9BE25F82C8F99820083379A /* chat_item_simple_updates_01.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9BE25D82C8F99820083379A /* chat_item_simple_updates_01.txtproto */; };
+		D9BE25F92C8F99820083379A /* chat_item_simple_updates_04.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9BE25D92C8F99820083379A /* chat_item_simple_updates_04.binproto */; };
+		D9BE25FA2C8F99820083379A /* chat_item_simple_updates_11.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9BE25DA2C8F99820083379A /* chat_item_simple_updates_11.binproto */; };
 		D9BFB8BF2C4EE33C00D67881 /* MessageBackupThreadMergeChatUpdateArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9BFB8BE2C4EE33C00D67881 /* MessageBackupThreadMergeChatUpdateArchiver.swift */; };
 		D9BFB8C82C4F02C900D67881 /* MessageBackupSessionSwitchoverChatUpdateArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9BFB8C72C4F02C900D67881 /* MessageBackupSessionSwitchoverChatUpdateArchiver.swift */; };
 		D9C0AE652BD7103100FCB05E /* OWSDeviceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C0AE632BD7103100FCB05E /* OWSDeviceStore.swift */; };
@@ -5444,6 +5474,36 @@
 		D9B95A9729E8906200D7CB95 /* OWSDeviceTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDeviceTest.swift; sourceTree = "<group>"; };
 		D9B95A9929E8918200D7CB95 /* InMemoryDB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMemoryDB.swift; sourceTree = "<group>"; };
 		D9B95A9C29E894A600D7CB95 /* ValidatableModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatableModel.swift; sourceTree = "<group>"; };
+		D9BE25BB2C8F997E0083379A /* chat_item_simple_updates_02.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_simple_updates_02.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_simple_updates_02.txtproto"; sourceTree = "<group>"; };
+		D9BE25BD2C8F997E0083379A /* chat_item_simple_updates_13.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_simple_updates_13.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_simple_updates_13.binproto"; sourceTree = "<group>"; };
+		D9BE25BE2C8F997E0083379A /* chat_item_simple_updates_11.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_simple_updates_11.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_simple_updates_11.txtproto"; sourceTree = "<group>"; };
+		D9BE25BF2C8F997F0083379A /* chat_item_simple_updates_02.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_simple_updates_02.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_simple_updates_02.binproto"; sourceTree = "<group>"; };
+		D9BE25C02C8F997F0083379A /* chat_item_simple_updates_03.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_simple_updates_03.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_simple_updates_03.binproto"; sourceTree = "<group>"; };
+		D9BE25C12C8F997F0083379A /* chat_item_simple_updates_03.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_simple_updates_03.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_simple_updates_03.txtproto"; sourceTree = "<group>"; };
+		D9BE25C22C8F997F0083379A /* chat_item_simple_updates_07.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_simple_updates_07.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_simple_updates_07.binproto"; sourceTree = "<group>"; };
+		D9BE25C32C8F997F0083379A /* chat_item_simple_updates_12.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_simple_updates_12.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_simple_updates_12.binproto"; sourceTree = "<group>"; };
+		D9BE25C42C8F997F0083379A /* chat_item_simple_updates_09.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_simple_updates_09.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_simple_updates_09.txtproto"; sourceTree = "<group>"; };
+		D9BE25C62C8F997F0083379A /* chat_item_simple_updates_13.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_simple_updates_13.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_simple_updates_13.txtproto"; sourceTree = "<group>"; };
+		D9BE25C72C8F997F0083379A /* chat_item_simple_updates_15.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_simple_updates_15.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_simple_updates_15.binproto"; sourceTree = "<group>"; };
+		D9BE25C82C8F99800083379A /* chat_item_simple_updates_01.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_simple_updates_01.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_simple_updates_01.binproto"; sourceTree = "<group>"; };
+		D9BE25C92C8F99800083379A /* chat_item_simple_updates_06.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_simple_updates_06.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_simple_updates_06.txtproto"; sourceTree = "<group>"; };
+		D9BE25CA2C8F99800083379A /* chat_item_simple_updates_00.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_simple_updates_00.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_simple_updates_00.txtproto"; sourceTree = "<group>"; };
+		D9BE25CB2C8F99800083379A /* chat_item_simple_updates_04.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_simple_updates_04.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_simple_updates_04.txtproto"; sourceTree = "<group>"; };
+		D9BE25CC2C8F99800083379A /* chat_item_simple_updates_12.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_simple_updates_12.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_simple_updates_12.txtproto"; sourceTree = "<group>"; };
+		D9BE25CD2C8F99800083379A /* chat_item_simple_updates_08.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_simple_updates_08.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_simple_updates_08.txtproto"; sourceTree = "<group>"; };
+		D9BE25CE2C8F99800083379A /* chat_item_simple_updates_00.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_simple_updates_00.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_simple_updates_00.binproto"; sourceTree = "<group>"; };
+		D9BE25CF2C8F99810083379A /* chat_item_simple_updates_15.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_simple_updates_15.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_simple_updates_15.txtproto"; sourceTree = "<group>"; };
+		D9BE25D02C8F99810083379A /* chat_item_simple_updates_10.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_simple_updates_10.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_simple_updates_10.txtproto"; sourceTree = "<group>"; };
+		D9BE25D12C8F99810083379A /* chat_item_simple_updates_14.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_simple_updates_14.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_simple_updates_14.txtproto"; sourceTree = "<group>"; };
+		D9BE25D22C8F99810083379A /* chat_item_simple_updates_08.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_simple_updates_08.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_simple_updates_08.binproto"; sourceTree = "<group>"; };
+		D9BE25D32C8F99810083379A /* chat_item_simple_updates_10.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_simple_updates_10.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_simple_updates_10.binproto"; sourceTree = "<group>"; };
+		D9BE25D42C8F99810083379A /* chat_item_simple_updates_07.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_simple_updates_07.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_simple_updates_07.txtproto"; sourceTree = "<group>"; };
+		D9BE25D52C8F99810083379A /* chat_item_simple_updates_14.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_simple_updates_14.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_simple_updates_14.binproto"; sourceTree = "<group>"; };
+		D9BE25D62C8F99810083379A /* chat_item_simple_updates_06.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_simple_updates_06.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_simple_updates_06.binproto"; sourceTree = "<group>"; };
+		D9BE25D72C8F99810083379A /* chat_item_simple_updates_09.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_simple_updates_09.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_simple_updates_09.binproto"; sourceTree = "<group>"; };
+		D9BE25D82C8F99820083379A /* chat_item_simple_updates_01.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_simple_updates_01.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_simple_updates_01.txtproto"; sourceTree = "<group>"; };
+		D9BE25D92C8F99820083379A /* chat_item_simple_updates_04.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_simple_updates_04.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_simple_updates_04.binproto"; sourceTree = "<group>"; };
+		D9BE25DA2C8F99820083379A /* chat_item_simple_updates_11.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_simple_updates_11.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_simple_updates_11.binproto"; sourceTree = "<group>"; };
 		D9BFB8BE2C4EE33C00D67881 /* MessageBackupThreadMergeChatUpdateArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupThreadMergeChatUpdateArchiver.swift; sourceTree = "<group>"; };
 		D9BFB8C72C4F02C900D67881 /* MessageBackupSessionSwitchoverChatUpdateArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupSessionSwitchoverChatUpdateArchiver.swift; sourceTree = "<group>"; };
 		D9C0AE612BD7102500FCB05E /* InactiveLinkedDeviceFinderTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InactiveLinkedDeviceFinderTest.swift; sourceTree = "<group>"; };
@@ -10991,6 +11051,43 @@
 			path = JobRecords;
 			sourceTree = "<group>";
 		};
+		D9BE25BA2C8F99690083379A /* SimpleUpdates */ = {
+			isa = PBXGroup;
+			children = (
+				D9BE25CE2C8F99800083379A /* chat_item_simple_updates_00.binproto */,
+				D9BE25CA2C8F99800083379A /* chat_item_simple_updates_00.txtproto */,
+				D9BE25C82C8F99800083379A /* chat_item_simple_updates_01.binproto */,
+				D9BE25D82C8F99820083379A /* chat_item_simple_updates_01.txtproto */,
+				D9BE25BF2C8F997F0083379A /* chat_item_simple_updates_02.binproto */,
+				D9BE25BB2C8F997E0083379A /* chat_item_simple_updates_02.txtproto */,
+				D9BE25C02C8F997F0083379A /* chat_item_simple_updates_03.binproto */,
+				D9BE25C12C8F997F0083379A /* chat_item_simple_updates_03.txtproto */,
+				D9BE25D92C8F99820083379A /* chat_item_simple_updates_04.binproto */,
+				D9BE25CB2C8F99800083379A /* chat_item_simple_updates_04.txtproto */,
+				D9BE25D62C8F99810083379A /* chat_item_simple_updates_06.binproto */,
+				D9BE25C92C8F99800083379A /* chat_item_simple_updates_06.txtproto */,
+				D9BE25C22C8F997F0083379A /* chat_item_simple_updates_07.binproto */,
+				D9BE25D42C8F99810083379A /* chat_item_simple_updates_07.txtproto */,
+				D9BE25D22C8F99810083379A /* chat_item_simple_updates_08.binproto */,
+				D9BE25CD2C8F99800083379A /* chat_item_simple_updates_08.txtproto */,
+				D9BE25D72C8F99810083379A /* chat_item_simple_updates_09.binproto */,
+				D9BE25C42C8F997F0083379A /* chat_item_simple_updates_09.txtproto */,
+				D9BE25D32C8F99810083379A /* chat_item_simple_updates_10.binproto */,
+				D9BE25D02C8F99810083379A /* chat_item_simple_updates_10.txtproto */,
+				D9BE25DA2C8F99820083379A /* chat_item_simple_updates_11.binproto */,
+				D9BE25BE2C8F997E0083379A /* chat_item_simple_updates_11.txtproto */,
+				D9BE25C32C8F997F0083379A /* chat_item_simple_updates_12.binproto */,
+				D9BE25CC2C8F99800083379A /* chat_item_simple_updates_12.txtproto */,
+				D9BE25BD2C8F997E0083379A /* chat_item_simple_updates_13.binproto */,
+				D9BE25C62C8F997F0083379A /* chat_item_simple_updates_13.txtproto */,
+				D9BE25D52C8F99810083379A /* chat_item_simple_updates_14.binproto */,
+				D9BE25D12C8F99810083379A /* chat_item_simple_updates_14.txtproto */,
+				D9BE25C72C8F997F0083379A /* chat_item_simple_updates_15.binproto */,
+				D9BE25CF2C8F99810083379A /* chat_item_simple_updates_15.txtproto */,
+			);
+			name = SimpleUpdates;
+			sourceTree = "<group>";
+		};
 		D9C0AE702BDC6B4000FCB05E /* Calls */ = {
 			isa = PBXGroup;
 			children = (
@@ -11315,6 +11412,7 @@
 				D936DE052C8E965F00A271C3 /* ProfileChange */,
 				D9A090F32C8E975B0083AB09 /* RemoteDeleteTombstone */,
 				D9C451EB2C8E97F400D0FDE2 /* SessionSwitchover */,
+				D9BE25BA2C8F99690083379A /* SimpleUpdates */,
 			);
 			name = ChatItem;
 			sourceTree = "<group>";
@@ -13892,6 +13990,36 @@
 				D9C451F32C8E980500D0FDE2 /* chat_item_session_switchover_update_00.txtproto in Resources */,
 				D9C451F22C8E980500D0FDE2 /* chat_item_session_switchover_update_01.binproto in Resources */,
 				D9C451F12C8E980500D0FDE2 /* chat_item_session_switchover_update_01.txtproto in Resources */,
+				D9BE25EE2C8F99820083379A /* chat_item_simple_updates_00.binproto in Resources */,
+				D9BE25EA2C8F99820083379A /* chat_item_simple_updates_00.txtproto in Resources */,
+				D9BE25E82C8F99820083379A /* chat_item_simple_updates_01.binproto in Resources */,
+				D9BE25F82C8F99820083379A /* chat_item_simple_updates_01.txtproto in Resources */,
+				D9BE25DF2C8F99820083379A /* chat_item_simple_updates_02.binproto in Resources */,
+				D9BE25DB2C8F99820083379A /* chat_item_simple_updates_02.txtproto in Resources */,
+				D9BE25E02C8F99820083379A /* chat_item_simple_updates_03.binproto in Resources */,
+				D9BE25E12C8F99820083379A /* chat_item_simple_updates_03.txtproto in Resources */,
+				D9BE25F92C8F99820083379A /* chat_item_simple_updates_04.binproto in Resources */,
+				D9BE25EB2C8F99820083379A /* chat_item_simple_updates_04.txtproto in Resources */,
+				D9BE25F62C8F99820083379A /* chat_item_simple_updates_06.binproto in Resources */,
+				D9BE25E92C8F99820083379A /* chat_item_simple_updates_06.txtproto in Resources */,
+				D9BE25E22C8F99820083379A /* chat_item_simple_updates_07.binproto in Resources */,
+				D9BE25F42C8F99820083379A /* chat_item_simple_updates_07.txtproto in Resources */,
+				D9BE25F22C8F99820083379A /* chat_item_simple_updates_08.binproto in Resources */,
+				D9BE25ED2C8F99820083379A /* chat_item_simple_updates_08.txtproto in Resources */,
+				D9BE25F72C8F99820083379A /* chat_item_simple_updates_09.binproto in Resources */,
+				D9BE25E42C8F99820083379A /* chat_item_simple_updates_09.txtproto in Resources */,
+				D9BE25F32C8F99820083379A /* chat_item_simple_updates_10.binproto in Resources */,
+				D9BE25F02C8F99820083379A /* chat_item_simple_updates_10.txtproto in Resources */,
+				D9BE25FA2C8F99820083379A /* chat_item_simple_updates_11.binproto in Resources */,
+				D9BE25DE2C8F99820083379A /* chat_item_simple_updates_11.txtproto in Resources */,
+				D9BE25E32C8F99820083379A /* chat_item_simple_updates_12.binproto in Resources */,
+				D9BE25EC2C8F99820083379A /* chat_item_simple_updates_12.txtproto in Resources */,
+				D9BE25DD2C8F99820083379A /* chat_item_simple_updates_13.binproto in Resources */,
+				D9BE25E62C8F99820083379A /* chat_item_simple_updates_13.txtproto in Resources */,
+				D9BE25F52C8F99820083379A /* chat_item_simple_updates_14.binproto in Resources */,
+				D9BE25F12C8F99820083379A /* chat_item_simple_updates_14.txtproto in Resources */,
+				D9BE25E72C8F99820083379A /* chat_item_simple_updates_15.binproto in Resources */,
+				D9BE25EF2C8F99820083379A /* chat_item_simple_updates_15.txtproto in Resources */,
 				F942628B289B1B5600460798 /* sample-sticker.encrypted in Resources */,
 				F942628C289B1B5600460798 /* sample-sticker.webp in Resources */,
 				F908AA7D28CE629700472E68 /* test-apng.png in Resources */,

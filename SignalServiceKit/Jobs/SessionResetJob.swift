@@ -90,7 +90,7 @@ private class SessionResetJobRunner: JobRunner, Dependencies {
             // message. Otherwise if we send another message before them, they won't
             // have the session to decrypt it.
             self.archiveAllSessions(for: contactThread, tx: tx)
-            let message = TSInfoMessage(thread: contactThread, messageType: TSInfoMessageType.typeSessionDidEnd)
+            let message = TSInfoMessage(thread: contactThread, messageType: .typeLocalUserEndedSession)
             message.anyInsert(transaction: tx)
             jobRecord.anyRemove(transaction: tx)
         }

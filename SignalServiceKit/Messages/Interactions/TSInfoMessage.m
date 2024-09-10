@@ -222,7 +222,8 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
 - (NSString *)infoMessagePreviewTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     switch (_messageType) {
-        case TSInfoMessageTypeSessionDidEnd:
+        case TSInfoMessageTypeLocalUserEndedSession:
+        case TSInfoMessageTypeRemoteUserEndedSession:
             return OWSLocalizedString(@"SECURE_SESSION_RESET", nil);
         case TSInfoMessageTypeUnsupportedMessage:
             return OWSLocalizedString(@"UNSUPPORTED_ATTACHMENT", nil);

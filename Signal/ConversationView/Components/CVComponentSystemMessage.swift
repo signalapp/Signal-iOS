@@ -770,7 +770,8 @@ extension CVComponentSystemMessage {
         } else if let infoMessage = interaction as? TSInfoMessage {
             switch infoMessage.messageType {
             case .userNotRegistered,
-                 .typeSessionDidEnd,
+                .typeLocalUserEndedSession,
+                .typeRemoteUserEndedSession,
                  .typeUnsupportedMessage,
                  .addToContactsOffer,
                  .addUserToProfileWhitelistOffer,
@@ -1118,7 +1119,8 @@ extension CVComponentSystemMessage {
 
         switch infoMessage.messageType {
         case .userNotRegistered,
-             .typeSessionDidEnd:
+             .typeLocalUserEndedSession,
+             .typeRemoteUserEndedSession:
             return nil
         case .typeUnsupportedMessage:
             // Unused.

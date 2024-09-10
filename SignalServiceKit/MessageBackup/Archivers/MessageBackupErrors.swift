@@ -112,9 +112,6 @@ extension MessageBackup {
             /// An interaction used to create an identity-key change was missing
             /// info as to its author.
             case identityKeyChangeInteractionMissingAuthor
-            /// An interaction used to create a session-refresh update was
-            /// missing info as to its author.
-            case sessionRefreshInteractionMissingAuthor
             /// An interaction used to create a decryption error update was
             /// missing info as to its author.
             case decryptionErrorInteractionMissingAuthor
@@ -243,7 +240,6 @@ extension MessageBackup {
                     .verificationStateUpdateInteractionMissingAuthor,
                     .phoneNumberChangeInteractionMissingAuthor,
                     .identityKeyChangeInteractionMissingAuthor,
-                    .sessionRefreshInteractionMissingAuthor,
                     .decryptionErrorInteractionMissingAuthor,
                     .paymentActivationRequestInteractionMissingAuthor,
                     .paymentsActivatedInteractionMissingAuthor,
@@ -511,6 +507,9 @@ extension MessageBackup {
                 /// An "identity key changed" simple chat update was associated
                 /// with a non-contact recipient.
                 case identityKeyChangeNotFromContact
+                /// An "end session" simple chat update was associated with a
+                /// non-contact recipient.
+                case endSessionNotFromContact
                 /// A "decryption error" simple chat update was associated with
                 /// a non-contact recipient.
                 case decryptionErrorNotFromContact
@@ -728,6 +727,7 @@ extension MessageBackup {
                         .verificationStateChangeNotFromContact,
                         .phoneNumberChangeNotFromContact,
                         .identityKeyChangeNotFromContact,
+                        .endSessionNotFromContact,
                         .decryptionErrorNotFromContact,
                         .paymentsActivationRequestNotFromAci,
                         .paymentsActivatedNotFromAci,

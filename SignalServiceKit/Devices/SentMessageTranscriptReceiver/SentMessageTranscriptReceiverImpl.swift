@@ -88,7 +88,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             Logger.info("EndSession was sent to recipient: \(thread.contactAddress)")
             self.archiveSessions(for: thread.contactAddress, tx: tx)
 
-            let infoMessage = TSInfoMessage(thread: thread, messageType: .typeSessionDidEnd)
+            let infoMessage = TSInfoMessage(thread: thread, messageType: .typeLocalUserEndedSession)
             interactionStore.insertInteraction(infoMessage, tx: tx)
 
             // Don't continue processing lest we print a bubble for the session reset.

@@ -1035,7 +1035,8 @@ public class InteractionFinder: NSObject {
         let infoMessageTypes: [TSInfoMessageType] = [
             .typeGroupQuit,
             .typeGroupUpdate,
-            .typeSessionDidEnd,
+            .typeLocalUserEndedSession,
+            .typeRemoteUserEndedSession,
             .typeDisappearingMessagesUpdate,
             .unknownProtocolVersion
         ]

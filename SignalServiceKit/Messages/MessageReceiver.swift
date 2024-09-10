@@ -1768,7 +1768,7 @@ public final class MessageReceiver: Dependencies {
             withContactAddress: SignalServiceAddress(decryptedEnvelope.sourceAci),
             transaction: tx
         )
-        TSInfoMessage(thread: thread, messageType: .typeSessionDidEnd).anyInsert(transaction: tx)
+        TSInfoMessage(thread: thread, messageType: .typeRemoteUserEndedSession).anyInsert(transaction: tx)
 
         let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
         sessionStore.archiveAllSessions(for: decryptedEnvelope.sourceAci, tx: tx.asV2Write)

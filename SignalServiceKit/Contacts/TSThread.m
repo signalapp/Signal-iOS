@@ -365,7 +365,8 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
             case TSInfoMessageThreadMerge:
                 needsToClearArchived = NO;
                 break;
-            case TSInfoMessageTypeSessionDidEnd:
+            case TSInfoMessageTypeLocalUserEndedSession:
+            case TSInfoMessageTypeRemoteUserEndedSession:
             case TSInfoMessageUserNotRegistered:
             case TSInfoMessageTypeUnsupportedMessage:
             case TSInfoMessageTypeGroupUpdate:

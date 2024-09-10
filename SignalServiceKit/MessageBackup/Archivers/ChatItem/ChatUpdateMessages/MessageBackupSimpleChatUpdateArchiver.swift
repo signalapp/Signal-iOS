@@ -167,9 +167,12 @@ final class MessageBackupSimpleChatUpdateArchiver {
             }
 
             updateType = .unsupportedProtocolMessage
-        case .typeSessionDidEnd:
+        case .typeRemoteUserEndedSession:
             // Only inserted for 1:1 threads.
             updateAuthor = .containingContactThread
+            updateType = .endSession
+        case .typeLocalUserEndedSession:
+            updateAuthor = .localUser
             updateType = .endSession
         case .userJoinedSignal:
             // Only inserted for 1:1 threads.
@@ -256,7 +259,13 @@ final class MessageBackupSimpleChatUpdateArchiver {
             )])
         }
 
-        let updateAuthor: MessageBackup.ContactAddress
+        /// To whom we should attribute this update.
+        enum UpdateAuthor {
+            case localUser
+            case remoteUser(MessageBackup.ContactAddress)
+        }
+
+        let updateAuthor: UpdateAuthor
         let updateType: BackupProto_SimpleChatUpdate.TypeEnum
 
         switch errorMessage.errorType {
@@ -286,20 +295,11 @@ final class MessageBackupSimpleChatUpdateArchiver {
             }
 
             updateType = .identityUpdate
-            updateAuthor = recipientAddress
+            updateAuthor = .remoteUser(recipientAddress)
         case .sessionRefresh:
-            /// These can only happen in contact threads, not group threads.
-            /// They also historically did not persist the recipient on the
-            /// message, so we'll pull it off the thread.
-            guard
-                let contactThread = thread as? TSContactThread,
-                let recipientAddress = contactThread.contactAddress.asSingleServiceIdBackupAddress()
-            else {
-                return messageFailure(.sessionRefreshInteractionMissingAuthor)
-            }
-
+            /// We always generate these ourselves.
             updateType = .chatSessionRefresh
-            updateAuthor = recipientAddress
+            updateAuthor = .localUser
         case .decryptionFailure:
             /// This type of error message historically put the person who sent
             /// the failed-to-decrypt message in the `sender` property.
@@ -308,11 +308,19 @@ final class MessageBackupSimpleChatUpdateArchiver {
             }
 
             updateType = .badDecrypt
-            updateAuthor = recipientAddress
+            updateAuthor = .remoteUser(recipientAddress)
         }
 
-        guard let updateAuthorRecipientId = context.recipientContext[.contact(updateAuthor)] else {
-            return messageFailure(.referencedRecipientIdMissing(.contact(updateAuthor)))
+        let updateAuthorRecipientId: MessageBackup.RecipientId
+        switch updateAuthor {
+        case .localUser:
+            updateAuthorRecipientId = context.recipientContext.localRecipientId
+        case .remoteUser(let contactAddress):
+            guard let _updateAuthorRecipientId = context.recipientContext[.contact(contactAddress)] else {
+                return messageFailure(.referencedRecipientIdMissing(.contact(contactAddress)))
+            }
+
+            updateAuthorRecipientId = _updateAuthorRecipientId
         }
 
         var simpleChatUpdate = BackupProto_SimpleChatUpdate()
@@ -435,7 +443,20 @@ final class MessageBackupSimpleChatUpdateArchiver {
             logger.warn("Encountered not-yet-supported release-channel-donation-request update")
             return .success(())
         case .endSession:
-            simpleChatUpdateInteraction = .simpleInfoMessage(.typeSessionDidEnd)
+            guard let senderRecipient = context.recipientContext[chatItem.authorRecipientId] else {
+                return invalidProtoData(.recipientIdNotFound(chatItem.authorRecipientId))
+            }
+            let infoMessageType: TSInfoMessageType
+            switch senderRecipient {
+            case .localAddress:
+                infoMessageType = .typeLocalUserEndedSession
+            case .contact:
+                infoMessageType = .typeRemoteUserEndedSession
+            case .releaseNotesChannel, .group, .distributionList:
+                return invalidProtoData(.endSessionNotFromContact)
+            }
+
+            simpleChatUpdateInteraction = .simpleInfoMessage(infoMessageType)
         case .chatSessionRefresh:
             simpleChatUpdateInteraction = .errorMessage(.sessionRefresh(
                 thread: thread,
@@ -445,14 +466,20 @@ final class MessageBackupSimpleChatUpdateArchiver {
             guard let senderRecipient = context.recipientContext[chatItem.authorRecipientId] else {
                 return invalidProtoData(.recipientIdNotFound(chatItem.authorRecipientId))
             }
-            guard case .contact(let contactAddress) = senderRecipient else {
+            let contactAddress: MessageBackup.InteropAddress
+            switch senderRecipient {
+            case .localAddress:
+                contactAddress = context.recipientContext.localIdentifiers.aciAddress
+            case .contact(let _contactAddress):
+                contactAddress = _contactAddress.asInteropAddress()
+            case .releaseNotesChannel, .group, .distributionList:
                 return invalidProtoData(.decryptionErrorNotFromContact)
             }
 
             simpleChatUpdateInteraction = .errorMessage(.failedDecryption(
                 thread: thread,
                 timestamp: chatItem.dateSent,
-                sender: contactAddress.asInteropAddress()
+                sender: contactAddress
             ))
         case .paymentsActivated:
             let senderAci: Aci

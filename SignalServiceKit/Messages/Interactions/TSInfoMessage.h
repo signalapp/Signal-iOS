@@ -13,7 +13,12 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TSInfoMessage : TSMessage <OWSReadTracking>
 
 typedef NS_CLOSED_ENUM(NSInteger, TSInfoMessageType) {
-    TSInfoMessageTypeSessionDidEnd,
+    /// Represents that the local user ended a 1:1 encryption session.
+    /// - Note:
+    /// Legacy info messages did not differentiate between the local and
+    /// remote use ending the session. Those messages default to this case.
+    /// - SeeAlso: ``TSInfoMessageTypeRemoteUserEndedSession``
+    TSInfoMessageTypeLocalUserEndedSession,
     /// - Note This case is deprecated, but may be persisted in legacy messages.
     TSInfoMessageUserNotRegistered,
     /// - Note This case is deprecated, but may be persisted in legacy messages.
@@ -46,6 +51,9 @@ typedef NS_CLOSED_ENUM(NSInteger, TSInfoMessageType) {
     TSInfoMessageUnblockedOtherUser,
     TSInfoMessageUnblockedGroup,
     TSInfoMessageAcceptedMessageRequest,
+    /// Represents that the remote user ended a 1:1 encryption session.
+    /// - SeeAlso: ``TSInfoMessageTypeLocalUserEndedSession``
+    TSInfoMessageTypeRemoteUserEndedSession,
 };
 
 typedef NSString *InfoMessageUserInfoKey NS_STRING_ENUM;

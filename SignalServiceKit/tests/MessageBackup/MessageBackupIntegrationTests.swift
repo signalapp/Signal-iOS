@@ -52,6 +52,7 @@ class MessageBackupIntegrationTests: XCTestCase {
         case chatItemProfileChange
         case chatItemRemoteDeleteTombstone
         case chatItemSessionSwitchover
+        case chatItemSimpleUpdates
     }
 
     /// Specifies which integration test cases to run.
@@ -108,6 +109,8 @@ class MessageBackupIntegrationTests: XCTestCase {
                     return binprotoName.contains("chat_item_remote_delete_")
                 case .chatItemSessionSwitchover:
                     return binprotoName.contains("chat_item_session_switchover_update_")
+                case .chatItemSimpleUpdates:
+                    return binprotoName.contains("chat_item_simple_updates_")
                 }
             }
         }()
