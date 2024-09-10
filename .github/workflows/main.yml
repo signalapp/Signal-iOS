@@ -30,7 +30,7 @@ jobs:
 
     strategy:
       matrix:
-        xcode: ["Xcode_15.4", "Xcode_16_beta_6"]
+        xcode: ["Xcode_15.4", "Xcode_16.0"]
 
     steps:
       - name: Set Xcode version
