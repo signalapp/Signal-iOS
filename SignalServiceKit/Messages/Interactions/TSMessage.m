@@ -107,10 +107,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _messageSticker = messageBuilder.messageSticker;
     _giftBadge = messageBuilder.giftBadge;
 
-#ifdef DEBUG
-    [self verifyPerConversationExpiration];
-#endif
-
     return self;
 }
 
@@ -193,23 +189,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 - (void)sdsFinalizeMessage
 {
-#ifdef DEBUG
-    [self verifyPerConversationExpiration];
-#endif
-
     [self updateExpiresAt];
-}
-
-- (void)verifyPerConversationExpiration
-{
-    if (_expireStartedAt > 0 || _expiresAt > 0) {
-        // It only makes sense to set expireStartedAt and expiresAt for messages
-        // with per-conversation expiration, e.g. expiresInSeconds > 0.
-        // If either expireStartedAt and expiresAt are set, both should be set.
-        //        OWSAssertDebug(_expiresInSeconds > 0);
-        //        OWSAssertDebug(_expireStartedAt > 0);
-        //        OWSAssertDebug(_expiresAt > 0);
-    }
 }
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
@@ -384,10 +364,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [self insertMentionsInDatabaseWithTx:transaction];
 
     [self updateStoredShouldStartExpireTimer];
-
-#ifdef DEBUG
-    [self verifyPerConversationExpiration];
-#endif
 }
 
 - (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -406,10 +382,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [super anyWillUpdateWithTransaction:transaction];
 
     [self updateStoredShouldStartExpireTimer];
-
-#ifdef DEBUG
-    [self verifyPerConversationExpiration];
-#endif
 }
 
 - (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
