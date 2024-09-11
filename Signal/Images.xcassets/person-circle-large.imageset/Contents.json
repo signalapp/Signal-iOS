@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "person-circle.pdf",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

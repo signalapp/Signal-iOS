@@ -231,15 +231,15 @@ public class RegistrationCoordinatorTest: XCTestCase {
             }
 
             // Now we should show the permissions.
-            XCTAssertEqual(nextStep.value, .permissions(Stubs.permissionsState()))
+            XCTAssertEqual(nextStep.value, .permissions)
             // Doesn't change even if we try and proceed.
-            XCTAssertEqual(coordinator.nextStep().value, .permissions(Stubs.permissionsState()))
+            XCTAssertEqual(coordinator.nextStep().value, .permissions)
 
             // Once the state is updated we can proceed.
             nextStep = coordinator.requestPermissions()
             XCTAssertNotNil(nextStep.value)
             XCTAssertNotEqual(nextStep.value, .registrationSplash)
-            XCTAssertNotEqual(nextStep.value, .permissions(Stubs.permissionsState()))
+            XCTAssertNotEqual(nextStep.value, .permissions)
         }
     }
 
@@ -3693,7 +3693,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             // Now we should show the permissions.
             nextStep = coordinator.continueFromSplash()
             scheduler.runUntilIdle()
-            XCTAssertEqual(nextStep.value, .permissions(Stubs.permissionsState()))
+            XCTAssertEqual(nextStep.value, .permissions)
 
             // Once the state is updated we can proceed.
             nextStep = coordinator.requestPermissions()
@@ -3906,10 +3906,6 @@ public class RegistrationCoordinatorTest: XCTestCase {
         }
 
         // MARK: Step States
-
-        static func permissionsState() -> RegistrationPermissionsState {
-            return RegistrationPermissionsState(shouldRequestAccessToContacts: true)
-        }
 
         static func pinEntryStateForRegRecoveryPath(
             mode: RegistrationMode,

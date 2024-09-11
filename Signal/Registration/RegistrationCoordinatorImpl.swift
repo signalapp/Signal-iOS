@@ -1231,7 +1231,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         if inMemoryState.needsSomePermissions {
             // This class is only used for primary device registration
             // which always needs contacts permissions.
-            return .value(.permissions(RegistrationPermissionsState(shouldRequestAccessToContacts: true)))
+            return .value(.permissions)
         }
         if inMemoryState.hasEnteredE164, let e164 = persistedState.e164 {
             return self.startSession(e164: e164)

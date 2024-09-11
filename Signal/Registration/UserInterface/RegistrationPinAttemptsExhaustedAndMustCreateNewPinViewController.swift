@@ -120,9 +120,7 @@ class RegistrationPinAttemptsExhaustedAndMustCreateNewPinViewController: OWSView
 
         let stackView = UIStackView()
         stackView.axis = .vertical
-        stackView.layoutMargins = UIEdgeInsets.layoutMarginsForRegistration(
-            traitCollection.horizontalSizeClass
-        )
+        stackView.directionalLayoutMargins = .layoutMarginsForRegistration(traitCollection.horizontalSizeClass)
         stackView.isLayoutMarginsRelativeArrangement = true
 
         view.addSubview(stackView)

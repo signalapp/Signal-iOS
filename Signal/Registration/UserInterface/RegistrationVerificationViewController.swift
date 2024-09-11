@@ -261,9 +261,7 @@ class RegistrationVerificationViewController: OWSViewController {
         let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.spacing = 12
-        stackView.layoutMargins = UIEdgeInsets.layoutMarginsForRegistration(
-            traitCollection.horizontalSizeClass
-        )
+        stackView.directionalLayoutMargins = .layoutMarginsForRegistration(traitCollection.horizontalSizeClass)
         stackView.isLayoutMarginsRelativeArrangement = true
         stackView.setContentHuggingHigh()
         scrollView.addSubview(stackView)

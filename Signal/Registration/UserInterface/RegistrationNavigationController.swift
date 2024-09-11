@@ -144,12 +144,10 @@ public class RegistrationNavigationController: OWSNavigationController {
                 // No state to update.
                 update: nil
             )
-        case .permissions(let state):
+        case .permissions:
             return Controller(
                 type: RegistrationPermissionsViewController.self,
-                make: { presenter in
-                    return RegistrationPermissionsViewController(state: state, presenter: presenter)
-                },
+                make: RegistrationPermissionsViewController.init(presenter:),
                 // The state never changes here. In theory we would build
                 // state update support in the permissions controller,
                 // but its overkill so we have not.
@@ -419,11 +417,10 @@ extension RegistrationNavigationController: RegistrationConfimModeSwitchPresente
 extension RegistrationNavigationController: RegistrationChangeNumberSplashPresenter {}
 
 extension RegistrationNavigationController: RegistrationPermissionsPresenter {
-
-    func requestPermissions() -> Guarantee<Void> {
+    func requestPermissions() async {
         let guarantee = coordinator.requestPermissions()
         pushNextController(guarantee, loadingMode: nil)
-        return guarantee.asVoid()
+        await guarantee.asVoid().awaitable()
     }
 }
 

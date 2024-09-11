@@ -38,9 +38,9 @@ public class RegistrationSplashViewController: OWSViewController {
         let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.alignment = .fill
-        stackView.layoutMargins = {
+        stackView.directionalLayoutMargins = {
             let horizontalSizeClass = traitCollection.horizontalSizeClass
-            var result = UIEdgeInsets.layoutMarginsForRegistration(horizontalSizeClass)
+            var result = NSDirectionalEdgeInsets.layoutMarginsForRegistration(horizontalSizeClass)
             // We want the hero image a bit closer to the top.
             result.top = 16
             return result

@@ -40,7 +40,8 @@ opt_in_rules:
 - empty_string
 - sorted_first_last
 attributes:
-  always_on_line_above: ["@objc", "@nonobjc"]
+  always_on_line_above: ["@available", "@objc", "@nonobjc"]
+  attributes_with_arguments_always_on_line_above: false
 inclusive_language:
   override_allowed_terms: ["master", "whitelist"]
 large_tuple:

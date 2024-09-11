@@ -18,17 +18,17 @@ extension String {
 
 // MARK: - Layout margins
 
-extension UIEdgeInsets {
+extension NSDirectionalEdgeInsets {
     static func layoutMarginsForRegistration(
         _ horizontalSizeClass: UIUserInterfaceSizeClass
-    ) -> UIEdgeInsets {
+    ) -> NSDirectionalEdgeInsets {
         switch horizontalSizeClass {
-        case .unspecified, .compact:
-            return UIEdgeInsets(allButTop: 32)
         case .regular:
-            return UIEdgeInsets(allButTop: 112)
+            return NSDirectionalEdgeInsets(top: 0, leading: 112, bottom: 112, trailing: 112)
+        case .unspecified, .compact:
+            fallthrough
         @unknown default:
-            return UIEdgeInsets(allButTop: 32)
+            return NSDirectionalEdgeInsets(top: 0, leading: 32, bottom: 32, trailing: 32)
         }
     }
 
