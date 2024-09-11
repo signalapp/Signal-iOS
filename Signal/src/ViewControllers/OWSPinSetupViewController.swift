@@ -447,22 +447,31 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
             )
         ) { [weak self] _ in
             guard let self = self else { return }
-            Self.disablePinWithConfirmation(fromViewController: self).done { [weak self] pinDisabled in
-                guard pinDisabled, let self = self else { return }
-                self.completionHandler(self, nil)
-                pinnedHeightConstraint.isActive = false
-                self.proportionalSpacerConstraint?.isActive = true
-            }.catch { [weak self] error in
-                guard let self = self else { return }
-                OWSActionSheets.showActionSheet(
-                    title: OWSLocalizedString("PIN_DISABLE_ERROR_TITLE",
-                                             comment: "Error title indicating that the attempt to disable a PIN failed."),
-                    message: OWSLocalizedString("PIN_DISABLE_ERROR_MESSAGE",
-                                               comment: "Error body indicating that the attempt to disable a PIN failed.")
-                ) { _ in
-                    self.completionHandler(self, error)
-                    pinnedHeightConstraint.isActive = false
-                    self.proportionalSpacerConstraint?.isActive = true
+            Task {
+                do {
+                    let pinDisabled = try await Self.disablePinWithConfirmation(fromViewController: self)
+                    if pinDisabled {
+                        DispatchQueue.main.async {
+                            self.completionHandler(self, nil)
+                            pinnedHeightConstraint.isActive = false
+                            self.proportionalSpacerConstraint?.isActive = true
+                        }
+                    }
+                } catch {
+                    OWSActionSheets.showActionSheet(
+                        title: OWSLocalizedString(
+                            "PIN_DISABLE_ERROR_TITLE",
+                            comment: "Error title indicating that the attempt to disable a PIN failed."
+                        ),
+                        message: OWSLocalizedString(
+                            "PIN_DISABLE_ERROR_MESSAGE",
+                            comment: "Error body indicating that the attempt to disable a PIN failed."
+                        )
+                    ) { _ in
+                        self.completionHandler(self, error)
+                        pinnedHeightConstraint.isActive = false
+                        self.proportionalSpacerConstraint?.isActive = true
+                    }
                 }
             }
         }
@@ -588,14 +597,22 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         }
     }
 
+    private enum PinSetupError: Error {
+        case networkFailure
+        case enable2FA
+        case enableRegistrationLock
+    }
+
     private func enable2FAAndContinue(withPin pin: String) {
         Logger.debug("")
 
         pinTextField.resignFirstResponder()
 
         let progressView = AnimatedProgressView(
-            loadingText: OWSLocalizedString("PIN_CREATION_PIN_PROGRESS",
-                                           comment: "Indicates the work we are doing while creating the user's pin")
+            loadingText: OWSLocalizedString(
+                "PIN_CREATION_PIN_PROGRESS",
+                comment: "Indicates the work we are doing while creating the user's pin"
+            )
         )
         view.addSubview(progressView)
         progressView.autoPinWidthToSuperview()
@@ -609,23 +626,95 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
             self.recommendationLabel.alpha = 0
         }
 
-        enum PinSetupError: Error {
-            case networkFailure
-            case enable2FA
-            case enableRegistrationLock
-        }
+        Task {
+            do {
+                try await self._enable2FAAndContinue(withPin: pin)
+                DispatchQueue.main.async {
+                    // The completion handler always dismisses this view, so we don't want to animate anything.
+                    progressView.stopAnimatingImmediately()
+                    self.completionHandler(self, nil)
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    progressView.stopAnimating(success: false) {
+                        self.nextButton.alpha = 1
+                        self.pinTextField.alpha = 1
+                        self.validationWarningLabel.alpha = 1
+                        self.recommendationLabel.alpha = 1
+                    } completion: {
+                        self.view.isUserInteractionEnabled = true
+                        progressView.removeFromSuperview()
 
-        firstly { () -> Promise<Void> in
-            Logger.info("Setting v2 pin code")
-            return OWS2FAManager.shared.requestEnable2FA(withPin: pin, mode: .V2)
-        }.recover { error in
+                        guard let error = error as? PinSetupError else {
+                            return owsFailDebug("Unexpected error during PIN setup \(error)")
+                        }
+
+                        // Show special reglock themed error message.
+                        switch error {
+                        case .enableRegistrationLock:
+                            OWSActionSheets.showActionSheet(
+                                title: OWSLocalizedString(
+                                    "PIN_CREATION_REGLOCK_ERROR_TITLE",
+                                    comment: "Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed."),
+                                message: OWSLocalizedString(
+                                    "PIN_CREATION_REGLOCK_ERROR_MESSAGE",
+                                    comment: "Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed.")
+                            ) { _ in
+                                self.completionHandler(self, error)
+                            }
+                        case .networkFailure:
+                            OWSActionSheets.showActionSheet(
+                                title: OWSLocalizedString(
+                                    "PIN_CREATION_NO_NETWORK_ERROR_TITLE",
+                                    comment: "Error title indicating that the attempt to create a PIN failed due to network issues."),
+                                message: OWSLocalizedString(
+                                    "PIN_CREATION_NO_NETWORK_ERROR_MESSAGE",
+                                    comment: "Error body indicating that the attempt to create a PIN failed due to network issues.")
+                            )
+                        case .enable2FA:
+                            switch self.initialMode {
+                            case .changing:
+                                OWSActionSheets.showActionSheet(
+                                    title: OWSLocalizedString(
+                                        "PIN_CHANGE_ERROR_TITLE",
+                                        comment: "Error title indicating that the attempt to change a PIN failed."),
+                                    message: OWSLocalizedString(
+                                        "PIN_CHANGE_ERROR_MESSAGE",
+                                        comment: "Error body indicating that the attempt to change a PIN failed.")
+                                ) { _ in
+                                    self.completionHandler(self, error)
+                                }
+                            case .creating:
+                                OWSActionSheets.showActionSheet(
+                                    title: OWSLocalizedString(
+                                        "PIN_RECREATION_ERROR_TITLE",
+                                        comment: "Error title indicating that the attempt to recreate a PIN failed."),
+                                    message: OWSLocalizedString(
+                                        "PIN_RECRETION_ERROR_MESSAGE",
+                                        comment: "Error body indicating that the attempt to recreate a PIN failed.")
+                                ) { _ in
+                                    self.completionHandler(self, error)
+                                }
+                            case .confirming:
+                                owsFailDebug("Unexpected initial mode")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private func _enable2FAAndContinue(withPin pin: String) async throws {
+        Logger.info("Setting v2 pin code")
+        do {
+            try await OWS2FAManager.shared.requestEnable2FA(withPin: pin)
+        } catch OWSHTTPError.networkFailure {
             // If we have a network failure before even requesting to enable 2FA, we
             // can just ask the user to retry without altering any state. We can be
             // confident nothing has changed on the server.
-            if case OWSHTTPError.networkFailure = error {
-                throw PinSetupError.networkFailure
-            }
-
+            throw PinSetupError.networkFailure
+        } catch {
             owsFailDebug("Failed to enable 2FA with error: \(error)")
 
             // The client may have fallen out of sync with the service.
@@ -634,15 +723,13 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
             OWS2FAManager.shared.disable2FA(success: nil, failure: nil)
 
             throw PinSetupError.enable2FA
-        }.then { () -> Promise<Void> in
-            if self.enableRegistrationLock {
-                return OWS2FAManager.shared.enableRegistrationLockV2()
-            } else {
-                return Promise.value(())
-            }
-        }.recover { error -> Promise<Void> in
-            if error is PinSetupError { throw error }
+        }
 
+        do {
+            if self.enableRegistrationLock {
+                try await OWS2FAManager.shared.enableRegistrationLockV2()
+            }
+        } catch {
             owsFailDebug("Failed to enable registration lock with error: \(error)")
 
             // If the registration lock wasn't already enabled, we have to notify
@@ -652,9 +739,9 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
             guard OWS2FAManager.shared.isRegistrationLockV2Enabled else {
                 throw PinSetupError.enableRegistrationLock
             }
-            return Promise.value(())
         }
-        .done {
+
+        await DependenciesBridge.shared.db.awaitableWrite {
             // Always attempt to update our account attributes. This may fail,
             // but if it does it will flag our attributes as dirty so we upload them
             // ASAP (when we have the ability to talk to the service) and get the user
@@ -662,88 +749,10 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
             // registration recovery password.
             // We might have already done this in the steps above, but re-upload to be sure.
             // Just kick it off, don't wait on the result.
-            DependenciesBridge.shared.db.write {
-                DependenciesBridge.shared.accountAttributesUpdater.scheduleAccountAttributesUpdate(authedAccount: .implicit(), tx: $0)
-            }
-        }
-        .done {
-            AssertIsOnMainThread()
-
-            // The completion handler always dismisses this view, so we don't want to animate anything.
-            progressView.stopAnimatingImmediately()
-            self.completionHandler(self, nil)
+            DependenciesBridge.shared.accountAttributesUpdater.scheduleAccountAttributesUpdate(authedAccount: .implicit(), tx: $0)
 
             // Clear the experience upgrade if it was pending.
-            SDSDatabaseStorage.shared.asyncWrite { transaction in
-                ExperienceUpgradeManager.clearExperienceUpgrade(.introducingPins, transaction: transaction.unwrapGrdbWrite)
-            }
-        }.catch { error in
-            AssertIsOnMainThread()
-
-            progressView.stopAnimating(success: false) {
-                self.nextButton.alpha = 1
-                self.pinTextField.alpha = 1
-                self.validationWarningLabel.alpha = 1
-                self.recommendationLabel.alpha = 1
-            } completion: {
-                self.view.isUserInteractionEnabled = true
-                progressView.removeFromSuperview()
-
-                guard let error = error as? PinSetupError else {
-                    return owsFailDebug("Unexpected error during PIN setup \(error)")
-                }
-
-                // Show special reglock themed error message.
-                switch error {
-                case .enableRegistrationLock:
-                    OWSActionSheets.showActionSheet(
-                        title: OWSLocalizedString(
-                            "PIN_CREATION_REGLOCK_ERROR_TITLE",
-                            comment: "Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed."),
-                        message: OWSLocalizedString(
-                            "PIN_CREATION_REGLOCK_ERROR_MESSAGE",
-                            comment: "Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed.")
-                    ) { _ in
-                        self.completionHandler(self, error)
-                    }
-                case .networkFailure:
-                    OWSActionSheets.showActionSheet(
-                        title: OWSLocalizedString(
-                            "PIN_CREATION_NO_NETWORK_ERROR_TITLE",
-                            comment: "Error title indicating that the attempt to create a PIN failed due to network issues."),
-                        message: OWSLocalizedString(
-                            "PIN_CREATION_NO_NETWORK_ERROR_MESSAGE",
-                            comment: "Error body indicating that the attempt to create a PIN failed due to network issues.")
-                    )
-                case .enable2FA:
-                    switch self.initialMode {
-                    case .changing:
-                        OWSActionSheets.showActionSheet(
-                            title: OWSLocalizedString(
-                                "PIN_CHANGE_ERROR_TITLE",
-                                comment: "Error title indicating that the attempt to change a PIN failed."),
-                            message: OWSLocalizedString(
-                                "PIN_CHANGE_ERROR_MESSAGE",
-                                comment: "Error body indicating that the attempt to change a PIN failed.")
-                        ) { _ in
-                            self.completionHandler(self, error)
-                        }
-                    case .creating:
-                        OWSActionSheets.showActionSheet(
-                            title: OWSLocalizedString(
-                                "PIN_RECREATION_ERROR_TITLE",
-                                comment: "Error title indicating that the attempt to recreate a PIN failed."),
-                            message: OWSLocalizedString(
-                                "PIN_RECRETION_ERROR_MESSAGE",
-                                comment: "Error body indicating that the attempt to recreate a PIN failed.")
-                        ) { _ in
-                            self.completionHandler(self, error)
-                        }
-                    case .confirming:
-                        owsFailDebug("Unexpected initial mode")
-                    }
-                }
-            }
+            ExperienceUpgradeManager.clearExperienceUpgrade(.introducingPins, transaction: SDSDB.shimOnlyBridge($0).unwrapGrdbWrite)
         }
     }
 }
@@ -769,95 +778,100 @@ extension PinSetupViewController: UITextFieldDelegate {
 }
 
 extension PinSetupViewController {
-    public class func disablePinWithConfirmation(fromViewController: UIViewController) -> Promise<Bool> {
-        guard !OWS2FAManager.shared.isRegistrationLockV2Enabled else {
-            return showRegistrationLockConfirmation(fromViewController: fromViewController)
+    public class func disablePinWithConfirmation(fromViewController: UIViewController) async throws -> Bool {
+        if OWS2FAManager.shared.isRegistrationLockV2Enabled {
+            return try await showRegistrationLockConfirmation(fromViewController: fromViewController)
         }
-
-        let (promise, future) = Promise<Bool>.pending()
 
         let actionSheet = ActionSheetController(
-            title: OWSLocalizedString("PIN_CREATION_DISABLE_CONFIRMATION_TITLE",
-                                     comment: "Title of the 'pin disable' action sheet."),
-            message: OWSLocalizedString("PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE",
-                                       comment: "Message of the 'pin disable' action sheet.")
+            title: OWSLocalizedString(
+                "PIN_CREATION_DISABLE_CONFIRMATION_TITLE",
+                comment: "Title of the 'pin disable' action sheet."
+            ),
+            message: OWSLocalizedString(
+                "PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE",
+                comment: "Message of the 'pin disable' action sheet."
+            )
         )
 
-        let cancelAction = ActionSheetAction(title: CommonStrings.cancelButton, style: .cancel) { _ in
-            future.resolve(false)
-        }
-        actionSheet.addAction(cancelAction)
-
-        let disableAction = ActionSheetAction(
-            title: OWSLocalizedString("PIN_CREATION_DISABLE_CONFIRMATION_ACTION",
-                                     comment: "Action of the 'pin disable' action sheet."),
-            style: .destructive
-        ) { _ in
-            ModalActivityIndicatorViewController.present(
-                fromViewController: fromViewController,
-                canCancel: false
-            ) { modal in
-                SDSDatabaseStorage.shared.asyncWrite { transaction in
-                    // TODO[ViewContextPiping]
-                    ViewControllerContext.shared.svr.useDeviceLocalMasterKey(
-                        authedAccount: .implicit(),
-                        transaction: transaction.asV2Write
-                    )
-
-                    transaction.addAsyncCompletionOnMain {
-                        modal.dismiss { future.resolve(true) }
-                    }
-                }
+        return await withCheckedContinuation { continuation in
+            let cancelAction = ActionSheetAction(title: CommonStrings.cancelButton, style: .cancel) { _ in
+                continuation.resume(returning: false)
             }
+            actionSheet.addAction(cancelAction)
+
+            let disableAction = ActionSheetAction(
+                title: OWSLocalizedString(
+                    "PIN_CREATION_DISABLE_CONFIRMATION_ACTION",
+                    comment: "Action of the 'pin disable' action sheet."
+                ),
+                style: .destructive
+            ) { _ in
+                ModalActivityIndicatorViewController.present(
+                    fromViewController: fromViewController,
+                    canCancel: false,
+                    asyncBlock: { modal in
+                        await NSObject.databaseStorage.awaitableWrite { transaction in
+                            // TODO[ViewContextPiping]
+                            ViewControllerContext.shared.svr.useDeviceLocalMasterKey(
+                                authedAccount: .implicit(),
+                                transaction: transaction.asV2Write
+                            )
+                        }
+                        modal.dismiss { continuation.resume(returning: true) }
+                    }
+                )
+            }
+            actionSheet.addAction(disableAction)
+
+            fromViewController.presentActionSheet(actionSheet)
         }
-        actionSheet.addAction(disableAction)
-
-        fromViewController.presentActionSheet(actionSheet)
-
-        return promise
     }
 
-    private class func showRegistrationLockConfirmation(fromViewController: UIViewController) -> Promise<Bool> {
-        let (promise, future) = Promise<Bool>.pending()
-
+    private class func showRegistrationLockConfirmation(fromViewController: UIViewController) async throws -> Bool {
         let actionSheet = ActionSheetController(
-            title: OWSLocalizedString("PIN_CREATION_REGLOCK_CONFIRMATION_TITLE",
-                                     comment: "Title of the 'pin disable' reglock action sheet."),
-            message: OWSLocalizedString("PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE",
-                                       comment: "Message of the 'pin disable' reglock action sheet.")
+            title: OWSLocalizedString(
+                "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE",
+                comment: "Title of the 'pin disable' reglock action sheet."
+            ),
+            message: OWSLocalizedString(
+                "PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE",
+                comment: "Message of the 'pin disable' reglock action sheet."
+            )
         )
 
-        let cancelAction = ActionSheetAction(title: CommonStrings.cancelButton, style: .cancel) { _ in
-            future.resolve(false)
-        }
-        actionSheet.addAction(cancelAction)
-
-        let disableAction = ActionSheetAction(
-            title: OWSLocalizedString("PIN_CREATION_REGLOCK_CONFIRMATION_ACTION",
-                                     comment: "Action of the 'pin disable' reglock action sheet."),
-            style: .destructive
-        ) { _ in
-            ModalActivityIndicatorViewController.present(
-                fromViewController: fromViewController,
-                canCancel: false
-            ) { modal in
-                OWS2FAManager.shared.disableRegistrationLockV2().then {
-                    Guarantee { resolve in
-                        modal.dismiss { resolve(()) }
-                    }
-                }.then { () -> Promise<Bool> in
-                    disablePinWithConfirmation(fromViewController: fromViewController)
-                }.done { success in
-                    future.resolve(success)
-                }.catch { error in
-                    modal.dismiss { future.reject(error) }
-                }
+        return try await withCheckedThrowingContinuation { continuation in
+            let cancelAction = ActionSheetAction(title: CommonStrings.cancelButton, style: .cancel) { _ in
+                continuation.resume(returning: false)
             }
+            actionSheet.addAction(cancelAction)
+
+            let disableAction = ActionSheetAction(
+                title: OWSLocalizedString("PIN_CREATION_REGLOCK_CONFIRMATION_ACTION", comment: "Action of the 'pin disable' reglock action sheet."),
+                style: .destructive
+            ) { _ in
+                ModalActivityIndicatorViewController.present(
+                    fromViewController: fromViewController,
+                    canCancel: false,
+                    asyncBlock: { modal in
+                        do {
+                            try await OWS2FAManager.shared.disableRegistrationLockV2()
+                        } catch {
+                            modal.dismiss { continuation.resume(throwing: error) }
+                            return
+                        }
+                        await withCheckedContinuation { dismissContinuation in
+                            modal.dismiss { dismissContinuation.resume() }
+                        }
+                        continuation.resume(with: await Result {
+                            try await disablePinWithConfirmation(fromViewController: fromViewController)
+                        })
+                    }
+                )
+            }
+            actionSheet.addAction(disableAction)
+
+            fromViewController.presentActionSheet(actionSheet)
         }
-        actionSheet.addAction(disableAction)
-
-        fromViewController.presentActionSheet(actionSheet)
-
-        return promise
     }
 }

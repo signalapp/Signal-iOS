@@ -162,7 +162,6 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
 }
 
 - (void)requestEnable2FAWithPin:(NSString *)pin
-                           mode:(OWS2FAMode)mode
                         success:(nullable OWS2FASuccess)success
                         failure:(nullable OWS2FAFailure)failure
 {
@@ -170,38 +169,26 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
     OWSAssertDebug(success);
     OWSAssertDebug(failure);
 
-    switch (mode) {
-        case OWS2FAMode_V2: {
-            // Enabling V2 2FA doesn't inherently enable registration lock,
-            // it's managed by a separate setting.
-            [self generateAndBackupKeysWithPin:pin]
-                .done(^(id value) {
-                    OWSAssertIsOnMainThread();
+    // Enabling V2 2FA doesn't inherently enable registration lock,
+    // it's managed by a separate setting.
+    [self generateAndBackupKeysWithPin:pin]
+        .done(^(id value) {
+            OWSAssertIsOnMainThread();
 
-                    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                        [self markEnabledWithPin:pin transaction:transaction];
-                    });
+            DatabaseStorageWrite(self.databaseStorage,
+                ^(SDSAnyWriteTransaction *transaction) { [self markEnabledWithPin:pin transaction:transaction]; });
 
-                    if (success) {
-                        success();
-                    }
-                })
-                .catch(^(NSError *error) {
-                    OWSAssertIsOnMainThread();
+            if (success) {
+                success();
+            }
+        })
+        .catch(^(NSError *error) {
+            OWSAssertIsOnMainThread();
 
-                    if (failure) {
-                        failure(error);
-                    }
-                });
-            break;
-        }
-        case OWS2FAMode_V1:
-            [self enable2FAV1WithPin:pin success:success failure:failure];
-            break;
-        case OWS2FAMode_Disabled:
-            OWSFailDebug(@"Unexpectedly attempting to enable 2fa for disabled mode");
-            break;
-    }
+            if (failure) {
+                failure(error);
+            }
+        });
 }
 
 - (void)disable2FAWithSuccess:(nullable OWS2FASuccess)success failure:(nullable OWS2FAFailure)failure

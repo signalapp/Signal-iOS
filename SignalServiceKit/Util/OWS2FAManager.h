@@ -48,7 +48,6 @@ typedef NS_CLOSED_ENUM(NSUInteger, OWS2FAMode) {
 
 // Request with service
 - (void)requestEnable2FAWithPin:(NSString *)pin
-                           mode:(OWS2FAMode)mode
                         success:(nullable OWS2FASuccess)success
                         failure:(nullable OWS2FAFailure)failure;
 

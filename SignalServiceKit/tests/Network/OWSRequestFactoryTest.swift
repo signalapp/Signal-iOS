@@ -26,17 +26,6 @@ class OWSRequestFactoryTest: SSKBaseTest {
         return result
     }
 
-    // MARK: - Account
-
-    func testEnable2FARequestWithPin() {
-        let request = OWSRequestFactory.enable2FARequest(withPin: "90210")
-
-        XCTAssertEqual(request.url?.path, "v1/accounts/pin")
-        XCTAssertEqual(request.httpMethod, "PUT")
-        XCTAssertEqual(request.parameters as! [String: String], ["pin": "90210"])
-        XCTAssertTrue(request.shouldHaveAuthorizationHeaders)
-    }
-
     // MARK: - Devices
 
     func testDeviceProvisioning() {

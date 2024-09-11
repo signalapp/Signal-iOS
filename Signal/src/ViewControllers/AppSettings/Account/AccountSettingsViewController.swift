@@ -363,10 +363,13 @@ class AccountSettingsViewController: OWSTableViewController2 {
                 comment: "Action to turn on registration lock"
             )) { [weak self] _ in
                 if OWS2FAManager.shared.is2FAEnabled() {
-                    OWS2FAManager.shared.enableRegistrationLockV2().done {
-                        self?.updateTableContents()
-                    }.catch { error in
-                        owsFailDebug("Error enabling reglock \(error)")
+                    Task {
+                        do {
+                            try await OWS2FAManager.shared.enableRegistrationLockV2()
+                            self?.updateTableContents()
+                        } catch {
+                            owsFailDebug("Error enabling reglock \(error)")
+                        }
                     }
                 } else {
                     self?.showCreatePin(enableRegistrationLock: true)
@@ -386,10 +389,13 @@ class AccountSettingsViewController: OWSTableViewController2 {
                 ),
                 style: .destructive
             ) { [weak self] _ in
-                OWS2FAManager.shared.disableRegistrationLockV2().done {
-                    self?.updateTableContents()
-                }.catch { error in
-                    owsFailDebug("Failed to disable reglock \(error)")
+                Task {
+                    do {
+                        try await OWS2FAManager.shared.disableRegistrationLockV2()
+                        self?.updateTableContents()
+                    } catch {
+                        owsFailDebug("Failed to disable reglock \(error)")
+                    }
                 }
             }
             actionSheet.addAction(turnOffAction)

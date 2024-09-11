@@ -172,11 +172,6 @@ public enum OWSRequestFactory {
 
     // MARK: - Registration
 
-    static func enable2FARequest(withPin pin: String) -> TSRequest {
-        owsAssertBeta(!pin.isEmpty)
-        return .init(url: URL(string: textSecure2FAAPI)!, method: "PUT", parameters: ["pin": pin])
-    }
-
     static func disable2FARequest() -> TSRequest {
         return TSRequest(url: URL(string: self.textSecure2FAAPI)!, method: "DELETE", parameters: [:])
     }

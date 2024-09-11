@@ -85,12 +85,13 @@ class AdvancedPinSettingsTableViewController: OWSTableViewController2 {
     }
 
     private func disablePin() {
-        firstly(on: DispatchQueue.main) {
-            PinSetupViewController.disablePinWithConfirmation(fromViewController: self)
-        }.done { [weak self] _ in
-            self?.updateTableContents()
-        }.catch { error in
-            owsFailDebug("Error: \(error)")
+        Task {
+            do {
+                _ = try await PinSetupViewController.disablePinWithConfirmation(fromViewController: self)
+                self.updateTableContents()
+            } catch {
+                owsFailDebug("Error: \(error)")
+            }
         }
     }
 

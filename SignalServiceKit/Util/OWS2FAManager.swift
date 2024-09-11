@@ -41,51 +41,43 @@ extension OWS2FAManager {
         )
     }
 
-    public func requestEnable2FA(withPin pin: String, mode: OWS2FAMode) -> Promise<Void> {
-        return Promise { future in
-            requestEnable2FA(withPin: pin, mode: mode, success: {
-                future.resolve()
+    public func requestEnable2FA(withPin pin: String) async throws {
+        try await withCheckedThrowingContinuation { continuation in
+            requestEnable2FA(withPin: pin, success: {
+                continuation.resume()
             }) { error in
-                future.reject(error)
+                continuation.resume(throwing: error)
             }
         }
     }
 
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func enableRegistrationLockV2() -> AnyPromise {
-        return AnyPromise(enableRegistrationLockV2())
-    }
+    public func enableRegistrationLockV2() async throws {
+        let token = self.databaseStorage.read { tx in
+            return DependenciesBridge.shared.svr.data(
+                for: .registrationLock,
+                transaction: tx.asV2Read
+            )?.canonicalStringRepresentation
+        }
+        guard let token else {
+            throw OWSAssertionError("Cannot enable registration lock without an existing PIN")
+        }
 
-    public func enableRegistrationLockV2() -> Promise<Void> {
-        return DispatchQueue.global().async(.promise) { () -> String in
-            let token = Self.databaseStorage.read { tx in
-                return DependenciesBridge.shared.svr.data(
-                    for: .registrationLock,
-                    transaction: tx.asV2Read
-                )?.canonicalStringRepresentation
-            }
-            guard let token else {
-                throw OWSAssertionError("Cannot enable registration lock without an existing PIN")
-            }
-            return token
-        }.then { token -> Promise<HTTPResponse> in
-            let request = OWSRequestFactory.enableRegistrationLockV2Request(token: token)
-            return self.networkManager.makePromise(request: request)
-        }.done { _ in
-            self.databaseStorage.write { transaction in
-                OWS2FAManager.keyValueStore().setBool(
-                    true,
-                    key: OWS2FAManager.isRegistrationLockV2EnabledKey,
-                    transaction: transaction
-                )
-            }
-            firstly {
-                return Promise.wrapAsync {
-                    try await DependenciesBridge.shared.accountAttributesUpdater.updateAccountAttributes(authedAccount: .implicit())
-                }
-            }.catch { error in
-                Logger.error("Error: \(error)")
+        let request = OWSRequestFactory.enableRegistrationLockV2Request(token: token)
+        _ = try await self.networkManager.makePromise(request: request).awaitable()
+
+        await self.databaseStorage.awaitableWrite { transaction in
+            OWS2FAManager.keyValueStore().setBool(
+                true,
+                key: OWS2FAManager.isRegistrationLockV2EnabledKey,
+                transaction: transaction
+            )
+        }
+
+        Task {
+            do {
+                try await DependenciesBridge.shared.accountAttributesUpdater.updateAccountAttributes(authedAccount: .implicit())
+            } catch {
+                Logger.warn("\(error)")
             }
         }
     }
@@ -105,26 +97,25 @@ extension OWS2FAManager {
     @objc
     @available(swift, obsoleted: 1.0)
     public func disableRegistrationLockV2() -> AnyPromise {
-        return AnyPromise(disableRegistrationLockV2())
+        return AnyPromise(Promise.wrapAsync { try await self.disableRegistrationLockV2() })
     }
 
-    public func disableRegistrationLockV2() -> Promise<Void> {
-        return firstly { () -> Promise<HTTPResponse> in
-            let request = OWSRequestFactory.disableRegistrationLockV2Request()
-            return self.networkManager.makePromise(request: request)
-        }.done { _ in
-            self.databaseStorage.write { transaction in
-                OWS2FAManager.keyValueStore().removeValue(
-                    forKey: OWS2FAManager.isRegistrationLockV2EnabledKey,
-                    transaction: transaction
-                )
-            }
-            firstly {
-                return Promise.wrapAsync {
-                    try await DependenciesBridge.shared.accountAttributesUpdater.updateAccountAttributes(authedAccount: .implicit())
-                }
-            }.catch { error in
-                Logger.error("Error: \(error)")
+    public func disableRegistrationLockV2() async throws {
+        let request = OWSRequestFactory.disableRegistrationLockV2Request()
+        _ = try await self.networkManager.makePromise(request: request).awaitable()
+
+        await self.databaseStorage.awaitableWrite { transaction in
+            OWS2FAManager.keyValueStore().removeValue(
+                forKey: OWS2FAManager.isRegistrationLockV2EnabledKey,
+                transaction: transaction
+            )
+        }
+
+        Task {
+            do {
+                try await DependenciesBridge.shared.accountAttributesUpdater.updateAccountAttributes(authedAccount: .implicit())
+            } catch {
+                Logger.warn("\(error)")
             }
         }
     }
@@ -143,55 +134,32 @@ extension OWS2FAManager {
     @objc
     @available(swift, obsoleted: 1.0)
     public func migrateToRegistrationLockV2() -> AnyPromise {
-        return AnyPromise(migrateToRegistrationLockV2())
+        return AnyPromise(Promise.wrapAsync { try await self.migrateToRegistrationLockV2() })
     }
 
-    public func migrateToRegistrationLockV2() -> Promise<Void> {
+    public func migrateToRegistrationLockV2() async throws {
         guard let pinCode = pinCode else {
-            return Promise(error: OWSAssertionError("tried to migrate to registration lock V2 without legacy PIN"))
+            throw OWSAssertionError("tried to migrate to registration lock V2 without legacy PIN")
         }
 
-        return firstly {
-            return requestEnable2FA(withPin: pinCode, mode: .V2)
-        }.then {
-            return self.enableRegistrationLockV2()
-        }
+        try await requestEnable2FA(withPin: pinCode)
+        try await enableRegistrationLockV2()
     }
 
     @objc
-    public func enable2FAV1(pin: String,
-                            success: (() -> Void)?,
-                            failure: ((Error) -> Void)?) {
-        // Convert the pin to arabic numerals, we never want to
-        // operate with pins in other numbering systems.
-        let request = OWSRequestFactory.enable2FARequest(withPin: pin.ensureArabicNumerals)
-        firstly {
-            Self.networkManager.makePromise(request: request)
-        }.done(on: DispatchQueue.main) { _ in
-            Self.databaseStorage.write { transaction in
-                self.markEnabled(pin: pin, transaction: transaction)
+    public func disable2FAV1(success: OWS2FASuccess?, failure: OWS2FAFailure?) {
+        Task {
+            do {
+                let request = OWSRequestFactory.disable2FARequest()
+                _ = try await self.networkManager.makePromise(request: request).awaitable()
+                await self.databaseStorage.awaitableWrite { transaction in
+                    self.markDisabled(transaction: transaction)
+                }
+                DispatchQueue.main.async { success?() }
+            } catch {
+                owsFailDebugUnlessNetworkFailure(error)
+                DispatchQueue.main.async { failure?(error) }
             }
-            success?()
-        }.catch(on: DispatchQueue.main) { error in
-            owsFailDebugUnlessNetworkFailure(error)
-            failure?(error)
-        }
-    }
-
-    @objc
-    public func disable2FAV1(success: OWS2FASuccess?,
-                             failure: OWS2FAFailure?) {
-        let request = OWSRequestFactory.disable2FARequest()
-        firstly {
-            Self.networkManager.makePromise(request: request)
-        }.done(on: DispatchQueue.main) { _ in
-            Self.databaseStorage.write { transaction in
-                self.markDisabled(transaction: transaction)
-            }
-            success?()
-        }.catch(on: DispatchQueue.main) { error in
-            owsFailDebugUnlessNetworkFailure(error)
-            failure?(error)
         }
     }
 
