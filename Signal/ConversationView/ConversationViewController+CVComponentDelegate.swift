@@ -1079,7 +1079,12 @@ extension ConversationViewController: CVComponentDelegate {
             message: message
         )
         alert.addAction(ActionSheetAction(
-            title: "Block",
+            title: String(
+                format: OWSLocalizedString(
+                    "MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_BLOCK",
+                    comment: "Sheet option for blocking a chat. In this case, the sheet appears when the user taps a button attached to a 'message request accepted' info message in-chat."
+                )
+            ),
             style: .default,
             handler: { [weak self] _ in
                 guard let self else { return }
@@ -1089,7 +1094,12 @@ extension ConversationViewController: CVComponentDelegate {
             }
         ))
         alert.addAction(ActionSheetAction(
-            title: "Report Spam",
+            title: String(
+                format: OWSLocalizedString(
+                    "MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_SPAM",
+                    comment: "Sheet option for reporting a chat as spam. In this case, the sheet appears when the user taps a button attached to a 'message request accepted' info message in-chat."
+                )
+            ),
             style: .default,
             handler: { [weak self] _ in
                 guard let self else { return }
@@ -1099,7 +1109,12 @@ extension ConversationViewController: CVComponentDelegate {
             }
         ))
         alert.addAction(ActionSheetAction(
-            title: "Delete Chat",
+            title: String(
+                format: OWSLocalizedString(
+                    "MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_DELETE",
+                    comment: "Sheet option for deleting a chat. In this case, the sheet appears when the user taps a button attached to a 'message request accepted' info message in-chat."
+                )
+            ),
             style: .default,
             handler: { [weak self] _ in
                 guard let self else { return }
