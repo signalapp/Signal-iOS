@@ -6,6 +6,7 @@
 import Foundation
 import MessageUI
 import SignalServiceKit
+import SwiftUI
 
 public class RecipientPickerViewController: OWSViewController, OWSNavigationChildController {
 
@@ -799,8 +800,11 @@ extension RecipientPickerViewController {
     /// prevented Signal from accessing their contacts, we don't show the
     /// special UX and instead allow the banner to be visible.
     private func shouldNoContactsModeBeActive() -> Bool {
-        switch contactsManagerImpl.editingAuthorization {
-        case .denied, .restricted:
+        switch contactsManagerImpl.sharingAuthorization {
+        case .denied, .limited:
+            // Return false so `contactAccessReminderSection` is invoked.
+            return false
+        case .notDetermined:
             // Return false so `contactAccessReminderSection` is invoked.
             return false
         case .notAllowed where shouldShowContactAccessNotAllowedReminderItemWithSneakyTransaction():
@@ -831,8 +835,10 @@ extension RecipientPickerViewController {
     /// Works closely with `shouldNoContactsModeBeActive` and therefore might
     /// not be invoked even if the user has no contacts.
     private func noContactsTableSection() -> OWSTableSection {
-        switch contactsManagerImpl.editingAuthorization {
-        case .denied, .restricted:
+        switch contactsManagerImpl.sharingAuthorization {
+        case .notDetermined:
+            return OWSTableSection()
+        case .denied, .limited:
             return OWSTableSection()
         case .authorized where !contactsManagerImpl.hasLoadedSystemContacts:
             return OWSTableSection(items: [loadingContactsTableItem()])
@@ -846,10 +852,16 @@ extension RecipientPickerViewController {
     /// Works closely with `shouldNoContactsModeBeActive`.
     private func contactAccessReminderSection() -> OWSTableSection? {
         let tableItem: OWSTableItem
-        switch contactsManagerImpl.editingAuthorization {
+        switch contactsManagerImpl.sharingAuthorization {
         case .denied:
             tableItem = contactAccessDeniedReminderItem()
-        case .restricted:
+        case .limited:
+            if #available(iOS 18, *) {
+                tableItem = contactAccessLimitedReminderItem()
+            } else {
+                return nil
+            }
+        case .notDetermined:
             // TODO: We don't show a reminder when the user isn't allowed to give
             // contacts permission. Should we?
             return nil
@@ -895,6 +907,22 @@ extension RecipientPickerViewController {
             ContactAccessDeniedReminderTableViewCell {
                 CurrentAppContext().openSystemSettings()
             }
+        })
+    }
+
+    @available(iOS 18, *)
+    private func contactAccessLimitedReminderItem() -> OWSTableItem {
+        return OWSTableItem(customCellBlock: {
+            let cell = ContactAccessLimitedReminderTableViewCell()
+            cell.contentConfiguration = UIHostingConfiguration {
+                ContactAccessLimitedReminderView {
+                    Task {
+                        // Fetch all contacts the app has access to.
+                        try? await NSObject.contactsManagerImpl.userRequestedSystemContactsRefresh().asVoid().awaitable()
+                    }
+                }
+            }
+            return cell
         })
     }
 
@@ -1574,6 +1602,20 @@ private class ContactAccessDeniedReminderTableViewCell: UITableViewCell {
 extension ContactAccessDeniedReminderTableViewCell: CustomBackgroundColorCell {
     func customBackgroundColor(forceDarkMode: Bool) -> UIColor {
         ReminderView.warningBackgroundColor(forceDarkMode: forceDarkMode)
+    }
+
+    func customSelectedBackgroundColor(forceDarkMode: Bool) -> UIColor {
+        customBackgroundColor(forceDarkMode: forceDarkMode)
+    }
+}
+
+// MARK: - ContactAccessLimitedReminderTableViewCell
+
+class ContactAccessLimitedReminderTableViewCell: UITableViewCell {}
+
+extension ContactAccessLimitedReminderTableViewCell: CustomBackgroundColorCell {
+    func customBackgroundColor(forceDarkMode: Bool) -> UIColor {
+        Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_gray05
     }
 
     func customSelectedBackgroundColor(forceDarkMode: Bool) -> UIColor {

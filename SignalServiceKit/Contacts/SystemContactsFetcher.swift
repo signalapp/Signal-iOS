@@ -181,6 +181,15 @@ public class SystemContactsFetcher: NSObject {
         return contactStoreAdapter.rawAuthorizationStatus
     }
 
+    public var canReadSystemContacts: Bool {
+        switch rawAuthorizationStatus {
+        case .notDetermined, .denied, .restricted:
+            return false
+        case .limited, .authorized:
+            return true
+        }
+    }
+
     public private(set) var systemContactsHaveBeenRequestedAtLeastOnce = false
     private var hasSetupObservation = false
 
@@ -259,7 +268,6 @@ public class SystemContactsFetcher: NSObject {
                     self.updateContacts(completion: completion)
                 }
             }
-        // TODO: [Contacts, iOS 18] Validate if limited contacts authorization is appropriate
         case .authorized, .limited:
             self.updateContacts(completion: completion)
         case .denied, .restricted:
@@ -276,7 +284,7 @@ public class SystemContactsFetcher: NSObject {
             Logger.info("Skipping contacts fetch in NSE.")
             return
         }
-        guard rawAuthorizationStatus == .authorized else {
+        guard canReadSystemContacts else {
             self.delegate?.systemContactsFetcher(self, hasAuthorizationStatus: rawAuthorizationStatus)
             return
         }
@@ -317,7 +325,7 @@ public class SystemContactsFetcher: NSObject {
             Logger.info("Skipping contacts fetch in NSE.")
             return
         }
-        guard rawAuthorizationStatus == .authorized else {
+        guard canReadSystemContacts else {
             Logger.info("ignoring contacts change; no access.")
             self.delegate?.systemContactsFetcher(self, hasAuthorizationStatus: rawAuthorizationStatus)
             return
@@ -416,7 +424,7 @@ public class SystemContactsFetcher: NSObject {
 
     @objc
     public func fetchCNContact(contactId: String) -> CNContact? {
-        guard rawAuthorizationStatus == .authorized else {
+        guard canReadSystemContacts else {
             Logger.error("contact fetch failed; no access.")
             return nil
         }

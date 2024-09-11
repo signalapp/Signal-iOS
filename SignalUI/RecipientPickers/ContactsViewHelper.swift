@@ -156,7 +156,11 @@ public extension ContactsViewHelper {
             }
         case .authorized:
             performWhenAllowed()
+        case .limited:
+            performWhenAllowed()
         case .denied:
+            deniedBlock()
+        case .notAllowed:
             deniedBlock()
         }
     }

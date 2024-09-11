@@ -1707,6 +1707,7 @@
 		B9FF37362B9286C6005ADDB8 /* UsernameLinkScanQRCodeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FF37352B9286C6005ADDB8 /* UsernameLinkScanQRCodeSheet.swift */; };
 		C100E6822C33087C000C83B8 /* PaymentsFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = C100E6812C33087C000C83B8 /* PaymentsFormat.swift */; };
 		C10E9FAF2BB778E100A609B9 /* MessageBackupManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10E9FAE2BB778E100A609B9 /* MessageBackupManagerMock.swift */; };
+		C116A1D42C8F961000E6BDE3 /* ContactAccessLimitedReminderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C116A1D32C8F961000E6BDE3 /* ContactAccessLimitedReminderView.swift */; };
 		C11C278129F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C11C278029F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift */; };
 		C13341122C221DAD00C26ED5 /* OWSIncomingArchivedPaymentMessage+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13341102C221DAC00C26ED5 /* OWSIncomingArchivedPaymentMessage+SDS.swift */; };
 		C13341132C221DAD00C26ED5 /* OWSOutgoingArchivedPaymentMessage+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13341112C221DAD00C26ED5 /* OWSOutgoingArchivedPaymentMessage+SDS.swift */; };
@@ -5067,6 +5068,7 @@
 		BAD74FE6EBEB10FF3426D809 /* Pods-SignalTests.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.testable release.xcconfig"; path = "Target Support Files/Pods-SignalTests/Pods-SignalTests.testable release.xcconfig"; sourceTree = "<group>"; };
 		C100E6812C33087C000C83B8 /* PaymentsFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentsFormat.swift; sourceTree = "<group>"; };
 		C10E9FAE2BB778E100A609B9 /* MessageBackupManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupManagerMock.swift; sourceTree = "<group>"; };
+		C116A1D32C8F961000E6BDE3 /* ContactAccessLimitedReminderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactAccessLimitedReminderView.swift; sourceTree = "<group>"; };
 		C11C278029F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditHistoryTableSheetViewController.swift; sourceTree = "<group>"; };
 		C13341102C221DAC00C26ED5 /* OWSIncomingArchivedPaymentMessage+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSIncomingArchivedPaymentMessage+SDS.swift"; sourceTree = "<group>"; };
 		C13341112C221DAD00C26ED5 /* OWSOutgoingArchivedPaymentMessage+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSOutgoingArchivedPaymentMessage+SDS.swift"; sourceTree = "<group>"; };
@@ -9918,6 +9920,7 @@
 			isa = PBXGroup;
 			children = (
 				88A4717228664DE3001A3065 /* BaseMemberViewController.swift */,
+				C116A1D32C8F961000E6BDE3 /* ContactAccessLimitedReminderView.swift */,
 				451764291DE939FD00EDB8B9 /* ContactCell.swift */,
 				34A9550B271B510400B05242 /* ContactCellView.swift */,
 				34B3F83E1E8DF1700035BE1A /* ContactPickerViewController.swift */,
@@ -14371,6 +14374,7 @@
 				76A2EB1228B57AEE00A29C24 /* ColorPickerBar.swift in Sources */,
 				88B9870A28808BF600F8C74D /* CompareSafetyNumbersActivity.swift in Sources */,
 				667E90D028E799D1005FE603 /* ConnectionsEducationSheetViewController.swift in Sources */,
+				C116A1D42C8F961000E6BDE3 /* ContactAccessLimitedReminderView.swift in Sources */,
 				88B986FD28807F6400F8C74D /* ContactCell.swift in Sources */,
 				3402AA88271D9E180084CBAE /* ContactCellView.swift in Sources */,
 				3402AA30271D9DCD0084CBAE /* ContactFieldViewHelper.swift in Sources */,

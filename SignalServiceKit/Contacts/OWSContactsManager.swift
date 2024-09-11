@@ -19,11 +19,29 @@ public enum RawContactAuthorizationStatus: UInt {
 }
 
 public enum ContactAuthorizationForEditing {
-    case notAllowed, denied, restricted, authorized
+    // Contact edit access not supported by this device (e.g. a linked device)
+    case notAllowed
+    // Contact edit access explicitly denied by user
+    case denied
+    // Contact access restricted by actions outside the control of the user (see CNAuthorizationStatus.restricted)
+    case restricted
+    // Contact read access explicitly allowed by user to some or all of the system contacts.
+    // In both of these situations, the user can write to system contacts.
+    case authorized
 }
 
 public enum ContactAuthorizationForSharing {
-    case notDetermined, denied, authorized
+    // Authorization hasn't yet been requested
+    case notDetermined
+    // Contact read access not supported by this device (e.g. a linked device)
+    case notAllowed
+    // Contact read access explicitly denied by user
+    case denied
+    // Contact read access explicitly allowed by user
+    case authorized
+    // Contact read access allowed to a user-selected list of contacts.
+    // Note: Under limited access, write access is still allowed
+    case limited
 }
 
 @objc
@@ -47,20 +65,26 @@ public class OWSContactsManager: NSObject, ContactsManagerProtocol {
             return .denied
         case .restricted:
             return .restricted
-        // TODO: [Contacts, iOS 18] Validate if limited contacts authorization is appropriate
         case .authorized, .limited:
             return .authorized
         }
     }
+    public var isReadingAllowed: Bool {
+        TSAccountManagerObjcBridge.isPrimaryDeviceWithMaybeTransaction
+    }
     public var sharingAuthorization: ContactAuthorizationForSharing {
+        guard isReadingAllowed else {
+            return .notAllowed
+        }
         switch self.systemContactsFetcher.rawAuthorizationStatus {
         case .notDetermined:
             return .notDetermined
         case .denied, .restricted:
             return .denied
-        // TODO: [Contacts, iOS 18] Validate if limited contacts authorization is appropriate
-        case .authorized, .limited:
+        case .authorized:
             return .authorized
+        case .limited:
+            return .limited
         }
     }
     /// Whether or not we've fetched system contacts on this launch.
@@ -87,7 +111,7 @@ public class OWSContactsManager: NSObject, ContactsManagerProtocol {
     public func requestSystemContactsOnce(completion: (((any Error)?) -> Void)? = nil) {
         AssertIsOnMainThread()
 
-        guard isEditingAllowed else {
+        guard isReadingAllowed else {
             if let completion = completion {
                 Logger.warn("Editing contacts isn't available on linked devices.")
                 completion(OWSError(error: .genericFailure, description: OWSLocalizedString("ERROR_DESCRIPTION_UNKNOWN_ERROR", comment: "Worst case generic error message"), isRetryable: false))
@@ -100,7 +124,7 @@ public class OWSContactsManager: NSObject, ContactsManagerProtocol {
     /// Ensure's the app has the latest contacts, but won't prompt the user for contact
     /// access if they haven't granted it.
     public func fetchSystemContactsOnceIfAlreadyAuthorized() {
-        guard isEditingAllowed else {
+        guard isReadingAllowed else {
             return
         }
         systemContactsFetcher.fetchOnceIfAlreadyAuthorized()
@@ -110,7 +134,7 @@ public class OWSContactsManager: NSObject, ContactsManagerProtocol {
     /// but not prompt for contact access. Also, it will always notify delegates, even if
     /// contacts haven't changed, and will clear out any stale cached SignalAccounts
     public func userRequestedSystemContactsRefresh() -> AnyPromise {
-        guard isEditingAllowed else {
+        guard isReadingAllowed else {
             owsFailDebug("Editing contacts isn't available on linked devices.")
             let promise = AnyPromise()
             promise.reject(OWSError(error: .assertionFailure, description: OWSLocalizedString("ERROR_DESCRIPTION_UNKNOWN_ERROR", comment: "Worst case generic error message"), isRetryable: false))
