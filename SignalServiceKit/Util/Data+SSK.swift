@@ -5,24 +5,65 @@
 
 import Foundation
 
+extension NSData {
+    @objc
+    public func hexadecimalString() -> NSString {
+        (self as Data).hexadecimalString as NSString
+    }
+}
+
 extension Data {
+    public init?(hex: String) {
+        guard hex.count.isMultiple(of: 2) else {
+            return nil
+        }
+
+        var result: [UInt8] = []
+        result.reserveCapacity(hex.count / 2)
+        var hex = hex[...]
+        while !hex.isEmpty {
+            if hex.first! == "+" || hex.first! == "-" {
+                // FixedWidthInteger's radix init method will accept this but we won't
+                return nil
+            }
+            let n = hex.index(hex.startIndex, offsetBy: 2)
+            guard let v = UInt8(hex[..<n], radix: 16) else {
+                return nil
+            }
+            result.append(v)
+            hex = hex[n...]
+        }
+        self.init(result)
+    }
+
     public var hexadecimalString: String {
-        return (self as NSData).hexadecimalString()
+        var result: String = ""
+        result.reserveCapacity(count * 2)
+        for v in self {
+            result += String(format: "%02x", v)
+        }
+        return result
     }
 
     public static func data(fromHex hexString: String) -> Data? {
-        guard let data = NSData(fromHexString: hexString) else {
-            return nil
-        }
-        return data as Data
+        Data(hex: hexString)
     }
 
     public func ows_constantTimeIsEqual(to other: Data) -> Bool {
-        return (self as NSData).ows_constantTimeIsEqual(to: other)
-    }
+        guard count == other.count else {
+            return false
+        }
 
-    public static func join(_ dataList: [Data]) -> Data {
-        return NSData.join(dataList)
+        // avoid possible nil baseAddress by ensuring buffers aren't empty
+        if isEmpty {
+            return other.isEmpty
+        }
+
+        return withUnsafeBytes { b1 in
+            other.withUnsafeBytes { b2 in
+                timingsafe_bcmp(b1.baseAddress, b2.baseAddress, b1.count)
+            }
+        } == 0
     }
 }
 

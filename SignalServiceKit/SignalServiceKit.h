@@ -26,7 +26,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/LegacySendingChain.h>
 #import <SignalServiceKit/LegacySessionRecord.h>
 #import <SignalServiceKit/LegacySessionState.h>
-#import <SignalServiceKit/NSData+OWS.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/NSObject+OWS.h>
 #import <SignalServiceKit/OWS2FAManager.h>

@@ -47,4 +47,15 @@ class DataSSKTests: XCTestCase {
         XCTAssertEqual(Data(count: 3).base64EncodedStringWithoutPadding(), "AAAA")
         XCTAssertEqual(Data(count: 4).base64EncodedStringWithoutPadding(), "AAAAAA")
     }
+
+    // This does not confirm it's constant time. Just that it correctly checks equality.
+    func testConstantTimeEqual() {
+        XCTAssertFalse(Data(count: 5).ows_constantTimeIsEqual(to: Data([1, 2, 3, 4, 5])))
+        XCTAssertTrue(Data([255, 254, 253, 252]).ows_constantTimeIsEqual(to: Data([255, 254, 253, 252])))
+        XCTAssertFalse(Data([255, 254, 253, 252]).ows_constantTimeIsEqual(to: Data([255, 254, 253, 252, 251])))
+        XCTAssertFalse(Data([255, 254, 253, 252, 251]).ows_constantTimeIsEqual(to: Data([255, 254, 253, 252])))
+        XCTAssertFalse(Data([1]).ows_constantTimeIsEqual(to: Data()))
+        XCTAssertFalse(Data().ows_constantTimeIsEqual(to: Data([1])))
+        XCTAssertTrue(Data().ows_constantTimeIsEqual(to: Data()))
+    }
 }
