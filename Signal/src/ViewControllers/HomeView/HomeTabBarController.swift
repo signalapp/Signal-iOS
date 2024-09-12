@@ -13,32 +13,105 @@ class HomeTabBarController: UITabBarController {
         case chatList = 0
         case calls = 1
         case stories = 2
+
+        var title: String {
+            switch self {
+            case .chatList:
+                return OWSLocalizedString(
+                    "CHAT_LIST_TITLE_INBOX",
+                    comment: "Title for the chat list's default mode."
+                )
+            case .calls:
+                return OWSLocalizedString(
+                    "CALLS_LIST_TITLE",
+                    comment: "Title for the calls list view."
+                )
+            case .stories:
+                return OWSLocalizedString(
+                    "STORIES_TITLE",
+                    comment: "Title for the stories view."
+                )
+            }
+        }
+
+        var image: UIImage? {
+            switch self {
+            case .chatList:
+                return UIImage(imageLiteralResourceName: "tab-chats")
+            case .calls:
+                return UIImage(named: "tab-calls")
+            case .stories:
+                return UIImage(named: "tab-stories")
+            }
+        }
+
+        var selectedImage: UIImage? {
+            switch self {
+            case .chatList:
+                return UIImage(named: "tab-chats")
+            case .calls:
+                return UIImage(named: "tab-calls")
+            case .stories:
+                return UIImage(named: "tab-stories")
+            }
+        }
+
+        var tabBarItem: UITabBarItem {
+            return UITabBarItem(
+                title: title,
+                image: image,
+                selectedImage: selectedImage
+            )
+        }
+
+        var tabIdentifier: String {
+            switch self {
+            case .chatList:
+                return "chats"
+            case .calls:
+                return "calls"
+            case .stories:
+                return "stories"
+            }
+        }
     }
 
     lazy var chatListViewController = ChatListViewController(chatListMode: .inbox)
     lazy var chatListNavController = OWSNavigationController(rootViewController: chatListViewController)
-    lazy var chatListTabBarItem = UITabBarItem(
-        title: OWSLocalizedString("CHAT_LIST_TITLE_INBOX", comment: "Title for the chat list's default mode."),
-        image: UIImage(imageLiteralResourceName: "tab-chats"),
-        selectedImage: UIImage(named: "tab-chats")
-    )
+    lazy var chatListTabBarItem = Tabs.chatList.tabBarItem
 
     // No need to share spoiler render state across the whole app.
     lazy var storiesViewController = StoriesViewController(spoilerState: SpoilerRenderState())
     lazy var storiesNavController = OWSNavigationController(rootViewController: storiesViewController)
-    lazy var storiesTabBarItem = UITabBarItem(
-        title: OWSLocalizedString("STORIES_TITLE", comment: "Title for the stories view."),
-        image: UIImage(named: "tab-stories"),
-        selectedImage: UIImage(named: "tab-stories")
-    )
+    lazy var storiesTabBarItem = Tabs.stories.tabBarItem
 
     lazy var callsListViewController = CallsListViewController()
     lazy var callsListNavController = OWSNavigationController(rootViewController: callsListViewController)
-    lazy var callsListTabBarItem = UITabBarItem(
-        title: OWSLocalizedString("CALLS_LIST_TITLE", comment: "Title for the calls list view."),
-        image: UIImage(named: "tab-calls"),
-        selectedImage: UIImage(named: "tab-calls")
-    )
+    lazy var callsListTabBarItem = Tabs.calls.tabBarItem
+
+    // There are two things going on here that require this code. The first is a stored property can't
+    // conditionally include itself with an @available property, so some type erasing hoops need to be
+    // jumped through to persis UITabs in a property.  As for why the need to persit UITabs -
+    // UITabs are constructed with a 'viewControllerBuilder' completion that is required to return a
+    // fresh UIViewController instance each time a tab is replaced.  This behavior is in conflict with
+    // how this view controller manages the same set of child viewcontroller throughout it's lifetime.
+    // To avoid having to rebuild the ViewControllers whenever there's a change (e.g. - hiding stories), 
+    // build UITabs once and persist them in a type erasing array.
+#if compiler(>=6.0)
+    private var _uiTabs = [String: Any]()
+    @available(iOS 18, *)
+    func uiTab(for tab: Tabs) -> UITab {
+        var uiTab = _uiTabs[tab.tabIdentifier]
+        if uiTab == nil {
+            let vc = childControllers(for: tab).navigationController
+            uiTab = UITab(title: tab.title, image: tab.image, identifier: tab.tabIdentifier) { _ in
+                return vc
+            }
+            _uiTabs[tab.tabIdentifier] = uiTab
+        }
+        return uiTab as! UITab
+    }
+#endif
 
     var selectedHomeTab: Tabs {
         get { Tabs(rawValue: selectedIndex) ?? .chatList }
@@ -54,9 +127,6 @@ class HomeTabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Use our custom tab bar.
-        setValue(OWSTabBar(), forKey: "tabBar")
-
         delegate = self
 
         NotificationCenter.default.addObserver(self, selector: #selector(storiesEnabledStateDidChange), name: .storiesEnabledStateDidChange, object: nil)
@@ -69,11 +139,7 @@ class HomeTabBarController: UITabBarController {
         // small window where the tab bar is in the wrong state at app launch.
         let areStoriesEnabled = databaseStorage.read { StoryManager.areStoriesEnabled(transaction: $0) }
 
-        self.viewControllers = tabsToShow(areStoriesEnabled: areStoriesEnabled)
-
-        chatListNavController.tabBarItem = chatListTabBarItem
-        storiesNavController.tabBarItem = storiesTabBarItem
-        callsListNavController.tabBarItem = callsListTabBarItem
+        updateTabBars(areStoriesEnabled: areStoriesEnabled)
 
         AppEnvironment.shared.badgeManager.addObserver(self)
         storyBadgeCountManager.beginObserving(observer: self)
@@ -93,20 +159,60 @@ class HomeTabBarController: UITabBarController {
         tabBar.tintColor = Theme.primaryTextColor
     }
 
-    private func tabsToShow(areStoriesEnabled: Bool) -> [UIViewController] {
-        var tabs = [chatListNavController, callsListNavController]
+    private func updateTabBars(areStoriesEnabled: Bool) {
+        let newTabs = tabsToShow(areStoriesEnabled: areStoriesEnabled)
+#if compiler(>=6.0)
+        if #available(iOS 18, *) {
+            self.tabs = newTabs.map(uiTab(for:))
+        } else {
+            initializeCustomTabBar(tabs: newTabs)
+        }
+#else
+        initializeCustomTabBar(tabs: newTabs)
+#endif
+        applyTheme()
+    }
+
+    private func initializeCustomTabBar(tabs: [Tabs]) {
+        // Use our custom tab bar.
+        setValue(OWSTabBar(), forKey: "tabBar")
+        updateCustomTabBar(newTabs: tabs)
+    }
+
+    private func updateCustomTabBar(newTabs: [Tabs]) {
+        viewControllers = newTabs
+            .map(childControllers(for:))
+            .map { (navController, tabBarItem) in
+                navController.tabBarItem = tabBarItem
+                return navController
+            }
+    }
+
+    private func childControllers(for tab: HomeTabBarController.Tabs) -> (
+        navigationController: OWSNavigationController,
+        tabBarItem: UITabBarItem
+    ) {
+        switch tab {
+        case .chatList:
+            return (chatListNavController, chatListTabBarItem)
+        case .calls:
+            return (callsListNavController, callsListTabBarItem)
+        case .stories:
+            return (storiesNavController, storiesTabBarItem)
+        }
+    }
+
+    private func tabsToShow(areStoriesEnabled: Bool) -> [Tabs] {
+        var tabs = [Tabs.chatList, Tabs.calls]
         if areStoriesEnabled {
-            tabs.append(storiesNavController)
+            tabs.append(Tabs.stories)
         }
         return tabs
     }
 
     @objc
     private func storiesEnabledStateDidChange() {
-        viewControllers = tabsToShow(
-            areStoriesEnabled: StoryManager.areStoriesEnabled
-        )
-
+        updateTabBars(areStoriesEnabled: StoryManager.areStoriesEnabled)
         if selectedHomeTab == .stories {
             storiesNavController.popToRootViewController(animated: false)
         }
