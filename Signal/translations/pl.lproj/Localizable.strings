@@ -725,7 +725,7 @@
 "CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "Użyj linku, aby dołączyć do rozmowy Signal";
 
 /* Name of a toggle switch to enable/disable admin approval for joining a Call Link. */
-"CALL_LINK_REQUIRE_APPROVAL" = "Require Admin Approval";
+"CALL_LINK_REQUIRE_APPROVAL" = "Wymagaj potwierdzenia administratora";
 
 /* Button to open UI to share a Call Link with someone on Signal. */
 "CALL_LINK_SHARE_VIA_SIGNAL" = "Udostępnij link za pomocą Signal";
@@ -1096,6 +1096,18 @@
 /* Table section header for username search when composing a new message */
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Znajdź po nazwie użytkownika";
 
+/* Menu action to display limited contact picker. */
+"COMPOSE_SCREEN_LIMITED_CONTACTS_ACTION_MANAGE" = "Select More Contacts";
+
+/* Menu action visit app contact permission in settings. */
+"COMPOSE_SCREEN_LIMITED_CONTACTS_ACTION_SETTINGS" = "Go to Settings";
+
+/* Multi-line label explaining why compose-screen contact picker may be missing contacts. */
+"COMPOSE_SCREEN_LIMITED_CONTACTS_CTA" = "Manage";
+
+/* Multi-line label explaining why compose-screen contact picker is empty. */
+"COMPOSE_SCREEN_LIMITED_CONTACTS_PERMISSION" = "Signal has limited access to your system contacts";
+
 /* Button to open settings from an empty compose-screen contact picker. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "Otwórz ustawienia";
 
@@ -1184,19 +1196,19 @@
 "CONTACT_NOTE_TITLE" = "Notatka";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_2_BODY" = "To find people you know on Signal:";
+"CONTACT_PERMISSION_ACTION_SHEET_2_BODY" = "Aby znaleźć znajomych w Signal:";
 
 /* First step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_ONE" = "Tap “Go to Settings” below";
+"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_ONE" = "Stuknij poniżej „Przejdź do ustawień”";
 
 /* Third step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_THREE" = "Allow the permission";
+"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_THREE" = "Włącz uprawnienia";
 
 /* Second step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_TWO" = "Tap “Contacts”";
+"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_TWO" = "Stuknij „Kontakty”";
 
 /* Title for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_2_TITLE" = "Allow access to Contacts";
+"CONTACT_PERMISSION_ACTION_SHEET_2_TITLE" = "Zezwól na dostęp do kontaktów";
 
 /* Body for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Aby zobaczyć imiona i zdjęcia kontaktów w swoich czatach:";
@@ -1214,13 +1226,13 @@
 "CONTACT_PERMISSION_NOT_NOW_ACTION" = "Nie teraz";
 
 /* Action text for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Allow Access";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Zezwól na dostęp";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Allow access to your contacts to quickly find them on Signal.";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Zezwól na dostęp do kontaktów, by móc je szybko znaleźć w Signal.";
 
 /* Title for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Find contacts on Signal";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Szukaj kontaktów w Signal";
 
 /* Label for a contact's phone number. */
 "CONTACT_PHONE" = "Numer telefonu";
@@ -4198,6 +4210,15 @@
 /* Context menu message preview accessibility label */
 "MESSAGE_PREVIEW" = "Podgląd wiadomości";
 
+/* Sheet option for blocking a chat. In this case, the sheet appears when the user taps a button attached to a 'message request accepted' info message in-chat. */
+"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_BLOCK" = "Block";
+
+/* Sheet option for deleting a chat. In this case, the sheet appears when the user taps a button attached to a 'message request accepted' info message in-chat. */
+"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_DELETE" = "Delete Chat";
+
+/* Sheet option for reporting a chat as spam. In this case, the sheet appears when the user taps a button attached to a 'message request accepted' info message in-chat. */
+"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_SPAM" = "Report Spam";
+
 /* Action sheet action to confirm blocking a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_ACTION" = "Zablokuj";
 
@@ -4735,11 +4756,20 @@
 /* warning to the user that linking a phone is not recommended */
 "ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Łączenie Twojego iPhone nie jest zalecane i ograniczy podstawową funkcjonalność.";
 
-/* Label for the 'give access' button in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Włącz uprawnienia";
+/* Description of the 'Contacts' permission in the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_CONTACTS_DESCRIPTION" = "Find people you know. Your contacts are encrypted and not visible to the Signal service.";
 
-/* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Zezwolenie na wyświetlanie powiadomień i dostęp do kontaktów pozwala Ci zobaczyć, kiedy przychodzą nowe wiadomości i znaleźć ludzi, których znasz. Kontakty są zaszyfrowane i usługa Signal nie ma do nich dostępu.";
+/* Title introducing the 'Contacts' permission in the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_CONTACTS_TITLE" = "Contacts";
+
+/* Description of the 'Notifications' permission in the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_NOTIFICATIONS_DESCRIPTION" = "Get notified when new messages arrive.";
+
+/* Title introducing the 'Notifications' permission in the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_NOTIFICATIONS_TITLE" = "Notifications";
+
+/* Preamble of the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_PREAMBLE" = "Signal would like to request the following permissions.";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "Włącz uprawnienia";
@@ -4937,7 +4967,7 @@
 "PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_FACEID" = "Dodaj dodatkowe zabezpieczenie — wymagaj Face ID do wysłania środków.";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_OPTICID" = "Add an additional layer of security and require Optic ID to send funds.";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_OPTICID" = "Dodaj dodatkowe zabezpieczenie – wymagaj Optic ID do wysłania środków.";
 
 /* First time payments suggest payments lock message */
 "PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_PASSCODE" = "Dodaj dodatkowe zabezpieczenie — wymagaj kodu dostępu do wysłania środków.";
@@ -4955,7 +4985,7 @@
 "PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_FACEID" = "Wymagaj Face ID do wysłania";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_OPTICID" = "Require Optic ID to Send";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_OPTICID" = "Wymagaj Optic ID do wysyłania";
 
 /* Affirmative action title to enable payments lock */
 "PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_PASSCODE" = "Wymagaj kodu dostępu telefonu do wysłania";
@@ -6836,7 +6866,7 @@
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_FACEID" = "Pominąć włączenie Face ID?";
 
 /* Double reminder action sheet title in Payments Lock Prompt view for Optic ID. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_OPTICID" = "Skip Enabling Optic ID?";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_OPTICID" = "Pominąć włączenie Optic ID?";
 
 /* Double reminder action sheet title in Payments Lock Prompt view for Passcode. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_PASSCODE" = "Pominąć włączenie kodu dostępu?";
@@ -6848,7 +6878,7 @@
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_FACEID" = "Użyj Face ID";
 
 /* Enable Button title in Payments Lock Prompt view for Optic ID. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_OPTICID" = "Use Optic ID";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_OPTICID" = "Używaj Optic ID";
 
 /* Enable Button title in Payments Lock Prompt view for Passcode. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_PASSCODE" = "Użyj kodu dostępu";
@@ -6860,7 +6890,7 @@
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_FACEID" = "Dodaj kolejną warstwę zabezpieczeń w postaci Face ID, które uniemożliwi osobom korzystającym z Twojego telefonu dostęp do Twoich środków. Możesz wyłączyć tę opcję w Ustawieniach.";
 
 /* Explanation of 'payments lock' with Optic ID in the 'payments lock prompt' view shown after payments activation. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_OPTICID" = "Help prevent a person with your phone from accessing your funds by enabling Optic ID. You can disable this option in Settings.";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_OPTICID" = "Dodaj kolejną warstwę zabezpieczeń, włączając Optic ID, co uniemożliwi innym dostęp do Twoich środków przy użyciu Twojego telefonu. Możesz wyłączyć tę opcję w Ustawieniach.";
 
 /* Explanation of 'payments lock' with passcode in the 'payments lock prompt' view shown after payments activation. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_PASSCODE" = "Używaj kodu dostępu, który uniemożliwi osobom korzystającym z Twojego telefonu dostęp do Twoich środków. Możesz wyłączyć tę opcję w Ustawieniach.";
@@ -6977,7 +7007,7 @@
 "SETTINGS_PAYMENTS_SECURITY_DETAIL_FACEID" = "Wymagaj Face ID do przekazania środków.";
 
 /* Caption for footer label beneath the payments lock privacy toggle for opticid biometry */
-"SETTINGS_PAYMENTS_SECURITY_DETAIL_OPTICID" = "Require Optic ID to transfer funds.";
+"SETTINGS_PAYMENTS_SECURITY_DETAIL_OPTICID" = "Wymagaj Optic ID do przesłania środków.";
 
 /* Caption for footer label beneath the payments lock privacy toggle for a biometry type that is a passcode. */
 "SETTINGS_PAYMENTS_SECURITY_DETAIL_PASSCODE" = "Wymagaj kodu dostępu telefonu do wysłania środków.";
@@ -7187,7 +7217,7 @@
 "SETTINGS_SECURITY_DETAIL_FACEID" = "Użyj Face ID, aby odblokować Signal.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_OPTICID" = "Use Optic ID to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL_OPTICID" = "Używaj Optic ID do odblokowania Signal.";
 
 /* Section footer */
 "SETTINGS_SECURITY_DETAIL_PASSCODE" = "Użyj hasła do swojego urządzenia, aby odblokować Signal.";

@@ -725,7 +725,7 @@
 "CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "Använd den här länken för att gå med i ett Signal-samtal";
 
 /* Name of a toggle switch to enable/disable admin approval for joining a Call Link. */
-"CALL_LINK_REQUIRE_APPROVAL" = "Require Admin Approval";
+"CALL_LINK_REQUIRE_APPROVAL" = "Kräv godkännande av administratör";
 
 /* Button to open UI to share a Call Link with someone on Signal. */
 "CALL_LINK_SHARE_VIA_SIGNAL" = "Dela länk via Signal";
@@ -1096,6 +1096,18 @@
 /* Table section header for username search when composing a new message */
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Hitta via användarnamn";
 
+/* Menu action to display limited contact picker. */
+"COMPOSE_SCREEN_LIMITED_CONTACTS_ACTION_MANAGE" = "Select More Contacts";
+
+/* Menu action visit app contact permission in settings. */
+"COMPOSE_SCREEN_LIMITED_CONTACTS_ACTION_SETTINGS" = "Go to Settings";
+
+/* Multi-line label explaining why compose-screen contact picker may be missing contacts. */
+"COMPOSE_SCREEN_LIMITED_CONTACTS_CTA" = "Manage";
+
+/* Multi-line label explaining why compose-screen contact picker is empty. */
+"COMPOSE_SCREEN_LIMITED_CONTACTS_PERMISSION" = "Signal has limited access to your system contacts";
+
 /* Button to open settings from an empty compose-screen contact picker. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "Öppna inställningar";
 
@@ -1184,19 +1196,19 @@
 "CONTACT_NOTE_TITLE" = "Anteckning";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_2_BODY" = "To find people you know on Signal:";
+"CONTACT_PERMISSION_ACTION_SHEET_2_BODY" = "För att hitta personer du känner på Signal:";
 
 /* First step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_ONE" = "Tap “Go to Settings” below";
+"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_ONE" = "Tryck på \"Gå till inställningar\" nedan";
 
 /* Third step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_THREE" = "Allow the permission";
+"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_THREE" = "Tillåt behörigheten";
 
 /* Second step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_TWO" = "Tap “Contacts”";
+"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_TWO" = "Tryck på Kontakter";
 
 /* Title for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_2_TITLE" = "Allow access to Contacts";
+"CONTACT_PERMISSION_ACTION_SHEET_2_TITLE" = "Tillåt åtkomst till kontakter";
 
 /* Body for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Så här ser du kontaktnamn och foton i dina chattar:";
@@ -1214,13 +1226,13 @@
 "CONTACT_PERMISSION_NOT_NOW_ACTION" = "Inte nu";
 
 /* Action text for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Allow Access";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Tillåt åtkomst";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Allow access to your contacts to quickly find them on Signal.";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Tillåt åtkomst till dina kontakter för att snabbt hitta dem på Signal.";
 
 /* Title for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Find contacts on Signal";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Hitta kontakter på Signal";
 
 /* Label for a contact's phone number. */
 "CONTACT_PHONE" = "Telefon";
@@ -4198,6 +4210,15 @@
 /* Context menu message preview accessibility label */
 "MESSAGE_PREVIEW" = "Meddelandeförhandsgranskning";
 
+/* Sheet option for blocking a chat. In this case, the sheet appears when the user taps a button attached to a 'message request accepted' info message in-chat. */
+"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_BLOCK" = "Block";
+
+/* Sheet option for deleting a chat. In this case, the sheet appears when the user taps a button attached to a 'message request accepted' info message in-chat. */
+"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_DELETE" = "Delete Chat";
+
+/* Sheet option for reporting a chat as spam. In this case, the sheet appears when the user taps a button attached to a 'message request accepted' info message in-chat. */
+"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_SPAM" = "Report Spam";
+
 /* Action sheet action to confirm blocking a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_ACTION" = "Blockera";
 
@@ -4735,11 +4756,20 @@
 /* warning to the user that linking a phone is not recommended */
 "ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Att länka din iPhone rekommenderas inte och kommer att begränsa kärnfunktioner.";
 
-/* Label for the 'give access' button in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Tillåt behörigheter";
+/* Description of the 'Contacts' permission in the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_CONTACTS_DESCRIPTION" = "Find people you know. Your contacts are encrypted and not visible to the Signal service.";
 
-/* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Genom att tillåta notiser och kontakter kan du se när du får meddelanden och hjälper dig att hitta personer du känner. Kontakterna är krypterade så att Signal-tjänsten inte kan se dem.";
+/* Title introducing the 'Contacts' permission in the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_CONTACTS_TITLE" = "Contacts";
+
+/* Description of the 'Notifications' permission in the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_NOTIFICATIONS_DESCRIPTION" = "Get notified when new messages arrive.";
+
+/* Title introducing the 'Notifications' permission in the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_NOTIFICATIONS_TITLE" = "Notifications";
+
+/* Preamble of the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_PREAMBLE" = "Signal would like to request the following permissions.";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "Tillåt behörigheter";
@@ -4937,7 +4967,7 @@
 "PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_FACEID" = "Lägg till ytterligare ett säkerhetslager och kräv Face ID för att skicka pengar.";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_OPTICID" = "Add an additional layer of security and require Optic ID to send funds.";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_OPTICID" = "Lägg till ytterligare ett säkerhetslager och kräv Optic ID för att skicka pengar.";
 
 /* First time payments suggest payments lock message */
 "PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_PASSCODE" = "Lägg till ytterligare ett säkerhetslager och kräv lösenkod för att skicka pengar.";
@@ -4955,7 +4985,7 @@
 "PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_FACEID" = "Kräv Face ID för att skicka";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_OPTICID" = "Require Optic ID to Send";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_OPTICID" = "Kräv Optic ID för att skicka";
 
 /* Affirmative action title to enable payments lock */
 "PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_PASSCODE" = "Kräv telefonens lösenkod för att skicka";
@@ -6836,7 +6866,7 @@
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_FACEID" = "Hoppa över att aktivera Face ID?";
 
 /* Double reminder action sheet title in Payments Lock Prompt view for Optic ID. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_OPTICID" = "Skip Enabling Optic ID?";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_OPTICID" = "Hoppa över aktivering av Optic ID?";
 
 /* Double reminder action sheet title in Payments Lock Prompt view for Passcode. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_PASSCODE" = "Hoppa över att aktivera lösenkod?";
@@ -6848,7 +6878,7 @@
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_FACEID" = "Använd Face ID";
 
 /* Enable Button title in Payments Lock Prompt view for Optic ID. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_OPTICID" = "Use Optic ID";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_OPTICID" = "Använd Optic ID";
 
 /* Enable Button title in Payments Lock Prompt view for Passcode. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_PASSCODE" = "Använd lösenkod";
@@ -6860,7 +6890,7 @@
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_FACEID" = "Förhindra att en person med din telefon får åtkomst till dina pengar genom att aktivera Face ID. Du kan inaktivera det här alternativet i Inställningar.";
 
 /* Explanation of 'payments lock' with Optic ID in the 'payments lock prompt' view shown after payments activation. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_OPTICID" = "Help prevent a person with your phone from accessing your funds by enabling Optic ID. You can disable this option in Settings.";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_OPTICID" = "Förhindra att en person med din telefon får åtkomst till dina pengar genom att aktivera Optic ID. Du kan inaktivera det här alternativet i Inställningar.";
 
 /* Explanation of 'payments lock' with passcode in the 'payments lock prompt' view shown after payments activation. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_PASSCODE" = "Förhindra att en person med din telefon får åtkomst till dina pengar genom att använda din lösenkod. Du kan inaktivera det här alternativet i Inställningar.";
@@ -6977,7 +7007,7 @@
 "SETTINGS_PAYMENTS_SECURITY_DETAIL_FACEID" = "Kräv Face ID för att överföra pengar.";
 
 /* Caption for footer label beneath the payments lock privacy toggle for opticid biometry */
-"SETTINGS_PAYMENTS_SECURITY_DETAIL_OPTICID" = "Require Optic ID to transfer funds.";
+"SETTINGS_PAYMENTS_SECURITY_DETAIL_OPTICID" = "Kräv Optic ID för att överföra pengar.";
 
 /* Caption for footer label beneath the payments lock privacy toggle for a biometry type that is a passcode. */
 "SETTINGS_PAYMENTS_SECURITY_DETAIL_PASSCODE" = "Kräv telefonens lösenkod för att överföra pengar.";
@@ -7187,7 +7217,7 @@
 "SETTINGS_SECURITY_DETAIL_FACEID" = "Använd Face ID för att låsa upp Signal.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_OPTICID" = "Use Optic ID to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL_OPTICID" = "Använd Optic ID för att låsa upp Signal.";
 
 /* Section footer */
 "SETTINGS_SECURITY_DETAIL_PASSCODE" = "Använd din enhets lösenkod för att låsa upp Signal.";

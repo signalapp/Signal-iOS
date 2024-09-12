@@ -551,7 +551,7 @@
 "BLOCK_LIST_BLOCK_BUTTON" = "Bloquer";
 
 /* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
-"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Bloquer le groupe « %1$@ » et le quitter ?";
+"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Bloquer et quitter le groupe \"%1$@\" ?";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
 "BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Bloquer %1$@ ?";
@@ -725,7 +725,7 @@
 "CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "Utiliser ce lien pour rejoindre un appel Signal";
 
 /* Name of a toggle switch to enable/disable admin approval for joining a Call Link. */
-"CALL_LINK_REQUIRE_APPROVAL" = "Require Admin Approval";
+"CALL_LINK_REQUIRE_APPROVAL" = "Exiger l'approbation d'un admin";
 
 /* Button to open UI to share a Call Link with someone on Signal. */
 "CALL_LINK_SHARE_VIA_SIGNAL" = "Partager le lien via Signal";
@@ -902,7 +902,7 @@
 "CALLS_TAB_START_VOICE_CALL_ACTION_TITLE" = "Appel vocal";
 
 /* Title for a long-press context menu action to view info about a call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_VIEW_CALL_INFO_ACTION_TITLE" = "Info";
+"CALLS_TAB_VIEW_CALL_INFO_ACTION_TITLE" = "Infos";
 
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "Prenez une photo et envoyez-la";
@@ -1096,6 +1096,18 @@
 /* Table section header for username search when composing a new message */
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Rechercher par nom d’utilisateur";
 
+/* Menu action to display limited contact picker. */
+"COMPOSE_SCREEN_LIMITED_CONTACTS_ACTION_MANAGE" = "Select More Contacts";
+
+/* Menu action visit app contact permission in settings. */
+"COMPOSE_SCREEN_LIMITED_CONTACTS_ACTION_SETTINGS" = "Go to Settings";
+
+/* Multi-line label explaining why compose-screen contact picker may be missing contacts. */
+"COMPOSE_SCREEN_LIMITED_CONTACTS_CTA" = "Manage";
+
+/* Multi-line label explaining why compose-screen contact picker is empty. */
+"COMPOSE_SCREEN_LIMITED_CONTACTS_PERMISSION" = "Signal has limited access to your system contacts";
+
 /* Button to open settings from an empty compose-screen contact picker. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "Ouvrir les paramètres";
 
@@ -1184,19 +1196,19 @@
 "CONTACT_NOTE_TITLE" = "Notes";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_2_BODY" = "To find people you know on Signal:";
+"CONTACT_PERMISSION_ACTION_SHEET_2_BODY" = "Pour rechercher vos amis sur Signal :";
 
 /* First step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_ONE" = "Tap “Go to Settings” below";
+"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_ONE" = "Touchez \"Accéder aux réglages\" ci-dessous.";
 
 /* Third step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_THREE" = "Allow the permission";
+"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_THREE" = "Accordez l'autorisation.";
 
 /* Second step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_TWO" = "Tap “Contacts”";
+"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_TWO" = "Appuyez sur \"Contacts\".";
 
 /* Title for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_2_TITLE" = "Allow access to Contacts";
+"CONTACT_PERMISSION_ACTION_SHEET_2_TITLE" = "Autoriser l'accès aux contacts";
 
 /* Body for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Pour voir le nom et la photo des contacts dans vos conversations :";
@@ -1205,7 +1217,7 @@
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Touchez \"Accéder aux réglages\" ci-dessous.";
 
 /* Second step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Activez « Contacts »";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Activez \"Contacts\".";
 
 /* Title for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "Activer Contacts";
@@ -1214,13 +1226,13 @@
 "CONTACT_PERMISSION_NOT_NOW_ACTION" = "Plus tard";
 
 /* Action text for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Allow Access";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Accorder l'accès";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Allow access to your contacts to quickly find them on Signal.";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Autorisez Signal à accéder à vos contacts pour les trouver rapidement.";
 
 /* Title for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Find contacts on Signal";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Rechercher des contacts sur Signal";
 
 /* Label for a contact's phone number. */
 "CONTACT_PHONE" = "Téléphone";
@@ -1334,7 +1346,7 @@
 "CONTEXT_MENU_DELETE_MESSAGE" = "Supprimer";
 
 /* Context menu button title */
-"CONTEXT_MENU_DETAILS" = "Info";
+"CONTEXT_MENU_DETAILS" = "Infos";
 
 /* Context menu edit button title */
 "CONTEXT_MENU_EDIT_MESSAGE" = "Modifier";
@@ -1691,7 +1703,7 @@
 "DATABASE_INTEGRITY_CHECK_TITLE" = "Exécuter un diagnostic de la base de données ?";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so keep that in mind. This is the description on the first screen of this interface, which gives them some information and asks them to continue. */
-"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "Une partie de l’historique de vos messages peut être corrompue. La sécurité de votre compte ou de vos message n’a pas été compromise. Appuyez sur « Continuer » pour récupérer vos données.";
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "Une partie de l'historique de vos messages est peut-être corrompue. Cela n'a aucune incidence sur la sécurité de votre compte ou de vos messages. Appuyez sur \"Continuer\" pour récupérer vos données.";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so try to avoid using terms like \"database\" or \"corrupted\"—terms like \"message history\" are better. This is the title on the first screen of this interface, which gives them some information and asks them to continue. */
 "DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Problème de récupération des données";
@@ -2348,7 +2360,7 @@
 "DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_DONATE_ACTION" = "Faire un don";
 
 /* Prompt confirming the user wants to abandon the current donation flow and start a new donation. */
-"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_MESSAGE" = "En appuyant sur « Faire un don », vous annulerez votre don récent. Vous ne serez pas facturé mais la demande de paiement pourrait s’afficher sur votre appli bancaire jusqu’à ce que vous agissiez. Êtes-vous sûr de vouloir effectuer un nouveau don ?";
+"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_MESSAGE" = "Si vous appuyez sur \"Faire un don\", vous annulerez votre don en cours. Vous ne serez pas facturé, mais il est possible que la demande de paiement s'affiche sur votre app bancaire jusqu'à ce que vous preniez les mesures nécessaires. Voulez-vous vraiment faire un autre don ?";
 
 /* Title for an action in an action sheet asking the user to renew a subscription that has failed to renew. */
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_RENEW_SUBSCRIPTION" = "Renouveler l’abonnement";
@@ -2408,7 +2420,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_WAITING_FOR_AUTHORIZATION" = "En attente d’autorisation";
 
 /* A string describing the amount and currency of a one-time payment. Embeds {{ the amount, formatted as a currency }}. */
-"DONATION_SETTINGS_ONE_TIME_AMOUNT_FORMAT" = "%1$@ ponctuel";
+"DONATION_SETTINGS_ONE_TIME_AMOUNT_FORMAT" = "Don ponctuel de %1$@";
 
 /* Title for the \"donate for a friend\" button on the donation view. */
 "DONATION_VIEW_DONATE_ON_BEHALF_OF_A_FRIEND" = "Faire un don pour un ami";
@@ -2807,7 +2819,7 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Saisissez votre recherche";
 
 /* Label for the 'go to settings' button */
-"GO_TO_SETTINGS_BUTTON" = "Aller dans Réglages";
+"GO_TO_SETTINGS_BUTTON" = "Accéder aux réglages";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "Vous avez défini l'autorisation de modifier les informations du groupe sur \"%1$@\".";
@@ -2936,10 +2948,10 @@
 "GROUP_CALL_RECONNECTING" = "Reconnexion";
 
 /* The title of an alert when you've been removed from a group call. */
-"GROUP_CALL_REMOVED" = "Vous avez été retiré de l’appel";
+"GROUP_CALL_REMOVED" = "Vous avez été retiré de l'appel";
 
 /* The message of an alert when you've been removed from a group call. */
-"GROUP_CALL_REMOVED_MESSAGE" = "Un utilisateur vous a retiré de l’appel.";
+"GROUP_CALL_REMOVED_MESSAGE" = "Un utilisateur vous a retiré de l'appel.";
 
 /* The title of an alert when tried to join a call using a link but the admin rejected your request. */
 "GROUP_CALL_REQUEST_DENIED" = "Demande de participation refusée";
@@ -3401,7 +3413,7 @@
 "GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Supprimer la story de groupe";
 
 /* Action sheet title confirming deletion of a group story on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Voulez-vous vraiment supprimer « %1$@ » ?";
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Voulez-vous vraiment supprimer \"%1$@\" ?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Les membres de la conversation de groupe \"%1$@\" peuvent afficher cette story et y réagir. Vous pouvez ajouter ou retirer des spectateurs depuis les paramètres du groupe.";
@@ -3470,7 +3482,7 @@
 "GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ a remplacé le nom du groupe par \"%2$@\".";
 
 /* Message indicating that the group's name was changed. Embeds {{new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Le nom du groupe est désormais « %1$@ ».";
+"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Le groupe s'appelle maintenant \"%1$@\".";
 
 /* Message indicating that the group was migrated. */
 "GROUP_WAS_MIGRATED" = "Ce groupe a été converti en Nouveau groupe.";
@@ -3611,7 +3623,7 @@
 "HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Invitation par message";
 
 /* Format string when search returns no results. Embeds {{search term}} */
-"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Aucun résultat n’a été trouvé pour « %1$@ ».";
+"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Aucun résultat ne correspond à \"%1$@\".";
 
 /* Title for the conversation list's 'archive' mode. */
 "HOME_VIEW_TITLE_ARCHIVE" = "Archives";
@@ -3797,7 +3809,7 @@
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Autoriser l’accès aux contacts";
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
-"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Inviter des amis à Signal";
+"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Inviter des amis à rejoindre Signal";
 
 /* Header label above a section for more options for adding contacts */
 "INVITE_FRIENDS_CONTACT_TABLE_HEADER" = "Plus";
@@ -3872,7 +3884,7 @@
 "LEAVE_GROUP_FAILED" = "Une erreur s’est produite en quittant le groupe.";
 
 /* Text in a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "« Les groupes hérités » ne sont gérés par aucun administrateur et ne vous permettent pas de mentionner un membre. La plupart des groupes hérités ont été convertis automatiquement ou manuellement en « nouveaux groupes ». En raison d’une longue période d’inactivité, ce groupe ne peut plus être converti.\n\nPour poursuivre cette conversation, vous devez créer un nouveau groupe.";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "Les \"groupes hérités\" ne prennent pas en charge des fonctionnalités telles que les admins ou les @mentions. La plupart des groupes hérités ont été convertis automatiquement ou manuellement en \"nouveaux groupes\". En raison d'une longue période d'inactivité, ce groupe ne peut plus être converti.\n\nPour poursuivre cette conversation, vous devez créer un nouveau groupe.";
 
 /* Title for a sheet explaining details about 'Legacy Groups'. */
 "LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "Groupes hérités";
@@ -3944,13 +3956,13 @@
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP" = "Besoin d’aide ?";
 
 /* First step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "Sur chaque appareil, ouvrez les Réglages";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "Sur chaque appareil, ouvrez l'app Réglages.";
 
 /* Third step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Activez « Réseau local »";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Activez \"Réseau local\".";
 
 /* Second step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Naviguez vers Signal";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Recherchez Signal.";
 
 /* Title for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Activez Accès au réseau local";
@@ -4193,10 +4205,19 @@
 "MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "Nom du fichier";
 
 /* Title for the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_TITLE" = "Détails du message";
+"MESSAGE_METADATA_VIEW_TITLE" = "Infos du message";
 
 /* Context menu message preview accessibility label */
 "MESSAGE_PREVIEW" = "Aperçu du message";
+
+/* Sheet option for blocking a chat. In this case, the sheet appears when the user taps a button attached to a 'message request accepted' info message in-chat. */
+"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_BLOCK" = "Block";
+
+/* Sheet option for deleting a chat. In this case, the sheet appears when the user taps a button attached to a 'message request accepted' info message in-chat. */
+"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_DELETE" = "Delete Chat";
+
+/* Sheet option for reporting a chat as spam. In this case, the sheet appears when the user taps a button attached to a 'message request accepted' info message in-chat. */
+"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_SPAM" = "Report Spam";
 
 /* Action sheet action to confirm blocking a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_ACTION" = "Bloquer";
@@ -4511,7 +4532,7 @@
 "NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "Le nouveau groupe n’a pas pu être créé. Vérifiez votre connexion à Internet et réessayez.";
 
 /* Message for error alert indicating that a group name is required. */
-"NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "Un nom de groupe est requis.";
+"NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "Veuillez saisir un nom de groupe.";
 
 /* Title for error alert indicating that a group name is required. */
 "NEW_GROUP_CREATION_MISSING_NAME_ALERT_TITLE" = "Il manque le nom du groupe";
@@ -4634,10 +4655,10 @@
 "NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Touchez \"Accéder aux réglages\" ci-dessous.";
 
 /* Third step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "Activez « Autoriser les notifications »";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "Activez \"Autoriser les notifications\".";
 
 /* Second step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_TWO" = "Touchez Notifications";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_TWO" = "Sélectionnez \"Notifications\".";
 
 /* Title for notification permission action sheet */
 "NOTIFICATION_PERMISSION_ACTION_SHEET_TITLE" = "Activer les notifications";
@@ -4735,11 +4756,20 @@
 /* warning to the user that linking a phone is not recommended */
 "ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Il n’est pas recommandé d’associer votre iPhone : des fonctionnalités essentielles s’en trouveront limitées.";
 
-/* Label for the 'give access' button in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Accorder les autorisations";
+/* Description of the 'Contacts' permission in the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_CONTACTS_DESCRIPTION" = "Find people you know. Your contacts are encrypted and not visible to the Signal service.";
 
-/* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Autoriser les notifications et les contacts vous permet de savoir qu’un message est reçu et vous aide à trouver les personnes que vous connaissez. Les contacts sont chiffrés et le service Signal ne peut pas les voir.";
+/* Title introducing the 'Contacts' permission in the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_CONTACTS_TITLE" = "Contacts";
+
+/* Description of the 'Notifications' permission in the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_NOTIFICATIONS_DESCRIPTION" = "Get notified when new messages arrive.";
+
+/* Title introducing the 'Notifications' permission in the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_NOTIFICATIONS_TITLE" = "Notifications";
+
+/* Preamble of the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_PREAMBLE" = "Signal would like to request the following permissions.";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "Accorder les autorisations";
@@ -4937,7 +4967,7 @@
 "PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_FACEID" = "Ajoutez une couche de sécurité supplémentaire et exigez l’utilisation de Face ID pour envoyer des fonds.";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_OPTICID" = "Add an additional layer of security and require Optic ID to send funds.";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_OPTICID" = "Activez Optic ID pour renforcer la sécurité de vos paiements.";
 
 /* First time payments suggest payments lock message */
 "PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_PASSCODE" = "Ajoutez une couche de sécurité supplémentaire et exigez la saisie de votre code d’accès pour envoyer des fonds.";
@@ -4955,7 +4985,7 @@
 "PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_FACEID" = "Exiger l’utilisation de Face ID pour l'envoi";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_OPTICID" = "Require Optic ID to Send";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_OPTICID" = "Exiger Optic ID pour les paiements";
 
 /* Affirmative action title to enable payments lock */
 "PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_PASSCODE" = "Exigez la saisie du code d’accès de votre téléphone pour l'envoi";
@@ -5171,7 +5201,7 @@
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "Ajouter au groupe";
 
 /* Title of 'accept member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Ajouter « %1$@ » au groupe ?";
+"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Ajouter %1$@ au groupe  ?";
 
 /* Title of 'deny member request to join group' button. */
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "Refuser la demande";
@@ -5201,7 +5231,7 @@
 "PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Annuler l'invitation envoyée à %1$@ ?";
 
 /* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Lorsque des membres du groupe invitent des utilisateurs, nous n’affichons aucune info sur ces derniers. Ces informations ne sont communiquées au groupe que si les invités choisissent de le rejoindre. De même, les invités n’ont pas accès aux messages du groupe tant qu’ils ne l’ont pas rejoint.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Lorsque des membres du groupe invitent des utilisateurs, nous n'affichons aucune info sur ces derniers. Ces informations ne sont communiquées au groupe que si les invités choisissent de le rejoindre. De même, les invités n'ont pas accès aux messages du groupe tant qu'ils ne l'ont pas rejoint.";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "Les personnes suivantes tentent de rejoindre %1$@ via le lien du groupe.";
@@ -5363,7 +5393,7 @@
 "PIN_CREATION_EXPLANATION" = "Avec un code PIN, les informations stockées dans Signal sont chiffrées, et vous seul y avez accès. Votre profil, vos contacts et vos paramètres sont restaurés si vous réinstallez Signal. Vous n’avez pas besoin du code PIN pour ouvrir l’appli.";
 
 /* Learn more action on the pin creation view */
-"PIN_CREATION_LEARN_MORE" = "Plus d’info à propos du PIN";
+"PIN_CREATION_LEARN_MORE" = "En savoir plus sur les PIN";
 
 /* Users can create PINs to restore their account data later. They can learn more about this on a sheet. This is the text on that sheet. */
 "PIN_CREATION_LEARN_MORE_TEXT" = "Les PIN permettent de garantir que les informations stockées dans Signal sont chiffrées afin que vous soyez la seule personne à pouvoir y accéder. Votre profil, vos paramètres et vos contacts seront restaurés lors de la réinstallation de l’appli.";
@@ -6170,7 +6200,7 @@
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Choisir un nom pour cet appareil";
 
 /* label text */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "Ce nom apparaîtra sous « Appareils associés ».";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "Ce nom apparaîtra sous \"Appareils associés\".";
 
 /* text field placeholder */
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "Choisissez un nom";
@@ -6356,13 +6386,13 @@
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Journaux d’erreurs";
 
 /* Information on sheet about changing the app icon - first line */
-"SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "Le nom de l'appli « Signal » apparaîtra sur la page Accueil, dans les notifications et dans la Bibliothèque d'applis.";
+"SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "Le nom de l'app Signal apparaîtra sur l'écran d'accueil, dans les notifications et dans la Bibliothèque d'apps.";
 
 /* Information on sheet about changing the app icon - second line */
-"SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "Vous pouvez masquer le nom « Signal » sur l'écran d'accueil en plaçant l'appli dans le dock en bas de l'écran.";
+"SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "Pour masquer le nom \"Signal\" sur l'écran d'accueil, déplacez l'app vers le Dock en bas de l'écran.";
 
 /* The footer for the app icon selection settings page. */
-"SETTINGS_APP_ICON_FOOTER" = "Le nom de l'appli « Signal » apparaîtra sur la page Accueil, dans les notifications et dans la Bibliothèque d'applis.";
+"SETTINGS_APP_ICON_FOOTER" = "Le nom de l'app Signal apparaîtra sur l'écran d'accueil, dans les notifications et dans la Bibliothèque d'apps.";
 
 /* The title for the app icon selection settings page. */
 "SETTINGS_APP_ICON_TITLE" = "Icône de l’appli";
@@ -6812,7 +6842,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "Le détail des transactions incluant le montant des paiements et date de transaction font partie du Registre MobileCoin.";
 
 /* Footer string for the status section of the payment details view in the app settings for defragmentation transactions. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "Des « frais de nettoyage des pièces » sont facturés quand les pièces en votre possession ne peuvent pas être combinées pour finaliser une transaction. Le nettoyage vous permettra de poursuivre l’envoi de paiements.";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "Lorsque les jetons en votre possession ne peuvent pas être combinés pour finaliser une transaction, ils doivent être agrégés et des frais vous sont facturés. Cette agrégation vous permet de continuer à effectuer des paiements.";
 
 /* Message for the 'insufficient balance for payment' alert. Embeds: {{ The current payments balance }}. */
 "SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "Vous ne disposez pas de suffisamment de MOB pour finaliser ce paiement. Votre solde actuel est de %1$@.";
@@ -6836,7 +6866,7 @@
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_FACEID" = "Ignorer l’activation de Face ID ?";
 
 /* Double reminder action sheet title in Payments Lock Prompt view for Optic ID. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_OPTICID" = "Skip Enabling Optic ID?";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_OPTICID" = "Ne pas activer Optic ID pour le moment ?";
 
 /* Double reminder action sheet title in Payments Lock Prompt view for Passcode. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_PASSCODE" = "Ignorer l’activation du code d’accès ?";
@@ -6848,7 +6878,7 @@
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_FACEID" = "Utiliser Face ID";
 
 /* Enable Button title in Payments Lock Prompt view for Optic ID. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_OPTICID" = "Use Optic ID";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_OPTICID" = "Utiliser Optic ID";
 
 /* Enable Button title in Payments Lock Prompt view for Passcode. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_PASSCODE" = "Utiliser le code d’accès";
@@ -6860,7 +6890,7 @@
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_FACEID" = "Contribuez à empêcher une personne en possession de votre téléphone d’accéder à vos fonds en activant Face ID. Vous pouvez désactiver cette option dans les paramètres.";
 
 /* Explanation of 'payments lock' with Optic ID in the 'payments lock prompt' view shown after payments activation. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_OPTICID" = "Help prevent a person with your phone from accessing your funds by enabling Optic ID. You can disable this option in Settings.";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_OPTICID" = "Avec Optic ID, si votre téléphone tombe entre les mains d'un tiers, vous l'empêchez d'accéder à vos fonds. Vous pouvez désactiver cette option dans les paramètres.";
 
 /* Explanation of 'payments lock' with passcode in the 'payments lock prompt' view shown after payments activation. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_PASSCODE" = "Contribuez à empêcher une personne en possession de votre téléphone d’accéder à vos fonds en utilisant un code d’accès. Vous pouvez désactiver cette option dans les paramètres.";
@@ -6977,7 +7007,7 @@
 "SETTINGS_PAYMENTS_SECURITY_DETAIL_FACEID" = "Exigez l’utilisation de Face ID pour transférer des fonds.";
 
 /* Caption for footer label beneath the payments lock privacy toggle for opticid biometry */
-"SETTINGS_PAYMENTS_SECURITY_DETAIL_OPTICID" = "Require Optic ID to transfer funds.";
+"SETTINGS_PAYMENTS_SECURITY_DETAIL_OPTICID" = "Exiger Optic ID pour les paiements.";
 
 /* Caption for footer label beneath the payments lock privacy toggle for a biometry type that is a passcode. */
 "SETTINGS_PAYMENTS_SECURITY_DETAIL_PASSCODE" = "Exigez la saisie du code d’accès de votre téléphone pour transférer des fonds.";
@@ -7130,7 +7160,7 @@
 "SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Paramètres de contournement de la censure, du proxy, des appels relayés et d’expéditeur scellé.";
 
 /* Title for the advanced privacy settings */
-"SETTINGS_PRIVACY_ADVANCED_TITLE" = "Avancés";
+"SETTINGS_PRIVACY_ADVANCED_TITLE" = "Paramètres avancés";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Afficher les appels dans Récents";
@@ -7172,7 +7202,7 @@
 "SETTINGS_SCREEN_SECURITY" = "Masquer l’écran dans le sélecteur d’app";
 
 /* Footer for table section */
-"SETTINGS_SECTION_FOOTER_CALLING" = "Afficher les appels dans la liste « Récents » dans l'appli Téléphone d’iOS.";
+"SETTINGS_SECTION_FOOTER_CALLING" = "Afficher les appels dans la liste \"Récents\" de l'app Téléphone d'iOS.";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "Sons";
@@ -7187,7 +7217,7 @@
 "SETTINGS_SECURITY_DETAIL_FACEID" = "Utilisez Face ID pour déverrouiller Signal.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_OPTICID" = "Use Optic ID to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL_OPTICID" = "Utiliser Optic ID pour déverrouiller Signal.";
 
 /* Section footer */
 "SETTINGS_SECURITY_DETAIL_PASSCODE" = "Utilisez le mot de passe de votre appareil pour déverrouiller Signal.";
@@ -7229,7 +7259,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Autoriser de tous";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Activez l’option « expéditeur scellé » pour les messages entrants provenant d’expéditeurs qui ne sont pas dans vos contacts et de personnes avec qui vous n’avez pas partagé votre profil.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Activer l'option \"Expéditeur scellé\" pour les messages provenant d'expéditeurs qui ne figurent pas dans vos contacts ou avec qui vous n'avez pas partagé votre profil.";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "Version";
@@ -7421,7 +7451,7 @@
 "STORIES_HIDE_STORY_CONFIRMATION_TOAST" = "Story masquée";
 
 /* Context menu action to view metadata about the story */
-"STORIES_INFO_ACTION" = "Info";
+"STORIES_INFO_ACTION" = "Infos";
 
 /* Indicates that there are no recent stories to render */
 "STORIES_NO_RECENT_MESSAGES" = "Aucun nouveau contenu.";
@@ -7691,7 +7721,7 @@
 "SUPPORT_EMAIL_HID_LABEL_FORMAT" = "HID : %1$@";
 
 /* Localized divider for support request emails internal information */
-"SUPPORT_EMAIL_INFO_DIVIDER" = "--- Info d’assistance ---";
+"SUPPORT_EMAIL_INFO_DIVIDER" = "--- Infos d'assistance ---";
 
 /* Localized label for support request email iOS Version string (e.g. 13.4). Embeds {{ios version}}. */
 "SUPPORT_EMAIL_IOS_VERSION_LABEL_FORMAT" = "Version d’iOS : %1$@";
@@ -7859,46 +7889,46 @@
 "THREAD_MERGE_PHONE_NUMBER" = "L’historique de vos messages échangés avec %1$@ et son numéro %2$@ ont été fusionnés.";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS" = "%1$@ jours";
+"TIME_AMOUNT_DAYS" = "%1$@ jours";
 
 /* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%1$@ j";
+"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%1$@ j";
 
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS" = "%1$@ heures";
+"TIME_AMOUNT_HOURS" = "%1$@ heures";
 
 /* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%1$@ h";
+"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%1$@ h";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES" = "%1$@ minutes";
+"TIME_AMOUNT_MINUTES" = "%1$@ minutes";
 
 /* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%1$@ m";
+"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%1$@ m";
 
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SECONDS" = "%1$@ secondes";
+"TIME_AMOUNT_SECONDS" = "%1$@ secondes";
 
 /* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%1$@ s";
+"TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%1$@ s";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_DAY" = "%1$@ jour";
+"TIME_AMOUNT_SINGLE_DAY" = "%1$@ jour";
 
 /* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_HOUR" = "%1$@ heure";
+"TIME_AMOUNT_SINGLE_HOUR" = "%1$@ heure";
 
 /* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_MINUTE" = "%1$@ minute";
+"TIME_AMOUNT_SINGLE_MINUTE" = "%1$@ minute";
 
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_WEEK" = "%1$@ semaine";
+"TIME_AMOUNT_SINGLE_WEEK" = "%1$@ semaine";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS" = "%1$@ semaines";
+"TIME_AMOUNT_WEEKS" = "%1$@ semaines";
 
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%1$@ sem";
+"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%1$@ sem";
 
 /* Button for bottom sheet shown when device transfer completes on the receiving device. Tapping will terminate the Signal app and trigger a notification to relaunch. */
 "TRANSFER_COMPLETE_SHEET_BUTTON" = "Fermer Signal";
@@ -7964,7 +7994,7 @@
 "UNLINK_CONFIRMATION_ALERT_BODY" = "Si vous dissociez cet appareil, il ne pourra plus envoyer ni recevoir de messages.";
 
 /* Alert title for confirming device deletion */
-"UNLINK_CONFIRMATION_ALERT_TITLE" = "Annuler le lien avec « %1$@ » ?";
+"UNLINK_CONFIRMATION_ALERT_TITLE" = "Dissocier \"%1$@\" ?";
 
 /* Label warning the user that they have been unlinked from their primary device. */
 "UNLINKED_WARNING" = "Cet appareil n’est plus associé. Associez-le de nouveau pour continuer à utiliser Signal.";

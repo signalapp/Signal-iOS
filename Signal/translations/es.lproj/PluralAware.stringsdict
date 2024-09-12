@@ -125,9 +125,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Este color personalizado se está usando en %1$d chat. ¿Deseas eliminarlo?</string>
+			<string>Este color personalizado se usa en %1$d chat. ¿Deseas eliminarlo?</string>
 			<key>other</key>
-			<string>Este color personalizado se está usando en %1$d chats. ¿Deseas eliminarlo para todos los chats?</string>
+			<string>Este color personalizado se usa en %1$d chats. ¿Deseas eliminarlo para todos los chats?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -141,9 +141,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Este color se está usando en %1$d chat. ¿Deseas guardar los cambios en todos los chats?</string>
+			<string>Este color se usa en %1$d chat. ¿Deseas guardar los cambios en ese chat?</string>
 			<key>other</key>
-			<string>Este color se está usando en %1$d chats. ¿Deseas guardar los cambios en todos los chats?</string>
+			<string>Este color se usa en %1$d chats. ¿Deseas guardar los cambios en todos los chats?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -328,9 +328,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Solo se puede hacer %1$d cambio en este mensaje de texto.</string>
+			<string>Solo se puede hacer %1$d cambio en este mensaje.</string>
 			<key>other</key>
-			<string>Solo se pueden hacer %1$d cambios en este mensaje de texto.</string>
+			<string>Solo se pueden hacer %1$d cambios en este mensaje.</string>
 		</dict>
 	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>

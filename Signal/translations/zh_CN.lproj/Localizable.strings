@@ -725,7 +725,7 @@
 "CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "使用此链接加入 Signal 通话";
 
 /* Name of a toggle switch to enable/disable admin approval for joining a Call Link. */
-"CALL_LINK_REQUIRE_APPROVAL" = "Require Admin Approval";
+"CALL_LINK_REQUIRE_APPROVAL" = "需要管理员批准";
 
 /* Button to open UI to share a Call Link with someone on Signal. */
 "CALL_LINK_SHARE_VIA_SIGNAL" = "通过 Signal 分享链接";
@@ -1096,6 +1096,18 @@
 /* Table section header for username search when composing a new message */
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "按用户名查找";
 
+/* Menu action to display limited contact picker. */
+"COMPOSE_SCREEN_LIMITED_CONTACTS_ACTION_MANAGE" = "Select More Contacts";
+
+/* Menu action visit app contact permission in settings. */
+"COMPOSE_SCREEN_LIMITED_CONTACTS_ACTION_SETTINGS" = "Go to Settings";
+
+/* Multi-line label explaining why compose-screen contact picker may be missing contacts. */
+"COMPOSE_SCREEN_LIMITED_CONTACTS_CTA" = "Manage";
+
+/* Multi-line label explaining why compose-screen contact picker is empty. */
+"COMPOSE_SCREEN_LIMITED_CONTACTS_PERMISSION" = "Signal has limited access to your system contacts";
+
 /* Button to open settings from an empty compose-screen contact picker. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "打开设置";
 
@@ -1184,19 +1196,19 @@
 "CONTACT_NOTE_TITLE" = "备注";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_2_BODY" = "To find people you know on Signal:";
+"CONTACT_PERMISSION_ACTION_SHEET_2_BODY" = "如要在 Signal 上查找认识的人：";
 
 /* First step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_ONE" = "Tap “Go to Settings” below";
+"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_ONE" = "轻按下面的“去设置”";
 
 /* Third step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_THREE" = "Allow the permission";
+"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_THREE" = "授予权限";
 
 /* Second step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_TWO" = "Tap “Contacts”";
+"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_TWO" = "点击“联系人”";
 
 /* Title for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_2_TITLE" = "Allow access to Contacts";
+"CONTACT_PERMISSION_ACTION_SHEET_2_TITLE" = "允许访问联系人";
 
 /* Body for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_BODY" = "去查看联系人名称以及聊天中的图片：";
@@ -1214,13 +1226,13 @@
 "CONTACT_PERMISSION_NOT_NOW_ACTION" = "以后再说";
 
 /* Action text for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Allow Access";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "允许访问";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Allow access to your contacts to quickly find them on Signal.";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "允许访问您的联系人以便在 Signal 上快速找到他们。";
 
 /* Title for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Find contacts on Signal";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "在 Signal 上寻找联系人";
 
 /* Label for a contact's phone number. */
 "CONTACT_PHONE" = "电话";
@@ -4198,6 +4210,15 @@
 /* Context menu message preview accessibility label */
 "MESSAGE_PREVIEW" = "消息预览";
 
+/* Sheet option for blocking a chat. In this case, the sheet appears when the user taps a button attached to a 'message request accepted' info message in-chat. */
+"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_BLOCK" = "Block";
+
+/* Sheet option for deleting a chat. In this case, the sheet appears when the user taps a button attached to a 'message request accepted' info message in-chat. */
+"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_DELETE" = "Delete Chat";
+
+/* Sheet option for reporting a chat as spam. In this case, the sheet appears when the user taps a button attached to a 'message request accepted' info message in-chat. */
+"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_SPAM" = "Report Spam";
+
 /* Action sheet action to confirm blocking a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_ACTION" = "屏蔽";
 
@@ -4735,11 +4756,20 @@
 /* warning to the user that linking a phone is not recommended */
 "ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "我们并不建议关联您的iPhone，它会使某些关键功能受限。";
 
-/* Label for the 'give access' button in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "授予权限";
+/* Description of the 'Contacts' permission in the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_CONTACTS_DESCRIPTION" = "Find people you know. Your contacts are encrypted and not visible to the Signal service.";
 
-/* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "授予通知和读取联系人权限后，您可以收到消息提醒，并轻松地找到您认识的用户。联系人信息将被加密，不会被 Signal 服务端解密读取。";
+/* Title introducing the 'Contacts' permission in the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_CONTACTS_TITLE" = "Contacts";
+
+/* Description of the 'Notifications' permission in the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_NOTIFICATIONS_DESCRIPTION" = "Get notified when new messages arrive.";
+
+/* Title introducing the 'Notifications' permission in the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_NOTIFICATIONS_TITLE" = "Notifications";
+
+/* Preamble of the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_PREAMBLE" = "Signal would like to request the following permissions.";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "授予权限";
@@ -4937,7 +4967,7 @@
 "PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_FACEID" = "转账时需要 Face ID才能转账，多加一重安全保护。";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_OPTICID" = "Add an additional layer of security and require Optic ID to send funds.";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_OPTICID" = "转账时需要视控 ID才能转账，多加一重安全保护。";
 
 /* First time payments suggest payments lock message */
 "PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_PASSCODE" = "转账时需要输入密码才能转账，多加一重安全保护。";
@@ -4955,7 +4985,7 @@
 "PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_FACEID" = "需要 Face ID 才能转账";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_OPTICID" = "Require Optic ID to Send";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_OPTICID" = "需要视控 ID 才能转账";
 
 /* Affirmative action title to enable payments lock */
 "PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_PASSCODE" = "需要输入您的手机密码才能转账";
@@ -6836,7 +6866,7 @@
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_FACEID" = "要跳过启用 Face ID 吗？";
 
 /* Double reminder action sheet title in Payments Lock Prompt view for Optic ID. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_OPTICID" = "Skip Enabling Optic ID?";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_OPTICID" = "要跳过启用视控 ID 吗？";
 
 /* Double reminder action sheet title in Payments Lock Prompt view for Passcode. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_PASSCODE" = "要跳过启用密码吗？";
@@ -6848,7 +6878,7 @@
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_FACEID" = "使用 Face ID";
 
 /* Enable Button title in Payments Lock Prompt view for Optic ID. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_OPTICID" = "Use Optic ID";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_OPTICID" = "使用视控 ID";
 
 /* Enable Button title in Payments Lock Prompt view for Passcode. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_PASSCODE" = "使用密码";
@@ -6860,7 +6890,7 @@
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_FACEID" = "启用 Face ID 可以防止接触到您手机的人获取您的资金。您可以在设置中禁用该选项。";
 
 /* Explanation of 'payments lock' with Optic ID in the 'payments lock prompt' view shown after payments activation. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_OPTICID" = "Help prevent a person with your phone from accessing your funds by enabling Optic ID. You can disable this option in Settings.";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_OPTICID" = "启用视控 ID 可以防止接触到您手机的人获取您的资金。您可以在设置中禁用该选项。";
 
 /* Explanation of 'payments lock' with passcode in the 'payments lock prompt' view shown after payments activation. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_PASSCODE" = "使用密码可以防止接触到您手机的人获取您的资金。您可以在设置中禁用该选项。";
@@ -6977,7 +7007,7 @@
 "SETTINGS_PAYMENTS_SECURITY_DETAIL_FACEID" = "需要 Face ID 才能转账。";
 
 /* Caption for footer label beneath the payments lock privacy toggle for opticid biometry */
-"SETTINGS_PAYMENTS_SECURITY_DETAIL_OPTICID" = "Require Optic ID to transfer funds.";
+"SETTINGS_PAYMENTS_SECURITY_DETAIL_OPTICID" = "需要视控 ID 才能转账。";
 
 /* Caption for footer label beneath the payments lock privacy toggle for a biometry type that is a passcode. */
 "SETTINGS_PAYMENTS_SECURITY_DETAIL_PASSCODE" = "需要输入您的手机密码才能转账。";
@@ -7187,7 +7217,7 @@
 "SETTINGS_SECURITY_DETAIL_FACEID" = "使用 Face ID 解锁 Signal。";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_OPTICID" = "Use Optic ID to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL_OPTICID" = "使用视控 ID 解锁 Signal。";
 
 /* Section footer */
 "SETTINGS_SECURITY_DETAIL_PASSCODE" = "使用设备密码解锁 Signal。";

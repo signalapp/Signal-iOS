@@ -45,9 +45,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ajouter un membre à « %2$@ » ?</string>
+			<string>Ajouter un membre à &quot;%2$@&quot; ?</string>
 			<key>other</key>
-			<string>Ajouter %1$d membres à « %2$@ » ?</string>
+			<string>Ajouter %1$d membres à &quot;%2$@&quot; ?</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_%d</key>
