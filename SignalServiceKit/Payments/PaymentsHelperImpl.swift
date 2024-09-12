@@ -487,7 +487,7 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
             let paymentModel = TSPaymentModel(paymentType: paymentType,
                                               paymentState: paymentState,
                                               paymentAmount: paymentAmount,
-                                              createdDate: NSDate.ows_date(withMillisecondsSince1970: messageTimestamp),
+                                              createdDate: Date(millisecondsSince1970: messageTimestamp),
                                               senderOrRecipientAci: recipientAci.map { AciObjC($0) },
                                               memoMessage: memoMessage,
                                               isUnread: false,

@@ -31,7 +31,19 @@ public extension NSDate {
     }
 
     var ows_millisecondsSince1970: UInt64 {
-        return NSDate.ows_millisecondsSince1970(for: self as Date)
+        (self as Date).ows_millisecondsSince1970
+    }
+
+    static func ows_millisecondsSince1970(forDate date: NSDate) -> UInt64 {
+        date.ows_millisecondsSince1970
+    }
+
+    static func ows_millisecondTimeStamp() -> UInt64 {
+        Date.ows_millisecondTimestamp()
+    }
+
+    static func ows_date(withMillisecondsSince1970 milliseconds: UInt64) -> NSDate {
+        NSDate(timeIntervalSince1970: Double(milliseconds) / 1000)
     }
 
     static var distantFutureForMillisecondTimestamp: Date {
@@ -40,6 +52,14 @@ public extension NSDate {
 
     static var distantFutureMillisecondTimestamp: UInt64 {
         Date.distantFutureMillisecondTimestamp
+    }
+
+    func isBefore(date: NSDate) -> Bool {
+        (self as Date).isBefore(date as Date)
+    }
+
+    func isAfterNow() -> Bool {
+        (self as Date).isAfterNow
     }
 }
 
@@ -53,15 +73,15 @@ public extension Date {
     }
 
     var ows_millisecondsSince1970: UInt64 {
-        return (self as NSDate).ows_millisecondsSince1970
+        UInt64(timeIntervalSince1970 * 1000)
     }
 
     static func ows_millisecondTimestamp() -> UInt64 {
-        return NSDate.ows_millisecondTimeStamp()
+        Date().ows_millisecondsSince1970
     }
 
     init(millisecondsSince1970: UInt64) {
-        self = NSDate.ows_date(withMillisecondsSince1970: millisecondsSince1970) as Date
+        self.init(timeIntervalSince1970: Double(millisecondsSince1970) / 1000)
     }
 
     static var distantFutureForMillisecondTimestamp: Date {
@@ -77,19 +97,19 @@ public extension Date {
     }
 
     func isBefore(_ date: Date) -> Bool {
-        (self as NSDate).is(before: date)
+        self < date
     }
 
     var isBeforeNow: Bool {
-        (self as NSDate).isBeforeNow()
+        self < Date()
     }
 
     func isAfter(_ date: Date) -> Bool {
-        (self as NSDate).is(after: date)
+        self > date
     }
 
     var isAfterNow: Bool {
-        (self as NSDate).isAfterNow()
+        self > Date()
     }
 
     var formatIntervalSinceNow: String {

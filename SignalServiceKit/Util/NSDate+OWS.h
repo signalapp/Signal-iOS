@@ -26,18 +26,4 @@ extern const NSTimeInterval kYearInterval;
 // kYearsInMs is a double to avoid overflow
 #define kYearsInMs (kDayInMs * 365.0)
 
-@interface NSDate (OWS)
-
-+ (uint64_t)ows_millisecondTimeStamp;
-+ (NSDate *)ows_dateWithMillisecondsSince1970:(uint64_t)milliseconds;
-+ (uint64_t)ows_millisecondsSince1970ForDate:(NSDate *)date;
-
-- (BOOL)isAfterDate:(NSDate *)otherDate;
-- (BOOL)isBeforeDate:(NSDate *)otherDate;
-
-- (BOOL)isAfterNow;
-- (BOOL)isBeforeNow;
-
-@end
-
 NS_ASSUME_NONNULL_END

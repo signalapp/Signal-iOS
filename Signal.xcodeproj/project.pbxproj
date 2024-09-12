@@ -983,7 +983,7 @@
 		668A00E22C2B5F0C007B8808 /* OWSAssertionError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668A00E12C2B5F0C007B8808 /* OWSAssertionError.swift */; };
 		668A00E42C2B5F35007B8808 /* OWSLocalizedString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668A00E32C2B5F35007B8808 /* OWSLocalizedString.swift */; };
 		668A00E92C2B5F59007B8808 /* UnfairLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668A00E62C2B5F58007B8808 /* UnfairLock.swift */; };
-		668A00F42C2B5F81007B8808 /* NSDate+OWS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 668A00EC2C2B5F80007B8808 /* NSDate+OWS.mm */; };
+		668A00F42C2B5F81007B8808 /* NSDate+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 668A00EC2C2B5F80007B8808 /* NSDate+OWS.m */; };
 		668A00F52C2B5F81007B8808 /* NSObject+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = 668A00ED2C2B5F80007B8808 /* NSObject+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		668A00F82C2B5F81007B8808 /* NSDate+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = 668A00F02C2B5F81007B8808 /* NSDate+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		668A00F92C2B5F81007B8808 /* NSObject+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 668A00F12C2B5F81007B8808 /* NSObject+OWS.m */; };
@@ -4341,7 +4341,7 @@
 		668A00E12C2B5F0C007B8808 /* OWSAssertionError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSAssertionError.swift; sourceTree = "<group>"; };
 		668A00E32C2B5F35007B8808 /* OWSLocalizedString.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSLocalizedString.swift; sourceTree = "<group>"; };
 		668A00E62C2B5F58007B8808 /* UnfairLock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnfairLock.swift; sourceTree = "<group>"; };
-		668A00EC2C2B5F80007B8808 /* NSDate+OWS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSDate+OWS.mm"; sourceTree = "<group>"; };
+		668A00EC2C2B5F80007B8808 /* NSDate+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDate+OWS.m"; sourceTree = "<group>"; };
 		668A00ED2C2B5F80007B8808 /* NSObject+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+OWS.h"; sourceTree = "<group>"; };
 		668A00F02C2B5F81007B8808 /* NSDate+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+OWS.h"; sourceTree = "<group>"; };
 		668A00F12C2B5F81007B8808 /* NSObject+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+OWS.m"; sourceTree = "<group>"; };
@@ -12875,7 +12875,7 @@
 				F9C5CB57289453B200548EEE /* ModelReadCache.swift */,
 				D9C7CECE28ECC043001E87B6 /* NSAttributedString+SSK.swift */,
 				668A00F02C2B5F81007B8808 /* NSDate+OWS.h */,
-				668A00EC2C2B5F80007B8808 /* NSDate+OWS.mm */,
+				668A00EC2C2B5F80007B8808 /* NSDate+OWS.m */,
 				507E1BDE2A0E13B100650611 /* NSKeyedUnarchiver+SSK.swift */,
 				F9C5CB39289453B200548EEE /* NSNotificationCenter+OWS.swift */,
 				668A00ED2C2B5F80007B8808 /* NSObject+OWS.h */,
@@ -15926,7 +15926,7 @@
 				725465612BA033E200EABFD2 /* NotificationPresenterImpl.swift in Sources */,
 				D9C7CECF28ECC043001E87B6 /* NSAttributedString+SSK.swift in Sources */,
 				F9C5CE09289453B400548EEE /* NSData+Image.swift in Sources */,
-				668A00F42C2B5F81007B8808 /* NSDate+OWS.mm in Sources */,
+				668A00F42C2B5F81007B8808 /* NSDate+OWS.m in Sources */,
 				507E1BDF2A0E13B100650611 /* NSKeyedUnarchiver+SSK.swift in Sources */,
 				F9C5CE0B289453B400548EEE /* NSNotificationCenter+OWS.swift in Sources */,
 				668A00F92C2B5F81007B8808 /* NSObject+OWS.m in Sources */,

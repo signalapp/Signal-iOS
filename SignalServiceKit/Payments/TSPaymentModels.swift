@@ -534,7 +534,7 @@ extension TSPaymentModel: TSPaymentBaseModel {
     // This only applies to mobilecoin.
     public var mcLedgerBlockDate: Date? {
         if mcLedgerBlockTimestamp != 0 {
-            return NSDate.ows_date(withMillisecondsSince1970: mcLedgerBlockTimestamp)
+            return Date(millisecondsSince1970: mcLedgerBlockTimestamp)
         }
         return nil
     }

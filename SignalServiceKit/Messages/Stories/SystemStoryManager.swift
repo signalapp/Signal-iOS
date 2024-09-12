@@ -517,7 +517,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
                 // this is a legacy client with stories that were viewed before
                 // we kept track of viewed state independently.
                 try self.setOnboardingStoryViewedOnThisDevice(
-                    atTimestamp: Date.distantPast.ows_millisecondsSince1970,
+                    atTimestamp: 0,
                     shouldUpdateStorageService: true,
                     transaction: transaction
                 )

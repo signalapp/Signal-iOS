@@ -497,7 +497,7 @@ public class PaymentsReconciliation: Dependencies {
         let ledgerBlockIndex: UInt64 = blockActivity.blockIndex
         let ledgerBlockTimestamp: UInt64 = blockActivity.blockTimestamp ?? 0
         let createdTimestamp: UInt64 = timestamp
-        let createdDate = NSDate.ows_date(withMillisecondsSince1970: createdTimestamp)
+        let createdDate = Date(millisecondsSince1970: createdTimestamp)
 
         let unaccountedForSpentKeyImages: [Data] = unaccountedForSpentItems.map { $0.keyImage }
         let spentKeyImages: [Data]? = Array(Set(unaccountedForSpentKeyImages)).nilIfEmpty
@@ -572,7 +572,7 @@ public class PaymentsReconciliation: Dependencies {
 
         let ledgerBlockIndex: UInt64 = blockActivity.blockIndex
         let ledgerBlockTimestamp: UInt64 = blockActivity.blockTimestamp ?? 0
-        let createdDate = NSDate.ows_date(withMillisecondsSince1970: timestamp)
+        let createdDate = Date(millisecondsSince1970: timestamp)
 
         let mobileCoin = MobileCoinPayment(
             recipientPublicAddressData: nil,

@@ -468,7 +468,7 @@ public class _MessageBackup_AccountData_SystemStoryManagerWrapper: _MessageBacku
         }
 
         let source: OnboardingStoryViewSource = .local(
-            timestamp: Date.distantPast.ows_millisecondsSince1970,
+            timestamp: 0,
             shouldUpdateStorageService: false
         )
         try? systemStoryManager.setHasViewedOnboardingStory(source: source, transaction: SDSDB.shimOnlyBridge(tx))

@@ -195,7 +195,7 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift, Payments
                 throw OWSAssertionError("Invalid responseObject.")
             }
             let timestamp: UInt64 = try parser.required(key: "timestamp")
-            let serviceDate = NSDate.ows_date(withMillisecondsSince1970: timestamp)
+            let serviceDate = Date(millisecondsSince1970: timestamp)
             let currencyObjects: [Any] = try parser.required(key: "currencies")
             var conversionRateMap = ConversionRateMap()
             for currencyObject in currencyObjects {

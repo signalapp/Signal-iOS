@@ -28,7 +28,7 @@ open class MessageBackupManagerMock: MessageBackupManager {
                 digest: Data(),
                 encryptedDataLength: 0,
                 plaintextDataLength: 0),
-            beginTimestamp: Date.distantPast.ows_millisecondsSince1970,
+            beginTimestamp: 0,
             finishTimestamp: Date().ows_millisecondsSince1970
         )
     }

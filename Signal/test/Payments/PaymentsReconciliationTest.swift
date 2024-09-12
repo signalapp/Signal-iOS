@@ -375,7 +375,7 @@ class PaymentsReconciliationTest: SignalBaseTest {
         }
     }
 
-    private static let date2 = NSDate.ows_date(withMillisecondsSince1970: 1000 + 2)
+    private static let date2 = Date(millisecondsSince1970: 1000 + 2)
     private static let block2 = MobileCoin.BlockMetadata(index: 2, timestamp: date2)
     private static let block4 = MobileCoin.BlockMetadata(index: 2, timestamp: date2)
 

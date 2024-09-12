@@ -471,7 +471,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
             }
         }
 
-        let collapseCutoffTimestamp = NSDate.ows_millisecondsSince1970(for: viewStateSnapshot.collapseCutoffDate)
+        let collapseCutoffTimestamp = viewStateSnapshot.collapseCutoffDate.ows_millisecondsSince1970
         if interaction.receivedAtTimestamp > collapseCutoffTimestamp {
             itemViewState.shouldHideFooter = false
         }
@@ -510,7 +510,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
         let itemTimestamp = item.interaction.timestamp
         owsAssertDebug(itemTimestamp > 0)
 
-        let itemDate = NSDate.ows_date(withMillisecondsSince1970: itemTimestamp)
+        let itemDate = Date(millisecondsSince1970: itemTimestamp)
         let daysBeforeToday = DateUtil.daysFrom(firstDate: itemDate, toSecondDate: todayDate)
 
         var shouldShowDate = false

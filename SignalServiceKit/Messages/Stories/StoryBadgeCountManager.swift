@@ -46,7 +46,7 @@ public class StoryBadgeCountManager: NSObject, Dependencies {
             var latestStoryPerContext = [StoryContext: StoryMessage]()
 
             StoryFinder.enumerateUnreadIncomingStories(transaction: transaction, block: { storyMessage, _ in
-                let latestKnownTimestamp = latestStoryPerContext[storyMessage.context]?.timestamp ?? Date.distantPast.ows_millisecondsSince1970
+                let latestKnownTimestamp = latestStoryPerContext[storyMessage.context]?.timestamp ?? 0
                 if storyMessage.timestamp > latestKnownTimestamp {
                     latestStoryPerContext[storyMessage.context] = storyMessage
                 }

@@ -507,7 +507,7 @@ public class FullTextSearcher: NSObject {
                 threadViewModel: threadViewModel,
                 sortKey: sortKey,
                 messageId: message.uniqueId,
-                messageDate: NSDate.ows_date(withMillisecondsSince1970: message.timestamp),
+                messageDate: Date(millisecondsSince1970: message.timestamp),
                 snippet: snippet
             )
             guard messages[sortKey] == nil else { return }

@@ -198,7 +198,7 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
             )
         )
 
-        let itemDate = NSDate.ows_date(withMillisecondsSince1970: interaction.timestamp)
+        let itemDate = Date(millisecondsSince1970: interaction.timestamp)
         let daysPrior = DateUtil.daysFrom(firstDate: itemDate, toSecondDate: Date())
         if forceDateHeader || daysPrior > currentDaysBefore {
             currentDaysBefore = daysPrior

@@ -121,7 +121,7 @@ public class DateUtil {
         let nowTimestamp = NSDate.ows_millisecondTimeStamp()
         let isFutureTimestamp = pastTimestamp >= nowTimestamp
 
-        let pastDate = NSDate.ows_date(withMillisecondsSince1970: pastTimestamp)
+        let pastDate = Date(millisecondsSince1970: pastTimestamp)
         let dateString: String = {
             if isFutureTimestamp || dateIsToday(pastDate) {
                 return OWSLocalizedString("DATE_TODAY", comment: "The current day.")
@@ -135,7 +135,7 @@ public class DateUtil {
     }
 
     public static func formatTimestampShort(_ timestamp: UInt64) -> String {
-        return formatDateShort(NSDate.ows_date(withMillisecondsSince1970: timestamp))
+        return formatDateShort(Date(millisecondsSince1970: timestamp))
     }
 
     public static func formatDateShort(_ date: Date, nowDate: Date = Date()) -> String {
@@ -159,7 +159,7 @@ public class DateUtil {
     }
 
     public static func formatTimestampAsTime(_ timestamp: UInt64) -> String {
-        return formatDateAsTime(NSDate.ows_date(withMillisecondsSince1970: timestamp))
+        return formatDateAsTime(Date(millisecondsSince1970: timestamp))
     }
 
     public static func formatDateAsTime(_ date: Date) -> String {
@@ -396,8 +396,8 @@ public class DateUtil {
     }()
 
     public static func isSameDay(timestamp timestamp1: UInt64, timestamp timestamp2: UInt64) -> Bool {
-        isSameDay(date: NSDate.ows_date(withMillisecondsSince1970: timestamp1),
-                  date: NSDate.ows_date(withMillisecondsSince1970: timestamp2))
+        isSameDay(date: Date(millisecondsSince1970: timestamp1),
+                  date: Date(millisecondsSince1970: timestamp2))
     }
 
     public static func isSameDay(date date1: Date, date date2: Date) -> Bool {

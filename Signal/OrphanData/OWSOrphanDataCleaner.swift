@@ -701,7 +701,7 @@ enum OWSOrphanDataCleaner {
                     continue
                 }
                 // Don't delete interactions which were created in the last N minutes.
-                let creationDate = NSDate.ows_date(withMillisecondsSince1970: interaction.timestamp) as Date
+                let creationDate = Date(millisecondsSince1970: interaction.timestamp)
                 guard creationDate <= thresholdDate else {
                     Logger.info("Skipping orphan interaction due to age: \(creationDate.timeIntervalSinceNow)")
                     continue
