@@ -66,7 +66,7 @@ enum OWSFrontingHost {
         }
     }
 
-    private static let fastlySniHeaders = ["github.githubassets.com", "pinterest.com", "www.redditstatic.com"]
+    private static let fastlySniHeaders = ["fastly.jsdelivr.net", "github.githubassets.com", "www.python.org", "www.gov.uk"]
     private static let googleCommonSniHeaders = [
         "www.google.com",
         "android.clients.google.com",
