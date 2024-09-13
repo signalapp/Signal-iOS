@@ -71,7 +71,6 @@ public class CaptchaView: UIView {
 
         let webView = WKWebView(frame: .zero, configuration: configuration)
         webView.allowsBackForwardNavigationGestures = false
-        webView.customUserAgent = OWSURLSession.userAgentHeaderValueSignalIos
         webView.allowsLinkPreview = false
         webView.scrollView.contentInset = .zero
         webView.layoutMargins = .zero
