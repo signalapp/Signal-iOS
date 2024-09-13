@@ -289,7 +289,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 - (void)updateExpiresAt
 {
     if (self.hasPerConversationExpirationStarted) {
-        _expiresAt = _expireStartedAt + _expiresInSeconds * 1000;
+        _expiresAt = _expireStartedAt + (uint64_t)_expiresInSeconds * 1000;
     } else {
         _expiresAt = 0;
     }
