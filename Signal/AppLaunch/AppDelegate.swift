@@ -142,11 +142,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
     // MARK: - App Launch
 
-    // We have to hold a reference to this object so it isn't deallocated.
-    // TODO: remove this (and the incremental migrator itself) once we make this
-    // migration a launch-blocking GRDB migration.
-    private var incrementalMessageTSAttachmentMigrator: IncrementalMessageTSAttachmentMigrator?
-
     func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
@@ -238,11 +233,17 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         // Do this even if `appVersion` isn't used -- there's side effects.
         let appVersion = AppVersionImpl.shared
 
+        // Set up and register incremental migration for TSAttachment -> v2 Attachment.
+        // TODO: remove this (and the incremental migrator itself) once we make this
+        // migration a launch-blocking GRDB migration.
+        let incrementalMessageTSAttachmentMigrator = IncrementalMessageTSAttachmentMigratorImpl(databaseStorage: databaseStorage)
+
         let launchContext = LaunchContext(
             appContext: mainAppContext,
             databaseStorage: databaseStorage,
             keychainStorage: keychainStorage,
-            launchStartedAt: launchStartedAt
+            launchStartedAt: launchStartedAt,
+            incrementalMessageTSAttachmentMigrator: incrementalMessageTSAttachmentMigrator
         )
 
         // We need to do this _after_ we set up logging, when the keychain is unlocked,
@@ -273,15 +274,9 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         let appLaunchesAttempted = userDefaults.integer(forKey: Constants.appLaunchesAttemptedKey)
         userDefaults.set(appLaunchesAttempted + 1, forKey: Constants.appLaunchesAttemptedKey)
 
-        // Set up and register incremental migration for TSAttachment -> v2 Attachment.
-        // TODO: remove this (and the incremental migrator itself) once we make this
-        // migration a launch-blocking GRDB migration.
-        let incrementalMessageTSAttachmentMigrator = IncrementalMessageTSAttachmentMigratorImpl(databaseStorage: databaseStorage)
-
         // We _must_ register BGProcessingTask handlers synchronously in didFinishLaunching.
         // https://developer.apple.com/documentation/backgroundtasks/bgtaskscheduler/register(fortaskwithidentifier:using:launchhandler:)
         incrementalMessageTSAttachmentMigrator.registerBGProcessingTask(databaseStorage: databaseStorage)
-        self.incrementalMessageTSAttachmentMigrator = incrementalMessageTSAttachmentMigrator
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             incrementalMessageTSAttachmentMigrator.scheduleBGProcessingTaskIfNeeded(databaseStorage: databaseStorage)
         }
@@ -308,6 +303,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         var databaseStorage: SDSDatabaseStorage
         var keychainStorage: any KeychainStorage
         var launchStartedAt: CFTimeInterval
+        var incrementalMessageTSAttachmentMigrator: IncrementalMessageTSAttachmentMigrator
     }
 
     private func launchApp(
@@ -352,8 +348,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             callMessageHandler: WebRTCCallMessageHandler(),
             currentCallProvider: currentCall,
             notificationPresenter: NotificationPresenterImpl(),
-            incrementalTSAttachmentMigrator: incrementalMessageTSAttachmentMigrator
-                ?? NoOpIncrementalMessageTSAttachmentMigrator()
+            incrementalTSAttachmentMigrator: launchContext.incrementalMessageTSAttachmentMigrator
         )
         setupNSEInteroperation()
         SUIEnvironment.shared.setUp(authCredentialManager: databaseContinuation.authCredentialManager)
