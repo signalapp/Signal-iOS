@@ -81,11 +81,21 @@ class GroupCallViewController: UIViewController {
             passthroughView.autoPinEdgesToSuperviewEdges()
         }
 
+        private var previousHit: (timestamp: TimeInterval, point: CGPoint, view: UIView?)?
+
         override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-            let view = super.hitTest(point, with: event)
-            if view == passthroughView {
-                return nil
+            var view = super.hitTest(point, with: event)
+
+            let isSameEventAsPreviousHitTest = previousHit?.timestamp == event?.timestamp && previousHit?.point == point
+            let previousHitWasNotPassedThrough = previousHit?.view != nil
+
+            if
+                view == passthroughView,
+                !(isSameEventAsPreviousHitTest && previousHitWasNotPassedThrough)
+            {
+                view = nil
             }
+            self.previousHit = event.map { ($0.timestamp, point, view) }
             return view
         }
     }
