@@ -53,6 +53,7 @@ public class DependenciesBridge {
     public let authorMergeHelper: AuthorMergeHelper
     public let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
     public let badgeCountFetcher: BadgeCountFetcher
+    public let callLinkStore: any CallLinkRecordStore
     public let callRecordDeleteManager: CallRecordDeleteManager
     public let callRecordMissedCallManager: CallRecordMissedCallManager
     public let callRecordQuerier: CallRecordQuerier
@@ -163,6 +164,7 @@ public class DependenciesBridge {
         authorMergeHelper: AuthorMergeHelper,
         backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
         badgeCountFetcher: BadgeCountFetcher,
+        callLinkStore: any CallLinkRecordStore,
         callRecordDeleteManager: CallRecordDeleteManager,
         callRecordMissedCallManager: CallRecordMissedCallManager,
         callRecordQuerier: CallRecordQuerier,
@@ -272,6 +274,7 @@ public class DependenciesBridge {
         self.authorMergeHelper = authorMergeHelper
         self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
         self.badgeCountFetcher = badgeCountFetcher
+        self.callLinkStore = callLinkStore
         self.callRecordDeleteManager = callRecordDeleteManager
         self.callRecordMissedCallManager = callRecordMissedCallManager
         self.callRecordQuerier = callRecordQuerier

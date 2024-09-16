@@ -508,6 +508,7 @@ public class AppSetup {
             dateProvider: { Date() }
         )
 
+        let callLinkStore = CallLinkRecordStoreImpl()
         let deletedCallRecordStore = DeletedCallRecordStoreImpl()
         let deletedCallRecordCleanupManager = DeletedCallRecordCleanupManagerImpl(
             dateProvider: dateProvider,
@@ -1061,6 +1062,7 @@ public class AppSetup {
             authorMergeHelper: authorMergeHelper,
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
             badgeCountFetcher: badgeCountFetcher,
+            callLinkStore: callLinkStore,
             callRecordDeleteManager: callRecordDeleteManager,
             callRecordMissedCallManager: callRecordMissedCallManager,
             callRecordQuerier: callRecordQuerier,

@@ -169,22 +169,36 @@ class CreateCallLinkViewController: InteractiveSheetViewController {
             return
         }
         didPersist = true
+        createCallLinkRecord()
+    }
 
-        // [CallLink] TODO: Insert it into the Calls Tab.
-        // [CallLink] TODO: Move this into a -Manager object.
-        Task { [callLink, adminPasskey] in
-            await NSObject.databaseStorage.awaitableWrite { tx in
-                let localThread = TSContactThread.getOrCreateLocalThread(transaction: tx)!
-                let callLinkUpdate = OutgoingCallLinkUpdateMessage(
-                    localThread: localThread,
-                    rootKey: callLink.rootKey,
-                    adminPasskey: adminPasskey,
-                    tx: tx
-                )
-                let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueueRef
-                messageSenderJobQueue.add(message: .preprepared(transientMessageWithoutAttachments: callLinkUpdate), transaction: tx)
+    private func createCallLinkRecord() {
+        // [CallLink] TODO: Make this asynchronous if needed.
+        let callLinkStore = DependenciesBridge.shared.callLinkStore
+        databaseStorage.write { tx in
+            if FeatureFlags.callLinkRecordTable {
+                do {
+                    var callLinkRecord = try callLinkStore.fetchOrInsert(rootKey: callLink.rootKey, tx: tx.asV2Write)
+                    callLinkRecord.adminPasskey = adminPasskey
+                    callLinkRecord.updateState(callLinkState)
+                    try callLinkStore.update(callLinkRecord, tx: tx.asV2Write)
+                } catch {
+                    owsFailDebug("Couldn't create CallLinkRecord: \(error)")
+                }
             }
+
+            // [CallLink] TODO: Move this into a -Manager object.
+            let localThread = TSContactThread.getOrCreateLocalThread(transaction: tx)!
+            let callLinkUpdate = OutgoingCallLinkUpdateMessage(
+                localThread: localThread,
+                rootKey: callLink.rootKey,
+                adminPasskey: adminPasskey,
+                tx: tx
+            )
+            let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueueRef
+            messageSenderJobQueue.add(message: .preprepared(transientMessageWithoutAttachments: callLinkUpdate), transaction: tx)
         }
+        storageServiceManager.recordPendingUpdates(callLinkRootKeys: [callLink.rootKey])
     }
 
     private func joinCall() {

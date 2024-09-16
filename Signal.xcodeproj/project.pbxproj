@@ -580,6 +580,8 @@
 		50169695291B0627007AD709 /* ContactDiscoveryManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50169694291B0627007AD709 /* ContactDiscoveryManagerTest.swift */; };
 		5018B9DD2ADF4157001DFB12 /* AuthedDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5018B9DC2ADF4157001DFB12 /* AuthedDevice.swift */; };
 		501AD1C42AF17A16001B796A /* ECKeyPairTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501AD1C32AF17A16001B796A /* ECKeyPairTest.swift */; };
+		501F11002C7FD688008FC0DD /* CallLinkRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501F10FF2C7FD688008FC0DD /* CallLinkRecord.swift */; };
+		501F11022C7FD999008FC0DD /* CallLinkRecordStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501F11012C7FD999008FC0DD /* CallLinkRecordStore.swift */; };
 		5020EFA22BA8A5390038C2D5 /* CanonicalPhoneNumber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5020EFA12BA8A5390038C2D5 /* CanonicalPhoneNumber.swift */; };
 		5021B0332C0106470028AC87 /* CallOfferHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5021B0322C0106470028AC87 /* CallOfferHandler.swift */; };
 		502B1B55297B28AF00FDB3AE /* ErrorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502B1B54297B28AF00FDB3AE /* ErrorTest.swift */; };
@@ -3927,6 +3929,8 @@
 		5018B9DC2ADF4157001DFB12 /* AuthedDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthedDevice.swift; sourceTree = "<group>"; };
 		501AD1C32AF17A16001B796A /* ECKeyPairTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ECKeyPairTest.swift; sourceTree = "<group>"; };
 		501D64FA28C027BA008D5993 /* OWSPaymentsLock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSPaymentsLock.swift; sourceTree = "<group>"; };
+		501F10FF2C7FD688008FC0DD /* CallLinkRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallLinkRecord.swift; sourceTree = "<group>"; };
+		501F11012C7FD999008FC0DD /* CallLinkRecordStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallLinkRecordStore.swift; sourceTree = "<group>"; };
 		5020EFA12BA8A5390038C2D5 /* CanonicalPhoneNumber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanonicalPhoneNumber.swift; sourceTree = "<group>"; };
 		5021B0322C0106470028AC87 /* CallOfferHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallOfferHandler.swift; sourceTree = "<group>"; };
 		5027A6AB2AFC48D000D5AB95 /* LogFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogFormatter.swift; sourceTree = "<group>"; };
@@ -11749,6 +11753,8 @@
 				D9AA379D2A86C9660088EFFB /* Group */,
 				D9AA379E2A86CA3F0088EFFB /* Individual */,
 				50E42FE92C1BA3B900554BD6 /* CallHTTPClient.swift */,
+				501F10FF2C7FD688008FC0DD /* CallLinkRecord.swift */,
+				501F11012C7FD999008FC0DD /* CallLinkRecordStore.swift */,
 				50E42FE52C1B9EB900554BD6 /* CallLinkState.swift */,
 				50C831752BAA3A8000BEBF25 /* CallMessageHandler.swift */,
 				32525F9427C74B1A0099E801 /* GroupCallManager.swift */,
@@ -15487,6 +15493,8 @@
 				50D3136F2BFFE9370023EDCC /* CallEventInserter.swift in Sources */,
 				50E42FEA2C1BA3B900554BD6 /* CallHTTPClient.swift in Sources */,
 				50A4AC622C111FAE00D89C8E /* CallLinkAuthCredential.swift in Sources */,
+				501F11002C7FD688008FC0DD /* CallLinkRecord.swift in Sources */,
+				501F11022C7FD999008FC0DD /* CallLinkRecordStore.swift in Sources */,
 				50150DAC2C80E2CE0047F1CB /* CallLinkState.swift in Sources */,
 				50C831762BAA3A8000BEBF25 /* CallMessageHandler.swift in Sources */,
 				72C9058E2B9AC8E600E586B8 /* CallMessageRelay.swift in Sources */,

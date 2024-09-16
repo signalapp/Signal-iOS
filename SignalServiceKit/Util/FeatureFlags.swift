@@ -47,6 +47,7 @@ public enum FeatureFlags {
 
     public static let callLinkCreate = build.includes(.internal)
     public static let callLinkStorageService = false
+    public static let callLinkRecordTable = false
 
     public static let chatListFilter = build.includes(.internal)
 
