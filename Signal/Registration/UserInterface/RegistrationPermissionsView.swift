@@ -12,25 +12,28 @@ protocol RegistrationPermissionsPresenter {
     func requestPermissions() async
 }
 
-final class RegistrationPermissionsViewController: UIHostingController<RegistrationPermissionsView> {
-    init(presenter: any RegistrationPermissionsPresenter) {
-        super.init(rootView: RegistrationPermissionsView(presenter: presenter))
-    }
-
-    @available(*, unavailable)
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-}
-
 struct RegistrationPermissionsView: View {
+    var requestingContactsAuthorization: Bool
     var presenter: any RegistrationPermissionsPresenter
     @State private var requestPermissions: RequestPermissionsTask?
 
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
     @AccessibleLayoutMetric private var headerPadding = 16
     @AccessibleLayoutMetric private var headerSpacing = 12
     @AccessibleLayoutMetric(scale: 0.5) private var sectionSpacing = 64
+
+    private var isCompactLayout: Bool {
+        horizontalSizeClass == .compact || verticalSizeClass == .compact
+    }
+
+    private var layoutMargins: EdgeInsets {
+        if isCompactLayout {
+            EdgeInsets(.layoutMarginsForRegistration(UIUserInterfaceSizeClass(horizontalSizeClass)))
+        } else {
+            EdgeInsets()
+        }
+    }
 
     var body: some View {
         VStack {
@@ -44,7 +47,7 @@ struct RegistrationPermissionsView: View {
             .multilineTextAlignment(.center)
             .padding(.horizontal, headerPadding)
 
-            ScrollView {
+            ScrollableWhenCompact {
                 VStack {
                     Spacer(minLength: sectionSpacing)
                         .frame(maxHeight: $sectionSpacing.rawValue)
@@ -59,14 +62,18 @@ struct RegistrationPermissionsView: View {
                             PermissionIcon(.bellRing)
                         }
 
-                        PermissionDescription {
-                            Text(OWSLocalizedString("ONBOARDING_PERMISSIONS_CONTACTS_TITLE", comment: "Title introducing the 'Contacts' permission in the 'onboarding permissions' view."))
-                        } description: {
-                            Text(OWSLocalizedString("ONBOARDING_PERMISSIONS_CONTACTS_DESCRIPTION", comment: "Description of the 'Contacts' permission in the 'onboarding permissions' view."))
-                        } icon: {
-                            PermissionIcon(.personCircleLarge)
+                        if requestingContactsAuthorization {
+                            PermissionDescription {
+                                Text(OWSLocalizedString("ONBOARDING_PERMISSIONS_CONTACTS_TITLE", comment: "Title introducing the 'Contacts' permission in the 'onboarding permissions' view."))
+                            } description: {
+                                Text(OWSLocalizedString("ONBOARDING_PERMISSIONS_CONTACTS_DESCRIPTION", comment: "Description of the 'Contacts' permission in the 'onboarding permissions' view."))
+                            } icon: {
+                                PermissionIcon(.personCircleLarge)
+                            }
                         }
                     }
+                    // Expand to available width when compact, otherwise horizontally center.
+                    .frame(maxWidth: isCompactLayout ? .infinity : nil, alignment: .leading)
 
                     Spacer(minLength: sectionSpacing)
                         .layoutPriority(-1)
@@ -78,11 +85,16 @@ struct RegistrationPermissionsView: View {
                     .dynamicTypeSize(...DynamicTypeSize.accessibility2)
                     .frame(maxWidth: 400)
                 }
-                .padding(EdgeInsets(.layoutMarginsForRegistration(UIUserInterfaceSizeClass(horizontalSizeClass))))
+                .padding(layoutMargins)
             }
-            .scrollBounceBehaviorIfAvailable(.basedOnSize)
         }
         .foregroundStyle(Color.Signal.label, Color.Signal.secondaryLabel, Color.Signal.tertiaryLabel)
+        // Use larger text size on iPad.
+        .transformEnvironment(\.dynamicTypeSize) { dynamicTypeSize in
+            if !isCompactLayout, dynamicTypeSize < .xLarge {
+                dynamicTypeSize = .xLarge
+            }
+        }
         .dynamicTypeSize(...DynamicTypeSize.accessibility3)
         .minimumScaleFactor(0.9)
         .navigationBarBackButtonHidden()
@@ -150,7 +162,6 @@ private extension RegistrationPermissionsView {
                             .foregroundStyle(.secondary)
                             .layoutPriority(1)
                     }
-                    Spacer()
                 }
             }
         }
@@ -181,6 +192,17 @@ private extension RegistrationPermissionsView {
     }
 }
 
+final class RegistrationPermissionsViewController: UIHostingController<RegistrationPermissionsView> {
+    init(requestingContactsAuthorization: Bool, presenter: any RegistrationPermissionsPresenter) {
+        super.init(rootView: RegistrationPermissionsView(requestingContactsAuthorization: requestingContactsAuthorization, presenter: presenter))
+    }
+
+    @available(*, unavailable)
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
 #if DEBUG
 private struct PreviewPermissionsPresenter: RegistrationPermissionsPresenter {
     func requestPermissions() async {
@@ -191,7 +213,7 @@ private struct PreviewPermissionsPresenter: RegistrationPermissionsPresenter {
 #Preview {
     VStack {
         Color.clear.frame(height: 44)
-        RegistrationPermissionsView(presenter: PreviewPermissionsPresenter())
+        RegistrationPermissionsView(requestingContactsAuthorization: true, presenter: PreviewPermissionsPresenter())
     }
 }
 #endif

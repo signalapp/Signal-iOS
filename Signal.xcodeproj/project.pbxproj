@@ -26,6 +26,7 @@
 		0550A5E22C4035170072CC02 /* CLVViewInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0550A5E12C4035170072CC02 /* CLVViewInfo.swift */; };
 		0550A5E42C4048CF0072CC02 /* ChatListFilterFooterCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0550A5E32C4048CF0072CC02 /* ChatListFilterFooterCell.swift */; };
 		05572BC42BFC0094006A72F1 /* DoubleTapToEditOnboardingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05572BC32BFC0094006A72F1 /* DoubleTapToEditOnboardingController.swift */; };
+		05594CCE2C989F1900CCBFF6 /* ScrollableWhenCompact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05594CCD2C989F1900CCBFF6 /* ScrollableWhenCompact.swift */; };
 		058B49932C66805500307D38 /* AVAssetExportSession+Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058B49922C66804B00307D38 /* AVAssetExportSession+Async.swift */; };
 		059982642C6D0C5200C87533 /* ChatListPinInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059982632C6D0C4F00C87533 /* ChatListPinInfo.swift */; };
 		05B411252C62845000A1EDBC /* ChatListInboxFilterSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B411242C62845000A1EDBC /* ChatListInboxFilterSection.swift */; };
@@ -3422,6 +3423,7 @@
 		0550A5E12C4035170072CC02 /* CLVViewInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLVViewInfo.swift; sourceTree = "<group>"; };
 		0550A5E32C4048CF0072CC02 /* ChatListFilterFooterCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListFilterFooterCell.swift; sourceTree = "<group>"; };
 		05572BC32BFC0094006A72F1 /* DoubleTapToEditOnboardingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoubleTapToEditOnboardingController.swift; sourceTree = "<group>"; };
+		05594CCD2C989F1900CCBFF6 /* ScrollableWhenCompact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollableWhenCompact.swift; sourceTree = "<group>"; };
 		058B49922C66804B00307D38 /* AVAssetExportSession+Async.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVAssetExportSession+Async.swift"; sourceTree = "<group>"; };
 		059982632C6D0C4F00C87533 /* ChatListPinInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListPinInfo.swift; sourceTree = "<group>"; };
 		05B411242C62845000A1EDBC /* ChatListInboxFilterSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListInboxFilterSection.swift; sourceTree = "<group>"; };
@@ -10555,6 +10557,7 @@
 			children = (
 				05104E392C8B540C00F8851F /* AccessibleLayoutMetric.swift */,
 				05104D172C8A151100F8851F /* AsyncViewTask.swift */,
+				05594CCD2C989F1900CCBFF6 /* ScrollableWhenCompact.swift */,
 				0510F69D2C91EB2800FA3FDE /* ScrollBounceBehaviorIfAvailable.swift */,
 				B9D721752C87B8EB007EDA85 /* SwiftUI+Animations.swift */,
 			);
@@ -15175,6 +15178,7 @@
 				88B987022880890800F8C74D /* SafetyNumberConfirmationSheet.swift in Sources */,
 				88B9870928808A8A00F8C74D /* ScanQRCodeViewController.swift in Sources */,
 				7677E41129F7A60500AC6A75 /* ScreenLockViewController.swift in Sources */,
+				05594CCE2C989F1900CCBFF6 /* ScrollableWhenCompact.swift in Sources */,
 				0510F69E2C91EB3000FA3FDE /* ScrollBounceBehaviorIfAvailable.swift in Sources */,
 				50597BBF2B97D629004681E1 /* SearchableNameFinder.swift in Sources */,
 				66FC638E29EDABAC00F00DAC /* SearchDisplayConfigurations.swift in Sources */,
