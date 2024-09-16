@@ -82,7 +82,7 @@ class CreateCallLinkViewController: InteractiveSheetViewController {
         let view = CallLinkCardView(
             callLink: self.callLink,
             callLinkState: self.callLinkState,
-            adminPasskey: self.adminPasskey
+            joinAction: { [unowned self] in self.joinCall() }
         )
         cell.contentView.addSubview(view)
         view.autoPinLeadingToSuperviewMargin()
@@ -185,6 +185,11 @@ class CreateCallLinkViewController: InteractiveSheetViewController {
                 messageSenderJobQueue.add(message: .preprepared(transientMessageWithoutAttachments: callLinkUpdate), transaction: tx)
             }
         }
+    }
+
+    private func joinCall() {
+        persistIfNeeded()
+        GroupCallViewController.presentLobby(for: callLink, adminPasskey: adminPasskey)
     }
 
     private func editName() {
@@ -349,21 +354,10 @@ private class CallLinkCardView: UIView {
         return stackView
     }()
 
-    private lazy var joinButton: UIButton = {
-        return JoinButton(callLink: callLink, adminPasskey: adminPasskey)
-    }()
+    private let joinButton: UIButton
 
     private class JoinButton: UIButton {
-        private let callLink: CallLink
-        private let adminPasskey: Data
-
-        init(
-            callLink: CallLink,
-            adminPasskey: Data
-        ) {
-            self.callLink = callLink
-            self.adminPasskey = adminPasskey
-
+        init(joinAction: @escaping () -> Void) {
             super.init(frame: .zero)
 
             let view = UIView()
@@ -379,7 +373,7 @@ private class CallLinkCardView: UIView {
             view.isUserInteractionEnabled = false
 
             self.clipsToBounds = true
-            self.addTarget(self, action: #selector(joinButtonWasTapped), for: .touchUpInside)
+            self.addAction(UIAction(handler: { _ in joinAction() }), for: .touchUpInside)
 
             view.addSubview(label)
             label.autoPinEdge(.top, to: .top, of: view, withOffset: Constants.vMargin)
@@ -391,11 +385,6 @@ private class CallLinkCardView: UIView {
             view.autoPinEdgesToSuperviewEdges()
 
             self.accessibilityLabel = CallStrings.joinCallPillButtonTitle
-        }
-
-        @objc
-        private func joinButtonWasTapped() {
-            GroupCallViewController.presentLobby(for: self.callLink, adminPasskey: self.adminPasskey)
         }
 
         override public var bounds: CGRect {
@@ -420,16 +409,15 @@ private class CallLinkCardView: UIView {
 
     private let callLink: CallLink
     private let callLinkState: CallLinkState
-    private let adminPasskey: Data
 
     init(
         callLink: CallLink,
         callLinkState: CallLinkState,
-        adminPasskey: Data
+        joinAction: @escaping () -> Void
     ) {
         self.callLink = callLink
         self.callLinkState = callLinkState
-        self.adminPasskey = adminPasskey
+        self.joinButton = JoinButton(joinAction: joinAction)
 
         super.init(frame: .zero)
 
