@@ -15,10 +15,14 @@ protocol RegistrationPermissionsPresenter {
 struct RegistrationPermissionsView: View {
     var requestingContactsAuthorization: Bool
     var presenter: any RegistrationPermissionsPresenter
+
+    @State private var hasAppeared = (notifications: false, contacts: false)
     @State private var requestPermissions: RequestPermissionsTask?
 
+    @Environment(\.appearanceTransitionState) private var appearanceTransitionState
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.verticalSizeClass) private var verticalSizeClass
+
     @AccessibleLayoutMetric private var headerPadding = 16
     @AccessibleLayoutMetric private var headerSpacing = 12
     @AccessibleLayoutMetric(scale: 0.5) private var sectionSpacing = 64
@@ -53,23 +57,30 @@ struct RegistrationPermissionsView: View {
                         .frame(maxHeight: $sectionSpacing.rawValue)
                         .layoutPriority(-1)
 
-                    VStack(alignment: .leading, spacing: 32) {
-                        PermissionDescription {
-                            Text(OWSLocalizedString("ONBOARDING_PERMISSIONS_NOTIFICATIONS_TITLE", comment: "Title introducing the 'Notifications' permission in the 'onboarding permissions' view."))
-                        } description: {
-                            Text(OWSLocalizedString("ONBOARDING_PERMISSIONS_NOTIFICATIONS_DESCRIPTION", comment: "Description of the 'Notifications' permission in the 'onboarding permissions' view."))
-                        } icon: {
-                            PermissionIcon(.bellRing)
-                        }
+                    ZStack(alignment: .topLeading) {
+                        // Make sure the full width is laid out whether
+                        // or not the individual views have appeared.
+                        VStack(alignment: .leading, spacing: 32) {
+                            notificationsPermissionView
 
-                        if requestingContactsAuthorization {
-                            PermissionDescription {
-                                Text(OWSLocalizedString("ONBOARDING_PERMISSIONS_CONTACTS_TITLE", comment: "Title introducing the 'Contacts' permission in the 'onboarding permissions' view."))
-                            } description: {
-                                Text(OWSLocalizedString("ONBOARDING_PERMISSIONS_CONTACTS_DESCRIPTION", comment: "Description of the 'Contacts' permission in the 'onboarding permissions' view."))
-                            } icon: {
-                                PermissionIcon(.personCircleLarge)
+                            if requestingContactsAuthorization {
+                                contactsPermissionView
                             }
+                        }
+                        .hidden()
+
+                        // Animate them in one-by-one.
+                        VStack(alignment: .leading, spacing: 32) {
+                            Group {
+                                if hasAppeared.notifications {
+                                    notificationsPermissionView
+                                }
+
+                                if requestingContactsAuthorization && hasAppeared.contacts {
+                                    contactsPermissionView
+                                }
+                            }
+                            .transition(.offset(x: 0, y: -20).combined(with: .opacity))
                         }
                     }
                     // Expand to available width when compact, otherwise horizontally center.
@@ -88,6 +99,20 @@ struct RegistrationPermissionsView: View {
                 .padding(layoutMargins)
             }
         }
+        .onChange(of: appearanceTransitionState) { newValue in
+            if newValue == .finished {
+                let duration = 0.75
+                let spring = Animation.spring(duration: duration)
+                withAnimation(spring) {
+                    hasAppeared.notifications = true
+                }
+                if requestingContactsAuthorization {
+                    withAnimation(spring.delay(duration)) {
+                        hasAppeared.contacts = true
+                    }
+                }
+            }
+        }
         .foregroundStyle(Color.Signal.label, Color.Signal.secondaryLabel, Color.Signal.tertiaryLabel)
         // Use larger text size on iPad.
         .transformEnvironment(\.dynamicTypeSize) { dynamicTypeSize in
@@ -102,6 +127,26 @@ struct RegistrationPermissionsView: View {
         // FIXME: Forcing light mode for consistency with the rest of registration
         .background(Color.Signal.background)
         .environment(\.colorScheme, .light)
+    }
+
+    private var notificationsPermissionView: some View {
+        PermissionDescription {
+            Text(OWSLocalizedString("ONBOARDING_PERMISSIONS_NOTIFICATIONS_TITLE", comment: "Title introducing the 'Notifications' permission in the 'onboarding permissions' view."))
+        } description: {
+            Text(OWSLocalizedString("ONBOARDING_PERMISSIONS_NOTIFICATIONS_DESCRIPTION", comment: "Description of the 'Notifications' permission in the 'onboarding permissions' view."))
+        } icon: {
+            PermissionIcon(.bellRing)
+        }
+    }
+
+    private var contactsPermissionView: some View {
+        PermissionDescription {
+            Text(OWSLocalizedString("ONBOARDING_PERMISSIONS_CONTACTS_TITLE", comment: "Title introducing the 'Contacts' permission in the 'onboarding permissions' view."))
+        } description: {
+            Text(OWSLocalizedString("ONBOARDING_PERMISSIONS_CONTACTS_DESCRIPTION", comment: "Description of the 'Contacts' permission in the 'onboarding permissions' view."))
+        } icon: {
+            PermissionIcon(.personCircleLarge)
+        }
     }
 }
 
@@ -192,9 +237,9 @@ private extension RegistrationPermissionsView {
     }
 }
 
-final class RegistrationPermissionsViewController: UIHostingController<RegistrationPermissionsView> {
+final class RegistrationPermissionsViewController: HostingController<RegistrationPermissionsView> {
     init(requestingContactsAuthorization: Bool, presenter: any RegistrationPermissionsPresenter) {
-        super.init(rootView: RegistrationPermissionsView(requestingContactsAuthorization: requestingContactsAuthorization, presenter: presenter))
+        super.init(wrappedView: RegistrationPermissionsView(requestingContactsAuthorization: requestingContactsAuthorization, presenter: presenter))
     }
 
     @available(*, unavailable)
