@@ -105,17 +105,22 @@ public class AttachmentStream {
 
         let tmpURL: URL
         if let filename {
+            var normalizedFilename = (filename as NSString)
+                .deletingPathExtension
+                .trimmingCharacters(in: .whitespaces)
+
+            // Ensure that the filename is a valid filesystem name, replacing invalid characters with an underscore.
+            let invalidCharacterSets: [CharacterSet] = [.whitespacesAndNewlines, .illegalCharacters, .controlCharacters, .init(charactersIn: "<>|\\:()&;?*/~")]
+            for invalidCharacterSet in invalidCharacterSets {
+                normalizedFilename = normalizedFilename.components(separatedBy: invalidCharacterSet).joined(separator: "_")
+            }
+
+            // Remove leading periods to prevent hidden files, "." and ".." special file names.
+            let dotPrefixLength = normalizedFilename.prefix { $0 == "." }.count
+            normalizedFilename.removeFirst(dotPrefixLength)
+
             tmpURL = OWSFileSystem.temporaryFileUrl(
-                fileName: (filename as NSString)
-                    .deletingPathExtension
-                    // We don't want percent-encoding, as these are user visible when sharing.
-                    // But we do need a url-safe name, so just use a custom replacement.
-                    // Replace : as well, even though its url-safe, because UIActivityViewController
-                    // doesn't like colons for some reason.
-                    .replaceCharacters(
-                        characterSet: .urlHostAllowed.inverted.union(.init(charactersIn: ":")),
-                        replacement: "_"
-                    ),
+                fileName: normalizedFilename,
                 fileExtension: pathExtension
             )
             try OWSFileSystem.deleteFileIfExists(url: tmpURL)
