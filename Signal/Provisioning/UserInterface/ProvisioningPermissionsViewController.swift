@@ -3,104 +3,39 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Contacts
-import Lottie
 import SignalServiceKit
 import SignalUI
 
-public class ProvisioningPermissionsViewController: ProvisioningBaseViewController {
-
-    private let animationView = LottieAnimationView(name: "notificationPermission")
-
-    override public func loadView() {
+class ProvisioningPermissionsViewController: ProvisioningBaseViewController {
+    override func loadView() {
         view = UIView()
+        view.backgroundColor = Theme.backgroundColor
         view.addSubview(primaryView)
         primaryView.autoPinEdgesToSuperviewEdges()
 
-        view.backgroundColor = Theme.backgroundColor
-
-        let titleText: String
-        let explanationText: String
-        let giveAccessText: String
-        titleText = OWSLocalizedString(
-            "LINKED_ONBOARDING_PERMISSIONS_TITLE",
-            comment: "Title of the 'onboarding permissions' view."
-        )
-        explanationText = OWSLocalizedString(
-            "LINKED_ONBOARDING_PERMISSIONS_EXPLANATION",
-            comment: "Explanation in the 'onboarding permissions' view."
-        )
-        giveAccessText = OWSLocalizedString(
-            "LINKED_ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON",
-            comment: "Label for the 'give access' button in the 'onboarding permissions' view."
-        )
-
-        let titleLabel = self.createTitleLabel(text: titleText)
-        titleLabel.accessibilityIdentifier = "onboarding.permissions." + "titleLabel"
-        titleLabel.setCompressionResistanceVerticalHigh()
-
-        let explanationLabel = self.createExplanationLabel(explanationText: explanationText)
-        explanationLabel.accessibilityIdentifier = "onboarding.permissions." + "explanationLabel"
-        explanationLabel.setCompressionResistanceVerticalHigh()
-
-        let giveAccessButton = self.primaryButton(title: giveAccessText, selector: #selector(giveAccessPressed))
-        giveAccessButton.accessibilityIdentifier = "onboarding.permissions." + "giveAccessButton"
-        giveAccessButton.setCompressionResistanceVerticalHigh()
-
-        animationView.loopMode = .playOnce
-        animationView.backgroundBehavior = .pauseAndRestore
-        animationView.contentMode = .scaleAspectFit
-        animationView.setContentHuggingHigh()
-
-        let stackView = UIStackView(arrangedSubviews: [
-            titleLabel,
-            UIView.spacer(withHeight: 20),
-            explanationLabel,
-            UIView.spacer(withHeight: 60),
-            animationView,
-            UIView.vStretchingSpacer(minHeight: 80),
-            ProvisioningBaseViewController.horizontallyWrap(primaryButton: giveAccessButton)
-        ])
-        stackView.axis = .vertical
-        stackView.alignment = .fill
-        stackView.spacing = 0
-        primaryView.addSubview(stackView)
-
-        stackView.autoPinEdgesToSuperviewMargins()
+        let content = RegistrationPermissionsViewController(requestingContactsAuthorization: false, presenter: self)
+        addChild(content)
+        primaryView.addSubview(content.view)
+        content.view.autoPinEdgesToSuperviewMargins()
+        content.didMove(toParent: self)
     }
 
-    override public func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        self.animationView.play()
-    }
-
-    // MARK: Requesting permissions
-
-    public func needsToAskForAnyPermissions() -> Guarantee<Bool> {
-        return Guarantee<Bool> { resolve in
+    func needsToAskForAnyPermissions() -> Guarantee<Bool> {
+        Guarantee { resolve in
             UNUserNotificationCenter.current().getNotificationSettings { settings in
                 resolve(settings.authorizationStatus == .notDetermined)
             }
         }
     }
+}
 
-    private func requestPermissions() {
+extension ProvisioningPermissionsViewController: RegistrationPermissionsPresenter {
+    func requestPermissions() async {
         Logger.info("")
 
         // If you request any additional permissions, make sure to add them to
         // `needsToAskForAnyPermissions`.
-        Task { @MainActor in
-            await PushRegistrationManager.shared.registerUserNotificationSettings()
-            self.provisioningController.provisioningPermissionsDidComplete(viewController: self)
-        }
-    }
-
-     // MARK: - Events
-
-    @objc
-    private func giveAccessPressed() {
-        Logger.info("")
-
-        requestPermissions()
+        await PushRegistrationManager.shared.registerUserNotificationSettings()
+        provisioningController.provisioningPermissionsDidComplete(viewController: self)
     }
 }
