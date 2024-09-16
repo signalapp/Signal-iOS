@@ -161,7 +161,7 @@ public class ShareableAttachment: NSObject, UIActivityItemSource {
 
         switch attachmentStream.contentType {
         case .audio, .file:
-            self.shareType = .decryptedFileURL(try attachmentStream.makeDecryptedCopy())
+            self.shareType = .decryptedFileURL(try attachmentStream.makeDecryptedCopy(filename: sourceFilename))
             return
         case .image, .animatedImage:
             shareType = .decryptedFileURL(try attachmentStream.makeDecryptedCopy(filename: sourceFilename))

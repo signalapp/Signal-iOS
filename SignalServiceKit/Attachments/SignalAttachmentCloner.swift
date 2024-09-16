@@ -24,7 +24,9 @@ public class SignalAttachmentClonerImpl: SignalAttachmentCloner {
         }
 
         // Just use a random file name on the decrypted copy; its internal use only.
-        let decryptedCopyUrl = try attachment.attachmentStream.makeDecryptedCopy(filename: nil)
+        let decryptedCopyUrl = try attachment.attachmentStream.makeDecryptedCopy(
+            filename: attachment.reference.sourceFilename
+        )
 
         let decryptedDataSource = try DataSourcePath(
             fileUrl: decryptedCopyUrl,

@@ -82,10 +82,20 @@ public class AttachmentStream {
 
     /// - parameter filename: if provided, the output file url will use this name, minus any file extension (which
     /// will instead be inferred from the file contents) and made url-safe AND user-friendly. If nil, a random file name is used.
-    public func makeDecryptedCopy(filename: String? = nil) throws -> URL {
-        guard var pathExtension = MimeTypeUtil.fileExtensionForMimeType(mimeType) else {
-            throw OWSAssertionError("Invalid mime type!")
-        }
+    public func makeDecryptedCopy(filename: String?) throws -> URL {
+        var pathExtension: String = {
+            if let pathExtension = MimeTypeUtil.fileExtensionForMimeType(mimeType) {
+                return pathExtension
+            } else if
+                let filename,
+                let filenameUrl = URL(string: filename),
+                let pathExtension = fileURL.pathExtension.nilIfEmpty
+            {
+                return pathExtension
+            } else {
+                return "bin"
+            }
+        }()
         // Special-case the "aac" filetype we use for voice messages (for legacy reasons)
         // to use a .m4a file extension, not .aac, since AVAudioPlayer can't handle .aac
         // properly. Doesn't affect file contents.
