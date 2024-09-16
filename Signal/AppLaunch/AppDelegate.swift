@@ -100,12 +100,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         // Ensure that all windows have the correct frame.
         WindowManager.shared.updateWindowFrames()
-
-        AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
-            self.incrementalMessageTSAttachmentMigrator?.runInMainAppBackgroundIfNeeded(
-                databaseStorage: self.databaseStorage
-            )
-        }
     }
 
     private let flushQueue = DispatchQueue(label: "org.signal.flush", qos: .utility)
@@ -290,7 +284,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         self.incrementalMessageTSAttachmentMigrator = incrementalMessageTSAttachmentMigrator
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             incrementalMessageTSAttachmentMigrator.scheduleBGProcessingTaskIfNeeded(databaseStorage: databaseStorage)
-            incrementalMessageTSAttachmentMigrator.runInMainAppBackgroundIfNeeded(databaseStorage: databaseStorage)
         }
 
         // Show LoadingViewController until the database migrations are complete.
