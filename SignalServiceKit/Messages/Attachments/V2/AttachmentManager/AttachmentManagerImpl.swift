@@ -256,7 +256,10 @@ public class AttachmentManagerImpl: AttachmentManager {
                 knownIdInOwner: knownIdFromProto,
                 renderingFlag: .fromProto(proto),
                 // Not downloaded so we don't know the content type.
-                contentType: nil
+                contentType: nil,
+                // This should be unset for newly-incoming attachments, but it's
+                // still technically in the proto definition.
+                caption: proto.hasCaption ? proto.caption : nil
             ),
             sourceFilename: sourceFilename,
             sourceUnencryptedByteCount: proto.size,
@@ -456,7 +459,9 @@ public class AttachmentManagerImpl: AttachmentManager {
                     knownIdInOwner: knownIdFromProto,
                     renderingFlag: ownedProto.renderingFlag,
                     // Not downloaded so we don't know the content type.
-                    contentType: nil
+                    contentType: nil,
+                    // Restored legacy attachments might have a caption.
+                    caption: proto.hasCaption ? proto.caption : nil
                 ),
                 sourceFilename: sourceFilename,
                 sourceUnencryptedByteCount: sourceUnencryptedByteCount,

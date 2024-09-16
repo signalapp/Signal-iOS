@@ -418,10 +418,6 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
         let maxBodyLength = bodyLength < 0 ? nil : bodyLength
         var protos = [SSKProtoBodyRange]()
 
-        var mentionIndex = 0
-        var styleIndex = 0
-        let flattenedStyles = CollapsedStyle.flatten(collapsedStyles)
-
         func appendMention(_ mention: NSRangedValue<Aci>) {
             guard let builder = self.protoBuilder(mention.range, maxBodyLength: maxBodyLength) else {
                 return
@@ -438,28 +434,14 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
             protos.append(builder.buildInfallibly())
         }
 
-        while mentionIndex < orderedMentions.count || styleIndex < flattenedStyles.count {
-            if mentionIndex >= orderedMentions.count {
-                appendStyle(flattenedStyles[styleIndex])
-                styleIndex += 1
-                continue
-            }
-            if styleIndex >= collapsedStyles.count {
-                appendMention(orderedMentions[mentionIndex])
-                mentionIndex += 1
-                continue
-            }
-            // Insert whichever is earlier.
-            let mention = orderedMentions[mentionIndex]
-            let style = collapsedStyles[styleIndex]
-            if mention.range.location <= style.range.location {
-                appendMention(orderedMentions[mentionIndex])
-                mentionIndex += 1
-            } else {
-                appendStyle(flattenedStyles[styleIndex])
-                styleIndex += 1
-            }
+        for mention in orderedMentions {
+            appendMention(mention)
         }
+
+        for singleStyle in CollapsedStyle.flatten(collapsedStyles) {
+            appendStyle(singleStyle)
+        }
+
         return protos
     }
 

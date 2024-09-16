@@ -53,11 +53,16 @@ extension AttachmentReference {
         /// A known identifier for this attachment within the owner. Callers
         /// should pass ``KnownIdInOwner/none`` if no identifier information is
         /// available. Only relevant for message body attachments!
+        /// - Parameter caption
+        /// A caption for a message body attachment. This field is no longer
+        /// used by new attachments; however, it might be present when dealing
+        /// with legacy data.
         public func build(
             orderInOwner: UInt32?,
             knownIdInOwner: KnownIdInOwner,
             renderingFlag: AttachmentReference.RenderingFlag,
-            contentType: AttachmentReference.ContentType?
+            contentType: AttachmentReference.ContentType?,
+            caption: String? = nil
         ) throws -> AttachmentReference.Owner {
             switch self {
             case .messageBodyAttachment(let metadata):
@@ -71,7 +76,7 @@ extension AttachmentReference {
                     threadRowId: metadata.threadRowId,
                     contentType: contentType,
                     // We ignore captions in modern instances.
-                    caption: nil,
+                    caption: caption,
                     renderingFlag: renderingFlag,
                     orderInOwner: orderInOwner,
                     idInOwner: { () -> UUID? in

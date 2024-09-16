@@ -194,16 +194,18 @@ extension MessageBodyRanges {
             originals[style] = nil
         }
 
-        public static func flatten(_ collapsedStyles: [NSRangedValue<CollapsedStyle>]) -> [NSRangedValue<SingleStyle>] {
-            let coveredIds = Set<StyleIdType>()
-            return collapsedStyles.flatMap { collapsedStyle in
-                return collapsedStyle.value.originals.compactMap { original in
-                    guard !coveredIds.contains(original.value.id) else {
-                        return nil
-                    }
-                    return NSRangedValue(original.value.style, range: original.value.mergedRange)
+        public static func flatten(_ collapsedStyles: [NSRangedValue<CollapsedStyle>]) -> Set<NSRangedValue<SingleStyle>> {
+            var flattenedStyles = Set<NSRangedValue<SingleStyle>>()
+            for collapsedStyle: CollapsedStyle in collapsedStyles.map(\.value) {
+                for originalMergedStyle: MergedSingleStyle in collapsedStyle.originals.values {
+                    flattenedStyles.insert(NSRangedValue(
+                        originalMergedStyle.style,
+                        range: originalMergedStyle.mergedRange
+                    ))
                 }
             }
+
+            return flattenedStyles
         }
     }
 }

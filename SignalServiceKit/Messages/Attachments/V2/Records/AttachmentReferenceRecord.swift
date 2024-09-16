@@ -217,7 +217,7 @@ extension AttachmentReference {
                 self.idInMessage = metadata.idInOwner?.uuidString
                 self.orderInMessage = metadata.orderInOwner
                 self.threadRowId = metadata.threadRowId
-                self.caption = nil
+                self.caption = metadata.caption
                 self.stickerPackId = nil
                 self.stickerId = nil
             case .oversizeText(let metadata):

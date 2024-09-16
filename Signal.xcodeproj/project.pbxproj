@@ -1810,6 +1810,36 @@
 		D221A0E8169DFFC500537ABF /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A0E7169DFFC500537ABF /* AVFoundation.framework */; };
 		D24B5BD5169F568C00681372 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D24B5BD4169F568C00681372 /* AudioToolbox.framework */; };
 		D2AEACDC16C426DA00C364C0 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */; };
+		D900B3AF2C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_05.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D900B3912C920B68008AEF02 /* chat_item_standard_message_standard_attachments_05.txtproto */; };
+		D900B3B02C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_04.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D900B3922C920B69008AEF02 /* chat_item_standard_message_standard_attachments_04.binproto */; };
+		D900B3B12C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_10.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D900B3932C920B69008AEF02 /* chat_item_standard_message_standard_attachments_10.binproto */; };
+		D900B3B22C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_08.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D900B3942C920B69008AEF02 /* chat_item_standard_message_standard_attachments_08.binproto */; };
+		D900B3B32C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_11.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D900B3952C920B69008AEF02 /* chat_item_standard_message_standard_attachments_11.txtproto */; };
+		D900B3B42C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_07.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D900B3962C920B69008AEF02 /* chat_item_standard_message_standard_attachments_07.txtproto */; };
+		D900B3B52C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_08.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D900B3972C920B69008AEF02 /* chat_item_standard_message_standard_attachments_08.txtproto */; };
+		D900B3B62C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_02.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D900B3982C920B6A008AEF02 /* chat_item_standard_message_standard_attachments_02.txtproto */; };
+		D900B3B72C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_04.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D900B3992C920B6A008AEF02 /* chat_item_standard_message_standard_attachments_04.txtproto */; };
+		D900B3B82C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_01.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D900B39A2C920B6A008AEF02 /* chat_item_standard_message_standard_attachments_01.txtproto */; };
+		D900B3B92C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_11.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D900B39B2C920B6A008AEF02 /* chat_item_standard_message_standard_attachments_11.binproto */; };
+		D900B3BA2C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_12.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D900B39C2C920B6A008AEF02 /* chat_item_standard_message_standard_attachments_12.txtproto */; };
+		D900B3BB2C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_09.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D900B39D2C920B6A008AEF02 /* chat_item_standard_message_standard_attachments_09.txtproto */; };
+		D900B3BC2C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_06.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D900B39E2C920B6A008AEF02 /* chat_item_standard_message_standard_attachments_06.binproto */; };
+		D900B3BD2C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_10.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D900B39F2C920B6B008AEF02 /* chat_item_standard_message_standard_attachments_10.txtproto */; };
+		D900B3BE2C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_02.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D900B3A02C920B6B008AEF02 /* chat_item_standard_message_standard_attachments_02.binproto */; };
+		D900B3BF2C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_14.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D900B3A12C920B6B008AEF02 /* chat_item_standard_message_standard_attachments_14.binproto */; };
+		D900B3C02C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_13.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D900B3A22C920B6B008AEF02 /* chat_item_standard_message_standard_attachments_13.txtproto */; };
+		D900B3C12C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_09.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D900B3A32C920B6B008AEF02 /* chat_item_standard_message_standard_attachments_09.binproto */; };
+		D900B3C22C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_14.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D900B3A42C920B6B008AEF02 /* chat_item_standard_message_standard_attachments_14.txtproto */; };
+		D900B3C32C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_07.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D900B3A52C920B6C008AEF02 /* chat_item_standard_message_standard_attachments_07.binproto */; };
+		D900B3C42C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_12.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D900B3A62C920B6C008AEF02 /* chat_item_standard_message_standard_attachments_12.binproto */; };
+		D900B3C52C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_01.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D900B3A72C920B6C008AEF02 /* chat_item_standard_message_standard_attachments_01.binproto */; };
+		D900B3C62C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_06.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D900B3A82C920B6C008AEF02 /* chat_item_standard_message_standard_attachments_06.txtproto */; };
+		D900B3C72C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_13.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D900B3A92C920B6C008AEF02 /* chat_item_standard_message_standard_attachments_13.binproto */; };
+		D900B3C82C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_05.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D900B3AA2C920B6C008AEF02 /* chat_item_standard_message_standard_attachments_05.binproto */; };
+		D900B3C92C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_00.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D900B3AB2C920B6C008AEF02 /* chat_item_standard_message_standard_attachments_00.binproto */; };
+		D900B3CA2C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_03.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D900B3AC2C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_03.txtproto */; };
+		D900B3CB2C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_00.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D900B3AD2C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_00.txtproto */; };
+		D900B3CC2C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_03.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D900B3AE2C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_03.binproto */; };
 		D90D4D842BBB61680097C573 /* MessageBackupEmptyFrameId.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D832BBB61680097C573 /* MessageBackupEmptyFrameId.swift */; };
 		D9106DFF2AC1FEFD007ABFE6 /* EmptyForCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9106DFE2AC1FEFD007ABFE6 /* EmptyForCodable.swift */; };
 		D9106E022AC20066007ABFE6 /* EmptyForCodableTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9106E002AC20061007ABFE6 /* EmptyForCodableTest.swift */; };
@@ -1871,6 +1901,10 @@
 		D925F560298D8F9400158EE4 /* Usernames+UsernameLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F552298349EF00158EE4 /* Usernames+UsernameLink.swift */; };
 		D925F561298D8F9400158EE4 /* Usernames+ParsedUsername.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840C3297A0ECE00F7ED6D /* Usernames+ParsedUsername.swift */; };
 		D925F563298D8F9400158EE4 /* Usernames.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840BE297A04EB00F7ED6D /* Usernames.swift */; };
+		D9267BFA2C9229FB00F39B24 /* chat_item_standard_message_with_edits_01.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9267BF42C9229FA00F39B24 /* chat_item_standard_message_with_edits_01.txtproto */; };
+		D9267BFB2C9229FB00F39B24 /* chat_item_standard_message_with_edits_01.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9267BF52C9229FA00F39B24 /* chat_item_standard_message_with_edits_01.binproto */; };
+		D9267BFE2C9229FB00F39B24 /* chat_item_standard_message_with_edits_00.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9267BF82C9229FB00F39B24 /* chat_item_standard_message_with_edits_00.binproto */; };
+		D9267BFF2C9229FB00F39B24 /* chat_item_standard_message_with_edits_00.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9267BF92C9229FB00F39B24 /* chat_item_standard_message_with_edits_00.txtproto */; };
 		D92AB7D829E3BEE30081CA7D /* OWSDeviceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92AB7D729E3BEE30081CA7D /* OWSDeviceManager.swift */; };
 		D92C57552A2925AD00A03BB7 /* TSInfoMessage+DisplayableGroupUpdateItemTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92C57542A2925AD00A03BB7 /* TSInfoMessage+DisplayableGroupUpdateItemTest.swift */; };
 		D93086272C616391008E3A27 /* TSOutgoingMessage+Builder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93086262C616391008E3A27 /* TSOutgoingMessage+Builder.swift */; };
@@ -1884,6 +1918,36 @@
 		D9317FD52A4BB15D00075A92 /* BitmapsImageCenteredDeadzoneTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9317FD42A4BB15D00075A92 /* BitmapsImageCenteredDeadzoneTest.swift */; };
 		D9317FD82A4BC4FC00075A92 /* BitmapsRectTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9317FD62A4BC4F000075A92 /* BitmapsRectTest.swift */; };
 		D9317FDC2A4CE48D00075A92 /* UsernameLinkQRCodeColorPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9317FDB2A4CE48D00075A92 /* UsernameLinkQRCodeColorPickerViewController.swift */; };
+		D93372C62C9227D9008926D0 /* chat_item_standard_message_text_only_08.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D93372A82C9227D4008926D0 /* chat_item_standard_message_text_only_08.binproto */; };
+		D93372C72C9227D9008926D0 /* chat_item_standard_message_text_only_06.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D93372A92C9227D4008926D0 /* chat_item_standard_message_text_only_06.txtproto */; };
+		D93372C82C9227D9008926D0 /* chat_item_standard_message_text_only_10.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D93372AA2C9227D4008926D0 /* chat_item_standard_message_text_only_10.txtproto */; };
+		D93372C92C9227D9008926D0 /* chat_item_standard_message_text_only_02.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D93372AB2C9227D4008926D0 /* chat_item_standard_message_text_only_02.binproto */; };
+		D93372CA2C9227D9008926D0 /* chat_item_standard_message_text_only_07.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D93372AC2C9227D5008926D0 /* chat_item_standard_message_text_only_07.binproto */; };
+		D93372CB2C9227D9008926D0 /* chat_item_standard_message_text_only_12.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D93372AD2C9227D5008926D0 /* chat_item_standard_message_text_only_12.txtproto */; };
+		D93372CC2C9227D9008926D0 /* chat_item_standard_message_text_only_08.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D93372AE2C9227D5008926D0 /* chat_item_standard_message_text_only_08.txtproto */; };
+		D93372CD2C9227D9008926D0 /* chat_item_standard_message_text_only_03.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D93372AF2C9227D5008926D0 /* chat_item_standard_message_text_only_03.txtproto */; };
+		D93372CE2C9227D9008926D0 /* chat_item_standard_message_text_only_09.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D93372B02C9227D5008926D0 /* chat_item_standard_message_text_only_09.txtproto */; };
+		D93372CF2C9227D9008926D0 /* chat_item_standard_message_text_only_07.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D93372B12C9227D5008926D0 /* chat_item_standard_message_text_only_07.txtproto */; };
+		D93372D02C9227D9008926D0 /* chat_item_standard_message_text_only_00.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D93372B22C9227D6008926D0 /* chat_item_standard_message_text_only_00.binproto */; };
+		D93372D12C9227D9008926D0 /* chat_item_standard_message_text_only_13.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D93372B32C9227D6008926D0 /* chat_item_standard_message_text_only_13.binproto */; };
+		D93372D22C9227D9008926D0 /* chat_item_standard_message_text_only_04.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D93372B42C9227D6008926D0 /* chat_item_standard_message_text_only_04.txtproto */; };
+		D93372D32C9227D9008926D0 /* chat_item_standard_message_text_only_11.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D93372B52C9227D6008926D0 /* chat_item_standard_message_text_only_11.binproto */; };
+		D93372D42C9227D9008926D0 /* chat_item_standard_message_text_only_13.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D93372B62C9227D6008926D0 /* chat_item_standard_message_text_only_13.txtproto */; };
+		D93372D52C9227D9008926D0 /* chat_item_standard_message_text_only_05.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D93372B72C9227D6008926D0 /* chat_item_standard_message_text_only_05.txtproto */; };
+		D93372D62C9227D9008926D0 /* chat_item_standard_message_text_only_04.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D93372B82C9227D7008926D0 /* chat_item_standard_message_text_only_04.binproto */; };
+		D93372D72C9227D9008926D0 /* chat_item_standard_message_text_only_01.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D93372B92C9227D7008926D0 /* chat_item_standard_message_text_only_01.binproto */; };
+		D93372D82C9227D9008926D0 /* chat_item_standard_message_text_only_03.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D93372BA2C9227D7008926D0 /* chat_item_standard_message_text_only_03.binproto */; };
+		D93372D92C9227D9008926D0 /* chat_item_standard_message_text_only_11.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D93372BB2C9227D7008926D0 /* chat_item_standard_message_text_only_11.txtproto */; };
+		D93372DA2C9227D9008926D0 /* chat_item_standard_message_text_only_01.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D93372BC2C9227D7008926D0 /* chat_item_standard_message_text_only_01.txtproto */; };
+		D93372DB2C9227D9008926D0 /* chat_item_standard_message_text_only_12.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D93372BD2C9227D7008926D0 /* chat_item_standard_message_text_only_12.binproto */; };
+		D93372DC2C9227D9008926D0 /* chat_item_standard_message_text_only_14.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D93372BE2C9227D8008926D0 /* chat_item_standard_message_text_only_14.binproto */; };
+		D93372DD2C9227D9008926D0 /* chat_item_standard_message_text_only_09.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D93372BF2C9227D8008926D0 /* chat_item_standard_message_text_only_09.binproto */; };
+		D93372DE2C9227D9008926D0 /* chat_item_standard_message_text_only_05.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D93372C02C9227D8008926D0 /* chat_item_standard_message_text_only_05.binproto */; };
+		D93372DF2C9227D9008926D0 /* chat_item_standard_message_text_only_00.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D93372C12C9227D8008926D0 /* chat_item_standard_message_text_only_00.txtproto */; };
+		D93372E02C9227D9008926D0 /* chat_item_standard_message_text_only_06.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D93372C22C9227D8008926D0 /* chat_item_standard_message_text_only_06.binproto */; };
+		D93372E12C9227D9008926D0 /* chat_item_standard_message_text_only_02.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D93372C32C9227D8008926D0 /* chat_item_standard_message_text_only_02.txtproto */; };
+		D93372E22C9227D9008926D0 /* chat_item_standard_message_text_only_14.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D93372C42C9227D8008926D0 /* chat_item_standard_message_text_only_14.txtproto */; };
+		D93372E32C9227D9008926D0 /* chat_item_standard_message_text_only_10.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D93372C52C9227D9008926D0 /* chat_item_standard_message_text_only_10.binproto */; };
 		D936DE0A2C8E967200A271C3 /* chat_item_profile_change_update_01.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D936DE062C8E967200A271C3 /* chat_item_profile_change_update_01.txtproto */; };
 		D936DE0B2C8E967200A271C3 /* chat_item_profile_change_update_00.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D936DE072C8E967200A271C3 /* chat_item_profile_change_update_00.txtproto */; };
 		D936DE0C2C8E967200A271C3 /* chat_item_profile_change_update_01.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D936DE082C8E967200A271C3 /* chat_item_profile_change_update_01.binproto */; };
@@ -1950,6 +2014,36 @@
 		D9708B5C29E4CCCB004306FA /* OWSDeviceManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9708B5B29E4CCCB004306FA /* OWSDeviceManagerTest.swift */; };
 		D972E2FF2C542BCD001D7337 /* Backup.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = D972E2FE2C542BCD001D7337 /* Backup.pb.swift */; };
 		D97411BB28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97411BA28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift */; };
+		D9750F9F2C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_02.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9750F812C920A5F00A4D4F0 /* chat_item_standard_message_special_attachments_02.txtproto */; };
+		D9750FA02C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_12.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9750F822C920A5F00A4D4F0 /* chat_item_standard_message_special_attachments_12.txtproto */; };
+		D9750FA12C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_05.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9750F832C920A5F00A4D4F0 /* chat_item_standard_message_special_attachments_05.binproto */; };
+		D9750FA22C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_00.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9750F842C920A5F00A4D4F0 /* chat_item_standard_message_special_attachments_00.txtproto */; };
+		D9750FA32C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_03.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9750F852C920A6000A4D4F0 /* chat_item_standard_message_special_attachments_03.txtproto */; };
+		D9750FA42C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_04.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9750F862C920A6000A4D4F0 /* chat_item_standard_message_special_attachments_04.txtproto */; };
+		D9750FA52C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_05.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9750F872C920A6000A4D4F0 /* chat_item_standard_message_special_attachments_05.txtproto */; };
+		D9750FA62C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_12.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9750F882C920A6000A4D4F0 /* chat_item_standard_message_special_attachments_12.binproto */; };
+		D9750FA72C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_14.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9750F892C920A6000A4D4F0 /* chat_item_standard_message_special_attachments_14.binproto */; };
+		D9750FA82C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_11.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9750F8A2C920A6000A4D4F0 /* chat_item_standard_message_special_attachments_11.txtproto */; };
+		D9750FA92C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_10.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9750F8B2C920A6000A4D4F0 /* chat_item_standard_message_special_attachments_10.txtproto */; };
+		D9750FAA2C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_00.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9750F8C2C920A6100A4D4F0 /* chat_item_standard_message_special_attachments_00.binproto */; };
+		D9750FAB2C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_02.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9750F8D2C920A6100A4D4F0 /* chat_item_standard_message_special_attachments_02.binproto */; };
+		D9750FAC2C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_07.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9750F8E2C920A6100A4D4F0 /* chat_item_standard_message_special_attachments_07.binproto */; };
+		D9750FAD2C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_13.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9750F8F2C920A6100A4D4F0 /* chat_item_standard_message_special_attachments_13.binproto */; };
+		D9750FAE2C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_03.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9750F902C920A6100A4D4F0 /* chat_item_standard_message_special_attachments_03.binproto */; };
+		D9750FAF2C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_08.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9750F912C920A6100A4D4F0 /* chat_item_standard_message_special_attachments_08.binproto */; };
+		D9750FB02C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_08.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9750F922C920A6200A4D4F0 /* chat_item_standard_message_special_attachments_08.txtproto */; };
+		D9750FB12C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_04.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9750F932C920A6200A4D4F0 /* chat_item_standard_message_special_attachments_04.binproto */; };
+		D9750FB22C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_07.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9750F942C920A6200A4D4F0 /* chat_item_standard_message_special_attachments_07.txtproto */; };
+		D9750FB32C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_10.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9750F952C920A6200A4D4F0 /* chat_item_standard_message_special_attachments_10.binproto */; };
+		D9750FB42C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_06.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9750F962C920A6200A4D4F0 /* chat_item_standard_message_special_attachments_06.binproto */; };
+		D9750FB52C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_09.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9750F972C920A6200A4D4F0 /* chat_item_standard_message_special_attachments_09.txtproto */; };
+		D9750FB62C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_11.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9750F982C920A6300A4D4F0 /* chat_item_standard_message_special_attachments_11.binproto */; };
+		D9750FB72C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_01.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9750F992C920A6300A4D4F0 /* chat_item_standard_message_special_attachments_01.txtproto */; };
+		D9750FB82C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_14.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9750F9A2C920A6300A4D4F0 /* chat_item_standard_message_special_attachments_14.txtproto */; };
+		D9750FB92C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_01.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9750F9B2C920A6300A4D4F0 /* chat_item_standard_message_special_attachments_01.binproto */; };
+		D9750FBA2C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_13.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9750F9C2C920A6300A4D4F0 /* chat_item_standard_message_special_attachments_13.txtproto */; };
+		D9750FBB2C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_09.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9750F9D2C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_09.binproto */; };
+		D9750FBC2C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_06.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9750F9E2C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_06.txtproto */; };
 		D979CC262AD3933B006AAC49 /* IndividualCallRecordManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC1F2AD3933B006AAC49 /* IndividualCallRecordManager.swift */; };
 		D979CC282AD3933B006AAC49 /* ThreadStore+CallRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC212AD3933B006AAC49 /* ThreadStore+CallRecord.swift */; };
 		D979CC292AD3933B006AAC49 /* OutgoingCallEventSyncMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC222AD3933B006AAC49 /* OutgoingCallEventSyncMessageManager.swift */; };
@@ -2089,6 +2183,38 @@
 		D9A85DC22BE1719C003F7045 /* MessageBackupGroupCallArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A85DC12BE1719C003F7045 /* MessageBackupGroupCallArchiver.swift */; };
 		D9AA37A02A86E0910088EFFB /* OutgoingCallEventSyncMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AA379F2A86E0910088EFFB /* OutgoingCallEventSyncMessageTest.swift */; };
 		D9AA37A42A8A9A910088EFFB /* OutgoingGroupCallUpdateMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AA37A32A8A9A910088EFFB /* OutgoingGroupCallUpdateMessage.swift */; };
+		D9AABF3A2C92012300E854CE /* chat_item_learned_profile_update_04.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9AABF382C92012300E854CE /* chat_item_learned_profile_update_04.binproto */; };
+		D9AABF3B2C92012300E854CE /* chat_item_learned_profile_update_04.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9AABF392C92012300E854CE /* chat_item_learned_profile_update_04.txtproto */; };
+		D9AABF5A2C92014C00E854CE /* chat_item_standard_message_long_text_03.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9AABF3C2C92014700E854CE /* chat_item_standard_message_long_text_03.binproto */; };
+		D9AABF5B2C92014C00E854CE /* chat_item_standard_message_long_text_08.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9AABF3D2C92014700E854CE /* chat_item_standard_message_long_text_08.binproto */; };
+		D9AABF5C2C92014C00E854CE /* chat_item_standard_message_long_text_06.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9AABF3E2C92014700E854CE /* chat_item_standard_message_long_text_06.binproto */; };
+		D9AABF5D2C92014C00E854CE /* chat_item_standard_message_long_text_06.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9AABF3F2C92014800E854CE /* chat_item_standard_message_long_text_06.txtproto */; };
+		D9AABF5E2C92014C00E854CE /* chat_item_standard_message_long_text_07.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9AABF402C92014800E854CE /* chat_item_standard_message_long_text_07.txtproto */; };
+		D9AABF5F2C92014C00E854CE /* chat_item_standard_message_long_text_03.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9AABF412C92014800E854CE /* chat_item_standard_message_long_text_03.txtproto */; };
+		D9AABF602C92014C00E854CE /* chat_item_standard_message_long_text_13.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9AABF422C92014800E854CE /* chat_item_standard_message_long_text_13.txtproto */; };
+		D9AABF612C92014C00E854CE /* chat_item_standard_message_long_text_01.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9AABF432C92014800E854CE /* chat_item_standard_message_long_text_01.binproto */; };
+		D9AABF622C92014C00E854CE /* chat_item_standard_message_long_text_10.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9AABF442C92014800E854CE /* chat_item_standard_message_long_text_10.txtproto */; };
+		D9AABF632C92014C00E854CE /* chat_item_standard_message_long_text_09.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9AABF452C92014800E854CE /* chat_item_standard_message_long_text_09.txtproto */; };
+		D9AABF642C92014C00E854CE /* chat_item_standard_message_long_text_04.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9AABF462C92014800E854CE /* chat_item_standard_message_long_text_04.binproto */; };
+		D9AABF652C92014C00E854CE /* chat_item_standard_message_long_text_07.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9AABF472C92014900E854CE /* chat_item_standard_message_long_text_07.binproto */; };
+		D9AABF662C92014C00E854CE /* chat_item_standard_message_long_text_14.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9AABF482C92014900E854CE /* chat_item_standard_message_long_text_14.binproto */; };
+		D9AABF672C92014C00E854CE /* chat_item_standard_message_long_text_09.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9AABF492C92014900E854CE /* chat_item_standard_message_long_text_09.binproto */; };
+		D9AABF682C92014C00E854CE /* chat_item_standard_message_long_text_11.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9AABF4A2C92014900E854CE /* chat_item_standard_message_long_text_11.txtproto */; };
+		D9AABF692C92014C00E854CE /* chat_item_standard_message_long_text_11.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9AABF4B2C92014900E854CE /* chat_item_standard_message_long_text_11.binproto */; };
+		D9AABF6A2C92014C00E854CE /* chat_item_standard_message_long_text_08.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9AABF4C2C92014900E854CE /* chat_item_standard_message_long_text_08.txtproto */; };
+		D9AABF6B2C92014C00E854CE /* chat_item_standard_message_long_text_05.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9AABF4D2C92014A00E854CE /* chat_item_standard_message_long_text_05.txtproto */; };
+		D9AABF6C2C92014C00E854CE /* chat_item_standard_message_long_text_10.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9AABF4E2C92014A00E854CE /* chat_item_standard_message_long_text_10.binproto */; };
+		D9AABF6D2C92014C00E854CE /* chat_item_standard_message_long_text_13.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9AABF4F2C92014A00E854CE /* chat_item_standard_message_long_text_13.binproto */; };
+		D9AABF6E2C92014C00E854CE /* chat_item_standard_message_long_text_14.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9AABF502C92014A00E854CE /* chat_item_standard_message_long_text_14.txtproto */; };
+		D9AABF6F2C92014C00E854CE /* chat_item_standard_message_long_text_04.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9AABF512C92014B00E854CE /* chat_item_standard_message_long_text_04.txtproto */; };
+		D9AABF702C92014C00E854CE /* chat_item_standard_message_long_text_00.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9AABF522C92014B00E854CE /* chat_item_standard_message_long_text_00.txtproto */; };
+		D9AABF712C92014C00E854CE /* chat_item_standard_message_long_text_12.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9AABF532C92014B00E854CE /* chat_item_standard_message_long_text_12.binproto */; };
+		D9AABF722C92014C00E854CE /* chat_item_standard_message_long_text_05.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9AABF542C92014B00E854CE /* chat_item_standard_message_long_text_05.binproto */; };
+		D9AABF732C92014C00E854CE /* chat_item_standard_message_long_text_00.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9AABF552C92014B00E854CE /* chat_item_standard_message_long_text_00.binproto */; };
+		D9AABF742C92014C00E854CE /* chat_item_standard_message_long_text_02.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9AABF562C92014C00E854CE /* chat_item_standard_message_long_text_02.binproto */; };
+		D9AABF752C92014C00E854CE /* chat_item_standard_message_long_text_12.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9AABF572C92014C00E854CE /* chat_item_standard_message_long_text_12.txtproto */; };
+		D9AABF762C92014C00E854CE /* chat_item_standard_message_long_text_02.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9AABF582C92014C00E854CE /* chat_item_standard_message_long_text_02.txtproto */; };
+		D9AABF772C92014C00E854CE /* chat_item_standard_message_long_text_01.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9AABF592C92014C00E854CE /* chat_item_standard_message_long_text_01.txtproto */; };
 		D9AD1D9528B9955C00B42E6F /* TSInfoMessage+GroupUpdateType+NSAttributedStringTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AD1D9428B9955C00B42E6F /* TSInfoMessage+GroupUpdateType+NSAttributedStringTest.swift */; };
 		D9AE0ACB29162C160063488B /* TSAttachmentMultisendJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AE0ACA29162C160063488B /* TSAttachmentMultisendJobRecord.swift */; };
 		D9AE0ACF29186D7F0063488B /* IncomingContactSyncJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AE0ACE29186D7F0063488B /* IncomingContactSyncJobRecord.swift */; };
@@ -2211,6 +2337,36 @@
 		D9F399B22A96D65D001599EC /* LinkedDevicePniKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F399B12A96D65D001599EC /* LinkedDevicePniKeyManager.swift */; };
 		D9F399B42A96E54C001599EC /* LinkedDevicePniKeyManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F399B32A96E54C001599EC /* LinkedDevicePniKeyManagerTest.swift */; };
 		D9F399B92A9EA1FA001599EC /* MockDBV2Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F399B82A9EA1FA001599EC /* MockDBV2Test.swift */; };
+		D9F512942C90D8680094D759 /* chat_item_standard_message_formatted_text_06.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9F512762C90D8640094D759 /* chat_item_standard_message_formatted_text_06.binproto */; };
+		D9F512952C90D8680094D759 /* chat_item_standard_message_formatted_text_00.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9F512772C90D8640094D759 /* chat_item_standard_message_formatted_text_00.binproto */; };
+		D9F512962C90D8680094D759 /* chat_item_standard_message_formatted_text_09.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9F512782C90D8640094D759 /* chat_item_standard_message_formatted_text_09.binproto */; };
+		D9F512972C90D8680094D759 /* chat_item_standard_message_formatted_text_01.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9F512792C90D8650094D759 /* chat_item_standard_message_formatted_text_01.binproto */; };
+		D9F512982C90D8680094D759 /* chat_item_standard_message_formatted_text_05.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9F5127A2C90D8650094D759 /* chat_item_standard_message_formatted_text_05.txtproto */; };
+		D9F512992C90D8680094D759 /* chat_item_standard_message_formatted_text_05.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9F5127B2C90D8650094D759 /* chat_item_standard_message_formatted_text_05.binproto */; };
+		D9F5129A2C90D8680094D759 /* chat_item_standard_message_formatted_text_12.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9F5127C2C90D8650094D759 /* chat_item_standard_message_formatted_text_12.binproto */; };
+		D9F5129B2C90D8680094D759 /* chat_item_standard_message_formatted_text_09.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9F5127D2C90D8650094D759 /* chat_item_standard_message_formatted_text_09.txtproto */; };
+		D9F5129C2C90D8680094D759 /* chat_item_standard_message_formatted_text_06.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9F5127E2C90D8650094D759 /* chat_item_standard_message_formatted_text_06.txtproto */; };
+		D9F5129D2C90D8680094D759 /* chat_item_standard_message_formatted_text_00.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9F5127F2C90D8650094D759 /* chat_item_standard_message_formatted_text_00.txtproto */; };
+		D9F5129E2C90D8680094D759 /* chat_item_standard_message_formatted_text_13.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9F512802C90D8650094D759 /* chat_item_standard_message_formatted_text_13.binproto */; };
+		D9F5129F2C90D8680094D759 /* chat_item_standard_message_formatted_text_11.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9F512812C90D8660094D759 /* chat_item_standard_message_formatted_text_11.binproto */; };
+		D9F512A02C90D8680094D759 /* chat_item_standard_message_formatted_text_10.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9F512822C90D8660094D759 /* chat_item_standard_message_formatted_text_10.binproto */; };
+		D9F512A12C90D8680094D759 /* chat_item_standard_message_formatted_text_01.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9F512832C90D8660094D759 /* chat_item_standard_message_formatted_text_01.txtproto */; };
+		D9F512A22C90D8680094D759 /* chat_item_standard_message_formatted_text_12.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9F512842C90D8660094D759 /* chat_item_standard_message_formatted_text_12.txtproto */; };
+		D9F512A32C90D8680094D759 /* chat_item_standard_message_formatted_text_13.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9F512852C90D8660094D759 /* chat_item_standard_message_formatted_text_13.txtproto */; };
+		D9F512A42C90D8680094D759 /* chat_item_standard_message_formatted_text_14.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9F512862C90D8660094D759 /* chat_item_standard_message_formatted_text_14.txtproto */; };
+		D9F512A52C90D8680094D759 /* chat_item_standard_message_formatted_text_07.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9F512872C90D8660094D759 /* chat_item_standard_message_formatted_text_07.binproto */; };
+		D9F512A62C90D8680094D759 /* chat_item_standard_message_formatted_text_02.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9F512882C90D8670094D759 /* chat_item_standard_message_formatted_text_02.txtproto */; };
+		D9F512A72C90D8680094D759 /* chat_item_standard_message_formatted_text_02.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9F512892C90D8670094D759 /* chat_item_standard_message_formatted_text_02.binproto */; };
+		D9F512A82C90D8680094D759 /* chat_item_standard_message_formatted_text_07.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9F5128A2C90D8670094D759 /* chat_item_standard_message_formatted_text_07.txtproto */; };
+		D9F512A92C90D8680094D759 /* chat_item_standard_message_formatted_text_08.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9F5128B2C90D8670094D759 /* chat_item_standard_message_formatted_text_08.txtproto */; };
+		D9F512AA2C90D8680094D759 /* chat_item_standard_message_formatted_text_04.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9F5128C2C90D8670094D759 /* chat_item_standard_message_formatted_text_04.binproto */; };
+		D9F512AB2C90D8680094D759 /* chat_item_standard_message_formatted_text_14.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9F5128D2C90D8670094D759 /* chat_item_standard_message_formatted_text_14.binproto */; };
+		D9F512AC2C90D8680094D759 /* chat_item_standard_message_formatted_text_08.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9F5128E2C90D8670094D759 /* chat_item_standard_message_formatted_text_08.binproto */; };
+		D9F512AD2C90D8680094D759 /* chat_item_standard_message_formatted_text_10.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9F5128F2C90D8680094D759 /* chat_item_standard_message_formatted_text_10.txtproto */; };
+		D9F512AE2C90D8680094D759 /* chat_item_standard_message_formatted_text_04.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9F512902C90D8680094D759 /* chat_item_standard_message_formatted_text_04.txtproto */; };
+		D9F512AF2C90D8680094D759 /* chat_item_standard_message_formatted_text_11.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9F512912C90D8680094D759 /* chat_item_standard_message_formatted_text_11.txtproto */; };
+		D9F512B02C90D8680094D759 /* chat_item_standard_message_formatted_text_03.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9F512922C90D8680094D759 /* chat_item_standard_message_formatted_text_03.txtproto */; };
+		D9F512B12C90D8680094D759 /* chat_item_standard_message_formatted_text_03.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9F512932C90D8680094D759 /* chat_item_standard_message_formatted_text_03.binproto */; };
 		D9F6553229D6531D002A330A /* SDSCodableModel+ColumnName.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6553129D6531D002A330A /* SDSCodableModel+ColumnName.swift */; };
 		D9F6553B29D6547F002A330A /* SDSCodableModelDatabaseInterface+Remove.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6553529D6547E002A330A /* SDSCodableModelDatabaseInterface+Remove.swift */; };
 		D9F6553C29D6547F002A330A /* SDSCodableModelDatabaseInterface+Save.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6553629D6547E002A330A /* SDSCodableModelDatabaseInterface+Save.swift */; };
@@ -5174,6 +5330,36 @@
 		D221A0E7169DFFC500537ABF /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = ../../../../../../System/Library/Frameworks/AVFoundation.framework; sourceTree = "<group>"; };
 		D24B5BD4169F568C00681372 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = ../../../../../../System/Library/Frameworks/AudioToolbox.framework; sourceTree = "<group>"; };
 		D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		D900B3912C920B68008AEF02 /* chat_item_standard_message_standard_attachments_05.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_standard_attachments_05.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_standard_attachments_05.txtproto"; sourceTree = "<group>"; };
+		D900B3922C920B69008AEF02 /* chat_item_standard_message_standard_attachments_04.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_standard_attachments_04.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_standard_attachments_04.binproto"; sourceTree = "<group>"; };
+		D900B3932C920B69008AEF02 /* chat_item_standard_message_standard_attachments_10.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_standard_attachments_10.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_standard_attachments_10.binproto"; sourceTree = "<group>"; };
+		D900B3942C920B69008AEF02 /* chat_item_standard_message_standard_attachments_08.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_standard_attachments_08.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_standard_attachments_08.binproto"; sourceTree = "<group>"; };
+		D900B3952C920B69008AEF02 /* chat_item_standard_message_standard_attachments_11.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_standard_attachments_11.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_standard_attachments_11.txtproto"; sourceTree = "<group>"; };
+		D900B3962C920B69008AEF02 /* chat_item_standard_message_standard_attachments_07.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_standard_attachments_07.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_standard_attachments_07.txtproto"; sourceTree = "<group>"; };
+		D900B3972C920B69008AEF02 /* chat_item_standard_message_standard_attachments_08.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_standard_attachments_08.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_standard_attachments_08.txtproto"; sourceTree = "<group>"; };
+		D900B3982C920B6A008AEF02 /* chat_item_standard_message_standard_attachments_02.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_standard_attachments_02.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_standard_attachments_02.txtproto"; sourceTree = "<group>"; };
+		D900B3992C920B6A008AEF02 /* chat_item_standard_message_standard_attachments_04.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_standard_attachments_04.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_standard_attachments_04.txtproto"; sourceTree = "<group>"; };
+		D900B39A2C920B6A008AEF02 /* chat_item_standard_message_standard_attachments_01.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_standard_attachments_01.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_standard_attachments_01.txtproto"; sourceTree = "<group>"; };
+		D900B39B2C920B6A008AEF02 /* chat_item_standard_message_standard_attachments_11.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_standard_attachments_11.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_standard_attachments_11.binproto"; sourceTree = "<group>"; };
+		D900B39C2C920B6A008AEF02 /* chat_item_standard_message_standard_attachments_12.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_standard_attachments_12.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_standard_attachments_12.txtproto"; sourceTree = "<group>"; };
+		D900B39D2C920B6A008AEF02 /* chat_item_standard_message_standard_attachments_09.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_standard_attachments_09.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_standard_attachments_09.txtproto"; sourceTree = "<group>"; };
+		D900B39E2C920B6A008AEF02 /* chat_item_standard_message_standard_attachments_06.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_standard_attachments_06.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_standard_attachments_06.binproto"; sourceTree = "<group>"; };
+		D900B39F2C920B6B008AEF02 /* chat_item_standard_message_standard_attachments_10.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_standard_attachments_10.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_standard_attachments_10.txtproto"; sourceTree = "<group>"; };
+		D900B3A02C920B6B008AEF02 /* chat_item_standard_message_standard_attachments_02.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_standard_attachments_02.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_standard_attachments_02.binproto"; sourceTree = "<group>"; };
+		D900B3A12C920B6B008AEF02 /* chat_item_standard_message_standard_attachments_14.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_standard_attachments_14.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_standard_attachments_14.binproto"; sourceTree = "<group>"; };
+		D900B3A22C920B6B008AEF02 /* chat_item_standard_message_standard_attachments_13.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_standard_attachments_13.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_standard_attachments_13.txtproto"; sourceTree = "<group>"; };
+		D900B3A32C920B6B008AEF02 /* chat_item_standard_message_standard_attachments_09.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_standard_attachments_09.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_standard_attachments_09.binproto"; sourceTree = "<group>"; };
+		D900B3A42C920B6B008AEF02 /* chat_item_standard_message_standard_attachments_14.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_standard_attachments_14.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_standard_attachments_14.txtproto"; sourceTree = "<group>"; };
+		D900B3A52C920B6C008AEF02 /* chat_item_standard_message_standard_attachments_07.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_standard_attachments_07.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_standard_attachments_07.binproto"; sourceTree = "<group>"; };
+		D900B3A62C920B6C008AEF02 /* chat_item_standard_message_standard_attachments_12.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_standard_attachments_12.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_standard_attachments_12.binproto"; sourceTree = "<group>"; };
+		D900B3A72C920B6C008AEF02 /* chat_item_standard_message_standard_attachments_01.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_standard_attachments_01.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_standard_attachments_01.binproto"; sourceTree = "<group>"; };
+		D900B3A82C920B6C008AEF02 /* chat_item_standard_message_standard_attachments_06.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_standard_attachments_06.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_standard_attachments_06.txtproto"; sourceTree = "<group>"; };
+		D900B3A92C920B6C008AEF02 /* chat_item_standard_message_standard_attachments_13.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_standard_attachments_13.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_standard_attachments_13.binproto"; sourceTree = "<group>"; };
+		D900B3AA2C920B6C008AEF02 /* chat_item_standard_message_standard_attachments_05.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_standard_attachments_05.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_standard_attachments_05.binproto"; sourceTree = "<group>"; };
+		D900B3AB2C920B6C008AEF02 /* chat_item_standard_message_standard_attachments_00.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_standard_attachments_00.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_standard_attachments_00.binproto"; sourceTree = "<group>"; };
+		D900B3AC2C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_03.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_standard_attachments_03.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_standard_attachments_03.txtproto"; sourceTree = "<group>"; };
+		D900B3AD2C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_00.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_standard_attachments_00.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_standard_attachments_00.txtproto"; sourceTree = "<group>"; };
+		D900B3AE2C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_03.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_standard_attachments_03.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_standard_attachments_03.binproto"; sourceTree = "<group>"; };
 		D90D4C822BB633560097C573 /* Backup.proto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.protobuf; path = Backup.proto; sourceTree = "<group>"; };
 		D90D4D832BBB61680097C573 /* MessageBackupEmptyFrameId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupEmptyFrameId.swift; sourceTree = "<group>"; };
 		D9106DFE2AC1FEFD007ABFE6 /* EmptyForCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyForCodable.swift; sourceTree = "<group>"; };
@@ -5235,6 +5421,10 @@
 		D925F55E298C743E00158EE4 /* UsernameLookupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLookupManager.swift; sourceTree = "<group>"; };
 		D925F566298DC33E00158EE4 /* MockUsernameLookupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockUsernameLookupManager.swift; sourceTree = "<group>"; };
 		D925F56F298DF41B00158EE4 /* UsernameLookupRecordTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLookupRecordTest.swift; sourceTree = "<group>"; };
+		D9267BF42C9229FA00F39B24 /* chat_item_standard_message_with_edits_01.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_with_edits_01.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_with_edits_01.txtproto"; sourceTree = "<group>"; };
+		D9267BF52C9229FA00F39B24 /* chat_item_standard_message_with_edits_01.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_with_edits_01.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_with_edits_01.binproto"; sourceTree = "<group>"; };
+		D9267BF82C9229FB00F39B24 /* chat_item_standard_message_with_edits_00.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_with_edits_00.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_with_edits_00.binproto"; sourceTree = "<group>"; };
+		D9267BF92C9229FB00F39B24 /* chat_item_standard_message_with_edits_00.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_with_edits_00.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_with_edits_00.txtproto"; sourceTree = "<group>"; };
 		D92AB7D729E3BEE30081CA7D /* OWSDeviceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDeviceManager.swift; sourceTree = "<group>"; };
 		D92C57542A2925AD00A03BB7 /* TSInfoMessage+DisplayableGroupUpdateItemTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+DisplayableGroupUpdateItemTest.swift"; sourceTree = "<group>"; };
 		D93086262C616391008E3A27 /* TSOutgoingMessage+Builder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSOutgoingMessage+Builder.swift"; sourceTree = "<group>"; };
@@ -5249,6 +5439,36 @@
 		D9317FD42A4BB15D00075A92 /* BitmapsImageCenteredDeadzoneTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitmapsImageCenteredDeadzoneTest.swift; sourceTree = "<group>"; };
 		D9317FD62A4BC4F000075A92 /* BitmapsRectTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitmapsRectTest.swift; sourceTree = "<group>"; };
 		D9317FDB2A4CE48D00075A92 /* UsernameLinkQRCodeColorPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLinkQRCodeColorPickerViewController.swift; sourceTree = "<group>"; };
+		D93372A82C9227D4008926D0 /* chat_item_standard_message_text_only_08.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_text_only_08.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_text_only_08.binproto"; sourceTree = "<group>"; };
+		D93372A92C9227D4008926D0 /* chat_item_standard_message_text_only_06.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_text_only_06.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_text_only_06.txtproto"; sourceTree = "<group>"; };
+		D93372AA2C9227D4008926D0 /* chat_item_standard_message_text_only_10.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_text_only_10.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_text_only_10.txtproto"; sourceTree = "<group>"; };
+		D93372AB2C9227D4008926D0 /* chat_item_standard_message_text_only_02.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_text_only_02.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_text_only_02.binproto"; sourceTree = "<group>"; };
+		D93372AC2C9227D5008926D0 /* chat_item_standard_message_text_only_07.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_text_only_07.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_text_only_07.binproto"; sourceTree = "<group>"; };
+		D93372AD2C9227D5008926D0 /* chat_item_standard_message_text_only_12.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_text_only_12.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_text_only_12.txtproto"; sourceTree = "<group>"; };
+		D93372AE2C9227D5008926D0 /* chat_item_standard_message_text_only_08.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_text_only_08.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_text_only_08.txtproto"; sourceTree = "<group>"; };
+		D93372AF2C9227D5008926D0 /* chat_item_standard_message_text_only_03.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_text_only_03.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_text_only_03.txtproto"; sourceTree = "<group>"; };
+		D93372B02C9227D5008926D0 /* chat_item_standard_message_text_only_09.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_text_only_09.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_text_only_09.txtproto"; sourceTree = "<group>"; };
+		D93372B12C9227D5008926D0 /* chat_item_standard_message_text_only_07.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_text_only_07.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_text_only_07.txtproto"; sourceTree = "<group>"; };
+		D93372B22C9227D6008926D0 /* chat_item_standard_message_text_only_00.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_text_only_00.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_text_only_00.binproto"; sourceTree = "<group>"; };
+		D93372B32C9227D6008926D0 /* chat_item_standard_message_text_only_13.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_text_only_13.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_text_only_13.binproto"; sourceTree = "<group>"; };
+		D93372B42C9227D6008926D0 /* chat_item_standard_message_text_only_04.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_text_only_04.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_text_only_04.txtproto"; sourceTree = "<group>"; };
+		D93372B52C9227D6008926D0 /* chat_item_standard_message_text_only_11.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_text_only_11.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_text_only_11.binproto"; sourceTree = "<group>"; };
+		D93372B62C9227D6008926D0 /* chat_item_standard_message_text_only_13.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_text_only_13.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_text_only_13.txtproto"; sourceTree = "<group>"; };
+		D93372B72C9227D6008926D0 /* chat_item_standard_message_text_only_05.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_text_only_05.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_text_only_05.txtproto"; sourceTree = "<group>"; };
+		D93372B82C9227D7008926D0 /* chat_item_standard_message_text_only_04.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_text_only_04.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_text_only_04.binproto"; sourceTree = "<group>"; };
+		D93372B92C9227D7008926D0 /* chat_item_standard_message_text_only_01.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_text_only_01.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_text_only_01.binproto"; sourceTree = "<group>"; };
+		D93372BA2C9227D7008926D0 /* chat_item_standard_message_text_only_03.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_text_only_03.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_text_only_03.binproto"; sourceTree = "<group>"; };
+		D93372BB2C9227D7008926D0 /* chat_item_standard_message_text_only_11.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_text_only_11.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_text_only_11.txtproto"; sourceTree = "<group>"; };
+		D93372BC2C9227D7008926D0 /* chat_item_standard_message_text_only_01.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_text_only_01.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_text_only_01.txtproto"; sourceTree = "<group>"; };
+		D93372BD2C9227D7008926D0 /* chat_item_standard_message_text_only_12.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_text_only_12.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_text_only_12.binproto"; sourceTree = "<group>"; };
+		D93372BE2C9227D8008926D0 /* chat_item_standard_message_text_only_14.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_text_only_14.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_text_only_14.binproto"; sourceTree = "<group>"; };
+		D93372BF2C9227D8008926D0 /* chat_item_standard_message_text_only_09.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_text_only_09.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_text_only_09.binproto"; sourceTree = "<group>"; };
+		D93372C02C9227D8008926D0 /* chat_item_standard_message_text_only_05.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_text_only_05.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_text_only_05.binproto"; sourceTree = "<group>"; };
+		D93372C12C9227D8008926D0 /* chat_item_standard_message_text_only_00.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_text_only_00.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_text_only_00.txtproto"; sourceTree = "<group>"; };
+		D93372C22C9227D8008926D0 /* chat_item_standard_message_text_only_06.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_text_only_06.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_text_only_06.binproto"; sourceTree = "<group>"; };
+		D93372C32C9227D8008926D0 /* chat_item_standard_message_text_only_02.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_text_only_02.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_text_only_02.txtproto"; sourceTree = "<group>"; };
+		D93372C42C9227D8008926D0 /* chat_item_standard_message_text_only_14.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_text_only_14.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_text_only_14.txtproto"; sourceTree = "<group>"; };
+		D93372C52C9227D9008926D0 /* chat_item_standard_message_text_only_10.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_text_only_10.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_text_only_10.binproto"; sourceTree = "<group>"; };
 		D936DE062C8E967200A271C3 /* chat_item_profile_change_update_01.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_profile_change_update_01.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_profile_change_update_01.txtproto"; sourceTree = "<group>"; };
 		D936DE072C8E967200A271C3 /* chat_item_profile_change_update_00.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_profile_change_update_00.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_profile_change_update_00.txtproto"; sourceTree = "<group>"; };
 		D936DE082C8E967200A271C3 /* chat_item_profile_change_update_01.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_profile_change_update_01.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_profile_change_update_01.binproto"; sourceTree = "<group>"; };
@@ -5320,6 +5540,36 @@
 		D9708B5B29E4CCCB004306FA /* OWSDeviceManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDeviceManagerTest.swift; sourceTree = "<group>"; };
 		D972E2FE2C542BCD001D7337 /* Backup.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Backup.pb.swift; sourceTree = "<group>"; };
 		D97411BA28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GroupManager+GenericGroupUpdates.swift"; sourceTree = "<group>"; };
+		D9750F812C920A5F00A4D4F0 /* chat_item_standard_message_special_attachments_02.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_special_attachments_02.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_special_attachments_02.txtproto"; sourceTree = "<group>"; };
+		D9750F822C920A5F00A4D4F0 /* chat_item_standard_message_special_attachments_12.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_special_attachments_12.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_special_attachments_12.txtproto"; sourceTree = "<group>"; };
+		D9750F832C920A5F00A4D4F0 /* chat_item_standard_message_special_attachments_05.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_special_attachments_05.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_special_attachments_05.binproto"; sourceTree = "<group>"; };
+		D9750F842C920A5F00A4D4F0 /* chat_item_standard_message_special_attachments_00.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_special_attachments_00.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_special_attachments_00.txtproto"; sourceTree = "<group>"; };
+		D9750F852C920A6000A4D4F0 /* chat_item_standard_message_special_attachments_03.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_special_attachments_03.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_special_attachments_03.txtproto"; sourceTree = "<group>"; };
+		D9750F862C920A6000A4D4F0 /* chat_item_standard_message_special_attachments_04.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_special_attachments_04.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_special_attachments_04.txtproto"; sourceTree = "<group>"; };
+		D9750F872C920A6000A4D4F0 /* chat_item_standard_message_special_attachments_05.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_special_attachments_05.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_special_attachments_05.txtproto"; sourceTree = "<group>"; };
+		D9750F882C920A6000A4D4F0 /* chat_item_standard_message_special_attachments_12.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_special_attachments_12.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_special_attachments_12.binproto"; sourceTree = "<group>"; };
+		D9750F892C920A6000A4D4F0 /* chat_item_standard_message_special_attachments_14.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_special_attachments_14.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_special_attachments_14.binproto"; sourceTree = "<group>"; };
+		D9750F8A2C920A6000A4D4F0 /* chat_item_standard_message_special_attachments_11.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_special_attachments_11.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_special_attachments_11.txtproto"; sourceTree = "<group>"; };
+		D9750F8B2C920A6000A4D4F0 /* chat_item_standard_message_special_attachments_10.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_special_attachments_10.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_special_attachments_10.txtproto"; sourceTree = "<group>"; };
+		D9750F8C2C920A6100A4D4F0 /* chat_item_standard_message_special_attachments_00.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_special_attachments_00.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_special_attachments_00.binproto"; sourceTree = "<group>"; };
+		D9750F8D2C920A6100A4D4F0 /* chat_item_standard_message_special_attachments_02.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_special_attachments_02.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_special_attachments_02.binproto"; sourceTree = "<group>"; };
+		D9750F8E2C920A6100A4D4F0 /* chat_item_standard_message_special_attachments_07.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_special_attachments_07.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_special_attachments_07.binproto"; sourceTree = "<group>"; };
+		D9750F8F2C920A6100A4D4F0 /* chat_item_standard_message_special_attachments_13.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_special_attachments_13.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_special_attachments_13.binproto"; sourceTree = "<group>"; };
+		D9750F902C920A6100A4D4F0 /* chat_item_standard_message_special_attachments_03.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_special_attachments_03.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_special_attachments_03.binproto"; sourceTree = "<group>"; };
+		D9750F912C920A6100A4D4F0 /* chat_item_standard_message_special_attachments_08.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_special_attachments_08.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_special_attachments_08.binproto"; sourceTree = "<group>"; };
+		D9750F922C920A6200A4D4F0 /* chat_item_standard_message_special_attachments_08.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_special_attachments_08.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_special_attachments_08.txtproto"; sourceTree = "<group>"; };
+		D9750F932C920A6200A4D4F0 /* chat_item_standard_message_special_attachments_04.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_special_attachments_04.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_special_attachments_04.binproto"; sourceTree = "<group>"; };
+		D9750F942C920A6200A4D4F0 /* chat_item_standard_message_special_attachments_07.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_special_attachments_07.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_special_attachments_07.txtproto"; sourceTree = "<group>"; };
+		D9750F952C920A6200A4D4F0 /* chat_item_standard_message_special_attachments_10.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_special_attachments_10.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_special_attachments_10.binproto"; sourceTree = "<group>"; };
+		D9750F962C920A6200A4D4F0 /* chat_item_standard_message_special_attachments_06.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_special_attachments_06.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_special_attachments_06.binproto"; sourceTree = "<group>"; };
+		D9750F972C920A6200A4D4F0 /* chat_item_standard_message_special_attachments_09.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_special_attachments_09.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_special_attachments_09.txtproto"; sourceTree = "<group>"; };
+		D9750F982C920A6300A4D4F0 /* chat_item_standard_message_special_attachments_11.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_special_attachments_11.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_special_attachments_11.binproto"; sourceTree = "<group>"; };
+		D9750F992C920A6300A4D4F0 /* chat_item_standard_message_special_attachments_01.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_special_attachments_01.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_special_attachments_01.txtproto"; sourceTree = "<group>"; };
+		D9750F9A2C920A6300A4D4F0 /* chat_item_standard_message_special_attachments_14.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_special_attachments_14.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_special_attachments_14.txtproto"; sourceTree = "<group>"; };
+		D9750F9B2C920A6300A4D4F0 /* chat_item_standard_message_special_attachments_01.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_special_attachments_01.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_special_attachments_01.binproto"; sourceTree = "<group>"; };
+		D9750F9C2C920A6300A4D4F0 /* chat_item_standard_message_special_attachments_13.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_special_attachments_13.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_special_attachments_13.txtproto"; sourceTree = "<group>"; };
+		D9750F9D2C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_09.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_special_attachments_09.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_special_attachments_09.binproto"; sourceTree = "<group>"; };
+		D9750F9E2C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_06.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_special_attachments_06.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_special_attachments_06.txtproto"; sourceTree = "<group>"; };
 		D979CC1F2AD3933B006AAC49 /* IndividualCallRecordManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndividualCallRecordManager.swift; sourceTree = "<group>"; };
 		D979CC202AD3933B006AAC49 /* IncomingCallEventSyncMessageManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IncomingCallEventSyncMessageManager.swift; sourceTree = "<group>"; };
 		D979CC212AD3933B006AAC49 /* ThreadStore+CallRecord.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ThreadStore+CallRecord.swift"; sourceTree = "<group>"; };
@@ -5461,6 +5711,38 @@
 		D9A85DC12BE1719C003F7045 /* MessageBackupGroupCallArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupGroupCallArchiver.swift; sourceTree = "<group>"; };
 		D9AA379F2A86E0910088EFFB /* OutgoingCallEventSyncMessageTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingCallEventSyncMessageTest.swift; sourceTree = "<group>"; };
 		D9AA37A32A8A9A910088EFFB /* OutgoingGroupCallUpdateMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingGroupCallUpdateMessage.swift; sourceTree = "<group>"; };
+		D9AABF382C92012300E854CE /* chat_item_learned_profile_update_04.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_learned_profile_update_04.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_learned_profile_update_04.binproto"; sourceTree = "<group>"; };
+		D9AABF392C92012300E854CE /* chat_item_learned_profile_update_04.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_learned_profile_update_04.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_learned_profile_update_04.txtproto"; sourceTree = "<group>"; };
+		D9AABF3C2C92014700E854CE /* chat_item_standard_message_long_text_03.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_long_text_03.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_long_text_03.binproto"; sourceTree = "<group>"; };
+		D9AABF3D2C92014700E854CE /* chat_item_standard_message_long_text_08.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_long_text_08.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_long_text_08.binproto"; sourceTree = "<group>"; };
+		D9AABF3E2C92014700E854CE /* chat_item_standard_message_long_text_06.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_long_text_06.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_long_text_06.binproto"; sourceTree = "<group>"; };
+		D9AABF3F2C92014800E854CE /* chat_item_standard_message_long_text_06.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_long_text_06.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_long_text_06.txtproto"; sourceTree = "<group>"; };
+		D9AABF402C92014800E854CE /* chat_item_standard_message_long_text_07.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_long_text_07.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_long_text_07.txtproto"; sourceTree = "<group>"; };
+		D9AABF412C92014800E854CE /* chat_item_standard_message_long_text_03.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_long_text_03.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_long_text_03.txtproto"; sourceTree = "<group>"; };
+		D9AABF422C92014800E854CE /* chat_item_standard_message_long_text_13.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_long_text_13.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_long_text_13.txtproto"; sourceTree = "<group>"; };
+		D9AABF432C92014800E854CE /* chat_item_standard_message_long_text_01.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_long_text_01.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_long_text_01.binproto"; sourceTree = "<group>"; };
+		D9AABF442C92014800E854CE /* chat_item_standard_message_long_text_10.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_long_text_10.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_long_text_10.txtproto"; sourceTree = "<group>"; };
+		D9AABF452C92014800E854CE /* chat_item_standard_message_long_text_09.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_long_text_09.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_long_text_09.txtproto"; sourceTree = "<group>"; };
+		D9AABF462C92014800E854CE /* chat_item_standard_message_long_text_04.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_long_text_04.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_long_text_04.binproto"; sourceTree = "<group>"; };
+		D9AABF472C92014900E854CE /* chat_item_standard_message_long_text_07.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_long_text_07.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_long_text_07.binproto"; sourceTree = "<group>"; };
+		D9AABF482C92014900E854CE /* chat_item_standard_message_long_text_14.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_long_text_14.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_long_text_14.binproto"; sourceTree = "<group>"; };
+		D9AABF492C92014900E854CE /* chat_item_standard_message_long_text_09.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_long_text_09.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_long_text_09.binproto"; sourceTree = "<group>"; };
+		D9AABF4A2C92014900E854CE /* chat_item_standard_message_long_text_11.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_long_text_11.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_long_text_11.txtproto"; sourceTree = "<group>"; };
+		D9AABF4B2C92014900E854CE /* chat_item_standard_message_long_text_11.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_long_text_11.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_long_text_11.binproto"; sourceTree = "<group>"; };
+		D9AABF4C2C92014900E854CE /* chat_item_standard_message_long_text_08.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_long_text_08.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_long_text_08.txtproto"; sourceTree = "<group>"; };
+		D9AABF4D2C92014A00E854CE /* chat_item_standard_message_long_text_05.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_long_text_05.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_long_text_05.txtproto"; sourceTree = "<group>"; };
+		D9AABF4E2C92014A00E854CE /* chat_item_standard_message_long_text_10.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_long_text_10.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_long_text_10.binproto"; sourceTree = "<group>"; };
+		D9AABF4F2C92014A00E854CE /* chat_item_standard_message_long_text_13.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_long_text_13.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_long_text_13.binproto"; sourceTree = "<group>"; };
+		D9AABF502C92014A00E854CE /* chat_item_standard_message_long_text_14.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_long_text_14.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_long_text_14.txtproto"; sourceTree = "<group>"; };
+		D9AABF512C92014B00E854CE /* chat_item_standard_message_long_text_04.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_long_text_04.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_long_text_04.txtproto"; sourceTree = "<group>"; };
+		D9AABF522C92014B00E854CE /* chat_item_standard_message_long_text_00.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_long_text_00.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_long_text_00.txtproto"; sourceTree = "<group>"; };
+		D9AABF532C92014B00E854CE /* chat_item_standard_message_long_text_12.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_long_text_12.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_long_text_12.binproto"; sourceTree = "<group>"; };
+		D9AABF542C92014B00E854CE /* chat_item_standard_message_long_text_05.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_long_text_05.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_long_text_05.binproto"; sourceTree = "<group>"; };
+		D9AABF552C92014B00E854CE /* chat_item_standard_message_long_text_00.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_long_text_00.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_long_text_00.binproto"; sourceTree = "<group>"; };
+		D9AABF562C92014C00E854CE /* chat_item_standard_message_long_text_02.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_long_text_02.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_long_text_02.binproto"; sourceTree = "<group>"; };
+		D9AABF572C92014C00E854CE /* chat_item_standard_message_long_text_12.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_long_text_12.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_long_text_12.txtproto"; sourceTree = "<group>"; };
+		D9AABF582C92014C00E854CE /* chat_item_standard_message_long_text_02.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_long_text_02.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_long_text_02.txtproto"; sourceTree = "<group>"; };
+		D9AABF592C92014C00E854CE /* chat_item_standard_message_long_text_01.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_long_text_01.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_long_text_01.txtproto"; sourceTree = "<group>"; };
 		D9AD1D9428B9955C00B42E6F /* TSInfoMessage+GroupUpdateType+NSAttributedStringTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+GroupUpdateType+NSAttributedStringTest.swift"; sourceTree = "<group>"; };
 		D9AE0ACA29162C160063488B /* TSAttachmentMultisendJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAttachmentMultisendJobRecord.swift; sourceTree = "<group>"; };
 		D9AE0ACE29186D7F0063488B /* IncomingContactSyncJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomingContactSyncJobRecord.swift; sourceTree = "<group>"; };
@@ -5595,6 +5877,36 @@
 		D9F399B12A96D65D001599EC /* LinkedDevicePniKeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkedDevicePniKeyManager.swift; sourceTree = "<group>"; };
 		D9F399B32A96E54C001599EC /* LinkedDevicePniKeyManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkedDevicePniKeyManagerTest.swift; sourceTree = "<group>"; };
 		D9F399B82A9EA1FA001599EC /* MockDBV2Test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDBV2Test.swift; sourceTree = "<group>"; };
+		D9F512762C90D8640094D759 /* chat_item_standard_message_formatted_text_06.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_formatted_text_06.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_formatted_text_06.binproto"; sourceTree = "<group>"; };
+		D9F512772C90D8640094D759 /* chat_item_standard_message_formatted_text_00.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_formatted_text_00.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_formatted_text_00.binproto"; sourceTree = "<group>"; };
+		D9F512782C90D8640094D759 /* chat_item_standard_message_formatted_text_09.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_formatted_text_09.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_formatted_text_09.binproto"; sourceTree = "<group>"; };
+		D9F512792C90D8650094D759 /* chat_item_standard_message_formatted_text_01.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_formatted_text_01.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_formatted_text_01.binproto"; sourceTree = "<group>"; };
+		D9F5127A2C90D8650094D759 /* chat_item_standard_message_formatted_text_05.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_formatted_text_05.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_formatted_text_05.txtproto"; sourceTree = "<group>"; };
+		D9F5127B2C90D8650094D759 /* chat_item_standard_message_formatted_text_05.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_formatted_text_05.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_formatted_text_05.binproto"; sourceTree = "<group>"; };
+		D9F5127C2C90D8650094D759 /* chat_item_standard_message_formatted_text_12.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_formatted_text_12.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_formatted_text_12.binproto"; sourceTree = "<group>"; };
+		D9F5127D2C90D8650094D759 /* chat_item_standard_message_formatted_text_09.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_formatted_text_09.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_formatted_text_09.txtproto"; sourceTree = "<group>"; };
+		D9F5127E2C90D8650094D759 /* chat_item_standard_message_formatted_text_06.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_formatted_text_06.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_formatted_text_06.txtproto"; sourceTree = "<group>"; };
+		D9F5127F2C90D8650094D759 /* chat_item_standard_message_formatted_text_00.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_formatted_text_00.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_formatted_text_00.txtproto"; sourceTree = "<group>"; };
+		D9F512802C90D8650094D759 /* chat_item_standard_message_formatted_text_13.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_formatted_text_13.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_formatted_text_13.binproto"; sourceTree = "<group>"; };
+		D9F512812C90D8660094D759 /* chat_item_standard_message_formatted_text_11.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_formatted_text_11.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_formatted_text_11.binproto"; sourceTree = "<group>"; };
+		D9F512822C90D8660094D759 /* chat_item_standard_message_formatted_text_10.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_formatted_text_10.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_formatted_text_10.binproto"; sourceTree = "<group>"; };
+		D9F512832C90D8660094D759 /* chat_item_standard_message_formatted_text_01.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_formatted_text_01.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_formatted_text_01.txtproto"; sourceTree = "<group>"; };
+		D9F512842C90D8660094D759 /* chat_item_standard_message_formatted_text_12.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_formatted_text_12.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_formatted_text_12.txtproto"; sourceTree = "<group>"; };
+		D9F512852C90D8660094D759 /* chat_item_standard_message_formatted_text_13.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_formatted_text_13.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_formatted_text_13.txtproto"; sourceTree = "<group>"; };
+		D9F512862C90D8660094D759 /* chat_item_standard_message_formatted_text_14.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_formatted_text_14.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_formatted_text_14.txtproto"; sourceTree = "<group>"; };
+		D9F512872C90D8660094D759 /* chat_item_standard_message_formatted_text_07.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_formatted_text_07.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_formatted_text_07.binproto"; sourceTree = "<group>"; };
+		D9F512882C90D8670094D759 /* chat_item_standard_message_formatted_text_02.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_formatted_text_02.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_formatted_text_02.txtproto"; sourceTree = "<group>"; };
+		D9F512892C90D8670094D759 /* chat_item_standard_message_formatted_text_02.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_formatted_text_02.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_formatted_text_02.binproto"; sourceTree = "<group>"; };
+		D9F5128A2C90D8670094D759 /* chat_item_standard_message_formatted_text_07.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_formatted_text_07.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_formatted_text_07.txtproto"; sourceTree = "<group>"; };
+		D9F5128B2C90D8670094D759 /* chat_item_standard_message_formatted_text_08.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_formatted_text_08.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_formatted_text_08.txtproto"; sourceTree = "<group>"; };
+		D9F5128C2C90D8670094D759 /* chat_item_standard_message_formatted_text_04.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_formatted_text_04.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_formatted_text_04.binproto"; sourceTree = "<group>"; };
+		D9F5128D2C90D8670094D759 /* chat_item_standard_message_formatted_text_14.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_formatted_text_14.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_formatted_text_14.binproto"; sourceTree = "<group>"; };
+		D9F5128E2C90D8670094D759 /* chat_item_standard_message_formatted_text_08.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_formatted_text_08.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_formatted_text_08.binproto"; sourceTree = "<group>"; };
+		D9F5128F2C90D8680094D759 /* chat_item_standard_message_formatted_text_10.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_formatted_text_10.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_formatted_text_10.txtproto"; sourceTree = "<group>"; };
+		D9F512902C90D8680094D759 /* chat_item_standard_message_formatted_text_04.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_formatted_text_04.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_formatted_text_04.txtproto"; sourceTree = "<group>"; };
+		D9F512912C90D8680094D759 /* chat_item_standard_message_formatted_text_11.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_formatted_text_11.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_formatted_text_11.txtproto"; sourceTree = "<group>"; };
+		D9F512922C90D8680094D759 /* chat_item_standard_message_formatted_text_03.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_formatted_text_03.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_formatted_text_03.txtproto"; sourceTree = "<group>"; };
+		D9F512932C90D8680094D759 /* chat_item_standard_message_formatted_text_03.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = chat_item_standard_message_formatted_text_03.binproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_formatted_text_03.binproto"; sourceTree = "<group>"; };
 		D9F6553129D6531D002A330A /* SDSCodableModel+ColumnName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SDSCodableModel+ColumnName.swift"; sourceTree = "<group>"; };
 		D9F6553529D6547E002A330A /* SDSCodableModelDatabaseInterface+Remove.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SDSCodableModelDatabaseInterface+Remove.swift"; sourceTree = "<group>"; };
 		D9F6553629D6547E002A330A /* SDSCodableModelDatabaseInterface+Save.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SDSCodableModelDatabaseInterface+Save.swift"; sourceTree = "<group>"; };
@@ -10479,6 +10791,43 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		D900B3902C920B3C008AEF02 /* StandardMessageStandardAttachments */ = {
+			isa = PBXGroup;
+			children = (
+				D900B3AB2C920B6C008AEF02 /* chat_item_standard_message_standard_attachments_00.binproto */,
+				D900B3AD2C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_00.txtproto */,
+				D900B3A72C920B6C008AEF02 /* chat_item_standard_message_standard_attachments_01.binproto */,
+				D900B39A2C920B6A008AEF02 /* chat_item_standard_message_standard_attachments_01.txtproto */,
+				D900B3A02C920B6B008AEF02 /* chat_item_standard_message_standard_attachments_02.binproto */,
+				D900B3982C920B6A008AEF02 /* chat_item_standard_message_standard_attachments_02.txtproto */,
+				D900B3AE2C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_03.binproto */,
+				D900B3AC2C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_03.txtproto */,
+				D900B3922C920B69008AEF02 /* chat_item_standard_message_standard_attachments_04.binproto */,
+				D900B3992C920B6A008AEF02 /* chat_item_standard_message_standard_attachments_04.txtproto */,
+				D900B3AA2C920B6C008AEF02 /* chat_item_standard_message_standard_attachments_05.binproto */,
+				D900B3912C920B68008AEF02 /* chat_item_standard_message_standard_attachments_05.txtproto */,
+				D900B39E2C920B6A008AEF02 /* chat_item_standard_message_standard_attachments_06.binproto */,
+				D900B3A82C920B6C008AEF02 /* chat_item_standard_message_standard_attachments_06.txtproto */,
+				D900B3A52C920B6C008AEF02 /* chat_item_standard_message_standard_attachments_07.binproto */,
+				D900B3962C920B69008AEF02 /* chat_item_standard_message_standard_attachments_07.txtproto */,
+				D900B3942C920B69008AEF02 /* chat_item_standard_message_standard_attachments_08.binproto */,
+				D900B3972C920B69008AEF02 /* chat_item_standard_message_standard_attachments_08.txtproto */,
+				D900B3A32C920B6B008AEF02 /* chat_item_standard_message_standard_attachments_09.binproto */,
+				D900B39D2C920B6A008AEF02 /* chat_item_standard_message_standard_attachments_09.txtproto */,
+				D900B3932C920B69008AEF02 /* chat_item_standard_message_standard_attachments_10.binproto */,
+				D900B39F2C920B6B008AEF02 /* chat_item_standard_message_standard_attachments_10.txtproto */,
+				D900B39B2C920B6A008AEF02 /* chat_item_standard_message_standard_attachments_11.binproto */,
+				D900B3952C920B69008AEF02 /* chat_item_standard_message_standard_attachments_11.txtproto */,
+				D900B3A62C920B6C008AEF02 /* chat_item_standard_message_standard_attachments_12.binproto */,
+				D900B39C2C920B6A008AEF02 /* chat_item_standard_message_standard_attachments_12.txtproto */,
+				D900B3A92C920B6C008AEF02 /* chat_item_standard_message_standard_attachments_13.binproto */,
+				D900B3A22C920B6B008AEF02 /* chat_item_standard_message_standard_attachments_13.txtproto */,
+				D900B3A12C920B6B008AEF02 /* chat_item_standard_message_standard_attachments_14.binproto */,
+				D900B3A42C920B6B008AEF02 /* chat_item_standard_message_standard_attachments_14.txtproto */,
+			);
+			name = StandardMessageStandardAttachments;
+			sourceTree = "<group>";
+		};
 		D90D4C4C2BB633560097C573 /* Backups */ = {
 			isa = PBXGroup;
 			children = (
@@ -10631,6 +10980,17 @@
 			path = Usernames;
 			sourceTree = "<group>";
 		};
+		D9267BF32C92293900F39B24 /* StandardMessageWithEdits */ = {
+			isa = PBXGroup;
+			children = (
+				D9267BF82C9229FB00F39B24 /* chat_item_standard_message_with_edits_00.binproto */,
+				D9267BF92C9229FB00F39B24 /* chat_item_standard_message_with_edits_00.txtproto */,
+				D9267BF52C9229FA00F39B24 /* chat_item_standard_message_with_edits_01.binproto */,
+				D9267BF42C9229FA00F39B24 /* chat_item_standard_message_with_edits_01.txtproto */,
+			);
+			name = StandardMessageWithEdits;
+			sourceTree = "<group>";
+		};
 		D9277AAA2AC3885300A72E73 /* CallRecord */ = {
 			isa = PBXGroup;
 			children = (
@@ -10695,6 +11055,43 @@
 			path = Links;
 			sourceTree = "<group>";
 		};
+		D93372A72C9227BA008926D0 /* StandardMessageTextOnly */ = {
+			isa = PBXGroup;
+			children = (
+				D93372B22C9227D6008926D0 /* chat_item_standard_message_text_only_00.binproto */,
+				D93372C12C9227D8008926D0 /* chat_item_standard_message_text_only_00.txtproto */,
+				D93372B92C9227D7008926D0 /* chat_item_standard_message_text_only_01.binproto */,
+				D93372BC2C9227D7008926D0 /* chat_item_standard_message_text_only_01.txtproto */,
+				D93372AB2C9227D4008926D0 /* chat_item_standard_message_text_only_02.binproto */,
+				D93372C32C9227D8008926D0 /* chat_item_standard_message_text_only_02.txtproto */,
+				D93372BA2C9227D7008926D0 /* chat_item_standard_message_text_only_03.binproto */,
+				D93372AF2C9227D5008926D0 /* chat_item_standard_message_text_only_03.txtproto */,
+				D93372B82C9227D7008926D0 /* chat_item_standard_message_text_only_04.binproto */,
+				D93372B42C9227D6008926D0 /* chat_item_standard_message_text_only_04.txtproto */,
+				D93372C02C9227D8008926D0 /* chat_item_standard_message_text_only_05.binproto */,
+				D93372B72C9227D6008926D0 /* chat_item_standard_message_text_only_05.txtproto */,
+				D93372C22C9227D8008926D0 /* chat_item_standard_message_text_only_06.binproto */,
+				D93372A92C9227D4008926D0 /* chat_item_standard_message_text_only_06.txtproto */,
+				D93372AC2C9227D5008926D0 /* chat_item_standard_message_text_only_07.binproto */,
+				D93372B12C9227D5008926D0 /* chat_item_standard_message_text_only_07.txtproto */,
+				D93372A82C9227D4008926D0 /* chat_item_standard_message_text_only_08.binproto */,
+				D93372AE2C9227D5008926D0 /* chat_item_standard_message_text_only_08.txtproto */,
+				D93372BF2C9227D8008926D0 /* chat_item_standard_message_text_only_09.binproto */,
+				D93372B02C9227D5008926D0 /* chat_item_standard_message_text_only_09.txtproto */,
+				D93372C52C9227D9008926D0 /* chat_item_standard_message_text_only_10.binproto */,
+				D93372AA2C9227D4008926D0 /* chat_item_standard_message_text_only_10.txtproto */,
+				D93372B52C9227D6008926D0 /* chat_item_standard_message_text_only_11.binproto */,
+				D93372BB2C9227D7008926D0 /* chat_item_standard_message_text_only_11.txtproto */,
+				D93372BD2C9227D7008926D0 /* chat_item_standard_message_text_only_12.binproto */,
+				D93372AD2C9227D5008926D0 /* chat_item_standard_message_text_only_12.txtproto */,
+				D93372B32C9227D6008926D0 /* chat_item_standard_message_text_only_13.binproto */,
+				D93372B62C9227D6008926D0 /* chat_item_standard_message_text_only_13.txtproto */,
+				D93372BE2C9227D8008926D0 /* chat_item_standard_message_text_only_14.binproto */,
+				D93372C42C9227D8008926D0 /* chat_item_standard_message_text_only_14.txtproto */,
+			);
+			name = StandardMessageTextOnly;
+			sourceTree = "<group>";
+		};
 		D936DE052C8E965F00A271C3 /* ProfileChange */ = {
 			isa = PBXGroup;
 			children = (
@@ -10730,6 +11127,8 @@
 				D95508E42C8E8E87000BDD3B /* chat_item_learned_profile_update_02.txtproto */,
 				D95508E22C8E8E87000BDD3B /* chat_item_learned_profile_update_03.binproto */,
 				D95508E32C8E8E87000BDD3B /* chat_item_learned_profile_update_03.txtproto */,
+				D9AABF382C92012300E854CE /* chat_item_learned_profile_update_04.binproto */,
+				D9AABF392C92012300E854CE /* chat_item_learned_profile_update_04.txtproto */,
 			);
 			name = LearnedProfile;
 			sourceTree = "<group>";
@@ -10775,6 +11174,43 @@
 				4C9C50FF22F495F60054A33F /* TSAttachmentMultisendJob.swift */,
 			);
 			path = Jobs;
+			sourceTree = "<group>";
+		};
+		D9750F802C920A4000A4D4F0 /* StandardMessageSpecialAttachments */ = {
+			isa = PBXGroup;
+			children = (
+				D9750F8C2C920A6100A4D4F0 /* chat_item_standard_message_special_attachments_00.binproto */,
+				D9750F842C920A5F00A4D4F0 /* chat_item_standard_message_special_attachments_00.txtproto */,
+				D9750F9B2C920A6300A4D4F0 /* chat_item_standard_message_special_attachments_01.binproto */,
+				D9750F992C920A6300A4D4F0 /* chat_item_standard_message_special_attachments_01.txtproto */,
+				D9750F8D2C920A6100A4D4F0 /* chat_item_standard_message_special_attachments_02.binproto */,
+				D9750F812C920A5F00A4D4F0 /* chat_item_standard_message_special_attachments_02.txtproto */,
+				D9750F902C920A6100A4D4F0 /* chat_item_standard_message_special_attachments_03.binproto */,
+				D9750F852C920A6000A4D4F0 /* chat_item_standard_message_special_attachments_03.txtproto */,
+				D9750F932C920A6200A4D4F0 /* chat_item_standard_message_special_attachments_04.binproto */,
+				D9750F862C920A6000A4D4F0 /* chat_item_standard_message_special_attachments_04.txtproto */,
+				D9750F832C920A5F00A4D4F0 /* chat_item_standard_message_special_attachments_05.binproto */,
+				D9750F872C920A6000A4D4F0 /* chat_item_standard_message_special_attachments_05.txtproto */,
+				D9750F962C920A6200A4D4F0 /* chat_item_standard_message_special_attachments_06.binproto */,
+				D9750F9E2C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_06.txtproto */,
+				D9750F8E2C920A6100A4D4F0 /* chat_item_standard_message_special_attachments_07.binproto */,
+				D9750F942C920A6200A4D4F0 /* chat_item_standard_message_special_attachments_07.txtproto */,
+				D9750F912C920A6100A4D4F0 /* chat_item_standard_message_special_attachments_08.binproto */,
+				D9750F922C920A6200A4D4F0 /* chat_item_standard_message_special_attachments_08.txtproto */,
+				D9750F9D2C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_09.binproto */,
+				D9750F972C920A6200A4D4F0 /* chat_item_standard_message_special_attachments_09.txtproto */,
+				D9750F952C920A6200A4D4F0 /* chat_item_standard_message_special_attachments_10.binproto */,
+				D9750F8B2C920A6000A4D4F0 /* chat_item_standard_message_special_attachments_10.txtproto */,
+				D9750F982C920A6300A4D4F0 /* chat_item_standard_message_special_attachments_11.binproto */,
+				D9750F8A2C920A6000A4D4F0 /* chat_item_standard_message_special_attachments_11.txtproto */,
+				D9750F882C920A6000A4D4F0 /* chat_item_standard_message_special_attachments_12.binproto */,
+				D9750F822C920A5F00A4D4F0 /* chat_item_standard_message_special_attachments_12.txtproto */,
+				D9750F8F2C920A6100A4D4F0 /* chat_item_standard_message_special_attachments_13.binproto */,
+				D9750F9C2C920A6300A4D4F0 /* chat_item_standard_message_special_attachments_13.txtproto */,
+				D9750F892C920A6000A4D4F0 /* chat_item_standard_message_special_attachments_14.binproto */,
+				D9750F9A2C920A6300A4D4F0 /* chat_item_standard_message_special_attachments_14.txtproto */,
+			);
+			name = StandardMessageSpecialAttachments;
 			sourceTree = "<group>";
 		};
 		D979CC3F2AD4DD8A006AAC49 /* CallRecord */ = {
@@ -11031,6 +11467,43 @@
 			path = Individual;
 			sourceTree = "<group>";
 		};
+		D9AABF332C92008D00E854CE /* StandardMessageLongText */ = {
+			isa = PBXGroup;
+			children = (
+				D9AABF552C92014B00E854CE /* chat_item_standard_message_long_text_00.binproto */,
+				D9AABF522C92014B00E854CE /* chat_item_standard_message_long_text_00.txtproto */,
+				D9AABF432C92014800E854CE /* chat_item_standard_message_long_text_01.binproto */,
+				D9AABF592C92014C00E854CE /* chat_item_standard_message_long_text_01.txtproto */,
+				D9AABF562C92014C00E854CE /* chat_item_standard_message_long_text_02.binproto */,
+				D9AABF582C92014C00E854CE /* chat_item_standard_message_long_text_02.txtproto */,
+				D9AABF3C2C92014700E854CE /* chat_item_standard_message_long_text_03.binproto */,
+				D9AABF412C92014800E854CE /* chat_item_standard_message_long_text_03.txtproto */,
+				D9AABF462C92014800E854CE /* chat_item_standard_message_long_text_04.binproto */,
+				D9AABF512C92014B00E854CE /* chat_item_standard_message_long_text_04.txtproto */,
+				D9AABF542C92014B00E854CE /* chat_item_standard_message_long_text_05.binproto */,
+				D9AABF4D2C92014A00E854CE /* chat_item_standard_message_long_text_05.txtproto */,
+				D9AABF3E2C92014700E854CE /* chat_item_standard_message_long_text_06.binproto */,
+				D9AABF3F2C92014800E854CE /* chat_item_standard_message_long_text_06.txtproto */,
+				D9AABF472C92014900E854CE /* chat_item_standard_message_long_text_07.binproto */,
+				D9AABF402C92014800E854CE /* chat_item_standard_message_long_text_07.txtproto */,
+				D9AABF3D2C92014700E854CE /* chat_item_standard_message_long_text_08.binproto */,
+				D9AABF4C2C92014900E854CE /* chat_item_standard_message_long_text_08.txtproto */,
+				D9AABF492C92014900E854CE /* chat_item_standard_message_long_text_09.binproto */,
+				D9AABF452C92014800E854CE /* chat_item_standard_message_long_text_09.txtproto */,
+				D9AABF4E2C92014A00E854CE /* chat_item_standard_message_long_text_10.binproto */,
+				D9AABF442C92014800E854CE /* chat_item_standard_message_long_text_10.txtproto */,
+				D9AABF4B2C92014900E854CE /* chat_item_standard_message_long_text_11.binproto */,
+				D9AABF4A2C92014900E854CE /* chat_item_standard_message_long_text_11.txtproto */,
+				D9AABF532C92014B00E854CE /* chat_item_standard_message_long_text_12.binproto */,
+				D9AABF572C92014C00E854CE /* chat_item_standard_message_long_text_12.txtproto */,
+				D9AABF4F2C92014A00E854CE /* chat_item_standard_message_long_text_13.binproto */,
+				D9AABF422C92014800E854CE /* chat_item_standard_message_long_text_13.txtproto */,
+				D9AABF482C92014900E854CE /* chat_item_standard_message_long_text_14.binproto */,
+				D9AABF502C92014A00E854CE /* chat_item_standard_message_long_text_14.txtproto */,
+			);
+			name = StandardMessageLongText;
+			sourceTree = "<group>";
+		};
 		D9B95A9329E682CA00D7CB95 /* JobRecords */ = {
 			isa = PBXGroup;
 			children = (
@@ -11231,6 +11704,43 @@
 			path = Mocks;
 			sourceTree = "<group>";
 		};
+		D9F512752C90D84A0094D759 /* StandardMessageFormatted */ = {
+			isa = PBXGroup;
+			children = (
+				D9F512772C90D8640094D759 /* chat_item_standard_message_formatted_text_00.binproto */,
+				D9F5127F2C90D8650094D759 /* chat_item_standard_message_formatted_text_00.txtproto */,
+				D9F512792C90D8650094D759 /* chat_item_standard_message_formatted_text_01.binproto */,
+				D9F512832C90D8660094D759 /* chat_item_standard_message_formatted_text_01.txtproto */,
+				D9F512892C90D8670094D759 /* chat_item_standard_message_formatted_text_02.binproto */,
+				D9F512882C90D8670094D759 /* chat_item_standard_message_formatted_text_02.txtproto */,
+				D9F512932C90D8680094D759 /* chat_item_standard_message_formatted_text_03.binproto */,
+				D9F512922C90D8680094D759 /* chat_item_standard_message_formatted_text_03.txtproto */,
+				D9F5128C2C90D8670094D759 /* chat_item_standard_message_formatted_text_04.binproto */,
+				D9F512902C90D8680094D759 /* chat_item_standard_message_formatted_text_04.txtproto */,
+				D9F5127B2C90D8650094D759 /* chat_item_standard_message_formatted_text_05.binproto */,
+				D9F5127A2C90D8650094D759 /* chat_item_standard_message_formatted_text_05.txtproto */,
+				D9F512762C90D8640094D759 /* chat_item_standard_message_formatted_text_06.binproto */,
+				D9F5127E2C90D8650094D759 /* chat_item_standard_message_formatted_text_06.txtproto */,
+				D9F512872C90D8660094D759 /* chat_item_standard_message_formatted_text_07.binproto */,
+				D9F5128A2C90D8670094D759 /* chat_item_standard_message_formatted_text_07.txtproto */,
+				D9F5128E2C90D8670094D759 /* chat_item_standard_message_formatted_text_08.binproto */,
+				D9F5128B2C90D8670094D759 /* chat_item_standard_message_formatted_text_08.txtproto */,
+				D9F512782C90D8640094D759 /* chat_item_standard_message_formatted_text_09.binproto */,
+				D9F5127D2C90D8650094D759 /* chat_item_standard_message_formatted_text_09.txtproto */,
+				D9F512822C90D8660094D759 /* chat_item_standard_message_formatted_text_10.binproto */,
+				D9F5128F2C90D8680094D759 /* chat_item_standard_message_formatted_text_10.txtproto */,
+				D9F512812C90D8660094D759 /* chat_item_standard_message_formatted_text_11.binproto */,
+				D9F512912C90D8680094D759 /* chat_item_standard_message_formatted_text_11.txtproto */,
+				D9F5127C2C90D8650094D759 /* chat_item_standard_message_formatted_text_12.binproto */,
+				D9F512842C90D8660094D759 /* chat_item_standard_message_formatted_text_12.txtproto */,
+				D9F512802C90D8650094D759 /* chat_item_standard_message_formatted_text_13.binproto */,
+				D9F512852C90D8660094D759 /* chat_item_standard_message_formatted_text_13.txtproto */,
+				D9F5128D2C90D8670094D759 /* chat_item_standard_message_formatted_text_14.binproto */,
+				D9F512862C90D8660094D759 /* chat_item_standard_message_formatted_text_14.txtproto */,
+			);
+			name = StandardMessageFormatted;
+			sourceTree = "<group>";
+		};
 		D9F6553029D6530B002A330A /* SDSCodableModel */ = {
 			isa = PBXGroup;
 			children = (
@@ -11401,6 +11911,12 @@
 				D9A090F32C8E975B0083AB09 /* RemoteDeleteTombstone */,
 				D9C451EB2C8E97F400D0FDE2 /* SessionSwitchover */,
 				D9BE25BA2C8F99690083379A /* SimpleUpdates */,
+				D9F512752C90D84A0094D759 /* StandardMessageFormatted */,
+				D9AABF332C92008D00E854CE /* StandardMessageLongText */,
+				D9750F802C920A4000A4D4F0 /* StandardMessageSpecialAttachments */,
+				D900B3902C920B3C008AEF02 /* StandardMessageStandardAttachments */,
+				D93372A72C9227BA008926D0 /* StandardMessageTextOnly */,
+				D9267BF32C92293900F39B24 /* StandardMessageWithEdits */,
 			);
 			name = ChatItem;
 			sourceTree = "<group>";
@@ -13908,6 +14424,8 @@
 				D95508EC2C8E8E88000BDD3B /* chat_item_learned_profile_update_02.txtproto in Resources */,
 				D95508EA2C8E8E88000BDD3B /* chat_item_learned_profile_update_03.binproto in Resources */,
 				D95508EB2C8E8E88000BDD3B /* chat_item_learned_profile_update_03.txtproto in Resources */,
+				D9AABF3A2C92012300E854CE /* chat_item_learned_profile_update_04.binproto in Resources */,
+				D9AABF3B2C92012300E854CE /* chat_item_learned_profile_update_04.txtproto in Resources */,
 				D9A10F772C8E8F7900308EC0 /* chat_item_payment_notification_00.binproto in Resources */,
 				D9A10F752C8E8F7900308EC0 /* chat_item_payment_notification_00.txtproto in Resources */,
 				D9A10F722C8E8F7900308EC0 /* chat_item_payment_notification_01.binproto in Resources */,
@@ -14006,6 +14524,160 @@
 				D9BE25F12C8F99820083379A /* chat_item_simple_updates_14.txtproto in Resources */,
 				D9BE25E72C8F99820083379A /* chat_item_simple_updates_15.binproto in Resources */,
 				D9BE25EF2C8F99820083379A /* chat_item_simple_updates_15.txtproto in Resources */,
+				D9F512952C90D8680094D759 /* chat_item_standard_message_formatted_text_00.binproto in Resources */,
+				D9F5129D2C90D8680094D759 /* chat_item_standard_message_formatted_text_00.txtproto in Resources */,
+				D9F512972C90D8680094D759 /* chat_item_standard_message_formatted_text_01.binproto in Resources */,
+				D9F512A12C90D8680094D759 /* chat_item_standard_message_formatted_text_01.txtproto in Resources */,
+				D9F512A72C90D8680094D759 /* chat_item_standard_message_formatted_text_02.binproto in Resources */,
+				D9F512A62C90D8680094D759 /* chat_item_standard_message_formatted_text_02.txtproto in Resources */,
+				D9F512B12C90D8680094D759 /* chat_item_standard_message_formatted_text_03.binproto in Resources */,
+				D9F512B02C90D8680094D759 /* chat_item_standard_message_formatted_text_03.txtproto in Resources */,
+				D9F512AA2C90D8680094D759 /* chat_item_standard_message_formatted_text_04.binproto in Resources */,
+				D9F512AE2C90D8680094D759 /* chat_item_standard_message_formatted_text_04.txtproto in Resources */,
+				D9F512992C90D8680094D759 /* chat_item_standard_message_formatted_text_05.binproto in Resources */,
+				D9F512982C90D8680094D759 /* chat_item_standard_message_formatted_text_05.txtproto in Resources */,
+				D9F512942C90D8680094D759 /* chat_item_standard_message_formatted_text_06.binproto in Resources */,
+				D9F5129C2C90D8680094D759 /* chat_item_standard_message_formatted_text_06.txtproto in Resources */,
+				D9F512A52C90D8680094D759 /* chat_item_standard_message_formatted_text_07.binproto in Resources */,
+				D9F512A82C90D8680094D759 /* chat_item_standard_message_formatted_text_07.txtproto in Resources */,
+				D9F512AC2C90D8680094D759 /* chat_item_standard_message_formatted_text_08.binproto in Resources */,
+				D9F512A92C90D8680094D759 /* chat_item_standard_message_formatted_text_08.txtproto in Resources */,
+				D9F512962C90D8680094D759 /* chat_item_standard_message_formatted_text_09.binproto in Resources */,
+				D9F5129B2C90D8680094D759 /* chat_item_standard_message_formatted_text_09.txtproto in Resources */,
+				D9F512A02C90D8680094D759 /* chat_item_standard_message_formatted_text_10.binproto in Resources */,
+				D9F512AD2C90D8680094D759 /* chat_item_standard_message_formatted_text_10.txtproto in Resources */,
+				D9F5129F2C90D8680094D759 /* chat_item_standard_message_formatted_text_11.binproto in Resources */,
+				D9F512AF2C90D8680094D759 /* chat_item_standard_message_formatted_text_11.txtproto in Resources */,
+				D9F5129A2C90D8680094D759 /* chat_item_standard_message_formatted_text_12.binproto in Resources */,
+				D9F512A22C90D8680094D759 /* chat_item_standard_message_formatted_text_12.txtproto in Resources */,
+				D9F5129E2C90D8680094D759 /* chat_item_standard_message_formatted_text_13.binproto in Resources */,
+				D9F512A32C90D8680094D759 /* chat_item_standard_message_formatted_text_13.txtproto in Resources */,
+				D9F512AB2C90D8680094D759 /* chat_item_standard_message_formatted_text_14.binproto in Resources */,
+				D9F512A42C90D8680094D759 /* chat_item_standard_message_formatted_text_14.txtproto in Resources */,
+				D9AABF732C92014C00E854CE /* chat_item_standard_message_long_text_00.binproto in Resources */,
+				D9AABF702C92014C00E854CE /* chat_item_standard_message_long_text_00.txtproto in Resources */,
+				D9AABF612C92014C00E854CE /* chat_item_standard_message_long_text_01.binproto in Resources */,
+				D9AABF772C92014C00E854CE /* chat_item_standard_message_long_text_01.txtproto in Resources */,
+				D9AABF742C92014C00E854CE /* chat_item_standard_message_long_text_02.binproto in Resources */,
+				D9AABF762C92014C00E854CE /* chat_item_standard_message_long_text_02.txtproto in Resources */,
+				D9AABF5A2C92014C00E854CE /* chat_item_standard_message_long_text_03.binproto in Resources */,
+				D9AABF5F2C92014C00E854CE /* chat_item_standard_message_long_text_03.txtproto in Resources */,
+				D9AABF642C92014C00E854CE /* chat_item_standard_message_long_text_04.binproto in Resources */,
+				D9AABF6F2C92014C00E854CE /* chat_item_standard_message_long_text_04.txtproto in Resources */,
+				D9AABF722C92014C00E854CE /* chat_item_standard_message_long_text_05.binproto in Resources */,
+				D9AABF6B2C92014C00E854CE /* chat_item_standard_message_long_text_05.txtproto in Resources */,
+				D9AABF5C2C92014C00E854CE /* chat_item_standard_message_long_text_06.binproto in Resources */,
+				D9AABF5D2C92014C00E854CE /* chat_item_standard_message_long_text_06.txtproto in Resources */,
+				D9AABF652C92014C00E854CE /* chat_item_standard_message_long_text_07.binproto in Resources */,
+				D9AABF5E2C92014C00E854CE /* chat_item_standard_message_long_text_07.txtproto in Resources */,
+				D9AABF5B2C92014C00E854CE /* chat_item_standard_message_long_text_08.binproto in Resources */,
+				D9AABF6A2C92014C00E854CE /* chat_item_standard_message_long_text_08.txtproto in Resources */,
+				D9AABF672C92014C00E854CE /* chat_item_standard_message_long_text_09.binproto in Resources */,
+				D9AABF632C92014C00E854CE /* chat_item_standard_message_long_text_09.txtproto in Resources */,
+				D9AABF6C2C92014C00E854CE /* chat_item_standard_message_long_text_10.binproto in Resources */,
+				D9AABF622C92014C00E854CE /* chat_item_standard_message_long_text_10.txtproto in Resources */,
+				D9AABF692C92014C00E854CE /* chat_item_standard_message_long_text_11.binproto in Resources */,
+				D9AABF682C92014C00E854CE /* chat_item_standard_message_long_text_11.txtproto in Resources */,
+				D9AABF712C92014C00E854CE /* chat_item_standard_message_long_text_12.binproto in Resources */,
+				D9AABF752C92014C00E854CE /* chat_item_standard_message_long_text_12.txtproto in Resources */,
+				D9AABF6D2C92014C00E854CE /* chat_item_standard_message_long_text_13.binproto in Resources */,
+				D9AABF602C92014C00E854CE /* chat_item_standard_message_long_text_13.txtproto in Resources */,
+				D9AABF662C92014C00E854CE /* chat_item_standard_message_long_text_14.binproto in Resources */,
+				D9AABF6E2C92014C00E854CE /* chat_item_standard_message_long_text_14.txtproto in Resources */,
+				D9750FAA2C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_00.binproto in Resources */,
+				D9750FA22C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_00.txtproto in Resources */,
+				D9750FB92C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_01.binproto in Resources */,
+				D9750FB72C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_01.txtproto in Resources */,
+				D9750FAB2C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_02.binproto in Resources */,
+				D9750F9F2C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_02.txtproto in Resources */,
+				D9750FAE2C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_03.binproto in Resources */,
+				D9750FA32C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_03.txtproto in Resources */,
+				D9750FB12C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_04.binproto in Resources */,
+				D9750FA42C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_04.txtproto in Resources */,
+				D9750FA12C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_05.binproto in Resources */,
+				D9750FA52C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_05.txtproto in Resources */,
+				D9750FB42C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_06.binproto in Resources */,
+				D9750FBC2C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_06.txtproto in Resources */,
+				D9750FAC2C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_07.binproto in Resources */,
+				D9750FB22C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_07.txtproto in Resources */,
+				D9750FAF2C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_08.binproto in Resources */,
+				D9750FB02C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_08.txtproto in Resources */,
+				D9750FBB2C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_09.binproto in Resources */,
+				D9750FB52C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_09.txtproto in Resources */,
+				D9750FB32C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_10.binproto in Resources */,
+				D9750FA92C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_10.txtproto in Resources */,
+				D9750FB62C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_11.binproto in Resources */,
+				D9750FA82C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_11.txtproto in Resources */,
+				D9750FA62C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_12.binproto in Resources */,
+				D9750FA02C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_12.txtproto in Resources */,
+				D9750FAD2C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_13.binproto in Resources */,
+				D9750FBA2C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_13.txtproto in Resources */,
+				D9750FA72C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_14.binproto in Resources */,
+				D9750FB82C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_14.txtproto in Resources */,
+				D900B3C92C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_00.binproto in Resources */,
+				D900B3CB2C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_00.txtproto in Resources */,
+				D900B3C52C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_01.binproto in Resources */,
+				D900B3B82C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_01.txtproto in Resources */,
+				D900B3BE2C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_02.binproto in Resources */,
+				D900B3B62C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_02.txtproto in Resources */,
+				D900B3CC2C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_03.binproto in Resources */,
+				D900B3CA2C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_03.txtproto in Resources */,
+				D900B3B02C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_04.binproto in Resources */,
+				D900B3B72C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_04.txtproto in Resources */,
+				D900B3C82C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_05.binproto in Resources */,
+				D900B3AF2C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_05.txtproto in Resources */,
+				D900B3BC2C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_06.binproto in Resources */,
+				D900B3C62C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_06.txtproto in Resources */,
+				D900B3C32C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_07.binproto in Resources */,
+				D900B3B42C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_07.txtproto in Resources */,
+				D900B3B22C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_08.binproto in Resources */,
+				D900B3B52C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_08.txtproto in Resources */,
+				D900B3C12C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_09.binproto in Resources */,
+				D900B3BB2C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_09.txtproto in Resources */,
+				D900B3B12C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_10.binproto in Resources */,
+				D900B3BD2C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_10.txtproto in Resources */,
+				D900B3B92C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_11.binproto in Resources */,
+				D900B3B32C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_11.txtproto in Resources */,
+				D900B3C42C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_12.binproto in Resources */,
+				D900B3BA2C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_12.txtproto in Resources */,
+				D900B3C72C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_13.binproto in Resources */,
+				D900B3C02C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_13.txtproto in Resources */,
+				D900B3BF2C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_14.binproto in Resources */,
+				D900B3C22C920B6D008AEF02 /* chat_item_standard_message_standard_attachments_14.txtproto in Resources */,
+				D93372D02C9227D9008926D0 /* chat_item_standard_message_text_only_00.binproto in Resources */,
+				D93372DF2C9227D9008926D0 /* chat_item_standard_message_text_only_00.txtproto in Resources */,
+				D93372D72C9227D9008926D0 /* chat_item_standard_message_text_only_01.binproto in Resources */,
+				D93372DA2C9227D9008926D0 /* chat_item_standard_message_text_only_01.txtproto in Resources */,
+				D93372C92C9227D9008926D0 /* chat_item_standard_message_text_only_02.binproto in Resources */,
+				D93372E12C9227D9008926D0 /* chat_item_standard_message_text_only_02.txtproto in Resources */,
+				D93372D82C9227D9008926D0 /* chat_item_standard_message_text_only_03.binproto in Resources */,
+				D93372CD2C9227D9008926D0 /* chat_item_standard_message_text_only_03.txtproto in Resources */,
+				D93372D62C9227D9008926D0 /* chat_item_standard_message_text_only_04.binproto in Resources */,
+				D93372D22C9227D9008926D0 /* chat_item_standard_message_text_only_04.txtproto in Resources */,
+				D93372DE2C9227D9008926D0 /* chat_item_standard_message_text_only_05.binproto in Resources */,
+				D93372D52C9227D9008926D0 /* chat_item_standard_message_text_only_05.txtproto in Resources */,
+				D93372E02C9227D9008926D0 /* chat_item_standard_message_text_only_06.binproto in Resources */,
+				D93372C72C9227D9008926D0 /* chat_item_standard_message_text_only_06.txtproto in Resources */,
+				D93372CA2C9227D9008926D0 /* chat_item_standard_message_text_only_07.binproto in Resources */,
+				D93372CF2C9227D9008926D0 /* chat_item_standard_message_text_only_07.txtproto in Resources */,
+				D93372C62C9227D9008926D0 /* chat_item_standard_message_text_only_08.binproto in Resources */,
+				D93372CC2C9227D9008926D0 /* chat_item_standard_message_text_only_08.txtproto in Resources */,
+				D93372DD2C9227D9008926D0 /* chat_item_standard_message_text_only_09.binproto in Resources */,
+				D93372CE2C9227D9008926D0 /* chat_item_standard_message_text_only_09.txtproto in Resources */,
+				D93372E32C9227D9008926D0 /* chat_item_standard_message_text_only_10.binproto in Resources */,
+				D93372C82C9227D9008926D0 /* chat_item_standard_message_text_only_10.txtproto in Resources */,
+				D93372D32C9227D9008926D0 /* chat_item_standard_message_text_only_11.binproto in Resources */,
+				D93372D92C9227D9008926D0 /* chat_item_standard_message_text_only_11.txtproto in Resources */,
+				D93372DB2C9227D9008926D0 /* chat_item_standard_message_text_only_12.binproto in Resources */,
+				D93372CB2C9227D9008926D0 /* chat_item_standard_message_text_only_12.txtproto in Resources */,
+				D93372D12C9227D9008926D0 /* chat_item_standard_message_text_only_13.binproto in Resources */,
+				D93372D42C9227D9008926D0 /* chat_item_standard_message_text_only_13.txtproto in Resources */,
+				D93372DC2C9227D9008926D0 /* chat_item_standard_message_text_only_14.binproto in Resources */,
+				D93372E22C9227D9008926D0 /* chat_item_standard_message_text_only_14.txtproto in Resources */,
+				D9267BFE2C9229FB00F39B24 /* chat_item_standard_message_with_edits_00.binproto in Resources */,
+				D9267BFF2C9229FB00F39B24 /* chat_item_standard_message_with_edits_00.txtproto in Resources */,
+				D9267BFB2C9229FB00F39B24 /* chat_item_standard_message_with_edits_01.binproto in Resources */,
+				D9267BFA2C9229FB00F39B24 /* chat_item_standard_message_with_edits_01.txtproto in Resources */,
 				F942628B289B1B5600460798 /* sample-sticker.encrypted in Resources */,
 				F942628C289B1B5600460798 /* sample-sticker.webp in Resources */,
 				F908AA7D28CE629700472E68 /* test-apng.png in Resources */,

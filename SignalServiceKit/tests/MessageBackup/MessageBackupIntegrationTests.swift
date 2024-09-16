@@ -26,15 +26,6 @@ class MessageBackupIntegrationTests: XCTestCase {
         case minimalDiff
     }
 
-    /// The preferred log output for test failures.
-    ///
-    /// Set by default to `.minimalDiff` to reduce log noise in automated test
-    /// runs. Toggle to `.fullLibSignalJSON` if desired during local
-    /// development, for more thorough inspection of the failure case.
-    private let preferredFailureLogOutput: LibSignalComparisonFailureLogOutput = .minimalDiff
-
-    // MARK: -
-
     private enum WhichIntegrationTestCases {
         case all
         case specific(names: Set<String>)
@@ -53,7 +44,20 @@ class MessageBackupIntegrationTests: XCTestCase {
         case chatItemRemoteDeleteTombstone
         case chatItemSessionSwitchover
         case chatItemSimpleUpdates
+        case chatItemStandardMessageFormatted
+        case chatItemStandardMessageLongText
+        case chatItemStandardMessageSpecialAttachments
+        case chatItemStandardMessageStandardAttachments
+        case chatItemStandardMessageTextOnly
+        case chatItemStandardMessageWithEdits
     }
+
+    /// The preferred log output for test failures.
+    ///
+    /// Set by default to `.minimalDiff` to reduce log noise in automated test
+    /// runs. Toggle to `.fullLibSignalJSON` if desired during local
+    /// development, for more thorough inspection of the failure case.
+    private let preferredFailureLogOutput: LibSignalComparisonFailureLogOutput = .minimalDiff
 
     /// Specifies which integration test cases to run.
     ///
@@ -111,6 +115,18 @@ class MessageBackupIntegrationTests: XCTestCase {
                     return binprotoName.contains("chat_item_session_switchover_update_")
                 case .chatItemSimpleUpdates:
                     return binprotoName.contains("chat_item_simple_updates_")
+                case .chatItemStandardMessageFormatted:
+                    return binprotoName.contains("chat_item_standard_message_formatted_")
+                case .chatItemStandardMessageLongText:
+                    return binprotoName.contains("chat_item_standard_message_long_text_")
+                case .chatItemStandardMessageSpecialAttachments:
+                    return binprotoName.contains("chat_item_standard_message_special_attachments_")
+                case .chatItemStandardMessageStandardAttachments:
+                    return binprotoName.contains("chat_item_standard_message_standard_attachments_")
+                case .chatItemStandardMessageTextOnly:
+                    return binprotoName.contains("chat_item_standard_message_text_only_")
+                case .chatItemStandardMessageWithEdits:
+                    return binprotoName.contains("chat_item_standard_message_with_edits_")
                 }
             }
         }()
@@ -126,6 +142,14 @@ class MessageBackupIntegrationTests: XCTestCase {
                 .filenameWithoutExtension
 
             do {
+                Logger.info("""
+
+
+                [TestCase] Running test case: \(filename)
+
+                """)
+                Logger.flush()
+
                 try await runRoundTripTest(
                     testCaseFileUrl: binprotoFileUrl,
                     failureLogOutput: preferredFailureLogOutput
