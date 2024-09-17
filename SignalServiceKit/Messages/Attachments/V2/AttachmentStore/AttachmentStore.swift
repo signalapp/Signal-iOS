@@ -101,6 +101,15 @@ public protocol AttachmentStore {
         tx: DBWriteTransaction
     ) throws
 
+    /// Update an attachment after revalidating.
+    func updateAttachment(
+        _ attachment: Attachment,
+        revalidatedContentType contentType: Attachment.ContentType,
+        mimeType: String,
+        blurHash: String?,
+        tx: DBWriteTransaction
+    ) throws
+
     func addOwner(
         _ reference: AttachmentReference.ConstructionParams,
         for attachmentId: Attachment.IDType,

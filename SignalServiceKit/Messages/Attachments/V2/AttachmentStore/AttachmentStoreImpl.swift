@@ -136,6 +136,23 @@ public class AttachmentStoreImpl: AttachmentStore {
         )
     }
 
+    public func updateAttachment(
+        _ attachment: Attachment,
+        revalidatedContentType contentType: Attachment.ContentType,
+        mimeType: String,
+        blurHash: String?,
+        tx: DBWriteTransaction
+    ) throws {
+        try updateAttachment(
+            attachment,
+            revalidatedContentType: contentType,
+            mimeType: mimeType,
+            blurHash: blurHash,
+            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database,
+            tx: tx
+        )
+    }
+
     public func addOwner(
         _ reference: AttachmentReference.ConstructionParams,
         for attachmentId: Attachment.IDType,
@@ -512,6 +529,29 @@ public class AttachmentStoreImpl: AttachmentStore {
         }
         newRecord.sqliteId = id
         try newRecord.checkAllUInt64FieldsFitInInt64()
+        try newRecord.update(db)
+    }
+
+    private func updateAttachment(
+        _ attachment: Attachment,
+        revalidatedContentType contentType: Attachment.ContentType,
+        mimeType: String,
+        blurHash: String?,
+        db: GRDB.Database,
+        tx: DBWriteTransaction
+    ) throws {
+        var newRecord = Attachment.Record(
+            params: .forUpdatingWithRevalidatedContentType(
+                attachment: attachment,
+                contentType: contentType,
+                mimeType: mimeType,
+                blurHash: blurHash
+            )
+        )
+        newRecord.sqliteId = attachment.id
+        try newRecord.checkAllUInt64FieldsFitInInt64()
+        // NOTE: a sqlite trigger handles updating all attachment reference rows
+        // with the new content type.
         try newRecord.update(db)
     }
 

@@ -20,6 +20,15 @@ public protocol PendingAttachment {
     var orphanRecordId: OrphanedAttachmentRecord.IDType { get }
 }
 
+public protocol RevalidatedAttachment {
+    var validatedContentType: Attachment.ContentType { get }
+    /// Revalidation might _change_ the mimeType we report.
+    var mimeType: String { get }
+    var blurHash: String? { get }
+    /// Orphan record for any created ancillary files, such as the audio waveform.
+    var orphanRecordId: OrphanedAttachmentRecord.IDType { get }
+}
+
 public enum ValidatedMessageBody {
     /// The original body was small enough to send as-is.
     case inline(MessageBody)
@@ -72,6 +81,16 @@ public protocol AttachmentContentValidator {
         renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?
     ) throws -> PendingAttachment
+
+    /// Just validate an encrypted attachment file's contents, based on the provided mimetype.
+    /// Returns the validated content type;  does no digest validation or primary file copy preparation.
+    /// Errors are thrown if data reading/parsing/decryption fails.
+    func reValidateContents(
+        ofEncryptedFileAt fileUrl: URL,
+        encryptionKey: Data,
+        plaintextLength: UInt32,
+        mimeType: String
+    ) throws -> RevalidatedAttachment
 
     /// Validate and prepare a backup media file's contents, based on the provided mimetype.
     /// Returns a PendingAttachment with validated contents, ready to be inserted.

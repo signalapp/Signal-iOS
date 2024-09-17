@@ -286,13 +286,15 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             migrator: Task { incrementalMessageTSAttachmentMigrator },
             db: databaseStorage
         )
+        let attachmentBackfillStore = AttachmentValidationBackfillStore()
         AttachmentValidationBackfillRunner.registerBGProcessingTask(
-            store: (),
+            store: attachmentBackfillStore,
             migrator: Task {
                 await withCheckedContinuation { continuation in
                     AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
-                        // TODO: load the migrator from DependenciesBridge here.
-                        continuation.resume(with: .success(()))
+                        continuation.resume(with: .success(
+                            DependenciesBridge.shared.attachmentValidationBackfillMigrator
+                        ))
                     }
                 }
             },
@@ -305,7 +307,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 db: databaseStorage
             )
             AttachmentValidationBackfillRunner.scheduleBGProcessingTaskIfNeeded(
-                store: (),
+                store: attachmentBackfillStore,
                 db: databaseStorage
             )
         }

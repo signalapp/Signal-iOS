@@ -92,6 +92,16 @@ open class AttachmentStoreMock: AttachmentStore {
         // do nothing
     }
 
+    open func updateAttachment(
+        _ attachment: Attachment,
+        revalidatedContentType contentType: Attachment.ContentType,
+        mimeType: String,
+        blurHash: String?,
+        tx: DBWriteTransaction
+    ) throws {
+        // do nothing
+    }
+
     open func addOwner(
         _ reference: AttachmentReference.ConstructionParams,
         for attachmentId: Attachment.IDType,

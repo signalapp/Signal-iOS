@@ -42,6 +42,15 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
         throw OWSAssertionError("Unimplemented")
     }
 
+    open func reValidateContents(
+        ofEncryptedFileAt fileUrl: URL,
+        encryptionKey: Data,
+        plaintextLength: UInt32,
+        mimeType: String
+    ) throws -> RevalidatedAttachment {
+        throw OWSAssertionError("Unimplemented")
+    }
+
     open func validateContents(
         ofBackupMediaFileAt fileUrl: URL,
         outerEncryptionData: EncryptionMetadata,

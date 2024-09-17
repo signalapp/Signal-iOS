@@ -294,6 +294,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addCallEndedTimestampToCallRecord
         case addIsViewOnceColumnToMessageAttachmentReference
         case backfillIsViewOnceMessageAttachmentReference
+        case addAttachmentValidationBackfillTable
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -355,7 +356,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 88
+    public static let grdbSchemaVersionLatest: UInt = 89
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -3478,6 +3479,16 @@ public class GRDBSchemaMigrator: NSObject {
                 )
             }
 
+            return .success(())
+        }
+
+        migrator.registerMigration(.addAttachmentValidationBackfillTable) { tx in
+            try tx.database.create(table: "AttachmentValidationBackfillQueue") { table in
+                table.column("attachmentId", .integer)
+                    .notNull()
+                    .references("Attachment", column: "id", onDelete: .cascade)
+                    .primaryKey(onConflict: .ignore)
+            }
             return .success(())
         }
 

@@ -329,5 +329,35 @@ extension Attachment {
                 originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply
             )
         }
+
+        public static func forUpdatingWithRevalidatedContentType(
+            attachment: Attachment,
+            contentType: Attachment.ContentType,
+            mimeType: String,
+            blurHash: String?
+        ) -> ConstructionParams {
+            let streamInfo = attachment.streamInfo.map {
+                return Attachment.StreamInfo(
+                    sha256ContentHash: $0.sha256ContentHash,
+                    encryptedByteCount: $0.encryptedByteCount,
+                    unencryptedByteCount: $0.unencryptedByteCount,
+                    contentType: contentType,
+                    digestSHA256Ciphertext: $0.digestSHA256Ciphertext,
+                    localRelativeFilePath: $0.localRelativeFilePath
+                )
+            }
+            return .init(
+                blurHash: blurHash,
+                mimeType: mimeType,
+                encryptionKey: attachment.encryptionKey,
+                streamInfo: streamInfo,
+                transitTierInfo: attachment.transitTierInfo,
+                mediaName: attachment.mediaName,
+                mediaTierInfo: attachment.mediaTierInfo,
+                thumbnailMediaTierInfo: attachment.thumbnailMediaTierInfo,
+                localRelativeFilePathThumbnail: attachment.localRelativeFilePathThumbnail,
+                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply
+            )
+        }
     }
 }

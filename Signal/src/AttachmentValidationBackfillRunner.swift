@@ -13,8 +13,8 @@ public class AttachmentValidationBackfillRunner: BGProcessingTaskRunner {
     // MARK: - BGProcessingTaskRunner
 
     // TODO: add migrator class
-    public typealias Migrator = Void
-    public typealias Store = Void
+    public typealias Migrator = AttachmentValidationBackfillMigrator
+    public typealias Store = AttachmentValidationBackfillStore
 
     public static let taskIdentifier = "AttachmentValidationBackfillMigrator"
 
@@ -23,12 +23,17 @@ public class AttachmentValidationBackfillRunner: BGProcessingTaskRunner {
     public static let logger = PrefixedLogger(prefix: "AttachmentValidationBackfillMigrator")
 
     public static func runNextBatch(migrator: Migrator) async throws -> Bool {
-        // TODO: run migration
-        return true
+        return try await migrator.runNextBatch()
     }
 
     public static func shouldLaunchBGProcessingTask(store: Store, db: SDSDatabaseStorage) -> Bool {
-        // TODO: check eligibility
-        return false
+        return db.read { tx in
+            do {
+                return try store.needsToRun(tx: tx.asV2Read)
+            } catch let error {
+                Self.logger.error("Failed to check status \(error)")
+                return false
+            }
+        }
     }
 }

@@ -2060,3 +2060,14 @@ CREATE
             ,"isEnabled" BOOLEAN NOT NULL
         )
 ;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "AttachmentValidationBackfillQueue" (
+            "attachmentId" INTEGER PRIMARY KEY
+                ON CONFLICT IGNORE NOT NULL REFERENCES "Attachment"("id"
+        )
+            ON DELETE
+                CASCADE
+)
+;

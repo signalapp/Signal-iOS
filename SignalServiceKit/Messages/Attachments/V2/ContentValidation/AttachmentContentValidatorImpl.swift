@@ -111,6 +111,33 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         )
     }
 
+    public func reValidateContents(
+        ofEncryptedFileAt fileUrl: URL,
+        encryptionKey: Data,
+        plaintextLength: UInt32,
+        mimeType: String
+    ) throws -> RevalidatedAttachment {
+        let input = Input.encryptedFile(
+            fileUrl,
+            encryptionKey: encryptionKey,
+            plaintextLength: plaintextLength,
+            // No need to validate digest
+            digestSHA256Ciphertext: nil
+        )
+        var mimeType = mimeType
+        let contentTypeResult = try validateContentType(
+            input: input,
+            encryptionKey: encryptionKey,
+            mimeType: &mimeType
+        )
+        return try prepareAttachmentContentTypeFiles(
+            input: input,
+            encryptionKey: encryptionKey,
+            mimeType: mimeType,
+            contentResult: contentTypeResult
+        )
+    }
+
     public func validateContents(
         ofBackupMediaFileAt fileUrl: URL,
         outerEncryptionData: EncryptionMetadata,
@@ -241,6 +268,13 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         let renderingFlag: AttachmentReference.RenderingFlag
         let sourceFilename: String?
         let validatedContentType: Attachment.ContentType
+        let orphanRecordId: OrphanedAttachmentRecord.IDType
+    }
+
+    private struct RevalidatedAttachmentImpl: RevalidatedAttachment {
+        let validatedContentType: Attachment.ContentType
+        let mimeType: String
+        let blurHash: String?
         let orphanRecordId: OrphanedAttachmentRecord.IDType
     }
 
@@ -726,10 +760,60 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             throw OWSAssertionError("Couldn't determine size")
         }
 
-        let audioWaveformFile = try contentResult.audioWaveformFile?.encryptFileIfNeeded(
+        let orphanRecordId = try commitOrphanRecordWithSneakyTransaction(
+            primaryPendingFile: primaryPendingFile,
+            audioWaveformFile: contentResult.audioWaveformFile,
+            videoStillFrameFile: contentResult.videoStillFrameFile,
             encryptionKey: encryptionKey
         )
-        let videoStillFrameFile = try contentResult.videoStillFrameFile?.encryptFileIfNeeded(
+
+        return PendingAttachmentImpl(
+            blurHash: contentResult.blurHash,
+            sha256ContentHash: primaryFilePlaintextHash,
+            encryptedByteCount: primaryEncryptedLength,
+            unencryptedByteCount: primaryPlaintextLength,
+            mimeType: mimeType,
+            encryptionKey: encryptionKey,
+            digestSHA256Ciphertext: primaryFileDigest,
+            localRelativeFilePath: primaryPendingFile.reservedRelativeFilePath,
+            renderingFlag: renderingFlag,
+            sourceFilename: sourceFilename,
+            validatedContentType: contentResult.contentType,
+            orphanRecordId: orphanRecordId
+        )
+    }
+
+    private func prepareAttachmentContentTypeFiles(
+        input: Input,
+        encryptionKey: Data,
+        mimeType: String,
+        contentResult: ContentTypeResult
+    ) throws -> RevalidatedAttachmentImpl {
+        let orphanRecordId = try commitOrphanRecordWithSneakyTransaction(
+            primaryPendingFile: nil,
+            audioWaveformFile: contentResult.audioWaveformFile,
+            videoStillFrameFile: contentResult.videoStillFrameFile,
+            encryptionKey: encryptionKey
+        )
+
+        return RevalidatedAttachmentImpl(
+            validatedContentType: contentResult.contentType,
+            mimeType: mimeType,
+            blurHash: contentResult.blurHash,
+            orphanRecordId: orphanRecordId
+        )
+    }
+
+    private func commitOrphanRecordWithSneakyTransaction(
+        primaryPendingFile: PendingFile?,
+        audioWaveformFile: PendingFile?,
+        videoStillFrameFile: PendingFile?,
+        encryptionKey: Data
+    ) throws -> OrphanedAttachmentRecord.IDType {
+        let audioWaveformFile = try audioWaveformFile?.encryptFileIfNeeded(
+            encryptionKey: encryptionKey
+        )
+        let videoStillFrameFile = try videoStillFrameFile?.encryptFileIfNeeded(
             encryptionKey: encryptionKey
         )
 
@@ -738,7 +822,8 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         // associated Attachment row, the files will be cleaned up.
         // See OrphanedAttachmentCleaner for details.
         let orphanRecord = OrphanedAttachmentRecord(
-            localRelativeFilePath: primaryPendingFile.reservedRelativeFilePath,
+            isPendingAttachment: true,
+            localRelativeFilePath: primaryPendingFile?.reservedRelativeFilePath,
             // We don't pre-generate thumbnails for local attachments.
             localRelativeFilePathThumbnail: nil,
             localRelativeFilePathAudioWaveform: audioWaveformFile?.reservedRelativeFilePath,
@@ -760,20 +845,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             )
         }
 
-        return PendingAttachmentImpl(
-            blurHash: contentResult.blurHash,
-            sha256ContentHash: primaryFilePlaintextHash,
-            encryptedByteCount: primaryEncryptedLength,
-            unencryptedByteCount: primaryPlaintextLength,
-            mimeType: mimeType,
-            encryptionKey: encryptionKey,
-            digestSHA256Ciphertext: primaryFileDigest,
-            localRelativeFilePath: primaryPendingFile.reservedRelativeFilePath,
-            renderingFlag: renderingFlag,
-            sourceFilename: sourceFilename,
-            validatedContentType: contentResult.contentType,
-            orphanRecordId: orphanRecordId
-        )
+        return orphanRecordId
     }
 
     // MARK: - Encryption

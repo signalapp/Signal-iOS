@@ -343,6 +343,14 @@ public class AppSetup {
             orphanedAttachmentStore: orphanedAttachmentStore,
             stickerManager: AttachmentManagerImpl.Wrappers.StickerManager()
         )
+        let attachmentValidationBackfillMigrator = AttachmentValidationBackfillMigratorImpl(
+            attachmentStore: attachmentStore,
+            attachmentValidationBackfillStore: AttachmentValidationBackfillStore(),
+            databaseStorage: databaseStorage,
+            orphanedAttachmentCleaner: orphanedAttachmentCleaner,
+            orphanedAttachmentStore: orphanedAttachmentStore,
+            validator: attachmentContentValidator
+        )
 
         let attachmentThumbnailService = AttachmentThumbnailServiceImpl()
 
@@ -1057,6 +1065,7 @@ public class AppSetup {
             attachmentStore: attachmentStore,
             attachmentThumbnailService: attachmentThumbnailService,
             attachmentUploadManager: attachmentUploadManager,
+            attachmentValidationBackfillMigrator: attachmentValidationBackfillMigrator,
             attachmentViewOnceManager: attachmentViewOnceManager,
             audioWaveformManager: audioWaveformManager,
             authorMergeHelper: authorMergeHelper,
