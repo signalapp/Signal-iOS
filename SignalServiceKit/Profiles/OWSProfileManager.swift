@@ -50,10 +50,7 @@ public class OWSProfileManager: NSObject, ProfileManagerProtocol {
         SwiftSingletons.register(self)
 
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            if TSAccountManagerObjcBridge.isRegisteredPrimaryDeviceWithMaybeTransaction {
-                self.rotateLocalProfileKeyIfNecessary()
-            }
-
+            self.rotateLocalProfileKeyIfNecessary()
             self.updateProfileOnServiceIfNecessary(authedAccount: .implicit())
             Self.updateStorageServiceIfNecessary()
         }
@@ -938,6 +935,10 @@ extension OWSProfileManager: ProfileManager, Dependencies {
     @objc
     internal func rotateLocalProfileKeyIfNecessary() {
         DispatchQueue.global().async {
+            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+            guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice else {
+                return
+            }
             self.databaseStorage.write { tx in
                 self.rotateProfileKeyIfNecessary(tx: tx)
             }
