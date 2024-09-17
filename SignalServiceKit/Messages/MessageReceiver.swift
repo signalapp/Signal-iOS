@@ -625,7 +625,7 @@ public final class MessageReceiver: Dependencies {
             case nil:
                 Logger.warn("Ignoring CallLinkUpdate with unexpected type.")
             case .update:
-                self.handleCallLinkUpdate(callLinkUpdate)
+                self.handleCallLinkUpdate(callLinkUpdate, tx: tx)
             }
         } else if let callLogEvent = syncMessage.callLogEvent {
             let incomingCallLogEvent: IncomingCallLogEventSyncMessageParams
@@ -707,16 +707,21 @@ public final class MessageReceiver: Dependencies {
         )
     }
 
-    private func handleCallLinkUpdate(_ callLinkUpdate: SSKProtoSyncMessageCallLinkUpdate) {
-        guard
-            let rootKeyData = callLinkUpdate.rootKey,
-            let rootKey = try? CallLinkRootKey(rootKeyData)
-        else {
-            Logger.warn("Ignoring CallLinkUpdate with invalid rootKey.")
-            return
+    private func handleCallLinkUpdate(_ callLinkUpdate: SSKProtoSyncMessageCallLinkUpdate, tx: SDSAnyWriteTransaction) {
+        let callLinkStore = DependenciesBridge.shared.callLinkStore
+        do {
+            let rootKey = try CallLinkRootKey(callLinkUpdate.rootKey ?? Data())
+            guard FeatureFlags.callLinkRecordTable else {
+                Logger.warn("Ignoring CallLinkUpdate w/\(rootKey.description) & \(callLinkUpdate.adminPasskey != nil)")
+                return
+            }
+            var callLink = try callLinkStore.fetchOrInsert(rootKey: rootKey, tx: tx.asV2Write)
+            callLink.adminPasskey = callLink.adminPasskey ?? callLinkUpdate.adminPasskey
+            // [CallLink] TODO: Schedule a name/restrictions/etc. fetch.
+            try callLinkStore.update(callLink, tx: tx.asV2Write)
+        } catch {
+            Logger.warn("Ignoring CallLinkUpdate: \(error)")
         }
-        // [CallLink] TODO: Insert into the DB (if needed) & fetch details.
-        Logger.verbose("Ignoring CallLinkUpdate w/\(rootKey.description) & \(callLinkUpdate.adminPasskey != nil)")
     }
 
     private func handleIncomingEnvelope(
