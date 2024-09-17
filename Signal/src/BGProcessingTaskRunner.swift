@@ -47,7 +47,7 @@ extension BGProcessingTaskRunner {
     /// to run; that will simply not schedule any unecessary tasks.
     public static func registerBGProcessingTask(
         store: Store,
-        migrator: Migrator,
+        migrator: Task<Migrator, Never>,
         db: SDSDatabaseStorage
     ) {
         // We register the handler _regardless_ of whether we schedule the task.
@@ -106,7 +106,7 @@ extension BGProcessingTaskRunner {
     private static func runInBGProcessingTask(
         _ bgTask: BGTask,
         store: Store,
-        migrator: Migrator,
+        migrator: Task<Migrator, Never>,
         db: SDSDatabaseStorage
     ) {
         guard shouldLaunchBGProcessingTask(store: store, db: db) else {
@@ -117,6 +117,8 @@ extension BGProcessingTaskRunner {
 
         logger.info("Starting migration in BGProcessingTask")
         let task = Task {
+            let migrator = await migrator.value
+
             var batchCount = 0
             var didFinish = false
             while !didFinish {

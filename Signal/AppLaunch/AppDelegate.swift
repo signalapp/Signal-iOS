@@ -280,14 +280,32 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         // We _must_ register BGProcessingTask handlers synchronously in didFinishLaunching.
         // https://developer.apple.com/documentation/backgroundtasks/bgtaskscheduler/register(fortaskwithidentifier:using:launchhandler:)
+        // WARNING: Apple docs say we can only have 10 BGProcessingTasks registered.
         IncrementalMessageTSAttachmentMigrationRunner.registerBGProcessingTask(
             store: incrementalMessageTSAttachmentMigrationStore,
-            migrator: incrementalMessageTSAttachmentMigrator,
+            migrator: Task { incrementalMessageTSAttachmentMigrator },
             db: databaseStorage
         )
+        AttachmentValidationBackfillRunner.registerBGProcessingTask(
+            store: (),
+            migrator: Task {
+                await withCheckedContinuation { continuation in
+                    AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
+                        // TODO: load the migrator from DependenciesBridge here.
+                        continuation.resume(with: .success(()))
+                    }
+                }
+            },
+            db: databaseStorage
+        )
+
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             IncrementalMessageTSAttachmentMigrationRunner.scheduleBGProcessingTaskIfNeeded(
                 store: incrementalMessageTSAttachmentMigrationStore,
+                db: databaseStorage
+            )
+            AttachmentValidationBackfillRunner.scheduleBGProcessingTaskIfNeeded(
+                store: (),
                 db: databaseStorage
             )
         }

@@ -1191,6 +1191,7 @@
 		66D7B9432B9A67D30005C98B /* AttachmentDownloadPriority+TSResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B9422B9A67D30005C98B /* AttachmentDownloadPriority+TSResource.swift */; };
 		66DA59C62BBB090C00D0EC58 /* AttachmentUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DA59C52BBB090C00D0EC58 /* AttachmentUpload.swift */; };
 		66DA8DF82C910D3B00799E70 /* BGProcessingTaskRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DA8DF72C910D3B00799E70 /* BGProcessingTaskRunner.swift */; };
+		66DA8DFA2C91125200799E70 /* AttachmentValidationBackfillRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DA8DF92C91125200799E70 /* AttachmentValidationBackfillRunner.swift */; };
 		66E1AD502B80126200C56B7B /* TSResourceId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD4F2B80126200C56B7B /* TSResourceId.swift */; };
 		66E1AD532B8D017400C56B7B /* TSResourceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD522B8D017400C56B7B /* TSResourceStore.swift */; };
 		66E1AD552B8D033E00C56B7B /* ConcreteTSResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD542B8D033E00C56B7B /* ConcreteTSResource.swift */; };
@@ -4715,6 +4716,7 @@
 		66D7B9422B9A67D30005C98B /* AttachmentDownloadPriority+TSResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AttachmentDownloadPriority+TSResource.swift"; sourceTree = "<group>"; };
 		66DA59C52BBB090C00D0EC58 /* AttachmentUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentUpload.swift; sourceTree = "<group>"; };
 		66DA8DF72C910D3B00799E70 /* BGProcessingTaskRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BGProcessingTaskRunner.swift; sourceTree = "<group>"; };
+		66DA8DF92C91125200799E70 /* AttachmentValidationBackfillRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentValidationBackfillRunner.swift; sourceTree = "<group>"; };
 		66E1AD4F2B80126200C56B7B /* TSResourceId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceId.swift; sourceTree = "<group>"; };
 		66E1AD522B8D017400C56B7B /* TSResourceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceStore.swift; sourceTree = "<group>"; };
 		66E1AD542B8D033E00C56B7B /* ConcreteTSResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcreteTSResource.swift; sourceTree = "<group>"; };
@@ -9853,6 +9855,7 @@
 				450DF2061E0DD28D003D14BE /* UserInterface */,
 				76EB04C818170B33006006FC /* util */,
 				6698FC12297F38AC004EFC30 /* ViewControllerContext */,
+				66DA8DF92C91125200799E70 /* AttachmentValidationBackfillRunner.swift */,
 				66DA8DF72C910D3B00799E70 /* BGProcessingTaskRunner.swift */,
 				6660C7982C48277300D9C30A /* IncrementalMessageTSAttachmentMigrationRunner.swift */,
 				66CDB7512AF9D117009A36EC /* MessageFetchBGRefreshTask.swift */,
@@ -15323,6 +15326,7 @@
 				661AEE482C2088FD0046B1D8 /* AttachmentDownloadRetryRunner.swift in Sources */,
 				88A9729222FA5D4B004B4FBF /* AttachmentFormatPickerView.swift in Sources */,
 				8809CE8722F8FE6D00D38867 /* AttachmentKeyboard.swift in Sources */,
+				66DA8DFA2C91125200799E70 /* AttachmentValidationBackfillRunner.swift in Sources */,
 				45B3680B2A1D75DF0067D05A /* AudioAllMediaPresenter.swift in Sources */,
 				45D9784429F0B51F00BBB3C0 /* AudioCell.swift in Sources */,
 				668CAB3E289983520085A2C3 /* AudioMessagePlaybackRateView.swift in Sources */,
