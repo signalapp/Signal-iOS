@@ -884,7 +884,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                 }
             }
 
-            return .ended
+            return .inactive
         }()
 
         if let contactThread = callThread as? TSContactThread {
@@ -1013,8 +1013,8 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             case active
             /// The user is currently in this call.
             case participating
-            /// The call is no longer active.
-            case ended
+            /// The call is no longer active or was never active (eg, an upcoming Call Link).
+            case inactive
         }
 
         enum RecipientType {
@@ -1500,7 +1500,7 @@ extension CallsListViewController: UITableViewDelegate {
                 self?.returnToCall(from: viewModel)
             }
             actions.append(returnToCallAction)
-        case .ended:
+        case .inactive:
             switch viewModel.recipientType {
             case .individual:
                 let audioCallAction = UIAction(
@@ -1553,7 +1553,7 @@ extension CallsListViewController: UITableViewDelegate {
         actions.append(selectAction)
 
         switch viewModel.state {
-        case .active, .ended:
+        case .active, .inactive:
             let deleteAction = UIAction(
                 title: Strings.deleteCallActionTitle,
                 image: Theme.iconImage(.contextMenuDelete),
@@ -1800,7 +1800,7 @@ private extension CallsListViewController {
                 text = Strings.joinCallButtonTitle
             case .participating:
                 text = Strings.returnToCallButtonTitle
-            case .ended:
+            case .inactive:
                 return nil
             }
 
@@ -1910,7 +1910,7 @@ private extension CallsListViewController {
                 case .active, .participating:
                     /// Don't show a date for active calls.
                     return nil
-                case .ended:
+                case .inactive:
                     return viewModel.callBeganDate
                 }
             }()
@@ -2003,7 +2003,7 @@ private extension CallsListViewController {
                     joinPill.autoVCenterInSuperview()
                     joinPill.autoPinWidthToSuperviewMargins()
                 }
-            case .ended:
+            case .inactive:
                 // Info button
                 detailsButton.setImage(imageName: "info")
                 detailsButton.tintColor = Theme.primaryIconColor
@@ -2038,7 +2038,7 @@ private extension CallsListViewController {
                 delegate.joinCall(from: viewModel)
             case .participating:
                 delegate.returnToCall(from: viewModel)
-            case .ended:
+            case .inactive:
                 delegate.showCallInfo(from: viewModel)
             }
         }

@@ -57,7 +57,7 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
             title: "Hey, I just met you, and this is crazy, but here's my number, so call me maybe?",
             recipientType: recipientType,
             direction: direction,
-            state: .ended
+            state: .inactive
         )
     }
 
