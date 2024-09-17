@@ -13,7 +13,7 @@ public class MobileCoinHelperMinimal: MobileCoinHelper {
     public init() { }
 
     public func info(forReceiptData receiptData: Data) throws -> MobileCoinReceiptInfo {
-        guard let proto = try? External_Receipt(serializedData: receiptData) else {
+        guard let proto = try? External_Receipt(serializedBytes: receiptData) else {
             Logger.warn("Couldn't decode MobileCoin receipt")
             throw MobileCoinHelperMinimalError.invalidReceipt
         }
@@ -23,7 +23,7 @@ public class MobileCoinHelperMinimal: MobileCoinHelper {
 
     public func isValidMobileCoinPublicAddress(_ addressData: Data) -> Bool {
         do {
-            _ = try External_PublicAddress(serializedData: addressData)
+            _ = try External_PublicAddress(serializedBytes: addressData)
             return true
         } catch {
             Logger.warn("Couldn't decode MobileCoin public address: \(error)")

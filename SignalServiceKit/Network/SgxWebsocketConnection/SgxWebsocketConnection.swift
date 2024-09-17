@@ -143,7 +143,7 @@ public class SgxWebsocketConnectionImpl<Configurator: SgxWebsocketConfigurator>:
             return self.webSocket.waitForResponse()
         }.map(on: scheduler) { encryptedResponse in
             let data = try self.decryptResponse(encryptedResponse)
-            return try Configurator.Response(serializedData: data)
+            return try Configurator.Response(serializedBytes: data)
         }
     }
 
@@ -156,7 +156,7 @@ public class SgxWebsocketConnectionImpl<Configurator: SgxWebsocketConfigurator>:
         }.map(on: scheduler) { encryptedResponses in
             try encryptedResponses.map {
                 let data = try self.decryptResponse($0)
-                return try Configurator.Response(serializedData: data)
+                return try Configurator.Response(serializedBytes: data)
             }
         }
     }

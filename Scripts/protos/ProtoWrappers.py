@@ -893,7 +893,7 @@ public func serializedData() throws -> Data {
             writer.add("public init(serializedData: Data) throws {")
         writer.push_indent()
         writer.add(
-            "let proto = try %s(serializedData: serializedData)" % (wrapped_swift_name,)
+            "let proto = try %s(serializedBytes: serializedData)" % (wrapped_swift_name,)
         )
         if self.can_init_throw():
             writer.add("try self.init(proto)")

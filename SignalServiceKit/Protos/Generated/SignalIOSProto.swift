@@ -53,7 +53,7 @@ public class SignalIOSProtoDeviceName: NSObject, Codable, NSSecureCoding {
 
     @objc
     public convenience init(serializedData: Data) throws {
-        let proto = try IOSProtos_DeviceName(serializedData: serializedData)
+        let proto = try IOSProtos_DeviceName(serializedBytes: serializedData)
         try self.init(proto)
     }
 

@@ -93,7 +93,7 @@ public struct StorageServiceProtoStorageItem: Codable, CustomDebugStringConverti
     }
 
     public init(serializedData: Data) throws {
-        let proto = try StorageServiceProtos_StorageItem(serializedData: serializedData)
+        let proto = try StorageServiceProtos_StorageItem(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -225,7 +225,7 @@ public struct StorageServiceProtoStorageItems: Codable, CustomDebugStringConvert
     }
 
     public init(serializedData: Data) throws {
-        let proto = try StorageServiceProtos_StorageItems(serializedData: serializedData)
+        let proto = try StorageServiceProtos_StorageItems(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -342,7 +342,7 @@ public struct StorageServiceProtoStorageManifest: Codable, CustomDebugStringConv
     }
 
     public init(serializedData: Data) throws {
-        let proto = try StorageServiceProtos_StorageManifest(serializedData: serializedData)
+        let proto = try StorageServiceProtos_StorageManifest(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -468,7 +468,7 @@ public struct StorageServiceProtoReadOperation: Codable, CustomDebugStringConver
     }
 
     public init(serializedData: Data) throws {
-        let proto = try StorageServiceProtos_ReadOperation(serializedData: serializedData)
+        let proto = try StorageServiceProtos_ReadOperation(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -588,7 +588,7 @@ public struct StorageServiceProtoWriteOperation: Codable, CustomDebugStringConve
     }
 
     public init(serializedData: Data) throws {
-        let proto = try StorageServiceProtos_WriteOperation(serializedData: serializedData)
+        let proto = try StorageServiceProtos_WriteOperation(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -808,7 +808,7 @@ public struct StorageServiceProtoManifestRecordKey: Codable, CustomDebugStringCo
     }
 
     public init(serializedData: Data) throws {
-        let proto = try StorageServiceProtos_ManifestRecord.Key(serializedData: serializedData)
+        let proto = try StorageServiceProtos_ManifestRecord.Key(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -941,7 +941,7 @@ public struct StorageServiceProtoManifestRecord: Codable, CustomDebugStringConve
     }
 
     public init(serializedData: Data) throws {
-        let proto = try StorageServiceProtos_ManifestRecord(serializedData: serializedData)
+        let proto = try StorageServiceProtos_ManifestRecord(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -1106,7 +1106,7 @@ public struct StorageServiceProtoStorageRecord: Codable, CustomDebugStringConver
     }
 
     public init(serializedData: Data) throws {
-        let proto = try StorageServiceProtos_StorageRecord(serializedData: serializedData)
+        let proto = try StorageServiceProtos_StorageRecord(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -1235,7 +1235,7 @@ public struct StorageServiceProtoContactRecordName: Codable, CustomDebugStringCo
     }
 
     public init(serializedData: Data) throws {
-        let proto = try StorageServiceProtos_ContactRecord.Name(serializedData: serializedData)
+        let proto = try StorageServiceProtos_ContactRecord.Name(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -1558,7 +1558,7 @@ public struct StorageServiceProtoContactRecord: Codable, CustomDebugStringConver
     }
 
     public init(serializedData: Data) throws {
-        let proto = try StorageServiceProtos_ContactRecord(serializedData: serializedData)
+        let proto = try StorageServiceProtos_ContactRecord(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -1878,7 +1878,7 @@ public struct StorageServiceProtoGroupV1Record: Codable, CustomDebugStringConver
     }
 
     public init(serializedData: Data) throws {
-        let proto = try StorageServiceProtos_GroupV1Record(serializedData: serializedData)
+        let proto = try StorageServiceProtos_GroupV1Record(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -2070,7 +2070,7 @@ public struct StorageServiceProtoGroupV2Record: Codable, CustomDebugStringConver
     }
 
     public init(serializedData: Data) throws {
-        let proto = try StorageServiceProtos_GroupV2Record(serializedData: serializedData)
+        let proto = try StorageServiceProtos_GroupV2Record(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -2244,7 +2244,7 @@ public struct StorageServiceProtoAccountRecordPinnedConversationContact: Codable
     }
 
     public init(serializedData: Data) throws {
-        let proto = try StorageServiceProtos_AccountRecord.PinnedConversation.Contact(serializedData: serializedData)
+        let proto = try StorageServiceProtos_AccountRecord.PinnedConversation.Contact(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -2396,7 +2396,7 @@ public struct StorageServiceProtoAccountRecordPinnedConversation: Codable, Custo
     }
 
     public init(serializedData: Data) throws {
-        let proto = try StorageServiceProtos_AccountRecord.PinnedConversation(serializedData: serializedData)
+        let proto = try StorageServiceProtos_AccountRecord.PinnedConversation(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -2518,7 +2518,7 @@ public struct StorageServiceProtoAccountRecordPayments: Codable, CustomDebugStri
     }
 
     public init(serializedData: Data) throws {
-        let proto = try StorageServiceProtos_AccountRecord.Payments(serializedData: serializedData)
+        let proto = try StorageServiceProtos_AccountRecord.Payments(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -2735,7 +2735,7 @@ public struct StorageServiceProtoAccountRecordUsernameLink: Codable, CustomDebug
     }
 
     public init(serializedData: Data) throws {
-        let proto = try StorageServiceProtos_AccountRecord.UsernameLink(serializedData: serializedData)
+        let proto = try StorageServiceProtos_AccountRecord.UsernameLink(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -3068,7 +3068,7 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
     }
 
     public init(serializedData: Data) throws {
-        let proto = try StorageServiceProtos_AccountRecord(serializedData: serializedData)
+        let proto = try StorageServiceProtos_AccountRecord(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -3461,7 +3461,7 @@ public struct StorageServiceProtoStoryDistributionListRecord: Codable, CustomDeb
     }
 
     public init(serializedData: Data) throws {
-        let proto = try StorageServiceProtos_StoryDistributionListRecord(serializedData: serializedData)
+        let proto = try StorageServiceProtos_StoryDistributionListRecord(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -3630,7 +3630,7 @@ public struct StorageServiceProtoCallLinkRecord: Codable, CustomDebugStringConve
     }
 
     public init(serializedData: Data) throws {
-        let proto = try StorageServiceProtos_CallLinkRecord(serializedData: serializedData)
+        let proto = try StorageServiceProtos_CallLinkRecord(serializedBytes: serializedData)
         self.init(proto)
     }
 

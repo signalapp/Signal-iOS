@@ -43,7 +43,7 @@ public class FingerprintProtoLogicalFingerprint: NSObject, Codable, NSSecureCodi
 
     @objc
     public convenience init(serializedData: Data) throws {
-        let proto = try FingerprintProtos_LogicalFingerprint(serializedData: serializedData)
+        let proto = try FingerprintProtos_LogicalFingerprint(serializedBytes: serializedData)
         try self.init(proto)
     }
 
@@ -210,7 +210,7 @@ public class FingerprintProtoLogicalFingerprints: NSObject, Codable, NSSecureCod
 
     @objc
     public convenience init(serializedData: Data) throws {
-        let proto = try FingerprintProtos_LogicalFingerprints(serializedData: serializedData)
+        let proto = try FingerprintProtos_LogicalFingerprints(serializedBytes: serializedData)
         try self.init(proto)
     }
 

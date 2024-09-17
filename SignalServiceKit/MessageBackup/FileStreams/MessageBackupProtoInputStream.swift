@@ -47,13 +47,13 @@ internal class MessageBackupProtoInputStreamImpl: MessageBackupProtoInputStream 
 
     internal func readHeader() -> MessageBackup.ProtoInputStreamReadResult<BackupProto_BackupInfo> {
         return readProto { protoData in
-            return try BackupProto_BackupInfo(contiguousBytes: protoData)
+            return try BackupProto_BackupInfo(serializedBytes: protoData)
         }
     }
 
     internal func readFrame() -> MessageBackup.ProtoInputStreamReadResult<BackupProto_Frame> {
         return readProto { protoData in
-            return try BackupProto_Frame(contiguousBytes: protoData)
+            return try BackupProto_Frame(serializedBytes: protoData)
         }
     }
 

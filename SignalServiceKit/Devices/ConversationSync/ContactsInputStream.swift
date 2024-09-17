@@ -37,7 +37,7 @@ public class ContactsInputStream {
         var contactData: Data = Data()
         try inputStream.decodeData(value: &contactData, count: Int(contactDataLength))
 
-        let contactDetails = try SignalServiceProtos_ContactDetails(serializedData: contactData)
+        let contactDetails = try SignalServiceProtos_ContactDetails(serializedBytes: contactData)
 
         if contactDetails.hasAvatar {
             // Consume but discard the incoming contact avatar.

@@ -221,7 +221,7 @@ extension LegacySessionRecord {
     }
 
     public convenience init(serializedProto: Data) throws {
-        let deserialized = try SessionRecordProtos_RecordStructure(serializedData: serializedProto)
+        let deserialized = try SessionRecordProtos_RecordStructure(serializedBytes: serializedProto)
         validate(deserialized.unknownFields.data.isEmpty)
 
         self.init()

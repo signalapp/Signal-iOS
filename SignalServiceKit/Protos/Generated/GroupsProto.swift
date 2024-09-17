@@ -105,7 +105,7 @@ public struct GroupsProtoAvatarUploadAttributes: Codable, CustomDebugStringConve
     }
 
     public init(serializedData: Data) throws {
-        let proto = try GroupsProtos_AvatarUploadAttributes(serializedData: serializedData)
+        let proto = try GroupsProtos_AvatarUploadAttributes(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -378,7 +378,7 @@ public struct GroupsProtoMember: Codable, CustomDebugStringConvertible {
     }
 
     public init(serializedData: Data) throws {
-        let proto = try GroupsProtos_Member(serializedData: serializedData)
+        let proto = try GroupsProtos_Member(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -540,7 +540,7 @@ public struct GroupsProtoPendingMember: Codable, CustomDebugStringConvertible {
     }
 
     public init(serializedData: Data) throws {
-        let proto = try GroupsProtos_PendingMember(serializedData: serializedData)
+        let proto = try GroupsProtos_PendingMember(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -706,7 +706,7 @@ public struct GroupsProtoRequestingMember: Codable, CustomDebugStringConvertible
     }
 
     public init(serializedData: Data) throws {
-        let proto = try GroupsProtos_RequestingMember(serializedData: serializedData)
+        let proto = try GroupsProtos_RequestingMember(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -859,7 +859,7 @@ public struct GroupsProtoBannedMember: Codable, CustomDebugStringConvertible {
     }
 
     public init(serializedData: Data) throws {
-        let proto = try GroupsProtos_BannedMember(serializedData: serializedData)
+        let proto = try GroupsProtos_BannedMember(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -1042,7 +1042,7 @@ public struct GroupsProtoAccessControl: Codable, CustomDebugStringConvertible {
     }
 
     public init(serializedData: Data) throws {
-        let proto = try GroupsProtos_AccessControl(serializedData: serializedData)
+        let proto = try GroupsProtos_AccessControl(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -1239,7 +1239,7 @@ public struct GroupsProtoGroup: Codable, CustomDebugStringConvertible {
     }
 
     public init(serializedData: Data) throws {
-        let proto = try GroupsProtos_Group(serializedData: serializedData)
+        let proto = try GroupsProtos_Group(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -1527,7 +1527,7 @@ public struct GroupsProtoGroupAttributeBlob: Codable, CustomDebugStringConvertib
     }
 
     public init(serializedData: Data) throws {
-        let proto = try GroupsProtos_GroupAttributeBlob(serializedData: serializedData)
+        let proto = try GroupsProtos_GroupAttributeBlob(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -1656,7 +1656,7 @@ public struct GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1: Codable, Cust
     }
 
     public init(serializedData: Data) throws {
-        let proto = try GroupsProtos_GroupInviteLink.GroupInviteLinkContentsV1(serializedData: serializedData)
+        let proto = try GroupsProtos_GroupInviteLink.GroupInviteLinkContentsV1(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -1802,7 +1802,7 @@ public struct GroupsProtoGroupInviteLink: Codable, CustomDebugStringConvertible 
     }
 
     public init(serializedData: Data) throws {
-        let proto = try GroupsProtos_GroupInviteLink(serializedData: serializedData)
+        let proto = try GroupsProtos_GroupInviteLink(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -1963,7 +1963,7 @@ public struct GroupsProtoGroupJoinInfo: Codable, CustomDebugStringConvertible {
     }
 
     public init(serializedData: Data) throws {
-        let proto = try GroupsProtos_GroupJoinInfo(serializedData: serializedData)
+        let proto = try GroupsProtos_GroupJoinInfo(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -2138,7 +2138,7 @@ public struct GroupsProtoGroupChangeActionsAddMemberAction: Codable, CustomDebug
     }
 
     public init(serializedData: Data) throws {
-        let proto = try GroupsProtos_GroupChange.Actions.AddMemberAction(serializedData: serializedData)
+        let proto = try GroupsProtos_GroupChange.Actions.AddMemberAction(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -2268,7 +2268,7 @@ public struct GroupsProtoGroupChangeActionsDeleteMemberAction: Codable, CustomDe
     }
 
     public init(serializedData: Data) throws {
-        let proto = try GroupsProtos_GroupChange.Actions.DeleteMemberAction(serializedData: serializedData)
+        let proto = try GroupsProtos_GroupChange.Actions.DeleteMemberAction(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -2390,7 +2390,7 @@ public struct GroupsProtoGroupChangeActionsModifyMemberRoleAction: Codable, Cust
     }
 
     public init(serializedData: Data) throws {
-        let proto = try GroupsProtos_GroupChange.Actions.ModifyMemberRoleAction(serializedData: serializedData)
+        let proto = try GroupsProtos_GroupChange.Actions.ModifyMemberRoleAction(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -2534,7 +2534,7 @@ public struct GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction: Codable
     }
 
     public init(serializedData: Data) throws {
-        let proto = try GroupsProtos_GroupChange.Actions.ModifyMemberProfileKeyAction(serializedData: serializedData)
+        let proto = try GroupsProtos_GroupChange.Actions.ModifyMemberProfileKeyAction(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -2673,7 +2673,7 @@ public struct GroupsProtoGroupChangeActionsAddPendingMemberAction: Codable, Cust
     }
 
     public init(serializedData: Data) throws {
-        let proto = try GroupsProtos_GroupChange.Actions.AddPendingMemberAction(serializedData: serializedData)
+        let proto = try GroupsProtos_GroupChange.Actions.AddPendingMemberAction(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -2798,7 +2798,7 @@ public struct GroupsProtoGroupChangeActionsDeletePendingMemberAction: Codable, C
     }
 
     public init(serializedData: Data) throws {
-        let proto = try GroupsProtos_GroupChange.Actions.DeletePendingMemberAction(serializedData: serializedData)
+        let proto = try GroupsProtos_GroupChange.Actions.DeletePendingMemberAction(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -2937,7 +2937,7 @@ public struct GroupsProtoGroupChangeActionsPromotePendingMemberAction: Codable, 
     }
 
     public init(serializedData: Data) throws {
-        let proto = try GroupsProtos_GroupChange.Actions.PromotePendingMemberAction(serializedData: serializedData)
+        let proto = try GroupsProtos_GroupChange.Actions.PromotePendingMemberAction(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -3112,7 +3112,7 @@ public struct GroupsProtoGroupChangeActionsPromoteMemberPendingPniAciProfileKeyA
     }
 
     public init(serializedData: Data) throws {
-        let proto = try GroupsProtos_GroupChange.Actions.PromoteMemberPendingPniAciProfileKeyAction(serializedData: serializedData)
+        let proto = try GroupsProtos_GroupChange.Actions.PromoteMemberPendingPniAciProfileKeyAction(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -3264,7 +3264,7 @@ public struct GroupsProtoGroupChangeActionsAddRequestingMemberAction: Codable, C
     }
 
     public init(serializedData: Data) throws {
-        let proto = try GroupsProtos_GroupChange.Actions.AddRequestingMemberAction(serializedData: serializedData)
+        let proto = try GroupsProtos_GroupChange.Actions.AddRequestingMemberAction(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -3389,7 +3389,7 @@ public struct GroupsProtoGroupChangeActionsDeleteRequestingMemberAction: Codable
     }
 
     public init(serializedData: Data) throws {
-        let proto = try GroupsProtos_GroupChange.Actions.DeleteRequestingMemberAction(serializedData: serializedData)
+        let proto = try GroupsProtos_GroupChange.Actions.DeleteRequestingMemberAction(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -3511,7 +3511,7 @@ public struct GroupsProtoGroupChangeActionsPromoteRequestingMemberAction: Codabl
     }
 
     public init(serializedData: Data) throws {
-        let proto = try GroupsProtos_GroupChange.Actions.PromoteRequestingMemberAction(serializedData: serializedData)
+        let proto = try GroupsProtos_GroupChange.Actions.PromoteRequestingMemberAction(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -3629,7 +3629,7 @@ public struct GroupsProtoGroupChangeActionsAddBannedMemberAction: Codable, Custo
     }
 
     public init(serializedData: Data) throws {
-        let proto = try GroupsProtos_GroupChange.Actions.AddBannedMemberAction(serializedData: serializedData)
+        let proto = try GroupsProtos_GroupChange.Actions.AddBannedMemberAction(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -3754,7 +3754,7 @@ public struct GroupsProtoGroupChangeActionsDeleteBannedMemberAction: Codable, Cu
     }
 
     public init(serializedData: Data) throws {
-        let proto = try GroupsProtos_GroupChange.Actions.DeleteBannedMemberAction(serializedData: serializedData)
+        let proto = try GroupsProtos_GroupChange.Actions.DeleteBannedMemberAction(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -3873,7 +3873,7 @@ public struct GroupsProtoGroupChangeActionsModifyTitleAction: Codable, CustomDeb
     }
 
     public init(serializedData: Data) throws {
-        let proto = try GroupsProtos_GroupChange.Actions.ModifyTitleAction(serializedData: serializedData)
+        let proto = try GroupsProtos_GroupChange.Actions.ModifyTitleAction(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -3992,7 +3992,7 @@ public struct GroupsProtoGroupChangeActionsModifyAvatarAction: Codable, CustomDe
     }
 
     public init(serializedData: Data) throws {
-        let proto = try GroupsProtos_GroupChange.Actions.ModifyAvatarAction(serializedData: serializedData)
+        let proto = try GroupsProtos_GroupChange.Actions.ModifyAvatarAction(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -4111,7 +4111,7 @@ public struct GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction
     }
 
     public init(serializedData: Data) throws {
-        let proto = try GroupsProtos_GroupChange.Actions.ModifyDisappearingMessagesTimerAction(serializedData: serializedData)
+        let proto = try GroupsProtos_GroupChange.Actions.ModifyDisappearingMessagesTimerAction(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -4223,7 +4223,7 @@ public struct GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction: 
     }
 
     public init(serializedData: Data) throws {
-        let proto = try GroupsProtos_GroupChange.Actions.ModifyAttributesAccessControlAction(serializedData: serializedData)
+        let proto = try GroupsProtos_GroupChange.Actions.ModifyAttributesAccessControlAction(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -4327,7 +4327,7 @@ public struct GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction: Coda
     }
 
     public init(serializedData: Data) throws {
-        let proto = try GroupsProtos_GroupChange.Actions.ModifyAvatarAccessControlAction(serializedData: serializedData)
+        let proto = try GroupsProtos_GroupChange.Actions.ModifyAvatarAccessControlAction(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -4431,7 +4431,7 @@ public struct GroupsProtoGroupChangeActionsModifyMembersAccessControlAction: Cod
     }
 
     public init(serializedData: Data) throws {
-        let proto = try GroupsProtos_GroupChange.Actions.ModifyMembersAccessControlAction(serializedData: serializedData)
+        let proto = try GroupsProtos_GroupChange.Actions.ModifyMembersAccessControlAction(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -4535,7 +4535,7 @@ public struct GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlA
     }
 
     public init(serializedData: Data) throws {
-        let proto = try GroupsProtos_GroupChange.Actions.ModifyAddFromInviteLinkAccessControlAction(serializedData: serializedData)
+        let proto = try GroupsProtos_GroupChange.Actions.ModifyAddFromInviteLinkAccessControlAction(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -4646,7 +4646,7 @@ public struct GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction: Codab
     }
 
     public init(serializedData: Data) throws {
-        let proto = try GroupsProtos_GroupChange.Actions.ModifyInviteLinkPasswordAction(serializedData: serializedData)
+        let proto = try GroupsProtos_GroupChange.Actions.ModifyInviteLinkPasswordAction(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -4765,7 +4765,7 @@ public struct GroupsProtoGroupChangeActionsModifyDescriptionAction: Codable, Cus
     }
 
     public init(serializedData: Data) throws {
-        let proto = try GroupsProtos_GroupChange.Actions.ModifyDescriptionAction(serializedData: serializedData)
+        let proto = try GroupsProtos_GroupChange.Actions.ModifyDescriptionAction(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -4877,7 +4877,7 @@ public struct GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction: Codabl
     }
 
     public init(serializedData: Data) throws {
-        let proto = try GroupsProtos_GroupChange.Actions.ModifyAnnouncementsOnlyAction(serializedData: serializedData)
+        let proto = try GroupsProtos_GroupChange.Actions.ModifyAnnouncementsOnlyAction(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -5079,7 +5079,7 @@ public struct GroupsProtoGroupChangeActions: Codable, CustomDebugStringConvertib
     }
 
     public init(serializedData: Data) throws {
-        let proto = try GroupsProtos_GroupChange.Actions(serializedData: serializedData)
+        let proto = try GroupsProtos_GroupChange.Actions(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -5556,7 +5556,7 @@ public struct GroupsProtoGroupChange: Codable, CustomDebugStringConvertible {
     }
 
     public init(serializedData: Data) throws {
-        let proto = try GroupsProtos_GroupChange(serializedData: serializedData)
+        let proto = try GroupsProtos_GroupChange(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -5691,7 +5691,7 @@ public struct GroupsProtoGroupChangesGroupChangeState: Codable, CustomDebugStrin
     }
 
     public init(serializedData: Data) throws {
-        let proto = try GroupsProtos_GroupChanges.GroupChangeState(serializedData: serializedData)
+        let proto = try GroupsProtos_GroupChanges.GroupChangeState(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -5829,7 +5829,7 @@ public struct GroupsProtoGroupChanges: Codable, CustomDebugStringConvertible {
     }
 
     public init(serializedData: Data) throws {
-        let proto = try GroupsProtos_GroupChanges(serializedData: serializedData)
+        let proto = try GroupsProtos_GroupChanges(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -5944,7 +5944,7 @@ public struct GroupsProtoGroupExternalCredential: Codable, CustomDebugStringConv
     }
 
     public init(serializedData: Data) throws {
-        let proto = try GroupsProtos_GroupExternalCredential(serializedData: serializedData)
+        let proto = try GroupsProtos_GroupExternalCredential(serializedBytes: serializedData)
         self.init(proto)
     }
 

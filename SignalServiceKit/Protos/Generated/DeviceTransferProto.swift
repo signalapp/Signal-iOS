@@ -47,7 +47,7 @@ public struct DeviceTransferProtoFile: Codable, CustomDebugStringConvertible {
     }
 
     public init(serializedData: Data) throws {
-        let proto = try DeviceTransferProtos_File(serializedData: serializedData)
+        let proto = try DeviceTransferProtos_File(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -191,7 +191,7 @@ public struct DeviceTransferProtoDefault: Codable, CustomDebugStringConvertible 
     }
 
     public init(serializedData: Data) throws {
-        let proto = try DeviceTransferProtos_Default(serializedData: serializedData)
+        let proto = try DeviceTransferProtos_Default(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -331,7 +331,7 @@ public struct DeviceTransferProtoDatabase: Codable, CustomDebugStringConvertible
     }
 
     public init(serializedData: Data) throws {
-        let proto = try DeviceTransferProtos_Database(serializedData: serializedData)
+        let proto = try DeviceTransferProtos_Database(serializedBytes: serializedData)
         self.init(proto)
     }
 
@@ -496,7 +496,7 @@ public struct DeviceTransferProtoManifest: Codable, CustomDebugStringConvertible
     }
 
     public init(serializedData: Data) throws {
-        let proto = try DeviceTransferProtos_Manifest(serializedData: serializedData)
+        let proto = try DeviceTransferProtos_Manifest(serializedBytes: serializedData)
         self.init(proto)
     }
 

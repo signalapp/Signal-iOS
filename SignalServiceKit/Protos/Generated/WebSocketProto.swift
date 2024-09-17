@@ -70,7 +70,7 @@ public class WebSocketProtoWebSocketRequestMessage: NSObject, Codable, NSSecureC
 
     @objc
     public convenience init(serializedData: Data) throws {
-        let proto = try WebSocketProtos_WebSocketRequestMessage(serializedData: serializedData)
+        let proto = try WebSocketProtos_WebSocketRequestMessage(serializedBytes: serializedData)
         try self.init(proto)
     }
 
@@ -316,7 +316,7 @@ public class WebSocketProtoWebSocketResponseMessage: NSObject, Codable, NSSecure
 
     @objc
     public convenience init(serializedData: Data) throws {
-        let proto = try WebSocketProtos_WebSocketResponseMessage(serializedData: serializedData)
+        let proto = try WebSocketProtos_WebSocketResponseMessage(serializedBytes: serializedData)
         try self.init(proto)
     }
 
@@ -568,7 +568,7 @@ public class WebSocketProtoWebSocketMessage: NSObject, Codable, NSSecureCoding {
 
     @objc
     public convenience init(serializedData: Data) throws {
-        let proto = try WebSocketProtos_WebSocketMessage(serializedData: serializedData)
+        let proto = try WebSocketProtos_WebSocketMessage(serializedBytes: serializedData)
         try self.init(proto)
     }
 
