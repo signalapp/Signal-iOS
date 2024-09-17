@@ -284,7 +284,8 @@ class AttachmentDownloadStoreTests: XCTestCase {
                 caption: nil,
                 renderingFlag: .default,
                 orderInOwner: 0,
-                idInOwner: nil
+                idInOwner: nil,
+                isViewOnce: false
             )))
         )
         try attachmentStore.insert(

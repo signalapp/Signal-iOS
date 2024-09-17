@@ -30,6 +30,7 @@ extension AttachmentReference.ConstructionParams {
         contentType: Attachment.ContentTypeRaw? = .image,
         caption: String? = nil,
         renderingFlag: AttachmentReference.RenderingFlag = .default,
+        isViewOnce: Bool = false,
         orderInOwner: UInt32 = 0,
         idInOwner: UUID? = nil,
         sourceFilename: String? = UUID().uuidString,
@@ -45,7 +46,8 @@ extension AttachmentReference.ConstructionParams {
                 caption: caption,
                 renderingFlag: renderingFlag,
                 orderInOwner: orderInOwner,
-                idInOwner: idInOwner
+                idInOwner: idInOwner,
+                isViewOnce: isViewOnce
             ))),
             sourceFilename: sourceFilename,
             sourceUnencryptedByteCount: sourceUnencryptedByteCount,

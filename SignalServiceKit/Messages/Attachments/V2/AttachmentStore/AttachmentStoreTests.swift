@@ -885,7 +885,8 @@ class AttachmentStoreTests: XCTestCase {
                 sourceMediaHeightPixels: 1,
                 sourceMediaWidthPixels: 1,
                 stickerPackId: nil,
-                stickerId: 1
+                stickerId: 1,
+                isViewOnce: false
             ),
             keyPathNames: [
                 \.receivedAtTimestamp: "receivedAtTimestamp"

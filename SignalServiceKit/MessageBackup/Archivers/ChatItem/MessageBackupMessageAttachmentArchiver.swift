@@ -177,7 +177,8 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
                 owner: .messageBodyAttachment(.init(
                     messageRowId: messageRowId,
                     receivedAtTimestamp: message.receivedAtTimestamp,
-                    threadRowId: thread.threadRowId
+                    threadRowId: thread.threadRowId,
+                    isViewOnce: message.isViewOnceMessage
                 ))
             )
         }

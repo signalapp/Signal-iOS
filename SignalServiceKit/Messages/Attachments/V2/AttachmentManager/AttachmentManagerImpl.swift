@@ -186,7 +186,11 @@ public class AttachmentManagerImpl: AttachmentManager {
             case .messageBodyAttachment(let metadata):
                 // Convert text mime type attachments in the first spot to oversize text.
                 if mimeType(input) == MimeType.textXSignalPlain.rawValue {
-                    ownerForInput = .messageOversizeText(metadata)
+                    ownerForInput = .messageOversizeText(.init(
+                        messageRowId: metadata.messageRowId,
+                        receivedAtTimestamp: metadata.receivedAtTimestamp,
+                        threadRowId: metadata.threadRowId
+                    ))
                     indexOffset = -1
                     sourceOrder = nil
                 } else {

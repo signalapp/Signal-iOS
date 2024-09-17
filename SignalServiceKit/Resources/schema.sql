@@ -1604,6 +1604,7 @@ CREATE
             contentType = 0
             OR contentType = 1
         ) VIRTUAL
+        ,"isViewOnce" BOOLEAN NOT NULL DEFAULT 0
 )
 ;
 

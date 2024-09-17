@@ -67,6 +67,7 @@ extension AttachmentReference {
         let sourceMediaWidthPixels: UInt32?
         let stickerPackId: Data?
         let stickerId: UInt32?
+        let isViewOnce: Bool
 
         // MARK: - Coding Keys
 
@@ -87,6 +88,7 @@ extension AttachmentReference {
             case sourceMediaWidthPixels
             case stickerPackId
             case stickerId
+            case isViewOnce
         }
 
         // MARK: - PersistableRecord
@@ -156,7 +158,8 @@ extension AttachmentReference {
             sourceMediaHeightPixels: UInt32?,
             sourceMediaWidthPixels: UInt32?,
             stickerPackId: Data?,
-            stickerId: UInt32?
+            stickerId: UInt32?,
+            isViewOnce: Bool
         ) {
             self.ownerType = ownerType
             self.ownerRowId = ownerRowId
@@ -174,6 +177,7 @@ extension AttachmentReference {
             self.sourceMediaWidthPixels = sourceMediaWidthPixels
             self.stickerPackId = stickerPackId
             self.stickerId = stickerId
+            self.isViewOnce = isViewOnce
         }
 
         internal init(
@@ -220,6 +224,7 @@ extension AttachmentReference {
                 self.caption = metadata.caption
                 self.stickerPackId = nil
                 self.stickerId = nil
+                self.isViewOnce = metadata.isViewOnce
             case .oversizeText(let metadata):
                 self.ownerRowId = metadata.messageRowId
                 self.receivedAtTimestamp = metadata.receivedAtTimestamp
@@ -231,6 +236,8 @@ extension AttachmentReference {
                 self.caption = nil
                 self.stickerPackId = nil
                 self.stickerId = nil
+                // Oversize text cannot be view once
+                self.isViewOnce = false
             case .linkPreview(let metadata):
                 self.ownerRowId = metadata.messageRowId
                 self.receivedAtTimestamp = metadata.receivedAtTimestamp
@@ -242,6 +249,8 @@ extension AttachmentReference {
                 self.caption = nil
                 self.stickerPackId = nil
                 self.stickerId = nil
+                // Link previews cannot be view once
+                self.isViewOnce = false
             case .quotedReply(let metadata):
                 self.ownerRowId = metadata.messageRowId
                 self.receivedAtTimestamp = metadata.receivedAtTimestamp
@@ -253,6 +262,8 @@ extension AttachmentReference {
                 self.caption = nil
                 self.stickerPackId = nil
                 self.stickerId = nil
+                // Quoted reply thumbnails cannot be view once
+                self.isViewOnce = false
             case .sticker(let metadata):
                 self.ownerRowId = metadata.messageRowId
                 self.receivedAtTimestamp = metadata.receivedAtTimestamp
@@ -264,6 +275,8 @@ extension AttachmentReference {
                 self.caption = nil
                 self.stickerPackId = metadata.stickerPackId
                 self.stickerId = metadata.stickerId
+                // Stickers cannot be view once
+                self.isViewOnce = false
             case .contactAvatar(let metadata):
                 self.ownerRowId = metadata.messageRowId
                 self.receivedAtTimestamp = metadata.receivedAtTimestamp
@@ -275,8 +288,9 @@ extension AttachmentReference {
                 self.caption = nil
                 self.stickerPackId = nil
                 self.stickerId = nil
+                // Contact avatars cannot be view once
+                self.isViewOnce = false
             }
-
         }
     }
 

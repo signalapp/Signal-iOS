@@ -620,6 +620,8 @@ extension TSAttachmentMigration {
             }
             let messageReceivedAtTimestamp = UInt64(bitPattern: messageReceivedAtTimestampRaw)
 
+            let isViewOnce = (messageRow["isViewOnceMessage"] as? Bool) ?? false
+
             // Edited messages can share attachments with the original.
             // Don't delete attachments if this is an edit, just migrate and leave alone.
             // We will delete when we get to the original.
@@ -647,6 +649,7 @@ extension TSAttachmentMigration {
                     orderInMessage: orderInMessage.map(UInt32.init(_:)),
                     stickerPackId: stickerPackId,
                     stickerId: stickerId,
+                    isViewOnce: isViewOnce,
                     tx: tx
                 )
                 if let migratedAttachment {
@@ -769,6 +772,7 @@ extension TSAttachmentMigration {
             orderInMessage: UInt32?,
             stickerPackId: Data?,
             stickerId: UInt32?,
+            isViewOnce: Bool,
             tx: GRDBWriteTransaction
         ) throws -> TSAttachmentMigration.V1Attachment? {
             let oldAttachment: TSAttachmentMigration.V1Attachment?
@@ -973,7 +977,8 @@ extension TSAttachmentMigration {
                 sourceMediaHeightPixels: sourceMediaHeightPixels,
                 sourceMediaWidthPixels: sourceMediaWidthPixels,
                 stickerPackId: stickerPackId,
-                stickerId: stickerId
+                stickerId: stickerId,
+                isViewOnce: isViewOnce
             )
             do {
                 try reference.insert(tx.database)
@@ -1132,7 +1137,9 @@ extension TSAttachmentMigration {
                 sourceMediaHeightPixels: nil,
                 sourceMediaWidthPixels: nil,
                 stickerPackId: nil,
-                stickerId: nil
+                stickerId: nil,
+                // Quoted message attachments cannot be view once
+                isViewOnce: false
             )
             do {
                 try reference.insert(tx.database)

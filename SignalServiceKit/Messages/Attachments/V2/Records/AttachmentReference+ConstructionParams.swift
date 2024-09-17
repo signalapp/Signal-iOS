@@ -19,7 +19,7 @@ extension AttachmentReference {
     /// This type is just those fields that would not be on the source proto (or stream, or whatever)
     /// but must instead be uniquely specified per type.
     public enum OwnerBuilder: Equatable {
-        case messageBodyAttachment(MessageAttachmentBuilder)
+        case messageBodyAttachment(MessageBodyAttachmentBuilder)
         case messageOversizeText(MessageAttachmentBuilder)
         case messageLinkPreview(MessageAttachmentBuilder)
         /// Note that the row id is for the parent message containing the quoted reply,
@@ -85,7 +85,8 @@ extension AttachmentReference {
                         case .knownNil: return nil
                         case .known(let knownValue): return knownValue
                         }
-                    }()
+                    }(),
+                    isViewOnce: metadata.isViewOnce
                 )))
             case .messageOversizeText(let metadata):
                 return .message(.oversizeText(.init(
@@ -156,6 +157,25 @@ extension AttachmentReference {
                 self.messageRowId = messageRowId
                 self.receivedAtTimestamp = receivedAtTimestamp
                 self.threadRowId = threadRowId
+            }
+        }
+
+        public struct MessageBodyAttachmentBuilder: Equatable {
+            public let messageRowId: Int64
+            public let receivedAtTimestamp: UInt64
+            public let threadRowId: Int64
+            public let isViewOnce: Bool
+
+            public init(
+                messageRowId: Int64,
+                receivedAtTimestamp: UInt64,
+                threadRowId: Int64,
+                isViewOnce: Bool
+            ) {
+                self.messageRowId = messageRowId
+                self.receivedAtTimestamp = receivedAtTimestamp
+                self.threadRowId = threadRowId
+                self.isViewOnce = isViewOnce
             }
         }
 

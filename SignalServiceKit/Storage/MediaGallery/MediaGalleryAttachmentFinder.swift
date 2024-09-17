@@ -289,12 +289,15 @@ public struct MediaGalleryAttachmentFinder {
         let renderingFlagColumn = Column(RecordType.CodingKeys.renderingFlag)
         let contentTypeColumn = Column(RecordType.CodingKeys.contentType)
         let ownerTypeColumn = Column(RecordType.CodingKeys.ownerType)
+        let isViewOnceColumn = Column(RecordType.CodingKeys.isViewOnce)
 
         var query: QueryInterfaceRequest<RecordType> = RecordType
             // All finders are thread-scoped; filter to this thread.
             .filter(threadIdColumn == self.threadId)
             // Media gallery only shows body attachments; always filter to that owner type.
             .filter(ownerTypeColumn == AttachmentReference.MessageOwnerTypeRaw.bodyAttachment.rawValue)
+            // Never show view once media in the gallery
+            .filter(isViewOnceColumn == false)
 
         switch filter {
         case .allPhotoVideoCategory:

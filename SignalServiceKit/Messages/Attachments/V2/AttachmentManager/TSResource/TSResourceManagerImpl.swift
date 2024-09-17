@@ -83,7 +83,8 @@ public class TSResourceManagerImpl: TSResourceManager {
                     owner: .messageBodyAttachment(.init(
                         messageRowId: messageRowId,
                         receivedAtTimestamp: message.receivedAtTimestamp,
-                        threadRowId: threadRowId
+                        threadRowId: threadRowId,
+                        isViewOnce: message.isViewOnceMessage
                     ))
                 )
             },
@@ -156,7 +157,8 @@ public class TSResourceManagerImpl: TSResourceManager {
                         owner: .messageBodyAttachment(.init(
                             messageRowId: messageRowId,
                             receivedAtTimestamp: message.receivedAtTimestamp,
-                            threadRowId: threadRowId
+                            threadRowId: threadRowId,
+                            isViewOnce: message.isViewOnceMessage
                         ))
                     )
                 },

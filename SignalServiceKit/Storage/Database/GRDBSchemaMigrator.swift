@@ -292,6 +292,8 @@ public class GRDBSchemaMigrator: NSObject {
         case addIncrementalMacParamsToAttachment
         case splitIncrementalMacAttachmentColumns
         case addCallEndedTimestampToCallRecord
+        case addIsViewOnceColumnToMessageAttachmentReference
+        case backfillIsViewOnceMessageAttachmentReference
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -353,7 +355,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 87
+    public static let grdbSchemaVersionLatest: UInt = 88
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -3446,6 +3448,34 @@ public class GRDBSchemaMigrator: NSObject {
                 table.add(column: "callEndedTimestamp", .integer)
                     .notNull()
                     .defaults(to: 0)
+            }
+
+            return .success(())
+        }
+
+        migrator.registerMigration(.addIsViewOnceColumnToMessageAttachmentReference) { tx in
+            try tx.database.alter(table: "MessageAttachmentReference") { table in
+                table.add(column: "isViewOnce", .boolean)
+                    .notNull()
+                    .defaults(to: false)
+            }
+            return .success(())
+        }
+
+        migrator.registerMigration(.backfillIsViewOnceMessageAttachmentReference) { tx in
+            let cursor = try UInt64.fetchCursor(
+                tx.database,
+                sql: "SELECT id from model_TSInteraction where isViewOnceMessage = 1;"
+            )
+            while let nextInteractionId = try cursor.next() {
+                try tx.database.execute(
+                    sql: """
+                        UPDATE MessageAttachmentReference
+                        SET isViewOnce = 1
+                        WHERE ownerRowId = ?
+                        """,
+                    arguments: [nextInteractionId]
+                )
             }
 
             return .success(())

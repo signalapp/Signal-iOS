@@ -399,6 +399,7 @@ extension TSAttachmentMigration {
         var sourceMediaWidthPixels: UInt32?
         var stickerPackId: Data?
         var stickerId: UInt32?
+        var isViewOnce: Bool
     }
 
     struct StoryMessageAttachmentReference: Codable, PersistableRecord, FetchableRecord {

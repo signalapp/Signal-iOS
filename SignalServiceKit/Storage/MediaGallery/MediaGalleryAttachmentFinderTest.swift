@@ -69,6 +69,15 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
             contentType: .image,
             orderInOwner: 5
         )
+        // ...and a view once attachment that will be excluded.
+        try insertAttachment(
+            messageRowId: messageRowId,
+            threadRowId: threadRowId,
+            receivedAtTimestamp: 200,
+            contentType: .image,
+            isViewOnce: true,
+            orderInOwner: 6
+        )
         let exclusionSet = Set<AttachmentReferenceId>([
             .init(ownerId: .messageBodyAttachment(messageRowId: messageRowId), orderInOwner: 5)
         ])
@@ -255,6 +264,7 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
         contentType: AttachmentReference.ContentType,
         caption: String? = nil,
         renderingFlag: AttachmentReference.RenderingFlag = .default,
+        isViewOnce: Bool = false,
         orderInOwner: UInt32,
         idInOwner: UUID? = nil
     ) throws -> Attachment.IDType {
@@ -268,7 +278,8 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
                 caption: caption,
                 renderingFlag: renderingFlag,
                 orderInOwner: orderInOwner,
-                idInOwner: idInOwner
+                idInOwner: idInOwner,
+                isViewOnce: isViewOnce
             )))
         )
 

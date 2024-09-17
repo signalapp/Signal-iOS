@@ -125,6 +125,9 @@ extension AttachmentReference {
                 /// Uniquely identifies this attachment in the owning message's body attachments.
                 public let idInOwner: UUID?
 
+                /// If the message owning this body attachment is a view-once message
+                public let isViewOnce: Bool
+
                 internal init(
                     messageRowId: Int64,
                     receivedAtTimestamp: UInt64,
@@ -133,12 +136,14 @@ extension AttachmentReference {
                     caption: String?,
                     renderingFlag: RenderingFlag,
                     orderInOwner: UInt32,
-                    idInOwner: UUID?
+                    idInOwner: UUID?,
+                    isViewOnce: Bool
                 ) {
                     self.caption = caption
                     self.renderingFlag = renderingFlag
                     self.orderInOwner = orderInOwner
                     self.idInOwner = idInOwner
+                    self.isViewOnce = isViewOnce
                     super.init(
                         messageRowId: messageRowId,
                         receivedAtTimestamp: receivedAtTimestamp,
@@ -304,7 +309,8 @@ extension AttachmentReference.Owner {
                 caption: record.caption,
                 renderingFlag: try .init(rawValue: record.renderingFlag),
                 orderInOwner: orderInOwner,
-                idInOwner: record.idInMessage.flatMap { UUID(uuidString: $0) }
+                idInOwner: record.idInMessage.flatMap { UUID(uuidString: $0) },
+                isViewOnce: record.isViewOnce
             )))
         case .oversizeText:
             return .message(.oversizeText(.init(
@@ -408,7 +414,8 @@ extension AttachmentReference.Owner {
                         caption: metadata.caption,
                         renderingFlag: metadata.renderingFlag,
                         orderInOwner: metadata.orderInOwner,
-                        idInOwner: metadata.idInOwner
+                        idInOwner: metadata.idInOwner,
+                        isViewOnce: metadata.isViewOnce
                     ))
                 case .oversizeText(let metadata):
                     return .oversizeText(.init(
