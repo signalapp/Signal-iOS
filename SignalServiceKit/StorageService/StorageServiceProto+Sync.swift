@@ -1833,7 +1833,10 @@ class StorageServiceCallLinkRecordUpdater: StorageServiceRecordUpdater {
     typealias IdType = Data
     typealias RecordType = StorageServiceProtoCallLinkRecord
 
-    init() {
+    let callLinkStore: any CallLinkRecordStore
+
+    init(callLinkStore: any CallLinkRecordStore) {
+        self.callLinkStore = callLinkStore
     }
 
     func unknownFields(for record: StorageServiceProtoCallLinkRecord) -> UnknownStorage? { record.unknownFields }
@@ -1845,18 +1848,36 @@ class StorageServiceCallLinkRecordUpdater: StorageServiceRecordUpdater {
     func buildRecord(
         for rootKeyData: Data,
         unknownFields: UnknownStorage?,
-        transaction: SDSAnyReadTransaction
+        transaction tx: SDSAnyReadTransaction
     ) -> StorageServiceProtoCallLinkRecord? {
         owsPrecondition(FeatureFlags.callLinkStorageService)
+        owsPrecondition(FeatureFlags.callLinkRecordTable)
 
         guard let rootKey = try? CallLinkRootKey(rootKeyData) else {
             owsFailDebug("Invalid CallLinkRootKey")
             return nil
         }
+        let roomId = rootKey.deriveRoomId()
+        let callLink: CallLinkRecord?
+        do {
+            callLink = try self.callLinkStore.fetch(roomId: roomId, tx: tx.asV2Read)
+        } catch {
+            owsFailDebug("Skipping CallLink that can't be fetched: \(rootKey.description)")
+            return nil
+        }
+
+        guard let callLink, callLink.adminPasskey != nil || callLink.adminDeletedAtTimestampMs != nil else {
+            // We're not an admin, so this link doesn't go in Storage Service.
+            return nil
+        }
+
         var builder = StorageServiceProtoCallLinkRecord.builder()
         builder.setRootKey(rootKey.bytes)
-
-        // [CallLink] TODO: Fetch from DB & add relevant fields.
+        if let adminDeletedAtTimestampMs = callLink.adminDeletedAtTimestampMs {
+            builder.setDeletedAtTimestampMs(adminDeletedAtTimestampMs)
+        } else if let adminPasskey = callLink.adminPasskey {
+            builder.setAdminPasskey(adminPasskey)
+        }
 
         if let unknownFields {
             builder.setUnknownFields(unknownFields)
@@ -1866,18 +1887,27 @@ class StorageServiceCallLinkRecordUpdater: StorageServiceRecordUpdater {
 
     func mergeRecord(
         _ record: StorageServiceProtoCallLinkRecord,
-        transaction: SDSAnyWriteTransaction
+        transaction tx: SDSAnyWriteTransaction
     ) -> StorageServiceMergeResult<Data> {
         owsPrecondition(FeatureFlags.callLinkStorageService)
+        owsPrecondition(FeatureFlags.callLinkRecordTable)
 
         guard let rootKeyData = record.rootKey, let rootKey = try? CallLinkRootKey(rootKeyData) else {
             owsFailDebug("invalid rootKey")
             return .invalid
         }
-
-        // [CallLink] TODO: Persist into DB & fetch from server.
-        Logger.verbose("Ignoring CallLink w/\(rootKey.description)")
-
+        do {
+            var callLink = try self.callLinkStore.fetchOrInsert(rootKey: rootKey, tx: tx.asV2Write)
+            // The earliest deletion timestamp takes precendence when merging.
+            if record.deletedAtTimestampMs > 0 || callLink.adminDeletedAtTimestampMs != nil {
+                callLink.markDeleted(atTimestampMs: [record.deletedAtTimestampMs, callLink.adminDeletedAtTimestampMs].compacted().min()!)
+            } else if let adminPasskey = record.adminPasskey?.nilIfEmpty {
+                callLink.adminPasskey = adminPasskey
+            }
+            try self.callLinkStore.update(callLink, tx: tx.asV2Write)
+        } catch {
+            owsFailDebug("Couldn't merge CallLink \(rootKey.description): \(error)")
+        }
         return .merged(needsUpdate: false, rootKey.bytes)
     }
 }

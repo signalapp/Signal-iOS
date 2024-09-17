@@ -51,6 +51,10 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
                 // If we have any pending changes since we last launch, back them up now.
                 self.backupPendingChanges(authedDevice: .implicit)
             }
+
+            AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
+                Task { await self.cleanUpDeletedCallLinks() }
+            }
         }
     }
 
@@ -401,6 +405,32 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
         AssertIsOnMainThread()
 
         backupPendingChanges(authedDevice: .implicit)
+    }
+
+    // MARK: - Cleanup
+
+    private func cleanUpDeletedCallLinks() async {
+        let callLinkStore = DependenciesBridge.shared.callLinkStore
+        let deletionThresholdMs = Date.ows_millisecondTimestamp() - CallLinkRecord.Constants.storageServiceDeletionDelayMs
+        guard FeatureFlags.callLinkRecordTable else {
+            return
+        }
+        do {
+            let callLinkRecords = try databaseStorage.read { tx in
+                try callLinkStore.fetchWhere(adminDeletedAtTimestampMsIsLessThan: deletionThresholdMs, tx: tx.asV2Read)
+            }
+            if !callLinkRecords.isEmpty {
+                Logger.info("Cleaning up \(callLinkRecords.count) call links that were deleted a while ago.")
+                try await databaseStorage.awaitableWrite { tx in
+                    for callLinkRecord in callLinkRecords {
+                        try callLinkStore.delete(callLinkRecord, tx: tx.asV2Write)
+                    }
+                }
+                recordPendingUpdates(callLinkRootKeys: callLinkRecords.map(\.rootKey))
+            }
+        } catch {
+            owsFailDebug("Couldn't clean up deleted call links: \(error)")
+        }
     }
 }
 
@@ -945,9 +975,13 @@ class StorageServiceOperation: OWSOperation {
                 }
 
             let callLinkUpdater = buildCallLinkUpdater()
-            // [CallLink] TODO: Enumerate & insert all Call Links.
-            ([] as [CallLinkRootKey]).forEach {
-                createRecord(localId: $0.bytes, stateUpdater: callLinkUpdater)
+            let callLinkStore = callLinkUpdater.recordUpdater.callLinkStore
+            do {
+                try callLinkStore.fetchAll(tx: transaction.asV2Read).forEach {
+                    createRecord(localId: $0.rootKey.bytes, stateUpdater: callLinkUpdater)
+                }
+            } catch {
+                owsFailDebug("Couldn't add CallLinks to manifest: \(error)")
             }
         }
 
@@ -1157,8 +1191,17 @@ class StorageServiceOperation: OWSOperation {
                 }
 
                 var orphanedCallLinkRootKeyCount = 0
-                for (callLinkRootKey, storageIdentifier) in mutableState.callLinkRootKeyToStorageIdentifierMap where !allManifestItems.contains(storageIdentifier) {
-                    mutableState.callLinkRootKeyChangeMap[callLinkRootKey] = .updated
+                for (callLinkRootKeyData, storageIdentifier) in mutableState.callLinkRootKeyToStorageIdentifierMap where !allManifestItems.contains(storageIdentifier) {
+                    // If another client removes a deleted call link, allow it.
+                    let callLinkStore = DependenciesBridge.shared.callLinkStore
+                    guard
+                        let callLinkRootKey = try? CallLinkRootKey(callLinkRootKeyData),
+                        let callLinkRecord = try? callLinkStore.fetch(roomId: callLinkRootKey.deriveRoomId(), tx: transaction.asV2Read),
+                        callLinkRecord.adminPasskey != nil
+                    else {
+                        continue
+                    }
+                    mutableState.callLinkRootKeyChangeMap[callLinkRootKeyData] = .updated
                     orphanedCallLinkRootKeyCount += 1
                 }
 
@@ -1474,7 +1517,7 @@ class StorageServiceOperation: OWSOperation {
                 buildContactUpdater(),
                 buildGroupV2Updater(),
                 buildStoryDistributionListUpdater(),
-                buildCallLinkUpdater()
+                buildCallLinkUpdater(),
             ]
 
             if StorageServiceUnknownFieldMigrator.needsAnyUnknownFieldsMigrations(tx: tx) {
@@ -1690,7 +1733,9 @@ class StorageServiceOperation: OWSOperation {
 
     private func buildCallLinkUpdater() -> MultipleElementStateUpdater<StorageServiceCallLinkRecordUpdater> {
         return MultipleElementStateUpdater(
-            recordUpdater: StorageServiceCallLinkRecordUpdater(),
+            recordUpdater: StorageServiceCallLinkRecordUpdater(
+                callLinkStore: DependenciesBridge.shared.callLinkStore
+            ),
             changeState: \.callLinkRootKeyChangeMap,
             storageIdentifier: \.callLinkRootKeyToStorageIdentifierMap,
             recordWithUnknownFields: \.callLinkRootKeyToRecordWithUnknownFields

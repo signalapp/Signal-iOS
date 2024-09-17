@@ -10,10 +10,15 @@ import SignalRingRTC
 public struct CallLinkRecord: Codable, PersistableRecord, FetchableRecord {
     public static let databaseTableName: String = "CallLink"
 
+    enum Constants {
+        static let storageServiceDeletionDelayMs = 30 * kDayInMs
+    }
+
     public let id: Int64
     public let roomId: Data
     public let rootKey: CallLinkRootKey
     public var adminPasskey: Data?
+    private(set) public var adminDeletedAtTimestampMs: UInt64?
     private(set) public var isUpcoming: Bool?
     private(set) public var name: String?
     private(set) public var restrictions: Restrictions?
@@ -25,6 +30,7 @@ public struct CallLinkRecord: Codable, PersistableRecord, FetchableRecord {
         roomId: Data,
         rootKey: CallLinkRootKey,
         adminPasskey: Data?,
+        adminDeletedAtTimestampMs: UInt64?,
         isUpcoming: Bool?,
         name: String?,
         restrictions: Restrictions?,
@@ -35,6 +41,7 @@ public struct CallLinkRecord: Codable, PersistableRecord, FetchableRecord {
         self.roomId = roomId
         self.rootKey = rootKey
         self.adminPasskey = adminPasskey
+        self.adminDeletedAtTimestampMs = adminDeletedAtTimestampMs
         self.isUpcoming = isUpcoming
         self.name = name
         self.restrictions = restrictions
@@ -47,6 +54,7 @@ public struct CallLinkRecord: Codable, PersistableRecord, FetchableRecord {
         case roomId
         case rootKey
         case adminPasskey
+        case adminDeletedAtTimestampMs
         case isUpcoming
         case name
         case restrictions
@@ -60,6 +68,7 @@ public struct CallLinkRecord: Codable, PersistableRecord, FetchableRecord {
         try container.encode(self.roomId, forKey: .roomId)
         try container.encode(self.rootKey.bytes, forKey: .rootKey)
         try container.encodeIfPresent(self.adminPasskey, forKey: .adminPasskey)
+        try container.encodeIfPresent(self.adminDeletedAtTimestampMs.map(Int64.init(bitPattern:)), forKey: .adminDeletedAtTimestampMs)
         try container.encodeIfPresent(self.isUpcoming, forKey: .isUpcoming)
         try container.encodeIfPresent(self.name, forKey: .name)
         try container.encodeIfPresent(self.restrictions?.rawValue, forKey: .restrictions)
@@ -73,6 +82,7 @@ public struct CallLinkRecord: Codable, PersistableRecord, FetchableRecord {
         self.roomId = try container.decode(Data.self, forKey: .roomId)
         self.rootKey = try CallLinkRootKey(container.decode(Data.self, forKey: .rootKey))
         self.adminPasskey = try container.decodeIfPresent(Data.self, forKey: .adminPasskey)
+        self.adminDeletedAtTimestampMs = try container.decodeIfPresent(Int64.self, forKey: .adminDeletedAtTimestampMs).map(UInt64.init(bitPattern:))
         self.isUpcoming = try container.decodeIfPresent(Bool.self, forKey: .isUpcoming)
         self.name = try container.decodeIfPresent(String.self, forKey: .name)
         self.restrictions = try container.decodeIfPresent(Int.self, forKey: .restrictions).map { rawValue in
@@ -119,5 +129,15 @@ public struct CallLinkRecord: Codable, PersistableRecord, FetchableRecord {
     private mutating func didUpdateState() {
         // If we haven't used the link & we're an admin, mark it as upcoming.
         self.isUpcoming = self.isUpcoming ?? (self.adminPasskey != nil)
+    }
+
+    public mutating func markDeleted(atTimestampMs timestampMs: UInt64) {
+        self.adminPasskey = nil
+        self.adminDeletedAtTimestampMs = timestampMs
+        self.name = nil
+        self.restrictions = nil
+        self.revoked = nil
+        self.expiration = nil
+        self.isUpcoming = false
     }
 }
