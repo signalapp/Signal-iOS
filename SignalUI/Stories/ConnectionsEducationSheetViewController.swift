@@ -10,6 +10,13 @@ public class ConnectionsEducationSheetViewController: StackSheetViewController {
         .init(top: 24, left: 24, bottom: 32, right: 24)
     }
 
+    public override var sheetBackgroundColor: UIColor {
+        UIColor(named: "Signal/secondaryBackground")!
+    }
+    public override var handleBackgroundColor: UIColor {
+        UIColor(named: "Signal/transparentSeparator")!
+    }
+
     public init() {
         super.init()
 
@@ -29,7 +36,7 @@ public class ConnectionsEducationSheetViewController: StackSheetViewController {
     let connectionsImageView: UIImageView = {
         let view = UIImageView()
         view.image = UIImage(named: "connections-display-bold")
-        view.tintColor = Theme.primaryTextColor
+        view.tintColor = .label
         view.contentMode = .scaleAspectFit
         view.autoSetDimension(.height, toSize: 56)
         return view
@@ -44,7 +51,7 @@ public class ConnectionsEducationSheetViewController: StackSheetViewController {
             with: .font(.dynamicTypeBody),
             .xmlRules([.style("bold", .init(.font(UIFont.dynamicTypeBody.semibold())))])
         )
-        label.textColor = Theme.primaryTextColor
+        label.textColor = .label
         label.numberOfLines = 0
         label.setCompressionResistanceHigh()
         return label
@@ -75,7 +82,7 @@ public class ConnectionsEducationSheetViewController: StackSheetViewController {
             "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER",
             comment: "Footer for the explainer sheet for signal connections"
         )
-        label.textColor = Theme.primaryTextColor
+        label.textColor = .label
         label.font = .dynamicTypeBody
         label.numberOfLines = 0
         label.setCompressionResistanceHigh()
@@ -83,7 +90,6 @@ public class ConnectionsEducationSheetViewController: StackSheetViewController {
     }()
 
     private class ListPointView: UIStackView {
-
         init(text: String) {
             super.init(frame: .zero)
 
@@ -94,17 +100,18 @@ public class ConnectionsEducationSheetViewController: StackSheetViewController {
             let label = UILabel()
             label.text = text
             label.numberOfLines = 0
-            label.textColor = Theme.primaryTextColor
+            label.textColor = .label
             label.font = .dynamicTypeBody
 
             let bulletPoint = UIView()
-            bulletPoint.backgroundColor = UIColor(rgbHex: 0xC4C4C4)
+            bulletPoint.backgroundColor = UIColor(named: "Signal/tertiaryLabel")!
 
             addArrangedSubview(.spacer(withWidth: 4))
             addArrangedSubview(bulletPoint)
             addArrangedSubview(label)
 
             bulletPoint.autoSetDimensions(to: .init(width: 4, height: 14))
+            bulletPoint.layer.cornerRadius = 2
             label.setCompressionResistanceHigh()
         }
 

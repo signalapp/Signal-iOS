@@ -9,7 +9,25 @@ import SignalRingRTC
 import LibSignalClient
 import SignalServiceKit
 
-private typealias ApprovalRequest = ApprovalRequestStack.ApprovalRequest
+private typealias ApprovalRequest = CallLinkApprovalRequest
+
+// MARK: ApprovalRequest
+
+struct CallLinkApprovalRequest: Hashable, Identifiable {
+    /// View ID. Shouldn't be tied to the content so that the
+    /// content can change without being seen as a new view.
+    var id: UUID
+    var aci: Aci
+    var address: SignalServiceAddress
+    var name: String
+
+    init(aci: Aci, name: String) {
+        self.id = aci.rawUUID
+        self.aci = aci
+        self.address = .init(aci)
+        self.name = name
+    }
+}
 
 // MARK: - ApprovalRequestView
 
@@ -47,7 +65,7 @@ private struct ApprovalRequestView: View {
                         dataSource: .address(self.request.address),
                         sizeClass: .fortyEight,
                         localUserDisplayMode: .asLocalUser,
-                        badged: false
+                        badged: true
                     )
                 }
 
@@ -155,6 +173,8 @@ private struct ApprovalRequestView: View {
 // MARK: - ApprovalRequestStack
 
 struct ApprovalRequestStack: View {
+    typealias ApprovalRequest = CallLinkApprovalRequest
+
     @ObservedObject var viewModel: ViewModel
 
     var openProfileDetails: (ApprovalRequest) -> Void
@@ -279,24 +299,6 @@ struct ApprovalRequestStack: View {
             withAnimation(.quickSpring()) {
                 self.requests = requests
             }
-        }
-    }
-
-    // MARK: ApprovalRequest
-
-    struct ApprovalRequest: Hashable, Identifiable {
-        /// View ID. Shouldn't be tied to the content so that the
-        /// content can change without being seen as a new view.
-        var id: UUID
-        var aci: Aci
-        var address: SignalServiceAddress
-        var name: String
-
-        init(aci: Aci, name: String) {
-            self.id = aci.rawUUID
-            self.aci = aci
-            self.address = .init(aci)
-            self.name = name
         }
     }
 }

@@ -28,6 +28,8 @@ class CallDrawerSheet: InteractiveSheetViewController {
     private let call: SignalCall
     private let callSheetDataSource: CallDrawerSheetDataSource
 
+    private var didPresentViewController: ((UIViewController) -> Void)?
+
     override var sheetBackgroundColor: UIColor { UIColor(rgbHex: 0x1C1C1E) }
 
     override var handleBackgroundColor: UIColor { UIColor(rgbHex: 0x787880).withAlphaComponent(0.36) }
@@ -38,7 +40,8 @@ class CallDrawerSheet: InteractiveSheetViewController {
         callService: CallService,
         confirmationToastManager: CallControlsConfirmationToastManager,
         callControlsDelegate: CallControlsDelegate,
-        sheetPanDelegate: (any SheetPanDelegate)?
+        sheetPanDelegate: (any SheetPanDelegate)?,
+        didPresentViewController: ((UIViewController) -> Void)? = nil
     ) {
         self.call = call
         self.callSheetDataSource = callSheetDataSource
@@ -48,6 +51,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
             confirmationToastManager: confirmationToastManager,
             delegate: callControlsDelegate
         )
+        self.didPresentViewController = didPresentViewController
 
         super.init(blurEffect: nil)
 
@@ -76,6 +80,11 @@ class CallDrawerSheet: InteractiveSheetViewController {
         } else {
             return halfHeight
         }
+    }
+
+    override func present(_ viewControllerToPresent: UIViewController, animated flag: Bool, completion: (() -> Void)? = nil) {
+        super.present(viewControllerToPresent, animated: flag, completion: completion)
+        self.didPresentViewController?(viewControllerToPresent)
     }
 
     // MARK: - Table setup

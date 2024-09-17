@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import UIKit
 import SignalUI
 import SignalServiceKit
 
@@ -43,8 +44,12 @@ class ContactAboutSheet: StackSheetViewController {
 
     private weak var fromViewController: UIViewController?
 
-    func present(from viewController: UIViewController) {
-        fromViewController = viewController
+    func present(
+        from viewController: UIViewController,
+        dismissalDelegate: (any SheetDismissalDelegate)? = nil
+    ) {
+        self.fromViewController = viewController
+        self.dismissalDelegate = dismissalDelegate
         viewController.present(self, animated: true)
     }
 
@@ -83,11 +88,6 @@ class ContactAboutSheet: StackSheetViewController {
         updateContents()
     }
 
-    override func themeDidChange() {
-        super.themeDidChange()
-        loadContents()
-    }
-
     override func contentSizeCategoryDidChange() {
         super.contentSizeCategoryDidChange()
         loadContents()
@@ -111,6 +111,12 @@ class ContactAboutSheet: StackSheetViewController {
     }
 
     override var minimumBottomInsetIncludingSafeArea: CGFloat { 32 }
+    override var sheetBackgroundColor: UIColor {
+        UIColor.Signal.secondaryBackground
+    }
+    override var handleBackgroundColor: UIColor {
+        UIColor.Signal.transparentSeparator
+    }
 
     // MARK: - Content
 
@@ -183,7 +189,11 @@ class ContactAboutSheet: StackSheetViewController {
 
         switch connectionState {
         case .connection:
-            stackView.addArrangedSubview(ProfileDetailLabel.signalConnectionLink(shouldDismissOnNavigation: true, presentEducationFrom: fromViewController))
+            stackView.addArrangedSubview(ProfileDetailLabel.signalConnectionLink(
+                shouldDismissOnNavigation: true,
+                presentEducationFrom: fromViewController,
+                dismissalDelegate: dismissalDelegate
+            ))
         case .blocked:
             stackView.addArrangedSubview(ProfileDetailLabel.blocked(name: self.shortDisplayName))
         case .pending:

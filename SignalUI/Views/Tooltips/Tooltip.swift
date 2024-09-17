@@ -28,6 +28,10 @@ public struct Tooltip {
     /// Default value is  `.dismiss`.
     public let tapAction: TapAction?
 
+    // Colors
+    private static let label = UIColor(named: "Signal/label")!
+    private static let secondaryLabel = UIColor(named: "Signal/secondaryLabel")!
+
     // Layout
     public let hSpacing: CGFloat = 12
     public let vSpacing: CGFloat = 0
@@ -52,15 +56,13 @@ public struct Tooltip {
         guard let title else { return nil }
         return NSAttributedString(string: title, attributes: [
             .font: UIFont.dynamicTypeHeadline,
-            .foregroundColor: Theme.primaryTextColor,
+            .foregroundColor: Self.label,
         ])
     }
 
     var attributedMessage: NSAttributedString? {
         guard let message else { return nil }
-        // TODO: Make colors configurable once new dynamic UIColors are added.
-        // Can't really be done before that since Theme colors can't change with the theme.
-        let textColor = title != nil ? Theme.secondaryTextAndIconColor : Theme.primaryTextColor
+        let textColor = title != nil ? Self.secondaryLabel : Self.label
         return NSAttributedString(string: message, attributes: [
             .font: UIFont.dynamicTypeSubheadline,
             .foregroundColor: textColor,
@@ -76,6 +78,7 @@ public struct Tooltip {
         arrowDirections: UIPopoverArrowDirection
     ) {
         let tooltipViewController = TooltipViewController(tooltip: self, presenter: viewController)
+        tooltipViewController.overrideUserInterfaceStyle = viewController.overrideUserInterfaceStyle
         tooltipViewController.modalPresentationStyle = .popover
 
         guard let presentation = tooltipViewController.popoverPresentationController else {
@@ -118,6 +121,7 @@ public struct Tooltip {
             let imageView = UIImageView(image: Theme.iconImage(icon))
             imageView.setCompressionResistanceHigh()
             imageView.setContentHuggingHigh()
+            imageView.tintColor = Tooltip.label
             return imageView
         }()
 
@@ -146,15 +150,9 @@ public struct Tooltip {
             imageView.addGestureRecognizer(tapGesture)
             imageView.setCompressionResistanceHigh()
             imageView.setContentHuggingHigh()
+            imageView.tintColor = Tooltip.secondaryLabel
             return imageView
         }()
-
-        private func updateTheme() {
-            iconImageView?.tintColor = Theme.primaryIconColor
-            titleLabel?.attributedText = self.tooltip.attributedTitle
-            messageLabel?.attributedText = self.tooltip.attributedMessage
-            closeButton?.tintColor = Theme.secondaryTextAndIconColor
-        }
 
         // MARK: Lifecycle
 
@@ -186,18 +184,11 @@ public struct Tooltip {
                 let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTap))
                 self.view.addGestureRecognizer(tapGesture)
             }
-
-            self.updateTheme()
         }
 
         public override func viewWillAppear(_ animated: Bool) {
             super.viewWillAppear(animated)
             self.updateContentSize()
-        }
-
-        public override func themeDidChange() {
-            super.themeDidChange()
-            self.updateTheme()
         }
 
         private func updateContentSize() {

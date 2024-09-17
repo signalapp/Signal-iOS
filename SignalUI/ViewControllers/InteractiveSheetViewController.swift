@@ -82,6 +82,7 @@ open class InteractiveSheetViewController: OWSViewController {
     private let blurEffect: UIBlurEffect?
 
     public weak var sheetPanDelegate: SheetPanDelegate?
+    public weak var dismissalDelegate: (any SheetDismissalDelegate)?
 
     public init(blurEffect: UIBlurEffect? = nil) {
         self.blurEffect = blurEffect
@@ -191,6 +192,11 @@ open class InteractiveSheetViewController: OWSViewController {
 
         // Setup handle for interactive dismissal / resizing
         setupInteractiveSizing()
+    }
+
+    open override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        dismissalDelegate?.didDismissPresentedSheet()
     }
 
     open override func themeDidChange() {

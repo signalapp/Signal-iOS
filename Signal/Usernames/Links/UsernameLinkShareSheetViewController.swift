@@ -11,19 +11,12 @@ class UsernameLinkShareSheetViewController: OWSTableSheetViewController {
     private let usernameLink: Usernames.UsernameLink
     private let didCopyUsername: (() -> Void)?
 
-    weak var dismissalDelegate: (any SheetDismissalDelegate)?
-
     init(
         usernameLink: Usernames.UsernameLink,
         didCopyUsername: (() -> Void)? = nil
     ) {
         self.usernameLink = usernameLink
         self.didCopyUsername = didCopyUsername
-    }
-
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        dismissalDelegate?.didDismissPresentedSheet()
     }
 
     // MARK: - Table contents

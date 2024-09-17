@@ -36,7 +36,10 @@ class GroupCallViewController: UIViewController {
             callService: callService,
             confirmationToastManager: callControlsConfirmationToastManager,
             callControlsDelegate: self,
-            sheetPanDelegate: self
+            sheetPanDelegate: self,
+            didPresentViewController: { [weak self] _ in
+                self?.scheduleBottomSheetTimeoutIfNecessary()
+            }
         )
     }()
     private lazy var fullscreenLocalMemberAddOnsView = SupplementalCallControlsForFullscreenLocalMember(
@@ -111,8 +114,8 @@ class GroupCallViewController: UIViewController {
         Spacer()
         ApprovalRequestStack(
             viewModel: self.approvalStackViewModel,
-            openProfileDetails: { _ in
-                // [CallLink] TODO: Display profile details
+            openProfileDetails: { [weak self] request in
+                self?.presentApprovalRequestDetails(approvalRequest: request)
             },
             didApprove: { [weak self] request in
                 self?.ringRtcCall.approveUser(request.aci.rawUUID)
@@ -553,18 +556,23 @@ class GroupCallViewController: UIViewController {
         }
     }
 
+    override func present(_ viewControllerToPresent: UIViewController, animated flag: Bool, completion: (() -> Void)? = nil) {
+        super.present(viewControllerToPresent, animated: flag, completion: completion)
+        scheduleBottomSheetTimeoutIfNecessary()
+    }
+
+    private var bottomSheetIsPresented: Bool {
+        bottomSheet.presentingViewController != nil
+    }
+
     private func presentBottomSheet() {
-        guard bottomSheet.presentingViewController == nil else {
-            return
-        }
+        guard !bottomSheetIsPresented else { return }
         bottomSheet.setBottomSheetMinimizedHeight()
         present(self.bottomSheet, animated: true)
     }
 
     private func dismissBottomSheet(animated: Bool = true) {
-        guard bottomSheet.presentingViewController != nil else {
-            return
-        }
+        guard bottomSheetIsPresented else { return }
         bottomSheet.dismiss(animated: animated)
     }
 
@@ -1187,6 +1195,27 @@ class GroupCallViewController: UIViewController {
         }
     }
 
+    /// Returns `presentedViewController` if one is presented or `self` otherwise.
+    /// Does not traverse the presentation hierarchy deeper than that.
+    private var frontViewController: UIViewController {
+        presentedViewController ?? self
+    }
+
+    private func presentApprovalRequestDetails(approvalRequest: CallLinkApprovalRequest) {
+        CallLinkApprovalRequestDetailsSheet(
+            approvalRequest: approvalRequest,
+            didApprove: { [weak self] request in
+                self?.frontViewController.dismiss(animated: true)
+                self?.ringRtcCall.approveUser(request.aci.rawUUID)
+            },
+            didDeny: { [weak self] request in
+                self?.frontViewController.dismiss(animated: true)
+                self?.ringRtcCall.denyUser(request.aci.rawUUID)
+            }
+        )
+        .present(from: frontViewController, dismissalDelegate: self)
+    }
+
     // MARK: - Drawer timeout
 
     @objc
@@ -1228,6 +1257,12 @@ class GroupCallViewController: UIViewController {
             }
 
             if isCallMinimized {
+                return false
+            }
+
+            let isPresentingOtherSheet = presentedViewController != nil && presentedViewController != bottomSheet
+            let otherSheetIsPresented = isPresentingOtherSheet || bottomSheet.presentedViewController != nil
+            if otherSheetIsPresented {
                 return false
             }
 
@@ -1638,7 +1673,7 @@ extension GroupCallViewController: GroupCallObserver {
                 }
             }
         ))
-        (self.presentedViewController ?? self).presentActionSheet(actionSheet)
+        frontViewController.presentActionSheet(actionSheet)
     }
 
     func groupCallReceivedReactions(_ call: GroupCall, reactions: [SignalRingRTC.Reaction]) {
@@ -1982,6 +2017,12 @@ extension GroupCallViewController: GroupCallBottomSheetStateDelegate {
 
     func bottomSheetStateDidChange(oldState: BottomSheetState) {
         updateCallUI(bottomSheetChangedStateFrom: oldState)
+        scheduleBottomSheetTimeoutIfNecessary()
+    }
+}
+
+extension GroupCallViewController: SheetDismissalDelegate {
+    func didDismissPresentedSheet() {
         scheduleBottomSheetTimeoutIfNecessary()
     }
 }

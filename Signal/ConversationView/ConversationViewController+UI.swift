@@ -31,7 +31,7 @@ extension ConversationViewController {
             let contactIcon = SignalSymbol.personCircle.attributedString(
                 dynamicTypeBaseSize: 14,
                 weight: .bold,
-                withLeadingSpace: true
+                leadingCharacter: .space
             )
             attributedName.append(contactIcon)
         }

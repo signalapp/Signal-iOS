@@ -1701,6 +1701,7 @@
 		B9D413742BCDDE66006D4E48 /* Tooltip.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D413732BCDDE66006D4E48 /* Tooltip.swift */; };
 		B9D65E532BAE1DA70067322A /* NicknameEditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D65E522BAE1DA70067322A /* NicknameEditorViewController.swift */; };
 		B9D721762C87B8EB007EDA85 /* SwiftUI+Animations.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D721752C87B8EB007EDA85 /* SwiftUI+Animations.swift */; };
+		B9D721782C87C8AF007EDA85 /* CallLinkApprovalRequestDetailsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D721772C87C8AF007EDA85 /* CallLinkApprovalRequestDetailsSheet.swift */; };
 		B9DB91702AF46B9A0051A3FD /* BankTransferMandateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DB916F2AF46B9A0051A3FD /* BankTransferMandateViewController.swift */; };
 		B9EB5ABD1884C002007CBB57 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		B9F2155D2A93C9E8002DCAE0 /* StickerPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F2155C2A93C9E8002DCAE0 /* StickerPickerSheet.swift */; };
@@ -5219,6 +5220,7 @@
 		B9D413732BCDDE66006D4E48 /* Tooltip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tooltip.swift; sourceTree = "<group>"; };
 		B9D65E522BAE1DA70067322A /* NicknameEditorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NicknameEditorViewController.swift; sourceTree = "<group>"; };
 		B9D721752C87B8EB007EDA85 /* SwiftUI+Animations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwiftUI+Animations.swift"; sourceTree = "<group>"; };
+		B9D721772C87C8AF007EDA85 /* CallLinkApprovalRequestDetailsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallLinkApprovalRequestDetailsSheet.swift; sourceTree = "<group>"; };
 		B9DB916F2AF46B9A0051A3FD /* BankTransferMandateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BankTransferMandateViewController.swift; sourceTree = "<group>"; };
 		B9EB5ABC1884C002007CBB57 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		B9F2155C2A93C9E8002DCAE0 /* StickerPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerPickerSheet.swift; sourceTree = "<group>"; };
@@ -10377,6 +10379,7 @@
 				C1FA1DAE2C40829100999B11 /* CallDrawerSheetDataSource.swift */,
 				88ABB8B42534070400229EAA /* CallHeader.swift */,
 				88D23D1B23CEC0C700B0E74B /* CallKitCallUIAdaptee.swift */,
+				B9D721772C87C8AF007EDA85 /* CallLinkApprovalRequestDetailsSheet.swift */,
 				B9C0A96C2C6D3F63001FD0AA /* CallLinkApprovalRequestView.swift */,
 				E1E78CAE2B573BD100B6FC2D /* CallMemberCameraOffView.swift */,
 				E1E78CAC2B573B5800B6FC2D /* CallMemberChromeOverlayView.swift */,
@@ -15371,6 +15374,7 @@
 				88D23D2423CEC0C700B0E74B /* CallKitCallManager.swift in Sources */,
 				88D23D2523CEC0C700B0E74B /* CallKitCallUIAdaptee.swift in Sources */,
 				50EF680D2C1A353D00BEB3B5 /* CallKitIdStore.swift in Sources */,
+				B9D721782C87C8AF007EDA85 /* CallLinkApprovalRequestDetailsSheet.swift in Sources */,
 				B9C0A96D2C6D3F63001FD0AA /* CallLinkApprovalRequestView.swift in Sources */,
 				50A7830E2C0128D70008030E /* CallLinkCall.swift in Sources */,
 				50733B1E2BAD038D00CEEC1F /* CallLinkManager.swift in Sources */,

@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import UIKit
 import SignalServiceKit
 
 // MARK: - ProfileDetailLabel
@@ -10,6 +11,9 @@ import SignalServiceKit
 public class ProfileDetailLabel: UIStackView {
     private let tapAction: (() -> Void)?
     private let longPressAction: (() -> Void)?
+
+    private static let foregroundColor = UIColor(named: "Signal/label")!
+    private static let secondaryTextColor = UIColor(named: "Signal/secondaryLabel")!
 
     public convenience init(
         title: String,
@@ -25,7 +29,7 @@ public class ProfileDetailLabel: UIStackView {
                 string: title,
                 attributes: [
                     .font: font,
-                    .foregroundColor: Theme.primaryTextColor,
+                    .foregroundColor: Self.foregroundColor,
                 ]
             ),
             icon: icon,
@@ -64,7 +68,7 @@ public class ProfileDetailLabel: UIStackView {
             font: font,
             attributes: [
                 .font: font,
-                .foregroundColor: Theme.primaryTextColor,
+                .foregroundColor: Self.foregroundColor,
             ]
         )
         let imageLabel = UILabel()
@@ -83,7 +87,7 @@ public class ProfileDetailLabel: UIStackView {
             let attachmentString = NSAttributedString.with(
                 image: chevron,
                 font: font,
-                attributes: [.foregroundColor: Theme.primaryIconColor]
+                attributes: [.foregroundColor: Self.secondaryTextColor]
             )
             if shouldLineWrap {
                 // Add the chevron at the end of the last line of text
@@ -143,7 +147,7 @@ public extension ProfileDetailLabel {
                         displayName,
                         " ",
                         "(\(secondaryName))"
-                            .styled(with: .color(Theme.secondaryTextAndIconColor))
+                            .styled(with: .color(Self.secondaryTextColor))
                     ])
                 } else {
                     return NSAttributedString.composed(of: [displayName])
@@ -171,7 +175,8 @@ public extension ProfileDetailLabel {
     static func signalConnectionLink(
         font: UIFont = .dynamicTypeBody,
         shouldDismissOnNavigation: Bool,
-        presentEducationFrom viewController: UIViewController?
+        presentEducationFrom viewController: UIViewController?,
+        dismissalDelegate: (any SheetDismissalDelegate)? = nil
     ) -> ProfileDetailLabel {
         .init(
             title: OWSLocalizedString(
@@ -182,11 +187,15 @@ public extension ProfileDetailLabel {
             font: font,
             showDetailDisclosure: true,
             tapAction: { [weak viewController] in
+                guard let viewController else { return }
                 func action() {
-                    viewController?.present(ConnectionsEducationSheetViewController(), animated: true)
+                    let sheet = ConnectionsEducationSheetViewController()
+                    sheet.overrideUserInterfaceStyle = viewController.overrideUserInterfaceStyle
+                    sheet.dismissalDelegate = dismissalDelegate
+                    viewController.present(sheet, animated: true)
                 }
                 if shouldDismissOnNavigation {
-                    viewController?.dismiss(animated: true, completion: action)
+                    viewController.dismiss(animated: true, completion: action)
                 } else {
                     action()
                 }
@@ -309,25 +318,32 @@ public extension ProfileDetailLabel {
         for thread: TSThread,
         mutualGroups: [TSGroupThread]
     ) -> String {
-        switch (thread, mutualGroups.count) {
+        mutualGroupsString(isInGroupContext: thread is TSGroupThread, mutualGroups: mutualGroups)
+    }
+
+    static func mutualGroupsString(
+        isInGroupContext: Bool,
+        mutualGroups: [TSGroupThread]
+    ) -> String {
+        switch (isInGroupContext, mutualGroups.count) {
         case (_, 2...):
             let formatString = OWSLocalizedString(
                 "MANY_GROUPS_IN_COMMON_%d", tableName: "PluralAware",
                 comment: "A string describing that the user has many groups in common with another user. Embeds {{common group count}}")
             return String.localizedStringWithFormat(formatString, mutualGroups.count)
 
-        case (is TSContactThread, 1):
+        case (false, 1):
             let formatString = OWSLocalizedString(
                 "THREAD_DETAILS_ONE_MUTUAL_GROUP",
                 comment: "A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}}")
             return String(format: formatString, mutualGroups[0].groupNameOrDefault)
 
-        case (is TSGroupThread, 1):
+        case (true, 1):
             return OWSLocalizedString(
                 "NO_OTHER_GROUPS_IN_COMMON",
                 comment: "A string describing that the user has no groups in common other than the group implied by the current UI context")
 
-        case (is TSContactThread, 0):
+        case (false, 0):
             return OWSLocalizedString(
                 "NO_GROUPS_IN_COMMON",
                 comment: "A string describing that the user has no groups in common with another user")

@@ -310,7 +310,7 @@ public class ContactCellView: ManualStackView {
             let contactIcon = SignalSymbol.personCircle.attributedString(
                 dynamicTypeBaseSize: 14,
                 weight: .bold,
-                withLeadingSpace: true,
+                leadingCharacter: .space,
                 attributes: [.foregroundColor: textColor]
             )
             nameLabel.attributedText = nameString.stringByAppendingString(contactIcon)

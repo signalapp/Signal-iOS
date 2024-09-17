@@ -144,17 +144,22 @@ public enum SignalSymbol: Character {
 
     // MARK: - Attributed string
 
+    public enum LeadingCharacter: String {
+        case space = " "
+        case nonBreakingSpace = "\u{00A0}"
+    }
+
     public func attributedString(
         dynamicTypeBaseSize: CGFloat,
         weight: Weight = .regular,
-        withLeadingSpace: Bool = false,
+        leadingCharacter: LeadingCharacter? = nil,
         attributes: [NSAttributedString.Key: Any] = [:]
     ) -> NSAttributedString {
         var attributes = attributes
         attributes[.font] = weight.dynamicTypeFont(ofStandardSize: dynamicTypeBaseSize)
 
         return NSAttributedString(
-            string: "\(withLeadingSpace ? " " : "")\(self.rawValue)",
+            string: "\(leadingCharacter?.rawValue ?? "")\(self.rawValue)",
             attributes: attributes
         )
     }

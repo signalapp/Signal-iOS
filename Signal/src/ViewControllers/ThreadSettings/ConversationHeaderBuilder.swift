@@ -405,7 +405,7 @@ struct ConversationHeaderBuilder: Dependencies {
         let button = OWSButton()
         button.setAttributedTitle(delegate.threadAttributedString(
             renderLocalUserAsNoteToSelf: options.contains(.renderLocalUserAsNoteToSelf),
-            transaction: transaction
+            tx: transaction
         ), for: .normal)
         button.titleLabel?.numberOfLines = 0
         button.titleLabel?.textAlignment = .center
@@ -419,6 +419,54 @@ struct ConversationHeaderBuilder: Dependencies {
             button.dimsWhenHighlighted = true
         }
         return button
+    }
+
+    static func threadAttributedString(
+        threadName: String,
+        isNoteToSelf: Bool,
+        isSystemContact: Bool,
+        canTap: Bool,
+        tx: SDSAnyReadTransaction
+    ) -> NSAttributedString {
+        let font = UIFont.dynamicTypeFont(ofStandardSize: 26, weight: .semibold)
+
+        let attributedString = NSMutableAttributedString(string: threadName, attributes: [
+            .foregroundColor: UIColor.label,
+            .font: font,
+        ])
+
+        if isNoteToSelf {
+            attributedString.append(" ")
+            let verifiedBadgeImage = Theme.iconImage(.official)
+            let verifiedBadgeAttachment = NSAttributedString.with(
+                image: verifiedBadgeImage,
+                font: .dynamicTypeTitle3,
+                centerVerticallyRelativeTo: font,
+                heightReference: .pointSize
+            )
+            attributedString.append(verifiedBadgeAttachment)
+        }
+
+        if isSystemContact {
+            let contactIcon = SignalSymbol.personCircle.attributedString(
+                dynamicTypeBaseSize: 20,
+                weight: .bold,
+                leadingCharacter: .nonBreakingSpace
+            )
+            attributedString.append(contactIcon)
+        }
+
+        if canTap {
+            let chevron = SignalSymbol.chevronTrailing.attributedString(
+                dynamicTypeBaseSize: 24,
+                weight: .bold,
+                leadingCharacter: .nonBreakingSpace,
+                attributes: [.foregroundColor: Theme.snippetColor]
+            )
+            attributedString.append(chevron)
+        }
+
+        return attributedString
     }
 
     @discardableResult
@@ -526,53 +574,26 @@ extension ConversationHeaderDelegate {
         return threadName
     }
 
-    func threadAttributedString(renderLocalUserAsNoteToSelf: Bool, transaction: SDSAnyReadTransaction) -> NSAttributedString {
-        let threadName = threadName(renderLocalUserAsNoteToSelf: renderLocalUserAsNoteToSelf, transaction: transaction)
-        let font = UIFont.dynamicTypeFont(ofStandardSize: 26, weight: .semibold)
+    func threadAttributedString(renderLocalUserAsNoteToSelf: Bool, tx: SDSAnyReadTransaction) -> NSAttributedString {
+        let threadName = threadName(renderLocalUserAsNoteToSelf: renderLocalUserAsNoteToSelf, transaction: tx)
 
-        let attributedString = NSMutableAttributedString(string: threadName, attributes: [
-            .foregroundColor: Theme.primaryTextColor,
-            .font: font,
-        ])
-
-        if thread.isNoteToSelf {
-            attributedString.append(" ")
-            let verifiedBadgeImage = Theme.iconImage(.official)
-            let verifiedBadgeAttachment = NSAttributedString.with(
-                image: verifiedBadgeImage,
-                font: .dynamicTypeTitle3,
-                centerVerticallyRelativeTo: font,
-                heightReference: .pointSize
-            )
-            attributedString.append(verifiedBadgeAttachment)
-        }
-
-        if
-            let contactThread = self.thread as? TSContactThread,
+        let isSystemContact =
+        if let contactThread = self.thread as? TSContactThread {
             contactsManager.fetchSignalAccount(
                 for: contactThread.contactAddress,
-                transaction: transaction
+                transaction: tx
             ) != nil
-        {
-            let contactIcon = SignalSymbol.personCircle.attributedString(
-                dynamicTypeBaseSize: 20,
-                weight: .bold,
-                withLeadingSpace: true
-            )
-            attributedString.append(contactIcon)
+        } else {
+            false
         }
 
-        if self.canTapThreadName {
-            let chevron = SignalSymbol.chevronTrailing.attributedString(
-                dynamicTypeBaseSize: 24,
-                weight: .bold,
-                withLeadingSpace: true,
-                attributes: [.foregroundColor: Theme.snippetColor]
-            )
-            attributedString.append(chevron)
-        }
-
-        return attributedString
+        return ConversationHeaderBuilder.threadAttributedString(
+            threadName: threadName,
+            isNoteToSelf: thread.isNoteToSelf,
+            isSystemContact: isSystemContact,
+            canTap: self.canTapThreadName,
+            tx: tx
+        )
     }
 
     func startCall(withVideo: Bool) {
