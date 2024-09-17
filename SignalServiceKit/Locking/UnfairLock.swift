@@ -13,8 +13,8 @@ import Foundation
 /// > Warning: Errors with unfair lock are fatal and will terminate the process.
 ///
 /// > Note: To be replaced with OSAllocatedUnfairLock once our underlying iOS version is ≥ 16.
-public final class UnfairLock: NSLocking {
-    private let _lock: os_unfair_lock_t
+public final class UnfairLock: NSLocking, Sendable {
+    nonisolated(unsafe) private let _lock: os_unfair_lock_t
 
     public init() {
         _lock = .allocate(capacity: 1)

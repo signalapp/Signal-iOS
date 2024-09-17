@@ -3,10 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-
-@objc
-public enum AtomicError: Int, Error {
+public enum AtomicError: Error {
     case invalidTransition
 }
 
@@ -19,7 +16,7 @@ extension UnfairLock {
 
 // MARK: -
 
-public class AtomicBool: NSObject {
+public final class AtomicBool: Sendable {
     private let value: AtomicValue<Bool>
 
     public init(_ value: Bool, lock: UnfairLock) {
@@ -65,7 +62,7 @@ public class AtomicBool: NSObject {
 
 // MARK: -
 
-public class AtomicUInt {
+public final class AtomicUInt: Sendable {
     private let value: AtomicValue<UInt>
 
     public init(_ value: UInt = 0, lock: UnfairLock) {
@@ -102,9 +99,9 @@ public class AtomicUInt {
 
 // MARK: -
 
-public final class AtomicValue<T> {
+public final class AtomicValue<T>: Sendable {
     private let lock: UnfairLock
-    private var value: T
+    nonisolated(unsafe) private var value: T
 
     public init(_ value: T, lock: UnfairLock) {
         self.value = value
@@ -165,7 +162,7 @@ extension AtomicValue where T: Equatable {
 
 // MARK: -
 
-public final class AtomicOptional<T> {
+public final class AtomicOptional<T>: Sendable {
     fileprivate let value: AtomicValue<T?>
 
     public init(_ value: T?, lock: UnfairLock) {
@@ -227,9 +224,9 @@ extension AtomicOptional where T: Equatable {
 
 // MARK: -
 
-public class AtomicArray<T> {
+public final class AtomicArray<T>: Sendable {
     private let lock: UnfairLock
-    private var values: [T]
+    nonisolated(unsafe) private var values: [T]
 
     public init(_ values: [T] = [], lock: UnfairLock) {
         self.values = values
@@ -320,9 +317,9 @@ extension AtomicArray where T: Equatable {
 
 // MARK: -
 
-public class AtomicDictionary<Key: Hashable, Value> {
+public final class AtomicDictionary<Key: Hashable, Value>: Sendable {
     private let lock: UnfairLock
-    private var values: [Key: Value]
+    nonisolated(unsafe) private var values: [Key: Value]
 
     public init(_ values: [Key: Value] = [:], lock: UnfairLock) {
         self.values = values
@@ -381,9 +378,9 @@ public class AtomicDictionary<Key: Hashable, Value> {
 
 // MARK: -
 
-public class AtomicSet<T: Hashable> {
+public final class AtomicSet<T: Hashable>: Sendable {
     private let lock: UnfairLock
-    private var values = Set<T>()
+    nonisolated(unsafe) private var values = Set<T>()
 
     public init(lock: UnfairLock) {
         self.lock = lock
@@ -427,8 +424,7 @@ public class AtomicSet<T: Hashable> {
 }
 
 @propertyWrapper
-public struct Atomic<Value> {
-
+public struct Atomic<Value>: Sendable {
     private let value: AtomicValue<Value>
 
     public init(wrappedValue value: Value) {
