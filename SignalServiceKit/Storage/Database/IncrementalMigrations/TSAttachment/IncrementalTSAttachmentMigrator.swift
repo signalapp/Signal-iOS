@@ -16,16 +16,20 @@ public protocol IncrementalMessageTSAttachmentMigrator {
 
 public class IncrementalMessageTSAttachmentMigratorImpl: IncrementalMessageTSAttachmentMigrator {
 
-    public typealias Store = IncrementalTSAttachmentMigrationStore
-
     private let databaseStorage: SDSDatabaseStorage
+    private let store: IncrementalTSAttachmentMigrationStore
 
-    public init(databaseStorage: SDSDatabaseStorage) {
+    public init(
+        databaseStorage: SDSDatabaseStorage,
+        store: IncrementalTSAttachmentMigrationStore
+    ) {
         self.databaseStorage = databaseStorage
+        self.store = store
 
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync { [weak self] in
-            self?.databaseStorage.read { tx in
-                switch Store.getState(tx: tx) {
+            guard let self else { return }
+            self.databaseStorage.read { tx in
+                switch self.store.getState(tx: tx) {
                 case .unstarted:
                     Logger.info("Has not started message attachment migration")
                 case .started:
@@ -41,7 +45,7 @@ public class IncrementalMessageTSAttachmentMigratorImpl: IncrementalMessageTSAtt
         // We DO NOT check the incrementalMigrationBreakGlass feature flag here;
         // this is used by backups which require the migration to have finished
         // and aren't enabled outside internal builds anyway.
-        let state = databaseStorage.read(block: Store.getState(tx:))
+        let state = databaseStorage.read(block: store.getState(tx:))
         switch state {
         case .finished:
             return
@@ -83,13 +87,13 @@ public class IncrementalMessageTSAttachmentMigratorImpl: IncrementalMessageTSAtt
                 tx: tx.unwrapGrdbWrite
             )
             if didPrepareBatch {
-                try Store.setState(.started, tx: tx)
+                try self.store.setState(.started, tx: tx)
                 return false
             }
 
             // If there was nothing to migrate and nothing to prepare, wipe the files and finish.
             try Migrator.cleanUpTSAttachmentFiles()
-            try Store.setState(.finished, tx: tx)
+            try self.store.setState(.finished, tx: tx)
             return true
         }
     }

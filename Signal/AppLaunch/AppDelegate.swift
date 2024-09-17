@@ -236,7 +236,11 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         // Set up and register incremental migration for TSAttachment -> v2 Attachment.
         // TODO: remove this (and the incremental migrator itself) once we make this
         // migration a launch-blocking GRDB migration.
-        let incrementalMessageTSAttachmentMigrator = IncrementalMessageTSAttachmentMigratorImpl(databaseStorage: databaseStorage)
+        let incrementalMessageTSAttachmentMigrationStore = IncrementalTSAttachmentMigrationStore()
+        let incrementalMessageTSAttachmentMigrator = IncrementalMessageTSAttachmentMigratorImpl(
+            databaseStorage: databaseStorage,
+            store: incrementalMessageTSAttachmentMigrationStore
+        )
 
         let launchContext = LaunchContext(
             appContext: mainAppContext,
@@ -276,9 +280,16 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         // We _must_ register BGProcessingTask handlers synchronously in didFinishLaunching.
         // https://developer.apple.com/documentation/backgroundtasks/bgtaskscheduler/register(fortaskwithidentifier:using:launchhandler:)
-        incrementalMessageTSAttachmentMigrator.registerBGProcessingTask(databaseStorage: databaseStorage)
+        IncrementalMessageTSAttachmentMigrationRunner.registerBGProcessingTask(
+            store: incrementalMessageTSAttachmentMigrationStore,
+            migrator: incrementalMessageTSAttachmentMigrator,
+            db: databaseStorage
+        )
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            incrementalMessageTSAttachmentMigrator.scheduleBGProcessingTaskIfNeeded(databaseStorage: databaseStorage)
+            IncrementalMessageTSAttachmentMigrationRunner.scheduleBGProcessingTaskIfNeeded(
+                store: incrementalMessageTSAttachmentMigrationStore,
+                db: databaseStorage
+            )
         }
 
         // Show LoadingViewController until the database migrations are complete.

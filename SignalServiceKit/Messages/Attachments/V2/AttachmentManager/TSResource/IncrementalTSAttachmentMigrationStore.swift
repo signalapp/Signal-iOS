@@ -15,15 +15,15 @@ public class IncrementalTSAttachmentMigrationStore {
         static let key = "state"
     }
 
-    private static var kvStore: SDSKeyValueStore {
-        return SDSKeyValueStore(collection: "IncrementalMessageTSAttachmentMigrator")
-    }
+    public init() {}
 
-    public static func getState(tx: SDSAnyReadTransaction) -> State {
+    private let kvStore = SDSKeyValueStore(collection: "IncrementalMessageTSAttachmentMigrator")
+
+    public func getState(tx: SDSAnyReadTransaction) -> State {
         return (try? kvStore.getCodableValue(forKey: State.key, transaction: tx)) ?? .unstarted
     }
 
-    public static func setState(_ state: State, tx: SDSAnyWriteTransaction) throws {
+    public func setState(_ state: State, tx: SDSAnyWriteTransaction) throws {
         try kvStore.setCodable(state, key: State.key, transaction: tx)
     }
 }
