@@ -128,7 +128,7 @@
 "ALERT_DELIVERY_ISSUE_TITLE" = "Fallo en la entrega";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "No se ha podido recibir un mensaje, sticker, reacción o notificación de lectura de %1$@. Puede haberlo enviado en un chat privado o en un grupo común.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "No se ha podido recibir un mensaje, sticker, reacción, confirmación de lectura o archivo multimedia que %1$@ te ha enviado directamente o en un chat grupal en común.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Descartar";
@@ -158,7 +158,7 @@
 "ALL_MEDIA_FILE_TYPE_MEDIA" = "Archivo multimedia";
 
 /* Menu option to limit All Media view to displaying only GIFs */
-"ALL_MEDIA_FILTER_GIFS" = "GIFs";
+"ALL_MEDIA_FILTER_GIFS" = "GIF";
 
 /* Menu option to remove content type restriction in All Media view */
 "ALL_MEDIA_FILTER_NONE" = "Todos los archivos multimedia";
@@ -197,10 +197,10 @@
 "APP_LAUNCH_FAILURE_CONTINUE" = "Reintentar abrir Signal";
 
 /* Message for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status. */
-"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_MESSAGE" = "Envía un registro de depuración a support@signal.org para que nos podamos ocupar del problema.";
+"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_MESSAGE" = "Envía un registro de depuración a support@signal.org para que nos podamos solucionar el problema.";
 
 /* Title for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status. */
-"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_TITLE" = "Fallo al abrir Signal";
+"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_TITLE" = "No se ha podido abrir Signal";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "No se ha podido cargar la base de datos";
@@ -254,43 +254,43 @@
 "APPEARANCE_SETTINGS_SYSTEM_THEME_NAME" = "Sistema";
 
 /* Apple Pay donation error for decline failures where authentication is required. */
-"APPLE_PAY_DONATION_ERROR_AUTHENTICATION_REQUIRED" = "Selecciona otro método de pago o contacta con tu banco para más información.";
+"APPLE_PAY_DONATION_ERROR_AUTHENTICATION_REQUIRED" = "Selecciona otro método de pago o contacta con tu banco para obtener más información.";
 
 /* Apple Pay donation error for decline failures where the user may need to contact their card or bank. */
-"APPLE_PAY_DONATION_ERROR_CALL_ISSUER" = "Comprueba que tu método de pago está al día en Apple Pay e inténtalo de nuevo. Si el problema persiste, contacta con tu banco.";
+"APPLE_PAY_DONATION_ERROR_CALL_ISSUER" = "Comprueba que tu método de pago está al día en Apple Pay e inténtalo de nuevo. Si el problema persiste, contacta con tu banco.";
 
 /* Apple Pay donation error for decline failures where the card is not supported. */
-"APPLE_PAY_DONATION_ERROR_CARD_NOT_SUPPORTED" = "Tu tarjeta no permite este tipo de gasto. Inténtalo con otro método de pago.";
+"APPLE_PAY_DONATION_ERROR_CARD_NOT_SUPPORTED" = "Tu tarjeta no permite este tipo de pago. Inténtalo con otro método de pago o contacta con tu banco para obtener más información.";
 
 /* Apple Pay donation error for decline failures where the card has expired. */
-"APPLE_PAY_DONATION_ERROR_EXPIRED_CARD" = "Tu tarjeta ha caducado. Comprueba que tu método de pago está actualizado en Apple Pay. Si no es el caso, actualízalo e inténtalo de nuevo.";
+"APPLE_PAY_DONATION_ERROR_EXPIRED_CARD" = "Tu tarjeta ha caducado. Comprueba que tu método de pago está actualizado en Apple Pay. Si no es así, actualízalo e inténtalo de nuevo.";
 
 /* Apple Pay donation error for decline failures where the card number is incorrect. */
-"APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_NUMBER" = "Tu número de tarjeta no es válido. Comprueba que tu método de pago está correctamente configurado en Apple Pay. Si no es el caso, actualízalo e inténtalo de nuevo.";
+"APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_NUMBER" = "El número de tu tarjeta no es correcto. Comprueba que tu método de pago está correctamente configurado en Apple Pay. Si no es así, actualízalo e inténtalo de nuevo.";
 
 /* Apple Pay donation error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
-"APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Tu número CVC es inválido. Comprueba que tu número CVC es el correcto en Apple Pay. Si no es así, actualízalo e inténtalo de nuevo.";
+"APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Tu número CVC no correcto Comprueba que has ingresado correctamente el número CVC en Apple Pay. Si no es así, actualízalo e inténtalo de nuevo.";
 
 /* Apple Pay donation error for decline failures where the card has insufficient funds. */
 "APPLE_PAY_DONATION_ERROR_INSUFFICIENT_FUNDS" = "Tu tarjeta no dispone de suficientes fondos para completar el pago. Selecciona otro método de pago o contacta con tu banco para obtener más información.";
 
 /* Apple Pay donation error for decline failures where the expiration month on the payment method is incorrect. */
-"APPLE_PAY_DONATION_ERROR_INVALID_EXPIRY_MONTH" = "El mes de vencimiento en tu método de pago no es correcto. Actualízalo en Apple Pay e inténtalo de nuevo.";
+"APPLE_PAY_DONATION_ERROR_INVALID_EXPIRY_MONTH" = "El mes de vencimiento de tu método de pago no es correcto. Actualízalo en Apple Pay e inténtalo de nuevo.";
 
 /* Apple Pay donation error for decline failures where the expiration year on the payment method is incorrect. */
-"APPLE_PAY_DONATION_ERROR_INVALID_EXPIRY_YEAR" = "El año de vencimiento de tu método de pago no es correcto. Actualízalo en Apple Pay e inténtalo de nuevo.";
+"APPLE_PAY_DONATION_ERROR_INVALID_EXPIRY_YEAR" = "El año de vencimiento de tu método de pago no es correcto. Actualízalo en Apple Pay e inténtalo de nuevo.";
 
 /* Apple Pay donation error for decline failures where the card number is incorrect. */
-"APPLE_PAY_DONATION_ERROR_INVALID_NUMBER" = "Tu número de tarjeta es incorrecto. Actualízalo en Apple Pay e inténtalo de nuevo.";
+"APPLE_PAY_DONATION_ERROR_INVALID_NUMBER" = "El número de tu tarjeta no es correcto. Actualízalo en Apple Pay e inténtalo de nuevo.";
 
 /* Apple Pay donation error for \"issuer not available\" decline failures. The user should try again or contact their card/bank. */
-"APPLE_PAY_DONATION_ERROR_ISSUER_NOT_AVAILABLE" = "Intenta completar el pago de nuevo o contacta con tu banco para más información.";
+"APPLE_PAY_DONATION_ERROR_ISSUER_NOT_AVAILABLE" = "Intenta completar el pago de nuevo o contacta con tu banco para obtener más información.";
 
 /* Apple Pay donation error for unspecified decline failures. */
-"APPLE_PAY_DONATION_ERROR_OTHER" = "Selecciona otro método de pago o contacta con tu banco para más información.";
+"APPLE_PAY_DONATION_ERROR_OTHER" = "Selecciona otro método de pago o contacta con tu banco para obtener más información.";
 
 /* Apple Pay donation error for decline failures where the payment cannot be authorized. */
-"APPLE_PAY_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Comprueba que tu método de pago está actualizado en Apple Pay. Si no es el caso, actualízalo e inténtalo de nuevo.";
+"APPLE_PAY_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Comprueba que tu método de pago está actualizado en Apple Pay. Si no es así, actualízalo e inténtalo de nuevo.";
 
 /* On the iOS home screen, if you tap and hold the Signal icon, this shortcut will appear. Tapping it will let users send a new message. You may want to refer to similar behavior in other iOS apps, such as Messages, for equivalent strings. */
 "APPLICATION_SHORTCUT_NEW_MESSAGE" = "Mensaje nuevo";
@@ -485,7 +485,7 @@
 "BADGE_EXPIRED_BOOST_BODY" = "Tu insignia Boost ha caducado y ya no es visible en tu perfil.\n\nPuedes continuar usando Signal, pero para sostener la tecnología hecha para ti, considera en convertirte en donante mensual.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "Tu insignia Boost ha caducado y ya no es visible en tu perfil.\n\nPuedes reactivar tu insignia Boost por otros 30 días al hacer una donación única.";
+"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "Tu insignia Apoyo Signal ha caducado y ya no es visible en tu perfil.\n\nPuedes hacer una donación única para reactivar tu insignia Apoyo Signal por 30 días más.";
 
 /* Title for boost on the badge expiration sheet. */
 "BADGE_EXPIRED_BOOST_TITLE" = "Distintivo caducado";
@@ -1097,16 +1097,16 @@
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Buscar por alias";
 
 /* Menu action to display limited contact picker. */
-"COMPOSE_SCREEN_LIMITED_CONTACTS_ACTION_MANAGE" = "Select More Contacts";
+"COMPOSE_SCREEN_LIMITED_CONTACTS_ACTION_MANAGE" = "Seleccionar más contactos";
 
 /* Menu action visit app contact permission in settings. */
-"COMPOSE_SCREEN_LIMITED_CONTACTS_ACTION_SETTINGS" = "Go to Settings";
+"COMPOSE_SCREEN_LIMITED_CONTACTS_ACTION_SETTINGS" = "Ir a Ajustes";
 
 /* Multi-line label explaining why compose-screen contact picker may be missing contacts. */
-"COMPOSE_SCREEN_LIMITED_CONTACTS_CTA" = "Manage";
+"COMPOSE_SCREEN_LIMITED_CONTACTS_CTA" = "Gestionar";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_LIMITED_CONTACTS_PERMISSION" = "Signal has limited access to your system contacts";
+"COMPOSE_SCREEN_LIMITED_CONTACTS_PERMISSION" = "Signal tiene acceso limitado a tus contactos";
 
 /* Button to open settings from an empty compose-screen contact picker. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "Abrir Ajustes";
@@ -1598,7 +1598,7 @@
 "CONVERSATION_SETTINGS_UNBLOCK_USER" = "Desbloquear persona";
 
 /* Label for button to unmute a thread. */
-"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Reactivar notificaciones";
+"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Reactivar";
 
 /* Button to start a video call */
 "CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "vídeo";
@@ -1607,7 +1607,7 @@
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Información del contacto";
 
 /* Button to start a voice call */
-"CONVERSATION_SETTINGS_VOICE_CALL_BUTTON" = "voz";
+"CONVERSATION_SETTINGS_VOICE_CALL_BUTTON" = "audio";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Añadir a contactos";
@@ -1649,7 +1649,7 @@
 "CREDIT_OR_DEBIT_CARD_DONATION_ERROR_EXPIRED_CARD" = "Tu tarjeta ha caducado. Comprueba que los datos de tu tarjeta son correctos e inténtalo de nuevo.";
 
 /* Credit/debit card donation error for decline failures where the card number is incorrect. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INCORRECT_CARD_NUMBER" = "Tu número de tarjeta no es correcto. Comprueba que los datos de tu tarjeta son correctos e inténtalo de nuevo.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INCORRECT_CARD_NUMBER" = "El número de tu tarjeta no es correcto. Comprueba que los datos de tu tarjeta son correctos e inténtalo de nuevo.";
 
 /* Credit/debit card donation error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
 "CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "El número CVC de tu tarjeta no es correcto. Comprueba que los datos de tu tarjeta son correctos e inténtalo de nuevo.";
@@ -1886,10 +1886,10 @@
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Volver a registrar este número";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "Este dispositivo ya no está registrado. Probablemente se debe a que se registró el número en Signal con un dispositivo distinto.";
+"DEREGISTRATION_WARNING" = "Este dispositivo ya no está registrado. Probablemente se debe a que has registrado tu número de teléfono en Signal con un dispositivo diferente.";
 
 /* If the user has been deregistered, they'll see a warning. This is This is the call to action on that warning. */
-"DEREGISTRATION_WARNING_ACTION_TITLE" = "Volver a registrar el dispositivo";
+"DEREGISTRATION_WARNING_ACTION_TITLE" = "Volver a registrar dispositivo";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Última actividad: %1$@";
@@ -2093,7 +2093,7 @@
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_ONE_TIME_DONATION" = "Consigue la insignia %1$@ durante 30 días";
 
 /* When users make donations on a friend's behalf, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money}}, such as \"$5\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "Donación a Signal de %1$@";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "Donación de %1$@ a Signal";
 
 /* When users make monthly donations, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money per month}}, such as \"$5/month\". */
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_MONTHLY_DONATION" = "Donar %1$@ a Signal";
@@ -2102,13 +2102,13 @@
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_ONE_TIME_DONATION" = "Donar %1$@ a Signal";
 
 /* Users can donate on a friend's behalf and can optionally add a message. This is tells users about that optional message. */
-"DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_INFO" = "Se notificará al destinatario sobre la donación en un mensaje privado. Añade tu propio mensaje más abajo.";
+"DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_INFO" = "La persona que has seleccionado recibirá un mensaje privado con la notificación de la donación. Añade tu propio mensaje más abajo.";
 
 /* Users can donate on a friend's behalf and can optionally add a message. This is the placeholder in the text field for that additional message. */
 "DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_PLACEHOLDER" = "Añadir mensaje";
 
 /* If a donation badge has been sent, indicates that it's expired and can no longer be redeemed. This is shown in the chat. */
-"DONATE_ON_BEHALF_OF_A_FRIEND_CHAT_EXPIRED" = "Caducado";
+"DONATE_ON_BEHALF_OF_A_FRIEND_CHAT_EXPIRED" = "Caducada";
 
 /* Message in an alert presented when the user tries to make a donation, but already has an iDEAL donation that is currently awaiting approval. */
 "DONATE_SCREEN_ERROR_MESSAGE_APPROVE_IDEAL_DONATION_BEFORE_MAKING_ANOTHER_DONATION" = "Tu donación a través de iDEAL aún se está procesando. Consulta la aplicación de tu banco para aprobar el pago antes de hacer otra donación.";
@@ -2195,28 +2195,28 @@
 "DONATION_FOR_A_FRIEND_ROW_DURATION" = "Dura %1$@";
 
 /* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the text on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY" = "Tu donación ha caducado y ya no podrás mostrarla en tu perfil.";
+"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY" = "Tu insignia de donación ha caducado y ya no podrás mostrarla en tu perfil.";
 
 /* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the title on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_TITLE" = "Tu donación ha caducado";
+"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_TITLE" = "Tu insignia de donación ha caducado";
 
 /* Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the text on that sheet. Embeds {{contact name}}. */
-"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_BODY_FORMAT" = "Tu donación de %1$@ ha caducado y ya no puede ser reclamada.";
+"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_BODY_FORMAT" = "La insignia de donación que %1$@ te regaló ha caducado y ya no puedes reclamarla.";
 
 /* Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the title on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_TITLE" = "Tu donación ha caducado";
+"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_TITLE" = "Tu insignia de donación ha caducado";
 
 /* Label for a button to see details about a badge you've already redeemed, received as a result of a donation from a friend. This text is shown next to a check mark. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_BADGE_REDEEMED" = "Canjeado";
+"DONATION_ON_BEHALF_OF_A_FRIEND_BADGE_REDEEMED" = "Canjeada";
 
 /* Users can donate on behalf of a friend, and the friend will receive a badge. This is a short paragraph on the screen where users choose the badge their friend will receive. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_DESCRIPTION" = "Apoya a Signal haciendo una donación en nombre de un amigo o familiar que use Signal. La persona que elijas podrá mostrar que apoya a Signal en su perfil.";
 
 /* Users can donate on behalf of a friend, and the friend will receive a badge. This is the title on the screen where users choose the badge their friend will receive. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_TITLE" = "Donar a nombre de alguien";
+"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_TITLE" = "Donar en nombre de alguien";
 
 /* Title on the screen where you choose who you're going to donate on behalf of. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_RECIPIENT_TITLE" = "Seleccionar destinatarix";
+"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_RECIPIENT_TITLE" = "Seleccionar persona";
 
 /* Users can donate on a friend's behalf. This is the title on the screen where users confirm the donation, and can write a message for the friend. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_CONFIRMATION_SCREEN_TITLE" = "Confirmar donación";
@@ -2231,7 +2231,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_TITLE" = "No se puede realizar la donación";
 
 /* Users can donate on a friend's behalf. This tells users that this will be a one-time donation. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_DESCRIPTION" = "Donación puntual";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_DESCRIPTION" = "Donación única";
 
 /* Users can donate on a friend's behalf. If the payment fails and the user has not been charged, this error message is shown. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_BODY" = "No se ha podido procesar el pago y no hemos efectuado el cargo. Inténtalo de nuevo.";
@@ -2243,16 +2243,16 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_BODY" = "Tu pago se ha procesado, pero Signal no ha podido enviar tu mensaje de donación. Contacta con el equipo de asistencia.";
 
 /* Users can donate on a friend's behalf. If the payment was processed but the donation failed to send, an error dialog will be shown. This is the title of that dialog. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_TITLE" = "Donación fallida";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_TITLE" = "No se ha podido realizar la donación";
 
 /* A friend has donated on your behalf. This text is shown in the list of chats, when the most recent message is one of these donations. Embeds {friend's short display name}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_INCOMING" = "✨ %1$@ ha hecho una donación por ti";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_INCOMING" = "✨ %1$@ ha hecho una donación en tu nombre";
 
 /* You have a made a donation on a friend's behalf. This text is shown in the list of chats, when the most recent message is one of these donations. Embeds {friend's short display name}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_OUTGOING" = "✨ Has hecho una donación por %1$@";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_OUTGOING" = "✨ Has hecho una donación en nombre de %1$@";
 
 /* You received a donation from a friend. This is the title of that message in the chat. Embeds {{short contact name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_RECEIVED_TITLE_FORMAT" = "%1$@ ha donado a Signal en tu nombre";
+"DONATION_ON_BEHALF_OF_A_FRIEND_RECEIVED_TITLE_FORMAT" = "%1$@ ha hecho una donación a Signal en tu nombre";
 
 /* Users can donate on a friend's behalf. This is the error message that appears if the try to do this, but the recipient is blocked. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_BODY" = "No puedes hacer una donación en nombre de esta persona porque la tienes bloqueada.";
@@ -2264,10 +2264,10 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE" = "Canjear";
 
 /* When you receive a badge as a result of a donation from a friend, a screen is shown. This toast is shown when dismissing that screen if you do not redeem the badge. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_LATER" = "Puedes canjear tu donación más tarde";
+"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_LATER" = "Puedes reclamar tu insignia de donación más tarde";
 
 /* A friend has donated on your behalf and you received a badge. A sheet opens for you to redeem this badge. Embeds {{contact's short name, such as a first name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_TITLE_FORMAT" = "%1$@ ha hecho una donación por ti";
+"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_TITLE_FORMAT" = "%1$@ ha hecho una donación en tu nombre";
 
 /* Shown when you're replying to a donation message. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_REPLY" = "Donación";
@@ -2276,7 +2276,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Donación en nombre de %1$@";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the text on that sheet. Embeds {{recipient name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "Has hecho una donación a Signal en nombre de %1$@. Tendrá la opción de mostrar su apoyo en su perfil.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "Has hecho una donación a Signal en nombre de %1$@. Podrá mostrar que apoya a Signal en su perfil.";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the title on that sheet. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_TITLE" = "¡Gracias por tu apoyo!";
@@ -2315,7 +2315,7 @@
 "DONATION_RECEIPT_FOOTER" = "Gracias por apoyar a Signal. Tu contribución ayuda a impulsar nuestra misión: desarrollar tecnología de código abierto basada en la privacidad que protege la libre expresión y hace posible una comunicación segura a nivel global para millones de personas en todo el mundo. Si resides en Estados Unidos, conserva este justificante para tus declaraciones fiscales. Signal Technology Foundation es una organización sin ánimo de lucro exenta de impuestos en Estados Unidos bajo la sección 501(c)(3) del código tributario de EE. UU. (Internal Revenue Code). Nuestro número de identificación fiscal es 82-4506840.";
 
 /* Title for receipts for donations given on a friend's behalf */
-"DONATION_RECEIPT_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "Donación a nombre de alguien";
+"DONATION_RECEIPT_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "Donación en nombre de alguien";
 
 /* Title for one-time donation receipts */
 "DONATION_RECEIPT_ONE_TIME" = "Única";
@@ -2423,7 +2423,7 @@
 "DONATION_SETTINGS_ONE_TIME_AMOUNT_FORMAT" = "%1$@ (pago único)";
 
 /* Title for the \"donate for a friend\" button on the donation view. */
-"DONATION_VIEW_DONATE_ON_BEHALF_OF_A_FRIEND" = "Donar a nombre de alguien";
+"DONATION_VIEW_DONATE_ON_BEHALF_OF_A_FRIEND" = "Donar en nombre de alguien";
 
 /* Text describing to the user that they're going to pay a donation to Signal */
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "Donación a Signal";
@@ -2498,7 +2498,7 @@
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "¡Hola!\n\nHace un tiempo que uso Signal porque quiero que mis chats sean privados. Me gustaría que instales la app para asegurarnos de que nadie más, además de tú y yo, pueda leer nuestros mensajes o escuchar nuestras llamadas.\n\nSignal está disponible para iPhone y Android. Puedes descargar la app aquí: %1$@\n\nSignal funciona como otras aplicaciones de chat. Podemos enviarnos fotos y vídeos, hacer llamadas y videollamadas, y crear grupos. Lo mejor es que nadie tiene acceso al contenido de nuestros chats ni de nuestras llamadas, ni siquiera quienes trabajan en Signal.\n\nPuedes leer más sobre Open Whisper Systems, los que desarrollan Signal, aquí: %2$@";
+"EMAIL_INVITE_BODY" = "¡Hola!\n\nHace tiempo que uso Signal porque quiero que mis chats sean privados. Me gustaría que instales la app para asegurarnos de que nadie más, además de tú y yo, pueda leer nuestros mensajes ni escuchar nuestras llamadas.\n\nSignal está disponible para iPhone y Android. Puedes descargar la app aquí: %1$@\n\nSignal funciona como otras aplicaciones de chat. Podemos enviarnos fotos y vídeos, hacer llamadas y videollamadas, y crear grupos. Lo mejor es que nadie tiene acceso al contenido de nuestros chats ni de nuestras llamadas, ni siquiera quienes trabajan en Signal.\n\nPuedes leer más sobre Open Whisper Systems, los que desarrollan Signal, aquí: %2$@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Pasémonos a Signal";
@@ -2672,7 +2672,7 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "Persona no registrada: %1$@";
 
 /* Button to exit change number, shown in context menu. */
-"EXIT_CHANGE_NUMBER" = "Salir Cambiar número";
+"EXIT_CHANGE_NUMBER" = "Salir del cambio de número";
 
 /* Button to exit re-registration, shown in context menu. */
 "EXIT_REREGISTRATION" = "Salir del registro";
@@ -2684,10 +2684,10 @@
 "EXPIRATION_WARNING_ACTION_TITLE" = "Actualizar ahora";
 
 /* Label warning the user that the app will expire soon. Embeds {{date}}. */
-"EXPIRATION_WARNING_SOON" = "Esta versión de Signal caduca el %1$@. Actualízala para seguir mandando mensajes.";
+"EXPIRATION_WARNING_SOON" = "Esta versión de Signal caduca el %1$@. Actualízala para seguir chateando.";
 
 /* Label warning the user that the app will expire today. */
-"EXPIRATION_WARNING_TODAY" = "Esta versión de Signal caduca hoy. Actualízala para seguir mandando mensajes.";
+"EXPIRATION_WARNING_TODAY" = "Esta versión de Signal caduca hoy. Actualízala para seguir chateando.";
 
 /* action sheet header when re-sending message which failed because of an invalid key signature */
 "FAILED_SENDING_BECAUSE_INVALID_KEY_SIGNATURE" = "No se ha podido enviar el mensaje porque %1$@ debe actualizar y abrir Signal.";
@@ -2918,7 +2918,7 @@
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "No se puede recibir audio ni vídeo de %1$@";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
-"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "Esto se puede deber a que no han verificado el cambio de tu número de seguridad, hay un problema con su dispositivo, o te han bloqueado.";
+"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "Esto se puede deber a que la persona no ha verificado el cambio de tu número de seguridad, hay un problema con su dispositivo, o te ha bloqueado.";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
 "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "No se puede recibir audio ni vídeo de %1$@";
@@ -3937,15 +3937,6 @@
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Dispositivos vinculados";
 
-/* Label for the 'give access' button in the 'onboarding permissions' view. */
-"LINKED_ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Permitir notificaciones";
-
-/* Explanation in the 'onboarding permissions' view. */
-"LINKED_ONBOARDING_PERMISSIONS_EXPLANATION" = "Permitir las notificaciones hará que puedas saber cuándo recibes mensajes, llamadas o cuándo hay nueva actividad en una conversación.";
-
-/* Title of the 'onboarding permissions' view. */
-"LINKED_ONBOARDING_PERMISSIONS_TITLE" = "Permitir notificaciones";
-
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "No se ha podido vincular el dispositivo";
 
@@ -4037,7 +4028,7 @@
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Este mes";
 
 /* Text explaining that the user will forward all media from a message. */
-"MEDIA_PAGE_FORWARD_MEDIA_CONFIRM_MESSAGE" = "Todos los archivos multimedia en este mensaje serán reenviados.";
+"MEDIA_PAGE_FORWARD_MEDIA_CONFIRM_MESSAGE" = "Se reenviarán todos los archivos multimedia de este mensaje.";
 
 /* Context menu item in media viewer. Refers to deleting currently displayed photo/video. */
 "MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "Eliminar";
@@ -4211,13 +4202,13 @@
 "MESSAGE_PREVIEW" = "Vista previa del mensaje";
 
 /* Sheet option for blocking a chat. In this case, the sheet appears when the user taps a button attached to a 'message request accepted' info message in-chat. */
-"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_BLOCK" = "Block";
+"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_BLOCK" = "Bloquear";
 
 /* Sheet option for deleting a chat. In this case, the sheet appears when the user taps a button attached to a 'message request accepted' info message in-chat. */
-"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_DELETE" = "Delete Chat";
+"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_DELETE" = "Eliminar chat";
 
 /* Sheet option for reporting a chat as spam. In this case, the sheet appears when the user taps a button attached to a 'message request accepted' info message in-chat. */
-"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_SPAM" = "Report Spam";
+"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_SPAM" = "Denunciar spam";
 
 /* Action sheet action to confirm blocking a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_ACTION" = "Bloquear";
@@ -4292,7 +4283,7 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Bloquear";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "¿Deseas que %1$@ te envíe mensajes y compartir tu nombre y foto? Esta persona no sabrá que has visto sus mensajes hasta que aceptes.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "¿Permitir que %1$@ te envíe mensajes y compartir tu nombre y foto con esta persona? No sabrá que has recibido sus mensajes hasta que la desbloquees.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
 "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "¿Desbloquear este grupo y compartir tu nombre y foto con sus participantes? No recibirás ningún mensaje del grupo hasta que lo desbloquees.";
@@ -4727,7 +4718,7 @@
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Omitir y crear nuevo PIN";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Si no puedes recordar tu PIN, puedes crear uno nuevo. Podrás registrarte y usar tu cuenta, pero se perderán algunos ajustes ya guardados, como tu información de perfil.";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Si olvidas tu PIN, puedes crear uno nuevo. Podrás registrarte y usar tu cuenta, pero se perderán algunos ajustes ya guardados, como tu información de perfil.";
 
 /* Title for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "¿No introducir PIN?";
@@ -4757,19 +4748,19 @@
 "ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Vincular tu iPhone no es la opción recomendada, ya que limitará funcionalidades importantes.";
 
 /* Description of the 'Contacts' permission in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_CONTACTS_DESCRIPTION" = "Find people you know. Your contacts are encrypted and not visible to the Signal service.";
+"ONBOARDING_PERMISSIONS_CONTACTS_DESCRIPTION" = "Encuentra a las personas que conoces. Tus contactos están cifrados y no son visibles para el servicio Signal.";
 
 /* Title introducing the 'Contacts' permission in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_CONTACTS_TITLE" = "Contacts";
+"ONBOARDING_PERMISSIONS_CONTACTS_TITLE" = "Contactos";
 
 /* Description of the 'Notifications' permission in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_NOTIFICATIONS_DESCRIPTION" = "Get notified when new messages arrive.";
+"ONBOARDING_PERMISSIONS_NOTIFICATIONS_DESCRIPTION" = "Recibir notificaciones cuando lleguen nuevos mensajes.";
 
 /* Title introducing the 'Notifications' permission in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_NOTIFICATIONS_TITLE" = "Notifications";
+"ONBOARDING_PERMISSIONS_NOTIFICATIONS_TITLE" = "Notificaciones";
 
 /* Preamble of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_PREAMBLE" = "Signal would like to request the following permissions.";
+"ONBOARDING_PERMISSIONS_PREAMBLE" = "Signal desea solicitar los siguientes permisos.";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "Activar permisos";
@@ -4799,7 +4790,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "PIN incorrecto";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when it is unknown if reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "Te has quedado sin intentos pero aún puedes acceder a tu cuenta de Signal si verificas tu número de teléfono. Por tu seguridad y para proteger tu privacidad, se restaurará tu cuenta eliminando cualquier información guardada en tu perfil o ajustes.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "Te has quedado sin intentos para verificar el PIN, pero aún puedes acceder a tu cuenta de Signal si verificas tu número de teléfono. Por tu seguridad y para proteger tu privacidad, se restaurará tu cuenta y se eliminará cualquier información guardada en tu perfil o ajustes.";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Términos y Política de privacidad";
@@ -4820,7 +4811,7 @@
 "ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Verificando código…";
 
 /* First bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_1" = "Comprueba que tu teléfono tenga señal celular para recibir SMS o llamadas";
+"ONBOARDING_VERIFICATION_HELP_BULLET_1" = "Comprueba que tu teléfono tiene señal celular para recibir SMS o llamadas";
 
 /* Second bullet point for the explainer sheet for registering via verification code. */
 "ONBOARDING_VERIFICATION_HELP_BULLET_2" = "Confirma que puedes recibir llamadas a ese número";
@@ -4892,7 +4883,7 @@
 "OUTGOING_TRANSFER_COMPLETE_TITLE" = "¡Transferencia completada!";
 
 /* info message text in conversation view */
-"OUTGOING_VIDEO_CALL" = "Videollamada realizada";
+"OUTGOING_VIDEO_CALL" = "Videollamada saliente";
 
 /* info message text in conversation view */
 "OUTGOING_VOICE_CALL" = "Llamada saliente";
@@ -4943,10 +4934,10 @@
 "PAYMENTS_INFO_UNAVAILABLE_MESSAGE" = "NO DISPONIBLE";
 
 /* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
-"PAYMENTS_LOCK_AUTHENTICATION_ENABLE_UNKNOWN_ERROR" = "No se ha podido acceder a los datos de identificación.";
+"PAYMENTS_LOCK_AUTHENTICATION_ENABLE_UNKNOWN_ERROR" = "No se ha podido acceder a los datos de autenticación.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode authentication failed. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Fallo en la identificación.";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Error de autenticación.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
 "PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Demasiados intentos fallidos. Prueba de nuevo más tarde.";
@@ -5393,13 +5384,13 @@
 "PIN_CREATION_EXPLANATION" = "El PIN mantiene la información guardada en Signal cifrada para que solo tú tengas acceso. Tu perfil, ajustes y contactos se restaurarán al reinstalar Signal. No necesitarás el PIN para abrir la aplicación.";
 
 /* Learn more action on the pin creation view */
-"PIN_CREATION_LEARN_MORE" = "Más sobre los PINs";
+"PIN_CREATION_LEARN_MORE" = "Más sobre los PIN";
 
 /* Users can create PINs to restore their account data later. They can learn more about this on a sheet. This is the text on that sheet. */
 "PIN_CREATION_LEARN_MORE_TEXT" = "El PIN mantiene la información guardada en Signal cifrada para que solo tú tengas acceso. Tu perfil, ajustes y contactos se restaurarán al reinstalar Signal.";
 
 /* Users can create PINs to restore their account data later. They can learn more about this on a sheet. This is the title on that sheet. */
-"PIN_CREATION_LEARN_MORE_TITLE" = "Sobre los PINs de Signal";
+"PIN_CREATION_LEARN_MORE_TITLE" = "Acerca de los PIN de Signal";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "Los PIN no coinciden. Inténtalo de nuevo.";
@@ -5447,7 +5438,7 @@
 "PIN_CREATION_WEAK_ERROR" = "Elige un PIN más seguro";
 
 /* If your attempted PIN is too weak, you'll see an error message. This is the text on the error dialog. */
-"PIN_CREATION_WEAK_ERROR_MESSAGE" = "El PIN permite mantener tu información almacenada i cifrada con Signal, para que solo tú puedes acceder a ella. Elige un PIN más seguro para proteger tu cuenta.";
+"PIN_CREATION_WEAK_ERROR_MESSAGE" = "El PIN mantiene la información guardada en Signal cifrada para que solo tú tengas acceso. Elige un PIN más seguro para proteger tu cuenta.";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_MESSAGE" = "No se ha podido desactivar tu PIN. Te pediremos que lo intentes de nuevo más tarde.";
@@ -5720,7 +5711,7 @@
 "QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Ha reaccionado a tu historia";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Reaccionó a la historia de %1$@";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Ha reaccionado a la historia de %1$@";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
 "QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%1$@ · Historia";
@@ -5759,40 +5750,40 @@
 "REACTION_DETAIL_ALL_FORMAT" = "Todas · %1$@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reacción a tu mensaje: %1$@";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Ha reaccionado con %1$@ a tu mensaje";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Reacción a tu álbum: %1$@";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Ha reaccionado con %1$@ a tu álbum";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Reacción a tu audio: %1$@";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Ha reaccionado con %1$@ a tu audio";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Reacción a tu contacto compartido: %1$@";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Ha reaccionado con %1$@ a tu contacto compartido";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Reacción a tu archivo: %1$@";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Ha reaccionado con %1$@ a tu archivo";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Reacción a tu GIF: %1$@";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Ha reaccionado con %1$@ a tu GIF";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Reacción a tu foto: %1$@";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Ha reaccionado con %1$@ a tu foto";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Reacción a tu sticker: %1$@";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Ha reaccionado con %1$@ a tu sticker";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Ha reaccionado con %1$@ a: \"%2$@\"";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Ha reaccionado con %1$@ a \"%2$@\"";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Reacción a tu vídeo: %1$@";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Ha reaccionado con %1$@ a tu vídeo";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reacción a tu archivo multimedia para ver una vez: %1$@";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Ha reaccionado con %1$@ a tu archivo";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reacción a tu nota de voz: %1$@";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Ha reaccionado con %1$@ a tu mensaje de voz";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "Leído";
@@ -5825,13 +5816,13 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "¿Necesitas ayuda?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Tu PIN es un código numérico o alfanumérico de 4 o más dígitos que has creado. Si no recuerdas tu PIN, deberás esperar 7 días para volver a registrar tu cuenta.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Tu PIN es un código numérico o alfanumérico de 4 o más dígitos que has creado. Si olvidas tu PIN, deberás esperar 7 días para volver a registrar tu cuenta.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they cannot necessarily create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Tu PIN es un código de 4+ caracteres creado por ti, que puede constar de dígitos o caracteres alfanuméricos. Si olvidas tu PIN, podrás volver a registrar y usar tu cuenta pero perderás algunos ajustes guardados como la información de tu perfil.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Tu PIN es un código numérico o alfanumérico de 4 o más dígitos que has creado. Si olvidas tu PIN, podrás volver a registrarte y usar tu cuenta, pero perderás algunos ajustes guardados, como tu información de perfil.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they can create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "El PIN de Signal es un código de 4+ dígitos creado por ti que puede constar de cifras y letras. Si olvidas tu PIN, podrás crear uno nuevo. Podrás volver a registrar y usar tu cuenta pero perderás tu perfil, contactos, grupos y personas bloqueadas.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "Tu PIN es un código numérico o alfanumérico de 4 o más dígitos que has creado. Si olvidas tu PIN, puedes crear uno nuevo. Podrás volver a registrarte y usar tu cuenta, pero perderás algunos ajustes ya guardados, como tu información de perfil.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "PIN incorrecto";
@@ -5855,10 +5846,10 @@
 "REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_ACTION" = "Actualizar";
 
 /* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the description text on that alert. */
-"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_DESCRIPTION" = "Para continuar con el registro, actualiza a la última versión de Signal.";
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_DESCRIPTION" = "Para continuar con el proceso de registro, actualiza a la última versión de Signal.";
 
 /* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the title on that alert. */
-"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_TITLE" = "Actualización requerida";
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_TITLE" = "Actualización necesaria";
 
 /* During registration, users may be shown a CAPTCHA to verify that they're human. This text is shown above the CAPTCHA. */
 "REGISTRATION_CAPTCHA_TITLE" = "Necesitamos verificar que eres una persona";
@@ -5867,7 +5858,7 @@
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Código de país";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is a description on the screen that asks them this question. */
-"REGISTRATION_DEVICE_TRANSFER_CHOICE_EXPLANATION" = "Al continuar, desactivarás Signal en el resto de dispositivos registrados bajo el mismo número de teléfono.";
+"REGISTRATION_DEVICE_TRANSFER_CHOICE_EXPLANATION" = "Si continúas, Signal se desactivará en otros dispositivos registrados con el mismo número de teléfono.";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is the title on the screen that asks them this question. */
 "REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE" = "Transferir cuenta y mensajes";
@@ -5879,13 +5870,13 @@
 "REGISTRATION_ERROR" = "Error de registro";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the description on that screen, explaining what's going on. Embeds {{ duration }}, such as \"7 days\". */
-"REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "Tu cuenta ha sido bloqueada para proteger tu privacidad y seguridad. Después de %1$@ días con tu cuenta inactiva, podrás volver a registrar tu cuenta con este número de teléfono sin necesidad de tu PIN. Todo tu contenido será eliminado.";
+"REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "Tu cuenta se ha bloqueado para proteger tu privacidad y seguridad. Después de %1$@ días con tu cuenta inactiva, podrás volver a registrarte con este número de teléfono sin necesidad de introducir tu PIN. Se eliminará todo tu contenido.";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will tell the user more information. */
 "REGISTRATION_LOCK_TIMEOUT_LEARN_MORE_BUTTON" = "Más información sobre las cuentas bloqueadas";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will bump the user back, earlier in registration, so they can register with a different phone number. */
-"REGISTRATION_LOCK_TIMEOUT_RESET_PHONE_NUMBER_BUTTON" = "Utiliza un número diferente";
+"REGISTRATION_LOCK_TIMEOUT_RESET_PHONE_NUMBER_BUTTON" = "Usar otro número";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the title of that screen. */
 "REGISTRATION_LOCK_TIMEOUT_TITLE" = "Cuenta bloqueada";
@@ -5903,7 +5894,7 @@
 "REGISTRATION_PHONE_NUMBER_TITLE" = "Tu número de teléfono";
 
 /* Message for confirmation alert when requesting a voice code during phone number registration. */
-"REGISTRATION_PHONE_NUMBER_VOICE_CODE_ALERT_MESSAGE" = "Recibirás un código de verificación en este número. ¿Es correcto el número que se muestra arriba?";
+"REGISTRATION_PHONE_NUMBER_VOICE_CODE_ALERT_MESSAGE" = "Recibirás una llamada para verificar este número. ¿Es correcto el número que se muestra arriba?";
 
 /* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "Número de teléfono";
@@ -5915,19 +5906,19 @@
 "REGISTRATION_PIN_CONFIRM_TITLE" = "Confirma tu PIN";
 
 /* During registration, users are asked to create a PIN code. This is the subtitle on the screen where this happens. A \"learn more\" link will be added to the end of this string. */
-"REGISTRATION_PIN_CREATE_SUBTITLE" = "Los PIN pueden ayudarte a restaurar tu cuenta y mantener tu información cifrada en Signal.";
+"REGISTRATION_PIN_CREATE_SUBTITLE" = "El PIN puede ayudarte a restaurar tu cuenta y mantener tu información cifrada en Signal.";
 
 /* During registration, users are asked to create a PIN code. This is the title on the screen where this happens. */
 "REGISTRATION_PIN_CREATE_TITLE" = "Crea tu PIN";
 
 /* During re-registration, users may be asked to re-enter their PIN code. This is the subtitle on the screen where this happens. A \"learn more\" link will be added to the end of this string. */
-"REGISTRATION_PIN_ENTER_EXISTING_SUBTITLE" = "Los PIN pueden ayudarte a restaurar tu cuenta y mantener tu información cifrada en Signal.";
+"REGISTRATION_PIN_ENTER_EXISTING_SUBTITLE" = "El PIN puede ayudarte a restaurar tu cuenta y mantener tu información cifrada en Signal.";
 
 /* During re-registration, users may be asked to re-enter their PIN code. This is the title on the screen where this happens. */
 "REGISTRATION_PIN_ENTER_EXISTING_TITLE" = "Introduce tu PIN";
 
 /* During registration, users set up their profile. Users input a family name. This is the placeholder for that field. */
-"REGISTRATION_PROFILE_SETUP_FAMILY_NAME_FIELD_PLACEHOLDER" = "Apellido(s)";
+"REGISTRATION_PROFILE_SETUP_FAMILY_NAME_FIELD_PLACEHOLDER" = "Apellido";
 
 /* During registration, users can choose who can see their phone number. */
 "REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "¿Quién puede encontrarme con mi número?";
@@ -5939,10 +5930,10 @@
 "REGISTRATION_PROFILE_SETUP_MORE_INFO_DETAILS" = "Tu nombre, foto y actualizaciones solo son visibles para tus contactos y las personas con las que inicias o aceptas un chat.";
 
 /* During registration, users set up their profile. They can learn more about the privacy of their profile by clicking a \"learn more\" button. This is the title on a sheet that appears when they do that. */
-"REGISTRATION_PROFILE_SETUP_MORE_INFO_TITLE" = "Sobre la privacidad del perfil";
+"REGISTRATION_PROFILE_SETUP_MORE_INFO_TITLE" = "Acerca de la privacidad del perfil";
 
 /* During registration, users set up their profile. This is the subtitle on the screen where this is done. It tells users about the privacy of their profile. A \"learn more\" link will be added to the end of this string. */
-"REGISTRATION_PROFILE_SETUP_SUBTITLE" = "Los perfiles serán visibles para la gente a la que mandes mensajes, tus contactos y tus grupos.";
+"REGISTRATION_PROFILE_SETUP_SUBTITLE" = "Tu perfil es visible para las personas a las que mandes mensajes, tus contactos y tus grupos.";
 
 /* During registration, users set up their profile. This is the title on the screen where this is done. */
 "REGISTRATION_PROFILE_SETUP_TITLE" = "Completa tu perfil";
@@ -5957,7 +5948,7 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "Debes registrarte para poder enviar un mensaje.";
 
 /* Button when sending a verification code via sms failed, but resending via voice call might succeed. */
-"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "Llamada de voz";
+"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "Llamada";
 
 /* Error message when sending a verification code via sms failed, but resending via voice call might succeed. */
 "REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "No hemos podido enviarte el código de verificación por SMS. Intenta recibir tu código a través de una llamada de voz.";
@@ -5966,7 +5957,7 @@
 "REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "Has hecho demasiados intentos para introducir el código. Vuelve a enviar el código e inténtalo de nuevo.";
 
 /* Alert shown when submitting a verification code too many times. Embeds {{ duration }}, such as \"5:00\" */
-"REGISTRATION_SUBMIT_CODE_RATE_LIMIT_ALERT_FORMAT" = "Has hecho demasiados intentos para introducir el código. Vuelve a intentarlo en %1$@";
+"REGISTRATION_SUBMIT_CODE_RATE_LIMIT_ALERT_FORMAT" = "Has hecho demasiados intentos para introducir el código. Vuelve a intentarlo en %1$@.";
 
 /* During registration and re-registration, users may have to enter a code to verify ownership of their phone number. If they enter an invalid code, they will see this error message. */
 "REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "El código que has introducido no es válido. Vuelve a enviar el código e inténtalo de nuevo.";
@@ -6020,10 +6011,10 @@
 "REREGISTER_FOR_PUSH" = "Reactivar las notificaciones push";
 
 /* If the user is re-registering, they may need to enter their PIN to restore all their data. If they enter the incorrect PIN, they will be shown a warning. In some cases (such as for this string), the user has the option to skip PIN entry and will lose some data. Embeds {{ number of attempts }}, such as \"3 attempts\". */
-"REREGISTER_INVALID_PIN_WARNING_SKIPPABLE_FORMAT" = "Te queda %1$@. Cuando agotes tus intentos, podrás crear un nuevo PIN. Podrás registrar y usar tu cuenta pero perderás tu perfil, contactos, grupos y personas bloqueadas.";
+"REREGISTER_INVALID_PIN_WARNING_SKIPPABLE_FORMAT" = "Te queda %1$@. Cuando agotes tus intentos, podrás crear un nuevo PIN. Podrás volver a registrarte y usar tu cuenta, pero perderás algunos ajustes ya guardados, como tu información de perfil.";
 
 /* If the user is re-registering, they may need to enter their PIN to restore all their data. If they enter the incorrect PIN, they will be shown a warning. Embeds {{ number of attempts }}, such as \"3 attempts\". */
-"REREGISTER_INVALID_PIN_WARNING_UNSKIPPABLE_FORMAT" = "Te quedan %1$@. Cuando agotes tus intentos, tu cuenta se bloqueará durante 7 días. Después de 7 días de inactividad, podrás volver a registrate sin tu PIN. Todo tu contenido será eliminado.";
+"REREGISTER_INVALID_PIN_WARNING_UNSKIPPABLE_FORMAT" = "Te quedan %1$@. Si agotas los intentos, tu cuenta se bloqueará durante 7 días. Después de 7 días de inactividad, podrás volver a registrarte sin tener que introducir tu PIN. Se eliminará todo tu contenido.";
 
 /* Configure reactions reset button text */
 "RESET" = "Restablecer";
@@ -6689,10 +6680,10 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "Desactivar pagos";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "Te recomendamos transferir tus fondos a otra cartera antes de desactivar los pagos. Si seleccionas no transferir los fondos ahora, permanecerán en la cartera asociada a tu cuenta de Signal cuando vuelvas a activar los pagos.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "Te recomendamos transferir tus fondos a otra cartera antes de desactivar los pagos. Si decides no transferir los fondos ahora, permanecerán en la cartera asociada a tu cuenta de Signal para cuando vuelvas a activar los pagos.";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Tu balance permanecerá en la cartera asociada a tu cuenta de Signal para cuando decidas reactivar los pagos.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Tu saldo permanecerá en la cartera asociada a tu cuenta de Signal para cuando decidas reactivar los pagos.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "¿Desactivar sin transferir?";
@@ -7466,7 +7457,7 @@
 "STORIES_NO_VIEWS_YET" = "Aún no hay visualizaciones";
 
 /* Section footer for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Deja que las personas que ven tu historia puedan reaccionar y responder.";
+"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Deja que las personas que ven tus historias puedan reaccionar y responder.";
 
 /* Section header for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_HEADER" = "Respuestas y reacciones";
@@ -7580,7 +7571,7 @@
 "STORY_PRIVACY_TITLE" = "Privacidad de la historia";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
-"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Ha reaccionado %1$@ a tu historia";
+"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Ha reaccionado con %1$@ a tu historia";
 
 /* quote text for a reaction to a story by the user (the header on the bubble says \"You\"). Embeds {{reaction emoji}} */
 "STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON" = "Has reaccionado con %1$@ a una historia";
@@ -7589,7 +7580,7 @@
 "STORY_REACTION_QUOTE_FORMAT_THIRD_PERSON" = "Ha reaccionado con %1$@ a una historia";
 
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
-"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Ha reaccionado %1$@ a la historia de %2$@";
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Ha reaccionado con %1$@ a la historia de %2$@";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "Responder";
@@ -7952,7 +7943,7 @@
 "UNARCHIVE_ACTION" = "Desarchivar";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"UNKNOWN_CONTACT_BLOCK_OFFER" = "Esta persona no está entre tus contactos. ¿Deseas bloquearla?";
+"UNKNOWN_CONTACT_BLOCK_OFFER" = "Esta persona no está en tus contactos. ¿Deseas bloquearla?";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "Has enviado un mensaje desde uno de tus dispositivos que no se puede procesar ni mostrar, ya que usa una función nueva de Signal.";

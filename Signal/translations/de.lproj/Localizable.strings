@@ -1097,16 +1097,16 @@
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Nach Nutzernamen suchen";
 
 /* Menu action to display limited contact picker. */
-"COMPOSE_SCREEN_LIMITED_CONTACTS_ACTION_MANAGE" = "Select More Contacts";
+"COMPOSE_SCREEN_LIMITED_CONTACTS_ACTION_MANAGE" = "Weitere Kontakte auswählen";
 
 /* Menu action visit app contact permission in settings. */
-"COMPOSE_SCREEN_LIMITED_CONTACTS_ACTION_SETTINGS" = "Go to Settings";
+"COMPOSE_SCREEN_LIMITED_CONTACTS_ACTION_SETTINGS" = "Zu Einstellungen";
 
 /* Multi-line label explaining why compose-screen contact picker may be missing contacts. */
-"COMPOSE_SCREEN_LIMITED_CONTACTS_CTA" = "Manage";
+"COMPOSE_SCREEN_LIMITED_CONTACTS_CTA" = "Verwalten";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_LIMITED_CONTACTS_PERMISSION" = "Signal has limited access to your system contacts";
+"COMPOSE_SCREEN_LIMITED_CONTACTS_PERMISSION" = "Signal hat nur begrenzten Zugriff auf deine Telefonkontakte";
 
 /* Button to open settings from an empty compose-screen contact picker. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "Einstellungen öffnen";
@@ -3937,15 +3937,6 @@
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Gekoppelte Geräte";
 
-/* Label for the 'give access' button in the 'onboarding permissions' view. */
-"LINKED_ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Mitteilungen zulassen";
-
-/* Explanation in the 'onboarding permissions' view. */
-"LINKED_ONBOARDING_PERMISSIONS_EXPLANATION" = "Durch das Zulassen von Mitteilungen wirst du bei neuen Nachrichten, Anrufen oder sonstigen Aktivitäten in deinen Chats benachrichtigt.";
-
-/* Title of the 'onboarding permissions' view. */
-"LINKED_ONBOARDING_PERMISSIONS_TITLE" = "Mitteilungen zulassen";
-
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "Gerät konnte nicht gekoppelt werden";
 
@@ -4211,13 +4202,13 @@
 "MESSAGE_PREVIEW" = "Nachrichtenvorschau";
 
 /* Sheet option for blocking a chat. In this case, the sheet appears when the user taps a button attached to a 'message request accepted' info message in-chat. */
-"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_BLOCK" = "Block";
+"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_BLOCK" = "Blockieren";
 
 /* Sheet option for deleting a chat. In this case, the sheet appears when the user taps a button attached to a 'message request accepted' info message in-chat. */
-"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_DELETE" = "Delete Chat";
+"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_DELETE" = "Chat löschen";
 
 /* Sheet option for reporting a chat as spam. In this case, the sheet appears when the user taps a button attached to a 'message request accepted' info message in-chat. */
-"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_SPAM" = "Report Spam";
+"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_SPAM" = "Spam melden";
 
 /* Action sheet action to confirm blocking a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_ACTION" = "Blockieren";
@@ -4757,19 +4748,19 @@
 "ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Das Koppeln deines iPhones wird nicht empfohlen und wichtige Funktionen einschränken.";
 
 /* Description of the 'Contacts' permission in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_CONTACTS_DESCRIPTION" = "Find people you know. Your contacts are encrypted and not visible to the Signal service.";
+"ONBOARDING_PERMISSIONS_CONTACTS_DESCRIPTION" = "Finde Leute, die du kennst. Deine Kontakte sind verschlüsselt und für den Signal-Dienst nicht sichtbar.";
 
 /* Title introducing the 'Contacts' permission in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_CONTACTS_TITLE" = "Contacts";
+"ONBOARDING_PERMISSIONS_CONTACTS_TITLE" = "Kontakte";
 
 /* Description of the 'Notifications' permission in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_NOTIFICATIONS_DESCRIPTION" = "Get notified when new messages arrive.";
+"ONBOARDING_PERMISSIONS_NOTIFICATIONS_DESCRIPTION" = "Erhalte Benachrichtigungen, wenn du neue Nachrichten erhältst.";
 
 /* Title introducing the 'Notifications' permission in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_NOTIFICATIONS_TITLE" = "Notifications";
+"ONBOARDING_PERMISSIONS_NOTIFICATIONS_TITLE" = "Mitteilungen";
 
 /* Preamble of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_PREAMBLE" = "Signal would like to request the following permissions.";
+"ONBOARDING_PERMISSIONS_PREAMBLE" = "Signal möchte folgende Berechtigungen anfragen.";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "Berechtigungen gewähren";

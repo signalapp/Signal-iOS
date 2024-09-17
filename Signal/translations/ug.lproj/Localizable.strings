@@ -1097,16 +1097,16 @@
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "ئىشلەتكۈچى نامى بويىچە ئىزدەش";
 
 /* Menu action to display limited contact picker. */
-"COMPOSE_SCREEN_LIMITED_CONTACTS_ACTION_MANAGE" = "Select More Contacts";
+"COMPOSE_SCREEN_LIMITED_CONTACTS_ACTION_MANAGE" = "تېخىمۇ كۆپ ئالاقىلاشقۇچىلارنى تاللاڭ";
 
 /* Menu action visit app contact permission in settings. */
-"COMPOSE_SCREEN_LIMITED_CONTACTS_ACTION_SETTINGS" = "Go to Settings";
+"COMPOSE_SCREEN_LIMITED_CONTACTS_ACTION_SETTINGS" = "تەڭشەكلەرگە يۆتكەل";
 
 /* Multi-line label explaining why compose-screen contact picker may be missing contacts. */
-"COMPOSE_SCREEN_LIMITED_CONTACTS_CTA" = "Manage";
+"COMPOSE_SCREEN_LIMITED_CONTACTS_CTA" = "باشقۇرۇش";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_LIMITED_CONTACTS_PERMISSION" = "Signal has limited access to your system contacts";
+"COMPOSE_SCREEN_LIMITED_CONTACTS_PERMISSION" = "سىگنال سىزنىڭ سىستېما ئالاقىداشلىرىڭىزنى چەكلىك دائىرىدىلا زىيارەت قىلالايدۇ";
 
 /* Button to open settings from an empty compose-screen contact picker. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "تەڭشەكنى ئېچىش";
@@ -3937,15 +3937,6 @@
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "باغلانغان ئۈسكۈنىلەر";
 
-/* Label for the 'give access' button in the 'onboarding permissions' view. */
-"LINKED_ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "ئۇقتۇرۇشقا رۇخسەت";
-
-/* Explanation in the 'onboarding permissions' view. */
-"LINKED_ONBOARDING_PERMISSIONS_EXPLANATION" = "ئۇقتۇرۇشقا رۇخسەت قىلسىڭىز، ئۇچۇر ياكى چاقىرىق كەلگەندە ياكى يېڭى پاراڭ پائالىيەتلىرى ھەققىدە خەۋەر بولغاندا سىزگە ئۇقتۇرۇش قىلىنىدۇ.";
-
-/* Title of the 'onboarding permissions' view. */
-"LINKED_ONBOARDING_PERMISSIONS_TITLE" = "ئۇقتۇرۇشقا رۇخسەت";
-
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "ئۈسكۈنە باغلاش مەغلۇب بولدى";
 
@@ -4211,13 +4202,13 @@
 "MESSAGE_PREVIEW" = "ئۇچۇرنى ئالدىن كۆر";
 
 /* Sheet option for blocking a chat. In this case, the sheet appears when the user taps a button attached to a 'message request accepted' info message in-chat. */
-"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_BLOCK" = "Block";
+"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_BLOCK" = "چەكلەش";
 
 /* Sheet option for deleting a chat. In this case, the sheet appears when the user taps a button attached to a 'message request accepted' info message in-chat. */
-"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_DELETE" = "Delete Chat";
+"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_DELETE" = "پاراڭنى ئۆچۈرۈش";
 
 /* Sheet option for reporting a chat as spam. In this case, the sheet appears when the user taps a button attached to a 'message request accepted' info message in-chat. */
-"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_SPAM" = "Report Spam";
+"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_SPAM" = "ئالدامچى مەلۇم قىلىش";
 
 /* Action sheet action to confirm blocking a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_ACTION" = "چەكلەش";
@@ -4757,19 +4748,19 @@
 "ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "iPhone نىڭىزنى باغلاش ئادەتتە تەۋسىيە قىلىنمايدۇ ۋە بەزى نۇقتىلىق ئىقتىدارلار چەكلىنىپ قالىدۇ.";
 
 /* Description of the 'Contacts' permission in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_CONTACTS_DESCRIPTION" = "Find people you know. Your contacts are encrypted and not visible to the Signal service.";
+"ONBOARDING_PERMISSIONS_CONTACTS_DESCRIPTION" = "سىز تونۇيدىغان كىشىلەرنى تېپىڭ. ئالاقىداشلىرىڭىز مەخپىيلەشتۈرۈلگەن بولۇپ، سىگنال مۇلازىمىتىگە كۆرۈنمەيدۇ.";
 
 /* Title introducing the 'Contacts' permission in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_CONTACTS_TITLE" = "Contacts";
+"ONBOARDING_PERMISSIONS_CONTACTS_TITLE" = "ئالاقەداشلار";
 
 /* Description of the 'Notifications' permission in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_NOTIFICATIONS_DESCRIPTION" = "Get notified when new messages arrive.";
+"ONBOARDING_PERMISSIONS_NOTIFICATIONS_DESCRIPTION" = "يېڭى ئۇچۇرلار كەلگەندە، خەۋەردار بولۇڭ.";
 
 /* Title introducing the 'Notifications' permission in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_NOTIFICATIONS_TITLE" = "Notifications";
+"ONBOARDING_PERMISSIONS_NOTIFICATIONS_TITLE" = "ئۇقتۇرۇشلار";
 
 /* Preamble of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_PREAMBLE" = "Signal would like to request the following permissions.";
+"ONBOARDING_PERMISSIONS_PREAMBLE" = "سىگنال تۆۋەندىكى ئىجازەتلەرنى تەلەپ قىلماقچى.";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "ھوقۇق بېرىڭ";

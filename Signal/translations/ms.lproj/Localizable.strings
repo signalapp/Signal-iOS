@@ -1097,16 +1097,16 @@
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Cari dengan Nama Pengguna";
 
 /* Menu action to display limited contact picker. */
-"COMPOSE_SCREEN_LIMITED_CONTACTS_ACTION_MANAGE" = "Select More Contacts";
+"COMPOSE_SCREEN_LIMITED_CONTACTS_ACTION_MANAGE" = "Pilih Lebih Banyak Kenalan";
 
 /* Menu action visit app contact permission in settings. */
-"COMPOSE_SCREEN_LIMITED_CONTACTS_ACTION_SETTINGS" = "Go to Settings";
+"COMPOSE_SCREEN_LIMITED_CONTACTS_ACTION_SETTINGS" = "Pergi ke Tetapan";
 
 /* Multi-line label explaining why compose-screen contact picker may be missing contacts. */
-"COMPOSE_SCREEN_LIMITED_CONTACTS_CTA" = "Manage";
+"COMPOSE_SCREEN_LIMITED_CONTACTS_CTA" = "Urus";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_LIMITED_CONTACTS_PERMISSION" = "Signal has limited access to your system contacts";
+"COMPOSE_SCREEN_LIMITED_CONTACTS_PERMISSION" = "Signal mempunyai akses terhad kepada kenalan sistem anda";
 
 /* Button to open settings from an empty compose-screen contact picker. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "Buka tetapan";
@@ -3937,15 +3937,6 @@
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Peranti Dipautkan";
 
-/* Label for the 'give access' button in the 'onboarding permissions' view. */
-"LINKED_ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Benarkan Pemberitahuan";
-
-/* Explanation in the 'onboarding permissions' view. */
-"LINKED_ONBOARDING_PERMISSIONS_EXPLANATION" = "Membenarkan pemberitahuan membolehkan anda menerima mesej, panggilan atau kemas kini tentang aktiviti perbualan baru.";
-
-/* Title of the 'onboarding permissions' view. */
-"LINKED_ONBOARDING_PERMISSIONS_TITLE" = "Benarkan Pemberitahuan";
-
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "Gagal Memaut Peranti";
 
@@ -4211,13 +4202,13 @@
 "MESSAGE_PREVIEW" = "Pratonton Mesej";
 
 /* Sheet option for blocking a chat. In this case, the sheet appears when the user taps a button attached to a 'message request accepted' info message in-chat. */
-"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_BLOCK" = "Block";
+"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_BLOCK" = "Sekat";
 
 /* Sheet option for deleting a chat. In this case, the sheet appears when the user taps a button attached to a 'message request accepted' info message in-chat. */
-"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_DELETE" = "Delete Chat";
+"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_DELETE" = "Padam sembang";
 
 /* Sheet option for reporting a chat as spam. In this case, the sheet appears when the user taps a button attached to a 'message request accepted' info message in-chat. */
-"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_SPAM" = "Report Spam";
+"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_SPAM" = "Laporkan spam";
 
 /* Action sheet action to confirm blocking a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_ACTION" = "Sekat";
@@ -4757,19 +4748,19 @@
 "ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Memautkan iPhone anda tidak dicadangkan dan akan mengehadkan fungsi teras.";
 
 /* Description of the 'Contacts' permission in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_CONTACTS_DESCRIPTION" = "Find people you know. Your contacts are encrypted and not visible to the Signal service.";
+"ONBOARDING_PERMISSIONS_CONTACTS_DESCRIPTION" = "Cari orang yang anda kenal. Kenalan anda disulitkan dan tidak kelihatan kepada perkhidmatan Signal.";
 
 /* Title introducing the 'Contacts' permission in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_CONTACTS_TITLE" = "Contacts";
+"ONBOARDING_PERMISSIONS_CONTACTS_TITLE" = "Kenalan";
 
 /* Description of the 'Notifications' permission in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_NOTIFICATIONS_DESCRIPTION" = "Get notified when new messages arrive.";
+"ONBOARDING_PERMISSIONS_NOTIFICATIONS_DESCRIPTION" = "Dapatkan pemberitahuan apabila mesej baharu tiba.";
 
 /* Title introducing the 'Notifications' permission in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_NOTIFICATIONS_TITLE" = "Notifications";
+"ONBOARDING_PERMISSIONS_NOTIFICATIONS_TITLE" = "Pemberitahuan";
 
 /* Preamble of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_PREAMBLE" = "Signal would like to request the following permissions.";
+"ONBOARDING_PERMISSIONS_PREAMBLE" = "Signal ingin meminta kebenaran berikut.";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "Benarkan Kebenaran";

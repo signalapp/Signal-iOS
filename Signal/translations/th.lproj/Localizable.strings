@@ -1097,16 +1097,16 @@
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "ค้นหาด้วยชื่อผู้ใช้";
 
 /* Menu action to display limited contact picker. */
-"COMPOSE_SCREEN_LIMITED_CONTACTS_ACTION_MANAGE" = "Select More Contacts";
+"COMPOSE_SCREEN_LIMITED_CONTACTS_ACTION_MANAGE" = "เลือกผู้ติดต่อเพิ่มเติม";
 
 /* Menu action visit app contact permission in settings. */
-"COMPOSE_SCREEN_LIMITED_CONTACTS_ACTION_SETTINGS" = "Go to Settings";
+"COMPOSE_SCREEN_LIMITED_CONTACTS_ACTION_SETTINGS" = "ไปที่การตั้งค่า";
 
 /* Multi-line label explaining why compose-screen contact picker may be missing contacts. */
-"COMPOSE_SCREEN_LIMITED_CONTACTS_CTA" = "Manage";
+"COMPOSE_SCREEN_LIMITED_CONTACTS_CTA" = "จัดการ";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_LIMITED_CONTACTS_PERMISSION" = "Signal has limited access to your system contacts";
+"COMPOSE_SCREEN_LIMITED_CONTACTS_PERMISSION" = "Signal ได้รับสิทธิ์จำกัดในการเข้าถึงผู้ติดต่อของระบบคุณ";
 
 /* Button to open settings from an empty compose-screen contact picker. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "เปิดการตั้งค่า";
@@ -3937,15 +3937,6 @@
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "อุปกรณ์ที่เชื่อมโยง";
 
-/* Label for the 'give access' button in the 'onboarding permissions' view. */
-"LINKED_ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "อนุญาตการแจ้งเตือน";
-
-/* Explanation in the 'onboarding permissions' view. */
-"LINKED_ONBOARDING_PERMISSIONS_EXPLANATION" = "การอนุญาตการแจ้งเตือนจะทำให้คุณทราบเมื่อได้รับข้อความ สายโทรเข้า หรืออัปเดตเกี่ยวกับความเคลื่อนไหวใหม่ในการสนทนา";
-
-/* Title of the 'onboarding permissions' view. */
-"LINKED_ONBOARDING_PERMISSIONS_TITLE" = "อนุญาตการแจ้งเตือน";
-
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "การเชื่อมโยงอุปกรณ์ไม่สำเร็จ";
 
@@ -4211,13 +4202,13 @@
 "MESSAGE_PREVIEW" = "ตัวอย่างข้อความ";
 
 /* Sheet option for blocking a chat. In this case, the sheet appears when the user taps a button attached to a 'message request accepted' info message in-chat. */
-"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_BLOCK" = "Block";
+"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_BLOCK" = "บล็อก";
 
 /* Sheet option for deleting a chat. In this case, the sheet appears when the user taps a button attached to a 'message request accepted' info message in-chat. */
-"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_DELETE" = "Delete Chat";
+"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_DELETE" = "ลบแชท";
 
 /* Sheet option for reporting a chat as spam. In this case, the sheet appears when the user taps a button attached to a 'message request accepted' info message in-chat. */
-"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_SPAM" = "Report Spam";
+"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_SPAM" = "รายงานว่าเป็นสแปม";
 
 /* Action sheet action to confirm blocking a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_ACTION" = "บล็อก";
@@ -4757,19 +4748,19 @@
 "ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "การเชื่อมโยงกับ iPhone นั้นไม่แนะนำ และมันจะจำกัดความสามารถหลัก";
 
 /* Description of the 'Contacts' permission in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_CONTACTS_DESCRIPTION" = "Find people you know. Your contacts are encrypted and not visible to the Signal service.";
+"ONBOARDING_PERMISSIONS_CONTACTS_DESCRIPTION" = "ค้นหาคนที่คุณรู้จัก โดยรายชื่อผู้ติดต่อของคุณจะได้รับการเข้ารหัสและไม่ถูกเปิดเผยต่อบริการของ Signal";
 
 /* Title introducing the 'Contacts' permission in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_CONTACTS_TITLE" = "Contacts";
+"ONBOARDING_PERMISSIONS_CONTACTS_TITLE" = "ผู้ติดต่อ";
 
 /* Description of the 'Notifications' permission in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_NOTIFICATIONS_DESCRIPTION" = "Get notified when new messages arrive.";
+"ONBOARDING_PERMISSIONS_NOTIFICATIONS_DESCRIPTION" = "ได้รับแจ้งเตือนเมื่อมีข้อความใหม่";
 
 /* Title introducing the 'Notifications' permission in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_NOTIFICATIONS_TITLE" = "Notifications";
+"ONBOARDING_PERMISSIONS_NOTIFICATIONS_TITLE" = "การแจ้งเตือน";
 
 /* Preamble of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_PREAMBLE" = "Signal would like to request the following permissions.";
+"ONBOARDING_PERMISSIONS_PREAMBLE" = "Signal ต้องการขออนุญาตสิทธิ์ต่อไปนี้";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "อนุญาต";

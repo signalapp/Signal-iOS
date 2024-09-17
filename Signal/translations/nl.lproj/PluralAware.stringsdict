@@ -952,9 +952,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Verborgen voor %1$d</string>
+			<string>Voor %1$d persoon verborgen</string>
 			<key>other</key>
-			<string>Verborgen voor %1$d</string>
+			<string>Voor %1$d personen verborgen</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE_%d</key>
@@ -1240,9 +1240,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; antwoord</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; reactie</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; antwoorden</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; reacties</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -1320,9 +1320,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; weergave</string>
+			<string>Door &lt;bold&gt;%1$d&lt;/bold&gt; persoon gezien</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; weergaven</string>
+			<string>Door &lt;bold&gt;%1$d&lt;/bold&gt; personen gezien</string>
 		</dict>
 	</dict>
 	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>

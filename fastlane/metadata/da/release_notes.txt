@@ -1,1 +1,1 @@
-• We added support for the new app icon customization features in iOS 18. Now when you configure your iOS Home Screen to use dark or tinted icons, Signal will adapt accordingly. Go completely monochrome or pick a scheme that matches your colorful imagination.
+• Vi har tilføjet understøttelse af de nye funktioner til tilpasning af appikoner i iOS 18. Når du konfigurerer din iOS-startskærm til at bruge mørke eller tonede ikoner, vil Signal nu tilpasse sig i overensstemmelse hermed. Gå helt monokromt, eller vælg et farveskema, der matcher din farverige fantasi.

@@ -13,9 +13,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Nota de voz de %1$d segundo</string>
+			<string>Mensaje de voz de %1$d segundo</string>
 			<key>other</key>
-			<string>Nota de voz de %1$d segundos</string>
+			<string>Mensaje de voz de %1$d segundos</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>
