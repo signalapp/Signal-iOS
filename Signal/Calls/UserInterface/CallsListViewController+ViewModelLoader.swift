@@ -43,7 +43,7 @@ extension CallsListViewController {
             case newer
         }
 
-        private var callRecordLoader: CallRecordLoader
+        private let callRecordLoader: CallRecordLoader
         private let createCallViewModelBlock: CreateCallViewModelBlock
         private let fetchCallRecordBlock: FetchCallRecordBlock
         private let viewModelPageSize: UInt
