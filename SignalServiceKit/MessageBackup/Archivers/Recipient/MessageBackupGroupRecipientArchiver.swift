@@ -348,7 +348,12 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
             let storyContext = storyStore.getOrCreateStoryContextAssociatedData(
                 forGroupThread: groupThread, tx: context.tx
             )
-            storyStore.updateStoryContext(storyContext, isHidden: true, tx: context.tx)
+            storyStore.updateStoryContext(
+                storyContext,
+                updateStorageService: false,
+                isHidden: true,
+                tx: context.tx
+            )
         }
 
         if groupModel.avatarUrlPath != nil {

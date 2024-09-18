@@ -30,8 +30,12 @@ class MessageBackupIntegrationTests: XCTestCase {
         case all
         case specific(names: Set<String>)
 
+        case standardFrames
+
         case accountData
+
         case chat
+
         case chatItem
         case chatItemContactMessage
         case chatItemExpirationTimerUpdate
@@ -51,6 +55,13 @@ class MessageBackupIntegrationTests: XCTestCase {
         case chatItemStandardMessageTextOnly
         case chatItemStandardMessageWithEdits
         case chatItemStandardMessageWithQuote
+        case chatItemStickerMessage
+        case chatItemThreadMerge
+
+        case recipient
+        case recipientContact
+        case recipientDistributionList
+        case recipientGroup
     }
 
     /// The preferred log output for test failures.
@@ -88,6 +99,8 @@ class MessageBackupIntegrationTests: XCTestCase {
                     return true
                 case .specific(let names):
                     return names.contains(binprotoName)
+                case .standardFrames:
+                    return binprotoName.contains("standard_frames")
                 case .accountData:
                     return binprotoName.contains("account_data_")
                 case .chat:
@@ -130,6 +143,18 @@ class MessageBackupIntegrationTests: XCTestCase {
                     return binprotoName.contains("chat_item_standard_message_with_edits_")
                 case .chatItemStandardMessageWithQuote:
                     return binprotoName.contains("chat_item_standard_message_with_quote_")
+                case .chatItemStickerMessage:
+                    return binprotoName.contains("chat_item_sticker_message_")
+                case .chatItemThreadMerge:
+                    return binprotoName.contains("chat_item_thread_merge_")
+                case .recipient:
+                    return binprotoName.contains("recipient_")
+                case .recipientContact:
+                    return binprotoName.contains("recipient_contacts_")
+                case .recipientDistributionList:
+                    return binprotoName.contains("recipient_distribution_list_")
+                case .recipientGroup:
+                    return binprotoName.contains("recipient_groups_")
                 }
             }
         }()

@@ -130,7 +130,9 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
         }
 
         var distributionList = BackupProto_DistributionList()
-        distributionList.name = storyThread.name
+        // Empty name specifically expected for My Story, and `storyThread.name`
+        // will return the localized "My Story" string.
+        distributionList.name = storyThread.isMyStory ? "" : storyThread.name
         distributionList.allowReplies = storyThread.allowsReplies
         distributionList.privacyMode = privacyMode
         distributionList.memberRecipientIds = memberRecipientIds
