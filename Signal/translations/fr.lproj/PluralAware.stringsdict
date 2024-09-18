@@ -680,9 +680,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Une invitation au groupe a été révoquée pour %1$d personne.</string>
+			<string>L&apos;invitation envoyée à %1$d personne a été annulée.</string>
 			<key>other</key>
-			<string>Des invitations au groupe ont été révoquées pour %1$d personnes.</string>
+			<string>Les invitations envoyées à %1$d personnes ont été annulées.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_%d</key>
@@ -696,9 +696,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ a révoqué une invitation au groupe pour %1$d personne.</string>
+			<string>%2$@ a annulé l&apos;invitation envoyée à %1$d personne.</string>
 			<key>other</key>
-			<string>%2$@ a révoqué des invitations au groupe pour %1$d personnes.</string>
+			<string>%2$@ a annulé les invitations envoyées à %1$d personnes.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_AND_CANCELED_%d</key>
@@ -1128,9 +1128,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Révoquer une invitation invalide</string>
+			<string>Annuler une invitation non valide</string>
 			<key>other</key>
-			<string>Révoquer %1$d invitations invalides</string>
+			<string>Annuler %1$d invitations non valides</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
@@ -1144,9 +1144,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Révoquer l&apos;invitation</string>
+			<string>Annuler l&apos;invitation</string>
 			<key>other</key>
-			<string>Révoquer les invitations</string>
+			<string>Annuler les invitations</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_%d</key>
@@ -1160,9 +1160,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Révoquer l’invitation de groupe envoyée par « %2$@ » ?</string>
+			<string>Annuler l&apos;invitation envoyée par %2$@ ?</string>
 			<key>other</key>
-			<string>Révoquer %1$d invitations envoyées par « %2$@ » ?</string>
+			<string>Annuler %1$d invitations envoyées par %2$@ ?</string>
 		</dict>
 	</dict>
 	<key>PRIVATE_STORY_VIEWERS_%d</key>

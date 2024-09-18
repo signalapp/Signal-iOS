@@ -1097,16 +1097,16 @@
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "البحث باسم المُستخدم";
 
 /* Menu action to display limited contact picker. */
-"COMPOSE_SCREEN_LIMITED_CONTACTS_ACTION_MANAGE" = "Select More Contacts";
+"COMPOSE_SCREEN_LIMITED_CONTACTS_ACTION_MANAGE" = "اختر المزيد من جهات الاتصال";
 
 /* Menu action visit app contact permission in settings. */
-"COMPOSE_SCREEN_LIMITED_CONTACTS_ACTION_SETTINGS" = "Go to Settings";
+"COMPOSE_SCREEN_LIMITED_CONTACTS_ACTION_SETTINGS" = "الانتقال إلى الإعدادات";
 
 /* Multi-line label explaining why compose-screen contact picker may be missing contacts. */
-"COMPOSE_SCREEN_LIMITED_CONTACTS_CTA" = "Manage";
+"COMPOSE_SCREEN_LIMITED_CONTACTS_CTA" = "إدارة";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_LIMITED_CONTACTS_PERMISSION" = "Signal has limited access to your system contacts";
+"COMPOSE_SCREEN_LIMITED_CONTACTS_PERMISSION" = "لدى سيجنال وصول محدود إلى جهات الاتصال على جهازك.";
 
 /* Button to open settings from an empty compose-screen contact picker. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "فتح الإعدادات";
@@ -3937,15 +3937,6 @@
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "اﻷجهزة المرتبطة";
 
-/* Label for the 'give access' button in the 'onboarding permissions' view. */
-"LINKED_ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "السماح بالإشعارات";
-
-/* Explanation in the 'onboarding permissions' view. */
-"LINKED_ONBOARDING_PERMISSIONS_EXPLANATION" = "يُتيح لك السماح بالإشعارات معرفة متى تتلقّى رسائل أو مُكالمات أو تحديثات حول نشاط المحادثة الجديد.";
-
-/* Title of the 'onboarding permissions' view. */
-"LINKED_ONBOARDING_PERMISSIONS_TITLE" = "السماح بالإشعارات";
-
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "فشل ربط الجهاز";
 
@@ -4211,13 +4202,13 @@
 "MESSAGE_PREVIEW" = "معاينة الرسالة";
 
 /* Sheet option for blocking a chat. In this case, the sheet appears when the user taps a button attached to a 'message request accepted' info message in-chat. */
-"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_BLOCK" = "Block";
+"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_BLOCK" = "حظر";
 
 /* Sheet option for deleting a chat. In this case, the sheet appears when the user taps a button attached to a 'message request accepted' info message in-chat. */
-"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_DELETE" = "Delete Chat";
+"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_DELETE" = "حذف الدردشة";
 
 /* Sheet option for reporting a chat as spam. In this case, the sheet appears when the user taps a button attached to a 'message request accepted' info message in-chat. */
-"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_SPAM" = "Report Spam";
+"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_SPAM" = "الإبلاغ عن رسائل غير مرغوب فيها";
 
 /* Action sheet action to confirm blocking a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_ACTION" = "حظر";
@@ -4727,7 +4718,7 @@
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "التَّجاهُل وإنشاء PIN جَديد";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "إذا كنتَ لا تستطيع تذكُر PIN الخاص بك، يُمكنك إنشاء واحد جديد. يُمكنك التسجيل واستخدام حسابك لكن سوف تفقد بعض الإعدادات المحفوظة، مثل معلومات ملفك الشخصي.";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "إذا كنتَ لا تستطيع تذكُر PIN الخاص بك، يُمكنك إنشاء واحد جديد. يُمكنك التسجيل واستخدام حسابك لكن سوف تفقد بعض الإعدادات المحفوظة، مثل معلومات حسابك الشخصي.";
 
 /* Title for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "تجاهُل إدخال PIN؟";
@@ -4757,19 +4748,19 @@
 "ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "لا يُوصى بربط الـiPhone الخاص بك، إذ سيحدّ من بعض الوظف الأساسية.";
 
 /* Description of the 'Contacts' permission in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_CONTACTS_DESCRIPTION" = "Find people you know. Your contacts are encrypted and not visible to the Signal service.";
+"ONBOARDING_PERMISSIONS_CONTACTS_DESCRIPTION" = "اعثر على أشخاص تعرفهم. جهات اتصالك مشفرة وغير مرئية لخدمة سيجنال.";
 
 /* Title introducing the 'Contacts' permission in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_CONTACTS_TITLE" = "Contacts";
+"ONBOARDING_PERMISSIONS_CONTACTS_TITLE" = "جهات الاتصال";
 
 /* Description of the 'Notifications' permission in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_NOTIFICATIONS_DESCRIPTION" = "Get notified when new messages arrive.";
+"ONBOARDING_PERMISSIONS_NOTIFICATIONS_DESCRIPTION" = "تلقَّي إشعار عند وصول رسائل جديدة.";
 
 /* Title introducing the 'Notifications' permission in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_NOTIFICATIONS_TITLE" = "Notifications";
+"ONBOARDING_PERMISSIONS_NOTIFICATIONS_TITLE" = "الإشعارات";
 
 /* Preamble of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_PREAMBLE" = "Signal would like to request the following permissions.";
+"ONBOARDING_PERMISSIONS_PREAMBLE" = "يرغبُ سيجنال بطلب الصلاحيات التالية.";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "تَمكينُ الصّلاحيّات";
@@ -4790,7 +4781,7 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "رقم غير صالِح. للتَّسجيل يُرجى إدخال رقم هاتف صالِح.";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "لقد نَفذَت جميع مُحاولات تخمين الـPIN، لكن يُمكنك الوصول إلى حساب سيجنال الخاص بِكَ عبر إنشاء PIN جديد. للحفاظ على خصوصيتك وأمانك سوف يُستعاد حسابك من غير أي معلومات ملف شخصي أو إعادادات محفوظة مُسبقًا.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "لقد نَفذَت جميع مُحاولات تخمين الـPIN، لكن يُمكنك الوصول إلى حساب سيجنال الخاص بِكَ عبر إنشاء PIN جديد. للحفاظ على خصوصيتك وأمانك سوف يُستعاد حسابك من غير أي معلومات حساب شخصي أو إعدادات محفوظة مُسبقًا.";
 
 /* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "تعرّف على المزيد حول الـPIN";
@@ -4799,7 +4790,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "PIN غير صحيح";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when it is unknown if reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "لقد نَفذَت جميع مُحاولات تخمين رقم التعريف الشخصي، لكن يُمكنك الوصول إلى حساب سيجنال الخاص بِكَ عبر التحقق من رقم هاتفك. للحفاظ على خصوصيتك وأمانك سَيُستعاد حسابك من غير أي معلومات ملف شخصي أو إعدادات محفوظة مُسبقًا.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "لقد نَفذَت جميع مُحاولات تخمين رقم التعريف الشخصي، لكن يُمكنك الوصول إلى حساب سيجنال الخاص بِكَ عبر التحقق من رقم هاتفك. للحفاظ على خصوصيتك وأمانك سَيُستعاد حسابك من غير أي معلومات حساب شخصي أو إعدادات محفوظة مُسبقًا.";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "الشُروط وَسياسة الخُصُوصِية";
@@ -5390,7 +5381,7 @@
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "تحذير";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "الـPIN يُبقي المعلومات المحفوظة مع سيجنال مُعمّاة لذلك تستطيع أنت فقط الوصول إليها. سيتم استرجاع ملفك الشخصي، الإعدادات وجهات الاتصال عندما تُعيد التثبيت. أنت لست بحاجة إلى الـPIN لفتح التطبيق.";
+"PIN_CREATION_EXPLANATION" = "الـPIN يُبقي المعلومات المحفوظة مع سيجنال مُعمّاة لذلك تستطيع أنت فقط الوصول إليها. سيتم استرجاع حسابك الشخصي، الإعدادات وجهات الاتصال عندما تُعيد التثبيت. أنت لست بحاجة إلى الـPIN لفتح التطبيق.";
 
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "المزيد بخصوص رموز PIN";
@@ -5663,13 +5654,13 @@
 "PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "الاسم الأول (مُتَطلَّب)";
 
 /* Error shown when the user tries to update their profile when the app is not connected to the internet. */
-"PROFILE_VIEW_NO_CONNECTION" = "يُمكنكَ تحديث ملفك الشخصي فقط إذا كُنتَ متصلاً بالانترنت.";
+"PROFILE_VIEW_NO_CONNECTION" = "يُمكنكَ تحديث حسابك الشخصي فقط إذا كُنتَ متصلاً بالانترنت.";
 
 /* Description of the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "سيَظهر حسابك الشخصي والتغييرات التي طرأت عليه للأشخاص الذين تُراسلهم وجهات الاتصال والمجموعات.";
 
 /* Title for the profile view. */
-"PROFILE_VIEW_TITLE" = "الملف الشخصي";
+"PROFILE_VIEW_TITLE" = "الحساب الشخصي";
 
 /* Footer below the usernames section of the profile settings explaining username visibility. */
 "PROFILE_VIEW_USERNAME_DESCRIPTION" = "اسم المُستخدم الخاص بك ليس مرئيًا على حسابك الشخصي، وكذلك رمز ورابط الاستجابة السريعة الخاصين بك. شارك اسم المُستخدم الخاص بك فقط مع الناس الذين تثق بهم.";
@@ -5828,7 +5819,7 @@
 "REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "إنَّ الـPIN الخاص بك عِبارة عَن أربع خانات أو أكثر والتي يُمكن أن تكون إما أرقام أو حُروف. إذا لم تستطع تَذكُر الـPIN الخاص بك، يجبُ عليك الانتظار لمدة سبعة أيام لكي تُعيد تسجيل الحساب الخاص بك.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they cannot necessarily create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "إنَّ الرقم التعريفي الشخصي الخاص بك عِبارة عَن رمز أنشأته مكوّن من أربع خانات أو أكثر والتي يُمكن أن تكون إما أرقامًا أو حُروفًا. إذا لم تستطع تَذكُر الرقم التعريفي الشخصي الخاص بك، تستطيع إنشاء واحِد جديد. يُمكنك التسجيل واستخدام الحساب الخاص بك لكِنَك ستفقِد بعض الإعدادات المحفوظة، مِثل معلومات ملفك الشخصي.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "إنَّ الرقم التعريفي الشخصي الخاص بك عِبارة عَن رمز أنشأته مكوّن من أربع خانات أو أكثر والتي يُمكن أن تكون إما أرقامًا أو حُروفًا. إذا لم تستطع تَذكُر الرقم التعريفي الشخصي الخاص بك، تستطيع إنشاء واحِد جديد. يُمكنك التسجيل واستخدام الحساب الخاص بك لكِنَك ستفقِد بعض الإعدادات المحفوظة، مِثل معلومات حسابك الشخصي.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they can create a new PIN */
 "REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "إنَّ الرقم التعريفي الشخصي الخاص بك عِبارة عَن رمز أنشأته مكوّن من أربع خانات أو أكثر والتي يُمكن أن تكون إما أرقامًا أو حُروفًا. إذا لم تستطع تَذكُر الرقم التعريفي الشخصي الخاص بك، تستطيع إنشاء واحِد جديد. يُمكنك التسجيل واستخدام الحساب الخاص بك لكِنَك ستفقِد بعض الإعدادات المحفوظة، مِثل معلومات حسابك الشخصي.";
@@ -5945,7 +5936,7 @@
 "REGISTRATION_PROFILE_SETUP_SUBTITLE" = "تظهر الحسابات الشخصية للأشخاص الذين تُراسلهم وجهات الاتصال والمجموعات.";
 
 /* During registration, users set up their profile. This is the title on the screen where this is done. */
-"REGISTRATION_PROFILE_SETUP_TITLE" = "إعداد الملف الشخصي";
+"REGISTRATION_PROFILE_SETUP_TITLE" = "إعداد الحساب الشخصي";
 
 /* Error shown if an SMS/call service provider is permanently unable to send a verification code to the provided number. */
 "REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "لم يتمكن سيجنال من إرسال رمز عبر رسالة قصيرة إلى هاتفك نظرًا لعطب خارجي.";
@@ -6221,7 +6212,7 @@
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "ثبِّت سيجنال على الهاتف الخاص بك";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "انقر على صورة ملفك الشخصي لفتح ‫إعدادات ‫‫سيجنال‬‬‫ على الهاتف الخاص بك. بعد ذلك \"اﻷجهزة المُرتبطة\" ثم \"ربط جهاز جديد\" لمسح هذا الرمز عن طريق هاتفك:";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "انقر على صورة حسابك الشخصي لفتح ‫إعدادات ‫‫سيجنال‬‬‫ على الهاتف الخاص بك. بعد ذلك \"اﻷجهزة المُرتبطة\" ثم \"ربط جهاز جديد\" لمسح هذا الرمز عن طريق هاتفك:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "مِن هُنا احصل على المُساعدة في ربط الـiPad الخاص بك";
@@ -7145,7 +7136,7 @@
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "تذكيرات الـPIN";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "الـPIN يُبقي المعلومات المحفوظة مع سيجنال مُعمّاة لذلك تستطيع أنت فقط الوصول إليها. لا يمكن استرداد الـPIN الخاص بك. سيتم استرجاع ملفك الشخصي، الإعدادات وجهات الاتصال عندما تُعيد تثبيت سيجنال.";
+"SETTINGS_PINS_FOOTER" = "الـPIN يُبقي المعلومات المحفوظة مع سيجنال مُعمّاة لذلك تستطيع أنت فقط الوصول إليها. لا يمكن استرداد الـPIN الخاص بك. سيتم استرجاع حسابك الشخصي، الإعدادات وجهات الاتصال عندما تُعيد تثبيت سيجنال.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "تغيير الـPIN الخاص بك";
@@ -7259,7 +7250,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "السماح مِن أيِّ شخص";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "تفعيل المُرسِل المَختوم للرسائل الواردة مِن غير جهات الاتصال والأشخاص الذين لم تُشارك ملفَّكَ الشخصي معهم.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "تفعيل المُرسِل المَختوم للرسائل الواردة مِن غير جهات الاتصال والأشخاص الذين لم تُشارك حسابك الشخصي معهم.";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "اﻹصدار";
@@ -7760,7 +7751,7 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "تأكيد";
 
 /* Confirm Cancellation? Action sheet message */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "لن يتم تحصيل رسوم منك مرة أخرى. سَتتم إزالة شارتك من ملفك الشخصي في نهاية المدة الزمنية لإعداد الفواتير.";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "لن يتم تحصيل رسوم منك مرة أخرى. سَتتم إزالة شارتك من حسابك الشخصي في نهاية المدة الزمنية لإعداد الفواتير.";
 
 /* Confirm Cancellation? Action sheet title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "تأكيد الإلغاء؟";
