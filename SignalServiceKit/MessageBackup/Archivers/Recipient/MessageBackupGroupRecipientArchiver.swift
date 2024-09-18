@@ -126,7 +126,10 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
             if let groupDescription = groupModel.descriptionText?.nilIfEmpty {
                 groupSnapshot.description_p = .buildDescriptionText(groupDescription)
             }
-            if let dmConfiguration = disappearingMessageConfigStore.fetch(for: .thread(groupThread), tx: context.tx) {
+            if
+                let dmConfiguration = disappearingMessageConfigStore.fetch(for: .thread(groupThread), tx: context.tx),
+                dmConfiguration.isEnabled
+            {
                 let durationSeconds = dmConfiguration.durationSeconds
                 groupSnapshot.disappearingMessagesTimer = .buildDisappearingMessageTimer(durationSeconds)
             }
@@ -134,14 +137,13 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
             groupSnapshot.members = groupMembership.fullMembers.compactMap { address -> BackupProto_Group.Member? in
                 guard
                     let aci = address.aci,
-                    let role = groupMembership.role(for: address),
-                    let profileKey = profileManager.getProfileKeyData(for: address, tx: context.tx)
+                    let role = groupMembership.role(for: address)
                 else {
                     errors.append(.archiveFrameError(.missingRequiredGroupMemberParams, groupAppId))
                     return nil
                 }
 
-                return .build(serviceId: aci, role: role, profileKeyData: profileKey)
+                return .build(serviceId: aci, role: role)
             }
             groupSnapshot.membersPendingProfileKey = groupMembership.invitedMembers.compactMap { address -> BackupProto_Group.MemberPendingProfileKey? in
                 guard
@@ -160,16 +162,12 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
                 invitedMemberProto.timestamp = 0
                 invitedMemberProto.member = .build(
                     serviceId: serviceId,
-                    role: role,
-                    profileKeyData: nil
+                    role: role
                 )
                 return invitedMemberProto
             }
             groupSnapshot.membersPendingAdminApproval = groupMembership.requestingMembers.compactMap { address -> BackupProto_Group.MemberPendingAdminApproval? in
-                guard
-                    let aci = address.aci,
-                    let profileKey = profileManager.getProfileKeyData(for: address, tx: context.tx)
-                else {
+                guard let aci = address.aci else {
                     errors.append(.archiveFrameError(.missingRequiredGroupMemberParams, groupAppId))
                     return nil
                 }
@@ -178,7 +176,6 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
                 // default-populate it.
                 var memberPendingAdminApproval = BackupProto_Group.MemberPendingAdminApproval()
                 memberPendingAdminApproval.userID = aci.serviceIdBinary.asData
-                memberPendingAdminApproval.profileKey = profileKey
                 memberPendingAdminApproval.timestamp = 0
 
                 return memberPendingAdminApproval
@@ -245,18 +242,6 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
             }
 
             groupMembershipBuilder.addFullMember(aci, role: role)
-
-            if
-                let profileKey = Aes256Key(data: fullMember.profileKey),
-                !profileKey.isAllZeroes
-            {
-                profileManager.setProfileKeyIfMissing(
-                    profileKey,
-                    forAci: aci,
-                    localIdentifiers: context.localIdentifiers,
-                    tx: context.tx
-                )
-            }
         }
         for invitedMember in groupSnapshot.membersPendingProfileKey {
             guard invitedMember.hasMember else {
@@ -283,19 +268,8 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
             guard let aci = try? Aci.parseFrom(serviceIdBinary: requestingMember.userID) else {
                 return restoreFrameError(.invalidProtoData(.invalidAci(protoClass: BackupProto_Group.MemberPendingAdminApproval.self)))
             }
-            groupMembershipBuilder.addRequestingMember(aci)
 
-            if
-                let profileKey = Aes256Key(data: requestingMember.profileKey),
-                !profileKey.isAllZeroes
-            {
-                profileManager.setProfileKeyIfMissing(
-                    profileKey,
-                    forAci: aci,
-                    localIdentifiers: context.localIdentifiers,
-                    tx: context.tx
-                )
-            }
+            groupMembershipBuilder.addRequestingMember(aci)
         }
         for bannedMember in groupSnapshot.membersBanned {
             guard let aci = try? Aci.parseFrom(serviceIdBinary: bannedMember.userID) else {
@@ -453,14 +427,12 @@ private extension BackupProto_Group.GroupSnapshot {
 private extension BackupProto_Group.Member {
     static func build(
         serviceId: ServiceId,
-        role: TSGroupMemberRole,
-        profileKeyData: Data?
+        role: TSGroupMemberRole
     ) -> BackupProto_Group.Member {
         // iOS doesn't track the joinedAtRevision, so we'll default-populate it.
         var member = BackupProto_Group.Member()
         member.userID = serviceId.serviceIdBinary.asData
         member.role = role.asBackupProtoRole
-        member.profileKey = profileKeyData ?? Data()
         member.joinedAtVersion = 0
         return member
     }

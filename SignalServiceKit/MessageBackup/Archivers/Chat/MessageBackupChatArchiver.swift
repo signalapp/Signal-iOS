@@ -136,7 +136,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         }
 
         return archiveThread(
-            .init(threadType: .contact(thread), threadRowId: threadRowId),
+            MessageBackup.ChatThread(threadType: .contact(thread), threadRowId: threadRowId),
             chatId: chatId,
             recipientId: context.recipientContext.localRecipientId,
             stream: stream,
@@ -178,7 +178,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         }
 
         return archiveThread(
-            .init(threadType: .contact(thread), threadRowId: threadRowId),
+            MessageBackup.ChatThread(threadType: .contact(thread), threadRowId: threadRowId),
             chatId: chatId,
             recipientId: recipientId,
             stream: stream,
@@ -208,7 +208,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         }
 
         return archiveThread(
-            .init(threadType: .groupV2(thread), threadRowId: threadRowId),
+            MessageBackup.ChatThread(threadType: .groupV2(thread), threadRowId: threadRowId),
             chatId: chatId,
             recipientId: recipientId,
             stream: stream,
@@ -237,7 +237,10 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
             thisThreadPinnedOrder = 0
         }
 
-        let expirationTimerSeconds = dmConfigurationStore.durationSeconds(for: thread.tsThread, tx: context.tx)
+        let versionedExpireTimerToken = dmConfigurationStore.fetchOrBuildDefault(
+            for: .thread(thread.tsThread),
+            tx: context.tx
+        ).asVersionedToken
 
         let dontNotifyForMentionsIfMuted: Bool
         switch thread.tsThread.mentionNotificationMode {
@@ -252,7 +255,8 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         chat.recipientID = recipientId.value
         chat.archived = threadAssociatedData.isArchived
         chat.pinnedOrder = thisThreadPinnedOrder
-        chat.expirationTimerMs = UInt64(expirationTimerSeconds) * 1000
+        chat.expirationTimerMs = UInt64(versionedExpireTimerToken.durationSeconds) * 1000
+        chat.expireTimerVersion = versionedExpireTimerToken.version
         chat.muteUntilMs = threadAssociatedData.mutedUntilTimestamp
         chat.markedUnread = threadAssociatedData.isMarkedUnread
         chat.dontNotifyForMentionsIfMuted = dontNotifyForMentionsIfMuted
@@ -406,25 +410,22 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
             pinnedThreadManager.updatePinnedThreadIds(newPinnedThreadIds.map(\.value), updateStorageService: false, tx: context.tx)
         }
 
-        if chat.expirationTimerMs > 0 {
-            guard let expiresInSeconds: UInt32 = .msToSecs(chat.expirationTimerMs) else {
-                return .failure([.restoreFrameError(
-                    .invalidProtoData(.expirationTimerOverflowedLocalType),
-                    chat.chatId
-                )])
-            }
-
-            dmConfigurationStore.set(
-                token: .init(
-                    isEnabled: true,
-                    durationSeconds: expiresInSeconds,
-                    // TODO: [Backups] add DM timer version to backups
-                    version: nil
-                ),
-                for: .thread(chatThread.tsThread),
-                tx: context.tx
-            )
+        guard let expiresInSeconds: UInt32 = .msToSecs(chat.expirationTimerMs) else {
+            return .failure([.restoreFrameError(
+                .invalidProtoData(.expirationTimerOverflowedLocalType),
+                chat.chatId
+            )])
         }
+
+        dmConfigurationStore.set(
+            token: VersionedDisappearingMessageToken(
+                isEnabled: expiresInSeconds > 0,
+                durationSeconds: expiresInSeconds,
+                version: chat.expireTimerVersion
+            ),
+            for: .thread(chatThread.tsThread),
+            tx: context.tx
+        )
 
         if chat.dontNotifyForMentionsIfMuted {
             // We only need to set if its not the default.

@@ -12,10 +12,6 @@
 // For information on using the generated types, please see the documentation:
 //   https://github.com/apple/swift-protobuf/
 
-//
-// Copyright 2024 Signal Messenger, LLC
-// SPDX-License-Identifier: AGPL-3.0-only
-
 import Foundation
 import SwiftProtobuf
 
@@ -1070,8 +1066,6 @@ public struct BackupProto_Group {
 
     public var role: BackupProto_Group.Member.Role = .unknown
 
-    public var profileKey: Data = Data()
-
     public var joinedAtVersion: UInt32 = 0
 
     public var unknownFields = SwiftProtobuf.UnknownStorage()
@@ -1141,8 +1135,6 @@ public struct BackupProto_Group {
     // methods supported on all messages.
 
     public var userID: Data = Data()
-
-    public var profileKey: Data = Data()
 
     public var timestamp: UInt64 = 0
 
@@ -1308,6 +1300,8 @@ public struct BackupProto_Chat {
   public var hasStyle: Bool {return self._style != nil}
   /// Clears the value of `style`. Subsequent reads from it will return its default value.
   public mutating func clearStyle() {self._style = nil}
+
+  public var expireTimerVersion: UInt32 = 0
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -5658,6 +5652,8 @@ public struct BackupProto_ChatStyle {
     set {_uniqueStorage()._wallpaper = .wallpaperPreset(newValue)}
   }
 
+  /// This `FilePointer` is expected not to contain a `fileName`, `width`,
+  /// `height`, or `caption`.
   public var wallpaperPhoto: BackupProto_FilePointer {
     get {
       if case .wallpaperPhoto(let v)? = _storage._wallpaper {return v}
@@ -5707,6 +5703,8 @@ public struct BackupProto_ChatStyle {
 
   public enum OneOf_Wallpaper: Equatable {
     case wallpaperPreset(BackupProto_ChatStyle.WallpaperPreset)
+    /// This `FilePointer` is expected not to contain a `fileName`, `width`,
+    /// `height`, or `caption`.
     case wallpaperPhoto(BackupProto_FilePointer)
 
   #if !swift(>=4.1)
@@ -5948,6 +5946,7 @@ public struct BackupProto_ChatStyle {
     /// degrees
     public var angle: UInt32 = 0
 
+    /// 0xAARRGGBB
     public var colors: [UInt32] = []
 
     /// percent from 0 to 1
@@ -5967,6 +5966,7 @@ public struct BackupProto_ChatStyle {
 
     public var color: BackupProto_ChatStyle.CustomChatColor.OneOf_Color? = nil
 
+    /// 0xAARRGGBB
     public var solid: UInt32 {
       get {
         if case .solid(let v)? = color {return v}
@@ -5986,6 +5986,7 @@ public struct BackupProto_ChatStyle {
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
     public enum OneOf_Color: Equatable {
+      /// 0xAARRGGBB
       case solid(UInt32)
       case gradient(BackupProto_ChatStyle.Gradient)
 
@@ -7510,7 +7511,6 @@ extension BackupProto_Group.Member: SwiftProtobuf.Message, SwiftProtobuf._Messag
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "userId"),
     2: .same(proto: "role"),
-    3: .same(proto: "profileKey"),
     5: .same(proto: "joinedAtVersion"),
   ]
 
@@ -7522,7 +7522,6 @@ extension BackupProto_Group.Member: SwiftProtobuf.Message, SwiftProtobuf._Messag
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularBytesField(value: &self.userID) }()
       case 2: try { try decoder.decodeSingularEnumField(value: &self.role) }()
-      case 3: try { try decoder.decodeSingularBytesField(value: &self.profileKey) }()
       case 5: try { try decoder.decodeSingularUInt32Field(value: &self.joinedAtVersion) }()
       default: break
       }
@@ -7536,9 +7535,6 @@ extension BackupProto_Group.Member: SwiftProtobuf.Message, SwiftProtobuf._Messag
     if self.role != .unknown {
       try visitor.visitSingularEnumField(value: self.role, fieldNumber: 2)
     }
-    if !self.profileKey.isEmpty {
-      try visitor.visitSingularBytesField(value: self.profileKey, fieldNumber: 3)
-    }
     if self.joinedAtVersion != 0 {
       try visitor.visitSingularUInt32Field(value: self.joinedAtVersion, fieldNumber: 5)
     }
@@ -7548,7 +7544,6 @@ extension BackupProto_Group.Member: SwiftProtobuf.Message, SwiftProtobuf._Messag
   public static func ==(lhs: BackupProto_Group.Member, rhs: BackupProto_Group.Member) -> Bool {
     if lhs.userID != rhs.userID {return false}
     if lhs.role != rhs.role {return false}
-    if lhs.profileKey != rhs.profileKey {return false}
     if lhs.joinedAtVersion != rhs.joinedAtVersion {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -7615,7 +7610,6 @@ extension BackupProto_Group.MemberPendingAdminApproval: SwiftProtobuf.Message, S
   public static let protoMessageName: String = BackupProto_Group.protoMessageName + ".MemberPendingAdminApproval"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "userId"),
-    2: .same(proto: "profileKey"),
     4: .same(proto: "timestamp"),
   ]
 
@@ -7626,7 +7620,6 @@ extension BackupProto_Group.MemberPendingAdminApproval: SwiftProtobuf.Message, S
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularBytesField(value: &self.userID) }()
-      case 2: try { try decoder.decodeSingularBytesField(value: &self.profileKey) }()
       case 4: try { try decoder.decodeSingularUInt64Field(value: &self.timestamp) }()
       default: break
       }
@@ -7637,9 +7630,6 @@ extension BackupProto_Group.MemberPendingAdminApproval: SwiftProtobuf.Message, S
     if !self.userID.isEmpty {
       try visitor.visitSingularBytesField(value: self.userID, fieldNumber: 1)
     }
-    if !self.profileKey.isEmpty {
-      try visitor.visitSingularBytesField(value: self.profileKey, fieldNumber: 2)
-    }
     if self.timestamp != 0 {
       try visitor.visitSingularUInt64Field(value: self.timestamp, fieldNumber: 4)
     }
@@ -7648,7 +7638,6 @@ extension BackupProto_Group.MemberPendingAdminApproval: SwiftProtobuf.Message, S
 
   public static func ==(lhs: BackupProto_Group.MemberPendingAdminApproval, rhs: BackupProto_Group.MemberPendingAdminApproval) -> Bool {
     if lhs.userID != rhs.userID {return false}
-    if lhs.profileKey != rhs.profileKey {return false}
     if lhs.timestamp != rhs.timestamp {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -7797,6 +7786,7 @@ extension BackupProto_Chat: SwiftProtobuf.Message, SwiftProtobuf._MessageImpleme
     7: .same(proto: "markedUnread"),
     8: .same(proto: "dontNotifyForMentionsIfMuted"),
     9: .same(proto: "style"),
+    10: .same(proto: "expireTimerVersion"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -7814,6 +7804,7 @@ extension BackupProto_Chat: SwiftProtobuf.Message, SwiftProtobuf._MessageImpleme
       case 7: try { try decoder.decodeSingularBoolField(value: &self.markedUnread) }()
       case 8: try { try decoder.decodeSingularBoolField(value: &self.dontNotifyForMentionsIfMuted) }()
       case 9: try { try decoder.decodeSingularMessageField(value: &self._style) }()
+      case 10: try { try decoder.decodeSingularUInt32Field(value: &self.expireTimerVersion) }()
       default: break
       }
     }
@@ -7851,6 +7842,9 @@ extension BackupProto_Chat: SwiftProtobuf.Message, SwiftProtobuf._MessageImpleme
     try { if let v = self._style {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 9)
     } }()
+    if self.expireTimerVersion != 0 {
+      try visitor.visitSingularUInt32Field(value: self.expireTimerVersion, fieldNumber: 10)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -7864,6 +7858,7 @@ extension BackupProto_Chat: SwiftProtobuf.Message, SwiftProtobuf._MessageImpleme
     if lhs.markedUnread != rhs.markedUnread {return false}
     if lhs.dontNotifyForMentionsIfMuted != rhs.dontNotifyForMentionsIfMuted {return false}
     if lhs._style != rhs._style {return false}
+    if lhs.expireTimerVersion != rhs.expireTimerVersion {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

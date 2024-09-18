@@ -71,11 +71,11 @@ public class _MessageBackup_ContactManagerWrapper: _MessageBackup_ContactManager
 
 public protocol _MessageBackup_ProfileManagerShim {
 
+    func enumerateUserProfiles(tx: DBReadTransaction, block: (OWSUserProfile) -> Void)
+
     func getUserProfile(for address: SignalServiceAddress, tx: DBReadTransaction) -> OWSUserProfile?
 
     func getUserProfileForLocalUser(tx: DBReadTransaction) -> OWSUserProfile?
-
-    func getProfileKeyData(for address: SignalServiceAddress, tx: DBReadTransaction) -> Data?
 
     func allWhitelistedAddresses(tx: DBReadTransaction) -> [SignalServiceAddress]
 
@@ -100,13 +100,6 @@ public protocol _MessageBackup_ProfileManagerShim {
         profileKey: Aes256Key?,
         tx: DBWriteTransaction
     )
-
-    func setProfileKeyIfMissing(
-        _ profileKey: Aes256Key,
-        forAci aci: Aci,
-        localIdentifiers: LocalIdentifiers,
-        tx: DBWriteTransaction
-    )
 }
 
 public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManagerShim {
@@ -116,16 +109,18 @@ public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManager
         self.profileManager = profileManager
     }
 
+    public func enumerateUserProfiles(tx: any DBReadTransaction, block: (OWSUserProfile) -> Void) {
+        OWSUserProfile.anyEnumerate(transaction: SDSDB.shimOnlyBridge(tx)) { profile, _ in
+            block(profile)
+        }
+    }
+
     public func getUserProfile(for address: SignalServiceAddress, tx: DBReadTransaction) -> OWSUserProfile? {
         profileManager.getUserProfile(for: address, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     public func getUserProfileForLocalUser(tx: any DBReadTransaction) -> OWSUserProfile? {
         return OWSUserProfile.getUserProfileForLocalUser(tx: SDSDB.shimOnlyBridge(tx))
-    }
-
-    public func getProfileKeyData(for address: SignalServiceAddress, tx: DBReadTransaction) -> Data? {
-        profileManager.profileKeyData(for: address, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     public func allWhitelistedAddresses(tx: any DBReadTransaction) -> [SignalServiceAddress] {
@@ -211,32 +206,6 @@ public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManager
             profileKey: profileKey,
             tx: sdsTx
         )
-    }
-
-    public func setProfileKeyIfMissing(
-        _ profileKey: Aes256Key,
-        forAci aci: Aci,
-        localIdentifiers: LocalIdentifiers,
-        tx: DBWriteTransaction
-    ) {
-        let sdsTx: SDSAnyWriteTransaction = SDSDB.shimOnlyBridge(tx)
-
-        let profileAddress: OWSUserProfile.InsertableAddress = OWSUserProfile.insertableAddress(
-            serviceId: aci,
-            localIdentifiers: localIdentifiers
-        )
-
-        /// We can't simply insert a profile here, because we might have created
-        /// a profile through another flow.
-        let profile = OWSUserProfile.getOrBuildUserProfile(
-            for: profileAddress,
-            userProfileWriter: .messageBackupRestore,
-            tx: sdsTx
-        )
-
-        if profile.profileKey == nil {
-            profile.upsertProfileKeyWithNoSideEffects(profileKey, tx: sdsTx)
-        }
     }
 }
 

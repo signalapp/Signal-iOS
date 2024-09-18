@@ -1583,7 +1583,7 @@ internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnectionUsingSS
         }
     }
 
-    func connectionWasInterrupted(_ service: UnauthenticatedChatService) {
+    func connectionWasInterrupted(_ service: UnauthenticatedChatService, error: Error?) {
         // Don't do anything if the shadowing connection gets interrupted.
         // Either the main connection will also be interrupted, and they'll reconnect together,
         // or requests to the shadowing connection will come back as "chatServiceInactive".
@@ -1883,7 +1883,7 @@ internal class OWSChatConnectionUsingLibSignal<Service: ChatService>: OWSChatCon
         // Overridden by subclass.
     }
 
-    func connectionWasInterrupted(_ service: Service) {
+    func connectionWasInterrupted(_ service: Service, error: Error?) {
         self.serialQueue.async { [self] in
             guard service === chatService else {
                 // Already done with this service.
@@ -1892,6 +1892,12 @@ internal class OWSChatConnectionUsingLibSignal<Service: ChatService>: OWSChatCon
 
             if type == .identified {
                 self.didDisconnectIdentified()
+            }
+
+            if let error {
+                Logger.error("\(logPrefix) disconnected: \(error)")
+            } else if expectedInterruptions == 0 {
+                owsFailDebug("\(logPrefix) libsignal disconnected us without being asked")
             }
 
             if expectedInterruptions > 0 {
