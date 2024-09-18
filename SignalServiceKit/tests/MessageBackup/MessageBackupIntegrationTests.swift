@@ -50,6 +50,7 @@ class MessageBackupIntegrationTests: XCTestCase {
         case chatItemStandardMessageStandardAttachments
         case chatItemStandardMessageTextOnly
         case chatItemStandardMessageWithEdits
+        case chatItemStandardMessageWithQuote
     }
 
     /// The preferred log output for test failures.
@@ -70,7 +71,7 @@ class MessageBackupIntegrationTests: XCTestCase {
 
     /// Performs a round-trip import/export test on all `.binproto` integration
     /// test cases.
-    func testAllIntegrationTestCases() async throws {
+    func testIntegrationTestCases() async throws {
         let binProtoFileUrls: [URL] = {
             let allBinprotoUrls = Bundle(for: type(of: self)).urls(
                 forResourcesWithExtension: "binproto",
@@ -127,6 +128,8 @@ class MessageBackupIntegrationTests: XCTestCase {
                     return binprotoName.contains("chat_item_standard_message_text_only_")
                 case .chatItemStandardMessageWithEdits:
                     return binprotoName.contains("chat_item_standard_message_with_edits_")
+                case .chatItemStandardMessageWithQuote:
+                    return binprotoName.contains("chat_item_standard_message_with_quote_")
                 }
             }
         }()

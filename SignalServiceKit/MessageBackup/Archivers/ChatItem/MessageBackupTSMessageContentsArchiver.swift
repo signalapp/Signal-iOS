@@ -1210,35 +1210,39 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         // Try and find the targeted message, and use that as the source.
         // If this turns out to be a big perf hit, maybe we skip this and just
         // always use the contents of the proto?
-        let targetMessage = findTargetMessageForQuote(quote: quote, thread: thread, context: context)
+        let targetMessage = findTargetMessageForQuote(
+            quote: quote,
+            thread: thread,
+            context: context
+        )
 
-        let quoteBody: MessageBody?
         let bodySource: TSQuotedMessageContentSource
-        if let targetMessage {
+        let quoteBody: MessageBody?
+        if
+            let targetMessage,
+            let text = targetMessage.body
+        {
             bodySource = .local
-
-            if let text = targetMessage.body {
-                quoteBody = .init(text: text, ranges: targetMessage.bodyRanges ?? .empty)
-            } else {
-                quoteBody = nil
-            }
-        } else {
-            bodySource = .remote
-
-            if quote.hasText {
-                guard let bodyResult = restoreMessageBody(
+            quoteBody = MessageBody(
+                text: text,
+                ranges: targetMessage.bodyRanges ?? .empty
+            )
+        } else if quote.hasText {
+            guard
+                let bodyResult = restoreMessageBody(
                     text: quote.text.body,
                     bodyRangeProtos: quote.text.bodyRanges,
                     chatItemId: chatItemId
-                )
-                    .unwrap(partialErrors: &partialErrors)
-                else {
-                    return .messageFailure(partialErrors)
-                }
-                quoteBody = bodyResult
-            } else {
-                quoteBody = nil
+                ).unwrap(partialErrors: &partialErrors)
+            else {
+                return .messageFailure(partialErrors)
             }
+
+            bodySource = .remote
+            quoteBody = bodyResult
+        } else {
+            bodySource = targetMessage == nil ? .remote : .local
+            quoteBody = nil
         }
 
         let isGiftBadge: Bool
@@ -1270,7 +1274,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             quotedAttachmentThumbnail = nil
         }
 
-        guard quoteBody != nil || quotedAttachmentThumbnail != nil || isGiftBadge else {
+        guard quoteBody != nil || quotedAttachmentInfo != nil || isGiftBadge else {
             return .messageFailure([.restoreFrameError(
                 .invalidProtoData(.quotedMessageEmptyContent),
                 chatItemId

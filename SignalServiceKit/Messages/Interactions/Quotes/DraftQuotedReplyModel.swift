@@ -44,6 +44,9 @@ public class DraftQuotedReplyModel {
         )
         /// The original message had an attachment that can be thumbnail-ed,
         /// though it may not actually be thumbnail-ed *yet*.
+        ///
+        /// - Note:
+        /// This includes sticker messages, which are thumbnailable attachments.
         case attachment(
             MessageBody?,
             attachmentRef: TSResourceReference,

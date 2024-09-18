@@ -216,7 +216,7 @@ NS_ASSUME_NONNULL_BEGIN
                                    quotedAttachmentInfo:(nullable OWSAttachmentInfo *)attachmentInfo
                                             isGiftBadge:(BOOL)isGiftBadge
 {
-    OWSAssertDebug(body != nil || attachmentInfo != nil);
+    OWSAssertDebug(body != nil || attachmentInfo != nil || isGiftBadge);
     OWSAssertDebug(authorAddress.isValid);
 
     uint64_t rawTimestamp;
