@@ -83,8 +83,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/OWSViewedReceiptsForLinkedDevicesMessage.h>
 #import <SignalServiceKit/OutgoingPaymentSyncMessage.h>
 #import <SignalServiceKit/PreKeyRecord.h>
-#import <SignalServiceKit/ProfileManagerProtocol.h>
-#import <SignalServiceKit/ProtoUtils.h>
 #import <SignalServiceKit/SDSCrossProcess.h>
 #import <SignalServiceKit/SDSDatabaseStorage+Objc.h>
 #import <SignalServiceKit/SDSKeyValueStore+ObjC.h>

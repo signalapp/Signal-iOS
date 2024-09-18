@@ -802,7 +802,6 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         return UserProfileFinder().userProfile(for: .localUser, transaction: tx) != nil
     }
 
-    @objc
     public class func getOrBuildUserProfileForLocalUser(
         userProfileWriter: UserProfileWriter,
         tx: SDSAnyWriteTransaction
@@ -905,7 +904,6 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
 
     // MARK: - ObjC Compability
 
-    @objc
     public static func shouldUpdateStorageServiceForUserProfileWriter(_ userProfileWriter: UserProfileWriter) -> Bool {
         return userProfileWriter.shouldUpdateStorageService
     }
@@ -1421,22 +1419,6 @@ extension OWSUserProfile {
         )
     }
     #endif
-
-    @available(swift, obsoleted: 1.0)
-    @objc
-    public func update(
-        profileKey: Aes256Key,
-        userProfileWriter: UserProfileWriter,
-        transaction: SDSAnyWriteTransaction,
-        completion: (() -> Void)?
-    ) {
-        update(
-            profileKey: .setTo(profileKey),
-            userProfileWriter: userProfileWriter,
-            transaction: transaction,
-            completion: completion
-        )
-    }
 }
 
 // MARK: - Update without side effects

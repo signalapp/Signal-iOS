@@ -116,14 +116,6 @@ public extension NSObject {
         .shared
     }
 
-    final var profileManagerObjC: ProfileManagerProtocol {
-        SSKEnvironment.shared.profileManagerRef
-    }
-
-    static var profileManagerObjC: ProfileManagerProtocol {
-        SSKEnvironment.shared.profileManagerRef
-    }
-
     @nonobjc
     final var profileManager: ProfileManager {
         SSKEnvironment.shared.profileManagerRef

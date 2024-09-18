@@ -6,7 +6,6 @@
 #import "TSOutgoingMessage.h"
 #import "AppReadiness.h"
 #import "OWSOutgoingSyncMessage.h"
-#import "ProtoUtils.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
 #import "TSGroupThread.h"

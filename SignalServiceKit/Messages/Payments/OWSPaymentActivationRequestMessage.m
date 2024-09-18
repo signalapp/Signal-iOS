@@ -4,8 +4,6 @@
 //
 
 #import "OWSPaymentActivationRequestMessage.h"
-#import "ProfileManagerProtocol.h"
-#import "ProtoUtils.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
