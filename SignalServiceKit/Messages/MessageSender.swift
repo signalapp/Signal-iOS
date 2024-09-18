@@ -1662,6 +1662,8 @@ public class MessageSender: Dependencies {
             // The resolver has 10s to asynchronously resolve a challenge If it
             // resolves, great! We'll let MessageSender auto-retry. Otherwise, it'll be
             // marked as "pending"
+        case let statusCode? where (500...599).contains(statusCode):
+            throw responseError
         default:
             break
         }
