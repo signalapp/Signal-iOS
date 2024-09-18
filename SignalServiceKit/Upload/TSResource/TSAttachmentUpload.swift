@@ -157,7 +157,7 @@ public struct TSAttachmentUpload {
             throw Upload.Error.uploadFailure(recovery: .noMoreRetries)
         }
 
-        let totalDataLength = attempt.localMetadata.encryptedDataLength
+        let totalDataLength = attempt.encryptedDataLength
         var bytesAlreadyUploaded = 0
 
         // Only check remote upload progress if we think progress was made locally
@@ -168,7 +168,7 @@ public struct TSAttachmentUpload {
                 attempt.logger.info("Complete upload reported by endpoint.")
                 return
             case .uploaded(let updatedBytesAlreadUploaded):
-                attempt.logger.info("Endpoint reported \(updatedBytesAlreadUploaded)/\(attempt.localMetadata.encryptedDataLength) uploaded.")
+                attempt.logger.info("Endpoint reported \(updatedBytesAlreadUploaded)/\(attempt.encryptedDataLength) uploaded.")
                 bytesAlreadyUploaded = updatedBytesAlreadUploaded
             case .restart:
                 attempt.logger.warn("Error with fetching progress. Restart upload.")
@@ -239,8 +239,24 @@ public struct TSAttachmentUpload {
 
     // MARK: - Helper Methods
 
+    private func buildAttempt(
+        for localMetadata: Upload.LocalUploadMetadata,
+        count: UInt = 0,
+        logger: PrefixedLogger
+    ) async throws -> Upload.Attempt<Upload.LocalUploadMetadata> {
+        try await buildAttempt(
+            for: localMetadata,
+            fileUrl: localMetadata.fileUrl,
+            encryptedDataLength: localMetadata.encryptedDataLength,
+            count: count,
+            logger: logger
+        )
+    }
+
     private func buildAttempt<Metadata: UploadMetadata>(
         for localMetadata: Metadata,
+        fileUrl: URL,
+        encryptedDataLength: UInt32,
         count: UInt = 0,
         logger: PrefixedLogger
     ) async throws -> Upload.Attempt<Metadata> {
@@ -270,6 +286,8 @@ public struct TSAttachmentUpload {
         return Upload.Attempt(
             cdnKey: form.cdnKey,
             cdnNumber: form.cdnNumber,
+            fileUrl: fileUrl,
+            encryptedDataLength: encryptedDataLength,
             localMetadata: localMetadata,
             beginTimestamp: Date.ows_millisecondTimestamp(),
             endpoint: endpoint,

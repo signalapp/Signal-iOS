@@ -276,7 +276,7 @@ public class Attachment {
     }
 
     public enum TransitUploadStrategy {
-        case reuseExistingUpload(Upload.LocalUploadMetadata, TransitTierInfo)
+        case reuseExistingUpload(Upload.ReusedUploadMetadata)
         case reuseStreamEncryption(Upload.LocalUploadMetadata)
         case freshUpload(AttachmentStream)
         case cannotUpload
@@ -305,7 +305,17 @@ public class Attachment {
             ) <= Upload.Constants.uploadReuseWindow
         {
             // We have unexpired transit tier info. Reuse that upload.
-            return .reuseExistingUpload(metadata, transitTierInfo)
+            return .reuseExistingUpload(
+                .init(
+                    cdnKey: transitTierInfo.cdnKey,
+                    cdnNumber: transitTierInfo.cdnNumber,
+                    key: transitTierInfo.encryptionKey,
+                    digest: transitTierInfo.digestSHA256Ciphertext,
+                    // Okay to fall back to our local data length even if the original sender
+                    // didn't include it; we now know it from the local file.
+                    plaintextDataLength: transitTierInfo.unencryptedByteCount ?? metadata.plaintextDataLength
+                )
+            )
         } else if
             // This device has never uploaded
             transitTierInfo == nil,

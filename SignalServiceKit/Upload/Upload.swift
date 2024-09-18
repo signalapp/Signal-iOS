@@ -118,7 +118,7 @@ public enum Upload {
         public let plaintextDataLength: UInt32
     }
 
-    public struct LocalUploadMetadata: UploadMetadata, Codable {
+    public struct LocalUploadMetadata: AttachmentUploadMetadata, Codable {
         /// File URL of the data consisting of "iv  + encrypted data + hmac"
         public let fileUrl: URL
 
@@ -130,6 +130,21 @@ public enum Upload {
 
         /// The length of the encrypted data, consiting of "iv  + encrypted data + hmac"
         public let encryptedDataLength: UInt32
+
+        /// The length of the unencrypted data
+        public let plaintextDataLength: UInt32
+    }
+
+    public struct ReusedUploadMetadata: AttachmentUploadMetadata {
+        public let cdnKey: String
+
+        public let cdnNumber: UInt32
+
+        /// encryption key + hmac
+        public let key: Data
+
+        /// The digest of the encrypted file.  The encrypted file consist of "iv + encrypted data + hmac"
+        public let digest: Data
 
         /// The length of the unencrypted data
         public let plaintextDataLength: UInt32
@@ -147,9 +162,25 @@ public enum Upload {
         let finishTimestamp: UInt64
     }
 
+    public struct AttachmentResult {
+        let cdnKey: String
+        let cdnNumber: UInt32
+        let localUploadMetadata: AttachmentUploadMetadata
+
+        // Timestamp the upload attempt began
+        let beginTimestamp: UInt64
+
+        // Timestamp the upload attempt completed
+        let finishTimestamp: UInt64
+    }
+
     public struct Attempt<Metadata: UploadMetadata> {
         let cdnKey: String
         let cdnNumber: UInt32
+        /// File URL of the data consisting of "iv  + encrypted data + hmac"
+        let fileUrl: URL
+        /// The length of the encrypted data, consiting of "iv  + encrypted data + hmac"
+        let encryptedDataLength: UInt32
         let localMetadata: Metadata
         let beginTimestamp: UInt64
         let endpoint: UploadEndpoint

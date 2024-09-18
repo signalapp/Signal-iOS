@@ -89,7 +89,7 @@ struct UploadEndpointCDN2: UploadEndpoint {
     ) async throws -> Upload.ResumeProgress {
         var headers = [String: String]()
         headers["Content-Length"] = "0"
-        headers["Content-Range"] = "bytes */\(attempt.localMetadata.encryptedDataLength)"
+        headers["Content-Range"] = "bytes */\(attempt.encryptedDataLength)"
 
         let urlSession = signalService.urlSessionForCdn(cdnNumber: uploadForm.cdnNumber, maxResponseSize: nil)
         let response = try await urlSession.dataTaskPromise(
@@ -150,18 +150,18 @@ struct UploadEndpointCDN2: UploadEndpoint {
         attempt: Upload.Attempt<Metadata>,
         progress progressBlock: @escaping UploadEndpointProgress
     ) async throws {
-        let totalDataLength = attempt.localMetadata.encryptedDataLength
+        let totalDataLength = attempt.encryptedDataLength
         var headers = [String: String]()
         let fileUrl: URL
         var fileToCleanup: URL?
 
         if startPoint == 0 {
             headers["Content-Length"] = "\(totalDataLength)"
-            fileUrl = attempt.localMetadata.fileUrl
+            fileUrl = attempt.fileUrl
         } else {
             // Resuming, slice attachment data in memory.
             let (dataSliceFileUrl, dataSliceLength) = try fileSystem.createTempFileSlice(
-                url: attempt.localMetadata.fileUrl,
+                url: attempt.fileUrl,
                 start: startPoint
             )
             fileUrl = dataSliceFileUrl

@@ -23,7 +23,7 @@ public struct AttachmentUpload {
     ) async throws -> Upload.Result<Metadata> {
         try Task.checkCancellation()
 
-        progress?(AttachmentUpload.buildProgress(done: 0, total: attempt.localMetadata.encryptedDataLength))
+        progress?(AttachmentUpload.buildProgress(done: 0, total: attempt.encryptedDataLength))
 
         return try await attemptUpload(
             attempt: attempt,
@@ -97,7 +97,7 @@ public struct AttachmentUpload {
             throw Upload.Error.uploadFailure(recovery: .noMoreRetries)
         }
 
-        let totalDataLength = attempt.localMetadata.encryptedDataLength
+        let totalDataLength = attempt.encryptedDataLength
         var bytesAlreadyUploaded = 0
 
         // Only check remote upload progress if we think progress was made locally
@@ -108,7 +108,7 @@ public struct AttachmentUpload {
                 attempt.logger.info("Complete upload reported by endpoint.")
                 return
             case .uploaded(let updatedBytesAlreadUploaded):
-                attempt.logger.info("Endpoint reported \(updatedBytesAlreadUploaded)/\(attempt.localMetadata.encryptedDataLength) uploaded.")
+                attempt.logger.info("Endpoint reported \(updatedBytesAlreadUploaded)/\(attempt.encryptedDataLength) uploaded.")
                 bytesAlreadyUploaded = updatedBytesAlreadUploaded
             case .restart:
                 attempt.logger.warn("Error with fetching progress. Restart upload.")
@@ -179,8 +179,54 @@ public struct AttachmentUpload {
 
     // MARK: - Helper Methods
 
+    public static func buildAttempt(
+        for localMetadata: Upload.LocalUploadMetadata,
+        form: Upload.Form,
+        existingSessionUrl: URL? = nil,
+        signalService: OWSSignalServiceProtocol,
+        fileSystem: Upload.Shims.FileSystem,
+        dateProvider: @escaping DateProvider,
+        logger: PrefixedLogger
+    ) async throws -> Upload.Attempt<Upload.LocalUploadMetadata> {
+        return try await buildAttempt(
+            for: localMetadata,
+            fileUrl: localMetadata.fileUrl,
+            encryptedDataLength: localMetadata.encryptedDataLength,
+            form: form,
+            existingSessionUrl: existingSessionUrl,
+            signalService: signalService,
+            fileSystem: fileSystem,
+            dateProvider: dateProvider,
+            logger: logger
+        )
+    }
+
+    public static func buildAttempt(
+        for localMetadata: Upload.EncryptedBackupUploadMetadata,
+        form: Upload.Form,
+        existingSessionUrl: URL? = nil,
+        signalService: OWSSignalServiceProtocol,
+        fileSystem: Upload.Shims.FileSystem,
+        dateProvider: @escaping DateProvider,
+        logger: PrefixedLogger
+    ) async throws -> Upload.Attempt<Upload.EncryptedBackupUploadMetadata> {
+        return try await buildAttempt(
+            for: localMetadata,
+            fileUrl: localMetadata.fileUrl,
+            encryptedDataLength: localMetadata.encryptedDataLength,
+            form: form,
+            existingSessionUrl: existingSessionUrl,
+            signalService: signalService,
+            fileSystem: fileSystem,
+            dateProvider: dateProvider,
+            logger: logger
+        )
+    }
+
     public static func buildAttempt<Metadata: UploadMetadata>(
         for localMetadata: Metadata,
+        fileUrl: URL,
+        encryptedDataLength: UInt32,
         form: Upload.Form,
         existingSessionUrl: URL? = nil,
         signalService: OWSSignalServiceProtocol,
@@ -217,6 +263,8 @@ public struct AttachmentUpload {
         return Upload.Attempt(
             cdnKey: form.cdnKey,
             cdnNumber: form.cdnNumber,
+            fileUrl: fileUrl,
+            encryptedDataLength: encryptedDataLength,
             localMetadata: localMetadata,
             beginTimestamp: dateProvider().ows_millisecondsSince1970,
             endpoint: endpoint,

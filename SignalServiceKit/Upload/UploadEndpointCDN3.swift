@@ -81,7 +81,7 @@ struct UploadEndpointCDN3: UploadEndpoint {
         progress progressBlock: @escaping UploadEndpointProgress
     ) async throws {
         let urlSession = signalService.urlSessionForCdn(cdnNumber: uploadForm.cdnNumber, maxResponseSize: nil)
-        let totalDataLength = attempt.localMetadata.encryptedDataLength
+        let totalDataLength = attempt.encryptedDataLength
 
         var headers = uploadForm.headers
         headers["Content-Type"] = "application/offset+octet-stream"
@@ -98,7 +98,7 @@ struct UploadEndpointCDN3: UploadEndpoint {
 
             // For initial uploads, send a POST to create the file
             method = .post
-            temporaryFileUrl = attempt.localMetadata.fileUrl
+            temporaryFileUrl = attempt.fileUrl
             headers["Content-Length"] = "\(totalDataLength)"
             headers["Upload-Length"] = "\(totalDataLength)"
 
@@ -108,7 +108,7 @@ struct UploadEndpointCDN3: UploadEndpoint {
             // Resuming, slice attachment data in memory.
             // TODO[CDN3]: Avoid slicing file and instead use a input stream
             let (dataSliceFileUrl, dataSliceLength) = try fileSystem.createTempFileSlice(
-                url: attempt.localMetadata.fileUrl,
+                url: attempt.fileUrl,
                 start: startPoint
             )
 

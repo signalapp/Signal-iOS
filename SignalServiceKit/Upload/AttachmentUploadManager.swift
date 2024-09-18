@@ -34,7 +34,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
     private let storyStore: StoryStore
 
     // Map of active upload tasks.
-    private var activeUploads = [Attachment.IDType: Task<(AttachmentUploadRecord, Upload.Result<Upload.LocalUploadMetadata>), Error>]()
+    private var activeUploads = [Attachment.IDType: Task<(AttachmentUploadRecord, Upload.AttachmentResult), Error>]()
 
     private enum UploadType {
         case transitTier
@@ -255,7 +255,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         type: UploadType,
         logger: PrefixedLogger,
         progress: Upload.ProgressBlock?
-    ) async throws -> (record: AttachmentUploadRecord, result: Upload.Result<Upload.LocalUploadMetadata>) {
+    ) async throws -> (record: AttachmentUploadRecord, result: Upload.AttachmentResult) {
 
         if let activeUpload = activeUploads[attachmentId] {
             // If this fails, it means the internal retry logic has given up, so don't 
@@ -302,7 +302,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         type: UploadType,
         logger: PrefixedLogger,
         progress: Upload.ProgressBlock?
-    ) async throws -> (AttachmentUploadRecord, Upload.Result<Upload.LocalUploadMetadata>) {
+    ) async throws -> (AttachmentUploadRecord, Upload.AttachmentResult) {
         let attachmentId = attachment.id
         var updateRecord = false
         var cleanupMetadata = false
@@ -338,13 +338,13 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             attachmentUploadRecord.uploadForm = nil
             attachmentUploadRecord.uploadFormTimestamp = nil
             attachmentUploadRecord.uploadSessionUrl = nil
-        case .alreadyUploaded(let metadata, let transitTierInfo):
+        case .alreadyUploaded(let metadata):
             // No need to upload - Cleanup the upload record and return
             return (
                 attachmentUploadRecord,
-                Upload.Result(
-                    cdnKey: transitTierInfo.cdnKey,
-                    cdnNumber: transitTierInfo.cdnNumber,
+                Upload.AttachmentResult(
+                    cdnKey: metadata.cdnKey,
+                    cdnNumber: metadata.cdnNumber,
                     localUploadMetadata: metadata,
                     beginTimestamp: dateProvider().ows_millisecondsSince1970,
                     finishTimestamp: dateProvider().ows_millisecondsSince1970
@@ -418,7 +418,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                     owsFailDebug("Error: \(error)")
                 }
             }
-            return (attachmentUploadRecord, result)
+            return (attachmentUploadRecord, result.asAttachmentResult)
         } catch {
 
             // If the max number of upload failures was hit, give up and throw an error
@@ -501,7 +501,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         case new(Upload.LocalUploadMetadata)
         case existing(Upload.LocalUploadMetadata)
         case reuse(Upload.LocalUploadMetadata)
-        case alreadyUploaded(Upload.LocalUploadMetadata, Attachment.TransitTierInfo)
+        case alreadyUploaded(Upload.ReusedUploadMetadata)
     }
 
     private func getOrFetchUploadMetadata(
@@ -533,9 +533,9 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             logger.warn("Attachment is not uploadable.")
             // Can't upload non-stream attachments; terminal failure.
             throw OWSUnretryableError()
-        case .reuseExistingUpload(let metadata, let info):
+        case .reuseExistingUpload(let metadata):
             logger.debug("Attachment previously uploaded.")
-            return .alreadyUploaded(metadata, info)
+            return .alreadyUploaded(metadata)
         case .reuseStreamEncryption(let metadata):
             return .reuse(metadata)
         case .freshUpload(let stream):
@@ -584,7 +584,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
     // Update all the necessary places once the upload succeeds
     private func updateTransitTier(
         attachmentStream: AttachmentStream,
-        with result: Upload.Result<Upload.LocalUploadMetadata>,
+        with result: Upload.AttachmentResult,
         logger: PrefixedLogger,
         tx: DBWriteTransaction
     ) throws {
@@ -648,7 +648,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         localAci: Aci,
         mediaName: String,
         uploadEra: String,
-        result: Upload.Result<Upload.LocalUploadMetadata>,
+        result: Upload.AttachmentResult,
         logger: PrefixedLogger
     ) async throws -> UInt32 {
         let auth = try await messageBackupRequestManager.fetchBackupServiceAuth(localAci: localAci, auth: .implicit())
@@ -706,6 +706,19 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                 Upload.Constants.uploadProgressKey: progress,
                 Upload.Constants.uploadAttachmentIDKey: id
             ]
+        )
+    }
+}
+
+extension Upload.Result where Metadata: AttachmentUploadMetadata {
+
+    var asAttachmentResult: Upload.AttachmentResult {
+        return Upload.AttachmentResult(
+            cdnKey: cdnKey,
+            cdnNumber: cdnNumber,
+            localUploadMetadata: localUploadMetadata,
+            beginTimestamp: beginTimestamp,
+            finishTimestamp: finishTimestamp
         )
     }
 }
