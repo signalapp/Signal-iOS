@@ -640,7 +640,7 @@ extension ConversationSettingsViewController: ConversationHeaderDelegate {
 
     func buildMainHeader() -> UIView {
         let options: ConversationHeaderBuilder.Options
-        if callViewModel == nil {
+        if callRecords.isEmpty {
             options = [.videoCall, .audioCall, .mute, .search, .renderLocalUserAsNoteToSelf]
         } else {
             // Call details

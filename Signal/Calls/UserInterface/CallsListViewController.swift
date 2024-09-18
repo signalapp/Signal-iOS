@@ -1692,7 +1692,7 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
             isSystemContact: isSystemContact,
             // Nothing would have been revealed, so this can be a fresh instance
             spoilerState: SpoilerRenderState(),
-            callViewModel: viewModel
+            callRecords: viewModel.allCallRecords
         )
 
         callDetailsView.hidesBottomBarWhenPushed = true

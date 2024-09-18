@@ -32,16 +32,14 @@ extension ConversationSettingsViewController {
 
         let isNoteToSelf = thread.isNoteToSelf
 
+        let callDetailsSection = createCallSection()
+        if let callDetailsSection {
+            contents.add(callDetailsSection)
+        }
+
         let mainSection = OWSTableSection()
 
-        let firstSection: OWSTableSection
-        if let callViewModel {
-            let callDetailsSection = createCallSection(callViewModel: callViewModel)
-            firstSection = callDetailsSection
-            contents.add(callDetailsSection)
-        } else {
-            firstSection = mainSection
-        }
+        let firstSection = callDetailsSection ?? mainSection
 
         let header = buildMainHeader()
         lastContentWidth = view.width
@@ -93,7 +91,11 @@ extension ConversationSettingsViewController {
 
     // MARK: Calls section
 
-    private func createCallSection(callViewModel: CallViewModel) -> OWSTableSection {
+    private func createCallSection() -> OWSTableSection? {
+        guard let callRecord = callRecords.first else {
+            return nil
+        }
+
         let section = OWSTableSection()
 
         let stackView = UIStackView()
@@ -104,12 +106,12 @@ extension ConversationSettingsViewController {
         dateLabel.font = .dynamicTypeBody
         dateLabel.textColor = Theme.primaryTextColor
         // We always want to show the absolute date with year
-        dateLabel.text = DateUtil.formatOldDate(callViewModel.callBeganDate)
+        dateLabel.text = DateUtil.formatOldDate(callRecord.callBeganDate)
         stackView.addArrangedSubview(dateLabel)
         stackView.setCustomSpacing(10, after: dateLabel)
 
         typealias CallRow = (icon: ThemeIcon, description: String, timestamp: String)
-        let callRows: [CallRow] = callViewModel.allCallRecords.map { callRecord in
+        let callRows: [CallRow] = callRecords.map { callRecord in
             let icon: ThemeIcon = switch callRecord.callType {
             case .audioCall:
                 .phone16

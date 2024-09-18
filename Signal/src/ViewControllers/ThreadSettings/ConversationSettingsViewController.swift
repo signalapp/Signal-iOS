@@ -26,14 +26,12 @@ public protocol ConversationSettingsViewDelegate: AnyObject {
 // TODO: We should describe which state updates & when it is committed.
 class ConversationSettingsViewController: OWSTableViewController2, BadgeCollectionDataSource {
 
-    typealias CallViewModel = CallsListViewController.CallViewModel
-
     public weak var conversationSettingsViewDelegate: ConversationSettingsViewDelegate?
 
     private(set) var threadViewModel: ThreadViewModel
     private(set) var isSystemContact: Bool
     let spoilerState: SpoilerRenderState
-    let callViewModel: CallViewModel?
+    let callRecords: [CallRecord]
 
     var thread: TSThread {
         threadViewModel.threadRecord
@@ -64,12 +62,12 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         threadViewModel: ThreadViewModel,
         isSystemContact: Bool,
         spoilerState: SpoilerRenderState,
-        callViewModel: CallViewModel? = nil
+        callRecords: [CallRecord] = []
     ) {
         self.threadViewModel = threadViewModel
         self.isSystemContact = isSystemContact
         self.spoilerState = spoilerState
-        self.callViewModel = callViewModel
+        self.callRecords = callRecords
         groupViewHelper = GroupViewHelper(threadViewModel: threadViewModel)
 
         disappearingMessagesConfiguration = Self.databaseStorage.read { tx in
