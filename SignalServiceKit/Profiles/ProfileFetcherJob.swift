@@ -429,7 +429,10 @@ public class ProfileFetcherJob {
             }
         }
 
-        if shouldSendProfileSync {
+        if
+            shouldSendProfileSync,
+            DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx).isRegistered
+        {
             /// If some capability is newly enabled, we want all devices to be aware.
             /// This would happen automatically the next time those devices
             /// fetch the local profile, but we'd prefer it happen ASAP!
