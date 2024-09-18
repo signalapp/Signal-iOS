@@ -746,6 +746,7 @@ public class AppSetup {
             appExpiry: appExpiry,
             db: db,
             libsignalNet: libsignalNet,
+            registrationStateChangeManager: registrationStateChangeManager,
             userDefaults: appContext.appUserDefaults()
         )
 

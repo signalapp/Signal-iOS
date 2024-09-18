@@ -48,9 +48,6 @@ public class OWSChatConnection: NSObject {
     public typealias RequestFailure = (OWSHTTPError) -> Void
     fileprivate typealias RequestSuccessInternal = (HTTPResponse, RequestInfo) -> Void
 
-    // Track where Dependencies are used throughout this class.
-    fileprivate struct GlobalDependencies: Dependencies {}
-
     public static let chatConnectionStateDidChange = Notification.Name("chatConnectionStateDidChange")
 
     fileprivate let serialQueue: DispatchQueue
@@ -60,6 +57,8 @@ public class OWSChatConnection: NSObject {
     fileprivate let type: OWSChatConnectionType
     fileprivate let appExpiry: AppExpiry
     fileprivate let db: DB
+    fileprivate let accountManager: TSAccountManager
+    fileprivate let registrationStateChangeManager: RegistrationStateChangeManager
 
     fileprivate static func label(forRequest request: TSRequest,
                                   connectionType: OWSChatConnectionType,
@@ -191,13 +190,15 @@ public class OWSChatConnection: NSObject {
 
     // MARK: -
 
-    public init(type: OWSChatConnectionType, appExpiry: AppExpiry, db: DB) {
+    public init(type: OWSChatConnectionType, accountManager: TSAccountManager, appExpiry: AppExpiry, db: DB, registrationStateChangeManager: RegistrationStateChangeManager) {
         AssertIsOnMainThread()
 
         self.serialQueue = DispatchQueue(label: "org.signal.chat-connection-\(type)")
         self.type = type
         self.appExpiry = appExpiry
         self.db = db
+        self.accountManager = accountManager
+        self.registrationStateChangeManager = registrationStateChangeManager
 
         super.init()
 
@@ -347,7 +348,7 @@ public class OWSChatConnection: NSObject {
             return .closed(reason: "!isAppReady")
         }
 
-        guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
+        guard self.accountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
             return .closed(reason: "!isRegisteredAndReady")
         }
 
@@ -606,6 +607,9 @@ public class OWSChatConnection: NSObject {
 }
 
 public class OWSChatConnectionUsingSSKWebSocket: OWSChatConnection {
+    // Track where Dependencies are used throughout this class.
+    fileprivate struct GlobalDependencies: Dependencies {}
+
     private var _currentWebSocket = AtomicOptional<WebSocketConnection>(nil, lock: .sharedGlobal)
     fileprivate var currentWebSocket: WebSocketConnection? {
         get {
@@ -937,8 +941,8 @@ public class OWSChatConnectionUsingSSKWebSocket: OWSChatConnection {
             // UD socket is unauthenticated.
             return nil
         case .identified:
-            let login = DependenciesBridge.shared.tsAccountManager.storedServerUsernameWithMaybeTransaction ?? ""
-            let password = DependenciesBridge.shared.tsAccountManager.storedServerAuthTokenWithMaybeTransaction ?? ""
+            let login = accountManager.storedServerUsernameWithMaybeTransaction ?? ""
+            let password = accountManager.storedServerAuthTokenWithMaybeTransaction ?? ""
             owsAssertDebug(login.nilIfEmpty != nil)
             owsAssertDebug(password.nilIfEmpty != nil)
             return [
@@ -1157,10 +1161,9 @@ extension OWSChatConnectionUsingSSKWebSocket: SSKWebSocketDelegate {
 
         // If socket opens, we know we're not de-registered.
         if type == .identified {
-            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-            if tsAccountManager.registrationStateWithMaybeSneakyTransaction.isDeregistered {
-                DependenciesBridge.shared.db.write { tx in
-                    DependenciesBridge.shared.registrationStateChangeManager.setIsDeregisteredOrDelinked(false, tx: tx)
+            if accountManager.registrationStateWithMaybeSneakyTransaction.isDeregistered {
+                db.write { tx in
+                    registrationStateChangeManager.setIsDeregisteredOrDelinked(false, tx: tx)
                 }
             }
         }
@@ -1188,8 +1191,8 @@ extension OWSChatConnectionUsingSSKWebSocket: SSKWebSocketDelegate {
         self.currentWebSocket = nil
 
         if type == .identified, case WebSocketError.httpError(statusCode: 403, _) = error {
-            DependenciesBridge.shared.db.write { tx in
-                DependenciesBridge.shared.registrationStateChangeManager.setIsDeregisteredOrDelinked(true, tx: tx)
+            db.write { tx in
+                registrationStateChangeManager.setIsDeregisteredOrDelinked(true, tx: tx)
             }
         }
 
@@ -1433,12 +1436,12 @@ internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnectionUsingSS
         return libsignalNet.createUnauthenticatedChatService()
     }
 
-    internal init(libsignalNet: Net, type: OWSChatConnectionType, appExpiry: AppExpiry, db: DB, shadowingFrequency: Double) {
+    internal init(libsignalNet: Net, type: OWSChatConnectionType, accountManager: TSAccountManager, appExpiry: AppExpiry, db: DB, registrationStateChangeManager: RegistrationStateChangeManager, shadowingFrequency: Double) {
         owsPrecondition((0.0...1.0).contains(shadowingFrequency))
         self.libsignalNet = libsignalNet
         self.chatService = Self.makeChatService(libsignalNet: libsignalNet)
         self._shadowingFrequency = shadowingFrequency
-        super.init(type: type, appExpiry: appExpiry, db: db)
+        super.init(type: type, accountManager: accountManager, appExpiry: appExpiry, db: db, registrationStateChangeManager: registrationStateChangeManager)
     }
 
     fileprivate override func isSignalProxyReadyDidChange(_ notification: NSNotification) {
@@ -1639,10 +1642,10 @@ internal class OWSChatConnectionUsingLibSignal<Service: ChatService>: OWSChatCon
         }
     }
 
-    internal init(libsignalNet: Net, chatService: Service, type: OWSChatConnectionType, appExpiry: AppExpiry, db: DB) {
+    internal init(libsignalNet: Net, chatService: Service, type: OWSChatConnectionType, accountManager: TSAccountManager, appExpiry: AppExpiry, db: DB, registrationStateChangeManager: RegistrationStateChangeManager) {
         self.libsignalNet = libsignalNet
         self._chatService = chatService
-        super.init(type: type, appExpiry: appExpiry, db: db)
+        super.init(type: type, accountManager: accountManager, appExpiry: appExpiry, db: db, registrationStateChangeManager: registrationStateChangeManager)
     }
 
     fileprivate func makeChatService() -> Service {
@@ -1729,7 +1732,7 @@ internal class OWSChatConnectionUsingLibSignal<Service: ChatService>: OWSChatCon
                 serialQueue.async {
                     if self.chatService === chatService {
                         self.db.write { tx in
-                            DependenciesBridge.shared.registrationStateChangeManager.setIsDeregisteredOrDelinked(true, tx: tx)
+                            self.registrationStateChangeManager.setIsDeregisteredOrDelinked(true, tx: tx)
                         }
                     }
                 }
@@ -1925,9 +1928,9 @@ internal class OWSChatConnectionUsingLibSignal<Service: ChatService>: OWSChatCon
 }
 
 internal class OWSUnauthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<UnauthenticatedChatService> {
-    init(libsignalNet: Net, appExpiry: AppExpiry, db: DB) {
+    init(libsignalNet: Net, accountManager: TSAccountManager, appExpiry: AppExpiry, db: DB, registrationStateChangeManager: RegistrationStateChangeManager) {
         let chatService = libsignalNet.createUnauthenticatedChatService()
-        super.init(libsignalNet: libsignalNet, chatService: chatService, type: .unidentified, appExpiry: appExpiry, db: db)
+        super.init(libsignalNet: libsignalNet, chatService: chatService, type: .unidentified, accountManager: accountManager, appExpiry: appExpiry, db: db, registrationStateChangeManager: registrationStateChangeManager)
         chatService.setListener(self)
     }
 
@@ -1942,17 +1945,14 @@ internal class OWSUnauthConnectionUsingLibSignal: OWSChatConnectionUsingLibSigna
 }
 
 internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<AuthenticatedChatService>, ChatListener {
-    private let accountManager: TSAccountManager
-
     private let _hasEmptiedInitialQueue = AtomicBool(false, lock: .sharedGlobal)
     override var hasEmptiedInitialQueue: Bool {
         _hasEmptiedInitialQueue.get()
     }
 
-    init(libsignalNet: Net, accountManager: TSAccountManager, appExpiry: AppExpiry, db: DB) {
-        self.accountManager = accountManager
+    init(libsignalNet: Net, accountManager: TSAccountManager, appExpiry: AppExpiry, db: DB, registrationStateChangeManager: RegistrationStateChangeManager) {
         let dummyChatService = libsignalNet.createAuthenticatedChatService(username: "", password: "", receiveStories: false)
-        super.init(libsignalNet: libsignalNet, chatService: dummyChatService, type: .identified, appExpiry: appExpiry, db: db)
+        super.init(libsignalNet: libsignalNet, chatService: dummyChatService, type: .identified, accountManager: accountManager, appExpiry: appExpiry, db: db, registrationStateChangeManager: registrationStateChangeManager)
     }
 
     fileprivate override func appDidBecomeReady() {
@@ -1980,7 +1980,7 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
     fileprivate override func didConnectIdentified() {
         if accountManager.registrationStateWithMaybeSneakyTransaction.isDeregistered {
             db.write { tx in
-                DependenciesBridge.shared.registrationStateChangeManager.setIsDeregisteredOrDelinked(false, tx: tx)
+                registrationStateChangeManager.setIsDeregisteredOrDelinked(false, tx: tx)
             }
         }
     }

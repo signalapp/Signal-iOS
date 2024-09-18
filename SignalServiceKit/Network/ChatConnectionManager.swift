@@ -22,26 +22,30 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
     private let connectionUnidentified: OWSChatConnection
     private var connections: [OWSChatConnection] { [ connectionIdentified, connectionUnidentified ]}
 
-    public init(accountManager: TSAccountManager, appExpiry: AppExpiry, db: DB, libsignalNet: Net, userDefaults: UserDefaults) {
+    public init(accountManager: TSAccountManager, appExpiry: AppExpiry, db: DB, libsignalNet: Net, registrationStateChangeManager: RegistrationStateChangeManager, userDefaults: UserDefaults) {
         AssertIsOnMainThread()
         if userDefaults.bool(forKey: Self.shouldUseLibsignalForIdentifiedDefaultsKey) {
-            connectionIdentified = OWSAuthConnectionUsingLibSignal(libsignalNet: libsignalNet, accountManager: accountManager, appExpiry: appExpiry, db: db)
+            connectionIdentified = OWSAuthConnectionUsingLibSignal(libsignalNet: libsignalNet, accountManager: accountManager, appExpiry: appExpiry, db: db, registrationStateChangeManager: registrationStateChangeManager)
         } else {
             connectionIdentified = OWSChatConnectionUsingSSKWebSocket(
                 type: .identified,
+                accountManager: accountManager,
                 appExpiry: appExpiry,
-                db: db
+                db: db,
+                registrationStateChangeManager: registrationStateChangeManager
             )
         }
 
         if userDefaults.bool(forKey: Self.shouldUseLibsignalForUnidentifiedDefaultsKey) {
-            connectionUnidentified = OWSUnauthConnectionUsingLibSignal(libsignalNet: libsignalNet, appExpiry: appExpiry, db: db)
+            connectionUnidentified = OWSUnauthConnectionUsingLibSignal(libsignalNet: libsignalNet, accountManager: accountManager, appExpiry: appExpiry, db: db, registrationStateChangeManager: registrationStateChangeManager)
         } else if userDefaults.bool(forKey: Self.enableShadowingDefaultsKey) {
             let shadowingConnection = OWSChatConnectionWithLibSignalShadowing(
                 libsignalNet: libsignalNet,
                 type: .unidentified,
+                accountManager: accountManager,
                 appExpiry: appExpiry,
                 db: db,
+                registrationStateChangeManager: registrationStateChangeManager,
                 shadowingFrequency: 0.0
             )
             // RemoteConfig isn't available while we're still setting up singletons,
@@ -53,7 +57,7 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
             }
             connectionUnidentified = shadowingConnection
         } else {
-            connectionUnidentified = OWSChatConnectionUsingSSKWebSocket(type: .unidentified, appExpiry: appExpiry, db: db)
+            connectionUnidentified = OWSChatConnectionUsingSSKWebSocket(type: .unidentified, accountManager: accountManager, appExpiry: appExpiry, db: db, registrationStateChangeManager: registrationStateChangeManager)
         }
 
         SwiftSingletons.register(self)
