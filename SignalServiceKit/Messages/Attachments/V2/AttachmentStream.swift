@@ -89,7 +89,7 @@ public class AttachmentStream {
             } else if
                 let filename,
                 let filenameUrl = URL(string: filename),
-                let pathExtension = fileURL.pathExtension.nilIfEmpty
+                let pathExtension = filenameUrl.pathExtension.nilIfEmpty
             {
                 return pathExtension
             } else {
