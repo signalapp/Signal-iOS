@@ -97,7 +97,6 @@ class HomeTabBarController: UITabBarController {
     // how this view controller manages the same set of child viewcontroller throughout it's lifetime.
     // To avoid having to rebuild the ViewControllers whenever there's a change (e.g. - hiding stories), 
     // build UITabs once and persist them in a type erasing array.
-#if compiler(>=6.0)
     private var _uiTabs = [String: Any]()
     @available(iOS 18, *)
     func uiTab(for tab: Tabs) -> UITab {
@@ -111,7 +110,6 @@ class HomeTabBarController: UITabBarController {
         }
         return uiTab as! UITab
     }
-#endif
 
     var selectedHomeTab: Tabs {
         get { Tabs(rawValue: selectedIndex) ?? .chatList }
@@ -161,15 +159,11 @@ class HomeTabBarController: UITabBarController {
 
     private func updateTabBars(areStoriesEnabled: Bool) {
         let newTabs = tabsToShow(areStoriesEnabled: areStoriesEnabled)
-#if compiler(>=6.0)
         if #available(iOS 18, *) {
             self.tabs = newTabs.map(uiTab(for:))
         } else {
             initializeCustomTabBar(tabs: newTabs)
         }
-#else
-        initializeCustomTabBar(tabs: newTabs)
-#endif
         applyTheme()
     }
 

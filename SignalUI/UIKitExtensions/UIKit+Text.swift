@@ -37,14 +37,14 @@ public extension UITextView {
     }
 }
 
-public extension UITextInputTraits {
-
-    func disableAiWritingTools() {
-        #if compiler(>=16.0)
+extension UITextInputTraits {
+    public func disableAiWritingTools() {
         if #available(iOS 18, *) {
-            self.writingToolsBehavior = .none
+            let setWritingToolsBehavior = #selector(setter: writingToolsBehavior)
+            if self.responds(to: setWritingToolsBehavior) {
+                self.perform(setWritingToolsBehavior, with: UIWritingToolsBehavior.none)
+            }
         }
-        #endif
     }
 }
 
@@ -207,12 +207,7 @@ public extension NSTextAlignment {
 
 // MARK: -
 
-#if compiler(>=6)
-extension NSTextAlignment: @retroactive CustomStringConvertible {}
-#else
-extension NSTextAlignment: CustomStringConvertible {}
-#endif
-extension NSTextAlignment {
+extension NSTextAlignment: @retroactive CustomStringConvertible {
     public var description: String {
         switch self {
         case .left:

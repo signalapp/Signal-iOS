@@ -344,10 +344,6 @@ extension VideoEditorModel {
             }
 
             let exportURL = URL(fileURLWithPath: dstFilePath)
-#if compiler(<6.0)
-            session.outputURL = exportURL
-            session.outputFileType = .mp4
-#endif
 
             // This will ensure that the MP4 moov atom (movie atom)
             // is located at the beginning of the file. That may help
@@ -359,11 +355,7 @@ extension VideoEditorModel {
             let cmRange: CMTimeRange = CMTimeRange(start: cmStart, duration: cmDuration)
             session.timeRange = cmRange
 
-#if compiler(>=6.0)
             try await session.exportAsync(to: exportURL, as: .mp4)
-#else
-            await session.export()
-#endif
 
             switch (session.status, session.outputURL?.path) {
             case (.completed, let path?):

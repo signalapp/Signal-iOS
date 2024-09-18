@@ -6,7 +6,6 @@
 import AVFoundation
 
 extension AVAssetExportSession {
-#if compiler(>=6.0)
     /// Workaround for `export(to:as:)` not being back-deployed before iOS 18.
     @available(iOSApplicationExtension, obsoleted: 18.0, message: "Use export(to:as:) instead")
     @inlinable
@@ -28,5 +27,4 @@ extension AVAssetExportSession {
             }
         }
     }
-#endif
 }

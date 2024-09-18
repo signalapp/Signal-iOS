@@ -32,13 +32,7 @@ extension RecipientPickerDelegate where Self: UIViewController & UsernameLinkSca
     }
 }
 
-// TODO: Remove conditional code once Xcode 15 support is dropped
-#if compiler(<6.0)
-extension BaseMemberViewController: MemberViewUsernameQRCodeScannerPresenter {}
-#else
-extension BaseMemberViewController: @retroactive MemberViewUsernameQRCodeScannerPresenter {}
-#endif
-extension BaseMemberViewController {
+extension BaseMemberViewController: @retroactive MemberViewUsernameQRCodeScannerPresenter {
     public func presentUsernameQRCodeScannerFromMemberView() {
         presentUsernameQRCodeScanner()
     }

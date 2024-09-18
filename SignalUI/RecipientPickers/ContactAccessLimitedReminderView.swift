@@ -65,10 +65,8 @@ struct ContactAccessLimitedReminderView: View {
                 }
             }
         }
-#if compiler(>=6.0)
         .contactAccessPicker(isPresented: $displayPicker) { _ in
             completion()
         }
-#endif
     }
 }

@@ -1194,19 +1194,11 @@ public class SignalAttachment: NSObject {
         exportSession.metadataItemFilter = AVMetadataItemFilter.forSharing()
 
         let exportURL = videoTempPath.appendingPathComponent(UUID().uuidString).appendingPathExtension("mp4")
-#if compiler(<6.0)
-        exportSession.outputURL = exportURL
-        exportSession.outputFileType = .mp4
-#endif
 
         try await withThrowingTaskGroup(of: Void.self) { group in
             group.addTask { @MainActor in
                 Logger.debug("Starting video export")
-#if compiler(>=6.0)
                 try await exportSession.exportAsync(to: exportURL, as: .mp4)
-#else
-                await exportSession.export()
-#endif
 
                 switch exportSession.status {
                 case .unknown:

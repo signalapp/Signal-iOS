@@ -177,11 +177,7 @@ class DebugContactsUtils: Dependencies {
         case .denied, .restricted:
             return false
 
-#if compiler(>=6.0)
-        case .limited:
-            fallthrough
-#endif
-        case .authorized:
+        case .limited, .authorized:
             return true
 
         case .notDetermined:

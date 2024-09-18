@@ -52,10 +52,8 @@ public class ContactsFrameworkContactStoreAdaptee: NSObject, ContactStoreAdaptee
             return .restricted
         case .denied:
             return .denied
-#if compiler(>=6.0)
         case .limited:
             return .limited
-#endif
         case .authorized:
              return .authorized
         @unknown default:
