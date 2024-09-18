@@ -5,22 +5,16 @@
 
 import SignalUI
 import SignalServiceKit
+import SignalRingRTC
 
 /// A type that allows calls to be started with a given recipient after various
 /// checks are performed. See ``startCall(from:)`` for details of those checks.
 struct CallStarter {
     private enum Recipient {
+        // [CallLink] TODO: Rename these to avoid ambiguity with group calls.
         case contact(thread: TSContactThread, withVideo: Bool)
         case group(thread: TSGroupThread)
-
-        var thread: TSThread {
-            switch self {
-            case let .contact(thread, _):
-                return thread
-            case let .group(thread):
-                return thread
-            }
-        }
+        case callLink(CallLinkRootKey)
     }
 
     enum StartCallResult {
@@ -60,6 +54,11 @@ struct CallStarter {
         self.context = context
     }
 
+    init(callLink: CallLinkRootKey, context: Context) {
+        self.recipient = .callLink(callLink)
+        self.context = context
+    }
+
     /// Attempts to start a call, if the conditions to start a call are met. If
     /// a call with `recipient` is already ongoing, it returns to that call.
     ///
@@ -78,7 +77,7 @@ struct CallStarter {
     @discardableResult
     func startCall(from viewController: UIViewController) -> StartCallResult {
         let callTarget: CallTarget
-        let callThread: TSThread
+        let callThread: TSThread?
         let isVideoCall: Bool
         switch recipient {
         case .contact(let thread, let withVideo):
@@ -89,14 +88,20 @@ struct CallStarter {
             callTarget = .groupThread(thread)
             callThread = thread
             isVideoCall = true
+        case .callLink(let rootKey):
+            callTarget = .callLink(CallLink(rootKey: rootKey))
+            callThread = nil
+            isVideoCall = true
         }
 
-        let threadIsBlocked = context.databaseStorage.read { tx in
-            return context.blockingManager.isThreadBlocked(callThread, transaction: tx)
-        }
-        if threadIsBlocked {
-            BlockListUIUtils.showUnblockThreadActionSheet(callThread, from: viewController, completion: nil)
-            return .promptedToUnblock
+        if let callThread {
+            let threadIsBlocked = context.databaseStorage.read { tx in
+                return context.blockingManager.isThreadBlocked(callThread, transaction: tx)
+            }
+            if threadIsBlocked {
+                BlockListUIUtils.showUnblockThreadActionSheet(callThread, from: viewController, completion: nil)
+                return .promptedToUnblock
+            }
         }
 
         if let currentCall = context.callService.callServiceState.currentCall, currentCall.mode.matches(callTarget) {
@@ -110,6 +115,7 @@ struct CallStarter {
                 owsFailDebug("Shouldn't be able to startCall if canCall is false")
                 return .callNotStarted
             }
+            self.whitelistThread(thread)
         case .groupThread(let thread):
             guard !thread.isBlockedByAnnouncementOnly else {
                 Self.showBlockedByAnnouncementOnlySheet(from: viewController)
@@ -118,10 +124,10 @@ struct CallStarter {
             guard thread.canCall else {
                 return .callNotStarted
             }
+            self.whitelistThread(thread)
         case .callLink:
-            owsFail("Not supported.")
+            break
         }
-        self.whitelistThread(callThread)
         context.callService.initiateCall(to: callTarget, isVideo: isVideoCall)
         return .callStarted
     }
