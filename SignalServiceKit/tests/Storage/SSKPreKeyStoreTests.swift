@@ -34,7 +34,7 @@ class SSKPreKeyStoreTests: SSKBaseTest {
     }
 
     func testGeneratingAndStoringPreKeys() {
-        let generatedKeys = aciPreKeyStore.generatePreKeyRecords()
+        let generatedKeys = databaseStorage.write { aciPreKeyStore.generatePreKeyRecords(transaction: $0) }
         XCTAssertEqual(generatedKeys.count, 100)
 
         aciPreKeyStore.storePreKeyRecords(generatedKeys)
@@ -56,7 +56,7 @@ class SSKPreKeyStoreTests: SSKBaseTest {
     }
 
     func testRemovingPreKeys() {
-        let generatedKeys = aciPreKeyStore.generatePreKeyRecords()
+        let generatedKeys = databaseStorage.write { aciPreKeyStore.generatePreKeyRecords(transaction: $0) }
         XCTAssertEqual(generatedKeys.count, 100)
 
         aciPreKeyStore.storePreKeyRecords(generatedKeys)

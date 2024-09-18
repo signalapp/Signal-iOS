@@ -5,7 +5,6 @@
 
 #import "SSKSignedPreKeyStore.h"
 #import "SDSKeyValueStore+ObjC.h"
-#import "SSKPreKeyStore.h"
 #import "SignedPrekeyRecord.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 

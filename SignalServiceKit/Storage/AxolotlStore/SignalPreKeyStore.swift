@@ -7,8 +7,6 @@ import Foundation
 import LibSignalClient
 
 public protocol SignalPreKeyStore: LibSignalClient.PreKeyStore {
-    func generatePreKeyRecords() -> [SignalServiceKit.PreKeyRecord]
-
     func generatePreKeyRecords(tx: DBWriteTransaction) -> [SignalServiceKit.PreKeyRecord]
 
     func storePreKeyRecords(_ records: [SignalServiceKit.PreKeyRecord], tx: DBWriteTransaction)
