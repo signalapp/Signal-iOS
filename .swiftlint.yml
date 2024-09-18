@@ -35,13 +35,9 @@ disabled_rules:
 - unused_closure_parameter
 - unused_optional_binding
 opt_in_rules:
-- attributes
 - comma_inheritance
 - empty_string
 - sorted_first_last
-attributes:
-  always_on_line_above: ["@available", "@objc", "@nonobjc"]
-  attributes_with_arguments_always_on_line_above: false
 inclusive_language:
   override_allowed_terms: ["master", "whitelist"]
 large_tuple:
