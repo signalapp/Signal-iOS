@@ -3170,7 +3170,6 @@
 		F9C5CD58289453B300548EEE /* BaseModel.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA7B289453B100548EEE /* BaseModel.m */; };
 		F9C5CD59289453B300548EEE /* FullTextSearchIndexer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA7C289453B100548EEE /* FullTextSearchIndexer.swift */; };
 		F9C5CD5A289453B300548EEE /* TSYapDatabaseObject.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA7D289453B100548EEE /* TSYapDatabaseObject.m */; };
-		F9C5CD5B289453B300548EEE /* TSStorageKeys.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA7E289453B100548EEE /* TSStorageKeys.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CD5D289453B300548EEE /* MediaGalleryRecordFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA80289453B100548EEE /* MediaGalleryRecordFinder.swift */; };
 		F9C5CD5F289453B300548EEE /* RecipientIdFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA82289453B100548EEE /* RecipientIdFinder.swift */; };
 		F9C5CD61289453B300548EEE /* TSYapDatabaseObject.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA84289453B100548EEE /* TSYapDatabaseObject.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -6815,7 +6814,6 @@
 		F9C5CA7B289453B100548EEE /* BaseModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BaseModel.m; sourceTree = "<group>"; };
 		F9C5CA7C289453B100548EEE /* FullTextSearchIndexer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FullTextSearchIndexer.swift; sourceTree = "<group>"; };
 		F9C5CA7D289453B100548EEE /* TSYapDatabaseObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSYapDatabaseObject.m; sourceTree = "<group>"; };
-		F9C5CA7E289453B100548EEE /* TSStorageKeys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSStorageKeys.h; sourceTree = "<group>"; };
 		F9C5CA80289453B100548EEE /* MediaGalleryRecordFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaGalleryRecordFinder.swift; sourceTree = "<group>"; };
 		F9C5CA82289453B100548EEE /* RecipientIdFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecipientIdFinder.swift; sourceTree = "<group>"; };
 		F9C5CA84289453B100548EEE /* TSYapDatabaseObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSYapDatabaseObject.h; sourceTree = "<group>"; };
@@ -13393,7 +13391,6 @@
 				5008672E2B91432F00E34B5F /* SearchableNameIndexer.swift */,
 				F9C5CA77289453B100548EEE /* SSKKeychainStorage.swift */,
 				50F86FC32AFEFEC20045F58B /* TimeGatedBatch.swift */,
-				F9C5CA7E289453B100548EEE /* TSStorageKeys.h */,
 				F9C5CA84289453B100548EEE /* TSYapDatabaseObject.h */,
 				F9C5CA7D289453B100548EEE /* TSYapDatabaseObject.m */,
 				72454E7F2C9BCEA30084B483 /* YDBStorage.swift */,
@@ -14003,7 +14000,6 @@
 				F9C5CD82289453B300548EEE /* TSPaymentModels.h in Headers */,
 				F9C5CCCC289453B300548EEE /* TSPrivateStoryThread.h in Headers */,
 				F9C5CC03289453B300548EEE /* TSQuotedMessage.h in Headers */,
-				F9C5CD5B289453B300548EEE /* TSStorageKeys.h in Headers */,
 				F9C5CCBA289453B300548EEE /* TSThread.h in Headers */,
 				F9C5CBF1289453B300548EEE /* TSUnreadIndicatorInteraction.h in Headers */,
 				F9C5CD61289453B300548EEE /* TSYapDatabaseObject.h in Headers */,
