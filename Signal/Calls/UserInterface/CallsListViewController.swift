@@ -1091,18 +1091,6 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             }
         }
 
-        /// The `TSThread` for the call. If a `TSContactThread` or
-        /// `TSGroupThread` is needed, switch on `recipientType`
-        /// instead of typecasting this property.
-        var thread: TSThread {
-            switch recipientType {
-            case let .individual(_, contactThread):
-                return contactThread
-            case let .group(groupThread):
-                return groupThread
-            }
-        }
-
         var isMissed: Bool {
             switch direction {
             case .outgoing, .incoming:
@@ -1392,13 +1380,17 @@ extension CallsListViewController: UITableViewDelegate {
             return nil
         }
 
+        guard let chatThread = goToChatThread(from: viewModel) else {
+            return nil
+        }
+
         let goToChatAction = makeContextualAction(
             style: .normal,
             color: .ows_accentBlue,
             image: "arrow-square-upright-fill",
             title: Strings.goToChatActionTitle
         ) { [weak self] in
-            self?.goToChat(from: viewModel)
+            self?.goToChat(for: chatThread)
         }
 
         return .init(actions: [goToChatAction])
@@ -1525,14 +1517,16 @@ extension CallsListViewController: UITableViewDelegate {
             actions.append(videoCallAction)
         }
 
-        let goToChatAction = UIAction(
-            title: Strings.goToChatActionTitle,
-            image: Theme.iconImage(.contextMenuOpenInChat),
-            attributes: []
-        ) { [weak self] _ in
-            self?.goToChat(from: viewModel)
+        if let chatThread = goToChatThread(from: viewModel) {
+            let goToChatAction = UIAction(
+                title: Strings.goToChatActionTitle,
+                image: Theme.iconImage(.contextMenuOpenInChat),
+                attributes: []
+            ) { [weak self] _ in
+                self?.goToChat(for: chatThread)
+            }
+            actions.append(goToChatAction)
         }
-        actions.append(goToChatAction)
 
         let infoAction = UIAction(
             title: Strings.viewCallInfoActionTitle,
@@ -1620,10 +1614,6 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
         }
     }
 
-    private func goToChat(from viewModel: CallViewModel) {
-        goToChat(for: viewModel.thread)
-    }
-
     private func deleteCalls(viewModelReferences: [CallViewModel.Reference]) {
         deps.db.asyncWrite { tx in
             let callRecordIdsToDelete: [CallRecord.ID] = viewModelReferences.flatMap { reference in
@@ -1673,8 +1663,14 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
     fileprivate func showCallInfo(from viewModel: CallViewModel) {
         AssertIsOnMainThread()
 
+        switch viewModel.recipientType {
+        case .individual(type: _, let thread as TSThread), .group(let thread as TSThread):
+            showCallInfo(for: thread, callRecords: viewModel.allCallRecords)
+        }
+    }
+
+    private func showCallInfo(for thread: TSThread, callRecords: [CallRecord]) {
         let (threadViewModel, isSystemContact) = deps.db.read { tx in
-            let thread = viewModel.thread
             let threadViewModel = ThreadViewModel(
                 thread: thread,
                 forChatList: false,
@@ -1692,7 +1688,7 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
             isSystemContact: isSystemContact,
             // Nothing would have been revealed, so this can be a fresh instance
             spoilerState: SpoilerRenderState(),
-            callRecords: viewModel.allCallRecords
+            callRecords: callRecords
         )
 
         callDetailsView.hidesBottomBarWhenPushed = true
@@ -1700,6 +1696,13 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
     }
 
     // MARK: NewCallViewControllerDelegate
+
+    private func goToChatThread(from viewModel: CallViewModel) -> TSThread? {
+        switch viewModel.recipientType {
+        case .individual(type: _, let thread as TSThread), .group(let thread as TSThread):
+            return thread
+        }
+    }
 
     func goToChat(for thread: TSThread) {
         SignalApp.shared.presentConversationForThread(thread, action: .compose, animated: false)
@@ -1945,7 +1948,10 @@ private extension CallsListViewController {
             }
 
             avatarView.updateWithSneakyTransactionIfNecessary { configuration in
-                configuration.dataSource = .thread(viewModel.thread)
+                switch viewModel.recipientType {
+                case .individual(type: _, let thread as TSThread), .group(let thread as TSThread):
+                    configuration.dataSource = .thread(thread)
+                }
             }
 
             let titleText: String = {
