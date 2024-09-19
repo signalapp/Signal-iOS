@@ -3143,7 +3143,6 @@
 		F9C5CD33289453B300548EEE /* SSKSignedPreKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA55289453B100548EEE /* SSKSignedPreKeyStore.swift */; };
 		F9C5CD34289453B300548EEE /* SignalProtocolStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA56289453B100548EEE /* SignalProtocolStore.swift */; };
 		F9C5CD35289453B300548EEE /* SessionRecordMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA57289453B100548EEE /* SessionRecordMigration.swift */; };
-		F9C5CD36289453B300548EEE /* SSKSignedPreKeyStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA58289453B100548EEE /* SSKSignedPreKeyStore.m */; };
 		F9C5CD37289453B300548EEE /* SenderKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA59289453B100548EEE /* SenderKeyStore.swift */; };
 		F9C5CD3C289453B300548EEE /* SSKSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA5E289453B100548EEE /* SSKSessionStore.swift */; };
 		F9C5CD3D289453B300548EEE /* LegacySendingChain.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA60289453B100548EEE /* LegacySendingChain.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -3164,7 +3163,6 @@
 		F9C5CD4D289453B300548EEE /* PreKeyRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA70289453B100548EEE /* PreKeyRecord.m */; };
 		F9C5CD4E289453B300548EEE /* LegacySessionState.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA71289453B100548EEE /* LegacySessionState.m */; };
 		F9C5CD4F289453B300548EEE /* LegacyMessageKeys.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA72289453B100548EEE /* LegacyMessageKeys.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CD51289453B300548EEE /* SSKSignedPreKeyStore.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA74289453B100548EEE /* SSKSignedPreKeyStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CD52289453B300548EEE /* SSKPreKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA75289453B100548EEE /* SSKPreKeyStore.swift */; };
 		F9C5CD54289453B300548EEE /* SSKKeychainStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA77289453B100548EEE /* SSKKeychainStorage.swift */; };
 		F9C5CD55289453B300548EEE /* YDBStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA78289453B100548EEE /* YDBStorage.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -6791,7 +6789,6 @@
 		F9C5CA55289453B100548EEE /* SSKSignedPreKeyStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSKSignedPreKeyStore.swift; sourceTree = "<group>"; };
 		F9C5CA56289453B100548EEE /* SignalProtocolStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalProtocolStore.swift; sourceTree = "<group>"; };
 		F9C5CA57289453B100548EEE /* SessionRecordMigration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SessionRecordMigration.swift; sourceTree = "<group>"; };
-		F9C5CA58289453B100548EEE /* SSKSignedPreKeyStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSKSignedPreKeyStore.m; sourceTree = "<group>"; };
 		F9C5CA59289453B100548EEE /* SenderKeyStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SenderKeyStore.swift; sourceTree = "<group>"; };
 		F9C5CA5E289453B100548EEE /* SSKSessionStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSKSessionStore.swift; sourceTree = "<group>"; };
 		F9C5CA60289453B100548EEE /* LegacySendingChain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LegacySendingChain.h; sourceTree = "<group>"; };
@@ -6812,7 +6809,6 @@
 		F9C5CA70289453B100548EEE /* PreKeyRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreKeyRecord.m; sourceTree = "<group>"; };
 		F9C5CA71289453B100548EEE /* LegacySessionState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LegacySessionState.m; sourceTree = "<group>"; };
 		F9C5CA72289453B100548EEE /* LegacyMessageKeys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LegacyMessageKeys.h; sourceTree = "<group>"; };
-		F9C5CA74289453B100548EEE /* SSKSignedPreKeyStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSKSignedPreKeyStore.h; sourceTree = "<group>"; };
 		F9C5CA75289453B100548EEE /* SSKPreKeyStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSKPreKeyStore.swift; sourceTree = "<group>"; };
 		F9C5CA77289453B100548EEE /* SSKKeychainStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSKKeychainStorage.swift; sourceTree = "<group>"; };
 		F9C5CA78289453B100548EEE /* YDBStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YDBStorage.h; sourceTree = "<group>"; };
@@ -13473,8 +13469,6 @@
 				C198FDD52A37C905000BCAC9 /* SSKKyberPreKeyStore.swift */,
 				F9C5CA75289453B100548EEE /* SSKPreKeyStore.swift */,
 				F9C5CA5E289453B100548EEE /* SSKSessionStore.swift */,
-				F9C5CA74289453B100548EEE /* SSKSignedPreKeyStore.h */,
-				F9C5CA58289453B100548EEE /* SSKSignedPreKeyStore.m */,
 				F9C5CA55289453B100548EEE /* SSKSignedPreKeyStore.swift */,
 			);
 			path = AxolotlStore;
@@ -13988,7 +13982,6 @@
 				F9C5CD4B289453B300548EEE /* SignedPrekeyRecord.h in Headers */,
 				F9C5CD2C289453B300548EEE /* SSKAccessors+SDS.h in Headers */,
 				F9C5CE42289453B400548EEE /* SSKAsserts.h in Headers */,
-				F9C5CD51289453B300548EEE /* SSKSignedPreKeyStore.h in Headers */,
 				F9C5CC1C289453B300548EEE /* StickerInfo.h in Headers */,
 				F9C5CC0F289453B300548EEE /* StickerPack.h in Headers */,
 				668A01142C2B6077007B8808 /* Threading.h in Headers */,
@@ -17429,7 +17422,6 @@
 				F9C5CCA1289453B300548EEE /* SSKProto.swift in Sources */,
 				F9C5CC8E289453B300548EEE /* SSKProtos.swift in Sources */,
 				F9C5CD3C289453B300548EEE /* SSKSessionStore.swift in Sources */,
-				F9C5CD36289453B300548EEE /* SSKSignedPreKeyStore.m in Sources */,
 				F9C5CD33289453B300548EEE /* SSKSignedPreKeyStore.swift in Sources */,
 				F9C5CD9E289453B400548EEE /* SSKWebSocket.swift in Sources */,
 				F9C5CC1B289453B300548EEE /* StickerError.swift in Sources */,

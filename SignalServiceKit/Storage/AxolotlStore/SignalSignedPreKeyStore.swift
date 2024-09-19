@@ -80,7 +80,7 @@ extension SSKSignedPreKeyStore: SignalSignedPreKeyStore {
 #if TESTABLE_BUILD
 
     public func removeAll(tx: DBWriteTransaction) {
-        removeAll(SDSDB.shimOnlyBridge(tx))
+        removeAll(transaction: SDSDB.shimOnlyBridge(tx))
     }
 
 #endif
