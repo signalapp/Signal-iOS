@@ -30,9 +30,9 @@ PODS:
     - Logging (~> 1.4)
   - PureLayout (3.1.4)
   - Reachability (3.7.6)
-  - SignalRingRTC (2.47.1):
-    - SignalRingRTC/WebRTC (= 2.47.1)
-  - SignalRingRTC/WebRTC (2.47.1)
+  - SignalRingRTC (2.48.0):
+    - SignalRingRTC/WebRTC (= 2.48.0)
+  - SignalRingRTC/WebRTC (2.48.0)
   - SQLCipher (4.6.0):
     - SQLCipher/standard (= 4.6.0)
   - SQLCipher/common (4.6.0)
@@ -62,7 +62,7 @@ DEPENDENCIES:
   - MobileCoin/CoreHTTP (from `https://github.com/mobilecoinofficial/MobileCoin-Swift`, tag `v6.0.3`)
   - PureLayout
   - Reachability
-  - SignalRingRTC (from `https://github.com/signalapp/ringrtc`, tag `v2.47.1`)
+  - SignalRingRTC (from `https://github.com/signalapp/ringrtc`, tag `v2.48.0`)
   - SQLCipher (from `https://github.com/signalapp/sqlcipher.git`, tag `v4.6.0-f_barrierfsync`)
   - SSZipArchive (from `ThirdParty/SSZipArchive.podspec`)
   - SwiftProtobuf (>= 1.14.0)
@@ -103,7 +103,7 @@ EXTERNAL SOURCES:
     :tag: v6.0.3
   SignalRingRTC:
     :git: https://github.com/signalapp/ringrtc
-    :tag: v2.47.1
+    :tag: v2.48.0
   SQLCipher:
     :git: https://github.com/signalapp/sqlcipher.git
     :tag: v4.6.0-f_barrierfsync
@@ -134,7 +134,7 @@ CHECKOUT OPTIONS:
     :tag: v6.0.3
   SignalRingRTC:
     :git: https://github.com/signalapp/ringrtc
-    :tag: v2.47.1
+    :tag: v2.48.0
   SQLCipher:
     :git: https://github.com/signalapp/sqlcipher.git
     :tag: v4.6.0-f_barrierfsync
@@ -157,12 +157,12 @@ SPEC CHECKSUMS:
   MobileCoin: cd7f49d6eaa2d362e4c9f8324cae0cc3bc3c53b5
   PureLayout: f08c01b8dec00bb14a1fefa3de4c7d9c265df85e
   Reachability: fd0ecd23705e2599e4cceeb943222ae02296cbc6
-  SignalRingRTC: c6a8d94650f2d7bcd8fe466eb48166e13fcdc04d
+  SignalRingRTC: 606450c29b690c2bf71e40c07b18ba96ee236c17
   SQLCipher: 30a8e81afa6128e600b17ffa77d0f92fa05ed208
   SSZipArchive: 8c3485528a87fa6f90afdbfc33682eb61d985ae5
   SwiftProtobuf: cc47329e2a10c235e35ba4faed831742ae5135ce
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
 
-PODFILE CHECKSUM: 3d6507239a0eabf0cc8657e14501c7ae5263a27c
+PODFILE CHECKSUM: 04737359fcf0afaaff5c76614a4f867b41d1cafa
 
 COCOAPODS: 1.15.2
