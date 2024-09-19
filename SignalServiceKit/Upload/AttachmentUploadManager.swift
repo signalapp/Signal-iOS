@@ -374,7 +374,8 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                     chatConnectionManager: self.chatConnectionManager
                 ).start()
             case .mediaTier(let auth, _):
-                uploadForm = try await self.messageBackupRequestManager.fetchBackupUploadForm(auth: auth)
+                uploadForm = try await self.messageBackupRequestManager
+                    .fetchBackupMediaAttachmentUploadForm(auth: auth)
             }
 
             attachmentUploadRecord.uploadForm = uploadForm
