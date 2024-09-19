@@ -117,7 +117,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/TSUnreadIndicatorInteraction.h>
 #import <SignalServiceKit/TSYapDatabaseObject.h>
 #import <SignalServiceKit/Threading.h>
-#import <SignalServiceKit/YDBStorage.h>
 
 #define OWSLocalizedString(key, comment)                                                                               \
     [[NSBundle mainBundle].appBundle localizedStringForKey:(key) value:@"" table:nil]
