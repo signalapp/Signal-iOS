@@ -312,7 +312,7 @@ public class RegistrationTransferQRCodeViewController: OWSViewController, OWSNav
                     )
                 ),
                 .init(
-                    icon: #imageLiteral(resourceName: "AppIcon"),
+                    icon: UIImage(resource: UIApplication.shared.currentAppIcon.previewImageResource),
                     text: OWSLocalizedString(
                         "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO",
                         comment: "Second step for local network permission action sheet"
