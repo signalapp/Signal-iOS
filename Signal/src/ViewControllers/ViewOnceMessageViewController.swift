@@ -83,7 +83,11 @@ class ViewOnceMessageViewController: OWSViewController {
         let controlsHeight = controlSize + vMargin * 2
         mediaView.autoSetDimension(.width, toSize: controlsWidth, relation: .greaterThanOrEqual)
         mediaView.autoSetDimension(.height, toSize: controlsHeight, relation: .greaterThanOrEqual)
-
+        contentView.addSubview(placeholderView)
+        placeholderView.autoSetDimension(.width, toSize: controlsWidth, relation: .greaterThanOrEqual)
+        placeholderView.autoSetDimension(.height, toSize: controlsHeight, relation: .greaterThanOrEqual)
+        placeholderView.autoPinEdgesToSuperviewEdges()
+        
         let dismissButton = OWSButton(imageName: Theme.iconName(.buttonX), tintColor: Theme.darkThemePrimaryColor) { [weak self] in
             self?.dismissButtonPressed()
         }
@@ -100,6 +104,39 @@ class ViewOnceMessageViewController: OWSViewController {
 
         setupDatabaseObservation()
     }
+    
+    private var placeholderView: UIView = {
+        let view = UIView()
+        view.backgroundColor = Theme.backgroundColor
+        let label = UILabel()
+        label.text = OWSLocalizedString("VIEW_ONCE_MEDIA_SCREEN_RECORD_RESTRICTION", comment: "Text to show when user tries to see a media file when device screen recording is still going on.")
+        label.numberOfLines = 0
+        
+        let imageView = UIImageView(image: UIImage(named: "video-slash"))
+        imageView.autoSetDimension(.height, toSize: 48)
+        imageView.autoSetDimension(.width, toSize: 48)
+        imageView.contentMode = .scaleAspectFill
+        let stackView = UIStackView()
+        stackView.addArrangedSubview(imageView)
+        stackView.addArrangedSubview(label)
+        stackView.axis = .vertical
+        stackView.alignment = .center
+        stackView.distribution = .equalCentering
+        stackView.spacing = 12
+        view.addSubview(stackView)
+        stackView.autoCenterInSuperview()
+        stackView.autoPinLeadingToSuperviewMargin(withInset: 24)
+        stackView.autoPinTrailingToSuperviewMargin(withInset: 24)
+        
+        let logoView = UIImageView(image: UIImage(named: "signal-full-logo"))
+        view.addSubview(logoView)
+        logoView.autoSetDimension(.height, toSize: 48)
+        logoView.autoSetDimension(.width, toSize: 48)
+        logoView.contentMode = .scaleAspectFill
+        logoView.autoPinBottomToSuperviewMargin(withInset: 24)
+        logoView.autoHCenterInSuperview()
+        return view
+    }()
 
     private func buildMediaView() -> UIView? {
         switch content.type {
