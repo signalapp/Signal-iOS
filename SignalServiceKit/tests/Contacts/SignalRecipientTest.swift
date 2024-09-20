@@ -627,12 +627,14 @@ class SignalRecipientTest: SSKBaseTest {
         )
     }
 
-    private func fetchRecipient(aci: Aci, transaction: SDSAnyReadTransaction) -> SignalRecipient? {
-        SignalRecipient.fetchRecipient(for: SignalServiceAddress(aci), onlyIfRegistered: false, tx: transaction)
+    private func fetchRecipient(aci: Aci, transaction tx: SDSAnyReadTransaction) -> SignalRecipient? {
+        return DependenciesBridge.shared.recipientDatabaseTable
+            .fetchRecipient(serviceId: aci, transaction: tx.asV2Read)
     }
 
-    private func fetchRecipient(phoneNumber: E164, transaction: SDSAnyReadTransaction) -> SignalRecipient? {
-        SignalRecipient.fetchRecipient(for: SignalServiceAddress(phoneNumber), onlyIfRegistered: false, tx: transaction)
+    private func fetchRecipient(phoneNumber: E164, transaction tx: SDSAnyReadTransaction) -> SignalRecipient? {
+        return DependenciesBridge.shared.recipientDatabaseTable
+            .fetchRecipient(phoneNumber: phoneNumber.stringValue, transaction: tx.asV2Read)
     }
 }
 

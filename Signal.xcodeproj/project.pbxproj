@@ -3087,7 +3087,6 @@
 		F9C5CCDD289453B300548EEE /* SignalAccountFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9F7289453B100548EEE /* SignalAccountFinder.swift */; };
 		F9C5CCDE289453B300548EEE /* TSThread.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9F8289453B100548EEE /* TSThread.m */; };
 		F9C5CCDF289453B300548EEE /* TSThread+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9F9289453B100548EEE /* TSThread+SDS.swift */; };
-		F9C5CCE0289453B300548EEE /* SignalRecipientFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9FA289453B100548EEE /* SignalRecipientFinder.swift */; };
 		F9C5CCE1289453B300548EEE /* ContactThreadFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9FB289453B100548EEE /* ContactThreadFinder.swift */; };
 		F9C5CCE2289453B300548EEE /* SignalServiceAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9FC289453B100548EEE /* SignalServiceAddress.swift */; };
 		F9C5CCE3289453B300548EEE /* TSGroupMember.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9FD289453B100548EEE /* TSGroupMember.swift */; };
@@ -6731,7 +6730,6 @@
 		F9C5C9F7289453B100548EEE /* SignalAccountFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalAccountFinder.swift; sourceTree = "<group>"; };
 		F9C5C9F8289453B100548EEE /* TSThread.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSThread.m; sourceTree = "<group>"; };
 		F9C5C9F9289453B100548EEE /* TSThread+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TSThread+SDS.swift"; sourceTree = "<group>"; };
-		F9C5C9FA289453B100548EEE /* SignalRecipientFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalRecipientFinder.swift; sourceTree = "<group>"; };
 		F9C5C9FB289453B100548EEE /* ContactThreadFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactThreadFinder.swift; sourceTree = "<group>"; };
 		F9C5C9FC289453B100548EEE /* SignalServiceAddress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalServiceAddress.swift; sourceTree = "<group>"; };
 		F9C5C9FD289453B100548EEE /* TSGroupMember.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSGroupMember.swift; sourceTree = "<group>"; };
@@ -8706,7 +8704,6 @@
 			isa = PBXGroup;
 			children = (
 				F9C5C9E1289453B100548EEE /* SignalRecipient.swift */,
-				F9C5C9FA289453B100548EEE /* SignalRecipientFinder.swift */,
 				6619A1942B27C7F3004B38FE /* SignalRecipientManager.swift */,
 			);
 			path = SignalRecipient;
@@ -17384,7 +17381,6 @@
 				88DF819528E1130900F8BA80 /* SignalProxy+RelayServer.swift in Sources */,
 				88DF819928E1157400F8BA80 /* SignalProxy.swift in Sources */,
 				F9C5CCC8289453B300548EEE /* SignalRecipient.swift in Sources */,
-				F9C5CCE0289453B300548EEE /* SignalRecipientFinder.swift in Sources */,
 				6619A1952B27C7F3004B38FE /* SignalRecipientManager.swift in Sources */,
 				F9C5CC9A289453B300548EEE /* SignalService.pb.swift in Sources */,
 				F9C5CCE2289453B300548EEE /* SignalServiceAddress.swift in Sources */,

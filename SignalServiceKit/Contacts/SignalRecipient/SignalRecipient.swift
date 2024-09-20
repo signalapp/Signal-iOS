@@ -257,27 +257,6 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
 
     // MARK: - Fetching
 
-    public static func fetchRecipient(
-        for address: SignalServiceAddress,
-        onlyIfRegistered: Bool,
-        tx: SDSAnyReadTransaction
-    ) -> SignalRecipient? {
-        owsAssertDebug(address.isValid)
-        guard let signalRecipient = SignalRecipientFinder().signalRecipient(for: address, tx: tx) else {
-            return nil
-        }
-        if onlyIfRegistered {
-            guard signalRecipient.isRegistered else {
-                return nil
-            }
-        }
-        return signalRecipient
-    }
-
-    public static func isRegistered(address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> Bool {
-        return fetchRecipient(for: address, onlyIfRegistered: true, tx: tx) != nil
-    }
-
     public static func fetchAllPhoneNumbers(tx: SDSAnyReadTransaction) -> [String: Bool] {
         var result = [String: Bool]()
         Self.anyEnumerate(transaction: tx) { signalRecipient, _ in

@@ -922,12 +922,17 @@ extension OWSProfileManager: ProfileManager, Dependencies {
     }
 
     public func allWhitelistedRegisteredAddresses(tx: SDSAnyReadTransaction) -> [SignalServiceAddress] {
-        return SignalRecipientFinder().signalRecipients(
-            for: allWhitelistedAddresses(tx: tx),
-            tx: tx
-        )
-        .lazy
-        .filter { $0.isRegistered }.map { $0.address }
+        return allWhitelistedAddresses(tx: tx).lazy.compactMap { address in
+            guard
+                let recipient = DependenciesBridge.shared.recipientDatabaseTable
+                    .fetchRecipient(address: address, tx: tx.asV2Read),
+                recipient.isRegistered
+            else {
+                return nil
+            }
+
+            return recipient.address
+        }
     }
 
     // MARK: -

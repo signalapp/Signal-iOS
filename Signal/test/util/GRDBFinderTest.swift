@@ -145,6 +145,17 @@ class GRDBFinderTest: SignalBaseTest {
             }
         }
 
+        /// We used to have a type called `SignalRecipientFinder`, whose
+        /// functionality was moved to `RecipientDatabaseTable`. To minimize the
+        /// diff in the code just below, I've recreated a type with the same
+        /// name such that the lines below didn't need to change.
+        struct SignalRecipientFinder {
+            func signalRecipient(for address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> SignalRecipient? {
+                return DependenciesBridge.shared.recipientDatabaseTable
+                    .fetchRecipient(address: address, tx: tx.asV2Read)
+            }
+        }
+
         self.read { tx in
             // These should exist...
             XCTAssertNotNil(SignalRecipientFinder().signalRecipient(for: address1, tx: tx))

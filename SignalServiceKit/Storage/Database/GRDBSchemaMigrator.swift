@@ -3655,10 +3655,8 @@ public class GRDBSchemaMigrator: NSObject {
                     // not been populated yet at this point in time. We want to record
                     // as close to a fully qualified address as we can in the database,
                     // so defer to the address from the signal recipient (if one exists)
-                    let recipient = SignalRecipientFinder().signalRecipient(
-                        for: address,
-                        tx: transaction.asAnyRead
-                    )
+                    let recipient = DependenciesBridge.shared.recipientDatabaseTable
+                        .fetchRecipient(address: address, tx: transaction.asAnyRead.asV2Read)
                     let memberAddress = recipient?.address ?? address
 
                     guard let newAddress = NormalizedDatabaseRecordAddress(address: memberAddress) else {
@@ -4739,7 +4737,7 @@ public func createInitialGalleryRecords(transaction: GRDBWriteTransaction) throw
     }
 }
 
-public func dedupeSignalRecipients(transaction: SDSAnyWriteTransaction) throws {
+private func dedupeSignalRecipients(transaction: SDSAnyWriteTransaction) throws {
     var recipients: [SignalServiceAddress: [String]] = [:]
 
     SignalRecipient.anyEnumerate(transaction: transaction) { (recipient, _) in
@@ -4766,11 +4764,10 @@ public func dedupeSignalRecipients(transaction: SDSAnyWriteTransaction) throws {
         // Since we have duplicate recipients for an address, we want to keep the one returned by the
         // finder, since that is the one whose uniqueId is used as the `accountId` for the
         // accountId finder.
-        guard let primaryRecipient = SignalRecipient.fetchRecipient(
-            for: address,
-            onlyIfRegistered: false,
-            tx: transaction
-        ) else {
+        guard
+            let primaryRecipient = DependenciesBridge.shared.recipientDatabaseTable
+                .fetchRecipient(address: address, tx: transaction.asV2Read)
+        else {
             owsFailDebug("primaryRecipient was unexpectedly nil")
             continue
         }

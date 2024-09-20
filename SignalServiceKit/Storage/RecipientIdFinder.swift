@@ -38,9 +38,13 @@ public final class RecipientIdFinder {
     }
 
     public func recipientUniqueId(for address: SignalServiceAddress, tx: DBReadTransaction) -> Result<RecipientUniqueId, RecipientIdError>? {
-        guard let recipient = SignalRecipient.fetchRecipient(for: address, onlyIfRegistered: false, tx: SDSDB.shimOnlyBridge(tx)) else {
+        guard
+            let recipient = DependenciesBridge.shared.recipientDatabaseTable
+                .fetchRecipient(address: address, tx: tx)
+        else {
             return nil
         }
+
         return recipientUniqueIdResult(for: address.serviceId, recipient: recipient)
     }
 

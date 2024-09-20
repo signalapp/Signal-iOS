@@ -65,11 +65,19 @@ public class RecipientDatabaseTableImpl: RecipientDatabaseTable {
     }
 
     public func fetchRecipient(serviceId: ServiceId, transaction tx: DBReadTransaction) -> SignalRecipient? {
-        SignalRecipientFinder().signalRecipientForServiceId(serviceId, tx: SDSDB.shimOnlyBridge(tx))
+        let serviceIdColumn: SignalRecipient.CodingKeys = {
+            switch serviceId.kind {
+            case .aci: return .aciString
+            case .pni: return .pni
+            }
+        }()
+        let sql = "SELECT * FROM \(SignalRecipient.databaseTableName) WHERE \(signalRecipientColumn: serviceIdColumn) = ?"
+        return SignalRecipient.anyFetch(sql: sql, arguments: [serviceId.serviceIdUppercaseString], transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     public func fetchRecipient(phoneNumber: String, transaction tx: DBReadTransaction) -> SignalRecipient? {
-        SignalRecipientFinder().signalRecipientForPhoneNumber(phoneNumber, tx: SDSDB.shimOnlyBridge(tx))
+        let sql = "SELECT * FROM \(SignalRecipient.databaseTableName) WHERE \(signalRecipientColumn: .phoneNumber) = ?"
+        return SignalRecipient.anyFetch(sql: sql, arguments: [phoneNumber], transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     public func enumerateAll(tx: DBReadTransaction, block: (SignalRecipient) -> Void) {

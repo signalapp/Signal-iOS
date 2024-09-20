@@ -103,6 +103,7 @@ extension RecipientHidingManager {
     ///
     /// - Returns: The ``SignalRecipient``.
     private func recipient(from address: SignalServiceAddress, tx: DBReadTransaction) -> SignalRecipient? {
-        return SignalRecipient.fetchRecipient(for: address, onlyIfRegistered: false, tx: SDSDB.shimOnlyBridge(tx))
+        return DependenciesBridge.shared.recipientDatabaseTable
+            .fetchRecipient(address: address, tx: tx)
     }
 }
