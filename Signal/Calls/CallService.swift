@@ -486,14 +486,12 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         case .individual(let individualCall):
             if individualCall.state == .connected || individualCall.state == .reconnecting {
                 callManager.setLocalVideoEnabled(enabled: shouldHaveLocalVideoTrack, call: call)
-            } else {
+            } else if individualCall.isViewLoaded, individualCall.hasLocalVideo, !Platform.isSimulator {
                 // If we're not yet connected, just enable the camera but don't tell RingRTC
                 // to start sending video. This allows us to show a "vanity" view while connecting.
-                if !Platform.isSimulator && individualCall.hasLocalVideo {
-                    individualCall.videoCaptureController.startCapture()
-                } else {
-                    individualCall.videoCaptureController.stopCapture()
-                }
+                individualCall.videoCaptureController.startCapture()
+            } else {
+                individualCall.videoCaptureController.stopCapture()
             }
         case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
             if shouldHaveLocalVideoTrack {

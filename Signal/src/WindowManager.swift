@@ -94,12 +94,13 @@ class WindowManager {
         window.isHidden = true
         window.isOpaque = true
         window.backgroundColor = Theme.launchScreenBackgroundColor
-        window.rootViewController = callNavigationController
+        window.rootViewController = nil
 
         return window
 
     }()
-    private lazy var callNavigationController: UINavigationController = {
+
+    private func newCallNavigationController() -> UINavigationController {
         let viewController = WindowRootViewController()
         viewController.view.backgroundColor = Theme.launchScreenBackgroundColor
 
@@ -110,7 +111,7 @@ class WindowManager {
         let navigationController = WindowRootNavigationViewController(rootViewController: viewController)
         navigationController.isNavigationBarHidden = true
         return navigationController
-    }()
+    }
 
     // UIWindow.Level._background if inactive,
     // UIWindow.Level._screenBlocking() if active.
@@ -266,7 +267,8 @@ class WindowManager {
         callViewController = viewController
 
         // Attach callViewController to window.
-        callNavigationController.popToRootViewController(animated: false)
+        let callNavigationController = self.newCallNavigationController()
+        self.callViewWindow.rootViewController = callNavigationController
         callNavigationController.pushViewController(viewController, animated: false)
 
         shouldShowCallView = true
@@ -288,7 +290,7 @@ class WindowManager {
             return
         }
 
-        callNavigationController.popViewController(animated: false)
+        callViewWindow.rootViewController = nil
         callViewController = nil
 
         shouldShowCallView = false

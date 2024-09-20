@@ -174,6 +174,12 @@ public class IndividualCall: CustomDebugStringConvertible {
         }
     }
 
+    /// This is part of an ugly hack, but CallService is currently responsible
+    /// for starting/stopping the video preview, but we don't want to do that
+    /// until the view is actually going to be displayed. So we pass state
+    /// through IndividualCall.
+    var isViewLoaded = false
+
     var deferredAnswerCompletion: (() -> Void)? {
         didSet {
             owsAssertDebug(deferredAnswerCompletion == nil || state == .accepting)

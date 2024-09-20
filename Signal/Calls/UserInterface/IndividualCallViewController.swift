@@ -184,6 +184,8 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         super.init()
 
         self.localVideoView.animatableLocalMemberViewDelegate = self
+
+        self.callService.callServiceState.addObserver(self)
     }
 
     deinit {
@@ -245,6 +247,11 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        self.callService.callServiceState.removeObserver(self)
+
+        self.individualCall.isViewLoaded = true
+        self.callService.updateIsVideoEnabled()
+
         remoteMemberView.applyChangesToCallMemberViewAndVideoView { view in
             view.isHidden = false
         }
@@ -264,10 +271,12 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         // Subscribe for future call updates
         individualCall.addObserverAndSyncState(self)
 
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(didBecomeActive),
-                                               name: .OWSApplicationDidBecomeActive,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(didBecomeActive),
+            name: .OWSApplicationDidBecomeActive,
+            object: nil
+        )
     }
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
@@ -879,8 +888,9 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
     }
 
     private func displayNeedPermissionErrorAndDismiss() {
-        guard !hasDismissed else { return }
-
+        if hasDismissed {
+            return
+        }
         hasDismissed = true
 
         contactNameLabel.removeFromSuperview()
@@ -897,15 +907,15 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
 
         let permissionErrorView = PermissionErrorView(
             thread: self.thread,
-            contactManager: self.contactsManager) { [weak self] in
-                self?.dismissImmediately(completion: nil)
-            }
+            contactManager: self.contactsManager,
+            okayButtonWasTapped: { [weak self] in self?.dismissImmediately() }
+        )
         view.addSubview(permissionErrorView)
         permissionErrorView.autoPinWidthToSuperview(withMargin: 16)
         permissionErrorView.autoVCenterInSuperview()
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 10) { [weak self] in
-            self?.dismissImmediately(completion: nil)
+            self?.dismissImmediately()
         }
     }
 
@@ -1126,30 +1136,22 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
 
     // MARK: - Dismiss
 
-    private func dismissIfPossible(shouldDelay: Bool, completion: (() -> Void)? = nil) {
+    private func dismissIfPossible(shouldDelay: Bool) {
         if hasDismissed {
-            // Don't dismiss twice.
             return
-        } else if shouldDelay {
-            hasDismissed = true
-
-            if UIApplication.shared.applicationState == .active {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
-                    guard let strongSelf = self else { return }
-                    strongSelf.dismissImmediately(completion: completion)
-                }
-            } else {
-                dismissImmediately(completion: completion)
+        }
+        hasDismissed = true
+        if shouldDelay, UIApplication.shared.applicationState == .active {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
+                self?.dismissImmediately()
             }
         } else {
-            hasDismissed = true
-            dismissImmediately(completion: completion)
+            dismissImmediately()
         }
     }
 
-    private func dismissImmediately(completion: (() -> Void)?) {
+    private func dismissImmediately() {
         WindowManager.shared.endCall(viewController: self)
-        completion?()
     }
 }
 
@@ -1277,6 +1279,18 @@ extension IndividualCallViewController: AnimatableLocalMemberViewDelegate {
     func animatableLocalMemberViewWillBeginAnimation(_ localMemberView: CallMemberView) {
         self.isPipAnimationInProgress = true
         self.flipCameraTooltipManager.dismissTooltip()
+    }
+}
+
+extension IndividualCallViewController: CallServiceStateObserver {
+    func didUpdateCall(from oldValue: SignalCall?, to newValue: SignalCall?) {
+        /// If the call ends before the view is ever loaded, just "dismiss" it
+        /// immediately. We don't need to wait or have animations or anything
+        /// because it's not even visible yet.
+        owsAssertDebug(!self.isViewLoaded)
+        if self.call === oldValue {
+            self.dismissIfPossible(shouldDelay: false)
+        }
     }
 }
 
