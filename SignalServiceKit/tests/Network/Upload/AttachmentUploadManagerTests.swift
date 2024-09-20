@@ -15,6 +15,7 @@ class AttachmentUploadManagerTests: XCTestCase {
         uploadManager = AttachmentUploadManagerImpl(
             attachmentEncrypter: helper.mockAttachmentEncrypter,
             attachmentStore: helper.mockAttachmentStore,
+            attachmentThumbnailService: helper.mockAttachmentThumbnailService,
             chatConnectionManager: helper.mockChatConnectionManager,
             dateProvider: helper.mockDateProvider,
             db: helper.mockDB,

@@ -879,6 +879,7 @@ public class AppSetup {
         let attachmentUploadManager = AttachmentUploadManagerImpl(
             attachmentEncrypter: Upload.Wrappers.AttachmentEncrypter(),
             attachmentStore: attachmentStore,
+            attachmentThumbnailService: attachmentThumbnailService,
             chatConnectionManager: chatConnectionManager,
             dateProvider: dateProvider,
             db: db,

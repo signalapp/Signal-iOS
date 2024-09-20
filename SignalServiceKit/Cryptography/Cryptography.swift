@@ -239,6 +239,7 @@ public extension Cryptography {
     /// - parameter input: The data to encrypt.
     /// - parameter encryptionKey: The key to encrypt with; the AES key and the hmac key concatenated together.
     ///     (The same format as ``EncryptionMetadata/key``). A random key will be generated if none is provided.
+    /// - parameter iv: the iv to use. If nil, a random iv is generated. If provided, but be of length ``Cryptography/aescbcIVLength``.
     /// - parameter applyExtraPadding: If true, extra zero padding will be applied to ensure bucketing of file sizes,
     ///     in addition to standard PKCS7 padding. If false, only standard PKCS7 padding is applied.
     ///
@@ -246,6 +247,7 @@ public extension Cryptography {
     static func encrypt(
         _ input: Data,
         encryptionKey inputKey: Data? = nil,
+        iv: Data? = nil,
         applyExtraPadding: Bool = false
     ) throws -> (Data, EncryptionMetadata) {
         if let inputKey, inputKey.count != concatenatedEncryptionKeyLength {
@@ -268,6 +270,7 @@ public extension Cryptography {
             },
             encryptionKey: encryptionKey,
             hmacKey: hmacKey,
+            iv: iv,
             applyExtraPadding: applyExtraPadding
         )
         return (outputData, encryptionMetadata)
@@ -281,6 +284,7 @@ public extension Cryptography {
     /// - parameter output: Called by this method with each chunk of output ciphertext data.
     /// - parameter encryptionKey: The key used for encryption. Must be of byte length ``Cryptography/aesKeySize``.
     /// - parameter hmacKey: The key used for hmac. Must be of byte length ``Cryptography/hmac256KeyLength``.
+    /// - parameter iv: the iv to use. If nil, a random iv is generated. If provided, but be of length ``Cryptography/aescbcIVLength``.
     /// - parameter applyExtraPadding: If true, additional padding is applied _before_ pkcs7 padding to obfuscate
     /// the size of the encrypted file. If false, only standard pkcs7 padding is used.
     private static func _encryptAttachment(
@@ -289,6 +293,7 @@ public extension Cryptography {
         output: @escaping (Data) -> Void,
         encryptionKey: Data,
         hmacKey: Data,
+        iv inputIV: Data? = nil,
         applyExtraPadding: Bool
     ) throws -> EncryptionMetadata {
 
@@ -298,7 +303,15 @@ public extension Cryptography {
             output(outputData)
         }
 
-        let iv = Randomness.generateRandomBytes(UInt(aescbcIVLength))
+        let iv: Data
+        if let inputIV {
+            if inputIV.count != aescbcIVLength {
+                throw OWSAssertionError("Invalid IV length")
+            }
+            iv = inputIV
+        } else {
+            iv = Randomness.generateRandomBytes(UInt(aescbcIVLength))
+        }
 
         var hmac = HMAC<SHA256>(key: .init(data: hmacKey))
         var sha256 = SHA256()

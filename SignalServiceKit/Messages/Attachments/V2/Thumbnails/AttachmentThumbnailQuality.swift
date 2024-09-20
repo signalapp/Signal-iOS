@@ -10,6 +10,7 @@ public enum AttachmentThumbnailQuality: CaseIterable {
     case medium
     case mediumLarge
     case large
+    case backupThumbnail
 }
 
 extension AttachmentThumbnailQuality: CustomStringConvertible {
@@ -23,6 +24,8 @@ extension AttachmentThumbnailQuality: CustomStringConvertible {
             return "MediumLarge"
         case .large:
             return "Large"
+        case .backupThumbnail:
+            return "Backup Thumbnail"
         }
     }
 }
@@ -49,6 +52,12 @@ extension AttachmentThumbnailQuality {
         return max(screenSizePoints.width, screenSizePoints.height)
     }
 
+    private static func thumbnailDimensionPointsBackupThumbnail() -> CGFloat {
+        let screenScale = UIScreen.main.scale
+        let desiredPixelSize: CGFloat = 256
+        return desiredPixelSize / screenScale
+    }
+
     public func thumbnailDimensionPoints() -> CGFloat {
         switch self {
         case .small:
@@ -59,6 +68,8 @@ extension AttachmentThumbnailQuality {
             return Self.thumbnailDimensionPointsMediumLarge
         case .large:
             return Self.thumbnailDimensionPointsLarge()
+        case .backupThumbnail:
+            return Self.thumbnailDimensionPointsBackupThumbnail()
         }
     }
 

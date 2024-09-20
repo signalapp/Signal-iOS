@@ -143,6 +143,11 @@ extension AttachmentThumbnailQuality {
             return .mediumLarge
         case .large:
             return .large
+        case .backupThumbnail:
+            // legacy attachments don't use backup thumbnail size,
+            // but small is close enough.
+            owsFailDebug("Shouldn't use backup size for tsAttachments")
+            return .small
         }
     }
 }

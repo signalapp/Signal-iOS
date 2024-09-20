@@ -576,12 +576,12 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     let cdnNumber = thumbnailInfo.cdnNumber,
                     // This is the outer encryption
                     let outerEncryptionMetadata = await buildCdnEncryptionMetadata(
-                        mediaName: "\(mediaName)_thumbnail",
+                        mediaName: AttachmentBackupThumbnail.thumbnailMediaName(fullsizeMediaName: mediaName),
                         type: .attachment
                     ),
                     // inner encryption
                     let innerEncryptionMetadata = await buildCdnEncryptionMetadata(
-                        mediaName: "\(mediaName)_thumbnail",
+                        mediaName: AttachmentBackupThumbnail.thumbnailMediaName(fullsizeMediaName: mediaName),
                         type: .thumbnail
                     ),
                     let cdnReadCredential = await fetchBackupCdnReadCredential(for: cdnNumber)

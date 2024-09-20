@@ -44,4 +44,8 @@ public class AttachmentBackupThumbnail {
             metadata: .init(key: attachment.encryptionKey)
         )
     }
+
+    public static func thumbnailMediaName(fullsizeMediaName: String) -> String {
+        return fullsizeMediaName + "_thumbnail"
+    }
 }

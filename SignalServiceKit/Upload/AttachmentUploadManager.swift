@@ -16,12 +16,22 @@ public protocol AttachmentUploadManager {
     /// Upload an Attachment to the given endpoint.
     /// Will fail if the attachment doesn't exist or isn't available locally.
     func uploadTransitTierAttachment(attachmentId: Attachment.IDType) async throws
+
+    /// Upload an attachment's thumbnail to the media tier (uploading to the transit tier and copying to the media tier).
+    /// Will fail if the attachment doesn't exist or isn't available locally.
+    func uploadMediaTierThumbnailAttachment(
+        attachmentId: Attachment.IDType,
+        uploadEra: String,
+        localAci: Aci,
+        auth: MessageBackupServiceAuth
+    ) async throws
 }
 
 public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
 
     private let attachmentEncrypter: Upload.Shims.AttachmentEncrypter
     private let attachmentStore: AttachmentUploadStore
+    private let attachmentThumbnailService: AttachmentThumbnailService
     private let chatConnectionManager: ChatConnectionManager
     private let dateProvider: DateProvider
     private let db: DB
@@ -54,6 +64,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
     public init(
         attachmentEncrypter: Upload.Shims.AttachmentEncrypter,
         attachmentStore: AttachmentUploadStore,
+        attachmentThumbnailService: AttachmentThumbnailService,
         chatConnectionManager: ChatConnectionManager,
         dateProvider: @escaping DateProvider,
         db: DB,
@@ -67,6 +78,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
     ) {
         self.attachmentEncrypter = attachmentEncrypter
         self.attachmentStore = attachmentStore
+        self.attachmentThumbnailService = attachmentThumbnailService
         self.chatConnectionManager = chatConnectionManager
         self.dateProvider = dateProvider
         self.db = db
@@ -213,6 +225,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         let cdnNumber =  try await self.copyToMediaTier(
             localAci: localAci,
             mediaName: mediaName,
+            encryptionType: .attachment,
             uploadEra: uploadEra,
             result: result,
             logger: logger
@@ -233,6 +246,60 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             try self.attachmentStore.markUploadedToMediaTier(
                 attachmentStream: attachmentStream,
                 mediaTierInfo: mediaTierInfo,
+                tx: tx
+            )
+
+            self.cleanup(record: record, logger: logger, tx: tx)
+        }
+    }
+
+    public func uploadMediaTierThumbnailAttachment(
+        attachmentId: Attachment.IDType,
+        uploadEra: String,
+        localAci: Aci,
+        auth: MessageBackupServiceAuth
+    ) async throws {
+        let logger = PrefixedLogger(prefix: "[MediaTierThumbnailUpload]", suffix: "[\(attachmentId)]")
+        let (record, result) = try await uploadAttachment(
+            attachmentId: attachmentId,
+            type: .mediaTier(auth: auth, isThumbnail: true),
+            logger: logger,
+            progress: nil
+        )
+
+        // Read the attachment fresh from the DB
+        guard
+            let attachmentStream = try? db.read(block: { try self.fetchAttachment(
+                attachmentId: attachmentId,
+                logger: logger,
+                tx: $0
+            )}).asStream(),
+            let mediaName = attachmentStream.attachment.mediaName
+        else {
+            logger.warn("Attachment deleted while uploading")
+            return
+        }
+
+        let cdnNumber =  try await self.copyToMediaTier(
+            localAci: localAci,
+            mediaName: AttachmentBackupThumbnail.thumbnailMediaName(fullsizeMediaName: mediaName),
+            encryptionType: .thumbnail,
+            uploadEra: uploadEra,
+            result: result,
+            logger: logger
+        )
+
+        try await db.awaitableWrite { tx in
+
+            let thumbnailInfo = Attachment.ThumbnailMediaTierInfo(
+                cdnNumber: cdnNumber,
+                uploadEra: uploadEra,
+                lastDownloadAttemptTimestamp: nil
+            )
+
+            try self.attachmentStore.markThumbnailUploadedToMediaTier(
+                attachmentStream: attachmentStream,
+                thumbnailMediaTierInfo: thumbnailInfo,
                 tx: tx
             )
 
@@ -319,7 +386,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         // See `Attachment.transitUploadStrategy(dateProvider:)` for details on when metadata
         // is reused vs. constructed new.
         let localMetadata: Upload.LocalUploadMetadata
-        switch try getOrFetchUploadMetadata(
+        switch try await getOrFetchUploadMetadata(
             attachment: attachment,
             type: type,
             record: attachmentUploadRecord,
@@ -510,9 +577,10 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         type: UploadType,
         record: AttachmentUploadRecord,
         logger: PrefixedLogger
-    ) throws -> MetadataResult {
+    ) async throws -> MetadataResult {
 
-        if case .mediaTier = type {
+        switch type {
+        case .mediaTier(_, let isThumbnail) where !isThumbnail:
             // We never allow uploads of data we don't have locally.
             guard let stream = attachment.asStream() else {
                 logger.warn("Attachment is not uploadable.")
@@ -527,36 +595,94 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                 plaintextDataLength: stream.info.unencryptedByteCount
             )
             return .reuse(metadata)
-        }
 
-        switch attachment.transitUploadStrategy(dateProvider: dateProvider) {
-        case .cannotUpload:
-            logger.warn("Attachment is not uploadable.")
-            // Can't upload non-stream attachments; terminal failure.
-            throw OWSUnretryableError()
-        case .reuseExistingUpload(let metadata):
-            logger.debug("Attachment previously uploaded.")
-            return .alreadyUploaded(metadata)
-        case .reuseStreamEncryption(let metadata):
-            return .reuse(metadata)
-        case .freshUpload(let stream):
-            // Attempting to upload an existing attachment that's older than 3 days requires
-            // the attachment to be re-encrypted before upload.
-            // If this exists in the upload record from a prior attempt, use 
-            // that file if it still exists.
-            if
-                let metadata = record.localMetadata,
-                // TODO: 
-                // Currently, the file url is in a temp directory and doesn't
-                // persist across launches, so this will never be hit. The fix for this
-                // is to store the temporary file in a more persistent location, and
-                // register the file with the OrphanedAttachmentCleaner
-                OWSFileSystem.fileOrFolderExists(url: metadata.fileUrl)
-            {
-                return .existing(metadata)
+        case .mediaTier(_, let isThumbnail):
+            // We never allow uploads of data we don't have locally.
+            guard
+                let stream = attachment.asStream(),
+                let mediaName = attachment.mediaName
+            else {
+                logger.warn("Attachment is not uploadable.")
+                throw OWSUnretryableError()
+            }
+            let fileUrl = fileSystem.temporaryFileUrl()
+            let encryptionKey = try db.read { tx in
+                try messageBackupKeyMaterial.mediaEncryptionMetadata(
+                    mediaName: mediaName,
+                    type: .thumbnail,
+                    tx: tx
+                )
+            }
+            guard
+                let thumbnailImage = await attachmentThumbnailService.thumbnailImage(
+                    for: stream,
+                    quality: .backupThumbnail
+                ),
+                let thumbnailData = thumbnailImage.jpegData(compressionQuality: 0.8)
+            else {
+                logger.warn("Unable to generate thumbnail; may not be visual media?")
+                throw OWSUnretryableError()
+            }
+
+            let (encryptedThumbnailData, encryptedThumbnailMetadata) = try Cryptography.encrypt(
+                thumbnailData,
+                encryptionKey: encryptionKey.encryptionKey,
+                iv: encryptionKey.iv,
+                applyExtraPadding: true
+            )
+
+            let digest: Data
+            if let _digest = encryptedThumbnailMetadata.digest {
+                digest = _digest
             } else {
-                let metadata = try buildMetadata(forUploading: stream)
-                return .new(metadata)
+                // The digest field is optional, but can never actually be nil when
+                // encrypting (its just nullable for the decryption's usage).
+                owsFailDebug("Missing digest for file we just encrypted!")
+                // We don't actually _need_ a digest here anyway.
+                digest = Data()
+            }
+
+            // Write the thumbnail to the file.
+            try encryptedThumbnailData.write(to: fileUrl)
+
+            return .reuse(Upload.LocalUploadMetadata(
+                fileUrl: fileUrl,
+                key: encryptionKey.encryptionKey,
+                digest: digest,
+                encryptedDataLength: UInt32(encryptedThumbnailData.count),
+                plaintextDataLength: UInt32(thumbnailData.count)
+            ))
+
+        case .transitTier:
+            switch attachment.transitUploadStrategy(dateProvider: dateProvider) {
+            case .cannotUpload:
+                logger.warn("Attachment is not uploadable.")
+                // Can't upload non-stream attachments; terminal failure.
+                throw OWSUnretryableError()
+            case .reuseExistingUpload(let metadata):
+                logger.debug("Attachment previously uploaded.")
+                return .alreadyUploaded(metadata)
+            case .reuseStreamEncryption(let metadata):
+                return .reuse(metadata)
+            case .freshUpload(let stream):
+                // Attempting to upload an existing attachment that's older than 3 days requires
+                // the attachment to be re-encrypted before upload.
+                // If this exists in the upload record from a prior attempt, use
+                // that file if it still exists.
+                if
+                    let metadata = record.localMetadata,
+                    // TODO:
+                    // Currently, the file url is in a temp directory and doesn't
+                    // persist across launches, so this will never be hit. The fix for this
+                    // is to store the temporary file in a more persistent location, and
+                    // register the file with the OrphanedAttachmentCleaner
+                    OWSFileSystem.fileOrFolderExists(url: metadata.fileUrl)
+                {
+                    return .existing(metadata)
+                } else {
+                    let metadata = try buildMetadata(forUploading: stream)
+                    return .new(metadata)
+                }
             }
         }
     }
@@ -648,6 +774,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
     public func copyToMediaTier(
         localAci: Aci,
         mediaName: String,
+        encryptionType: MediaTierEncryptionType,
         uploadEra: String,
         result: Upload.AttachmentResult,
         logger: PrefixedLogger
@@ -656,7 +783,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         let mediaEncryptionMetadata = try db.read { tx in
             try messageBackupKeyMaterial.mediaEncryptionMetadata(
                 mediaName: mediaName,
-                type: .attachment,
+                type: encryptionType,
                 tx: tx
             )
         }
