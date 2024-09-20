@@ -54,7 +54,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
             )
 
             pinSection.add(.disclosureItem(
-                withText: OWS2FAManager.shared.is2FAEnabled()
+                withText: OWS2FAManager.shared.is2FAEnabled
                     ? OWSLocalizedString(
                         "SETTINGS_PINS_ITEM",
                         comment: "Label for the 'pins' item of the privacy settings when the user does have a pin."
@@ -69,7 +69,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
             ))
 
             // Reminders toggle.
-            if OWS2FAManager.shared.is2FAEnabled() {
+            if OWS2FAManager.shared.is2FAEnabled {
                 pinSection.add(.switch(
                     withText: OWSLocalizedString(
                         "SETTINGS_PIN_REMINDER_SWITCH_LABEL",
@@ -362,7 +362,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
                 "SETTINGS_REGISTRATION_LOCK_TURN_ON",
                 comment: "Action to turn on registration lock"
             )) { [weak self] _ in
-                if OWS2FAManager.shared.is2FAEnabled() {
+                if OWS2FAManager.shared.is2FAEnabled {
                     Task {
                         do {
                             try await OWS2FAManager.shared.enableRegistrationLockV2()
@@ -413,7 +413,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
     }
 
     public func showCreateOrChangePin() {
-        if OWS2FAManager.shared.is2FAEnabled() {
+        if OWS2FAManager.shared.is2FAEnabled {
             showChangePin()
         } else {
             showCreatePin()

@@ -100,14 +100,6 @@ public extension NSObject {
         SSKEnvironment.shared.networkManagerRef
     }
 
-    final var ows2FAManager: OWS2FAManager {
-        .shared
-    }
-
-    static var ows2FAManager: OWS2FAManager {
-        .shared
-    }
-
     final var receiptManager: OWSReceiptManager {
         .shared
     }
@@ -986,7 +978,6 @@ public extension SDSDatabaseStorage {
 
 // MARK: -
 
-@objc
 public extension OWS2FAManager {
     static var shared: OWS2FAManager {
         SSKEnvironment.shared.ows2FAManagerRef

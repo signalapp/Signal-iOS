@@ -3520,7 +3520,7 @@ public class GRDBSchemaMigrator: NSObject {
                 return .success(())
             }
 
-            OWS2FAManager.keyValueStore().setBool(true, key: OWS2FAManager.isRegistrationLockV2EnabledKey, transaction: transaction.asAnyWrite)
+            OWS2FAManager.keyValueStore.setBool(true, key: OWS2FAManager.isRegistrationLockV2EnabledKey, transaction: transaction.asAnyWrite)
             return .success(())
         }
 

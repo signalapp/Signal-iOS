@@ -249,7 +249,7 @@ public class PinConfirmationViewController: OWSViewController {
 
         OWS2FAManager.shared.verifyPin(pin) { success in
             guard success else {
-                guard OWS2FAManager.shared.needsLegacyPinMigration(), pin.count > kLegacyTruncated2FAv1PinLength else {
+                guard OWS2FAManager.shared.needsLegacyPinMigration, pin.count > kLegacyTruncated2FAv1PinLength else {
                     self.validationState = .mismatch
                     return
                 }

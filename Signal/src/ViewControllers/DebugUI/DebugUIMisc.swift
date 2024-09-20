@@ -56,7 +56,7 @@ class DebugUIMisc: NSObject, DebugUIPage, Dependencies {
             }),
             OWSTableItem(title: "Reset 2FA Repetition Interval", actionBlock: {
                 SDSDatabaseStorage.shared.write { transaction in
-                    OWS2FAManager.shared.setDefaultRepetitionIntervalWith(transaction)
+                    OWS2FAManager.shared.setDefaultRepetitionInterval(transaction: transaction)
                 }
             }),
 

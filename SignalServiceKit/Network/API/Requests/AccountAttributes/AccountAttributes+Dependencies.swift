@@ -36,7 +36,7 @@ extension AccountAttributes {
         {
             twoFaMode = .v2(reglockToken: reglockToken.canonicalStringRepresentation)
         } else if
-            let pinCode = dependencies.ows2FAManager.pinCode(with: transaction),
+            let pinCode = dependencies.ows2FAManager.pinCode(transaction: transaction),
             pinCode.isEmpty.negated,
             svr.hasBackedUpMasterKey(transaction: transaction.asV2Read).negated
         {

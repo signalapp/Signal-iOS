@@ -720,7 +720,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
             // The client may have fallen out of sync with the service.
             // Try to get back to a known good state by disabling 2FA
             // whenever enabling it fails.
-            OWS2FAManager.shared.disable2FA(success: nil, failure: nil)
+            OWS2FAManager.shared.disable2FA()
 
             throw PinSetupError.enable2FA
         }

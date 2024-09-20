@@ -186,7 +186,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
             }
 
             let hasShortOrMissingPin: Bool = {
-                guard OWS2FAManager.shared.is2FAEnabled() else {
+                guard OWS2FAManager.shared.is2FAEnabled else {
                     return true
                 }
                 guard let pinCode = OWS2FAManager.shared.pinCode else {

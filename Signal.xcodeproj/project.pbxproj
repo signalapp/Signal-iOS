@@ -3233,7 +3233,6 @@
 		F9C5CDDB289453B400548EEE /* String+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB09289453B200548EEE /* String+SSK.swift */; };
 		F9C5CDDC289453B400548EEE /* OWSOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB0A289453B200548EEE /* OWSOperation.swift */; };
 		F9C5CDDD289453B400548EEE /* Error+ErrorLocalizedDescription.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB0B289453B200548EEE /* Error+ErrorLocalizedDescription.swift */; };
-		F9C5CDDE289453B400548EEE /* OWS2FAManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB0C289453B200548EEE /* OWS2FAManager.m */; };
 		F9C5CDDF289453B400548EEE /* ImageQuality.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB0D289453B200548EEE /* ImageQuality.swift */; };
 		F9C5CDE0289453B400548EEE /* DarwinNotificationCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB0E289453B200548EEE /* DarwinNotificationCenter.m */; };
 		F9C5CDE2289453B400548EEE /* ThreadBacked.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB10289453B200548EEE /* ThreadBacked.swift */; };
@@ -3282,7 +3281,6 @@
 		F9C5CE29289453B400548EEE /* ModelReadCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB57289453B200548EEE /* ModelReadCache.swift */; };
 		F9C5CE2A289453B400548EEE /* Platform.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB58289453B200548EEE /* Platform.swift */; };
 		F9C5CE2B289453B400548EEE /* FeatureFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB59289453B200548EEE /* FeatureFlags.swift */; };
-		F9C5CE2C289453B400548EEE /* OWS2FAManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB5A289453B200548EEE /* OWS2FAManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE2D289453B400548EEE /* ExperienceUpgradeFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB5B289453B200548EEE /* ExperienceUpgradeFinder.swift */; };
 		F9C5CE2F289453B400548EEE /* SwiftSingletons.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB5D289453B200548EEE /* SwiftSingletons.swift */; };
 		F9C5CE33289453B400548EEE /* LocalDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB61289453B200548EEE /* LocalDevice.swift */; };
@@ -6877,7 +6875,6 @@
 		F9C5CB09289453B200548EEE /* String+SSK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+SSK.swift"; sourceTree = "<group>"; };
 		F9C5CB0A289453B200548EEE /* OWSOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSOperation.swift; sourceTree = "<group>"; };
 		F9C5CB0B289453B200548EEE /* Error+ErrorLocalizedDescription.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Error+ErrorLocalizedDescription.swift"; sourceTree = "<group>"; };
-		F9C5CB0C289453B200548EEE /* OWS2FAManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWS2FAManager.m; sourceTree = "<group>"; };
 		F9C5CB0D289453B200548EEE /* ImageQuality.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageQuality.swift; sourceTree = "<group>"; };
 		F9C5CB0E289453B200548EEE /* DarwinNotificationCenter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DarwinNotificationCenter.m; sourceTree = "<group>"; };
 		F9C5CB10289453B200548EEE /* ThreadBacked.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadBacked.swift; sourceTree = "<group>"; };
@@ -6926,7 +6923,6 @@
 		F9C5CB57289453B200548EEE /* ModelReadCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelReadCache.swift; sourceTree = "<group>"; };
 		F9C5CB58289453B200548EEE /* Platform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Platform.swift; sourceTree = "<group>"; };
 		F9C5CB59289453B200548EEE /* FeatureFlags.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeatureFlags.swift; sourceTree = "<group>"; };
-		F9C5CB5A289453B200548EEE /* OWS2FAManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWS2FAManager.h; sourceTree = "<group>"; };
 		F9C5CB5B289453B200548EEE /* ExperienceUpgradeFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExperienceUpgradeFinder.swift; sourceTree = "<group>"; };
 		F9C5CB5D289453B200548EEE /* SwiftSingletons.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftSingletons.swift; sourceTree = "<group>"; };
 		F9C5CB61289453B200548EEE /* LocalDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalDevice.swift; sourceTree = "<group>"; };
@@ -13728,8 +13724,6 @@
 				F9C5CB44289453B200548EEE /* OffMainThreadTimer.swift */,
 				F9C5CB72289453B200548EEE /* OrderedDictionary.swift */,
 				F9C5CB4C289453B200548EEE /* OrderedSet.swift */,
-				F9C5CB5A289453B200548EEE /* OWS2FAManager.h */,
-				F9C5CB0C289453B200548EEE /* OWS2FAManager.m */,
 				F9C5CB3B289453B200548EEE /* OWS2FAManager.swift */,
 				668A00E12C2B5F0C007B8808 /* OWSAssertionError.swift */,
 				7257F67D2C8B522200269C1E /* OWSBackgroundTask.swift */,
@@ -13911,7 +13905,6 @@
 				668A00F82C2B5F81007B8808 /* NSDate+OWS.h in Headers */,
 				668A00F52C2B5F81007B8808 /* NSObject+OWS.h in Headers */,
 				F9C5CBC6289453B300548EEE /* OutgoingPaymentSyncMessage.h in Headers */,
-				F9C5CE2C289453B400548EEE /* OWS2FAManager.h in Headers */,
 				F9C5CC1E289453B300548EEE /* OWSAddToContactsOfferMessage.h in Headers */,
 				F9C5CC84289453B300548EEE /* OWSAddToProfileWhitelistOfferMessage.h in Headers */,
 				C190F8F72C1B48BE00D1EAC9 /* OWSArchivedPaymentMessage.h in Headers */,
@@ -17047,7 +17040,6 @@
 				C1E307402BA3B342009F015B /* OutputStreamable.swift in Sources */,
 				664165132BA4A27000C34F6A /* OwnedAttachmentBuilder.swift in Sources */,
 				6676A40A2BD1EB3D006B9CC9 /* OwnedAttachmentPointerProto.swift in Sources */,
-				F9C5CDDE289453B400548EEE /* OWS2FAManager.m in Sources */,
 				F9C5CE0D289453B400548EEE /* OWS2FAManager.swift in Sources */,
 				F9C5CC49289453B300548EEE /* OWSAddToContactsOfferMessage+SDS.swift in Sources */,
 				F9C5CC67289453B300548EEE /* OWSAddToContactsOfferMessage.m in Sources */,

@@ -197,7 +197,7 @@ public class _RegistrationCoordinator_OWS2FAManagerWrapper: _RegistrationCoordin
     public init(_ manager: OWS2FAManager) { self.manager = manager }
 
     public func pinCode(_ tx: DBReadTransaction) -> String? {
-        return manager.pinCode(with: SDSDB.shimOnlyBridge(tx))
+        return manager.pinCode(transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     public func clearLocalPinCode(_ tx: DBWriteTransaction) {

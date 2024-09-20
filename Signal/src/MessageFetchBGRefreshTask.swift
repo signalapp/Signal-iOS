@@ -20,7 +20,7 @@ public class MessageFetchBGRefreshTask {
         return MessageFetchBGRefreshTask(
             dateProvider: { Date() },
             messageFetcherJob: NSObject.messageFetcherJob,
-            ows2FAManager: NSObject.ows2FAManager,
+            ows2FAManager: .shared,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager
         )
     }()
