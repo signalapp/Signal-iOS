@@ -193,7 +193,7 @@ class TurnOnPermissionView: UIStackView {
             iconViewContainer.addSubview(iconView)
             iconView.autoPinWidthToSuperview()
             iconView.autoPinEdge(toSuperviewEdge: .top)
-            iconView.autoSetDimensions(to: CGSize(square: icon.size.width))
+            iconView.autoSetDimensions(to: CGSize(square: 32))
 
             stepStack.addArrangedSubview(iconViewContainer)
         }
