@@ -83,10 +83,10 @@ class ViewOnceMessageViewController: OWSViewController {
         let controlsHeight = controlSize + vMargin * 2
         mediaView.autoSetDimension(.width, toSize: controlsWidth, relation: .greaterThanOrEqual)
         mediaView.autoSetDimension(.height, toSize: controlsHeight, relation: .greaterThanOrEqual)
-        contentView.addSubview(placeholderView)
-        placeholderView.autoSetDimension(.width, toSize: controlsWidth, relation: .greaterThanOrEqual)
-        placeholderView.autoSetDimension(.height, toSize: controlsHeight, relation: .greaterThanOrEqual)
-        placeholderView.autoPinEdgesToSuperviewEdges()
+        contentView.addSubview(restrictScreenRecordPlaceholderView)
+        restrictScreenRecordPlaceholderView.autoSetDimension(.width, toSize: controlsWidth, relation: .greaterThanOrEqual)
+        restrictScreenRecordPlaceholderView.autoSetDimension(.height, toSize: controlsHeight, relation: .greaterThanOrEqual)
+        restrictScreenRecordPlaceholderView.autoPinEdgesToSuperviewEdges()
         
         let dismissButton = OWSButton(imageName: Theme.iconName(.buttonX), tintColor: Theme.darkThemePrimaryColor) { [weak self] in
             self?.dismissButtonPressed()
@@ -105,12 +105,13 @@ class ViewOnceMessageViewController: OWSViewController {
         setupDatabaseObservation()
     }
     
-    private var placeholderView: UIView = {
+    private var restrictScreenRecordPlaceholderView: UIView = {
         let view = UIView()
         view.backgroundColor = Theme.backgroundColor
         let label = UILabel()
         label.text = OWSLocalizedString("VIEW_ONCE_MEDIA_SCREEN_RECORD_RESTRICTION", comment: "Text to show when user tries to see a media file when device screen recording is still going on.")
         label.numberOfLines = 0
+        label.font = .dynamicTypeCaption1
         
         let imageView = UIImageView(image: UIImage(named: "video-slash"))
         imageView.autoSetDimension(.height, toSize: 48)
@@ -267,7 +268,11 @@ class ViewOnceMessageViewController: OWSViewController {
 
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(screenCapturedDidChange),
+                                               name: UIScreen.capturedDidChangeNotification,
+                                               object: nil)
         self.videoPlayer?.play()
     }
 
@@ -311,6 +316,13 @@ class ViewOnceMessageViewController: OWSViewController {
         AssertIsOnMainThread()
 
         dismiss(animated: true)
+    }
+    
+    @objc private func screenCapturedDidChange() {
+        DispatchQueue.main.async { [weak self] in
+            let isCaptured = UIScreen.main.isCaptured
+            self?.restrictScreenRecordPlaceholderView.isHidden = !isCaptured
+        }
     }
 }
 
