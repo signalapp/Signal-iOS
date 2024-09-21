@@ -4,7 +4,6 @@
 //
 
 #import "TSInvalidIdentityKeyErrorMessage.h"
-#import "OWSError.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

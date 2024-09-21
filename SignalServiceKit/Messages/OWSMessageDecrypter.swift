@@ -161,7 +161,7 @@ public class OWSMessageDecrypter: Dependencies {
         Logger.error(logString)
 
         let wrappedError: Error
-        if (error as NSError).domain == OWSSignalServiceKitErrorDomain {
+        if (error as NSError).domain == OWSError.errorDomain {
             wrappedError = error
         } else {
             wrappedError = OWSError(error: .failedToDecryptMessage,

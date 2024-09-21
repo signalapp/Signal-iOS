@@ -66,7 +66,7 @@ class OWSErrorTest: XCTestCase {
         let error1: Error = OWSError(errorCode: errorCode1, description: errorDescription1, isRetryable: isRetryable1)
 
         XCTAssertEqual((error1 as NSError).code, errorCode1)
-        XCTAssertEqual((error1 as NSError).domain, OWSSignalServiceKitErrorDomain)
+        XCTAssertEqual((error1 as NSError).domain, OWSError.errorDomain)
         XCTAssertTrue(error1.hasUserErrorDescription)
         XCTAssertEqual(error1.userErrorDescription, errorDescription1)
         XCTAssertTrue(error1.hasIsRetryable)
@@ -74,7 +74,7 @@ class OWSErrorTest: XCTestCase {
 
         let nsError1: NSError = error1 as NSError
         XCTAssertEqual(nsError1.code, errorCode1)
-        XCTAssertEqual(nsError1.domain, OWSSignalServiceKitErrorDomain)
+        XCTAssertEqual(nsError1.domain, OWSError.errorDomain)
         XCTAssertTrue(nsError1.hasUserErrorDescription)
         XCTAssertEqual(nsError1.userErrorDescription, errorDescription1)
         XCTAssertTrue(nsError1.hasIsRetryable)
@@ -85,7 +85,7 @@ class OWSErrorTest: XCTestCase {
             XCTFail("Thrower did not throw.")
         } catch {
             XCTAssertEqual((error as NSError).code, errorCode1)
-            XCTAssertEqual((error as NSError).domain, OWSSignalServiceKitErrorDomain)
+            XCTAssertEqual((error as NSError).domain, OWSError.errorDomain)
             XCTAssertTrue(error.hasUserErrorDescription)
             XCTAssertEqual(error.userErrorDescription, errorDescription1)
             XCTAssertTrue(error.hasIsRetryable)
@@ -97,7 +97,7 @@ class OWSErrorTest: XCTestCase {
             XCTFail("Thrower did not throw.")
         } catch {
             XCTAssertEqual((error as NSError).code, errorCode1)
-            XCTAssertEqual((error as NSError).domain, OWSSignalServiceKitErrorDomain)
+            XCTAssertEqual((error as NSError).domain, OWSError.errorDomain)
             XCTAssertTrue(error.hasUserErrorDescription)
             XCTAssertEqual(error.userErrorDescription, errorDescription1)
             XCTAssertTrue(error.hasIsRetryable)
@@ -112,7 +112,7 @@ class OWSErrorTest: XCTestCase {
         let error1: Error = OWSError(errorCode: errorCode1, description: errorDescription1, isRetryable: isRetryable1)
 
         XCTAssertEqual((error1 as NSError).code, errorCode1)
-        XCTAssertEqual((error1 as NSError).domain, OWSSignalServiceKitErrorDomain)
+        XCTAssertEqual((error1 as NSError).domain, OWSError.errorDomain)
         XCTAssertTrue(error1.hasUserErrorDescription)
         XCTAssertEqual(error1.userErrorDescription, errorDescription1)
         XCTAssertTrue(error1.hasIsRetryable)
@@ -120,7 +120,7 @@ class OWSErrorTest: XCTestCase {
 
         let nsError1: NSError = error1 as NSError
         XCTAssertEqual(nsError1.code, errorCode1)
-        XCTAssertEqual(nsError1.domain, OWSSignalServiceKitErrorDomain)
+        XCTAssertEqual(nsError1.domain, OWSError.errorDomain)
         XCTAssertTrue(nsError1.hasUserErrorDescription)
         XCTAssertEqual(nsError1.userErrorDescription, errorDescription1)
         XCTAssertTrue(nsError1.hasIsRetryable)
@@ -131,7 +131,7 @@ class OWSErrorTest: XCTestCase {
             XCTFail("Thrower did not throw.")
         } catch {
             XCTAssertEqual((error as NSError).code, errorCode1)
-            XCTAssertEqual((error as NSError).domain, OWSSignalServiceKitErrorDomain)
+            XCTAssertEqual((error as NSError).domain, OWSError.errorDomain)
             XCTAssertTrue(error.hasUserErrorDescription)
             XCTAssertEqual(error.userErrorDescription, errorDescription1)
             XCTAssertTrue(error.hasIsRetryable)
@@ -143,7 +143,7 @@ class OWSErrorTest: XCTestCase {
             XCTFail("Thrower did not throw.")
         } catch {
             XCTAssertEqual((error as NSError).code, errorCode1)
-            XCTAssertEqual((error as NSError).domain, OWSSignalServiceKitErrorDomain)
+            XCTAssertEqual((error as NSError).domain, OWSError.errorDomain)
             XCTAssertTrue(error.hasUserErrorDescription)
             XCTAssertEqual(error.userErrorDescription, errorDescription1)
             XCTAssertTrue(error.hasIsRetryable)
@@ -160,7 +160,7 @@ class OWSErrorTest: XCTestCase {
                                      isRetryable: isRetryable1)
 
         XCTAssertEqual((error1 as NSError).code, errorCode1)
-        XCTAssertEqual((error1 as NSError).domain, OWSSignalServiceKitErrorDomain)
+        XCTAssertEqual((error1 as NSError).domain, OWSError.errorDomain)
         XCTAssertTrue(error1.hasUserErrorDescription)
         XCTAssertEqual(error1.userErrorDescription, errorDescription1)
         XCTAssertTrue(error1.hasIsRetryable)
@@ -168,7 +168,7 @@ class OWSErrorTest: XCTestCase {
 
         let nsError1: NSError = error1 as NSError
         XCTAssertEqual(nsError1.code, errorCode1)
-        XCTAssertEqual(nsError1.domain, OWSSignalServiceKitErrorDomain)
+        XCTAssertEqual(nsError1.domain, OWSError.errorDomain)
         XCTAssertTrue(nsError1.hasUserErrorDescription)
         XCTAssertEqual(nsError1.userErrorDescription, errorDescription1)
         XCTAssertTrue(nsError1.hasIsRetryable)
@@ -179,7 +179,7 @@ class OWSErrorTest: XCTestCase {
             XCTFail("Thrower did not throw.")
         } catch {
             XCTAssertEqual((error as NSError).code, errorCode1)
-            XCTAssertEqual((error as NSError).domain, OWSSignalServiceKitErrorDomain)
+            XCTAssertEqual((error as NSError).domain, OWSError.errorDomain)
             XCTAssertTrue(error.hasUserErrorDescription)
             XCTAssertEqual(error.userErrorDescription, errorDescription1)
             XCTAssertTrue(error.hasIsRetryable)
@@ -191,7 +191,7 @@ class OWSErrorTest: XCTestCase {
             XCTFail("Thrower did not throw.")
         } catch {
             XCTAssertEqual((error as NSError).code, errorCode1)
-            XCTAssertEqual((error as NSError).domain, OWSSignalServiceKitErrorDomain)
+            XCTAssertEqual((error as NSError).domain, OWSError.errorDomain)
             XCTAssertTrue(error.hasUserErrorDescription)
             XCTAssertEqual(error.userErrorDescription, errorDescription1)
             XCTAssertTrue(error.hasIsRetryable)
@@ -202,7 +202,7 @@ class OWSErrorTest: XCTestCase {
     func testOWSError4() {
         let errorCode1: Int = 999
         let errorDescription1: String = "abc"
-        let nsError1: NSError = NSError(domain: OWSSignalServiceKitErrorDomain,
+        let nsError1: NSError = NSError(domain: OWSError.errorDomain,
                                         code: errorCode1,
                                         userInfo: [
                                             NSLocalizedDescriptionKey: errorDescription1
@@ -210,12 +210,12 @@ class OWSErrorTest: XCTestCase {
         let error1: Error = nsError1 as Error
 
         XCTAssertEqual((error1 as NSError).code, errorCode1)
-        XCTAssertEqual((error1 as NSError).domain, OWSSignalServiceKitErrorDomain)
+        XCTAssertEqual((error1 as NSError).domain, OWSError.errorDomain)
         XCTAssertFalse(error1.hasUserErrorDescription)
         XCTAssertFalse(error1.hasIsRetryable)
 
         XCTAssertEqual(nsError1.code, errorCode1)
-        XCTAssertEqual(nsError1.domain, OWSSignalServiceKitErrorDomain)
+        XCTAssertEqual(nsError1.domain, OWSError.errorDomain)
         XCTAssertFalse(nsError1.hasUserErrorDescription)
         XCTAssertFalse(nsError1.hasIsRetryable)
 
@@ -224,7 +224,7 @@ class OWSErrorTest: XCTestCase {
             XCTFail("Thrower did not throw.")
         } catch {
             XCTAssertEqual((error as NSError).code, errorCode1)
-            XCTAssertEqual((error as NSError).domain, OWSSignalServiceKitErrorDomain)
+            XCTAssertEqual((error as NSError).domain, OWSError.errorDomain)
             XCTAssertFalse(error.hasUserErrorDescription)
             XCTAssertFalse(error.hasIsRetryable)
         }
@@ -234,7 +234,7 @@ class OWSErrorTest: XCTestCase {
             XCTFail("Thrower did not throw.")
         } catch {
             XCTAssertEqual((error as NSError).code, errorCode1)
-            XCTAssertEqual((error as NSError).domain, OWSSignalServiceKitErrorDomain)
+            XCTAssertEqual((error as NSError).domain, OWSError.errorDomain)
             XCTAssertFalse(error.hasUserErrorDescription)
             XCTAssertFalse(error.hasIsRetryable)
         }

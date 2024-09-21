@@ -4,7 +4,6 @@
 //
 
 #import "TSAttachmentStream.h"
-#import "OWSError.h"
 #import "TSAttachmentPointer.h"
 #import <AVFoundation/AVFoundation.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -266,7 +265,7 @@ NSString *NSStringForAttachmentThumbnailQuality(TSAttachmentThumbnailQuality val
     *error = nil;
     NSString *_Nullable filePath = self.originalFilePath;
     if (!filePath) {
-        *error = OWSErrorMakeAssertionError(@"Missing path for attachment.");
+        *error = [OWSError makeAssertionError:@"Missing path for attachment."];
         return NO;
     }
     return [data writeToFile:filePath options:0 error:error];
@@ -278,7 +277,7 @@ NSString *NSStringForAttachmentThumbnailQuality(TSAttachmentThumbnailQuality val
 
     NSURL *_Nullable originalMediaURL = self.originalMediaURL;
     if (originalMediaURL == nil) {
-        *error = OWSErrorMakeAssertionError(@"Missing URL for attachment.");
+        *error = [OWSError makeAssertionError:@"Missing URL for attachment."];
         return NO;
     }
     return [dataSource writeTo:originalMediaURL error:error];
@@ -290,7 +289,7 @@ NSString *NSStringForAttachmentThumbnailQuality(TSAttachmentThumbnailQuality val
 
     NSURL *_Nullable originalMediaURL = self.originalMediaURL;
     if (originalMediaURL == nil) {
-        *error = OWSErrorMakeAssertionError(@"Missing URL for attachment.");
+        *error = [OWSError makeAssertionError:@"Missing URL for attachment."];
         return NO;
     }
     return [dataSource moveToUrlAndConsume:originalMediaURL error:error];
@@ -478,7 +477,7 @@ NSString *NSStringForAttachmentThumbnailQuality(TSAttachmentThumbnailQuality val
             self.isValidImageCached = @([NSData imageMetadataWithPath:self.originalFilePath
                                                              mimeType:self.contentType
                                                        ignoreFileSize:ignoreSize]
-                                            .isValid);
+                    .isValid);
             if (!self.isValidImageCached.boolValue) {
                 OWSLogWarn(@"Invalid image.");
             }
