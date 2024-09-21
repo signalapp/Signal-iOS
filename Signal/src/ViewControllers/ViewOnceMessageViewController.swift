@@ -273,7 +273,6 @@ class ViewOnceMessageViewController: OWSViewController {
                                                selector: #selector(screenCapturedDidChange),
                                                name: UIScreen.capturedDidChangeNotification,
                                                object: nil)
-        self.videoPlayer?.play()
     }
 
     public override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -322,6 +321,7 @@ class ViewOnceMessageViewController: OWSViewController {
         DispatchQueue.main.async { [weak self] in
             let isCaptured = UIScreen.main.isCaptured
             self?.restrictScreenRecordPlaceholderView.isHidden = !isCaptured
+            isCaptured ? self?.videoPlayer?.stop() : self?.videoPlayer?.play()
         }
     }
 }
