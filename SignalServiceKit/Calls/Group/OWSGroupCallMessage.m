@@ -4,7 +4,6 @@
 //
 
 #import "OWSGroupCallMessage.h"
-#import "FunctionalUtil.h"
 #import "TSGroupThread.h"
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -28,7 +27,11 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    _joinedMemberUuids = [joinedMemberAcis map:^(AciObjC *aci) { return aci.serviceIdUppercaseString; }];
+    NSMutableArray<NSString *> *uuids = [[NSMutableArray alloc] initWithCapacity:joinedMemberAcis.count];
+    for (AciObjC *aci in joinedMemberAcis) {
+        [uuids addObject:aci.serviceIdUppercaseString];
+    }
+    _joinedMemberUuids = uuids;
     _hasEnded = joinedMemberAcis.count == 0;
     _creatorUuid = creatorAci.serviceIdUppercaseString;
 
@@ -85,8 +88,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSArray<AciObjC *> *)joinedMemberAcis
 {
-    return [(self.joinedMemberUuids ?: @[]) map:^(
-        NSString *aciString) { return [[AciObjC alloc] initWithAciString:aciString]; }];
+    NSArray<NSString *> *_Nullable uuids = self.joinedMemberUuids;
+    NSMutableArray<AciObjC *> *result = [[NSMutableArray alloc] initWithCapacity:uuids.count];
+    for (NSString *aciString in uuids) {
+        [result addObject:[[AciObjC alloc] initWithAciString:aciString]];
+    }
+    return result;
 }
 
 - (nullable AciObjC *)creatorAci

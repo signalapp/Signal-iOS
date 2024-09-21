@@ -29,8 +29,6 @@ typedef NS_CLOSED_ENUM(uint32_t, GroupsVersion) {
 
 // groupMembers includes administrators and normal members.
 @property (nonatomic, readonly) NSArray<SignalServiceAddress *> *groupMembers;
-// The contents of groupMembers, excluding the local user.
-@property (nonatomic, readonly) NSArray<SignalServiceAddress *> *nonLocalGroupMembers;
 @property (nonatomic, readonly, nullable) NSString *groupName;
 @property (nonatomic, readonly) NSData *groupId;
 @property (nonatomic, readonly, nullable) SignalServiceAddress *addedByAddress;

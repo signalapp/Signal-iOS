@@ -4,7 +4,6 @@
 //
 
 #import "TSGroupModel.h"
-#import "FunctionalUtil.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -186,12 +185,6 @@ NSUInteger const TSGroupModelSchemaVersion = 2;
 + (NSData *)generateRandomV1GroupId
 {
     return [Randomness generateRandomBytes:kGroupIdLengthV1];
-}
-
-- (NSArray<SignalServiceAddress *> *)nonLocalGroupMembers
-{
-    return
-        [self.groupMembers filter:^BOOL(SignalServiceAddress *groupMemberId) { return !groupMemberId.isLocalAddress; }];
 }
 
 - (NSString *)debugDescription
