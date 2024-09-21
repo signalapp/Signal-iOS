@@ -53,12 +53,12 @@ public struct TestProtocolRunner {
                                 context: transaction)
 
         // Bob does the same:
-        try recipientClient.preKeyStore.storePreKey(PreKeyRecord(id: prekeyId, privateKey: bobPreKey),
+        try recipientClient.preKeyStore.storePreKey(LibSignalClient.PreKeyRecord(id: prekeyId, privateKey: bobPreKey),
                                                     id: prekeyId,
                                                     context: transaction)
 
         try recipientClient.signedPreKeyStore.storeSignedPreKey(
-            SignedPreKeyRecord(
+            LibSignalClient.SignedPreKeyRecord(
                 id: signedPrekeyId,
                 timestamp: 42000,
                 privateKey: bobSignedPreKey,
