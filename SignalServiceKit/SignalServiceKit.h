@@ -18,13 +18,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/IncomingGroupsV2MessageJob.h>
 #import <SignalServiceKit/InstalledSticker.h>
 #import <SignalServiceKit/KnownStickerPack.h>
-#import <SignalServiceKit/LegacyChainKey.h>
-#import <SignalServiceKit/LegacyMessageKeys.h>
-#import <SignalServiceKit/LegacyReceivingChain.h>
-#import <SignalServiceKit/LegacyRootKey.h>
-#import <SignalServiceKit/LegacySendingChain.h>
-#import <SignalServiceKit/LegacySessionRecord.h>
-#import <SignalServiceKit/LegacySessionState.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/NSObject+OWS.h>
 #import <SignalServiceKit/OWSAddToContactsOfferMessage.h>

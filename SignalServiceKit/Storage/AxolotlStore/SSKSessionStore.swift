@@ -16,8 +16,6 @@ public final class SSKSessionStore: SignalSessionStore {
         keyValueStoreFactory: KeyValueStoreFactory,
         recipientIdFinder: RecipientIdFinder
     ) {
-        LegacySessionRecord.setUpKeyedArchiverSubstitutions()
-
         self.keyValueStore = keyValueStoreFactory.keyValueStore(collection: {
             switch identity {
             case .aci:
@@ -51,13 +49,6 @@ public final class SSKSessionStore: SignalSessionStore {
         switch entry {
         case let data as Data:
             return data
-        case let record as LegacySessionRecord:
-            do {
-                return try record.serializeProto()
-            } catch {
-                owsFailDebug("failed to serialize AxolotlKit session: \(error)")
-                return nil
-            }
         default:
             owsFailDebug("unexpected entry in session store: \(entry)")
             return nil

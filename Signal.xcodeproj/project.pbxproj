@@ -3143,23 +3143,8 @@
 		F9C5CD2F289453B300548EEE /* SDSCrossProcess.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA50289453B100548EEE /* SDSCrossProcess.m */; };
 		F9C5CD33289453B300548EEE /* SSKSignedPreKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA55289453B100548EEE /* SSKSignedPreKeyStore.swift */; };
 		F9C5CD34289453B300548EEE /* SignalProtocolStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA56289453B100548EEE /* SignalProtocolStore.swift */; };
-		F9C5CD35289453B300548EEE /* SessionRecordMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA57289453B100548EEE /* SessionRecordMigration.swift */; };
 		F9C5CD37289453B300548EEE /* SenderKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA59289453B100548EEE /* SenderKeyStore.swift */; };
 		F9C5CD3C289453B300548EEE /* SSKSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA5E289453B100548EEE /* SSKSessionStore.swift */; };
-		F9C5CD3D289453B300548EEE /* LegacySendingChain.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA60289453B100548EEE /* LegacySendingChain.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CD3E289453B300548EEE /* LegacyRootKey.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA61289453B100548EEE /* LegacyRootKey.m */; };
-		F9C5CD3F289453B300548EEE /* LegacyChainKey.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA62289453B100548EEE /* LegacyChainKey.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CD40289453B300548EEE /* LegacyReceivingChain.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA63289453B100548EEE /* LegacyReceivingChain.m */; };
-		F9C5CD41289453B300548EEE /* LegacySessionRecord.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA64289453B100548EEE /* LegacySessionRecord.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CD44289453B300548EEE /* LegacyMessageKeys.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA67289453B100548EEE /* LegacyMessageKeys.m */; };
-		F9C5CD45289453B300548EEE /* LegacySessionState.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA68289453B100548EEE /* LegacySessionState.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CD47289453B300548EEE /* LegacyChainKey.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA6A289453B100548EEE /* LegacyChainKey.m */; };
-		F9C5CD48289453B300548EEE /* LegacyRootKey.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA6B289453B100548EEE /* LegacyRootKey.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CD49289453B300548EEE /* LegacySendingChain.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA6C289453B100548EEE /* LegacySendingChain.m */; };
-		F9C5CD4A289453B300548EEE /* LegacyReceivingChain.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA6D289453B100548EEE /* LegacyReceivingChain.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CD4C289453B300548EEE /* LegacySessionRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA6F289453B100548EEE /* LegacySessionRecord.m */; };
-		F9C5CD4E289453B300548EEE /* LegacySessionState.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA71289453B100548EEE /* LegacySessionState.m */; };
-		F9C5CD4F289453B300548EEE /* LegacyMessageKeys.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA72289453B100548EEE /* LegacyMessageKeys.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CD52289453B300548EEE /* SSKPreKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA75289453B100548EEE /* SSKPreKeyStore.swift */; };
 		F9C5CD54289453B300548EEE /* SSKKeychainStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA77289453B100548EEE /* SSKKeychainStorage.swift */; };
 		F9C5CD56289453B300548EEE /* PendingViewedReceiptRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA79289453B100548EEE /* PendingViewedReceiptRecord.swift */; };
@@ -6777,23 +6762,8 @@
 		F9C5CA50289453B100548EEE /* SDSCrossProcess.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDSCrossProcess.m; sourceTree = "<group>"; };
 		F9C5CA55289453B100548EEE /* SSKSignedPreKeyStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSKSignedPreKeyStore.swift; sourceTree = "<group>"; };
 		F9C5CA56289453B100548EEE /* SignalProtocolStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalProtocolStore.swift; sourceTree = "<group>"; };
-		F9C5CA57289453B100548EEE /* SessionRecordMigration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SessionRecordMigration.swift; sourceTree = "<group>"; };
 		F9C5CA59289453B100548EEE /* SenderKeyStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SenderKeyStore.swift; sourceTree = "<group>"; };
 		F9C5CA5E289453B100548EEE /* SSKSessionStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSKSessionStore.swift; sourceTree = "<group>"; };
-		F9C5CA60289453B100548EEE /* LegacySendingChain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LegacySendingChain.h; sourceTree = "<group>"; };
-		F9C5CA61289453B100548EEE /* LegacyRootKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LegacyRootKey.m; sourceTree = "<group>"; };
-		F9C5CA62289453B100548EEE /* LegacyChainKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LegacyChainKey.h; sourceTree = "<group>"; };
-		F9C5CA63289453B100548EEE /* LegacyReceivingChain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LegacyReceivingChain.m; sourceTree = "<group>"; };
-		F9C5CA64289453B100548EEE /* LegacySessionRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LegacySessionRecord.h; sourceTree = "<group>"; };
-		F9C5CA67289453B100548EEE /* LegacyMessageKeys.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LegacyMessageKeys.m; sourceTree = "<group>"; };
-		F9C5CA68289453B100548EEE /* LegacySessionState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LegacySessionState.h; sourceTree = "<group>"; };
-		F9C5CA6A289453B100548EEE /* LegacyChainKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LegacyChainKey.m; sourceTree = "<group>"; };
-		F9C5CA6B289453B100548EEE /* LegacyRootKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LegacyRootKey.h; sourceTree = "<group>"; };
-		F9C5CA6C289453B100548EEE /* LegacySendingChain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LegacySendingChain.m; sourceTree = "<group>"; };
-		F9C5CA6D289453B100548EEE /* LegacyReceivingChain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LegacyReceivingChain.h; sourceTree = "<group>"; };
-		F9C5CA6F289453B100548EEE /* LegacySessionRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LegacySessionRecord.m; sourceTree = "<group>"; };
-		F9C5CA71289453B100548EEE /* LegacySessionState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LegacySessionState.m; sourceTree = "<group>"; };
-		F9C5CA72289453B100548EEE /* LegacyMessageKeys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LegacyMessageKeys.h; sourceTree = "<group>"; };
 		F9C5CA75289453B100548EEE /* SSKPreKeyStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSKPreKeyStore.swift; sourceTree = "<group>"; };
 		F9C5CA77289453B100548EEE /* SSKKeychainStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSKKeychainStorage.swift; sourceTree = "<group>"; };
 		F9C5CA79289453B100548EEE /* PendingViewedReceiptRecord.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PendingViewedReceiptRecord.swift; sourceTree = "<group>"; };
@@ -13433,7 +13403,6 @@
 				F9C5CA5F289453B100548EEE /* Model */,
 				5050A8782B76E2E100E9BFA4 /* PreKeyId.swift */,
 				F9C5CA59289453B100548EEE /* SenderKeyStore.swift */,
-				F9C5CA57289453B100548EEE /* SessionRecordMigration.swift */,
 				C1CD0E352A6B0BC900307F1A /* SignalPreKeyStore.swift */,
 				F9C5CA56289453B100548EEE /* SignalProtocolStore.swift */,
 				C1CD0E392A6B0D2700307F1A /* SignalSessionStore.swift */,
@@ -13449,20 +13418,6 @@
 		F9C5CA5F289453B100548EEE /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				F9C5CA62289453B100548EEE /* LegacyChainKey.h */,
-				F9C5CA6A289453B100548EEE /* LegacyChainKey.m */,
-				F9C5CA72289453B100548EEE /* LegacyMessageKeys.h */,
-				F9C5CA67289453B100548EEE /* LegacyMessageKeys.m */,
-				F9C5CA6D289453B100548EEE /* LegacyReceivingChain.h */,
-				F9C5CA63289453B100548EEE /* LegacyReceivingChain.m */,
-				F9C5CA6B289453B100548EEE /* LegacyRootKey.h */,
-				F9C5CA61289453B100548EEE /* LegacyRootKey.m */,
-				F9C5CA60289453B100548EEE /* LegacySendingChain.h */,
-				F9C5CA6C289453B100548EEE /* LegacySendingChain.m */,
-				F9C5CA64289453B100548EEE /* LegacySessionRecord.h */,
-				F9C5CA6F289453B100548EEE /* LegacySessionRecord.m */,
-				F9C5CA68289453B100548EEE /* LegacySessionState.h */,
-				F9C5CA71289453B100548EEE /* LegacySessionState.m */,
 				5010B6B32C6BD41E00314CD4 /* PreKeyBundle.swift */,
 				72B0C23F2C9EEA7700B57DAD /* PreKeyRecord.swift */,
 				72B0C2412C9EED0800B57DAD /* SignedPreKeyRecord.swift */,
@@ -13873,13 +13828,6 @@
 				F9C5CDA7289453B400548EEE /* IncomingGroupsV2MessageJob.h in Headers */,
 				F9C5CC0A289453B300548EEE /* InstalledSticker.h in Headers */,
 				F9C5CC16289453B300548EEE /* KnownStickerPack.h in Headers */,
-				F9C5CD3F289453B300548EEE /* LegacyChainKey.h in Headers */,
-				F9C5CD4F289453B300548EEE /* LegacyMessageKeys.h in Headers */,
-				F9C5CD4A289453B300548EEE /* LegacyReceivingChain.h in Headers */,
-				F9C5CD48289453B300548EEE /* LegacyRootKey.h in Headers */,
-				F9C5CD3D289453B300548EEE /* LegacySendingChain.h in Headers */,
-				F9C5CD41289453B300548EEE /* LegacySessionRecord.h in Headers */,
-				F9C5CD45289453B300548EEE /* LegacySessionState.h in Headers */,
 				668A00F82C2B5F81007B8808 /* NSDate+OWS.h in Headers */,
 				668A00F52C2B5F81007B8808 /* NSObject+OWS.h in Headers */,
 				F9C5CBC6289453B300548EEE /* OutgoingPaymentSyncMessage.h in Headers */,
@@ -16805,17 +16753,10 @@
 				F9C5CC10289453B300548EEE /* KnownStickerPack.m in Sources */,
 				D93EA11F2A057FD600579C6F /* LearnMyOwnPniManager.swift in Sources */,
 				66076B692BC0A06C0043D547 /* LegacyAttachmentMigrator.swift in Sources */,
-				F9C5CD47289453B300548EEE /* LegacyChainKey.m in Sources */,
 				D9CA5BF729B3F61E00D9AAD1 /* LegacyChangePhoneNumber+ChangeTokens.swift in Sources */,
 				F9C5CE0E289453B400548EEE /* LegacyChangePhoneNumber.swift in Sources */,
 				D9AE0ADB29188A170063488B /* LegacyMessageDecryptJobRecord.swift in Sources */,
 				F9C5CDA4289453B400548EEE /* LegacyMessageJobFinder.swift in Sources */,
-				F9C5CD44289453B300548EEE /* LegacyMessageKeys.m in Sources */,
-				F9C5CD40289453B300548EEE /* LegacyReceivingChain.m in Sources */,
-				F9C5CD3E289453B300548EEE /* LegacyRootKey.m in Sources */,
-				F9C5CD49289453B300548EEE /* LegacySendingChain.m in Sources */,
-				F9C5CD4C289453B300548EEE /* LegacySessionRecord.m in Sources */,
-				F9C5CD4E289453B300548EEE /* LegacySessionState.m in Sources */,
 				D9A36B932C7FEDA100CEC0E7 /* LineByLineStringDiff.swift in Sources */,
 				D9F399B22A96D65D001599EC /* LinkedDevicePniKeyManager.swift in Sources */,
 				66076B4C2BC053290043D547 /* LinkPreviewBuilder.swift in Sources */,
@@ -17318,7 +17259,6 @@
 				50A5AA9B2A7449D000CF2ECC /* ServerReceiptEnvelope.swift in Sources */,
 				507CD5E529660D5100E47DAC /* ServiceId.swift in Sources */,
 				F9C5CC96289453B300548EEE /* SessionRecord.pb.swift in Sources */,
-				F9C5CD35289453B300548EEE /* SessionRecordMigration.swift in Sources */,
 				725465242BA017D500EABFD2 /* SessionResetJob.swift in Sources */,
 				D9AE0AD729187A700063488B /* SessionResetJobRecord.swift in Sources */,
 				1700E34128BD41150073D949 /* SetAlgebra+SSK.swift in Sources */,
