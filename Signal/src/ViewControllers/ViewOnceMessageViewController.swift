@@ -318,11 +318,11 @@ class ViewOnceMessageViewController: OWSViewController {
     }
     
     @objc private func screenCapturedDidChange() {
+        let isCaptured = UIScreen.main.isCaptured
         DispatchQueue.main.async { [weak self] in
-            let isCaptured = UIScreen.main.isCaptured
             self?.restrictScreenRecordPlaceholderView.isHidden = !isCaptured
-            isCaptured ? self?.videoPlayer?.stop() : self?.videoPlayer?.play()
         }
+        isCaptured ? videoPlayer?.stop() : videoPlayer?.play()
     }
 }
 
