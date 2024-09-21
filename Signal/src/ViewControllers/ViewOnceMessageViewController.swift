@@ -83,10 +83,10 @@ class ViewOnceMessageViewController: OWSViewController {
         let controlsHeight = controlSize + vMargin * 2
         mediaView.autoSetDimension(.width, toSize: controlsWidth, relation: .greaterThanOrEqual)
         mediaView.autoSetDimension(.height, toSize: controlsHeight, relation: .greaterThanOrEqual)
-        contentView.addSubview(restrictScreenRecordPlaceholderView)
-        restrictScreenRecordPlaceholderView.autoSetDimension(.width, toSize: controlsWidth, relation: .greaterThanOrEqual)
-        restrictScreenRecordPlaceholderView.autoSetDimension(.height, toSize: controlsHeight, relation: .greaterThanOrEqual)
-        restrictScreenRecordPlaceholderView.autoPinEdgesToSuperviewEdges()
+        contentView.addSubview(restrictScreenCapturePlaceholderView)
+        restrictScreenCapturePlaceholderView.autoSetDimension(.width, toSize: controlsWidth, relation: .greaterThanOrEqual)
+        restrictScreenCapturePlaceholderView.autoSetDimension(.height, toSize: controlsHeight, relation: .greaterThanOrEqual)
+        restrictScreenCapturePlaceholderView.autoPinEdgesToSuperviewEdges()
         
         let dismissButton = OWSButton(imageName: Theme.iconName(.buttonX), tintColor: Theme.darkThemePrimaryColor) { [weak self] in
             self?.dismissButtonPressed()
@@ -105,11 +105,11 @@ class ViewOnceMessageViewController: OWSViewController {
         setupDatabaseObservation()
     }
     
-    private var restrictScreenRecordPlaceholderView: UIView = {
+    private var restrictScreenCapturePlaceholderView: UIView = {
         let view = UIView()
         view.backgroundColor = Theme.backgroundColor
         let label = UILabel()
-        label.text = OWSLocalizedString("VIEW_ONCE_MEDIA_SCREEN_RECORD_RESTRICTION", comment: "Text to show when user tries to see a media file when device screen recording is still going on.")
+        label.text = OWSLocalizedString("VIEW_ONCE_MEDIA_SCREEN_CAPTURE_RESTRICTION", comment: "Text to show when user tries to see a media file when device screen recording is still going on.")
         label.numberOfLines = 0
         label.font = .dynamicTypeCaption1
         
@@ -265,14 +265,18 @@ class ViewOnceMessageViewController: OWSViewController {
                                                name: .OWSApplicationWillEnterForeground,
                                                object: nil)
     }
+    
+    func setupScreenCaptureDidChangeObservation() {
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(checkAndShowPlaceholderView),
+                                               name: UIScreen.capturedDidChangeNotification,
+                                               object: nil)
+        
+    }
 
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(screenCapturedDidChange),
-                                               name: UIScreen.capturedDidChangeNotification,
-                                               object: nil)
+        checkAndShowPlaceholderView()
     }
 
     public override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -317,10 +321,10 @@ class ViewOnceMessageViewController: OWSViewController {
         dismiss(animated: true)
     }
     
-    @objc private func screenCapturedDidChange() {
+    @objc private func checkAndShowPlaceholderView() {
         let isCaptured = UIScreen.main.isCaptured
         DispatchQueue.main.async { [weak self] in
-            self?.restrictScreenRecordPlaceholderView.isHidden = !isCaptured
+            self?.restrictScreenCapturePlaceholderView.isHidden = !isCaptured
         }
         isCaptured ? videoPlayer?.stop() : videoPlayer?.play()
     }
