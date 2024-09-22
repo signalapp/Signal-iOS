@@ -6,15 +6,11 @@
 import SignalServiceKit
 import SignalUI
 
-class AppUpdateNag: NSObject {
+class AppUpdateNag {
 
     // MARK: Public
 
-    public static let shared: AppUpdateNag = {
-        let versionService = AppStoreVersionService()
-        let nagManager = AppUpdateNag(versionService: versionService)
-        return nagManager
-    }()
+    public static let shared = AppUpdateNag(databaseStorage: SSKEnvironment.shared.databaseStorageRef)
 
     public func showAppUpgradeNagIfNecessary() {
         let currentVersion = AppVersionImpl.shared.currentAppVersion
@@ -29,65 +25,78 @@ class AppUpdateNag: NSObject {
             return
         }
 
-        firstly {
-            self.versionService.fetchLatestVersion(lookupURL: lookupURL)
-        }.then(on: DispatchQueue.global()) { (appStoreRecord) -> Promise<Void> in
-            let appStoreVersion = AppVersionNumber(appStoreRecord.version)
-            let currentVersion = AppVersionNumber(currentVersion)
-            guard appStoreVersion > currentVersion else {
-                self.clearFirstHeardOfNewVersionDate()
-                return Promise.value(())
-            }
-            return firstly(on: DispatchQueue.main) {
+        Task {
+            do {
+                let appStoreRecord = try await Self.fetchLatestVersion(lookupURL: lookupURL)
+                let appStoreVersion = AppVersionNumber(appStoreRecord.version)
+                let currentVersion = AppVersionNumber(currentVersion)
+                guard appStoreVersion > currentVersion else {
+                    await self.clearFirstHeardOfNewVersionDate()
+                    return
+                }
                 Logger.info("new version available: \(appStoreRecord)")
-                self.showUpdateNagIfEnoughTimeHasPassed(appStoreRecord: appStoreRecord)
-            }
-        }.catch { error in
-            // Only failDebug if we're looking up the true org.whispersystems.signal app store record
-            // If someone is building Signal with their own bundleID, it's less important that this succeeds.
-            if error.isNetworkFailureOrTimeout || !bundleIdentifier.hasPrefix("org.whispersystems") {
-                Logger.warn("failed with error: \(error)")
-            } else {
-                owsFailDebug("Failed to find Signal app store record")
+                await self.showUpdateNagIfEnoughTimeHasPassed(appStoreRecord: appStoreRecord)
+            } catch {
+                // Only failDebug if we're looking up the true org.whispersystems.signal app store record
+                // If someone is building Signal with their own bundleID, it's less important that this succeeds.
+                if error.isNetworkFailureOrTimeout || !bundleIdentifier.hasPrefix("org.whispersystems.") {
+                    Logger.warn("failed with error: \(error)")
+                } else {
+                    owsFailDebug("Failed to find Signal app store record")
+                }
             }
         }
     }
 
+    private static func fetchLatestVersion(lookupURL: URL) async throws -> AppStoreRecord {
+        Logger.debug("lookupURL:\(lookupURL)")
+
+        let (data, _) = try await URLSession(configuration: .ephemeral).data(from: lookupURL)
+        let decoder = JSONDecoder()
+        let resultSet = try decoder.decode(AppStoreLookupResultSet.self, from: data)
+        guard let appStoreRecord = resultSet.results.first else {
+            throw OWSGenericError("Missing or invalid record.")
+        }
+
+        return appStoreRecord
+    }
+
     // MARK: - Internal
 
-    static let kLastNagDateKey = "TSStorageManagerAppUpgradeNagDate"
-    static let kFirstHeardOfNewVersionDateKey = "TSStorageManagerAppUpgradeFirstHeardOfNewVersionDate"
+    private static let kLastNagDateKey = "TSStorageManagerAppUpgradeNagDate"
+    private static let kFirstHeardOfNewVersionDateKey = "TSStorageManagerAppUpgradeFirstHeardOfNewVersionDate"
 
     // MARK: - KV Store
 
-    public let keyValueStore = SDSKeyValueStore(collection: "TSStorageManagerAppUpgradeNagCollection")
+    private let keyValueStore = SDSKeyValueStore(collection: "TSStorageManagerAppUpgradeNagCollection")
 
     // MARK: - Bundle accessors
 
-    var bundle: Bundle {
+    private var bundle: Bundle {
         return Bundle.main
     }
 
-    var bundleIdentifier: String? {
+    private var bundleIdentifier: String? {
         return bundle.bundleIdentifier
     }
 
-    func lookupURL(bundleIdentifier: String) -> URL? {
-        return URL(string: "https://itunes.apple.com/lookup?bundleId=\(bundleIdentifier)")
+    private func lookupURL(bundleIdentifier: String) -> URL? {
+        var result = URLComponents(string: "https://itunes.apple.com/lookup")
+        result?.queryItems = [URLQueryItem(name: "bundleId", value: bundleIdentifier)]
+        return result?.url
     }
 
-    let versionService: AppStoreVersionService
+    private let databaseStorage: SDSDatabaseStorage
 
-    init(versionService: AppStoreVersionService) {
-        self.versionService = versionService
-        super.init()
-
+    private init(databaseStorage: SDSDatabaseStorage) {
+        self.databaseStorage = databaseStorage
         SwiftSingletons.register(self)
     }
 
-    func showUpdateNagIfEnoughTimeHasPassed(appStoreRecord: AppStoreRecord) {
+    @MainActor
+    private func showUpdateNagIfEnoughTimeHasPassed(appStoreRecord: AppStoreRecord) async {
         guard let firstHeardOfNewVersionDate = self.firstHeardOfNewVersionDate else {
-            self.setFirstHeardOfNewVersionDate(Date())
+            await setFirstHeardOfNewVersionDate(Date())
             return
         }
 
@@ -114,15 +123,16 @@ class AppUpdateNag: NSObject {
 
         switch frontmostViewController {
         case is ConversationSplitViewController, is ProvisioningSplashViewController, is RegistrationSplashViewController:
-            self.setLastNagDate(Date())
-            self.clearFirstHeardOfNewVersionDate()
+            await setLastNagDate(Date())
+            await clearFirstHeardOfNewVersionDate()
             presentUpgradeNag(appStoreRecord: appStoreRecord)
         default:
             Logger.debug("not presenting alert due to frontmostViewController: \(frontmostViewController)")
         }
     }
 
-    func presentUpgradeNag(appStoreRecord: AppStoreRecord) {
+    @MainActor
+    private func presentUpgradeNag(appStoreRecord: AppStoreRecord) {
         let title = OWSLocalizedString("APP_UPDATE_NAG_ALERT_TITLE", comment: "Title for the 'new app version available' alert.")
 
         let bodyFormat = OWSLocalizedString("APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT", comment: "Message format for the 'new app version available' alert. Embeds: {{The latest app version number}}")
@@ -148,7 +158,7 @@ class AppUpdateNag: NSObject {
         OWSActionSheets.showActionSheet(alert)
     }
 
-    func showAppStore(appStoreURL: URL) {
+    private func showAppStore(appStoreURL: URL) {
         assert(CurrentAppContext().isMainApp)
 
         Logger.debug("")
@@ -158,32 +168,32 @@ class AppUpdateNag: NSObject {
 
     // MARK: Storage
 
-    var firstHeardOfNewVersionDate: Date? {
-        return self.databaseStorage.read { transaction in
+    private var firstHeardOfNewVersionDate: Date? {
+        return databaseStorage.read { transaction in
             return self.keyValueStore.getDate(AppUpdateNag.kFirstHeardOfNewVersionDateKey, transaction: transaction)
         }
     }
 
-    func setFirstHeardOfNewVersionDate(_ date: Date) {
-        self.databaseStorage.write { transaction in
+    private func setFirstHeardOfNewVersionDate(_ date: Date) async {
+        await databaseStorage.awaitableWrite { transaction in
             self.keyValueStore.setDate(date, key: AppUpdateNag.kFirstHeardOfNewVersionDateKey, transaction: transaction)
         }
     }
 
-    func clearFirstHeardOfNewVersionDate() {
-        self.databaseStorage.write { transaction in
+    private func clearFirstHeardOfNewVersionDate() async {
+        await databaseStorage.awaitableWrite { transaction in
             self.keyValueStore.removeValue(forKey: AppUpdateNag.kFirstHeardOfNewVersionDateKey, transaction: transaction)
         }
     }
 
-    var lastNagDate: Date? {
-        return self.databaseStorage.read { transaction in
+    private var lastNagDate: Date? {
+        return databaseStorage.read { transaction in
             return self.keyValueStore.getDate(AppUpdateNag.kLastNagDateKey, transaction: transaction)
         }
     }
 
-    func setLastNagDate(_ date: Date) {
-        self.databaseStorage.write { transaction in
+    private func setLastNagDate(_ date: Date) async {
+        await databaseStorage.awaitableWrite { transaction in
             self.keyValueStore.setDate(date, key: AppUpdateNag.kLastNagDateKey, transaction: transaction)
         }
     }
@@ -191,60 +201,17 @@ class AppUpdateNag: NSObject {
 
 // MARK: Parsing Structs
 
-struct AppStoreLookupResultSet: Codable {
+private struct AppStoreLookupResultSet: Codable {
     let resultCount: UInt
     let results: [AppStoreRecord]
 }
 
-struct AppStoreRecord: Codable {
+private struct AppStoreRecord: Codable {
     let appStoreURL: URL
     let version: String
 
     private enum CodingKeys: String, CodingKey {
         case appStoreURL = "trackViewUrl"
         case version
-    }
-}
-
-class AppStoreVersionService: NSObject {
-
-    func fetchLatestVersion(lookupURL: URL) -> Promise<AppStoreRecord> {
-        Logger.debug("lookupURL:\(lookupURL)")
-
-        let (promise, future) = Promise<AppStoreRecord>.pending()
-
-        let task = URLSession.ephemeral.dataTask(with: lookupURL) { (data, _, networkError) in
-            if let networkError = networkError {
-                return future.reject(networkError)
-            }
-
-            guard let data = data else {
-                future.reject(OWSAssertionError("Missing data."))
-                return
-            }
-
-            do {
-                let decoder = JSONDecoder()
-                let resultSet = try decoder.decode(AppStoreLookupResultSet.self, from: data)
-                guard let appStoreRecord = resultSet.results.first else {
-                    future.reject(OWSGenericError("Missing or invalid record."))
-                    return
-                }
-
-                future.resolve(appStoreRecord)
-            } catch {
-                future.reject(error)
-            }
-        }
-
-        task.resume()
-
-        return promise
-    }
-}
-
-extension URLSession {
-    static var ephemeral: URLSession {
-        return URLSession(configuration: .ephemeral)
     }
 }
