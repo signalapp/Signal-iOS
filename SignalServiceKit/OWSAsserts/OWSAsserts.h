@@ -143,24 +143,4 @@ __attribute__((annotate("returns_localized_nsstring"))) static inline NSString *
     return s;
 }
 
-#pragma mark - Overflow Math
-
-#define ows_add_overflow(a, b, resultRef)                                                                              \
-    do {                                                                                                               \
-        BOOL _didOverflow = __builtin_add_overflow(a, b, resultRef);                                                   \
-        OWSPrecondition(!_didOverflow);                                                                                \
-    } while (NO)
-
-#define ows_sub_overflow(a, b, resultRef)                                                                              \
-    do {                                                                                                               \
-        BOOL _didOverflow = __builtin_sub_overflow(a, b, resultRef);                                                   \
-        OWSPrecondition(!_didOverflow);                                                                                \
-    } while (NO)
-
-#define ows_mul_overflow(a, b, resultRef)                                                                              \
-    do {                                                                                                               \
-        BOOL _didOverflow = __builtin_mul_overflow(a, b, resultRef);                                                   \
-        OWSPrecondition(!_didOverflow);                                                                                \
-    } while (NO)
-
 NS_ASSUME_NONNULL_END
