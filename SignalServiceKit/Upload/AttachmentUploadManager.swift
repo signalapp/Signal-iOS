@@ -17,6 +17,15 @@ public protocol AttachmentUploadManager {
     /// Will fail if the attachment doesn't exist or isn't available locally.
     func uploadTransitTierAttachment(attachmentId: Attachment.IDType) async throws
 
+    /// Upload an attachment to the media tier (uploading to the transit tier if needed and copying to the media tier).
+    /// Will fail if the attachment doesn't exist or isn't available locally.
+    func uploadMediaTierAttachment(
+        attachmentId: Attachment.IDType,
+        uploadEra: String,
+        localAci: Aci,
+        auth: MessageBackupServiceAuth
+    ) async throws
+
     /// Upload an attachment's thumbnail to the media tier (uploading to the transit tier and copying to the media tier).
     /// Will fail if the attachment doesn't exist or isn't available locally.
     func uploadMediaTierThumbnailAttachment(
@@ -587,14 +596,32 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                 throw OWSUnretryableError()
             }
 
-            let metadata = Upload.LocalUploadMetadata(
-                fileUrl: stream.fileURL,
-                key: attachment.encryptionKey,
-                digest: stream.info.digestSHA256Ciphertext,
-                encryptedDataLength: stream.info.encryptedByteCount,
-                plaintextDataLength: stream.info.unencryptedByteCount
-            )
-            return .reuse(metadata)
+            if
+                // We have an existing upload
+                let transitTierInfo = attachment.transitTierInfo,
+                // It uses the same primary key (it isn't a reupload with a rotated key)
+                transitTierInfo.encryptionKey == attachment.encryptionKey,
+                // We expect it isn't expired
+                dateProvider().ows_millisecondsSince1970 - transitTierInfo.uploadTimestamp < 30 * kDayInMs
+            {
+                // Reuse the existing transit tier upload without reuploading.
+                return .alreadyUploaded(.init(
+                    cdnKey: transitTierInfo.cdnKey,
+                    cdnNumber: transitTierInfo.cdnNumber,
+                    key: attachment.encryptionKey,
+                    digest: stream.encryptedFileSha256Digest,
+                    plaintextDataLength: stream.unencryptedByteCount
+                ))
+            } else {
+                let metadata = Upload.LocalUploadMetadata(
+                    fileUrl: stream.fileURL,
+                    key: attachment.encryptionKey,
+                    digest: stream.info.digestSHA256Ciphertext,
+                    encryptedDataLength: stream.info.encryptedByteCount,
+                    plaintextDataLength: stream.info.unencryptedByteCount
+                )
+                return .reuse(metadata)
+            }
 
         case .mediaTier(_, let isThumbnail):
             // We never allow uploads of data we don't have locally.

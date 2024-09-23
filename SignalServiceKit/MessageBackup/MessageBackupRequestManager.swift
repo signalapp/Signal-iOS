@@ -62,6 +62,15 @@ public extension MessageBackup {
             let mediaId: String
             let objectLength: UInt64
         }
+
+        public enum CopyToMediaTierError: Int, Error {
+            case badArgument = 400
+            case invalidAuth = 401
+            case forbidden = 403
+            case sourceObjectNotFound = 410
+            case outOfCapacity = 413
+            case rateLimited = 429
+        }
     }
 }
 
@@ -342,7 +351,7 @@ public struct MessageBackupRequestManagerImpl: MessageBackupRequestManager {
         item: MessageBackup.Request.MediaItem,
         auth: MessageBackupServiceAuth
     ) async throws -> UInt32 {
-        return try await executeBackupService(
+        let response = try await executeBackupServiceRequest(
             auth: auth,
             requestFactory: {
                 OWSRequestFactory.copyToMediaTier(
@@ -351,6 +360,15 @@ public struct MessageBackupRequestManagerImpl: MessageBackupRequestManager {
                 )
             }
         )
+
+        if let error = MessageBackup.Response.CopyToMediaTierError.init(rawValue: response.responseStatusCode) {
+            throw error
+        }
+
+        guard let bodyData = response.responseBodyData else {
+            throw OWSAssertionError("Missing body data")
+        }
+        return try JSONDecoder().decode(UInt32.self, from: bodyData)
     }
 
     public func copyToMediaTier(
