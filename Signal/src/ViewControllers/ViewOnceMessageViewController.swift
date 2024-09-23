@@ -268,7 +268,7 @@ class ViewOnceMessageViewController: OWSViewController {
     
     func setupScreenCaptureDidChangeObservation() {
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(checkAndShowPlaceholderView),
+                                               selector: #selector(checkScreenCaptureStatusAndShowPlaceholderView),
                                                name: UIScreen.capturedDidChangeNotification,
                                                object: nil)
         
@@ -276,7 +276,7 @@ class ViewOnceMessageViewController: OWSViewController {
 
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        checkAndShowPlaceholderView()
+        checkScreenCaptureStatusAndShowPlaceholderView()
     }
 
     public override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -321,8 +321,8 @@ class ViewOnceMessageViewController: OWSViewController {
         dismiss(animated: true)
     }
     
-    @objc private func checkAndShowPlaceholderView() {
-        let isCaptured = UIScreen.main.isCaptured
+    @objc private func checkScreenCaptureStatusAndShowPlaceholderView() {
+        let isCaptured = !UIScreen.main.isCaptured
         DispatchQueue.main.async { [weak self] in
             self?.restrictScreenCapturePlaceholderView.isHidden = !isCaptured
         }
