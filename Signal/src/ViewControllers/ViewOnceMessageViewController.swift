@@ -274,8 +274,8 @@ class ViewOnceMessageViewController: OWSViewController {
         
     }
 
-    public override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+    public override func viewDidLoad() {
+        super.viewDidLoad()
         checkScreenCaptureStatusAndShowPlaceholderView()
     }
 
@@ -322,11 +322,15 @@ class ViewOnceMessageViewController: OWSViewController {
     }
     
     @objc private func checkScreenCaptureStatusAndShowPlaceholderView() {
-        let isCaptured = !UIScreen.main.isCaptured
+        let isCaptured = UIScreen.main.isCaptured
         DispatchQueue.main.async { [weak self] in
             self?.restrictScreenCapturePlaceholderView.isHidden = !isCaptured
         }
         isCaptured ? videoPlayer?.stop() : videoPlayer?.play()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        videoPlayer?.stop()
     }
 }
 
