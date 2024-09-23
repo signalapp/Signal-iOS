@@ -124,9 +124,6 @@ struct RegistrationPermissionsView: View {
         .minimumScaleFactor(0.9)
         .navigationBarBackButtonHidden()
         .task($requestPermissions.animation())
-        // FIXME: Forcing light mode for consistency with the rest of registration
-        .background(Color.Signal.background)
-        .environment(\.colorScheme, .light)
     }
 
     private var notificationsPermissionView: some View {
