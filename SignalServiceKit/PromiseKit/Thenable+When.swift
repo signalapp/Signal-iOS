@@ -21,7 +21,7 @@ public extension Thenable {
         _ tu: U
     ) -> Promise<(T.Value, U.Value)> where T.Value == Value {
         Guarantee<Any>._when(on: scheduler, fulfilled: [
-            AnyPromise(tt), AnyPromise(tu)
+            tt.asVoid(on: scheduler), tu.asVoid(on: scheduler)
         ]).map(on: scheduler) { (tt.value!, tu.value!) }
     }
 
@@ -32,7 +32,7 @@ public extension Thenable {
         _ tv: V
     ) -> Promise<(T.Value, U.Value, V.Value)> where T.Value == Value {
         Guarantee<Any>._when(on: scheduler, fulfilled: [
-            AnyPromise(tt), AnyPromise(tu), AnyPromise(tv)
+            tt.asVoid(on: scheduler), tu.asVoid(on: scheduler), tv.asVoid(on: scheduler)
         ]).map(on: scheduler) { (tt.value!, tu.value!, tv.value!) }
     }
 
@@ -44,7 +44,7 @@ public extension Thenable {
         _ tw: W
     ) -> Promise<(T.Value, U.Value, V.Value, W.Value)> where T.Value == Value {
         Guarantee<Any>._when(on: scheduler, fulfilled: [
-            AnyPromise(tt), AnyPromise(tu), AnyPromise(tv), AnyPromise(tw)
+            tt.asVoid(on: scheduler), tu.asVoid(on: scheduler), tv.asVoid(on: scheduler), tw.asVoid(on: scheduler)
         ]).map(on: scheduler) { (tt.value!, tu.value!, tv.value!, tw.value!) }
     }
 }

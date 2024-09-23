@@ -114,7 +114,7 @@ public class OWSContactsManager: NSObject, ContactsManagerProtocol {
         guard isReadingAllowed else {
             if let completion = completion {
                 Logger.warn("Editing contacts isn't available on linked devices.")
-                completion(OWSError(error: .genericFailure, description: OWSLocalizedString("ERROR_DESCRIPTION_UNKNOWN_ERROR", comment: "Worst case generic error message"), isRetryable: false))
+                completion(OWSError.makeGenericError())
             }
             return
         }
@@ -133,23 +133,21 @@ public class OWSContactsManager: NSObject, ContactsManagerProtocol {
     /// This variant will fetch system contacts if contact access has already been granted,
     /// but not prompt for contact access. Also, it will always notify delegates, even if
     /// contacts haven't changed, and will clear out any stale cached SignalAccounts
-    public func userRequestedSystemContactsRefresh() -> AnyPromise {
+    public func userRequestedSystemContactsRefresh() -> Promise<Void> {
         guard isReadingAllowed else {
             owsFailDebug("Editing contacts isn't available on linked devices.")
-            let promise = AnyPromise()
-            promise.reject(OWSError(error: .assertionFailure, description: OWSLocalizedString("ERROR_DESCRIPTION_UNKNOWN_ERROR", comment: "Worst case generic error message"), isRetryable: false))
-            return promise
+            return Promise<Void>(error: OWSError.makeAssertionError())
         }
-        return AnyPromise(future: { (future: AnyFuture) in
-            self.systemContactsFetcher.userRequestedRefresh { (error: (any Error)?) in
-                if let error = error {
+        return Promise<Void> { future in
+            self.systemContactsFetcher.userRequestedRefresh { error in
+                if let error {
                     Logger.error("refreshing contacts failed with error: \(error)")
-                    future.reject(error: error)
+                    future.reject(error)
                 } else {
-                    future.resolve(value: NSNumber(value: 1))
+                    future.resolve(())
                 }
             }
-        })
+        }
     }
 }
 

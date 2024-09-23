@@ -108,8 +108,7 @@ private extension ConversationViewController {
                                              blockMode: .localShouldLeaveGroups,
                                              transaction: transaction)
         }
-        syncManager.sendMessageRequestResponseSyncMessage(thread: thread,
-                                                          responseType: .block)
+        SSKEnvironment.shared.syncManagerRef.sendMessageRequestResponseSyncMessage(thread: thread, responseType: .block)
         NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
     }
 
@@ -195,7 +194,7 @@ private extension ConversationViewController {
     ) {
         AssertIsOnMainThread()
 
-        syncManager.sendMessageRequestResponseSyncMessage(
+        SSKEnvironment.shared.syncManagerRef.sendMessageRequestResponseSyncMessage(
             thread: self.thread,
             responseType: messageRequestResponseType
         )
@@ -284,7 +283,7 @@ private extension ConversationViewController {
 
                 /// Send a sync message telling our other devices that we
                 /// accepted.
-                self.syncManager.sendMessageRequestResponseSyncMessage(
+                SSKEnvironment.shared.syncManagerRef.sendMessageRequestResponseSyncMessage(
                     thread: thread,
                     responseType: .accept,
                     transaction: transaction

@@ -636,7 +636,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         AssertIsOnMainThread()
         owsPrecondition(DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice == false)
 
-        syncManager.sendAllSyncRequestMessages(timeout: 20).ensure {
+        SSKEnvironment.shared.syncManagerRef.sendAllSyncRequestMessages(timeout: 20).ensure {
             refreshControl.endRefreshing()
         }.cauterize()
     }

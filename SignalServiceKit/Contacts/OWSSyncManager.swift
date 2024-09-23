@@ -13,7 +13,7 @@ extension Notification.Name {
 }
 
 @objc
-public class OWSSyncManager: NSObject, SyncManagerProtocolObjc {
+public class OWSSyncManager: NSObject {
     private static var keyValueStore: SDSKeyValueStore {
         SDSKeyValueStore(collection: "kTSStorageManagerOWSSyncManagerCollection")
     }
@@ -71,49 +71,49 @@ public class OWSSyncManager: NSObject, SyncManagerProtocolObjc {
         AssertIsOnMainThread()
         _ = syncAllContactsIfFullSyncRequested()
     }
+}
 
-    // MARK: - SyncManagerProtocolObjc methods
+extension OWSSyncManager: SyncManagerProtocolObjc {
 
-    public func processIncomingConfigurationSyncMessage(_ syncMessage: SSKProtoSyncMessageConfiguration, transaction: SDSAnyWriteTransaction) {
-        if syncMessage.hasReadReceipts {
-            SSKEnvironment.shared.receiptManager.setAreReadReceiptsEnabled(syncMessage.readReceipts, transaction: transaction)
-        }
-        if syncMessage.hasUnidentifiedDeliveryIndicators {
-            let updatedValue = syncMessage.unidentifiedDeliveryIndicators
-            self.preferences.setShouldShowUnidentifiedDeliveryIndicators(updatedValue, transaction: transaction)
-        }
-        if syncMessage.hasTypingIndicators {
-            self.typingIndicatorsImpl.setTypingIndicatorsEnabled(value: syncMessage.typingIndicators, transaction: transaction)
-        }
-        if syncMessage.hasLinkPreviews {
-            let linkPreviewSettingStore = DependenciesBridge.shared.linkPreviewSettingStore
-            linkPreviewSettingStore.setAreLinkPreviewsEnabled(syncMessage.linkPreviews, tx: transaction.asV2Write)
-        }
-        transaction.addAsyncCompletionOffMain {
-            NotificationCenter.default.postNotificationNameAsync(.syncManagerConfigurationSyncDidComplete, object: nil)
-        }
-    }
+    // MARK: - Configuration Sync
 
-    public func processIncomingContactsSyncMessage(_ syncMessage: SSKProtoSyncMessageContacts, transaction: SDSAnyWriteTransaction) {
-        guard
-            syncMessage.blob.hasCdnNumber,
-            let cdnKey = syncMessage.blob.cdnKey?.nilIfEmpty,
-            let encryptionKey = syncMessage.blob.key?.nilIfEmpty,
-            let digest = syncMessage.blob.digest?.nilIfEmpty,
-            syncMessage.blob.hasSize
-        else {
-            owsFailDebug("failed to create attachment download info from incoming contacts sync message")
+    private func _sendConfigurationSyncMessage(tx: SDSAnyWriteTransaction) {
+        Logger.info("")
+
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        guard tsAccountManager.registrationState(tx: tx.asV2Read).isRegistered else {
             return
         }
-        self.smJobQueues.incomingContactSyncJobQueue.add(
-            cdnNumber: syncMessage.blob.cdnNumber,
-            cdnKey: cdnKey,
-            encryptionKey: encryptionKey,
-            digest: digest,
-            plaintextLength: syncMessage.blob.size,
-            isComplete: syncMessage.isComplete,
-            tx: transaction
+
+        guard let thread = TSContactThread.getOrCreateLocalThread(transaction: tx) else {
+            owsFailDebug("Missing thread.")
+            return
+        }
+
+        let linkPreviews = DependenciesBridge.shared.linkPreviewSettingStore.areLinkPreviewsEnabled(tx: tx.asV2Read)
+        let readReceipts = receiptManager.areReadReceiptsEnabled(transaction: tx)
+        let sealedSenderIndicators = preferences.shouldShowUnidentifiedDeliveryIndicators(transaction: tx)
+        let typingIndicators = typingIndicatorsImpl.areTypingIndicatorsEnabled()
+
+        let configurationSyncMessage = OWSSyncConfigurationMessage(
+            thread: thread,
+            readReceiptsEnabled: readReceipts,
+            showUnidentifiedDeliveryIndicators: sealedSenderIndicators,
+            showTypingIndicators: typingIndicators,
+            sendLinkPreviews: linkPreviews,
+            transaction: tx
         )
+        let preparedMessage = PreparedOutgoingMessage.preprepared(
+            transientMessageWithoutAttachments: configurationSyncMessage
+        )
+
+        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: tx)
+    }
+
+    public func sendConfigurationSyncMessage() {
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+            Task { await self.databaseStorage.awaitableWrite(block: self._sendConfigurationSyncMessage(tx:)) }
+        }
     }
 }
 
@@ -129,15 +129,12 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
 
     // MARK: - Sync Requests
 
-    @objc
-    public func sendAllSyncRequestMessagesIfNecessary() -> AnyPromise {
-        return AnyPromise(_sendAllSyncRequestMessages(onlyIfNecessary: true))
+    public func sendAllSyncRequestMessagesIfNecessary() -> Promise<Void> {
+        _sendAllSyncRequestMessages(onlyIfNecessary: true)
     }
 
-    @objc
-    public func sendAllSyncRequestMessages(timeout: TimeInterval) -> AnyPromise {
-        return AnyPromise(_sendAllSyncRequestMessages(onlyIfNecessary: false)
-            .timeout(seconds: timeout, substituteValue: ()))
+    public func sendAllSyncRequestMessages(timeout: TimeInterval) -> Promise<Void> {
+        _sendAllSyncRequestMessages(onlyIfNecessary: false).timeout(seconds: timeout, substituteValue: ())
     }
 
     private func _sendAllSyncRequestMessages(onlyIfNecessary: Bool) -> Promise<Void> {
@@ -221,7 +218,6 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: tx)
     }
 
-    @objc
     public func processIncomingKeysSyncMessage(_ syncMessage: SSKProtoSyncMessageKeys, transaction: SDSAnyWriteTransaction) {
         guard !DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction.asV2Read).isRegisteredPrimaryDevice else {
             return owsFailDebug("Key sync messages should only be processed on linked devices")
@@ -267,7 +263,6 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         }
     }
 
-    @objc
     public func processIncomingMessageRequestResponseSyncMessage(
         _ syncMessage: SSKProtoSyncMessageMessageRequestResponse,
         transaction: SDSAnyWriteTransaction
@@ -360,63 +355,21 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: transaction)
     }
 
-    // MARK: - Configuration Sync
-
-    public func sendConfigurationSyncMessage() {
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            Task { await self.databaseStorage.awaitableWrite(block: self._sendConfigurationSyncMessage(tx:)) }
-        }
-    }
-
-    private func _sendConfigurationSyncMessage(tx: SDSAnyWriteTransaction) {
-        Logger.info("")
-
-        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        guard tsAccountManager.registrationState(tx: tx.asV2Read).isRegistered else {
-            return
-        }
-
-        guard let thread = TSContactThread.getOrCreateLocalThread(transaction: tx) else {
-            owsFailDebug("Missing thread.")
-            return
-        }
-
-        let linkPreviews = DependenciesBridge.shared.linkPreviewSettingStore.areLinkPreviewsEnabled(tx: tx.asV2Read)
-        let readReceipts = receiptManager.areReadReceiptsEnabled(transaction: tx)
-        let sealedSenderIndicators = preferences.shouldShowUnidentifiedDeliveryIndicators(transaction: tx)
-        let typingIndicators = typingIndicatorsImpl.areTypingIndicatorsEnabled()
-
-        let configurationSyncMessage = OWSSyncConfigurationMessage(
-            thread: thread,
-            readReceiptsEnabled: readReceipts,
-            showUnidentifiedDeliveryIndicators: sealedSenderIndicators,
-            showTypingIndicators: typingIndicators,
-            sendLinkPreviews: linkPreviews,
-            transaction: tx
-        )
-        let preparedMessage = PreparedOutgoingMessage.preprepared(
-            transientMessageWithoutAttachments: configurationSyncMessage
-        )
-
-        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: tx)
-    }
-
     // MARK: - Contact Sync
 
-    public func syncAllContacts() -> AnyPromise {
+    public func syncAllContacts() -> Promise<Void> {
         owsAssertDebug(canSendContactSyncMessage())
-        return AnyPromise(syncContacts(mode: .allSignalAccounts))
+        return syncContacts(mode: .allSignalAccounts)
     }
 
-    @objc
     func syncAllContactsIfNecessary() {
         owsAssertDebug(CurrentAppContext().isMainApp)
         _ = syncContacts(mode: .allSignalAccountsIfChanged)
     }
 
-    public func syncAllContactsIfFullSyncRequested() -> AnyPromise {
+    public func syncAllContactsIfFullSyncRequested() -> Promise<Void> {
         owsAssertDebug(CurrentAppContext().isMainApp)
-        return AnyPromise(syncContacts(mode: .allSignalAccountsIfFullSyncRequested))
+        return syncContacts(mode: .allSignalAccountsIfFullSyncRequested)
     }
 
     private enum ContactSyncMode {
@@ -614,6 +567,48 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         )
         SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: tx)
     }
+
+    public func processIncomingConfigurationSyncMessage(_ syncMessage: SSKProtoSyncMessageConfiguration, transaction: SDSAnyWriteTransaction) {
+        if syncMessage.hasReadReceipts {
+            SSKEnvironment.shared.receiptManager.setAreReadReceiptsEnabled(syncMessage.readReceipts, transaction: transaction)
+        }
+        if syncMessage.hasUnidentifiedDeliveryIndicators {
+            let updatedValue = syncMessage.unidentifiedDeliveryIndicators
+            self.preferences.setShouldShowUnidentifiedDeliveryIndicators(updatedValue, transaction: transaction)
+        }
+        if syncMessage.hasTypingIndicators {
+            self.typingIndicatorsImpl.setTypingIndicatorsEnabled(value: syncMessage.typingIndicators, transaction: transaction)
+        }
+        if syncMessage.hasLinkPreviews {
+            let linkPreviewSettingStore = DependenciesBridge.shared.linkPreviewSettingStore
+            linkPreviewSettingStore.setAreLinkPreviewsEnabled(syncMessage.linkPreviews, tx: transaction.asV2Write)
+        }
+        transaction.addAsyncCompletionOffMain {
+            NotificationCenter.default.postNotificationNameAsync(.syncManagerConfigurationSyncDidComplete, object: nil)
+        }
+    }
+
+    public func processIncomingContactsSyncMessage(_ syncMessage: SSKProtoSyncMessageContacts, transaction: SDSAnyWriteTransaction) {
+        guard
+            syncMessage.blob.hasCdnNumber,
+            let cdnKey = syncMessage.blob.cdnKey?.nilIfEmpty,
+            let encryptionKey = syncMessage.blob.key?.nilIfEmpty,
+            let digest = syncMessage.blob.digest?.nilIfEmpty,
+            syncMessage.blob.hasSize
+        else {
+            owsFailDebug("failed to create attachment download info from incoming contacts sync message")
+            return
+        }
+        self.smJobQueues.incomingContactSyncJobQueue.add(
+            cdnNumber: syncMessage.blob.cdnNumber,
+            cdnKey: cdnKey,
+            encryptionKey: encryptionKey,
+            digest: digest,
+            plaintextLength: syncMessage.blob.size,
+            isComplete: syncMessage.isComplete,
+            tx: transaction
+        )
+    }
 }
 
 // MARK: -
@@ -643,7 +638,6 @@ public extension OWSSyncManager {
         }
     }
 
-    @objc
     fileprivate func sendSyncRequestMessage(_ requestType: SSKProtoSyncMessageRequestType,
                                             transaction: SDSAnyWriteTransaction) {
         switch requestType {

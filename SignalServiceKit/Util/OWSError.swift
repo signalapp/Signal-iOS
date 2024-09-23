@@ -123,9 +123,23 @@ public class OWSError: NSObject, CustomNSError, IsRetryableProvider, UserErrorDe
 
     // MARK: - Old OWSError.h functions
 
+    @available(swift, obsoleted: 1)
     @objc
     public static func makeAssertionError(_ description: String) -> NSError {
         owsFailDebug("Assertion failed: \(description)")
-        return OWSError(error: .assertionFailure, description: OWSLocalizedString("ERROR_DESCRIPTION_UNKNOWN_ERROR", comment: "Worst case generic error message"), isRetryable: false) as Error as NSError
+        return makeAssertionError() as Error as NSError
+    }
+
+    @inlinable
+    public static func genericErrorDescription() -> String {
+        OWSLocalizedString("ERROR_DESCRIPTION_UNKNOWN_ERROR", comment: "Worst case generic error message")
+    }
+
+    public static func makeAssertionError() -> OWSError {
+        OWSError(error: .assertionFailure, description: genericErrorDescription(), isRetryable: false)
+    }
+
+    public static func makeGenericError() -> OWSError {
+        OWSError(error: .genericFailure, description: genericErrorDescription(), isRetryable: false)
     }
 }

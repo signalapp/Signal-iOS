@@ -470,11 +470,11 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
         AssertIsOnMainThread()
         Logger.info("Beginning refreshing")
 
-        let refreshPromise: AnyPromise
+        let refreshPromise: Promise<Void>
         if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice {
             refreshPromise = contactsManagerImpl.userRequestedSystemContactsRefresh()
         } else {
-            refreshPromise = syncManager.sendAllSyncRequestMessages(timeout: 20)
+            refreshPromise = SSKEnvironment.shared.syncManagerRef.sendAllSyncRequestMessages(timeout: 20)
         }
         _ = refreshPromise.ensure {
             Logger.info("ending refreshing")

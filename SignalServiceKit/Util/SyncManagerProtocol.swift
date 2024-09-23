@@ -5,29 +5,26 @@
 
 import Foundation
 
-@objc
 public protocol SyncManagerProtocol: SyncManagerProtocolObjc, SyncManagerProtocolSwift {}
 
 // MARK: -
 
 @objc
 public protocol SyncManagerProtocolObjc {
-    func processIncomingConfigurationSyncMessage(_ syncMessage: SSKProtoSyncMessageConfiguration, transaction: SDSAnyWriteTransaction)
-    func processIncomingContactsSyncMessage(_ syncMessage: SSKProtoSyncMessageContacts, transaction: SDSAnyWriteTransaction)
-
+    func sendConfigurationSyncMessage()
 }
 
 // MARK: -
 
-@objc
 public protocol SyncManagerProtocolSwift {
-    func sendAllSyncRequestMessagesIfNecessary() -> AnyPromise
-    func sendAllSyncRequestMessages(timeout: TimeInterval) -> AnyPromise
+    func sendAllSyncRequestMessagesIfNecessary() -> Promise<Void>
+    func sendAllSyncRequestMessages(timeout: TimeInterval) -> Promise<Void>
 
-    func sendConfigurationSyncMessage()
+    func processIncomingConfigurationSyncMessage(_ syncMessage: SSKProtoSyncMessageConfiguration, transaction: SDSAnyWriteTransaction)
+    func processIncomingContactsSyncMessage(_ syncMessage: SSKProtoSyncMessageContacts, transaction: SDSAnyWriteTransaction)
 
-    func syncAllContacts() -> AnyPromise
-    func syncAllContactsIfFullSyncRequested() -> AnyPromise
+    func syncAllContacts() -> Promise<Void>
+    func syncAllContactsIfFullSyncRequested() -> Promise<Void>
 
     func sendFetchLatestProfileSyncMessage(tx: SDSAnyWriteTransaction)
     func sendFetchLatestStorageManifestSyncMessage()

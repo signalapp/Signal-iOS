@@ -790,10 +790,7 @@ private class MockStorageServiceManager: StorageServiceManager {
         didRecordPendingLocalAccountUpdates = true
     }
 
-    func waitForPendingRestores() -> AnyPromise {
-        return AnyPromise(Promise<Void>.value(()))
-    }
-
+    func waitForPendingRestores() -> Promise<Void> { Promise.value(()) }
     func resetLocalData(transaction: DBWriteTransaction) { owsFail("Not implemented!") }
     func recordPendingUpdates(updatedRecipientUniqueIds: [RecipientUniqueId]) { owsFail("Not implemented!") }
     func recordPendingUpdates(updatedAddresses: [SignalServiceAddress]) { owsFail("Not implemented!") }

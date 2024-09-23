@@ -14,18 +14,16 @@ public class OWSMockSyncManager: NSObject, SyncManagerProtocol {
         Logger.info("")
     }
 
-    @objc
-    public func sendAllSyncRequestMessagesIfNecessary() -> AnyPromise {
+    public func sendAllSyncRequestMessagesIfNecessary() -> Promise<Void> {
         Logger.info("")
 
-        return AnyPromise(Promise.value(()))
+        return Promise.value(())
     }
 
-    @objc
-    public func sendAllSyncRequestMessages(timeout: TimeInterval) -> AnyPromise {
+    public func sendAllSyncRequestMessages(timeout: TimeInterval) -> Promise<Void> {
         Logger.info("")
 
-        return AnyPromise(Promise.value(()))
+        return Promise.value(())
     }
 
     public func sendFetchLatestProfileSyncMessage(tx: SDSAnyWriteTransaction) {
@@ -80,18 +78,16 @@ public class OWSMockSyncManager: NSObject, SyncManagerProtocol {
         Logger.info("")
     }
 
-    @objc
-    public func syncAllContacts() -> AnyPromise {
+    public func syncAllContacts() -> Promise<Void> {
         Logger.info("")
 
-        return AnyPromise()
+        return Promise<Void>()
     }
 
-    @objc
-    public func syncAllContactsIfFullSyncRequested() -> AnyPromise {
+    public func syncAllContactsIfFullSyncRequested() -> Promise<Void> {
         Logger.info("")
 
-        return AnyPromise()
+        return Promise<Void>()
     }
 }
 

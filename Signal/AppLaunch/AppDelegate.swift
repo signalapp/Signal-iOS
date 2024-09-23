@@ -1265,7 +1265,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 _ = self.messageFetcherJob.run()
                 // If the main app gets woken to process messages in the background, check
                 // for any pending NSE requests to fulfill.
-                _ = self.syncManager.syncAllContactsIfFullSyncRequested()
+                _ = SSKEnvironment.shared.syncManagerRef.syncAllContactsIfFullSyncRequested()
             }
         }
     }

@@ -126,11 +126,11 @@ public extension NSObject {
         SSKEnvironment.shared.reachabilityManagerRef
     }
 
-    final var syncManager: SyncManagerProtocol {
+    final var syncManager: SyncManagerProtocolObjc {
         SSKEnvironment.shared.syncManagerRef
     }
 
-    static var syncManager: SyncManagerProtocol {
+    static var syncManager: SyncManagerProtocolObjc {
         SSKEnvironment.shared.syncManagerRef
     }
 

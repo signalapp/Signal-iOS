@@ -170,10 +170,7 @@ class MessageSenderNoSessionForTransientMessageError: NSObject, CustomNSError, I
     public var localizedDescription: String {
         // These messages are never presented to the user, since these errors only
         // occur to transient messages. We only specify an error to avoid an assert.
-        return OWSLocalizedString(
-            "ERROR_DESCRIPTION_UNKNOWN_ERROR",
-            comment: "Worst case generic error message"
-        )
+        return OWSError.genericErrorDescription()
     }
 }
 

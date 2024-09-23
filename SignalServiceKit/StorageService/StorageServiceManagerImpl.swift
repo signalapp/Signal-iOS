@@ -356,12 +356,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
         }
     }
 
-    @objc
-    public func waitForPendingRestores() -> AnyPromise {
-        return AnyPromise(_waitForPendingRestores())
-    }
-
-    private func _waitForPendingRestores() -> Promise<Void> {
+    public func waitForPendingRestores() -> Promise<Void> {
         let (promise, future) = Promise<Void>.pending()
         updateManagerState { managerState in
             managerState.pendingRestoreCompletionFutures.append(future)

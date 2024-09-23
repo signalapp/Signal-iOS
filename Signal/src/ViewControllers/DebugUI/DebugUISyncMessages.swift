@@ -26,7 +26,7 @@ class DebugUISyncMessages: DebugUIPage, Dependencies {
     // MARK: -
 
     private static func sendContactsSyncMessage() {
-        SSKEnvironment.shared.syncManager.syncAllContacts()
+        SSKEnvironment.shared.syncManagerRef.syncAllContacts()
             .catch(on: DispatchQueue.global()) { error in
                 Logger.info("Error: \(error)")
             }

@@ -28,7 +28,7 @@ public class FakeStorageServiceManager: NSObject, StorageServiceManager {
         return restoreOrCreateManifestIfNecessaryMock(authedDevice)
     }
 
-    public func waitForPendingRestores() -> AnyPromise { AnyPromise(Promise.value(())) }
+    public func waitForPendingRestores() -> Promise<Void> { Promise.value(()) }
 
     public func resetLocalData(transaction: DBWriteTransaction) {}
 }

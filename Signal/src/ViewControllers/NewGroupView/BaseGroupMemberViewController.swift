@@ -157,8 +157,8 @@ extension BaseGroupMemberViewController: MemberViewDelegate {
         return true
     }
 
-    public func memberViewPrepareToSelectRecipient(_ recipient: PickedRecipient) -> AnyPromise {
-        return AnyPromise(tryToEnableGroupsV2(for: recipient))
+    public func memberViewPrepareToSelectRecipient(_ recipient: PickedRecipient) -> Promise<Void> {
+        return tryToEnableGroupsV2(for: recipient)
     }
 
     private func tryToEnableGroupsV2(for recipient: PickedRecipient) -> Promise<Void> {

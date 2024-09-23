@@ -28,7 +28,7 @@ public protocol RecipientPickerDelegate: RecipientContextMenuHelperDelegate {
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         prepareToSelectRecipient recipient: PickedRecipient
-    ) -> AnyPromise
+    ) -> Promise<Void>
 
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
@@ -69,9 +69,9 @@ public extension RecipientPickerDelegate {
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         prepareToSelectRecipient recipient: PickedRecipient
-    ) -> AnyPromise {
+    ) -> Promise<Void> {
         owsFailDebug("Not implemented")
-        return AnyPromise(Promise.value(()))
+        return Promise.value(())
     }
 
     func recipientPicker(

@@ -106,25 +106,24 @@ class DebugUIMessagesAssetLoader {
         _ assetLoaders: [DebugUIMessagesAssetLoader],
         completion: @escaping Completion
     ) {
-        var promises = [AnyPromise]()
+        var promises = [Promise<Void>]()
 
         assetLoaders.forEach { assetLoader in
             // Use chained promises to make the code more readable.
-            let promise = AnyPromise { future in
+            let promise = Promise<Void> { future in
                 assetLoader.prepare!({ result in
                     switch result {
                     case .success:
-                        future.resolve(value: Void())
-
+                        future.resolve(())
                     case .failure(let error):
-                        future.reject(error: error)
+                        future.reject(error)
                     }
                 })
             }
             promises.append(promise)
         }
 
-        AnyPromise.when(resolved: promises)
+        Promise.when(resolved: promises)
             .done { _ in
                 completion(.success(()))
             }.catch { error in

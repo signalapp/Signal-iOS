@@ -240,29 +240,6 @@ class PromiseTests: XCTestCase {
         waitForExpectations(timeout: 5)
     }
 
-    func test_anyPromise() {
-        let anyPromiseExpectation = expectation(description: "Expect anyPromise on global queue")
-        let mapExpectation = expectation(description: "Expect map on global queue")
-        let doneExpectation = expectation(description: "Expect done on main queue")
-
-        AnyPromise(firstly(on: DispatchQueue.global()) { () -> String in
-            XCTAssertTrue(DispatchQueueIsCurrentQueue(.global()))
-            anyPromiseExpectation.fulfill()
-            return "abc"
-        }).map(on: DispatchQueue.global()) { string -> String in
-            XCTAssertTrue(string is String)
-            XCTAssertTrue(DispatchQueueIsCurrentQueue(.global()))
-            mapExpectation.fulfill()
-            return (string as! String) + "xyz"
-        }.done { string in
-            XCTAssertTrue(DispatchQueueIsCurrentQueue(.main))
-            XCTAssertEqual(string, "abcxyz")
-            doneExpectation.fulfill()
-        }.cauterize()
-
-        waitForExpectations(timeout: 5)
-    }
-
     func test_deepPromiseChain() {
         var sharedValue = 0
         var promise = firstly(on: DispatchQueue.global()) {

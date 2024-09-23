@@ -332,6 +332,6 @@ internal class _UsernameValidationManager_StorageServiceManagerWrapper: Username
     }
 
     public func waitForPendingRestores() -> Promise<Void> {
-        storageServiceManager.waitForPendingRestores().asVoid()
+        storageServiceManager.waitForPendingRestores()
     }
 }

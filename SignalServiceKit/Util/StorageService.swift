@@ -22,6 +22,17 @@ public protocol StorageServiceManagerObjc {
     ///
     /// Called during app launch, registration, and change number.
     func setLocalIdentifiers(_ localIdentifiers: LocalIdentifiersObjC)
+}
+
+public protocol StorageServiceManager: StorageServiceManagerObjc {
+    func recordPendingUpdates(callLinkRootKeys: [CallLinkRootKey])
+
+    func backupPendingChanges(authedDevice: AuthedDevice)
+
+    @discardableResult
+    func restoreOrCreateManifestIfNecessary(authedDevice: AuthedDevice) -> Promise<Void>
+
+    func resetLocalData(transaction: DBWriteTransaction)
 
     /// Waits for pending restores to finish.
     ///
@@ -40,18 +51,7 @@ public protocol StorageServiceManagerObjc {
     /// described as: "if this device has knowledge that storage service has new
     /// state at the time this method is invoked, the returned Promise will be
     /// resolved after that state has been fetched".
-    func waitForPendingRestores() -> AnyPromise
-}
-
-public protocol StorageServiceManager: StorageServiceManagerObjc {
-    func recordPendingUpdates(callLinkRootKeys: [CallLinkRootKey])
-
-    func backupPendingChanges(authedDevice: AuthedDevice)
-
-    @discardableResult
-    func restoreOrCreateManifestIfNecessary(authedDevice: AuthedDevice) -> Promise<Void>
-
-    func resetLocalData(transaction: DBWriteTransaction)
+    func waitForPendingRestores() -> Promise<Void>
 }
 
 // MARK: -

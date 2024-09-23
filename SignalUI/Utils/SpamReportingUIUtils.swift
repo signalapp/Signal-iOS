@@ -67,7 +67,7 @@ public struct ReportSpamUIUtils {
 
         Self.reportSpam(in: thread, tx: tx)
 
-        NSObject.syncManager.sendMessageRequestResponseSyncMessage(
+        SSKEnvironment.shared.syncManagerRef.sendMessageRequestResponseSyncMessage(
             thread: thread,
             responseType: .blockAndSpam
         )
@@ -76,7 +76,7 @@ public struct ReportSpamUIUtils {
     public static func report(in thread: TSThread, tx: SDSAnyWriteTransaction) {
         Self.reportSpam(in: thread, tx: tx)
 
-        NSObject.syncManager.sendMessageRequestResponseSyncMessage(
+        SSKEnvironment.shared.syncManagerRef.sendMessageRequestResponseSyncMessage(
             thread: thread,
             responseType: .blockAndSpam
         )
