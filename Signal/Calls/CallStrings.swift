@@ -104,4 +104,18 @@ extension CallStrings {
             comment: "Button to join an active group call"
         )
     }
+
+    static var callLinkErrorSheetTitle: String {
+        OWSLocalizedString(
+            "CALL_LINK_CREATION_OR_UPDATE_FAILURE_SHEET_TITLE",
+            comment: "Title of sheet presented when call link creation or update fails."
+        )
+    }
+
+    static var callLinkUpdateErrorSheetDescription: String {
+        OWSLocalizedString(
+            "CALL_LINK_UPDATE_FAILURE_SHEET_DESCRIPTION",
+            comment: "Description of sheet presented when call link update fails."
+        )
+    }
 }

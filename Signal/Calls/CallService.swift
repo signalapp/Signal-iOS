@@ -530,11 +530,31 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         }
     }
 
+    /// Rather than always fetching the current `CallLinkState`,
+    /// there may be times when we already have a reasonably
+    /// up-to-date copy of the state and do not wish to have to,
+    /// say, block UI waiting on a re-fetch. If in doubt, use
+    /// `.fetch`. Because that is "so fetch."
+    enum CallLinkStateRetrievalStrategy {
+        case reuse(SignalServiceKit.CallLinkState)
+        case fetch
+    }
+
     @MainActor
-    func buildAndConnectCallLinkCall(callLink: CallLink, adminPasskey: Data?) async throws -> (SignalCall, CallLinkCall)? {
+    func buildAndConnectCallLinkCall(
+        callLink: CallLink,
+        adminPasskey: Data?,
+        callLinkStateRetrievalStrategy: CallLinkStateRetrievalStrategy
+    ) async throws -> (SignalCall, CallLinkCall)? {
         let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!
         let authCredential = try await authCredentialManager.fetchCallLinkAuthCredential(localIdentifiers: localIdentifiers)
-        let callLinkState = try await callLinkFetcher.readCallLink(callLink.rootKey, authCredential: authCredential)
+        let state: SignalServiceKit.CallLinkState
+        switch callLinkStateRetrievalStrategy {
+        case .reuse(let callLinkState):
+            state = callLinkState
+        case .fetch:
+            state = try await callLinkFetcher.readCallLink(callLink.rootKey, authCredential: authCredential)
+        }
         return _buildAndConnectGroupCall(isOutgoingVideoMuted: false) { () -> (SignalCall, CallLinkCall)? in
             // [CallLink] TODO: Read adminPasskey from disk instead of a parameter.
             let videoCaptureController = VideoCaptureController()
@@ -556,7 +576,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             let callLinkCall = CallLinkCall(
                 callLink: callLink,
                 adminPasskey: adminPasskey,
-                callLinkState: callLinkState,
+                callLinkState: state,
                 ringRtcCall: ringRtcCall,
                 videoCaptureController: videoCaptureController
             )

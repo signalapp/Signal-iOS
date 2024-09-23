@@ -203,7 +203,17 @@ class CreateCallLinkViewController: InteractiveSheetViewController {
 
     private func joinCall() {
         persistIfNeeded()
-        GroupCallViewController.presentLobby(for: callLink, adminPasskey: adminPasskey)
+        GroupCallViewController.presentLobby(
+            for: callLink,
+            adminPasskey: adminPasskey,
+            // Because the local user is the admin and all the changes
+            // they are making to the state are being updated in the
+            // local model, we don't need to re-fetch the state from
+            // the server. In fact, it feels strange to block the UI with
+            // an activity indicator when waiting for this, as we
+            // already have all the info necessary to show the call UI.
+            callLinkStateRetrievalStrategy: .reuse(callLinkState)
+        )
     }
 
     private func editName() {
@@ -217,28 +227,57 @@ class CreateCallLinkViewController: InteractiveSheetViewController {
         )
     }
 
-    private func updateName(_ name: String) {
-        updateCallLink { callLinkManager, authCredential in
-            return try await callLinkManager.updateCallLinkName(
-                name,
-                rootKey: self.callLink.rootKey,
-                adminPasskey: self.adminPasskey,
-                authCredential: authCredential
-            )
-        }
+    private func updateName(_ name: String) async throws {
+        try await updateCallLink(
+            { callLinkManager, authCredential in
+                return try await callLinkManager.updateCallLinkName(
+                    name,
+                    rootKey: self.callLink.rootKey,
+                    adminPasskey: self.adminPasskey,
+                    authCredential: authCredential
+                )
+            }
+        )
     }
 
     @objc
     private func toggleApproveAllMembers(_ sender: UISwitch) {
         let isOn = sender.isOn
-        updateCallLink { callLinkManager, authCredential in
-            return try await callLinkManager.updateCallLinkRestrictions(
-                requiresAdminApproval: isOn,
-                rootKey: self.callLink.rootKey,
-                adminPasskey: self.adminPasskey,
-                authCredential: authCredential
-            )
-        }
+        ModalActivityIndicatorViewController.present(
+            fromViewController: self,
+            presentationDelay: 0.25,
+            asyncBlock: { [weak self] modal in
+                guard let self else { return }
+                let updateResult = await Result { [weak self] in
+                    guard let self else { return }
+                    try await self.updateCallLink { callLinkManager, authCredential in
+                        return try await callLinkManager.updateCallLinkRestrictions(
+                            requiresAdminApproval: isOn,
+                            rootKey: self.callLink.rootKey,
+                            adminPasskey: self.adminPasskey,
+                            authCredential: authCredential
+                        )
+                    }
+                }
+                modal.dismissIfNotCanceled {
+                    do {
+                        _ = try updateResult.get()
+                    } catch {
+                        if error.isNetworkFailureOrTimeout {
+                            // [CallLink] TODO: Refresh switch UI, as we don't know whether the operation succeeded or failed.
+                        } else {
+                            Logger.warn("Call link approve members switch update failed with error \(error)")
+                            // The operation definitely failed. Revert switch state.
+                            sender.isOn = !isOn
+                            OWSActionSheets.showActionSheet(
+                                title: CallStrings.callLinkErrorSheetTitle,
+                                message: CallStrings.callLinkUpdateErrorSheetDescription
+                            )
+                        }
+                    }
+                }
+            }
+        )
     }
 
     private func shareCallLinkViaSignal() {
@@ -283,9 +322,15 @@ class CreateCallLinkViewController: InteractiveSheetViewController {
                         ), animated: true)
                     }
                 } catch {
+                    Logger.warn("Call link creation failed with error \(error)")
                     modal.dismissIfNotCanceled {
-                        // [CallLink] TODO: Present these errors to the user.
-                        Logger.warn("\(error)")
+                        OWSActionSheets.showActionSheet(
+                            title: CallStrings.callLinkErrorSheetTitle,
+                            message: OWSLocalizedString(
+                                "CALL_LINK_CREATION_FAILURE_SHEET_DESCRIPTION",
+                                comment: "Description of sheet presented when call link creation fails."
+                            )
+                        )
                     }
                 }
             }
@@ -294,27 +339,29 @@ class CreateCallLinkViewController: InteractiveSheetViewController {
 
     // MARK: - Update Call Link
 
-    private var priorTask: Task<Void, Never>?
-    private func updateCallLink(_ performUpdate: @escaping (_ callLinkManager: CallLinkManager, _ authCredential: SignalServiceKit.CallLinkAuthCredential) async throws -> CallLinkState) {
+    private var priorTask: Task<Void, any Error>?
+    private func updateCallLink(
+        _ performUpdate: @escaping (_ callLinkManager: CallLinkManager, _ authCredential: SignalServiceKit.CallLinkAuthCredential) async throws -> CallLinkState
+    ) async throws {
         let priorTask = self.priorTask
-        self.priorTask = Task {
-            await priorTask?.value
-            await self._updateCallLink(performUpdate)
+        let newTask = Task {
+            try? await priorTask?.value
+            return try await self._updateCallLink(performUpdate)
         }
+        self.priorTask = newTask
+        return try await newTask.value
     }
 
-    private func _updateCallLink(_ performUpdate: (CallLinkManager, SignalServiceKit.CallLinkAuthCredential) async throws -> CallLinkState) async {
+    private func _updateCallLink(
+        _ performUpdate: (CallLinkManager, SignalServiceKit.CallLinkAuthCredential) async throws -> CallLinkState
+    ) async throws {
         let authCredentialManager = AppEnvironment.shared.callService.authCredentialManager
         let callLinkManager = AppEnvironment.shared.callService.callLinkManager
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        do {
-            let localIdentifiers = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!
-            let authCredential = try await authCredentialManager.fetchCallLinkAuthCredential(localIdentifiers: localIdentifiers)
-            self.callLinkState = try await performUpdate(callLinkManager, authCredential)
-            updateContents(shouldReload: true)
-        } catch {
-            Logger.warn("[CallLink] TODO: Couldn't update Call Link: \(error)")
-        }
+        let localIdentifiers = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!
+        let authCredential = try await authCredentialManager.fetchCallLinkAuthCredential(localIdentifiers: localIdentifiers)
+        self.callLinkState = try await performUpdate(callLinkManager, authCredential)
+        updateContents(shouldReload: true)
     }
 }
 

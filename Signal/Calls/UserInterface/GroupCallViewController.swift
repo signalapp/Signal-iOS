@@ -291,7 +291,11 @@ class GroupCallViewController: UIViewController {
         }
     }
 
-    static func presentLobby(for callLink: CallLink, adminPasskey: Data? = nil) {
+    static func presentLobby(
+        for callLink: CallLink,
+        adminPasskey: Data? = nil,
+        callLinkStateRetrievalStrategy: CallService.CallLinkStateRetrievalStrategy = .fetch
+    ) {
         guard RemoteConfig.current.callLinkJoin else {
             return
         }
@@ -299,10 +303,22 @@ class GroupCallViewController: UIViewController {
             do {
                 return try await self._prepareLobby(from: viewController, shouldAskForCameraPermission: true) {
                     let callService = AppEnvironment.shared.callService!
-                    return try await callService.buildAndConnectCallLinkCall(callLink: callLink, adminPasskey: adminPasskey)
+                    return try await callService.buildAndConnectCallLinkCall(
+                        callLink: callLink,
+                        adminPasskey: adminPasskey,
+                        callLinkStateRetrievalStrategy: callLinkStateRetrievalStrategy
+                    )
                 }
             } catch {
-                owsFail("[CallLink] TODO: Couldn't buildAndConnectCallLinkCall \(error)")
+                Logger.warn("Call link lobby presentation failed with error \(error)")
+                OWSActionSheets.showActionSheet(
+                    title: CallStrings.callLinkErrorSheetTitle,
+                    message: OWSLocalizedString(
+                        "CALL_LINK_JOIN_CALL_FAILURE_SHEET_DESCRIPTION",
+                        comment: "Description of sheet presented when joining call from call link sheet fails."
+                    )
+                )
+                return nil
             }
         }
     }

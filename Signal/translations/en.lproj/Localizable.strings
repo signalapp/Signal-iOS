@@ -718,8 +718,17 @@
 /* Navigation bar title for the sheet used to create & configure a Call Link. */
 "CALL_LINK_CREATE" = "Create Call Link";
 
+/* Description of sheet presented when call link creation fails. */
+"CALL_LINK_CREATION_FAILURE_SHEET_DESCRIPTION" = "Call link could not be created. Check your internet connection and try again.";
+
+/* Title of sheet presented when call link creation or update fails. */
+"CALL_LINK_CREATION_OR_UPDATE_FAILURE_SHEET_TITLE" = "Network Error";
+
 /* Button to open a screen to edit the name of a Call Link. Also used as the title of that screen once it opens. */
 "CALL_LINK_EDIT_NAME" = "Edit Call Name";
+
+/* Description of sheet presented when joining call from call link sheet fails. */
+"CALL_LINK_JOIN_CALL_FAILURE_SHEET_DESCRIPTION" = "Could not join call. Check your internet connection and try again.";
 
 /* Shown in a message bubble when you send a call link in a Signal chat */
 "CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "Use this link to join a Signal call";
@@ -732,6 +741,9 @@
 
 /* Button to open the system share sheet to share a Call Link. */
 "CALL_LINK_SHARE_VIA_SYSTEM" = "Share Link";
+
+/* Description of sheet presented when call link update fails. */
+"CALL_LINK_UPDATE_FAILURE_SHEET_DESCRIPTION" = "Call link could not be updated. Check your internet connection and try again.";
 
 /* Label on button for lowering hand in call. */
 "CALL_LOWER_HAND_BUTTON_LABEL" = "Lower Hand";

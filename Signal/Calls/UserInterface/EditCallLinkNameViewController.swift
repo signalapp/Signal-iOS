@@ -29,9 +29,9 @@ class EditCallLinkNameViewController: OWSTableViewController2 {
     )
 
     private let oldCallName: String
-    private let setNewCallName: (String) -> Void
+    private let setNewCallName: (String) async throws -> Void
 
-    init(oldCallName: String, setNewCallName: @escaping (String) -> Void) {
+    init(oldCallName: String, setNewCallName: @escaping (String) async throws -> Void) {
         self.oldCallName = oldCallName
         self.setNewCallName = setNewCallName
         super.init()
@@ -83,8 +83,28 @@ class EditCallLinkNameViewController: OWSTableViewController2 {
     }
 
     private func didTapDone() {
-        self.dismiss(animated: true)
-        self.setNewCallName(self.callNameField.text!)
+        ModalActivityIndicatorViewController.present(
+            fromViewController: self,
+            presentationDelay: 0.25,
+            asyncBlock: { [weak self] modal in
+                guard let self else { return }
+                let updateResult = await Result {
+                    try await self.setNewCallName(self.callNameField.text!)
+                }
+                modal.dismissIfNotCanceled { [weak self] in
+                    do {
+                        _ = try updateResult.get()
+                        self?.dismiss(animated: true)
+                    } catch {
+                        Logger.warn("Call link edit name failed with error \(error)")
+                        OWSActionSheets.showActionSheet(
+                            title: CallStrings.callLinkErrorSheetTitle,
+                            message: CallStrings.callLinkUpdateErrorSheetDescription
+                        )
+                    }
+                }
+            }
+        )
     }
 }
 
