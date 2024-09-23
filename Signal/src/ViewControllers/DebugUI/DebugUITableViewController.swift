@@ -63,7 +63,7 @@ class DebugUITableViewController: OWSTableViewController {
         }
         subsectionItems += [
             itemForSubsection(DebugUINotifications(databaseStorage: databaseStorage, notificationPresenterImpl: notificationPresenterImpl), viewController: viewController, thread: thread),
-            itemForSubsection(DebugUIStress(), viewController: viewController, thread: thread),
+            itemForSubsection(DebugUIStress(contactsManager: contactsManager, databaseStorage: databaseStorage, messageSender: messageSender), viewController: viewController, thread: thread),
             itemForSubsection(DebugUISyncMessages(), viewController: viewController, thread: thread),
 
             OWSTableItem(
