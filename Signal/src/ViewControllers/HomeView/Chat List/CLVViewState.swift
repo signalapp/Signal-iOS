@@ -61,6 +61,14 @@ class CLVViewState {
     func configure() {
         tableDataSource.configure(viewState: self)
     }
+
+    func updateViewInfo(_ viewInfo: CLVViewInfo) {
+        inboxFilter = viewInfo.inboxFilter
+        settingsButtonCreator.updateState(
+            hasInboxChats: viewInfo.inboxCount > 0,
+            hasArchivedChats: viewInfo.archiveCount > 0
+        )
+    }
 }
 
 // MARK: -

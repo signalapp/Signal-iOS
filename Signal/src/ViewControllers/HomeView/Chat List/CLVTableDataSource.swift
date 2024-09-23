@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+private import ObjectiveC.runtime
 import SignalServiceKit
 public import SignalUI
 
@@ -10,6 +11,14 @@ class CLVTableDataSource: NSObject {
     private var viewState: CLVViewState!
 
     let tableView = CLVTableView()
+
+    /// CLVTableDataSource is itself a UITableViewDelegate and thus conforms to
+    /// UIScrollViewDelegate. Any UIScrollViewDelegate methods implemented by
+    /// this class are either manually forwarded after being handled, or automatically
+    /// forwarded in the implementation of `forwardingTarget(for:)`.
+    ///
+    /// - Note: This must be set before calling `configure(viewState:)`.
+    weak var scrollViewDelegate: (any UIScrollViewDelegate)?
 
     weak var viewController: ChatListViewController?
 
@@ -55,6 +64,29 @@ class CLVTableDataSource: NSObject {
                 }
             }
         }
+    }
+
+    override func responds(to selector: Selector!) -> Bool {
+        if super.responds(to: selector) {
+            return true
+        }
+
+        if let scrollViewDelegate, protocol_getMethodDescription(UIScrollViewDelegate.self, selector, false, true).name != nil {
+            return scrollViewDelegate.responds(to: selector)
+        }
+
+        return false
+    }
+
+    override func forwardingTarget(for selector: Selector!) -> Any? {
+        guard let scrollViewDelegate else { return nil }
+
+        // We're relying on `responds(to:)` first validating the selector is a
+        // method in `UIScrollViewDelegate`, and not claiming to respond to
+        // any other selectors.
+        assert(scrollViewDelegate.responds(to: selector))
+
+        return scrollViewDelegate
     }
 
     func configure(viewState: CLVViewState) {
@@ -181,21 +213,6 @@ class CLVTableDataSource: NSObject {
         for indexPath in indexPathsToPreload {
             preloadCellIfNecessaryAsync(indexPath: indexPath)
         }
-    }
-}
-
-// MARK: - UIScrollViewDelegate
-
-extension CLVTableDataSource: UIScrollViewDelegate {
-    public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        AssertIsOnMainThread()
-
-        guard let viewController = viewController else {
-            owsFailDebug("Missing viewController.")
-            return
-        }
-
-        viewController.cancelSearch()
     }
 }
 

@@ -81,16 +81,8 @@ struct CLVRenderState {
         }
     }
 
-    var archiveCount: UInt {
-        viewInfo.archiveCount
-    }
-
     var hasSectionTitles: Bool {
         pinInfo.pinnedThreadCount > 0
-    }
-
-    var inboxCount: UInt {
-        viewInfo.inboxCount
     }
 
     var visibleThreadCount: Int {

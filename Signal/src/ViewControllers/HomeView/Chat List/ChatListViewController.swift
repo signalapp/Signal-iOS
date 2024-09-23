@@ -20,6 +20,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
         super.init()
 
+        tableDataSource.scrollViewDelegate = self
         tableDataSource.viewController = self
         loadCoordinator.viewController = self
         reminderViews.chatListViewController = self
@@ -33,6 +34,8 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
     }
 
     // MARK: View Lifecycle
+
+    private lazy var filterControl = ChatListFilterControl()
 
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -58,8 +61,8 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         tableView.estimatedRowHeight = 60
         tableView.allowsSelectionDuringEditing = true
         tableView.allowsMultipleSelectionDuringEditing = true
-
-        addPullToRefreshIfNeeded()
+        tableView.tableHeaderView = filterControl
+        filterControl.delegate = self
 
         // Empty Inbox
         view.addSubview(emptyInboxView)
@@ -104,7 +107,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         }
 
         if isSearching {
-            scrollSearchBarToTop()
+            scrollSearchBarToTop(animated: false)
         } else if let lastViewedThread {
             owsAssertDebug((searchBar.text ?? "").stripped.isEmpty)
 
@@ -232,13 +235,20 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
     public override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
-        var contentInset = UIEdgeInsets.zero
-        if let getStartedBanner, getStartedBanner.isViewLoaded, !getStartedBanner.view.isHidden {
-            contentInset.bottom = getStartedBanner.opaqueHeight
+        let bottomInset = if let getStartedBanner, getStartedBanner.isViewLoaded, !getStartedBanner.view.isHidden {
+            getStartedBanner.opaqueHeight
+        } else {
+            CGFloat(0.0)
         }
-        if tableView.contentInset != contentInset {
+
+        if !hasEverAppeared {
+            filterControl.sizeToFit()
+            updateFilterControl(animated: false)
+        }
+
+        if tableView.contentInset.bottom != bottomInset {
             UIView.animate(withDuration: 0.25) {
-                self.tableView.contentInset = contentInset
+                self.tableView.contentInset.bottom = bottomInset
             }
         }
     }
@@ -626,28 +636,6 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         showNewConversationView()
     }
 
-    private func addPullToRefreshIfNeeded() {
-        if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice ?? true {
-            return
-        }
-
-        let pullToRefreshView = UIRefreshControl()
-        pullToRefreshView.tintColor = .gray
-        pullToRefreshView.addTarget(self, action: #selector(pullToRefreshPerformed), for: .valueChanged)
-        pullToRefreshView.accessibilityIdentifier = "ChatListViewController.pullToRefreshView"
-        tableView.refreshControl = pullToRefreshView
-    }
-
-    @objc
-    private func pullToRefreshPerformed(_ refreshControl: UIRefreshControl) {
-        AssertIsOnMainThread()
-        owsPrecondition(DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice == false)
-
-        SSKEnvironment.shared.syncManagerRef.sendAllSyncRequestMessages(timeout: 20).ensure {
-            refreshControl.endRefreshing()
-        }.cauterize()
-    }
-
     private func applyDefaultBackButton() {
         AssertIsOnMainThread()
 
@@ -704,7 +692,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
     }
 
     private var shouldShowEmptyInboxView: Bool {
-        return viewState.chatListMode == .inbox && renderState.inboxCount == 0 && renderState.archiveCount == 0 && !renderState.hasVisibleReminders
+        return viewState.chatListMode == .inbox && renderState.viewInfo.inboxCount == 0 && renderState.viewInfo.archiveCount == 0 && !renderState.hasVisibleReminders
     }
 
     func updateViewState() {
@@ -1349,16 +1337,37 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 // MARK: - ChatListFilterActions
 
 extension ChatListViewController {
-    func enableChatListFilter(_ sender: Any?) {
+    func enableChatListFilter(_ sender: AnyObject?) {
         updateChatListFilter(.unread)
         updateBarButtonItems()
-        loadCoordinator.loadIfNecessary()
+
+        if filterControl.isFiltering {
+            // No need to update the filter control if it's already in the
+            // filtering state.
+            loadCoordinator.loadIfNecessary()
+        } else {
+            tableView.performBatchUpdates { [self] in
+                filterControl.startFiltering(animated: true)
+                loadCoordinator.loadIfNecessary()
+            }
+        }
     }
 
-    func disableChatListFilter(_ sender: Any?) {
+    func disableChatListFilter(_ sender: AnyObject?) {
         updateChatListFilter(.none)
         updateBarButtonItems()
-        loadCoordinator.loadIfNecessary()
+        tableView.performBatchUpdates { [self] in
+            filterControl.stopFiltering(animated: true)
+            loadCoordinator.loadIfNecessary()
+        }
+    }
+
+    private func updateFilterControl(animated: Bool) {
+        if viewState.inboxFilter == .unread {
+            filterControl.startFiltering(animated: animated)
+        } else {
+            filterControl.stopFiltering(animated: animated)
+        }
     }
 
     private func updateChatListFilter(_ inboxFilter: InboxFilter) {
@@ -1386,7 +1395,6 @@ extension ChatListViewController: ChatListProxyButtonDelegate {
 }
 
 extension ChatListViewController {
-
     enum ShowAppSettingsMode {
         case none
         case payments
@@ -1510,7 +1518,6 @@ extension ChatListViewController {
 }
 
 extension ChatListViewController: BadgeIssueSheetDelegate {
-
     func badgeIssueSheetActionTapped(_ action: BadgeIssueSheetAction) {
         switch action {
         case .dismiss:
@@ -1522,14 +1529,12 @@ extension ChatListViewController: BadgeIssueSheetDelegate {
 }
 
 extension ChatListViewController: ThreadSwipeHandler {
-
     func updateUIAfterSwipeAction() {
         updateViewState()
     }
 }
 
 extension ChatListViewController: GetStartedBannerViewControllerDelegate {
-
     func presentGetStartedBannerIfNecessary() {
         guard getStartedBanner == nil && viewState.chatListMode == .inbox else { return }
 
@@ -1586,7 +1591,6 @@ extension ChatListViewController: GetStartedBannerViewControllerDelegate {
 // MARK: - First conversation label
 
 extension ChatListViewController {
-
     func updateFirstConversationLabel() {
         let contactNames = databaseStorage.read { tx -> [ComparableDisplayName] in
             let comparableNames = contactsManager.sortedComparableNames(
@@ -1642,5 +1646,29 @@ extension ChatListViewController {
         )
 
         firstConversationLabel.attributedText = attributedString
+    }
+}
+
+extension ChatListViewController: UIScrollViewDelegate {
+    public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        cancelSearch()
+    }
+
+    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        filterControl.updateScrollPosition(in: scrollView)
+    }
+
+    public func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+        filterControl.draggingWillEnd(in: scrollView)
+    }
+}
+
+extension ChatListViewController: ChatListFilterControlDelegate {
+    func filterControlDidStartFiltering() {
+        // Perform using the default run loop mode so that scroll view decelaration
+        // can finish gracefully before updating table content.
+        RunLoop.current.perform { [self] in
+            enableChatListFilter(filterControl)
+        }
     }
 }

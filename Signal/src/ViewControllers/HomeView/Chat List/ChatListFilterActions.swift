@@ -12,10 +12,10 @@ import UIKit
 @objc
 protocol ChatListFilterActions: NSObjectProtocol {
     @objc
-    optional func enableChatListFilter(_ sender: Any?)
+    optional func enableChatListFilter(_ sender: AnyObject?)
 
     @objc
-    optional func disableChatListFilter(_ sender: Any?)
+    optional func disableChatListFilter(_ sender: AnyObject?)
 }
 
 extension UIResponder: ChatListFilterActions {}

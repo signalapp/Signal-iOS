@@ -34,7 +34,7 @@ extension ChatListViewController: OWSNavigationChildController {
     private var searchText: String { (searchBar.text ?? "").stripped }
     var isSearching: Bool { !searchText.isEmpty }
 
-    func scrollSearchBarToTop(animated: Bool = false) {
+    func scrollSearchBarToTop(animated: Bool) {
         let topInset = view.safeAreaInsets.top
         tableView.setContentOffset(CGPoint(x: 0, y: -topInset), animated: animated)
     }

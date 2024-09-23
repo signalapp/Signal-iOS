@@ -13,6 +13,7 @@
 		0510F69E2C91EB3000FA3FDE /* ScrollBounceBehaviorIfAvailable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0510F69D2C91EB2800FA3FDE /* ScrollBounceBehaviorIfAvailable.swift */; };
 		0512145B2C5BCECF0021EEC9 /* CollectionDifference+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0512145A2C5BCECF0021EEC9 /* CollectionDifference+SSK.swift */; };
 		0517B9782BFCFF12002CDE7D /* TSThreadTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0517B9772BFCFF12002CDE7D /* TSThreadTests.swift */; };
+		052647BF2C63BAD60076E99D /* ChatListFilterControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052647BE2C63BAC40076E99D /* ChatListFilterControl.swift */; };
 		052647C12C6404DD0076E99D /* ChatListFilterStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052647C02C6404D70076E99D /* ChatListFilterStore.swift */; };
 		052A33382C52BF410083D812 /* ChatListFilterActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052A33372C52BF410083D812 /* ChatListFilterActions.swift */; };
 		052D17882C7E34D00023D56F /* AppIcon.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 052D17872C7E34D00023D56F /* AppIcon.xcassets */; };
@@ -3507,6 +3508,7 @@
 		0510F69D2C91EB2800FA3FDE /* ScrollBounceBehaviorIfAvailable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollBounceBehaviorIfAvailable.swift; sourceTree = "<group>"; };
 		0512145A2C5BCECF0021EEC9 /* CollectionDifference+SSK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CollectionDifference+SSK.swift"; sourceTree = "<group>"; };
 		0517B9772BFCFF12002CDE7D /* TSThreadTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSThreadTests.swift; sourceTree = "<group>"; };
+		052647BE2C63BAC40076E99D /* ChatListFilterControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListFilterControl.swift; sourceTree = "<group>"; };
 		052647C02C6404D70076E99D /* ChatListFilterStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListFilterStore.swift; sourceTree = "<group>"; };
 		052A33372C52BF410083D812 /* ChatListFilterActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListFilterActions.swift; sourceTree = "<group>"; };
 		052D17872C7E34D00023D56F /* AppIcon.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = AppIcon.xcassets; sourceTree = "<group>"; };
@@ -10217,6 +10219,7 @@
 				346E09002662FBBE0042375E /* ChatListCell.swift */,
 				052A33372C52BF410083D812 /* ChatListFilterActions.swift */,
 				0550A5DF2C3ECB230072CC02 /* ChatListFilterButton.swift */,
+				052647BE2C63BAC40076E99D /* ChatListFilterControl.swift */,
 				0550A5E32C4048CF0072CC02 /* ChatListFilterFooterCell.swift */,
 				052647C02C6404D70076E99D /* ChatListFilterStore.swift */,
 				05B411242C62845000A1EDBC /* ChatListInboxFilterSection.swift */,
@@ -15854,6 +15857,7 @@
 				346E09012662FBBE0042375E /* ChatListCell.swift in Sources */,
 				052A33382C52BF410083D812 /* ChatListFilterActions.swift in Sources */,
 				0550A5E02C3ECB230072CC02 /* ChatListFilterButton.swift in Sources */,
+				052647BF2C63BAD60076E99D /* ChatListFilterControl.swift in Sources */,
 				0550A5E42C4048CF0072CC02 /* ChatListFilterFooterCell.swift in Sources */,
 				052647C12C6404DD0076E99D /* ChatListFilterStore.swift in Sources */,
 				05B411252C62845000A1EDBC /* ChatListInboxFilterSection.swift in Sources */,
