@@ -15,6 +15,13 @@ public protocol AttachmentUploadStore: AttachmentStore {
         tx: DBWriteTransaction
     ) throws
 
+    /// Mark the attachment's transit tier upload as expired (wipe its transit tier info).
+    func markTransitTierUploadExpired(
+        attachment: Attachment,
+        info: Attachment.TransitTierInfo,
+        tx: DBWriteTransaction
+    ) throws
+
     /// Mark the attachment as having been uploaded to the media tier.
     func markUploadedToMediaTier(
         attachmentStream: AttachmentStream,

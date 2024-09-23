@@ -133,6 +133,8 @@ public enum Upload {
 
         /// The length of the unencrypted data
         public let plaintextDataLength: UInt32
+
+        public var isReusedTransitTierUpload: Bool { false }
     }
 
     public struct ReusedUploadMetadata: AttachmentUploadMetadata {
@@ -148,6 +150,8 @@ public enum Upload {
 
         /// The length of the unencrypted data
         public let plaintextDataLength: UInt32
+
+        public var isReusedTransitTierUpload: Bool { false }
     }
 
     public struct Result<Metadata: UploadMetadata> {

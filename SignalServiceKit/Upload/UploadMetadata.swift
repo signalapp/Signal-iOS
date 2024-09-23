@@ -18,4 +18,8 @@ public protocol UploadMetadata {
 public protocol AttachmentUploadMetadata: UploadMetadata {
     /// encryption key + hmac
     var key: Data { get }
+
+    /// True if the upload represents the reuse of an existing transit tier upload
+    /// with metadata we had stored locally on disk.
+    var isReusedTransitTierUpload: Bool { get }
 }

@@ -748,6 +748,45 @@ extension AttachmentStoreImpl: AttachmentUploadStore {
         try record.update(db)
     }
 
+    public func markTransitTierUploadExpired(
+        attachment: Attachment,
+        info: Attachment.TransitTierInfo,
+        tx: DBWriteTransaction
+    ) throws {
+        try markTransitTierUploadExpired(
+            attachment: attachment,
+            info: info,
+            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database,
+            tx: tx
+        )
+    }
+
+    func markTransitTierUploadExpired(
+        attachment: Attachment,
+        info: Attachment.TransitTierInfo,
+        db: GRDB.Database,
+        tx: DBWriteTransaction
+    ) throws {
+        // Refetch the attachment in case the passed in transit tier
+        // info is obsolete.
+        guard
+            let refetchedAttachment = self.fetch(ids: [attachment.id], tx: tx).first,
+            refetchedAttachment.transitTierInfo?.cdnKey == info.cdnKey
+        else {
+            return
+        }
+
+        var record = Attachment.Record(attachment: attachment)
+        record.transitCdnKey = nil
+        record.transitCdnNumber = nil
+        record.transitEncryptionKey = nil
+        record.transitUploadTimestamp = nil
+        record.transitUnencryptedByteCount = nil
+        record.transitDigestSHA256Ciphertext = nil
+        record.lastTransitDownloadAttemptTimestamp = nil
+        try record.update(db)
+    }
+
     public func markUploadedToMediaTier(
         attachmentStream: AttachmentStream,
         mediaTierInfo: Attachment.MediaTierInfo,

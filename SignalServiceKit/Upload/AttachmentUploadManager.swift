@@ -231,14 +231,40 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             return
         }
 
-        let cdnNumber =  try await self.copyToMediaTier(
-            localAci: localAci,
-            mediaName: mediaName,
-            encryptionType: .attachment,
-            uploadEra: uploadEra,
-            result: result,
-            logger: logger
-        )
+        let cdnNumber: UInt32
+        do {
+            cdnNumber =  try await self.copyToMediaTier(
+                localAci: localAci,
+                mediaName: mediaName,
+                encryptionType: .attachment,
+                uploadEra: uploadEra,
+                result: result,
+                logger: logger
+            )
+        } catch let error as MessageBackup.Response.CopyToMediaTierError {
+            switch error {
+            case .sourceObjectNotFound:
+                if
+                    result.localUploadMetadata.isReusedTransitTierUpload,
+                    let transitTierInfo = attachmentStream.attachment.transitTierInfo
+                {
+                    // We reused a transit tier upload but the source couldn't be found.
+                    // That transit tier upload is now invalid.
+                    try await db.awaitableWrite { tx in
+                        try self.attachmentStore.markTransitTierUploadExpired(
+                            attachment: attachmentStream.attachment,
+                            info: transitTierInfo,
+                            tx: tx
+                        )
+                    }
+                }
+                throw error
+            default:
+                throw error
+            }
+        } catch {
+            throw error
+        }
 
         try await db.awaitableWrite { tx in
 

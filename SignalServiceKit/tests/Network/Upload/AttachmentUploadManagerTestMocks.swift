@@ -208,6 +208,14 @@ class AttachmentUploadStoreMock: AttachmentStoreMock, AttachmentUploadStore {
         uploadedAttachments.append(attachmentStream)
     }
 
+    func markTransitTierUploadExpired(
+        attachment: Attachment,
+        info: Attachment.TransitTierInfo,
+        tx: DBWriteTransaction
+    ) throws {
+        // Do nothing
+    }
+
     func markUploadedToMediaTier(
         attachmentStream: AttachmentStream,
         mediaTierInfo: Attachment.MediaTierInfo,
