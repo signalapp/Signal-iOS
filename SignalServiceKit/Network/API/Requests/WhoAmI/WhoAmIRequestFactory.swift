@@ -55,7 +55,7 @@ public enum WhoAmIRequestFactory {
     /// See `Responses.AmIDeregistered`
     public static func amIDeregisteredRequest() -> TSRequest {
         let urlPathComponents = URLPathComponents(
-            ["v1", "accounts", "me"]
+            ["v1", "accounts", "whoami"]
         )
         var urlComponents = URLComponents()
         urlComponents.percentEncodedPath = urlPathComponents.percentEncoded
