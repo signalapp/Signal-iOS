@@ -8,7 +8,15 @@ import SignalUI
 
 #if USE_DEBUG_UI
 
-class DebugUINotifications: DebugUIPage, Dependencies {
+class DebugUINotifications: DebugUIPage {
+
+    private let databaseStorage: SDSDatabaseStorage
+    private let notificationPresenterImpl: NotificationPresenterImpl
+
+    init(databaseStorage: SDSDatabaseStorage, notificationPresenterImpl: NotificationPresenterImpl) {
+        self.databaseStorage = databaseStorage
+        self.notificationPresenterImpl = notificationPresenterImpl
+    }
 
     let name = "Notifications"
 
@@ -23,20 +31,20 @@ class DebugUINotifications: DebugUIPage, Dependencies {
         if let contactThread = thread as? TSContactThread {
             sectionItems += [
                 OWSTableItem(title: "All Notifications in Sequence") { [weak self] in
-                    self?.notifyForEverythingInSequence(contactThread: contactThread)
+                    Task { await self?.notifyForEverythingInSequence(contactThread: contactThread) }
                 },
                 OWSTableItem(title: "Call Rejected: New Safety Number") { [weak self] in
-                    self?.notifyForMissedCallBecauseOfNewIdentity(thread: contactThread)
+                    Task { await self?.notifyForMissedCallBecauseOfNewIdentity(thread: contactThread) }
                 },
                 OWSTableItem(title: "Call Rejected: No Longer Verified") { [weak self] in
-                    self?.notifyForMissedCallBecauseOfNoLongerVerifiedIdentity(thread: contactThread)
+                    Task { await self?.notifyForMissedCallBecauseOfNoLongerVerifiedIdentity(thread: contactThread) }
                 }
             ]
         }
 
         sectionItems += [
             OWSTableItem(title: "Last Incoming Message") { [weak self] in
-                self?.notifyForIncomingMessage(thread: thread)
+                Task { await self?.notifyForIncomingMessage(thread: thread) }
             },
         ]
 
@@ -47,75 +55,73 @@ class DebugUINotifications: DebugUIPage, Dependencies {
 
     // After enqueuing the notification you may want to background the app or lock the screen before it triggers, so
     // we give a little delay.
-    let kNotificationDelay: TimeInterval = 5
+    private let kNotificationDelay: TimeInterval = 5
 
-    func delayedNotificationDispatch(block: @escaping () -> Void) -> Guarantee<Void> {
+    @MainActor
+    private func delayedNotificationDispatch(block: @escaping () async -> Void) async {
         Logger.info("⚠️ will present notification after \(kNotificationDelay) second delay")
 
         // Notifications won't sound if the app is suspended.
         let taskIdentifier = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
-
-        return Guarantee.after(seconds: kNotificationDelay).done {
-            block()
-        }.then {
-            Guarantee.after(seconds: 2.0)
-        }.done {
-            // We don't want to endBackgroundTask until *after* the notifications manager is done,
-            // but it dispatches async without a completion handler, so we just wait a while extra.
-            // This is fragile, but it's only for debug UI.
-            UIApplication.shared.endBackgroundTask(taskIdentifier)
+        do {
+            try await Task.sleep(nanoseconds: UInt64(kNotificationDelay * TimeInterval(NSEC_PER_SEC)))
+        } catch {
+            return
         }
+        await block()
+        do {
+            try await Task.sleep(nanoseconds: 2 * NSEC_PER_SEC)
+        } catch {
+            return
+        }
+        // We don't want to endBackgroundTask until *after* the notifications manager is done,
+        // but it dispatches async without a completion handler, so we just wait a while extra.
+        // This is fragile, but it's only for debug UI.
+        UIApplication.shared.endBackgroundTask(taskIdentifier)
     }
 
-    func delayedNotificationDispatchWithFakeCallNotificationInfo(thread: TSContactThread, callBlock: @escaping (NotificationPresenterImpl.CallNotificationInfo) -> Void) -> Guarantee<Void> {
+    private func delayedNotificationDispatchWithFakeCallNotificationInfo(thread: TSContactThread, callBlock: @escaping (NotificationPresenterImpl.CallNotificationInfo) -> Void) async {
         let notificationInfo = NotificationPresenterImpl.CallNotificationInfo(
             groupingId: UUID(),
             thread: thread,
             caller: thread.contactAddress.aci!
         )
 
-        return delayedNotificationDispatch {
+        return await delayedNotificationDispatch {
             callBlock(notificationInfo)
         }
     }
 
     // MARK: Notification Methods
 
-    @discardableResult
-    func notifyForEverythingInSequence(contactThread: TSContactThread) -> Guarantee<Void> {
+    @MainActor
+    private func notifyForEverythingInSequence(contactThread: TSContactThread) async {
         let taskIdentifier = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
-
-        return self.notifyForMissedCallBecauseOfNewIdentity(thread: contactThread).then {
-            self.notifyForMissedCallBecauseOfNoLongerVerifiedIdentity(thread: contactThread)
-        }.then {
-            self.notifyForIncomingMessage(thread: contactThread)
-        }.done {
-            UIApplication.shared.endBackgroundTask(taskIdentifier)
-        }
+        await self.notifyForMissedCallBecauseOfNewIdentity(thread: contactThread)
+        await self.notifyForMissedCallBecauseOfNoLongerVerifiedIdentity(thread: contactThread)
+        await self.notifyForIncomingMessage(thread: contactThread)
+        UIApplication.shared.endBackgroundTask(taskIdentifier)
     }
 
-    @discardableResult
-    func notifyForMissedCallBecauseOfNewIdentity(thread: TSContactThread) -> Guarantee<Void> {
-        return delayedNotificationDispatchWithFakeCallNotificationInfo(thread: thread) { notificationInfo in
+    private func notifyForMissedCallBecauseOfNewIdentity(thread: TSContactThread) async {
+        return await delayedNotificationDispatchWithFakeCallNotificationInfo(thread: thread) { notificationInfo in
             self.databaseStorage.read { tx in
                 self.notificationPresenterImpl.presentMissedCallBecauseOfNewIdentity(notificationInfo: notificationInfo, tx: tx)
             }
         }
     }
 
-    @discardableResult
-    func notifyForMissedCallBecauseOfNoLongerVerifiedIdentity(thread: TSContactThread) -> Guarantee<Void> {
-        return delayedNotificationDispatchWithFakeCallNotificationInfo(thread: thread) { notificationInfo in
+    private func notifyForMissedCallBecauseOfNoLongerVerifiedIdentity(thread: TSContactThread) async {
+        return await delayedNotificationDispatchWithFakeCallNotificationInfo(thread: thread) { notificationInfo in
             self.databaseStorage.read { tx in
                 self.notificationPresenterImpl.presentMissedCallBecauseOfNoLongerVerifiedIdentity(notificationInfo: notificationInfo, tx: tx)
             }
         }
     }
 
-    @discardableResult
-    func notifyForIncomingMessage(thread: TSThread) -> Guarantee<Void> {
-        return delayedNotificationDispatch {
-            self.databaseStorage.write { transaction in
+    private func notifyForIncomingMessage(thread: TSThread) async {
+        return await delayedNotificationDispatch {
+            await self.databaseStorage.awaitableWrite { transaction in
                 let factory = IncomingMessageFactory()
                 factory.threadCreator = { _ in return thread }
                 let incomingMessage = factory.create(transaction: transaction)
