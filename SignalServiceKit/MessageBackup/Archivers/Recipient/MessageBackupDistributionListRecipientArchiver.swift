@@ -116,10 +116,6 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
                 }
                 return .onlyWith
             case .blockList:
-                guard memberRecipientIds.count > 0 else {
-                    errors.append(.archiveFrameError(.distributionListMissingRecipients, distributionListAppId))
-                    return nil
-                }
                 return .allExcept
             }
         }()
@@ -284,14 +280,14 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
         }
 
         switch viewMode {
-        case .blockList, .explicit:
+        case .explicit:
             guard addresses.count > 0 else {
                 return .failure([.restoreFrameError(
                     .invalidProtoData(.invalidDistributionListPrivacyModeMissingRequiredMembers),
                     recipientId
                 )])
             }
-        case .default, .disabled:
+        case .default, .blockList, .disabled:
             break
         }
 
