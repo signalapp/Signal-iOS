@@ -19,13 +19,32 @@ public protocol RecipientDatabaseTable {
 }
 
 extension RecipientDatabaseTable {
+    func fetchRecipient(contactThread: TSContactThread, tx: DBReadTransaction) -> SignalRecipient? {
+        return fetchServiceIdAndRecipient(contactThread: contactThread, tx: tx)
+            .flatMap { (_, recipient) in recipient }
+    }
+
     func fetchServiceId(contactThread: TSContactThread, tx: DBReadTransaction) -> ServiceId? {
-        let serviceId = contactThread.contactUUID.flatMap { try? ServiceId.parseFrom(serviceIdString: $0) }
+        return fetchServiceIdAndRecipient(contactThread: contactThread, tx: tx)
+            .map { (serviceId, _) in serviceId }
+    }
+
+    /// Fetch the `ServiceId` for the owner of this contact thread, and its
+    /// corresponding `SignalRecipient` if one exists.
+    private func fetchServiceIdAndRecipient(
+        contactThread: TSContactThread,
+        tx: DBReadTransaction
+    ) -> (ServiceId, SignalRecipient?)? {
+        let threadServiceId = contactThread.contactUUID.flatMap { try? ServiceId.parseFrom(serviceIdString: $0) }
+
         // If there's an ACI, it's *definitely* correct, and it's definitely the
         // owner, so we can return early without issuing any queries.
-        if let aci = serviceId as? Aci {
-            return aci
+        if let aci = threadServiceId as? Aci {
+            let ownedByRecipient = fetchRecipient(serviceId: aci, transaction: tx)
+
+            return (aci, ownedByRecipient)
         }
+
         // Otherwise, we need to figure out which recipient "owns" this thread. If
         // the thread has a phone number but there's no SignalRecipient with that
         // phone number, we'll return nil (even if the thread has a PNI). This is
@@ -36,14 +55,22 @@ extension RecipientDatabaseTable {
         // introduced after ThreadMerger.)
         if let phoneNumber = contactThread.contactPhoneNumber {
             let ownedByRecipient = fetchRecipient(phoneNumber: phoneNumber, transaction: tx)
-            return ownedByRecipient?.aci ?? ownedByRecipient?.pni
+            let ownedByServiceId = ownedByRecipient?.aci ?? ownedByRecipient?.pni
+
+            return ownedByServiceId.map { ($0, ownedByRecipient) }
         }
-        if let pni = serviceId as? Pni {
+
+        if let pni = threadServiceId as? Pni {
             let ownedByRecipient = fetchRecipient(serviceId: pni, transaction: tx)
-            return ownedByRecipient?.aci ?? ownedByRecipient?.pni ?? pni
+            let ownedByServiceId = ownedByRecipient?.aci ?? ownedByRecipient?.pni ?? pni
+
+            return (ownedByServiceId, ownedByRecipient)
         }
+
         return nil
     }
+
+    // MARK: -
 
     public func fetchRecipient(address: SignalServiceAddress, tx: DBReadTransaction) -> SignalRecipient? {
         return (

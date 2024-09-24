@@ -342,6 +342,7 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
                     do {
                         try self.dependencies.recipientHidingManager.addHiddenRecipient(
                             SignalServiceAddress(serviceId: self.serviceId, e164: self.e164),
+                            inKnownMessageRequestState: false,
                             wasLocallyInitiated: true,
                             tx: tx.asV2Write
                         )

@@ -152,17 +152,26 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
                     ).isHidden
                 }(),
                 visibility: { () -> BackupProto_Contact.Visibility in
-                    if self.recipientHidingManager.isHiddenRecipient(recipient, tx: context.tx) {
-                        if
-                            let contactThread = threadStore.fetchContactThread(recipient: recipient, tx: context.tx),
-                            threadStore.hasPendingMessageRequest(thread: contactThread, tx: context.tx)
-                        {
-                            return .hiddenMessageRequest
-                        }
-
-                        return .hidden
-                    } else {
+                    guard let hiddenRecipient = recipientHidingManager.fetchHiddenRecipient(
+                        signalRecipient: recipient,
+                        tx: context.tx
+                    ) else {
                         return .visible
+                    }
+
+                    if
+                        recipientHidingManager.isHiddenRecipientThreadInMessageRequest(
+                            hiddenRecipient: hiddenRecipient,
+                            contactThread: threadStore.fetchContactThread(
+                                recipient: recipient,
+                                tx: context.tx
+                            ),
+                            tx: context.tx
+                        )
+                    {
+                        return .hiddenMessageRequest
+                    } else {
+                        return .hidden
                     }
                 }(),
                 registration: { () -> BackupProto_Contact.OneOf_Registration in
@@ -394,12 +403,6 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
         }
         context[recipient.recipientId] = .contact(backupContactAddress)
 
-        let recipient = SignalRecipient.fromBackup(
-            backupContactAddress,
-            isRegistered: isRegistered,
-            unregisteredAtTimestamp: unregisteredTimestamp
-        )
-
         // Stop early if this is the local user. That shouldn't happen.
         let profileInsertableAddress: OWSUserProfile.InsertableAddress
         if let serviceId = backupContactAddress.aci ?? backupContactAddress.pni {
@@ -422,7 +425,14 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
             break
         }
 
+        let recipient: SignalRecipient = .fromBackup(
+            backupContactAddress,
+            isRegistered: isRegistered,
+            unregisteredAtTimestamp: unregisteredTimestamp
+        )
         recipientDatabaseTable.insertRecipient(recipient, transaction: context.tx)
+        let recipientRowId = recipient.id!
+
         /// No Backup code should be relying on the SSA cache, but once we've
         /// finished restoring and launched we want the cache to have accurate
         /// mappings based on the recipients we just restored.
@@ -444,19 +454,30 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
             blockingManager.addBlockedAddress(recipient.address, tx: context.tx)
         }
 
-        switch contactProto.visibility {
-        case .hidden, .hiddenMessageRequest:
-            /// Message-request state for hidden recipients isn't explicitly
-            /// tracked on iOS, and instead is derived from their hidden state
-            /// and the most-recent interactions in their 1:1 chat. So, for both
-            /// of these cases all we need to do is hide the recipient.
-            do {
-                try recipientHidingManager.addHiddenRecipient(recipient, wasLocallyInitiated: false, tx: context.tx)
-            } catch let error {
-                return restoreFrameError(.databaseInsertionFailed(error))
+        do {
+            func addHiddenRecipient(isHiddenInKnownMessageRequestState: Bool) throws {
+                try recipientHidingManager.addHiddenRecipient(
+                    recipient,
+                    inKnownMessageRequestState: isHiddenInKnownMessageRequestState,
+                    wasLocallyInitiated: false,
+                    tx: context.tx
+                )
+
+                context.addPostRestoreFrameAction(
+                    .insertContactHiddenInfoMessage(recipientRowId: recipientRowId)
+                )
             }
-        case .visible, .UNRECOGNIZED:
-            break
+
+            switch contactProto.visibility {
+            case .hidden:
+                try addHiddenRecipient(isHiddenInKnownMessageRequestState: false)
+            case .hiddenMessageRequest:
+                try addHiddenRecipient(isHiddenInKnownMessageRequestState: true)
+            case .visible, .UNRECOGNIZED:
+                break
+            }
+        } catch let error {
+            return restoreFrameError(.databaseInsertionFailed(error))
         }
 
         // We only need to active hide, since unhidden is the default.

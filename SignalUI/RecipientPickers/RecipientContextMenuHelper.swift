@@ -245,6 +245,7 @@ class RecipientContextMenuHelper {
                     do {
                         try self.recipientHidingManager.addHiddenRecipient(
                             address,
+                            inKnownMessageRequestState: false,
                             wasLocallyInitiated: true,
                             tx: tx.asV2Write
                         )

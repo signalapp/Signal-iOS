@@ -993,8 +993,13 @@ public class AppSetup {
             kvStoreFactory: keyValueStoreFactory,
             localRecipientArchiver: MessageBackupLocalRecipientArchiver(),
             messageBackupKeyMaterial: messageBackupKeyMaterial,
-            releaseNotesRecipientArchiver: MessageBackupReleaseNotesRecipientArchiver(),
-            plaintextStreamProvider: MessageBackupPlaintextProtoStreamProviderImpl()
+            plaintextStreamProvider: MessageBackupPlaintextProtoStreamProviderImpl(),
+            postFrameRestoreActionManager: MessageBackupPostFrameRestoreActionManager(
+                interactionStore: interactionStore,
+                recipientDatabaseTable: recipientDatabaseTable,
+                threadStore: threadStore
+            ),
+            releaseNotesRecipientArchiver: MessageBackupReleaseNotesRecipientArchiver()
         )
 
         let externalPendingIDEALDonationStore = ExternalPendingIDEALDonationStoreImpl(keyStoreFactory: keyValueStoreFactory)

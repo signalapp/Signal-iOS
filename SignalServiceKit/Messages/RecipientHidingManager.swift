@@ -28,23 +28,43 @@ public protocol RecipientHidingManager {
     /// - Parameter tx: The transaction to use for database operations.
     func hiddenRecipients(tx: DBReadTransaction) -> Set<SignalRecipient>
 
-    /// Whether a recipient is hidden.
+    /// Fetch the hidden-recipient state for the given `SignalRecipient`, if the
+    /// `SignalRecipient` is currently hidden.
+    func fetchHiddenRecipient(
+        signalRecipient: SignalRecipient,
+        tx: DBReadTransaction
+    ) -> HiddenRecipient?
+
+    /// Should the thread for the given hidden recipient be in a message-request
+    /// state?
     ///
-    /// - Parameter recipient: A ``SignalRecipient``.
-    /// - Parameter tx: The transaction to use for database operations.
-    ///
-    /// - Returns: True if the recipient is hidden.
-    func isHiddenRecipient(_ recipient: SignalRecipient, tx: DBReadTransaction) -> Bool
+    /// - Parameter hiddenRecipient
+    /// The hidden recipient in question.
+    /// - Parameter contactThread
+    /// The thread for our 1:1 conversation with the hidden recipient, if one
+    /// has been created.
+    func isHiddenRecipientThreadInMessageRequest(
+        hiddenRecipient: HiddenRecipient,
+        contactThread: TSContactThread?,
+        tx: DBReadTransaction
+    ) -> Bool
 
     // MARK: Write
 
-    /// Adds a recipient to the hidden recipient table.
+    /// Inserts hidden-recipient state for the given `SignalRecipient`.
     ///
-    /// - Parameter recipient: A ``SignalRecipient``.
-    /// - Parameter wasLocallyInitiated: Whether the user initiated
-    ///   the hide on this device (true) or a linked device (false).
-    /// - Parameter tx: The transaction to use for database operations.
-    func addHiddenRecipient(_ recipient: SignalRecipient, wasLocallyInitiated: Bool, tx: DBWriteTransaction) throws
+    /// - Parameter inKnownMessageRequestState
+    /// Whether we know immediately that this hidden recipient's chat should be
+    /// in a message-request state.
+    /// - Parameter wasLocallyInitiated
+    /// Whether this hide represents one initiated on this device, or one that
+    /// occurred on a linked device.
+    func addHiddenRecipient(
+        _ recipient: SignalRecipient,
+        inKnownMessageRequestState: Bool,
+        wasLocallyInitiated: Bool,
+        tx: DBWriteTransaction
+    ) throws
 
     /// Removes a recipient from the hidden recipient table.
     ///
@@ -55,21 +75,48 @@ public protocol RecipientHidingManager {
     func removeHiddenRecipient(_ recipient: SignalRecipient, wasLocallyInitiated: Bool, tx: DBWriteTransaction)
 }
 
+public extension RecipientHidingManager {
+
+    /// Whether the given `SignalRecipient` is currently hidden.
+    func isHiddenRecipient(
+        _ recipient: SignalRecipient,
+        tx: DBReadTransaction
+    ) -> Bool {
+        return fetchHiddenRecipient(signalRecipient: recipient, tx: tx) != nil
+    }
+}
+
 // MARK: - Record
 
 /// A database record denoting a hidden ``SignalRecipient`` by their row ID.
 /// Presence in the table means the recipient is hidden.
-struct HiddenRecipient: Codable, FetchableRecord, PersistableRecord {
+public struct HiddenRecipient: Codable, FetchableRecord, PersistableRecord {
     /// The name of the database where `HiddenRecipient`s are stored.
     public static let databaseTableName = "HiddenRecipient"
 
     public enum CodingKeys: String, CodingKey {
-        /// The column name for the `recipientId`.
-        case recipientId
+        case signalRecipientRowId = "recipientId"
+        case inKnownMessageRequestState
     }
 
     /// The hidden recipient's ``SignalRecipient.id``.
-    var recipientId: Int64
+    let signalRecipientRowId: Int64
+
+    /// Whether this hidden recipient's chat is known to be in a message-request
+    /// state.
+    ///
+    /// At the time of writing, this is only used when restoring a hidden
+    /// contact from a Backup, which stores state on a contact indicating that
+    /// they are both hidden and in a message-request state. Generally, the iOS
+    /// app determines if a hidden recipient's chat should also be in a
+    /// message-request state based on the most-recent message in the chat in
+    /// conjunction with a sentinel "contact hidden" info message; however,
+    /// since that info message isn't backed up (in favor of the aforementioned
+    /// per-contact state) we store this extra bit during Backup restore as an
+    /// alternate way to determine that state.
+    ///
+    /// - SeeAlso: ``RecipientHidingManager/isHiddenThreadInMessageRequest(contactThread:hiddenRecipient:tx:)``
+    let inKnownMessageRequestState: Bool
 }
 
 // MARK: - Manager Impl
@@ -97,6 +144,8 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
         self.messageSenderJobQueue = messageSenderJobQueue
     }
 
+    // MARK: -
+
     public func hiddenRecipients(tx: DBReadTransaction) -> Set<SignalRecipient> {
         do {
             let sql = """
@@ -115,29 +164,103 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
         }
     }
 
-    public func isHiddenRecipient(_ recipient: SignalRecipient, tx: DBReadTransaction) -> Bool {
-        guard let id = recipient.id else {
+    public func fetchHiddenRecipient(
+        signalRecipient: SignalRecipient,
+        tx: DBReadTransaction
+    ) -> HiddenRecipient? {
+        guard let signalRecipientRowId = signalRecipient.id else {
+            return nil
+        }
+
+        let db = SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database
+
+        do {
+            return try HiddenRecipient.fetchOne(db, key: signalRecipientRowId)
+        } catch {
+            Logger.warn("Failed to fetch HiddenRecipient: \(error.grdbErrorForLogging)")
+            return nil
+        }
+    }
+
+    public func isHiddenRecipientThreadInMessageRequest(
+        hiddenRecipient: HiddenRecipient,
+        contactThread: TSContactThread?,
+        tx: DBReadTransaction
+    ) -> Bool {
+        if hiddenRecipient.inKnownMessageRequestState {
+            /// We know, immediately, that this thread should be in a
+            /// message-request state.
+            return true
+        }
+
+        guard let contactThread else {
+            /// If we don't have a 1:1 thread with this recipient, it doesn't
+            /// mean much to say that we're in a message-request state.
+            ///
+            /// This shouldn't happen in the normal app, since UX shouldn't
+            /// allow us to hide someone without a `TSContactThread` created.
+            /// However, it's plausible we'd restore a Backup from another
+            /// platform with a hidden recipient but no corresponding chat.
             return false
         }
-        do {
-            let sql = """
-            SELECT EXISTS(
-                SELECT 1
-                FROM \(HiddenRecipient.databaseTableName)
-                WHERE \(HiddenRecipient.CodingKeys.recipientId.stringValue) = ?
-                LIMIT 1
-            )
-            """
-            let arguments: StatementArguments = [id]
-            return try Bool.fetchOne(SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database, sql: sql, arguments: arguments) ?? false
-        } catch {
-            Logger.warn("Could not fetch hidden recipient record.")
+
+        guard
+            let mostRecentInteraction = InteractionFinder(threadUniqueId: contactThread.uniqueId)
+                .mostRecentInteraction(transaction: SDSDB.shimOnlyBridge(tx))
+        else {
+            /// Weird, because we should at least have a "contact hidden" info
+            /// message. Not impossible, though, since we might have deleted the
+            /// contents of this chat. If so, being in message-request would be
+            /// confusing.
+            return false
+        }
+
+        /// Broadly, we want to show message-request if the latest thing to have
+        /// happened in the chat since the hiding is an incoming event. Below,
+        /// we'll check for interactions that indicate an incoming event (that
+        /// are possible in a contact thread).
+        ///
+        /// This works because when we hid the recipient we inserted a sentinel
+        /// `TSInfoMessage`, and consequently won't show message-request state
+        /// until we get an incoming interaction that's newer than that info
+        /// message. (This logic breaks down if that info message is missing.)
+        if mostRecentInteraction is TSIncomingMessage {
+            return true
+        } else if let individualCall = mostRecentInteraction as? TSCall {
+            switch individualCall.callType {
+            case
+                    .incoming,
+                    .incomingMissed,
+                    .incomingIncomplete,
+                    .incomingMissedBecauseOfChangedIdentity,
+                    .incomingDeclined,
+                    .incomingAnsweredElsewhere,
+                    .incomingDeclinedElsewhere,
+                    .incomingBusyElsewhere,
+                    .incomingMissedBecauseOfDoNotDisturb,
+                    .incomingMissedBecauseBlockedSystemContact:
+                return true
+            case
+                    .outgoing,
+                    .outgoingIncomplete,
+                    .outgoingMissed:
+                return false
+            @unknown default:
+                owsFailDebug("Unknown call type: \(individualCall.callType)")
+                return false
+            }
+        } else {
+            /// Anything else must not be "incoming", and so we do not want to
+            /// show message-request.
             return false
         }
     }
 
+    // MARK: -
+
     public func addHiddenRecipient(
         _ recipient: SignalRecipient,
+        inKnownMessageRequestState: Bool,
         wasLocallyInitiated: Bool,
         tx: DBWriteTransaction
     ) throws {
@@ -152,13 +275,18 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
             Logger.warn("Cannot hide already-hidden recipient.")
             throw RecipientHidingError.recipientAlreadyHidden
         }
-        if let id = recipient.id {
-            let record = HiddenRecipient(recipientId: id)
-            try record.save(SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database)
-            didSetAsHidden(recipient: recipient, wasLocallyInitiated: wasLocallyInitiated, tx: tx)
-        } else {
+
+        guard let signalRecipientRowId = recipient.id else {
             throw RecipientHidingError.recipientIdNotFound
         }
+
+        let record = HiddenRecipient(
+            signalRecipientRowId: signalRecipientRowId,
+            inKnownMessageRequestState: inKnownMessageRequestState
+        )
+        try record.save(SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database)
+
+        didSetAsHidden(recipient: recipient, wasLocallyInitiated: wasLocallyInitiated, tx: tx)
     }
 
     public func removeHiddenRecipient(
@@ -170,7 +298,7 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
             Logger.info("Unhiding recipient")
             let sql = """
                 DELETE FROM \(HiddenRecipient.databaseTableName)
-                WHERE \(HiddenRecipient.CodingKeys.recipientId.stringValue) = ?
+                WHERE \(HiddenRecipient.CodingKeys.signalRecipientRowId.stringValue) = ?
             """
             SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.execute(sql: sql, arguments: [id])
             didSetAsUnhidden(recipient: recipient, wasLocallyInitiated: wasLocallyInitiated, tx: tx)
@@ -201,9 +329,9 @@ private extension RecipientHidingManagerImpl {
             recipient.address,
             transaction: SDSDB.shimOnlyBridge(tx)
         ) {
-            let message = TSInfoMessage(thread: thread, messageType: .recipientHidden)
             Logger.info("[Recipient hiding][side effects] Posting TSInfoMessage.")
-            message.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
+            let infoMessage: TSInfoMessage = .makeForContactHidden(contactThread: thread)
+            infoMessage.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
 
             // Delete any send message intents.
             Logger.info("[Recipient hiding][side effects] Deleting INIntents.")
@@ -303,6 +431,8 @@ private extension RecipientHidingManagerImpl {
         }
     }
 }
+
+// MARK: -
 
 /// Custom errors that can arise when attempting to hide a recipient.
 public enum RecipientHidingError: Error, CustomStringConvertible {

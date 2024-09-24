@@ -35,7 +35,9 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         public var isDiscoverable: Bool
     }
 
+    /// The SQLite row ID for this `SignalRecipient`.
     public var id: RowId?
+
     public let uniqueId: String
     /// Represents the ACI for this SignalRecipient.
     ///

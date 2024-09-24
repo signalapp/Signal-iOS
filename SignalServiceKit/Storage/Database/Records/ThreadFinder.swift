@@ -270,27 +270,24 @@ public class ThreadFinder: Dependencies {
 
         let interactionFinder = InteractionFinder(threadUniqueId: thread.uniqueId)
 
+        let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
+        let recipientHidingManager = DependenciesBridge.shared.recipientHidingManager
         if
-            let thread = thread as? TSContactThread,
-            DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(
-                thread.contactAddress,
+            let contactThread = thread as? TSContactThread,
+            let signalRecipient = recipientDatabaseTable.fetchRecipient(
+                contactThread: contactThread,
+                tx: transaction.asV2Read
+            ),
+            let hiddenRecipient = recipientHidingManager.fetchHiddenRecipient(
+                signalRecipient: signalRecipient,
                 tx: transaction.asV2Read
             )
         {
-            // If the user hides a contact and said contact subsequently sends an incoming
-            // message or calls, we display the message request UI.
-            let mostRecentInteraction = interactionFinder.mostRecentInteraction(
-                transaction: transaction
+            return recipientHidingManager.isHiddenRecipientThreadInMessageRequest(
+                hiddenRecipient: hiddenRecipient,
+                contactThread: contactThread,
+                tx: transaction.asV2Read
             )
-            let isLatestInteractionIncomingMessage = mostRecentInteraction?.interactionType == .incomingMessage
-            var isLatestInteractionMissedCall = false
-            if
-                let call = mostRecentInteraction as? TSCall,
-                call.callType == .incomingMissed
-            {
-                isLatestInteractionMissedCall = true
-            }
-            return isLatestInteractionIncomingMessage || isLatestInteractionMissedCall
         }
 
         // If the thread is already whitelisted, do nothing. The user has already

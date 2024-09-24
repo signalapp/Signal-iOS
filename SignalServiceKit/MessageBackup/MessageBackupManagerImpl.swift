@@ -41,8 +41,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     private let kvStore: KeyValueStore
     private let localRecipientArchiver: MessageBackupLocalRecipientArchiver
     private let messageBackupKeyMaterial: MessageBackupKeyMaterial
-    private let releaseNotesRecipientArchiver: MessageBackupReleaseNotesRecipientArchiver
     private let plaintextStreamProvider: MessageBackupPlaintextProtoStreamProvider
+    private let postFrameRestoreActionManager: MessageBackupPostFrameRestoreActionManager
+    private let releaseNotesRecipientArchiver: MessageBackupReleaseNotesRecipientArchiver
 
     public init(
         accountDataArchiver: MessageBackupAccountDataArchiver,
@@ -62,8 +63,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         kvStoreFactory: KeyValueStoreFactory,
         localRecipientArchiver: MessageBackupLocalRecipientArchiver,
         messageBackupKeyMaterial: MessageBackupKeyMaterial,
-        releaseNotesRecipientArchiver: MessageBackupReleaseNotesRecipientArchiver,
-        plaintextStreamProvider: MessageBackupPlaintextProtoStreamProvider
+        plaintextStreamProvider: MessageBackupPlaintextProtoStreamProvider,
+        postFrameRestoreActionManager: MessageBackupPostFrameRestoreActionManager,
+        releaseNotesRecipientArchiver: MessageBackupReleaseNotesRecipientArchiver
     ) {
         self.accountDataArchiver = accountDataArchiver
         self.attachmentDownloadManager = attachmentDownloadManager
@@ -82,8 +84,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         self.kvStore = kvStoreFactory.keyValueStore(collection: Constants.keyValueStoreCollectionName)
         self.localRecipientArchiver = localRecipientArchiver
         self.messageBackupKeyMaterial = messageBackupKeyMaterial
-        self.releaseNotesRecipientArchiver = releaseNotesRecipientArchiver
         self.plaintextStreamProvider = plaintextStreamProvider
+        self.postFrameRestoreActionManager = postFrameRestoreActionManager
+        self.releaseNotesRecipientArchiver = releaseNotesRecipientArchiver
     }
 
     // MARK: - Remote backups
@@ -448,16 +451,30 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             throw BackupVersionNotSupportedError()
         }
 
-        let customChatColorContext = MessageBackup.CustomChatColorRestoringContext(tx: tx)
-        let recipientContext = MessageBackup.RecipientRestoringContext(
-            localIdentifiers: localIdentifiers,
-            tx: tx
-        )
-        let chatContext = MessageBackup.ChatRestoringContext(
-            customChatColorContext: customChatColorContext,
-            recipientContext: recipientContext,
-            tx: tx
-        )
+        /// Wraps all the various "contexts" we pass to downstream archivers.
+        struct Contexts {
+            let chat: MessageBackup.ChatRestoringContext
+            let customChatColor: MessageBackup.CustomChatColorRestoringContext
+            let recipient: MessageBackup.RecipientRestoringContext
+
+            var all: [MessageBackup.RestoringContext] {
+                [chat, customChatColor, recipient]
+            }
+
+            init(localIdentifiers: LocalIdentifiers, tx: DBWriteTransaction) {
+                customChatColor = MessageBackup.CustomChatColorRestoringContext(tx: tx)
+                recipient = MessageBackup.RecipientRestoringContext(
+                    localIdentifiers: localIdentifiers,
+                    tx: tx
+                )
+                chat = MessageBackup.ChatRestoringContext(
+                    customChatColorContext: customChatColor,
+                    recipientContext: recipient,
+                    tx: tx
+                )
+            }
+        }
+        let contexts = Contexts(localIdentifiers: localIdentifiers, tx: tx)
 
         while hasMoreFrames {
             let frame: BackupProto_Frame
@@ -486,31 +503,31 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                     recipientResult = localRecipientArchiver.restoreSelfRecipient(
                         selfRecipientProto,
                         recipient: recipient,
-                        context: recipientContext
+                        context: contexts.recipient
                     )
                 case .contact(let contactRecipientProto):
                     recipientResult = contactRecipientArchiver.restoreContactRecipientProto(
                         contactRecipientProto,
                         recipient: recipient,
-                        context: recipientContext
+                        context: contexts.recipient
                     )
                 case .group(let groupRecipientProto):
                     recipientResult = groupRecipientArchiver.restoreGroupRecipientProto(
                         groupRecipientProto,
                         recipient: recipient,
-                        context: recipientContext
+                        context: contexts.recipient
                     )
                 case .distributionList(let distributionListRecipientProto):
                     recipientResult = distributionListRecipientArchiver.restoreDistributionListRecipientProto(
                         distributionListRecipientProto,
                         recipient: recipient,
-                        context: recipientContext
+                        context: contexts.recipient
                     )
                 case .releaseNotes(let releaseNotesRecipientProto):
                     recipientResult = releaseNotesRecipientArchiver.restoreReleaseNotesRecipientProto(
                         releaseNotesRecipientProto,
                         recipient: recipient,
-                        context: recipientContext
+                        context: contexts.recipient
                     )
                 case .callLink(_):
                     // TODO: [Backups] Restore call link recipients.
@@ -528,7 +545,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             case .chat(let chat):
                 let chatResult = chatArchiver.restore(
                     chat,
-                    context: chatContext
+                    context: contexts.chat
                 )
                 switch chatResult {
                 case .success:
@@ -541,7 +558,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             case .chatItem(let chatItem):
                 let chatItemResult = chatItemArchiver.restore(
                     chatItem,
-                    context: chatContext
+                    context: contexts.chat
                 )
                 switch chatItemResult {
                 case .success:
@@ -554,7 +571,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             case .account(let backupProtoAccountData):
                 let accountDataResult = accountDataArchiver.restore(
                     backupProtoAccountData,
-                    context: customChatColorContext
+                    context: contexts.customChatColor
                 )
                 switch accountDataResult {
                 case .success:
@@ -589,6 +606,12 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         }
 
         stream.closeFileStream()
+
+        /// Take any necessary post-frame-restore actions.
+        try postFrameRestoreActionManager.performPostFrameRestoreActions(
+            contexts.all.flatMap { $0.postFrameRestoreActions },
+            tx: tx
+        )
 
         // Enqueue downloads for all the attachments.
 

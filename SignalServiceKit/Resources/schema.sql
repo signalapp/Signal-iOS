@@ -1250,6 +1250,7 @@ CREATE
     TABLE
         IF NOT EXISTS "HiddenRecipient" (
             "recipientId" INTEGER PRIMARY KEY NOT NULL
+            ,"inKnownMessageRequestState" BOOLEAN NOT NULL DEFAULT 0
             ,FOREIGN KEY ("recipientId") REFERENCES "model_SignalRecipient"("id"
         )
             ON DELETE

@@ -582,7 +582,12 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         if record.hidden != localIsHidden {
             if record.hidden {
                 do {
-                    try recipientHidingManager.addHiddenRecipient(anyAddress, wasLocallyInitiated: false, tx: tx)
+                    try recipientHidingManager.addHiddenRecipient(
+                        anyAddress,
+                        inKnownMessageRequestState: false,
+                        wasLocallyInitiated: false,
+                        tx: tx
+                    )
                 } catch {
                     Logger.warn("Recipient hidden remotely could not be hidden locally.")
                 }

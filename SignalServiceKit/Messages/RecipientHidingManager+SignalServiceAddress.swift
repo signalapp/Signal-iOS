@@ -51,14 +51,19 @@ extension RecipientHidingManager {
     }
 
     // MARK: Write
-    /// Adds a recipient to the hidden recipient table.
+    /// Inserts hidden-recipient state for the given `SignalServiceAddress`.
     ///
-    /// - Parameter address: The service address corresponding with
-    ///   the ``SignalRecipient``.
+    /// - Parameter inKnownMessageRequestState
+    /// Whether we know immediately that this hidden recipient's chat should be
+    /// in a message-request state.
     /// - Parameter wasLocallyInitiated: Whether the user initiated
     ///   the hide on this device (true) or a linked device (false).
-    /// - Parameter tx: The transaction to use for database operations.
-    public func addHiddenRecipient(_ address: SignalServiceAddress, wasLocallyInitiated: Bool, tx: DBWriteTransaction) throws {
+    public func addHiddenRecipient(
+        _ address: SignalServiceAddress,
+        inKnownMessageRequestState: Bool,
+        wasLocallyInitiated: Bool,
+        tx: DBWriteTransaction
+    ) throws {
         guard address.isValid else {
             throw RecipientHidingError.invalidRecipientAddress(address)
         }
@@ -72,7 +77,12 @@ extension RecipientHidingManager {
             forAddress: address,
             transaction: SDSDB.shimOnlyBridge(tx)
         )
-        try addHiddenRecipient(recipient, wasLocallyInitiated: wasLocallyInitiated, tx: tx)
+        try addHiddenRecipient(
+            recipient,
+            inKnownMessageRequestState: inKnownMessageRequestState,
+            wasLocallyInitiated: wasLocallyInitiated,
+            tx: tx
+        )
     }
 
     /// Removes a recipient from the hidden recipient table.

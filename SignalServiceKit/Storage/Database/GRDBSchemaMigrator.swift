@@ -296,6 +296,7 @@ public class GRDBSchemaMigrator: NSObject {
         case backfillIsViewOnceMessageAttachmentReference
         case addAttachmentValidationBackfillTable
         case addIsSmsColumnToTSAttachment
+        case addInKnownMessageRequestStateToHiddenRecipient
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -357,7 +358,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 90
+    public static let grdbSchemaVersionLatest: UInt = 91
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -2356,7 +2357,7 @@ public class GRDBSchemaMigrator: NSObject {
 
         migrator.registerMigration(.addHiddenRecipientsTable) { transaction in
             try transaction.database.create(table: HiddenRecipient.databaseTableName) { table in
-                table.column(HiddenRecipient.CodingKeys.recipientId.stringValue, .integer)
+                table.column("recipientId", .integer)
                     .primaryKey()
                     .notNull()
                 table.foreignKey(
@@ -3496,6 +3497,15 @@ public class GRDBSchemaMigrator: NSObject {
         migrator.registerMigration(.addIsSmsColumnToTSAttachment) { tx in
             try tx.database.alter(table: "model_TSInteraction") { table in
                 table.add(column: "isSmsMessageRestoredFromBackup", .boolean)
+            }
+
+            return .success(())
+        }
+
+        migrator.registerMigration(.addInKnownMessageRequestStateToHiddenRecipient) { tx in
+            try tx.database.alter(table: "HiddenRecipient") { table in
+                table.add(column: "inKnownMessageRequestState", .boolean)
+                    .notNull()
                     .defaults(to: false)
             }
 

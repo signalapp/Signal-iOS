@@ -2043,6 +2043,8 @@
 		D943F3EF2892F89B008C0C8B /* NSELogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D943F3EE2892F89B008C0C8B /* NSELogger.swift */; };
 		D9495A6D2C7683D100843BC1 /* TSOutgoingMessageRecipientState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9495A6C2C7683D100843BC1 /* TSOutgoingMessageRecipientState.swift */; };
 		D9495A702C76965600843BC1 /* TSOutgoingMessageRecipientStateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9495A6E2C76963F00843BC1 /* TSOutgoingMessageRecipientStateTest.swift */; };
+		D94D67CD2C9DEF870091B485 /* MessageBackupPostFrameRestoreActionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94D67CC2C9DEF6E0091B485 /* MessageBackupPostFrameRestoreActionManager.swift */; };
+		D94D67CF2C9DF4720091B485 /* TSInfoMessage+ContactHidden.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94D67CE2C9DF46E0091B485 /* TSInfoMessage+ContactHidden.swift */; };
 		D95508E72C8E8E88000BDD3B /* chat_item_learned_profile_update_00.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D95508DF2C8E8E87000BDD3B /* chat_item_learned_profile_update_00.txtproto */; };
 		D95508E82C8E8E88000BDD3B /* chat_item_learned_profile_update_00.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D95508E02C8E8E87000BDD3B /* chat_item_learned_profile_update_00.binproto */; };
 		D95508E92C8E8E88000BDD3B /* chat_item_learned_profile_update_01.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D95508E12C8E8E87000BDD3B /* chat_item_learned_profile_update_01.txtproto */; };
@@ -2179,6 +2181,8 @@
 		D995546F2AF5668E0001E15C /* ProfileBadgesSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99554692AF4873E0001E15C /* ProfileBadgesSnapshot.swift */; };
 		D99554752AF5AFE90001E15C /* BadgeThanksSheetPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99554742AF5AFE80001E15C /* BadgeThanksSheetPresenter.swift */; };
 		D99655E32C50433800AD29FB /* MessageBackupLearnedProfileChatUpdateArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99655E22C50433800AD29FB /* MessageBackupLearnedProfileChatUpdateArchiver.swift */; };
+		D997B8482C9CF43300B5272C /* recipient_contacts_02.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D997B8462C9CF43300B5272C /* recipient_contacts_02.binproto */; };
+		D997B8492C9CF43300B5272C /* recipient_contacts_02.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D997B8472C9CF43300B5272C /* recipient_contacts_02.txtproto */; };
 		D997FA7628F8E3A2003C7B8B /* RemoteMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = D997FA7528F8E3A2003C7B8B /* RemoteMegaphone.swift */; };
 		D99840B32976227100F7ED6D /* UsernameSelectionViewController+UsernameTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840B22976227100F7ED6D /* UsernameSelectionViewController+UsernameTextField.swift */; };
 		D99840C829809E9C00F7ED6D /* UsernameSelectionViewController+HeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840C729809E9C00F7ED6D /* UsernameSelectionViewController+HeaderView.swift */; };
@@ -5654,6 +5658,8 @@
 		D943F3EE2892F89B008C0C8B /* NSELogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSELogger.swift; sourceTree = "<group>"; };
 		D9495A6C2C7683D100843BC1 /* TSOutgoingMessageRecipientState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSOutgoingMessageRecipientState.swift; sourceTree = "<group>"; };
 		D9495A6E2C76963F00843BC1 /* TSOutgoingMessageRecipientStateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSOutgoingMessageRecipientStateTest.swift; sourceTree = "<group>"; };
+		D94D67CC2C9DEF6E0091B485 /* MessageBackupPostFrameRestoreActionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupPostFrameRestoreActionManager.swift; sourceTree = "<group>"; };
+		D94D67CE2C9DF46E0091B485 /* TSInfoMessage+ContactHidden.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+ContactHidden.swift"; sourceTree = "<group>"; };
 		D9517ABD292C596B00DDD37E /* Paypal+WebAuthentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Paypal+WebAuthentication.swift"; sourceTree = "<group>"; };
 		D9517ABF292C5A3900DDD37E /* Paypal+API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Paypal+API.swift"; sourceTree = "<group>"; };
 		D95508DF2C8E8E87000BDD3B /* chat_item_learned_profile_update_00.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_learned_profile_update_00.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_learned_profile_update_00.txtproto"; sourceTree = "<group>"; };
@@ -5796,6 +5802,8 @@
 		D99554702AF566C30001E15C /* ProfileBadgesSnapshot+Constructors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProfileBadgesSnapshot+Constructors.swift"; sourceTree = "<group>"; };
 		D99554742AF5AFE80001E15C /* BadgeThanksSheetPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeThanksSheetPresenter.swift; sourceTree = "<group>"; };
 		D99655E22C50433800AD29FB /* MessageBackupLearnedProfileChatUpdateArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupLearnedProfileChatUpdateArchiver.swift; sourceTree = "<group>"; };
+		D997B8462C9CF43300B5272C /* recipient_contacts_02.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = recipient_contacts_02.binproto; path = "Signal-Message-Backup-Tests/test-cases/recipient_contacts_02.binproto"; sourceTree = "<group>"; };
+		D997B8472C9CF43300B5272C /* recipient_contacts_02.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; name = recipient_contacts_02.txtproto; path = "Signal-Message-Backup-Tests/test-cases/recipient_contacts_02.txtproto"; sourceTree = "<group>"; };
 		D997FA7528F8E3A2003C7B8B /* RemoteMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteMegaphone.swift; sourceTree = "<group>"; };
 		D99840B22976227100F7ED6D /* UsernameSelectionViewController+UsernameTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UsernameSelectionViewController+UsernameTextField.swift"; sourceTree = "<group>"; };
 		D99840BE297A04EB00F7ED6D /* Usernames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Usernames.swift; sourceTree = "<group>"; };
@@ -9588,6 +9596,7 @@
 				66CD255A2B06884700139E17 /* Recipient */,
 				66CD255F2B06888800139E17 /* StickerPack */,
 				662590D02B5B525E001FDCDD /* MessageBackupErrors.swift */,
+				D94D67CC2C9DEF6E0091B485 /* MessageBackupPostFrameRestoreActionManager.swift */,
 				66CD25582B0685E000139E17 /* MessageBackupProtoArchiver.swift */,
 				66CD25712B07EE3A00139E17 /* SharedMap.swift */,
 			);
@@ -11030,6 +11039,8 @@
 				D90BC1FA2C9A2AF600A0A3CB /* recipient_contacts_00.txtproto */,
 				D90BC1F92C9A2AF600A0A3CB /* recipient_contacts_01.binproto */,
 				D90BC1F82C9A2AF600A0A3CB /* recipient_contacts_01.txtproto */,
+				D997B8462C9CF43300B5272C /* recipient_contacts_02.binproto */,
+				D997B8472C9CF43300B5272C /* recipient_contacts_02.txtproto */,
 				D90BC1FD2C9A2AF700A0A3CB /* recipient_contacts_03.binproto */,
 				D90BC1FB2C9A2AF600A0A3CB /* recipient_contacts_03.txtproto */,
 			);
@@ -13007,6 +13018,7 @@
 				F9C5C8E1289453B100548EEE /* TSIncomingMessage+SDS.swift */,
 				F9C5C8E8289453B100548EEE /* TSIncomingMessage.h */,
 				F9C5C8FC289453B100548EEE /* TSIncomingMessage.m */,
+				D94D67CE2C9DF46E0091B485 /* TSInfoMessage+ContactHidden.swift */,
 				D9B0AC7329EF42960070F31C /* TSInfoMessage+GroupUpdates+DisplayableGroupUpdateItem.swift */,
 				F9C5C8F3289453B100548EEE /* TSInfoMessage+GroupUpdates+GroupUpdateItemBuilder.swift */,
 				F9A042C5289C7468007D08B6 /* TSInfoMessage+GroupUpdates+PersistableGroupUpdateItem.swift */,
@@ -15080,6 +15092,8 @@
 				D90BC2022C9A2AF700A0A3CB /* recipient_contacts_00.txtproto in Resources */,
 				D90BC2012C9A2AF700A0A3CB /* recipient_contacts_01.binproto in Resources */,
 				D90BC2002C9A2AF700A0A3CB /* recipient_contacts_01.txtproto in Resources */,
+				D997B8482C9CF43300B5272C /* recipient_contacts_02.binproto in Resources */,
+				D997B8492C9CF43300B5272C /* recipient_contacts_02.txtproto in Resources */,
 				D90BC2052C9A2AF700A0A3CB /* recipient_contacts_03.binproto in Resources */,
 				D90BC2032C9A2AF700A0A3CB /* recipient_contacts_03.txtproto in Resources */,
 				D90BC1F12C9A2AEB00A0A3CB /* recipient_distribution_list_00.binproto in Resources */,
@@ -16938,6 +16952,7 @@
 				665C0D5E2ADF53E200539A37 /* MessageBackupManagerImpl.swift in Sources */,
 				C10E9FAF2BB778E100A609B9 /* MessageBackupManagerMock.swift in Sources */,
 				665F6F9D2C5C2FAD0002915C /* MessageBackupMessageAttachmentArchiver.swift in Sources */,
+				D94D67CD2C9DEF870091B485 /* MessageBackupPostFrameRestoreActionManager.swift in Sources */,
 				D994C7D12C45D24F009ECEDA /* MessageBackupProfileChangeChatUpdateArchiver.swift in Sources */,
 				66CD25592B0685E000139E17 /* MessageBackupProtoArchiver.swift in Sources */,
 				66CD25752B0807BC00139E17 /* MessageBackupProtoInputStream.swift in Sources */,
@@ -17570,6 +17585,7 @@
 				F9C5CBDB289453B300548EEE /* TSIncomingMessage+Builder.swift in Sources */,
 				F9C5CBD5289453B300548EEE /* TSIncomingMessage+SDS.swift in Sources */,
 				F9C5CBF0289453B300548EEE /* TSIncomingMessage.m in Sources */,
+				D94D67CF2C9DF4720091B485 /* TSInfoMessage+ContactHidden.swift in Sources */,
 				D9B0AC7429EF42960070F31C /* TSInfoMessage+GroupUpdates+DisplayableGroupUpdateItem.swift in Sources */,
 				F9C5CBE7289453B300548EEE /* TSInfoMessage+GroupUpdates+GroupUpdateItemBuilder.swift in Sources */,
 				F9A042C6289C7468007D08B6 /* TSInfoMessage+GroupUpdates+PersistableGroupUpdateItem.swift in Sources */,
