@@ -92,6 +92,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _expireStartedAt = messageBuilder.expireStartedAt;
     _expireTimerVersion = messageBuilder.expireTimerVersion;
     [self updateExpiresAt];
+    _isSmsMessageRestoredFromBackup = messageBuilder.isSmsMessageRestoredFromBackup;
     _isViewOnceMessage = messageBuilder.isViewOnceMessage;
     _isViewOnceComplete = messageBuilder.isViewOnceComplete;
     _wasRemotelyDeleted = messageBuilder.wasRemotelyDeleted;
@@ -134,6 +135,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                 expiresInSeconds:(unsigned int)expiresInSeconds
                        giftBadge:(nullable OWSGiftBadge *)giftBadge
                isGroupStoryReply:(BOOL)isGroupStoryReply
+  isSmsMessageRestoredFromBackup:(BOOL)isSmsMessageRestoredFromBackup
               isViewOnceComplete:(BOOL)isViewOnceComplete
                isViewOnceMessage:(BOOL)isViewOnceMessage
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
@@ -167,6 +169,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _expiresInSeconds = expiresInSeconds;
     _giftBadge = giftBadge;
     _isGroupStoryReply = isGroupStoryReply;
+    _isSmsMessageRestoredFromBackup = isSmsMessageRestoredFromBackup;
     _isViewOnceComplete = isViewOnceComplete;
     _isViewOnceMessage = isViewOnceMessage;
     _linkPreview = linkPreview;
@@ -340,9 +343,9 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         return [NSString stringWithFormat:@"Media Message with attachmentId: %@", attachmentId];
     } else {
         return [NSString stringWithFormat:@"%@ with body: %@ has mentions: %@",
-                         [self class],
-                         self.body,
-                         self.bodyRanges.hasMentions ? @"YES" : @"NO"];
+            [self class],
+            self.body,
+            self.bodyRanges.hasMentions ? @"YES" : @"NO"];
     }
 }
 

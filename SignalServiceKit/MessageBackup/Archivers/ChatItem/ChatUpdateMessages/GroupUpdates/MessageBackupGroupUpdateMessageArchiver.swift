@@ -93,7 +93,8 @@ final class MessageBackupGroupUpdateMessageArchiver {
             expireStartDate: nil,
             expiresInMs: nil,
             isSealedSender: false,
-            chatItemType: .updateMessage(chatUpdate)
+            chatItemType: .updateMessage(chatUpdate),
+            isSmsPreviouslyRestoredFromBackup: false
         )
 
         if partialErrors.isEmpty {

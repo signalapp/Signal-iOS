@@ -123,6 +123,7 @@ CREATE
             ,"editState" INTEGER DEFAULT 0
             ,"archivedPaymentInfo" BLOB
             ,"expireTimerVersion" INTEGER
+            ,"isSmsMessageRestoredFromBackup" BOOLEAN DEFAULT 0
         )
 ;
 

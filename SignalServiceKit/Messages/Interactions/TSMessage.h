@@ -115,6 +115,16 @@ typedef NS_CLOSED_ENUM(NSInteger, TSEditState) {
 @property (nonatomic, readonly) BOOL isViewOnceComplete;
 @property (nonatomic, readonly) BOOL wasRemotelyDeleted;
 
+/// If `true`, indicates that this message represents an SMS message restored
+/// from a Backup created by an Android.
+///
+/// Signal on Android historically could act as the default system messenger,
+/// which involved sending SMS messages if both parties were not on Signal.
+/// Those legacy SMS messages are included in Backups, and may consequently end
+/// up on an iOS device even though iOS never had support for sending/receiving
+/// SMS messages.
+@property (nonatomic, readonly) BOOL isSmsMessageRestoredFromBackup;
+
 // Story Context
 @property (nonatomic, readonly, nullable) NSNumber *storyTimestamp;
 @property (nonatomic, readonly, nullable) AciObjC *storyAuthorAci;
@@ -167,6 +177,7 @@ typedef NS_CLOSED_ENUM(NSInteger, TSEditState) {
                 expiresInSeconds:(unsigned int)expiresInSeconds
                        giftBadge:(nullable OWSGiftBadge *)giftBadge
                isGroupStoryReply:(BOOL)isGroupStoryReply
+  isSmsMessageRestoredFromBackup:(BOOL)isSmsMessageRestoredFromBackup
               isViewOnceComplete:(BOOL)isViewOnceComplete
                isViewOnceMessage:(BOOL)isViewOnceMessage
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
@@ -177,7 +188,7 @@ typedef NS_CLOSED_ENUM(NSInteger, TSEditState) {
               storyReactionEmoji:(nullable NSString *)storyReactionEmoji
                   storyTimestamp:(nullable NSNumber *)storyTimestamp
               wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:bodyRanges:contactShare:editState:expireStartedAt:expireTimerVersion:expiresAt:expiresInSeconds:giftBadge:isGroupStoryReply:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:storyAuthorUuidString:storyReactionEmoji:storyTimestamp:wasRemotelyDeleted:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:bodyRanges:contactShare:editState:expireStartedAt:expireTimerVersion:expiresAt:expiresInSeconds:giftBadge:isGroupStoryReply:isSmsMessageRestoredFromBackup:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:storyAuthorUuidString:storyReactionEmoji:storyTimestamp:wasRemotelyDeleted:));
 
 // clang-format on
 

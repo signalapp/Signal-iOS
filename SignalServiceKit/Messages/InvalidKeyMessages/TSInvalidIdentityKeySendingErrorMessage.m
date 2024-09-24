@@ -54,6 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
                 expiresInSeconds:(unsigned int)expiresInSeconds
                        giftBadge:(nullable OWSGiftBadge *)giftBadge
                isGroupStoryReply:(BOOL)isGroupStoryReply
+  isSmsMessageRestoredFromBackup:(BOOL)isSmsMessageRestoredFromBackup
               isViewOnceComplete:(BOOL)isViewOnceComplete
                isViewOnceMessage:(BOOL)isViewOnceMessage
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
@@ -89,6 +90,7 @@ NS_ASSUME_NONNULL_BEGIN
                   expiresInSeconds:expiresInSeconds
                          giftBadge:giftBadge
                  isGroupStoryReply:isGroupStoryReply
+    isSmsMessageRestoredFromBackup:isSmsMessageRestoredFromBackup
                 isViewOnceComplete:isViewOnceComplete
                  isViewOnceMessage:isViewOnceMessage
                        linkPreview:linkPreview

@@ -16,6 +16,7 @@ public class TSMessageBuilder: NSObject {
     public var expiresInSeconds: UInt32
     public var expireTimerVersion: NSNumber?
     public var expireStartedAt: UInt64
+    public var isSmsMessageRestoredFromBackup: Bool
     public var isViewOnceMessage: Bool
     public var isViewOnceComplete: Bool
     public var wasRemotelyDeleted: Bool
@@ -44,6 +45,7 @@ public class TSMessageBuilder: NSObject {
         expiresInSeconds: UInt32?,
         expireTimerVersion: UInt32?,
         expireStartedAt: UInt64?,
+        isSmsMessageRestoredFromBackup: Bool,
         isViewOnceMessage: Bool,
         isViewOnceComplete: Bool,
         wasRemotelyDeleted: Bool,
@@ -67,6 +69,7 @@ public class TSMessageBuilder: NSObject {
         self.expiresInSeconds = expiresInSeconds ?? 0
         self.expireTimerVersion = expireTimerVersion.map(NSNumber.init(value:))
         self.expireStartedAt = expireStartedAt ?? 0
+        self.isSmsMessageRestoredFromBackup = isSmsMessageRestoredFromBackup
         self.isViewOnceMessage = isViewOnceMessage
         self.isViewOnceComplete = isViewOnceComplete
         self.wasRemotelyDeleted = wasRemotelyDeleted
@@ -94,6 +97,7 @@ public class TSMessageBuilder: NSObject {
         expiresInSeconds: UInt32? = nil,
         expireTimerVersion: UInt32? = nil,
         expireStartedAt: UInt64? = nil,
+        isSmsMessageRestoredFromBackup: Bool = false,
         isViewOnceMessage: Bool = false,
         isViewOnceComplete: Bool = false,
         wasRemotelyDeleted: Bool = false,
@@ -116,6 +120,7 @@ public class TSMessageBuilder: NSObject {
             expiresInSeconds: expiresInSeconds,
             expireTimerVersion: expireTimerVersion,
             expireStartedAt: expireStartedAt,
+            isSmsMessageRestoredFromBackup: isSmsMessageRestoredFromBackup,
             isViewOnceMessage: isViewOnceMessage,
             isViewOnceComplete: isViewOnceComplete,
             wasRemotelyDeleted: wasRemotelyDeleted,
@@ -130,18 +135,11 @@ public class TSMessageBuilder: NSObject {
         )
     }
 
-    public class func messageBuilder(
-        thread: TSThread,
-        messageBody: String?
-    ) -> TSMessageBuilder {
-        return .withDefaultValues(thread: thread, messageBody: messageBody)
+    class func messageBuilder(thread: TSThread) -> TSMessageBuilder {
+        return .withDefaultValues(thread: thread)
     }
 
-    public class func messageBuilder(
-        thread: TSThread,
-        timestamp: UInt64,
-        messageBody: String?
-    ) -> TSMessageBuilder {
-        return .withDefaultValues(thread: thread, timestamp: timestamp, messageBody: messageBody)
+    class func messageBuilder(thread: TSThread, timestamp: UInt64) -> TSMessageBuilder {
+        return .withDefaultValues(thread: thread, timestamp: timestamp)
     }
 }

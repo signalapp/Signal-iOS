@@ -50,6 +50,7 @@ class MessageBackupIntegrationTests: XCTestCase {
         case chatItemSimpleUpdates
         case chatItemStandardMessageFormatted
         case chatItemStandardMessageLongText
+        case chatItemStandardMessageSms
         case chatItemStandardMessageSpecialAttachments
         case chatItemStandardMessageStandardAttachments
         case chatItemStandardMessageTextOnly
@@ -133,6 +134,8 @@ class MessageBackupIntegrationTests: XCTestCase {
                     return binprotoName.contains("chat_item_standard_message_formatted_")
                 case .chatItemStandardMessageLongText:
                     return binprotoName.contains("chat_item_standard_message_long_text_")
+                case .chatItemStandardMessageSms:
+                    return binprotoName.contains("chat_item_standard_message_sms_")
                 case .chatItemStandardMessageSpecialAttachments:
                     return binprotoName.contains("chat_item_standard_message_special_attachments_")
                 case .chatItemStandardMessageStandardAttachments:

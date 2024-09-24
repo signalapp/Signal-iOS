@@ -47,10 +47,11 @@ extension MessageBackup {
         let dateCreated: UInt64
         let expireStartDate: UInt64?
         let expiresInMs: UInt64?
-        // TODO: [Backups] Properly set isSms. This will only be relevant for messages we previously restored from an Android.
-        let isSms: Bool = false
         let isSealedSender: Bool
         let chatItemType: ChatItemType
+
+        /// - SeeAlso: ``TSMessage/isSmsMessageRestoredFromBackup``
+        let isSmsPreviouslyRestoredFromBackup: Bool
 
         /// Represents past revisions, if this instance represents the final
         /// form of a message that was edited.

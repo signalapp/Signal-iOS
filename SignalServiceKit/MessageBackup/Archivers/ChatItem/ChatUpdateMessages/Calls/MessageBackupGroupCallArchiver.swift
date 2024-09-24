@@ -104,7 +104,8 @@ final class MessageBackupGroupCallArchiver {
             expireStartDate: nil,
             expiresInMs: nil,
             isSealedSender: false,
-            chatItemType: .updateMessage(chatUpdateMessage)
+            chatItemType: .updateMessage(chatUpdateMessage),
+            isSmsPreviouslyRestoredFromBackup: false
         )
 
         return .success(interactionArchiveDetails)

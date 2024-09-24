@@ -1078,6 +1078,7 @@ public final class MessageReceiver: Dependencies {
             serverDeliveryTimestamp: request.serverDeliveryTimestamp,
             serverGuid: serverGuid?.uuidString.lowercased(),
             wasReceivedByUD: request.wasReceivedByUD,
+            isSmsMessageRestoredFromBackup: false,
             isViewOnceMessage: isViewOnceMessage,
             isViewOnceComplete: false,
             wasRemotelyDeleted: false,

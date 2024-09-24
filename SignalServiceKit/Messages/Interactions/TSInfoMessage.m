@@ -87,9 +87,9 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
 {
     TSMessageBuilder *builder;
     if (timestamp > 0) {
-        builder = [TSMessageBuilder messageBuilderWithThread:thread timestamp:timestamp messageBody:nil];
+        builder = [TSMessageBuilder messageBuilderWithThread:thread timestamp:timestamp];
     } else {
-        builder = [TSMessageBuilder messageBuilderWithThread:thread messageBody:nil];
+        builder = [TSMessageBuilder messageBuilderWithThread:thread];
     }
     self = [super initMessageWithBuilder:builder];
     if (!self) {
@@ -136,6 +136,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
                 expiresInSeconds:(unsigned int)expiresInSeconds
                        giftBadge:(nullable OWSGiftBadge *)giftBadge
                isGroupStoryReply:(BOOL)isGroupStoryReply
+  isSmsMessageRestoredFromBackup:(BOOL)isSmsMessageRestoredFromBackup
               isViewOnceComplete:(BOOL)isViewOnceComplete
                isViewOnceMessage:(BOOL)isViewOnceMessage
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
@@ -170,6 +171,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
                   expiresInSeconds:expiresInSeconds
                          giftBadge:giftBadge
                  isGroupStoryReply:isGroupStoryReply
+    isSmsMessageRestoredFromBackup:isSmsMessageRestoredFromBackup
                 isViewOnceComplete:isViewOnceComplete
                  isViewOnceMessage:isViewOnceMessage
                        linkPreview:linkPreview
@@ -234,7 +236,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
                 return [NSString stringWithFormat:OWSLocalizedString(@"ERROR_UNREGISTERED_USER_FORMAT",
                                                       @"Format string for 'unregistered user' error. Embeds {{the "
                                                       @"unregistered user's name or signal id}}."),
-                                 recipientName];
+                    recipientName];
             } else {
                 return OWSLocalizedString(@"CONTACT_DETAIL_COMM_TYPE_INSECURE", nil);
             }

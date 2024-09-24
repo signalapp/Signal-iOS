@@ -131,6 +131,7 @@ public class OutgoingMessageFactory: NSObject, Factory {
             expireStartedAt: expireStartedAtBuilder(),
             isVoiceMessage: isVoiceMessageBuilder(),
             groupMetaMessage: groupMetaMessageBuilder(),
+            isSmsMessageRestoredFromBackup: isSmsMessageRestoredFromBackupBuilder(),
             isViewOnceMessage: isViewOnceMessageBuilder(),
             isViewOnceComplete: false,
             wasRemotelyDeleted: false,
@@ -208,6 +209,10 @@ public class OutgoingMessageFactory: NSObject, Factory {
 
     public var groupMetaMessageBuilder: () -> TSGroupMetaMessage = {
         return .unspecified
+    }
+
+    public var isSmsMessageRestoredFromBackupBuilder: () -> Bool = {
+        return false
     }
 
     public var isViewOnceMessageBuilder: () -> Bool = {
@@ -298,6 +303,7 @@ public class IncomingMessageFactory: NSObject, Factory {
             serverDeliveryTimestamp: serverDeliveryTimestampBuilder(),
             serverGuid: serverGuidBuilder(),
             wasReceivedByUD: wasReceivedByUDBuilder(),
+            isSmsMessageRestoredFromBackup: isSmsMessageRestoredFromBackupBuilder(),
             isViewOnceMessage: isViewOnceMessageBuilder(),
             isViewOnceComplete: false,
             wasRemotelyDeleted: false,
@@ -388,6 +394,10 @@ public class IncomingMessageFactory: NSObject, Factory {
     }
 
     public var wasReceivedByUDBuilder: () -> Bool = {
+        return false
+    }
+
+    public var isSmsMessageRestoredFromBackupBuilder: () -> Bool = {
         return false
     }
 

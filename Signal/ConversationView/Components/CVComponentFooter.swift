@@ -148,6 +148,12 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             innerViews.append(messageTimerView)
         }
 
+        if isRepresentingSmsMessageRestoredFromBackup {
+            let smsLockIconView = componentView.smsLockIconView
+            smsLockIconView.configure(tintColor: textColor)
+            innerViews.append(smsLockIconView)
+        }
+
         if let statusIndicator = self.statusIndicator {
             if let icon = UIImage(named: statusIndicator.imageName) {
                 let statusIndicatorImageView = componentView.statusIndicatorImageView
@@ -524,6 +530,11 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             innerSubviewInfos.append(timerSize.asManualSubviewInfo(hasFixedWidth: true))
         }
 
+        if isRepresentingSmsMessageRestoredFromBackup {
+            let lockIconSize = SmsLockIconView.size
+            innerSubviewInfos.append(lockIconSize.asManualSubviewInfo(hasFixedWidth: true))
+        }
+
         if let statusIndicator = self.statusIndicator {
             let statusSize = statusIndicator.imageSize
             innerSubviewInfos.append(statusSize.asManualSubviewInfo(hasFixedWidth: true))
@@ -590,6 +601,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         fileprivate let timestampLabel = CVLabel()
         fileprivate let statusIndicatorImageView = CVImageView()
         fileprivate let messageTimerView = MessageTimerView()
+        fileprivate let smsLockIconView = SmsLockIconView()
         fileprivate let chatColorView = CVColorOrGradientView()
 
         public var isDedicatedCellView = false
@@ -615,8 +627,12 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             statusIndicatorImageView.image = nil
 
             statusIndicatorImageView.layer.removeAllAnimations()
+
             messageTimerView.prepareForReuse()
             messageTimerView.removeFromSuperview()
+
+            smsLockIconView.removeFromSuperview()
+
             chatColorView.reset()
             chatColorView.removeFromSuperview()
         }
@@ -629,5 +645,24 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             animation.repeatCount = .greatestFiniteMagnitude
             statusIndicatorImageView.layer.add(animation, forKey: "animation")
         }
+    }
+}
+
+// MARK: -
+
+private extension CVComponentFooter {
+    /// Is this footer representing an SMS message we restored from a Backup?
+    ///
+    /// If so, we want to add some UI to indicate such, matching the UI for
+    /// these on Android, where they originated.
+    var isRepresentingSmsMessageRestoredFromBackup: Bool {
+        if
+            let message = interaction as? TSMessage,
+            message.isSmsMessageRestoredFromBackup
+        {
+            return true
+        }
+
+        return false
     }
 }

@@ -169,7 +169,8 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
             expireStartDate: outgoingMessage.expireStartedAt,
             expiresInMs: UInt64(outgoingMessage.expiresInSeconds) * 1000,
             isSealedSender: wasAnySendSealedSender,
-            chatItemType: chatItemType
+            chatItemType: chatItemType,
+            isSmsPreviouslyRestoredFromBackup: outgoingMessage.isSmsMessageRestoredFromBackup
         )
 
         if partialErrors.isEmpty {
@@ -451,6 +452,7 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
                 expireStartedAt: chatItem.expireStartDate,
                 isVoiceMessage: false,
                 groupMetaMessage: .unspecified,
+                isSmsMessageRestoredFromBackup: chatItem.sms,
                 // TODO: [Backups] pass along if this is view once after proto field is added
                 isViewOnceMessage: false,
                 // TODO: [Backups] restore viewed view-once messages after proto field is added

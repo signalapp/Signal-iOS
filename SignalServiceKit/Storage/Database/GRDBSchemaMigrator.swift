@@ -295,6 +295,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addIsViewOnceColumnToMessageAttachmentReference
         case backfillIsViewOnceMessageAttachmentReference
         case addAttachmentValidationBackfillTable
+        case addIsSmsColumnToTSAttachment
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -356,7 +357,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 89
+    public static let grdbSchemaVersionLatest: UInt = 90
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -3489,6 +3490,15 @@ public class GRDBSchemaMigrator: NSObject {
                     .references("Attachment", column: "id", onDelete: .cascade)
                     .primaryKey(onConflict: .ignore)
             }
+            return .success(())
+        }
+
+        migrator.registerMigration(.addIsSmsColumnToTSAttachment) { tx in
+            try tx.database.alter(table: "model_TSInteraction") { table in
+                table.add(column: "isSmsMessageRestoredFromBackup", .boolean)
+                    .defaults(to: false)
+            }
+
             return .success(())
         }
 

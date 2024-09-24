@@ -281,7 +281,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         chatItem.dateSent = details.dateCreated
         chatItem.expireStartDate = details.expireStartDate ?? 0
         chatItem.expiresInMs = details.expiresInMs ?? 0
-        chatItem.sms = details.isSms
+        chatItem.sms = details.isSmsPreviouslyRestoredFromBackup
         chatItem.item = details.chatItemType
         chatItem.directionalDetails = details.directionalDetails
         chatItem.revisions = details.pastRevisions.map { pastRevisionDetails in

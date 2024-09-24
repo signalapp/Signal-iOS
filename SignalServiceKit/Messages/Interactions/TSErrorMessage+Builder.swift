@@ -26,6 +26,7 @@ public class TSErrorMessageBuilder: TSMessageBuilder {
             expiresInSeconds: nil,
             expireTimerVersion: nil,
             expireStartedAt: nil,
+            isSmsMessageRestoredFromBackup: false,
             isViewOnceMessage: false,
             isViewOnceComplete: false,
             wasRemotelyDeleted: false,

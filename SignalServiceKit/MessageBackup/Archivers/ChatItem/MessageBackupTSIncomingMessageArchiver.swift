@@ -138,7 +138,8 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
             expireStartDate: incomingMessage.expireStartedAt,
             expiresInMs: UInt64(incomingMessage.expiresInSeconds) * 1000,
             isSealedSender: incomingMessage.wasReceivedByUD.negated,
-            chatItemType: chatItemType
+            chatItemType: chatItemType,
+            isSmsPreviouslyRestoredFromBackup: incomingMessage.isSmsMessageRestoredFromBackup
         )
 
         if partialErrors.isEmpty {
@@ -264,6 +265,7 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
                 serverDeliveryTimestamp: 0,
                 serverGuid: nil,
                 wasReceivedByUD: incomingDetails.sealedSender,
+                isSmsMessageRestoredFromBackup: chatItem.sms,
                 // TODO: [Backups] pass along if this is view once after proto field is added
                 isViewOnceMessage: false,
                 // TODO: [Backups] restore viewed view-once messages after proto field is added

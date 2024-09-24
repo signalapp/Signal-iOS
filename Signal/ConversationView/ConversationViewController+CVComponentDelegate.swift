@@ -153,8 +153,10 @@ extension ConversationViewController: CVComponentDelegate {
         if self.threadViewModel.hasPendingMessageRequest {
             return false
         }
-        if let message = itemViewModel.interaction as? TSMessage,
-           message.wasRemotelyDeleted {
+        if itemViewModel.wasRemotelyDeleted {
+            return false
+        }
+        if itemViewModel.isSmsMessageRestoredFromBackup {
             return false
         }
 

@@ -434,6 +434,11 @@ public class EditManagerImpl: EditManager {
             return false
         }
 
+        // Skip restored SMS messages
+        if message.isSmsMessageRestoredFromBackup {
+            return false
+        }
+
         // Skip contact shares
         if dataStore.isMessageContactShare(message) {
             return false

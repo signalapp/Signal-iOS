@@ -121,6 +121,16 @@ public class CVItemViewModelImpl: CVComponentStateWrapper {
         return message.isViewOnceMessage
     }
 
+    public var isSmsMessageRestoredFromBackup: Bool {
+        AssertIsOnMainThread()
+
+        guard let message = interaction as? TSMessage else {
+            return false
+        }
+
+        return message.isSmsMessageRestoredFromBackup
+    }
+
     public var wasRemotelyDeleted: Bool {
         AssertIsOnMainThread()
 
@@ -242,6 +252,10 @@ extension CVItemViewModelImpl {
 
     var canForwardMessage: Bool {
         guard !isViewOnce else {
+            return false
+        }
+
+        guard !isSmsMessageRestoredFromBackup else {
             return false
         }
 

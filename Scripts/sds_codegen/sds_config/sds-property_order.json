@@ -74,6 +74,7 @@
     "InteractionRecord.infoMessageUserInfo": 50,
     "InteractionRecord.isGroupStoryReply": 67,
     "InteractionRecord.isLocalChange": 25,
+    "InteractionRecord.isSmsMessageRestoredFromBackup": 73,
     "InteractionRecord.isViewOnceComplete": 26,
     "InteractionRecord.isViewOnceMessage": 27,
     "InteractionRecord.isVoiceMessage": 28,

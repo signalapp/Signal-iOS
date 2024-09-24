@@ -87,32 +87,33 @@ extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyUsernameDisplayNameBef
 - (instancetype)initMessageWithBuilder:(TSMessageBuilder *)messageBuilder NS_UNAVAILABLE;
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
-                        uniqueId:(NSString *)uniqueId
-             receivedAtTimestamp:(uint64_t)receivedAtTimestamp
-                          sortId:(uint64_t)sortId
-                       timestamp:(uint64_t)timestamp
-                  uniqueThreadId:(NSString *)uniqueThreadId
-                   attachmentIds:(NSArray<NSString *> *)attachmentIds
-                            body:(nullable NSString *)body
-                      bodyRanges:(nullable MessageBodyRanges *)bodyRanges
-                    contactShare:(nullable OWSContact *)contactShare
-                       editState:(TSEditState)editState
-                 expireStartedAt:(uint64_t)expireStartedAt
-              expireTimerVersion:(nullable NSNumber *)expireTimerVersion
-                       expiresAt:(uint64_t)expiresAt
-                expiresInSeconds:(unsigned int)expiresInSeconds
-                       giftBadge:(nullable OWSGiftBadge *)giftBadge
-               isGroupStoryReply:(BOOL)isGroupStoryReply
-              isViewOnceComplete:(BOOL)isViewOnceComplete
-               isViewOnceMessage:(BOOL)isViewOnceMessage
-                     linkPreview:(nullable OWSLinkPreview *)linkPreview
-                  messageSticker:(nullable MessageSticker *)messageSticker
-                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-    storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
-           storyAuthorUuidString:(nullable NSString *)storyAuthorUuidString
-              storyReactionEmoji:(nullable NSString *)storyReactionEmoji
-                  storyTimestamp:(nullable NSNumber *)storyTimestamp
-              wasRemotelyDeleted:(BOOL)wasRemotelyDeleted NS_UNAVAILABLE;
+                          uniqueId:(NSString *)uniqueId
+               receivedAtTimestamp:(uint64_t)receivedAtTimestamp
+                            sortId:(uint64_t)sortId
+                         timestamp:(uint64_t)timestamp
+                    uniqueThreadId:(NSString *)uniqueThreadId
+                     attachmentIds:(NSArray<NSString *> *)attachmentIds
+                              body:(nullable NSString *)body
+                        bodyRanges:(nullable MessageBodyRanges *)bodyRanges
+                      contactShare:(nullable OWSContact *)contactShare
+                         editState:(TSEditState)editState
+                   expireStartedAt:(uint64_t)expireStartedAt
+                expireTimerVersion:(nullable NSNumber *)expireTimerVersion
+                         expiresAt:(uint64_t)expiresAt
+                  expiresInSeconds:(unsigned int)expiresInSeconds
+                         giftBadge:(nullable OWSGiftBadge *)giftBadge
+                 isGroupStoryReply:(BOOL)isGroupStoryReply
+    isSmsMessageRestoredFromBackup:(BOOL)isSmsMessageRestoredFromBackup
+                isViewOnceComplete:(BOOL)isViewOnceComplete
+                 isViewOnceMessage:(BOOL)isViewOnceMessage
+                       linkPreview:(nullable OWSLinkPreview *)linkPreview
+                    messageSticker:(nullable MessageSticker *)messageSticker
+                     quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+      storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
+             storyAuthorUuidString:(nullable NSString *)storyAuthorUuidString
+                storyReactionEmoji:(nullable NSString *)storyReactionEmoji
+                    storyTimestamp:(nullable NSNumber *)storyTimestamp
+                wasRemotelyDeleted:(BOOL)wasRemotelyDeleted NS_UNAVAILABLE;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
@@ -147,6 +148,7 @@ extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyUsernameDisplayNameBef
                 expiresInSeconds:(unsigned int)expiresInSeconds
                        giftBadge:(nullable OWSGiftBadge *)giftBadge
                isGroupStoryReply:(BOOL)isGroupStoryReply
+  isSmsMessageRestoredFromBackup:(BOOL)isSmsMessageRestoredFromBackup
               isViewOnceComplete:(BOOL)isViewOnceComplete
                isViewOnceMessage:(BOOL)isViewOnceMessage
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
@@ -163,7 +165,7 @@ extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyUsernameDisplayNameBef
                             read:(BOOL)read
                       serverGuid:(nullable NSString *)serverGuid
              unregisteredAddress:(nullable SignalServiceAddress *)unregisteredAddress
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:bodyRanges:contactShare:editState:expireStartedAt:expireTimerVersion:expiresAt:expiresInSeconds:giftBadge:isGroupStoryReply:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:storyAuthorUuidString:storyReactionEmoji:storyTimestamp:wasRemotelyDeleted:customMessage:infoMessageUserInfo:messageType:read:serverGuid:unregisteredAddress:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:bodyRanges:contactShare:editState:expireStartedAt:expireTimerVersion:expiresAt:expiresInSeconds:giftBadge:isGroupStoryReply:isSmsMessageRestoredFromBackup:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:storyAuthorUuidString:storyReactionEmoji:storyTimestamp:wasRemotelyDeleted:customMessage:infoMessageUserInfo:messageType:read:serverGuid:unregisteredAddress:));
 
 // clang-format on
 
