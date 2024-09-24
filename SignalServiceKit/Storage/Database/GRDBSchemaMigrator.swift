@@ -3497,6 +3497,7 @@ public class GRDBSchemaMigrator: NSObject {
         migrator.registerMigration(.addIsSmsColumnToTSAttachment) { tx in
             try tx.database.alter(table: "model_TSInteraction") { table in
                 table.add(column: "isSmsMessageRestoredFromBackup", .boolean)
+                    .defaults(to: false)
             }
 
             return .success(())
