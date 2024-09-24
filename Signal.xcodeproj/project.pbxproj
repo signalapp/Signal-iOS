@@ -847,6 +847,8 @@
 		6635B8A92BA25E08005C80EA /* QuotedReplyManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6635B8A82BA25E08005C80EA /* QuotedReplyManagerMock.swift */; };
 		663A189E2BC9C229005C1B41 /* MediaGalleryResourceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663A189D2BC9C229005C1B41 /* MediaGalleryResourceManager.swift */; };
 		663A18A02BCD8F16005C1B41 /* MediaGalleryAttachmentFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663A189F2BCD8F16005C1B41 /* MediaGalleryAttachmentFinder.swift */; };
+		663B9CAE2C9DEECC0055DC7D /* TaskQueueLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663B9CAD2C9DEEC00055DC7D /* TaskQueueLoader.swift */; };
+		663B9CB12C9DF55D0055DC7D /* TaskQueueLoaderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663B9CAF2C9DF5410055DC7D /* TaskQueueLoaderTest.swift */; };
 		663BA3182A4B8595004B9A43 /* SpoilerRenderState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663BA3172A4B8595004B9A43 /* SpoilerRenderState.swift */; };
 		663BA3202A4CF96B004B9A43 /* MessageBodyDisplayConfigurations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663BA31F2A4CF96B004B9A43 /* MessageBodyDisplayConfigurations.swift */; };
 		663D02DD2C06717900350632 /* UInt64SafeRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663D02DC2C06717900350632 /* UInt64SafeRecord.swift */; };
@@ -4447,6 +4449,8 @@
 		6635B8A82BA25E08005C80EA /* QuotedReplyManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotedReplyManagerMock.swift; sourceTree = "<group>"; };
 		663A189D2BC9C229005C1B41 /* MediaGalleryResourceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaGalleryResourceManager.swift; sourceTree = "<group>"; };
 		663A189F2BCD8F16005C1B41 /* MediaGalleryAttachmentFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaGalleryAttachmentFinder.swift; sourceTree = "<group>"; };
+		663B9CAD2C9DEEC00055DC7D /* TaskQueueLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskQueueLoader.swift; sourceTree = "<group>"; };
+		663B9CAF2C9DF5410055DC7D /* TaskQueueLoaderTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskQueueLoaderTest.swift; sourceTree = "<group>"; };
 		663BA3172A4B8595004B9A43 /* SpoilerRenderState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerRenderState.swift; sourceTree = "<group>"; };
 		663BA31F2A4CF96B004B9A43 /* MessageBodyDisplayConfigurations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBodyDisplayConfigurations.swift; sourceTree = "<group>"; };
 		663D02DC2C06717900350632 /* UInt64SafeRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UInt64SafeRecord.swift; sourceTree = "<group>"; };
@@ -13769,6 +13773,8 @@
 				F9C5CB09289453B200548EEE /* String+SSK.swift */,
 				F9C5CB5D289453B200548EEE /* SwiftSingletons.swift */,
 				F9C5CB32289453B200548EEE /* SyncManagerProtocol.swift */,
+				663B9CAD2C9DEEC00055DC7D /* TaskQueueLoader.swift */,
+				663B9CAF2C9DF5410055DC7D /* TaskQueueLoaderTest.swift */,
 				66FC638129E2172400F00DAC /* ThemedColor.swift */,
 				F9C5CB10289453B200548EEE /* ThreadBacked.swift */,
 				348C686C246B0B100039705A /* ThreadUtil.swift */,
@@ -17468,6 +17474,7 @@
 				669E900028B42B7A00043D28 /* SystemStoryManager.swift in Sources */,
 				669E901028B57D6300043D28 /* SystemStoryManagerMock.swift in Sources */,
 				669E900728B43F5B00043D28 /* SystemStoryManagerProtocol.swift in Sources */,
+				663B9CAE2C9DEECC0055DC7D /* TaskQueueLoader.swift in Sources */,
 				72B994DB2BE950DB000CBBFD /* TestAppContext.swift in Sources */,
 				F9C5CE5C289453B400548EEE /* TestProtocolRunner.swift in Sources */,
 				661278132996BE3400A1D5A1 /* TestScheduler.swift in Sources */,
@@ -17891,6 +17898,7 @@
 				6618D5EF2A20065F0059BA93 /* SVR2ConcurrencyTests.swift in Sources */,
 				6673FF752979F87500F96CFD /* SVRAuthCredentialStorageTests.swift in Sources */,
 				884BF73D28D37D5F00D94636 /* SystemStoryManagerTest.swift in Sources */,
+				663B9CB12C9DF55D0055DC7D /* TaskQueueLoaderTest.swift in Sources */,
 				F9426288289B1B5600460798 /* TestProtocolRunnerTest.swift in Sources */,
 				6600F38B299016BC00B1EDB7 /* TestSchedulerTest.swift in Sources */,
 				5011D9702A0429B6000FE8E5 /* ThreadMergerTest.swift in Sources */,

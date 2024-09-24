@@ -95,6 +95,13 @@ public enum JobResult {
 /// lost if the app is relaunched and a new `JobRunner` is created. In
 /// practice, this doesn't cause problems because the UX that's waiting for
 /// the completion callback is also dismissed if the app is relaunched.
+///
+/// When should you use this type as opposed to ``TaskQueueLoader`` and ``TaskRecord``?
+/// The JobRunner classes use a single db table across all jobs, and thus provide more in-built functionality
+/// around scheduling, starting, retrying, and failing jobs. ``TaskQueueLoader`` requires you to write
+/// your own db table (or in memory queue) but offers less functionality in exchange. You should consider
+/// ``TaskQueueLoader`` mainly if you want to enforce a priority order on your jobs; ``JobRunner``
+/// only handles FIFO ordering.
 public protocol JobRunner<JobRecordType> {
     associatedtype JobRecordType: JobRecord
 

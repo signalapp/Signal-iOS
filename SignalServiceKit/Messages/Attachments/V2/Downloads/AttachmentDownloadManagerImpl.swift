@@ -21,7 +21,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     private let downloadQueue: DownloadQueue
     private let downloadabilityChecker: DownloadabilityChecker
     private let progressStates: ProgressStates
-    private let queueLoader: PersistedQueueLoader
+    private let queueLoader: TaskQueueLoader<DownloadTaskRunner>
     private let tsAccountManager: TSAccountManager
 
     public init(
@@ -76,7 +76,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             profileManager: profileManager,
             threadStore: threadStore
         )
-        self.queueLoader = PersistedQueueLoader(
+        let taskRunner = DownloadTaskRunner(
             attachmentDownloadStore: attachmentDownloadStore,
             attachmentStore: attachmentStore,
             attachmentUpdater: attachmentUpdater,
@@ -90,6 +90,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             stickerManager: stickerManager,
             tsAccountManager: tsAccountManager
         )
+        self.queueLoader = TaskQueueLoader(maxConcurrentTasks: 4, db: db, runner: taskRunner)
         self.tsAccountManager = tsAccountManager
 
         appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
@@ -249,7 +250,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         }
 
         Task { [weak self] in
-            try await self?.queueLoader.loadFromQueueIfAble()
+            try await self?.queueLoader.loadAndRunTasks()
         }
     }
 
@@ -275,7 +276,37 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
     // MARK: - Persisted Queue
 
-    private actor PersistedQueueLoader {
+    private struct DownloadTaskRecord: TaskRecord {
+        let id: Int64
+        let record: QueuedAttachmentDownloadRecord
+    }
+
+    private class DownloadTaskRecordStore: TaskRecordStore {
+        typealias Record = DownloadTaskRecord
+
+        private let store: AttachmentDownloadStore
+
+        init(store: AttachmentDownloadStore) {
+            self.store = store
+        }
+
+        func peek(count: UInt, tx: DBReadTransaction) throws -> [DownloadTaskRecord] {
+            return try store.peek(count: count, tx: tx).map {
+                return .init(id: $0.id!, record: $0)
+            }
+        }
+
+        func removeRecord(_ record: DownloadTaskRecord, tx: any DBWriteTransaction) throws {
+            try store.removeAttachmentFromQueue(
+                withId: record.record.attachmentId,
+                source: record.record.sourceType,
+                tx: tx
+            )
+        }
+    }
+
+    private class DownloadTaskRunner: TaskRecordRunner {
+        typealias Store = DownloadTaskRecordStore
 
         private let attachmentDownloadStore: AttachmentDownloadStore
         private let attachmentStore: AttachmentStore
@@ -288,6 +319,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         private let messageBackupKeyMaterial: MessageBackupKeyMaterial
         private let messageBackupRequestManager: MessageBackupRequestManager
         private let stickerManager: Shims.StickerManager
+        let store: Store
         private let tsAccountManager: TSAccountManager
 
         init(
@@ -315,112 +347,78 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             self.messageBackupKeyMaterial = messageBackupKeyMaterial
             self.messageBackupRequestManager = messageBackupRequestManager
             self.stickerManager = stickerManager
+            self.store = DownloadTaskRecordStore(store: attachmentDownloadStore)
             self.tsAccountManager = tsAccountManager
         }
 
-        private let maxConcurrentDownloads: UInt = 4
-        private var currentRecordIds = Set<Int64>()
+        // MARK: TaskRecordRunner conformance
 
-        /// Load the next N enqueued downloads, and begin downloading any
-        /// that are not already downloading.
-        /// (N = max concurrent downloads)
-        func loadFromQueueIfAble() async throws {
-            try Task.checkCancellation()
-
-            if currentRecordIds.count >= maxConcurrentDownloads {
-                return
-            }
-
-            let recordCandidates = try db.read { tx in
-                try attachmentDownloadStore.peek(count: self.maxConcurrentDownloads, tx: tx)
-            }
-
-            let records = recordCandidates.filter { record in
-                !currentRecordIds.contains(record.id!)
-            }
-            guard !records.isEmpty else {
-                return
-            }
-            records.lazy.compactMap(\.id).forEach {
-                currentRecordIds.insert($0)
-            }
-
-            try await withThrowingTaskGroup(of: Void.self) { taskGroup in
-                records.forEach { record in
-                    taskGroup.addTask {
-                        await self.downloadRecord(record)
-                        // As soon as we finish any download, start downloading more.
-                        try await self.loadFromQueueIfAble()
-                    }
-                }
-                try await taskGroup.waitForAll()
-            }
+        func runTask(
+            record: DownloadTaskRecord
+        ) async -> TaskRecordResult {
+            return await self.downloadRecord(record.record)
         }
 
-        private func didFinishDownloading(_ record: QueuedAttachmentDownloadRecord) async {
-            Logger.info("Succeeded download of attachment \(record.attachmentId)")
-            self.currentRecordIds.remove(record.id!)
-            await db.awaitableWrite { tx in
+        func didSucceed(
+            record: DownloadTaskRecord,
+            tx: DBWriteTransaction
+        ) throws {
+            Logger.info("Succeeded download of attachment \(record.record.attachmentId)")
+        }
+
+        func didCancel(
+            record: DownloadTaskRecord,
+            tx: DBWriteTransaction
+        ) throws {
+            Logger.info("Cancelled download of attachment \(record.record.attachmentId)")
+        }
+
+        func didFail(record: DownloadTaskRecord, error: Error, isRetryable: Bool, tx: DBWriteTransaction) throws {
+            let record = record.record
+            Logger.error("Failed download of attachment \(record.attachmentId)")
+            if isRetryable, let retryTime = self.retryTime(for: record) {
+                try? self.attachmentDownloadStore.markQueuedDownloadFailed(
+                    withId: record.id!,
+                    minRetryTimestamp: retryTime,
+                    tx: tx
+                )
+            } else {
+                let attachment = attachmentStore.fetch(id: record.attachmentId, tx: tx)
+
+                // If we tried to download as media tier, and failed, and we have
+                // a transit tier fallback available, try downloading from that.
+                let shouldReEnqueueAsTransitTier =
+                    record.sourceType == .mediaTierFullsize
+                    && attachment?.transitTierInfo != nil
+
+                // Not retrying; just delete the enqueued download
                 try? self.attachmentDownloadStore.removeAttachmentFromQueue(
                     withId: record.attachmentId,
                     source: record.sourceType,
                     tx: tx
                 )
-            }
-        }
-
-        private func didFailToDownload(
-            _ record: QueuedAttachmentDownloadRecord,
-            _ attachment: Attachment,
-            isRetryable: Bool
-        ) async {
-            Logger.error("Failed download of attachment \(record.attachmentId)")
-            self.currentRecordIds.remove(record.id!)
-            if isRetryable, let retryTime = self.retryTime(for: record) {
-                await db.awaitableWrite { tx in
-                    try? self.attachmentDownloadStore.markQueuedDownloadFailed(
-                        withId: record.id!,
-                        minRetryTimestamp: retryTime,
+                try? self.attachmentStore.updateAttachmentAsFailedToDownload(
+                    from: record.sourceType,
+                    id: record.attachmentId,
+                    timestamp: self.dateProvider().ows_millisecondsSince1970,
+                    tx: tx
+                )
+                if shouldReEnqueueAsTransitTier {
+                    try? self.attachmentDownloadStore.enqueueDownloadOfAttachment(
+                        withId: record.attachmentId,
+                        source: .transitTier,
+                        priority: record.priority,
                         tx: tx
                     )
                 }
-            } else {
-                // If we tried to download as media tier, and failed, and we have
-                // a transit tier fallback available, try downloading from that.
-                let shouldReEnqueueAsTransitTier =
-                    record.sourceType == .mediaTierFullsize
-                    && attachment.transitTierInfo != nil
 
-                // Not retrying; just delete the enqueued download
-                await db.awaitableWrite { tx in
-                    try? self.attachmentDownloadStore.removeAttachmentFromQueue(
-                        withId: record.attachmentId,
-                        source: record.sourceType,
-                        tx: tx
-                    )
-                    try? self.attachmentStore.updateAttachmentAsFailedToDownload(
-                        from: record.sourceType,
-                        id: record.attachmentId,
-                        timestamp: self.dateProvider().ows_millisecondsSince1970,
-                        tx: tx
-                    )
-                    if shouldReEnqueueAsTransitTier {
-                        try? self.attachmentDownloadStore.enqueueDownloadOfAttachment(
-                            withId: record.attachmentId,
-                            source: .transitTier,
-                            priority: record.priority,
+                tx.addAsyncCompletion(on: SyncScheduler()) { [weak self] in
+                    guard let self else { return }
+                    self.db.asyncWrite { tx in
+                        self.attachmentUpdater.touchAllOwners(
+                            attachmentId: record.attachmentId,
                             tx: tx
                         )
-                    }
-
-                    tx.addAsyncCompletion(on: SyncScheduler()) { [weak self] in
-                        guard let self else { return }
-                        self.db.asyncWrite { tx in
-                            self.attachmentUpdater.touchAllOwners(
-                                attachmentId: record.attachmentId,
-                                tx: tx
-                            )
-                        }
                     }
                 }
             }
@@ -461,7 +459,11 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             }
         }
 
-        private nonisolated func downloadRecord(_ record: QueuedAttachmentDownloadRecord) async {
+        // MARK: Downloading
+
+        private nonisolated func downloadRecord(
+            _ record: QueuedAttachmentDownloadRecord
+        ) async -> TaskRecordResult {
             guard let attachment = db.read(block: { tx in
                 attachmentStore.fetch(id: record.attachmentId, tx: tx)
             }) else {
@@ -469,14 +471,15 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 // only happen if the attachment got deleted between when we fetched the
                 // download queue record and now. Regardless, the record should now be deleted.
                 owsFailDebug("Attempting to download an attachment that doesn't exist!")
-                return
+                return .cancelled
             }
 
             guard attachment.asStream() == nil else {
                 // Already a stream! No need to download.
-                await self.didFinishDownloading(record)
-                return
+                return .cancelled
             }
+
+            struct SkipDownloadError: Error {}
 
             switch self.downloadabilityChecker.downloadability(record, attachment: attachment) {
             case .downloadable:
@@ -484,18 +487,15 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             case .blockedByActiveCall:
                 // This is a temporary setback; retry in a bit if the source allows it.
                 Logger.info("Skipping attachment download due to active call \(record.attachmentId)")
-                await self.didFailToDownload(record, attachment, isRetryable: true)
-                return
+                return .retryableError(SkipDownloadError())
             case .blockedByPendingMessageRequest:
                 Logger.info("Skipping attachment download due to pending message request \(record.attachmentId)")
                 // These can only be resolved by user action; cancel the enqueued download.
-                await self.didFailToDownload(record, attachment, isRetryable: false)
-                return
+                return .unretryableError(SkipDownloadError())
             case .blockedByAutoDownloadSettings:
                 Logger.info("Skipping attachment download due to auto download settings \(record.attachmentId)")
                 // These can only be resolved by user action; cancel the enqueued download.
-                await self.didFailToDownload(record, attachment, isRetryable: false)
-                return
+                return .unretryableError(SkipDownloadError())
             }
 
             Logger.info("Downloading attachment \(record.attachmentId)")
@@ -509,15 +509,13 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             {
                 // Done!
                 Logger.info("Sourced quote attachment from original \(record.attachmentId)")
-                await self.didFinishDownloading(record)
-                return
+                return .success
             }
 
             if await quoteUnquoteDownloadStickerFromInstalledPackIfPossible(record: record) {
                 // Done!
                 Logger.info("Sourced sticker attachment from installed sticker \(record.attachmentId)")
-                await self.didFinishDownloading(record)
-                return
+                return .success
             }
 
             if record.priority == .localClone {
@@ -526,8 +524,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 // 2. Local installed sticker for a sticker message
                 // If we were trying for either of these and got this far,
                 // we failed to use the local data, so just fail the whole thing.
-                await self.didFailToDownload(record, attachment, isRetryable: false)
-                return
+                return .unretryableError(OWSAssertionError("Failed local clone"))
             }
 
             let downloadMetadata: DownloadMetadata?
@@ -552,7 +549,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     let mediaTierInfo = attachment.mediaTierInfo,
                     let mediaName = attachment.mediaName,
                     let cdnNumber = mediaTierInfo.cdnNumber,
-                    let encryptionMetadata = await buildCdnEncryptionMetadata(mediaName: mediaName, type: .attachment),
+                    let encryptionMetadata = buildCdnEncryptionMetadata(mediaName: mediaName, type: .attachment),
                     let cdnCredential = await fetchBackupCdnReadCredential(for: cdnNumber)
                 else {
                     downloadMetadata = nil
@@ -575,12 +572,12 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     let mediaName = attachment.mediaName,
                     let cdnNumber = thumbnailInfo.cdnNumber,
                     // This is the outer encryption
-                    let outerEncryptionMetadata = await buildCdnEncryptionMetadata(
+                    let outerEncryptionMetadata = buildCdnEncryptionMetadata(
                         mediaName: AttachmentBackupThumbnail.thumbnailMediaName(fullsizeMediaName: mediaName),
                         type: .attachment
                     ),
                     // inner encryption
-                    let innerEncryptionMetadata = await buildCdnEncryptionMetadata(
+                    let innerEncryptionMetadata = buildCdnEncryptionMetadata(
                         mediaName: AttachmentBackupThumbnail.thumbnailMediaName(fullsizeMediaName: mediaName),
                         type: .thumbnail
                     ),
@@ -603,10 +600,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             }
 
             guard let downloadMetadata else {
-                owsFailDebug("Attempting to download an attachment without cdn info")
-                // Remove the download.
-                await self.didFailToDownload(record, attachment, isRetryable: false)
-                return
+                return .unretryableError(OWSAssertionError("Attempting to download an attachment without cdn info"))
             }
 
             let downloadedFileUrl: URL
@@ -623,8 +617,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 // The other type of error that can be expected here is if CDN
                 // credentials expire between enqueueing the download and the download
                 // excuting. The outcome is the same: fail the current download and retry.
-                await self.didFailToDownload(record, attachment, isRetryable: true)
-                return
+                return .retryableError(error)
             }
 
             let pendingAttachment: PendingAttachment
@@ -634,9 +627,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     metadata: downloadMetadata
                 )
             } catch let error {
-                Logger.error("Failed to validate: \(error)")
-                await self.didFailToDownload(record, attachment, isRetryable: false)
-                return
+                return .unretryableError(OWSAssertionError("Failed to validate: \(error)"))
             }
 
             let result: DownloadResult
@@ -647,9 +638,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     source: record.sourceType
                 )
             } catch let error {
-                Logger.error("Failed to update attachment: \(error)")
-                await self.didFailToDownload(record, attachment, isRetryable: true)
-                return
+                return .retryableError(OWSAssertionError("Failed to update attachment: \(error)"))
             }
 
             if case .stream(let attachmentStream) = result {
@@ -664,7 +653,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 }
             }
 
-            await self.didFinishDownloading(record)
+            return .success
         }
 
         private nonisolated func quoteUnquoteDownloadQuotedReplyFromOriginalStream(
