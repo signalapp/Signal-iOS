@@ -512,10 +512,17 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
 
         dismissKeyBoard()
 
-        let pickerModal = SendMediaNavigationController.showingApprovalWithPickedLibraryMedia(asset: asset,
-                                                                                              attachment: attachment,
-                                                                                              delegate: self,
-                                                                                              dataSource: self)
+        var options = AttachmentApprovalViewControllerOptions()
+        if inputToolbar?.quotedReplyDraft != nil {
+            options.insert(.disallowViewOnce)
+        }
+        let pickerModal = SendMediaNavigationController.showingApprovalWithPickedLibraryMedia(
+            asset: asset,
+            attachment: attachment,
+            options: options,
+            delegate: self,
+            dataSource: self
+        )
         presentFullScreen(pickerModal, animated: true)
     }
 }

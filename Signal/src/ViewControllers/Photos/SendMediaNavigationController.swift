@@ -90,10 +90,13 @@ class SendMediaNavigationController: OWSNavigationController {
         return navController
     }
 
-    class func showingApprovalWithPickedLibraryMedia(asset: PHAsset,
-                                                     attachment: SignalAttachment,
-                                                     delegate: SendMediaNavDelegate,
-                                                     dataSource: SendMediaNavDataSource) -> SendMediaNavigationController {
+    class func showingApprovalWithPickedLibraryMedia(
+        asset: PHAsset,
+        attachment: SignalAttachment,
+        options: AttachmentApprovalViewControllerOptions = .init(),
+        delegate: SendMediaNavDelegate,
+        dataSource: SendMediaNavDataSource
+    ) -> SendMediaNavigationController {
         let navController = SendMediaNavigationController()
         navController.sendMediaNavDelegate = delegate
         navController.sendMediaNavDataSource = dataSource
@@ -105,11 +108,15 @@ class SendMediaNavigationController: OWSNavigationController {
 
         navController.setViewControllers([navController.mediaLibraryViewController], animated: false)
 
+        var options = options
+        options.insert(.canAddMore)
+        options.insert(.hasCancel)
+
         // Since we're starting on the approval view, include cancel to allow the user to immediately dismiss.
         // If they choose to add more, `hasCancel` will go away and they'll enter the normal gallery flow.
         navController.pushApprovalViewController(
             attachmentApprovalItems: [approvalItem],
-            options: [.canAddMore, .hasCancel],
+            options: options,
             animated: false
         )
 
