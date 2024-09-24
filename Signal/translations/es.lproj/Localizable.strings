@@ -845,7 +845,7 @@
 "CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "Eliminar";
 
 /* Message for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
-"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_MESSAGE" = "Esta acción hará que se elimine de forma permanente todo tu historial de llamadas.";
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_MESSAGE" = "Se eliminará de forma permanente todo tu historial de llamadas.";
 
 /* Title for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
 "CALLS_TAB_DELETE_ALL_CALLS_PROMPT_TITLE" = "¿Eliminar historial de llamadas?";
@@ -1082,7 +1082,7 @@
 "COMPOSE_BUTTON_HINT" = "Selecciona o busca a una persona en Signal para comenzar a chatear.";
 
 /* Accessibility label from compose button. */
-"COMPOSE_BUTTON_LABEL" = "Redactar";
+"COMPOSE_BUTTON_LABEL" = "Escribir";
 
 /* Table section header for contact listing when composing a new message */
 "COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "Contactos";
@@ -3719,10 +3719,10 @@
 "INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST" = "Has aceptado la solicitud de mensaje.";
 
 /* Header for an action sheet providing options in response to an accepted 1:1 message request. Embeds {{ the name of your chat partner }}. */
-"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_CONTACT" = "Has aceptado una solicitud de mensaje de %1$@. Si se fue un error, puedes elegir una de las acciones que hay a continuación.";
+"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_CONTACT" = "Has aceptado una solicitud de mensaje de %1$@. Si ha sido un error, puedes elegir una de las siguientes acciones.";
 
 /* Header for an action sheet providing options in response to an accepted group message request. */
-"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_GROUP" = "Has aceptado una solicitud de mensaje de este grupo. Si fue un error, puedes elegir una de las acciones que hay a continuación.";
+"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_GROUP" = "Has aceptado una solicitud de mensaje de este grupo. Si ha sido un error, puedes elegir una de las siguientes acciones.";
 
 /* Title for a button shown alongside an info message indicating you accepted a message request. */
 "INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_BUTTON" = "Opciones";
@@ -4004,7 +4004,7 @@
 "MEDIA_GALLERY_CLEAR_FILTER_BUTTON" = "Quitar filtro";
 
 /* Explanatory text displayed when deleting N items in All Media screen. */
-"MEDIA_GALLERY_DELETE_MEDIA_BODY" = "Se eliminarán de forma permanente los archivos seleccionados. Todos los mensajes asociados con estos archivos también se eliminarán.";
+"MEDIA_GALLERY_DELETE_MEDIA_BODY" = "Se eliminarán de forma permanente los archivos seleccionados. También se eliminará cualquier mensaje asociado con estos archivos.";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%1$@";
@@ -4346,7 +4346,7 @@
 "MESSAGE_STATUS_FAILED_SHORT" = "Error";
 
 /* Label indicating that a message was only sent to some recipients. */
-"MESSAGE_STATUS_PARTIALLY_SENT" = "No se ha enviado a todas las personas. Toca aquí para ver más información.";
+"MESSAGE_STATUS_PARTIALLY_SENT" = "No enviado a todas las personas. Toca para ver más.";
 
 /* Label indicating that a message send was paused. */
 "MESSAGE_STATUS_PENDING" = "Envío pausado";
@@ -4598,7 +4598,7 @@
 "NICKNAME_BUTTON_TITLE" = "Apodo";
 
 /* The message for a prompt confirming that the user wants to delete the nickname and note. */
-"NICKNAME_EDITOR_DELETE_CONFIRMATION_MESSAGE" = "Esta acción hará que se elimine este apodo y estas notas de forma permanente.";
+"NICKNAME_EDITOR_DELETE_CONFIRMATION_MESSAGE" = "Se eliminará de forma permanente este apodo y estas notas.";
 
 /* The title for a prompt confirming that the user wants to delete the nickname and note. */
 "NICKNAME_EDITOR_DELETE_CONFIRMATION_TITLE" = "¿Eliminar apodo?";
@@ -4925,7 +4925,7 @@
 "PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "No válido";
 
 /* Payments in-chat message shown if a payment fails to send, bottom half. */
-"PAYMENTS_IN_CHAT_FAILURE_MESSAGE_BOTTOM" = "Toca aquí para ver los detalles";
+"PAYMENTS_IN_CHAT_FAILURE_MESSAGE_BOTTOM" = "Toca para ver más";
 
 /* Payments in-chat message shown if a payment fails to send, top part. Embeds {{ number, amount of MOB coin not sent }} */
 "PAYMENTS_IN_CHAT_FAILURE_MESSAGE_TOP" = "No se ha podido enviar %1$@ MOB";
@@ -6065,7 +6065,7 @@
 "SAFETY_TIPS_BUTTON_ACTION_TITLE" = "Consejos de seguridad";
 
 /* Message contents for the crypto safety tip. */
-"SAFETY_TIPS_CRYPTO_BODY" = "Ten cuidado si alguien a quien no conoces te envía mensajes sobre criptomonedas (como Bitcoin) o sobre una oportunidad financiera. Es probable que se trate de spam.";
+"SAFETY_TIPS_CRYPTO_BODY" = "Ten cuidado si alguien que no conoces te envía mensajes sobre criptomonedas (como Bitcoin) o sobre una oportunidad financiera. Es probable que se trate de spam.";
 
 /* Message title describing the crypto safety tip. */
 "SAFETY_TIPS_CRYPTO_TITLE" = "Estafas de criptomonedas o dinero";
@@ -6455,7 +6455,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "Número de teléfono";
 
 /* Description text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Aquí puedes cambiar tu número de teléfono actual a un número de teléfono nuevo. Este cambio no se puede deshacer.\nAntes de continuar, comprueba que tu número nuevo puede recibir SMS o llamadas.";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Puedes cambiar tu número de teléfono a uno nuevo. Este cambio es irreversible.\n\nAntes de continuar, comprueba que tu número nuevo puede recibir SMS o llamadas.";
 
 /* Title text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "Cambiar número de teléfono";
@@ -7514,7 +7514,7 @@
 "STORIES_SHARESHEET_PARTIAL_SEND_STORIES_SECTION_TITLE" = "No enviado a";
 
 /* Title shown when failing to send an incompatible file to stories, but still sending to non-story conversations. */
-"STORIES_SHARESHEET_PARTIAL_SEND_TITLE" = "No se ha enviado a todas las personas";
+"STORIES_SHARESHEET_PARTIAL_SEND_TITLE" = "No enviado a todas las personas";
 
 /* Subtitle shown when failing to send an incompatible file to stories via the sharesheet. */
 "STORIES_SHARESHEET_UNABLE_TO_SEND_SEND_SUBTITLE" = "El tipo de archivo seleccionado no es compatible.";
@@ -7628,10 +7628,10 @@
 "STORY_SEND_FAILED_TAP_FOR_DETAILS" = "No se ha podido enviar. Toca para reintentar";
 
 /* Text indicating that the story send has partially failed */
-"STORY_SEND_PARTIALLY_FAILED" = "No se ha enviado a todas las personas";
+"STORY_SEND_PARTIALLY_FAILED" = "No enviado a todas las personas";
 
 /* Text indicating that the story send has partially failed */
-"STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "No se ha enviado a todas las personas.Toca aquí para ver más información.";
+"STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "No enviado a todas las personas. Toca para ver más.";
 
 /* Text indicating that the story is currently sending */
 "STORY_SENDING" = "Enviando…";

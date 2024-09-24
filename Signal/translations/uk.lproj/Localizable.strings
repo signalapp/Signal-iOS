@@ -4163,7 +4163,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Не вдалося";
 
 /* Status label for messages which are paused. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "Відправлення призупинене";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "Надсилання припинено";
 
 /* Status label for messages which are read. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Хто прочитав:";
@@ -4349,10 +4349,10 @@
 "MESSAGE_STATUS_PARTIALLY_SENT" = "Частково надіслано, торкніться для деталей";
 
 /* Label indicating that a message send was paused. */
-"MESSAGE_STATUS_PENDING" = "Відправлення призупинене";
+"MESSAGE_STATUS_PENDING" = "Надсилання припинено";
 
 /* Label indicating that a message send was paused. */
-"MESSAGE_STATUS_PENDING_SHORT" = "Призупинене";
+"MESSAGE_STATUS_PENDING_SHORT" = "Припинено";
 
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "Прочитано";
@@ -4718,7 +4718,7 @@
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Пропустити і Створити Новий PIN-код";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Якщо ви забули свій PIN-код, то можете створити новий. Ви можете зареєструватись і використовувати свій акаунт, але ви втратите частину збережених налаштувань, як-от інформацію профілю.";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Якщо ви забули свій PIN-код, то можете створити новий. Ви можете зареєструвати й використовувати акаунт, але ви втратите частину збережених налаштувань, як-от інформацію профілю.";
 
 /* Title for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Пропустити Введення PIN-коду?";
@@ -7331,7 +7331,7 @@
 "SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Продовжити без підтвердження?";
 
 /* Body for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_BODY" = "Для запобігання поширення спаму у Signal, будь ласка, здійсніть підтвердження особи.\n\nПісля підтвердження ви зможете продовжити спілкування. Усі призупинені повідомлення відправляться автоматично.";
+"SPAM_CAPTCHA_SHEET_BODY" = "Просимо вас пройти перевірку. Це необхідно для запобігання поширенню спаму в Signal.\n\nВи зможете продовжити спілкування після перевірки. Усі зупинені повідомлення буде надіслано автоматично.";
 
 /* Title for action sheet explaining captcha requirement. */
 "SPAM_CAPTCHA_SHEET_TITLE" = "Підтвердити для продовження спілкування";

@@ -68,7 +68,7 @@
 "ACCOUNT_DATA_REPORT_TITLE" = "Jouw accountgegevens";
 
 /* Label for 'invite' button in contact view. */
-"ACTION_INVITE" = "Nodig uit voor Signal";
+"ACTION_INVITE" = "Uitnodigen voor Signal";
 
 /* Label for button that lets you send a message to a contact. */
 "ACTION_SEND_MESSAGE" = "Bericht verzenden";
@@ -971,7 +971,7 @@
 "CAMERA_VO_ZOOM_LEVEL" = "%1$@keer";
 
 /* Alert shown when the user needs to exchange messages to see the safety number. */
-"CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "Er wordt een veiligheidsnummer aangemaakt met deze persoon nadat je berichten hebt uitgewisseld.";
+"CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "Er wordt een veiligheidsnummer gegenereerd met deze persoon nadat je berichten hebt uitgewisseld.";
 
 /* Users can donate to Signal with a credit or debit card. If their card number is invalid, this generic error message will be shown. Try to use a short string to make space in the UI. */
 "CARD_DONATION_CARD_NUMBER_GENERIC_ERROR" = "Ongeldig kaartnummer";
@@ -1115,7 +1115,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Je kunt toegang tot contacten inschakelen in de iOS-instellingen-app om te zien wie van je contacten Signal gebruikt.";
 
 /* Configure reactions title text */
-"CONFIGURE_REACTIONS" = "Reactie-balk personaliseren";
+"CONFIGURE_REACTIONS" = "Reactiebalk personaliseren";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TEXT" = "Hiermee zal de applicatie gereset worden, waarbij alle berichten van dit apparaat worden verwijderd. De app wordt gesloten nadat dit proces is voltooid.";
@@ -1247,7 +1247,7 @@
 "CONTACT_PICKER_TITLE" = "Kies contact";
 
 /* Title for the 'Approve contact share' view. */
-"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "Contactinformatie delen";
+"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "Contact delen";
 
 /* Title for the 'edit contact share name' view. */
 "CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "Naam bewerken";
@@ -1265,10 +1265,10 @@
 "CONTACT_SUPPORT" = "Neem contact op met ondersteuning";
 
 /* The localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Doneren & badges";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Donaties & badges";
 
 /* A brief localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "Doneren & badges";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "Donaties & badges";
 
 /* The localized representation of the 'feature request' support filter. */
 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "Ik wil een nieuwe functie aanvragen";
@@ -1685,7 +1685,7 @@
 "CUSTOM_CHAT_COLOR_SETTINGS_SOLID_COLOR" = "Effen";
 
 /* Title for the custom chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "Zelfgekozen kleur";
+"CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "Aangepaste kleur";
 
 /* Tooltip highlighting the custom chat color controls. */
 "CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "Sleep om de richting van het verloop te veranderen";
@@ -1706,7 +1706,7 @@
 "DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "Delen van je chatgeschiedenis kunnen beschadigd zijn. Dit heeft geen gevolgen voor de veiligheid van je account of berichten. Tik op ‘Doorgaan’ om je gegevens te herstellen.";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so try to avoid using terms like \"database\" or \"corrupted\"—terms like \"message history\" are better. This is the title on the first screen of this interface, which gives them some information and asks them to continue. */
-"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Probleem met ophalen van gegevens.";
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Probleem met ophalen van gegevens";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the text on the button to bypass the warning. */
 "DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "Toch doorgaan";
@@ -1805,7 +1805,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Account verwijderen";
 
 /* Title for the action sheet message of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "Hiermee verwijder je je Signal-account en reset je de applicatie. De Signal-app zal zichzelf sluiten nadat je dit doet.";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "Hiermee verwijder je je Signal-account en reset je de app. De app wordt gesloten nadat dit proces is voltooid.";
 
 /* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "Weet je zeker dat je je account wilt verwijderen?";
@@ -1817,7 +1817,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Het verwijderen van je account is mislukt. Controleer of wifi of mobiele data is ingeschakeld en probeer het daarna opnieuw.";
 
 /* Description for the 'delete account' confirmation view. */
-"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Hiermee worden alle gegevens, je profiel en al je berichten verwijderd.";
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Hiermee worden alle accountgegevens, je profiel en al je berichten verwijderd.";
 
 /* Indicates the work we are doing while deleting the account */
 "DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Account aan het verwijderen…";
@@ -2168,7 +2168,7 @@
 "DONATE_SCREEN_ONE_TIME_CHOICE" = "Eenmalig";
 
 /* On the donation screen, if you already have a subscription, you'll see a button to update your subscription. This is the text on that button. */
-"DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON" = "Maandelijkse donatie bijwerken";
+"DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON" = "Maandelijkse donatie wijzigen";
 
 /* Message for a sheet explaining that a donation via bank payment has failed. Embeds {{ a specific, already-localized string describing the payment failure }}. */
 "DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_FAILED_MESSAGE" = "Er zijn problemen met het verwerken van je bankoverschrijving. %1$@";
@@ -2195,7 +2195,7 @@
 "DONATION_FOR_A_FRIEND_ROW_DURATION" = "Geldig voor %1$@";
 
 /* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the text on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY" = "Je badge is verlopen en kan niet langer op je profiel weergegeven worden.";
+"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY" = "Je badge is verlopen en kan niet langer op je profiel worden weergegeven.";
 
 /* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the title on that sheet. */
 "DONATION_FROM_A_FRIEND_BADGE_EXPIRED_TITLE" = "Je donatie is verlopen";
@@ -2213,7 +2213,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_DESCRIPTION" = "Steun Signal door een donatie te doen voor een vriend(in) of familielid die Signal gebruikt. Ze ontvangen een badge die ze op hun profiel kunnen weergeven.";
 
 /* Users can donate on behalf of a friend, and the friend will receive a badge. This is the title on the screen where users choose the badge their friend will receive. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_TITLE" = "Doneer namens een vriend(in)";
+"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_TITLE" = "Doneer voor een vriend(in)";
 
 /* Title on the screen where you choose who you're going to donate on behalf of. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_RECIPIENT_TITLE" = "Kies een ontvanger";
@@ -2315,7 +2315,7 @@
 "DONATION_RECEIPT_FOOTER" = "Bedankt dat je Signal steunt. Jouw bijdrage helpt bij het voortzetten van onze missie om opensource privacytechnologie te ontwikkelen waarmee van miljoenen mensen de vrijheid van expressie wordt gewaarborgd en waarmee beveiligde communicatie over de hele wereld mogelijk wordt gemaakt. Bewaar dit donatiebewijs als je een inwoner bent van de Verenigde Staten van Amerika, zodat je je donatie kunt opgeven bij je belastingaangifte. Signal Technology Foundation is een van belasting uitgezonderde organisatie zonder winstoogmerk volgens sectie 501c3 van het Internal Revenue Code (het Amerikaanse belastingreglement). Ons federale-belasting-ID is 82-4506840.";
 
 /* Title for receipts for donations given on a friend's behalf */
-"DONATION_RECEIPT_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "Donatie namens een vriend(in)";
+"DONATION_RECEIPT_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "Donatie voor een vriend(in)";
 
 /* Title for one-time donation receipts */
 "DONATION_RECEIPT_ONE_TIME" = "Eenmalig";
@@ -2423,7 +2423,7 @@
 "DONATION_SETTINGS_ONE_TIME_AMOUNT_FORMAT" = "%1$@ eenmalig";
 
 /* Title for the \"donate for a friend\" button on the donation view. */
-"DONATION_VIEW_DONATE_ON_BEHALF_OF_A_FRIEND" = "Doneer namens een vriend(in)";
+"DONATION_VIEW_DONATE_ON_BEHALF_OF_A_FRIEND" = "Doneer voor een vriend(in)";
 
 /* Text describing to the user that they're going to pay a donation to Signal */
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "Donatie aan Signal";
@@ -2678,7 +2678,7 @@
 "EXIT_REREGISTRATION" = "Registratie verlaten";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Deze versie van Signal is verlopen. Werk Signal bij om berichten te versturen en te ontvangen.";
+"EXPIRATION_ERROR" = "Deze versie van Signal is verlopen. Werk Signal bij om berichten te verzenden en te ontvangen.";
 
 /* If the user's app is too old, they'll be shown a warning asking them to upgrade. This is the text on the warning, and tapping it will open the App Store page for Signal. */
 "EXPIRATION_WARNING_ACTION_TITLE" = "Nu bijwerken";
@@ -2918,7 +2918,7 @@
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Kan geen audio & video van %1$@ ontvangen";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
-"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "Dit kan zijn omdat ze jouw wijziging van het veiligheidsnummer niet hebben geverifieerd, er een probleem is met hun apparaat, of ze jou hebben geblokkeerd.";
+"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "Dit kan zijn omdat ze jouw wijziging van het veiligheidsnummer niet hebben geverifieerd, er een probleem is met hun apparaat, of omdat ze jou hebben geblokkeerd.";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
 "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Kan geen audio en video van %1$@ ontvangen";
@@ -3029,7 +3029,7 @@
 "GROUP_DESCRIPTION_PLACEHOLDER" = "Voeg een groepsomschrijving toe…";
 
 /* Footer text when editing the group description */
-"GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "De groepsnaam, -afbeelding en -omschrijving zijn zichtbaar voor alle leden van deze groep, voor alle personen die zijn uitgenodigd om lid te worden en voor alle personen die een werkende groepslink hebben, zelfs als ze nog niet hebben verzocht om lid te worden.";
+"GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "De groepsnaam, -afbeelding en -omschrijving zijn zichtbaar voor alle leden van deze groep, voor alle personen die zijn uitgenodigd en voor alle personen die een werkende groepslink hebben, zelfs als ze nog niet hebben verzocht om lid te worden.";
 
 /* Title for the group description view. */
 "GROUP_DESCRIPTION_VIEW_TITLE" = "Groepsomschrijving";
@@ -3584,7 +3584,7 @@
 "HIDE_RECIPIENT_ERROR_ACTION_SHEET_TITLE_FORMAT" = "Kan %1$@ niet verwijderen";
 
 /* An explanation of why the user cannot be removed. */
-"HIDE_RECIPIENT_IMPASS_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_EXPLANATION" = "Deze persoon is opgeslagen in de contactenlijst van je apparaat. Verwijder uit je contacten om uit deze contactenlijst te halen.";
+"HIDE_RECIPIENT_IMPASS_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_EXPLANATION" = "Deze persoon is opgeslagen in de contactenlijst van je apparaat. Verwijder deze persoon uit Contacten op je telefoon om uit deze contactenlijst te halen.";
 
 /* A format for the 'unable to remove user' action sheet title. Embeds {{the removed user's name or phone number}}. */
 "HIDE_RECIPIENT_IMPASS_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_TITLE" = "Kan %1$@ niet verwijderen";
@@ -3989,7 +3989,7 @@
 "MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_TITLE" = "Wijzigingen verwijderen?";
 
 /* Title for the button that resets photo to its initial state. */
-"MEDIA_EDITOR_RESET" = "Standaardinstelling herstellen";
+"MEDIA_EDITOR_RESET" = "Herstellen";
 
 /* Tooltip to display above a clock sticker in the media editor saying to tap for more clock styles */
 "MEDIA_EDITOR_TAP_FOR_MORE" = "Tik voor meer";
@@ -4571,10 +4571,10 @@
 "NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Verhaalnaam (vereist)";
 
 /* The title for the 'new private story' view. */
-"NEW_PRIVATE_STORY_VIEW_TITLE" = "Personen selecteren";
+"NEW_PRIVATE_STORY_VIEW_TITLE" = "Kies wie kan bekijken";
 
 /* Header for the 'viewers' section of the 'new private story' view */
-"NEW_PRIVATE_STORY_VIEWERS_HEADER" = "Personen";
+"NEW_PRIVATE_STORY_VIEWERS_HEADER" = "Kijkers";
 
 /* table section header button to add a new story */
 "NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "Nieuw";
@@ -4811,10 +4811,10 @@
 "ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "De code wordt gevalideerd…";
 
 /* First bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_1" = "Controleer of je telefoon bereik heeft zodat je een sms of oproep kunt ontvangen";
+"ONBOARDING_VERIFICATION_HELP_BULLET_1" = "Zorg ervoor dat je telefoon een mobiel signaal heeft om je sms of oproep te ontvangen";
 
 /* Second bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_2" = "Controleer of je een telefoonoproep kunt ontvangen op dat telefoonnummer";
+"ONBOARDING_VERIFICATION_HELP_BULLET_2" = "Bevestig dat je een oproep op het telefoonnummer kunt ontvangen";
 
 /* Third bullet point for the explainer sheet for registering via verification code. */
 "ONBOARDING_VERIFICATION_HELP_BULLET_3" = "Controleer of je het telefoonnummer juist hebt ingevuld";
@@ -5159,7 +5159,7 @@
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "Kan betaling niet verzenden";
 
 /* The label for the 'send request' button in alerts and action sheets. */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_BUTTON" = "Stuur verzoek";
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_BUTTON" = "Verzoek sturen";
 
 /* Message for error alert indicating that a given user cannot receive payments because they have not enabled payments. */
 "PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "Wil je deze persoon een verzoek sturen om Betalingen te activeren?";
@@ -5549,7 +5549,7 @@
 "PRIVACY_VERIFY_BUTTON" = "Als geverifieerd markeren";
 
 /* Button to add a new viewer on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Personen toevoegen";
+"PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Persoon toevoegen";
 
 /* Button to delete the story on the 'private story settings' view */
 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Aangepast verhaal verwijderen";
@@ -5885,7 +5885,7 @@
 "REGISTRATION_NETWORK_ERROR_BODY" = "Controleer de internetverbinding van je telefoon en probeer het opnieuw om door te gaan.";
 
 /* A network error occurred during registration, and an error is shown to the user. This is the title on that error sheet. */
-"REGISTRATION_NETWORK_ERROR_TITLE" = "Check je netwerkverbinding";
+"REGISTRATION_NETWORK_ERROR_TITLE" = "Controleer je netwerkverbinding";
 
 /* During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions. */
 "REGISTRATION_PHONE_NUMBER_SUBTITLE" = "Voer je telefoonnummer in om te beginnen";
@@ -6392,7 +6392,7 @@
 "SETTINGS_APPEARANCE_APP_ICON" = "App-pictogram";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Geef indien beschikbaar profielfoto's uit je telefooncontacten weer";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Geef indien beschikbaar de profielfoto's uit de contactenlijst van je telefoon weer";
 
 /* Title for switch to toggle preference between contact and profile avatars */
 "SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Profielfoto's uit telefooncontacten gebruiken";
@@ -6878,16 +6878,16 @@
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_TOUCHID" = "Gebruik Touch ID";
 
 /* Explanation of 'payments lock' with Face ID in the 'payments lock prompt' view shown after payments activation. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_FACEID" = "Help voorkomen dat iemand met je telefoon toegang heeft tot jouw geld door Face ID aan te zetten. In instellingen kun je deze optie uitzetten.";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_FACEID" = "Help voorkomen dat iemand met jouw telefoon toegang heeft tot je geld door Face ID aan te zetten. In instellingen kun je deze optie uitschakelen.";
 
 /* Explanation of 'payments lock' with Optic ID in the 'payments lock prompt' view shown after payments activation. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_OPTICID" = "Help voorkomen dat iemand met je telefoon toegang heeft tot jouw geld door Optic ID aan te zetten. In instellingen kun je deze optie uitzetten.";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_OPTICID" = "Help voorkomen dat iemand met jouw telefoon toegang heeft tot je geld door Optic ID aan te zetten. In instellingen kun je deze optie uitschakelen.";
 
 /* Explanation of 'payments lock' with passcode in the 'payments lock prompt' view shown after payments activation. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_PASSCODE" = "Help voorkomen dat iemand met jouw telefoon toegang heeft tot jouw geld door je toegangscode te gebruiken. In instellingen kun je deze optie uitzetten.";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_PASSCODE" = "Help voorkomen dat iemand met jouw telefoon toegang heeft tot je geld door je toegangscode te gebruiken. In instellingen kun je deze optie uitschakelen.";
 
 /* Explanation of 'payments lock' with Touch ID in the 'payments lock prompt' view shown after payments activation. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_TOUCHID" = "Help voorkomen dat iemand met je telefoon toegang heeft tot jouw geld door Touch ID aan te zetten. In instellingen kun je deze optie uitzetten.";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_TOUCHID" = "Help voorkomen dat iemand met jouw telefoon toegang heeft tot je geld door Touch ID aan te zetten. In instellingen kun je deze optie uitschakelen.";
 
 /* Button for payments outdated sheet. */
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "Signal bijwerken";
@@ -7250,7 +7250,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Van iedereen toestaan";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Sta toe dat je berichten met een verzegelde afzender ontvangt welke afkomstig zijn van personen naar wie je nog nooit een bericht hebt verzonden en ook nooit mee in dezelfde groepschat zat.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Schakel verzegelde afzender in voor inkomende berichten van personen met wie je nog nooit eerder contact hebt gehad of je profiel hebt gedeeld.";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "Versie";
@@ -7493,7 +7493,7 @@
 "STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Verhalen uitzetten";
 
 /* Footer for the 'turn on' section of the stories settings */
-"STORIES_SETTINGS_TURN_ON_FOOTER" = "Deel en bekijk verhalen van anderen. Verhalen verdwijnen automatisch na 24 uur.";
+"STORIES_SETTINGS_TURN_ON_FOOTER" = "Deel verhalen en bekijk verhalen van anderen. Verhalen verdwijnen automatisch na 24 uur.";
 
 /* Button to turn on stories on the story privacy settings view */
 "STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Verhalen aanzetten";
@@ -7547,7 +7547,7 @@
 "STORY_COMPOSER_LINK_PREVIEW_ERROR" = "Link laadt niet. Controleer je internetverbinding en probeer het opnieuw.";
 
 /* Displayed in text story composer when user is about to attach a link with preview */
-"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "Een link delen met de personen die je verhaal bekijken";
+"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "Een link delen met de kijkers van je verhaal";
 
 /* Placeholder text in text stories compose UI */
 "STORY_COMPOSER_TAP_ADD_TEXT" = "Tik om tekst toe te voegen";
@@ -7787,10 +7787,10 @@
 "SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "Niet nu";
 
 /* Update Subscription? Action sheet message, embeds {{Price}} */
-"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Het nieuw ingestelde bedrag (%1$@) zal vandaag al worden afgeschreven. Datzelfde bedrag zal dan steeds precies een maand later opnieuw worden afgeschreven.";
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Het nieuw ingestelde bedrag (%1$@) zal vandaag worden afgeschreven. Je donatie wordt maandelijks automatisch verlengd en opnieuw afgeschreven.";
 
 /* Update Subscription? Action sheet title */
-"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "Maandelijkse donatie bijwerken?";
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "Maandelijkse donatie wijzigen?";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Uit";
@@ -7871,7 +7871,7 @@
 "THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Lid van %1$@ en %2$@";
 
 /* Shown after tapping a 'Learn More' button when multiple conversations for the same person have been merged into one. The first parameter is a phone number (eg +1 650-555-0100) and the second parameter is a name (eg John). */
-"THREAD_MERGE_LEARN_MORE" = "Na het uitwisselen van berichten met %1$@ weet je dat dit nummer van %2$@ is. Dit nummer is privé.\n\nJe chatgeschiedenis voor beide chats is hier samengevoegd.";
+"THREAD_MERGE_LEARN_MORE" = "Na het uitwisselen van berichten met %1$@ weet je dat dit nummer van %2$@ is. Hun telefoonnummer is privé.\n\nJe chatgeschiedenis voor beide chats is hier samengevoegd.";
 
 /* A system event shown in a conversation when multiple conversations for the same person have been merged into one. The parameter is replaced with the contact's name (eg John Doe). */
 "THREAD_MERGE_NO_PHONE_NUMBER" = "Je chatgeschiedenis met %1$@ en een andere chat met deze persoon zijn samengevoegd.";
@@ -7982,7 +7982,7 @@
 "UNLINK_ACTION" = "Ontkoppelen";
 
 /* Alert message to confirm unlinking a device */
-"UNLINK_CONFIRMATION_ALERT_BODY" = "Dit apparaat zal niet langer in staat zijn berichten te sturen en te ontvangen als het is ontkoppeld.";
+"UNLINK_CONFIRMATION_ALERT_BODY" = "Door dit apparaat te ontkoppelen kan het niet langer berichten versturen en ontvangen.";
 
 /* Alert title for confirming device deletion */
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "‘%1$@’ ontkoppelen?";
@@ -8294,16 +8294,16 @@
 "WALLPAPER_SETTINGS_FAILED_TO_RESET" = "Niet alle achtergronden zijn verwijderd. Probeer het later opnieuw of neem contact op met ondersteuning als het probleem blijft bestaan.";
 
 /* Label for 'reset all chat colors' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_ALL_CHAT_COLORS" = "Alle kleurinstellingen verwijderen";
+"WALLPAPER_SETTINGS_RESET_ALL_CHAT_COLORS" = "Alle chatkleuren resetten";
 
 /* Label for 'reset all wallpapers' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "Alle achtergronden verwijderen";
+"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "Alle achtergronden resetten";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Wil je deze kleurwijziging toepassen op alle chats?";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Wil je alleen de standaard chatkleur resetten of wil je de chatkleuren van al je chats resetten?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Chatkleuren verwijderen";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Chatkleuren resetten";
 
 /* Reset conversation chat color action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "Chatkleur verwijderen";
@@ -8312,25 +8312,25 @@
 "WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER" = "Achtergrond verwijderen";
 
 /* Label for 'reset default chat color' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "Standaardkleur verwijderen";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "Standaardkleur resetten";
 
 /* Reset global chat colors action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "Standaardkleur verwijderen";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "Chatkleuren resetten";
 
 /* Label for 'reset default wallpaper' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "Standaardachtergrond verwijderen";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "Standaardachtergrond resetten";
 
 /* Reset wallpapers action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_GLOBAL_WALLPAPER" = "Achtergronden verwijderen";
+"WALLPAPER_SETTINGS_RESET_GLOBAL_WALLPAPER" = "Achtergronden resetten";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_MESSAGE" = "Wil je deze achtergrondwijziging toepassen op alle chats?";
+"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_MESSAGE" = "Wil je alleen de standaardachtergrond resetten of wil je alle achtergronden van alle chats resetten?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "Standaardachtergrond verwijderen";
+"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "Achtergrond resetten";
 
 /* Set chat color action in color and wallpaper settings view. */
-"WALLPAPER_SETTINGS_SET_CHAT_COLOR" = "Chatkleur kiezen";
+"WALLPAPER_SETTINGS_SET_CHAT_COLOR" = "Chatkleur";
 
 /* Set wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_SET_WALLPAPER" = "Chatachtergrond kiezen";

@@ -125,9 +125,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Deze zelfgekozen kleur wordt nog in %1$d chat gebruikt. Wil je dit verwijderen?</string>
+			<string>Deze aangepaste kleur wordt nog in %1$d chat gebruikt. Wil je het voor alle chats verwijderen?</string>
 			<key>other</key>
-			<string>Deze zelfgekozen kleur wordt nog in %1$d chats gebruikt. Wil je het voor alle chats verwijderen?</string>
+			<string>Deze aangepaste kleur wordt nog in %1$d chats gebruikt. Wil je het voor alle chats verwijderen?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -248,7 +248,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Nog %1$d andere gemeenschappelijke groep</string>
+			<string>%1$d gemeenschappelijke groep</string>
 			<key>other</key>
 			<string>%1$d gemeenschappelijke groepen</string>
 		</dict>

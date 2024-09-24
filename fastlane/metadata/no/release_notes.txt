@@ -1,1 +1,1 @@
-• We added support for several new features in iOS 18, including contact privacy permissions and app icon customization. Now when you configure your iOS Home Screen to use dark or tinted icons, Signal will adapt accordingly. Go completely monochrome or pick a scheme that matches your colorful imagination.
+• Vi har gjort det mulig å tilpasse app-ikonet og styre tilgangen til kontaktlisten på enheten, i tråd med de nye oppdateringene i iOS 18.

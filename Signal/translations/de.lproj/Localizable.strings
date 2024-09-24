@@ -659,7 +659,7 @@
 "BUTTON_SELECT" = "Auswählen";
 
 /* Label for the 'set' button. */
-"BUTTON_SET" = "Festlegen";
+"BUTTON_SET" = "Speichern";
 
 /* Label for the 'share' button. */
 "BUTTON_SHARE" = "Teilen";
@@ -3920,7 +3920,7 @@
 "LINK_NEW_DEVICE_SUBTITLE" = "Scanne den QR-Code zum Koppeln eines neuen Geräts.";
 
 /* Navigation title when scanning QR code to add new device. */
-"LINK_NEW_DEVICE_TITLE" = "Ein neues Gerät koppeln";
+"LINK_NEW_DEVICE_TITLE" = "Neues Gerät koppeln";
 
 /* Label for link previews with an unknown host. */
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "Link-Vorschau";
