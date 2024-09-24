@@ -1,14 +1,20 @@
 SCHEME=Signal
+PODS=Pods
+BACKUP_TESTS=SignalServiceKit/tests/MessageBackup/Signal-Message-Backup-Tests
 
 .PHONY: dependencies
-dependencies: pod-setup fetch-ringrtc
+dependencies: pod-setup backup-tests-setup fetch-ringrtc
 
 .PHONY: pod-setup
 pod-setup:
-	git submodule foreach --recursive "git clean -xfd"
-	git submodule foreach --recursive "git reset --hard"
+	git -C ${PODS} clean -xfd
+	git -C ${PODS} reset --hard
 	./Scripts/setup_private_pods
-	git submodule update --init --progress
+	git submodule update --init --progress ${PODS}
+
+.PHONY: backup-tests-setup
+backup-tests-setup:
+	git submodule update --init --progress ${BACKUP_TESTS}
 
 .PHONY: fetch-ringrtc
 fetch-ringrtc:
@@ -17,7 +23,3 @@ fetch-ringrtc:
 .PHONY: test
 test: dependencies
 	bundle exec fastlane scan --scheme ${SCHEME}
-
-.PHONY: release
-release:
-	@echo This command has been deprecated by Xcode Cloud.
