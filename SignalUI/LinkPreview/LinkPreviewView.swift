@@ -139,6 +139,8 @@ public class LinkPreviewView: ManualStackViewWithLayer {
             return LinkPreviewViewAdapterDraft(state: state)
         } else if state.isGroupInviteLink {
             return LinkPreviewViewAdapterGroupLink(state: state)
+        } else if state.isCallLink {
+            return LinkPreviewViewAdapterCallLink(state: state)
         } else {
             if state.hasLoadedImage {
                 if Self.sentIsHero(state: state) {
@@ -907,6 +909,143 @@ private class LinkPreviewViewAdapterGroupLink: LinkPreviewViewAdapter {
             maxWidth: maxWidth
         )
         return rootStackMeasurement.measuredSize
+    }
+}
+
+// MARK: -
+
+private class LinkPreviewViewAdapterCallLink: LinkPreviewViewAdapter {
+
+    let state: LinkPreviewState
+
+    init(state: LinkPreviewState) {
+        self.state = state
+    }
+
+    var rootStackConfig: ManualStackView.Config {
+        ManualStackView.Config(
+            axis: .horizontal,
+            alignment: .fill,
+            spacing: LinkPreviewView.sentNonHeroHSpacing,
+            layoutMargins: LinkPreviewView.sentNonHeroLayoutMargins
+        )
+    }
+
+    var textStackConfig: ManualStackView.Config {
+        return ManualStackView.Config(
+            axis: .vertical,
+            alignment: .leading,
+            spacing: LinkPreviewView.sentVSpacing,
+            layoutMargins: .zero
+        )
+    }
+
+    func configureForRendering(
+        linkPreviewView: LinkPreviewView,
+        hasAsymmetricalRounding: Bool,
+        cellMeasurement: CVCellMeasurement
+    ) {
+
+        linkPreviewView.backgroundColor = Theme.secondaryBackgroundColor
+
+        var rootStackSubviews = [UIView]()
+
+        let iconView = CallLinkComponentFactory.callLinkIconView()
+        iconView.contentMode = .scaleAspectFill
+        iconView.clipsToBounds = true
+        rootStackSubviews.append(iconView)
+
+        let textStack = linkPreviewView.textStack
+        var textStackSubviews = [UIView]()
+        if let titleLabel = sentTitleLabel(state: state) {
+            textStackSubviews.append(titleLabel)
+        }
+        if let descriptionLabel = sentDescriptionLabel(state: state) {
+            textStackSubviews.append(descriptionLabel)
+        }
+        textStack.configure(
+            config: textStackConfig,
+            cellMeasurement: cellMeasurement,
+            measurementKey: Self.measurementKey_textStack,
+            subviews: textStackSubviews
+        )
+        rootStackSubviews.append(textStack)
+
+        linkPreviewView.configure(
+            config: rootStackConfig,
+            cellMeasurement: cellMeasurement,
+            measurementKey: Self.measurementKey_rootStack,
+            subviews: rootStackSubviews
+        )
+    }
+
+    func measure(
+        maxWidth: CGFloat,
+        measurementBuilder: CVCellMeasurement.Builder,
+        state: LinkPreviewState
+    ) -> CGSize {
+
+        var maxLabelWidth = (maxWidth - (
+            textStackConfig.layoutMargins.totalWidth + rootStackConfig.layoutMargins.totalWidth
+        ))
+
+        var rootStackSubviewInfos = [ManualStackSubviewInfo]()
+
+        let imageSize = LinkPreviewView.sentNonHeroImageSize
+        rootStackSubviewInfos.append(CGSize.square(imageSize).asManualSubviewInfo(hasFixedSize: true))
+        maxLabelWidth -= imageSize + rootStackConfig.spacing
+
+        maxLabelWidth = max(0, maxLabelWidth)
+
+        var textStackSubviewInfos = [ManualStackSubviewInfo]()
+        if let labelConfig = sentTitleLabelConfig(state: state) {
+            let labelSize = CVText.measureLabel(config: labelConfig, maxWidth: maxLabelWidth)
+            textStackSubviewInfos.append(labelSize.asManualSubviewInfo)
+        }
+        if let labelConfig = sentDescriptionLabelConfig(state: state) {
+            let labelSize = CVText.measureLabel(config: labelConfig, maxWidth: maxLabelWidth)
+            textStackSubviewInfos.append(labelSize.asManualSubviewInfo)
+        }
+
+        let textStackMeasurement = ManualStackView.measure(
+            config: textStackConfig,
+            measurementBuilder: measurementBuilder,
+            measurementKey: Self.measurementKey_textStack,
+            subviewInfos: textStackSubviewInfos
+        )
+        rootStackSubviewInfos.append(textStackMeasurement.measuredSize.asManualSubviewInfo)
+
+        let rootStackMeasurement = ManualStackView.measure(
+            config: rootStackConfig,
+            measurementBuilder: measurementBuilder,
+            measurementKey: Self.measurementKey_rootStack,
+            subviewInfos: rootStackSubviewInfos,
+            maxWidth: maxWidth
+        )
+        return rootStackMeasurement.measuredSize
+    }
+}
+
+public class CallLinkComponentFactory {
+    public static func callLinkIconView() -> UIView {
+        let circleView = CircleView()
+        circleView.backgroundColor = UIColor(rgbHex: Constants.iconBackgroundColor)
+        circleView.autoSetDimensions(to: CGSize(width: Constants.circleViewDimension, height: Constants.circleViewDimension))
+
+        let iconImageView = UIImageView(image: UIImage(named: "video-compact"))
+        iconImageView.tintColor = UIColor(rgbHex: Constants.iconTintColor)
+        iconImageView.autoSetDimensions(to: CGSize(width: Constants.iconDimension, height: Constants.iconDimension))
+        circleView.addSubview(iconImageView)
+        iconImageView.autoCenterInSuperview()
+
+        return circleView
+    }
+
+    private enum Constants {
+        static let circleViewDimension: CGFloat = 64
+        static let iconDimension: CGFloat = 36
+        static let iconBackgroundColor: UInt32 = 0xE4E4FD
+        static let iconTintColor: UInt32 = 0x5151F6
     }
 }
 

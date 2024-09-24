@@ -476,6 +476,13 @@ public enum CallStrings {
             comment: "Shown in the header when the user hasn't provided a custom name for a call."
         )
     }
+
+    public static var callLinkDescription: String {
+        return OWSLocalizedString(
+            "CALL_LINK_LINK_PREVIEW_DESCRIPTION",
+            comment: "Shown in a message bubble when you send a call link in a Signal chat"
+        )
+    }
 }
 
 // MARK: -

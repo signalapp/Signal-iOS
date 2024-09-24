@@ -1574,6 +1574,16 @@ fileprivate extension CVComponentState.Builder {
                     state: state
                 )
             }
+        } else if let _ = CallLink(url: url) {
+            let state = LinkPreviewCallLink(
+                linkPreview: linkPreview,
+                conversationStyle: conversationStyle
+            )
+            self.linkPreview = LinkPreview(
+                linkPreview: linkPreview,
+                linkPreviewAttachment: nil,
+                state: state
+            )
         } else {
             let linkPreviewAttachment = { () -> TSResource? in
                 guard

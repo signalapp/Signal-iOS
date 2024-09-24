@@ -2670,6 +2670,7 @@
 		E18C4A7729EF2ECC007534D4 /* SignalAccountTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E18C4A7629EF2ECC007534D4 /* SignalAccountTest.swift */; };
 		E1A090382A4B909B00F2BE8B /* RecipientHidingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A090372A4B909B00F2BE8B /* RecipientHidingManager.swift */; };
 		E1C2A54B2A8FCB0D00AEC4DA /* DeleteSystemContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1C2A54A2A8FCB0D00AEC4DA /* DeleteSystemContactViewController.swift */; };
+		E1CFAAA32C9DD2B1003145C3 /* LinkPreviewCallLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1CFAAA22C9DD2B1003145C3 /* LinkPreviewCallLink.swift */; };
 		E1D827D52BD9B6E50022C1AF /* ReactionsBurstView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1D827D42BD9B6E50022C1AF /* ReactionsBurstView.swift */; };
 		E1D827D72BD9DA4D0022C1AF /* ReactionsSink.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1D827D62BD9DA4D0022C1AF /* ReactionsSink.swift */; };
 		E1D827DA2BDC1F7B0022C1AF /* ReactionBurstManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1D827D82BDC1F6B0022C1AF /* ReactionBurstManagerTests.swift */; };
@@ -6301,6 +6302,7 @@
 		E1A090372A4B909B00F2BE8B /* RecipientHidingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientHidingManager.swift; sourceTree = "<group>"; };
 		E1A0AD8B16E13FDD0071E604 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		E1C2A54A2A8FCB0D00AEC4DA /* DeleteSystemContactViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteSystemContactViewController.swift; sourceTree = "<group>"; };
+		E1CFAAA22C9DD2B1003145C3 /* LinkPreviewCallLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewCallLink.swift; sourceTree = "<group>"; };
 		E1D827D42BD9B6E50022C1AF /* ReactionsBurstView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactionsBurstView.swift; sourceTree = "<group>"; };
 		E1D827D62BD9DA4D0022C1AF /* ReactionsSink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactionsSink.swift; sourceTree = "<group>"; };
 		E1D827D82BDC1F6B0022C1AF /* ReactionBurstManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactionBurstManagerTests.swift; sourceTree = "<group>"; };
@@ -7436,6 +7438,7 @@
 				348815C5255346A500D4F4C4 /* CVNode.swift */,
 				D9170EE9290C57BF00CD813A /* CVViewState+Banners.swift */,
 				341D392825472F3B00996E7B /* CVViewState.swift */,
+				E1CFAAA22C9DD2B1003145C3 /* LinkPreviewCallLink.swift */,
 				34A95517271B510400B05242 /* LinkPreviewGroupLink.swift */,
 				346EAA13250199A300E8AB6F /* MemberRequestView.swift */,
 				4CB5F26820F7D060004D1B42 /* MessageActions.swift */,
@@ -16122,6 +16125,7 @@
 				505C2ED42997015800C23FB2 /* LinkDeviceViewController.swift in Sources */,
 				3437F63A2512835300AC1767 /* LinkedDevicesTableViewController.swift in Sources */,
 				76C87FE128BE8E2400BD8709 /* LinkPreviewAttachmentViewController.swift in Sources */,
+				E1CFAAA32C9DD2B1003145C3 /* LinkPreviewCallLink.swift in Sources */,
 				507B69122C5044F800F1C6D7 /* LinkPreviewGroupLink.swift in Sources */,
 				4542DF54208D40AC007B4E76 /* LoadingViewController.swift in Sources */,
 				4C25768A23AD510800E0398D /* LoadMoreMessagesView.swift in Sources */,

@@ -376,16 +376,7 @@ private class _CreateCallLinkViewController: OWSTableViewController2 {
 
 private class CallLinkCardView: UIView {
     private lazy var circleView: UIView = {
-        let circleView = CircleView()
-        circleView.backgroundColor = UIColor(rgbHex: Constants.iconBackgroundColor)
-        circleView.autoSetDimensions(to: CGSize(width: Constants.circleViewDimension, height: Constants.circleViewDimension))
-
-        let iconImageView = UIImageView(image: UIImage(named: "video-compact"))
-        iconImageView.tintColor = UIColor(rgbHex: Constants.iconTintColor)
-        iconImageView.autoSetDimensions(to: CGSize(width: Constants.iconDimension, height: Constants.iconDimension))
-        circleView.addSubview(iconImageView)
-        iconImageView.autoCenterInSuperview()
-        return circleView
+        return SignalUI.CallLinkComponentFactory.callLinkIconView()
     }()
 
     private lazy var textStack: UIStackView = {
@@ -502,9 +493,5 @@ private class CallLinkCardView: UIView {
         static let spacingTextToButton: CGFloat = 16
         static let spacingIconToText: CGFloat = 12
         static let textStackSpacing: CGFloat = 2
-        static let circleViewDimension: CGFloat = 64
-        static let iconDimension: CGFloat = 36
-        static let iconBackgroundColor: UInt32 = 0xE4E4FD
-        static let iconTintColor: UInt32 = 0x5151F6
     }
 }

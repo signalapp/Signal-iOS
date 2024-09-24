@@ -310,10 +310,7 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
         let callLinkState = try await CallLinkFetcherImpl().readCallLink(callLink.rootKey, authCredential: authCredential)
         return (
             callLinkState.localizedName,
-            OWSLocalizedString(
-                "CALL_LINK_LINK_PREVIEW_DESCRIPTION",
-                comment: "Shown in a message bubble when you send a call link in a Signal chat"
-            )
+            CallStrings.callLinkDescription
         )
     }
 }
