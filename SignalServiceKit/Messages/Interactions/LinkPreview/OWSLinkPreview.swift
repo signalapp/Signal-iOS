@@ -21,21 +21,30 @@ public enum LinkPreviewError: Int, Error {
 // This contains the info for a link preview "draft".
 public class OWSLinkPreviewDraft: NSObject {
 
-    public var url: URL
+    public let url: URL
     public var urlString: String {
         return url.absoluteString
     }
-    public var title: String?
-    public var imageData: Data?
-    public var imageMimeType: String?
-    public var previewDescription: String?
-    public var date: Date?
+    public let title: String?
+    public let imageData: Data?
+    public let imageMimeType: String?
+    public let previewDescription: String?
+    public let date: Date?
 
-    public init(url: URL, title: String?, imageData: Data? = nil, imageMimeType: String? = nil) {
+    public init(
+        url: URL,
+        title: String?,
+        imageData: Data? = nil,
+        imageMimeType: String? = nil,
+        previewDescription: String? = nil,
+        date: Date? = nil
+    ) {
         self.url = url
         self.title = title
         self.imageData = imageData
         self.imageMimeType = imageMimeType
+        self.previewDescription = previewDescription
+        self.date = date
     }
 
     public var displayDomain: String? {

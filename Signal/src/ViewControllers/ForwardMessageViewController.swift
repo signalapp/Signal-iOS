@@ -787,13 +787,14 @@ public struct ForwardMessageItem {
         {
             linkPreviewImage = image
         }
-        let draft = OWSLinkPreviewDraft(url: url,
-                                        title: linkPreview.title,
-                                        imageData: linkPreviewImage?.imageData,
-                                        imageMimeType: linkPreviewImage?.mimetype)
-        draft.previewDescription = linkPreview.previewDescription
-        draft.date = linkPreview.date
-        return draft
+        return OWSLinkPreviewDraft(
+            url: url,
+            title: linkPreview.title,
+            imageData: linkPreviewImage?.imageData,
+            imageMimeType: linkPreviewImage?.mimetype,
+            previewDescription: linkPreview.previewDescription,
+            date: linkPreview.date
+        )
     }
 }
 

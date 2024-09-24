@@ -52,50 +52,56 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
             throw LinkPreviewError.featureDisabled
         }
 
-        let linkPreviewDraft: OWSLinkPreviewDraft
+        let linkPreviewDraft: OWSLinkPreviewDraft?
         if StickerPackInfo.isStickerPackShare(url) {
             linkPreviewDraft = try await self.linkPreviewDraft(forStickerShare: url)
         } else if GroupManager.isPossibleGroupInviteLink(url) {
             linkPreviewDraft = try await self.linkPreviewDraft(forGroupInviteLink: url)
         } else if let callLink = CallLink(url: url) {
-            let (linkName, linkDescription) = try await self.linkNameAndDescription(forCallLink: callLink)
+            let linkName = try await self.fetchName(forCallLink: callLink)
             linkPreviewDraft = OWSLinkPreviewDraft(url: url, title: linkName)
-            linkPreviewDraft.previewDescription = linkDescription
         } else {
             linkPreviewDraft = try await self.fetchLinkPreview(forGenericUrl: url)
         }
-        guard linkPreviewDraft.isValid() else {
+        guard let linkPreviewDraft else {
             throw LinkPreviewError.noPreview
         }
         return linkPreviewDraft
     }
 
-    private func fetchLinkPreview(forGenericUrl url: URL) async throws -> OWSLinkPreviewDraft {
+    private func fetchLinkPreview(forGenericUrl url: URL) async throws -> OWSLinkPreviewDraft? {
         let (respondingUrl, rawHtml) = try await self.fetchStringResource(from: url)
 
         let content = HTMLMetadata.construct(parsing: rawHtml)
         let rawTitle = content.ogTitle ?? content.titleTag
-        let normalizedTitle = rawTitle.map { LinkPreviewHelper.normalizeString($0, maxLines: 2) }
-        let draft = OWSLinkPreviewDraft(url: url, title: normalizedTitle)
-
-        let rawDescription = content.ogDescription ?? content.description
-        if rawDescription != rawTitle, let description = rawDescription {
-            draft.previewDescription = LinkPreviewHelper.normalizeString(description, maxLines: 3)
+        let normalizedTitle = rawTitle.map { LinkPreviewHelper.normalizeString($0, maxLines: 2) }?.nilIfEmpty
+        var rawDescription = content.ogDescription ?? content.description
+        if rawDescription == rawTitle {
+            rawDescription = nil
         }
+        let normalizedDescription = rawDescription.map { LinkPreviewHelper.normalizeString($0, maxLines: 3) }
 
-        draft.date = content.dateForLinkPreview
-
+        var previewThumbnail: PreviewThumbnail?
         if
             let imageUrlString = content.ogImageUrlString ?? content.faviconUrlString,
             let imageUrl = URL(string: imageUrlString, relativeTo: respondingUrl),
             let imageData = try? await self.fetchImageResource(from: imageUrl)
         {
-            let previewThumbnail = await Self.previewThumbnail(srcImageData: imageData, srcMimeType: nil)
-            draft.imageData = previewThumbnail?.imageData
-            draft.imageMimeType = previewThumbnail?.mimetype
+            previewThumbnail = await Self.previewThumbnail(srcImageData: imageData, srcMimeType: nil)
         }
 
-        return draft
+        guard normalizedTitle != nil || previewThumbnail != nil else {
+            return nil
+        }
+
+        return OWSLinkPreviewDraft(
+            url: url,
+            title: normalizedTitle,
+            imageData: previewThumbnail?.imageData,
+            imageMimeType: previewThumbnail?.mimetype,
+            previewDescription: normalizedDescription,
+            date: content.dateForLinkPreview
+        )
     }
 
     private func buildOWSURLSession() -> OWSURLSessionProtocol {
@@ -247,19 +253,25 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
 
     // MARK: - Stickers
 
-    private func linkPreviewDraft(forStickerShare url: URL) async throws -> OWSLinkPreviewDraft {
+    private func linkPreviewDraft(forStickerShare url: URL) async throws -> OWSLinkPreviewDraft? {
         guard let stickerPackInfo = StickerPackInfo.parseStickerPackShare(url) else {
             Logger.error("Could not parse url.")
             throw LinkPreviewError.invalidPreview
         }
         // tryToDownloadStickerPack will use locally saved data if possible...
         let stickerPack = try await StickerManager.tryToDownloadStickerPack(stickerPackInfo: stickerPackInfo).awaitable()
+        let title = stickerPack.title?.filterForDisplay.nilIfEmpty
         let coverUrl = try await StickerManager.tryToDownloadSticker(stickerPack: stickerPack, stickerInfo: stickerPack.coverInfo).awaitable()
         let coverData = try Data(contentsOf: coverUrl)
         let previewThumbnail = await Self.previewThumbnail(srcImageData: coverData, srcMimeType: MimeType.imageWebp.rawValue)
+
+        guard title != nil || previewThumbnail != nil else {
+            return nil
+        }
+
         return OWSLinkPreviewDraft(
             url: url,
-            title: stickerPack.title?.filterForDisplay,
+            title: title,
             imageData: previewThumbnail?.imageData,
             imageMimeType: previewThumbnail?.mimetype
         )
@@ -267,7 +279,7 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
 
     // MARK: - Group Invite Links
 
-    private func linkPreviewDraft(forGroupInviteLink url: URL) async throws -> OWSLinkPreviewDraft {
+    private func linkPreviewDraft(forGroupInviteLink url: URL) async throws -> OWSLinkPreviewDraft? {
         guard let groupInviteLinkInfo = GroupInviteLinkInfo.parseFrom(url) else {
             Logger.error("Could not parse URL.")
             throw LinkPreviewError.invalidPreview
@@ -294,9 +306,15 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
             }
             return await Self.previewThumbnail(srcImageData: avatarData, srcMimeType: nil)
         }()
+
+        let title = groupInviteLinkPreview.title.nilIfEmpty
+        guard title != nil || previewThumbnail != nil else {
+            return nil
+        }
+
         return OWSLinkPreviewDraft(
             url: url,
-            title: groupInviteLinkPreview.title,
+            title: title,
             imageData: previewThumbnail?.imageData,
             imageMimeType: previewThumbnail?.mimetype
         )
@@ -304,14 +322,11 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
 
     // MARK: - Call Links
 
-    private func linkNameAndDescription(forCallLink callLink: CallLink) async throws -> (String, String) {
+    private func fetchName(forCallLink callLink: CallLink) async throws -> String? {
         let localIdentifiers = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!
         let authCredential = try await authCredentialManager.fetchCallLinkAuthCredential(localIdentifiers: localIdentifiers)
         let callLinkState = try await CallLinkFetcherImpl().readCallLink(callLink.rootKey, authCredential: authCredential)
-        return (
-            callLinkState.localizedName,
-            CallStrings.callLinkDescription
-        )
+        return callLinkState.name
     }
 }
 
@@ -320,17 +335,5 @@ fileprivate extension HTMLMetadata {
         [ogPublishDateString, articlePublishDateString, ogModifiedDateString, articleModifiedDateString]
             .first(where: {$0 != nil})?
             .flatMap { Date.ows_parseFromISO8601String($0) }
-    }
-}
-
-extension OWSLinkPreviewDraft {
-
-    fileprivate func isValid() -> Bool {
-        var hasTitle = false
-        if let titleValue = title {
-            hasTitle = !titleValue.isEmpty
-        }
-        let hasImage = imageData != nil && imageMimeType != nil
-        return hasTitle || hasImage
     }
 }
