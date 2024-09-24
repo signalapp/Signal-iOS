@@ -11,24 +11,6 @@ import SignalServiceKit
 
 private typealias ApprovalRequest = CallLinkApprovalRequest
 
-// MARK: ApprovalRequest
-
-struct CallLinkApprovalRequest: Hashable, Identifiable {
-    /// View ID. Shouldn't be tied to the content so that the
-    /// content can change without being seen as a new view.
-    var id: UUID
-    var aci: Aci
-    var address: SignalServiceAddress
-    var name: String
-
-    init(aci: Aci, name: String) {
-        self.id = aci.rawUUID
-        self.aci = aci
-        self.address = .init(aci)
-        self.name = name
-    }
-}
-
 // MARK: - ApprovalRequestView
 
 private struct ApprovalRequestView: View {
@@ -175,12 +157,9 @@ private struct ApprovalRequestView: View {
 struct ApprovalRequestStack: View {
     typealias ApprovalRequest = CallLinkApprovalRequest
 
-    @ObservedObject var viewModel: ViewModel
+    @ObservedObject var viewModel: CallLinkApprovalViewModel
 
-    var openProfileDetails: (ApprovalRequest) -> Void
-    var didApprove: (ApprovalRequest) -> Void
-    var didDeny: (ApprovalRequest) -> Void
-    var didTapMore: () -> Void
+    var didTapMore: ([ApprovalRequest]) -> Void
     var didChangeHeight: (CGFloat) -> Void
 
     private var cappedRequests: [ApprovalRequest] {
@@ -205,17 +184,20 @@ struct ApprovalRequestStack: View {
                 if self.viewModel.requests.count <= 2 {
                     .single(request)
                 } else {
-                    .many(topRequest: request,
-                          amountMore: self.viewModel.requests.count - 1,
-                          didTapMore: self.didTapMore
+                    .many(
+                        topRequest: request,
+                        amountMore: self.viewModel.requests.count - 1,
+                        didTapMore: {
+                            self.didTapMore(self.viewModel.requests)
+                        }
                     )
                 }
 
                 ApprovalRequestView(
                     requests: requests,
-                    openProfileDetails: { self.openProfileDetails(request) },
-                    didApprove: { self.didApprove(request) },
-                    didDeny: { self.didDeny(request) }
+                    openProfileDetails: { self.viewModel.performRequestAction.send((.viewDetails, request)) },
+                    didApprove: { self.viewModel.performRequestAction.send((.approve, request)) },
+                    didDeny: { self.viewModel.performRequestAction.send((.deny, request)) }
                 )
                 .zIndex({
                     if isTopOfStack {
@@ -246,61 +228,6 @@ struct ApprovalRequestStack: View {
             }
         }
     }
-
-    // MARK: View Model
-
-    @MainActor
-    class ViewModel: ObservableObject {
-        @Published var requests: [ApprovalRequest] = []
-
-        struct Deps {
-            let db: any DB
-            let contactsManager: any ContactManager
-        }
-
-        private let deps = Deps(
-            db: DependenciesBridge.shared.db,
-            contactsManager: NSObject.contactsManager
-        )
-
-        func loadRequestsWithSneakyTransaction(for uuids: [UUID]) {
-            let oldRequests = self.requests
-            let acis = uuids.map(Aci.init(fromUUID:))
-
-            guard oldRequests.map(\.aci) != acis else { return }
-
-            if uuids.isEmpty {
-                // Avoid opening database transaction
-                withAnimation(.quickSpring()) {
-                    self.requests.removeAll()
-                }
-                return
-            }
-
-            let nameConfig: DisplayName.Config = .current()
-            let names = self.deps.db.read { tx in
-                self.deps.contactsManager.displayNames(
-                    for: acis.map(SignalServiceAddress.init),
-                    tx: SDSDB.shimOnlyBridge(tx)
-                )
-            }.map { displayName in
-                displayName.resolvedValue(config: nameConfig, useShortNameIfAvailable: false)
-            }
-
-            var requests = zip(acis, names).map { (aci, name) in
-                ApprovalRequest(aci: aci, name: name)
-            }
-
-            let shouldUpdateFrontCard = requests.count > 2 || (requests.count == 2 && oldRequests.count >= 2)
-            if shouldUpdateFrontCard {
-                requests[0].id = oldRequests[0].id
-            }
-
-            withAnimation(.quickSpring()) {
-                self.requests = requests
-            }
-        }
-    }
 }
 
 // MARK: Preview
@@ -320,7 +247,7 @@ private struct PreviewView: View {
         .kai,
     ]
 
-    @StateObject private var viewModel = ApprovalRequestStack.ViewModel()
+    @StateObject private var viewModel = CallLinkApprovalViewModel()
     private var requests: [ApprovalRequest] { viewModel.requests }
     @State private var height: CGFloat = 0
 
@@ -378,10 +305,7 @@ private struct PreviewView: View {
 
             ApprovalRequestStack(
                 viewModel: self.viewModel,
-                openProfileDetails: { _ in },
-                didApprove: self.didTapButton(_:),
-                didDeny: self.didTapButton(_:),
-                didTapMore: { },
+                didTapMore: { _ in },
                 didChangeHeight: { height in self.height = height }
             )
         }

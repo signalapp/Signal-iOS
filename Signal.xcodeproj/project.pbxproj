@@ -1692,6 +1692,7 @@
 		B93296692BBB3FF200B8BD39 /* ProfileName.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95BBAC12BB36025009EFB4A /* ProfileName.swift */; };
 		B93526902B0E63C400421E6A /* NewCallViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B935268F2B0E63C300421E6A /* NewCallViewController.swift */; };
 		B93955E32B06D47000F35940 /* CallsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93955E22B06D47000F35940 /* CallsListViewController.swift */; };
+		B93E4B2C2C9A3298005989B6 /* CallLinkApprovalViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93E4B2B2C9A3298005989B6 /* CallLinkApprovalViewModel.swift */; };
 		B95A765C2B76C5BB00AA7E97 /* AvatarViewPresentationContextProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95A765B2B76C5BB00AA7E97 /* AvatarViewPresentationContextProvider.swift */; };
 		B95A765E2B76E93500AA7E97 /* FindByUsernameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95A765D2B76E93500AA7E97 /* FindByUsernameViewController.swift */; };
 		B96D6D792B9F83270039EB99 /* SignalSymbols-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = B96D6D782B9F83270039EB99 /* SignalSymbols-Regular.otf */; };
@@ -1712,6 +1713,7 @@
 		B9D721762C87B8EB007EDA85 /* SwiftUI+Animations.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D721752C87B8EB007EDA85 /* SwiftUI+Animations.swift */; };
 		B9D721782C87C8AF007EDA85 /* CallLinkApprovalRequestDetailsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D721772C87C8AF007EDA85 /* CallLinkApprovalRequestDetailsSheet.swift */; };
 		B9DB91702AF46B9A0051A3FD /* BankTransferMandateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DB916F2AF46B9A0051A3FD /* BankTransferMandateViewController.swift */; };
+		B9DFDAD72C99F68A00588AD1 /* CallLinkBulkApprovalSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DFDAD62C99F68A00588AD1 /* CallLinkBulkApprovalSheet.swift */; };
 		B9EB5ABD1884C002007CBB57 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		B9F2155D2A93C9E8002DCAE0 /* StickerPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F2155C2A93C9E8002DCAE0 /* StickerPickerSheet.swift */; };
 		B9F2155F2A940596002DCAE0 /* ImageEditorStickerItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F2155E2A940596002DCAE0 /* ImageEditorStickerItem.swift */; };
@@ -5294,6 +5296,7 @@
 		B93296662BB5CF7500B8BD39 /* NicknameRecordStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NicknameRecordStore.swift; sourceTree = "<group>"; };
 		B935268F2B0E63C300421E6A /* NewCallViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCallViewController.swift; sourceTree = "<group>"; };
 		B93955E22B06D47000F35940 /* CallsListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallsListViewController.swift; sourceTree = "<group>"; };
+		B93E4B2B2C9A3298005989B6 /* CallLinkApprovalViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallLinkApprovalViewModel.swift; sourceTree = "<group>"; };
 		B95A765B2B76C5BB00AA7E97 /* AvatarViewPresentationContextProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarViewPresentationContextProvider.swift; sourceTree = "<group>"; };
 		B95A765D2B76E93500AA7E97 /* FindByUsernameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindByUsernameViewController.swift; sourceTree = "<group>"; };
 		B95BBAC12BB36025009EFB4A /* ProfileName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileName.swift; sourceTree = "<group>"; };
@@ -5315,6 +5318,7 @@
 		B9D721752C87B8EB007EDA85 /* SwiftUI+Animations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwiftUI+Animations.swift"; sourceTree = "<group>"; };
 		B9D721772C87C8AF007EDA85 /* CallLinkApprovalRequestDetailsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallLinkApprovalRequestDetailsSheet.swift; sourceTree = "<group>"; };
 		B9DB916F2AF46B9A0051A3FD /* BankTransferMandateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BankTransferMandateViewController.swift; sourceTree = "<group>"; };
+		B9DFDAD62C99F68A00588AD1 /* CallLinkBulkApprovalSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallLinkBulkApprovalSheet.swift; sourceTree = "<group>"; };
 		B9EB5ABC1884C002007CBB57 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		B9F2155C2A93C9E8002DCAE0 /* StickerPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerPickerSheet.swift; sourceTree = "<group>"; };
 		B9F2155E2A940596002DCAE0 /* ImageEditorStickerItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorStickerItem.swift; sourceTree = "<group>"; };
@@ -10551,6 +10555,8 @@
 				88D23D1B23CEC0C700B0E74B /* CallKitCallUIAdaptee.swift */,
 				B9D721772C87C8AF007EDA85 /* CallLinkApprovalRequestDetailsSheet.swift */,
 				B9C0A96C2C6D3F63001FD0AA /* CallLinkApprovalRequestView.swift */,
+				B93E4B2B2C9A3298005989B6 /* CallLinkApprovalViewModel.swift */,
+				B9DFDAD62C99F68A00588AD1 /* CallLinkBulkApprovalSheet.swift */,
 				E1E78CAE2B573BD100B6FC2D /* CallMemberCameraOffView.swift */,
 				E1E78CAC2B573B5800B6FC2D /* CallMemberChromeOverlayView.swift */,
 				E1E78CB32B575C2700B6FC2D /* CallMemberVideoView.swift */,
@@ -15785,6 +15791,8 @@
 				50EF680D2C1A353D00BEB3B5 /* CallKitIdStore.swift in Sources */,
 				B9D721782C87C8AF007EDA85 /* CallLinkApprovalRequestDetailsSheet.swift in Sources */,
 				B9C0A96D2C6D3F63001FD0AA /* CallLinkApprovalRequestView.swift in Sources */,
+				B93E4B2C2C9A3298005989B6 /* CallLinkApprovalViewModel.swift in Sources */,
+				B9DFDAD72C99F68A00588AD1 /* CallLinkBulkApprovalSheet.swift in Sources */,
 				50A7830E2C0128D70008030E /* CallLinkCall.swift in Sources */,
 				50733B1E2BAD038D00CEEC1F /* CallLinkManager.swift in Sources */,
 				E1E78CAF2B573BD100B6FC2D /* CallMemberCameraOffView.swift in Sources */,

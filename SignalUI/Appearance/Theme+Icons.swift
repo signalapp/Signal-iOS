@@ -67,7 +67,9 @@ public enum ThemeIcon: UInt {
     case checkCircle
     case checkCircleFill
     case xCircle
+    case xBold
     case checkmark
+    case checkmarkBold
     case circle
     case arrowDown
     case arrowUp
@@ -322,8 +324,12 @@ public extension Theme {
             return "check-circle-fill"
         case .xCircle:
             return "x-circle"
+        case .xBold:
+            return "x-bold"
         case .checkmark:
             return "check"
+        case .checkmarkBold:
+            return "check-bold"
         case .circle:
             return "circle"
         case .arrowDown:

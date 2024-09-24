@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import Combine
 import SwiftUI
 import LibSignalClient
 import SignalRingRTC
@@ -108,23 +109,33 @@ class GroupCallViewController: UIViewController {
     private let raisedHandsToastContainer = UIView()
     private lazy var raisedHandsToast = RaisedHandsToast(call: self.groupCall)
 
-    private lazy var approvalStackViewModel = ApprovalRequestStack.ViewModel()
+    private var approvalRequestActionsSubscription: AnyCancellable?
+    private lazy var callLinkApprovalViewModel: CallLinkApprovalViewModel = {
+        let viewModel = CallLinkApprovalViewModel()
+
+        approvalRequestActionsSubscription = viewModel.performRequestAction
+            .sink { [weak self] (action, request) in
+                guard let self else { return }
+                switch action {
+                case .approve:
+                    self.ringRtcCall.approveUser(request.aci.rawUUID)
+                case .deny:
+                    self.ringRtcCall.denyUser(request.aci.rawUUID)
+                case .viewDetails:
+                    self.presentApprovalRequestDetails(approvalRequest: request)
+                }
+            }
+
+        return viewModel
+    }()
+
     /// The `UIHostingController` with the approval request views in a stack.
     private lazy var approvalStack = UIHostingController(rootView: VStack {
         Spacer()
         ApprovalRequestStack(
-            viewModel: self.approvalStackViewModel,
-            openProfileDetails: { [weak self] request in
-                self?.presentApprovalRequestDetails(approvalRequest: request)
-            },
-            didApprove: { [weak self] request in
-                self?.ringRtcCall.approveUser(request.aci.rawUUID)
-            },
-            didDeny: { [weak self] request in
-                self?.ringRtcCall.denyUser(request.aci.rawUUID)
-            },
-            didTapMore: {
-                // [CallLink] TODO: Display approvals sheet
+            viewModel: self.callLinkApprovalViewModel,
+            didTapMore: { [weak self] requests in
+                self?.presentBulkApprovalSheet()
             },
             didChangeHeight: { [weak self] height in
                 self?.approvalStackHeightConstraint?.constant = height
@@ -717,13 +728,13 @@ class GroupCallViewController: UIViewController {
         self.fullscreenLocalMemberAddOnsView.isHiddenInStackView = self.shouldHideAddOnsView
         self.updateAddOnsViewPosition()
 
-        /// If there are no approval requests, `approvalStackViewModel`'s height
+        /// If there are no approval requests, `callLinkApprovalViewModel`'s height
         /// will be zero, but we don't want to hide it because the approval view
         /// itself is pinned to it, and we want it to retain its position when
         /// the last item animates out.
         let hasApprovalRequests: Bool = switch self.groupCall.concreteType {
         case .groupThread: false
-        case .callLink: !self.approvalStackViewModel.requests.isEmpty
+        case .callLink: !self.callLinkApprovalViewModel.requests.isEmpty
         }
 
         let hasOverflowMembers = self.videoOverflow.hasOverflowMembers
@@ -1167,7 +1178,7 @@ class GroupCallViewController: UIViewController {
 
         bottomSheetStateManager.submitState(.callControls)
         self.raisedHandsToast.raisedHands.removeAll()
-        self.approvalStackViewModel.requests.removeAll()
+        self.callLinkApprovalViewModel.requests.removeAll()
 
         guard
             let splitViewSnapshot = SignalApp.shared.snapshotSplitViewController(afterScreenUpdates: false),
@@ -1211,25 +1222,26 @@ class GroupCallViewController: UIViewController {
         }
     }
 
-    /// Returns `presentedViewController` if one is presented or `self` otherwise.
-    /// Does not traverse the presentation hierarchy deeper than that.
-    private var frontViewController: UIViewController {
+    /// The view controller to present new view controllers from.
+    private var presenter: UIViewController {
         presentedViewController ?? self
     }
 
     private func presentApprovalRequestDetails(approvalRequest: CallLinkApprovalRequest) {
+        let presenter = self.presenter
+        // Present request details on top of the bulk request sheet by checking
+        // one layer deeper than `presenter`.
+        let presentingViewController = presenter.presentedViewController ?? presenter
         CallLinkApprovalRequestDetailsSheet(
             approvalRequest: approvalRequest,
-            didApprove: { [weak self] request in
-                self?.frontViewController.dismiss(animated: true)
-                self?.ringRtcCall.approveUser(request.aci.rawUUID)
-            },
-            didDeny: { [weak self] request in
-                self?.frontViewController.dismiss(animated: true)
-                self?.ringRtcCall.denyUser(request.aci.rawUUID)
-            }
+            approvalViewModel: self.callLinkApprovalViewModel
         )
-        .present(from: frontViewController, dismissalDelegate: self)
+        .present(from: presentingViewController, dismissalDelegate: self)
+    }
+
+    private func presentBulkApprovalSheet() {
+        CallLinkBulkApprovalSheet(viewModel: callLinkApprovalViewModel)
+            .present(from: presenter, dismissalDelegate: self)
     }
 
     // MARK: - Drawer timeout
@@ -1593,7 +1605,7 @@ extension GroupCallViewController: GroupCallObserver {
             break
         case .callLink:
             let requests = call.ringRtcCall.peekInfo?.pendingUsers ?? []
-            self.approvalStackViewModel.loadRequestsWithSneakyTransaction(for: requests)
+            self.callLinkApprovalViewModel.loadRequestsWithSneakyTransaction(for: requests)
         }
 
         updateCallUI()
@@ -1689,7 +1701,7 @@ extension GroupCallViewController: GroupCallObserver {
                 }
             }
         ))
-        frontViewController.presentActionSheet(actionSheet)
+        presenter.presentActionSheet(actionSheet)
     }
 
     func groupCallReceivedReactions(_ call: GroupCall, reactions: [SignalRingRTC.Reaction]) {

@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "x-bold.pdf",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

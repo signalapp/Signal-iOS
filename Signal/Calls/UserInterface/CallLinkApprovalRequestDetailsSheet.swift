@@ -23,8 +23,7 @@ class CallLinkApprovalRequestDetailsSheet: OWSTableSheetViewController {
     )
 
     let approvalRequest: CallLinkApprovalRequest
-    var didApprove: (CallLinkApprovalRequest) -> Void
-    var didDeny: (CallLinkApprovalRequest) -> Void
+    let approvalViewModel: CallLinkApprovalViewModel
 
     override var handleBackgroundColor: UIColor {
         UIColor.Signal.transparentSeparator
@@ -32,12 +31,10 @@ class CallLinkApprovalRequestDetailsSheet: OWSTableSheetViewController {
 
     init(
         approvalRequest: CallLinkApprovalRequest,
-        didApprove: @escaping (CallLinkApprovalRequest) -> Void,
-        didDeny: @escaping (CallLinkApprovalRequest) -> Void
+        approvalViewModel: CallLinkApprovalViewModel
     ) {
         self.approvalRequest = approvalRequest
-        self.didApprove = didApprove
-        self.didDeny = didDeny
+        self.approvalViewModel = approvalViewModel
         super.init()
 
         self.overrideUserInterfaceStyle = .dark
@@ -72,7 +69,8 @@ class CallLinkApprovalRequestDetailsSheet: OWSTableSheetViewController {
                     textColor: UIColor.Signal.label
                 ) { [weak self] in
                     guard let self else { return }
-                    self.didApprove(self.approvalRequest)
+                    self.dismiss(animated: true)
+                    self.approvalViewModel.performRequestAction.send((.approve, self.approvalRequest))
                 },
                 .item(
                     icon: .xCircle,
@@ -81,7 +79,8 @@ class CallLinkApprovalRequestDetailsSheet: OWSTableSheetViewController {
                     textColor: UIColor.Signal.label
                 ) { [weak self] in
                     guard let self else { return }
-                    self.didDeny(self.approvalRequest)
+                    self.dismiss(animated: true)
+                    self.approvalViewModel.performRequestAction.send((.deny, self.approvalRequest))
                 },
             ],
             headerView: self.buildHeader()
@@ -197,10 +196,9 @@ class CallLinkApprovalRequestDetailsSheet: OWSTableSheetViewController {
         }
 
         private func sheet() -> CallLinkApprovalRequestDetailsSheet {
-            CallLinkApprovalRequestDetailsSheet(
+            return CallLinkApprovalRequestDetailsSheet(
                 approvalRequest: .init(aci: .init(fromUUID: UUID()), name: "Candice"),
-                didApprove: { [weak self] _ in self?.dismiss(animated: true) },
-                didDeny: { [weak self] _ in self?.dismiss(animated: true) }
+                approvalViewModel: CallLinkApprovalViewModel()
             )
         }
     }
