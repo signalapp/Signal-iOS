@@ -114,7 +114,7 @@ final class InMemoryDB: DB {
         return try _read(block: block, rescue: { throw $0 })
     }
 
-    private func _read<T>(block: (DBReadTransaction) throws -> T, rescue: (Error) throws -> Void) rethrows -> T {
+    private func _read<T>(block: (DBReadTransaction) throws -> T, rescue: (Error) throws -> Never) rethrows -> T {
         var thrownError: Error?
         let result: T? = try! databaseQueue.read { db in
             do {
@@ -141,7 +141,7 @@ final class InMemoryDB: DB {
 
     private func _write<T>(
         block: (DBWriteTransaction) throws -> T,
-        rescue: (Error) throws -> Void
+        rescue: (Error) throws -> Never
     ) rethrows -> T {
         var thrownError: Error?
         let result: T? = try! databaseQueue.write { db in

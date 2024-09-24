@@ -344,7 +344,7 @@ public class SDSDatabaseStorage: NSObject {
         function: String,
         line: Int,
         block: (SDSAnyReadTransaction) throws -> T,
-        rescue: (Error) throws -> Void
+        rescue: (Error) throws -> Never
     ) rethrows -> T {
         var value: T!
         var thrown: Error?
@@ -422,7 +422,7 @@ public class SDSDatabaseStorage: NSObject {
         function: String,
         line: Int,
         block: (SDSAnyWriteTransaction) throws -> T,
-        rescue: (Error) throws -> Void
+        rescue: (Error) throws -> Never
     ) rethrows -> T {
         var value: T!
         var thrown: Error?
@@ -519,7 +519,7 @@ public class SDSDatabaseStorage: NSObject {
         function: String,
         line: Int,
         block: @escaping (SDSAnyWriteTransaction) throws -> T,
-        rescue: @escaping (Error) throws -> Void
+        rescue: (Error) throws -> Never
     ) async rethrows -> T {
         let result: Result<T, Error> = await withCheckedContinuation { continuation in
             asyncWriteQueue.async {
@@ -536,7 +536,6 @@ public class SDSDatabaseStorage: NSObject {
             return value
         case .failure(let error):
             try rescue(error)
-            fatalError()
         }
     }
 
