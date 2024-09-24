@@ -6,6 +6,9 @@
 import LibSignalClient
 
 public final class SSKSessionStore: SignalSessionStore {
+    // Note that even though the values here are always serialized Data,
+    // using AnyObject here defers any checking or conversion of the values
+    // when converting from an NSDictionary.
     fileprivate typealias SessionsByDeviceDictionary = [Int32: AnyObject]
 
     private let keyValueStore: KeyValueStore
@@ -50,7 +53,7 @@ public final class SSKSessionStore: SignalSessionStore {
         case let data as Data:
             return data
         default:
-            owsFailDebug("unexpected entry in session store: \(entry)")
+            owsFailDebug("unexpected entry in session store: \(type(of: entry))")
             return nil
         }
     }
@@ -63,11 +66,38 @@ public final class SSKSessionStore: SignalSessionStore {
         owsAssertDebug(!recipientUniqueId.isEmpty)
         owsAssertDebug(deviceId > 0)
 
-        let dictionary = keyValueStore.getObject(forKey: recipientUniqueId, transaction: tx) as! SessionsByDeviceDictionary?
+        let dictionary = loadAllSerializedSessions(for: recipientUniqueId, tx: tx)
         guard let entry = dictionary?[Int32(bitPattern: deviceId)] else {
             return nil
         }
         return serializedSession(fromDatabaseRepresentation: entry)
+    }
+
+    private func loadAllSerializedSessions(
+        for recipientUniqueId: String,
+        tx: DBReadTransaction
+    ) -> SessionsByDeviceDictionary? {
+        owsAssertDebug(!recipientUniqueId.isEmpty)
+
+        guard let serialized = keyValueStore.getData(recipientUniqueId, transaction: tx) else {
+            return nil
+        }
+
+        let rawDictionary: NSDictionary?
+        do {
+            rawDictionary = try NSKeyedUnarchiver.unarchivedObject(ofClasses: [NSDictionary.self, NSNumber.self, NSData.self], from: serialized) as? NSDictionary
+        } catch let error as NSError {
+            // Deliberately don't log the full error; it might contain session data.
+            Logger.error("Unknown data (or legacy session) in session store; continuing as if there were no stored sessions (\(error.domain) \(error.code))")
+            return nil
+        }
+
+        guard let dictionary = rawDictionary as? SessionsByDeviceDictionary else {
+            Logger.error("Invalid device ID keys in session store; continuing as if there were no stored sessions")
+            return nil
+        }
+
+        return dictionary
     }
 
     fileprivate func storeSerializedSession(
@@ -96,9 +126,31 @@ public final class SSKSessionStore: SignalSessionStore {
         owsAssertDebug(!recipientUniqueId.isEmpty)
         owsAssertDebug(deviceId > 0)
 
-        var dictionary = (keyValueStore.getObject(forKey: recipientUniqueId, transaction: tx) as! SessionsByDeviceDictionary?) ?? [:]
+        var dictionary = loadAllSerializedSessions(for: recipientUniqueId, tx: tx) ?? [:]
         dictionary[Int32(bitPattern: deviceId)] = sessionData as NSData
-        keyValueStore.setObject(dictionary, key: recipientUniqueId, transaction: tx)
+        saveSerializedSessions(dictionary, for: recipientUniqueId, tx: tx)
+    }
+
+    private func saveSerializedSessions(
+        _ sessions: SessionsByDeviceDictionary,
+        for recipientUniqueId: String,
+        tx: DBWriteTransaction
+    ) {
+        // Avoid using KeyValueStore.setObject(_:key:transaction:).
+        // The database-based KV store implicitly archives using NSKeyedArchiver,
+        // but the in-memory one for testing does not.
+        // In order for loadAllSerializedSessions(for:tx:) to manually control deserialization,
+        // we need to consistently archive.
+        // This will also make it easier to potentially move away from NSKeyedArchiver in the future.
+        do {
+            let archived = try NSKeyedArchiver.archivedData(withRootObject: sessions, requiringSecureCoding: true)
+            keyValueStore.setData(archived, key: recipientUniqueId, transaction: tx)
+        } catch {
+            Logger.debug("failed to serialize session data: \(error)\n\(sessions)")
+            owsFailDebug("failed to serialize session data")
+            // At least clear out whatever's in the store, so we don't keep old sessions around longer than we should.
+            keyValueStore.setData(nil, key: recipientUniqueId, transaction: tx)
+        }
     }
 
     public func mightContainSession(for recipient: SignalRecipient, tx: DBReadTransaction) -> Bool {
@@ -158,7 +210,7 @@ public final class SSKSessionStore: SignalSessionStore {
     private func archiveAllSessions(for recipientUniqueId: RecipientUniqueId, tx: DBWriteTransaction) {
         owsAssertDebug(!recipientUniqueId.isEmpty)
 
-        guard let dictionary = keyValueStore.getObject(forKey: recipientUniqueId, transaction: tx) as! SessionsByDeviceDictionary? else {
+        guard let dictionary = loadAllSerializedSessions(for: recipientUniqueId, tx: tx) else {
             // We never had a session for this account in the first place.
             return
         }
@@ -179,7 +231,7 @@ public final class SSKSessionStore: SignalSessionStore {
             }
         }
 
-        keyValueStore.setObject(newDictionary, key: recipientUniqueId, transaction: tx)
+        saveSerializedSessions(newDictionary, for: recipientUniqueId, tx: tx)
     }
 
     public func resetSessionStore(tx: DBWriteTransaction) {
@@ -269,6 +321,11 @@ extension SSKSessionStore: LibSignalClient.SessionStore {
 #if TESTABLE_BUILD
 
 extension SSKSessionStore {
+    // Available through `@testable import`
+    internal var keyValueStoreForTesting: KeyValueStore {
+        self.keyValueStore
+    }
+
     public func removeAll(tx: DBWriteTransaction) {
         keyValueStore.removeAll(transaction: tx)
     }

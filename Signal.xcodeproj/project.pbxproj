@@ -734,6 +734,7 @@
 		50F77AA02AAA7B8A00FB70C5 /* ProfileWhitelistMerger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F77A9F2AAA7B8A00FB70C5 /* ProfileWhitelistMerger.swift */; };
 		50F86FC42AFEFEC20045F58B /* TimeGatedBatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F86FC32AFEFEC20045F58B /* TimeGatedBatch.swift */; };
 		50F946102AD768AF002EF293 /* MockIdentityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F9460F2AD768AF002EF293 /* MockIdentityManager.swift */; };
+		5AA002E62CA24566002D1CC2 /* SessionStoreTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AA002E52CA2455F002D1CC2 /* SessionStoreTest.swift */; };
 		616577F953D77424E32C7438 /* Pods_SignalUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 675486AB8F0612FF2C717BAE /* Pods_SignalUI.framework */; };
 		6600BB182BA3A04C0005A035 /* LinkPreviewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600BB172BA3A04C0005A035 /* LinkPreviewManager.swift */; };
 		6600BB1A2BA3A0930005A035 /* LinkPreviewManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600BB192BA3A0930005A035 /* LinkPreviewManagerImpl.swift */; };
@@ -4339,6 +4340,7 @@
 		50F96F3A28ECBC3200541EED /* ms */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ms; path = translations/ms.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		538291A33C75754BC577D8C3 /* Pods-SignalShareExtension.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.testable release.xcconfig"; path = "Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.testable release.xcconfig"; sourceTree = "<group>"; };
 		55B305CB99EC1478F69D91CF /* Pods-SignalUITests.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUITests.profiling.xcconfig"; path = "Target Support Files/Pods-SignalUITests/Pods-SignalUITests.profiling.xcconfig"; sourceTree = "<group>"; };
+		5AA002E52CA2455F002D1CC2 /* SessionStoreTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStoreTest.swift; sourceTree = "<group>"; };
 		5D6C4583F668E9D733E59B9B /* Pods-SignalServiceKitTests.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalServiceKitTests.testable release.xcconfig"; path = "Target Support Files/Pods-SignalServiceKitTests/Pods-SignalServiceKitTests.testable release.xcconfig"; sourceTree = "<group>"; };
 		5F85041386A219C9710EAB41 /* Pods-Signal.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.debug.xcconfig"; path = "Target Support Files/Pods-Signal/Pods-Signal.debug.xcconfig"; sourceTree = "<group>"; };
 		65703441A3D2C7FE670E65ED /* Pods-SignalServiceKit.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalServiceKit.profiling.xcconfig"; path = "Target Support Files/Pods-SignalServiceKit/Pods-SignalServiceKit.profiling.xcconfig"; sourceTree = "<group>"; };
@@ -12583,6 +12585,7 @@
 				50B62C752AB216E300705A89 /* PniSignatureProcessorTest.swift */,
 				F942622C289B1B5500460798 /* ReceiptSenderTest.swift */,
 				50B0E9492AC747B3005D46AB /* RecipientStateMergerTest.swift */,
+				5AA002E52CA2455F002D1CC2 /* SessionStoreTest.swift */,
 				F9426239289B1B5500460798 /* SignalServiceAddressTest.swift */,
 				F9426238289B1B5500460798 /* SMKSecretSessionCipherTest.swift */,
 				F942622E289B1B5500460798 /* SMKTestUtils.swift */,
@@ -17887,6 +17890,7 @@
 				662C44172A1D21D7001F83E2 /* SecureValueRecovery2Tests.swift in Sources */,
 				6605B98A2B211BD500E8A68A /* SerialTaskQueueTest.swift in Sources */,
 				503158F22B57B0010023A5DB /* ServiceIdTest.swift in Sources */,
+				5AA002E62CA24566002D1CC2 /* SessionStoreTest.swift in Sources */,
 				7267B1582C5D4F2800612C34 /* Sha256HmacSivTest.swift in Sources */,
 				F942626C289B1B5500460798 /* SignalAccountFinderTest.swift in Sources */,
 				E18C4A7729EF2ECC007534D4 /* SignalAccountTest.swift in Sources */,
