@@ -16,12 +16,13 @@ protocol CallDrawerSheetDataSourceObserver: AnyObject {
     func callSheetRaisedHandsDidChange(_ dataSource: CallDrawerSheetDataSource)
 }
 
-protocol CallDrawerSheetDataSource: GroupCallMemberCellDelegate {
+protocol CallDrawerSheetDataSource {
     typealias JoinedMember = CallDrawerSheet.JoinedMember
 
     func unsortedMembers(tx: DBReadTransaction) -> [JoinedMember]
 
     func raisedHandMemberIds() -> [JoinedMember.ID]
+    func raiseHand(raise: Bool)
 
     func addObserver(_ observer: any CallDrawerSheetDataSourceObserver, syncStateImmediately: Bool)
     func removeObserver(_ observer: any CallDrawerSheetDataSourceObserver)
@@ -168,11 +169,7 @@ extension GroupCallSheetDataSource: GroupCallObserver {
         AssertIsOnMainThread()
         observers.elements.forEach { $0.callSheetRaisedHandsDidChange(self) }
     }
-}
 
-// MARK: GroupCallMemberCellDelegate
-
-extension GroupCallSheetDataSource: GroupCallMemberCellDelegate {
     func raiseHand(raise: Bool) {
         ringRtcCall.raiseHand(raise: raise)
     }
@@ -180,9 +177,23 @@ extension GroupCallSheetDataSource: GroupCallMemberCellDelegate {
 
 // MARK: Call Links
 
-extension GroupCallSheetDataSource where Call == CallLinkCall {
+typealias CallLinkSheetDataSource = GroupCallSheetDataSource<CallLinkCall>
+
+extension CallLinkSheetDataSource {
     func url() -> URL {
         return self.groupCall.callLink.url()
+    }
+
+    var isAdmin: Bool {
+        return self.groupCall.adminPasskey != nil
+    }
+
+    func removeMember(demuxId: DemuxId) {
+        ringRtcCall.removeClient(demuxId: demuxId)
+    }
+
+    func blockMember(demuxId: DemuxId) {
+        ringRtcCall.blockClient(demuxId: demuxId)
     }
 }
 
@@ -247,6 +258,9 @@ class IndividualCallSheetDataSource: CallDrawerSheetDataSource {
     }
 
     func raisedHandMemberIds() -> [JoinedMember.ID] {[]}
+    func raiseHand(raise: Bool) {
+        owsFailDebug("Should not be able to raise hand in individual call")
+    }
 
     private var observers: WeakArray<any CallDrawerSheetDataSourceObserver> = []
     func addObserver(_ observer: any CallDrawerSheetDataSourceObserver, syncStateImmediately: Bool = false) {
@@ -301,11 +315,4 @@ extension IndividualCallSheetDataSource: IndividualCallObserver {
         AssertIsOnMainThread()
         observers.elements.forEach { $0.callSheetMembershipDidChange(self) }
     }
-}
-
-// MARK: GroupCallMemberCellDelegate
-
-extension IndividualCallSheetDataSource: GroupCallMemberCellDelegate {
-    // Raise hand not supported for 1:1 calls
-    func raiseHand(raise: Bool) { }
 }

@@ -28,6 +28,10 @@ class CallDrawerSheet: InteractiveSheetViewController {
     private let call: SignalCall
     private let callSheetDataSource: CallDrawerSheetDataSource
 
+    private var callLinkDataSource: CallLinkSheetDataSource? {
+        self.callSheetDataSource as? CallLinkSheetDataSource
+    }
+
     private var didPresentViewController: ((UIViewController) -> Void)?
 
     override var sheetBackgroundColor: UIColor { UIColor(rgbHex: 0x1C1C1E) }
@@ -118,14 +122,30 @@ class CallDrawerSheet: InteractiveSheetViewController {
         case let .member(section: section, id: memberID):
             let cell = tableView.dequeueReusableCell(GroupCallMemberCell.self, for: indexPath)
 
-            cell.delegate = self?.callSheetDataSource
+            cell.delegate = self
 
             guard let viewModel = self?.viewModelsByID[memberID] else {
                 owsFailDebug("missing view model")
                 return cell
             }
 
-            cell.configure(with: viewModel, isHandRaised: section == .raisedHands)
+            let isCallAdmin = self?.callLinkDataSource?.isAdmin ?? false
+            let canBeRemoved = section == .inCall && !viewModel.isLocalUser && isCallAdmin
+
+            let removeUserButtonVisibility: GroupCallMemberCell.Visibility =
+            if canBeRemoved {
+                .visible
+            } else if isCallAdmin && section == .inCall {
+                .spaceReserved
+            } else {
+                .hidden
+            }
+
+            cell.configure(
+                with: viewModel,
+                isHandRaised: section == .raisedHands,
+                removeUserButtonVisibility: removeUserButtonVisibility
+            )
 
             return cell
         case let .callLink(row):
@@ -454,9 +474,13 @@ class CallDrawerSheet: InteractiveSheetViewController {
 
 extension CallDrawerSheet: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        if section == 0, !callSheetDataSource.raisedHandMemberIds().isEmpty {
+        let section = dataSource.snapshot().sectionIdentifiers[section]
+        switch section {
+        case .callLink:
+            return nil
+        case .members(.raisedHands):
             return raisedHandsHeader
-        } else {
+        case .members(.inCall):
             return inCallHeader
         }
     }
@@ -482,7 +506,7 @@ extension CallDrawerSheet: UITableViewDelegate {
 
     private func shareCallLink() {
         AssertIsOnMainThread()
-        guard let callLinkDataSource = self.callSheetDataSource as? GroupCallSheetDataSource<CallLinkCall> else {
+        guard let callLinkDataSource else {
             owsFailDebug("Contains call link section without a call link data source")
             return
         }
@@ -492,6 +516,45 @@ extension CallDrawerSheet: UITableViewDelegate {
             applicationActivities: nil
         )
         present(shareSheet, animated: true)
+    }
+}
+
+// MARK: GroupCallMemberCellDelegate
+
+extension CallDrawerSheet: GroupCallMemberCellDelegate {
+    func raiseHand(raise: Bool) {
+        callSheetDataSource.raiseHand(raise: raise)
+    }
+
+    func removeMember(demuxId: DemuxId) {
+        guard let callLinkDataSource else {
+            return owsFailDebug("Missing call link data source")
+        }
+        guard let name = viewModelsByID[.demuxID(demuxId)]?.name else {
+            return owsFailDebug("Missing view model for demux ID")
+        }
+
+        // [CallLink] TODO: Dark theme
+        // [CallLink] TODO: Localize
+        let actionSheet = ActionSheetController(title: String(
+            format: "Remove %@ from the call?",
+            name
+        ))
+        // [CallLink] TODO: Localize
+        actionSheet.addAction(.init(
+            title: "Remove"
+        ) { [callLinkDataSource] _ in
+            callLinkDataSource.removeMember(demuxId: demuxId)
+        })
+        // [CallLink] TODO: Localize
+        actionSheet.addAction(.init(
+            title: "Block From Call"
+        ) { [callLinkDataSource] _ in
+            callLinkDataSource.blockMember(demuxId: demuxId)
+        })
+        actionSheet.addAction(.cancel)
+
+        self.presentActionSheet(actionSheet)
     }
 }
 
@@ -576,6 +639,7 @@ private class CallLinkURLCell: UITableViewCell, ReusableTableViewCell {
 
 protocol GroupCallMemberCellDelegate: AnyObject {
     func raiseHand(raise: Bool)
+    func removeMember(demuxId: DemuxId)
 }
 
 private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
@@ -588,6 +652,7 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
         let aci: Aci
         let name: String
         let isLocalUser: Bool
+        let demuxId: DemuxId?
 
         @Published var shouldShowAudioMutedIcon = false
         @Published var shouldShowVideoMutedIcon = false
@@ -597,6 +662,7 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
             self.aci = member.aci
             self.name = member.displayName
             self.isLocalUser = member.isLocalUser
+            self.demuxId = member.demuxID
             self.update(using: member)
         }
 
@@ -630,6 +696,24 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
         self?.delegate?.raiseHand(raise: false)
     }
 
+    private var demuxId: DemuxId?
+    private lazy var removeUserButton: OWSButton = {
+        let button = OWSButton { [weak self] in
+            guard let self, let demuxId else { return }
+            self.delegate?.removeMember(demuxId: demuxId)
+        }
+        button.setAttributedTitle(
+            SignalSymbol.minusCircle.attributedString(
+                dynamicTypeBaseSize: 24,
+                weight: .light,
+                attributes: [.foregroundColor: UIColor.Signal.label]
+            ),
+            for: .normal
+        )
+        button.dimsWhenHighlighted = true
+        return button
+    }()
+
     private let leadingWrapper = UIView()
     private let videoMutedIndicator = UIImageView()
     private let presentingIndicator = UIImageView()
@@ -653,6 +737,8 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
             iconView.setTemplateImageName(imageName, tintColor: Theme.darkThemeSecondaryTextAndIconColor)
             wrapper.addSubview(iconView)
             iconView.autoPinEdgesToSuperviewEdges()
+            iconView.setCompressionResistanceHorizontalHigh()
+            iconView.setContentHuggingHorizontalHigh()
         }
 
         let trailingWrapper = UIView()
@@ -667,7 +753,8 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
             nameLabel,
             lowerHandButton,
             leadingWrapper,
-            trailingWrapper
+            trailingWrapper,
+            removeUserButton,
         ])
         stackView.axis = .horizontal
         stackView.alignment = .center
@@ -677,6 +764,15 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
         stackView.spacing = 16
         stackView.setCustomSpacing(12, after: avatarView)
         stackView.setCustomSpacing(8, after: nameLabel)
+
+        nameLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        nameLabel.setContentHuggingHorizontalLow()
+        nameLabel.setCompressionResistanceHorizontalLow()
+        [leadingWrapper, trailingWrapper, removeUserButton, lowerHandButton]
+            .forEach {
+                $0.setContentHuggingHorizontalHigh()
+                $0.setCompressionResistanceHorizontalHigh()
+            }
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -685,9 +781,17 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
 
     // MARK: Configuration
 
+    enum Visibility {
+        case visible, spaceReserved, hidden
+    }
+
     // isHandRaised isn't part of ViewModel because the same view model is used
     // for any given member in both the members and raised hand sections.
-    func configure(with viewModel: ViewModel, isHandRaised: Bool) {
+    func configure(
+        with viewModel: ViewModel,
+        isHandRaised: Bool,
+        removeUserButtonVisibility: Visibility
+    ) {
         self.subscriptions.removeAll()
 
         if isHandRaised {
@@ -707,6 +811,18 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
         self.nameLabel.text = viewModel.name
         self.avatarView.updateWithSneakyTransactionIfNecessary { config in
             config.dataSource = .address(SignalServiceAddress(viewModel.aci))
+        }
+
+        self.demuxId = viewModel.demuxId
+        switch removeUserButtonVisibility {
+        case .visible:
+            self.removeUserButton.isHiddenInStackView = false
+            self.removeUserButton.layer.opacity = 1
+        case .spaceReserved:
+            self.removeUserButton.isHiddenInStackView = false
+            self.removeUserButton.layer.opacity = 0
+        case .hidden:
+            self.removeUserButton.isHiddenInStackView = true
         }
     }
 
