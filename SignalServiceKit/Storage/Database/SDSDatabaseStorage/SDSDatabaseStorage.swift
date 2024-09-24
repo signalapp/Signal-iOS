@@ -15,7 +15,9 @@ public class SDSDatabaseStorage: NSObject {
 
     private var hasPendingCrossProcessWrite = false
 
-    private let crossProcess = SDSCrossProcess()
+    // Implicitly unwrapped because it is set in the initializer but after initialization completes because it
+    // needs to refer to self.
+    private var crossProcess: SDSCrossProcess!
 
     // MARK: - Initialization / Setup
 
@@ -34,23 +36,17 @@ public class SDSDatabaseStorage: NSObject {
 
         super.init()
 
-        addObservers()
-    }
-
-    private func addObservers() {
-        guard !CurrentAppContext().isRunningTests else {
-            return
-        }
-        // Cross process writes
-        crossProcess.callback = { [weak self] in
-            DispatchQueue.main.async {
+        if CurrentAppContext().isRunningTests {
+            self.crossProcess = SDSCrossProcess(callback: {})
+        } else {
+            self.crossProcess = SDSCrossProcess(callback: { @MainActor [weak self] () -> Void in
                 self?.handleCrossProcessWrite()
-            }
+            })
+            NotificationCenter.default.addObserver(self,
+                                                   selector: #selector(didBecomeActive),
+                                                   name: UIApplication.didBecomeActiveNotification,
+                                                   object: nil)
         }
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(didBecomeActive),
-                                               name: UIApplication.didBecomeActiveNotification,
-                                               object: nil)
     }
 
     @objc
@@ -236,6 +232,7 @@ public class SDSDatabaseStorage: NSObject {
 
     // MARK: - Cross Process Notifications
 
+    @MainActor
     private func handleCrossProcessWrite() {
         AssertIsOnMainThread()
 
@@ -381,7 +378,9 @@ public class SDSDatabaseStorage: NSObject {
         let timeoutThreshold = DebugFlags.internalLogging ? 0.1 : 0.5
 
         defer {
-            crossProcess.notifyChangedAsync()
+            Task { @MainActor in
+                crossProcess.notifyChanged()
+            }
         }
 
         return try grdbStorage.write { tx in

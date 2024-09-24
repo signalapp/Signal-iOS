@@ -13,7 +13,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 
 #import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/BaseModel.h>
-#import <SignalServiceKit/DarwinNotificationCenter.h>
 #import <SignalServiceKit/DebuggerUtils.h>
 #import <SignalServiceKit/IncomingGroupsV2MessageJob.h>
 #import <SignalServiceKit/InstalledSticker.h>
@@ -71,7 +70,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/OWSViewOnceMessageReadSyncMessage.h>
 #import <SignalServiceKit/OWSViewedReceiptsForLinkedDevicesMessage.h>
 #import <SignalServiceKit/OutgoingPaymentSyncMessage.h>
-#import <SignalServiceKit/SDSCrossProcess.h>
 #import <SignalServiceKit/SDSDatabaseStorage+Objc.h>
 #import <SignalServiceKit/SDSKeyValueStore+ObjC.h>
 #import <SignalServiceKit/SSKAccessors+SDS.h>

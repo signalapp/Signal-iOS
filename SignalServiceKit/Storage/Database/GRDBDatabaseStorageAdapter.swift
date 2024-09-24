@@ -101,7 +101,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         OWSFileSystem.ensureDirectoryExists(fileUrl.deletingLastPathComponent().path)
         try? newPrimaryFolderName.write(toFile: fileUrl.path, atomically: true, encoding: .utf8)
 
-        DarwinNotificationCenter.post(.primaryDBFolderNameDidChange)
+        DarwinNotificationCenter.postNotification(name: .primaryDBFolderNameDidChange)
     }
 
     private let checkpointQueue = DispatchQueue(label: "org.signal.checkpoint", qos: .utility)
@@ -141,20 +141,20 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     }
 
     deinit {
-        if let darwinToken, DarwinNotificationCenter.isValidObserver(darwinToken) {
+        if let darwinToken, DarwinNotificationCenter.isValid(darwinToken) {
             DarwinNotificationCenter.removeObserver(darwinToken)
         }
     }
 
     // MARK: - DatabasePathObservation
 
-    private var darwinToken: Int32?
+    private var darwinToken: DarwinNotificationCenter.ObserverToken?
 
     public func setUpDatabasePathKVO() {
         darwinToken = DarwinNotificationCenter.addObserver(
-            for: .primaryDBFolderNameDidChange,
+            name: .primaryDBFolderNameDidChange,
             queue: .main,
-            using: { [weak self] token in
+            block: { [weak self] token in
                 self?.primaryDBFolderNameDidChange(darwinNotificationToken: token)
             }
         )

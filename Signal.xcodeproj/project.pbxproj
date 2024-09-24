@@ -1351,6 +1351,8 @@
 		72901D2D2C9B129B000406DC /* ProfileManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72901D2C2C9B1296000406DC /* ProfileManagerProtocol.swift */; };
 		72901D2F2C9B1918000406DC /* ProtoUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72901D2E2C9B1913000406DC /* ProtoUtils.swift */; };
 		72976BF22BDCF00C0054FAC2 /* NSTimer+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72976BF12BDCF00C0054FAC2 /* NSTimer+OWS.swift */; };
+		72A132A52CA210C7000ACED6 /* DarwinNotificationCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72A132A42CA210C2000ACED6 /* DarwinNotificationCenter.swift */; };
+		72A132A72CA25EF0000ACED6 /* SDSCrossProcess.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72A132A62CA25EE9000ACED6 /* SDSCrossProcess.swift */; };
 		72B0C2402C9EEA8200B57DAD /* PreKeyRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72B0C23F2C9EEA7700B57DAD /* PreKeyRecord.swift */; };
 		72B0C2422C9EED0E00B57DAD /* SignedPreKeyRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72B0C2412C9EED0800B57DAD /* SignedPreKeyRecord.swift */; };
 		72B4819D2BD60FDF008B8BA1 /* OWSMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72B4819C2BD60FDF008B8BA1 /* OWSMath.swift */; };
@@ -3159,7 +3161,6 @@
 		F9C5CD1F289453B300548EEE /* GRDBDatabaseStorageAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA40289453B100548EEE /* GRDBDatabaseStorageAdapter.swift */; };
 		F9C5CD20289453B300548EEE /* SDSDatabaseStorage+Objc.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA41289453B100548EEE /* SDSDatabaseStorage+Objc.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CD22289453B300548EEE /* SDSTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA43289453B100548EEE /* SDSTransaction.swift */; };
-		F9C5CD24289453B300548EEE /* SDSCrossProcess.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA45289453B100548EEE /* SDSCrossProcess.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CD26289453B300548EEE /* GRDBSchemaMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA47289453B100548EEE /* GRDBSchemaMigrator.swift */; };
 		F9C5CD27289453B300548EEE /* DeepCopy.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA48289453B100548EEE /* DeepCopy.swift */; };
 		F9C5CD28289453B300548EEE /* SDSKeyValueStore+ObjC.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA49289453B100548EEE /* SDSKeyValueStore+ObjC.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -3169,7 +3170,6 @@
 		F9C5CD2C289453B300548EEE /* SSKAccessors+SDS.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA4D289453B100548EEE /* SSKAccessors+SDS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CD2D289453B300548EEE /* SDSCodableModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA4E289453B100548EEE /* SDSCodableModel.swift */; };
 		F9C5CD2E289453B300548EEE /* SDSSerializable.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA4F289453B100548EEE /* SDSSerializable.swift */; };
-		F9C5CD2F289453B300548EEE /* SDSCrossProcess.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA50289453B100548EEE /* SDSCrossProcess.m */; };
 		F9C5CD33289453B300548EEE /* SSKSignedPreKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA55289453B100548EEE /* SSKSignedPreKeyStore.swift */; };
 		F9C5CD34289453B300548EEE /* SignalProtocolStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA56289453B100548EEE /* SignalProtocolStore.swift */; };
 		F9C5CD37289453B300548EEE /* SenderKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA59289453B100548EEE /* SenderKeyStore.swift */; };
@@ -3245,7 +3245,6 @@
 		F9C5CDDC289453B400548EEE /* OWSOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB0A289453B200548EEE /* OWSOperation.swift */; };
 		F9C5CDDD289453B400548EEE /* Error+ErrorLocalizedDescription.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB0B289453B200548EEE /* Error+ErrorLocalizedDescription.swift */; };
 		F9C5CDDF289453B400548EEE /* ImageQuality.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB0D289453B200548EEE /* ImageQuality.swift */; };
-		F9C5CDE0289453B400548EEE /* DarwinNotificationCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB0E289453B200548EEE /* DarwinNotificationCenter.m */; };
 		F9C5CDE2289453B400548EEE /* ThreadBacked.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB10289453B200548EEE /* ThreadBacked.swift */; };
 		F9C5CDE3289453B400548EEE /* MailtoLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB11289453B200548EEE /* MailtoLink.swift */; };
 		F9C5CDE4289453B400548EEE /* StorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB12289453B200548EEE /* StorageService.swift */; };
@@ -3286,7 +3285,6 @@
 		F9C5CE23289453B400548EEE /* Error+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB51289453B200548EEE /* Error+SSK.swift */; };
 		F9C5CE25289453B400548EEE /* AppReadiness.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB53289453B200548EEE /* AppReadiness.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE26289453B400548EEE /* UserProfileFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB54289453B200548EEE /* UserProfileFinder.swift */; };
-		F9C5CE27289453B400548EEE /* DarwinNotificationCenter.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB55289453B200548EEE /* DarwinNotificationCenter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE29289453B400548EEE /* ModelReadCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB57289453B200548EEE /* ModelReadCache.swift */; };
 		F9C5CE2A289453B400548EEE /* Platform.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB58289453B200548EEE /* Platform.swift */; };
 		F9C5CE2B289453B400548EEE /* FeatureFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB59289453B200548EEE /* FeatureFlags.swift */; };
@@ -4885,6 +4883,8 @@
 		72901D2C2C9B1296000406DC /* ProfileManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileManagerProtocol.swift; sourceTree = "<group>"; };
 		72901D2E2C9B1913000406DC /* ProtoUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProtoUtils.swift; sourceTree = "<group>"; };
 		72976BF12BDCF00C0054FAC2 /* NSTimer+OWS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSTimer+OWS.swift"; sourceTree = "<group>"; };
+		72A132A42CA210C2000ACED6 /* DarwinNotificationCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DarwinNotificationCenter.swift; sourceTree = "<group>"; };
+		72A132A62CA25EE9000ACED6 /* SDSCrossProcess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDSCrossProcess.swift; sourceTree = "<group>"; };
 		72B0C23F2C9EEA7700B57DAD /* PreKeyRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyRecord.swift; sourceTree = "<group>"; };
 		72B0C2412C9EED0800B57DAD /* SignedPreKeyRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignedPreKeyRecord.swift; sourceTree = "<group>"; };
 		72B4819C2BD60FDF008B8BA1 /* OWSMath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSMath.swift; sourceTree = "<group>"; };
@@ -6807,7 +6807,6 @@
 		F9C5CA40289453B100548EEE /* GRDBDatabaseStorageAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GRDBDatabaseStorageAdapter.swift; sourceTree = "<group>"; };
 		F9C5CA41289453B100548EEE /* SDSDatabaseStorage+Objc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SDSDatabaseStorage+Objc.h"; sourceTree = "<group>"; };
 		F9C5CA43289453B100548EEE /* SDSTransaction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDSTransaction.swift; sourceTree = "<group>"; };
-		F9C5CA45289453B100548EEE /* SDSCrossProcess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDSCrossProcess.h; sourceTree = "<group>"; };
 		F9C5CA47289453B100548EEE /* GRDBSchemaMigrator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GRDBSchemaMigrator.swift; sourceTree = "<group>"; };
 		F9C5CA48289453B100548EEE /* DeepCopy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeepCopy.swift; sourceTree = "<group>"; };
 		F9C5CA49289453B100548EEE /* SDSKeyValueStore+ObjC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SDSKeyValueStore+ObjC.h"; sourceTree = "<group>"; };
@@ -6817,7 +6816,6 @@
 		F9C5CA4D289453B100548EEE /* SSKAccessors+SDS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SSKAccessors+SDS.h"; sourceTree = "<group>"; };
 		F9C5CA4E289453B100548EEE /* SDSCodableModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDSCodableModel.swift; sourceTree = "<group>"; };
 		F9C5CA4F289453B100548EEE /* SDSSerializable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDSSerializable.swift; sourceTree = "<group>"; };
-		F9C5CA50289453B100548EEE /* SDSCrossProcess.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDSCrossProcess.m; sourceTree = "<group>"; };
 		F9C5CA55289453B100548EEE /* SSKSignedPreKeyStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSKSignedPreKeyStore.swift; sourceTree = "<group>"; };
 		F9C5CA56289453B100548EEE /* SignalProtocolStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalProtocolStore.swift; sourceTree = "<group>"; };
 		F9C5CA59289453B100548EEE /* SenderKeyStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SenderKeyStore.swift; sourceTree = "<group>"; };
@@ -6894,7 +6892,6 @@
 		F9C5CB0A289453B200548EEE /* OWSOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSOperation.swift; sourceTree = "<group>"; };
 		F9C5CB0B289453B200548EEE /* Error+ErrorLocalizedDescription.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Error+ErrorLocalizedDescription.swift"; sourceTree = "<group>"; };
 		F9C5CB0D289453B200548EEE /* ImageQuality.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageQuality.swift; sourceTree = "<group>"; };
-		F9C5CB0E289453B200548EEE /* DarwinNotificationCenter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DarwinNotificationCenter.m; sourceTree = "<group>"; };
 		F9C5CB10289453B200548EEE /* ThreadBacked.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadBacked.swift; sourceTree = "<group>"; };
 		F9C5CB11289453B200548EEE /* MailtoLink.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MailtoLink.swift; sourceTree = "<group>"; };
 		F9C5CB12289453B200548EEE /* StorageService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StorageService.swift; sourceTree = "<group>"; };
@@ -6935,7 +6932,6 @@
 		F9C5CB51289453B200548EEE /* Error+SSK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Error+SSK.swift"; sourceTree = "<group>"; };
 		F9C5CB53289453B200548EEE /* AppReadiness.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppReadiness.h; sourceTree = "<group>"; };
 		F9C5CB54289453B200548EEE /* UserProfileFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserProfileFinder.swift; sourceTree = "<group>"; };
-		F9C5CB55289453B200548EEE /* DarwinNotificationCenter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DarwinNotificationCenter.h; sourceTree = "<group>"; };
 		F9C5CB57289453B200548EEE /* ModelReadCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelReadCache.swift; sourceTree = "<group>"; };
 		F9C5CB58289453B200548EEE /* Platform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Platform.swift; sourceTree = "<group>"; };
 		F9C5CB59289453B200548EEE /* FeatureFlags.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeatureFlags.swift; sourceTree = "<group>"; };
@@ -13454,8 +13450,7 @@
 				F9C5CA40289453B100548EEE /* GRDBDatabaseStorageAdapter.swift */,
 				F9C5CA47289453B100548EEE /* GRDBSchemaMigrator.swift */,
 				D9B95A9929E8918200D7CB95 /* InMemoryDB.swift */,
-				F9C5CA45289453B100548EEE /* SDSCrossProcess.h */,
-				F9C5CA50289453B100548EEE /* SDSCrossProcess.m */,
+				72A132A62CA25EE9000ACED6 /* SDSCrossProcess.swift */,
 				F9C5CA3B289453B100548EEE /* SDSDeserialization.swift */,
 				F9C5CA32289453B100548EEE /* SDSError.swift */,
 				F9C5CA34289453B100548EEE /* SDSModel.swift */,
@@ -13703,8 +13698,7 @@
 				34A955AB271B521500B05242 /* CommonStrings.swift */,
 				F962B389293F9F1F00765BD8 /* CRC32.swift */,
 				F9C5CB22289453B200548EEE /* Currency.swift */,
-				F9C5CB55289453B200548EEE /* DarwinNotificationCenter.h */,
-				F9C5CB0E289453B200548EEE /* DarwinNotificationCenter.m */,
+				72A132A42CA210C2000ACED6 /* DarwinNotificationCenter.swift */,
 				F9C5CB63289453B200548EEE /* DarwinNotificationName.swift */,
 				F93999F728C8204800E34899 /* Data+MessagePadding.swift */,
 				F9C5CB2D289453B200548EEE /* Data+SSK.swift */,
@@ -13918,7 +13912,6 @@
 			files = (
 				F9C5CE25289453B400548EEE /* AppReadiness.h in Headers */,
 				F9C5CD77289453B300548EEE /* BaseModel.h in Headers */,
-				F9C5CE27289453B400548EEE /* DarwinNotificationCenter.h in Headers */,
 				668A00E02C2B5ECF007B8808 /* DebuggerUtils.h in Headers */,
 				F9C5CDA7289453B400548EEE /* IncomingGroupsV2MessageJob.h in Headers */,
 				F9C5CC0A289453B300548EEE /* InstalledSticker.h in Headers */,
@@ -13976,7 +13969,6 @@
 				F9C5CD0A289453B300548EEE /* OWSVerificationStateSyncMessage.h in Headers */,
 				F9C5CD0B289453B300548EEE /* OWSViewedReceiptsForLinkedDevicesMessage.h in Headers */,
 				F9C5CD11289453B300548EEE /* OWSViewOnceMessageReadSyncMessage.h in Headers */,
-				F9C5CD24289453B300548EEE /* SDSCrossProcess.h in Headers */,
 				F9C5CD20289453B300548EEE /* SDSDatabaseStorage+Objc.h in Headers */,
 				F9C5CD28289453B300548EEE /* SDSKeyValueStore+ObjC.h in Headers */,
 				F9262C46289462F600063502 /* SignalServiceKit-Prefix.pch in Headers */,
@@ -16678,7 +16670,7 @@
 				F962B38A293F9F1F00765BD8 /* CRC32.swift in Sources */,
 				668A00D02C2B5E32007B8808 /* Cryptography.swift in Sources */,
 				F9C5CDF4289453B400548EEE /* Currency.swift in Sources */,
-				F9C5CDE0289453B400548EEE /* DarwinNotificationCenter.m in Sources */,
+				72A132A52CA210C7000ACED6 /* DarwinNotificationCenter.swift in Sources */,
 				F9C5CE35289453B400548EEE /* DarwinNotificationName.swift in Sources */,
 				F93999F828C8204800E34899 /* Data+MessagePadding.swift in Sources */,
 				F9C5CDFF289453B400548EEE /* Data+SSK.swift in Sources */,
@@ -17349,7 +17341,7 @@
 				D9F6553B29D6547F002A330A /* SDSCodableModelDatabaseInterface+Remove.swift in Sources */,
 				D9F6553C29D6547F002A330A /* SDSCodableModelDatabaseInterface+Save.swift in Sources */,
 				D9F6553D29D6547F002A330A /* SDSCodableModelDatabaseInterface.swift in Sources */,
-				F9C5CD2F289453B300548EEE /* SDSCrossProcess.m in Sources */,
+				72A132A72CA25EF0000ACED6 /* SDSCrossProcess.swift in Sources */,
 				F9C5CD2B289453B300548EEE /* SDSDatabaseStorage+Objc.m in Sources */,
 				F9C5CD1A289453B300548EEE /* SDSDatabaseStorage.swift in Sources */,
 				6673FF8B297B6FA800F96CFD /* SDSDB.swift in Sources */,

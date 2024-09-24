@@ -39,10 +39,10 @@ class NSEEnvironment: Dependencies {
             // Listen for an indication that the main app is going to handle
             // this notification. If the main app is active we don't want to
             // process any messages here.
-            let token = DarwinNotificationCenter.addObserver(for: .mainAppHandledNotification, queue: Self.mainAppDarwinQueue) { token in
+            let token = DarwinNotificationCenter.addObserver(name: .mainAppHandledNotification, queue: Self.mainAppDarwinQueue) { token in
                 guard hasCalledBack.tryToSetFlag() else { return }
 
-                if DarwinNotificationCenter.isValidObserver(token) {
+                if DarwinNotificationCenter.isValid(token) {
                     DarwinNotificationCenter.removeObserver(token)
                 }
 
@@ -55,7 +55,7 @@ class NSEEnvironment: Dependencies {
 
             // Notify the main app that we received new content to process.
             // If it's running, it will notify us so we can bail out.
-            DarwinNotificationCenter.post(.nseDidReceiveNotification)
+            DarwinNotificationCenter.postNotification(name: .nseDidReceiveNotification)
 
             // The main app should notify us nearly instantaneously if it's
             // going to process this notification so we only wait a fraction
@@ -63,7 +63,7 @@ class NSEEnvironment: Dependencies {
             Self.mainAppDarwinQueue.asyncAfter(deadline: DispatchTime.now() + 0.010) {
                 guard hasCalledBack.tryToSetFlag() else { return }
 
-                if DarwinNotificationCenter.isValidObserver(token) {
+                if DarwinNotificationCenter.isValid(token) {
                     DarwinNotificationCenter.removeObserver(token)
                 }
 
@@ -75,10 +75,10 @@ class NSEEnvironment: Dependencies {
         }
     }
 
-    private var mainAppLaunchObserverToken = DarwinNotificationInvalidObserver
+    private var mainAppLaunchObserverToken = DarwinNotificationCenter.invalidObserverToken
     func listenForMainAppLaunch(logger: NSELogger) {
-        guard !DarwinNotificationCenter.isValidObserver(mainAppLaunchObserverToken) else { return }
-        mainAppLaunchObserverToken = DarwinNotificationCenter.addObserver(for: .mainAppLaunched, queue: .global(), using: { _ in
+        guard !DarwinNotificationCenter.isValid(mainAppLaunchObserverToken) else { return }
+        mainAppLaunchObserverToken = DarwinNotificationCenter.addObserver(name: .mainAppLaunched, queue: .global(), block: { _ in
             // If we're currently processing messages we want to commit
             // suicide to ensure that we don't try and process messages
             // while the main app is running. If we're not processing

@@ -78,7 +78,7 @@ class RingerSwitch {
             return isRingerStateSilenced(token: ringerStateToken)
         }
         let token = DarwinNotificationCenter.addObserver(
-            for: Self.ringerStateNotificationName,
+            name: Self.ringerStateNotificationName,
             queue: .main
         ) { [weak self] token in
             guard let strongSelf = self else {
@@ -98,6 +98,6 @@ class RingerSwitch {
     }
 
     private func isRingerStateSilenced(token: Int32) -> Bool {
-        return DarwinNotificationCenter.getStateForObserver(token) > 0 ? false : true
+        return DarwinNotificationCenter.getState(observer: token) > 0 ? false : true
     }
 }
