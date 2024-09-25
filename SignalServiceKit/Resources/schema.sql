@@ -2093,3 +2093,12 @@ CREATE
     ,"timestamp"
 )
 ;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "BackupStickerPackDownloadQueue" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT
+            ,"packId" BLOB NOT NULL
+            ,"packKey" BLOB NOT NULL
+        )
+;

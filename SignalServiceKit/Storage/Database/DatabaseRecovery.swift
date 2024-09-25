@@ -285,7 +285,8 @@ public extension DatabaseRecovery {
             QueuedBackupAttachmentDownload.databaseTableName,
             AttachmentUploadRecord.databaseTableName,
             "AttachmentValidationBackfillQueue",
-            QueuedBackupAttachmentUpload.databaseTableName
+            QueuedBackupAttachmentUpload.databaseTableName,
+            QueuedBackupStickerPackDownload.databaseTableName
         ]
 
         private static func prepareToCopyTablesWithBestEffort(

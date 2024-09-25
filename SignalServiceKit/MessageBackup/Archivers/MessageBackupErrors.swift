@@ -286,6 +286,9 @@ extension MessageBackup {
             /// We fetched an interaction (via the iterator) with no sqlite row id.
             case fetchedInteractionMissingRowId
 
+            /// Error iterating over all sticker packs for backup purposes.
+            case stickerPackIteratorError(RawError)
+
             /// These should never happen; it means some invariant in the backup code
             /// we could not enforce with the type system was broken. Nothing was wrong with
             /// the proto or local database; its the iOS backup code that has a bug somewhere.

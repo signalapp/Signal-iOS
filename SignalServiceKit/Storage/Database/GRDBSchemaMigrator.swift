@@ -298,6 +298,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addIsSmsColumnToTSAttachment
         case addInKnownMessageRequestStateToHiddenRecipient
         case addBackupAttachmentUploadQueue
+        case addBackupStickerPackDownloadQueue
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -3531,6 +3532,18 @@ public class GRDBSchemaMigrator: NSObject {
                 on: "BackupAttachmentUploadQueue",
                 columns: ["sourceType", "timestamp"]
             )
+
+            return .success(())
+        }
+
+        migrator.registerMigration(.addBackupStickerPackDownloadQueue) { tx in
+            try tx.database.create(table: "BackupStickerPackDownloadQueue") { table in
+                table.autoIncrementedPrimaryKey("id")
+                table.column("packId", .blob)
+                    .notNull()
+                table.column("packKey", .blob)
+                    .notNull()
+            }
 
             return .success(())
         }

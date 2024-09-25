@@ -1729,6 +1729,11 @@
 		B9FF37362B9286C6005ADDB8 /* UsernameLinkScanQRCodeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FF37352B9286C6005ADDB8 /* UsernameLinkScanQRCodeSheet.swift */; };
 		C100E6822C33087C000C83B8 /* PaymentsFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = C100E6812C33087C000C83B8 /* PaymentsFormat.swift */; };
 		C10E9FAF2BB778E100A609B9 /* MessageBackupManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10E9FAE2BB778E100A609B9 /* MessageBackupManagerMock.swift */; };
+		C113994B2CA1B32C00D4D90C /* BackupStickerPackDownloadStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C113994A2CA1B32400D4D90C /* BackupStickerPackDownloadStore.swift */; };
+		C113994D2CA1B3E200D4D90C /* QueuedBackupStickerPackDownload.swift in Sources */ = {isa = PBXBuildFile; fileRef = C113994C2CA1B3DA00D4D90C /* QueuedBackupStickerPackDownload.swift */; };
+		C11399622CA21C8900D4D90C /* sticker_pack_00.binproto in Resources */ = {isa = PBXBuildFile; fileRef = C113995C2CA21C8900D4D90C /* sticker_pack_00.binproto */; };
+		C11399662CA21C8900D4D90C /* sticker_pack_01.binproto in Resources */ = {isa = PBXBuildFile; fileRef = C113995E2CA21C8900D4D90C /* sticker_pack_01.binproto */; };
+		C11399672CA21C8900D4D90C /* sticker_pack_02.binproto in Resources */ = {isa = PBXBuildFile; fileRef = C11399602CA21C8900D4D90C /* sticker_pack_02.binproto */; };
 		C116A1D42C8F961000E6BDE3 /* ContactAccessLimitedReminderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C116A1D32C8F961000E6BDE3 /* ContactAccessLimitedReminderView.swift */; };
 		C11C278129F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C11C278029F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift */; };
 		C13341122C221DAD00C26ED5 /* OWSIncomingArchivedPaymentMessage+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13341102C221DAC00C26ED5 /* OWSIncomingArchivedPaymentMessage+SDS.swift */; };
@@ -5344,6 +5349,11 @@
 		BAD74FE6EBEB10FF3426D809 /* Pods-SignalTests.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.testable release.xcconfig"; path = "Target Support Files/Pods-SignalTests/Pods-SignalTests.testable release.xcconfig"; sourceTree = "<group>"; };
 		C100E6812C33087C000C83B8 /* PaymentsFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentsFormat.swift; sourceTree = "<group>"; };
 		C10E9FAE2BB778E100A609B9 /* MessageBackupManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupManagerMock.swift; sourceTree = "<group>"; };
+		C113994A2CA1B32400D4D90C /* BackupStickerPackDownloadStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupStickerPackDownloadStore.swift; sourceTree = "<group>"; };
+		C113994C2CA1B3DA00D4D90C /* QueuedBackupStickerPackDownload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueuedBackupStickerPackDownload.swift; sourceTree = "<group>"; };
+		C113995C2CA21C8900D4D90C /* sticker_pack_00.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = sticker_pack_00.binproto; path = "Signal-Message-Backup-Tests/test-cases/sticker_pack_00.binproto"; sourceTree = "<group>"; };
+		C113995E2CA21C8900D4D90C /* sticker_pack_01.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = sticker_pack_01.binproto; path = "Signal-Message-Backup-Tests/test-cases/sticker_pack_01.binproto"; sourceTree = "<group>"; };
+		C11399602CA21C8900D4D90C /* sticker_pack_02.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = sticker_pack_02.binproto; path = "Signal-Message-Backup-Tests/test-cases/sticker_pack_02.binproto"; sourceTree = "<group>"; };
 		C116A1D32C8F961000E6BDE3 /* ContactAccessLimitedReminderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactAccessLimitedReminderView.swift; sourceTree = "<group>"; };
 		C11C278029F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditHistoryTableSheetViewController.swift; sourceTree = "<group>"; };
 		C13341102C221DAC00C26ED5 /* OWSIncomingArchivedPaymentMessage+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSIncomingArchivedPaymentMessage+SDS.swift"; sourceTree = "<group>"; };
@@ -9669,7 +9679,9 @@
 		66CD255F2B06888800139E17 /* StickerPack */ = {
 			isa = PBXGroup;
 			children = (
+				C113994A2CA1B32400D4D90C /* BackupStickerPackDownloadStore.swift */,
 				66CD25692B06963200139E17 /* MessageBackupStickerPackArchiver.swift */,
+				C113994C2CA1B3DA00D4D90C /* QueuedBackupStickerPackDownload.swift */,
 			);
 			path = StickerPack;
 			sourceTree = "<group>";
@@ -10768,6 +10780,16 @@
 			path = SwiftUIExtensions;
 			sourceTree = "<group>";
 		};
+		C113995B2CA21C6800D4D90C /* StickerPack */ = {
+			isa = PBXGroup;
+			children = (
+				C113995C2CA21C8900D4D90C /* sticker_pack_00.binproto */,
+				C113995E2CA21C8900D4D90C /* sticker_pack_01.binproto */,
+				C11399602CA21C8900D4D90C /* sticker_pack_02.binproto */,
+			);
+			name = StickerPack;
+			sourceTree = "<group>";
+		};
 		C182C4BC29E45D64007F7A7C /* Edit */ = {
 			isa = PBXGroup;
 			children = (
@@ -11201,6 +11223,7 @@
 				D9FB77CD2C8932A200B5DA73 /* Chat */,
 				D9FB78432C89334400B5DA73 /* ChatItem */,
 				D90BC1D02C9A2A9400A0A3CB /* Recipient */,
+				C113995B2CA21C6800D4D90C /* StickerPack */,
 				D90BC1D52C9A2AD300A0A3CB /* standard_frames.binproto */,
 				D90BC1D42C9A2AD200A0A3CB /* standard_frames.txtproto */,
 			);
@@ -15126,6 +15149,9 @@
 				F942628C289B1B5600460798 /* sample-sticker.webp in Resources */,
 				D90BC1D72C9A2AD300A0A3CB /* standard_frames.binproto in Resources */,
 				D90BC1D62C9A2AD300A0A3CB /* standard_frames.txtproto in Resources */,
+				C11399622CA21C8900D4D90C /* sticker_pack_00.binproto in Resources */,
+				C11399662CA21C8900D4D90C /* sticker_pack_01.binproto in Resources */,
+				C11399672CA21C8900D4D90C /* sticker_pack_02.binproto in Resources */,
 				F908AA7D28CE629700472E68 /* test-apng.png in Resources */,
 				F927478828CFE9B10056EAFE /* test-png.png in Resources */,
 			);
@@ -16604,6 +16630,7 @@
 				667BB2082C580C1400E79B57 /* BackupAttachmentDownloadStore.swift in Sources */,
 				66734F012CA1ED3F00558494 /* BackupAttachmentUploadManager.swift in Sources */,
 				66C7952D2C9B78E900C13937 /* BackupAttachmentUploadStore.swift in Sources */,
+				C113994B2CA1B32C00D4D90C /* BackupStickerPackDownloadStore.swift in Sources */,
 				F9C5CE3A289453B400548EEE /* BadgeAssets.swift in Sources */,
 				D979DA162B8D1FDD000EEAB8 /* BadgeCountFetcher.swift in Sources */,
 				F9C5CE37289453B400548EEE /* BadgeStore.swift in Sources */,
@@ -17302,6 +17329,7 @@
 				669573022C1B77C00092B755 /* QueuedAttachmentDownloadRecord.swift in Sources */,
 				667BB2062C58076400E79B57 /* QueuedBackupAttachmentDownload.swift in Sources */,
 				661681862C9A1ADF00A39C12 /* QueuedBackupAttachmentUpload.swift in Sources */,
+				C113994D2CA1B3E200D4D90C /* QueuedBackupStickerPackDownload.swift in Sources */,
 				6676A40C2BD1F5F9006B9CC9 /* QuotedAttachmentInfo.swift in Sources */,
 				66D7B9132B979C3A0005C98B /* QuotedMessageAttachmentReference+TSResource.swift in Sources */,
 				66D7B90E2B9798950005C98B /* QuotedMessageAttachmentReference.swift in Sources */,

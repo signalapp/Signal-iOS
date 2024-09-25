@@ -1443,6 +1443,9 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 }
             }
             DependenciesBridge.shared.attachmentDownloadManager.beginDownloadingIfNecessary()
+            Task {
+                try await StickerManager.downloadPendingSickerPacks()
+            }
         }
 
         Self.updateApplicationShortcutItems(isRegistered: isRegistered)

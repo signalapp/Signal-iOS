@@ -924,6 +924,9 @@ public class AppSetup {
             dateProvider: dateProvider,
             wallpaperStore: wallpaperStore
         )
+
+        let backupStickerPackDownloadStore = BackupStickerPackDownloadStoreImpl()
+
         let messageBackupManager = MessageBackupManagerImpl(
             accountDataArchiver: MessageBackupAccountDataArchiverImpl(
                 chatStyleArchiver: messageBackupChatStyleArchiver,
@@ -948,6 +951,7 @@ public class AppSetup {
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
             backupAttachmentUploadManager: backupAttachmentUploadManager,
             backupRequestManager: messageBackupRequestManager,
+            backupStickerPackDownloadStore: backupStickerPackDownloadStore,
             chatArchiver: MessageBackupChatArchiverImpl(
                 chatStyleArchiver: messageBackupChatStyleArchiver,
                 dmConfigurationStore: disappearingMessagesConfigurationStore,
@@ -1010,7 +1014,11 @@ public class AppSetup {
                 recipientDatabaseTable: recipientDatabaseTable,
                 threadStore: threadStore
             ),
-            releaseNotesRecipientArchiver: MessageBackupReleaseNotesRecipientArchiver()
+            releaseNotesRecipientArchiver: MessageBackupReleaseNotesRecipientArchiver(),
+            stickerPackArchiver: MessageBackupStickerPackArchiverImpl(
+                backupStickerPackDownloadStore: backupStickerPackDownloadStore,
+                stickerManager: MessageBackup.Wrappers.StickerManager()
+            )
         )
 
         let externalPendingIDEALDonationStore = ExternalPendingIDEALDonationStoreImpl(keyStoreFactory: keyValueStoreFactory)

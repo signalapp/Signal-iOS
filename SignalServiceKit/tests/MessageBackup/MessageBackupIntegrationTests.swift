@@ -63,6 +63,8 @@ class MessageBackupIntegrationTests: XCTestCase {
         case recipientContact
         case recipientDistributionList
         case recipientGroup
+
+        case stickerPack
     }
 
     /// The preferred log output for test failures.
@@ -158,6 +160,8 @@ class MessageBackupIntegrationTests: XCTestCase {
                     return binprotoName.contains("recipient_distribution_list_")
                 case .recipientGroup:
                     return binprotoName.contains("recipient_groups_")
+                case .stickerPack:
+                    return binprotoName.contains("sticker_pack_")
                 }
             }
         }()

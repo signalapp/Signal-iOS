@@ -75,17 +75,42 @@ public class StickerManager: NSObject {
         case installIfUnsaved
     }
 
+    private let queueLoader: TaskQueueLoader<StickerPackDownloadTaskRunner>
+
     // MARK: - Initializers
 
     override init() {
+
+        // Task queue to install any sticker packs restored from a backup
+        self.queueLoader = TaskQueueLoader(
+            maxConcurrentTasks: 4,
+            db: DependenciesBridge.shared.db,
+            runner: StickerPackDownloadTaskRunner(
+                store: StickerPackDownloadTaskRecordStore(
+                    store: BackupStickerPackDownloadStoreImpl()
+                )
+            )
+        )
+
         super.init()
 
         // Resume sticker and sticker pack downloads when app is ready.
         AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
             if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered {
-                StickerManager.refreshContents()
+                Task {
+                    // This will return once all restored sticker packs have been downloaded
+                    try await self.queueLoader.loadAndRunTasks()
+
+                    // Refresh contents after pending downloads complete
+                    StickerManager.refreshContents()
+                }
             }
         }
+    }
+
+    // Attempt to download any sticker packs restored via backup.
+    public static func downloadPendingSickerPacks() async throws {
+        try await shared.queueLoader.loadAndRunTasks()
     }
 
     // The sticker manager is responsible for downloading more than one kind
@@ -1163,6 +1188,70 @@ public class StickerManager: NSObject {
             owsFailDebug("Unknown type.")
             return
         }
+    }
+
+    // MARK: - StickerPack Download Task Queue
+
+    private struct StickerPackDownloadTaskRecord: TaskRecord {
+        let id: Int64
+        let record: QueuedBackupStickerPackDownload
+    }
+
+    private class StickerPackDownloadTaskRecordStore: TaskRecordStore {
+        typealias Record = StickerPackDownloadTaskRecord
+
+        private let store: BackupStickerPackDownloadStore
+        init(store: BackupStickerPackDownloadStore) {
+            self.store = store
+        }
+
+        func peek(count: UInt, tx: DBReadTransaction) throws -> [StickerPackDownloadTaskRecord] {
+            return try store.peek(count: count, tx: tx).map {
+                return .init(id: $0.id!, record: $0)
+            }
+        }
+
+        func removeRecord(_ record: StickerPackDownloadTaskRecord, tx: any DBWriteTransaction) throws {
+            try store.removeRecordFromQueue(record: record.record, tx: tx)
+        }
+    }
+
+    private class StickerPackDownloadTaskRunner: TaskRecordRunner {
+        typealias Record = StickerPackDownloadTaskRecord
+        typealias Store = StickerPackDownloadTaskRecordStore
+
+        let store: StickerPackDownloadTaskRecordStore
+        init(store: StickerPackDownloadTaskRecordStore) {
+            self.store = store
+        }
+
+        func runTask(record: Record) async -> TaskRecordResult {
+            let stickerPackInfo = StickerPackInfo(packId: record.record.packId, packKey: record.record.packKey)
+            do {
+                guard !StickerManager.isStickerPackInstalled(stickerPackInfo: stickerPackInfo) else {
+                    return .success
+                }
+                try await StickerManager.tryToDownloadStickerPack(
+                    stickerPackInfo: stickerPackInfo
+                ).done(on: DispatchQueue.global()) { stickerPack in
+                    StickerManager.upsertStickerPack(
+                        stickerPack: stickerPack,
+                        installMode: .installIfUnsaved,
+                        wasLocallyInitiated: true
+                    )
+                }.awaitable()
+                return .success
+            } catch {
+                Logger.error("Failed to download sticker: \(error)")
+                return .unretryableError(error)
+            }
+        }
+
+        func didSucceed(record: Record, tx: any DBWriteTransaction) throws { }
+
+        func didFail(record: Record, error: any Error, isRetryable: Bool, tx: any DBWriteTransaction) throws { }
+
+        func didCancel(record: Record, tx: any DBWriteTransaction) throws { }
     }
 }
 

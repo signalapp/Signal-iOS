@@ -14,12 +14,14 @@ extension MessageBackup {
         public typealias BlockingManager = _MessageBackup_BlockingManagerShim
         public typealias ContactManager = _MessageBackup_ContactManagerShim
         public typealias ProfileManager = _MessageBackup_ProfileManagerShim
+        public typealias StickerManager = _MessageBackup_StickerManagerShim
     }
 
     public enum Wrappers {
         public typealias BlockingManager = _MessageBackup_BlockingManagerWrapper
         public typealias ContactManager = _MessageBackup_ContactManagerWrapper
         public typealias ProfileManager = _MessageBackup_ProfileManagerWrapper
+        public typealias StickerManager = _MessageBackup_StickerManagerWrapper
     }
 }
 
@@ -206,6 +208,18 @@ public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManager
             profileKey: profileKey,
             tx: sdsTx
         )
+    }
+}
+
+// MARK: - StickerManager
+
+public protocol _MessageBackup_StickerManagerShim {
+    func installedStickerPacks(tx: DBReadTransaction) -> [StickerPack]
+}
+
+public class _MessageBackup_StickerManagerWrapper: _MessageBackup_StickerManagerShim {
+    public func installedStickerPacks(tx: DBReadTransaction) -> [StickerPack] {
+        return StickerManager.installedStickerPacks(transaction: SDSDB.shimOnlyBridge(tx))
     }
 }
 

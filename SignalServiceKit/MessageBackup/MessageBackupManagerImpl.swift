@@ -30,6 +30,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
     private let backupAttachmentUploadManager: BackupAttachmentUploadManager
     private let backupRequestManager: MessageBackupRequestManager
+    private let backupStickerPackDownloadStore: BackupStickerPackDownloadStore
     private let chatArchiver: MessageBackupChatArchiver
     private let chatItemArchiver: MessageBackupChatItemArchiver
     private let contactRecipientArchiver: MessageBackupContactRecipientArchiver
@@ -45,6 +46,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     private let plaintextStreamProvider: MessageBackupPlaintextProtoStreamProvider
     private let postFrameRestoreActionManager: MessageBackupPostFrameRestoreActionManager
     private let releaseNotesRecipientArchiver: MessageBackupReleaseNotesRecipientArchiver
+    private let stickerPackArchiver: MessageBackupStickerPackArchiver
 
     public init(
         accountDataArchiver: MessageBackupAccountDataArchiver,
@@ -53,6 +55,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
         backupAttachmentUploadManager: BackupAttachmentUploadManager,
         backupRequestManager: MessageBackupRequestManager,
+        backupStickerPackDownloadStore: BackupStickerPackDownloadStore,
         chatArchiver: MessageBackupChatArchiver,
         chatItemArchiver: MessageBackupChatItemArchiver,
         contactRecipientArchiver: MessageBackupContactRecipientArchiver,
@@ -67,7 +70,8 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         messageBackupKeyMaterial: MessageBackupKeyMaterial,
         plaintextStreamProvider: MessageBackupPlaintextProtoStreamProvider,
         postFrameRestoreActionManager: MessageBackupPostFrameRestoreActionManager,
-        releaseNotesRecipientArchiver: MessageBackupReleaseNotesRecipientArchiver
+        releaseNotesRecipientArchiver: MessageBackupReleaseNotesRecipientArchiver,
+        stickerPackArchiver: MessageBackupStickerPackArchiver
     ) {
         self.accountDataArchiver = accountDataArchiver
         self.attachmentDownloadManager = attachmentDownloadManager
@@ -75,6 +79,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
         self.backupAttachmentUploadManager = backupAttachmentUploadManager
         self.backupRequestManager = backupRequestManager
+        self.backupStickerPackDownloadStore = backupStickerPackDownloadStore
         self.chatArchiver = chatArchiver
         self.chatItemArchiver = chatItemArchiver
         self.contactRecipientArchiver = contactRecipientArchiver
@@ -90,6 +95,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         self.plaintextStreamProvider = plaintextStreamProvider
         self.postFrameRestoreActionManager = postFrameRestoreActionManager
         self.releaseNotesRecipientArchiver = releaseNotesRecipientArchiver
+        self.stickerPackArchiver = stickerPackArchiver
     }
 
     // MARK: - Remote backups
@@ -334,6 +340,24 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             context: chatArchivingContext
         )
         switch chatItemArchiveResult {
+        case .success:
+            break
+        case .partialSuccess(let partialFailures):
+            try processArchiveFrameErrors(errors: partialFailures)
+        case .completeFailure(let error):
+            try processFatalArchivingError(error: error)
+        }
+
+        let archivingContext = MessageBackup.ArchivingContext(
+            currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
+            backupAttachmentUploadManager: backupAttachmentUploadManager,
+            tx: tx
+        )
+        let stickerPackArchiveResult = stickerPackArchiver.archiveStickerPacks(
+            stream: stream,
+            context: archivingContext
+        )
+        switch stickerPackArchiveResult {
         case .success:
             break
         case .partialSuccess(let partialFailures):
@@ -608,11 +632,18 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                     try processRestoreFrameErrors(errors: errors)
                 }
             case .stickerPack(let backupProtoStickerPack):
-                // TODO: [Backups] Restore sticker packs.
-                try processRestoreFrameErrors(errors: [.restoreFrameError(
-                    .unimplemented,
-                    MessageBackup.StickerPackId(backupProtoStickerPack.packID)
-                )])
+                let stickerPackResult = stickerPackArchiver.restore(
+                    backupProtoStickerPack,
+                    context: MessageBackup.RestoringContext(tx: tx)
+                )
+                switch stickerPackResult {
+                case .success:
+                    continue
+                case .partialRestore(let errors):
+                    try processRestoreFrameErrors(errors: errors)
+                case .failure(let errors):
+                    try processRestoreFrameErrors(errors: errors)
+                }
             case .adHocCall(let backupProtoAdHocCall):
                 // TODO: [Backups] Restore ad-hoc calls.
                 try processRestoreFrameErrors(errors: [.restoreFrameError(
