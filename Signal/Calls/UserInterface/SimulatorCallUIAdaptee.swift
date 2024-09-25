@@ -46,9 +46,8 @@ class SimulatorCallUIAdaptee: NSObject, CallUIAdaptee {
         completion(nil)
     }
 
+    @MainActor
     func answerCall(_ call: SignalCall) {
-        AssertIsOnMainThread()
-
         guard call.localId == self.callService.callServiceState.currentCall?.localId else {
             owsFailDebug("localId does not match current call")
             return
@@ -76,8 +75,8 @@ class SimulatorCallUIAdaptee: NSObject, CallUIAdaptee {
         self.audioSession.isRTCAudioEnabled = true
     }
 
+    @MainActor
     func localHangupCall(_ call: SignalCall) {
-        AssertIsOnMainThread()
         // If both parties hang up at the same moment, call might already be nil.
         owsPrecondition(self.callService.callServiceState.currentCall == nil || call.localId == self.callService.callServiceState.currentCall?.localId)
         callService.handleLocalHangupCall(call)
@@ -101,14 +100,14 @@ class SimulatorCallUIAdaptee: NSObject, CallUIAdaptee {
     func failCall(_ call: SignalCall, error: CallError) {
     }
 
+    @MainActor
     func setIsMuted(call: SignalCall, isMuted: Bool) {
-        AssertIsOnMainThread()
         owsPrecondition(call.localId == self.callService.callServiceState.currentCall?.localId)
         self.callService.updateIsLocalAudioMuted(isLocalAudioMuted: isMuted)
     }
 
+    @MainActor
     func setHasLocalVideo(call: SignalCall, hasLocalVideo: Bool) {
-        AssertIsOnMainThread()
         owsPrecondition(call.localId == self.callService.callServiceState.currentCall?.localId)
         self.callService.updateIsLocalVideoMuted(isLocalVideoMuted: !hasLocalVideo)
     }

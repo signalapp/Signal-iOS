@@ -501,12 +501,12 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 
+    @MainActor
     private func setAppIsReady(
         launchInterface: LaunchInterface,
         launchContext: LaunchContext
     ) {
         Logger.info("")
-        AssertIsOnMainThread()
         owsPrecondition(!AppReadiness.isAppReady)
         owsPrecondition(!CurrentAppContext().isRunningTests)
 

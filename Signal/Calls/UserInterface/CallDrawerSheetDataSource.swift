@@ -33,6 +33,8 @@ protocol CallDrawerSheetDataSource {
 final class GroupCallSheetDataSource<Call: GroupCall>: CallDrawerSheetDataSource {
     private let ringRtcCall: SignalRingRTC.GroupCall
     private let groupCall: Call
+
+    @MainActor
     init(groupCall: Call) {
         self.ringRtcCall = groupCall.ringRtcCall
         self.groupCall = groupCall

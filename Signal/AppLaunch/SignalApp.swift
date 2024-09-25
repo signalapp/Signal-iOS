@@ -64,8 +64,8 @@ extension SignalApp {
         }
     }
 
+    @MainActor
     func showLaunchInterface(_ launchInterface: LaunchInterface, launchStartedAt: TimeInterval) {
-        AssertIsOnMainThread()
         owsPrecondition(AppReadiness.isAppReady)
 
         let startupDuration = CACurrentMediaTime() - launchStartedAt

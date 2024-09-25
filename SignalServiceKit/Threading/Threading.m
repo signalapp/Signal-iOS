@@ -4,30 +4,16 @@
 //
 
 #import "Threading.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <pthread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-void DispatchMainThreadSafe(dispatch_block_t block)
+void DispatchMainThreadSafeObjc(dispatch_block_t block)
 {
     OWSCAssertDebug(block);
 
-    if ([NSThread isMainThread]) {
-        block();
-    } else {
-        dispatch_async(dispatch_get_main_queue(), ^{ block(); });
-    }
-}
-
-void DispatchSyncMainThreadSafe(dispatch_block_t block)
-{
-    OWSCAssertDebug(block);
-
-    if ([NSThread isMainThread]) {
-        block();
-    } else {
-        dispatch_sync(dispatch_get_main_queue(), ^{ block(); });
-    }
+    [ThreadingObjcBridge dispatchMainThreadSafe:block];
 }
 
 BOOL DispatchQueueIsCurrentQueue(dispatch_queue_t testQueue)

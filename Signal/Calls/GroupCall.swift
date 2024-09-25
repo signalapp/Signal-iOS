@@ -9,9 +9,17 @@ import SignalServiceKit
 import SignalUI
 
 protocol GroupCallObserver: AnyObject {
+
+    @MainActor
     func groupCallLocalDeviceStateChanged(_ call: GroupCall)
+
+    @MainActor
     func groupCallRemoteDeviceStatesChanged(_ call: GroupCall)
+
+    @MainActor
     func groupCallPeekChanged(_ call: GroupCall)
+
+    @MainActor
     func groupCallEnded(_ call: GroupCall, reason: GroupCallEndReason)
     func groupCallReceivedReactions(_ call: GroupCall, reactions: [SignalRingRTC.Reaction])
     func groupCallReceivedRaisedHands(_ call: GroupCall, raisedHands: [DemuxId])
@@ -31,7 +39,7 @@ extension GroupCallObserver {
     func handleUntrustedIdentityError(_ call: GroupCall) {}
 }
 
-class GroupCall: SignalRingRTC.GroupCallDelegate {
+class GroupCall: @preconcurrency SignalRingRTC.GroupCallDelegate {
     enum Constants {
         /// Automatically mute on join when seeing this many members in a call before we join.
         static let autoMuteThreshold = 8
@@ -114,9 +122,8 @@ class GroupCall: SignalRingRTC.GroupCallDelegate {
 
     private var observers: WeakArray<any GroupCallObserver> = []
 
+    @MainActor
     func addObserver(_ observer: any GroupCallObserver, syncStateImmediately: Bool = false) {
-        AssertIsOnMainThread()
-
         observers.append(observer)
 
         if syncStateImmediately {
@@ -136,6 +143,7 @@ class GroupCall: SignalRingRTC.GroupCallDelegate {
 
     // MARK: - GroupCallDelegate
 
+    @MainActor
     func groupCall(onLocalDeviceStateChanged groupCall: SignalRingRTC.GroupCall) {
         if groupCall.localDeviceState.joinState == .joined, commonState.setConnectedDateIfNeeded() {
             // make sure we don't terminate audio session during call
@@ -147,6 +155,7 @@ class GroupCall: SignalRingRTC.GroupCallDelegate {
     }
 
     private var remoteStateChangeDebounceId: UUID?
+    @MainActor
     func groupCall(onRemoteDeviceStatesChanged groupCall: SignalRingRTC.GroupCall) {
         // Debounce this event 0.5s to avoid spamming the calls UI with group changes.
         let debounceId = UUID()
@@ -183,6 +192,7 @@ class GroupCall: SignalRingRTC.GroupCallDelegate {
         }
     }
 
+    @MainActor
     func groupCall(onPeekChanged groupCall: SignalRingRTC.GroupCall) {
         observers.elements.forEach { $0.groupCallPeekChanged(self) }
     }
@@ -193,6 +203,7 @@ class GroupCall: SignalRingRTC.GroupCallDelegate {
     func groupCall(requestGroupMembers groupCall: SignalRingRTC.GroupCall) {
     }
 
+    @MainActor
     func groupCall(onEnded groupCall: SignalRingRTC.GroupCall, reason: GroupCallEndReason) {
         self.hasInvokedConnectMethod = false
 

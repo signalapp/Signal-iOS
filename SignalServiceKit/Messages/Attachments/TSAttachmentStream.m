@@ -819,8 +819,8 @@ NSString *NSStringForAttachmentThumbnailQuality(TSAttachmentThumbnailQuality val
                                            failure:(OWSThumbnailFailure)failure
 {
     [self loadedThumbnailWithThumbnailDimensionPoints:thumbnailDimensionPoints
-        success:^(OWSLoadedThumbnail *thumbnail) { DispatchMainThreadSafe(^{ success(thumbnail.image); }); }
-        failure:^{ DispatchMainThreadSafe(^{ failure(); }); }];
+        success:^(OWSLoadedThumbnail *thumbnail) { DispatchMainThreadSafeObjc(^{ success(thumbnail.image); }); }
+        failure:^{ DispatchMainThreadSafeObjc(^{ failure(); }); }];
 }
 
 - (void)loadedThumbnailWithThumbnailDimensionPoints:(CGFloat)thumbnailDimensionPoints

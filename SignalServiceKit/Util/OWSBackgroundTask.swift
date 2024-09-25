@@ -36,7 +36,7 @@ public class OWSBackgroundTask: NSObject {
     private var taskId: UInt64?
 
     /// This property should only be accessed while holding `lock`.
-    private var completionBlock: (@Sendable (BackgroundTaskState) -> Void)?
+    private var completionBlock: (@MainActor @Sendable (BackgroundTaskState) -> Void)?
 
     // This could be a default param but objc is in the way for now.
     @objc
@@ -46,7 +46,7 @@ public class OWSBackgroundTask: NSObject {
 
     /// - Parameters:
     ///   - completionBlock: will be called exactly once on the main thread
-    public init(label: String, completionBlock: (@Sendable (BackgroundTaskState) -> Void)?) {
+    public init(label: String, completionBlock: (@MainActor @Sendable (BackgroundTaskState) -> Void)?) {
         owsAssertDebug(!label.isEmpty)
 
         self.label = label
@@ -70,7 +70,7 @@ public class OWSBackgroundTask: NSObject {
 
                 // Make a local copy of completionBlock to ensure that it is called
                 // exactly once.
-                var completionBlock: (@Sendable (BackgroundTaskState) -> Void)?
+                var completionBlock: (@MainActor @Sendable (BackgroundTaskState) -> Void)?
                 self.lock.withLock {
                     guard self.taskId != nil else {
                         return
@@ -91,7 +91,7 @@ public class OWSBackgroundTask: NSObject {
         if taskId == nil {
             // Make a local copy of completionBlock to ensure that it is called
             // exactly once.
-            var completionBlock: (@Sendable (BackgroundTaskState) -> Void)?
+            var completionBlock: (@MainActor @Sendable (BackgroundTaskState) -> Void)?
             lock.withLock {
                 completionBlock = self.completionBlock
                 self.completionBlock = nil
@@ -106,7 +106,7 @@ public class OWSBackgroundTask: NSObject {
 
     public func end() {
         // Make a local copy of this state, since this method is called by `dealloc`.
-        var completionBlock: (@Sendable (BackgroundTaskState) -> Void)?
+        var completionBlock: (@MainActor @Sendable (BackgroundTaskState) -> Void)?
 
         lock.withLock {
             guard let taskId = self.taskId else {

@@ -17,6 +17,7 @@ final class GroupThreadCall: Signal.GroupCall {
     private weak var delegate: (any GroupThreadCallDelegate)?
 
     let groupThread: TSGroupThread
+    var membershipDidChangeObserver: (any NSObjectProtocol)!
 
     init(
         delegate: any GroupThreadCallDelegate,
@@ -50,12 +51,16 @@ final class GroupThreadCall: Signal.GroupCall {
         // Watch group membership changes. The object is the group thread ID, which
         // is a string. NotificationCenter dispatches by object identity rather
         // than equality, so we watch all changes and filter later.
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(groupMembershipDidChange),
-            name: TSGroupThread.membershipDidChange,
-            object: nil
-        )
+        self.membershipDidChangeObserver = NotificationCenter.default.addObserver(forName: TSGroupThread.membershipDidChange, object: nil, queue: .main) { [weak self] notification in
+            guard let self else { return }
+            MainActor.assumeIsolated {
+                self.groupMembershipDidChange(notification)
+            }
+        }
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(membershipDidChangeObserver!)
     }
 
     var hasTerminated: Bool {
@@ -78,9 +83,9 @@ final class GroupThreadCall: Signal.GroupCall {
         static let groupTooLarge = Self(rawValue: 1 << 2)
     }
 
+    @MainActor
     var ringRestrictions: RingRestrictions = [] {
         didSet {
-            AssertIsOnMainThread()
             if ringRestrictions != oldValue, joinState == .notJoined {
                 // Use a fake local state change to refresh the call controls.
                 //
@@ -91,7 +96,7 @@ final class GroupThreadCall: Signal.GroupCall {
         }
     }
 
-    @objc
+    @MainActor
     private func groupMembershipDidChange(_ notification: Notification) {
         // NotificationCenter dispatches by object identity rather than equality,
         // so we filter based on the thread ID here.

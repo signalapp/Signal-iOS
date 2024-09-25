@@ -20,50 +20,50 @@ class CallControls: UIView {
     private lazy var hangUpButton: CallButton = {
         let button = createButton(
             iconName: "phone-down-fill-28",
-            accessibilityLabel: viewModel.hangUpButtonAccessibilityLabel,
-            action: #selector(CallControlsViewModel.didPressHangup)
-        )
+            accessibilityLabel: viewModel.hangUpButtonAccessibilityLabel) { [viewModel] _ in
+                viewModel.didPressHangup()
+            }
         button.unselectedBackgroundColor = UIColor(rgbHex: 0xEB5545)
         return button
     }()
     private(set) lazy var audioSourceButton = createButton(
         iconName: "speaker-fill-28",
-        accessibilityLabel: viewModel.audioSourceAccessibilityLabel,
-        action: #selector(CallControlsViewModel.didPressAudioSource)
-    )
+        accessibilityLabel: viewModel.audioSourceAccessibilityLabel) { [viewModel] _ in
+            viewModel.didPressAudioSource()
+        }
     private lazy var muteButton = createButton(
         iconName: "mic-fill",
         selectedIconName: "mic-slash-fill-28",
-        accessibilityLabel: viewModel.muteButtonAccessibilityLabel,
-        action: #selector(CallControlsViewModel.didPressMute)
-    )
+        accessibilityLabel: viewModel.muteButtonAccessibilityLabel) { [viewModel] _ in
+            viewModel.didPressMute()
+        }
     private lazy var videoButton = createButton(
         iconName: "video-fill-28",
         selectedIconName: "video-slash-fill-28",
-        accessibilityLabel: viewModel.videoButtonAccessibilityLabel,
-        action: #selector(CallControlsViewModel.didPressVideo)
-    )
+        accessibilityLabel: viewModel.videoButtonAccessibilityLabel) { [viewModel] _ in
+            viewModel.didPressVideo()
+        }
+    // TODO: Accessibility label
     private lazy var ringButton = createButton(
         iconName: "bell-ring-fill-28",
-        selectedIconName: "bell-slash-fill",
-        // TODO: Accessibility label
-        action: #selector(CallControlsViewModel.didPressRing)
-    )
+        selectedIconName: "bell-slash-fill") { [viewModel] _ in
+            viewModel.didPressRing()
+        }
     private lazy var flipCameraButton: CallButton = {
         let button = createButton(
             iconName: "switch-camera-28",
-            accessibilityLabel: viewModel.flipCameraButtonAccessibilityLabel,
-            action: #selector(CallControlsViewModel.didPressFlipCamera)
-        )
+            accessibilityLabel: viewModel.flipCameraButtonAccessibilityLabel) { [viewModel] _ in
+                viewModel.didPressFlipCamera()
+            }
         button.selectedIconColor = button.iconColor
         button.selectedBackgroundColor = button.unselectedBackgroundColor
         return button
     }()
     private lazy var moreButton = createButton(
         iconName: "more",
-        accessibilityLabel: viewModel.moreButtonAccessibilityLabel,
-        action: #selector(CallControlsViewModel.didPressMore)
-    )
+        accessibilityLabel: viewModel.moreButtonAccessibilityLabel) { [viewModel] _ in
+            viewModel.didPressMore()
+        }
 
     private lazy var joinButtonActivityIndicator = UIActivityIndicatorView(style: .medium)
 
@@ -245,12 +245,12 @@ class CallControls: UIView {
         iconName: String,
         selectedIconName: String? = nil,
         accessibilityLabel: String? = nil,
-        action: Selector
+        action: @escaping UIActionHandler
     ) -> CallButton {
         let button = CallButton(iconName: iconName)
         button.selectedIconName = selectedIconName
         button.accessibilityLabel = accessibilityLabel
-        button.addTarget(viewModel, action: action, for: .touchUpInside)
+        button.addAction(UIAction(handler: action), for: .touchUpInside)
         button.setContentHuggingHorizontalHigh()
         button.setCompressionResistanceHorizontalLow()
         return button
@@ -296,6 +296,8 @@ private class CallControlsViewModel {
     private weak var delegate: CallControlsDelegate?
     private let confirmationToastManager: CallControlsConfirmationToastManager
     fileprivate var refreshView: (() -> Void)?
+
+    @MainActor
     init(
         call: SignalCall,
         callService: CallService,
@@ -315,17 +317,15 @@ private class CallControlsViewModel {
         callService.audioService.delegate = self
     }
 
-    deinit {
-        callService.audioService.delegate = nil
-    }
-
     private var didOverrideDefaultMuteState = false
 
+    @MainActor
     private var hasExternalAudioInputsAndAudioSource: Bool {
         let audioService = callService.audioService
         return audioService.hasExternalInputs && audioService.currentAudioSource != nil
     }
 
+    @MainActor
     var audioSourceButtonIsHidden: Bool {
         if hasExternalAudioInputsAndAudioSource {
             return false
@@ -344,6 +344,7 @@ private class CallControlsViewModel {
         let iconName: String
     }
 
+    @MainActor
     var audioSourceButtonConfiguration: AudioSourceButtonConfiguration {
         let showDropdownArrow: Bool
         let iconName: String
@@ -417,6 +418,7 @@ private class CallControlsViewModel {
         let isUserInteractionEnabled: Bool
     }
 
+    @MainActor
     var joinButtonConfig: JoinButtonConfiguration {
         if call.isFull {
             // Make the button look disabled, but don't actually disable it.
@@ -447,6 +449,7 @@ private class CallControlsViewModel {
         )
     }
 
+    @MainActor
     static func joinButtonLabel(for call: SignalCall) -> String {
         switch call.mode {
         case .individual:
@@ -479,6 +482,7 @@ private class CallControlsViewModel {
         return (call.joinState == .joining || call.joinState == .pending) && !joinButtonIsHidden
     }
 
+    @MainActor
     var ringButtonIsHidden: Bool {
         switch call.mode {
         case .individual(_):
@@ -496,6 +500,7 @@ private class CallControlsViewModel {
         let shouldDrawAsDisabled: Bool
     }
 
+    @MainActor
     var ringButtonConfiguration: RingButtonConfiguration? {
         switch call.mode {
         case .individual(_):
@@ -543,6 +548,7 @@ private class CallControlsViewModel {
         return call.isOutgoingAudioMuted
     }
 
+    @MainActor
     var ringButtonIsSelected: Bool {
         if let config = ringButtonConfiguration {
             return config.isSelected
@@ -551,6 +557,7 @@ private class CallControlsViewModel {
         return false
     }
 
+    @MainActor
     var audioSourceButtonIsSelected: Bool {
         return callService.audioService.isSpeakerEnabled
     }
@@ -631,13 +638,13 @@ extension CallControlsViewModel: CallAudioServiceDelegate {
 }
 
 extension CallControlsViewModel {
-    @objc
+    @MainActor
     func didPressHangup() {
         callService.callUIAdapter.localHangupCall(call)
         delegate?.didPressHangup()
     }
 
-    @objc
+    @MainActor
     func didPressAudioSource() {
         if callService.audioService.hasExternalInputs {
             callService.audioService.presentRoutePicker()
@@ -649,7 +656,7 @@ extension CallControlsViewModel {
         refreshView?()
     }
 
-    @objc
+    @MainActor
     func didPressMute() {
         let shouldMute = !muteButtonIsSelected
         callService.updateIsLocalAudioMuted(isLocalAudioMuted: shouldMute)
@@ -658,7 +665,7 @@ extension CallControlsViewModel {
         refreshView?()
     }
 
-    @objc
+    @MainActor
     func didPressVideo() {
         callService.updateIsLocalVideoMuted(isLocalVideoMuted: !call.isOutgoingVideoMuted)
 
@@ -669,7 +676,7 @@ extension CallControlsViewModel {
         refreshView?()
     }
 
-    @objc
+    @MainActor
     func didPressRing() {
         switch call.mode {
         case .individual:
@@ -694,7 +701,7 @@ extension CallControlsViewModel {
         }
     }
 
-    @objc
+    @MainActor
     func didPressFlipCamera() {
         if let isUsingFrontCamera = call.videoCaptureController.isUsingFrontCamera {
             callService.updateCameraSource(call: call, isUsingFrontCamera: !isUsingFrontCamera)

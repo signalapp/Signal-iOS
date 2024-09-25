@@ -103,9 +103,8 @@ class NSEEnvironment: Dependencies {
     /// Called for each notification the NSE receives.
     ///
     /// Will be invoked multiple times in the same NSE process.
+    @MainActor
     func setUp(logger: NSELogger) throws {
-        AssertIsOnMainThread()
-
         let debugLogger = DebugLogger.shared
 
         // Do this every time in case the setting is changed.
@@ -162,8 +161,8 @@ class NSEEnvironment: Dependencies {
         listenForMainAppLaunch(logger: logger)
     }
 
+    @MainActor
     private func setAppIsReady() {
-        AssertIsOnMainThread()
         owsPrecondition(!AppReadiness.isAppReady)
 
         // Note that this does much more than set a flag; it will also run all deferred blocks.

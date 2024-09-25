@@ -8,6 +8,7 @@ import SignalServiceKit
 
 protocol CallServiceStateObserver: AnyObject {
     /// Fired on the main thread when the current call changes.
+    @MainActor
     func didUpdateCall(from oldValue: SignalCall?, to newValue: SignalCall?)
 }
 
@@ -28,37 +29,31 @@ class CallServiceState {
     private let _currentCall: AtomicValue<SignalCall?>
 
     /// Represents the call currently occuring on this device.
-    private(set) var currentCall: SignalCall? {
-        get { _currentCall.get() }
-        set {
-            AssertIsOnMainThread()
+    var currentCall: SignalCall? { _currentCall.get() }
 
-            let oldValue = _currentCall.swap(newValue)
+    @MainActor
+    func setCurrentCall(_ currentCall: SignalCall?) {
+        let oldValue = _currentCall.swap(currentCall)
 
-            guard newValue !== oldValue else {
-                return
-            }
-
-            for observer in self.observers.elements {
-                observer.didUpdateCall(from: oldValue, to: newValue)
-            }
+        guard currentCall !== oldValue else {
+            return
         }
-    }
 
-    func setCurrentCall(_ currentCall: SignalCall) {
-        self.currentCall = currentCall
+        for observer in self.observers.elements {
+            observer.didUpdateCall(from: oldValue, to: currentCall)
+        }
     }
 
     /**
      * Clean up any existing call state and get ready to receive a new call.
      */
+    @MainActor
     func terminateCall(_ call: SignalCall) {
-        AssertIsOnMainThread()
         Logger.info("call: \(call as Optional)")
 
         // If call is for the current call, clear it out first.
         if call === currentCall {
-            currentCall = nil
+            setCurrentCall(nil)
         }
 
         delegate?.callServiceState(self, didTerminateCall: call)
@@ -68,9 +63,8 @@ class CallServiceState {
 
     private var observers = WeakArray<any CallServiceStateObserver>()
 
+    @MainActor
     func addObserver(_ observer: any CallServiceStateObserver, syncStateImmediately: Bool = false) {
-        AssertIsOnMainThread()
-
         observers.append(observer)
 
         if syncStateImmediately {

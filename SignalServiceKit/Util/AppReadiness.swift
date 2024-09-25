@@ -27,9 +27,8 @@ public class AppReadiness: NSObject {
     @objc
     public static var isUIReady: Bool { shared.readyFlagUI.isSet }
 
-    @objc
+    @MainActor
     public static func setAppIsReady() {
-        AssertIsOnMainThread()
         owsAssertDebug(!shared.readyFlag.isSet)
         owsAssertDebug(!shared.readyFlagUI.isSet)
 
@@ -37,18 +36,15 @@ public class AppReadiness: NSObject {
         shared.readyFlagUI.setIsReady()
     }
 
-    @objc
+    @MainActor
     public static func setAppIsReadyUIStillPending() {
-        AssertIsOnMainThread()
         owsAssertDebug(!shared.readyFlag.isSet)
 
         shared.readyFlag.setIsReady()
     }
 
-    @objc
+    @MainActor
     public static func setUIIsReady() {
-        AssertIsOnMainThread()
-
         shared.readyFlagUI.setIsReady()
     }
 
@@ -100,11 +96,10 @@ public class AppReadiness: NSObject {
         }
     }
 
+    @MainActor
     private func runNowOrWhenAppWillBecomeReady(_ block: @escaping BlockType,
                                                 label: String,
                                                 priority: ReadyFlag.Priority) {
-        AssertIsOnMainThread()
-
         guard !CurrentAppContext().isRunningTests else {
             // We don't need to do any "on app ready" work in the tests.
             return
@@ -159,14 +154,13 @@ public class AppReadiness: NSObject {
         }
     }
 
+    @MainActor
     private func runNowOrWhenAppDidBecomeReadySync(
         _ block: @escaping BlockType,
         flag: ReadyFlag,
         label: String,
         priority: ReadyFlag.Priority
     ) {
-        AssertIsOnMainThread()
-
         guard !CurrentAppContext().isRunningTests else {
             // We don't need to do any "on app ready" work in the tests.
             return

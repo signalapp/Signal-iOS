@@ -21,6 +21,7 @@ final class IndividualCallService: CallServiceStateObserver {
     private let callManager: CallService.CallManagerType
     private let callServiceState: CallServiceState
 
+    @MainActor
     init(
         callManager: CallService.CallManagerType,
         callServiceState: CallServiceState
@@ -43,6 +44,7 @@ final class IndividualCallService: CallServiceStateObserver {
     private var tsAccountManager: any TSAccountManager { DependenciesBridge.shared.tsAccountManager }
     private var identityManager: any OWSIdentityManager { DependenciesBridge.shared.identityManager }
 
+    @MainActor
     func didUpdateCall(from oldValue: SignalCall?, to newValue: SignalCall?) {
         stopAnyCallTimer()
         if let newValue {
@@ -60,8 +62,8 @@ final class IndividualCallService: CallServiceStateObserver {
     /**
      * Initiate an outgoing call.
      */
+    @MainActor
     func handleOutgoingCall(_ call: SignalCall) {
-        AssertIsOnMainThread()
         Logger.info("call: \(call)")
 
         guard callServiceState.currentCall == nil else {
@@ -85,8 +87,8 @@ final class IndividualCallService: CallServiceStateObserver {
     /**
      * User chose to answer the call. Used by the Callee only.
      */
+    @MainActor
     public func handleAcceptCall(_ call: SignalCall) {
-        AssertIsOnMainThread()
         Logger.info("\(call)")
 
         defer {
@@ -279,14 +281,13 @@ final class IndividualCallService: CallServiceStateObserver {
         }
     }
 
+    @MainActor
     private func _handleReceivedAnswer(
         callId: UInt64,
         sourceDevice: UInt32,
         opaque: Data,
         identityKeys: CallIdentityKeys?
     ) {
-        AssertIsOnMainThread()
-
         guard let identityKeys else {
             if let currentCall = callServiceState.currentCall, currentCall.individualCall?.callId == callId {
                 handleFailedCall(failedCall: currentCall, error: OWSAssertionError("missing identity keys"), shouldResetUI: true, shouldResetRingRTC: true)
@@ -359,9 +360,8 @@ final class IndividualCallService: CallServiceStateObserver {
         }
     }
 
+    @MainActor
     private func _handleReceivedHangup(callId: UInt64, sourceDevice: UInt32, hangupType: HangupType, deviceId: UInt32) {
-        AssertIsOnMainThread()
-
         do {
             try callManager.receivedHangup(sourceDevice: sourceDevice, callId: callId, hangupType: hangupType, deviceId: deviceId)
         } catch {
@@ -383,9 +383,8 @@ final class IndividualCallService: CallServiceStateObserver {
         }
     }
 
+    @MainActor
     private func _handleReceivedBusy(callId: UInt64, sourceDevice: UInt32) {
-        AssertIsOnMainThread()
-
         do {
             try callManager.receivedBusy(sourceDevice: sourceDevice, callId: callId)
         } catch {
@@ -398,8 +397,8 @@ final class IndividualCallService: CallServiceStateObserver {
 
     // MARK: - Call Manager Events
 
+    @MainActor
     public func callManager(_ callManager: CallService.CallManagerType, shouldStartCall call: SignalCall, callId: UInt64, isOutgoing: Bool, callMediaType: CallMediaType, shouldEarlyRing: Bool) {
-        AssertIsOnMainThread()
         Logger.info("call: \(call)")
 
         if shouldEarlyRing {
@@ -451,8 +450,8 @@ final class IndividualCallService: CallServiceStateObserver {
         }
     }
 
+    @MainActor
     public func callManager(_ callManager: CallService.CallManagerType, onEvent call: SignalCall, event: CallManagerEvent) {
-        AssertIsOnMainThread()
         Logger.info("call: \(call), onEvent: \(event)")
 
         switch event {
@@ -768,8 +767,8 @@ final class IndividualCallService: CallServiceStateObserver {
         }
     }
 
+    @MainActor
     public func callManager(_ callManager: CallService.CallManagerType, onUpdateLocalVideoSession call: SignalCall, session: AVCaptureSession?) {
-        AssertIsOnMainThread()
         Logger.info("onUpdateLocalVideoSession")
 
         guard call === callServiceState.currentCall else {
@@ -778,8 +777,8 @@ final class IndividualCallService: CallServiceStateObserver {
         }
     }
 
+    @MainActor
     public func callManager(_ callManager: CallService.CallManagerType, onAddRemoteVideoTrack call: SignalCall, track: RTCVideoTrack) {
-        AssertIsOnMainThread()
         Logger.info("onAddRemoteVideoTrack")
 
         guard call === callServiceState.currentCall else {
@@ -792,12 +791,11 @@ final class IndividualCallService: CallServiceStateObserver {
 
     // MARK: - Call Manager Signaling
 
+    @MainActor
     public func callManager(_ callManager: CallService.CallManagerType, shouldSendOffer callId: UInt64, call: SignalCall, destinationDeviceId: UInt32?, opaque: Data, callMediaType: CallMediaType) {
-        AssertIsOnMainThread()
-
         Logger.info("shouldSendOffer")
 
-        Task { @MainActor in
+        Task {
             do {
                 let offerBuilder = SSKProtoCallMessageOffer.builder(id: callId)
                 offerBuilder.setOpaque(opaque)
@@ -832,11 +830,11 @@ final class IndividualCallService: CallServiceStateObserver {
         }
     }
 
+    @MainActor
     public func callManager(_ callManager: CallService.CallManagerType, shouldSendAnswer callId: UInt64, call: SignalCall, destinationDeviceId: UInt32?, opaque: Data) {
-        AssertIsOnMainThread()
         Logger.info("shouldSendAnswer")
 
-        Task { @MainActor in
+        Task {
             do {
                 let answerBuilder = SSKProtoCallMessageAnswer.builder(id: callId)
                 answerBuilder.setOpaque(opaque)
@@ -867,11 +865,11 @@ final class IndividualCallService: CallServiceStateObserver {
         }
     }
 
+    @MainActor
     public func callManager(_ callManager: CallService.CallManagerType, shouldSendIceCandidates callId: UInt64, call: SignalCall, destinationDeviceId: UInt32?, candidates: [Data]) {
-        AssertIsOnMainThread()
         Logger.info("shouldSendIceCandidates")
 
-        Task { @MainActor in
+        Task {
             do {
                 var iceUpdateProtos = [SSKProtoCallMessageIceUpdate]()
 
@@ -915,11 +913,11 @@ final class IndividualCallService: CallServiceStateObserver {
         }
     }
 
+    @MainActor
     public func callManager(_ callManager: CallService.CallManagerType, shouldSendHangup callId: UInt64, call: SignalCall, destinationDeviceId: UInt32?, hangupType: HangupType, deviceId: UInt32) {
-        AssertIsOnMainThread()
         Logger.info("shouldSendHangup")
 
-        Task { @MainActor in
+        Task {
             do {
                 let sendPromise = await self.databaseStorage.awaitableWrite { tx in
                     return CallHangupSender.sendHangup(
@@ -949,11 +947,11 @@ final class IndividualCallService: CallServiceStateObserver {
         }
     }
 
+    @MainActor
     public func callManager(_ callManager: CallService.CallManagerType, shouldSendBusy callId: UInt64, call: SignalCall, destinationDeviceId: UInt32?) {
-        AssertIsOnMainThread()
         Logger.info("shouldSendBusy")
 
-        Task { @MainActor in
+        Task {
             do {
                 let busyBuilder = SSKProtoCallMessageBusy.builder(id: callId)
 
@@ -989,8 +987,8 @@ final class IndividualCallService: CallServiceStateObserver {
     /**
      * User didn't answer incoming call
      */
+    @MainActor
     public func handleMissedCall(_ call: SignalCall, error: CallError? = nil) {
-        AssertIsOnMainThread()
         Logger.info("call: \(call)")
 
         let callType: RPRecentCallType
@@ -1024,6 +1022,7 @@ final class IndividualCallService: CallServiceStateObserver {
         }
     }
 
+    @MainActor
     func handleAnsweredElsewhere(call: SignalCall) {
         call.individualCall.createOrUpdateCallInteractionAsync(callType: .incomingAnsweredElsewhere)
 
@@ -1035,6 +1034,7 @@ final class IndividualCallService: CallServiceStateObserver {
         callServiceState.terminateCall(call)
     }
 
+    @MainActor
     func handleDeclinedElsewhere(call: SignalCall) {
         call.individualCall.createOrUpdateCallInteractionAsync(callType: .incomingDeclinedElsewhere)
 
@@ -1046,6 +1046,7 @@ final class IndividualCallService: CallServiceStateObserver {
         callServiceState.terminateCall(call)
     }
 
+    @MainActor
     func handleBusyElsewhere(call: SignalCall) {
         call.individualCall.createOrUpdateCallInteractionAsync(callType: .incomingBusyElsewhere)
 
@@ -1070,8 +1071,8 @@ final class IndividualCallService: CallServiceStateObserver {
      * In the latter case, the ring is performed before any messages have been exchanged. This is to satisfy
      * callservicesd which requires that we post a CallKit ring shortly after the NSE wakes the main app.
      */
+    @MainActor
     private func handleRinging(call: SignalCall, isAnticipatory: Bool = false) {
-        AssertIsOnMainThread()
         // Only incoming calls can use the early ring states
         owsAssertDebug(!(call.individualCall.direction == .outgoing && isAnticipatory))
         Logger.info("call: \(call)")
@@ -1102,8 +1103,8 @@ final class IndividualCallService: CallServiceStateObserver {
         }
     }
 
+    @MainActor
     private func handleReconnecting(call: SignalCall) {
-        AssertIsOnMainThread()
         Logger.info("call: \(call)")
 
         guard call === callServiceState.currentCall else {
@@ -1121,8 +1122,8 @@ final class IndividualCallService: CallServiceStateObserver {
         }
     }
 
+    @MainActor
     private func handleReconnected(call: SignalCall) {
-        AssertIsOnMainThread()
         Logger.info("call: \(call)")
 
         guard call === callServiceState.currentCall else {
@@ -1162,8 +1163,8 @@ final class IndividualCallService: CallServiceStateObserver {
      * Local user toggled to hold call. Currently only possible via CallKit screen,
      * e.g. when another Call comes in.
      */
+    @MainActor
     func setIsOnHold(call: SignalCall, isOnHold: Bool) {
-        AssertIsOnMainThread()
         Logger.info("call: \(call)")
 
         guard call === callServiceState.currentCall else {
@@ -1206,8 +1207,8 @@ final class IndividualCallService: CallServiceStateObserver {
         return turnServerInfo
     }
 
+    @MainActor
     public func handleCallKitProviderReset() {
-        AssertIsOnMainThread()
         Logger.debug("")
 
         // Return to a known good state by ending the current call, if any.
@@ -1216,6 +1217,7 @@ final class IndividualCallService: CallServiceStateObserver {
         }
     }
 
+    @MainActor
     func cleanUpStaleCall(_ staleCall: SignalCall, function: StaticString = #function, line: UInt = #line) {
         assert(staleCall !== callServiceState.currentCall)
         if let currentCall = callServiceState.currentCall {
@@ -1232,8 +1234,8 @@ final class IndividualCallService: CallServiceStateObserver {
     // * If we know which call it was, we should update that call's state
     //   to reflect the error.
     // * IFF that call is the current call, we want to terminate it.
+    @MainActor
     public func handleFailedCall(failedCall: SignalCall, error: Error, shouldResetUI: Bool, shouldResetRingRTC: Bool) {
-        AssertIsOnMainThread()
         Logger.debug("")
 
         let callError = CallError.wrapErrorIfNeeded(error)
@@ -1278,9 +1280,8 @@ final class IndividualCallService: CallServiceStateObserver {
     // MARK: CallViewController Timer
 
     private var activeCallTimer: Timer?
+    @MainActor
     func startCallTimer(for call: SignalCall) {
-        AssertIsOnMainThread()
-
         var hasUsedUpTimerSlop: Bool = false
 
         assert(self.activeCallTimer == nil)
@@ -1294,6 +1295,7 @@ final class IndividualCallService: CallServiceStateObserver {
         }
     }
 
+    @MainActor
     private func ensureCallScreenPresented(call: SignalCall, hasUsedUpTimerSlop: inout Bool) {
         guard let connectedDate = call.commonState.connectedDate else {
             // Ignore; call hasn't connected yet.

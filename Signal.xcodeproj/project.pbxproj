@@ -1356,6 +1356,7 @@
 		72901D2D2C9B129B000406DC /* ProfileManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72901D2C2C9B1296000406DC /* ProfileManagerProtocol.swift */; };
 		72901D2F2C9B1918000406DC /* ProtoUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72901D2E2C9B1913000406DC /* ProtoUtils.swift */; };
 		72976BF22BDCF00C0054FAC2 /* NSTimer+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72976BF12BDCF00C0054FAC2 /* NSTimer+OWS.swift */; };
+		729E0B0A2CA4AEB0002EC961 /* Threading.swift in Sources */ = {isa = PBXBuildFile; fileRef = 729E0B082CA4ADE2002EC961 /* Threading.swift */; };
 		72A132A52CA210C7000ACED6 /* DarwinNotificationCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72A132A42CA210C2000ACED6 /* DarwinNotificationCenter.swift */; };
 		72A132A72CA25EF0000ACED6 /* SDSCrossProcess.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72A132A62CA25EE9000ACED6 /* SDSCrossProcess.swift */; };
 		72B0C2402C9EEA8200B57DAD /* PreKeyRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72B0C23F2C9EEA7700B57DAD /* PreKeyRecord.swift */; };
@@ -4896,6 +4897,7 @@
 		72901D2C2C9B1296000406DC /* ProfileManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileManagerProtocol.swift; sourceTree = "<group>"; };
 		72901D2E2C9B1913000406DC /* ProtoUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProtoUtils.swift; sourceTree = "<group>"; };
 		72976BF12BDCF00C0054FAC2 /* NSTimer+OWS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSTimer+OWS.swift"; sourceTree = "<group>"; };
+		729E0B082CA4ADE2002EC961 /* Threading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Threading.swift; sourceTree = "<group>"; };
 		72A132A42CA210C2000ACED6 /* DarwinNotificationCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DarwinNotificationCenter.swift; sourceTree = "<group>"; };
 		72A132A62CA25EE9000ACED6 /* SDSCrossProcess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDSCrossProcess.swift; sourceTree = "<group>"; };
 		72B0C23F2C9EEA7700B57DAD /* PreKeyRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyRecord.swift; sourceTree = "<group>"; };
@@ -9251,6 +9253,7 @@
 			children = (
 				668A01122C2B6077007B8808 /* Threading.h */,
 				668A01132C2B6077007B8808 /* Threading.m */,
+				729E0B082CA4ADE2002EC961 /* Threading.swift */,
 			);
 			path = Threading;
 			sourceTree = "<group>";
@@ -17545,6 +17548,7 @@
 				F9C5CDE2289453B400548EEE /* ThreadBacked.swift in Sources */,
 				F9C5CD17289453B300548EEE /* ThreadFinder.swift in Sources */,
 				668A01152C2B6077007B8808 /* Threading.m in Sources */,
+				729E0B0A2CA4AEB0002EC961 /* Threading.swift in Sources */,
 				5033D45F29D4DAAC007FEADA /* ThreadMerger.swift in Sources */,
 				502D45442A05A34B00B8BCE0 /* ThreadRemover.swift in Sources */,
 				45161BA928A2E54B0055AB45 /* ThreadReplyInfo.swift in Sources */,

@@ -78,11 +78,10 @@ public class ReadyFlag: NSObject {
         flag.get()
     }
 
+    @MainActor
     public func runNowOrWhenWillBecomeReady(_ readyBlock: @escaping ReadyBlock,
                                             label: String? = nil,
                                             priority: Priority? = nil) {
-        AssertIsOnMainThread()
-
         let priority = priority ?? Self.defaultPriority
         let task = ReadyTask(label: label, priority: priority, block: readyBlock)
 
@@ -102,19 +101,16 @@ public class ReadyFlag: NSObject {
                                logIfLongerThan: Self.blockLogDuration,
                                logInProduction: true) {
                 autoreleasepool {
-                    MainActor.assumeIsolated {
-                        task.block()
-                    }
+                    task.block()
                 }
             }
         }
     }
 
+    @MainActor
     public func runNowOrWhenDidBecomeReadySync(_ readyBlock: @escaping ReadyBlock,
                                                label: String? = nil,
                                                priority: Priority? = nil) {
-        AssertIsOnMainThread()
-
         let priority = priority ?? Self.defaultPriority
         let task = ReadyTask(label: label, priority: priority, block: readyBlock)
 
@@ -134,9 +130,7 @@ public class ReadyFlag: NSObject {
                                logIfLongerThan: Self.blockLogDuration,
                                logInProduction: true) {
                 autoreleasepool {
-                    MainActor.assumeIsolated {
-                        task.block()
-                    }
+                    task.block()
                 }
             }
         }
@@ -176,10 +170,8 @@ public class ReadyFlag: NSObject {
         }
     }
 
-    @objc
+    @MainActor
     public func setIsReady() {
-        AssertIsOnMainThread()
-
         guard let tasksToPerform = tryToSetFlag() else {
             return
         }
@@ -199,9 +191,7 @@ public class ReadyFlag: NSObject {
                                    logIfLongerThan: Self.blockLogDuration,
                                    logInProduction: true) {
                     autoreleasepool {
-                        MainActor.assumeIsolated {
-                            task.block()
-                        }
+                        task.block()
                     }
                 }
             }
@@ -215,9 +205,7 @@ public class ReadyFlag: NSObject {
                                    logIfLongerThan: Self.blockLogDuration,
                                    logInProduction: true) {
                     autoreleasepool {
-                        MainActor.assumeIsolated {
-                            task.block()
-                        }
+                        task.block()
                     }
                 }
             }

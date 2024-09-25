@@ -58,6 +58,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         )
     }()
 
+    @MainActor
     private(set) lazy var audioService: CallAudioService = {
         let result = CallAudioService(audioSession: self.audioSession)
         callServiceState.addObserver(result, syncStateImmediately: true)
@@ -68,6 +69,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
 
     let callServiceState: CallServiceState
 
+    @MainActor
     public init(
         appContext: any AppContext,
         authCredentialManager: any AuthCredentialManager,
@@ -163,9 +165,8 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     /**
      * Choose whether to use CallKit or a Notification backed interface for calling.
      */
+    @MainActor
     public func rebuildCallUIAdapter() {
-        AssertIsOnMainThread()
-
         if let currentCall = callServiceState.currentCall {
             Logger.warn("ending current call in. Did user toggle callkit preference while in a call?")
             callServiceState.terminateCall(currentCall)
@@ -251,9 +252,8 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     /**
      * Local user toggled to mute audio.
      */
+    @MainActor
     func updateIsLocalAudioMuted(isLocalAudioMuted: Bool) {
-        AssertIsOnMainThread()
-
         // Keep a reference to the call before permissions were requested...
         guard let currentCall = callServiceState.currentCall else {
             owsFailDebug("missing currentCall")
@@ -291,8 +291,8 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         }
     }
 
+    @MainActor
     private func updateIsLocalAudioMutedWithMicrophonePermission(call: SignalCall, isLocalAudioMuted: Bool) {
-        AssertIsOnMainThread()
         owsPrecondition(call === callServiceState.currentCall)
 
         switch call.mode {
@@ -308,9 +308,8 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     /**
      * Local user toggled video.
      */
+    @MainActor
     func updateIsLocalVideoMuted(isLocalVideoMuted: Bool) {
-        AssertIsOnMainThread()
-
         // Keep a reference to the call before permissions were requested...
         guard let currentCall = callServiceState.currentCall else {
             owsFailDebug("missing currentCall")
@@ -346,8 +345,8 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         }
     }
 
+    @MainActor
     private func updateIsLocalVideoMutedWithCameraPermissions(call: SignalCall, isLocalVideoMuted: Bool) {
-        AssertIsOnMainThread()
         owsPrecondition(call === callServiceState.currentCall)
 
         switch call.mode {
@@ -361,9 +360,8 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         updateIsVideoEnabled()
     }
 
+    @MainActor
     func updateCameraSource(call: SignalCall, isUsingFrontCamera: Bool) {
-        AssertIsOnMainThread()
-
         call.videoCaptureController.switchCamera(isUsingFrontCamera: isUsingFrontCamera)
     }
 
@@ -407,9 +405,8 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     // * If we know which call it was, we should update that call's state
     //   to reflect the error.
     // * IFF that call is the current call, we want to terminate it.
+    @MainActor
     public func handleFailedCall(failedCall: SignalCall, error: Error) {
-        AssertIsOnMainThread()
-
         switch failedCall.mode {
         case .individual:
             individualCallService.handleFailedCall(
@@ -423,9 +420,8 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         }
     }
 
+    @MainActor
     func handleLocalHangupCall(_ call: SignalCall) {
-        AssertIsOnMainThread()
-
         switch call.mode {
         case .individual:
             individualCallService.handleLocalHangupCall(call)
@@ -504,6 +500,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
 
     // MARK: -
 
+    @MainActor
     func buildAndConnectGroupCall(for thread: TSGroupThread, isVideoMuted: Bool) -> (SignalCall, GroupThreadCall)? {
         owsAssertDebug(thread.groupModel.groupsVersion == .V2)
 
@@ -584,11 +581,11 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         }
     }
 
+    @MainActor
     private func _buildAndConnectGroupCall<T: GroupCall>(
         isOutgoingVideoMuted: Bool,
         createCall: () -> (SignalCall, T)?
     ) -> (SignalCall, T)? {
-        AssertIsOnMainThread()
         guard callServiceState.currentCall == nil else {
             return nil
         }
@@ -615,6 +612,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         return (call, groupCall)
     }
 
+    @MainActor
     func joinGroupCallIfNecessary(_ call: SignalCall, groupCall: GroupCall) {
         guard call === self.callServiceState.currentCall else {
             owsFailDebug("Can't join a group call if it's not the current call")
@@ -666,6 +664,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     ///
     /// We wait for the call to end before terminating to ensure that observers
     /// have an opportunity to handle the "call ended" event.
+    @MainActor
     private func leaveAndTerminateGroupCall(_ call: SignalCall, groupCall: GroupCall) {
         if groupCall.hasInvokedConnectMethod {
             groupCall.ringRtcCall.disconnect()
@@ -873,8 +872,8 @@ extension CallService: IndividualCallObserver {
 }
 
 extension CallService: GroupCallObserver {
+    @MainActor
     func groupCallLocalDeviceStateChanged(_ call: GroupCall) {
-        AssertIsOnMainThread()
 
         let ringRtcCall = call.ringRtcCall
 
@@ -959,9 +958,8 @@ extension CallService: GroupCallObserver {
         }
     }
 
+    @MainActor
     func groupCallEnded(_ groupCall: GroupCall, reason: GroupCallEndReason) {
-        AssertIsOnMainThread()
-
         groupCallAccessoryMessageDelegate.localDeviceGroupCallDidEnd()
 
         let call = callServiceState.currentCall
@@ -976,6 +974,7 @@ extension CallService: GroupCallObserver {
         }
     }
 
+    @MainActor
     public func groupCallRemoteDeviceStatesChanged(_ call: GroupCall) {
         switch call.concreteType {
         case .groupThread(let call):
@@ -1078,7 +1077,7 @@ extension CallService: DatabaseChangeDelegate {
     }
 }
 
-extension CallService: CallManagerDelegate {
+extension CallService: @preconcurrency CallManagerDelegate {
     public typealias CallManagerDelegateCallType = SignalCall
 
     /**
@@ -1250,6 +1249,7 @@ extension CallService: CallManagerDelegate {
 
     // MARK: - 1:1 Call Delegates
 
+    @MainActor
     public func callManager(
         _ callManager: CallManager<SignalCall, CallService>,
         shouldStartCall call: SignalCall,
@@ -1257,8 +1257,6 @@ extension CallService: CallManagerDelegate {
         isOutgoing: Bool,
         callMediaType: CallMediaType
     ) {
-        AssertIsOnMainThread()
-
         guard callServiceState.currentCall == nil else {
             handleFailedCall(failedCall: call, error: OWSGenericError("a current call is already set"))
             return
@@ -1289,13 +1287,12 @@ extension CallService: CallManagerDelegate {
         )
     }
 
+    @MainActor
     public func callManager(
         _ callManager: CallManager<SignalCall, CallService>,
         onEvent call: SignalCall,
         event: CallManagerEvent
     ) {
-        AssertIsOnMainThread()
-
         individualCallService.callManager(
             callManager,
             onEvent: call,
@@ -1339,6 +1336,7 @@ extension CallService: CallManagerDelegate {
         // TODO: Implement handling of the "low outgoing bandwidth for video" notification.
     }
 
+    @MainActor
     public func callManager(
         _ callManager: CallManager<SignalCall, CallService>,
         shouldSendOffer callId: UInt64,
@@ -1347,8 +1345,6 @@ extension CallService: CallManagerDelegate {
         opaque: Data,
         callMediaType: CallMediaType
     ) {
-        AssertIsOnMainThread()
-
         individualCallService.callManager(
             callManager,
             shouldSendOffer: callId,
@@ -1359,6 +1355,7 @@ extension CallService: CallManagerDelegate {
         )
     }
 
+    @MainActor
     public func callManager(
         _ callManager: CallManager<SignalCall, CallService>,
         shouldSendAnswer callId: UInt64,
@@ -1366,8 +1363,6 @@ extension CallService: CallManagerDelegate {
         destinationDeviceId: UInt32?,
         opaque: Data
     ) {
-        AssertIsOnMainThread()
-
         individualCallService.callManager(
             callManager,
             shouldSendAnswer: callId,
@@ -1377,6 +1372,7 @@ extension CallService: CallManagerDelegate {
         )
     }
 
+    @MainActor
     public func callManager(
         _ callManager: CallManager<SignalCall, CallService>,
         shouldSendIceCandidates callId: UInt64,
@@ -1384,8 +1380,6 @@ extension CallService: CallManagerDelegate {
         destinationDeviceId: UInt32?,
         candidates: [Data]
     ) {
-        AssertIsOnMainThread()
-
         individualCallService.callManager(
             callManager,
             shouldSendIceCandidates: callId,
@@ -1395,6 +1389,7 @@ extension CallService: CallManagerDelegate {
         )
     }
 
+    @MainActor
     public func callManager(
         _ callManager: CallManager<SignalCall, CallService>,
         shouldSendHangup callId: UInt64,
@@ -1403,8 +1398,6 @@ extension CallService: CallManagerDelegate {
         hangupType: HangupType,
         deviceId: UInt32
     ) {
-        AssertIsOnMainThread()
-
         individualCallService.callManager(
             callManager,
             shouldSendHangup: callId,
@@ -1415,14 +1408,13 @@ extension CallService: CallManagerDelegate {
         )
     }
 
+    @MainActor
     public func callManager(
         _ callManager: CallManager<SignalCall, CallService>,
         shouldSendBusy callId: UInt64,
         call: SignalCall,
         destinationDeviceId: UInt32?
     ) {
-        AssertIsOnMainThread()
-
         individualCallService.callManager(
             callManager,
             shouldSendBusy: callId,
@@ -1431,13 +1423,12 @@ extension CallService: CallManagerDelegate {
         )
     }
 
+    @MainActor
     public func callManager(
         _ callManager: CallManager<SignalCall, CallService>,
         onUpdateLocalVideoSession call: SignalCall,
         session: AVCaptureSession?
     ) {
-        AssertIsOnMainThread()
-
         individualCallService.callManager(
             callManager,
             onUpdateLocalVideoSession: call,
@@ -1445,13 +1436,12 @@ extension CallService: CallManagerDelegate {
         )
     }
 
+    @MainActor
     public func callManager(
         _ callManager: CallManager<SignalCall, CallService>,
         onAddRemoteVideoTrack call: SignalCall,
         track: RTCVideoTrack
     ) {
-        AssertIsOnMainThread()
-
         individualCallService.callManager(
             callManager,
             onAddRemoteVideoTrack: call,
@@ -1466,6 +1456,7 @@ extension CallService: CallManagerDelegate {
      *
      * Invoked on the main thread, asynchronously.
      */
+    @MainActor
     public func callManager(
         _ callManager: CallManager<SignalCall, CallService>,
         didUpdateRingForGroup groupId: Data,

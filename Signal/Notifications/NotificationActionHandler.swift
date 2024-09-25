@@ -10,8 +10,8 @@ public class NotificationActionHandler: Dependencies {
 
     private static var callService: CallService { AppEnvironment.shared.callService }
 
+    @MainActor
     class func handleNotificationResponse( _ response: UNNotificationResponse, completionHandler: @escaping () -> Void) {
-        AssertIsOnMainThread()
         firstly {
             try handleNotificationResponse(response)
         }.done {
@@ -22,8 +22,8 @@ public class NotificationActionHandler: Dependencies {
         }
     }
 
+    @MainActor
     private class func handleNotificationResponse( _ response: UNNotificationResponse) throws -> Promise<Void> {
-        AssertIsOnMainThread()
         owsAssertDebug(AppReadiness.isAppReady)
 
         let userInfo = response.notification.request.content.userInfo
@@ -83,6 +83,7 @@ public class NotificationActionHandler: Dependencies {
 
     // MARK: -
 
+    @MainActor
     private class func callBack(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
         let aciString = userInfo[AppNotificationUserInfoKey.callBackAciString] as? String
         let phoneNumber = userInfo[AppNotificationUserInfoKey.callBackPhoneNumber] as? String

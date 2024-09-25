@@ -123,12 +123,14 @@ public class CVLoadCoordinator: NSObject {
 
     // MARK: -
 
+    @MainActor
     public func viewDidLoad() {
         addNotificationListeners()
     }
 
     // MARK: - Notifications
 
+    @MainActor
     private func addNotificationListeners() {
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(applicationDidEnterBackground),

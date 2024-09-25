@@ -15,19 +15,44 @@ protocol CallUIAdaptee: AnyObject {
 
     init(showNamesOnCallScreen: Bool, useSystemCallLog: Bool)
 
+    @MainActor
     func startOutgoingCall(call: SignalCall)
+
     // [CallLink] TODO: Only allow individual & group calls.
+    @MainActor
     func reportIncomingCall(_ call: SignalCall, completion: @escaping (Error?) -> Void)
+
+    @MainActor
     func answerCall(_ call: SignalCall)
+
+    @MainActor
     func recipientAcceptedCall(_ call: CallMode)
+
+    @MainActor
     func localHangupCall(_ call: SignalCall)
+
+    @MainActor
     func remoteDidHangupCall(_ call: SignalCall)
+
+    @MainActor
     func remoteBusy(_ call: SignalCall)
+
+    @MainActor
     func didAnswerElsewhere(call: SignalCall)
+
+    @MainActor
     func didDeclineElsewhere(call: SignalCall)
+
+    @MainActor
     func wasBusyElsewhere(call: SignalCall)
+
+    @MainActor
     func failCall(_ call: SignalCall, error: CallError)
+
+    @MainActor
     func setIsMuted(call: SignalCall, isMuted: Bool)
+
+    @MainActor
     func setHasLocalVideo(call: SignalCall, hasLocalVideo: Bool)
 }
 
@@ -58,17 +83,15 @@ public class CallUIAdapter: NSObject {
         )
     }()
 
+    @MainActor
     public override init() {
-        AssertIsOnMainThread()
-
         super.init()
 
         // We cannot assert singleton here, because this class gets rebuilt when the user changes relevant call settings
     }
 
+    @MainActor
     internal func reportIncomingCall(_ call: SignalCall) {
-        AssertIsOnMainThread()
-
         guard let caller = call.caller else {
             return
         }
@@ -100,9 +123,8 @@ public class CallUIAdapter: NSObject {
         }
     }
 
+    @MainActor
     internal func reportMissedCall(_ call: SignalCall, individualCall: IndividualCall) {
-        AssertIsOnMainThread()
-
         guard let callerAci = individualCall.thread.contactAddress.aci else {
             owsFailDebug("Can't receive a call without an ACI.")
             return
@@ -123,24 +145,21 @@ public class CallUIAdapter: NSObject {
         }
     }
 
+    @MainActor
     internal func startOutgoingCall(call: SignalCall) {
-        AssertIsOnMainThread()
-
         // make sure we don't terminate audio session during call
         _ = audioSession.startAudioActivity(call.commonState.audioActivity)
 
         adaptee.startOutgoingCall(call: call)
     }
 
+    @MainActor
     internal func answerCall(_ call: SignalCall) {
-        AssertIsOnMainThread()
-
         adaptee.answerCall(call)
     }
 
+    @MainActor
     public func startAndShowOutgoingCall(thread: TSContactThread, hasLocalVideo: Bool) {
-        AssertIsOnMainThread()
-
         guard let (call, individualCall) = self.callService.buildOutgoingIndividualCallIfPossible(
             thread: thread,
             hasVideo: hasLocalVideo
@@ -157,51 +176,48 @@ public class CallUIAdapter: NSObject {
         self.showCall(call)
     }
 
+    @MainActor
     internal func recipientAcceptedCall(_ call: CallMode) {
-        AssertIsOnMainThread()
-
         adaptee.recipientAcceptedCall(call)
     }
 
+    @MainActor
     internal func remoteDidHangupCall(_ call: SignalCall) {
-        AssertIsOnMainThread()
-
         adaptee.remoteDidHangupCall(call)
     }
 
+    @MainActor
     internal func remoteBusy(_ call: SignalCall) {
-        AssertIsOnMainThread()
-
         adaptee.remoteBusy(call)
     }
 
+    @MainActor
     internal func didAnswerElsewhere(call: SignalCall) {
         adaptee.didAnswerElsewhere(call: call)
     }
 
+    @MainActor
     internal func didDeclineElsewhere(call: SignalCall) {
         adaptee.didDeclineElsewhere(call: call)
     }
 
+    @MainActor
     internal func wasBusyElsewhere(call: SignalCall) {
         adaptee.wasBusyElsewhere(call: call)
     }
 
+    @MainActor
     internal func localHangupCall(_ call: SignalCall) {
-        AssertIsOnMainThread()
-
         adaptee.localHangupCall(call)
     }
 
+    @MainActor
     internal func failCall(_ call: SignalCall, error: CallError) {
-        AssertIsOnMainThread()
-
         adaptee.failCall(call, error: error)
     }
 
+    @MainActor
     private func showCall(_ call: SignalCall) {
-        AssertIsOnMainThread()
-
         guard !call.hasTerminated else {
             Logger.info("Not showing window for terminated call \(call)")
             return
@@ -221,22 +237,19 @@ public class CallUIAdapter: NSObject {
         WindowManager.shared.startCall(viewController: callViewController)
     }
 
+    @MainActor
     internal func setIsMuted(call: SignalCall, isMuted: Bool) {
-        AssertIsOnMainThread()
-
         // With CallKit, muting is handled by a CXAction, so it must go through the adaptee
         adaptee.setIsMuted(call: call, isMuted: isMuted)
     }
 
+    @MainActor
     internal func setHasLocalVideo(call: SignalCall, hasLocalVideo: Bool) {
-        AssertIsOnMainThread()
-
         adaptee.setHasLocalVideo(call: call, hasLocalVideo: hasLocalVideo)
     }
 
+    @MainActor
     internal func setCameraSource(call: SignalCall, isUsingFrontCamera: Bool) {
-        AssertIsOnMainThread()
-
         callService.updateCameraSource(call: call, isUsingFrontCamera: isUsingFrontCamera)
     }
 }

@@ -14,7 +14,7 @@ import SignalUI
  * User interface is routed to the CallManager which requests CXCallActions, and if the CXProvider accepts them,
  * their corresponding consequences are implemented in the CXProviderDelegate methods, e.g. using the CallService
  */
-final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
+final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXProviderDelegate {
 
     private let callManager: CallKitCallManager
     var callService: CallService { AppEnvironment.shared.callService }
@@ -130,8 +130,8 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
     // MARK: CallUIAdaptee
 
+    @MainActor
     func startOutgoingCall(call: SignalCall) {
-        AssertIsOnMainThread()
         Logger.info("")
 
         // Add the new outgoing call to the app's list of calls.
@@ -142,6 +142,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         }
     }
 
+    @MainActor
     private func endCallOnceReported(_ call: SignalCall, reason: CXCallEndedReason) {
         Self.providerReadyFlag.runNowOrWhenDidBecomeReadySync {
             switch call.commonState.systemState {
@@ -169,8 +170,8 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
     }
 
     // Called from CallService after call has ended to clean up any remaining CallKit call state.
+    @MainActor
     func failCall(_ call: SignalCall, error: CallError) {
-        AssertIsOnMainThread()
         Logger.info("")
 
         let reason: CXCallEndedReason
@@ -183,8 +184,8 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         self.endCallOnceReported(call, reason: reason)
     }
 
+    @MainActor
     func reportIncomingCall(_ call: SignalCall, completion: @escaping (Error?) -> Void) {
-        AssertIsOnMainThread()
         Logger.info("")
 
         // Construct a CXCallUpdate describing the incoming call, including the caller.
@@ -228,8 +229,8 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         }
     }
 
+    @MainActor
     func answerCall(_ call: SignalCall) {
-        AssertIsOnMainThread()
         Logger.info("")
 
         Self.providerReadyFlag.runNowOrWhenDidBecomeReadySync {
@@ -238,8 +239,8 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
     }
 
     private var ignoreFirstUnmuteAfterRemoteAnswer = false
+    @MainActor
     func recipientAcceptedCall(_ call: CallMode) {
-        AssertIsOnMainThread()
         Logger.info("")
 
         Self.providerReadyFlag.runNowOrWhenDidBecomeReadySync {
@@ -288,7 +289,6 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
     }
 
     func didAnswerElsewhere(call: SignalCall) {
-        AssertIsOnMainThread()
         Logger.info("")
         endCallOnceReported(call, reason: .answeredElsewhere)
     }
@@ -330,13 +330,13 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
     // MARK: CXProviderDelegate
 
+    @MainActor
     func providerDidBegin(_ provider: CXProvider) {
-        AssertIsOnMainThread()
         Self.providerReadyFlag.setIsReady()
     }
 
+    @MainActor
     func providerDidReset(_ provider: CXProvider) {
-        AssertIsOnMainThread()
         Logger.info("")
 
         // End any ongoing calls if the provider resets, and remove them from the app's list of calls,
@@ -347,9 +347,8 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         callManager.removeAllCalls()
     }
 
+    @MainActor
     func provider(_ provider: CXProvider, perform action: CXStartCallAction) {
-        AssertIsOnMainThread()
-
         Logger.info("CXStartCallAction")
 
         guard let call = callManager.callWithLocalId(action.callUUID) else {
@@ -398,9 +397,8 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         }
     }
 
+    @MainActor
     func provider(_ provider: CXProvider, perform action: CXAnswerCallAction) {
-        AssertIsOnMainThread()
-
         Logger.info("Received \(#function) CXAnswerCallAction \(action.timeoutDate)")
         guard let call = callManager.callWithLocalId(action.callUUID) else {
             owsFailDebug("call as unexpectedly nil")
@@ -439,9 +437,8 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         }
     }
 
+    @MainActor
     public func provider(_ provider: CXProvider, perform action: CXEndCallAction) {
-        AssertIsOnMainThread()
-
         Logger.info("Received \(#function) CXEndCallAction")
         guard let call = callManager.callWithLocalId(action.callUUID) else {
             Logger.error("trying to end unknown call with localId: \(action.callUUID)")
@@ -458,9 +455,8 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         self.callManager.removeCall(call)
     }
 
+    @MainActor
     public func provider(_ provider: CXProvider, perform action: CXSetHeldCallAction) {
-        AssertIsOnMainThread()
-
         Logger.info("Received \(#function) CXSetHeldCallAction")
         guard let call = callManager.callWithLocalId(action.callUUID) else {
             action.fail()
@@ -474,9 +470,8 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         action.fulfill()
     }
 
+    @MainActor
     public func provider(_ provider: CXProvider, perform action: CXSetMutedCallAction) {
-        AssertIsOnMainThread()
-
         Logger.info("Received \(#function) CXSetMutedCallAction")
         guard nil != callManager.callWithLocalId(action.callUUID) else {
             Logger.info("Failing CXSetMutedCallAction for unknown (ended?) call: \(action.callUUID)")
