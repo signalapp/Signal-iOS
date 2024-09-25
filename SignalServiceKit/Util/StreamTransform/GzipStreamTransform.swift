@@ -18,7 +18,6 @@ public class GzipStreamTransform: StreamTransform, FinalizableStreamTransform {
         case streamError
         case dataError
         case outOfMemoryError
-        case bufferError
         case transformFailed
         case finalizeFailed
     }
@@ -162,7 +161,13 @@ public class GzipStreamTransform: StreamTransform, FinalizableStreamTransform {
         case Z_MEM_ERROR:
             throw GzipError.outOfMemoryError
         case Z_BUF_ERROR:
-            throw GzipError.bufferError
+            // This usually indicates that the deflate has no more output, but the final
+            // chunk of output _exactly_ fills the output buffer, causing avail_out to be 0.
+            // This will cause the code above to attempt another deflate, but since there's
+            // nothing further to read, deflate() needs to signal back to the caller with
+            // Z_BUF_ERROR that it was no longer able to either consume input or produce output.
+            // According to zlib docs, Z_BUF_ERROR doesn't need to be checked for inflate()
+            break
         default:
             throw GzipError.transformFailed
         }
