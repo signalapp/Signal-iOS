@@ -209,8 +209,8 @@ class UrlOpener {
                     // This is an expected error case for pending donations
                     break
                 default:
-                    // Unexpected.  Log an warning
-                    OWSLogger.warn("[Donations] Unexpected error encountered with iDEAL donation")
+                    // Unexpected. Log a warning
+                    Logger.warn("[Donations] Unexpected error encountered with iDEAL donation")
                 }
             }
 

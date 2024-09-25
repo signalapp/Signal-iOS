@@ -4,11 +4,8 @@
 //
 
 #import "OWSLogs.h"
-#import <stdatomic.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
-@implementation OWSLogger
 
 static void logUnconditionally(
     DDLogFlag flag, const char *file, BOOL shouldTrimFilePath, NSUInteger line, const char *function, NSString *message)
@@ -43,40 +40,5 @@ void OWSLogUnconditionally(DDLogFlag flag,
     va_end(args);
     logUnconditionally(flag, file, shouldTrimFilePath, line, function, message);
 }
-
-static void _logShim(DDLogFlag flag, NSString *logString)
-{
-    if (!ShouldLogFlag(flag)) {
-        return;
-    }
-    logUnconditionally(flag, "", NO, 0, "", logString);
-}
-
-+ (void)verbose:(NSString *)logString
-{
-    _logShim(DDLogFlagVerbose, logString);
-}
-
-+ (void)debug:(NSString *)logString
-{
-    _logShim(DDLogFlagDebug, logString);
-}
-
-+ (void)info:(NSString *)logString
-{
-    _logShim(DDLogFlagInfo, logString);
-}
-
-+ (void)warn:(NSString *)logString
-{
-    _logShim(DDLogFlagWarning, logString);
-}
-
-+ (void)error:(NSString *)logString
-{
-    _logShim(DDLogFlagError, logString);
-}
-
-@end
 
 NS_ASSUME_NONNULL_END

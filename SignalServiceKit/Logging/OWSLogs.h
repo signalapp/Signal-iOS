@@ -43,16 +43,6 @@ static inline BOOL ShouldLogError(void)
     return ddLogLevel >= DDLogLevelError;
 }
 
-@interface OWSLogger : NSObject
-
-+ (void)verbose:(NSString *)logString;
-+ (void)debug:(NSString *)logString;
-+ (void)info:(NSString *)logString;
-+ (void)warn:(NSString *)logString;
-+ (void)error:(NSString *)logString;
-
-@end
-
 /// A helper method for `OWSLogIfEnabled`, which checks if a level should be logged.
 void OWSLogUnconditionally(DDLogFlag flag,
     const char *file,

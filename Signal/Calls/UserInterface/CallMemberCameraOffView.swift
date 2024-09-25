@@ -187,7 +187,7 @@ class CallMemberCameraOffView: UIView, CallMemberComposableView {
         tx: SDSAnyReadTransaction
     ) {
         guard let avatarView else {
-            OWSLogger.info("Skipping refresh of avatar view in call member view.")
+            Logger.info("Skipping refresh of avatar view in call member view.")
             return
         }
         let updatedSize = avatarDiameter
