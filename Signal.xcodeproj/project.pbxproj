@@ -941,6 +941,7 @@
 		666654212AD0B03F00B23B32 /* MasterKeySyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 666654202AD0B03F00B23B32 /* MasterKeySyncManager.swift */; };
 		66681CDF2C58174F00E50136 /* BackupAttachmentDownloadStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66681CDE2C58174F00E50136 /* BackupAttachmentDownloadStoreTests.swift */; };
 		666B0A8E2C0CD37100737CA0 /* TSResourceContentValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 666B0A8D2C0CD37100737CA0 /* TSResourceContentValidator.swift */; };
+		66734F012CA1ED3F00558494 /* BackupAttachmentUploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66734F002CA1ED3A00558494 /* BackupAttachmentUploadManager.swift */; };
 		6673FF702978C40300F96CFD /* SVRAuthCredentialStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF6F2978C40300F96CFD /* SVRAuthCredentialStorage.swift */; };
 		6673FF722979B33800F96CFD /* SVRAuthCredentialStorageImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF712979B33800F96CFD /* SVRAuthCredentialStorageImpl.swift */; };
 		6673FF752979F87500F96CFD /* SVRAuthCredentialStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF742979F87500F96CFD /* SVRAuthCredentialStorageTests.swift */; };
@@ -4552,6 +4553,7 @@
 		666654202AD0B03F00B23B32 /* MasterKeySyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasterKeySyncManager.swift; sourceTree = "<group>"; };
 		66681CDE2C58174F00E50136 /* BackupAttachmentDownloadStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentDownloadStoreTests.swift; sourceTree = "<group>"; };
 		666B0A8D2C0CD37100737CA0 /* TSResourceContentValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceContentValidator.swift; sourceTree = "<group>"; };
+		66734F002CA1ED3A00558494 /* BackupAttachmentUploadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentUploadManager.swift; sourceTree = "<group>"; };
 		6673FF6F2978C40300F96CFD /* SVRAuthCredentialStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRAuthCredentialStorage.swift; sourceTree = "<group>"; };
 		6673FF712979B33800F96CFD /* SVRAuthCredentialStorageImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRAuthCredentialStorageImpl.swift; sourceTree = "<group>"; };
 		6673FF742979F87500F96CFD /* SVRAuthCredentialStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRAuthCredentialStorageTests.swift; sourceTree = "<group>"; };
@@ -9124,6 +9126,7 @@
 			children = (
 				667BB2072C580C1400E79B57 /* BackupAttachmentDownloadStore.swift */,
 				66681CDE2C58174F00E50136 /* BackupAttachmentDownloadStoreTests.swift */,
+				66734F002CA1ED3A00558494 /* BackupAttachmentUploadManager.swift */,
 				66C7952C2C9B78E200C13937 /* BackupAttachmentUploadStore.swift */,
 				66C7952E2C9B837500C13937 /* BackupAttachmentUploadStoreTests.swift */,
 				667BB2052C58076400E79B57 /* QueuedBackupAttachmentDownload.swift */,
@@ -16599,6 +16602,7 @@
 				502C69722B06F07900012867 /* AwaitableAsyncBlockOperation.swift in Sources */,
 				D972E2FF2C542BCD001D7337 /* Backup.pb.swift in Sources */,
 				667BB2082C580C1400E79B57 /* BackupAttachmentDownloadStore.swift in Sources */,
+				66734F012CA1ED3F00558494 /* BackupAttachmentUploadManager.swift in Sources */,
 				66C7952D2C9B78E900C13937 /* BackupAttachmentUploadStore.swift in Sources */,
 				F9C5CE3A289453B400548EEE /* BadgeAssets.swift in Sources */,
 				D979DA162B8D1FDD000EEAB8 /* BadgeCountFetcher.swift in Sources */,

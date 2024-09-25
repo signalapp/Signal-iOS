@@ -33,6 +33,9 @@ public protocol BackupAttachmentUploadStore {
         for attachmentId: Attachment.IDType,
         tx: DBWriteTransaction
     ) throws
+
+    /// Remove all enqueued uploads from the able.
+    func removeAll(tx: DBWriteTransaction) throws
 }
 
 public class BackupAttachmentUploadStoreImpl: BackupAttachmentUploadStore {
@@ -138,6 +141,14 @@ public class BackupAttachmentUploadStoreImpl: BackupAttachmentUploadStore {
             .filter(Column(QueuedBackupAttachmentUpload.CodingKeys.attachmentRowId) == attachmentId)
             .deleteAll(db)
     }
+
+    public func removeAll(tx: DBWriteTransaction) throws {
+        try self.removeAll(db: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database, tx: tx)
+    }
+
+    internal func removeAll(db: GRDB.Database, tx: DBWriteTransaction) throws {
+        try QueuedBackupAttachmentUpload.deleteAll(db)
+    }
 }
 
 extension AttachmentReference.Owner {
@@ -204,6 +215,10 @@ open class BackupAttachmentUploadStoreMock: BackupAttachmentUploadStore {
         tx: DBWriteTransaction
     ) throws {
         queue.removeAll(where: { $0.attachmentRowId == attachmentId })
+    }
+
+    public func removeAll(tx: DBWriteTransaction) throws {
+        queue.removeAll()
     }
 }
 
