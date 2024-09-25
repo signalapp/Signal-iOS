@@ -7,6 +7,17 @@ import Foundation
 
 public protocol BackupAttachmentUploadManager {
 
+    /// "Enqueue" an attachment from a backup for upload, if needed and eligible, otherwise do nothing.
+    ///
+    /// If the same attachment is already enqueued, updates it to the greater of the old and new timestamp.
+    ///
+    /// Doesn't actually trigger an upload; callers must later call `backUpAllAttachments()` to upload.
+    func enqueueIfNeeded(
+        _ referencedAttachment: ReferencedAttachment,
+        currentUploadEra: String,
+        tx: DBWriteTransaction
+    ) throws
+
     /// Backs up all pending attachments in the BackupAttachmentUploadQueue.
     ///
     /// Will keep backing up attachments until there are none left, then returns.
@@ -29,7 +40,7 @@ public protocol BackupAttachmentUploadManager {
 
 public actor BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
 
-    private let backupAttachmentUploadStore: BackupAttachmentUploadStore
+    private nonisolated let backupAttachmentUploadStore: BackupAttachmentUploadStore
     private let db: DB
     private let taskQueue: TaskQueueLoader<TaskRunner>
 
@@ -59,6 +70,29 @@ public actor BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
             runner: taskRunner
         )
         taskRunner.backupAttachmentUploadManager = self
+    }
+
+    public nonisolated func enqueueIfNeeded(
+        _ referencedAttachment: ReferencedAttachment,
+        currentUploadEra: String,
+        tx: DBWriteTransaction
+    ) throws {
+        guard let referencedStream = referencedAttachment.asReferencedStream else {
+            // We only upload streams
+            return
+        }
+        let stream = referencedStream.attachmentStream
+        guard
+            stream.needsMediaTierUpload(currentUploadEra: currentUploadEra)
+            || stream.needsMediaTierThumbnailUpload(currentUploadEra: currentUploadEra)
+        else {
+            // If we don't need fullsize or thumbnail upload, dont bother enqueuing.
+            return
+        }
+        try backupAttachmentUploadStore.enqueue(
+            referencedStream,
+            tx: tx
+        )
     }
 
     private var runningTask: Task<Void, Error>?
@@ -161,6 +195,10 @@ public actor BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
                 return .cancelled
             }
 
+            if MessageBackupMessageAttachmentArchiver.isFreeTierBackup() {
+                return .cancelled
+            }
+
             // TODO: [Backups] get the real upload era
             let currentUploadEra: String
             do {
@@ -170,20 +208,8 @@ public actor BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
                 return .unretryableError(OWSAssertionError("Unable to get current upload era: \(error)"))
             }
 
-            let needsMediaTierUpload: Bool
-            if let mediaTierInfo = attachment.mediaTierInfo {
-                needsMediaTierUpload = mediaTierInfo.uploadEra != currentUploadEra
-            } else {
-                needsMediaTierUpload = true
-            }
-
-            let needsThumbnailUpload: Bool
-            if let thumbnailMediaTierInfo = attachment.thumbnailMediaTierInfo {
-                needsThumbnailUpload = thumbnailMediaTierInfo.uploadEra != currentUploadEra
-            } else {
-                // We only generate thumbnails for visual media.
-                needsThumbnailUpload = stream.contentType.isVisualMedia
-            }
+            let needsMediaTierUpload = stream.needsMediaTierUpload(currentUploadEra: currentUploadEra)
+            let needsThumbnailUpload = stream.needsMediaTierThumbnailUpload(currentUploadEra: currentUploadEra)
 
             guard needsMediaTierUpload || needsThumbnailUpload else {
                 return .success
@@ -313,11 +339,39 @@ public actor BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
     }
 }
 
+fileprivate extension AttachmentStream {
+
+    func needsMediaTierUpload(currentUploadEra: String) -> Bool {
+        if let mediaTierInfo = attachment.mediaTierInfo {
+            return mediaTierInfo.uploadEra != currentUploadEra
+        } else {
+            return true
+        }
+    }
+
+    func needsMediaTierThumbnailUpload(currentUploadEra: String) -> Bool {
+        if let thumbnailMediaTierInfo = attachment.thumbnailMediaTierInfo {
+            return thumbnailMediaTierInfo.uploadEra != currentUploadEra
+        } else {
+            // We only generate thumbnails for visual media.
+            return contentType.isVisualMedia
+        }
+    }
+}
+
 #if TESTABLE_BUILD
 
 open class BackupAttachmentUploadManagerMock: BackupAttachmentUploadManager {
 
     public init() {}
+
+    public func enqueueIfNeeded(
+        _ referencedAttachment: ReferencedAttachment,
+        currentUploadEra: String,
+        tx: DBWriteTransaction
+    ) throws {
+        // Do nothing
+    }
 
     public func backUpAllAttachments() async throws {
         // Do nothing

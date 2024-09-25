@@ -68,6 +68,9 @@ extension MessageBackup {
             /// A sticker message had no associated attachment for the sticker's image contents.
             case stickerMessageMissingStickerAttachment
 
+            /// An attachment failed to be enqueued for upload, and will not be uploaded to the media tier.
+            case failedToEnqueueAttachmentForUpload
+
             /// A reaction has an invalid or missing author address information, causing the
             /// reaction to be skipped.
             case invalidReactionAddress
@@ -231,6 +234,7 @@ extension MessageBackup {
                     .invalidQuoteAuthor,
                     .linkPreviewMissingUrl,
                     .stickerMessageMissingStickerAttachment,
+                    .failedToEnqueueAttachmentForUpload,
                     .invalidReactionAddress,
                     .emptyGroupUpdate,
                     .missingLocalProfile,

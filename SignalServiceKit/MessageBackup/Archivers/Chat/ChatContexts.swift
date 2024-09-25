@@ -94,13 +94,19 @@ extension MessageBackup {
         private let map = SharedMap<ThreadUniqueId, ChatId>()
 
         internal init(
+            currentBackupAttachmentUploadEra: String?,
+            backupAttachmentUploadManager: BackupAttachmentUploadManager,
             customChatColorContext: CustomChatColorArchivingContext,
             recipientContext: RecipientArchivingContext,
             tx: DBWriteTransaction
         ) {
             self.customChatColorContext = customChatColorContext
             self.recipientContext = recipientContext
-            super.init(tx: tx)
+            super.init(
+                currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
+                backupAttachmentUploadManager: backupAttachmentUploadManager,
+                tx: tx
+            )
         }
 
         internal func assignChatId(to threadUniqueId: ThreadUniqueId) -> ChatId {
@@ -203,8 +209,16 @@ extension MessageBackup {
         private var currentCustomChatColorId = CustomChatColorId(value: 1)
         private let map = SharedMap<CustomChatColor.Key, CustomChatColorId>()
 
-        internal override init(tx: DBWriteTransaction) {
-            super.init(tx: tx)
+        internal override init(
+            currentBackupAttachmentUploadEra: String?,
+            backupAttachmentUploadManager: BackupAttachmentUploadManager,
+            tx: DBWriteTransaction
+        ) {
+            super.init(
+                currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
+                backupAttachmentUploadManager: backupAttachmentUploadManager,
+                tx: tx
+            )
         }
 
         internal func assignCustomChatColorId(to customChatColorKey: CustomChatColor.Key) -> CustomChatColorId {

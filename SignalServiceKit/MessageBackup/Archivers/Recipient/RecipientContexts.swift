@@ -72,6 +72,8 @@ extension MessageBackup {
         private let contactE164ap = SharedMap<E164, RecipientId>()
 
         init(
+            currentBackupAttachmentUploadEra: String?,
+            backupAttachmentUploadManager: BackupAttachmentUploadManager,
             localIdentifiers: LocalIdentifiers,
             localRecipientId: RecipientId,
             tx: DBWriteTransaction
@@ -92,7 +94,11 @@ extension MessageBackup {
                 contactE164ap[e164] = currentRecipientId
             }
 
-            super.init(tx: tx)
+            super.init(
+                currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
+                backupAttachmentUploadManager: backupAttachmentUploadManager,
+                tx: tx
+            )
         }
 
         func assignRecipientId(to address: Address) -> RecipientId {

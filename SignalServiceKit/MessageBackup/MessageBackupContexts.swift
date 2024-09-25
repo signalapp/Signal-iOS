@@ -21,8 +21,29 @@ extension MessageBackup {
 
         public var tx: DBReadTransaction { _tx }
 
-        init(tx: DBWriteTransaction) {
+        /// Nil if not a paid backups account.
+        private let currentBackupAttachmentUploadEra: String?
+        private let backupAttachmentUploadManager: BackupAttachmentUploadManager
+
+        init(
+            currentBackupAttachmentUploadEra: String?,
+            backupAttachmentUploadManager: BackupAttachmentUploadManager,
+            tx: DBWriteTransaction
+        ) {
+            self.currentBackupAttachmentUploadEra = currentBackupAttachmentUploadEra
+            self.backupAttachmentUploadManager = backupAttachmentUploadManager
             self._tx = tx
+        }
+
+        func enqueueAttachmentForUploadIfNeeded(_ referencedAttachment: ReferencedAttachment) throws {
+            guard let currentBackupAttachmentUploadEra else {
+                return
+            }
+            try backupAttachmentUploadManager.enqueueIfNeeded(
+                referencedAttachment,
+                currentUploadEra: currentBackupAttachmentUploadEra,
+                tx: _tx
+            )
         }
     }
 

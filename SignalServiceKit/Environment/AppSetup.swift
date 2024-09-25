@@ -903,6 +903,16 @@ public class AppSetup {
         let backupAttachmentDownloadStore = BackupAttachmentDownloadStoreImpl(
             keyValueStoreFactory: keyValueStoreFactory
         )
+        let backupAttachmentUploadStore = BackupAttachmentUploadStoreImpl()
+        let backupAttachmentUploadManager = BackupAttachmentUploadManagerImpl(
+            attachmentStore: attachmentStore,
+            attachmentUploadManager: attachmentUploadManager,
+            backupAttachmentUploadStore: backupAttachmentUploadStore,
+            dateProvider: dateProvider,
+            db: db,
+            messageBackupRequestManager: messageBackupRequestManager,
+            tsAccountManager: tsAccountManager
+        )
 
         let reactionStore: any ReactionStore = ReactionStoreImpl()
 
@@ -936,6 +946,7 @@ public class AppSetup {
             attachmentDownloadManager: attachmentDownloadManager,
             attachmentUploadManager: attachmentUploadManager,
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
+            backupAttachmentUploadManager: backupAttachmentUploadManager,
             backupRequestManager: messageBackupRequestManager,
             chatArchiver: MessageBackupChatArchiverImpl(
                 chatStyleArchiver: messageBackupChatStyleArchiver,

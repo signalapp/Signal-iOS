@@ -461,9 +461,21 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
             return .success(nil)
         }
 
-        // TODO: [Backups] enqueue the attachment to be uploaded
-
         let isFreeTierBackup = MessageBackupMessageAttachmentArchiver.isFreeTierBackup()
+
+        if !isFreeTierBackup {
+            do {
+                try context.enqueueAttachmentForUploadIfNeeded(referencedAttachment)
+            } catch {
+                // Just log these errors, but count as success and proceed.
+                // The wallpaper just won't upload.
+                MessageBackup.log([MessageBackup.ArchiveFrameError<IDType>.archiveFrameError(
+                    .failedToEnqueueAttachmentForUpload,
+                    errorId
+                )])
+            }
+        }
+
         return .success(referencedAttachment.asBackupFilePointer(isFreeTierBackup: isFreeTierBackup))
     }
 

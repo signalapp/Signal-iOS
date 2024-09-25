@@ -59,9 +59,27 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
             pointers.append(attachmentProto)
         }
 
-        // TODO: [Backups] enqueue the attachments to be uploaded
+        var attachmentFailures: [MessageBackup.ArchiveFrameError<MessageBackup.InteractionUniqueId>] = []
+        if !isFreeTierBackup {
+            for referencedAttachment in referencedAttachments {
+                do {
+                    try context.enqueueAttachmentForUploadIfNeeded(referencedAttachment)
+                } catch {
+                    // If some attachment fails, thats ~mostly~ fine. Everything else
+                    // can still go through, the one attachment just won't upload.
+                    attachmentFailures.append(.archiveFrameError(
+                        .failedToEnqueueAttachmentForUpload,
+                        messageId
+                    ))
+                }
+            }
+        }
 
-        return .success(pointers)
+        if attachmentFailures.isEmpty {
+            return .success(pointers)
+        } else {
+            return .partialFailure(pointers, attachmentFailures)
+        }
     }
 
     public func archiveOversizeTextAttachment(
@@ -71,6 +89,7 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
     ) -> MessageBackup.ArchiveInteractionResult<BackupProto_FilePointer?> {
         return self.archiveSingleAttachment(
             ownerType: .oversizeText,
+            messageId: messageId,
             messageRowId: messageRowId,
             context: context
         )
@@ -83,6 +102,7 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
     ) -> MessageBackup.ArchiveInteractionResult<BackupProto_FilePointer?> {
         return self.archiveSingleAttachment(
             ownerType: .linkPreview,
+            messageId: messageId,
             messageRowId: messageRowId,
             context: context
         )
@@ -111,7 +131,18 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
         attachmentProto.wasDownloaded = referencedAttachment.attachment.asStream() != nil
         // NOTE: clientUuid is unecessary for quoted reply attachments.
 
-        // TODO: [Backups] enqueue the attachment to be uploaded
+        if !isFreeTierBackup {
+            do {
+                try context.enqueueAttachmentForUploadIfNeeded(referencedAttachment)
+            } catch {
+                // If some attachment fails, thats ~mostly~ fine. Everything else
+                // can still go through, the one attachment just won't upload.
+                return .partialFailure(attachmentProto, [.archiveFrameError(
+                    .failedToEnqueueAttachmentForUpload,
+                    messageId
+                )])
+            }
+        }
 
         return .success(attachmentProto)
     }
@@ -123,6 +154,7 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
     ) -> MessageBackup.ArchiveInteractionResult<BackupProto_FilePointer?> {
         return self.archiveSingleAttachment(
             ownerType: .contactAvatar,
+            messageId: messageId,
             messageRowId: messageRowId,
             context: context
         )
@@ -135,6 +167,7 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
     ) -> MessageBackup.ArchiveInteractionResult<BackupProto_FilePointer?> {
         return self.archiveSingleAttachment(
             ownerType: .sticker,
+            messageId: messageId,
             messageRowId: messageRowId,
             context: context
         )
@@ -364,6 +397,7 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
 
     private func archiveSingleAttachment(
         ownerType: AttachmentReference.MessageOwnerTypeRaw,
+        messageId: MessageBackup.InteractionUniqueId,
         messageRowId: Int64,
         context: MessageBackup.ArchivingContext
     ) -> MessageBackup.ArchiveInteractionResult<BackupProto_FilePointer?> {
@@ -377,10 +411,24 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
         }
 
         let isFreeTierBackup = Self.isFreeTierBackup()
+        let result = referencedAttachment.asBackupFilePointer(isFreeTierBackup: isFreeTierBackup)
 
-        // TODO: [Backups] enqueue the attachment to be uploaded
+        if !isFreeTierBackup {
+            do {
+                try context.enqueueAttachmentForUploadIfNeeded(referencedAttachment)
+            } catch {
+                // If some attachment fails, thats ~mostly~ fine. Everything else
+                // can still go through, the one attachment just won't upload.
+                return .partialFailure(
+                    result, [.archiveFrameError(
+                        .failedToEnqueueAttachmentForUpload,
+                        messageId
+                    )]
+                )
+            }
+        }
 
-        return .success(referencedAttachment.asBackupFilePointer(isFreeTierBackup: isFreeTierBackup))
+        return .success(result)
     }
 
     // MARK: Restoring

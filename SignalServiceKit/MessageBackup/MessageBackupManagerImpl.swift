@@ -28,6 +28,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     private let attachmentDownloadManager: AttachmentDownloadManager
     private let attachmentUploadManager: AttachmentUploadManager
     private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
+    private let backupAttachmentUploadManager: BackupAttachmentUploadManager
     private let backupRequestManager: MessageBackupRequestManager
     private let chatArchiver: MessageBackupChatArchiver
     private let chatItemArchiver: MessageBackupChatItemArchiver
@@ -50,6 +51,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         attachmentDownloadManager: AttachmentDownloadManager,
         attachmentUploadManager: AttachmentUploadManager,
         backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
+        backupAttachmentUploadManager: BackupAttachmentUploadManager,
         backupRequestManager: MessageBackupRequestManager,
         chatArchiver: MessageBackupChatArchiver,
         chatItemArchiver: MessageBackupChatItemArchiver,
@@ -71,6 +73,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         self.attachmentDownloadManager = attachmentDownloadManager
         self.attachmentUploadManager = attachmentUploadManager
         self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
+        self.backupAttachmentUploadManager = backupAttachmentUploadManager
         self.backupRequestManager = backupRequestManager
         self.chatArchiver = chatArchiver
         self.chatItemArchiver = chatItemArchiver
@@ -213,7 +216,18 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     ) throws {
         try writeHeader(stream: stream, tx: tx)
 
-        let customChatColorContext = MessageBackup.CustomChatColorArchivingContext(tx: tx)
+        let currentBackupAttachmentUploadEra: String?
+        if MessageBackupMessageAttachmentArchiver.isFreeTierBackup() {
+            currentBackupAttachmentUploadEra = nil
+        } else {
+            currentBackupAttachmentUploadEra = try MessageBackupMessageAttachmentArchiver.uploadEra()
+        }
+
+        let customChatColorContext = MessageBackup.CustomChatColorArchivingContext(
+            currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
+            backupAttachmentUploadManager: backupAttachmentUploadManager,
+            tx: tx
+        )
         let accountDataResult = accountDataArchiver.archiveAccountData(
             stream: stream,
             context: customChatColorContext
@@ -239,6 +253,8 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         }
 
         let recipientArchivingContext = MessageBackup.RecipientArchivingContext(
+            currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
+            backupAttachmentUploadManager: backupAttachmentUploadManager,
             localIdentifiers: localIdentifiers,
             localRecipientId: localRecipientId,
             tx: tx
@@ -294,6 +310,8 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         // TODO: [Backups] Archive call link recipients.
 
         let chatArchivingContext = MessageBackup.ChatArchivingContext(
+            currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
+            backupAttachmentUploadManager: backupAttachmentUploadManager,
             customChatColorContext: customChatColorContext,
             recipientContext: recipientArchivingContext,
             tx: tx
@@ -325,6 +343,14 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         }
 
         try stream.closeFileStream()
+
+        tx.addAsyncCompletion(on: DispatchQueue.global()) { [backupAttachmentUploadManager] in
+            Task {
+                // TODO: [Backups] this needs to talk to the banner at the top of the chat
+                // list to show progress.
+                try await backupAttachmentUploadManager.backUpAllAttachments()
+            }
+        }
     }
 
     private func writeHeader(stream: MessageBackupProtoOutputStream, tx: DBWriteTransaction) throws {
