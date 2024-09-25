@@ -768,6 +768,10 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         }
     }
 
+    private var isIncomingRing: Bool {
+        [.localRinging_Anticipatory, .localRinging_ReadyToAnswer].contains(individualCall.state)
+    }
+
     private func updateCallUI() {
         assert(Thread.isMainThread)
         updateCallStatusLabel()
@@ -807,16 +811,17 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         }
 
         let hideCallControls: Bool
-        switch bottomSheetState {
-        case .callControls:
+        switch (isIncomingRing, bottomSheetState) {
+        case (true, _):
+            // When incoming ring, on-screen call controls should always
+            // be displayed, but the bottom sheet should never.
+            dismissBottomSheet(true)
+            hideCallControls = false
+        case (false, .callControls):
             presentBottomSheet(true)
             hideCallControls = false
-        case .hidden:
-            let isIncomingRing = [.localRinging_Anticipatory, .localRinging_ReadyToAnswer].contains(individualCall.state)
-            if isIncomingRing {
-                hideCallControls = false
-                break
-            } else if !self.individualCall.isRemoteVideoEnabled {
+        case (false, .hidden):
+            if !self.individualCall.isRemoteVideoEnabled {
                 // When the remote video is enabled, call controls should
                 // be forced at all times.
                 bottomSheetState = .callControls
@@ -825,7 +830,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
             }
             dismissBottomSheet(true)
             hideCallControls = true
-        case .transitioning, .callInfo:
+        case (false, .transitioning), (false, .callInfo):
             hideCallControls = false
         }
 
@@ -985,7 +990,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
     }
 
     private var bottomSheetMustBeVisible: Bool {
-        return !self.individualCall.isRemoteVideoEnabled
+        return !self.individualCall.isRemoteVideoEnabled && !self.isIncomingRing
     }
 
     private func cancelBottomSheetTimeout() {
