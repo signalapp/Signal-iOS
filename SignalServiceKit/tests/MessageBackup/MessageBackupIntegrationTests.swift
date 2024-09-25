@@ -10,6 +10,27 @@ import XCTest
 
 class MessageBackupIntegrationTests: XCTestCase {
     override func setUp() {
+        /// By default, we cap test runs to 60s in CI. This test might run
+        /// longer, since we have very many integration test cases, so this
+        /// extends the time allowance specifically for this test.
+        ///
+        /// As an alternative, we could avoid running all the integration test
+        /// cases in one giant test. For example, in Swift Testing we can
+        /// "parameterize" tests, for example parameterizing over the list of
+        /// integration test cases, such that there's one "test" per integration
+        /// test case. I tried that, but unfortunately at the time of writing
+        /// Xcode struggles mightily with highly parameterized tests; the tests
+        /// ran very slowly, and Xcode itself beach-balled.
+        ///
+        /// In the future, if Xcode supports this better, we can move this test
+        /// to use Swift Testing and parameterization.
+        ///
+        /// - SeeAlso
+        /// The `-test-timeouts-enabled`, `-default-test-execution-time-allowance`,
+        /// and `-default-test-execution-time-allowance` command-line arguments
+        /// passed during CI.
+        executionTimeAllowance = 300
+
         DDLog.add(DDTTYLogger.sharedInstance!)
     }
 
