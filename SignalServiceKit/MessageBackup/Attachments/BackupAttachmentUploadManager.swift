@@ -38,9 +38,9 @@ public protocol BackupAttachmentUploadManager {
     func cancelPendingUploads() async throws
 }
 
-public actor BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
+public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
 
-    private nonisolated let backupAttachmentUploadStore: BackupAttachmentUploadStore
+    private let backupAttachmentUploadStore: BackupAttachmentUploadStore
     private let db: DB
     private let taskQueue: TaskQueueLoader<TaskRunner>
 
@@ -69,10 +69,9 @@ public actor BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
             db: db,
             runner: taskRunner
         )
-        taskRunner.backupAttachmentUploadManager = self
     }
 
-    public nonisolated func enqueueIfNeeded(
+    public func enqueueIfNeeded(
         _ referencedAttachment: ReferencedAttachment,
         currentUploadEra: String,
         tx: DBWriteTransaction
@@ -95,47 +94,20 @@ public actor BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         )
     }
 
-    private var runningTask: Task<Void, Error>?
-    // If the task is cancelled, throw this error on the caller if not nil.
-    private var cancellationReason: Error?
-
     public func backUpAllAttachments() async throws {
-        if let runningTask {
-            return try await runningTask.value
-        }
-        let task = Task {
-            try await taskQueue.loadAndRunTasks()
-            self.runningTask = nil
-        }
-        self.runningTask = task
-        do {
-            return try await task.value
-        } catch let cancellationError as CancellationError {
-            throw cancellationReason ?? cancellationError
-        } catch let error {
-            throw error
-        }
+        try await taskQueue.loadAndRunTasks()
     }
 
     public func cancelPendingUploads() async throws {
-        self.stopRunning(error: CancellationError())
+        try await taskQueue.stop()
         try await self.db.awaitableWrite { tx in
             try self.backupAttachmentUploadStore.removeAll(tx: tx)
         }
     }
 
-    fileprivate func stopRunning(error: Error) {
-        guard let runningTask, !runningTask.isCancelled else {
-            return
-        }
-        self.cancellationReason = error
-        runningTask.cancel()
-        self.runningTask = nil
-    }
-
     // MARK: - TaskRecordRunner
 
-    private class TaskRunner: TaskRecordRunner {
+    private final class TaskRunner: TaskRecordRunner {
 
         private let attachmentStore: AttachmentStore
         private let attachmentUploadManager: AttachmentUploadManager
@@ -146,8 +118,6 @@ public actor BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         private let tsAccountManager: TSAccountManager
 
         let store: TaskStore
-
-        weak var backupAttachmentUploadManager: BackupAttachmentUploadManagerImpl?
 
         init(
             attachmentStore: AttachmentStore,
@@ -181,7 +151,7 @@ public actor BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
 
         private let errorCounts = ErrorCounts()
 
-        func runTask(record: Store.Record) async -> TaskRecordResult {
+        func runTask(record: Store.Record, loader: TaskQueueLoader<TaskRunner>) async -> TaskRecordResult {
             let attachment = db.read { tx in
                 return self.attachmentStore.fetch(id: record.record.attachmentRowId, tx: tx)
             }
@@ -204,7 +174,7 @@ public actor BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
             do {
                 currentUploadEra = try MessageBackupMessageAttachmentArchiver.uploadEra()
             } catch let error {
-                await backupAttachmentUploadManager?.stopRunning(error: error)
+                try? await loader.stop(reason: error)
                 return .unretryableError(OWSAssertionError("Unable to get current upload era: \(error)"))
             }
 
@@ -220,7 +190,7 @@ public actor BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
             }
             guard let localAci else {
                 let error = OWSAssertionError("Not registered!")
-                await backupAttachmentUploadManager?.stopRunning(error: error)
+                try? await loader.stop(reason: error)
                 return .unretryableError(error)
             }
 
@@ -231,7 +201,7 @@ public actor BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
                     auth: .implicit()
                 )
             } catch let error {
-                await backupAttachmentUploadManager?.stopRunning(error: error)
+                try? await loader.stop(reason: error)
                 return .unretryableError(error)
             }
 

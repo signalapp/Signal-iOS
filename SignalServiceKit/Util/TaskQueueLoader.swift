@@ -71,7 +71,14 @@ public protocol TaskRecordRunner {
     /// Run the task for a single record.
     /// Returned errors do NOT interrupt task processing; the loader will continue
     /// to process tasks until there are none left.
-    func runTask(record: Store.Record) async -> TaskRecordResult
+    ///
+    /// - parameter loader: Provided so that runners can choose to call
+    /// ``TaskQueueLoader/stop(reason:)`` if some error they encounter
+    /// should stop all future tasks, not just the current one.
+    func runTask(
+        record: Store.Record,
+        loader: TaskQueueLoader<Self>
+    ) async -> TaskRecordResult
 
     /// Called by ``TaskQueueLoader`` when the task completes successfully,
     /// with the same write transaction used to delete the task's database record.
@@ -148,6 +155,10 @@ public actor TaskQueueLoader<Runner: TaskRecordRunner> {
         self.runner = runner
     }
 
+    private var runningTask: Task<Void, Error>?
+    /// Error provided when the task was stopped; if not nil, throw it on callers of loadAndRunTasks.
+    private var stoppedReason: Error?
+
     private var currentTaskIds = Set<Record.IDType>()
 
     /// Load tasks, N at a time, and begin running any that are not already running.
@@ -158,6 +169,46 @@ public actor TaskQueueLoader<Runner: TaskRecordRunner> {
     /// Throws an error IFF some database operation relating to the queue or post-task cleanup fails;
     /// within-task failures are handled by the runner and do NOT interrupt processing of subsequent tasks.
     public func loadAndRunTasks() async throws {
+        if let runningTask {
+            do {
+                return try await runningTask.value
+            } catch let cancellationError as CancellationError {
+                throw stoppedReason ?? cancellationError
+            } catch let error {
+                throw error
+            }
+        }
+        let task = Task {
+            try await self._loadAndRunTasks()
+            self.runningTask = nil
+        }
+        self.runningTask = task
+        try await withTaskCancellationHandler(
+            operation: {
+                do {
+                    return try await task.value
+                } catch let cancellationError as CancellationError {
+                    throw stoppedReason ?? cancellationError
+                } catch let error {
+                    throw error
+                }
+            },
+            onCancel: {
+                task.cancel()
+            }
+        )
+    }
+
+    public func stop(reason: Error? = nil) async throws {
+        guard let runningTask, !runningTask.isCancelled else {
+            return
+        }
+        self.stoppedReason = reason
+        runningTask.cancel()
+        self.runningTask = nil
+    }
+
+    private func _loadAndRunTasks() async throws {
         // Check cancellation at the start of each attempt.
         // This method is called recursively, so now is a good time to check.
         try Task.checkCancellation()
@@ -185,7 +236,7 @@ public actor TaskQueueLoader<Runner: TaskRecordRunner> {
         try await withThrowingTaskGroup(of: Void.self) { taskGroup in
             records.forEach { record in
                 taskGroup.addTask {
-                    let taskResult = await runner.runTask(record: record)
+                    let taskResult = await runner.runTask(record: record, loader: self)
                     switch taskResult {
                     case .success:
                         try await self.didSucceed(record: record)
@@ -197,7 +248,7 @@ public actor TaskQueueLoader<Runner: TaskRecordRunner> {
                         try await self.didCancel(record: record)
                     }
                     // As soon as we finish any task, start loading more tasks to run.
-                    try await self.loadAndRunTasks()
+                    try await self._loadAndRunTasks()
                 }
             }
             try await taskGroup.waitForAll()

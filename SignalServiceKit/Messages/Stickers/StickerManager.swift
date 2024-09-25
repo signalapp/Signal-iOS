@@ -1216,7 +1216,7 @@ public class StickerManager: NSObject {
         }
     }
 
-    private class StickerPackDownloadTaskRunner: TaskRecordRunner {
+    private final class StickerPackDownloadTaskRunner: TaskRecordRunner {
         typealias Record = StickerPackDownloadTaskRecord
         typealias Store = StickerPackDownloadTaskRecordStore
 
@@ -1225,7 +1225,7 @@ public class StickerManager: NSObject {
             self.store = store
         }
 
-        func runTask(record: Record) async -> TaskRecordResult {
+        func runTask(record: Record, loader: TaskQueueLoader<StickerPackDownloadTaskRunner>) async -> TaskRecordResult {
             let stickerPackInfo = StickerPackInfo(packId: record.record.packId, packKey: record.record.packKey)
             do {
                 guard !StickerManager.isStickerPackInstalled(stickerPackInfo: stickerPackInfo) else {

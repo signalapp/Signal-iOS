@@ -202,6 +202,89 @@ public class TaskQueueLoaderTest: XCTestCase {
         XCTAssert(runner.completedTasks.count <= 53)
     }
 
+    func testStopWithReason() async throws {
+        let runner = MockRunner(numRecords: 10)
+        let loader = TaskQueueLoader(
+            maxConcurrentTasks: 1,
+            db: InMemoryDB(),
+            runner: runner
+        )
+
+        struct MockError: Error {}
+
+        // Make the actual tasks spin forever (but allow for cancellation)
+        runner.taskRunner = { _ in
+            while true {
+                do {
+                    try Task.checkCancellation()
+                    await Task.yield()
+                } catch {
+                    return .cancelled
+                }
+            }
+        }
+
+        do {
+            try await withThrowingTaskGroup(of: Void.self) { taskGroup in
+                // The tasks run forever, so run in parallel with cancelling.
+                taskGroup.addTask {
+                    try await loader.loadAndRunTasks()
+                }
+                taskGroup.addTask {
+                    try await loader.stop(reason: MockError())
+                }
+                try await taskGroup.waitForAll()
+            }
+        } catch is MockError {
+            // This is what we want
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+        // Should have completed none of them.
+        XCTAssertEqual(runner.completedTasks.count, 0)
+    }
+
+    func testRunnerItselfStopsThings() async throws {
+        let runner = MockRunner(numRecords: 10)
+        let loader = TaskQueueLoader(
+            maxConcurrentTasks: 1,
+            db: InMemoryDB(),
+            runner: runner
+        )
+
+        struct MockError: Error {}
+
+        var mainTask: Task<Void, Error>!
+        runner.taskRunner = { [weak loader] id in
+            if id == 1 {
+                try! await loader?.stop(reason: MockError())
+                return .success
+            } else {
+                while true {
+                    do {
+                        try Task.checkCancellation()
+                        await Task.yield()
+                    } catch {
+                        return .cancelled
+                    }
+                }
+            }
+        }
+
+        mainTask = Task {
+            try await loader.loadAndRunTasks()
+        }
+        do {
+            try await mainTask.value
+        } catch is MockError {
+            // This is what we want
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+        // Should have cancelled after the first; none of the other ever terminate.
+        XCTAssertEqual(runner.completedTasks.count, 1)
+    }
+
     // MARK: - Mocks
 
     struct MockError: Error {}
@@ -230,7 +313,7 @@ public class TaskQueueLoaderTest: XCTestCase {
         }
     }
 
-    class MockRunner: TaskRecordRunner {
+    final class MockRunner: TaskRecordRunner {
         typealias Store = MockStore
 
         let store: MockStore
@@ -247,7 +330,7 @@ public class TaskQueueLoaderTest: XCTestCase {
             return .success
         }
 
-        func runTask(record: MockTaskRecord) async -> TaskRecordResult {
+        func runTask(record: MockTaskRecord, loader: TaskQueueLoader<MockRunner>) async -> TaskRecordResult {
             return await taskRunner(record.id)
         }
 

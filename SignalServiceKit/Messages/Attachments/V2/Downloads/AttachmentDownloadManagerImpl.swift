@@ -305,7 +305,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         }
     }
 
-    private class DownloadTaskRunner: TaskRecordRunner {
+    private final class DownloadTaskRunner: TaskRecordRunner {
         typealias Store = DownloadTaskRecordStore
 
         private let attachmentDownloadStore: AttachmentDownloadStore
@@ -354,7 +354,8 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         // MARK: TaskRecordRunner conformance
 
         func runTask(
-            record: DownloadTaskRecord
+            record: DownloadTaskRecord,
+            loader: TaskQueueLoader<DownloadTaskRunner>
         ) async -> TaskRecordResult {
             return await self.downloadRecord(record.record)
         }
