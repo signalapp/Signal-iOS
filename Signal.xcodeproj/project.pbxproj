@@ -806,6 +806,7 @@
 		661566722BCEDD58003F1647 /* AttachmentMultisend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661566712BCEDD58003F1647 /* AttachmentMultisend.swift */; };
 		661566742BD05D00003F1647 /* SharingThreadPickerProgressSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661566732BD05D00003F1647 /* SharingThreadPickerProgressSheet.swift */; };
 		661602A428BEB94400C1932D /* StoryListDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661602A328BEB94400C1932D /* StoryListDataSource.swift */; };
+		661681862C9A1ADF00A39C12 /* QueuedBackupAttachmentUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661681852C9A1AD600A39C12 /* QueuedBackupAttachmentUpload.swift */; };
 		6618D5EF2A20065F0059BA93 /* SVR2ConcurrencyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6618D5EE2A20065F0059BA93 /* SVR2ConcurrencyTests.swift */; };
 		6618DF402BBEF56900BCDC06 /* MessageEdits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6618DF3F2BBEF56900BCDC06 /* MessageEdits.swift */; };
 		6619A1952B27C7F3004B38FE /* SignalRecipientManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6619A1942B27C7F3004B38FE /* SignalRecipientManager.swift */; };
@@ -1129,6 +1130,8 @@
 		66C343D22C13C55B004C3D60 /* QuotedReplyTSResourceDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C343D12C13C55B004C3D60 /* QuotedReplyTSResourceDataSource.swift */; };
 		66C343D62C140BA7004C3D60 /* DraftQuotedReplyModel+ForSending.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C343D52C140BA7004C3D60 /* DraftQuotedReplyModel+ForSending.swift */; };
 		66C3887E29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C3887D29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift */; };
+		66C7952D2C9B78E900C13937 /* BackupAttachmentUploadStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C7952C2C9B78E200C13937 /* BackupAttachmentUploadStore.swift */; };
+		66C795302C9B83A200C13937 /* BackupAttachmentUploadStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C7952E2C9B837500C13937 /* BackupAttachmentUploadStoreTests.swift */; };
 		66CA4CE62B9FC761009A5ED8 /* AttachmentReference+RenderingFlag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CA4CE52B9FC761009A5ED8 /* AttachmentReference+RenderingFlag.swift */; };
 		66CA4CE92B9FDBF8009A5ED8 /* TSResourceManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CA4CE72B9FDBF8009A5ED8 /* TSResourceManagerImpl.swift */; };
 		66CA4CEA2B9FDBF8009A5ED8 /* TSResourceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CA4CE82B9FDBF8009A5ED8 /* TSResourceManager.swift */; };
@@ -4413,6 +4416,7 @@
 		661566712BCEDD58003F1647 /* AttachmentMultisend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentMultisend.swift; sourceTree = "<group>"; };
 		661566732BD05D00003F1647 /* SharingThreadPickerProgressSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingThreadPickerProgressSheet.swift; sourceTree = "<group>"; };
 		661602A328BEB94400C1932D /* StoryListDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryListDataSource.swift; sourceTree = "<group>"; };
+		661681852C9A1AD600A39C12 /* QueuedBackupAttachmentUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueuedBackupAttachmentUpload.swift; sourceTree = "<group>"; };
 		6618D5EE2A20065F0059BA93 /* SVR2ConcurrencyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVR2ConcurrencyTests.swift; sourceTree = "<group>"; };
 		6618DF3F2BBEF56900BCDC06 /* MessageEdits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageEdits.swift; sourceTree = "<group>"; };
 		6619A1942B27C7F3004B38FE /* SignalRecipientManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalRecipientManager.swift; sourceTree = "<group>"; };
@@ -4742,6 +4746,8 @@
 		66C343D12C13C55B004C3D60 /* QuotedReplyTSResourceDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotedReplyTSResourceDataSource.swift; sourceTree = "<group>"; };
 		66C343D52C140BA7004C3D60 /* DraftQuotedReplyModel+ForSending.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DraftQuotedReplyModel+ForSending.swift"; sourceTree = "<group>"; };
 		66C3887D29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTransferProgressViewController.swift; sourceTree = "<group>"; };
+		66C7952C2C9B78E200C13937 /* BackupAttachmentUploadStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentUploadStore.swift; sourceTree = "<group>"; };
+		66C7952E2C9B837500C13937 /* BackupAttachmentUploadStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentUploadStoreTests.swift; sourceTree = "<group>"; };
 		66CA4CE52B9FC761009A5ED8 /* AttachmentReference+RenderingFlag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AttachmentReference+RenderingFlag.swift"; sourceTree = "<group>"; };
 		66CA4CE72B9FDBF8009A5ED8 /* TSResourceManagerImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSResourceManagerImpl.swift; sourceTree = "<group>"; };
 		66CA4CE82B9FDBF8009A5ED8 /* TSResourceManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSResourceManager.swift; sourceTree = "<group>"; };
@@ -9118,7 +9124,10 @@
 			children = (
 				667BB2072C580C1400E79B57 /* BackupAttachmentDownloadStore.swift */,
 				66681CDE2C58174F00E50136 /* BackupAttachmentDownloadStoreTests.swift */,
+				66C7952C2C9B78E200C13937 /* BackupAttachmentUploadStore.swift */,
+				66C7952E2C9B837500C13937 /* BackupAttachmentUploadStoreTests.swift */,
 				667BB2052C58076400E79B57 /* QueuedBackupAttachmentDownload.swift */,
+				661681852C9A1AD600A39C12 /* QueuedBackupAttachmentUpload.swift */,
 			);
 			path = Attachments;
 			sourceTree = "<group>";
@@ -16590,6 +16599,7 @@
 				502C69722B06F07900012867 /* AwaitableAsyncBlockOperation.swift in Sources */,
 				D972E2FF2C542BCD001D7337 /* Backup.pb.swift in Sources */,
 				667BB2082C580C1400E79B57 /* BackupAttachmentDownloadStore.swift in Sources */,
+				66C7952D2C9B78E900C13937 /* BackupAttachmentUploadStore.swift in Sources */,
 				F9C5CE3A289453B400548EEE /* BadgeAssets.swift in Sources */,
 				D979DA162B8D1FDD000EEAB8 /* BadgeCountFetcher.swift in Sources */,
 				F9C5CE37289453B400548EEE /* BadgeStore.swift in Sources */,
@@ -17287,6 +17297,7 @@
 				F9C5CD91289453B300548EEE /* PushChallenge.swift in Sources */,
 				669573022C1B77C00092B755 /* QueuedAttachmentDownloadRecord.swift in Sources */,
 				667BB2062C58076400E79B57 /* QueuedBackupAttachmentDownload.swift in Sources */,
+				661681862C9A1ADF00A39C12 /* QueuedBackupAttachmentUpload.swift in Sources */,
 				6676A40C2BD1F5F9006B9CC9 /* QuotedAttachmentInfo.swift in Sources */,
 				66D7B9132B979C3A0005C98B /* QuotedMessageAttachmentReference+TSResource.swift in Sources */,
 				66D7B90E2B9798950005C98B /* QuotedMessageAttachmentReference.swift in Sources */,
@@ -17751,6 +17762,7 @@
 				50BDC36A2C88C2C8002294D0 /* AudioWaveformSamplerTest.swift in Sources */,
 				50B6BCB62AEC68940010FB3B /* AuthorMergeHelperTest.swift in Sources */,
 				66681CDF2C58174F00E50136 /* BackupAttachmentDownloadStoreTests.swift in Sources */,
+				66C795302C9B83A200C13937 /* BackupAttachmentUploadStoreTests.swift in Sources */,
 				F9426273289B1B5500460798 /* BlockingManagerStateTests.swift in Sources */,
 				F9426283289B1B5600460798 /* BlockingManagerTests.swift in Sources */,
 				D9C42C2F2B6C60600086B142 /* CallRecordDeleteManagerTest.swift in Sources */,

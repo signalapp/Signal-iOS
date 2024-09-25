@@ -297,6 +297,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addAttachmentValidationBackfillTable
         case addIsSmsColumnToTSAttachment
         case addInKnownMessageRequestStateToHiddenRecipient
+        case addBackupAttachmentUploadQueue
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -358,7 +359,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 91
+    public static let grdbSchemaVersionLatest: UInt = 92
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -3509,6 +3510,27 @@ public class GRDBSchemaMigrator: NSObject {
                     .notNull()
                     .defaults(to: false)
             }
+
+            return .success(())
+        }
+
+        migrator.registerMigration(.addBackupAttachmentUploadQueue) { tx in
+            try tx.database.create(table: "BackupAttachmentUploadQueue") { table in
+                table.autoIncrementedPrimaryKey("id")
+                table.column("attachmentRowId", .integer)
+                    .references("Attachment", column: "id", onDelete: .cascade)
+                    .notNull()
+                    .unique()
+                table.column("sourceType", .integer)
+                    .notNull()
+                table.column("timestamp", .integer)
+            }
+
+            try tx.database.create(
+                index: "index_BackupAttachmentUploadQueue_on_sourceType_timestamp",
+                on: "BackupAttachmentUploadQueue",
+                columns: ["sourceType", "timestamp"]
+            )
 
             return .success(())
         }

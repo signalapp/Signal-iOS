@@ -284,7 +284,8 @@ public extension DatabaseRecovery {
             TSAttachmentMigration.V1AttachmentReservedFileIds.databaseTableName,
             QueuedBackupAttachmentDownload.databaseTableName,
             AttachmentUploadRecord.databaseTableName,
-            "AttachmentValidationBackfillQueue"
+            "AttachmentValidationBackfillQueue",
+            QueuedBackupAttachmentUpload.databaseTableName
         ]
 
         private static func prepareToCopyTablesWithBestEffort(

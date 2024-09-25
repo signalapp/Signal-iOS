@@ -2073,3 +2073,23 @@ CREATE
                 CASCADE
 )
 ;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "BackupAttachmentUploadQueue" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT
+            ,"attachmentRowId" INTEGER NOT NULL UNIQUE REFERENCES "Attachment"("id"
+        )
+            ON DELETE
+                CASCADE
+                ,"sourceType" INTEGER NOT NULL
+                ,"timestamp" INTEGER
+)
+;
+
+CREATE
+    INDEX "index_BackupAttachmentUploadQueue_on_sourceType_timestamp"
+        ON "BackupAttachmentUploadQueue"("sourceType"
+    ,"timestamp"
+)
+;
