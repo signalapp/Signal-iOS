@@ -101,11 +101,9 @@ final class ShareAppExtensionContext: NSObject {
 
 extension ShareAppExtensionContext: AppContext {
 
-    var isMainApp: Bool { false }
+    var type: SignalServiceKit.AppContextType { .share }
 
     var isMainAppAndActive: Bool { false }
-
-    var isNSE: Bool { false }
 
     var isRTL: Bool { Self.isRTL }
 

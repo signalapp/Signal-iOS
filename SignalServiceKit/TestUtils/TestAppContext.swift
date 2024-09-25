@@ -50,9 +50,8 @@ public class TestAppContext: NSObject, AppContext {
 
     // MARK: -
 
-    public let isMainApp: Bool = true
+    public let type: SignalServiceKit.AppContextType = .main
     public let isMainAppAndActive: Bool = true
-    public let isNSE: Bool = false
     public func mainApplicationStateOnLaunch() -> UIApplication.State { .inactive }
     public let isRTL: Bool = false
     public func isInBackground() -> Bool { false }

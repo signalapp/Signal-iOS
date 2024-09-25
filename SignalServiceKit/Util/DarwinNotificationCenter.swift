@@ -67,21 +67,6 @@ public enum DarwinNotificationCenter {
         notify_cancel(observer)
     }
 
-    /// Sets the state value for a given observer. This value can be set and read from
-    /// any process listening for this notification. Note: ``setState(_:observer:)`` and ``getState(observer:)``
-    /// are vulnerable to races.
-    ///
-    /// - Parameter state: The `UInt64` state you wish to share with another process.
-    /// - Parameter observer: The token returned by ``addObserver(name:queue:block:)`` for the notification you want to set state for.
-    public static func setState(_ state: UInt64, observer: ObserverToken) {
-        guard isValid(observer) else {
-            owsFailDebug("Invalid observer token.")
-            return
-        }
-
-        notify_set_state(observer, state)
-    }
-
     /// Retrieves the state for a given observer. This value can be set and read from
     /// any process listening for this notification. Note: ``setState(_:observer:)`` and ``getState(observer:)``
     /// are vulnerable to races.

@@ -12,32 +12,37 @@
 ///   is detected.
 final class SDSCrossProcess: Sendable {
 
-    private static let localPid = getpid()
-
-    private let notifyToken: DarwinNotificationCenter.ObserverToken
+    private let notifyTokens: [DarwinNotificationCenter.ObserverToken]
 
     init(callback: @escaping @Sendable @MainActor () -> Void) {
-        self.notifyToken = DarwinNotificationCenter.addObserver(name: .sdsCrossProcess, queue: .main) { token in
-            let fromPid = DarwinNotificationCenter.getState(observer: token)
-            let isLocal = fromPid == Self.localPid
-            guard !isLocal else { return }
-            // we told the addObserver call above to execute this block on the main thread so we should already be isolated
+        var notifyTokens: [DarwinNotificationCenter.ObserverToken] = []
+        let block = { (_: DarwinNotificationCenter.ObserverToken) -> Void in
+            // the addObserver calls below execute this block on the main thread so we should already be isolated
             // but there's no way to tell the compiler this with these old APIs, so we tell it to assume we are.
             MainActor.assumeIsolated {
                 callback()
             }
         }
+
+        // listen to everyone but our self; then when posting post our own type
+        let currentAppContextType = CurrentAppContext().type
+        for appContextType in AppContextType.allCases {
+            if appContextType == currentAppContextType { continue }
+            notifyTokens.append(DarwinNotificationCenter.addObserver(name: .sdsCrossProcess(for: appContextType), queue: .main, block: block))
+        }
+        self.notifyTokens = notifyTokens
     }
 
     deinit {
-        if DarwinNotificationCenter.isValid(notifyToken) {
-            DarwinNotificationCenter.removeObserver(notifyToken)
+        for notifyToken in notifyTokens {
+            if DarwinNotificationCenter.isValid(notifyToken) {
+                DarwinNotificationCenter.removeObserver(notifyToken)
+            }
         }
     }
 
     @MainActor
     func notifyChanged() {
-        DarwinNotificationCenter.setState(UInt64(Self.localPid), observer: notifyToken)
-        DarwinNotificationCenter.postNotification(name: .sdsCrossProcess)
+        DarwinNotificationCenter.postNotification(name: .sdsCrossProcess(for: CurrentAppContext().type))
     }
 }

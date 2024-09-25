@@ -10,7 +10,27 @@ import UIKit
 public typealias BackgroundTaskExpirationHandler = () -> Void
 public typealias AppActiveBlock = () -> Void
 
+public enum AppContextType: CaseIterable, CustomStringConvertible {
+    case main
+    case nse
+    case share
+
+    public var description: String {
+        // This appears to be the default behavior but it's not actually specified by the swift documentation
+        // so we make it explicit just to be sure.
+        switch self {
+        case .main:
+            return "main"
+        case .nse:
+            return "nse"
+        case .share:
+            return "share"
+        }
+    }
+}
+
 public protocol AppContext {
+    var type: AppContextType { get }
     var isMainApp: Bool { get }
     var isMainAppAndActive: Bool { get }
     var isNSE: Bool { get }
@@ -161,4 +181,14 @@ public func CurrentAppContext() -> any AppContext {
 
 public func SetCurrentAppContext(_ appContext: any AppContext) {
     currentAppContext = appContext
+}
+
+extension AppContext {
+    public var isMainApp: Bool {
+        type == .main
+    }
+
+    public var isNSE: Bool {
+        type == .nse
+    }
 }

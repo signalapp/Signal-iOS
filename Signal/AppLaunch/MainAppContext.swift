@@ -7,6 +7,7 @@ import Foundation
 import SignalServiceKit
 
 class MainAppContext: NSObject, AppContext {
+    let type: SignalServiceKit.AppContextType = .main
 
     let appLaunchTime: Date
 
@@ -109,11 +110,7 @@ class MainAppContext: NSObject, AppContext {
         runAppActiveBlocks()
     }
 
-    let isMainApp: Bool = true
-
     var isMainAppAndActive: Bool { UIApplication.shared.applicationState == .active }
-
-    let isNSE: Bool = false
 
     let isRTL: Bool = UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft
 
