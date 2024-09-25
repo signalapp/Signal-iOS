@@ -280,10 +280,6 @@ class CreateCallLinkViewController: InteractiveSheetViewController {
         )
     }
 
-    private func shareCallLinkViaSignal() {
-        owsFail("[CallLink] TODO: Add support for sharing via Signal.")
-    }
-
     private func copyCallLink() {
         self.persistIfNeeded()
         UIPasteboard.general.url = self.callLink.url()
@@ -362,6 +358,42 @@ class CreateCallLinkViewController: InteractiveSheetViewController {
         let authCredential = try await authCredentialManager.fetchCallLinkAuthCredential(localIdentifiers: localIdentifiers)
         self.callLinkState = try await performUpdate(callLinkManager, authCredential)
         updateContents(shouldReload: true)
+    }
+
+    // MARK: - Share Via Signal
+
+    private var sendMessageFlow: SendMessageFlow?
+
+    func shareCallLinkViaSignal() {
+        let messageBody = MessageBody(text: callLink.url().absoluteString, ranges: .empty)
+        let unapprovedContent = SendMessageUnapprovedContent.text(messageBody: messageBody)
+        let sendMessageFlow = SendMessageFlow(
+            flowType: .`default`,
+            unapprovedContent: unapprovedContent,
+            useConversationComposeForSingleRecipient: true,
+            presentationStyle: .presentFrom(self),
+            delegate: self
+        )
+        // Retain the flow until it is complete.
+        self.sendMessageFlow = sendMessageFlow
+    }
+}
+
+extension CreateCallLinkViewController: SendMessageDelegate {
+    func sendMessageFlowDidComplete(threads: [TSThread]) {
+        AssertIsOnMainThread()
+
+        sendMessageFlow?.dismissNavigationController(animated: true)
+
+        sendMessageFlow = nil
+    }
+
+    func sendMessageFlowDidCancel() {
+        AssertIsOnMainThread()
+
+        sendMessageFlow?.dismissNavigationController(animated: true)
+
+        sendMessageFlow = nil
     }
 }
 

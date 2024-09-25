@@ -115,8 +115,6 @@ class SendMessageFlow: Dependencies {
 
     private weak var delegate: SendMessageDelegate?
 
-    private weak var navigationController: UINavigationController?
-
     var unapprovedContent: SendMessageUnapprovedContent
 
     var mentionCandidates: [SignalServiceAddress] = []
@@ -124,27 +122,58 @@ class SendMessageFlow: Dependencies {
     private let selection = ConversationPickerSelection()
     var selectedConversations: [ConversationItem] { selection.conversations }
 
-    public init(flowType: SendMessageFlowType,
-                unapprovedContent: SendMessageUnapprovedContent,
-                useConversationComposeForSingleRecipient: Bool,
-                navigationController: UINavigationController,
-                delegate: SendMessageDelegate) {
+    private let presentationStyle: PresentationStyle
+
+    enum PresentationStyle {
+      case pushOnto(UINavigationController)
+      case presentFrom(UIViewController)
+    }
+
+    private weak var navigationController: UINavigationController?
+
+    public init(
+        flowType: SendMessageFlowType,
+        unapprovedContent: SendMessageUnapprovedContent,
+        useConversationComposeForSingleRecipient: Bool,
+        presentationStyle: PresentationStyle,
+        delegate: SendMessageDelegate
+    ) {
         self.flowType = flowType
         self.unapprovedContent = unapprovedContent
         self.useConversationComposeForSingleRecipient = useConversationComposeForSingleRecipient
-        self.navigationController = navigationController
+        self.presentationStyle = presentationStyle
         self.delegate = delegate
 
         let conversationPicker = ConversationPickerViewController(selection: selection)
+        let navigationController: UINavigationController
+
+        switch presentationStyle {
+        case .pushOnto(let navController):
+            navigationController = navController
+        case .presentFrom:
+            navigationController = OWSNavigationController(rootViewController: conversationPicker)
+        }
+
         conversationPicker.pickerDelegate = self
 
-        if navigationController.viewControllers.isEmpty {
-            navigationController.setViewControllers([
-                conversationPicker
-            ], animated: false)
-        } else {
-            navigationController.pushViewController(conversationPicker, animated: true)
+        switch presentationStyle {
+        case .pushOnto:
+            if navigationController.viewControllers.isEmpty {
+                navigationController.setViewControllers([
+                    conversationPicker
+                ], animated: false)
+            } else {
+                navigationController.pushViewController(conversationPicker, animated: true)
+            }
+        case .presentFrom(let viewController):
+            viewController.present(navigationController, animated: true)
         }
+
+        self.navigationController = navigationController
+    }
+
+    func dismissNavigationController(animated: Bool) {
+        navigationController?.dismiss(animated: animated)
     }
 
     fileprivate func fireComplete(threads: [TSThread]) {

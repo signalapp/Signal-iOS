@@ -507,7 +507,7 @@ public class ManageStickersViewController: OWSTableViewController2 {
             flowType: .`default`,
             unapprovedContent: unapprovedContent,
             useConversationComposeForSingleRecipient: true,
-            navigationController: navigationController,
+            presentationStyle: .pushOnto(navigationController),
             delegate: self
         )
         // Retain the flow until it is complete.

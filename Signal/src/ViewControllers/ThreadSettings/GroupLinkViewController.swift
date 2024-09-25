@@ -316,7 +316,7 @@ public class GroupLinkViewUtils {
             let sendMessageFlow = SendMessageFlow(flowType: .`default`,
                                                   unapprovedContent: unapprovedContent,
                                                   useConversationComposeForSingleRecipient: true,
-                                                  navigationController: navigationController,
+                                                  presentationStyle: .pushOnto(navigationController),
                                                   delegate: sendMessageController)
             // Retain the flow until it is complete.
             sendMessageController.sendMessageFlow.set(sendMessageFlow)
