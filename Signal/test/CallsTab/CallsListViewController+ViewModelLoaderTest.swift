@@ -52,8 +52,8 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
         }()
 
         return CallViewModel(
-            primaryCallRecord: primaryCallRecord,
-            coalescedCallRecords: coalescedCallRecords,
+            reference: .callRecords(primaryId: primaryCallRecord.id, coalescedIds: coalescedCallRecords.map(\.id)),
+            callRecords: [primaryCallRecord] + coalescedCallRecords,
             title: "Hey, I just met you, and this is crazy, but here's my number, so call me maybe?",
             recipientType: recipientType,
             direction: direction,
@@ -62,9 +62,9 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
     }
 
     private func setUpViewModelLoader(
-        viewModelPageSize: UInt,
+        viewModelPageSize: Int,
         maxCachedViewModelCount: Int,
-        maxCoalescedCallsInOneViewModel: UInt = 100
+        maxCoalescedCallsInOneViewModel: Int = 100
     ) {
         viewModelLoader = ViewModelLoader(
             callRecordLoader: mockCallRecordLoader,
@@ -77,57 +77,61 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
     }
 
     private var loadedCallIds: [[UInt64]] {
-        return viewModelLoader.loadedViewModelReferences.allElements.map { reference -> [UInt64] in
-            return reference.containedIds.map { $0.callId }
+        return viewModelLoader.viewModelReferences().map { reference -> [UInt64] in
+            switch reference {
+            case .callRecords(let primaryId, let coalescedIds):
+                return [primaryId.callId] + coalescedIds.map(\.callId)
+            }
         }
     }
 
     private func loadMore(direction: ViewModelLoader.LoadDirection) -> Bool {
-        return mockDB.read { viewModelLoader.loadMore(direction: direction, tx: $0) }
-    }
-
-    private func loadUntilCached(loadedViewModelReferenceIndex: Int) {
-        mockDB.read {
-            viewModelLoader.loadUntilCached(loadedViewModelReferenceIndex: loadedViewModelReferenceIndex, tx: $0)
-        }
+        return mockDB.read { viewModelLoader.loadCallHistoryItemReferences(direction: direction, tx: $0) }
     }
 
     private func assertCached(loadedViewModelReferenceIndices: Range<Int>) {
-        XCTAssertFalse(
-            viewModelLoader.hasCachedViewModel(loadedViewModelReferenceIndex: loadedViewModelReferenceIndices.lowerBound - 1),
-            "Had cached view model outside given range! Idx: \(loadedViewModelReferenceIndices.lowerBound - 1)"
-        )
-        XCTAssertFalse(
-            viewModelLoader.hasCachedViewModel(loadedViewModelReferenceIndex: loadedViewModelReferenceIndices.upperBound),
-            "Had cached view model outside given range! Idx: \(loadedViewModelReferenceIndices.upperBound)"
-        )
+        // Cache the default block, since we're gonna override it.
+        let defaultFetchCallRecordBlock = fetchCallRecordBlock!
+
+        var fetchedCallIds = [UInt64]()
+        fetchCallRecordBlock = { callRecordId, tx -> CallRecord? in
+            fetchedCallIds.append(callRecordId.callId)
+            return defaultFetchCallRecordBlock(callRecordId, tx)
+        }
 
         for index in loadedViewModelReferenceIndices {
-            XCTAssertTrue(
-                viewModelLoader.hasCachedViewModel(loadedViewModelReferenceIndex: index),
+            XCTAssertNotNil(
+                viewModelLoader.viewModel(at: index, sneakyTransactionDb: mockDB),
                 "Missing cached view model for index \(index)!"
             )
         }
+
+        XCTAssertEqual(fetchedCallIds, [])
     }
 
     private func assertCachedCallIds(
         _ callIds: [UInt64],
         atLoadedViewModelReferenceIndex loadedViewModelReferenceIndex: Int
     ) {
-        guard let cachedViewModel = viewModelLoader.getCachedViewModel(loadedViewModelReferenceIndex: loadedViewModelReferenceIndex) else {
+        guard let cachedViewModel = viewModelLoader.viewModel(at: loadedViewModelReferenceIndex, sneakyTransactionDb: mockDB) else {
             XCTFail("Missing cached view model entirely!")
             return
         }
 
-        XCTAssertEqual(callIds, cachedViewModel.allCallRecords.map { $0.callId })
+        XCTAssertEqual(callIds, cachedViewModel.callRecords.map { $0.callId })
     }
 
     private func assertLoadedCallIds(_ callIdsByReference: [UInt64]...) {
         var callIdsByReference = callIdsByReference
 
-        for reference in viewModelLoader.loadedViewModelReferences.allElements {
+        for reference in viewModelLoader.viewModelReferences() {
             let expectedCallIds = callIdsByReference.popFirst()
-            XCTAssertEqual(expectedCallIds, reference.containedIds.map { $0.callId })
+            let actualCallIds: [UInt64]
+            switch reference {
+            case .callRecords(let primaryId, let coalescedIds):
+                actualCallIds = [primaryId.callId] + coalescedIds.map(\.callId)
+            }
+            XCTAssertEqual(expectedCallIds, actualCallIds)
         }
         XCTAssertTrue(callIdsByReference.isEmpty)
     }
@@ -141,12 +145,10 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
         setUpViewModelLoader(viewModelPageSize: 10, maxCachedViewModelCount: 30)
 
         XCTAssertFalse(loadMore(direction: .older))
-        XCTAssertTrue(viewModelLoader.loadedViewModelReferences.isEmpty)
-        XCTAssertFalse(viewModelLoader.hasCachedViewModel(loadedViewModelReferenceIndex: 0))
+        XCTAssertTrue(viewModelLoader.viewModelReferences().isEmpty)
 
         XCTAssertFalse(loadMore(direction: .newer))
-        XCTAssertTrue(viewModelLoader.loadedViewModelReferences.isEmpty)
-        XCTAssertFalse(viewModelLoader.hasCachedViewModel(loadedViewModelReferenceIndex: 0))
+        XCTAssertTrue(viewModelLoader.viewModelReferences().isEmpty)
     }
 
     func testBasicCoalescingRules() {
@@ -193,7 +195,6 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
             [95, 94, 93, 92],
             [0], [1], [2], [3], [4], [5], [6], [7], [8], [9], [10],
         ])
-        assertCached(loadedViewModelReferenceIndices: 0..<viewModelLoader.loadedViewModelReferences.count)
     }
 
     func testScrollingBackAndForthThroughMultiplePages() {
@@ -223,28 +224,28 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
 
         XCTAssertTrue(loadMore(direction: .older))
         assertLoadedCallIds([1], [2], [3, 3000])
-        assertCached(loadedViewModelReferenceIndices: 0..<3)
         assertCachedCallIds([1], atLoadedViewModelReferenceIndex: 0)
+        assertCached(loadedViewModelReferenceIndices: 0..<3)
         assertCachedCallIds([2], atLoadedViewModelReferenceIndex: 1)
         assertCachedCallIds([3, 3000], atLoadedViewModelReferenceIndex: 2)
 
         XCTAssertTrue(loadMore(direction: .older))
         assertLoadedCallIds([1], [2], [3, 3000], [4], [5], [6, 6000])
-        assertCached(loadedViewModelReferenceIndices: 0..<6)
         assertCachedCallIds([1], atLoadedViewModelReferenceIndex: 0)
         assertCachedCallIds([2], atLoadedViewModelReferenceIndex: 1)
         assertCachedCallIds([3, 3000], atLoadedViewModelReferenceIndex: 2)
         assertCachedCallIds([4], atLoadedViewModelReferenceIndex: 3)
+        assertCached(loadedViewModelReferenceIndices: 0..<6)
         assertCachedCallIds([5], atLoadedViewModelReferenceIndex: 4)
         assertCachedCallIds([6, 6000], atLoadedViewModelReferenceIndex: 5)
 
         XCTAssertTrue(loadMore(direction: .older))
         assertLoadedCallIds([1], [2], [3, 3000], [4], [5], [6, 6000], [7], [8], [9, 9000])
-        assertCached(loadedViewModelReferenceIndices: 3..<9)
         assertCachedCallIds([4], atLoadedViewModelReferenceIndex: 3)
         assertCachedCallIds([5], atLoadedViewModelReferenceIndex: 4)
         assertCachedCallIds([6, 6000], atLoadedViewModelReferenceIndex: 5)
         assertCachedCallIds([7], atLoadedViewModelReferenceIndex: 6)
+        assertCached(loadedViewModelReferenceIndices: 3..<9)
         assertCachedCallIds([8], atLoadedViewModelReferenceIndex: 7)
         assertCachedCallIds([9, 9000], atLoadedViewModelReferenceIndex: 8)
 
@@ -263,8 +264,8 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
         /// rehydrate already-loaded view model references.
         XCTAssertFalse(loadMore(direction: .newer))
         assertLoadedCallIds([1], [2], [3, 3000], [4], [5], [6, 6000], [7], [8], [9, 9000])
-        assertCached(loadedViewModelReferenceIndices: 0..<6)
         assertCachedCallIds([1], atLoadedViewModelReferenceIndex: 0)
+        assertCached(loadedViewModelReferenceIndices: 0..<6)
         assertCachedCallIds([2], atLoadedViewModelReferenceIndex: 1)
         assertCachedCallIds([3, 3000], atLoadedViewModelReferenceIndex: 2)
         assertCachedCallIds([4], atLoadedViewModelReferenceIndex: 3)
@@ -295,8 +296,8 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
                 /// Add a coalescable triplet of calls.
                 return [
                     .fixture(callId: UInt64(idx), timestamp: timestamp.uncoalescable(), threadRowId: Int64(idx)),
-                    .fixture(callId: UInt64(idx * 5000), timestamp: timestamp.coalescable(), threadRowId: Int64(idx)),
-                    .fixture(callId: UInt64(idx * 5001), timestamp: timestamp.coalescable(), threadRowId: Int64(idx)),
+                    .fixture(callId: UInt64(idx + 5000), timestamp: timestamp.coalescable(), threadRowId: Int64(idx)),
+                    .fixture(callId: UInt64(idx + 10000), timestamp: timestamp.coalescable(), threadRowId: Int64(idx)),
                 ]
             } else {
                 /// Add a single uncoalescable call.
@@ -310,13 +311,13 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
             XCTAssertTrue(loadMore(direction: .older))
         }
         XCTAssertFalse(loadMore(direction: .older))
-        assertCached(loadedViewModelReferenceIndices: 4700..<5000)
 
-        loadUntilCached(loadedViewModelReferenceIndex: 0)
-        assertCached(loadedViewModelReferenceIndices: 0..<300)
-
-        loadUntilCached(loadedViewModelReferenceIndex: 4999)
-        assertCached(loadedViewModelReferenceIndices: 4700..<5000)
+        assertCachedCallIds([5000, 10000, 15000], atLoadedViewModelReferenceIndex: 4999)
+        assertCached(loadedViewModelReferenceIndices: 4900..<5000)
+        assertCachedCallIds([1], atLoadedViewModelReferenceIndex: 0)
+        assertCached(loadedViewModelReferenceIndices: 0..<100)
+        assertCachedCallIds([5000, 10000, 15000], atLoadedViewModelReferenceIndex: 4999)
+        assertCached(loadedViewModelReferenceIndices: 4900..<5000)
     }
 
     func testNewerCallInserted() {
@@ -335,11 +336,13 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
         ]
 
         XCTAssertTrue(loadMore(direction: .newer))
-        assertCached(loadedViewModelReferenceIndices: 0..<2)
+        assertLoadedCallIds([3, 4, 5], [6])
         assertCachedCallIds([3, 4, 5], atLoadedViewModelReferenceIndex: 0)
+        assertCached(loadedViewModelReferenceIndices: 0..<2)
         assertCachedCallIds([6], atLoadedViewModelReferenceIndex: 1)
 
         XCTAssertFalse(loadMore(direction: .newer))
+        assertLoadedCallIds([3, 4, 5], [6])
         assertCached(loadedViewModelReferenceIndices: 0..<2)
         assertCachedCallIds([3, 4, 5], atLoadedViewModelReferenceIndex: 0)
         assertCachedCallIds([6], atLoadedViewModelReferenceIndex: 1)
@@ -349,31 +352,27 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
         /// view model.
         mockCallRecordLoader.callRecords.insert(.fixture(callId: 2, timestamp: timestampToInsert2), at: 0)
         XCTAssertTrue(loadMore(direction: .newer))
+        assertLoadedCallIds([2, 3, 4, 5], [6])
         assertCached(loadedViewModelReferenceIndices: 0..<2)
         assertCachedCallIds([2, 3, 4, 5], atLoadedViewModelReferenceIndex: 0)
         assertCachedCallIds([6], atLoadedViewModelReferenceIndex: 1)
 
-        /// If we then insert multiple new call records that can be coalesced,
-        /// those should *not* be merged into the existing view model. That's a
-        /// quirk of how the view model loader works – see comments in the
-        /// implementation about it – but since it's an intentional behavior
-        /// let's test it.
         mockCallRecordLoader.callRecords.insert(.fixture(callId: 1, timestamp: timestampToInsert1), at: 0)
         mockCallRecordLoader.callRecords.insert(.fixture(callId: 0, timestamp: timestampToInsert0), at: 0)
         XCTAssertTrue(loadMore(direction: .newer))
-        assertCached(loadedViewModelReferenceIndices: 0..<4)
+        assertLoadedCallIds([0], [1, 2, 3, 4, 5], [6])
         assertCachedCallIds([0], atLoadedViewModelReferenceIndex: 0)
-        assertCachedCallIds([1], atLoadedViewModelReferenceIndex: 1)
-        assertCachedCallIds([2, 3, 4, 5], atLoadedViewModelReferenceIndex: 2)
-        assertCachedCallIds([6], atLoadedViewModelReferenceIndex: 3)
+        assertCached(loadedViewModelReferenceIndices: 0..<3)
+        assertCachedCallIds([1, 2, 3, 4, 5], atLoadedViewModelReferenceIndex: 1)
+        assertCachedCallIds([6], atLoadedViewModelReferenceIndex: 2)
 
         /// And now, finally, there's nothing new to load.
         XCTAssertFalse(loadMore(direction: .newer))
-        assertCached(loadedViewModelReferenceIndices: 0..<4)
+        assertLoadedCallIds([0], [1, 2, 3, 4, 5], [6])
+        assertCached(loadedViewModelReferenceIndices: 0..<3)
         assertCachedCallIds([0], atLoadedViewModelReferenceIndex: 0)
-        assertCachedCallIds([1], atLoadedViewModelReferenceIndex: 1)
-        assertCachedCallIds([2, 3, 4, 5], atLoadedViewModelReferenceIndex: 2)
-        assertCachedCallIds([6], atLoadedViewModelReferenceIndex: 3)
+        assertCachedCallIds([1, 2, 3, 4, 5], atLoadedViewModelReferenceIndex: 1)
+        assertCachedCallIds([6], atLoadedViewModelReferenceIndex: 2)
     }
 
     func testRefreshingViewModels() {
@@ -383,18 +382,19 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
         setUpViewModelLoader(viewModelPageSize: 2, maxCachedViewModelCount: 2)
         var timestamp = SequentialTimestampBuilder()
 
+        let earlierTimestamp = timestamp.uncoalescable()
+
         mockCallRecordLoader.callRecords = [
             .fixture(callId: 0, timestamp: timestamp.uncoalescable()),
             .fixture(callId: 1, timestamp: timestamp.coalescable()),
 
             .fixture(callId: 2, timestamp: timestamp.uncoalescable()),
-
-            .fixture(callId: 3, timestamp: timestamp.uncoalescable()),
         ]
 
         XCTAssertTrue(loadMore(direction: .older))
-        assertCached(loadedViewModelReferenceIndices: 0..<2)
+        assertLoadedCallIds([0, 1], [2])
         assertCachedCallIds([0, 1], atLoadedViewModelReferenceIndex: 0)
+        assertCached(loadedViewModelReferenceIndices: 0..<2)
         assertCachedCallIds([2], atLoadedViewModelReferenceIndex: 1)
 
         var fetchedCallIds = [UInt64]()
@@ -417,9 +417,9 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
                         callRecordIds: [callRecordId], tx: tx
                     ),
                     [
-                        .coalescedCalls(
-                            primary: .fixture(callId: 0),
-                            coalesced: [.fixture(callId: 1)]
+                        .callRecords(
+                            primaryId: .fixture(callId: 0),
+                            coalescedIds: [.fixture(callId: 1)]
                         )
                     ]
                 )
@@ -429,24 +429,22 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
 
             XCTAssertEqual(
                 viewModelLoader.refreshViewModels(callRecordIds: [.fixture(callId: 2)], tx: tx),
-                [.singleCall(.fixture(callId: 2))]
+                [.callRecords(primaryId: .fixture(callId: 2), coalescedIds: [])]
             )
             XCTAssertEqual(fetchedCallIds, [2])
             fetchedCallIds = []
         }
 
-        /// Load across a partial page and drop that first coalesced view model.
-        XCTAssertTrue(loadMore(direction: .older))
-        assertCached(loadedViewModelReferenceIndices: 1..<3)
-        assertCachedCallIds([2], atLoadedViewModelReferenceIndex: 1)
-        assertCachedCallIds([3], atLoadedViewModelReferenceIndex: 2)
+        // Insert an earlier record that doesn't have a CallViewModel.
+        mockCallRecordLoader.callRecords.insert(.fixture(callId: 3, timestamp: earlierTimestamp), at: 0)
+        XCTAssertTrue(loadMore(direction: .newer))
 
         /// If we ask to recreate for a call record ID that's not part of
         /// any cached view models, nothing should happen.
         fetchCallRecordBlock = { (_, _) in XCTFail("Unexpectedly tried to fetch!"); return nil }
         mockDB.read { tx in
             XCTAssertEqual(
-                viewModelLoader.refreshViewModels(callRecordIds: [.fixture(callId: 0)], tx: tx),
+                viewModelLoader.refreshViewModels(callRecordIds: [.fixture(callId: 3)], tx: tx),
                 []
             )
             XCTAssertEqual(fetchedCallIds, [])
@@ -495,10 +493,12 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
 
         XCTAssertTrue(loadMore(direction: .older))
         assertLoadedCallIds([99], [98], [0], [97], [1, 2, 3], [4, 5, 6])
+        assertCachedCallIds([99], atLoadedViewModelReferenceIndex: 0)
         assertCached(loadedViewModelReferenceIndices: 0..<6)
 
         XCTAssertTrue(loadMore(direction: .older))
         assertLoadedCallIds([99], [98], [0], [97], [1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11])
+        assertCachedCallIds([7, 8, 9], atLoadedViewModelReferenceIndex: 6)
         assertCached(loadedViewModelReferenceIndices: 2..<8)
 
         mockDB.read { tx in
@@ -523,8 +523,8 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
             [4, 6],
             [10, 11]
         )
-        assertCached(loadedViewModelReferenceIndices: 1..<5)
         assertCachedCallIds([0], atLoadedViewModelReferenceIndex: 1)
+        assertCached(loadedViewModelReferenceIndices: 0..<5)
         assertCachedCallIds([2, 3], atLoadedViewModelReferenceIndex: 2)
         assertCachedCallIds([4, 6], atLoadedViewModelReferenceIndex: 3)
         assertCachedCallIds([10, 11], atLoadedViewModelReferenceIndex: 4)
@@ -546,7 +546,6 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
 
         XCTAssertTrue(loadMore(direction: .older))
         assertLoadedCallIds([1, 2, 3], [4, 5, 6], [7])
-        assertCached(loadedViewModelReferenceIndices: 0..<3)
     }
 }
 

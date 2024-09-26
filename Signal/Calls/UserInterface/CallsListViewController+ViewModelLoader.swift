@@ -6,26 +6,28 @@
 import SignalServiceKit
 
 extension CallsListViewController {
-    /// Responsible for loading ``CallViewModel``s from disk and persisting them
-    /// in-memory.
+    /// Responsible for loading call links & call records from disk.
     ///
-    /// This type will maintain an ordered list of references to every
-    /// ``CallViewModel`` it has ever loaded, as well as a bounded in-memory
-    /// cache of full view models. It exposes methods for paging forwards and
-    /// backwards in time, which results in updates to the currently-cached view
-    /// models as well as additions to the loaded view model references as
-    /// appropriate.
+    /// (For the purposes of this type, a "call history item" is one or more
+    /// ``CallRecord``s displayed as a single row in the UI. It might be a
+    /// single ``CallRecord`` or multiple that have been coalesced. These may be
+    /// individual calls, group calls, or call link calls. An "upcoming call
+    /// link" is a call link that's never been used. A "call list item" refers
+    /// to either of these.)
     ///
-    /// Callers should inspect ``loadedViewModelReferences`` for a comprehensive
-    /// list of all view models this instance is aware of, and use
-    /// ``getCachedViewModel(loadedViewModelReferenceIndex:)`` to request a full
-    /// view model for the reference at the given index in
-    /// ``loadedViewModelReferences``.
+    /// This types loads call list items from disk & exposes an API that
+    /// contains everything it has loaded. Internally, it performs caching &
+    /// batching of the larger ``CallViewModel``s to reduce memory usage.
+    /// However, these details are hidden from its public API.
     ///
-    /// Note that in the event of a "cache miss" when requesting a full view
-    /// model from this type, it is the callers responsibility to instruct this
-    /// type to load models to refill the cache such that the next request
-    /// results in a cache hit.
+    /// (In other words, callers should assume ``CallViewModel``s are available
+    /// for every element in ``viewModelReferences()`` because this type handles
+    /// batching & cache management behind the scenes.)
+    ///
+    /// When the on-disk values are changed, callers should invoke the
+    /// appropriate methods on this type to fetch/update/remove/apply the
+    /// changes. When the user scrolls to the bottom of the list, callers should
+    /// request additional items.
     struct ViewModelLoader {
         typealias CreateCallViewModelBlock = (
             _ primaryCallRecord: CallRecord,
@@ -46,17 +48,17 @@ extension CallsListViewController {
         private let callRecordLoader: CallRecordLoader
         private let createCallViewModelBlock: CreateCallViewModelBlock
         private let fetchCallRecordBlock: FetchCallRecordBlock
-        private let viewModelPageSize: UInt
+        private let viewModelPageSize: Int
         private let maxCachedViewModelCount: Int
-        private let maxCoalescedCallsInOneViewModel: UInt
+        private let maxCoalescedCallsInOneViewModel: Int
 
         init(
             callRecordLoader: CallRecordLoader,
             createCallViewModelBlock: @escaping CreateCallViewModelBlock,
             fetchCallRecordBlock: @escaping FetchCallRecordBlock,
-            viewModelPageSize: UInt = 50,
+            viewModelPageSize: Int = 50,
             maxCachedViewModelCount: Int = 150,
-            maxCoalescedCallsInOneViewModel: UInt = 50
+            maxCoalescedCallsInOneViewModel: Int = 50
         ) {
             owsPrecondition(
                 maxCachedViewModelCount >= viewModelPageSize,
@@ -70,673 +72,394 @@ extension CallsListViewController {
             self.maxCachedViewModelCount = maxCachedViewModelCount
             self.maxCoalescedCallsInOneViewModel = maxCoalescedCallsInOneViewModel
 
-            self.loadedViewModelReferences = IdentifierIndexedArray(elements: [])
-            self.cachedViewModels = IdentifierIndexedArray(elements: [])
+            self.callHistoryItemReferences = []
+            self.viewModels = []
+            self.viewModelOffset = 0
         }
 
-        // MARK: - Loaded view model references
+        // MARK: - References
 
-        /// All the view model references we've loaded thus far.
-        private(set) var loadedViewModelReferences: IdentifierIndexedArray<CallViewModel.Reference>
+        private struct CallHistoryItemReference {
+            let callRecordIds: NonEmptyArray<CallRecord.ID>
 
-        /// Returns a view model reference matching the given one, with any of
-        /// the given call record IDs removed. If the resulting reference would
-        /// contain no call record IDs, `nil` is returned.
-        private func dropCallRecordIds(
-            _ idsToDrop: Set<CallRecord.ID>,
-            fromViewModelReference viewModelReference: CallViewModel.Reference
-        ) -> CallViewModel.Reference? {
-            var containedCallRecordIds: [CallRecord.ID] = viewModelReference.containedIds
-
-            let countBefore = containedCallRecordIds.count
-            containedCallRecordIds.removeAll { idsToDrop.contains($0) }
-
-            guard countBefore != containedCallRecordIds.count else {
-                // Nothing was dropped, keep the same view model reference.
-                return viewModelReference
+            init(callRecordIds: NonEmptyArray<CallRecord.ID>) {
+                self.callRecordIds = callRecordIds
             }
 
-            if containedCallRecordIds.isEmpty {
-                return nil
-            } else if containedCallRecordIds.count == 1 {
-                return .singleCall(containedCallRecordIds.first!)
-            } else {
-                return .coalescedCalls(
-                    primary: containedCallRecordIds.first!,
-                    coalesced: Array(containedCallRecordIds.dropFirst())
-                )
+            var viewModelReference: CallViewModel.Reference {
+                return .callRecords(primaryId: callRecordIds.first, coalescedIds: Array(callRecordIds.rawValue.dropFirst()))
             }
         }
 
-        // MARK: - Cached view models
+        /// The range of `callBeganTimestamp`s that have been loaded. If nil,
+        /// nothing has been fetched yet (or there wasn't anything to fetch).
+        private var callHistoryItemTimestampRange: ClosedRange<UInt64>?
+
+        private var callHistoryItemReferences: [CallHistoryItemReference]
+
+        var isEmpty: Bool { callHistoryItemReferences.isEmpty }
+
+        var totalCount: Int { callHistoryItemReferences.count }
+
+        /// All the references known by this type.
+        ///
+        /// This value should be used as a the data source for a table view.
+        func viewModelReferences() -> [CallViewModel.Reference] {
+            return callHistoryItemReferences.map(\.viewModelReference)
+        }
+
+        func viewModelReference(at index: Int) -> CallViewModel.Reference {
+            return callHistoryItemReferences[index].viewModelReference
+        }
+
+        // MARK: - View Models
+
+        /// Tracks the correspondance between `viewModels` and the references.
+        ///
+        /// The invariant is that
+        ///     (upcomingCallLinkReferences + callHistoryItemReferences).dropFirst(viewModelOffset)
+        /// will correspond with viewModels.
+        private var viewModelOffset: Int
+
+        private var viewModelRange: Range<Int> { viewModelOffset..<(viewModelOffset + viewModels.count) }
 
         /// All the hydrated view models we currently have loaded.
-        private var cachedViewModels: IdentifierIndexedArray<CallViewModel>
+        private var viewModels: [CallViewModel]
 
-        /// Returns the cached view model corresponding to the view model
-        /// reference at the given index into ``loadedViewModelReferences``, if
-        /// one is cached.
+        /// Returns the view model at `index`.
         ///
-        /// - SeeAlso ``loadUntilCached(loadedViewModelReferenceIndex:tx:)``
-        func getCachedViewModel(loadedViewModelReferenceIndex index: Int) -> CallViewModel? {
-            guard let viewModelReference = loadedViewModelReferences[safe: index] else {
-                return nil
+        /// This fetches a new batch from the disk if `index` isn't yet loaded.
+        mutating func viewModel(at index: Int, sneakyTransactionDb: any DB) -> CallViewModel? {
+            if let alreadyFetched = viewModels[safe: index - self.viewModelOffset] {
+                return alreadyFetched
             }
-
-            return getCachedViewModel(reference: viewModelReference)
-        }
-
-        /// Returns whether a view model is cached corresponding to the view
-        /// model reference at the given index into
-        /// ``loadedViewModelReferences``.
-        func hasCachedViewModel(loadedViewModelReferenceIndex index: Int) -> Bool {
-            return getCachedViewModel(loadedViewModelReferenceIndex: index) != nil
-        }
-
-        private func getCachedViewModel(reference: CallViewModel.Reference) -> CallViewModel? {
-            return cachedViewModels[id: reference.primaryId]
-        }
-
-        /// Merges the given view models into the view model cache in the given
-        /// direction, dropping models from the other end of the cache if
-        /// necessary.
-        private mutating func mergeIntoCachedViewModels(
-            newViewModels: [CallViewModel],
-            direction: LoadDirection
-        ) {
-            if newViewModels.isEmpty { return }
-
-            let mergedCachedViewModels: [CallViewModel] = {
-                let combinedViewModels: [CallViewModel] = {
-                    switch direction {
-                    case .older: return cachedViewModels.allElements + newViewModels
-                    case .newer: return newViewModels + cachedViewModels.allElements
-                    }
-                }()
-
-                if combinedViewModels.count <= maxCachedViewModelCount {
-                    return combinedViewModels
-                } else {
-                    switch direction {
-                    case .older: return Array(combinedViewModels.suffix(maxCachedViewModelCount))
-                    case .newer: return Array(combinedViewModels.prefix(maxCachedViewModelCount))
-                    }
-                }
-            }()
-
-            cachedViewModels = IdentifierIndexedArray(elements: mergedCachedViewModels)
-        }
-
-        /// Returns a view model reference matching the given one, with any
-        /// should-be-dropped call record IDs removed. If the resulting
-        /// reference contains no call record IDs, `nil` is returned.
-        private func dropCallRecordIds(
-            _ idsToDrop: Set<CallRecord.ID>,
-            fromViewModel viewModel: CallViewModel,
-            tx: DBReadTransaction
-        ) -> CallViewModel? {
-            var containedCallRecords = viewModel.allCallRecords
-
-            let countBefore = containedCallRecords.count
-            containedCallRecords.removeAll { idsToDrop.contains($0.id) }
-
-            guard countBefore != containedCallRecords.count else {
-                // Nothing was dropped, keep the same view model.
-                return viewModel
-            }
-
-            if containedCallRecords.isEmpty {
-                return nil
-            } else {
-                return createCallViewModelBlock(
-                    containedCallRecords.first!,
-                    Array(containedCallRecords.dropFirst()),
-                    tx
-                )
-            }
+            sneakyTransactionDb.read { tx in self.loadUntilCached(at: index, tx: tx) }
+            return viewModels[safe: index - self.viewModelOffset]
         }
 
         // MARK: - Load more
 
-        /// Repeatedly loads pages of view models until a cached view model is
-        /// available for the given loaded view model reference index.
+        /// Loads a batch of view models surrounding `index`.
         ///
-        /// This method is safe to call for any valid loaded view model
-        /// reference index.
-        ///
-        /// - Note
-        /// This may result in multiple synchronous page loads if necessary. For
-        /// example, if view models are cached for rows in range `(500, 600)`
-        /// and this method is called for row 10, all the rows between row 500
-        /// and row 10 will be loaded.
-        ///
-        /// This behavior should be fine in practice, since loading a page is a
-        /// fast operation.
-        mutating func loadUntilCached(
-            loadedViewModelReferenceIndex index: Int,
-            tx: DBReadTransaction
-        ) {
-            guard
-                !hasCachedViewModel(loadedViewModelReferenceIndex: index),
-                !cachedViewModels.isEmpty
-            else { return }
+        /// This method is safe to call for any `index` less than `totalCount` or
+        /// `viewModelReferences().count`.
+        private mutating func loadUntilCached(at index: Int, tx: DBReadTransaction) {
+            let viewModelRange = self.viewModelRange
 
-            guard let cachedViewModelReferenceIndices = cachedViewModelReferenceIndices() else {
-                owsFail("Missing cached view model indices, but we checked above for empty cached view models!")
+            // For example, assume:
+            // - viewModelPageSize=25,
+            // - maxCachedViewModelCount=35,
+            // - viewModelRange=[20, 40)
+
+            // ... then newerRange will be [0, 20)
+            let newerRange = max(0, viewModelRange.lowerBound - viewModelPageSize)..<viewModelRange.lowerBound
+            // ... and if `index` is in that range ...
+            if newerRange.contains(index) {
+                let hydratedViewModels = self.hydrateViewModelReferences(inRange: newerRange, tx: tx)
+                // ... we load 20 new items, have 40 total, and then drop the last 5.
+                self.viewModels = Array((hydratedViewModels + self.viewModels).prefix(maxCachedViewModelCount))
+                // The first item is now earlier because we added items to the beginning.
+                self.viewModelOffset -= hydratedViewModels.count
+                return
             }
 
-            let loadDirection: LoadDirection = {
-                if index > cachedViewModelReferenceIndices.last {
-                    return .older
-                } else if index < cachedViewModelReferenceIndices.first {
-                    return .newer
-                }
-
-                owsFail("Row index is in the cached range, but somehow we didn't have a cached model. How did that happen?")
-            }()
-
-            while true {
-                if hasCachedViewModel(loadedViewModelReferenceIndex: index) {
-                    break
-                }
-
-                _ = loadMore(direction: loadDirection, tx: tx)
+            // ... then olderRange will be [40, 65) ...
+            let olderRange = viewModelRange.upperBound..<(viewModelRange.upperBound + viewModelPageSize)
+            // ... and if `index` is in that range ...
+            if olderRange.contains(index) {
+                let hydratedViewModels = self.hydrateViewModelReferences(inRange: olderRange, tx: tx)
+                // ... we load 25 new items, have 45 total, and then drop the first 10.
+                self.viewModels = Array((self.viewModels + hydratedViewModels).suffix(maxCachedViewModelCount))
+                // The first item is now later because we dropped 20 + 25 - 35 = 10 items from the beginning.
+                self.viewModelOffset += max(0, viewModelRange.count + hydratedViewModels.count - maxCachedViewModelCount)
+                return
             }
+
+            // ... otherwise we load a batch surrounding `index`
+            // (if index=837, pageIndex=33, pageRange=[825, 850))
+            let pageIndex = index / viewModelPageSize
+            let pageRange = (pageIndex * viewModelPageSize)..<((pageIndex + 1) * viewModelPageSize)
+            // ... and throw away all our items and jump directly to what we loaded.
+            self.viewModels = self.hydrateViewModelReferences(inRange: pageRange, tx: tx)
+            self.viewModelOffset = pageRange.lowerBound
         }
 
-        /// Load a page of calls in the requested direction.
+        /// Load a page of call history items in the requested direction.
         ///
-        /// This method may load brand new view models; it may page view models
-        /// into this loader's cache for view model references it had loaded in
-        /// the past; or it may do a combination of both.
+        /// This method might fetch view models in a few circumstances.
         ///
         /// - Returns
-        /// Whether changes were made to ``loadedViewModelReferences`` as a
-        /// result of this load.
-        mutating func loadMore(
+        /// True if the owner of this type should schedule a reload (ie changes were
+        /// made to call history items).
+        mutating func loadCallHistoryItemReferences(
             direction loadDirection: LoadDirection,
             tx: DBReadTransaction
         ) -> Bool {
-            var viewModelsToLoadCount = viewModelPageSize
+            var fetchResult: [NonEmptyArray<CallRecord>]
+            let fetchDirection: LoadDirection
+            switch (loadDirection, callHistoryItemTimestampRange) {
+            case (.older, _), (.newer, nil):
+                /// If we're asked to load newer calls, but we don't have any calls loaded
+                /// yet, do an "older" load since they're gonna be equivalent.
 
-            let rehydratedCount = rehydrateLoadedViewModelReferencesIntoCache(
-                maxCount: viewModelsToLoadCount,
-                direction: loadDirection,
-                tx: tx
-            )
+                fetchDirection = .older
+                fetchResult = loadOlderCallHistoryItemReferences(
+                    olderThan: callHistoryItemTimestampRange?.lowerBound,
+                    maxCount: viewModelPageSize,
+                    tx: tx
+                )
+            case (.newer, let callHistoryItemTimestampRange?):
+                fetchDirection = .newer
+                fetchResult = loadNewerCallHistoryItemReferences(
+                    newerThan: callHistoryItemTimestampRange.upperBound,
+                    tx: tx
+                ).map { NonEmptyArray(singleElement: $0) }
+            }
 
-            owsPrecondition(rehydratedCount <= viewModelsToLoadCount)
-            viewModelsToLoadCount -= rehydratedCount
-
-            if viewModelsToLoadCount == 0 {
-                /// We've loaded all the calls we need to, simply by rehydrating
-                /// already-loaded view model references.
+            guard let newestGroup = fetchResult.first, let oldestGroup = fetchResult.last else {
                 return false
             }
 
-            switch (loadDirection, cachedViewModels.count) {
-            case (.older, _), (.newer, 0):
-                /// If we're asked to load newer calls, but we don't have any
-                /// calls loaded yet, do an "older" load since they're gonna be
-                /// equivalent.
+            // Expand `callHistoryItemTimestampRange` so that the next fetch elides existing items.
+            let newestFetchedTimestamp: UInt64 = newestGroup.first.callBeganTimestamp
+            let oldestFetchedTimestamp: UInt64 = oldestGroup.last.callBeganTimestamp
 
-                let brandNewViewModels = loadBrandNewViewModelsOlder(
-                    maxCount: viewModelsToLoadCount, tx: tx
+            if let callHistoryItemTimestampRange {
+                self.callHistoryItemTimestampRange = (
+                    min(callHistoryItemTimestampRange.lowerBound, oldestFetchedTimestamp)
+                    ... max(callHistoryItemTimestampRange.upperBound, newestFetchedTimestamp)
                 )
-
-                if brandNewViewModels.isEmpty {
-                    return false
-                }
-
-                loadedViewModelReferences.append(
-                    newElements: brandNewViewModels.map { $0.reference }
-                )
-                mergeIntoCachedViewModels(
-                    newViewModels: brandNewViewModels,
-                    direction: .older
-                )
-
-                return true
-            case (.newer, _):
-                guard let newestCachedViewModel = cachedViewModels.first else {
-                    owsFail("Non-zero cached view model count, but missing first view model!")
-                }
-
-                let loadResult = loadBrandNewViewModelsNewer(
-                    maxCount: viewModelsToLoadCount,
-                    currentNewestViewModel: newestCachedViewModel,
-                    tx: tx
-                )
-
-                switch loadResult {
-                case .nothingLoaded:
-                    return false
-                case .coalescedIntoCurrentNewest(let updatedNewestViewModel):
-                    /// If we coalesced newly-loaded view models into the
-                    /// existing most-recent call, replace that call
-                    /// in-place and let callers know things changed.
-
-                    loadedViewModelReferences.replace(
-                        elementAtIndex: 0, with: updatedNewestViewModel.reference
-                    )
-                    cachedViewModels.replace(
-                        elementAtIndex: 0, with: updatedNewestViewModel
-                    )
-
-                    return true
-                case .loaded(let newViewModels):
-                    owsPrecondition(newViewModels.count > 0)
-
-                    loadedViewModelReferences.prepend(
-                        newElements: newViewModels.map { $0.reference }
-                    )
-                    mergeIntoCachedViewModels(
-                        newViewModels: newViewModels,
-                        direction: .newer
-                    )
-
-                    return true
-                }
+            } else {
+                self.callHistoryItemTimestampRange = oldestFetchedTimestamp...newestFetchedTimestamp
             }
+
+            // Special case: If we fetched newer records, and if the oldest one we
+            // fetched can be merged with what we already have, do so. This handles the
+            // common case of making a call while scrolled near the top of the Calls
+            // Tab. If this code is removed, the app will behave properly, but calls
+            // won't be coalesced until the a new loader is created.
+            if
+                fetchDirection == .newer,
+                let oldestGroupOfNewCallRecords = fetchResult.last,
+                let newestGroupOfOldCallRecords = viewModels[safe: 0]?.callRecords,
+                let oldestOldCallRecord = newestGroupOfOldCallRecords.last,
+                oldestGroupOfNewCallRecords.first.isValidCoalescingAnchor(for: oldestOldCallRecord),
+                (oldestGroupOfNewCallRecords.rawValue.count + newestGroupOfOldCallRecords.count) <= maxCoalescedCallsInOneViewModel
+            {
+                let combinedGroupOfCallRecords = oldestGroupOfNewCallRecords + newestGroupOfOldCallRecords
+                callHistoryItemReferences[0] = CallHistoryItemReference(
+                    callRecordIds: combinedGroupOfCallRecords.map(\.id)
+                )
+                viewModels[0] = createCallViewModelBlock(
+                    combinedGroupOfCallRecords.first,
+                    Array(combinedGroupOfCallRecords.rawValue.dropFirst()),
+                    tx
+                )
+                fetchResult = fetchResult.dropLast()
+            }
+
+            let fetchedCallHistoryItemReferences = fetchResult.map {
+                return CallHistoryItemReference(callRecordIds: $0.map(\.id))
+            }
+
+            switch fetchDirection {
+            case .older:
+                // swiftlint:disable shorthand_operator
+                self.callHistoryItemReferences = self.callHistoryItemReferences + fetchedCallHistoryItemReferences
+                // swiftlint:enable shorthand_operator
+            case .newer:
+                self.callHistoryItemReferences = fetchedCallHistoryItemReferences + self.callHistoryItemReferences
+                self.viewModelOffset += fetchedCallHistoryItemReferences.count
+            }
+
+            return true
         }
 
         // MARK: - Rehydration
 
-        /// "Rehydrate" already-loaded view model references that we know about
-        /// in the direction we want to load, and add the rehydrated view models
-        /// to our cache.
+        /// "Hydrate" (ie load) view models in `range`.
         ///
-        /// Rehydration will begin with the next already-loaded view model
-        /// reference without a corresponding view model in the cache, in the
-        /// given direction. For example, if we've loaded view model references
-        /// for rows `[0, 100]`, have cached view models for `[25, 75]`, the
-        /// first rehydrated view model will be at index 24 or 76.
-        ///
-        /// - Parameter maxCount
-        /// The max number of view models to rehydrate.
-        /// - Returns
-        /// The actual number of view models rehydrated. This may be lower than
-        /// the max if while rehydrating we run out of already-loaded view model
-        /// references in the given direction.
-        private mutating func rehydrateLoadedViewModelReferencesIntoCache(
-            maxCount: UInt,
-            direction loadDirection: LoadDirection,
-            tx: DBReadTransaction
-        ) -> UInt {
-            let cachedViewModelReferenceIndices: CachedViewModelReferenceIndices? = cachedViewModelReferenceIndices()
-
-            /// Collect any view model references we've already loaded, in the
-            /// given direction, for which we don't have a loaded view model.
-            let loadedViewModelReferencesToHydrate: [CallViewModel.Reference] = {
-                guard let cachedViewModelReferenceIndices else { return [] }
-
-                var referencesToHydrate = [CallViewModel.Reference]()
-
-                switch loadDirection {
-                case .older:
-                    var indexToHydrate = cachedViewModelReferenceIndices.last + 1
-                    while
-                        indexToHydrate < loadedViewModelReferences.count,
-                        referencesToHydrate.count < maxCount
-                    {
-                        referencesToHydrate.append(loadedViewModelReferences[index: indexToHydrate])
-                        indexToHydrate += 1
-                    }
-                case .newer:
-                    var indexToHydrate = cachedViewModelReferenceIndices.first - 1
-                    while
-                        indexToHydrate >= 0,
-                        referencesToHydrate.count < maxCount
-                    {
-                        referencesToHydrate.insert(loadedViewModelReferences[index: indexToHydrate], at: 0)
-                        indexToHydrate -= 1
-                    }
-                }
-
-                return referencesToHydrate
-            }()
-
-            let rehydratedViewModels = loadedViewModelReferencesToHydrate.map { viewModelReference in
-                hydrate(viewModelReference: viewModelReference, tx: tx)
-            }
-
-            mergeIntoCachedViewModels(
-                newViewModels: rehydratedViewModels,
-                direction: loadDirection
-            )
-
-            return UInt(rehydratedViewModels.count)
-        }
-
-        /// Hydrates a full view model from the given reference.
-        private func hydrate(
-            viewModelReference: CallViewModel.Reference,
-            tx: DBReadTransaction
-        ) -> CallViewModel {
-            switch viewModelReference {
-            case .singleCall(let id):
-                guard let primaryCallRecord = fetchCallRecordBlock(id, tx) else {
-                    owsFail("Missing call record for single-call view model!")
-                }
-
-                return createCallViewModelBlock(primaryCallRecord, [], tx)
-            case .coalescedCalls(let primaryId, let coalescedIds):
-                guard let primaryCallRecord = fetchCallRecordBlock(primaryId, tx) else {
-                    owsFail("Missing primary call record for coalesced-call view model!")
-                }
-
-                let coalescedCallRecords = coalescedIds.map { coalescedId -> CallRecord in
-                    guard let coalescedCallRecord = fetchCallRecordBlock(coalescedId, tx) else {
-                        owsFail("Missing coalesced call record for coalesced-call view model!")
-                    }
-
-                    return coalescedCallRecord
-                }
-
-                return createCallViewModelBlock(primaryCallRecord, coalescedCallRecords, tx)
-            }
-        }
-
-        // MARK: - Brand new models, older
-
-        /// Loads brand new view models older than the last cached view model.
-        ///
-        /// - Important
-        /// This method must only be called if our current view model cache
-        /// includes the oldest loaded view model reference. If this is not the
-        /// case, callers should first rehydrate older loaded view model
-        /// references until it is and then call this method.
-        ///
-        /// - Returns
-        /// View models not yet loaded in this loader's lifetime. No more than
-        /// `maxCount` view models will be returned, although note that due to
-        /// coalescing this may correspond to more than `maxCount` call records
-        /// having been loaded.
-        private func loadBrandNewViewModelsOlder(
-            maxCount: UInt,
+        /// This fetches new ``CallViewModel`` instances even if they're already
+        /// loaded. Therefore, the caller shouldn't invoke this for already-loaded
+        /// view models unless they are explicitly trying to reload them.
+        private func hydrateViewModelReferences(
+            inRange range: Range<Int>,
             tx: DBReadTransaction
         ) -> [CallViewModel] {
-            owsPrecondition(
-                cachedViewModels.isEmpty || cachedViewModels.last!.reference == loadedViewModelReferences.last!,
-                "Unexpectedly loading brand new view models, but last loaded view model reference does not have a cached view model!"
-            )
+            var newViewModels = [CallViewModel]()
 
-            let oldestLoadedCallTimestamp: UInt64? = cachedViewModels.last.map { oldestViewModel in
-                return oldestViewModel.oldestContainedTimestamp
+            var remainingRange = range
+            newViewModels += callHistoryItemReferences[consume(upTo: callHistoryItemReferences.count, from: &remainingRange)].map { reference in
+                let callRecords = reference.callRecordIds.map {
+                    return fetchCallRecordBlock($0, tx)!
+                }
+                return createCallViewModelBlock(callRecords.first, Array(callRecords.rawValue.dropFirst()), tx)
             }
 
-            let newCallRecordsCursor: CallRecordCursor = callRecordLoader.loadCallRecords(
-                loadDirection: .olderThan(
-                    oldestCallTimestamp: oldestLoadedCallTimestamp
-                ),
-                tx: tx
-            )
-
-            /// Collate groups of call records that will each correspond to a
-            /// single view model, with the first call in the group being the
-            /// primary and all subsequent calls being coalesced under the
-            /// primary.
-            var groupedCallRecordsForViewModels = [[CallRecord]]()
-            var callRecordsForNextViewModel = [CallRecord]()
-            while true {
-                if groupedCallRecordsForViewModels.count == maxCount {
-                    /// If we've reached the max view model count simply bail,
-                    /// even if we started a grouping for another view model.
-                    break
-                }
-
-                guard let nextCallRecord = try? newCallRecordsCursor.next() else {
-                    /// We may have run out of call records while assembling a
-                    /// group for the next view model. If so, we want to commit
-                    /// the grouping as it is.
-                    if !callRecordsForNextViewModel.isEmpty {
-                        groupedCallRecordsForViewModels.append(callRecordsForNextViewModel)
-                    }
-
-                    break
-                }
-
-                if callRecordsForNextViewModel.isEmpty {
-                    /// Start the first view model grouping.
-                    callRecordsForNextViewModel.append(nextCallRecord)
-                } else if
-                    callRecordsForNextViewModel.first!.isValidCoalescingAnchor(for: nextCallRecord),
-                    callRecordsForNextViewModel.count < maxCoalescedCallsInOneViewModel
-                {
-                    /// Build on the current new view model grouping.
-                    callRecordsForNextViewModel.append(nextCallRecord)
-                } else {
-                    /// Finish the current view model grouping, and start the
-                    /// next one.
-                    groupedCallRecordsForViewModels.append(callRecordsForNextViewModel)
-                    callRecordsForNextViewModel = [nextCallRecord]
-                }
-            }
-
-            owsPrecondition(
-                groupedCallRecordsForViewModels.allSatisfy { !$0.isEmpty },
-                "Had an empty grouping for a view model. How did this happen?"
-            )
-
-            return groupedCallRecordsForViewModels.map { callRecords -> CallViewModel in
-                return createCallViewModelBlock(
-                    callRecords.first!,
-                    Array(callRecords.dropFirst()),
-                    tx
-                )
-            }
+            return newViewModels
         }
 
-        // MARK: - Brand new models, newer
-
-        private enum LoadBrandNewViewModelsNewerResult {
-            /// No new view models were loaded.
-            case nothingLoaded
-
-            /// New view models were loaded.
-            /// - Note
-            /// The contained `newViewModels` are ordered descending by
-            /// their primary call record's timestamp.
-            case loaded(newViewModels: [CallViewModel])
-
-            /// New calls were loaded, but were coalesced into the existing
-            /// newest (by timestamp) view model.
-            case coalescedIntoCurrentNewest(updatedNewestViewModel: CallViewModel)
+        /// "Consume" `0..<bound` from `range`.
+        ///
+        /// Shifts `range` lower by `bound` and returns the overlap between
+        /// `0..<bound` and the original `range`.
+        ///
+        /// Returns an arbitrary empty range when there's no overlap.
+        private func consume(upTo bound: Int, from range: inout Range<Int>) -> Range<Int> {
+            let result = min(range.lowerBound, bound)..<min(range.upperBound, bound)
+            range = max(0, range.lowerBound - bound)..<max(0, range.upperBound - bound)
+            return result
         }
 
-        /// Loads brand new view models newer than the first cached view model.
-        ///
-        /// - Note
-        /// Unlike when loading brand new older view models, we do not generally
-        /// coalesce the newer calls loaded by this method.
-        ///
-        /// In general usage, this type expects to start empty and monotonically
-        /// load older calls; finding a brand-new newer call implies the call
-        /// was inserted after our initial load. Finding a single brand-new
-        /// newer call is expected in the case where a new call starts, but it
-        /// is unexpected to find multiple brand-new newer calls at once.
-        ///
-        /// Consequently, we will coalesce a single brand-new newer call into
-        /// the given `currentNewestViewModel`, so as to support the "new call"
-        /// scenario. However, if multiple brand-new newer calls are found, they
-        /// will each be transformed into their own view models.
-        ///
-        /// Users are unlikely to encounter this limitation in practice, and the
-        /// effect is simply that calls that should have coalesced are not until
-        /// the next time we load-from-empty. In return, we are able to simplify
-        /// this code as a result.
-        ///
-        /// - Important
-        /// This method must only be called if our current view model cache
-        /// includes the newest loaded view model reference. If this is not the
-        /// case, callers should first rehydrate newer loaded view model
-        /// references until it is and then call this method.
-        ///
-        /// - Parameter currentNewestViewModel
-        /// The current newest view model from our cache. This must correspond
-        /// to the newest loaded view model reference – see above.
+        // MARK: - Newly-Fetched References
+
+        /// Loads older call history items.
         ///
         /// - Returns
-        /// The result of loading newer calls.
-        private func loadBrandNewViewModelsNewer(
-            maxCount: UInt,
-            currentNewestViewModel: CallViewModel,
+        /// Call history items computed by merging ``CallRecord``s. At most
+        /// `maxCount` items will be returned, but more than `maxCount`
+        /// ``CallRecord``s may be fetched due to coalescing.
+        private func loadOlderCallHistoryItemReferences(
+            olderThan oldestCallTimestamp: UInt64?,
+            maxCount: Int,
             tx: DBReadTransaction
-        ) -> LoadBrandNewViewModelsNewerResult {
-            owsPrecondition(currentNewestViewModel.reference == loadedViewModelReferences.first)
-
+        ) -> [NonEmptyArray<CallRecord>] {
             let newCallRecordsCursor: CallRecordCursor = callRecordLoader.loadCallRecords(
-                loadDirection: .newerThan(
-                    newestCallTimestamp: currentNewestViewModel.newestContainedTimestamp
-                ),
+                loadDirection: .olderThan(oldestCallTimestamp: oldestCallTimestamp),
                 tx: tx
             )
 
-            guard let pageOfNewCallRecordsAsc = try? newCallRecordsCursor.drain(
-                maxResults: maxCount
-            ) else {
-                return .nothingLoaded
-            }
+            // Group call records that will be shown together in the UI.
+            var callRecordsForNextGroup = [CallRecord]()
 
-            /// The call records we get back from our cursor will be ordered
-            /// ascending, but we'll ultimately need them sorted descending to
-            /// merge into `cachedViewModels` and `loadedViewModelReferences`.
-            ///
-            /// We'll reverse them here, and return them ordered descending, to
-            /// make things easier on our callers.
-            owsPrecondition(pageOfNewCallRecordsAsc.isSortedByTimestamp(.ascending))
-            let pageOfNewCallRecords = pageOfNewCallRecordsAsc.reversed()
-
-            if pageOfNewCallRecords.isEmpty {
-                return .nothingLoaded
-            } else if
-                pageOfNewCallRecords.count == 1,
-                let singleNewCallRecord = pageOfNewCallRecords.first,
-                singleNewCallRecord.isValidCoalescingAnchor(for: currentNewestViewModel.primaryCallRecord)
-            {
-                let updatedNewestViewModel = createCallViewModelBlock(
-                    singleNewCallRecord,
-                    [currentNewestViewModel.primaryCallRecord] + currentNewestViewModel.coalescedCallRecords,
-                    tx
-                )
-
-                return .coalescedIntoCurrentNewest(updatedNewestViewModel: updatedNewestViewModel)
-            } else {
-                let uncoalescedViewModels: [CallViewModel] = pageOfNewCallRecords
-                    .map { callRecord in createCallViewModelBlock(callRecord, [], tx) }
-
-                return .loaded(newViewModels: uncoalescedViewModels)
-            }
-        }
-
-        // MARK: -
-
-        /// Represents the bounding indices of the currently-cached view models
-        /// within ``loadedViewModelReferences``.
-        private struct CachedViewModelReferenceIndices {
-            let first: Int
-            let last: Int
-        }
-
-        /// Computes the bounding indices of the currently-cached view models
-        /// within ``loadedViewModelReferences``.
-        private func cachedViewModelReferenceIndices() -> CachedViewModelReferenceIndices? {
-            func getRowIndex(cachedViewModel: CallViewModel?) -> Int? {
-                return cachedViewModel.flatMap {
-                    return loadedViewModelReferences.index(forId: $0.reference.primaryId)
+            var results = [NonEmptyArray<CallRecord>]()
+            while let nextCallRecord = try? newCallRecordsCursor.next() {
+                if let anchorCallRecord = callRecordsForNextGroup.first {
+                    let canCoalesce: Bool = (
+                        callRecordsForNextGroup.count < maxCoalescedCallsInOneViewModel
+                        && anchorCallRecord.isValidCoalescingAnchor(for: nextCallRecord)
+                    )
+                    if !canCoalesce {
+                        results.append(NonEmptyArray(callRecordsForNextGroup)!)
+                        callRecordsForNextGroup = []
+                        if results.count >= maxCount {
+                            // Bail when we reach the limit.
+                            break
+                        }
+                    }
                 }
-            }
 
-            guard
-                let firstCachedViewModelRowIndex = getRowIndex(cachedViewModel: cachedViewModels.first),
-                let lastCachedViewModelRowIndex = getRowIndex(cachedViewModel: cachedViewModels.last)
-            else {
-                return nil
+                callRecordsForNextGroup.append(nextCallRecord)
             }
+            if let finalGroup = NonEmptyArray(callRecordsForNextGroup) {
+                results.append(finalGroup)
+            }
+            return results
+        }
 
-            return CachedViewModelReferenceIndices(
-                first: firstCachedViewModelRowIndex,
-                last: lastCachedViewModelRowIndex
+        /// Loads newer call history items.
+        ///
+        /// - Note
+        /// Unlike ``loadOlderCallHistoryItemReferences()``, this method doesn't
+        /// coalesce its results.
+        ///
+        /// In general usage, this type expects to start empty and monotonically
+        /// load older calls; finding a brand-new newer call implies the call was
+        /// inserted after our initial load. Finding a single brand-new newer call
+        /// is expected in the case where a new call starts, but it is unexpected to
+        /// find multiple brand-new newer calls at once.
+        ///
+        /// Consequently, ``loadCallHistoryItemReferences()`` will sometimes
+        /// coalesce a single brand-new newer call into already-fetched value to
+        /// support the "new call" scenario. However, if multiple brand-new newer
+        /// calls are found, the others won't be coalesced.
+        ///
+        /// Users are unlikely to encounter this limitation in practice, and the
+        /// effect is simply that calls that should have coalesced are not until the
+        /// next time we load-from-empty. In return, this code is simpler.
+        private func loadNewerCallHistoryItemReferences(
+            newerThan newestCallTimestamp: UInt64,
+            tx: DBReadTransaction
+        ) -> [CallRecord] {
+            let newCallRecordsCursor: CallRecordCursor = callRecordLoader.loadCallRecords(
+                loadDirection: .newerThan(newestCallTimestamp: newestCallTimestamp),
+                tx: tx
             )
+
+            // The call records we get back from our cursor will be ordered ascending,
+            // but we need them to be sorted descending.
+            //
+            // We'll reverse them here to make things easier on our callers.
+            return (try? newCallRecordsCursor.drain().reversed()) ?? []
         }
 
         // MARK: -
 
-        /// Drops any calls with the given IDs from the loaded view model
-        /// references and view model cache.
+        /// Drops any calls with the given IDs from set of loaded objects.
         ///
         /// - Important
-        /// ``loadedViewModelReferences`` may have changed as a result of
-        /// calling this method.
+        /// ``viewModelReferences()``'s result may change after calling this method.
         mutating func dropCalls(
             matching callRecordIdsToDrop: [CallRecord.ID],
             tx: DBReadTransaction
         ) {
             let callRecordIdsToDrop = Set(callRecordIdsToDrop)
 
-            let droppedViewModelReferences = loadedViewModelReferences.allElements
-                .compactMap { viewModelReference in
-                    return dropCallRecordIds(callRecordIdsToDrop, fromViewModelReference: viewModelReference)
-                }
+            var didTouchViewModels = false
+            let callHistoryItemOffset = 0
+            let viewModelRange = self.viewModelRange
 
-            let droppedCachedViewModels = cachedViewModels.allElements
-                .compactMap { viewModel in
-                    return dropCallRecordIds(callRecordIdsToDrop, fromViewModel: viewModel, tx: tx)
+            // Remove any IDs that were dropped from the references.
+            var callHistoryItemIndicesToRemove = IndexSet()
+            for index in callHistoryItemReferences.indices {
+                let reference = callHistoryItemReferences[index]
+                guard reference.callRecordIds.rawValue.contains(where: { callRecordIdsToDrop.contains($0) }) else {
+                    continue
                 }
+                didTouchViewModels = didTouchViewModels || viewModelRange.contains(callHistoryItemOffset + index)
+                if let callRecordIds = NonEmptyArray(reference.callRecordIds.rawValue.filter({ !callRecordIdsToDrop.contains($0) })) {
+                    callHistoryItemReferences[index] = CallHistoryItemReference(
+                        callRecordIds: callRecordIds
+                    )
+                } else {
+                    callHistoryItemIndicesToRemove.insert(index)
+                }
+            }
+            callHistoryItemReferences.remove(atOffsets: callHistoryItemIndicesToRemove)
 
-            loadedViewModelReferences = IdentifierIndexedArray(elements: droppedViewModelReferences)
-            cachedViewModels = IdentifierIndexedArray(elements: droppedCachedViewModels)
+            // Drop the view models if they overlap. We'll refetch them when needed.
+            if didTouchViewModels {
+                self.viewModels = []
+                self.viewModelOffset = 0
+            }
         }
 
-        /// Refreshes cached view models containing any of the given IDs. If no
-        /// cached view models contain a given ID, that ID is ignored.
+        /// Refreshes view models containing any of the given IDs. If no cached view
+        /// models contain a given ID, that ID is ignored.
         ///
         /// - Returns
-        /// References for any view models that were refreshed. Note that this
-        /// will not include any IDs that were ignored.
+        /// References for any view models that were refreshed. Note that this will
+        /// not include any IDs that were ignored.
         mutating func refreshViewModels(
-            callRecordIds callRecordIdsForWhichToRefreshViewModels: [CallRecord.ID],
+            callRecordIds callRecordsIdsToRefresh: [CallRecord.ID],
             tx: DBReadTransaction
         ) -> [CallViewModel.Reference] {
             func refreshIfPossible(_ callRecord: CallRecord) -> CallRecord {
                 return fetchCallRecordBlock(callRecord.id, tx) ?? callRecord
             }
 
-            /// The given call record IDs may not have a cached view model, in
-            /// which case there's nothing to refresh. Multiple call record IDs
-            /// may also point to the same cached view model, which only needs
-            /// to be refreshed once since we'll re-fetch all the call records
-            /// when refreshing each view model anyway.
-            let cachedViewModelIndicesToRefresh: Set<Int> = Set(
-                callRecordIdsForWhichToRefreshViewModels.compactMap { callRecordId -> Int? in
-                    return cachedViewModels.index(forId: callRecordId)
-                }
-            )
+            let callRecordsIdsToRefresh = Set(callRecordsIdsToRefresh)
 
             var refreshedViewModelReferences = [CallViewModel.Reference]()
-            for cachedViewModelIndex in cachedViewModelIndicesToRefresh {
-                /// For each cached view model containing a call record we need
-                /// to reload, we'll in fact reload all the call records
-                /// associated with that view model. It's a tiny cost, and makes
-                /// this code a lot simpler; the alternative being to dissect
-                /// each view model to reload specific contained call records.
-                let cachedViewModel = cachedViewModels[index: cachedViewModelIndex]
 
-                let newPrimaryViewModel = refreshIfPossible(cachedViewModel.primaryCallRecord)
-                let newCoalescedViewModels = cachedViewModel.coalescedCallRecords.map(refreshIfPossible(_:))
-                let newCallViewModel = createCallViewModelBlock(
-                    newPrimaryViewModel,
-                    newCoalescedViewModels,
-                    tx
-                )
-
-                /// We haven't changed any of the actual call record IDs in the
-                /// view model, so we don't need to recompute indices.
-                cachedViewModels.replace(
-                    elementAtIndex: cachedViewModelIndex,
-                    with: newCallViewModel
-                )
-                refreshedViewModelReferences.append(newCallViewModel.reference)
+            for index in viewModels.indices {
+                let viewModel = viewModels[index]
+                guard viewModel.callRecords.contains(where: { callRecordsIdsToRefresh.contains($0.id) }) else {
+                    continue
+                }
+                let newCallRecords = viewModel.callRecords.map(refreshIfPossible(_:))
+                viewModels[index] = createCallViewModelBlock(newCallRecords.first!, Array(newCallRecords.dropFirst()), tx)
+                refreshedViewModelReferences.append(viewModels[index].reference)
             }
 
             return refreshedViewModelReferences
@@ -760,29 +483,36 @@ private extension CallRecord {
             callDirection == otherCallRecord.callDirection,
             callStatus.isMissedCall == otherCallRecord.callStatus.isMissedCall,
             callBeganDate.addingTimeInterval(-Constants.coalescingTimeWindow) < otherCallRecord.callBeganDate
-        else { return false }
-
+        else {
+            return false
+        }
         return true
     }
 }
 
-// MARK: - ContainsIdentifiers
+private struct NonEmptyArray<Element> {
+    let rawValue: [Element]
 
-extension CallsListViewController.CallViewModel.Reference: ContainsIdentifiers {
-    typealias ContainedIdType = CallRecord.ID
-
-    var containedIds: [CallRecord.ID] {
-        switch self {
-        case .singleCall(let callRecordId): return [callRecordId]
-        case .coalescedCalls(let primary, let coalesced): return [primary] + coalesced
+    init?(_ rawValue: [Element]) {
+        if rawValue.isEmpty {
+            return nil
         }
+        self.rawValue = rawValue
     }
-}
 
-extension CallsListViewController.CallViewModel: ContainsIdentifiers {
-    typealias ContainedIdType = CallRecord.ID
+    init(singleElement: Element) {
+        self.rawValue = [singleElement]
+    }
 
-    var containedIds: [CallRecord.ID] {
-        return reference.containedIds
+    var first: Element { self.rawValue.first! }
+
+    var last: Element { self.rawValue.last! }
+
+    func map<T, E>(_ transform: (Element) throws(E) -> T) throws(E) -> NonEmptyArray<T> where E: Error {
+        return NonEmptyArray<T>(try self.rawValue.map(transform))!
+    }
+
+    static func + (lhs: Self, rhs: [Element]) -> Self {
+        return Self(lhs.rawValue + rhs)!
     }
 }

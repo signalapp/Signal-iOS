@@ -25,7 +25,7 @@ public extension CallRecordCursor {
     ///
     /// Note that the returned array will be ordered according to this cursor's
     /// ``ordering``.
-    func drain(maxResults: UInt? = nil) throws -> [CallRecord] {
+    func drain(maxResults: Int? = nil) throws -> [CallRecord] {
         var records = [CallRecord]()
 
         while

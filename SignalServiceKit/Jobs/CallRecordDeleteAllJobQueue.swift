@@ -106,7 +106,7 @@ private class CallRecordDeleteAllJobRunner: JobRunner {
 
     private enum Constants {
         static let maxRetries: UInt = 110
-        static let deletionBatchSize: UInt = 500
+        static let deletionBatchSize: Int = 500
     }
 
     private var logger: CallRecordLogger { .shared }
