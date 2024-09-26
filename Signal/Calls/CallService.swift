@@ -68,6 +68,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     public let earlyRingNextIncomingCall = AtomicBool(false, lock: .init())
 
     let callServiceState: CallServiceState
+    var notificationObservers: [any NSObjectProtocol] = []
 
     @MainActor
     public init(
@@ -105,47 +106,31 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         SwiftSingletons.register(self)
         self.callServiceState.addObserver(self)
 
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(didEnterBackground),
-            name: .OWSApplicationDidEnterBackground,
-            object: nil
-        )
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(didBecomeActive),
-            name: .OWSApplicationDidBecomeActive,
-            object: nil
-        )
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(configureDataMode),
-            name: Self.callServicePreferencesDidChange,
-            object: nil)
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(registrationChanged),
-            name: .registrationStateDidChange,
-            object: nil)
+        notificationObservers.append(NotificationCenter.default.addObserver(forName: .OWSApplicationDidEnterBackground, object: nil, queue: .main) { [weak self] _ in
+            MainActor.assumeIsolated { self?.didEnterBackground() }
+        })
+        notificationObservers.append(NotificationCenter.default.addObserver(forName: .OWSApplicationDidBecomeActive, object: nil, queue: .main) { [weak self] _ in
+            MainActor.assumeIsolated { self?.didBecomeActive() }
+        })
+        notificationObservers.append(NotificationCenter.default.addObserver(forName: Self.callServicePreferencesDidChange, object: nil, queue: .main) { [weak self] _ in
+            MainActor.assumeIsolated { self?.configureDataMode() }
+        })
+        notificationObservers.append(NotificationCenter.default.addObserver(forName: .registrationStateDidChange, object: nil, queue: .main) { [weak self] _ in
+            MainActor.assumeIsolated { self?.registrationChanged() }
+        })
 
         // Note that we're not using the usual .owsReachabilityChanged
         // We want to update our data mode if the app has been backgrounded
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(configureDataMode),
-            name: .reachabilityChanged,
-            object: nil
-        )
+        notificationObservers.append(NotificationCenter.default.addObserver(forName: .reachabilityChanged, object: nil, queue: .main) { [weak self] _ in
+            MainActor.assumeIsolated { self?.configureDataMode() }
+        })
 
         // We don't support a rotating call screen on phones,
         // but we do still want to rotate the various icons.
         if !UIDevice.current.isIPad {
-            NotificationCenter.default.addObserver(
-                self,
-                selector: #selector(phoneOrientationDidChange),
-                name: UIDevice.orientationDidChangeNotification,
-                object: nil
-            )
+            notificationObservers.append(NotificationCenter.default.addObserver(forName: UIDevice.orientationDidChangeNotification, object: nil, queue: .main) { [weak self] _ in
+                MainActor.assumeIsolated { self?.phoneOrientationDidChange() }
+            })
         }
 
         AppReadiness.runNowOrWhenAppWillBecomeReady {
@@ -159,6 +144,12 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
 
             self.callServiceState.addObserver(self.groupCallAccessoryMessageDelegate, syncStateImmediately: true)
             self.callServiceState.addObserver(self.groupCallRemoteVideoManager, syncStateImmediately: true)
+        }
+    }
+
+    deinit {
+        for observer in notificationObservers {
+            NotificationCenter.default.removeObserver(observer)
         }
     }
 
@@ -365,7 +356,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         call.videoCaptureController.switchCamera(isUsingFrontCamera: isUsingFrontCamera)
     }
 
-    @objc
+    @MainActor
     private func configureDataMode() {
         guard AppReadiness.isAppReady else { return }
         guard let currentCall = callServiceState.currentCall else { return }
@@ -452,9 +443,8 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
 
     // MARK: - Video
 
+    @MainActor
     var shouldHaveLocalVideoTrack: Bool {
-        AssertIsOnMainThread()
-
         guard let call = self.callServiceState.currentCall else {
             return false
         }
@@ -473,9 +463,8 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         }
     }
 
+    @MainActor
     func updateIsVideoEnabled() {
-        AssertIsOnMainThread()
-
         guard let call = self.callServiceState.currentCall else { return }
 
         switch call.mode {
@@ -725,21 +714,18 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
 
     // MARK: - Notifications
 
-    @objc
+    @MainActor
     private func didEnterBackground() {
-        AssertIsOnMainThread()
         self.updateIsVideoEnabled()
     }
 
-    @objc
+    @MainActor
     private func didBecomeActive() {
-        AssertIsOnMainThread()
         self.updateIsVideoEnabled()
     }
 
-    @objc
+    @MainActor
     private func registrationChanged() {
-        AssertIsOnMainThread()
         if let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci {
             callManager.setSelfUuid(localAci.rawUUID)
         }
@@ -748,7 +734,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     /// The object is the rotation angle necessary to match the new orientation.
     static var phoneOrientationDidChange = Notification.Name("CallService.phoneOrientationDidChange")
 
-    @objc
+    @MainActor
     private func phoneOrientationDidChange() {
         guard callServiceState.currentCall != nil else {
             return
@@ -756,6 +742,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         sendPhoneOrientationNotification()
     }
 
+    @MainActor
     private func shouldReorientUI(for call: SignalCall) -> Bool {
         owsAssertDebug(!UIDevice.current.isIPad, "iPad has full UIKit rotation support")
 
@@ -772,6 +759,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         }
     }
 
+    @MainActor
     private func sendPhoneOrientationNotification() {
         owsAssertDebug(!UIDevice.current.isIPad, "iPad has full UIKit rotation support")
 
@@ -801,6 +789,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     }
 
     /// Pretend the phone just changed orientations so that the call UI will autorotate.
+    @MainActor
     func sendInitialPhoneOrientationNotification() {
         guard !UIDevice.current.isIPad else {
             return
@@ -1304,6 +1293,7 @@ extension CallService: @preconcurrency CallManagerDelegate {
      * onNetworkRouteChangedFor will be invoked when changes to the network routing (e.g. wifi/cellular) are detected.
      * Invoked on the main thread, asynchronously.
      */
+    @MainActor
     public func callManager(
         _ callManager: CallManager<SignalCall, CallService>,
         onNetworkRouteChangedFor call: SignalCall,

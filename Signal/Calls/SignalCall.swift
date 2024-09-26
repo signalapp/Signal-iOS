@@ -21,6 +21,7 @@ enum CallMode {
         }
     }
 
+    @MainActor
     var hasTerminated: Bool {
         switch self {
         case .individual(let call): return call.hasTerminated
@@ -29,6 +30,7 @@ enum CallMode {
         }
     }
 
+    @MainActor
     var isOutgoingAudioMuted: Bool {
         switch self {
         case .individual(let call):
@@ -38,6 +40,7 @@ enum CallMode {
         }
     }
 
+    @MainActor
     var isOutgoingVideoMuted: Bool {
         switch self {
         case .individual(let call):
@@ -47,6 +50,7 @@ enum CallMode {
         }
     }
 
+    @MainActor
     var joinState: JoinState {
         switch self {
         case .individual(let call):
@@ -166,10 +170,10 @@ class SignalCall: CallManagerCallReference {
     let mode: CallMode
 
     var commonState: CommonCallState { mode.commonState }
-    var hasTerminated: Bool { mode.hasTerminated }
-    var isOutgoingAudioMuted: Bool { mode.isOutgoingAudioMuted }
-    var isOutgoingVideoMuted: Bool { mode.isOutgoingVideoMuted }
-    var joinState: JoinState { mode.joinState }
+    @MainActor var hasTerminated: Bool { mode.hasTerminated }
+    @MainActor var isOutgoingAudioMuted: Bool { mode.isOutgoingAudioMuted }
+    @MainActor var isOutgoingVideoMuted: Bool { mode.isOutgoingVideoMuted }
+    @MainActor var joinState: JoinState { mode.joinState }
     var isFull: Bool { mode.isFull }
     var caller: SignalServiceAddress? { mode.caller }
     var videoCaptureController: VideoCaptureController { mode.videoCaptureController }

@@ -39,13 +39,13 @@ enum CallDirection {
 }
 
 protocol IndividualCallObserver: AnyObject {
-    func individualCallStateDidChange(_ call: IndividualCall, state: CallState)
-    func individualCallLocalVideoMuteDidChange(_ call: IndividualCall, isVideoMuted: Bool)
-    func individualCallLocalAudioMuteDidChange(_ call: IndividualCall, isAudioMuted: Bool)
-    func individualCallHoldDidChange(_ call: IndividualCall, isOnHold: Bool)
-    func individualCallRemoteAudioMuteDidChange(_ call: IndividualCall, isAudioMuted: Bool)
-    func individualCallRemoteVideoMuteDidChange(_ call: IndividualCall, isVideoMuted: Bool)
-    func individualCallRemoteSharingScreenDidChange(_ call: IndividualCall, isRemoteSharingScreen: Bool)
+    @MainActor func individualCallStateDidChange(_ call: IndividualCall, state: CallState)
+    @MainActor func individualCallLocalVideoMuteDidChange(_ call: IndividualCall, isVideoMuted: Bool)
+    @MainActor func individualCallLocalAudioMuteDidChange(_ call: IndividualCall, isAudioMuted: Bool)
+    @MainActor func individualCallHoldDidChange(_ call: IndividualCall, isOnHold: Bool)
+    @MainActor func individualCallRemoteAudioMuteDidChange(_ call: IndividualCall, isAudioMuted: Bool)
+    @MainActor func individualCallRemoteVideoMuteDidChange(_ call: IndividualCall, isVideoMuted: Bool)
+    @MainActor func individualCallRemoteSharingScreenDidChange(_ call: IndividualCall, isRemoteSharingScreen: Bool)
 }
 
 extension IndividualCallObserver {
@@ -90,10 +90,9 @@ public class IndividualCall: CustomDebugStringConvertible {
         }
     }
 
+    @MainActor
     weak var remoteVideoTrack: RTCVideoTrack? {
         didSet {
-            AssertIsOnMainThread()
-
             Logger.info("")
 
             observers.elements.forEach {
@@ -102,10 +101,9 @@ public class IndividualCall: CustomDebugStringConvertible {
         }
     }
 
+    @MainActor
     var isRemoteAudioMuted = false {
         didSet {
-            AssertIsOnMainThread()
-
             Logger.info("\(isRemoteAudioMuted)")
             observers.elements.forEach {
                 $0.individualCallRemoteAudioMuteDidChange(self, isAudioMuted: isRemoteAudioMuted)
@@ -113,10 +111,9 @@ public class IndividualCall: CustomDebugStringConvertible {
         }
     }
 
+    @MainActor
     var isRemoteVideoEnabled = false {
         didSet {
-            AssertIsOnMainThread()
-
             Logger.info("\(isRemoteVideoEnabled)")
             observers.elements.forEach {
                 $0.individualCallRemoteVideoMuteDidChange(self, isVideoMuted: !isRemoteVideoEnabled)
@@ -124,10 +121,9 @@ public class IndividualCall: CustomDebugStringConvertible {
         }
     }
 
+    @MainActor
     var isRemoteSharingScreen = false {
         didSet {
-            AssertIsOnMainThread()
-
             Logger.info("\(isRemoteSharingScreen)")
             observers.elements.forEach {
                 $0.individualCallRemoteSharingScreenDidChange(self, isRemoteSharingScreen: isRemoteSharingScreen)
@@ -141,6 +137,7 @@ public class IndividualCall: CustomDebugStringConvertible {
 
     var remoteAddress: SignalServiceAddress { thread.contactAddress }
 
+    @MainActor
     var isEnded: Bool {
         switch state {
         case .localFailure, .localHangup, .remoteHangup, .remoteHangupNeedPermission, .remoteBusy, .answeredElsewhere, .declinedElsewhere, .busyElsewhere:
@@ -164,10 +161,9 @@ public class IndividualCall: CustomDebugStringConvertible {
     /// Can be accessed from the main thread.
     private(set) var callType: RPRecentCallType?
 
+    @MainActor
     lazy var hasLocalVideo = offerMediaType == .video {
         didSet {
-            AssertIsOnMainThread()
-
             observers.elements.forEach {
                 $0.individualCallLocalVideoMuteDidChange(self, isVideoMuted: !hasLocalVideo)
             }
@@ -180,15 +176,16 @@ public class IndividualCall: CustomDebugStringConvertible {
     /// through IndividualCall.
     var isViewLoaded = false
 
+    @MainActor
     var deferredAnswerCompletion: (() -> Void)? {
         didSet {
             owsAssertDebug(deferredAnswerCompletion == nil || state == .accepting)
         }
     }
 
+    @MainActor
     var state: CallState {
         didSet {
-            AssertIsOnMainThread()
             Logger.debug("state changed: \(oldValue) -> \(self.state) for call: \(self)")
 
             let state = self.state
@@ -210,10 +207,9 @@ public class IndividualCall: CustomDebugStringConvertible {
     // We start out muted if the record permission isn't granted. This should generally
     // only happen for incoming calls, because we proactively ask about it before you
     // can make an outgoing call.
+    @MainActor
     public var isMuted = AVAudioSession.sharedInstance().recordPermission != .granted {
         didSet {
-            AssertIsOnMainThread()
-
             Logger.debug("muted changed: \(oldValue) -> \(self.isMuted)")
 
             observers.elements.forEach {
@@ -222,9 +218,9 @@ public class IndividualCall: CustomDebugStringConvertible {
         }
     }
 
+    @MainActor
     public var isOnHold = false {
         didSet {
-            AssertIsOnMainThread()
             Logger.debug("isOnHold changed: \(oldValue) -> \(self.isOnHold)")
 
             observers.elements.forEach {
@@ -233,6 +229,7 @@ public class IndividualCall: CustomDebugStringConvertible {
         }
     }
 
+    @MainActor
     var hasTerminated: Bool {
         switch state {
         case .idle, .dialing, .answering, .remoteRinging, .localRinging_Anticipatory, .localRinging_ReadyToAnswer,
@@ -309,7 +306,6 @@ public class IndividualCall: CustomDebugStringConvertible {
 
     deinit {
         Logger.debug("")
-        owsAssertDebug(isEnded, "isEnded was unexpectedly false")
     }
 
     public var debugDescription: String {
@@ -320,6 +316,7 @@ public class IndividualCall: CustomDebugStringConvertible {
 
     private var observers: WeakArray<any IndividualCallObserver> = []
 
+    @MainActor
     func addObserverAndSyncState(_ observer: any IndividualCallObserver) {
         AssertIsOnMainThread()
 

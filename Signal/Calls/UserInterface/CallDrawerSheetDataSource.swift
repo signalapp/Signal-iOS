@@ -16,6 +16,7 @@ protocol CallDrawerSheetDataSourceObserver: AnyObject {
     func callSheetRaisedHandsDidChange(_ dataSource: CallDrawerSheetDataSource)
 }
 
+@MainActor
 protocol CallDrawerSheetDataSource {
     typealias JoinedMember = CallDrawerSheet.JoinedMember
 

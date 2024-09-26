@@ -10,8 +10,8 @@ import SignalServiceKit
 import SignalUI
 
 protocol CallAudioServiceDelegate: AnyObject {
-    func callAudioServiceDidChangeAudioSession(_ callAudioService: CallAudioService)
-    func callAudioServiceDidChangeAudioSource(_ callAudioService: CallAudioService, audioSource: AudioSource?)
+    @MainActor func callAudioServiceDidChangeAudioSession(_ callAudioService: CallAudioService)
+    @MainActor func callAudioServiceDidChangeAudioSource(_ callAudioService: CallAudioService, audioSource: AudioSource?)
 }
 
 class CallAudioService: IndividualCallObserver, GroupCallObserver {
@@ -112,6 +112,7 @@ class CallAudioService: IndividualCallObserver, GroupCallObserver {
         self.isSpeakerEnabled = isEnabled
     }
 
+    @MainActor
     private func requestSpeakerphone(call: GroupCall, isEnabled: Bool) {
         // If toggled for an group call, save the enablement state and
         // update the AudioSession.
@@ -119,6 +120,7 @@ class CallAudioService: IndividualCallObserver, GroupCallObserver {
         self.ensureProperAudioSession(call: call)
     }
 
+    @MainActor
     private func requestSpeakerphone(call: IndividualCall, isEnabled: Bool) {
         // If toggled for an individual call, save the enablement state and
         // update the AudioSession.
@@ -126,6 +128,7 @@ class CallAudioService: IndividualCallObserver, GroupCallObserver {
         self.ensureProperAudioSession(call: call)
     }
 
+    @MainActor
     public func requestSpeakerphone(call: SignalCall, isEnabled: Bool) {
         switch call.mode {
         case .individual(let individualCall):
@@ -146,6 +149,7 @@ class CallAudioService: IndividualCallObserver, GroupCallObserver {
         }
     }
 
+    @MainActor
     private func ensureProperAudioSession(call: SignalCall) {
         switch call.mode {
         case .individual(let call):
@@ -155,6 +159,7 @@ class CallAudioService: IndividualCallObserver, GroupCallObserver {
         }
     }
 
+    @MainActor
     private func ensureProperAudioSession(call: GroupCall) {
         guard call.ringRtcCall.localDeviceState.joinState != .notJoined else {
             // Revert to ambient audio.
@@ -178,9 +183,8 @@ class CallAudioService: IndividualCallObserver, GroupCallObserver {
     /// Set the AudioSession based on the state of the call. If video is captured locally,
     /// it is assumed that the speaker should be used. Otherwise audio will be routed
     /// through the receiver, or speaker if enabled.
+    @MainActor
     private func ensureProperAudioSession(call: IndividualCall) {
-        AssertIsOnMainThread()
-
         guard !call.isEnded, call.state != .answering else {
             // Revert to ambient audio.
             setAudioSession(category: .ambient, mode: .default)
@@ -211,9 +215,8 @@ class CallAudioService: IndividualCallObserver, GroupCallObserver {
 
     // MARK: - Service action handlers
 
+    @MainActor
     private func handleState(call: IndividualCall) {
-        AssertIsOnMainThread()
-
         Logger.verbose("new state: \(call.state)")
 
         // Stop playing sounds while switching audio session so we don't 
@@ -273,16 +276,14 @@ class CallAudioService: IndividualCallObserver, GroupCallObserver {
         }
     }
 
+    @MainActor
     private func handleAnsweredElsewhere(call: IndividualCall) {
-        AssertIsOnMainThread()
-
         play(sound: .callEnded)
         handleCallEnded(call: call)
     }
 
+    @MainActor
     private func handleCallEnded(call: IndividualCall) {
-        AssertIsOnMainThread()
-
         // Sometimes (usually but not always) upon ending a call, the currentPlayer does not get
         // played to completion. This is necessary in order for the players
         // audioActivity to remove itself from AudioSession. Otherwise future AudioActivities,
@@ -378,11 +379,10 @@ class CallAudioService: IndividualCallObserver, GroupCallObserver {
 
     // The default option upon entry is always .mixWithOthers, so we will set that
     // as our default value if no options are provided.
+    @MainActor
     private func setAudioSession(category: AVAudioSession.Category,
                                  mode: AVAudioSession.Mode,
                                  options: AVAudioSession.CategoryOptions = AVAudioSession.CategoryOptions.mixWithOthers) {
-        AssertIsOnMainThread()
-
         var audioSessionChanged = false
         do {
             let oldCategory = avAudioSession.category

@@ -290,6 +290,7 @@ protocol CallControlsHeightObserver {
 
 // MARK: - View Model
 
+@MainActor
 private class CallControlsViewModel {
     private let call: SignalCall
     private let callService: CallService

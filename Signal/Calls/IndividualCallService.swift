@@ -1143,8 +1143,8 @@ final class IndividualCallService: CallServiceStateObserver {
      * For outgoing call, when the callee has chosen to accept the call.
      * For incoming call, when the local user has chosen to accept the call.
      */
+    @MainActor
     private func handleConnected(call: SignalCall) {
-        AssertIsOnMainThread()
         owsPrecondition(call === callServiceState.currentCall)
         Logger.info("call: \(call)")
 
@@ -1272,6 +1272,7 @@ final class IndividualCallService: CallServiceStateObserver {
         callServiceState.terminateCall(failedCall)
     }
 
+    @MainActor
     func ensureAudioState(call: SignalCall) {
         let isLocalAudioMuted = call.individualCall.state != .connected || call.individualCall.isMuted || call.individualCall.isOnHold
         callManager.setLocalAudioEnabled(enabled: !isLocalAudioMuted)
