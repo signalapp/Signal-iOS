@@ -155,17 +155,6 @@ def configure_testable_build(installer)
     target.build_configurations.each do |build_configuration|
       next unless ["Testable Release", "Debug", "Profiling"].include?(build_configuration.name)
       build_configuration.build_settings['ONLY_ACTIVE_ARCH'] = 'YES'
-      build_configuration.build_settings['OTHER_CFLAGS'] ||= '$(inherited)'
-      build_configuration.build_settings['OTHER_CFLAGS'] << ' -DTESTABLE_BUILD'
-
-      build_configuration.build_settings['OTHER_SWIFT_FLAGS'] ||= '$(inherited)'
-      build_configuration.build_settings['OTHER_SWIFT_FLAGS'] << ' -DTESTABLE_BUILD'
-      if target.name.end_with? "PureLayout"
-        # Avoid overwriting the PURELAYOUT_APP_EXTENSIONS.
-      else
-        build_configuration.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= '$(inherited)'
-        build_configuration.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << ' TESTABLE_BUILD=1'
-      end
       build_configuration.build_settings['ENABLE_TESTABILITY'] = 'YES'
     end
   end
