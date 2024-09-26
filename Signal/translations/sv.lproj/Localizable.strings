@@ -718,11 +718,29 @@
 /* Navigation bar title for the sheet used to create & configure a Call Link. */
 "CALL_LINK_CREATE" = "Skapa samtalslänk";
 
+/* Description of sheet presented when call link creation fails. */
+"CALL_LINK_CREATION_FAILURE_SHEET_DESCRIPTION" = "Call link could not be created. Check your internet connection and try again.";
+
+/* Title of sheet presented when call link creation or update fails. */
+"CALL_LINK_CREATION_OR_UPDATE_FAILURE_SHEET_TITLE" = "Network Error";
+
 /* Button to open a screen to edit the name of a Call Link. Also used as the title of that screen once it opens. */
 "CALL_LINK_EDIT_NAME" = "Redigera samtalsnamn";
 
+/* Description of sheet presented when joining call from call link sheet fails. */
+"CALL_LINK_JOIN_CALL_FAILURE_SHEET_DESCRIPTION" = "Could not join call. Check your internet connection and try again.";
+
 /* Shown in a message bubble when you send a call link in a Signal chat */
 "CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "Använd den här länken för att gå med i ett Signal-samtal";
+
+/* Title for button to approve all requests to join a call. */
+"CALL_LINK_REQUEST_SHEET_APPROVE_ALL_BUTTON" = "Approve All";
+
+/* Title for button to deny all requests to join a call. */
+"CALL_LINK_REQUEST_SHEET_DENY_ALL_BUTTON" = "Deny All";
+
+/* Header for the sheet displaying a list of requests to join a call. */
+"CALL_LINK_REQUEST_SHEET_HEADER" = "Requests to Join this Call";
 
 /* Name of a toggle switch to enable/disable admin approval for joining a Call Link. */
 "CALL_LINK_REQUIRE_APPROVAL" = "Kräv godkännande av administratör";
@@ -732,6 +750,9 @@
 
 /* Button to open the system share sheet to share a Call Link. */
 "CALL_LINK_SHARE_VIA_SYSTEM" = "Dela länk";
+
+/* Description of sheet presented when call link update fails. */
+"CALL_LINK_UPDATE_FAILURE_SHEET_DESCRIPTION" = "Call link could not be updated. Check your internet connection and try again.";
 
 /* Label on button for lowering hand in call. */
 "CALL_LOWER_HAND_BUTTON_LABEL" = "Ta ner handen";

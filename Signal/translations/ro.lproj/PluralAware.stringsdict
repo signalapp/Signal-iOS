@@ -74,6 +74,96 @@
 			<string>Adaugă membri noi</string>
 		</dict>
 	</dict>
+	<key>CALL_LINK_APPROVE_ALL_REQUESTS_CONFIRMATION_BODY_%ld</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$ld person will be added to the call.</string>
+			<key>few</key>
+			<string>%1$ld people will be added to the call.</string>
+			<key>other</key>
+			<string>%1$ld people will be added to the call.</string>
+		</dict>
+	</dict>
+	<key>CALL_LINK_APPROVE_ALL_REQUESTS_CONFIRMATION_TITLE_%ld</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Approve %1$ld Request?</string>
+			<key>few</key>
+			<string>Approve %1$ld Requests?</string>
+			<key>other</key>
+			<string>Approve %1$ld Requests?</string>
+		</dict>
+	</dict>
+	<key>CALL_LINK_DENY_ALL_REQUESTS_CONFIRMATION_BODY_%ld</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$ld person will not be added to the call.</string>
+			<key>few</key>
+			<string>%1$ld people will not be added to the call.</string>
+			<key>other</key>
+			<string>%1$ld people will not be added to the call.</string>
+		</dict>
+	</dict>
+	<key>CALL_LINK_DENY_ALL_REQUESTS_CONFIRMATION_TITLE_%ld</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Deny %1$ld Request?</string>
+			<key>few</key>
+			<string>Deny %1$ld Requests?</string>
+			<key>other</key>
+			<string>Deny %1$ld Requests?</string>
+		</dict>
+	</dict>
+	<key>CALL_LINK_REQUEST_HEADER_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$ld Person Waiting</string>
+			<key>few</key>
+			<string>%1$ld People Waiting</string>
+			<key>other</key>
+			<string>%1$ld People Waiting</string>
+		</dict>
+	</dict>
 	<key>CALL_PEOPLE_HERE</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

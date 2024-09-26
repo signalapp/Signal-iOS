@@ -86,10 +86,10 @@
 "ADD_GROUP_MEMBERS_VIEW_TITLE" = "Añadir participantes";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
-"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "¿Deseas compartir tu perfil con este grupo?";
+"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "¿Quieres compartir tu perfil con este grupo?";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"ADD_TO_CONTACTS_OFFER" = "¿Deseas añadir esta persona a tus contactos?";
+"ADD_TO_CONTACTS_OFFER" = "¿Quieres añadir esta persona a tus contactos?";
 
 /* Label for button or row which allows users to add to another group. */
 "ADD_TO_GROUP" = "Añadir a otro grupo";
@@ -116,7 +116,7 @@
 "ADD_TO_GROUP_TITLE" = "Añadir a un grupo";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "¿Deseas compartir tu perfil con esta persona?";
+"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "¿Quieres compartir tu perfil con esta persona?";
 
 /* generic button text to acknowledge that the corresponding text was read. */
 "ALERT_ACTION_ACKNOWLEDGE" = "Entendido";
@@ -614,7 +614,7 @@
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Las personas que bloquees no podrán llamarte ni enviarte mensajes.";
 
 /* Tooltip highlighting the blur image editing tool. */
-"BLUR_TOOLTIP" = "¡Nuevo! Difumina caras o partes de la foto.";
+"BLUR_TOOLTIP" = "¡Nuevo! Difumina caras o partes de tus fotos.";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Introduce una cantidad personalizada";
@@ -718,11 +718,29 @@
 /* Navigation bar title for the sheet used to create & configure a Call Link. */
 "CALL_LINK_CREATE" = "Crear enlace de llamada";
 
+/* Description of sheet presented when call link creation fails. */
+"CALL_LINK_CREATION_FAILURE_SHEET_DESCRIPTION" = "Call link could not be created. Check your internet connection and try again.";
+
+/* Title of sheet presented when call link creation or update fails. */
+"CALL_LINK_CREATION_OR_UPDATE_FAILURE_SHEET_TITLE" = "Network Error";
+
 /* Button to open a screen to edit the name of a Call Link. Also used as the title of that screen once it opens. */
 "CALL_LINK_EDIT_NAME" = "Editar nombre de llamada";
 
+/* Description of sheet presented when joining call from call link sheet fails. */
+"CALL_LINK_JOIN_CALL_FAILURE_SHEET_DESCRIPTION" = "Could not join call. Check your internet connection and try again.";
+
 /* Shown in a message bubble when you send a call link in a Signal chat */
 "CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "Usa este enlace para unirte a una llamada de Signal";
+
+/* Title for button to approve all requests to join a call. */
+"CALL_LINK_REQUEST_SHEET_APPROVE_ALL_BUTTON" = "Approve All";
+
+/* Title for button to deny all requests to join a call. */
+"CALL_LINK_REQUEST_SHEET_DENY_ALL_BUTTON" = "Deny All";
+
+/* Header for the sheet displaying a list of requests to join a call. */
+"CALL_LINK_REQUEST_SHEET_HEADER" = "Requests to Join this Call";
 
 /* Name of a toggle switch to enable/disable admin approval for joining a Call Link. */
 "CALL_LINK_REQUIRE_APPROVAL" = "Solicitar aprobación de admin";
@@ -732,6 +750,9 @@
 
 /* Button to open the system share sheet to share a Call Link. */
 "CALL_LINK_SHARE_VIA_SYSTEM" = "Compartir enlace";
+
+/* Description of sheet presented when call link update fails. */
+"CALL_LINK_UPDATE_FAILURE_SHEET_DESCRIPTION" = "Call link could not be updated. Check your internet connection and try again.";
 
 /* Label on button for lowering hand in call. */
 "CALL_LOWER_HAND_BUTTON_LABEL" = "Bajar la mano";
@@ -755,7 +776,7 @@
 "CALL_USER_ALERT_CALL_BUTTON" = "Llamar";
 
 /* Message format for alert offering to call a user. Embeds {{the user's display name or phone number}}. */
-"CALL_USER_ALERT_MESSAGE_FORMAT" = "¿Deseas llamar a %1$@?";
+"CALL_USER_ALERT_MESSAGE_FORMAT" = "¿Quieres llamar a %1$@?";
 
 /* Title for alert offering to call a user. */
 "CALL_USER_ALERT_TITLE" = "¿Llamar?";
@@ -845,7 +866,7 @@
 "CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "Eliminar";
 
 /* Message for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
-"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_MESSAGE" = "Esta acción hará que se elimine de forma permanente todo tu historial de llamadas.";
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_MESSAGE" = "Se eliminará de forma permanente todo tu historial de llamadas.";
 
 /* Title for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
 "CALLS_TAB_DELETE_ALL_CALLS_PROMPT_TITLE" = "¿Eliminar historial de llamadas?";
@@ -887,7 +908,7 @@
 "CALLS_TAB_RETURN_TO_CALL_BUTTON_TITLE" = "Volver";
 
 /* Label for a view explaining that no search results were found in the Calls Tab. Embeds {{ the search term }}. */
-"CALLS_TAB_SEARCH_NO_RESULTS_FOUND_LABEL_FORMAT" = "No se encontraron resultados para \"%1$@\"";
+"CALLS_TAB_SEARCH_NO_RESULTS_FOUND_LABEL_FORMAT" = "No se han encontrado resultados para \"%1$@\"";
 
 /* Title for a long-press context menu action to select a call, triggered from a call in the Calls Tab. */
 "CALLS_TAB_SELECT_CALL_ACTION_TITLE" = "Seleccionar";
@@ -899,7 +920,7 @@
 "CALLS_TAB_START_VIDEO_CALL_ACTION_TITLE" = "Videollamada";
 
 /* Title for a long-press context menu action to start a voice call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_START_VOICE_CALL_ACTION_TITLE" = "Llamada de voz";
+"CALLS_TAB_START_VOICE_CALL_ACTION_TITLE" = "Llamada";
 
 /* Title for a long-press context menu action to view info about a call, triggered from a call in the Calls Tab. */
 "CALLS_TAB_VIEW_CALL_INFO_ACTION_TITLE" = "Detalles";
@@ -1082,7 +1103,7 @@
 "COMPOSE_BUTTON_HINT" = "Selecciona o busca a una persona en Signal para comenzar a chatear.";
 
 /* Accessibility label from compose button. */
-"COMPOSE_BUTTON_LABEL" = "Redactar";
+"COMPOSE_BUTTON_LABEL" = "Escribir";
 
 /* Table section header for contact listing when composing a new message */
 "COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "Contactos";
@@ -1772,7 +1793,7 @@
 "DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "No se han podido cargar los archivos.";
 
 /* Message of the debug log alert. */
-"DEBUG_LOG_ALERT_MESSAGE" = "¿Qué deseas hacer con el enlace al registro de depuración?";
+"DEBUG_LOG_ALERT_MESSAGE" = "¿Qué quieres hacer con el enlace al registro de depuración?";
 
 /* Error indicating that no debug logs could be found. */
 "DEBUG_LOG_ALERT_NO_LOGS" = "No se ha podido encontrar ningún registro de depuración.";
@@ -1910,7 +1931,7 @@
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "Detener transferencia";
 
 /* The message of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "Si cierras esta ventana se detendrá la transferencia en progreso. ¿Deseas cerrarla de todos modos?";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "Si cierras esta ventana se detendrá la transferencia en progreso. ¿Quieres cerrarla de todos modos?";
 
 /* The title of the dialog asking the user if they want to cancel a device transfer */
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "¿Detener transferencia?";
@@ -2066,7 +2087,7 @@
 "DISPLAY_BADGES_ON_PROFILE_SETTING" = "Mostrar insignias en el perfil";
 
 /* Title for the proxy confirmation */
-"DO_YOU_WANT_TO_USE_PROXY" = "¿Deseas usar esta dirección de proxy?";
+"DO_YOU_WANT_TO_USE_PROXY" = "¿Quieres usar esta dirección de proxy?";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "País donde evitar censura";
@@ -2480,7 +2501,7 @@
 "EDIT_GROUP_UPDATE_BUTTON" = "Actualizar";
 
 /* The alert message if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "¿Deseas guardar los cambios que has hecho en este grupo?";
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "¿Quieres guardar los cambios que has hecho en este grupo?";
 
 /* The alert title if user tries to exit update group view without saving changes. */
 "EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Cambios sin guardar";
@@ -2882,7 +2903,7 @@
 "GROUP_CALL_ERROR_DETAILS" = "Más detalles";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. */
-"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "Se alcanzó el número máximo de participantes para esta llamada. Inténtalo de nuevo más tarde.";
+"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "Se alcanzó el máximo de participantes para esta llamada. Inténtalo de nuevo más tarde.";
 
 /* Text explaining that someone has sent a ring to the group. Embeds {ring sender name} */
 "GROUP_CALL_INCOMING_RING_FORMAT" = "%1$@ está llamando al grupo";
@@ -2897,7 +2918,7 @@
 "GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "Llamando a %1$@ y a %2$@…";
 
 /* Button to join an ongoing group call */
-"GROUP_CALL_JOIN_BUTTON" = "Unirse";
+"GROUP_CALL_JOIN_BUTTON" = "Unirse a la llamada";
 
 /* Button to leave a group call */
 "GROUP_CALL_LEAVE_BUTTON" = "Abandonar llamada";
@@ -3122,7 +3143,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "No es posible unirse al grupo";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "El enlace a este grupo no es válido.";
+"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "El enlace a este grupo ya no es válido.";
 
 /* Indicator for group conversations in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "Grupo";
@@ -3134,7 +3155,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Cargando…";
 
 /* Message text for the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "¿Deseas unirte a este grupo y compartir tu nombre y foto con sus participantes?";
+"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "¿Quieres unirte a este grupo y compartir tu nombre y foto con sus participantes?";
 
 /* Error message the attempt to request to join the group failed due to network connectivity. */
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "Combrueba que tengas conexión e inténtalo de nuevo.";
@@ -3164,7 +3185,7 @@
 "GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "Compartir enlace";
 
 /* Subtitle for the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "Comparte este enlace con quienes quieras para que se unan al grupo.";
+"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "Comparte este enlace para que otras personas se unan al grupo.";
 
 /* Title for the 'group link promotion' alert view. */
 "GROUP_LINK_PROMOTION_ALERT_TITLE" = "Invitar personas";
@@ -3197,7 +3218,7 @@
 "GROUP_LINK_VIEW_RESET_LINK" = "Restablecer enlace";
 
 /* Title for the 'confirm reset link' alert in the 'group link' view. */
-"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "¿Deseas restablecer el enlace para unirse al grupo? Si lo restableces, nadie podrá unirse al grupo usando el enlace actual.";
+"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "¿Quieres restablecer el enlace al grupo? Si lo restableces, nadie podrá unirse al grupo usando el enlace actual.";
 
 /* Label for the 'share link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_SHARE_LINK" = "Compartir";
@@ -3323,16 +3344,16 @@
 "GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "Han añadido a %1$@ al grupo.";
 
 /* Message indicating that a remote user has declined their invite. */
-"GROUP_REMOTE_USER_DECLINED_INVITE" = "1 persona ha rechazado la invitación al grupo.";
+"GROUP_REMOTE_USER_DECLINED_INVITE" = "Una persona ha rechazado la invitación al grupo.";
 
 /* Message indicating that a remote user has declined their invite. Embeds {{ user who invited them }}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "1 persona invitada por %1$@ ha rechazado la invitación al grupo.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "Una persona invitada por %1$@ ha rechazado la invitación al grupo.";
 
 /* Message indicating that a remote user has declined an invite to the group from the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%1$@ ha rechazado tu invitación al grupo.";
 
 /* Message indicating that a remote user was granted administrator role. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "%1$@ es ahora admin";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "%1$@ ahora es admin";
 
 /* Message indicating that a remote user was granted administrator role by local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "Has designado a %1$@ como admin.";
@@ -3623,7 +3644,7 @@
 "HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Solicitud de mensaje";
 
 /* Format string when search returns no results. Embeds {{search term}} */
-"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "No se encontraron resultados para \"%1$@\"";
+"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "No se han encontrado resultados para \"%1$@\"";
 
 /* Title for the conversation list's 'archive' mode. */
 "HOME_VIEW_TITLE_ARCHIVE" = "Archivar";
@@ -3719,10 +3740,10 @@
 "INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST" = "Has aceptado la solicitud de mensaje.";
 
 /* Header for an action sheet providing options in response to an accepted 1:1 message request. Embeds {{ the name of your chat partner }}. */
-"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_CONTACT" = "Has aceptado una solicitud de mensaje de %1$@. Si se fue un error, puedes elegir una de las acciones que hay a continuación.";
+"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_CONTACT" = "Has aceptado una solicitud de mensaje de %1$@. Si ha sido un error, puedes elegir una de las siguientes acciones.";
 
 /* Header for an action sheet providing options in response to an accepted group message request. */
-"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_GROUP" = "Has aceptado una solicitud de mensaje de este grupo. Si fue un error, puedes elegir una de las acciones que hay a continuación.";
+"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_GROUP" = "Has aceptado una solicitud de mensaje de este grupo. Si ha sido un error, puedes elegir una de las siguientes acciones.";
 
 /* Title for a button shown alongside an info message indicating you accepted a message request. */
 "INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_BUTTON" = "Opciones";
@@ -3905,7 +3926,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "No se ha podido vincular el dispositivo";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "En este dispositivo podrás acceder a tus grupos y contactos, leer todos tus mensajes y enviar mensajes en tu nombre.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "En este dispositivo podrás acceder a tus grupos y contactos, leer todos tus mensajes y enviar mensajes desde tu perfil.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "¿Vincular este dispositivo?";
@@ -4004,7 +4025,7 @@
 "MEDIA_GALLERY_CLEAR_FILTER_BUTTON" = "Quitar filtro";
 
 /* Explanatory text displayed when deleting N items in All Media screen. */
-"MEDIA_GALLERY_DELETE_MEDIA_BODY" = "Se eliminarán de forma permanente los archivos seleccionados. Todos los mensajes asociados con estos archivos también se eliminarán.";
+"MEDIA_GALLERY_DELETE_MEDIA_BODY" = "Se eliminarán de forma permanente los archivos seleccionados. También se eliminará cualquier mensaje asociado con estos archivos.";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%1$@";
@@ -4049,7 +4070,7 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Este mensaje se eliminará para todas las personas en el chat si usan una versión reciente de Signal. Podrán ver que has eliminado un mensaje.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
-"MESSAGE_ACTION_DELETE_FOR_TITLE" = "¿Para quién deseas eliminar este mensaje?";
+"MESSAGE_ACTION_DELETE_FOR_TITLE" = "¿Para quién quieres eliminar este mensaje?";
 
 /* The title for the action that deletes a message for the local user only. */
 "MESSAGE_ACTION_DELETE_FOR_YOU" = "Eliminar para mí";
@@ -4346,7 +4367,7 @@
 "MESSAGE_STATUS_FAILED_SHORT" = "Error";
 
 /* Label indicating that a message was only sent to some recipients. */
-"MESSAGE_STATUS_PARTIALLY_SENT" = "No se ha enviado a todas las personas. Toca aquí para ver más información.";
+"MESSAGE_STATUS_PARTIALLY_SENT" = "No enviado a todas las personas. Toca para ver más.";
 
 /* Label indicating that a message send was paused. */
 "MESSAGE_STATUS_PENDING" = "Envío pausado";
@@ -4502,7 +4523,7 @@
 "NEW_CALL_VIDEO_CALL_ACTION_TITLE" = "Videollamada";
 
 /* Title for a long-press context menu action to start a voice call, triggered from a recipient in the New Call contact picker */
-"NEW_CALL_VOICE_CALL_ACTION_TITLE" = "Llamada de voz";
+"NEW_CALL_VOICE_CALL_ACTION_TITLE" = "Llamada";
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Buscar por número de teléfono";
@@ -4598,7 +4619,7 @@
 "NICKNAME_BUTTON_TITLE" = "Apodo";
 
 /* The message for a prompt confirming that the user wants to delete the nickname and note. */
-"NICKNAME_EDITOR_DELETE_CONFIRMATION_MESSAGE" = "Esta acción hará que se elimine este apodo y estas notas de forma permanente.";
+"NICKNAME_EDITOR_DELETE_CONFIRMATION_MESSAGE" = "Se eliminará de forma permanente este apodo y estas notas.";
 
 /* The title for a prompt confirming that the user wants to delete the nickname and note. */
 "NICKNAME_EDITOR_DELETE_CONFIRMATION_TITLE" = "¿Eliminar apodo?";
@@ -4925,7 +4946,7 @@
 "PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "No válido";
 
 /* Payments in-chat message shown if a payment fails to send, bottom half. */
-"PAYMENTS_IN_CHAT_FAILURE_MESSAGE_BOTTOM" = "Toca aquí para ver los detalles";
+"PAYMENTS_IN_CHAT_FAILURE_MESSAGE_BOTTOM" = "Toca para ver más";
 
 /* Payments in-chat message shown if a payment fails to send, top part. Embeds {{ number, amount of MOB coin not sent }} */
 "PAYMENTS_IN_CHAT_FAILURE_MESSAGE_TOP" = "No se ha podido enviar %1$@ MOB";
@@ -5183,7 +5204,7 @@
 "PAYMENTS_UNKNOWN_PAYMENT" = "Pago no válido";
 
 /* The alert message if user tries to exit a task without saving changes. */
-"PENDING_CHANGES_ACTION_SHEET_MESSAGE" = "¿Deseas descartar estos cambios?";
+"PENDING_CHANGES_ACTION_SHEET_MESSAGE" = "¿Quieres descartar estos cambios?";
 
 /* The alert title if user tries to exit a task without saving changes. */
 "PENDING_CHANGES_ACTION_SHEET_TITLE" = "Cambios sin guardar";
@@ -5198,7 +5219,7 @@
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "Rechazar solicitud";
 
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "¿Rechazar solicitud de %1$@? Esta persona ya no podrá solicitar unirse al grupo mediante enlace.";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "¿Rechazar la solicitud de %1$@? Esta persona ya no podrá solicitar unirse al grupo mediante enlace.";
 
 /* Label indicating that a group has no pending member requests. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "No hay solicitudes pendientes.";
@@ -5807,7 +5828,7 @@
 "RECIPIENT_PICKER_INVITE_ACTION" = "Mensaje de texto";
 
 /* Alert text. Shown after selecting a phone number that isn't a Signal user. */
-"RECIPIENT_PICKER_INVITE_MESSAGE" = "%1$@ no usa Signal. ¿Deseas invitar este número a usar Signal?";
+"RECIPIENT_PICKER_INVITE_MESSAGE" = "%1$@ no usa Signal. ¿Quieres invitar este número a usar Signal?";
 
 /* Alert title. Shown after selecting a phone number that isn't a Signal user. */
 "RECIPIENT_PICKER_INVITE_TITLE" = "Invitar a Signal";
@@ -5951,7 +5972,7 @@
 "REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "Llamada";
 
 /* Error message when sending a verification code via sms failed, but resending via voice call might succeed. */
-"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "No hemos podido enviarte el código de verificación por SMS. Intenta recibir tu código a través de una llamada de voz.";
+"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "No hemos podido enviarte el código de verificación por SMS. Intenta recibir tu código a través de una llamada.";
 
 /* Alert shown when running out of attempts at submitting a verification code. */
 "REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "Has hecho demasiados intentos para introducir el código. Vuelve a enviar el código e inténtalo de nuevo.";
@@ -5984,10 +6005,10 @@
 "REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_BUTTON" = "Enviar SMS";
 
 /* Error message when sending a verification code via voice call failed, but resending via sms might succeed. */
-"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "No hemos podido enviarte el código de verificación por llamada de voz. Intenta recibir tu código por SMS.";
+"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "No hemos podido enviarte el código de verificación por llamada. Intenta recibir tu código por SMS.";
 
 /* No comment provided by engineer. */
-"RELAY_REGISTERED_ERROR_RECOVERY" = "El número de teléfono que deseas registrar ya está registrado en otro servidor. Dalo de baja del otro servidor e inténtalo de nuevo.";
+"RELAY_REGISTERED_ERROR_RECOVERY" = "El número de teléfono que quieres registrar ya está registrado en otro servidor. Dalo de baja del otro servidor e inténtalo de nuevo.";
 
 /* Button below the warning to fix a corrupted username. */
 "REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "Corregirlo ahora";
@@ -6065,7 +6086,7 @@
 "SAFETY_TIPS_BUTTON_ACTION_TITLE" = "Consejos de seguridad";
 
 /* Message contents for the crypto safety tip. */
-"SAFETY_TIPS_CRYPTO_BODY" = "Ten cuidado si alguien a quien no conoces te envía mensajes sobre criptomonedas (como Bitcoin) o sobre una oportunidad financiera. Es probable que se trate de spam.";
+"SAFETY_TIPS_CRYPTO_BODY" = "Ten cuidado si alguien que no conoces te envía mensajes sobre criptomonedas (como Bitcoin) o sobre una oportunidad financiera. Es probable que se trate de spam.";
 
 /* Message title describing the crypto safety tip. */
 "SAFETY_TIPS_CRYPTO_TITLE" = "Estafas de criptomonedas o dinero";
@@ -6164,7 +6185,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "No se ha podido recuperar el código de vinculación";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Para vincular este dispositivo con otra cuenta, primero debes eliminar la cuenta de este dispositivo. ¿Deseas eliminar todo tu historial (mensajes, archivos, llamadas, etc.)? Esta acción es irreversible.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Para vincular este dispositivo con otra cuenta, primero debes eliminar la cuenta de este dispositivo. ¿Quieres eliminar todo tu historial (mensajes, archivos, llamadas, etc.)? Esta acción es irreversible.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "Eliminar todo";
@@ -6455,7 +6476,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "Número de teléfono";
 
 /* Description text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Aquí puedes cambiar tu número de teléfono actual a un número de teléfono nuevo. Este cambio no se puede deshacer.\nAntes de continuar, comprueba que tu número nuevo puede recibir SMS o llamadas.";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Puedes cambiar tu número de teléfono a uno nuevo. Este cambio es irreversible.\nAntes de continuar, comprueba que tu número nuevo puede recibir SMS o llamadas.";
 
 /* Title text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "Cambiar número de teléfono";
@@ -6524,7 +6545,7 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "Eliminar todos los datos";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "¿Deseas eliminar todo el historial (mensajes, archivos, llamadas, etc.)? Esta acción es irreversible.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "¿Quieres eliminar todo el historial (mensajes, archivos, llamadas, etc.)? Esta acción es irreversible.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Eliminar todo";
@@ -6749,7 +6770,7 @@
 "SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "Todavía no hay actividad reciente.";
 
 /* Message for the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_MESSAGE" = "¿Deseas habilitar los pagos?";
+"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_MESSAGE" = "¿Quieres habilitar los pagos?";
 
 /* Title for the 'payments not enabled' alert. */
 "SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "Pagos no habilitados";
@@ -7514,7 +7535,7 @@
 "STORIES_SHARESHEET_PARTIAL_SEND_STORIES_SECTION_TITLE" = "No enviado a";
 
 /* Title shown when failing to send an incompatible file to stories, but still sending to non-story conversations. */
-"STORIES_SHARESHEET_PARTIAL_SEND_TITLE" = "No se ha enviado a todas las personas";
+"STORIES_SHARESHEET_PARTIAL_SEND_TITLE" = "No enviado a todas las personas";
 
 /* Subtitle shown when failing to send an incompatible file to stories via the sharesheet. */
 "STORIES_SHARESHEET_UNABLE_TO_SEND_SEND_SUBTITLE" = "El tipo de archivo seleccionado no es compatible.";
@@ -7628,10 +7649,10 @@
 "STORY_SEND_FAILED_TAP_FOR_DETAILS" = "No se ha podido enviar. Toca para reintentar";
 
 /* Text indicating that the story send has partially failed */
-"STORY_SEND_PARTIALLY_FAILED" = "No se ha enviado a todas las personas";
+"STORY_SEND_PARTIALLY_FAILED" = "No enviado a todas las personas";
 
 /* Text indicating that the story send has partially failed */
-"STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "No se ha enviado a todas las personas.Toca aquí para ver más información.";
+"STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "No enviado a todas las personas. Toca para ver más.";
 
 /* Text indicating that the story is currently sending */
 "STORY_SENDING" = "Enviando…";
@@ -7943,7 +7964,7 @@
 "UNARCHIVE_ACTION" = "Desarchivar";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"UNKNOWN_CONTACT_BLOCK_OFFER" = "Esta persona no está en tus contactos. ¿Deseas bloquearla?";
+"UNKNOWN_CONTACT_BLOCK_OFFER" = "Esta persona no está en tus contactos. ¿Quieres bloquearla?";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "Has enviado un mensaje desde uno de tus dispositivos que no se puede procesar ni mostrar, ya que usa una función nueva de Signal.";
@@ -8090,7 +8111,7 @@
 "USERNAME_LINK_QR_CODE_VIEW_TITLE_SCAN" = "Escanear";
 
 /* Text presented in a toast notifying the user that their username was copied to the system clipboard. */
-"USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "Se ha copiado el alias";
+"USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "Alias copiado";
 
 /* Text presented in a toast notifying the user that their username link was copied to the system clipboard. */
 "USERNAME_LINK_QR_CODE_VIEW_USERNAME_LINK_COPIED" = "Enlace copiado";
@@ -8234,7 +8255,7 @@
 "VIEW_STORY" = "Ver historia";
 
 /* Accessibility label for placing a voice call */
-"VOICE_CALL_LABEL" = "Llamada de voz";
+"VOICE_CALL_LABEL" = "Llamada";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Desliza para cancelar";
@@ -8276,7 +8297,7 @@
 "WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "Eliminar color del chat";
 
 /* Confirmation dialog when clearing the chat color for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "¿Deseas eliminar el color de este chat?";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "¿Quieres eliminar el color de este chat?";
 
 /* Clear wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Eliminar fondo de pantalla";
@@ -8300,7 +8321,7 @@
 "WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "Restablecer todos";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "¿Deseas cambiar los colores de todos tus chats?";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "¿Quieres cambiar los colores de todos tus chats?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Restablecer colores del chat";
@@ -8324,7 +8345,7 @@
 "WALLPAPER_SETTINGS_RESET_GLOBAL_WALLPAPER" = "Restablecer fondos de pantalla";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_MESSAGE" = "¿Deseas restablecer los fondos de todos los chats?";
+"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_MESSAGE" = "¿Quieres restablecer los fondos de todos los chats?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "Restablecer fondo de pantalla";

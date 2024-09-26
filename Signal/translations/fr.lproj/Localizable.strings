@@ -718,11 +718,29 @@
 /* Navigation bar title for the sheet used to create & configure a Call Link. */
 "CALL_LINK_CREATE" = "Créer un lien d'appel";
 
+/* Description of sheet presented when call link creation fails. */
+"CALL_LINK_CREATION_FAILURE_SHEET_DESCRIPTION" = "Call link could not be created. Check your internet connection and try again.";
+
+/* Title of sheet presented when call link creation or update fails. */
+"CALL_LINK_CREATION_OR_UPDATE_FAILURE_SHEET_TITLE" = "Network Error";
+
 /* Button to open a screen to edit the name of a Call Link. Also used as the title of that screen once it opens. */
 "CALL_LINK_EDIT_NAME" = "Renommer l'appel";
 
+/* Description of sheet presented when joining call from call link sheet fails. */
+"CALL_LINK_JOIN_CALL_FAILURE_SHEET_DESCRIPTION" = "Could not join call. Check your internet connection and try again.";
+
 /* Shown in a message bubble when you send a call link in a Signal chat */
 "CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "Utiliser ce lien pour rejoindre un appel Signal";
+
+/* Title for button to approve all requests to join a call. */
+"CALL_LINK_REQUEST_SHEET_APPROVE_ALL_BUTTON" = "Approve All";
+
+/* Title for button to deny all requests to join a call. */
+"CALL_LINK_REQUEST_SHEET_DENY_ALL_BUTTON" = "Deny All";
+
+/* Header for the sheet displaying a list of requests to join a call. */
+"CALL_LINK_REQUEST_SHEET_HEADER" = "Requests to Join this Call";
 
 /* Name of a toggle switch to enable/disable admin approval for joining a Call Link. */
 "CALL_LINK_REQUIRE_APPROVAL" = "Exiger l'approbation d'un admin";
@@ -732,6 +750,9 @@
 
 /* Button to open the system share sheet to share a Call Link. */
 "CALL_LINK_SHARE_VIA_SYSTEM" = "Partager le lien";
+
+/* Description of sheet presented when call link update fails. */
+"CALL_LINK_UPDATE_FAILURE_SHEET_DESCRIPTION" = "Call link could not be updated. Check your internet connection and try again.";
 
 /* Label on button for lowering hand in call. */
 "CALL_LOWER_HAND_BUTTON_LABEL" = "Baisser la main";
@@ -2639,7 +2660,7 @@
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Le numéro de sécurité a changé.";
 
 /* Shown when signal users safety numbers changed, embeds the user's {{name or phone number}} */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Votre numéro de sécurité avec %1$@ a changé.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Le numéro de sécurité associé à %1$@ a changé.";
 
 /* Text notifying the user that their secure session has been reset */
 "ERROR_MESSAGE_SESSION_REFRESH" = "La session de dialogue en ligne a été actualisée";
@@ -2696,7 +2717,7 @@
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Trop d’échecs avec ce contact. Veuillez réessayer plus tard.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Votre numéro de sécurité avec %1$@ a changé récemment. Vous devriez peut-être le confirmer avant de le renvoyer.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Le numéro de sécurité associé à %1$@ a récemment changé. Vous pouvez vérifier le nouveau numéro avant de renvoyer ce message.";
 
 /* Shown as the body of an alert when failing to redeem a badge that was received after a friend donated on your behalf. */
 "FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY" = "Votre macaron n’a pas pu être récupéré. Vérifiez votre connexion et réessayez.";
@@ -4376,13 +4397,13 @@
 "MESSAGE_STATUS_VIEWED" = "Vu";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%1$@ n’est plus marqué comme confirmé. Touchez pour plus d’options.";
+"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%1$@ n'est plus marqué comme confirmé. Touchez l'écran pour afficher les options.";
 
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%1$@ n’est plus marqué comme confirmé. Touchez pour plus d’options.";
+"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%1$@ n'est plus marqué comme confirmé. Touchez l'écran pour afficher les options.";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
-"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Plus d’un membre de ce groupe n’est plus marqué comme confirmé. Touchez pour plus d’options.";
+"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Des membres de ce groupe ne sont plus plus marqués comme confirmés. Touchez l'écran pour afficher les options";
 
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "Nouveaux messages";
@@ -5522,7 +5543,7 @@
 "PRIVACY_UNVERIFY_BUTTON" = "Annuler la confirmation";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Cela ne semble pas être votre numéro de sécurité avec %1$@. Confirmez-vous le bon contact ?";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Ce numéro de sécurité ne semble pas correspondre à celui de %1$@. S'agit-il bien du bon contact ?";
 
 /* Alert body */
 "PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Le numéro dans votre presse-papiers ne semble pas être le bon numéro de sécurité pour cette conversation.";
@@ -6041,7 +6062,7 @@
 "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "Envoyer quand même";
 
 /* Message for the 'safety number confirmation' view */
-"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "Les personnes suivantes ont peut-être réinstallé Signal ou changé d’appareil. Pour assurer la confidentialité, confirmez votre numéro de sécurité avec elles.";
+"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "Les contacts suivants ont peut-être réinstallé Signal ou changé d'appareil. Pour assurer la confidentialité de vos échanges, vérifiez les numéros de sécurité associés à ces personnes.";
 
 /* Text explaining that the given contact previously had their safety number verified. */
 "SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "Confirmé précédemment";
@@ -7262,7 +7283,7 @@
 "SHARE_ACTION_MESSAGE" = "Message";
 
 /* alert body when sharing file failed because of untrusted/changed identity keys */
-"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Votre numéro de sécurité avec %1$@ a changé récemment. Vous devriez peut-être le confirmer dans l’appli principale avant d’effectuer de nouveaux envois.";
+"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Le numéro de sécurité associé à %1$@ a récemment changé. Vous pouvez vérifier le nouveau numéro sur votre appareil principal avant de renvoyer ce message.";
 
 /* Indicates that the share extension is still loading. */
 "SHARE_EXTENSION_LOADING" = "Chargement…";
@@ -7685,7 +7706,7 @@
 "SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Identifiant du donateur copié dans le presse-papiers";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Votre numéro de sécurité avec %1$@ correspond. Vous pouvez marquer ce contact comme confirmé.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Votre numéro de sécurité et celui de %1$@ correspondent. Vous pouvez marquer ce contact comme confirmé.";
 
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "Le numéro de sécurité correspond.";
@@ -8015,7 +8036,7 @@
 "UNSUPPORTED_FEATURE_ERROR" = "Votre appareil ne prend pas cette fonction en charge";
 
 /* Description for the unverified safety number change. Embeds {name of contact with identity change} */
-"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "Votre numéro de secours avec %1$@ a changé probablement parce qu'ils ont ré-installé Signal ou changé de dispositif. Cliquez Vérifier pour confirmer le nouveau numéro de secours. Optionnel.";
+"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "Le numéro de sécurité associé à %1$@ a changé : ce contact a probablement réinstallé Signal ou changé d'appareil. Si vous le souhaitez, vous pouvez toucher \"Confirmer\" pour vérifier le nouveau numéro de sécurité.";
 
 /* Action to verify a safety number after it has changed */
 "UNVERIFIED_SAFETY_NUMBER_VERIFY_ACTION" = "Confirmer";
@@ -8195,7 +8216,7 @@
 "VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "Vous avez marqué %1$@ comme confirmé.";
 
 /* Format for info message indicating that the verification state was verified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "Vous avez marqué %1$@ comme confirmé sur un autre périphérique.";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "Vous avez confirmé le numéro de sécurité associé à %1$@ depuis un autre appareil.";
 
 /* Generic message indicating that verification state changed for a given user. */
 "VERIFICATION_STATE_CHANGE_GENERIC" = "L’état de confirmation a changé.";

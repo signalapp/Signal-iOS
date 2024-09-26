@@ -718,11 +718,29 @@
 /* Navigation bar title for the sheet used to create & configure a Call Link. */
 "CALL_LINK_CREATE" = "Створення посилання на виклик";
 
+/* Description of sheet presented when call link creation fails. */
+"CALL_LINK_CREATION_FAILURE_SHEET_DESCRIPTION" = "Call link could not be created. Check your internet connection and try again.";
+
+/* Title of sheet presented when call link creation or update fails. */
+"CALL_LINK_CREATION_OR_UPDATE_FAILURE_SHEET_TITLE" = "Network Error";
+
 /* Button to open a screen to edit the name of a Call Link. Also used as the title of that screen once it opens. */
 "CALL_LINK_EDIT_NAME" = "Змінити назву виклику";
 
+/* Description of sheet presented when joining call from call link sheet fails. */
+"CALL_LINK_JOIN_CALL_FAILURE_SHEET_DESCRIPTION" = "Could not join call. Check your internet connection and try again.";
+
 /* Shown in a message bubble when you send a call link in a Signal chat */
 "CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "Ось посилання, за яким можна приєднатися до виклику в Signal";
+
+/* Title for button to approve all requests to join a call. */
+"CALL_LINK_REQUEST_SHEET_APPROVE_ALL_BUTTON" = "Approve All";
+
+/* Title for button to deny all requests to join a call. */
+"CALL_LINK_REQUEST_SHEET_DENY_ALL_BUTTON" = "Deny All";
+
+/* Header for the sheet displaying a list of requests to join a call. */
+"CALL_LINK_REQUEST_SHEET_HEADER" = "Requests to Join this Call";
 
 /* Name of a toggle switch to enable/disable admin approval for joining a Call Link. */
 "CALL_LINK_REQUIRE_APPROVAL" = "Адміністратор затверджує учасників";
@@ -732,6 +750,9 @@
 
 /* Button to open the system share sheet to share a Call Link. */
 "CALL_LINK_SHARE_VIA_SYSTEM" = "Надіслати посилання";
+
+/* Description of sheet presented when call link update fails. */
+"CALL_LINK_UPDATE_FAILURE_SHEET_DESCRIPTION" = "Call link could not be updated. Check your internet connection and try again.";
 
 /* Label on button for lowering hand in call. */
 "CALL_LOWER_HAND_BUTTON_LABEL" = "Опустити руку";
@@ -4163,7 +4184,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Не вдалося";
 
 /* Status label for messages which are paused. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "Відправлення призупинене";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "Надсилання припинено";
 
 /* Status label for messages which are read. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Хто прочитав:";
@@ -4349,10 +4370,10 @@
 "MESSAGE_STATUS_PARTIALLY_SENT" = "Частково надіслано, торкніться для деталей";
 
 /* Label indicating that a message send was paused. */
-"MESSAGE_STATUS_PENDING" = "Відправлення призупинене";
+"MESSAGE_STATUS_PENDING" = "Надсилання припинено";
 
 /* Label indicating that a message send was paused. */
-"MESSAGE_STATUS_PENDING_SHORT" = "Призупинене";
+"MESSAGE_STATUS_PENDING_SHORT" = "Припинено";
 
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "Прочитано";
@@ -4718,7 +4739,7 @@
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Пропустити і Створити Новий PIN-код";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Якщо ви забули свій PIN-код, то можете створити новий. Ви можете зареєструватись і використовувати свій акаунт, але ви втратите частину збережених налаштувань, як-от інформацію профілю.";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Якщо ви забули свій PIN-код, то можете створити новий. Ви можете зареєструвати й використовувати акаунт, але ви втратите частину збережених налаштувань, як-от інформацію профілю.";
 
 /* Title for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Пропустити Введення PIN-коду?";
@@ -7331,7 +7352,7 @@
 "SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Продовжити без підтвердження?";
 
 /* Body for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_BODY" = "Для запобігання поширення спаму у Signal, будь ласка, здійсніть підтвердження особи.\n\nПісля підтвердження ви зможете продовжити спілкування. Усі призупинені повідомлення відправляться автоматично.";
+"SPAM_CAPTCHA_SHEET_BODY" = "Просимо вас пройти перевірку. Це необхідно для запобігання поширенню спаму в Signal.\n\nВи зможете продовжити спілкування після перевірки. Усі зупинені повідомлення буде надіслано автоматично.";
 
 /* Title for action sheet explaining captcha requirement. */
 "SPAM_CAPTCHA_SHEET_TITLE" = "Підтвердити для продовження спілкування";
