@@ -636,7 +636,10 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                     cdnNumber: transitTierInfo.cdnNumber,
                     key: attachment.encryptionKey,
                     digest: stream.encryptedFileSha256Digest,
-                    plaintextDataLength: stream.unencryptedByteCount
+                    plaintextDataLength: stream.unencryptedByteCount,
+                    // This is the length from the stream, not the transit tier,
+                    // but the length is the same regardless of the key used.
+                    encryptedDataLength: stream.encryptedByteCount
                 ))
             } else {
                 let metadata = Upload.LocalUploadMetadata(
@@ -649,7 +652,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                 return .reuse(metadata)
             }
 
-        case .mediaTier(_, let isThumbnail):
+        case .mediaTier(_, _):
             // We never allow uploads of data we don't have locally.
             guard
                 let stream = attachment.asStream(),
@@ -847,10 +850,10 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                     cdn: result.cdnNumber,
                     key: result.cdnKey
                 ),
-                objectLength: result.localUploadMetadata.plaintextDataLength,
+                objectLength: result.localUploadMetadata.encryptedDataLength,
                 mediaId: mediaEncryptionMetadata.mediaId,
                 hmacKey: mediaEncryptionMetadata.hmacKey,
-                encryptionKey: mediaEncryptionMetadata.encryptionKey,
+                aesKey: mediaEncryptionMetadata.aesKey,
                 iv: mediaEncryptionMetadata.iv
             ),
             auth: auth

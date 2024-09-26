@@ -151,6 +151,9 @@ public enum Upload {
         /// The length of the unencrypted data
         public let plaintextDataLength: UInt32
 
+        /// The length of the encrypted data, consiting of "iv  + encrypted data + hmac"
+        public let encryptedDataLength: UInt32
+
         public var isReusedTransitTierUpload: Bool { false }
     }
 

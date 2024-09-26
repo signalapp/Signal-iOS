@@ -145,6 +145,7 @@ extension OWSRequestFactory {
         limit: UInt32?
     ) -> TSRequest {
         var parameters: [String: Any] = [:]
+        // TODO: [Backups] these need to be query params, not part of the body.
         if let limit {
             parameters["limit"] = limit
         }

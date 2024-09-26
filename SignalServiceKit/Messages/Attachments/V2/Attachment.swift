@@ -313,7 +313,9 @@ public class Attachment {
                     digest: transitTierInfo.digestSHA256Ciphertext,
                     // Okay to fall back to our local data length even if the original sender
                     // didn't include it; we now know it from the local file.
-                    plaintextDataLength: transitTierInfo.unencryptedByteCount ?? metadata.plaintextDataLength
+                    plaintextDataLength: transitTierInfo.unencryptedByteCount ?? metadata.plaintextDataLength,
+                    // Encryped length is the same regardless of the key used.
+                    encryptedDataLength: metadata.encryptedDataLength
                 )
             )
         } else if

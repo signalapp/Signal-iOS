@@ -12,6 +12,8 @@ public protocol UploadMetadata {
 
     /// The length of the unencrypted data
     var plaintextDataLength: UInt32 { get }
+
+    var encryptedDataLength: UInt32 { get }
 }
 
 /// Specifically an upload of an attachment.

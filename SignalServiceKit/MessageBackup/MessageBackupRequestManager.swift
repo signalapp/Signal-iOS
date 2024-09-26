@@ -18,7 +18,7 @@ public extension MessageBackup {
             let objectLength: UInt32
             let mediaId: Data
             let hmacKey: Data
-            let encryptionKey: Data
+            let aesKey: Data
             let iv: Data
 
             var asParameters: [String: Any] {
@@ -30,7 +30,7 @@ public extension MessageBackup {
                     "objectLength": self.objectLength,
                     "mediaId": self.mediaId.asBase64Url,
                     "hmacKey": self.hmacKey.base64EncodedString(),
-                    "encryptionKey": self.encryptionKey.base64EncodedString(),
+                    "encryptionKey": self.aesKey.base64EncodedString(),
                     "iv": self.iv.base64EncodedString()
                 ]
             }
@@ -351,24 +351,37 @@ public struct MessageBackupRequestManagerImpl: MessageBackupRequestManager {
         item: MessageBackup.Request.MediaItem,
         auth: MessageBackupServiceAuth
     ) async throws -> UInt32 {
-        let response = try await executeBackupServiceRequest(
-            auth: auth,
-            requestFactory: {
-                OWSRequestFactory.copyToMediaTier(
-                    auth: $0,
-                    item: item
-                )
+        do {
+            let response = try await executeBackupServiceRequest(
+                auth: auth,
+                requestFactory: {
+                    OWSRequestFactory.copyToMediaTier(
+                        auth: $0,
+                        item: item
+                    )
+                }
+            )
+            if let error = MessageBackup.Response.CopyToMediaTierError.init(rawValue: response.responseStatusCode) {
+                throw error
             }
-        )
-
-        if let error = MessageBackup.Response.CopyToMediaTierError.init(rawValue: response.responseStatusCode) {
-            throw error
+            guard let bodyData = response.responseBodyData else {
+                throw OWSAssertionError("Missing body data")
+            }
+            let dict = try JSONDecoder().decode([String: UInt32].self, from: bodyData)
+            guard let cdn = dict["cdn"] else {
+                throw OWSAssertionError("Missing cdn")
+            }
+            return cdn
+        } catch let error {
+            if
+                let responseStatusCode = error.httpStatusCode,
+                let typedError = MessageBackup.Response.CopyToMediaTierError.init(rawValue: responseStatusCode)
+            {
+                throw typedError
+            } else {
+                throw error
+            }
         }
-
-        guard let bodyData = response.responseBodyData else {
-            throw OWSAssertionError("Missing body data")
-        }
-        return try JSONDecoder().decode(UInt32.self, from: bodyData)
     }
 
     public func copyToMediaTier(
