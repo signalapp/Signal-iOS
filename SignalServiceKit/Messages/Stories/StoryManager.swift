@@ -117,7 +117,7 @@ public class StoryManager: NSObject {
 
         startAutomaticDownloadIfNecessary(for: message, transaction: transaction)
 
-        OWSDisappearingMessagesJob.shared.scheduleRun(byTimestamp: message.timestamp + storyLifetimeMillis)
+        OWSDisappearingMessagesJob.shared.scheduleRun(by: message.timestamp + storyLifetimeMillis)
 
         earlyMessageManager.applyPendingMessages(for: message, transaction: transaction)
     }
@@ -151,7 +151,7 @@ public class StoryManager: NSObject {
 
             DependenciesBridge.shared.tsResourceDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(message, tx: transaction.asV2Write)
 
-            OWSDisappearingMessagesJob.shared.scheduleRun(byTimestamp: message.timestamp + storyLifetimeMillis)
+            OWSDisappearingMessagesJob.shared.scheduleRun(by: message.timestamp + storyLifetimeMillis)
 
             earlyMessageManager.applyPendingMessages(for: message, transaction: transaction)
         } else {

@@ -3001,7 +3001,6 @@
 		F9C5CC2B289453B300548EEE /* TSInvalidIdentityKeyReceivingErrorMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C93A289453B100548EEE /* TSInvalidIdentityKeyReceivingErrorMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CC2C289453B300548EEE /* OWSIdentityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C93B289453B100548EEE /* OWSIdentityManager.swift */; };
 		F9C5CC2D289453B300548EEE /* OWSOutgoingCallMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C93C289453B100548EEE /* OWSOutgoingCallMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CC2E289453B300548EEE /* OWSDisappearingMessagesJob.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C93D289453B100548EEE /* OWSDisappearingMessagesJob.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CC31289453B300548EEE /* BlockingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C940289453B100548EEE /* BlockingManager.swift */; };
 		F9C5CC32289453B300548EEE /* OWSProfileKeyMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C941289453B100548EEE /* OWSProfileKeyMessage.m */; };
 		F9C5CC34289453B300548EEE /* DeliveryReceiptContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C943289453B100548EEE /* DeliveryReceiptContext.swift */; };
@@ -3041,7 +3040,6 @@
 		F9C5CC5A289453B300548EEE /* OutgoingStoryMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C96C289453B100548EEE /* OutgoingStoryMessage.swift */; };
 		F9C5CC5C289453B300548EEE /* TSCall+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C96E289453B100548EEE /* TSCall+SDS.swift */; };
 		F9C5CC5D289453B300548EEE /* TSCall.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C96F289453B100548EEE /* TSCall.m */; };
-		F9C5CC5E289453B300548EEE /* OWSDisappearingMessagesJob.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C970289453B100548EEE /* OWSDisappearingMessagesJob.m */; };
 		F9C5CC61289453B300548EEE /* OWSMessageSend.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C973289453B100548EEE /* OWSMessageSend.swift */; };
 		F9C5CC62289453B300548EEE /* OWSOutgoingCallMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C974289453B100548EEE /* OWSOutgoingCallMessage.m */; };
 		F9C5CC63289453B300548EEE /* MessageProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C975289453B100548EEE /* MessageProcessor.swift */; };
@@ -6657,7 +6655,6 @@
 		F9C5C93A289453B100548EEE /* TSInvalidIdentityKeyReceivingErrorMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSInvalidIdentityKeyReceivingErrorMessage.h; sourceTree = "<group>"; };
 		F9C5C93B289453B100548EEE /* OWSIdentityManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSIdentityManager.swift; sourceTree = "<group>"; };
 		F9C5C93C289453B100548EEE /* OWSOutgoingCallMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSOutgoingCallMessage.h; sourceTree = "<group>"; };
-		F9C5C93D289453B100548EEE /* OWSDisappearingMessagesJob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSDisappearingMessagesJob.h; sourceTree = "<group>"; };
 		F9C5C940289453B100548EEE /* BlockingManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockingManager.swift; sourceTree = "<group>"; };
 		F9C5C941289453B100548EEE /* OWSProfileKeyMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSProfileKeyMessage.m; sourceTree = "<group>"; };
 		F9C5C943289453B100548EEE /* DeliveryReceiptContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeliveryReceiptContext.swift; sourceTree = "<group>"; };
@@ -6697,7 +6694,6 @@
 		F9C5C96C289453B100548EEE /* OutgoingStoryMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutgoingStoryMessage.swift; sourceTree = "<group>"; };
 		F9C5C96E289453B100548EEE /* TSCall+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TSCall+SDS.swift"; sourceTree = "<group>"; };
 		F9C5C96F289453B100548EEE /* TSCall.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSCall.m; sourceTree = "<group>"; };
-		F9C5C970289453B100548EEE /* OWSDisappearingMessagesJob.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSDisappearingMessagesJob.m; sourceTree = "<group>"; };
 		F9C5C973289453B100548EEE /* OWSMessageSend.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSMessageSend.swift; sourceTree = "<group>"; };
 		F9C5C974289453B100548EEE /* OWSOutgoingCallMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSOutgoingCallMessage.m; sourceTree = "<group>"; };
 		F9C5C975289453B100548EEE /* MessageProcessor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageProcessor.swift; sourceTree = "<group>"; };
@@ -12942,8 +12938,6 @@
 				F9C5C950289453B100548EEE /* OWSAddToProfileWhitelistOfferMessage+SDS.swift */,
 				F9C5C997289453B100548EEE /* OWSAddToProfileWhitelistOfferMessage.h */,
 				F9C5C958289453B100548EEE /* OWSAddToProfileWhitelistOfferMessage.m */,
-				F9C5C93D289453B100548EEE /* OWSDisappearingMessagesJob.h */,
-				F9C5C970289453B100548EEE /* OWSDisappearingMessagesJob.m */,
 				F959E0C629EF2ECD00A396CF /* OWSDisappearingMessagesJob.swift */,
 				F9C5C93B289453B100548EEE /* OWSIdentityManager.swift */,
 				F9C5C967289453B100548EEE /* OWSMessageContentJob+SDS.swift */,
@@ -13965,7 +13959,6 @@
 				F9C5CBE5289453B300548EEE /* OWSDisappearingConfigurationUpdateInfoMessage.h in Headers */,
 				F9C5CCB9289453B300548EEE /* OWSDisappearingMessagesConfiguration.h in Headers */,
 				F9C5CBCE289453B300548EEE /* OWSDisappearingMessagesConfigurationMessage.h in Headers */,
-				F9C5CC2E289453B300548EEE /* OWSDisappearingMessagesJob.h in Headers */,
 				F9C5CBE6289453B300548EEE /* OWSDynamicOutgoingMessage.h in Headers */,
 				F9C5CBFF289453B300548EEE /* OWSEndSessionMessage.h in Headers */,
 				F9C5CC36289453B300548EEE /* OWSGroupCallMessage.h in Headers */,
@@ -17142,7 +17135,6 @@
 				F9C5CCD7289453B300548EEE /* OWSDisappearingMessagesConfiguration.m in Sources */,
 				F9C5CCDA289453B300548EEE /* OWSDisappearingMessagesConfiguration.swift in Sources */,
 				F9C5CBEF289453B300548EEE /* OWSDisappearingMessagesConfigurationMessage.m in Sources */,
-				F9C5CC5E289453B300548EEE /* OWSDisappearingMessagesJob.m in Sources */,
 				F959E0C729EF2ECD00A396CF /* OWSDisappearingMessagesJob.swift in Sources */,
 				F9C5CC01289453B300548EEE /* OWSDynamicOutgoingMessage.m in Sources */,
 				F9C5CBE8289453B300548EEE /* OWSEndSessionMessage.m in Sources */,

@@ -10,7 +10,7 @@ public class AppReadiness: NSObject {
 
     private static let shared = AppReadiness()
 
-    public typealias BlockType = () -> Void
+    public typealias BlockType = @MainActor () -> Void
 
     private override init() {
         super.init()

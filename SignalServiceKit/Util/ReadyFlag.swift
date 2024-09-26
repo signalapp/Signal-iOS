@@ -28,7 +28,7 @@ public class ReadyFlag: NSObject {
 
     private let unfairLock = UnfairLock()
 
-    public typealias ReadyBlock = () -> Void
+    public typealias ReadyBlock = @MainActor () -> Void
     public typealias Priority = Int
 
     private struct ReadyTask {
@@ -102,7 +102,9 @@ public class ReadyFlag: NSObject {
                                logIfLongerThan: Self.blockLogDuration,
                                logInProduction: true) {
                 autoreleasepool {
-                    task.block()
+                    MainActor.assumeIsolated {
+                        task.block()
+                    }
                 }
             }
         }
@@ -132,7 +134,9 @@ public class ReadyFlag: NSObject {
                                logIfLongerThan: Self.blockLogDuration,
                                logInProduction: true) {
                 autoreleasepool {
-                    task.block()
+                    MainActor.assumeIsolated {
+                        task.block()
+                    }
                 }
             }
         }
@@ -195,7 +199,9 @@ public class ReadyFlag: NSObject {
                                    logIfLongerThan: Self.blockLogDuration,
                                    logInProduction: true) {
                     autoreleasepool {
-                        task.block()
+                        MainActor.assumeIsolated {
+                            task.block()
+                        }
                     }
                 }
             }
@@ -209,7 +215,9 @@ public class ReadyFlag: NSObject {
                                    logIfLongerThan: Self.blockLogDuration,
                                    logInProduction: true) {
                     autoreleasepool {
-                        task.block()
+                        MainActor.assumeIsolated {
+                            task.block()
+                        }
                     }
                 }
             }

@@ -1220,7 +1220,7 @@ public class AppSetup {
         )
         let messageDecrypter = OWSMessageDecrypter()
         let groupsV2MessageProcessor = GroupsV2MessageProcessor()
-        let disappearingMessagesJob = OWSDisappearingMessagesJob()
+        let disappearingMessagesJob = OWSDisappearingMessagesJob(databaseStorage: databaseStorage)
         let receiptSender = ReceiptSender(
             kvStoreFactory: keyValueStoreFactory,
             recipientDatabaseTable: recipientDatabaseTable
