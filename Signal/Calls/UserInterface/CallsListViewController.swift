@@ -18,7 +18,6 @@ private protocol CallCellDelegate: AnyObject {
 // MARK: - CallsListViewController
 
 class CallsListViewController: OWSViewController, HomeTabViewController, CallServiceStateObserver {
-    private typealias DiffableDataSource = UITableViewDiffableDataSource<Section, RowIdentifier>
     private typealias Snapshot = NSDiffableDataSourceSnapshot<Section, RowIdentifier>
 
     private enum Constants {
@@ -1187,7 +1186,22 @@ private extension CallRecordStore {
     }
 }
 
-// MARK: UITableViewDelegate
+// MARK: - Data Source
+
+extension CallsListViewController {
+    fileprivate class DiffableDataSource: UITableViewDiffableDataSource<Section, RowIdentifier> {
+        override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+            switch Section(rawValue: indexPath.section) {
+            case .createCallLink:
+                return false
+            case .existingCalls, .none:
+                return true
+            }
+        }
+    }
+}
+
+// MARK: - UITableViewDelegate
 
 extension CallsListViewController: UITableViewDelegate {
 
@@ -1203,6 +1217,18 @@ extension CallsListViewController: UITableViewDelegate {
         }
 
         return viewModel
+    }
+
+    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        switch Section(rawValue: indexPath.section) {
+        case .createCallLink:
+            if tableView.isEditing {
+                return nil
+            }
+        case .existingCalls, .none:
+            break
+        }
+        return indexPath
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -1976,7 +2002,7 @@ private extension CallsListViewController {
             stackView.spacing = Constants.spacing
             stackView.alignment = .center
 
-            self.addSubview(stackView)
+            self.contentView.addSubview(stackView)
             stackView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(hMargin: Constants.hMargin, vMargin: Constants.vMargin))
         }
 
