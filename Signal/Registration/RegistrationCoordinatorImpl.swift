@@ -1560,7 +1560,21 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     }
                     return .value(.showErrorSheet(.networkError))
                 case .genericError:
-                    return .value(.showErrorSheet(.genericError))
+                    if retriesLeft > 0 {
+                        return self.restoreSVRMasterSecretForAuthCredentialPath(
+                            pin: pin,
+                            credential: credential,
+                            retriesLeft: retriesLeft - 1
+                        )
+                    } else {
+                        self.inMemoryState.pinFromUser = nil
+                        return .value(.pinEntry(RegistrationPinState(
+                            operation: .enteringExistingPin(skippability: .canSkip, remainingAttempts: nil),
+                            error: .serverError,
+                            contactSupportMode: self.contactSupportRegistrationPINMode(),
+                            exitConfiguration: pinCodeEntryExitConfiguration()
+                        )))
+                    }
                 }
             }
     }
@@ -2956,8 +2970,24 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 case .genericError(let error):
                     if error.isPostRegDeregisteredError {
                         return self.becameDeregisteredBeforeCompleting(accountIdentity: accountIdentity)
+                    } else if retriesLeft > 0 {
+                        return self.restoreSVRBackupPostRegistration(
+                            pin: pin,
+                            accountIdentity: accountIdentity,
+                            retriesLeft: retriesLeft - 1
+                        )
+                    } else {
+                        self.inMemoryState.pinFromUser = nil
+                        return .value(.pinEntry(RegistrationPinState(
+                            operation: .enteringExistingPin(
+                                skippability: .canSkipAndCreateNew,
+                                remainingAttempts: nil
+                            ),
+                            error: .serverError,
+                            contactSupportMode: self.contactSupportRegistrationPINMode(),
+                            exitConfiguration: self.pinCodeEntryExitConfiguration()
+                        )))
                     }
-                    return .value(.showErrorSheet(.genericError))
                 }
             }
     }

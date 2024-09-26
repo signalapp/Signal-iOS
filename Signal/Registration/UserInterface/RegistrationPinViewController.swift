@@ -29,6 +29,7 @@ public struct RegistrationPinConfirmationBlob: Equatable {
 
 public enum RegistrationPinValidationError: Equatable {
     case wrongPin(wrongPin: String)
+    case serverError
 }
 
 // MARK: - RegistrationPinState
@@ -524,6 +525,12 @@ class RegistrationPinViewController: OWSViewController {
                     comment: "Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view."
                 )
             }
+            newViewsAtTheBottom.append(pinValidationLabel)
+        case .serverError:
+            pinValidationLabel.text = OWSLocalizedString(
+                "SOMETHING_WENT_WRONG_TRY_AGAIN_LATER_ERROR",
+                comment: "An error message generically indicating that something went wrong, and that the user should try again later."
+            )
             newViewsAtTheBottom.append(pinValidationLabel)
         }
         pinValidationLabel.textColor = .ows_accentRed
