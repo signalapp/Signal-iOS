@@ -407,8 +407,14 @@ private class _CreateCallLinkViewController: OWSTableViewController2 {
 // MARK: - CallLinkCardView
 
 private class CallLinkCardView: UIView {
-    private lazy var circleView: UIView = {
-        return SignalUI.CallLinkComponentFactory.callLinkIconView()
+    private lazy var iconView: UIImageView = {
+        let image = CommonCallLinksUI.callLinkIcon()
+        let imageView = UIImageView(image: image)
+        imageView.autoSetDimensions(to: CGSize(
+            width: Constants.circleViewDimension,
+            height: Constants.circleViewDimension
+        ))
+        return imageView
     }()
 
     private lazy var textStack: UIStackView = {
@@ -506,7 +512,7 @@ private class CallLinkCardView: UIView {
         super.init(frame: .zero)
 
         let stackView = UIStackView()
-        stackView.addArrangedSubviews([circleView, textStack, joinButton])
+        stackView.addArrangedSubviews([iconView, textStack, joinButton])
         stackView.axis = .horizontal
         stackView.distribution = .fillProportionally
         stackView.alignment = .center
@@ -525,5 +531,45 @@ private class CallLinkCardView: UIView {
         static let spacingTextToButton: CGFloat = 16
         static let spacingIconToText: CGFloat = 12
         static let textStackSpacing: CGFloat = 2
+
+        static let circleViewDimension: CGFloat = CommonCallLinksUI.Constants.circleViewDimension
+    }
+}
+
+public class CommonCallLinksUI {
+    public static func callLinkIcon() -> UIImage? {
+        guard let image = UIImage(named: "video-compact") else { return nil }
+        let newSize = CGSize(square: Constants.circleViewDimension)
+
+        let renderer = UIGraphicsImageRenderer(size: newSize)
+        let finalImage = renderer.image { context in
+            let rect = CGRect(origin: .zero, size: newSize)
+            let circlePath = UIBezierPath(ovalIn: rect)
+
+            Constants.iconBackgroundColor.setFill()
+            circlePath.fill()
+
+            context.cgContext.addPath(circlePath.cgPath)
+            context.cgContext.clip()
+
+            Constants.iconTintColor.set()
+            let centerOffset = Constants.circleViewDimension/2 - Constants.iconDimension/2
+            let imageRect = CGRect(
+                x: centerOffset,
+                y: centerOffset,
+                width: Constants.iconDimension,
+                height: Constants.iconDimension
+            )
+            image.withRenderingMode(.alwaysTemplate).draw(in: imageRect)
+        }
+
+        return finalImage
+    }
+
+    enum Constants {
+        static let circleViewDimension: CGFloat = 64
+        fileprivate static let iconDimension: CGFloat = 36
+        fileprivate static let iconBackgroundColor = UIColor(rgbHex: 0xE4E4FD)
+        fileprivate static let iconTintColor = UIColor(rgbHex: 0x5151F6)
     }
 }

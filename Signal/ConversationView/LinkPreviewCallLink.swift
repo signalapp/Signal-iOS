@@ -48,13 +48,16 @@ class LinkPreviewCallLink: LinkPreviewState {
         return .loaded
     }
 
-    public func imageAsync(thumbnailQuality: AttachmentThumbnailQuality, completion: @escaping (UIImage) -> Void) {}
+    public func imageAsync(thumbnailQuality: AttachmentThumbnailQuality, completion: @escaping (UIImage) -> Void) {
+        if let image = CommonCallLinksUI.callLinkIcon() {
+            completion(image)
+        }
+    }
 
     public func imageCacheKey(thumbnailQuality: AttachmentThumbnailQuality) -> LinkPreviewImageCacheKey? { return nil }
 
     public var imagePixelSize: CGSize {
-        // This value does not matter since the image is local for call links.
-        return .zero
+        return CGSize(square: CommonCallLinksUI.Constants.circleViewDimension)
     }
 
     public var previewDescription: String? {
