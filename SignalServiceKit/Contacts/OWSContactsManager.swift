@@ -1206,18 +1206,11 @@ extension OWSContactsManager: ContactManager {
         return phoneNumbers.map { $0 != nil ? compactedResult.next()! : nil }
     }
 
-    public func leaseCacheSize(_ cacheSize: Int) -> ModelReadCacheSizeLease {
-        return modelReadCaches.signalAccountReadCache.leaseCacheSize(cacheSize)
-    }
-
     public func fetchSignalAccounts(
         for phoneNumbers: [String],
         transaction: SDSAnyReadTransaction
     ) -> [SignalAccount?] {
-        return modelReadCaches.signalAccountReadCache.getSignalAccounts(
-            phoneNumbers: phoneNumbers,
-            transaction: transaction
-        )
+        return SignalAccountFinder().signalAccounts(for: phoneNumbers, tx: transaction)
     }
 
     public func shortestDisplayName(

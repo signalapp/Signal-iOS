@@ -11,8 +11,6 @@ public protocol ContactManager: ContactsManagerProtocol {
 
     func displayNames(for addresses: [SignalServiceAddress], tx: SDSAnyReadTransaction) -> [DisplayName]
 
-    func leaseCacheSize(_ cacheSize: Int) -> ModelReadCacheSizeLease
-
     func cnContactId(for phoneNumber: String) -> String?
 
     func cnContact(withId cnContactId: String?) -> CNContact?

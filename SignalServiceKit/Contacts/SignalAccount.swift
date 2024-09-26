@@ -195,29 +195,14 @@ extension SignalAccount {
 // MARK: - DB Operation Hooks
 
 extension SignalAccount {
-
     public func anyDidInsert(transaction: SDSAnyWriteTransaction) {
-        Self.modelReadCaches.signalAccountReadCache.didInsertOrUpdate(signalAccount: self, transaction: transaction)
         let searchableNameIndexer = DependenciesBridge.shared.searchableNameIndexer
         searchableNameIndexer.insert(self, tx: transaction.asV2Write)
     }
 
     public func anyDidUpdate(transaction: SDSAnyWriteTransaction) {
-        Self.modelReadCaches.signalAccountReadCache.didInsertOrUpdate(signalAccount: self, transaction: transaction)
         let searchableNameIndexer = DependenciesBridge.shared.searchableNameIndexer
         searchableNameIndexer.update(self, tx: transaction.asV2Write)
-    }
-
-    public func anyDidRemove(transaction: SDSAnyWriteTransaction) {
-        Self.modelReadCaches.signalAccountReadCache.didRemove(signalAccount: self, transaction: transaction)
-    }
-
-    public func anyDidFetchOne(transaction: SDSAnyReadTransaction) {
-        Self.modelReadCaches.signalAccountReadCache.didReadSignalAccount(self, transaction: transaction)
-    }
-
-    public func anyDidEnumerateOne(transaction: SDSAnyReadTransaction) {
-        Self.modelReadCaches.signalAccountReadCache.didReadSignalAccount(self, transaction: transaction)
     }
 }
 

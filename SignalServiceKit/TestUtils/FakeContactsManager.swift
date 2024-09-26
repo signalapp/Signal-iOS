@@ -45,10 +45,6 @@ public class FakeContactsManager: NSObject, ContactManager {
         return nil
     }
 
-    public func leaseCacheSize(_ cacheSize: Int) -> ModelReadCacheSizeLease {
-        fatalError()
-    }
-
     public func cnContact(withId contactId: String?) -> CNContact? {
         return nil
     }

@@ -678,10 +678,6 @@ public class OWSProfileManager: NSObject, ProfileManagerProtocol {
         return image
     }
 
-    public func leaseCacheSize(_ size: Int) -> ModelReadCacheSizeLease? {
-        modelReadCaches.userProfileReadCache.leaseCacheSize(size)
-    }
-
     public func rotateProfileKeyUponRecipientHide(withTx tx: SDSAnyWriteTransaction) {
         rotateProfileKeyUponRecipientHideObjC(tx: tx)
     }
@@ -1454,7 +1450,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
             // For "local reads", use the local user profile.
             return getLocalUserProfile(tx)
         } else {
-            return modelReadCaches.userProfileReadCache.getUserProfiles(for: [.otherUser(address)], transaction: tx).first!
+            return OWSUserProfile.getUserProfiles(for: [.otherUser(address)], tx: tx).first!
         }
     }
 
@@ -1466,7 +1462,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
             lazy var profile = { self.getLocalUserProfile(tx) }()
             return localAddresses.lazy.map { _ in profile }
         }, otherwise: { otherAddresses in
-            return self.modelReadCaches.userProfileReadCache.getUserProfiles(for: otherAddresses.map { .otherUser($0) }, transaction: tx)
+            return OWSUserProfile.getUserProfiles(for: otherAddresses.map { .otherUser($0) }, tx: tx)
         }).values
     }
 

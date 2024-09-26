@@ -43,7 +43,6 @@ public protocol ProfileManagerProtocol: NSObjectProtocol {
 
     /// This is an internal implementation detail and should only be used by OWSUserProfile.
     func localProfileWasUpdated(_ localUserProfile: OWSUserProfile)
-    func leaseCacheSize(_ size: Int) -> ModelReadCacheSizeLease?
 
     /// Rotates the local profile key. Intended specifically for the use case of recipient hiding.
     ///

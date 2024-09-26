@@ -64,7 +64,7 @@ class ModelCacheAdapter<KeyType: Hashable & Equatable, ValueType> {
 
 // MARK: -
 
-class ModelReadCache<KeyType: Hashable & Equatable, ValueType>: Dependencies, CacheSizeLeasing {
+class ModelReadCache<KeyType: Hashable & Equatable, ValueType>: Dependencies {
 
     enum Mode {
         // * .read caches can be accessed from any thread.
@@ -105,8 +105,6 @@ class ModelReadCache<KeyType: Hashable & Equatable, ValueType>: Dependencies, Ca
     }
 
     private let disableCachesInNSE = true
-
-    private var leases = NSHashTable<ModelReadCacheSizeLease>.weakObjects()
 
     init(mode: Mode, adapter: ModelCacheAdapter<KeyType, ValueType>) {
         self.mode = mode
@@ -310,28 +308,6 @@ class ModelReadCache<KeyType: Hashable & Equatable, ValueType>: Dependencies, Ca
         updateCacheForWrite(cacheKey: cacheKey, value: value, transaction: transaction)
     }
 
-    func add(lease: ModelReadCacheSizeLease) {
-        performSync {
-            // It's a bug to add an already-added lease.
-            owsPrecondition(!leases.contains(lease))
-
-            leases.add(lease)
-            updateMaxSize()
-        }
-    }
-
-    func remove(lease: ModelReadCacheSizeLease) {
-        performSync {
-            leases.remove(lease)
-            updateMaxSize()
-        }
-    }
-
-    private func updateMaxSize() {
-        let leasedSize = leases.allObjects.lazy.map { $0.size }.max() ?? 0
-        cache.maxSize = leasedSize + cache.regularMaxSize
-    }
-
     private func updateCacheForWrite(cacheKey: ModelCacheKey<KeyType>, value: ValueType?, transaction: SDSAnyWriteTransaction) {
         guard canUseCache(cacheKey: cacheKey, transaction: transaction) else {
             return
@@ -511,156 +487,6 @@ class ModelReadCache<KeyType: Hashable & Equatable, ValueType>: Dependencies, Ca
             objc_sync_exit(self)
             return value
         }
-    }
-}
-
-// MARK: -
-
-@objc
-public class UserProfileReadCache: NSObject {
-    typealias KeyType = OWSUserProfile.Address
-    typealias ValueType = OWSUserProfile
-
-    private class Adapter: ModelCacheAdapter<KeyType, ValueType> {
-        override func read(key: KeyType, transaction: SDSAnyReadTransaction) -> ValueType? {
-            return OWSUserProfile.getUserProfile(for: key, tx: transaction)
-        }
-
-        override func key(forValue value: ValueType) -> KeyType {
-            return value.internalAddress
-        }
-
-        override func cacheKey(forKey key: KeyType) -> ModelCacheKey<KeyType> {
-            return ModelCacheKey(key: key)
-        }
-
-        override func copy(value: ValueType) throws -> ValueType {
-            // We don't need to use a deepCopy for OWSUserProfile.
-            guard let modelCopy = value.copy() as? OWSUserProfile else {
-                throw OWSAssertionError("Copy failed.")
-            }
-            return modelCopy
-        }
-
-        override func read(keys: [KeyType], transaction tx: SDSAnyReadTransaction) -> [ValueType?] {
-            return OWSUserProfile.getUserProfiles(for: keys, tx: tx)
-        }
-    }
-
-    private let cache: ModelReadCache<KeyType, ValueType>
-
-    private let adapter = Adapter(cacheName: "UserProfile", cacheCountLimit: 32, cacheCountLimitNSE: 16)
-
-    @objc
-    public init(_ factory: ModelReadCacheFactory) {
-        cache = factory.create(mode: .read, adapter: adapter)
-    }
-
-    @objc(didRemoveUserProfile:transaction:)
-    public func didRemove(userProfile: OWSUserProfile, transaction: SDSAnyWriteTransaction) {
-        cache.didRemove(value: userProfile, transaction: transaction)
-    }
-
-    @objc(didInsertOrUpdateUserProfile:transaction:)
-    public func didInsertOrUpdate(userProfile: OWSUserProfile, transaction: SDSAnyWriteTransaction) {
-        cache.didInsertOrUpdate(value: userProfile, transaction: transaction)
-    }
-
-    @objc(didReadUserProfile:transaction:)
-    public func didReadUserProfile(_ userProfile: OWSUserProfile, transaction: SDSAnyReadTransaction) {
-        cache.didRead(value: userProfile, transaction: transaction)
-    }
-
-    @objc
-    public func leaseCacheSize(_ size: Int) -> ModelReadCacheSizeLease {
-        return ModelReadCacheSizeLease(size, model: cache)
-    }
-
-    public func getUserProfiles(
-        for addresses: some Sequence<OWSUserProfile.Address>,
-        transaction: SDSAnyReadTransaction
-    ) -> [OWSUserProfile?] {
-        let cacheKeys = addresses.map { self.adapter.cacheKey(forKey: $0) }
-        return cache.getValues(for: cacheKeys, transaction: transaction)
-    }
-}
-
-// MARK: -
-
-@objc
-public class SignalAccountReadCache: NSObject {
-    typealias KeyType = String
-    typealias ValueType = SignalAccount
-
-    private class Adapter: ModelCacheAdapter<KeyType, ValueType> {
-        private let accountFinder = SignalAccountFinder()
-
-        override func read(key: KeyType, transaction tx: SDSAnyReadTransaction) -> ValueType? {
-            accountFinder.signalAccount(for: key, tx: tx)
-        }
-
-        override func read(keys: [SignalAccountReadCache.KeyType],
-                           transaction tx: SDSAnyReadTransaction) -> [SignalAccountReadCache.ValueType?] {
-            accountFinder.signalAccounts(for: keys, tx: tx)
-        }
-
-        override func key(forValue value: ValueType) -> KeyType {
-            value.recipientPhoneNumber ?? ""
-        }
-
-        override func cacheKey(forKey key: KeyType) -> ModelCacheKey<KeyType> {
-            ModelCacheKey(key: key)
-        }
-
-        override func copy(value: ValueType) throws -> ValueType {
-            // We don't need to use a deepCopy for SignalAccount.
-            guard let modelCopy = value.copy() as? SignalAccount else {
-                throw OWSAssertionError("Copy failed.")
-            }
-            return modelCopy
-        }
-    }
-
-    private let cache: ModelReadCache<KeyType, ValueType>
-    private let adapter = Adapter(cacheName: "SignalAccount", cacheCountLimit: 256, cacheCountLimitNSE: 32)
-
-    @objc
-    public init(_ factory: ModelReadCacheFactory) {
-        cache = factory.create(mode: .read, adapter: adapter)
-    }
-
-    @objc
-    public func getSignalAccount(phoneNumber: String, transaction: SDSAnyReadTransaction) -> SignalAccount? {
-        let cacheKey = adapter.cacheKey(forKey: phoneNumber)
-        return cache.getValue(for: cacheKey, transaction: transaction)
-    }
-
-    public func getSignalAccounts(
-        phoneNumbers: some Sequence<String>,
-        transaction: SDSAnyReadTransaction
-    ) -> [SignalAccount?] {
-        let cacheKeys = phoneNumbers.map { adapter.cacheKey(forKey: $0) }
-        return cache.getValues(for: cacheKeys, transaction: transaction)
-    }
-
-    @objc(didRemoveSignalAccount:transaction:)
-    public func didRemove(signalAccount: SignalAccount, transaction: SDSAnyWriteTransaction) {
-        cache.didRemove(value: signalAccount, transaction: transaction)
-    }
-
-    @objc(didInsertOrUpdateSignalAccount:transaction:)
-    public func didInsertOrUpdate(signalAccount: SignalAccount, transaction: SDSAnyWriteTransaction) {
-        cache.didInsertOrUpdate(value: signalAccount, transaction: transaction)
-    }
-
-    @objc(didReadSignalAccount:transaction:)
-    public func didReadSignalAccount(_ signalAccount: SignalAccount, transaction: SDSAnyReadTransaction) {
-        cache.didRead(value: signalAccount, transaction: transaction)
-    }
-
-    @objc
-    public func leaseCacheSize(_ size: Int) -> ModelReadCacheSizeLease {
-        return ModelReadCacheSizeLease(size, model: cache)
     }
 }
 
@@ -922,53 +748,16 @@ public class InstalledStickerCache: NSObject {
 
 // MARK: -
 
-protocol CacheSizeLeasing: AnyObject {
-    func add(lease: ModelReadCacheSizeLease)
-    func remove(lease: ModelReadCacheSizeLease)
-}
-
-// Use a `ModelReadCacheSizeLease` to temporarily increase the size of a `ModelReadCache`.
-@objc
-public class ModelReadCacheSizeLease: NSObject {
-    fileprivate let size: Int
-    private weak var model: CacheSizeLeasing?
-
-    fileprivate init(_ size: Int, model: CacheSizeLeasing) {
-        self.size = size
-        self.model = model
-        super.init()
-        model.add(lease: self)
-    }
-
-    deinit {
-        terminate()
-    }
-
-    @objc
-    public func terminate() {
-        model?.remove(lease: self)
-        model = nil
-    }
-}
-
-// MARK: -
-
 @objc
 public class ModelReadCaches: NSObject {
     @objc(initWithModelReadCacheFactory:)
     public init(factory: ModelReadCacheFactory) {
-        userProfileReadCache = UserProfileReadCache(factory)
-        signalAccountReadCache = SignalAccountReadCache(factory)
         threadReadCache = ThreadReadCache(factory)
         interactionReadCache = InteractionReadCache(factory)
         attachmentReadCache = AttachmentReadCache(factory)
         installedStickerCache = InstalledStickerCache(factory)
     }
 
-    @objc
-    public let userProfileReadCache: UserProfileReadCache
-    @objc
-    public let signalAccountReadCache: SignalAccountReadCache
     @objc
     public let threadReadCache: ThreadReadCache
     @objc

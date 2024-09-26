@@ -879,27 +879,13 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
     }
 
     public func anyDidInsert(transaction: SDSAnyWriteTransaction) {
-        modelReadCaches.userProfileReadCache.didInsertOrUpdate(userProfile: self, transaction: transaction)
         let searchableNameIndexer = DependenciesBridge.shared.searchableNameIndexer
         searchableNameIndexer.insert(self, tx: transaction.asV2Write)
     }
 
     public func anyDidUpdate(transaction: SDSAnyWriteTransaction) {
-        modelReadCaches.userProfileReadCache.didInsertOrUpdate(userProfile: self, transaction: transaction)
         let searchableNameIndexer = DependenciesBridge.shared.searchableNameIndexer
         searchableNameIndexer.update(self, tx: transaction.asV2Write)
-    }
-
-    public func anyDidRemove(transaction: SDSAnyWriteTransaction) {
-        modelReadCaches.userProfileReadCache.didRemove(userProfile: self, transaction: transaction)
-    }
-
-    public func anyDidFetchOne(transaction: SDSAnyReadTransaction) {
-        modelReadCaches.userProfileReadCache.didReadUserProfile(self, transaction: transaction)
-    }
-
-    public func anyDidEnumerateOne(transaction: SDSAnyReadTransaction) {
-        modelReadCaches.userProfileReadCache.didReadUserProfile(self, transaction: transaction)
     }
 
     // MARK: - ObjC Compability

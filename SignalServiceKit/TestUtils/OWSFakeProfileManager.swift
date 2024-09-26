@@ -119,10 +119,6 @@ extension OWSFakeProfileManager: ProfileManagerProtocol {
     func localProfileWasUpdated(_ localUserProfile: OWSUserProfile) {
     }
 
-    func leaseCacheSize(_ size: Int) -> ModelReadCacheSizeLease? {
-        nil
-    }
-
     func hasProfileAvatarData(_ address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool {
         false
     }
