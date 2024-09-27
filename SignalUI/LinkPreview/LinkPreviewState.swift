@@ -42,7 +42,6 @@ public protocol LinkPreviewState: AnyObject {
     var previewDescription: String? { get }
     var date: Date? { get }
     var isGroupInviteLink: Bool { get }
-    var isCallLink: Bool { get }
     var activityIndicatorStyle: UIActivityIndicatorView.Style { get }
     var conversationStyle: ConversationStyle? { get }
 }
@@ -108,8 +107,6 @@ public class LinkPreviewLoading: LinkPreviewState {
             return false
         }
     }
-
-    public let isCallLink: Bool = false
 
     public var activityIndicatorStyle: UIActivityIndicatorView.Style {
         switch linkType {
@@ -206,7 +203,6 @@ public class LinkPreviewDraft: LinkPreviewState {
     public var date: Date? { linkPreviewDraft.date }
 
     public let isGroupInviteLink = false
-    public let isCallLink: Bool = false
 
     public var activityIndicatorStyle: UIActivityIndicatorView.Style {
         LinkPreviewView.defaultActivityIndicatorStyle
@@ -336,7 +332,6 @@ public class LinkPreviewSent: LinkPreviewState {
     public var date: Date? { linkPreview.date }
 
     public let isGroupInviteLink = false
-    public let isCallLink = false
 
     public var activityIndicatorStyle: UIActivityIndicatorView.Style {
         LinkPreviewView.defaultActivityIndicatorStyle

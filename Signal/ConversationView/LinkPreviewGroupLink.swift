@@ -121,7 +121,6 @@ class LinkPreviewGroupLink: LinkPreviewState {
     var date: Date? { linkPreview.date }
 
     let isGroupInviteLink = true
-    public let isCallLink = false
 
     var activityIndicatorStyle: UIActivityIndicatorView.Style {
         switch linkType {
