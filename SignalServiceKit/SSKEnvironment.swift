@@ -65,6 +65,7 @@ public class SSKEnvironment: NSObject {
     public let messageProcessorRef: MessageProcessor
     public let paymentsCurrenciesRef: PaymentsCurrenciesSwift
     public let paymentsEventsRef: PaymentsEvents
+    public let owsPaymentsLockRef: OWSPaymentsLock
     public let mobileCoinHelperRef: MobileCoinHelper
     public let spamChallengeResolverRef: SpamChallengeResolver
     public let senderKeyStoreRef: SenderKeyStore
@@ -131,6 +132,7 @@ public class SSKEnvironment: NSObject {
         paymentsHelper: PaymentsHelperSwift,
         paymentsCurrencies: PaymentsCurrenciesSwift,
         paymentsEvents: PaymentsEvents,
+        paymentsLock: OWSPaymentsLock,
         mobileCoinHelper: MobileCoinHelper,
         spamChallengeResolver: SpamChallengeResolver,
         senderKeyStore: SenderKeyStore,
@@ -192,6 +194,7 @@ public class SSKEnvironment: NSObject {
         self.paymentsHelperRef = paymentsHelper
         self.paymentsCurrenciesRef = paymentsCurrencies
         self.paymentsEventsRef = paymentsEvents
+        self.owsPaymentsLockRef = paymentsLock
         self.mobileCoinHelperRef = mobileCoinHelper
         self.spamChallengeResolverRef = spamChallengeResolver
         self.senderKeyStoreRef = senderKeyStore

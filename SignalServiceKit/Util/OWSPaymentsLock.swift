@@ -6,7 +6,7 @@
 import Foundation
 import LocalAuthentication
 
-public class OWSPaymentsLock: Dependencies {
+public class OWSPaymentsLock: NSObject, Dependencies {
 
     public enum LocalAuthOutcome: Equatable {
         case success
@@ -18,9 +18,8 @@ public class OWSPaymentsLock: Dependencies {
 
     // MARK: - Singleton class
 
-    public static let shared = OWSPaymentsLock()
-
-    init() {
+    override init() {
+        super.init()
         SwiftSingletons.register(self)
     }
 
@@ -167,7 +166,7 @@ public class OWSPaymentsLock: Dependencies {
 
     public func tryToUnlockPromise() -> Promise<OWSPaymentsLock.LocalAuthOutcome> {
         Promise<OWSPaymentsLock.LocalAuthOutcome>(on: DispatchQueue.main) { future in
-            OWSPaymentsLock.shared.tryToUnlock { outcome in
+            self.tryToUnlock { outcome in
                 future.resolve(outcome)
             }
         }

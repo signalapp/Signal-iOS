@@ -603,7 +603,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         ModalActivityIndicatorViewController.presentAsInvisible(fromViewController: self) { [weak self] modalActivityIndicator in
             guard let self = self else { return }
 
-            OWSPaymentsLock.shared.tryToUnlockPromise().then(on: DispatchQueue.main) { (authOutcome: OWSPaymentsLock.LocalAuthOutcome) -> Promise<PreparedPayment> in
+            Self.owsPaymentsLock.tryToUnlockPromise().then(on: DispatchQueue.main) { (authOutcome: OWSPaymentsLock.LocalAuthOutcome) -> Promise<PreparedPayment> in
                 switch authOutcome {
                 case .failure(let error):
                     throw PaymentsUIError.paymentsLockFailed(reason: "local authentication failed with error: \(error)")

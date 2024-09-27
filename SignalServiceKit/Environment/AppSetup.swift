@@ -1286,6 +1286,8 @@ public class AppSetup {
             groupCallPeekClient: groupCallPeekClient
         )
 
+        let paymentsLock = OWSPaymentsLock()
+
         let sskEnvironment = SSKEnvironment(
             contactManager: contactManager,
             messageSender: messageSender,
@@ -1326,6 +1328,7 @@ public class AppSetup {
             paymentsHelper: paymentsHelper,
             paymentsCurrencies: paymentsCurrencies,
             paymentsEvents: paymentsEvents,
+            paymentsLock: paymentsLock,
             mobileCoinHelper: mobileCoinHelper,
             spamChallengeResolver: spamChallengeResolver,
             senderKeyStore: senderKeyStore,

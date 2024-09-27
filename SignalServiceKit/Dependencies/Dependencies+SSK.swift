@@ -314,6 +314,14 @@ public extension NSObject {
         SSKEnvironment.shared.paymentsEventsRef
     }
 
+    final var owsPaymentsLock: OWSPaymentsLock {
+        SSKEnvironment.shared.owsPaymentsLockRef
+    }
+
+    static var owsPaymentsLock: OWSPaymentsLock {
+        SSKEnvironment.shared.owsPaymentsLockRef
+    }
+
     final var spamChallengeResolver: SpamChallengeResolver {
         SSKEnvironment.shared.spamChallengeResolverRef
     }
@@ -688,6 +696,14 @@ public extension Dependencies {
 
     static var paymentsEvents: PaymentsEvents {
         SSKEnvironment.shared.paymentsEventsRef
+    }
+
+    var owsPaymentsLock: OWSPaymentsLock {
+        SSKEnvironment.shared.owsPaymentsLockRef
+    }
+
+    static var owsPaymentsLock: OWSPaymentsLock {
+        SSKEnvironment.shared.owsPaymentsLockRef
     }
 
     var mobileCoinHelper: MobileCoinHelper {

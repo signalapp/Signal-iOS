@@ -194,7 +194,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
                 "SETTINGS_PAYMENTS_LOCK_SWITCH_LABEL",
                 comment: "Label for UISwitch based payments-lock setting that when enabled requires biometric-authentication (or passcode) to transfer funds or view the recovery phrase."
             ),
-            isOn: { OWSPaymentsLock.shared.isPaymentsLockEnabled() },
+            isOn: { Self.owsPaymentsLock.isPaymentsLockEnabled() },
             target: self,
             selector: #selector(didTogglePaymentsLockSwitch)
         ))
@@ -266,8 +266,8 @@ class PrivacySettingsViewController: OWSTableViewController2 {
     @objc
     private func didTogglePaymentsLockSwitch(_ sender: UISwitch) {
         // Require unlock to disable payments lock
-        if OWSPaymentsLock.shared.isPaymentsLockEnabled() {
-            OWSPaymentsLock.shared.tryToUnlock { [weak self] outcome in
+        if Self.owsPaymentsLock.isPaymentsLockEnabled() {
+            Self.owsPaymentsLock.tryToUnlock { [weak self] outcome in
                 guard let self = self else { return }
                 guard case .success = outcome else {
                     self.updateTableContents()
@@ -275,13 +275,13 @@ class PrivacySettingsViewController: OWSTableViewController2 {
                     return
                 }
                 self.databaseStorage.write { transaction in
-                    OWSPaymentsLock.shared.setIsPaymentsLockEnabled(false, transaction: transaction)
+                    Self.owsPaymentsLock.setIsPaymentsLockEnabled(false, transaction: transaction)
                 }
                 self.updateTableContents()
             }
         } else {
             databaseStorage.write { transaction in
-                OWSPaymentsLock.shared.setIsPaymentsLockEnabled(true, transaction: transaction)
+                Self.owsPaymentsLock.setIsPaymentsLockEnabled(true, transaction: transaction)
             }
             self.updateTableContents()
         }
