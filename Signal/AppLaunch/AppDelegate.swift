@@ -183,7 +183,10 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         MessageFetchBGRefreshTask.register()
 
         let keychainStorage = KeychainStorageImpl(isUsingProductionService: TSConstants.isUsingProductionService)
-        let deviceTransferService = DeviceTransferService(keychainStorage: keychainStorage)
+        let deviceTransferService = DeviceTransferService(
+            appReadiness: appReadiness,
+            keychainStorage: keychainStorage
+        )
 
         AppEnvironment.setSharedEnvironment(AppEnvironment(
             appReadiness: appReadiness,

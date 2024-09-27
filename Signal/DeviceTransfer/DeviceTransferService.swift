@@ -124,9 +124,11 @@ class DeviceTransferService: NSObject {
 
     // MARK: -
 
+    let appReadiness: AppReadiness
     let keychainStorage: any KeychainStorage
 
-    init(keychainStorage: any KeychainStorage) {
+    init(appReadiness: AppReadiness, keychainStorage: any KeychainStorage) {
+        self.appReadiness = appReadiness
         self.keychainStorage = keychainStorage
 
         super.init()
