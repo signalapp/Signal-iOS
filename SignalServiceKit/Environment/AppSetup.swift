@@ -1256,6 +1256,7 @@ public class AppSetup {
         )
         let remoteConfigManager = testDependencies.remoteConfigManager ?? RemoteConfigManagerImpl(
             appExpiry: appExpiry,
+            appReadiness: appReadiness,
             db: db,
             keyValueStoreFactory: keyValueStoreFactory,
             tsAccountManager: tsAccountManager,

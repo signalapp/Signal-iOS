@@ -642,6 +642,7 @@ public class StubbableRemoteConfigManager: RemoteConfigManager {
 
 public class RemoteConfigManagerImpl: RemoteConfigManager {
     private let appExpiry: AppExpiry
+    private let appReadiness: AppReadiness
     private let db: DB
     private let keyValueStore: KeyValueStore
     private let tsAccountManager: TSAccountManager
@@ -666,18 +667,20 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
 
     public init(
         appExpiry: AppExpiry,
+        appReadiness: AppReadiness,
         db: DB,
         keyValueStoreFactory: KeyValueStoreFactory,
         tsAccountManager: TSAccountManager,
         serviceClient: SignalServiceClient
     ) {
         self.appExpiry = appExpiry
+        self.appReadiness = appReadiness
         self.db = db
         self.keyValueStore = keyValueStoreFactory.keyValueStore(collection: "RemoteConfigManager")
         self.tsAccountManager = tsAccountManager
         self.serviceClient = serviceClient
 
-        AppReadinessGlobal.runNowOrWhenMainAppDidBecomeReadyAsync {
+        appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
             guard self.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
                 return
             }
@@ -740,7 +743,7 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
         updateCachedConfig { _ in remoteConfig }
         warmSecondaryCaches(valueFlags: valueFlags ?? [:])
 
-        AppReadinessGlobal.runNowOrWhenAppWillBecomeReady {
+        appReadiness.runNowOrWhenAppWillBecomeReady {
             RemoteConfig.current.logFlags()
         }
     }
