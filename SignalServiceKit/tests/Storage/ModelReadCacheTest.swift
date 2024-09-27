@@ -55,7 +55,7 @@ class ModelReadCacheTest: SSKBaseTest {
             adapter.storage[address] = OWSUserProfile(address: address)
         }
         read { [unowned self] transaction in
-            let cache = TestableModelReadCache(mode: .read, adapter: adapter)
+            let cache = TestableModelReadCache(mode: .read, adapter: adapter, appReadiness: AppReadinessMock())
             cache.performSync {
                 let keys = addresses.map { adapter.cacheKey(forKey: $0) }
                 let actual = cache.readValues(for: AnySequence(keys), transaction: transaction)
@@ -71,7 +71,7 @@ class ModelReadCacheTest: SSKBaseTest {
             .otherUser(SignalServiceAddress.randomForTesting()),
         ]
         read { [unowned self] transaction in
-            let cache = TestableModelReadCache(mode: .read, adapter: adapter)
+            let cache = TestableModelReadCache(mode: .read, adapter: adapter, appReadiness: AppReadinessMock())
             cache.performSync {
                 // Place values in the cache but not in storage.
                 for address in addresses {
@@ -103,7 +103,7 @@ class ModelReadCacheTest: SSKBaseTest {
             .otherUser(SignalServiceAddress.randomForTesting()),
         ]
         read { [unowned self] transaction in
-            let cache = TestableModelReadCache(mode: .read, adapter: adapter)
+            let cache = TestableModelReadCache(mode: .read, adapter: adapter, appReadiness: AppReadinessMock())
             cache.performSync {
                 // Place values in the cache but not in storage just to check that they don't get removed.
                 for address in addresses {
@@ -144,7 +144,7 @@ class ModelReadCacheTest: SSKBaseTest {
         let bob: OWSUserProfile.Address = .otherUser(SignalServiceAddress.randomForTesting())
         adapter.storage[alice] = OWSUserProfile(address: alice)
         read { [unowned self] transaction in
-            let cache = TestableModelReadCache(mode: .read, adapter: adapter)
+            let cache = TestableModelReadCache(mode: .read, adapter: adapter, appReadiness: AppReadinessMock())
             cache.performSync {
                 // 2. Put bob in cache.
                 cache.writeToCache(
@@ -178,7 +178,7 @@ class ModelReadCacheTest: SSKBaseTest {
             adapter.storage[address] = OWSUserProfile(address: address)
         }
         read { [unowned self] transaction in
-            let cache = TestableModelReadCache(mode: .read, adapter: adapter)
+            let cache = TestableModelReadCache(mode: .read, adapter: adapter, appReadiness: AppReadinessMock())
             cache.performSync {
                 let alice = addresses[0]
                 let key = adapter.cacheKey(forKey: alice)
@@ -198,7 +198,7 @@ class ModelReadCacheTest: SSKBaseTest {
             adapter.storage[address] = OWSUserProfile(address: address)
         }
         read { [unowned self] transaction in
-            let cache = TestableModelReadCache(mode: .read, adapter: adapter)
+            let cache = TestableModelReadCache(mode: .read, adapter: adapter, appReadiness: AppReadinessMock())
             cache.performSync {
                 let alice: OWSUserProfile.Address = .otherUser(SignalServiceAddress.randomForTesting())
                 let key = adapter.cacheKey(forKey: alice)
@@ -217,7 +217,7 @@ class ModelReadCacheTest: SSKBaseTest {
             adapter.storage[address] = OWSUserProfile(address: address)
         }
         read { [unowned self] transaction in
-            let cache = TestableModelReadCache(mode: .read, adapter: adapter)
+            let cache = TestableModelReadCache(mode: .read, adapter: adapter, appReadiness: AppReadinessMock())
             cache.performSync {
                 let alice = addresses[0]
                 let key = adapter.cacheKey(forKey: alice)
@@ -240,7 +240,7 @@ class ModelReadCacheTest: SSKBaseTest {
             adapter.storage[address] = OWSUserProfile(address: address)
         }
         read { [unowned self] transaction in
-            let cache = TestableModelReadCache(mode: .read, adapter: adapter)
+            let cache = TestableModelReadCache(mode: .read, adapter: adapter, appReadiness: AppReadinessMock())
             cache.performSync {
                 let alice = addresses[0]
                 let key = adapter.cacheKey(forKey: alice)
@@ -261,7 +261,7 @@ class ModelReadCacheTest: SSKBaseTest {
             adapter.storage[address] = OWSUserProfile(address: address)
         }
         read { [unowned self] transaction in
-            let cache = TestableModelReadCache(mode: .read, adapter: adapter)
+            let cache = TestableModelReadCache(mode: .read, adapter: adapter, appReadiness: AppReadinessMock())
             cache.performSync {
                 let keys = addresses.map { adapter.cacheKey(forKey: $0) }
                 let actual = cache.getValues(for: keys, transaction: transaction)
@@ -277,7 +277,7 @@ class ModelReadCacheTest: SSKBaseTest {
             .otherUser(SignalServiceAddress.randomForTesting()),
         ]
         read { [unowned self] transaction in
-            let cache = TestableModelReadCache(mode: .read, adapter: adapter)
+            let cache = TestableModelReadCache(mode: .read, adapter: adapter, appReadiness: AppReadinessMock())
             cache.performSync {
                 let keys = addresses.map { adapter.cacheKey(forKey: $0) }
                 let actual = cache.getValues(for: keys, transaction: transaction)
@@ -295,7 +295,7 @@ class ModelReadCacheTest: SSKBaseTest {
             adapter.storage[address] = OWSUserProfile(address: address)
         }
         read { [unowned self] transaction in
-            let cache = TestableModelReadCache(mode: .read, adapter: adapter)
+            let cache = TestableModelReadCache(mode: .read, adapter: adapter, appReadiness: AppReadinessMock())
             cache.performSync {
                 let keys = addresses.map { adapter.cacheKey(forKey: $0) }
                 for (key, address) in zip(keys, addresses) {
@@ -321,7 +321,7 @@ class ModelReadCacheTest: SSKBaseTest {
         // Add a bogus address to test querying a nonexistent key.
         let addresses: [OWSUserProfile.Address] = storedAddresses + [.otherUser(SignalServiceAddress.randomForTesting())]
         read { [unowned self] transaction in
-            let cache = TestableModelReadCache(mode: .read, adapter: adapter)
+            let cache = TestableModelReadCache(mode: .read, adapter: adapter, appReadiness: AppReadinessMock())
             cache.performSync {
                 cache.writeToCache(
                     cacheKey: adapter.cacheKey(forKey: addresses[0]),

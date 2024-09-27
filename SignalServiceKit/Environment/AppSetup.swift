@@ -160,7 +160,9 @@ public class AppSetup {
         let messageProcessor = MessageProcessor(appReadiness: appReadiness)
         let messageSender = testDependencies.messageSender ?? MessageSender()
         let messageSenderJobQueue = MessageSenderJobQueue(appReadiness: appReadiness)
-        let modelReadCaches = testDependencies.modelReadCaches ?? ModelReadCaches(factory: ModelReadCacheFactory())
+        let modelReadCaches = testDependencies.modelReadCaches ?? ModelReadCaches(
+            factory: ModelReadCacheFactory(appReadiness: appReadiness)
+        )
         let networkManager = testDependencies.networkManager ?? NetworkManager(libsignalNet: libsignalNet)
         let ows2FAManager = OWS2FAManager(appReadiness: appReadiness)
         let paymentsHelper = testDependencies.paymentsHelper ?? PaymentsHelperImpl()

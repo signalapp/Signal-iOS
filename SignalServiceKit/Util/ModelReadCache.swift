@@ -83,6 +83,7 @@ class ModelReadCache<KeyType: Hashable & Equatable, ValueType>: Dependencies {
         }
     }
 
+    private let appReadiness: AppReadiness
     private let mode: Mode
 
     private var cacheName: String {
@@ -106,7 +107,12 @@ class ModelReadCache<KeyType: Hashable & Equatable, ValueType>: Dependencies {
 
     private let disableCachesInNSE = true
 
-    init(mode: Mode, adapter: ModelCacheAdapter<KeyType, ValueType>) {
+    init(
+        mode: Mode,
+        adapter: ModelCacheAdapter<KeyType, ValueType>,
+        appReadiness: AppReadiness
+    ) {
+        self.appReadiness = appReadiness
         self.mode = mode
         self.adapter = adapter
         self.cache = LRUCache(maxSize: adapter.cacheCountLimit,
@@ -356,7 +362,7 @@ class ModelReadCache<KeyType: Hashable & Equatable, ValueType>: Dependencies {
     }
 
     var isAppReady: Bool {
-        return AppReadinessGlobal.isAppReady
+        return appReadiness.isAppReady
     }
 
     private func canUseCache(cacheKey: ModelCacheKey<KeyType>,
@@ -782,13 +788,19 @@ class TestableModelReadCache<KeyType: Hashable & Equatable, ValueType>: ModelRea
     }
 }
 
-@objc
 public class ModelReadCacheFactory: NSObject {
+
+    fileprivate let appReadiness: AppReadiness
+
+    public init(appReadiness: AppReadiness) {
+        self.appReadiness = appReadiness
+    }
+
     func create<KeyType: Hashable & Equatable, ValueType>(
         mode: ModelReadCache<KeyType, ValueType>.Mode,
         adapter: ModelCacheAdapter<KeyType, ValueType>
     ) -> ModelReadCache<KeyType, ValueType> {
-        return ModelReadCache(mode: mode, adapter: adapter)
+        return ModelReadCache(mode: mode, adapter: adapter, appReadiness: appReadiness)
     }
 }
 
@@ -798,6 +810,6 @@ class TestableModelReadCacheFactory: ModelReadCacheFactory {
         mode: ModelReadCache<KeyType, ValueType>.Mode,
         adapter: ModelCacheAdapter<KeyType, ValueType>
     ) -> ModelReadCache<KeyType, ValueType> {
-        return TestableModelReadCache(mode: mode, adapter: adapter)
+        return TestableModelReadCache(mode: mode, adapter: adapter, appReadiness: appReadiness)
     }
 }
