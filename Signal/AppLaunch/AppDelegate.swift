@@ -391,6 +391,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         setupNSEInteroperation()
         SUIEnvironment.shared.setUp(authCredentialManager: databaseContinuation.authCredentialManager)
         AppEnvironment.shared.setUp(
+            appReadiness: appReadiness,
             callService: CallService(
                 appContext: launchContext.appContext,
                 authCredentialManager: databaseContinuation.authCredentialManager,

@@ -49,7 +49,7 @@ public class AppEnvironment: NSObject {
         SwiftSingletons.register(self)
     }
 
-    func setUp(callService: CallService) {
+    func setUp(appReadiness: AppReadiness, callService: CallService) {
         self.callService = callService
 
         self.badgeManager = BadgeManager(
@@ -63,12 +63,12 @@ public class AppEnvironment: NSObject {
             database: DependenciesBridge.shared.db
         )
 
-        AppReadinessGlobal.runNowOrWhenAppWillBecomeReady {
+        appReadiness.runNowOrWhenAppWillBecomeReady {
             self.badgeManager.startObservingChanges(in: self.databaseStorage)
             self.appIconBadgeUpdater.startObserving()
         }
 
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             let isPrimaryDevice = self.databaseStorage.read { tx -> Bool in
                 return DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx.asV2Read).isPrimaryDevice ?? true
             }
