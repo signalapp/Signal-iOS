@@ -685,10 +685,9 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                 // Reset our loaded calls.
                 self.viewModelLoader = ViewModelLoader(
                     callRecordLoader: callRecordLoader,
-                    createCallViewModelBlock: { primaryCallRecord, coalescedCallRecords, tx in
-                        return Self.createCallViewModel(
-                            primaryCallRecord: primaryCallRecord,
-                            coalescedCallRecords: coalescedCallRecords,
+                    callViewModelForCallRecords: { callRecords, tx in
+                        return Self.callViewModel(
+                            forCallRecords: callRecords,
                             deps: capturedDeps,
                             tx: SDSDB.shimOnlyBridge(tx)
                         )
@@ -752,42 +751,44 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     /// - Important
     /// The primary and and coalesced call records *must* all have the same
     /// thread, direction, missed status, and call type.
-    private static func createCallViewModel(
-        primaryCallRecord: CallRecord,
-        coalescedCallRecords: [CallRecord],
+    private static func callViewModel(
+        forCallRecords callRecords: [CallRecord],
         deps: Dependencies,
         tx: SDSAnyReadTransaction
     ) -> CallViewModel {
+        owsPrecondition(!callRecords.isEmpty)
         owsPrecondition(
-            coalescedCallRecords.allSatisfy { $0.threadRowId == primaryCallRecord.threadRowId },
+            Set(callRecords.map(\.threadRowId)).count == 1,
             "Coalesced call records were for a different thread than the primary!"
         )
         owsPrecondition(
-            coalescedCallRecords.allSatisfy { $0.callDirection == primaryCallRecord.callDirection },
+            Set(callRecords.map(\.callDirection)).count == 1,
             "Coalesced call records were of a different direction than the primary!"
         )
         owsPrecondition(
-            coalescedCallRecords.allSatisfy { $0.callStatus.isMissedCall == primaryCallRecord.callStatus.isMissedCall },
+            Set(callRecords.map(\.callStatus.isMissedCall)).count == 1,
             "Coalesced call records were of a different missed status than the primary!"
         )
         owsPrecondition(
-            ([primaryCallRecord] + coalescedCallRecords).isSortedByTimestamp(.descending),
+            callRecords.isSortedByTimestamp(.descending),
             "Primary and coalesced call records were not ordered descending by timestamp!"
         )
 
+        let mostRecentCallRecord = callRecords.first!
+
         guard let callThread = deps.threadStore.fetchThread(
-            rowId: primaryCallRecord.threadRowId,
+            rowId: mostRecentCallRecord.threadRowId,
             tx: tx.asV2Read
         ) else {
             owsFail("Missing thread for call record! This should be impossible, per the DB schema.")
         }
 
         let callDirection: CallViewModel.Direction = {
-            if primaryCallRecord.callStatus.isMissedCall {
+            if mostRecentCallRecord.callStatus.isMissedCall {
                 return .missed
             }
 
-            switch primaryCallRecord.callDirection {
+            switch mostRecentCallRecord.callDirection {
             case .incoming: return .incoming
             case .outgoing: return .outgoing
             }
@@ -798,9 +799,9 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         let callState: CallViewModel.State = {
             let currentCallId: UInt64? = deps.callService.callServiceState.currentCall?.callId
 
-            switch primaryCallRecord.callStatus {
+            switch mostRecentCallRecord.callStatus {
             case .individual:
-                if primaryCallRecord.callId == currentCallId {
+                if mostRecentCallRecord.callId == currentCallId {
                     // We can have at most one 1:1 call active at a time, and if
                     // we have an active 1:1 call we must be in it. All other
                     // 1:1 calls must have ended.
@@ -809,7 +810,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             case .group:
                 guard let groupCallInteraction: OWSGroupCallMessage = deps.interactionStore
                     .fetchAssociatedInteraction(
-                        callRecord: primaryCallRecord, tx: tx.asV2Read
+                        callRecord: mostRecentCallRecord, tx: tx.asV2Read
                     )
                 else {
                     owsFail("Missing interaction for group call. This should be impossible per the DB schema!")
@@ -820,7 +821,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                 // leetle wonky that we use the interaction to store that info,
                 // but such is life.
                 if !groupCallInteraction.hasEnded {
-                    if primaryCallRecord.callId == currentCallId {
+                    if mostRecentCallRecord.callId == currentCallId {
                         return .participating
                     }
 
@@ -838,7 +839,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         case let contactThread as TSContactThread:
             title = deps.contactsManager.displayName(for: contactThread.contactAddress, tx: tx).resolvedValue()
             let callType: CallViewModel.RecipientType.CallType = {
-                switch primaryCallRecord.callType {
+                switch mostRecentCallRecord.callType {
                 case .audioCall:
                     return .audio
                 case .groupCall:
@@ -857,8 +858,8 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         }
 
         return CallViewModel(
-            reference: .callRecords(primaryId: primaryCallRecord.id, coalescedIds: coalescedCallRecords.map(\.id)),
-            callRecords: [primaryCallRecord] + coalescedCallRecords,
+            reference: .callRecords(primaryId: mostRecentCallRecord.id, coalescedIds: callRecords.dropFirst().map(\.id)),
+            callRecords: callRecords,
             title: title,
             recipientType: recipientType,
             direction: callDirection,

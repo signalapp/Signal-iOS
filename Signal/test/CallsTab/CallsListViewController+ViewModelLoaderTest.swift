@@ -16,20 +16,16 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
 
     private var mockDB: MockDB!
     private var mockCallRecordLoader: MockCallRecordLoader!
-    private lazy var createCallViewModelBlock: ViewModelLoader.CreateCallViewModelBlock! = {
-        self.createCallViewModel(primaryCallRecord: $0, coalescedCallRecords: $1, tx: $2)
+    private lazy var callViewModelForCallRecords: ViewModelLoader.CallViewModelForCallRecords! = {
+        self.createCallViewModel(callRecords: $0, tx: $1)
     }
     private lazy var fetchCallRecordBlock: ViewModelLoader.FetchCallRecordBlock! = { (callRecordId, tx) -> CallRecord? in
         return self.mockCallRecordLoader.callRecordsById[callRecordId]
     }
 
-    private func createCallViewModel(
-        primaryCallRecord: CallRecord,
-        coalescedCallRecords: [CallRecord],
-        tx: DBReadTransaction
-    ) -> CallViewModel {
+    private func createCallViewModel(callRecords: [CallRecord], tx: DBReadTransaction) -> CallViewModel {
         let recipientType: CallViewModel.RecipientType = {
-            switch primaryCallRecord.callStatus {
+            switch callRecords.first!.callStatus {
             case .individual:
                 return .individual(type: .audio, contactThread: TSContactThread(
                     contactUUID: UUID().uuidString,
@@ -41,19 +37,19 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
         }()
 
         let direction: CallViewModel.Direction = {
-            if primaryCallRecord.callStatus.isMissedCall {
+            if callRecords.first!.callStatus.isMissedCall {
                 return .missed
             }
 
-            switch primaryCallRecord.callDirection {
+            switch callRecords.first!.callDirection {
             case .incoming: return .incoming
             case .outgoing: return .outgoing
             }
         }()
 
         return CallViewModel(
-            reference: .callRecords(primaryId: primaryCallRecord.id, coalescedIds: coalescedCallRecords.map(\.id)),
-            callRecords: [primaryCallRecord] + coalescedCallRecords,
+            reference: .callRecords(primaryId: callRecords.first!.id, coalescedIds: callRecords.dropFirst().map(\.id)),
+            callRecords: callRecords,
             title: "Hey, I just met you, and this is crazy, but here's my number, so call me maybe?",
             recipientType: recipientType,
             direction: direction,
@@ -68,7 +64,7 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
     ) {
         viewModelLoader = ViewModelLoader(
             callRecordLoader: mockCallRecordLoader,
-            createCallViewModelBlock: { self.createCallViewModelBlock($0, $1, $2) },
+            callViewModelForCallRecords: { self.callViewModelForCallRecords($0, $1) },
             fetchCallRecordBlock: { self.fetchCallRecordBlock($0, $1) },
             viewModelPageSize: viewModelPageSize,
             maxCachedViewModelCount: maxCachedViewModelCount,

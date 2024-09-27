@@ -29,9 +29,8 @@ extension CallsListViewController {
     /// changes. When the user scrolls to the bottom of the list, callers should
     /// request additional items.
     struct ViewModelLoader {
-        typealias CreateCallViewModelBlock = (
-            _ primaryCallRecord: CallRecord,
-            _ coalescedCallRecords: [CallRecord],
+        typealias CallViewModelForCallRecords = (
+            _ callRecords: [CallRecord],
             _ tx: DBReadTransaction
         ) -> CallViewModel
 
@@ -46,7 +45,7 @@ extension CallsListViewController {
         }
 
         private let callRecordLoader: CallRecordLoader
-        private let createCallViewModelBlock: CreateCallViewModelBlock
+        private let callViewModelForCallRecords: CallViewModelForCallRecords
         private let fetchCallRecordBlock: FetchCallRecordBlock
         private let viewModelPageSize: Int
         private let maxCachedViewModelCount: Int
@@ -54,7 +53,7 @@ extension CallsListViewController {
 
         init(
             callRecordLoader: CallRecordLoader,
-            createCallViewModelBlock: @escaping CreateCallViewModelBlock,
+            callViewModelForCallRecords: @escaping CallViewModelForCallRecords,
             fetchCallRecordBlock: @escaping FetchCallRecordBlock,
             viewModelPageSize: Int = 50,
             maxCachedViewModelCount: Int = 150,
@@ -66,7 +65,7 @@ extension CallsListViewController {
             )
 
             self.callRecordLoader = callRecordLoader
-            self.createCallViewModelBlock = createCallViewModelBlock
+            self.callViewModelForCallRecords = callViewModelForCallRecords
             self.fetchCallRecordBlock = fetchCallRecordBlock
             self.viewModelPageSize = viewModelPageSize
             self.maxCachedViewModelCount = maxCachedViewModelCount
@@ -250,9 +249,8 @@ extension CallsListViewController {
                 callHistoryItemReferences[0] = CallHistoryItemReference(
                     callRecordIds: combinedGroupOfCallRecords.map(\.id)
                 )
-                viewModels[0] = createCallViewModelBlock(
-                    combinedGroupOfCallRecords.first,
-                    Array(combinedGroupOfCallRecords.rawValue.dropFirst()),
+                viewModels[0] = callViewModelForCallRecords(
+                    combinedGroupOfCallRecords.rawValue,
                     tx
                 )
                 fetchResult = fetchResult.dropLast()
@@ -293,7 +291,7 @@ extension CallsListViewController {
                 let callRecords = reference.callRecordIds.map {
                     return fetchCallRecordBlock($0, tx)!
                 }
-                return createCallViewModelBlock(callRecords.first, Array(callRecords.rawValue.dropFirst()), tx)
+                return callViewModelForCallRecords(callRecords.rawValue, tx)
             }
 
             return newViewModels
@@ -458,7 +456,7 @@ extension CallsListViewController {
                     continue
                 }
                 let newCallRecords = viewModel.callRecords.map(refreshIfPossible(_:))
-                viewModels[index] = createCallViewModelBlock(newCallRecords.first!, Array(newCallRecords.dropFirst()), tx)
+                viewModels[index] = callViewModelForCallRecords(newCallRecords, tx)
                 refreshedViewModelReferences.append(viewModels[index].reference)
             }
 
