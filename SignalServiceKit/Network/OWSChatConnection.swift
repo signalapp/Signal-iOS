@@ -56,6 +56,7 @@ public class OWSChatConnection: NSObject {
 
     fileprivate let type: OWSChatConnectionType
     fileprivate let appExpiry: AppExpiry
+    fileprivate let  appReadiness: AppReadiness
     fileprivate let db: DB
     fileprivate let accountManager: TSAccountManager
     fileprivate let currentCallProvider: any CurrentCallProvider
@@ -195,6 +196,7 @@ public class OWSChatConnection: NSObject {
         type: OWSChatConnectionType,
         accountManager: TSAccountManager,
         appExpiry: AppExpiry,
+        appReadiness: AppReadiness,
         currentCallProvider: any CurrentCallProvider,
         db: DB,
         registrationStateChangeManager: RegistrationStateChangeManager
@@ -204,6 +206,7 @@ public class OWSChatConnection: NSObject {
         self.serialQueue = DispatchQueue(label: "org.signal.chat-connection-\(type)")
         self.type = type
         self.appExpiry = appExpiry
+        self.appReadiness = appReadiness
         self.db = db
         self.accountManager = accountManager
         self.currentCallProvider = currentCallProvider
@@ -211,7 +214,7 @@ public class OWSChatConnection: NSObject {
 
         super.init()
 
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync { [weak self] in
+        appReadiness.runNowOrWhenAppDidBecomeReadySync { [weak self] in
             guard let self = self else { return }
             self.appDidBecomeReady()
             self.applyDesiredSocketState()
@@ -353,7 +356,7 @@ public class OWSChatConnection: NSObject {
 
     // This method is thread-safe.
     fileprivate var desiredSocketState: DesiredSocketState? {
-        guard AppReadinessGlobal.isAppReady else {
+        guard appReadiness.isAppReady else {
             return .closed(reason: "!isAppReady")
         }
 
@@ -393,7 +396,7 @@ public class OWSChatConnection: NSObject {
 
     // This method is thread-safe.
     public func didReceivePush() {
-        owsAssertDebug(AppReadinessGlobal.isAppReady)
+        owsAssertDebug(appReadiness.isAppReady)
 
         self.ensureBackgroundKeepAlive(.didReceivePush)
     }
@@ -403,8 +406,8 @@ public class OWSChatConnection: NSObject {
     // This method is thread-safe.
     fileprivate func applyDesiredSocketState(completion: (() -> Void)? = nil) {
 
-        guard AppReadinessGlobal.isAppReady else {
-            AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync { [weak self] in
+        guard appReadiness.isAppReady else {
+            appReadiness.runNowOrWhenAppDidBecomeReadySync { [weak self] in
                 self?.applyDesiredSocketState(completion: completion)
             }
             return
@@ -1450,12 +1453,12 @@ internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnectionUsingSS
         return libsignalNet.createUnauthenticatedChatService()
     }
 
-    internal init(libsignalNet: Net, type: OWSChatConnectionType, accountManager: TSAccountManager, appExpiry: AppExpiry, currentCallProvider: any CurrentCallProvider, db: DB, registrationStateChangeManager: RegistrationStateChangeManager, shadowingFrequency: Double) {
+    internal init(libsignalNet: Net, type: OWSChatConnectionType, accountManager: TSAccountManager, appExpiry: AppExpiry, appReadiness: AppReadiness, currentCallProvider: any CurrentCallProvider, db: DB, registrationStateChangeManager: RegistrationStateChangeManager, shadowingFrequency: Double) {
         owsPrecondition((0.0...1.0).contains(shadowingFrequency))
         self.libsignalNet = libsignalNet
         self.chatService = Self.makeChatService(libsignalNet: libsignalNet)
         self._shadowingFrequency = shadowingFrequency
-        super.init(type: type, accountManager: accountManager, appExpiry: appExpiry, currentCallProvider: currentCallProvider, db: db, registrationStateChangeManager: registrationStateChangeManager)
+        super.init(type: type, accountManager: accountManager, appExpiry: appExpiry, appReadiness: appReadiness, currentCallProvider: currentCallProvider, db: db, registrationStateChangeManager: registrationStateChangeManager)
     }
 
     fileprivate override func isSignalProxyReadyDidChange(_ notification: NSNotification) {
@@ -1656,10 +1659,10 @@ internal class OWSChatConnectionUsingLibSignal<Service: ChatService>: OWSChatCon
         }
     }
 
-    internal init(libsignalNet: Net, chatService: Service, type: OWSChatConnectionType, accountManager: TSAccountManager, appExpiry: AppExpiry, currentCallProvider: any CurrentCallProvider, db: DB, registrationStateChangeManager: RegistrationStateChangeManager) {
+    internal init(libsignalNet: Net, chatService: Service, type: OWSChatConnectionType, accountManager: TSAccountManager, appExpiry: AppExpiry, appReadiness: AppReadiness, currentCallProvider: any CurrentCallProvider, db: DB, registrationStateChangeManager: RegistrationStateChangeManager) {
         self.libsignalNet = libsignalNet
         self._chatService = chatService
-        super.init(type: type, accountManager: accountManager, appExpiry: appExpiry, currentCallProvider: currentCallProvider, db: db, registrationStateChangeManager: registrationStateChangeManager)
+        super.init(type: type, accountManager: accountManager, appExpiry: appExpiry, appReadiness: appReadiness, currentCallProvider: currentCallProvider, db: db, registrationStateChangeManager: registrationStateChangeManager)
     }
 
     fileprivate func makeChatService() -> Service {
@@ -1942,9 +1945,9 @@ internal class OWSChatConnectionUsingLibSignal<Service: ChatService>: OWSChatCon
 }
 
 internal class OWSUnauthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<UnauthenticatedChatService> {
-    init(libsignalNet: Net, accountManager: TSAccountManager, appExpiry: AppExpiry, currentCallProvider: any CurrentCallProvider, db: DB, registrationStateChangeManager: RegistrationStateChangeManager) {
+    init(libsignalNet: Net, accountManager: TSAccountManager, appExpiry: AppExpiry, appReadiness: AppReadiness, currentCallProvider: any CurrentCallProvider, db: DB, registrationStateChangeManager: RegistrationStateChangeManager) {
         let chatService = libsignalNet.createUnauthenticatedChatService()
-        super.init(libsignalNet: libsignalNet, chatService: chatService, type: .unidentified, accountManager: accountManager, appExpiry: appExpiry, currentCallProvider: currentCallProvider, db: db, registrationStateChangeManager: registrationStateChangeManager)
+        super.init(libsignalNet: libsignalNet, chatService: chatService, type: .unidentified, accountManager: accountManager, appExpiry: appExpiry, appReadiness: appReadiness, currentCallProvider: currentCallProvider, db: db, registrationStateChangeManager: registrationStateChangeManager)
         chatService.setListener(self)
     }
 
@@ -1964,9 +1967,9 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
         _hasEmptiedInitialQueue.get()
     }
 
-    init(libsignalNet: Net, accountManager: TSAccountManager, appExpiry: AppExpiry, currentCallProvider: any CurrentCallProvider, db: DB, registrationStateChangeManager: RegistrationStateChangeManager) {
+    init(libsignalNet: Net, accountManager: TSAccountManager, appExpiry: AppExpiry, appReadiness: AppReadiness, currentCallProvider: any CurrentCallProvider, db: DB, registrationStateChangeManager: RegistrationStateChangeManager) {
         let dummyChatService = libsignalNet.createAuthenticatedChatService(username: "", password: "", receiveStories: false)
-        super.init(libsignalNet: libsignalNet, chatService: dummyChatService, type: .identified, accountManager: accountManager, appExpiry: appExpiry, currentCallProvider: currentCallProvider, db: db, registrationStateChangeManager: registrationStateChangeManager)
+        super.init(libsignalNet: libsignalNet, chatService: dummyChatService, type: .identified, accountManager: accountManager, appExpiry: appExpiry, appReadiness: appReadiness, currentCallProvider: currentCallProvider, db: db, registrationStateChangeManager: registrationStateChangeManager)
     }
 
     fileprivate override func appDidBecomeReady() {
