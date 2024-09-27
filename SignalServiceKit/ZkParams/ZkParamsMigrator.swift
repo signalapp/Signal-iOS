@@ -6,6 +6,7 @@
 import Foundation
 
 class ZkParamsMigrator {
+    private let appReadiness: AppReadiness
     private let authCredentialStore: AuthCredentialStore
     private let db: DB
     private let migrationStore: KeyValueStore
@@ -14,6 +15,7 @@ class ZkParamsMigrator {
     private let versionedProfiles: VersionedProfilesSwift
 
     init(
+        appReadiness: AppReadiness,
         authCredentialStore: AuthCredentialStore,
         db: DB,
         keyValueStoreFactory: KeyValueStoreFactory,
@@ -21,6 +23,7 @@ class ZkParamsMigrator {
         tsAccountManager: TSAccountManager,
         versionedProfiles: VersionedProfilesSwift
     ) {
+        self.appReadiness = appReadiness
         self.authCredentialStore = authCredentialStore
         self.db = db
         // This collection name is weird for historical reasons.
@@ -77,7 +80,7 @@ class ZkParamsMigrator {
     // MARK: - Helpers
 
     private func reuploadLocalProfile() {
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync { [db, profileManager, tsAccountManager] in
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync { [db, profileManager, tsAccountManager] in
             guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
                 return
             }

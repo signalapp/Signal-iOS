@@ -18,7 +18,10 @@ public class OWSPaymentsLock: NSObject, Dependencies {
 
     // MARK: - Singleton class
 
-    override init() {
+    private let appReadiness: AppReadiness
+
+    init(appReadiness: AppReadiness) {
+        self.appReadiness = appReadiness
         super.init()
         SwiftSingletons.register(self)
     }
@@ -32,7 +35,7 @@ public class OWSPaymentsLock: NSObject, Dependencies {
     public func isPaymentsLockEnabled() -> Bool {
         AssertIsOnMainThread()
 
-        guard AppReadinessGlobal.isAppReady else {
+        guard appReadiness.isAppReady else {
             owsFailDebug("accessed payments lock state before storage is ready.")
             // `true` is a more secure default
             return true
@@ -54,7 +57,7 @@ public class OWSPaymentsLock: NSObject, Dependencies {
 
     public func setIsPaymentsLockEnabled(_ value: Bool, transaction: SDSAnyWriteTransaction) {
         AssertIsOnMainThread()
-        assert(AppReadinessGlobal.isAppReady)
+        assert(appReadiness.isAppReady)
 
         self.keyValueStore.setBool(value,
                                    key: .isPaymentsLockEnabledKey,
@@ -64,7 +67,7 @@ public class OWSPaymentsLock: NSObject, Dependencies {
     public func isTimeToShowSuggestion() -> Bool {
         AssertIsOnMainThread()
 
-        if !AppReadinessGlobal.isAppReady {
+        if !appReadiness.isAppReady {
             owsFailDebug("accessed payments lock state before storage is ready.")
             return false
         }
@@ -80,7 +83,7 @@ public class OWSPaymentsLock: NSObject, Dependencies {
 
     public func snoozeSuggestion(transaction: SDSAnyWriteTransaction) {
         AssertIsOnMainThread()
-        assert(AppReadinessGlobal.isAppReady)
+        assert(appReadiness.isAppReady)
 
         let currentDate = Date()
         let numberOfSnoozeDays = 30.0

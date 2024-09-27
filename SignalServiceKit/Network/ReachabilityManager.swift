@@ -83,15 +83,17 @@ public class SSKReachabilityManagerImpl: NSObject, SSKReachabilityManager {
         }
     }
 
-    @objc
-    override public init() {
+    private let appReadiness: AppReadiness
+
+    public init(appReadiness: AppReadiness) {
+        self.appReadiness = appReadiness
         AssertIsOnMainThread()
 
         self.reachability = Reachability.forInternetConnection()
 
         super.init()
 
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync {
+        appReadiness.runNowOrWhenAppDidBecomeReadySync {
             self.configure()
         }
     }
@@ -119,7 +121,7 @@ public class SSKReachabilityManagerImpl: NSObject, SSKReachabilityManager {
     func reachabilityChanged() {
         AssertIsOnMainThread()
 
-        guard AppReadinessGlobal.isAppReady else {
+        guard appReadiness.isAppReady else {
             owsFailDebug("App is unexpectedly not ready.")
             return
         }
@@ -134,7 +136,7 @@ public class SSKReachabilityManagerImpl: NSObject, SSKReachabilityManager {
     private func startNotifier() {
         AssertIsOnMainThread()
 
-        guard AppReadinessGlobal.isAppReady else {
+        guard appReadiness.isAppReady else {
             owsFailDebug("App is unexpectedly not ready.")
             return
         }

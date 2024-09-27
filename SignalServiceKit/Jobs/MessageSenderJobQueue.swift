@@ -24,11 +24,13 @@ import Foundation
 /// (e.g. rate limiting)
 public class MessageSenderJobQueue: NSObject, JobQueue {
 
-    @objc
-    public override init() {
+    private let appReadiness: AppReadiness
+
+    public init(appReadiness: AppReadiness) {
+        self.appReadiness = appReadiness
         super.init()
 
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             self.setup()
         }
     }
@@ -74,7 +76,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
         future: Future<Void>?,
         transaction: SDSAnyWriteTransaction
     ) {
-        assert(AppReadinessGlobal.isAppReady || CurrentAppContext().isRunningTests)
+        assert(appReadiness.isAppReady || CurrentAppContext().isRunningTests)
         // Mark as sending now so the UI updates immediately.
         message.updateAllUnsentRecipientsAsSending(tx: transaction)
         let jobRecord: MessageSenderJobRecord

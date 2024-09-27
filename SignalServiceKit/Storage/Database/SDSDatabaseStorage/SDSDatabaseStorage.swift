@@ -21,12 +21,15 @@ public class SDSDatabaseStorage: NSObject {
 
     // MARK: - Initialization / Setup
 
+    private let appReadiness: AppReadiness
+
     public let databaseFileUrl: URL
     public let keyFetcher: GRDBKeyFetcher
 
     private(set) public var grdbStorage: GRDBDatabaseStorageAdapter
 
-    public init(databaseFileUrl: URL, keychainStorage: any KeychainStorage) throws {
+    public init(appReadiness: AppReadiness, databaseFileUrl: URL, keychainStorage: any KeychainStorage) throws {
+        self.appReadiness = appReadiness
         self.databaseFileUrl = databaseFileUrl
         self.keyFetcher = GRDBKeyFetcher(keychainStorage: keychainStorage)
         self.grdbStorage = try GRDBDatabaseStorageAdapter(
@@ -151,7 +154,7 @@ public class SDSDatabaseStorage: NSObject {
             DatabaseChangeObserver.serializedSync {
                 if let databaseChangeObserver = grdbStorage.databaseChangeObserver {
                     databaseChangeObserver.updateIdMapping(thread: thread, transaction: grdb)
-                } else if AppReadinessGlobal.isAppReady {
+                } else if appReadiness.isAppReady {
                     owsFailDebug("databaseChangeObserver was unexpectedly nil")
                 }
             }
@@ -165,7 +168,7 @@ public class SDSDatabaseStorage: NSObject {
             DatabaseChangeObserver.serializedSync {
                 if let databaseChangeObserver = grdbStorage.databaseChangeObserver {
                     databaseChangeObserver.updateIdMapping(interaction: interaction, transaction: grdb)
-                } else if AppReadinessGlobal.isAppReady {
+                } else if appReadiness.isAppReady {
                     owsFailDebug("databaseChangeObserver was unexpectedly nil")
                 }
             }
@@ -181,7 +184,7 @@ public class SDSDatabaseStorage: NSObject {
             DatabaseChangeObserver.serializedSync {
                 if let databaseChangeObserver = grdbStorage.databaseChangeObserver {
                     databaseChangeObserver.didTouch(interaction: interaction, transaction: grdb)
-                } else if AppReadinessGlobal.isAppReady {
+                } else if appReadiness.isAppReady {
                     owsFailDebug("databaseChangeObserver was unexpectedly nil")
                 }
             }
@@ -199,7 +202,7 @@ public class SDSDatabaseStorage: NSObject {
             DatabaseChangeObserver.serializedSync {
                 if let databaseChangeObserver = grdbStorage.databaseChangeObserver {
                     databaseChangeObserver.didTouch(thread: thread, shouldUpdateChatListUi: shouldUpdateChatListUi, transaction: grdb)
-                } else if AppReadinessGlobal.isAppReady {
+                } else if appReadiness.isAppReady {
                     // This can race with observation setup when app becomes ready.
                     Logger.warn("databaseChangeObserver was unexpectedly nil")
                 }
@@ -223,7 +226,7 @@ public class SDSDatabaseStorage: NSObject {
             DatabaseChangeObserver.serializedSync {
                 if let databaseChangeObserver = grdbStorage.databaseChangeObserver {
                     databaseChangeObserver.didTouch(storyMessage: storyMessage, transaction: grdb)
-                } else if AppReadinessGlobal.isAppReady {
+                } else if appReadiness.isAppReady {
                     owsFailDebug("databaseChangeObserver was unexpectedly nil")
                 }
             }

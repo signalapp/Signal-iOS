@@ -204,6 +204,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         let databaseStorage: SDSDatabaseStorage
         do {
             databaseStorage = try SDSDatabaseStorage(
+                appReadiness: appReadiness,
                 databaseFileUrl: SDSDatabaseStorage.grdbDatabaseFileUrl,
                 keychainStorage: keychainStorage
             )
@@ -394,6 +395,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             appReadiness: appReadiness,
             callService: CallService(
                 appContext: launchContext.appContext,
+                appReadiness: appReadiness,
                 authCredentialManager: databaseContinuation.authCredentialManager,
                 callLinkPublicParams: databaseContinuation.callLinkPublicParams,
                 callLinkStore: DependenciesBridge.shared.callLinkStore,
@@ -975,6 +977,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     ) {
         var launchContext = launchContext
         let recoveryViewController = DatabaseRecoveryViewController<(AppSetup.FinalContinuation, NSObject)>(
+            appReadiness: appReadiness,
             corruptDatabaseStorage: launchContext.databaseStorage,
             keychainStorage: launchContext.keychainStorage,
             setupSskEnvironment: { databaseStorage in

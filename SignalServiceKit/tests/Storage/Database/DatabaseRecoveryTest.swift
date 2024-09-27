@@ -27,6 +27,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
 
     private func cloneDatabaseStorage(_ databaseStorage: SDSDatabaseStorage) throws -> SDSDatabaseStorage {
         return try SDSDatabaseStorage(
+            appReadiness: AppReadinessMock(),
             databaseFileUrl: databaseStorage.databaseFileUrl,
             keychainStorage: keychainStorage
         )
@@ -103,12 +104,14 @@ final class DatabaseRecoveryTest: SSKBaseTest {
         try XCTUnwrap(databaseStorage.grdbStorage.pool.close())
 
         let dump = DatabaseRecovery.DumpAndRestore(
+            appReadiness: AppReadinessMock(),
             corruptDatabaseStorage: try cloneDatabaseStorage(databaseStorage),
             keychainStorage: keychainStorage
         )
         try XCTUnwrap(dump.run())
 
         let finishedDatabaseStorage = try SDSDatabaseStorage(
+            appReadiness: AppReadinessMock(),
             databaseFileUrl: databaseStorage.databaseFileUrl,
             keychainStorage: keychainStorage
         )
@@ -181,12 +184,14 @@ final class DatabaseRecoveryTest: SSKBaseTest {
         try XCTUnwrap(databaseStorage.grdbStorage.pool.close())
 
         let dump = DatabaseRecovery.DumpAndRestore(
+            appReadiness: AppReadinessMock(),
             corruptDatabaseStorage: try cloneDatabaseStorage(databaseStorage),
             keychainStorage: keychainStorage
         )
         try XCTUnwrap(dump.run())
 
         let finishedDatabaseStorage = try SDSDatabaseStorage(
+            appReadiness: AppReadinessMock(),
             databaseFileUrl: databaseStorage.databaseFileUrl,
             keychainStorage: keychainStorage
         )
@@ -258,6 +263,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
         try XCTUnwrap(databaseStorage.grdbStorage.pool.close())
 
         let dump = DatabaseRecovery.DumpAndRestore(
+            appReadiness: AppReadinessMock(),
             corruptDatabaseStorage: try cloneDatabaseStorage(databaseStorage),
             keychainStorage: keychainStorage
         )
@@ -278,12 +284,14 @@ final class DatabaseRecoveryTest: SSKBaseTest {
         try XCTUnwrap(databaseStorage.grdbStorage.pool.close())
 
         let dump = DatabaseRecovery.DumpAndRestore(
+            appReadiness: AppReadinessMock(),
             corruptDatabaseStorage: try cloneDatabaseStorage(databaseStorage),
             keychainStorage: keychainStorage
         )
         try XCTUnwrap(dump.run())
 
         let finishedDatabaseStorage = try SDSDatabaseStorage(
+            appReadiness: AppReadinessMock(),
             databaseFileUrl: databaseStorage.databaseFileUrl,
             keychainStorage: keychainStorage
         )
@@ -325,12 +333,14 @@ final class DatabaseRecoveryTest: SSKBaseTest {
         try XCTUnwrap(databaseStorage.grdbStorage.pool.close())
 
         let dump = DatabaseRecovery.DumpAndRestore(
+            appReadiness: AppReadinessMock(),
             corruptDatabaseStorage: try cloneDatabaseStorage(databaseStorage),
             keychainStorage: keychainStorage
         )
         try XCTUnwrap(dump.run())
 
         let finishedDatabaseStorage = try SDSDatabaseStorage(
+            appReadiness: AppReadinessMock(),
             databaseFileUrl: databaseStorage.databaseFileUrl,
             keychainStorage: keychainStorage
         )
@@ -362,6 +372,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
 
     func newDatabase(keychainStorage: any KeychainStorage) throws -> SDSDatabaseStorage {
         return try SDSDatabaseStorage(
+            appReadiness: AppReadinessMock(),
             databaseFileUrl: OWSFileSystem.temporaryFileUrl(),
             keychainStorage: keychainStorage
         )

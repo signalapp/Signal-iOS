@@ -8,14 +8,16 @@ import Foundation
 public class TSResourceDownloadManagerImpl: TSResourceDownloadManager {
 
     private let attachmentDownloadManager: AttachmentDownloadManager
-    private let tsAttachmentDownloadManager = TSAttachmentDownloadManager()
+    private let tsAttachmentDownloadManager: TSAttachmentDownloadManager
     private let tsResourceStore: TSResourceStore
 
     public init(
+        appReadiness: AppReadiness,
         attachmentDownloadManager: AttachmentDownloadManager,
         tsResourceStore: TSResourceStore
     ) {
         self.attachmentDownloadManager = attachmentDownloadManager
+        self.tsAttachmentDownloadManager = TSAttachmentDownloadManager(appReadiness: appReadiness)
         self.tsResourceStore = tsResourceStore
 
         NotificationCenter.default.addObserver(

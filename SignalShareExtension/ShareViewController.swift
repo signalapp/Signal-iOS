@@ -75,6 +75,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         let databaseStorage: SDSDatabaseStorage
         do {
             databaseStorage = try SDSDatabaseStorage(
+                appReadiness: appReadiness,
                 databaseFileUrl: SDSDatabaseStorage.grdbDatabaseFileUrl,
                 keychainStorage: keychainStorage
             )

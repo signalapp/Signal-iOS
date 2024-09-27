@@ -124,7 +124,10 @@ public class MessageProcessor: NSObject {
         }
     }
 
-    public override init() {
+    private let appReadiness: AppReadiness
+
+    public init(appReadiness: AppReadiness) {
+        self.appReadiness = appReadiness
         super.init()
 
         SwiftSingletons.register(self)
@@ -136,7 +139,7 @@ public class MessageProcessor: NSObject {
             object: nil
         )
 
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync {
+        appReadiness.runNowOrWhenAppDidBecomeReadySync {
             Self.messagePipelineSupervisor.register(pipelineStage: self)
 
             SDSDatabaseStorage.shared.read { transaction in
@@ -445,7 +448,7 @@ public class MessageProcessor: NSObject {
 
     @objc
     private func registrationStateDidChange() {
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync {
+        appReadiness.runNowOrWhenAppDidBecomeReadySync {
             self.drainPendingEnvelopes()
         }
     }

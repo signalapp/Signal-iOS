@@ -40,16 +40,19 @@ public class OWSProfileManager: NSObject, ProfileManagerProtocol {
     fileprivate let metadataStore = SDSKeyValueStore(collection: "kOWSProfileManager_Metadata")
     @Atomic fileprivate var isRotatingProfileKey: Bool = false
 
-    init(databaseStorage: SDSDatabaseStorage, swiftValues: OWSProfileManagerSwiftValues) {
+    private let appReadiness: AppReadiness
+
+    init(appReadiness: AppReadiness, databaseStorage: SDSDatabaseStorage, swiftValues: OWSProfileManagerSwiftValues) {
         AssertIsOnMainThread()
 
         self.swiftValues = swiftValues
+        self.appReadiness = appReadiness
 
         super.init()
 
         SwiftSingletons.register(self)
 
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             self.rotateLocalProfileKeyIfNecessary()
             self.updateProfileOnServiceIfNecessary(authedAccount: .implicit())
             Self.updateStorageServiceIfNecessary()
@@ -700,7 +703,7 @@ public class OWSProfileManager: NSObject, ProfileManagerProtocol {
     @objc
     private func blockListDidChange(_ notification: NSNotification) {
         AssertIsOnMainThread()
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             self.rotateLocalProfileKeyIfNecessary()
         }
     }
@@ -947,7 +950,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
     }
 
     private func rotateProfileKeyIfNecessary(tx: SDSAnyWriteTransaction) {
-        if CurrentAppContext().isNSE || !AppReadinessGlobal.isAppReady {
+        if CurrentAppContext().isNSE || !appReadiness.isAppReady {
             return
         }
 
@@ -1505,7 +1508,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
     private func _updateProfileOnServiceIfNecessary(retryDelay: TimeInterval = 1) -> UpdateProfileStatus {
         AssertIsOnMainThread()
 
-        guard AppReadinessGlobal.isAppReady else {
+        guard appReadiness.isAppReady else {
             return .notReady
         }
         guard !isUpdatingProfileOnService else {

@@ -23,6 +23,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     // `callManager` continues to work properly.
     private let callManagerHttpClient: AnyObject
 
+    private let appReadiness: AppReadiness
     private var audioSession: AudioSession { NSObject.audioSession }
     let authCredentialManager: any AuthCredentialManager
     private var databaseStorage: SDSDatabaseStorage { NSObject.databaseStorage }
@@ -74,6 +75,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     @MainActor
     public init(
         appContext: any AppContext,
+        appReadiness: AppReadiness,
         authCredentialManager: any AuthCredentialManager,
         callLinkPublicParams: GenericServerPublicParams,
         callLinkStore: any CallLinkRecordStore,
@@ -82,6 +84,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         networkManager: NetworkManager,
         tsAccountManager: any TSAccountManager
     ) {
+        self.appReadiness = appReadiness
         self.authCredentialManager = authCredentialManager
         let httpClient = CallHTTPClient()
         self.callManager = CallManager(
@@ -143,13 +146,13 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             })
         }
 
-        AppReadinessGlobal.runNowOrWhenAppWillBecomeReady {
+        appReadiness.runNowOrWhenAppWillBecomeReady {
             if let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci {
                 self.callManager.setSelfUuid(localAci.rawUUID)
             }
         }
 
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             SDSDatabaseStorage.shared.appendDatabaseChangeDelegate(self)
 
             self.callServiceState.addObserver(self.groupCallAccessoryMessageDelegate, syncStateImmediately: true)
@@ -368,7 +371,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
 
     @MainActor
     private func configureDataMode() {
-        guard AppReadinessGlobal.isAppReady else { return }
+        guard appReadiness.isAppReady else { return }
         guard let currentCall = callServiceState.currentCall else { return }
 
         switch currentCall.mode {
@@ -1049,7 +1052,7 @@ extension CallService: DatabaseChangeDelegate {
 
     public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()
-        owsAssertDebug(AppReadinessGlobal.isAppReady)
+        owsAssertDebug(appReadiness.isAppReady)
 
         switch callServiceState.currentCall?.mode {
         case nil, .individual, .callLink:
@@ -1063,14 +1066,14 @@ extension CallService: DatabaseChangeDelegate {
 
     public func databaseChangesDidUpdateExternally() {
         AssertIsOnMainThread()
-        owsAssertDebug(AppReadinessGlobal.isAppReady)
+        owsAssertDebug(appReadiness.isAppReady)
 
         updateGroupMembersForCurrentCallIfNecessary()
     }
 
     public func databaseChangesDidReset() {
         AssertIsOnMainThread()
-        owsAssertDebug(AppReadinessGlobal.isAppReady)
+        owsAssertDebug(appReadiness.isAppReady)
 
         updateGroupMembersForCurrentCallIfNecessary()
     }

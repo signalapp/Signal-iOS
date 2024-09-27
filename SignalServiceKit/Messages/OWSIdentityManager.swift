@@ -194,6 +194,7 @@ extension OWSIdentityManager {
 
 public class OWSIdentityManagerImpl: OWSIdentityManager {
     private let aciProtocolStore: SignalProtocolStore
+    private let appReadiness: AppReadiness
     private let db: DB
     private let messageSenderJobQueue: MessageSenderJobQueue
     private let networkManager: NetworkManager
@@ -210,6 +211,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
 
     public init(
         aciProtocolStore: SignalProtocolStore,
+        appReadiness: AppReadiness,
         db: DB,
         keyValueStoreFactory: KeyValueStoreFactory,
         messageSenderJobQueue: MessageSenderJobQueue,
@@ -223,6 +225,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         tsAccountManager: TSAccountManager
     ) {
         self.aciProtocolStore = aciProtocolStore
+        self.appReadiness = appReadiness
         self.db = db
         self.messageSenderJobQueue = messageSenderJobQueue
         self.networkManager = networkManager
@@ -577,7 +580,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
 
     public func tryToSyncQueuedVerificationStates() {
         AssertIsOnMainThread()
-        AppReadinessGlobal.runNowOrWhenMainAppDidBecomeReadyAsync {
+        appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
             self.schedulers.global().async { self.syncQueuedVerificationStates() }
         }
     }

@@ -15,7 +15,10 @@ class BlockingManagerTests: SSKBaseTest {
 
     override func setUp() {
         super.setUp()
-        otherBlockingManager = BlockingManager(blockedRecipientStore: BlockedRecipientStoreImpl())
+        otherBlockingManager = BlockingManager(
+            appReadiness: AppReadinessMock(),
+            blockedRecipientStore: BlockedRecipientStoreImpl()
+        )
     }
 
     override func tearDown() {

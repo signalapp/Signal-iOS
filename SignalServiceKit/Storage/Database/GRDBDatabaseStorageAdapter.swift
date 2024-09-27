@@ -179,13 +179,13 @@ public class GRDBDatabaseStorageAdapter: NSObject {
 
     private(set) public var databaseChangeObserver: DatabaseChangeObserver?
 
-    func setupDatabaseChangeObserver() throws {
+    func setupDatabaseChangeObserver(appReadiness: AppReadiness) throws {
         owsAssertDebug(self.databaseChangeObserver == nil)
 
         // DatabaseChangeObserver is a general purpose observer, whose delegates
         // are notified when things change, but are not given any specific details
         // about the changes.
-        let databaseChangeObserver = DatabaseChangeObserver()
+        let databaseChangeObserver = DatabaseChangeObserver(appReadiness: appReadiness)
         self.databaseChangeObserver = databaseChangeObserver
 
         try pool.write { db in

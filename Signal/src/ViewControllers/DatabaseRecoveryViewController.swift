@@ -7,17 +7,20 @@ import SignalServiceKit
 import SignalUI
 
 class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
+    private let appReadiness: AppReadiness
     private let corruptDatabaseStorage: SDSDatabaseStorage
     private let keychainStorage: any KeychainStorage
     private let setupSskEnvironment: (SDSDatabaseStorage) -> Guarantee<SetupResult>
     private let launchApp: (SetupResult) -> Void
 
     public init(
+        appReadiness: AppReadiness,
         corruptDatabaseStorage: SDSDatabaseStorage,
         keychainStorage: any KeychainStorage,
         setupSskEnvironment: @escaping (SDSDatabaseStorage) -> Guarantee<SetupResult>,
         launchApp: @escaping (SetupResult) -> Void
     ) {
+        self.appReadiness = appReadiness
         self.corruptDatabaseStorage = corruptDatabaseStorage
         self.keychainStorage = keychainStorage
         self.setupSskEnvironment = setupSskEnvironment
@@ -260,6 +263,7 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
 
                 if shouldDumpAndRecreate {
                     let dumpAndRestore = DatabaseRecovery.DumpAndRestore(
+                        appReadiness: self.appReadiness,
                         corruptDatabaseStorage: self.corruptDatabaseStorage,
                         keychainStorage: self.keychainStorage
                     )
@@ -278,6 +282,7 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
             }.then(on: DispatchQueue.sharedUserInitiated) { shouldDumpAndRecreate in
                 // Create a *new* SDSDatabaseStorage since we replaced the file.
                 let databaseStorage = try SDSDatabaseStorage(
+                    appReadiness: self.appReadiness,
                     databaseFileUrl: self.corruptDatabaseStorage.databaseFileUrl,
                     keychainStorage: self.keychainStorage
                 )

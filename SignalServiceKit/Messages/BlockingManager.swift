@@ -25,18 +25,20 @@ public enum BlockMode: UInt {
 // MARK: -
 
 public class BlockingManager: NSObject {
+    private let appReadiness: AppReadiness
     private let blockedRecipientStore: any BlockedRecipientStore
 
     private let lock = UnfairLock()
     private var state = State()
 
-    init(blockedRecipientStore: any BlockedRecipientStore) {
+    init(appReadiness: AppReadiness, blockedRecipientStore: any BlockedRecipientStore) {
+        self.appReadiness = appReadiness
         self.blockedRecipientStore = blockedRecipientStore
 
         super.init()
 
         SwiftSingletons.register(self)
-        AppReadinessGlobal.runNowOrWhenAppWillBecomeReady {
+        appReadiness.runNowOrWhenAppWillBecomeReady {
             self.observeNotifications()
             self.loadStateOnLaunch()
         }
@@ -53,7 +55,7 @@ public class BlockingManager: NSObject {
             withCurrentState(transaction: $0) { _ in }
         }
         // Once we're ready to send a message, check to see if we need to sync.
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             DispatchQueue.global().async {
                 self.sendBlockListSyncMessage(force: false)
             }
@@ -495,7 +497,7 @@ extension BlockingManager {
 
     @objc
     private func applicationDidBecomeActive() {
-        AppReadinessGlobal.runNowOrWhenMainAppDidBecomeReadyAsync {
+        appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
             DispatchQueue.global().async {
                 self.sendBlockListSyncMessage(force: false)
             }

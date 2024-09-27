@@ -11,6 +11,7 @@ import XCTest
 class GRDBSchemaMigratorTest: XCTestCase {
     func testMigrateFromScratch() throws {
         let databaseStorage = try SDSDatabaseStorage(
+            appReadiness: AppReadinessMock(),
             databaseFileUrl: OWSFileSystem.temporaryFileUrl(),
             keychainStorage: MockKeychainStorage()
         )

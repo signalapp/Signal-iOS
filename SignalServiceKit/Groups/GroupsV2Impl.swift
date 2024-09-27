@@ -21,6 +21,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
     ) {
         self.authCredentialStore = authCredentialStore
         self.authCredentialManager = authCredentialManager
+        self.profileKeyUpdater = GroupsV2ProfileKeyUpdater(appReadiness: appReadiness)
 
         SwiftSingletons.register(self)
 
@@ -959,7 +960,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
 
     // MARK: - Rotate Profile Key
 
-    private let profileKeyUpdater = GroupsV2ProfileKeyUpdater()
+    private let profileKeyUpdater: GroupsV2ProfileKeyUpdater
 
     public func scheduleAllGroupsV2ForProfileKeyUpdate(transaction: SDSAnyWriteTransaction) {
         profileKeyUpdater.scheduleAllGroupsV2ForProfileKeyUpdate(transaction: transaction)

@@ -169,20 +169,23 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     // Exposed for testing
     public internal(set) var trustRoot: PublicKey
 
-    public override init() {
+    private let appReadiness: AppReadiness
+
+    public init(appReadiness: AppReadiness) {
+        self.appReadiness = appReadiness
         self.trustRoot = OWSUDManagerImpl.trustRoot()
 
         super.init()
 
         SwiftSingletons.register(self)
 
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync {
+        appReadiness.runNowOrWhenAppDidBecomeReadySync {
             self.setup()
         }
     }
 
     private func setup() {
-        owsAssertDebug(AppReadinessGlobal.isAppReady)
+        owsAssertDebug(appReadiness.isAppReady)
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(registrationStateDidChange),
@@ -202,7 +205,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     @objc
     private func registrationStateDidChange() {
-        owsAssertDebug(AppReadinessGlobal.isAppReady)
+        owsAssertDebug(appReadiness.isAppReady)
 
         Task {
             _ = try? await fetchSenderCertificates(certificateExpirationPolicy: .strict)
@@ -211,7 +214,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     @objc
     private func didBecomeActive() {
-        owsAssertDebug(AppReadinessGlobal.isAppReady)
+        owsAssertDebug(appReadiness.isAppReady)
 
         Task {
             _ = try? await fetchSenderCertificates(certificateExpirationPolicy: .strict)

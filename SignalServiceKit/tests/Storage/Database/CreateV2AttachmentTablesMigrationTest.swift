@@ -15,6 +15,7 @@ public class AttachmentV2MigrationTest: XCTestCase {
     override public func setUp() async throws {
         self.dbFileURL = OWSFileSystem.temporaryFileUrl()
         self.db = try SDSDatabaseStorage(
+            appReadiness: AppReadinessMock(),
             databaseFileUrl: dbFileURL,
             keychainStorage: MockKeychainStorage()
         )

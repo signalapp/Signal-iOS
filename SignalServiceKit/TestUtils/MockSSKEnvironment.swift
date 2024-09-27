@@ -21,6 +21,7 @@ public class MockSSKEnvironment: NSObject {
             appContext: testAppContext,
             appReadiness: appReadiness,
             databaseStorage: try! SDSDatabaseStorage(
+                appReadiness: appReadiness,
                 databaseFileUrl: SDSDatabaseStorage.grdbDatabaseFileUrl,
                 keychainStorage: MockKeychainStorage()
             ),

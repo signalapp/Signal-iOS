@@ -9,6 +9,7 @@ import LibSignalClient
 @objc
 public class LegacyChangePhoneNumber: NSObject {
 
+    private let appReadiness: AppReadiness
     private let changePhoneNumberPniManager: ChangePhoneNumberPniManager
 
     /// Records change-number operations that were started (by this, or
@@ -19,15 +20,15 @@ public class LegacyChangePhoneNumber: NSObject {
     /// we will attempt to recover it.
     private let incompleteChangeTokenStore = IncompleteChangeTokenStore()
 
-    @objc
-    public override init() {
+    public init(appReadiness: AppReadiness) {
+        self.appReadiness = appReadiness
         self.changePhoneNumberPniManager = DependenciesBridge.shared.changePhoneNumberPniManager
 
         super.init()
 
         SwiftSingletons.register(self)
 
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             self.recoverInterruptedChangeNumberIfNecessary()
         }
     }
@@ -124,7 +125,7 @@ public class LegacyChangePhoneNumber: NSObject {
     }
 
     private func recoverInterruptedChangeNumberIfNecessary() {
-        guard AppReadinessGlobal.isAppReady else {
+        guard appReadiness.isAppReady else {
             owsFailDebug("isAppReady.")
             return
         }

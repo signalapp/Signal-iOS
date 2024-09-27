@@ -130,6 +130,7 @@ class NSEEnvironment: Dependencies {
 
         let keychainStorage = KeychainStorageImpl(isUsingProductionService: TSConstants.isUsingProductionService)
         let databaseStorage = try SDSDatabaseStorage(
+            appReadiness: appReadiness,
             databaseFileUrl: SDSDatabaseStorage.grdbDatabaseFileUrl,
             keychainStorage: keychainStorage
         )

@@ -17,9 +17,11 @@ private struct IncomingGroupsV2MessageJobInfo {
 
 class IncomingGroupsV2MessageQueue: MessageProcessingPipelineStage {
 
+    private let appReadiness: AppReadiness
     private let finder = GRDBGroupsV2MessageJobFinder()
 
-    init() {
+    init(appReadiness: AppReadiness) {
+        self.appReadiness = appReadiness
         SwiftSingletons.register(self)
 
         observeNotifications()
@@ -61,7 +63,7 @@ class IncomingGroupsV2MessageQueue: MessageProcessingPipelineStage {
             object: nil
         )
 
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync {
+        appReadiness.runNowOrWhenAppDidBecomeReadySync {
             NSObject.messagePipelineSupervisor.register(pipelineStage: self)
         }
     }
@@ -134,7 +136,7 @@ class IncomingGroupsV2MessageQueue: MessageProcessingPipelineStage {
         guard CurrentAppContext().shouldProcessIncomingMessages else {
             return
         }
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync {
+        appReadiness.runNowOrWhenAppDidBecomeReadySync {
             DispatchQueue.global().async {
                 self.drainQueues()
             }
@@ -156,7 +158,7 @@ class IncomingGroupsV2MessageQueue: MessageProcessingPipelineStage {
     private func drainQueues() {
         owsAssertDebug(!Thread.isMainThread)
 
-        guard AppReadinessGlobal.isAppReady || CurrentAppContext().isRunningTests else {
+        guard appReadiness.isAppReady || CurrentAppContext().isRunningTests else {
             owsFailDebug("App is not ready.")
             return
         }
@@ -185,7 +187,7 @@ class IncomingGroupsV2MessageQueue: MessageProcessingPipelineStage {
             let groupIdsToProcess = groupIdsWithJobs.subtracting(groupIdsBeingProcessed)
             groupIdsBeingProcessed.formUnion(groupIdsToProcess)
 
-            return groupIdsToProcess.map { GroupsMessageProcessor(groupId: $0) }
+            return groupIdsToProcess.map { GroupsMessageProcessor(groupId: $0, appReadiness: appReadiness) }
         }
 
         for processor in messageProcessors {
@@ -222,13 +224,16 @@ class IncomingGroupsV2MessageQueue: MessageProcessingPipelineStage {
 // we give up.
 internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependencies {
 
+    private let appReadiness: AppReadiness
+
     fileprivate let groupId: Data
     private let finder = GRDBGroupsV2MessageJobFinder()
 
     fileprivate let promise: Promise<Void>
     private let future: Future<Void>
 
-    internal init(groupId: Data) {
+    internal init(groupId: Data, appReadiness: AppReadiness) {
+        self.appReadiness = appReadiness
         self.groupId = groupId
 
         let (promise, future) = Promise<Void>.pending()
@@ -273,7 +278,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
             object: nil
         )
 
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync {
+        appReadiness.runNowOrWhenAppDidBecomeReadySync {
             self.messagePipelineSupervisor.register(pipelineStage: self)
         }
     }
@@ -866,9 +871,10 @@ public class GroupsV2MessageProcessor: NSObject {
 
     public static let didFlushGroupsV2MessageQueue = Notification.Name("didFlushGroupsV2MessageQueue")
 
-    private let processingQueue = IncomingGroupsV2MessageQueue()
+    private let processingQueue: IncomingGroupsV2MessageQueue
 
-    public override init() {
+    public init(appReadiness: AppReadiness) {
+        self.processingQueue = IncomingGroupsV2MessageQueue(appReadiness: appReadiness)
         super.init()
         SwiftSingletons.register(self)
         processingQueue.drainQueueWhenReady()

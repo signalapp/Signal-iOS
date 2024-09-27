@@ -96,9 +96,9 @@ public class OWSContactsManager: NSObject, ContactsManagerProtocol {
     /// Otherwise, it's value is undefined.
     public private(set) var hasLoadedSystemContacts: Bool = false
 
-    public init(swiftValues: OWSContactsManagerSwiftValues) {
+    public init(appReadiness: AppReadiness, swiftValues: OWSContactsManagerSwiftValues) {
         keyValueStore = SDSKeyValueStore(collection: "OWSContactsManagerCollection")
-        systemContactsFetcher = SystemContactsFetcher()
+        systemContactsFetcher = SystemContactsFetcher(appReadiness: appReadiness)
         self.swiftValues = swiftValues
         super.init()
         systemContactsFetcher.delegate = self

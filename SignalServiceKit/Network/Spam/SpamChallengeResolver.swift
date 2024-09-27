@@ -34,12 +34,14 @@ public class SpamChallengeResolver: NSObject, SpamChallengeSchedulingDelegate {
         }
     }
 
-    @objc
-    public override init() {
+    private let appReadiness: AppReadiness
+
+    public init(appReadiness: AppReadiness) {
+        self.appReadiness = appReadiness
         super.init()
         SwiftSingletons.register(self)
 
-        AppReadinessGlobal.runNowOrWhenAppWillBecomeReady {
+        appReadiness.runNowOrWhenAppWillBecomeReady {
             self.workQueue.async {
                 self.loadChallengesFromDatabase()
                 if let challengeCount = self.challenges?.count, challengeCount > 0 {
@@ -134,7 +136,7 @@ extension SpamChallengeResolver {
 
     @objc
     public func handleIncomingPushChallengeToken(_ token: String) {
-        guard AppReadinessGlobal.isAppReady else {
+        guard appReadiness.isAppReady else {
             owsFailDebug("App not ready")
             return
         }
@@ -165,7 +167,7 @@ extension SpamChallengeResolver {
 
     @objc
     public func handleIncomingCaptchaChallengeToken(_ token: String) {
-        guard AppReadinessGlobal.isAppReady else {
+        guard appReadiness.isAppReady else {
             owsFailDebug("App not ready")
             return
         }
@@ -210,7 +212,7 @@ extension SpamChallengeResolver {
         retryAfter: Date,
         silentRecoveryCompletionHandler: ((Bool) -> Void)? = nil
     ) {
-        guard AppReadinessGlobal.isAppReady else { return owsFailDebug("App not ready") }
+        guard appReadiness.isAppReady else { return owsFailDebug("App not ready") }
         guard let payload = try? JSONDecoder().decode(ServerChallengePayload.self, from: body) else {
             return owsFailDebug("Invalid server spam request response body: \(body)")
         }

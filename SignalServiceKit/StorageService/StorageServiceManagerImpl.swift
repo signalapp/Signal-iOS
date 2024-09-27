@@ -17,17 +17,20 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
         return queue
     }()
 
-    override init() {
+    private let appReadiness: AppReadiness
+
+    init(appReadiness: AppReadiness) {
+        self.appReadiness = appReadiness
         super.init()
 
         SwiftSingletons.register(self)
 
         if CurrentAppContext().hasUI {
-            AppReadinessGlobal.runNowOrWhenAppWillBecomeReady {
+            appReadiness.runNowOrWhenAppWillBecomeReady {
                 self.cleanUpUnknownData()
             }
 
-            AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync {
+            appReadiness.runNowOrWhenAppDidBecomeReadySync {
                 NotificationCenter.default.addObserver(
                     self,
                     selector: #selector(self.willResignActive),
@@ -36,7 +39,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
                 )
             }
 
-            AppReadinessGlobal.runNowOrWhenMainAppDidBecomeReadyAsync {
+            appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
                 guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else { return }
 
                 // Schedule a restore. This will do nothing unless we've never
@@ -47,7 +50,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
                 self.backupPendingChanges(authedDevice: .implicit)
             }
 
-            AppReadinessGlobal.runNowOrWhenMainAppDidBecomeReadyAsync {
+            appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
                 Task { await self.cleanUpDeletedCallLinks() }
             }
         }

@@ -52,6 +52,7 @@ extension OutgoingCallEventSyncMessageManager {
 }
 
 final class OutgoingCallEventSyncMessageManagerImpl: OutgoingCallEventSyncMessageManager {
+    private let appReadiness: AppReadiness
     private let databaseStorage: SDSDatabaseStorage
     private let messageSenderJobQueue: MessageSenderJobQueue
     private let recipientDatabaseTable: RecipientDatabaseTable
@@ -59,10 +60,12 @@ final class OutgoingCallEventSyncMessageManagerImpl: OutgoingCallEventSyncMessag
     private var logger: CallRecordLogger { .shared }
 
     init(
+        appReadiness: AppReadiness,
         databaseStorage: SDSDatabaseStorage,
         messageSenderJobQueue: MessageSenderJobQueue,
         recipientDatabaseTable: RecipientDatabaseTable
     ) {
+        self.appReadiness = appReadiness
         self.databaseStorage = databaseStorage
         self.messageSenderJobQueue = messageSenderJobQueue
         self.recipientDatabaseTable = recipientDatabaseTable
@@ -173,14 +176,14 @@ final class OutgoingCallEventSyncMessageManagerImpl: OutgoingCallEventSyncMessag
     ) {
         let syncTx = SDSDB.shimOnlyBridge(syncTx)
 
-        if AppReadinessGlobal.isAppReady {
+        if appReadiness.isAppReady {
             logger.info("Enqueuing call event sync message: \(callEvent.callType), \(callEvent.eventDirection), \(callEvent.eventType).")
 
             _sendSyncMessage(outgoingCallEvent: callEvent, tx: syncTx)
         } else {
             logger.info("Delaying call event sync message because app isn't ready.")
 
-            AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
+            appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
                 self.databaseStorage.write { asyncTx in
                     self._sendSyncMessage(outgoingCallEvent: callEvent, tx: asyncTx)
                 }

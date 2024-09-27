@@ -403,6 +403,7 @@ class MessageBackupIntegrationTests: XCTestCase {
         /// subdirectory of our temp directory unique to the instantiation of
         /// the app context.
         let databaseStorage = try! SDSDatabaseStorage(
+            appReadiness: appReadiness,
             databaseFileUrl: SDSDatabaseStorage.grdbDatabaseFileUrl,
             keychainStorage: MockKeychainStorage()
         )

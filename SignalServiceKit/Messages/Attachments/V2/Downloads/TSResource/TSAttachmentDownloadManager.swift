@@ -21,11 +21,12 @@ public class TSAttachmentDownloadManager: NSObject {
     // Just used to drive progress indicators.
     private var completeAttachmentMap = LRUCache<AttachmentId, Bool>(maxSize: 256)
 
+    private let appReadiness: AppReadiness
     private static let schedulers: Schedulers = DispatchQueueSchedulers()
     private var schedulers: Schedulers { Self.schedulers }
 
-    @objc
-    public override init() {
+    public init(appReadiness: AppReadiness) {
+        self.appReadiness = appReadiness
         super.init()
 
         SwiftSingletons.register(self)
@@ -44,7 +45,7 @@ public class TSAttachmentDownloadManager: NSObject {
             object: nil
         )
 
-        AppReadinessGlobal.runNowOrWhenMainAppDidBecomeReadyAsync { self.startPendingMessageDownloads() }
+        appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { self.startPendingMessageDownloads() }
     }
 
     @objc
@@ -77,7 +78,7 @@ public class TSAttachmentDownloadManager: NSObject {
 
     @objc
     func applicationDidBecomeActive() {
-        AppReadinessGlobal.runNowOrWhenMainAppDidBecomeReadyAsync { self.startPendingMessageDownloads() }
+        appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { self.startPendingMessageDownloads() }
     }
 
     // MARK: -

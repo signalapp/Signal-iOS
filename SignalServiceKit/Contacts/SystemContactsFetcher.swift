@@ -22,6 +22,13 @@ public class ContactsFrameworkContactStoreAdaptee: NSObject, ContactStoreAdaptee
     private var initializedObserver = false
     private var lastSortOrder: CNContactSortOrder?
 
+    private let appReadiness: AppReadiness
+
+    init(appReadiness: AppReadiness) {
+        self.appReadiness = appReadiness
+        super.init()
+    }
+
     private static let minimalContactKeys: [CNKeyDescriptor] = [
         CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
         CNContactPhoneNumbersKey as CNKeyDescriptor,
@@ -73,7 +80,7 @@ public class ContactsFrameworkContactStoreAdaptee: NSObject, ContactStoreAdaptee
 
     @objc
     private func didBecomeActive() {
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             let currentSortOrder = CNContactsUserDefaults.shared().sortOrder
 
             guard currentSortOrder != self.lastSortOrder else {
@@ -191,9 +198,8 @@ public class SystemContactsFetcher: NSObject {
     public private(set) var systemContactsHaveBeenRequestedAtLeastOnce = false
     private var hasSetupObservation = false
 
-    @objc
-    public override init() {
-        self.contactStoreAdapter = ContactsFrameworkContactStoreAdaptee()
+    public init(appReadiness: AppReadiness) {
+        self.contactStoreAdapter = ContactsFrameworkContactStoreAdaptee(appReadiness: appReadiness)
 
         super.init()
 

@@ -44,6 +44,7 @@ class MessageReceiptSet: NSObject, Codable {
 public class ReceiptSender: NSObject {
     private let recipientDatabaseTable: any RecipientDatabaseTable
 
+    private let appReadiness: AppReadiness
     private let deliveryReceiptStore: KeyValueStore
     private let readReceiptStore: KeyValueStore
     private let viewedReceiptStore: KeyValueStore
@@ -52,7 +53,8 @@ public class ReceiptSender: NSObject {
     private let pendingTasks = PendingTasks(label: #fileID)
     private let sendingState: AtomicValue<SendingState>
 
-    public init(kvStoreFactory: KeyValueStoreFactory, recipientDatabaseTable: any RecipientDatabaseTable) {
+    public init(appReadiness: AppReadiness, kvStoreFactory: KeyValueStoreFactory, recipientDatabaseTable: any RecipientDatabaseTable) {
+        self.appReadiness = appReadiness
         self.recipientDatabaseTable = recipientDatabaseTable
         self.deliveryReceiptStore = kvStoreFactory.keyValueStore(collection: "kOutgoingDeliveryReceiptManagerCollection")
         self.readReceiptStore = kvStoreFactory.keyValueStore(collection: "kOutgoingReadReceiptManagerCollection")
@@ -77,7 +79,7 @@ public class ReceiptSender: NSObject {
             using: { [weak self] _ in self?.sendPendingReceiptsIfNeeded(pendingTask: nil) }
         ))
 
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             self.sendPendingReceiptsIfNeeded(pendingTask: nil)
         }
     }
@@ -193,7 +195,7 @@ public class ReceiptSender: NSObject {
         do {
             defer { pendingTask?.complete() }
 
-            guard AppReadinessGlobal.isAppReady, reachabilityManager.isReachable else {
+            guard appReadiness.isAppReady, reachabilityManager.isReachable else {
                 return
             }
             guard sendingState.update(block: { $0.startIfPossible() }) else {

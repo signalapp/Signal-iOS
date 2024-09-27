@@ -29,10 +29,10 @@ public class GroupV2UpdatesImpl: Dependencies {
         return operationQueue
     }()
 
-    public init() {
+    public init(appReadiness: AppReadiness) {
         SwiftSingletons.register(self)
 
-        AppReadinessGlobal.runNowOrWhenMainAppDidBecomeReadyAsync {
+        appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
             Task { await self.autoRefreshGroupOnLaunch() }
         }
     }

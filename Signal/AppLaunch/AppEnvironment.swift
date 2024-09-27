@@ -41,7 +41,7 @@ public class AppEnvironment: NSObject {
 
     init(appReadiness: AppReadiness, deviceTransferService: DeviceTransferService) {
         self.deviceTransferServiceRef = deviceTransferService
-        self.pushRegistrationManagerRef = PushRegistrationManager()
+        self.pushRegistrationManagerRef = PushRegistrationManager(appReadiness: appReadiness)
         self.avatarHistorManagerRef = AvatarHistoryManager(appReadiness: appReadiness)
 
         super.init()
@@ -59,6 +59,7 @@ public class AppEnvironment: NSObject {
         )
         self.appIconBadgeUpdater = AppIconBadgeUpdater(badgeManager: badgeManager)
         self.usernameValidationObserverRef = UsernameValidationObserver(
+            appReadiness: appReadiness,
             manager: DependenciesBridge.shared.usernameValidationManager,
             database: DependenciesBridge.shared.db
         )

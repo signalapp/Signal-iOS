@@ -29,6 +29,7 @@ class ZkParamsMigratorTest: XCTestCase {
         mockDb = MockDB()
         versionedProfilesRef = MockVersionedProfiles()
         zkParamsMigrator = ZkParamsMigrator(
+            appReadiness: AppReadinessMock(),
             authCredentialStore: authCredentialStore,
             db: mockDb,
             keyValueStoreFactory: keyValueStoreFactory,

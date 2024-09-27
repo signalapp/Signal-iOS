@@ -19,10 +19,13 @@ public class OWSSyncManager: NSObject {
     }
     private var isRequestInFlight: Bool = false
 
-    public init(default: Void) {
+    fileprivate let appReadiness: AppReadiness
+
+    public init(appReadiness: AppReadiness) {
+        self.appReadiness = appReadiness
         super.init()
         SwiftSingletons.register(self)
-        AppReadinessGlobal.runNowOrWhenMainAppDidBecomeReadyAsync {
+        appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
             self.addObservers()
 
             if TSAccountManagerObjcBridge.isRegisteredWithMaybeTransaction {
@@ -111,7 +114,7 @@ extension OWSSyncManager: SyncManagerProtocolObjc {
     }
 
     public func sendConfigurationSyncMessage() {
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             Task { await self.databaseStorage.awaitableWrite(block: self._sendConfigurationSyncMessage(tx:)) }
         }
     }
@@ -379,7 +382,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
     }
 
     private func canSendContactSyncMessage() -> Bool {
-        guard AppReadinessGlobal.isAppReady else {
+        guard appReadiness.isAppReady else {
             return false
         }
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager

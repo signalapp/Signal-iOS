@@ -18,7 +18,10 @@ public enum PushRegistrationError: Error {
  */
 public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
 
-    override init() {
+    private let appReadiness: AppReadiness
+
+    init(appReadiness: AppReadiness) {
+        self.appReadiness = appReadiness
         (preauthChallengeGuarantee, preauthChallengeFuture) = Guarantee<String>.pending()
 
         super.init()
@@ -104,7 +107,7 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
 
     @objc
     public func didReceiveVanillaPreAuthChallengeToken(_ challenge: String) {
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync {
+        appReadiness.runNowOrWhenAppDidBecomeReadySync {
             AssertIsOnMainThread()
             Logger.info("received vanilla preauth challenge")
             self.preauthChallengeFuture.resolve(challenge)
@@ -149,7 +152,7 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
 
         // Synchronously wait until the app is ready.
         let appReady = DispatchSemaphore(value: 0)
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync {
+        appReadiness.runNowOrWhenAppDidBecomeReadySync {
             appReady.signal()
         }
         appReady.wait()

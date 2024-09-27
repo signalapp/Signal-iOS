@@ -17,12 +17,12 @@ public class IncomingContactSyncJobQueue: NSObject {
         IncomingContactSyncJobRunnerFactory
     >
 
-    public init(db: DB, reachabilityManager: SSKReachabilityManager) {
+    public init(appReadiness: AppReadiness, db: DB, reachabilityManager: SSKReachabilityManager) {
         self.jobQueueRunner = JobQueueRunner(
             canExecuteJobsConcurrently: false,
             db: db,
             jobFinder: JobRecordFinderImpl(db: db),
-            jobRunnerFactory: IncomingContactSyncJobRunnerFactory()
+            jobRunnerFactory: IncomingContactSyncJobRunnerFactory(appReadiness: appReadiness)
         )
         super.init()
         self.jobQueueRunner.listenForReachabilityChanges(reachabilityManager: reachabilityManager)
@@ -55,12 +55,27 @@ public class IncomingContactSyncJobQueue: NSObject {
 }
 
 private class IncomingContactSyncJobRunnerFactory: JobRunnerFactory {
-    func buildRunner() -> IncomingContactSyncJobRunner { return IncomingContactSyncJobRunner() }
+
+    private let appReadiness: AppReadiness
+
+    init(appReadiness: AppReadiness) {
+        self.appReadiness = appReadiness
+    }
+
+    func buildRunner() -> IncomingContactSyncJobRunner {
+        return IncomingContactSyncJobRunner(appReadiness: appReadiness)
+    }
 }
 
 private class IncomingContactSyncJobRunner: JobRunner, Dependencies {
     private enum Constants {
         static let maxRetries: UInt = 4
+    }
+
+    private let appReadiness: AppReadiness
+
+    init(appReadiness: AppReadiness) {
+        self.appReadiness = appReadiness
     }
 
     func runJobAttempt(_ jobRecord: IncomingContactSyncJobRecord) async -> JobAttemptResult {
@@ -94,7 +109,7 @@ private class IncomingContactSyncJobRunner: JobRunner, Dependencies {
             let attachmentStream: TSAttachmentStream
             switch attachment {
             case let attachmentPointer as TSAttachmentPointer:
-                attachmentStream = try await TSAttachmentDownloadManager()
+                attachmentStream = try await TSAttachmentDownloadManager(appReadiness: appReadiness)
                     .enqueueContactSyncDownload(attachmentPointer: attachmentPointer)
             case let attachmentStreamValue as TSAttachmentStream:
                 attachmentStream = attachmentStreamValue

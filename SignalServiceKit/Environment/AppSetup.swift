@@ -151,12 +151,15 @@ public class AppSetup {
             recipientIdFinder: recipientIdFinder
         )
         let blockedRecipientStore = BlockedRecipientStoreImpl()
-        let blockingManager = BlockingManager(blockedRecipientStore: blockedRecipientStore)
+        let blockingManager = BlockingManager(
+            appReadiness: appReadiness,
+            blockedRecipientStore: blockedRecipientStore
+        )
         let dateProvider = testDependencies.dateProvider ?? Date.provider
         let earlyMessageManager = EarlyMessageManager(appReadiness: appReadiness)
-        let messageProcessor = MessageProcessor()
+        let messageProcessor = MessageProcessor(appReadiness: appReadiness)
         let messageSender = testDependencies.messageSender ?? MessageSender()
-        let messageSenderJobQueue = MessageSenderJobQueue()
+        let messageSenderJobQueue = MessageSenderJobQueue(appReadiness: appReadiness)
         let modelReadCaches = testDependencies.modelReadCaches ?? ModelReadCaches(factory: ModelReadCacheFactory())
         let networkManager = testDependencies.networkManager ?? NetworkManager(libsignalNet: libsignalNet)
         let ows2FAManager = OWS2FAManager(appReadiness: appReadiness)
@@ -168,10 +171,13 @@ public class AppSetup {
             recipientIdFinder: recipientIdFinder
         )
         let profileManager = testDependencies.profileManager ?? OWSProfileManager(
+            appReadiness: appReadiness,
             databaseStorage: databaseStorage,
             swiftValues: OWSProfileManagerSwiftValues()
         )
-        let reachabilityManager = testDependencies.reachabilityManager ?? SSKReachabilityManagerImpl()
+        let reachabilityManager = testDependencies.reachabilityManager ?? SSKReachabilityManagerImpl(
+            appReadiness: appReadiness
+        )
 
         // NOTE: TSThead accesses AppReadinessObjcBridge.shared and relies on this having been called
         // in this method, even things change such that nothing else here needs the instance.
@@ -188,9 +194,11 @@ public class AppSetup {
         )
         let signalService = testDependencies.signalService ?? OWSSignalService()
         let signalServiceAddressCache = SignalServiceAddressCache()
-        let storageServiceManager = testDependencies.storageServiceManager ?? StorageServiceManagerImpl()
-        let syncManager = testDependencies.syncManager ?? OWSSyncManager(default: ())
-        let udManager = OWSUDManagerImpl()
+        let storageServiceManager = testDependencies.storageServiceManager ?? StorageServiceManagerImpl(
+            appReadiness: appReadiness
+        )
+        let syncManager = testDependencies.syncManager ?? OWSSyncManager(appReadiness: appReadiness)
+        let udManager = OWSUDManagerImpl(appReadiness: appReadiness)
         let versionedProfiles = testDependencies.versionedProfiles ?? VersionedProfilesImpl(appReadiness: appReadiness)
 
         let signalAccountStore = SignalAccountStoreImpl()
@@ -220,11 +228,14 @@ public class AppSetup {
             storageServiceManager: storageServiceManager,
             schedulers: schedulers
         )
-        let contactManager = testDependencies.contactManager ?? OWSContactsManager(swiftValues: OWSContactsManagerSwiftValues(
-            usernameLookupManager: usernameLookupManager,
-            recipientDatabaseTable: recipientDatabaseTable,
-            nicknameManager: nicknameManager
-        ))
+        let contactManager = testDependencies.contactManager ?? OWSContactsManager(
+            appReadiness: appReadiness,
+            swiftValues: OWSContactsManagerSwiftValues(
+                usernameLookupManager: usernameLookupManager,
+                recipientDatabaseTable: recipientDatabaseTable,
+                nicknameManager: nicknameManager
+            )
+        )
 
         let db = SDSDB(databaseStorage: databaseStorage)
 
@@ -377,6 +388,7 @@ public class AppSetup {
         )
 
         let tsResourceDownloadManager = TSResourceDownloadManagerImpl(
+            appReadiness: appReadiness,
             attachmentDownloadManager: attachmentDownloadManager,
             tsResourceStore: tsResourceStore
         )
@@ -421,6 +433,7 @@ public class AppSetup {
 
         let identityManager = OWSIdentityManagerImpl(
             aciProtocolStore: aciProtocolStore,
+            appReadiness: appReadiness,
             db: db,
             keyValueStoreFactory: keyValueStoreFactory,
             messageSenderJobQueue: messageSenderJobQueue,
@@ -543,6 +556,7 @@ public class AppSetup {
             schedulers: schedulers
         )
         let outgoingCallEventSyncMessageManager = OutgoingCallEventSyncMessageManagerImpl(
+            appReadiness: appReadiness,
             databaseStorage: databaseStorage,
             messageSenderJobQueue: messageSenderJobQueue,
             recipientDatabaseTable: recipientDatabaseTable
@@ -1247,16 +1261,17 @@ public class AppSetup {
             serviceClient: SignalServiceRestClient.shared
         )
         let messageDecrypter = OWSMessageDecrypter(appReadiness: appReadiness)
-        let groupsV2MessageProcessor = GroupsV2MessageProcessor()
-        let disappearingMessagesJob = OWSDisappearingMessagesJob(databaseStorage: databaseStorage)
+        let groupsV2MessageProcessor = GroupsV2MessageProcessor(appReadiness: appReadiness)
+        let disappearingMessagesJob = OWSDisappearingMessagesJob(appReadiness: appReadiness, databaseStorage: databaseStorage)
         let receiptSender = ReceiptSender(
+            appReadiness: appReadiness,
             kvStoreFactory: keyValueStoreFactory,
             recipientDatabaseTable: recipientDatabaseTable
         )
         let stickerManager = StickerManager(appReadiness: appReadiness)
         let sskPreferences = SSKPreferences()
-        let groupV2Updates = testDependencies.groupV2Updates ?? GroupV2UpdatesImpl()
-        let messageFetcherJob = MessageFetcherJob()
+        let groupV2Updates = testDependencies.groupV2Updates ?? GroupV2UpdatesImpl(appReadiness: appReadiness)
+        let messageFetcherJob = MessageFetcherJob(appReadiness: appReadiness)
         let profileFetcher = ProfileFetcherImpl(
             db: db,
             deleteForMeSyncMessageSettingsStore: deleteForMeSyncMessageSettingsStore,
@@ -1275,9 +1290,9 @@ public class AppSetup {
         )
         let messagePipelineSupervisor = MessagePipelineSupervisor()
         let paymentsCurrencies = testDependencies.paymentsCurrencies ?? PaymentsCurrenciesImpl()
-        let spamChallengeResolver = SpamChallengeResolver()
+        let spamChallengeResolver = SpamChallengeResolver(appReadiness: appReadiness)
         let phoneNumberUtil = PhoneNumberUtil(swiftValues: PhoneNumberUtilSwiftValues())
-        let legacyChangePhoneNumber = LegacyChangePhoneNumber()
+        let legacyChangePhoneNumber = LegacyChangePhoneNumber(appReadiness: appReadiness)
         let contactDiscoveryManager = ContactDiscoveryManagerImpl(
             db: db,
             recipientDatabaseTable: recipientDatabaseTable,
@@ -1300,7 +1315,7 @@ public class AppSetup {
             groupCallPeekClient: groupCallPeekClient
         )
 
-        let paymentsLock = OWSPaymentsLock()
+        let paymentsLock = OWSPaymentsLock(appReadiness: appReadiness)
 
         let sskEnvironment = SSKEnvironment(
             contactManager: contactManager,
@@ -1451,7 +1466,7 @@ extension AppSetup.DatabaseContinuation {
             }
             databaseStorage.runGrdbSchemaMigrationsOnMainDatabase(completionScheduler: mainScheduler) {
                 do {
-                    try databaseStorage.grdbStorage.setupDatabaseChangeObserver()
+                    try databaseStorage.grdbStorage.setupDatabaseChangeObserver(appReadiness: self.appReadiness)
                 } catch {
                     owsFail("Couldn't set up change observer: \(error.grdbErrorForLogging)")
                 }
@@ -1511,6 +1526,7 @@ extension AppSetup.FinalContinuation {
         AssertIsOnMainThread()
 
         ZkParamsMigrator(
+            appReadiness: appReadiness,
             authCredentialStore: authCredentialStore,
             db: dependenciesBridge.db,
             keyValueStoreFactory: dependenciesBridge.keyValueStoreFactory,

@@ -19,6 +19,7 @@ class ReceiptSenderTest: XCTestCase {
         mockDb = MockDB()
         recipientDatabaseTable = MockRecipientDatabaseTable()
         receiptSender = ReceiptSender(
+            appReadiness: AppReadinessMock(),
             kvStoreFactory: InMemoryKeyValueStoreFactory(),
             recipientDatabaseTable: recipientDatabaseTable
         )

@@ -27,14 +27,17 @@ public final class OWSDisappearingMessagesJob: NSObject {
     @MainActor
     private var fallbackTimer: Timer?
 
-    init(databaseStorage: SDSDatabaseStorage) {
+    private let appReadiness: AppReadiness
+
+    init(appReadiness: AppReadiness, databaseStorage: SDSDatabaseStorage) {
+        self.appReadiness = appReadiness
         self.myDatabaseStorage = databaseStorage
 
         super.init()
 
         SwiftSingletons.register(self)
 
-        AppReadinessGlobal.runNowOrWhenMainAppDidBecomeReadyAsync { @MainActor in
+        appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { @MainActor in
             self.fallbackTimer = .scheduledTimer(withTimeInterval: 5 * kMinuteInterval, repeats: true) { [weak self] timer in
                 guard let self else {
                     timer.invalidate()
@@ -120,7 +123,7 @@ public final class OWSDisappearingMessagesJob: NSObject {
     /// Clean up any messages that expired since last launch immediately
     /// and continue cleaning in the background.
     public func startIfNecessary() {
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync { [self] in
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync { [self] in
             guard !hasStarted else { return }
             guard !Self.isDatabaseCorrupted() else { return }
             hasStarted = true
@@ -179,7 +182,7 @@ public final class OWSDisappearingMessagesJob: NSObject {
 
     @MainActor
     private func applicationDidBecomeActive() {
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             Self.serialQueue.async {
                 _ = self.runLoop()
             }
@@ -201,7 +204,7 @@ public final class OWSDisappearingMessagesJob: NSObject {
             return
         }
 
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync { @MainActor in
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync { @MainActor in
             self.resetNextDisapperanceTimer()
             Self.serialQueue.async {
                 _ = self.runLoop()
@@ -219,7 +222,7 @@ public final class OWSDisappearingMessagesJob: NSObject {
         // apparently recently means within the last second; although not having one set is apparently also true
         let recentlyScheduledDisappearanceTimer = fabs(self.nextDisappearanceDate?.timeIntervalSinceNow ?? 0.0) < 1.0
 
-        AppReadinessGlobal.runNowOrWhenMainAppDidBecomeReadyAsync {
+        appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
             Self.serialQueue.async {
                 let deletedCount = self.runLoop()
 

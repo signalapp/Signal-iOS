@@ -12,7 +12,7 @@ class MessageSenderJobQueueTest: SSKBaseTest {
     }
 
     func test_messageIsSent() async throws {
-        let jobQueue = MessageSenderJobQueue()
+        let jobQueue = MessageSenderJobQueue(appReadiness: AppReadinessMock())
         let (message, promise) = try await databaseStorage.awaitableWrite { tx in
             let message = OutgoingMessageFactory().create(transaction: tx)
             let jobRecord = try MessageSenderJobRecord(
@@ -38,7 +38,7 @@ class MessageSenderJobQueueTest: SSKBaseTest {
 
     func test_respectsQueueOrder() async throws {
         let messageCount = 3
-        let jobQueue = MessageSenderJobQueue()
+        let jobQueue = MessageSenderJobQueue(appReadiness: AppReadinessMock())
         let (messages, promises) = try await databaseStorage.awaitableWrite { tx in
             let messages = (1...messageCount).map { _ in OutgoingMessageFactory().create(transaction: tx) }
             let promises = try messages.map {
@@ -67,7 +67,7 @@ class MessageSenderJobQueueTest: SSKBaseTest {
     }
 
     func test_sendingInvisibleMessage() async throws {
-        let jobQueue = MessageSenderJobQueue()
+        let jobQueue = MessageSenderJobQueue(appReadiness: AppReadinessMock())
         fakeMessageSender.stubbedFailingErrors = [nil]
         jobQueue.setup()
         let (message, promise) = await databaseStorage.awaitableWrite { tx in
@@ -83,7 +83,7 @@ class MessageSenderJobQueueTest: SSKBaseTest {
     }
 
     func test_retryableFailure() async throws {
-        let jobQueue = MessageSenderJobQueue()
+        let jobQueue = MessageSenderJobQueue(appReadiness: AppReadinessMock())
 
         let (message, promise) = try await databaseStorage.awaitableWrite { tx in
             let message = OutgoingMessageFactory().create(transaction: tx)
@@ -152,7 +152,7 @@ class MessageSenderJobQueueTest: SSKBaseTest {
     }
 
     func test_permanentFailure() async throws {
-        let jobQueue = MessageSenderJobQueue()
+        let jobQueue = MessageSenderJobQueue(appReadiness: AppReadinessMock())
 
         let (message, promise) = try await databaseStorage.awaitableWrite { tx in
             let message = OutgoingMessageFactory().create(transaction: tx)

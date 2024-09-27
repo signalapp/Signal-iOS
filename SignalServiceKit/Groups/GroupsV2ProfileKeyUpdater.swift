@@ -16,7 +16,10 @@ import Foundation
 // need to be updated and for updating them.
 class GroupsV2ProfileKeyUpdater: Dependencies {
 
-    public init() {
+    private let appReadiness: AppReadiness
+
+    public init(appReadiness: AppReadiness) {
+        self.appReadiness = appReadiness
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(reachabilityChanged),
                                                name: SSKReachability.owsReachabilityDidChange,
@@ -33,7 +36,7 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
     private func didBecomeActive() {
         AssertIsOnMainThread()
 
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             self.tryToUpdateNext()
         }
     }
@@ -42,7 +45,7 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
     private func reachabilityChanged() {
         AssertIsOnMainThread()
 
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             self.tryToUpdateNext()
         }
     }

@@ -62,6 +62,7 @@ public extension DatabaseRecovery {
     ///
     /// Remember: this isn't everything you need to do to recover a database! See earlier docs.
     class DumpAndRestore {
+        private let appReadiness: AppReadiness
         private let corruptDatabaseStorage: SDSDatabaseStorage
         private let keychainStorage: any KeychainStorage
 
@@ -74,7 +75,8 @@ public extension DatabaseRecovery {
 
         public let progress: Progress
 
-        public init(corruptDatabaseStorage: SDSDatabaseStorage, keychainStorage: any KeychainStorage) {
+        public init(appReadiness: AppReadiness, corruptDatabaseStorage: SDSDatabaseStorage, keychainStorage: any KeychainStorage) {
+            self.appReadiness = appReadiness
             self.corruptDatabaseStorage = corruptDatabaseStorage
             self.keychainStorage = keychainStorage
             let totalUnitCount = Int64(
@@ -129,6 +131,7 @@ public extension DatabaseRecovery {
                 let newDatabaseStorage: SDSDatabaseStorage
                 do {
                     newDatabaseStorage = try SDSDatabaseStorage(
+                        appReadiness: self.appReadiness,
                         databaseFileUrl: newTemporaryDatabaseFileUrl,
                         keychainStorage: self.keychainStorage
                     )
