@@ -179,7 +179,7 @@ public class AppSetup {
         )
         let signalService = testDependencies.signalService ?? OWSSignalService()
         let signalServiceAddressCache = SignalServiceAddressCache()
-        let storageServiceManager = testDependencies.storageServiceManager ?? StorageServiceManagerImpl.shared
+        let storageServiceManager = testDependencies.storageServiceManager ?? StorageServiceManagerImpl()
         let syncManager = testDependencies.syncManager ?? OWSSyncManager(default: ())
         let udManager = OWSUDManagerImpl()
         let versionedProfiles = testDependencies.versionedProfiles ?? VersionedProfilesImpl()

@@ -10,11 +10,6 @@ import SwiftProtobuf
 
 public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
 
-    // TODO: We could convert this into a SSKEnvironment accessor so that we
-    // can replace it in tests.
-    @objc
-    public static let shared = StorageServiceManagerImpl()
-
     private let operationQueue: OperationQueue = {
         let queue = OperationQueue()
         queue.maxConcurrentOperationCount = 1
@@ -1131,6 +1126,7 @@ class StorageServiceOperation: OWSOperation {
             }
         }.done(on: DispatchQueue.global()) { updatedState in
             var mutableState = updatedState
+            let storageServiceManager = self.storageServiceManager
             self.databaseStorage.write { transaction in
                 // Update the manifest version to reflect the remote version we just restored to
                 mutableState.manifestVersion = manifest.version
@@ -1238,7 +1234,7 @@ class StorageServiceOperation: OWSOperation {
                 mutableState.save(clearConsecutiveConflicts: true, transaction: transaction)
 
                 if backupAfterSuccess {
-                    StorageServiceManagerImpl.shared.backupPendingChanges(authedDevice: self.authedDevice)
+                    storageServiceManager.backupPendingChanges(authedDevice: self.authedDevice)
                 }
             }
             self.reportSuccess()
