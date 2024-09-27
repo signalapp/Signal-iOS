@@ -393,6 +393,7 @@ class MessageBackupIntegrationTests: XCTestCase {
     private func initializeApp(dateProvider: DateProvider?) async {
         let testAppContext = TestAppContext()
         SetCurrentAppContext(testAppContext)
+        let appReadiness = AppReadinessMock()
 
         /// Note that ``SDSDatabaseStorage/grdbDatabaseFileUrl``, through a few
         /// layers of abstraction, uses the "current app context" to decide
@@ -411,6 +412,7 @@ class MessageBackupIntegrationTests: XCTestCase {
         /// are bound to the SignalUI target.
         _ = await AppSetup().start(
             appContext: testAppContext,
+            appReadiness: appReadiness,
             databaseStorage: databaseStorage,
             paymentsEvents: PaymentsEventsNoop(),
             mobileCoinHelper: MobileCoinHelperMock(),

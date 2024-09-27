@@ -15,10 +15,11 @@ public class MockSSKEnvironment: NSObject {
     public static func activate() {
         let testAppContext = TestAppContext()
         SetCurrentAppContext(testAppContext)
-        _ = AppReadinessImpl.createSingleton()
+        let appReadiness = AppReadinessImpl.createSingleton()
 
         let finalContinuation = AppSetup().start(
             appContext: testAppContext,
+            appReadiness: appReadiness,
             databaseStorage: try! SDSDatabaseStorage(
                 databaseFileUrl: SDSDatabaseStorage.grdbDatabaseFileUrl,
                 keychainStorage: MockKeychainStorage()

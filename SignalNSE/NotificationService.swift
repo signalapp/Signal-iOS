@@ -118,7 +118,7 @@ class NotificationService: UNNotificationServiceExtension {
 
         _ = Self.nseDidStart()
 
-        AppReadinessGlobal.runNowOrWhenAppWillBecomeReady {
+        globalEnvironment.appReadiness.runNowOrWhenAppWillBecomeReady {
             // Mark down that the APNS token is working since we got a push.
             // Do this as early as possible but after the app is ready and has run
             // GRDB migrations and such. (therefore, willBecomeReady, which actually runs
@@ -128,11 +128,11 @@ class NotificationService: UNNotificationServiceExtension {
             }
         }
 
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync {
+        globalEnvironment.appReadiness.runNowOrWhenAppDidBecomeReadySync {
             self.messageFetcherJob.prepareToFetchViaREST()
         }
 
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync {
+        globalEnvironment.appReadiness.runNowOrWhenAppDidBecomeReadySync {
             globalEnvironment.askMainAppToHandleReceipt(logger: logger) { [weak self] mainAppHandledReceipt in
                 guard !mainAppHandledReceipt else {
                     logger.info("Received notification handled by main application, memoryUsage: \(LocalDevice.memoryUsageString).")

@@ -139,6 +139,7 @@ class NSEEnvironment: Dependencies {
 
         let databaseContinuation = AppSetup().start(
             appContext: CurrentAppContext(),
+            appReadiness: appReadiness,
             databaseStorage: databaseStorage,
             paymentsEvents: PaymentsEventsAppExtension(),
             mobileCoinHelper: MobileCoinHelperMinimal(),
@@ -165,10 +166,10 @@ class NSEEnvironment: Dependencies {
 
     @MainActor
     private func setAppIsReady() {
-        owsPrecondition(!AppReadinessGlobal.isAppReady)
+        owsPrecondition(!appReadiness.isAppReady)
 
         // Note that this does much more than set a flag; it will also run all deferred blocks.
-        AppReadinessGlobal.setAppIsReady()
+        appReadiness.setAppIsReady()
 
         AppVersionImpl.shared.nseLaunchDidComplete()
     }

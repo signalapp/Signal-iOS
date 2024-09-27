@@ -409,23 +409,26 @@ class AppReadinessObjcBridge: NSObject {
 
     private static var shared: AppReadinessObjcBridge?
 
-    public static func setShared(isRunningTests: Bool) -> AppReadinessObjcBridge {
+    public static func setShared(appReadiness: AppReadiness, isRunningTests: Bool) -> AppReadinessObjcBridge {
         owsPrecondition(shared == nil || isRunningTests)
-        let value = AppReadinessObjcBridge()
+        let value = AppReadinessObjcBridge(appReadiness: appReadiness)
         shared = value
         return value
     }
 
-    private override init() {
+    private let appReadiness: AppReadiness
+
+    private init(appReadiness: AppReadiness) {
+        self.appReadiness = appReadiness
         super.init()
     }
 
-    var isAppReady: Bool { AppReadinessGlobal.isAppReady }
+    var isAppReady: Bool { appReadiness.isAppReady }
 
     static var isAppReady: Bool { shared?.isAppReady ?? false }
 
     func runNowOrWhenAppDidBecomeReadyAsync(_ block: @escaping () -> Void) {
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync(block)
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync(block)
     }
 }
 

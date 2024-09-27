@@ -87,6 +87,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         // We shouldn't set up our environment until after we've consulted isReadyForAppExtensions.
         let databaseContinuation = AppSetup().start(
             appContext: appContext,
+            appReadiness: appReadiness,
             databaseStorage: databaseStorage,
             paymentsEvents: PaymentsEventsAppExtension(),
             mobileCoinHelper: MobileCoinHelperMinimal(),
@@ -209,12 +210,12 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     private func setAppIsReady() {
         Logger.debug("")
         AssertIsOnMainThread()
-        owsPrecondition(!AppReadinessGlobal.isAppReady)
+        owsPrecondition(!appReadiness.isAppReady)
 
         // We don't need to use LaunchJobs in the SAE.
 
         // Note that this does much more than set a flag; it will also run all deferred blocks.
-        AppReadinessGlobal.setAppIsReady()
+        appReadiness.setAppIsReady()
 
         if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered {
             Logger.info("localAddress: \(String(describing: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress))")
@@ -253,7 +254,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         Logger.debug("")
 
-        guard AppReadinessGlobal.isAppReady else {
+        guard appReadiness.isAppReady else {
             return
         }
         guard !hasInitialRootViewController else {
@@ -343,7 +344,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         Logger.debug("")
 
         if isReadyForAppExtensions {
-            AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync { [weak self] in
+            appReadiness.runNowOrWhenAppDidBecomeReadySync { [weak self] in
                 AssertIsOnMainThread()
                 self?.activate()
             }

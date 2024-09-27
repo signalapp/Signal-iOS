@@ -98,6 +98,7 @@ public class AppSetup {
 
     public func start(
         appContext: AppContext,
+        appReadiness: AppReadiness,
         databaseStorage: SDSDatabaseStorage,
         paymentsEvents: PaymentsEvents,
         mobileCoinHelper: MobileCoinHelper,
@@ -174,7 +175,10 @@ public class AppSetup {
 
         // NOTE: TSThead accesses AppReadinessObjcBridge.shared and relies on this having been called
         // in this method, even things change such that nothing else here needs the instance.
-        let appReadinessObjc = AppReadinessObjcBridge.setShared(isRunningTests: appContext.isRunningTests)
+        let appReadinessObjc = AppReadinessObjcBridge.setShared(
+            appReadiness: appReadiness,
+            isRunningTests: appContext.isRunningTests
+        )
 
         let receiptManager = OWSReceiptManager(appReadiness: appReadinessObjc)
         let senderKeyStore = SenderKeyStore()
@@ -1368,6 +1372,7 @@ public class AppSetup {
 
         return AppSetup.DatabaseContinuation(
             appContext: appContext,
+            appReadiness: appReadiness,
             authCredentialStore: authCredentialStore,
             dependenciesBridge: dependenciesBridge,
             sskEnvironment: sskEnvironment,
@@ -1387,6 +1392,7 @@ public class AppSetup {
 extension AppSetup {
     public class DatabaseContinuation {
         private let appContext: AppContext
+        private let appReadiness: AppReadiness
         private let authCredentialStore: AuthCredentialStore
         private let dependenciesBridge: DependenciesBridge
         private let sskEnvironment: SSKEnvironment
@@ -1400,6 +1406,7 @@ extension AppSetup {
 
         fileprivate init(
             appContext: AppContext,
+            appReadiness: AppReadiness,
             authCredentialStore: AuthCredentialStore,
             dependenciesBridge: DependenciesBridge,
             sskEnvironment: SSKEnvironment,
@@ -1408,6 +1415,7 @@ extension AppSetup {
             callLinkPublicParams: GenericServerPublicParams
         ) {
             self.appContext = appContext
+            self.appReadiness = appReadiness
             self.authCredentialStore = authCredentialStore
             self.dependenciesBridge = dependenciesBridge
             self.sskEnvironment = sskEnvironment
@@ -1446,6 +1454,7 @@ extension AppSetup.DatabaseContinuation {
                 self.sskEnvironment.warmCaches()
                 self.backgroundTask.end()
                 future.resolve(AppSetup.FinalContinuation(
+                    appReadiness: self.appReadiness,
                     authCredentialStore: self.authCredentialStore,
                     dependenciesBridge: self.dependenciesBridge,
                     sskEnvironment: self.sskEnvironment
@@ -1470,15 +1479,18 @@ extension AppSetup.DatabaseContinuation {
 
 extension AppSetup {
     public class FinalContinuation {
+        private let appReadiness: AppReadiness
         private let authCredentialStore: AuthCredentialStore
         private let dependenciesBridge: DependenciesBridge
         private let sskEnvironment: SSKEnvironment
 
         fileprivate init(
+            appReadiness: AppReadiness,
             authCredentialStore: AuthCredentialStore,
             dependenciesBridge: DependenciesBridge,
             sskEnvironment: SSKEnvironment
         ) {
+            self.appReadiness = appReadiness
             self.authCredentialStore = authCredentialStore
             self.dependenciesBridge = dependenciesBridge
             self.sskEnvironment = sskEnvironment
@@ -1507,7 +1519,7 @@ extension AppSetup.FinalContinuation {
             return .corruptRegistrationState
         }
 
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync { [dependenciesBridge] in
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync { [dependenciesBridge] in
             let preKeyManager = dependenciesBridge.preKeyManager
             Task {
                 // Rotate ACI keys first since PNI keys may block on incoming messages.
