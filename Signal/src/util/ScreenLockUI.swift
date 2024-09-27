@@ -8,8 +8,6 @@ import SignalUI
 
 class ScreenLockUI: Dependencies {
 
-    static let shared = ScreenLockUI()
-
     // Unlike UIApplication.applicationState, this state reflects the
     // notifications, i.e. "did become active", "will resign active",
     // "will enter foreground", "did enter background".
@@ -85,7 +83,7 @@ class ScreenLockUI: Dependencies {
         return viewController
     }()
 
-    private init() {
+    public init() {
         AssertIsOnMainThread()
     }
 

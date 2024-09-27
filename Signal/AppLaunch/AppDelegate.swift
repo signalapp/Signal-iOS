@@ -355,10 +355,11 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 
+    private lazy var screenLockUI = ScreenLockUI()
+
     private func configureGlobalUI(in window: UIWindow) {
         Theme.setupSignalAppearance()
 
-        let screenLockUI = ScreenLockUI.shared
         screenLockUI.setupWithRootWindow(window)
         WindowManager.shared.setupWithRootWindow(window, screenBlockingWindow: screenLockUI.screenBlockingWindow)
         screenLockUI.startObserving()
