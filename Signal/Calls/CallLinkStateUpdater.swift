@@ -70,10 +70,18 @@ actor CallLinkStateUpdater {
         guard let localIdentifiers = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction else {
             throw OWSGenericError("Not registered.")
         }
-        let oldRecord = try db.read { tx in return try callLinkStore.fetch(roomId: roomId, tx: tx) }
+        let oldRecord = try db.read { tx -> CallLinkRecord? in
+            guard FeatureFlags.callLinkRecordTable else {
+                return nil
+            }
+            return try callLinkStore.fetch(roomId: roomId, tx: tx)
+        }
         let authCredential = try await authCredentialManager.fetchCallLinkAuthCredential(localIdentifiers: localIdentifiers)
         let newState = try await updateAndFetch(authCredential)
         try await db.awaitableWrite { tx in
+            guard FeatureFlags.callLinkRecordTable else {
+                return
+            }
             if var newRecord = try self.callLinkStore.fetch(roomId: roomId, tx: tx) {
                 if !newRecord.isDeleted {
                     newRecord.updateState(newState)
