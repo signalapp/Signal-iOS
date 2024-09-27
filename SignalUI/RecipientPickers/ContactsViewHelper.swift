@@ -16,8 +16,10 @@ public protocol ContactsViewHelperObserver: AnyObject {
 
 public class ContactsViewHelper: Dependencies {
 
-    public init() {
-        AppReadinessGlobal.runNowOrWhenUIDidBecomeReadySync {
+    public init() {}
+
+    public func performInitialSetup(appReadiness: AppReadiness) {
+        appReadiness.runNowOrWhenUIDidBecomeReadySync {
             self.setup()
         }
     }

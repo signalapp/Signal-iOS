@@ -67,9 +67,11 @@ public class AudioSession: NSObject {
 
     public override init() {
         super.init()
+    }
 
+    public func performInitialSetup(appReadiness: AppReadiness) {
         if CurrentAppContext().isMainApp {
-            AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync {
+            appReadiness.runNowOrWhenAppDidBecomeReadySync {
                 self.setup()
             }
         }

@@ -53,6 +53,9 @@ public class SUIEnvironment: NSObject {
             tsAccountManager: DependenciesBridge.shared.tsAccountManager
         )
         self.paymentsRef = PaymentsImpl(appReadiness: appReadiness)
+
+        contactsViewHelperRef.performInitialSetup(appReadiness: appReadiness)
+        audioSessionRef.performInitialSetup(appReadiness: appReadiness)
     }
 
     private func registerCustomFonts() {
