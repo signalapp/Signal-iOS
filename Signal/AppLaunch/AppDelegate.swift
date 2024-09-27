@@ -1595,8 +1595,13 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         didReceive response: UNNotificationResponse,
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
+        let appReadiness: AppReadiness = self.appReadiness
         appReadiness.runNowOrWhenAppDidBecomeReadySync {
-            NotificationActionHandler.handleNotificationResponse(response, completionHandler: completionHandler)
+            NotificationActionHandler.handleNotificationResponse(
+                response,
+                appReadiness: appReadiness,
+                completionHandler: completionHandler
+            )
         }
     }
 }

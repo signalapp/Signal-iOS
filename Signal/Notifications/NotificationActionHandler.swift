@@ -11,9 +11,13 @@ public class NotificationActionHandler: Dependencies {
     private static var callService: CallService { AppEnvironment.shared.callService }
 
     @MainActor
-    class func handleNotificationResponse( _ response: UNNotificationResponse, completionHandler: @escaping () -> Void) {
+    class func handleNotificationResponse(
+        _ response: UNNotificationResponse,
+        appReadiness: AppReadiness,
+        completionHandler: @escaping () -> Void
+    ) {
         firstly {
-            try handleNotificationResponse(response)
+            try handleNotificationResponse(response, appReadiness: appReadiness)
         }.done {
             completionHandler()
         }.catch { error in
@@ -23,8 +27,11 @@ public class NotificationActionHandler: Dependencies {
     }
 
     @MainActor
-    private class func handleNotificationResponse( _ response: UNNotificationResponse) throws -> Promise<Void> {
-        owsAssertDebug(AppReadinessGlobal.isAppReady)
+    private class func handleNotificationResponse(
+        _ response: UNNotificationResponse,
+        appReadiness: AppReadiness
+    ) throws -> Promise<Void> {
+        owsAssertDebug(appReadiness.isAppReady)
 
         let userInfo = response.notification.request.content.userInfo
 
@@ -66,7 +73,7 @@ public class NotificationActionHandler: Dependencies {
         case .showThread:
             return try showThread(userInfo: userInfo)
         case .showMyStories:
-            return showMyStories()
+            return showMyStories(appReadiness: appReadiness)
         case .reactWithThumbsUp:
             return try reactWithThumbsUp(userInfo: userInfo)
         case .showCallLobby:
@@ -74,7 +81,7 @@ public class NotificationActionHandler: Dependencies {
         case .submitDebugLogs:
             return submitDebugLogs()
         case .reregister:
-            return reregister()
+            return reregister(appReadiness: appReadiness)
         case .showChatList:
             // No need to do anything.
             return .value(())
@@ -174,9 +181,9 @@ public class NotificationActionHandler: Dependencies {
         }
     }
 
-    private class func showMyStories() -> Promise<Void> {
+    private class func showMyStories(appReadiness: AppReadiness) -> Promise<Void> {
         return Promise { future in
-            AppReadinessGlobal.runNowOrWhenMainAppDidBecomeReadyAsync {
+            appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
                 SignalApp.shared.showMyStories(animated: UIApplication.shared.applicationState == .active)
                 future.resolve()
             }
@@ -302,9 +309,9 @@ public class NotificationActionHandler: Dependencies {
         }
     }
 
-    private class func reregister() -> Promise<Void> {
+    private class func reregister(appReadiness: AppReadiness) -> Promise<Void> {
         Promise { future in
-            AppReadinessGlobal.runNowOrWhenMainAppDidBecomeReadyAsync {
+            appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
                 guard let viewController = CurrentAppContext().frontmostViewController() else {
                     Logger.error("Responding to reregister notification action without a view controller!")
                     future.resolve()
