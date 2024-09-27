@@ -692,9 +692,9 @@ private extension OWSColor {
     /// Returns this color as an `0xAARRGGBB` hex value.
     func asARGBHex() -> UInt32 {
         let alphaComponent = UInt32(255) << 24
-        let redComponent = UInt32(red * 255) << 16
-        let greenComponent = UInt32(green * 255) << 8
-        let blueComponent = UInt32(blue * 255) << 0
+        let redComponent = UInt32(round(red * 255)) << 16
+        let greenComponent = UInt32(round(green * 255)) << 8
+        let blueComponent = UInt32(round(blue * 255)) << 0
 
         return alphaComponent | redComponent | greenComponent | blueComponent
     }
