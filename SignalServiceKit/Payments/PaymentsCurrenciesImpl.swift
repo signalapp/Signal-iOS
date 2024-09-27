@@ -14,7 +14,7 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift, Payments
 
         // TODO: Tune.
         let refreshCheckInterval = kMinuteInterval * 15
-        refreshEvent = RefreshEvent(refreshInterval: refreshCheckInterval) { [weak self] in
+        refreshEvent = RefreshEvent(appReadiness: appReadiness, refreshInterval: refreshCheckInterval) { [weak self] in
             self?.updateConversationRatesIfStale()
         }
 

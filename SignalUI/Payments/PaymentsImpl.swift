@@ -30,7 +30,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         //
         // TODO: Tune.
         let refreshCheckInterval = kMinuteInterval * 5
-        refreshBalanceEvent = RefreshEvent(refreshInterval: refreshCheckInterval) { [weak self] in
+        refreshBalanceEvent = RefreshEvent(appReadiness: appReadiness, refreshInterval: refreshCheckInterval) { [weak self] in
             self?.updateCurrentPaymentBalanceIfNecessary()
         }
 

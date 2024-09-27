@@ -20,7 +20,7 @@ public class PaymentsReconciliation: Dependencies {
             //
             // TODO: Tune.
             let refreshCheckInterval = kMinuteInterval * 5
-            self.refreshEvent = RefreshEvent(refreshInterval: refreshCheckInterval) { [weak self] in
+            self.refreshEvent = RefreshEvent(appReadiness: appReadiness, refreshInterval: refreshCheckInterval) { [weak self] in
                 self?.reconcileIfNecessary()
             }
         }

@@ -18,18 +18,24 @@ public class RefreshEvent: Dependencies {
 
     private var refreshTimer: Timer?
 
+    private let appReadiness: AppReadiness
+
     // The block will be performed with a rough frequency of refreshInterval.
     //
     // It will not be performed if the app isn't ready, the user isn't registered,
     // if the app isn't the main app, if the app isn't active.
     //
     // It will also be performed immediately if any of the conditions change.
-    public init(refreshInterval: TimeInterval,
-                block: @escaping Block) {
+    public init(
+        appReadiness: AppReadiness,
+        refreshInterval: TimeInterval,
+        block: @escaping Block
+    ) {
+        self.appReadiness = appReadiness
         self.refreshInterval = refreshInterval
         self.block = block
 
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync { [weak self] in
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync { [weak self] in
             self?.ensureRefreshTimer()
         }
         NotificationCenter.default.addObserver(
@@ -53,7 +59,7 @@ public class RefreshEvent: Dependencies {
 
     private var canFire: Bool {
         guard
-            AppReadinessGlobal.isAppReady,
+            appReadiness.isAppReady,
             CurrentAppContext().isMainAppAndActive,
             DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
         else {
