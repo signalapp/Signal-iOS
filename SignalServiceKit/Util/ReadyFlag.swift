@@ -29,26 +29,15 @@ public class ReadyFlag: NSObject {
     private let unfairLock = UnfairLock()
 
     public typealias ReadyBlock = @MainActor () -> Void
-    public typealias Priority = Int
 
     private struct ReadyTask {
         let label: String?
-        let priority: Priority
         let block: ReadyBlock
 
         var displayLabel: String {
             label ?? "unknown"
         }
-
-        static func sort(_ tasks: [ReadyTask]) -> [ReadyTask] {
-            tasks.sorted { (left, right) -> Bool in
-                // TODO: Verify correctness.
-                left.priority <= right.priority
-            }
-        }
     }
-
-    private static let defaultPriority: Priority = 0
 
     private let name: String
 
@@ -79,11 +68,11 @@ public class ReadyFlag: NSObject {
     }
 
     @MainActor
-    public func runNowOrWhenWillBecomeReady(_ readyBlock: @escaping ReadyBlock,
-                                            label: String? = nil,
-                                            priority: Priority? = nil) {
-        let priority = priority ?? Self.defaultPriority
-        let task = ReadyTask(label: label, priority: priority, block: readyBlock)
+    public func runNowOrWhenWillBecomeReady(
+        _ readyBlock: @escaping ReadyBlock,
+        label: String? = nil
+    ) {
+        let task = ReadyTask(label: label, block: readyBlock)
 
         let didEnqueue: Bool = {
             unfairLock.withLock {
@@ -97,9 +86,11 @@ public class ReadyFlag: NSObject {
 
         if !didEnqueue {
             // We perform the block outside unfairLock to avoid deadlock.
-            BenchManager.bench(title: self.name + ".willBecomeReady " + task.displayLabel,
-                               logIfLongerThan: Self.blockLogDuration,
-                               logInProduction: true) {
+            BenchManager.bench(
+                title: self.name + ".willBecomeReady " + task.displayLabel,
+                logIfLongerThan: Self.blockLogDuration,
+                logInProduction: true
+            ) {
                 autoreleasepool {
                     task.block()
                 }
@@ -108,11 +99,11 @@ public class ReadyFlag: NSObject {
     }
 
     @MainActor
-    public func runNowOrWhenDidBecomeReadySync(_ readyBlock: @escaping ReadyBlock,
-                                               label: String? = nil,
-                                               priority: Priority? = nil) {
-        let priority = priority ?? Self.defaultPriority
-        let task = ReadyTask(label: label, priority: priority, block: readyBlock)
+    public func runNowOrWhenDidBecomeReadySync(
+        _ readyBlock: @escaping ReadyBlock,
+        label: String? = nil
+    ) {
+        let task = ReadyTask(label: label, block: readyBlock)
 
         let didEnqueue: Bool = {
             unfairLock.withLock {
@@ -126,9 +117,11 @@ public class ReadyFlag: NSObject {
 
         if !didEnqueue {
             // We perform the block outside unfairLock to avoid deadlock.
-            BenchManager.bench(title: self.name + ".didBecomeReady " + task.displayLabel,
-                               logIfLongerThan: Self.blockLogDuration,
-                               logInProduction: true) {
+            BenchManager.bench(
+                title: self.name + ".didBecomeReady " + task.displayLabel,
+                logIfLongerThan: Self.blockLogDuration,
+                logInProduction: true
+            ) {
                 autoreleasepool {
                     task.block()
                 }
@@ -136,13 +129,13 @@ public class ReadyFlag: NSObject {
         }
     }
 
-    public func runNowOrWhenDidBecomeReadyAsync(_ readyBlock: @escaping ReadyBlock,
-                                                label: String? = nil,
-                                                priority: Priority? = nil) {
+    public func runNowOrWhenDidBecomeReadyAsync(
+        _ readyBlock: @escaping ReadyBlock,
+        label: String? = nil
+    ) {
         AssertIsOnMainThread()
 
-        let priority = priority ?? Self.defaultPriority
-        let task = ReadyTask(label: label, priority: priority, block: readyBlock)
+        let task = ReadyTask(label: label, block: readyBlock)
 
         let didEnqueue: Bool = {
             unfairLock.withLock {
@@ -159,9 +152,11 @@ public class ReadyFlag: NSObject {
             //
             // Always perform async blocks async.
             DispatchQueue.main.async { () -> Void in
-                BenchManager.bench(title: self.name + ".didBecomeReadyPolite " + task.displayLabel,
-                                   logIfLongerThan: Self.blockLogDuration,
-                                   logInProduction: true) {
+                BenchManager.bench(
+                    title: self.name + ".didBecomeReadyPolite " + task.displayLabel,
+                    logIfLongerThan: Self.blockLogDuration,
+                    logInProduction: true
+                ) {
                     autoreleasepool {
                         task.block()
                     }
@@ -178,18 +173,20 @@ public class ReadyFlag: NSObject {
 
         Logger.info("\(self.name)")
 
-        let willBecomeReadyTasks = ReadyTask.sort(tasksToPerform.willBecomeReadyTasks)
-        let didBecomeReadySyncTasks = ReadyTask.sort(tasksToPerform.didBecomeReadySyncTasks)
-        let didBecomeReadyAsyncTasks = ReadyTask.sort(tasksToPerform.didBecomeReadyAsyncTasks)
+        let willBecomeReadyTasks = tasksToPerform.willBecomeReadyTasks
+        let didBecomeReadySyncTasks = tasksToPerform.didBecomeReadySyncTasks
+        let didBecomeReadyAsyncTasks = tasksToPerform.didBecomeReadyAsyncTasks
 
         // We bench the blocks individually and as a group.
         BenchManager.bench(title: self.name + ".willBecomeReady group",
                            logIfLongerThan: Self.groupLogDuration,
                            logInProduction: true) {
             for task in willBecomeReadyTasks {
-                BenchManager.bench(title: self.name + ".willBecomeReady " + task.displayLabel,
-                                   logIfLongerThan: Self.blockLogDuration,
-                                   logInProduction: true) {
+                BenchManager.bench(
+                    title: self.name + ".willBecomeReady " + task.displayLabel,
+                    logIfLongerThan: Self.blockLogDuration,
+                    logInProduction: true
+                ) {
                     autoreleasepool {
                         task.block()
                     }
@@ -197,13 +194,17 @@ public class ReadyFlag: NSObject {
             }
         }
 
-        BenchManager.bench(title: self.name + ".didBecomeReady group",
-                           logIfLongerThan: Self.groupLogDuration,
-                           logInProduction: true) {
+        BenchManager.bench(
+            title: self.name + ".didBecomeReady group",
+            logIfLongerThan: Self.groupLogDuration,
+            logInProduction: true
+        ) {
             for task in didBecomeReadySyncTasks {
-                BenchManager.bench(title: self.name + ".didBecomeReady " + task.displayLabel,
-                                   logIfLongerThan: Self.blockLogDuration,
-                                   logInProduction: true) {
+                BenchManager.bench(
+                    title: self.name + ".didBecomeReady " + task.displayLabel,
+                    logIfLongerThan: Self.blockLogDuration,
+                    logInProduction: true
+                ) {
                     autoreleasepool {
                         task.block()
                     }
@@ -231,9 +232,11 @@ public class ReadyFlag: NSObject {
                 return nil
             }
 
-            let tasksToPerform = TasksToPerform(willBecomeReadyTasks: self.willBecomeReadyTasks,
-                                                didBecomeReadySyncTasks: self.didBecomeReadySyncTasks,
-                                                didBecomeReadyAsyncTasks: self.didBecomeReadyAsyncTasks)
+            let tasksToPerform = TasksToPerform(
+                willBecomeReadyTasks: self.willBecomeReadyTasks,
+                didBecomeReadySyncTasks: self.didBecomeReadySyncTasks,
+                didBecomeReadyAsyncTasks: self.didBecomeReadyAsyncTasks
+            )
             self.willBecomeReadyTasks = []
             self.didBecomeReadySyncTasks = []
             self.didBecomeReadyAsyncTasks = []
@@ -249,10 +252,12 @@ public class ReadyFlag: NSObject {
             guard let task = tasks.first else {
                 return
             }
-            BenchManager.bench(title: self.name + ".didBecomeReadyPolite " + task.displayLabel,
-                               logIfLongerThan: Self.blockLogDuration,
-                               logInProduction: true,
-                               block: task.block)
+            BenchManager.bench(
+                title: self.name + ".didBecomeReadyPolite " + task.displayLabel,
+                logIfLongerThan: Self.blockLogDuration,
+                logInProduction: true,
+                block: task.block
+            )
 
             let remainder = Array(tasks.suffix(from: 1))
             self.performDidBecomeReadyAsyncTasks(remainder)
