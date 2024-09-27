@@ -528,7 +528,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             DispatchQueue.global().async { SDSKeyValueStore.logCollectionStatistics() }
         }
 
-        SignalApp.shared.performInitialSetup()
+        SignalApp.shared.performInitialSetup(appReadiness: appReadiness)
 
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             // This runs every 24 hours or so.
@@ -710,7 +710,11 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         checkDatabaseIntegrityIfNecessary(isRegistered: tsRegistrationState.isRegistered)
 
-        SignalApp.shared.showLaunchInterface(launchInterface, launchStartedAt: launchContext.launchStartedAt)
+        SignalApp.shared.showLaunchInterface(
+            launchInterface,
+            appReadiness: appReadiness,
+            launchStartedAt: launchContext.launchStartedAt
+        )
     }
 
     private func scheduleBgAppRefresh() {
