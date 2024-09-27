@@ -58,6 +58,7 @@ public class OWSChatConnection: NSObject {
     fileprivate let appExpiry: AppExpiry
     fileprivate let db: DB
     fileprivate let accountManager: TSAccountManager
+    fileprivate let currentCallProvider: any CurrentCallProvider
     fileprivate let registrationStateChangeManager: RegistrationStateChangeManager
 
     fileprivate static func label(forRequest request: TSRequest,
@@ -190,7 +191,14 @@ public class OWSChatConnection: NSObject {
 
     // MARK: -
 
-    public init(type: OWSChatConnectionType, accountManager: TSAccountManager, appExpiry: AppExpiry, db: DB, registrationStateChangeManager: RegistrationStateChangeManager) {
+    public init(
+        type: OWSChatConnectionType,
+        accountManager: TSAccountManager,
+        appExpiry: AppExpiry,
+        currentCallProvider: any CurrentCallProvider,
+        db: DB,
+        registrationStateChangeManager: RegistrationStateChangeManager
+    ) {
         AssertIsOnMainThread()
 
         self.serialQueue = DispatchQueue(label: "org.signal.chat-connection-\(type)")
@@ -198,6 +206,7 @@ public class OWSChatConnection: NSObject {
         self.appExpiry = appExpiry
         self.db = db
         self.accountManager = accountManager
+        self.currentCallProvider = currentCallProvider
         self.registrationStateChangeManager = registrationStateChangeManager
 
         super.init()
@@ -372,6 +381,11 @@ public class OWSChatConnection: NSObject {
         if hasBackgroundKeepAlive {
             // If app is doing any work in the background, keep web socket alive.
             return .open(reason: "hasBackgroundKeepAlive")
+        }
+
+        if currentCallProvider.hasCurrentCall {
+            // If the user is on a call, we need to be able to send/receive messages.
+            return .open(reason: "hasCurrentCall")
         }
 
         return nil
@@ -1436,12 +1450,12 @@ internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnectionUsingSS
         return libsignalNet.createUnauthenticatedChatService()
     }
 
-    internal init(libsignalNet: Net, type: OWSChatConnectionType, accountManager: TSAccountManager, appExpiry: AppExpiry, db: DB, registrationStateChangeManager: RegistrationStateChangeManager, shadowingFrequency: Double) {
+    internal init(libsignalNet: Net, type: OWSChatConnectionType, accountManager: TSAccountManager, appExpiry: AppExpiry, currentCallProvider: any CurrentCallProvider, db: DB, registrationStateChangeManager: RegistrationStateChangeManager, shadowingFrequency: Double) {
         owsPrecondition((0.0...1.0).contains(shadowingFrequency))
         self.libsignalNet = libsignalNet
         self.chatService = Self.makeChatService(libsignalNet: libsignalNet)
         self._shadowingFrequency = shadowingFrequency
-        super.init(type: type, accountManager: accountManager, appExpiry: appExpiry, db: db, registrationStateChangeManager: registrationStateChangeManager)
+        super.init(type: type, accountManager: accountManager, appExpiry: appExpiry, currentCallProvider: currentCallProvider, db: db, registrationStateChangeManager: registrationStateChangeManager)
     }
 
     fileprivate override func isSignalProxyReadyDidChange(_ notification: NSNotification) {
@@ -1642,10 +1656,10 @@ internal class OWSChatConnectionUsingLibSignal<Service: ChatService>: OWSChatCon
         }
     }
 
-    internal init(libsignalNet: Net, chatService: Service, type: OWSChatConnectionType, accountManager: TSAccountManager, appExpiry: AppExpiry, db: DB, registrationStateChangeManager: RegistrationStateChangeManager) {
+    internal init(libsignalNet: Net, chatService: Service, type: OWSChatConnectionType, accountManager: TSAccountManager, appExpiry: AppExpiry, currentCallProvider: any CurrentCallProvider, db: DB, registrationStateChangeManager: RegistrationStateChangeManager) {
         self.libsignalNet = libsignalNet
         self._chatService = chatService
-        super.init(type: type, accountManager: accountManager, appExpiry: appExpiry, db: db, registrationStateChangeManager: registrationStateChangeManager)
+        super.init(type: type, accountManager: accountManager, appExpiry: appExpiry, currentCallProvider: currentCallProvider, db: db, registrationStateChangeManager: registrationStateChangeManager)
     }
 
     fileprivate func makeChatService() -> Service {
@@ -1928,9 +1942,9 @@ internal class OWSChatConnectionUsingLibSignal<Service: ChatService>: OWSChatCon
 }
 
 internal class OWSUnauthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<UnauthenticatedChatService> {
-    init(libsignalNet: Net, accountManager: TSAccountManager, appExpiry: AppExpiry, db: DB, registrationStateChangeManager: RegistrationStateChangeManager) {
+    init(libsignalNet: Net, accountManager: TSAccountManager, appExpiry: AppExpiry, currentCallProvider: any CurrentCallProvider, db: DB, registrationStateChangeManager: RegistrationStateChangeManager) {
         let chatService = libsignalNet.createUnauthenticatedChatService()
-        super.init(libsignalNet: libsignalNet, chatService: chatService, type: .unidentified, accountManager: accountManager, appExpiry: appExpiry, db: db, registrationStateChangeManager: registrationStateChangeManager)
+        super.init(libsignalNet: libsignalNet, chatService: chatService, type: .unidentified, accountManager: accountManager, appExpiry: appExpiry, currentCallProvider: currentCallProvider, db: db, registrationStateChangeManager: registrationStateChangeManager)
         chatService.setListener(self)
     }
 
@@ -1950,9 +1964,9 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
         _hasEmptiedInitialQueue.get()
     }
 
-    init(libsignalNet: Net, accountManager: TSAccountManager, appExpiry: AppExpiry, db: DB, registrationStateChangeManager: RegistrationStateChangeManager) {
+    init(libsignalNet: Net, accountManager: TSAccountManager, appExpiry: AppExpiry, currentCallProvider: any CurrentCallProvider, db: DB, registrationStateChangeManager: RegistrationStateChangeManager) {
         let dummyChatService = libsignalNet.createAuthenticatedChatService(username: "", password: "", receiveStories: false)
-        super.init(libsignalNet: libsignalNet, chatService: dummyChatService, type: .identified, accountManager: accountManager, appExpiry: appExpiry, db: db, registrationStateChangeManager: registrationStateChangeManager)
+        super.init(libsignalNet: libsignalNet, chatService: dummyChatService, type: .identified, accountManager: accountManager, appExpiry: appExpiry, currentCallProvider: currentCallProvider, db: db, registrationStateChangeManager: registrationStateChangeManager)
     }
 
     fileprivate override func appDidBecomeReady() {

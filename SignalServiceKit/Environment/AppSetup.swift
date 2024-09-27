@@ -747,6 +747,7 @@ public class AppSetup {
         let chatConnectionManager = ChatConnectionManagerImpl(
             accountManager: tsAccountManager,
             appExpiry: appExpiry,
+            currentCallProvider: currentCallProvider,
             db: db,
             libsignalNet: libsignalNet,
             registrationStateChangeManager: registrationStateChangeManager,
