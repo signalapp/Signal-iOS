@@ -364,7 +364,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 
-    private lazy var screenLockUI = ScreenLockUI()
+    private lazy var screenLockUI = ScreenLockUI(appReadiness: appReadiness)
 
     private func configureGlobalUI(in window: UIWindow) {
         Theme.setupSignalAppearance()
