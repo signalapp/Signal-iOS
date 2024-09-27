@@ -1455,7 +1455,7 @@ extension AppSetup.DatabaseContinuation {
                 } catch {
                     owsFail("Couldn't set up change observer: \(error.grdbErrorForLogging)")
                 }
-                self.sskEnvironment.warmCaches()
+                self.sskEnvironment.warmCaches(appReadiness: self.appReadiness)
                 self.backgroundTask.end()
                 future.resolve(AppSetup.FinalContinuation(
                     appReadiness: self.appReadiness,

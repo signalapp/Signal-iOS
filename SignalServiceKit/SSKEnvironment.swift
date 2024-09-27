@@ -229,8 +229,8 @@ public class SSKEnvironment: NSObject {
 
     public static let warmCachesNotification = Notification.Name("WarmCachesNotification")
 
-    func warmCaches() {
-        SignalProxy.warmCaches()
+    func warmCaches(appReadiness: AppReadiness) {
+        SignalProxy.warmCaches(appReadiness: appReadiness)
         DependenciesBridge.shared.tsAccountManager.warmCaches()
         fixLocalRecipientIfNeeded()
         signalServiceAddressCache.warmCaches()
@@ -243,10 +243,10 @@ public class SSKEnvironment: NSObject {
         typingIndicatorsImpl.warmCaches()
         paymentsHelper.warmCaches()
         paymentsCurrencies.warmCaches()
-        StoryManager.setup()
+        StoryManager.setup(appReadiness: appReadiness)
         DependenciesBridge.shared.db.read { tx in appExpiryRef.warmCaches(with: tx) }
 
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             self.localUserLeaveGroupJobQueueRef.start(appContext: CurrentAppContext())
             self.callRecordDeleteAllJobQueueRef.start(appContext: CurrentAppContext())
             self.bulkDeleteInteractionJobQueueRef.start(appContext: CurrentAppContext())

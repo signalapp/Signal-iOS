@@ -10,12 +10,11 @@ import LibSignalClient
 public class StoryManager: NSObject {
     public static let storyLifetimeMillis = kDayInMs
 
-    @objc
-    public class func setup() {
+    public class func setup(appReadiness: AppReadiness) {
         cacheAreStoriesEnabled()
         cacheAreViewReceiptsEnabled()
 
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             Self.databaseStorage.asyncWrite { transaction in
                 // Create My Story thread if necessary
                 TSPrivateStoryThread.getOrCreateMyStory(transaction: transaction)
