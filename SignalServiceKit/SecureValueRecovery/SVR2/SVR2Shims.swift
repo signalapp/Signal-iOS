@@ -8,32 +8,26 @@ import LibSignalClient
 
 extension SVR2 {
     public enum Shims {
-        public typealias AppReadiness = _SVR2_AppReadinessShim
+        public typealias AppContext = _SVR2_AppContextShim
         public typealias OWS2FAManager = _SVR2_OWS2FAManagerShim
     }
     public enum Wrappers {
-        public typealias AppReadiness = _SVR2_AppReadinessWrapper
+        public typealias AppContext = _SVR2_AppContextWrapper
         public typealias OWS2FAManager = _SVR2_OWS2FAManagerWrapper
     }
 }
 
-public protocol _SVR2_AppReadinessShim {
+public protocol _SVR2_AppContextShim {
 
     var isMainApp: Bool { get }
-
-    func runNowOrWhenMainAppDidBecomeReadyAsync(_ block: @escaping () -> Void)
 }
 
-public class _SVR2_AppReadinessWrapper: _SVR2_AppReadinessShim {
+public class _SVR2_AppContextWrapper: _SVR2_AppContextShim {
 
     public init() {}
 
     public var isMainApp: Bool {
         return CurrentAppContext().isMainApp
-    }
-
-    public func runNowOrWhenMainAppDidBecomeReadyAsync(_ block: @escaping () -> Void) {
-        AppReadinessGlobal.runNowOrWhenMainAppDidBecomeReadyAsync(block)
     }
 }
 
@@ -136,17 +130,15 @@ internal class SVR2ClientWrapperImpl: SVR2ClientWrapper {
 
 extension SVR2 {
     enum Mocks {
-        typealias AppReadiness = _SVR2_AppReadinessMock
+        typealias AppContext = _SVR2_AppContextMock
     }
 }
 
-internal class _SVR2_AppReadinessMock: _SVR2_AppReadinessShim {
+internal class _SVR2_AppContextMock: _SVR2_AppContextShim {
 
     init() {}
 
     var isMainApp: Bool { true }
-
-    func runNowOrWhenMainAppDidBecomeReadyAsync(_ block: @escaping () -> Void) {}
 }
 
 internal class MockSVR2ClientWrapper: SVR2ClientWrapper {

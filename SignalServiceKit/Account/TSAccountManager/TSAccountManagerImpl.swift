@@ -8,7 +8,7 @@ import LibSignalClient
 
 public class TSAccountManagerImpl: TSAccountManager {
 
-    private let appReadiness: Shims.AppReadiness
+    private let appReadiness: AppReadiness
     private let dateProvider: DateProvider
     private let db: DB
     private let schedulers: Schedulers
@@ -19,7 +19,7 @@ public class TSAccountManagerImpl: TSAccountManager {
     private var cachedAccountState: AccountState?
 
     public init(
-        appReadiness: Shims.AppReadiness,
+        appReadiness: AppReadiness,
         dateProvider: @escaping DateProvider,
         db: DB,
         keyValueStoreFactory: KeyValueStoreFactory,
@@ -35,10 +35,8 @@ public class TSAccountManagerImpl: TSAccountManager {
         )
         self.kvStore = kvStore
 
-        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            if !self.appReadiness.isMainApp {
-                self.db.appendDbChangeDelegate(self)
-            }
+        appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
+            self.db.appendDbChangeDelegate(self)
         }
     }
 

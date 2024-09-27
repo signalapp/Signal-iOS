@@ -891,7 +891,6 @@
 		6646573D2AC3894D0099DE1C /* RegistrationStateChangeManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6646573C2AC3894D0099DE1C /* RegistrationStateChangeManagerImpl.swift */; };
 		6646573F2AC3B9190099DE1C /* MockRegistrationStateChangeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6646573E2AC3B9190099DE1C /* MockRegistrationStateChangeManager.swift */; };
 		664657412AC4FB720099DE1C /* NotificationPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664657402AC4FB720099DE1C /* NotificationPresenter.swift */; };
-		664657452ACB34AA0099DE1C /* TSAccountManagerImpl+Shims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664657442ACB34AA0099DE1C /* TSAccountManagerImpl+Shims.swift */; };
 		664657472ACB66630099DE1C /* TSAccountManagerObjcBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664657462ACB66630099DE1C /* TSAccountManagerObjcBridge.swift */; };
 		6649651C2BDC6EAD00E2DE98 /* AVAsset+Attachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6649651B2BDC6EAD00E2DE98 /* AVAsset+Attachment.swift */; };
 		6649651E2BDF169F00E2DE98 /* UIImage+Attachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6649651D2BDF169F00E2DE98 /* UIImage+Attachment.swift */; };
@@ -4508,7 +4507,6 @@
 		6646573C2AC3894D0099DE1C /* RegistrationStateChangeManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationStateChangeManagerImpl.swift; sourceTree = "<group>"; };
 		6646573E2AC3B9190099DE1C /* MockRegistrationStateChangeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockRegistrationStateChangeManager.swift; sourceTree = "<group>"; };
 		664657402AC4FB720099DE1C /* NotificationPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPresenter.swift; sourceTree = "<group>"; };
-		664657442ACB34AA0099DE1C /* TSAccountManagerImpl+Shims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSAccountManagerImpl+Shims.swift"; sourceTree = "<group>"; };
 		664657462ACB66630099DE1C /* TSAccountManagerObjcBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAccountManagerObjcBridge.swift; sourceTree = "<group>"; };
 		6649651B2BDC6EAD00E2DE98 /* AVAsset+Attachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVAsset+Attachment.swift"; sourceTree = "<group>"; };
 		6649651D2BDF169F00E2DE98 /* UIImage+Attachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Attachment.swift"; sourceTree = "<group>"; };
@@ -8658,7 +8656,6 @@
 				661170C52ABA4E9C00A1B16D /* MockTSAccountManager.swift */,
 				661170C02ABA459D00A1B16D /* RegistrationIdGenerator.swift */,
 				661170C32ABA4D9900A1B16D /* TSAccountManager.swift */,
-				664657442ACB34AA0099DE1C /* TSAccountManagerImpl+Shims.swift */,
 				661170C72ABA4F3A00A1B16D /* TSAccountManagerImpl.swift */,
 				664657462ACB66630099DE1C /* TSAccountManagerObjcBridge.swift */,
 				6615553E2ABA5A7500AA302B /* TSRegistrationState.swift */,
@@ -17570,7 +17567,6 @@
 				C14EC1A22BA891D200A4D064 /* TransformingInputStream.swift in Sources */,
 				C1CF83D42B9A207800CDC9C4 /* TransformingOutputStream.swift in Sources */,
 				661170C42ABA4D9900A1B16D /* TSAccountManager.swift in Sources */,
-				664657452ACB34AA0099DE1C /* TSAccountManagerImpl+Shims.swift in Sources */,
 				661170C82ABA4F3A00A1B16D /* TSAccountManagerImpl.swift in Sources */,
 				664657472ACB66630099DE1C /* TSAccountManagerObjcBridge.swift in Sources */,
 				F9C5CC77289453B300548EEE /* TSAttachment+SDS.swift in Sources */,

@@ -10,7 +10,8 @@ import LibSignalClient
 public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     private let accountAttributesUpdater: AccountAttributesUpdater
-    private let appReadiness: SVR2.Shims.AppReadiness
+    private let appContext: SVR2.Shims.AppContext
+    private let appReadiness: AppReadiness
     private let appVersion: AppVersion
     private let clientWrapper: SVR2ClientWrapper
     private let connectionFactory: SgxWebsocketConnectionFactory
@@ -27,7 +28,8 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     public convenience init(
         accountAttributesUpdater: AccountAttributesUpdater,
-        appReadiness: SVR2.Shims.AppReadiness,
+        appContext: SVR2.Shims.AppContext,
+        appReadiness: AppReadiness,
         appVersion: AppVersion,
         connectionFactory: SgxWebsocketConnectionFactory,
         credentialStorage: SVRAuthCredentialStorage,
@@ -43,6 +45,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     ) {
         self.init(
             accountAttributesUpdater: accountAttributesUpdater,
+            appContext: appContext,
             appReadiness: appReadiness,
             appVersion: appVersion,
             clientWrapper: SVR2ClientWrapperImpl(),
@@ -64,7 +67,8 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     internal init(
         accountAttributesUpdater: AccountAttributesUpdater,
-        appReadiness: SVR2.Shims.AppReadiness,
+        appContext: SVR2.Shims.AppContext,
+        appReadiness: AppReadiness,
         appVersion: AppVersion,
         clientWrapper: SVR2ClientWrapper,
         connectionFactory: SgxWebsocketConnectionFactory,
@@ -80,6 +84,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         twoFAManager: SVR2.Shims.OWS2FAManager
     ) {
         self.accountAttributesUpdater = accountAttributesUpdater
+        self.appContext = appContext
         self.appReadiness = appReadiness
         self.appVersion = appVersion
         self.clientWrapper = clientWrapper
@@ -1254,7 +1259,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     /// If there is no migration needed, returns a success promise immediately.
     private func migrateEnclavesIfNecessary() -> Promise<Void>? {
         // Never migrate in the NSE or extensions.
-        guard self.appReadiness.isMainApp else {
+        guard self.appContext.isMainApp else {
             return nil
         }
         return firstly(on: scheduler) { [weak self] () -> (String, String, Data)? in
@@ -1647,7 +1652,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         storageServiceManager.resetLocalData(transaction: transaction)
 
         // If the app is ready start that restoration.
-        guard AppReadinessGlobal.isAppReady else { return }
+        guard appReadiness.isAppReady else { return }
 
         switch mode {
         case .syncStorageService(let authedAccount):

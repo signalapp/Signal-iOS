@@ -7,7 +7,7 @@ import Foundation
 
 public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
 
-    private let appReadiness: Shims.AppReadiness
+    private let appReadiness: AppReadiness
     private let appVersion: AppVersion
     private let dateProvider: DateProvider
     private let db: DB
@@ -21,7 +21,7 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
     private let kvStore: KeyValueStore
 
     public init(
-        appReadiness: Shims.AppReadiness,
+        appReadiness: AppReadiness,
         appVersion: AppVersion,
         dateProvider: @escaping DateProvider,
         db: DB,
@@ -46,7 +46,7 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
 
         self.kvStore = keyValueStoreFactory.keyValueStore(collection: "AccountAttributesUpdater")
 
-        appReadiness.runNowOrWhenAppBecomesReadyAsync {
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             Task {
                 try await self.updateAccountAttributesIfNecessaryAttempt(authedAccount: .implicit())
             }
@@ -66,7 +66,7 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
 
     @objc
     private func reachabilityDidChange() {
-        appReadiness.runNowOrWhenAppBecomesReadyAsync {
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             Task {
                 try await self.updateAccountAttributesIfNecessaryAttempt(authedAccount: .implicit())
             }
@@ -105,7 +105,7 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
     // * On launch.
     // * When reachability changes.
     private func updateAccountAttributesIfNecessaryAttempt(authedAccount: AuthedAccount) async throws {
-        guard appReadiness.isAppReady() else {
+        guard appReadiness.isAppReady else {
             Logger.info("Aborting; app is not ready.")
             return
         }
@@ -209,35 +209,5 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
         static let lastUpdateDeviceCapabilities = "lastUpdateDeviceCapabilities"
         static let lastUpdateAppVersion = "lastUpdateAppVersion"
 
-    }
-}
-
-extension AccountAttributesUpdaterImpl {
-    public enum Shims {
-        public typealias AppReadiness = _AccountAttributesUpdater_AppReadinessShim
-    }
-
-    public enum Wrappers {
-        public typealias AppReadiness = _AccountAttributesUpdater_AppReadinessWrapper
-    }
-}
-
-public protocol _AccountAttributesUpdater_AppReadinessShim {
-
-    func isAppReady() -> Bool
-
-    func runNowOrWhenAppBecomesReadyAsync(_ block: @escaping () -> Void)
-}
-
-public class _AccountAttributesUpdater_AppReadinessWrapper: _AccountAttributesUpdater_AppReadinessShim {
-
-    public init() {}
-
-    public func isAppReady() -> Bool {
-        return AppReadinessGlobal.isAppReady
-    }
-
-    public func runNowOrWhenAppBecomesReadyAsync(_ block: @escaping () -> Void) {
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync(block)
     }
 }

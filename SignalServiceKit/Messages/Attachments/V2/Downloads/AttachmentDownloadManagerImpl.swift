@@ -12,7 +12,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         case thumbnail(AttachmentBackupThumbnail)
     }
 
-    private let appReadiness: Shims.AppReadiness
+    private let appReadiness: AppReadiness
     private let attachmentDownloadStore: AttachmentDownloadStore
     private let attachmentStore: AttachmentStore
     private let attachmentUpdater: AttachmentUpdater
@@ -25,7 +25,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     private let tsAccountManager: TSAccountManager
 
     public init(
-        appReadiness: Shims.AppReadiness,
+        appReadiness: AppReadiness,
         attachmentDownloadStore: AttachmentDownloadStore,
         attachmentStore: AttachmentStore,
         attachmentValidator: AttachmentContentValidator,
@@ -2035,29 +2035,13 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
 extension AttachmentDownloadManagerImpl {
     public enum Shims {
-        public typealias AppReadiness = _AttachmentDownloadManagerImpl_AppReadinessShim
         public typealias ProfileManager = _AttachmentDownloadManagerImpl_ProfileManagerShim
         public typealias StickerManager = _AttachmentDownloadManagerImpl_StickerManagerShim
     }
 
     public enum Wrappers {
-        public typealias AppReadiness = _AttachmentDownloadManagerImpl_AppReadinessWrapper
         public typealias ProfileManager = _AttachmentDownloadManagerImpl_ProfileManagerWrapper
         public typealias StickerManager = _AttachmentDownloadManagerImpl_StickerManagerWrapper
-    }
-}
-
-public protocol _AttachmentDownloadManagerImpl_AppReadinessShim {
-
-    func runNowOrWhenMainAppDidBecomeReadyAsync(_ block: @escaping () -> Void)
-}
-
-public class _AttachmentDownloadManagerImpl_AppReadinessWrapper: _AttachmentDownloadManagerImpl_AppReadinessShim {
-
-    public init() {}
-
-    public func runNowOrWhenMainAppDidBecomeReadyAsync(_ block: @escaping () -> Void) {
-        AppReadinessGlobal.runNowOrWhenMainAppDidBecomeReadyAsync(block)
     }
 }
 

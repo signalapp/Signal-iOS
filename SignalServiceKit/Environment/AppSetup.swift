@@ -266,7 +266,7 @@ public class AppSetup {
         )
 
         let tsAccountManager = TSAccountManagerImpl(
-            appReadiness: TSAccountManagerImpl.Wrappers.AppReadiness(),
+            appReadiness: appReadiness,
             dateProvider: dateProvider,
             db: db,
             keyValueStoreFactory: keyValueStoreFactory,
@@ -277,7 +277,7 @@ public class AppSetup {
         let svrLocalStorage = SVRLocalStorageImpl(keyValueStoreFactory: keyValueStoreFactory)
 
         let accountAttributesUpdater = AccountAttributesUpdaterImpl(
-            appReadiness: AccountAttributesUpdaterImpl.Wrappers.AppReadiness(),
+            appReadiness: appReadiness,
             appVersion: appVersion,
             dateProvider: dateProvider,
             db: db,
@@ -292,7 +292,8 @@ public class AppSetup {
 
         let svr = SecureValueRecovery2Impl(
             accountAttributesUpdater: accountAttributesUpdater,
-            appReadiness: SVR2.Wrappers.AppReadiness(),
+            appContext: SVR2.Wrappers.AppContext(),
+            appReadiness: appReadiness,
             appVersion: appVersion,
             connectionFactory: SgxWebsocketConnectionFactoryImpl(websocketFactory: webSocketFactory),
             credentialStorage: svrCredentialStorage,
@@ -328,7 +329,7 @@ public class AppSetup {
         let orphanedAttachmentStore = OrphanedAttachmentStoreImpl()
         let attachmentDownloadStore = AttachmentDownloadStoreImpl(dateProvider: dateProvider)
         let attachmentDownloadManager = AttachmentDownloadManagerImpl(
-            appReadiness: AttachmentDownloadManagerImpl.Wrappers.AppReadiness(),
+            appReadiness: appReadiness,
             attachmentDownloadStore: attachmentDownloadStore,
             attachmentStore: attachmentStore,
             attachmentValidator: attachmentContentValidator,
