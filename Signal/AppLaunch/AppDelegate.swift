@@ -180,7 +180,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         BenchEventStart(title: "Presenting HomeView", eventId: "AppStart", logInProduction: true)
         appReadiness.runNowOrWhenUIDidBecomeReadySync { BenchEventComplete(eventId: "AppStart") }
 
-        MessageFetchBGRefreshTask.register()
+        MessageFetchBGRefreshTask.register(appReadiness: appReadiness)
 
         let keychainStorage = KeychainStorageImpl(isUsingProductionService: TSConstants.isUsingProductionService)
         let deviceTransferService = DeviceTransferService(
@@ -726,7 +726,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     private func scheduleBgAppRefresh() {
-        MessageFetchBGRefreshTask.shared?.scheduleTask()
+        MessageFetchBGRefreshTask.getShared(appReadiness: appReadiness)?.scheduleTask()
     }
 
     /// The user must unlock the device once after reboot before the database encryption key can be accessed.

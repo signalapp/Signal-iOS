@@ -16,20 +16,24 @@ import SignalServiceKit
  */
 public class MessageFetchBGRefreshTask {
 
-    private static var _shared: MessageFetchBGRefreshTask = {
-        return MessageFetchBGRefreshTask(
+    private static var _shared: MessageFetchBGRefreshTask?
+
+    public static func getShared(appReadiness: AppReadiness) -> MessageFetchBGRefreshTask? {
+        if let _shared {
+            return _shared
+        }
+
+        guard appReadiness.isAppReady else {
+            return nil
+        }
+        let value = MessageFetchBGRefreshTask(
             dateProvider: { Date() },
             messageFetcherJob: NSObject.messageFetcherJob,
             ows2FAManager: .shared,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager
         )
-    }()
-
-    public static var shared: MessageFetchBGRefreshTask? {
-        guard AppReadinessGlobal.isAppReady else {
-            return nil
-        }
-        return _shared
+        _shared = value
+        return value
     }
 
     // Must be kept in sync with the value in info.plist.
@@ -52,13 +56,13 @@ public class MessageFetchBGRefreshTask {
         self.tsAccountManager = tsAccountManager
     }
 
-    public static func register() {
+    public static func register(appReadiness: AppReadiness) {
         BGTaskScheduler.shared.register(
             forTaskWithIdentifier: Self.taskIdentifier,
             using: nil,
             launchHandler: { task in
-                AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
-                    Self.shared!.performTask(task)
+                appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+                    Self.getShared(appReadiness: appReadiness)!.performTask(task, appReadiness: appReadiness)
                 }
             }
         )
@@ -99,9 +103,9 @@ public class MessageFetchBGRefreshTask {
         }
     }
 
-    private func performTask(_ task: BGTask) {
+    private func performTask(_ task: BGTask, appReadiness: AppReadiness) {
         Logger.info("performing background fetch")
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync {
+        appReadiness.runNowOrWhenAppDidBecomeReadySync {
             self.messageFetcherJob.run()
                 .then {
                     return NSObject.messageProcessor.waitForFetchingAndProcessing()
