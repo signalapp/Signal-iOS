@@ -27,7 +27,7 @@ public class SUIEnvironment: NSObject {
 
     public var contactsViewHelperRef: ContactsViewHelper = ContactsViewHelper()
 
-    public var paymentsRef: Payments = PaymentsImpl()
+    public var paymentsRef: Payments!
 
     private(set) public var linkPreviewFetcher: (any LinkPreviewFetcher)!
 
@@ -51,6 +51,7 @@ public class SUIEnvironment: NSObject {
             linkPreviewSettingStore: DependenciesBridge.shared.linkPreviewSettingStore,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager
         )
+        self.paymentsRef = PaymentsImpl()
     }
 
     private func registerCustomFonts() {
