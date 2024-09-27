@@ -52,7 +52,8 @@ public class DependenciesBridge {
     public let attachmentViewOnceManager: AttachmentViewOnceManager
     public let audioWaveformManager: AudioWaveformManager
     public let authorMergeHelper: AuthorMergeHelper
-    public let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
+    public let backupAttachmentDownloadManager: BackupAttachmentDownloadManager
+    public let backupAttachmentUploadManager: BackupAttachmentUploadManager
     public let badgeCountFetcher: BadgeCountFetcher
     public let callLinkStore: any CallLinkRecordStore
     public let callRecordDeleteManager: CallRecordDeleteManager
@@ -164,7 +165,8 @@ public class DependenciesBridge {
         attachmentViewOnceManager: AttachmentViewOnceManager,
         audioWaveformManager: AudioWaveformManager,
         authorMergeHelper: AuthorMergeHelper,
-        backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
+        backupAttachmentDownloadManager: BackupAttachmentDownloadManager,
+        backupAttachmentUploadManager: BackupAttachmentUploadManager,
         badgeCountFetcher: BadgeCountFetcher,
         callLinkStore: any CallLinkRecordStore,
         callRecordDeleteManager: CallRecordDeleteManager,
@@ -275,7 +277,8 @@ public class DependenciesBridge {
         self.attachmentViewOnceManager = attachmentViewOnceManager
         self.audioWaveformManager = audioWaveformManager
         self.authorMergeHelper = authorMergeHelper
-        self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
+        self.backupAttachmentDownloadManager = backupAttachmentDownloadManager
+        self.backupAttachmentUploadManager = backupAttachmentUploadManager
         self.badgeCountFetcher = badgeCountFetcher
         self.callLinkStore = callLinkStore
         self.callRecordDeleteManager = callRecordDeleteManager

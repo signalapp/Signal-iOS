@@ -11,16 +11,16 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
 
     private let attachmentManager: AttachmentManager
     private let attachmentStore: AttachmentStore
-    private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
+    private let backupAttachmentDownloadManager: BackupAttachmentDownloadManager
 
     init(
         attachmentManager: AttachmentManager,
         attachmentStore: AttachmentStore,
-        backupAttachmentDownloadStore: BackupAttachmentDownloadStore
+        backupAttachmentDownloadManager: BackupAttachmentDownloadManager
     ) {
         self.attachmentManager = attachmentManager
         self.attachmentStore = attachmentStore
-        self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
+        self.backupAttachmentDownloadManager = backupAttachmentDownloadManager
     }
 
     // MARK: - Archiving
@@ -465,7 +465,7 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
             })
         }
 
-        let results = attachmentStore.fetchReferences(owners: attachments.map(\.owner.id), tx: context.tx)
+        let results = attachmentStore.fetchReferencedAttachments(owners: attachments.map(\.owner.id), tx: context.tx)
         if results.isEmpty && !attachments.isEmpty {
             return .messageFailure([.restoreFrameError(
                 .failedToCreateAttachment,
@@ -475,7 +475,7 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
 
         do {
             try results.forEach {
-                try backupAttachmentDownloadStore.enqueue($0, tx: context.tx)
+                try backupAttachmentDownloadManager.enqueueIfNeeded($0, tx: context.tx)
             }
         } catch {
             return .partialRestore((), [.restoreFrameError(

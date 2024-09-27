@@ -22,6 +22,7 @@ public class AppSetup {
     /// limited set of mock singletons.
     public struct TestDependencies {
         let accountServiceClient: AccountServiceClient?
+        let backupAttachmentDownloadManager: BackupAttachmentDownloadManager?
         let contactManager: (any ContactManager)?
         let dateProvider: DateProvider?
         let groupV2Updates: (any GroupV2Updates)?
@@ -46,6 +47,7 @@ public class AppSetup {
 
         public init(
             accountServiceClient: AccountServiceClient? = nil,
+            backupAttachmentDownloadManager: BackupAttachmentDownloadManager? = nil,
             contactManager: (any ContactManager)? = nil,
             dateProvider: DateProvider? = nil,
             groupV2Updates: (any GroupV2Updates)? = nil,
@@ -69,6 +71,7 @@ public class AppSetup {
             webSocketFactory: (any WebSocketFactory)? = nil
         ) {
             self.accountServiceClient = accountServiceClient
+            self.backupAttachmentDownloadManager = backupAttachmentDownloadManager
             self.contactManager = contactManager
             self.dateProvider = dateProvider
             self.groupV2Updates = groupV2Updates
@@ -903,6 +906,16 @@ public class AppSetup {
         let backupAttachmentDownloadStore = BackupAttachmentDownloadStoreImpl(
             keyValueStoreFactory: keyValueStoreFactory
         )
+        let backupAttachmentDownloadManager = testDependencies.backupAttachmentDownloadManager
+            ?? BackupAttachmentDownloadManagerImpl(
+                attachmentStore: attachmentStore,
+                attachmentDownloadManager: attachmentDownloadManager,
+                backupAttachmentDownloadStore: backupAttachmentDownloadStore,
+                dateProvider: dateProvider,
+                db: db,
+                messageBackupRequestManager: messageBackupRequestManager,
+                tsAccountManager: tsAccountManager
+            )
         let backupAttachmentUploadStore = BackupAttachmentUploadStoreImpl()
         let backupAttachmentUploadManager = BackupAttachmentUploadManagerImpl(
             attachmentStore: attachmentStore,
@@ -919,7 +932,7 @@ public class AppSetup {
         let messageBackupChatStyleArchiver = MessageBackupChatStyleArchiver(
             attachmentManager: attachmentManager,
             attachmentStore: attachmentStore,
-            backupAttachmentDownloadStore: backupAttachmentDownloadStore,
+            backupAttachmentDownloadManager: backupAttachmentDownloadManager,
             chatColorSettingStore: chatColorSettingStore,
             dateProvider: dateProvider,
             wallpaperStore: wallpaperStore
@@ -948,7 +961,7 @@ public class AppSetup {
             ),
             attachmentDownloadManager: attachmentDownloadManager,
             attachmentUploadManager: attachmentUploadManager,
-            backupAttachmentDownloadStore: backupAttachmentDownloadStore,
+            backupAttachmentDownloadManager: backupAttachmentDownloadManager,
             backupAttachmentUploadManager: backupAttachmentUploadManager,
             backupRequestManager: messageBackupRequestManager,
             backupStickerPackDownloadStore: backupStickerPackDownloadStore,
@@ -961,7 +974,7 @@ public class AppSetup {
             chatItemArchiver: MessageBackupChatItemArchiverImpl(
                 attachmentManager: attachmentManager,
                 attachmentStore: attachmentStore,
-                backupAttachmentDownloadStore: backupAttachmentDownloadStore,
+                backupAttachmentDownloadManager: backupAttachmentDownloadManager,
                 callRecordStore: callRecordStore,
                 contactManager: MessageBackup.Wrappers.ContactManager(contactManager),
                 dateProvider: dateProvider,
@@ -1095,7 +1108,8 @@ public class AppSetup {
             attachmentViewOnceManager: attachmentViewOnceManager,
             audioWaveformManager: audioWaveformManager,
             authorMergeHelper: authorMergeHelper,
-            backupAttachmentDownloadStore: backupAttachmentDownloadStore,
+            backupAttachmentDownloadManager: backupAttachmentDownloadManager,
+            backupAttachmentUploadManager: backupAttachmentUploadManager,
             badgeCountFetcher: badgeCountFetcher,
             callLinkStore: callLinkStore,
             callRecordDeleteManager: callRecordDeleteManager,

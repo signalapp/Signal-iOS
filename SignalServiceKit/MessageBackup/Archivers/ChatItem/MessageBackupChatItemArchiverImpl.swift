@@ -11,7 +11,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
 
     private let attachmentManager: AttachmentManager
     private let attachmentStore: AttachmentStore
-    private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
+    private let backupAttachmentDownloadManager: BackupAttachmentDownloadManager
     private let callRecordStore: CallRecordStore
     private let contactManager: MessageBackup.Shims.ContactManager
     private let dateProvider: DateProvider
@@ -28,7 +28,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
     public init(
         attachmentManager: AttachmentManager,
         attachmentStore: AttachmentStore,
-        backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
+        backupAttachmentDownloadManager: BackupAttachmentDownloadManager,
         callRecordStore: CallRecordStore,
         contactManager: MessageBackup.Shims.ContactManager,
         dateProvider: @escaping DateProvider,
@@ -44,7 +44,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
     ) {
         self.attachmentManager = attachmentManager
         self.attachmentStore = attachmentStore
-        self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
+        self.backupAttachmentDownloadManager = backupAttachmentDownloadManager
         self.callRecordStore = callRecordStore
         self.contactManager = contactManager
         self.dateProvider = dateProvider
@@ -62,7 +62,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
     private lazy var attachmentsArchiver = MessageBackupMessageAttachmentArchiver(
         attachmentManager: attachmentManager,
         attachmentStore: attachmentStore,
-        backupAttachmentDownloadStore: backupAttachmentDownloadStore
+        backupAttachmentDownloadManager: backupAttachmentDownloadManager
     )
     private lazy var reactionArchiver = MessageBackupReactionArchiver(
         reactionStore: reactionStore

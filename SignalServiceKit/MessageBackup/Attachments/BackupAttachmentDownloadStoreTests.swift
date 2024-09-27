@@ -105,7 +105,7 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
         }
     }
 
-    func testDequeue() throws {
+    func testPeek() throws {
         let timestamps: [UInt64] = [1111, 4444, 3333, 2222]
         for timestamp in timestamps {
             var attachmentRecord = Attachment.Record(params: .mockPointer())
@@ -136,7 +136,12 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
         var dequeuedTimestamps = [UInt64]()
         try db.write { tx in
             var lastRecordId = Int64.max
-            try store.dequeueAndClearTable(tx: tx, db: InMemoryDB.shimOnlyBridge(tx).db) { record in
+            let records = try store.peek(
+                count: UInt(timestamps.count - 1),
+                db: InMemoryDB.shimOnlyBridge(tx).db,
+                tx: tx
+            )
+            for record in records {
                 XCTAssert(record.id! < lastRecordId)
                 lastRecordId = record.id!
                 dequeuedTimestamps.append(record.timestamp!)
@@ -145,15 +150,7 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
 
         // We should have gotten entries in reverse order to insertion order,
         // regardless of timestamps.
-        XCTAssertEqual(dequeuedTimestamps, timestamps.reversed())
-
-        try db.read { tx in
-            // all rows should be deleted.
-            XCTAssertEqual(
-                0,
-                try QueuedBackupAttachmentDownload.fetchCount(InMemoryDB.shimOnlyBridge(tx).db)
-            )
-        }
+        XCTAssertEqual(dequeuedTimestamps, Array(timestamps.reversed().prefix(timestamps.count - 1)))
     }
 
     // MARK: - Helpers

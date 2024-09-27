@@ -24,9 +24,18 @@ public protocol BackupAttachmentDownloadStore {
     /// rows into the normal AttachmentDownloadQueue, as this table serves only as an intermediary.
     func enqueue(_ reference: AttachmentReference, tx: DBWriteTransaction) throws
 
-    /// Read rows off the queue one by one, calling the block for each, and then when finished delete
-    /// every row in the table.
-    func dequeueAndClearTable(tx: DBWriteTransaction, block: (QueuedBackupAttachmentDownload) throws -> Void) throws
+    /// Read the next highest priority downloads off the queue, up to count.
+    /// Returns an empty array if nothing is left to download.
+    func peek(count: UInt, tx: DBReadTransaction) throws -> [QueuedBackupAttachmentDownload]
+
+    /// Remove the download from the queue. Should be called once downloaded (or permanently failed).
+    func removeQueuedDownload(
+        _ record: QueuedBackupAttachmentDownload,
+        tx: DBWriteTransaction
+    ) throws
+
+    /// Remove all enqueued downloads from the table.
+    func removeAll(tx: DBWriteTransaction) throws
 }
 
 public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
@@ -103,28 +112,55 @@ public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
         try record.insert(db)
     }
 
-    public func dequeueAndClearTable(
-        tx: any DBWriteTransaction,
-        block: (QueuedBackupAttachmentDownload) throws -> Void
-    ) throws {
-        let db = SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database
-        try self.dequeueAndClearTable(tx: tx, db: db, block: block)
+    public func peek(
+        count: UInt,
+        tx: DBReadTransaction
+    ) throws -> [QueuedBackupAttachmentDownload] {
+        return try self.peek(
+            count: count,
+            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database,
+            tx: tx
+        )
     }
 
-    internal func dequeueAndClearTable(
-        tx: any DBWriteTransaction,
-        db: Database,
-        block: (QueuedBackupAttachmentDownload) throws -> Void
-    ) throws {
-        let cursor = try QueuedBackupAttachmentDownload
+    internal func peek(
+        count: UInt,
+        db: GRDB.Database,
+        tx: DBReadTransaction
+    ) throws -> [QueuedBackupAttachmentDownload] {
+        try QueuedBackupAttachmentDownload
             // We want to dequeue in _reverse_ insertion order.
             .order([Column(QueuedBackupAttachmentDownload.CodingKeys.id).desc])
-            .fetchCursor(db)
+            .limit(Int(count))
+            .fetchAll(db)
+    }
 
-        while let record = try cursor.next() {
-            try block(record)
-        }
+    public func removeQueuedDownload(
+        _ record: QueuedBackupAttachmentDownload,
+        tx: DBWriteTransaction
+    ) throws {
+        try self.removeQueuedDownload(
+            record,
+            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database,
+            tx: tx
+        )
+    }
 
+    internal func removeQueuedDownload(
+        _ record: QueuedBackupAttachmentDownload,
+        db: Database,
+        tx: DBWriteTransaction
+    ) throws {
+        try QueuedBackupAttachmentDownload
+            .filter(Column(QueuedBackupAttachmentDownload.CodingKeys.id) == record.id)
+            .deleteAll(db)
+    }
+
+    public func removeAll(tx: DBWriteTransaction) throws {
+        try self.removeAll(db: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database, tx: tx)
+    }
+
+    internal func removeAll(db: GRDB.Database, tx: DBWriteTransaction) throws {
         try QueuedBackupAttachmentDownload.deleteAll(db)
     }
 }
@@ -149,7 +185,18 @@ open class BackupAttachmentDownloadStoreMock: BackupAttachmentDownloadStore {
         // Do nothing
     }
 
-    open func dequeueAndClearTable(tx: any DBWriteTransaction, block: (QueuedBackupAttachmentDownload) throws -> Void) throws {
+    open func peek(count: UInt, tx: DBReadTransaction) throws -> [QueuedBackupAttachmentDownload] {
+        return []
+    }
+
+    open func removeQueuedDownload(
+        _ record: QueuedBackupAttachmentDownload,
+        tx: DBWriteTransaction
+    ) throws {
+        // Do nothing
+    }
+
+    open func removeAll(tx: DBWriteTransaction) throws {
         // Do nothing
     }
 }

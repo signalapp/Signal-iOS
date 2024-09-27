@@ -241,6 +241,37 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         }
     }
 
+    public func downloadAttachment(
+        id: Attachment.IDType,
+        priority: AttachmentDownloadPriority,
+        source: QueuedAttachmentDownloadRecord.SourceType
+    ) async throws {
+        if CurrentAppContext().isRunningTests {
+            // No need to enqueue downloads if we're running tests.
+            return
+        }
+
+        let downloadWaitingTask = Task {
+            try await self.downloadQueue.waitForDownloadOfAttachment(
+                id: id,
+                source: source
+            )
+        }
+
+        try await db.awaitableWrite { tx in
+            try self.attachmentDownloadStore.enqueueDownloadOfAttachment(
+                withId: id,
+                source: source,
+                priority: priority,
+                tx: tx
+            )
+        }
+
+        self.beginDownloadingIfNecessary()
+
+        try await downloadWaitingTask.value
+    }
+
     public func beginDownloadingIfNecessary() {
         guard CurrentAppContext().isMainApp else {
             return
@@ -576,7 +607,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 // For now as a hack hardcode to 3 if missing (since they'll all be 3 anyway).
                 let cdnNumber = attachment.thumbnailMediaTierInfo?.cdnNumber ?? 3
                 guard
-                    let thumbnailInfo = attachment.thumbnailMediaTierInfo,
+                    attachment.thumbnailMediaTierInfo != nil,
                     let mediaName = attachment.mediaName,
                     // This is the outer encryption
                     let outerEncryptionMetadata = buildCdnEncryptionMetadata(
@@ -1137,8 +1168,8 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
     private actor DownloadQueue {
 
-        private let progressStates: ProgressStates
-        private let signalService: OWSSignalServiceProtocol
+        private nonisolated let progressStates: ProgressStates
+        private nonisolated let signalService: OWSSignalServiceProtocol
 
         init(
             progressStates: ProgressStates,
@@ -1151,6 +1182,52 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         private let maxConcurrentDownloads = 4
         private var concurrentDownloads = 0
         private var queue = [CheckedContinuation<Void, Error>]()
+
+        private struct DownloadKey: Hashable {
+            let attachmentId: Attachment.IDType
+            let source: QueuedAttachmentDownloadRecord.SourceType
+        }
+        private var downloadObservers = [DownloadKey: [CheckedContinuation<Void, Error>]]()
+
+        func waitForDownloadOfAttachment(
+            id: Attachment.IDType,
+            source: QueuedAttachmentDownloadRecord.SourceType
+        ) async throws {
+            return try await withCheckedThrowingContinuation { continuation in
+                let key = DownloadKey(attachmentId: id, source: source)
+                var observers = self.downloadObservers[key] ?? []
+                observers.append(continuation)
+                self.downloadObservers[key] = observers
+            }
+        }
+
+        private func updateObservers(downloadState: DownloadState, error: Error?) {
+            switch downloadState.type {
+            case .backup, .transientAttachment:
+                break
+            case .attachment(let downloadMetadata, let id):
+                let source: QueuedAttachmentDownloadRecord.SourceType = {
+                    switch downloadMetadata.source {
+                    case .transitTier:
+                        return .transitTier
+                    case .mediaTierFullsize:
+                        return .mediaTierFullsize
+                    case .mediaTierThumbnail:
+                        return .mediaTierThumbnail
+                    }
+                }()
+                let key = DownloadKey(
+                    attachmentId: id,
+                    source: source
+                )
+                let observers = self.downloadObservers.removeValue(forKey: key) ?? []
+                if let error {
+                    observers.forEach { $0.resume(throwing: error) }
+                } else {
+                    observers.forEach { $0.resume() }
+                }
+            }
+        }
 
         func enqueueDownload(
             downloadState: DownloadState,
@@ -1168,12 +1245,19 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 runNextQueuedDownloadIfPossible()
             }
             try Task.checkCancellation()
-            return try await performDownloadAttempt(
-                downloadState: downloadState,
-                maxDownloadSizeBytes: maxDownloadSizeBytes,
-                resumeData: nil,
-                attemptCount: 0
-            )
+            do {
+                let result = try await performDownloadAttempt(
+                    downloadState: downloadState,
+                    maxDownloadSizeBytes: maxDownloadSizeBytes,
+                    resumeData: nil,
+                    attemptCount: 0
+                )
+                self.updateObservers(downloadState: downloadState, error: nil)
+                return result
+            } catch let error {
+                self.updateObservers(downloadState: downloadState, error: error)
+                throw error
+            }
         }
 
         private func runNextQueuedDownloadIfPossible() {

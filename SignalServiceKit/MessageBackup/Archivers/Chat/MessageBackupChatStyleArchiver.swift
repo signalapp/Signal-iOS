@@ -9,7 +9,7 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
 
     private let attachmentManager: AttachmentManager
     private let attachmentStore: AttachmentStore
-    private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
+    private let backupAttachmentDownloadManager: BackupAttachmentDownloadManager
     private let chatColorSettingStore: ChatColorSettingStore
     private let dateProvider: DateProvider
     private let wallpaperStore: WallpaperStore
@@ -17,14 +17,14 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
     public init(
         attachmentManager: AttachmentManager,
         attachmentStore: AttachmentStore,
-        backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
+        backupAttachmentDownloadManager: BackupAttachmentDownloadManager,
         chatColorSettingStore: ChatColorSettingStore,
         dateProvider: @escaping DateProvider,
         wallpaperStore: WallpaperStore
     ) {
         self.attachmentManager = attachmentManager
         self.attachmentStore = attachmentStore
-        self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
+        self.backupAttachmentDownloadManager = backupAttachmentDownloadManager
         self.chatColorSettingStore = chatColorSettingStore
         self.dateProvider = dateProvider
         self.wallpaperStore = wallpaperStore
@@ -525,7 +525,7 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
             })
         }
 
-        let results = attachmentStore.fetchReferences(owners: [ownedAttachment.owner.id], tx: context.tx)
+        let results = attachmentStore.fetchReferencedAttachments(owners: [ownedAttachment.owner.id], tx: context.tx)
         if results.isEmpty {
             return .partialRestore([.restoreFrameError(
                 .failedToCreateAttachment,
@@ -535,7 +535,7 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
 
         do {
             try results.forEach {
-                try backupAttachmentDownloadStore.enqueue($0, tx: context.tx)
+                try backupAttachmentDownloadManager.enqueueIfNeeded($0, tx: context.tx)
             }
         } catch {
             return .partialRestore([.restoreFrameError(

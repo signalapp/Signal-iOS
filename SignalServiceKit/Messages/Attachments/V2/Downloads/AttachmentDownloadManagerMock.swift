@@ -44,6 +44,14 @@ open class AttachmentDownloadManagerMock: AttachmentDownloadManager {
         // Do nothing
     }
 
+    open func downloadAttachment(
+        id: Attachment.IDType,
+        priority: AttachmentDownloadPriority,
+        source: QueuedAttachmentDownloadRecord.SourceType
+    ) async throws {
+        // Do nothing
+    }
+
     open func beginDownloadingIfNecessary() {
         // Do nothing
     }

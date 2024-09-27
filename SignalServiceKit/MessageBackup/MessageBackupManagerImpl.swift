@@ -27,7 +27,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     private let accountDataArchiver: MessageBackupAccountDataArchiver
     private let attachmentDownloadManager: AttachmentDownloadManager
     private let attachmentUploadManager: AttachmentUploadManager
-    private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
+    private let backupAttachmentDownloadManager: BackupAttachmentDownloadManager
     private let backupAttachmentUploadManager: BackupAttachmentUploadManager
     private let backupRequestManager: MessageBackupRequestManager
     private let backupStickerPackDownloadStore: BackupStickerPackDownloadStore
@@ -52,7 +52,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         accountDataArchiver: MessageBackupAccountDataArchiver,
         attachmentDownloadManager: AttachmentDownloadManager,
         attachmentUploadManager: AttachmentUploadManager,
-        backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
+        backupAttachmentDownloadManager: BackupAttachmentDownloadManager,
         backupAttachmentUploadManager: BackupAttachmentUploadManager,
         backupRequestManager: MessageBackupRequestManager,
         backupStickerPackDownloadStore: BackupStickerPackDownloadStore,
@@ -76,7 +76,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         self.accountDataArchiver = accountDataArchiver
         self.attachmentDownloadManager = attachmentDownloadManager
         self.attachmentUploadManager = attachmentUploadManager
-        self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
+        self.backupAttachmentDownloadManager = backupAttachmentDownloadManager
         self.backupAttachmentUploadManager = backupAttachmentUploadManager
         self.backupRequestManager = backupRequestManager
         self.backupStickerPackDownloadStore = backupStickerPackDownloadStore
@@ -671,41 +671,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         )
 
         // Enqueue downloads for all the attachments.
-
-        // TODO: [Backups] do this in a separate write transaction after we query the list media
-        // tier attachments endpoint. We may be missing cdn number info for backup attachments
-        // that we can retrieve via the list; also we can cancel the download of attachments
-        // not in the list endpoint's results. We need to make the list endpoint request durably.
-
-        // TODO: [Backups] enqueue download of transit tier attachments where backup tier unavailable
-        // and wasDownloaded=true.
-        let nowDate = dateProvider()
-        let shouldDownloadAllFullsize = backupAttachmentDownloadStore.getShouldStoreAllMediaLocally(tx: tx)
-        try backupAttachmentDownloadStore.dequeueAndClearTable(tx: tx) { backupDownload in
-            // Every backup attachment gets enqueued for thumbnail download at lower priority.
-            /*
-            TODO: Re-enable thumbnail downloading once AttachmentDownloadManager understands thumbnail types
-            attachmentDownloadManager.enqueueDownloadOfAttachment(
-                id: backupDownload.attachmentRowId,
-                priority: .backupRestoreLow,
-                source: .mediaTierThumbnail,
-                tx: tx
-            )
-            */
-            // If its recent media, also download fullsize at higher priority.
-            // Or if "optimize media" is off, download fullsize everything
-            // regardless of date.
-            let isRecentMedia = backupDownload.isRecentMedia(now: nowDate)
-            if
-                shouldDownloadAllFullsize
-                    || isRecentMedia
-            {
-                attachmentDownloadManager.enqueueDownloadOfAttachment(
-                    id: backupDownload.attachmentRowId,
-                    priority: isRecentMedia ? .backupRestoreHigh : .backupRestoreLow,
-                    source: .mediaTierFullsize,
-                    tx: tx
-                )
+        tx.addAsyncCompletion(on: DispatchQueue.global()) { [backupAttachmentDownloadManager] in
+            Task {
+                try await backupAttachmentDownloadManager.restoreAttachmentsIfNeeded()
             }
         }
     }

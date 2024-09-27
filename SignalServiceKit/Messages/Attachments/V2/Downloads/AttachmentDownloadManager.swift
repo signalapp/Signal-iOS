@@ -110,6 +110,12 @@ public protocol AttachmentDownloadManager {
         tx: DBWriteTransaction
     )
 
+    func downloadAttachment(
+        id: Attachment.IDType,
+        priority: AttachmentDownloadPriority,
+        source: QueuedAttachmentDownloadRecord.SourceType
+    ) async throws
+
     /// Starts downloading off the persisted queue, if there's anything to download
     /// and if not already downloading the max number of parallel downloads at once.
     func beginDownloadingIfNecessary()
