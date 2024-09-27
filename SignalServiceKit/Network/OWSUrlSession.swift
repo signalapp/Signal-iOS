@@ -72,13 +72,8 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
     // that can be are declared so here. Objc callers must use this implementation
     // directly and not touch the protocol.
 
-    public static var defaultSecurityPolicy: OWSHTTPSecurityPolicy {
-        OWSHTTPSecurityPolicy.systemDefault()
-    }
-
-    public static var signalServiceSecurityPolicy: OWSHTTPSecurityPolicy {
-        OWSHTTPSecurityPolicy.shared()
-    }
+    public static let defaultSecurityPolicy = HttpSecurityPolicy.systemDefault
+    public static let signalServiceSecurityPolicy = HttpSecurityPolicy.signalCaPinned
 
     public static var defaultConfigurationWithCaching: URLSessionConfiguration {
         .ephemeral
@@ -125,7 +120,7 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
     }
 
     convenience public init(
-        securityPolicy: OWSHTTPSecurityPolicy,
+        securityPolicy: HttpSecurityPolicy,
         configuration: URLSessionConfiguration
     ) {
         self.init(
@@ -143,7 +138,7 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
 
     convenience public init(
         baseUrl: URL? = nil,
-        securityPolicy: OWSHTTPSecurityPolicy,
+        securityPolicy: HttpSecurityPolicy,
         configuration: URLSessionConfiguration,
         extraHeaders: [String: String] = [:],
         maxResponseSize: Int? = nil,
@@ -745,7 +740,7 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
 
         if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust,
            let serverTrust = challenge.protectionSpace.serverTrust {
-            if endpoint.securityPolicy.evaluateServerTrust(serverTrust, forDomain: challenge.protectionSpace.host) {
+            if endpoint.securityPolicy.evaluate(serverTrust: serverTrust, domain: challenge.protectionSpace.host) {
                 credential = URLCredential(trust: serverTrust)
                 disposition = .useCredential
             } else {

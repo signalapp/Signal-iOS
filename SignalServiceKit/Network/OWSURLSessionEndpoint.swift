@@ -19,12 +19,12 @@ public class OWSURLSessionEndpoint {
     private let extraHeaders: [String: String]
 
     /// The set of certificates we should use during the TLS handshake.
-    let securityPolicy: OWSHTTPSecurityPolicy
+    let securityPolicy: HttpSecurityPolicy
 
     init(
         baseUrl: URL?,
         frontingInfo: OWSUrlFrontingInfo?,
-        securityPolicy: OWSHTTPSecurityPolicy,
+        securityPolicy: HttpSecurityPolicy,
         extraHeaders: [String: String]
     ) {
         self.baseUrl = baseUrl

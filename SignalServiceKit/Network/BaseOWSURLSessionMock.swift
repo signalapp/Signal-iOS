@@ -19,10 +19,9 @@ public class BaseOWSURLSessionMock: OWSURLSessionProtocol {
 
     public var customRedirectHandler: ((URLRequest) -> URLRequest?)?
 
-    @objc
-    public static var defaultSecurityPolicy: OWSHTTPSecurityPolicy = OWSURLSession.defaultSecurityPolicy
+    public static let defaultSecurityPolicy = OWSURLSession.defaultSecurityPolicy
 
-    public static var signalServiceSecurityPolicy: OWSHTTPSecurityPolicy = OWSURLSession.signalServiceSecurityPolicy
+    public static let signalServiceSecurityPolicy = OWSURLSession.signalServiceSecurityPolicy
 
     public static var defaultConfigurationWithCaching: URLSessionConfiguration = OWSURLSession.defaultConfigurationWithCaching
 
@@ -59,7 +58,7 @@ public class BaseOWSURLSessionMock: OWSURLSessionProtocol {
             endpoint: OWSURLSessionEndpoint(
                 baseUrl: nil,
                 frontingInfo: nil,
-                securityPolicy: .systemDefault(),
+                securityPolicy: .systemDefault,
                 extraHeaders: [:]
             ),
             configuration: .default,

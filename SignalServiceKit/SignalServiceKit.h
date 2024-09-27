@@ -30,7 +30,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/OWSDynamicOutgoingMessage.h>
 #import <SignalServiceKit/OWSEndSessionMessage.h>
 #import <SignalServiceKit/OWSGroupCallMessage.h>
-#import <SignalServiceKit/OWSHTTPSecurityPolicy.h>
 #import <SignalServiceKit/OWSIncomingArchivedPaymentMessage.h>
 #import <SignalServiceKit/OWSIncomingPaymentMessage.h>
 #import <SignalServiceKit/OWSLinkedDeviceReadReceipt.h>

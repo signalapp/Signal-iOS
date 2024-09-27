@@ -512,67 +512,18 @@ extension MobileCoinAPI {
         }
     }
 
-    // MARK: - Certificates
-
-    private class Certificates: NSObject {
-
-        enum CertificateBundle {
-            case mainApp
-            case ssk
-        }
-
-        static func certificateData(forService certFilename: String,
-                                    type: String,
-                                    certificateBundle: CertificateBundle,
-                                    verifyDer: Bool = false) -> Data {
-            let bundle: Bundle = {
-                switch certificateBundle {
-                case .mainApp:
-                    return Bundle(for: self)
-                case .ssk:
-                    return Bundle(for: OWSHTTPSecurityPolicy.self)
-                }
-            }()
-            guard let filepath = bundle.path(forResource: certFilename, ofType: type) else {
-                owsFail("Missing cert: \(certFilename)")
-            }
-            guard OWSFileSystem.fileOrFolderExists(atPath: filepath) else {
-                owsFail("Missing cert: \(certFilename)")
-            }
-            let data = try! Data(contentsOf: URL(fileURLWithPath: filepath))
-            guard !data.isEmpty else {
-                owsFail("Invalid cert: \(certFilename)")
-            }
-            if verifyDer {
-                guard let certificate = SecCertificateCreateWithData(nil, data as CFData) else {
-                    owsFail("Invalid cert: \(certFilename)")
-                }
-                let derData = SecCertificateCopyData(certificate) as Data
-                return derData
-            } else {
-                return data
-            }
-        }
-    }
-
     // MARK: - TrustRootCerts
 
-    private class TrustRootCerts: NSObject {
+    private enum TrustRootCerts {
 
-        static func anchorCertificates_mobileCoin() -> [Data] {
-            [
-                Certificates.certificateData(forService: "isrgrootx1", type: "crt", certificateBundle: .ssk, verifyDer: true)
-            ]
-        }
+        private static let anchorCertificates_mobileCoin = [Certificates.load("isrgrootx1", extension: "crt")]
 
-        static func pinPolicy(environment: Environment) -> Result<OWSHTTPSecurityPolicy, Error> {
-            let trustRootCertDatas: [Data] = anchorCertificates_mobileCoin()
-            guard !trustRootCertDatas.isEmpty else {
-                return .failure(OWSAssertionError("No certificate data"))
+        static func pinPolicy(environment: Environment) throws(OWSAssertionError) -> HttpSecurityPolicy {
+            let trustRootCerts: [SecCertificate] = anchorCertificates_mobileCoin
+            guard !trustRootCerts.isEmpty else {
+                throw OWSAssertionError("No certificate data")
             }
-
-            let securityPolicy =  OWSHTTPSecurityPolicy(pinnedCertificates: Set(trustRootCertDatas))
-            return .success(securityPolicy)
+            return HttpSecurityPolicy(pinnedCertificates: trustRootCerts)
         }
     }
 
@@ -612,9 +563,9 @@ extension MobileCoinAPI {
                                                             fogReportAttestation: attestationConfig.fogReport,
                                                             transportProtocol: .http)
 
-            let securityPolicy: OWSHTTPSecurityPolicy
+            let securityPolicy: HttpSecurityPolicy
             do {
-                securityPolicy = try TrustRootCerts.pinPolicy(environment: environment).get()
+                securityPolicy = try TrustRootCerts.pinPolicy(environment: environment)
             } catch {
                 owsFailDebug("Error: \(error)")
                 throw error
@@ -726,9 +677,9 @@ final class MobileCoinHttpRequester: NSObject, HttpRequester {
         return config
     }()
 
-    private let securityPolicy: OWSHTTPSecurityPolicy
+    private let securityPolicy: HttpSecurityPolicy
 
-    init(securityPolicy: OWSHTTPSecurityPolicy) {
+    init(securityPolicy: HttpSecurityPolicy) {
         self.securityPolicy = securityPolicy
     }
 

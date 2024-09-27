@@ -17,10 +17,11 @@ enum OWSFrontingHost {
     case `default`
 
     /// When using censorship circumvention, we pin to the fronted domain host.
-    /// Adding a new domain front entails adding a corresponding OWSHTTPSecurityPolicy
+    /// Adding a new domain front entails adding a corresponding HttpSecurityPolicy
     /// and pinning to its CA.
+    ///
     /// If the security policy requires new certificates, include them in the SSK bundle
-    fileprivate var securityPolicy: OWSHTTPSecurityPolicy {
+    fileprivate var securityPolicy: HttpSecurityPolicy {
         switch self {
         case .googleEgypt, .googleUae, .googleOman, .googlePakistan, .googleQatar, .googleUzbekistan, .googleVenezuela, .default:
             return PinningPolicy.google.securityPolicy
@@ -86,7 +87,7 @@ enum OWSFrontingHost {
 struct OWSCensorshipConfiguration {
 
     let domainFrontBaseUrl: URL
-    let domainFrontSecurityPolicy: OWSHTTPSecurityPolicy
+    let domainFrontSecurityPolicy: HttpSecurityPolicy
     let requiresPathPrefix: Bool
 
     /// Returns a service specific host header.
@@ -154,7 +155,7 @@ struct OWSCensorshipConfiguration {
         censoredCountryCode(e164: e164) != nil
     }
 
-    private init(domainFrontBaseUrl: URL, securityPolicy: OWSHTTPSecurityPolicy, requiresPathPrefix: Bool) {
+    private init(domainFrontBaseUrl: URL, securityPolicy: HttpSecurityPolicy, requiresPathPrefix: Bool) {
         self.domainFrontBaseUrl = domainFrontBaseUrl
         self.domainFrontSecurityPolicy = securityPolicy
         self.requiresPathPrefix = requiresPathPrefix
@@ -202,7 +203,7 @@ private enum PinningPolicy {
     case fastly
     case google
 
-    var securityPolicy: OWSHTTPSecurityPolicy {
+    var securityPolicy: HttpSecurityPolicy {
         switch self {
         case .fastly:
             return Self.fastlySecurityPolicy
@@ -211,39 +212,12 @@ private enum PinningPolicy {
         }
     }
 
-    private static func securityPolicy(certNames: [String]) -> OWSHTTPSecurityPolicy {
-        var certificates = Set<Data>()
-        for certName in certNames {
-            certificates.insert(certificateData(name: certName))
-        }
-        return OWSHTTPSecurityPolicy(pinnedCertificates: certificates)
+    private static func securityPolicy(certNames: [String]) -> HttpSecurityPolicy {
+        HttpSecurityPolicy(pinnedCertificates: certNames.map { Certificates.load($0, extension: "crt") })
     }
 
-    private static func certificateData(name: String) -> Data {
-        guard !name.isEmpty else {
-            owsFail("expected name with length > 0")
-        }
+    private static let fastlySecurityPolicy = HttpSecurityPolicy.systemDefault
 
-        let bundle = Bundle(for: OWSHTTPSecurityPolicy.self)
-        guard let url = bundle.url(forResource: name, withExtension: "crt") else {
-            owsFail("missing certificate data for name: \(name)")
-        }
-
-        do {
-            let certData = try Data(contentsOf: url)
-            guard !certData.isEmpty else {
-                owsFail("empty certData for name: \(name)")
-            }
-            return certData
-        } catch {
-            owsFail("failed to read cert file with path: \(url)")
-        }
-    }
-
-    private static let fastlySecurityPolicy = OWSHTTPSecurityPolicy.systemDefault()
-
-    private static let googleSecurityPolicy = {
-        // GIAG2 cert plus root certs from pki.goog
-        securityPolicy(certNames: ["GIAG2", "GSR2", "GSR4", "GTSR1", "GTSR2", "GTSR3", "GTSR4"])
-    }()
+    // GIAG2 cert plus root certs from pki.goog
+    private static let googleSecurityPolicy = securityPolicy(certNames: ["GIAG2", "GSR2", "GSR4", "GTSR1", "GTSR2", "GTSR3", "GTSR4"])
 }

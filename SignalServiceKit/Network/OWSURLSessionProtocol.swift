@@ -104,8 +104,8 @@ public protocol OWSURLSessionProtocol: AnyObject, Dependencies {
 
     var customRedirectHandler: ((URLRequest) -> URLRequest?)? { get set }
 
-    static var defaultSecurityPolicy: OWSHTTPSecurityPolicy { get }
-    static var signalServiceSecurityPolicy: OWSHTTPSecurityPolicy { get }
+    static var defaultSecurityPolicy: HttpSecurityPolicy { get }
+    static var signalServiceSecurityPolicy: HttpSecurityPolicy { get }
     static var defaultConfigurationWithCaching: URLSessionConfiguration { get }
     static var defaultConfigurationWithoutCaching: URLSessionConfiguration { get }
 

@@ -28,7 +28,7 @@ public class OWSSignalServiceMock: OWSSignalServiceProtocol, Dependencies {
         return urlEndpointBuilder?(signalServiceInfo) ?? OWSURLSessionEndpoint(
             baseUrl: signalServiceInfo.baseUrl,
             frontingInfo: nil,
-            securityPolicy: .systemDefault(),
+            securityPolicy: .systemDefault,
             extraHeaders: [:]
         )
     }
