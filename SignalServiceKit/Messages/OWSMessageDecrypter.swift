@@ -12,7 +12,7 @@ public class OWSMessageDecrypter: Dependencies {
         didSet { oldValue?.invalidate() }
     }
 
-    public init() {
+    public init(appReadiness: AppReadiness) {
         SwiftSingletons.register(self)
 
         NotificationCenter.default.addObserver(
@@ -22,7 +22,7 @@ public class OWSMessageDecrypter: Dependencies {
             object: nil
         )
 
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync { [weak self] in
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync { [weak self] in
             guard let self = self else { return }
             guard CurrentAppContext().isMainApp else { return }
             self.cleanUpExpiredPlaceholders()

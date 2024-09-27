@@ -15,6 +15,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
     private let authCredentialManager: any AuthCredentialManager
 
     init(
+        appReadiness: AppReadiness,
         authCredentialStore: AuthCredentialStore,
         authCredentialManager: any AuthCredentialManager
     ) {
@@ -23,7 +24,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
 
         SwiftSingletons.register(self)
 
-        AppReadinessGlobal.runNowOrWhenAppWillBecomeReady {
+        appReadiness.runNowOrWhenAppWillBecomeReady {
             guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
                 return
             }
@@ -37,7 +38,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
             }
         }
 
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             Self.enqueueRestoreGroupPass(authedAccount: .implicit())
         }
 

@@ -79,7 +79,7 @@ public class StickerManager: NSObject {
 
     // MARK: - Initializers
 
-    override init() {
+    init(appReadiness: AppReadiness) {
 
         // Task queue to install any sticker packs restored from a backup
         self.queueLoader = TaskQueueLoader(
@@ -95,7 +95,7 @@ public class StickerManager: NSObject {
         super.init()
 
         // Resume sticker and sticker pack downloads when app is ready.
-        AppReadinessGlobal.runNowOrWhenMainAppDidBecomeReadyAsync {
+        appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
             if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered {
                 Task {
                     // This will return once all restored sticker packs have been downloaded

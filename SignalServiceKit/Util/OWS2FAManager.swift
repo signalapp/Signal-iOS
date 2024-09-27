@@ -21,10 +21,10 @@ public enum OWS2FAMode {
 }
 
 public class OWS2FAManager: Dependencies {
-    init() {
+    init(appReadiness: AppReadiness) {
         SwiftSingletons.register(self)
 
-        AppReadinessGlobal.runNowOrWhenMainAppDidBecomeReadyAsync {
+        appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
             if self.mode == .V1 {
                 Logger.info("Migrating V1 reglock to V2 reglock")
 

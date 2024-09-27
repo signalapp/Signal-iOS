@@ -186,6 +186,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         let deviceTransferService = DeviceTransferService(keychainStorage: keychainStorage)
 
         AppEnvironment.setSharedEnvironment(AppEnvironment(
+            appReadiness: appReadiness,
             deviceTransferService: deviceTransferService
         ))
 
@@ -241,6 +242,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         // migration a launch-blocking GRDB migration.
         let incrementalMessageTSAttachmentMigrationStore = IncrementalTSAttachmentMigrationStore()
         let incrementalMessageTSAttachmentMigrator = IncrementalMessageTSAttachmentMigratorImpl(
+            appReadiness: appReadiness,
             databaseStorage: databaseStorage,
             store: incrementalMessageTSAttachmentMigrationStore
         )

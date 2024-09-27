@@ -197,17 +197,16 @@ public extension Notification.Name {
 @objc
 public class SubscriptionManagerImpl: NSObject {
 
-    @objc
-    public override init() {
+    public init(appReadiness: AppReadiness) {
         super.init()
 
         SwiftSingletons.register(self)
 
-        AppReadinessGlobal.runNowOrWhenAppWillBecomeReady {
+        appReadiness.runNowOrWhenAppWillBecomeReady {
             Self.warmCaches()
         }
 
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             DispatchQueue.global().async {
                 Self.performMigrationToStorageServiceIfNecessary()
                 Self.performSubscriptionKeepAliveIfNecessary()

@@ -50,12 +50,12 @@ public class AvatarBuilder: NSObject {
 
     // MARK: -
 
-    public override init() {
+    public init(appReadiness: AppReadiness) {
         super.init()
 
         SwiftSingletons.register(self)
 
-        AppReadinessGlobal.runNowOrWhenAppWillBecomeReady {
+        appReadiness.runNowOrWhenAppWillBecomeReady {
             self.addObservers()
         }
     }

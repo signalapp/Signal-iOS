@@ -9,12 +9,11 @@ import LibSignalClient
 @objc
 public class ViewOnceMessages: NSObject {
 
-    @objc
-    public override init() {
+    public init(appReadiness: AppReadiness) {
         super.init()
 
         if CurrentAppContext().isMainApp {
-            AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync {
+            appReadiness.runNowOrWhenAppDidBecomeReadySync {
                 Self.appDidBecomeReady()
             }
         }

@@ -153,13 +153,13 @@ public class AppSetup {
         let blockedRecipientStore = BlockedRecipientStoreImpl()
         let blockingManager = BlockingManager(blockedRecipientStore: blockedRecipientStore)
         let dateProvider = testDependencies.dateProvider ?? Date.provider
-        let earlyMessageManager = EarlyMessageManager()
+        let earlyMessageManager = EarlyMessageManager(appReadiness: appReadiness)
         let messageProcessor = MessageProcessor()
         let messageSender = testDependencies.messageSender ?? MessageSender()
         let messageSenderJobQueue = MessageSenderJobQueue()
         let modelReadCaches = testDependencies.modelReadCaches ?? ModelReadCaches(factory: ModelReadCacheFactory())
         let networkManager = testDependencies.networkManager ?? NetworkManager(libsignalNet: libsignalNet)
-        let ows2FAManager = OWS2FAManager()
+        let ows2FAManager = OWS2FAManager(appReadiness: appReadiness)
         let paymentsHelper = testDependencies.paymentsHelper ?? PaymentsHelperImpl()
         let archivedPaymentStore = ArchivedPaymentStoreImpl()
         let pniSignalProtocolStore = SignalProtocolStoreImpl(
@@ -191,7 +191,7 @@ public class AppSetup {
         let storageServiceManager = testDependencies.storageServiceManager ?? StorageServiceManagerImpl()
         let syncManager = testDependencies.syncManager ?? OWSSyncManager(default: ())
         let udManager = OWSUDManagerImpl()
-        let versionedProfiles = testDependencies.versionedProfiles ?? VersionedProfilesImpl()
+        let versionedProfiles = testDependencies.versionedProfiles ?? VersionedProfilesImpl(appReadiness: appReadiness)
 
         let signalAccountStore = SignalAccountStoreImpl()
         let threadStore = ThreadStoreImpl()
@@ -239,6 +239,7 @@ public class AppSetup {
         )
 
         let groupsV2 = testDependencies.groupsV2 ?? GroupsV2Impl(
+            appReadiness: appReadiness,
             authCredentialStore: authCredentialStore,
             authCredentialManager: authCredentialManager
         )
@@ -886,8 +887,8 @@ public class AppSetup {
         )
 
         let preferences = Preferences()
-        let subscriptionManager = testDependencies.subscriptionManager ?? SubscriptionManagerImpl()
-        let systemStoryManager = testDependencies.systemStoryManager ?? SystemStoryManager()
+        let subscriptionManager = testDependencies.subscriptionManager ?? SubscriptionManagerImpl(appReadiness: appReadiness)
+        let systemStoryManager = testDependencies.systemStoryManager ?? SystemStoryManager(appReadiness: appReadiness)
         let typingIndicators = TypingIndicatorsImpl()
 
         let attachmentUploadManager = AttachmentUploadManagerImpl(
@@ -1220,13 +1221,15 @@ public class AppSetup {
         DependenciesBridge.setShared(dependenciesBridge)
 
         let proximityMonitoringManager = OWSProximityMonitoringManagerImpl()
-        let avatarBuilder = AvatarBuilder()
+        let avatarBuilder = AvatarBuilder(appReadiness: appReadiness)
         let smJobQueues = SignalMessagingJobQueues(
+            appReadiness: appReadiness,
             db: db,
             reachabilityManager: reachabilityManager
         )
 
-        let pendingReceiptRecorder = testDependencies.pendingReceiptRecorder ?? MessageRequestPendingReceipts()
+        let pendingReceiptRecorder = testDependencies.pendingReceiptRecorder
+            ?? MessageRequestPendingReceipts(appReadiness: appReadiness)
         let messageReceiver = MessageReceiver(
             callMessageHandler: callMessageHandler,
             deleteForMeSyncMessageReceiver: DeleteForMeSyncMessageReceiverImpl(
@@ -1243,14 +1246,14 @@ public class AppSetup {
             tsAccountManager: tsAccountManager,
             serviceClient: SignalServiceRestClient.shared
         )
-        let messageDecrypter = OWSMessageDecrypter()
+        let messageDecrypter = OWSMessageDecrypter(appReadiness: appReadiness)
         let groupsV2MessageProcessor = GroupsV2MessageProcessor()
         let disappearingMessagesJob = OWSDisappearingMessagesJob(databaseStorage: databaseStorage)
         let receiptSender = ReceiptSender(
             kvStoreFactory: keyValueStoreFactory,
             recipientDatabaseTable: recipientDatabaseTable
         )
-        let stickerManager = StickerManager()
+        let stickerManager = StickerManager(appReadiness: appReadiness)
         let sskPreferences = SSKPreferences()
         let groupV2Updates = testDependencies.groupV2Updates ?? GroupV2UpdatesImpl()
         let messageFetcherJob = MessageFetcherJob()
@@ -1369,7 +1372,7 @@ public class AppSetup {
         NSKeyedUnarchiver.setClass(TSGroupModelV2.self, forClassName: "TSGroupModelV2")
         NSKeyedUnarchiver.setClass(PendingProfileUpdate.self, forClassName: "SignalMessaging.PendingProfileUpdate")
 
-        Sounds.performStartupTasks()
+        Sounds.performStartupTasks(appReadiness: appReadiness)
 
         return AppSetup.DatabaseContinuation(
             appContext: appContext,

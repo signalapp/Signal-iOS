@@ -97,10 +97,10 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
 
     // MARK: - Init
 
-    override public init() {
+    public init(appReadiness: AppReadiness) {
         super.init()
 
-        AppReadinessGlobal.runNowOrWhenMainAppDidBecomeReadyAsync {
+        appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
             // Once we think all clients in the world have migrated to expiring
             // credentials we can remove this.
             self.databaseStorage.asyncWrite { transaction in

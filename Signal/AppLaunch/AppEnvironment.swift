@@ -27,7 +27,7 @@ public class AppEnvironment: NSObject {
 
     let deviceTransferServiceRef: DeviceTransferService
 
-    let avatarHistorManagerRef = AvatarHistoryManager()
+    let avatarHistorManagerRef: AvatarHistoryManager
 
     let cvAudioPlayerRef = CVAudioPlayer()
 
@@ -39,9 +39,10 @@ public class AppEnvironment: NSObject {
     private(set) var badgeManager: BadgeManager!
     private var usernameValidationObserverRef: UsernameValidationObserver?
 
-    init(deviceTransferService: DeviceTransferService) {
+    init(appReadiness: AppReadiness, deviceTransferService: DeviceTransferService) {
         self.deviceTransferServiceRef = deviceTransferService
         self.pushRegistrationManagerRef = PushRegistrationManager()
+        self.avatarHistorManagerRef = AvatarHistoryManager(appReadiness: appReadiness)
 
         super.init()
 

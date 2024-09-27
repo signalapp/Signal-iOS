@@ -79,9 +79,9 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
 
     private lazy var chainedPromise = ChainedPromise<Void>(scheduler: queue)
 
-    @objc
-    public override convenience init() {
+    public convenience init(appReadiness: AppReadiness) {
         self.init(
+            appReadiness: appReadiness,
             fileSystem: OnboardingStoryManagerFilesystem.self,
             schedulers: DispatchQueueSchedulers(),
             storyMessageFactory: OnboardingStoryManagerStoryMessageFactory.self
@@ -89,6 +89,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
     }
 
     init(
+        appReadiness: AppReadiness,
         fileSystem: OnboardingStoryManagerFilesystem.Type,
         schedulers: Schedulers,
         storyMessageFactory: OnboardingStoryManagerStoryMessageFactory.Type
@@ -99,7 +100,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
         super.init()
 
         if CurrentAppContext().isMainApp {
-            AppReadinessGlobal.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
+            appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
                 guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
                     // Observe when the account is ready before we try and download.
                     self?.observeRegistrationChanges()

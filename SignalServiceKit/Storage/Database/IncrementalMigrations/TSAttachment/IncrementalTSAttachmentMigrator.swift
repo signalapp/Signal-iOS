@@ -20,13 +20,14 @@ public class IncrementalMessageTSAttachmentMigratorImpl: IncrementalMessageTSAtt
     private let store: IncrementalTSAttachmentMigrationStore
 
     public init(
+        appReadiness: AppReadiness,
         databaseStorage: SDSDatabaseStorage,
         store: IncrementalTSAttachmentMigrationStore
     ) {
         self.databaseStorage = databaseStorage
         self.store = store
 
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync { [weak self] in
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync { [weak self] in
             guard let self else { return }
             self.databaseStorage.read { tx in
                 switch self.store.getState(tx: tx) {

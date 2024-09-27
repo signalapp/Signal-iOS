@@ -168,12 +168,12 @@ public class EarlyMessageManager: NSObject {
     private var pendingReceiptStore =  SDSKeyValueStore(collection: "EarlyReceiptsStore")
     private var metadataStore =  SDSKeyValueStore(collection: "EarlyMessageManager.metadata")
 
-    public override init() {
+    public init(appReadiness: AppReadiness) {
         super.init()
 
         SwiftSingletons.register(self)
 
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             self.cleanupStaleMessages()
         }
     }

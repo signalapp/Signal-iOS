@@ -23,11 +23,11 @@ public class AvatarHistoryManager: NSObject {
     static let appSharedDataDirectory = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath())
     static let imageHistoryDirectory = URL(fileURLWithPath: "AvatarHistory", isDirectory: true, relativeTo: appSharedDataDirectory)
 
-    override init() {
+    public init(appReadiness: AppReadiness) {
         super.init()
         SwiftSingletons.register(self)
 
-        AppReadinessGlobal.runNowOrWhenMainAppDidBecomeReadyAsync {
+        appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
             DispatchQueue.global().async {
                 self.cleanupOrphanedImages()
             }

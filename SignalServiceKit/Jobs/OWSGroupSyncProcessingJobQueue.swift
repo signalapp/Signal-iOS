@@ -26,10 +26,10 @@ public class IncomingGroupSyncJobQueue: NSObject, JobQueue {
         return operationQueue
     }()
 
-    public override init() {
+    public init(appReadiness: AppReadiness) {
         super.init()
 
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             self.setup()
         }
     }

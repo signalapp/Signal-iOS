@@ -28,6 +28,7 @@ class SystemStoryManagerTest: SSKBaseTest {
             )
         }
         manager = SystemStoryManager(
+            appReadiness: AppReadinessMock(),
             fileSystem: OnboardingStoryManagerFilesystemMock.self,
             schedulers: TestSchedulers(scheduler: scheduler),
             storyMessageFactory: OnboardingStoryManagerStoryMessageFactoryMock.self
