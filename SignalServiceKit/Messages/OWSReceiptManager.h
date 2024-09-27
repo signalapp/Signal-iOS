@@ -7,6 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class AppReadinessObjcBridge;
 @class GRDBWriteTransaction;
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
@@ -51,7 +52,9 @@ extern NSString *const kIncomingMessageMarkedAsReadNotification;
 
 + (SDSKeyValueStore *)keyValueStore;
 
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithAppReadiness:(AppReadinessObjcBridge *)appReadiness NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 #pragma mark - Locally Read
 

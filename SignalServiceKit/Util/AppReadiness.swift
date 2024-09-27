@@ -5,7 +5,6 @@
 
 import Foundation
 
-@objc
 public class AppReadiness: NSObject {
 
     private static let shared = AppReadiness()
@@ -21,10 +20,8 @@ public class AppReadiness: NSObject {
     private let readyFlag = ReadyFlag(name: "AppReadiness")
     private let readyFlagUI = ReadyFlag(name: "AppReadinessUI")
 
-    @objc
     public static var isAppReady: Bool { shared.readyFlag.isSet }
 
-    @objc
     public static var isUIReady: Bool { shared.readyFlagUI.isSet }
 
     @MainActor
@@ -84,20 +81,6 @@ public class AppReadiness: NSObject {
         }
     }
 
-    @objc
-    @available(swift, obsoleted: 1.0)
-    static func runNowOrWhenAppWillBecomeReady(
-        _ block: @escaping BlockType,
-        label: String
-    ) {
-        DispatchMainThreadSafe {
-            shared.runNowOrWhenAppWillBecomeReady(
-                block,
-                label: label
-            )
-        }
-    }
-
     @MainActor
     private func runNowOrWhenAppWillBecomeReady(
         _ block: @escaping BlockType,
@@ -132,22 +115,6 @@ public class AppReadiness: NSObject {
         line: Int = #line
     ) {
         let label = Self.buildLabel(file: file, function: function, line: line)
-        DispatchMainThreadSafe {
-            shared.runNowOrWhenAppDidBecomeReadySync(block, flag: shared.readyFlag, label: label)
-        }
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public static func runNowOrWhenUIDidBecomeReadySync(_ block: @escaping BlockType, label: String) {
-        DispatchMainThreadSafe {
-            shared.runNowOrWhenAppDidBecomeReadySync(block, flag: shared.readyFlagUI, label: label)
-        }
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public static func runNowOrWhenAppDidBecomeReadySync(_ block: @escaping BlockType, label: String) {
         DispatchMainThreadSafe {
             shared.runNowOrWhenAppDidBecomeReadySync(block, flag: shared.readyFlag, label: label)
         }
@@ -192,14 +159,6 @@ public class AppReadiness: NSObject {
         line: Int = #line
     ) {
         let label = Self.buildLabel(file: file, function: function, line: line)
-        runNowOrWhenAppDidBecomeReadyAsync(block, label: label)
-    }
-
-    @objc
-    static func runNowOrWhenAppDidBecomeReadyAsync(
-        _ block: @escaping BlockType,
-        label: String
-    ) {
         DispatchMainThreadSafe {
             shared.runNowOrWhenAppDidBecomeReadyAsync(
                 block,
@@ -225,21 +184,6 @@ public class AppReadiness: NSObject {
         )
     }
 
-    @objc
-    @available(swift, obsoleted: 1.0)
-    static func runNowOrWhenMainAppDidBecomeReadyAsync(
-        _ block: @escaping BlockType,
-        label: String
-    ) {
-        runNowOrWhenAppDidBecomeReadyAsync(
-            {
-                guard CurrentAppContext().isMainApp else { return }
-                block()
-            },
-            label: label
-        )
-    }
-
     private func runNowOrWhenAppDidBecomeReadyAsync(
         _ block: @escaping BlockType,
         label: String
@@ -259,5 +203,30 @@ public class AppReadiness: NSObject {
         // We format the filename & line number in a format compatible
         // with XCode's "Open Quickly..." feature.
         return "[\(filename):\(line) \(function)]"
+    }
+}
+
+@objcMembers
+class AppReadinessObjcBridge: NSObject {
+
+    private static var shared: AppReadinessObjcBridge?
+
+    public static func setShared(isRunningTests: Bool) -> AppReadinessObjcBridge {
+        owsPrecondition(shared == nil || isRunningTests)
+        let value = AppReadinessObjcBridge()
+        shared = value
+        return value
+    }
+
+    private override init() {
+        super.init()
+    }
+
+    var isAppReady: Bool { AppReadiness.isAppReady }
+
+    static var isAppReady: Bool { shared?.isAppReady ?? false }
+
+    func runNowOrWhenAppDidBecomeReadyAsync(_ block: @escaping () -> Void) {
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync(block)
     }
 }

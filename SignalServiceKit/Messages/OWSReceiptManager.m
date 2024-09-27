@@ -4,7 +4,6 @@
 //
 
 #import "OWSReceiptManager.h"
-#import "AppReadiness.h"
 #import "OWSLinkedDeviceReadReceipt.h"
 #import "OWSReadReceiptsForLinkedDevicesMessage.h"
 #import "OWSReceiptsForSenderMessage.h"
@@ -22,6 +21,8 @@ NSString *const OWSReceiptManagerCollection = @"OWSReadReceiptManagerCollection"
 NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabled";
 
 @interface OWSReceiptManager ()
+
+@property (nonatomic) AppReadinessObjcBridge *appReadiness;
 
 // Should only be accessed while synchronized on the OWSReceiptManager.
 @property (nonatomic) BOOL isProcessing;
@@ -43,7 +44,7 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
     return instance;
 }
 
-- (instancetype)init
+- (instancetype)initWithAppReadiness:(AppReadinessObjcBridge *)appReadiness
 {
     self = [super init];
 
@@ -51,10 +52,12 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
         return self;
     }
 
+    _appReadiness = appReadiness;
+
     OWSSingletonAssert();
 
     // Start processing.
-    AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{ [self scheduleProcessing]; });
+    [appReadiness runNowOrWhenAppDidBecomeReadyAsync:^{ [self scheduleProcessing]; }];
 
     return self;
 }
@@ -62,7 +65,7 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
 // Schedules a processing pass, unless one is already scheduled.
 - (void)scheduleProcessing
 {
-    OWSAssertDebug(AppReadiness.isAppReady);
+    OWSAssertDebug(_appReadiness.isAppReady);
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         @synchronized(self) {

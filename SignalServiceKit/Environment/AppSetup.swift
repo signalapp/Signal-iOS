@@ -171,7 +171,12 @@ public class AppSetup {
             swiftValues: OWSProfileManagerSwiftValues()
         )
         let reachabilityManager = testDependencies.reachabilityManager ?? SSKReachabilityManagerImpl()
-        let receiptManager = OWSReceiptManager()
+
+        // NOTE: TSThead accesses AppReadinessObjcBridge.shared and relies on this having been called
+        // in this method, even things change such that nothing else here needs the instance.
+        let appReadinessObjc = AppReadinessObjcBridge.setShared(isRunningTests: appContext.isRunningTests)
+
+        let receiptManager = OWSReceiptManager(appReadiness: appReadinessObjc)
         let senderKeyStore = SenderKeyStore()
         let signalProtocolStoreManager = SignalProtocolStoreManagerImpl(
             aciProtocolStore: aciSignalProtocolStore,

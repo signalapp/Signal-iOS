@@ -4,7 +4,6 @@
 //
 
 #import "TSThread.h"
-#import "AppReadiness.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSReadTracking.h"
 #import "TSIncomingMessage.h"
@@ -355,7 +354,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
     BOOL needsToClearArchived = threadAssociatedData.isArchived && wasMessageInserted;
 
     // Shouldn't clear archived during migrations.
-    if (!AppContextObjCBridge.shared.isRunningTests && !AppReadiness.isAppReady) {
+    if (!AppContextObjCBridge.shared.isRunningTests && !AppReadinessObjcBridge.isAppReady) {
         needsToClearArchived = NO;
     }
 
