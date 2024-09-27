@@ -4,11 +4,10 @@
 //
 
 import SignalServiceKit
-import SignalUI
 
 // MARK: -
 
-class LinkPreviewCallLink: LinkPreviewState {
+public class LinkPreviewCallLink: LinkPreviewState {
     private let linkPreview: OWSLinkPreview
 
     public let conversationStyle: ConversationStyle?
@@ -71,5 +70,43 @@ class LinkPreviewCallLink: LinkPreviewState {
 
     public var activityIndicatorStyle: UIActivityIndicatorView.Style {
         LinkPreviewView.defaultActivityIndicatorStyle
+    }
+}
+
+public class CommonCallLinksUI {
+    public static func callLinkIcon() -> UIImage? {
+        guard let image = UIImage(named: "video-compact") else { return nil }
+        let newSize = CGSize(square: Constants.circleViewDimension)
+
+        let renderer = UIGraphicsImageRenderer(size: newSize)
+        let finalImage = renderer.image { context in
+            let rect = CGRect(origin: .zero, size: newSize)
+            let circlePath = UIBezierPath(ovalIn: rect)
+
+            Constants.iconBackgroundColor.setFill()
+            circlePath.fill()
+
+            context.cgContext.addPath(circlePath.cgPath)
+            context.cgContext.clip()
+
+            Constants.iconTintColor.set()
+            let centerOffset = Constants.circleViewDimension/2 - Constants.iconDimension/2
+            let imageRect = CGRect(
+                x: centerOffset,
+                y: centerOffset,
+                width: Constants.iconDimension,
+                height: Constants.iconDimension
+            )
+            image.withRenderingMode(.alwaysTemplate).draw(in: imageRect)
+        }
+
+        return finalImage
+    }
+
+    public enum Constants {
+        public static let circleViewDimension: CGFloat = 64
+        fileprivate static let iconDimension: CGFloat = 36
+        fileprivate static let iconBackgroundColor = UIColor(rgbHex: 0xE4E4FD)
+        fileprivate static let iconTintColor = UIColor(rgbHex: 0x5151F6)
     }
 }

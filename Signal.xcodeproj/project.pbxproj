@@ -2684,8 +2684,8 @@
 		E173F7032BC9E61D000BCDB3 /* CallControlsOverflowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E173F7022BC9E61D000BCDB3 /* CallControlsOverflowView.swift */; };
 		E18C4A7729EF2ECC007534D4 /* SignalAccountTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E18C4A7629EF2ECC007534D4 /* SignalAccountTest.swift */; };
 		E1A090382A4B909B00F2BE8B /* RecipientHidingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A090372A4B909B00F2BE8B /* RecipientHidingManager.swift */; };
+		E1B32F842CA6162A002141F4 /* LinkPreviewCallLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1CFAAA22C9DD2B1003145C3 /* LinkPreviewCallLink.swift */; };
 		E1C2A54B2A8FCB0D00AEC4DA /* DeleteSystemContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1C2A54A2A8FCB0D00AEC4DA /* DeleteSystemContactViewController.swift */; };
-		E1CFAAA32C9DD2B1003145C3 /* LinkPreviewCallLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1CFAAA22C9DD2B1003145C3 /* LinkPreviewCallLink.swift */; };
 		E1D827D52BD9B6E50022C1AF /* ReactionsBurstView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1D827D42BD9B6E50022C1AF /* ReactionsBurstView.swift */; };
 		E1D827D72BD9DA4D0022C1AF /* ReactionsSink.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1D827D62BD9DA4D0022C1AF /* ReactionsSink.swift */; };
 		E1D827DA2BDC1F7B0022C1AF /* ReactionBurstManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1D827D82BDC1F6B0022C1AF /* ReactionBurstManagerTests.swift */; };
@@ -15576,6 +15576,7 @@
 				88B986FB28807F1D00F8C74D /* InviteFlow.swift in Sources */,
 				3402AA54271D9DCD0084CBAE /* LinearHorizontalLayout.swift in Sources */,
 				3402AA7F271D9E180084CBAE /* LinkingTextView.swift in Sources */,
+				E1B32F842CA6162A002141F4 /* LinkPreviewCallLink.swift in Sources */,
 				509085BC2C498D3600409B85 /* LinkPreviewFetcher.swift in Sources */,
 				5003BB3F299DA0F10037159B /* LinkPreviewFetchState.swift in Sources */,
 				3402AA77271D9E180084CBAE /* LinkPreviewState.swift in Sources */,
@@ -16164,7 +16165,6 @@
 				505C2ED42997015800C23FB2 /* LinkDeviceViewController.swift in Sources */,
 				3437F63A2512835300AC1767 /* LinkedDevicesTableViewController.swift in Sources */,
 				76C87FE128BE8E2400BD8709 /* LinkPreviewAttachmentViewController.swift in Sources */,
-				E1CFAAA32C9DD2B1003145C3 /* LinkPreviewCallLink.swift in Sources */,
 				507B69122C5044F800F1C6D7 /* LinkPreviewGroupLink.swift in Sources */,
 				4542DF54208D40AC007B4E76 /* LoadingViewController.swift in Sources */,
 				4C25768A23AD510800E0398D /* LoadMoreMessagesView.swift in Sources */,
