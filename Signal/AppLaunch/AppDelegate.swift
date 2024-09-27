@@ -393,7 +393,10 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             incrementalTSAttachmentMigrator: launchContext.incrementalMessageTSAttachmentMigrator
         )
         setupNSEInteroperation()
-        SUIEnvironment.shared.setUp(authCredentialManager: databaseContinuation.authCredentialManager)
+        SUIEnvironment.shared.setUp(
+            appReadiness: appReadiness,
+            authCredentialManager: databaseContinuation.authCredentialManager
+        )
         AppEnvironment.shared.setUp(
             appReadiness: appReadiness,
             callService: CallService(

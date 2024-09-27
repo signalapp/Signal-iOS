@@ -38,11 +38,12 @@ public class SUIEnvironment: NSObject {
     }
 
     public func setUp(
+        appReadiness: AppReadiness,
         authCredentialManager: any AuthCredentialManager
     ) {
         registerCustomFonts()
 
-        Theme.performInitialSetup()
+        Theme.performInitialSetup(appReadiness: appReadiness)
 
         self.linkPreviewFetcher = LinkPreviewFetcherImpl(
             authCredentialManager: authCredentialManager,
