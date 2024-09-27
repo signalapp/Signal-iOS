@@ -517,6 +517,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             DispatchQueue.global().async { SDSKeyValueStore.logCollectionStatistics() }
         }
 
+        SignalApp.shared.performInitialSetup()
+
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             // This runs every 24 hours or so.
             let messageSendLog = SSKEnvironment.shared.messageSendLogRef

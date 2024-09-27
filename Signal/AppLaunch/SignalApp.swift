@@ -22,7 +22,9 @@ public class SignalApp: NSObject {
 
     private override init() {
         super.init()
+    }
 
+    public func performInitialSetup() {
         AppReadiness.runNowOrWhenUIDidBecomeReadySync {
             self.warmCachesAsync()
         }
