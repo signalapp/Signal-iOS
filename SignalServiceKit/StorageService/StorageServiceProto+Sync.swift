@@ -1908,6 +1908,7 @@ class StorageServiceCallLinkRecordUpdater: StorageServiceRecordUpdater {
                 callLink.markDeleted(atTimestampMs: [record.deletedAtTimestampMs, callLink.adminDeletedAtTimestampMs].compacted().min()!)
             } else if let adminPasskey = record.adminPasskey?.nilIfEmpty {
                 callLink.adminPasskey = adminPasskey
+                callLink.setNeedsFetch()
             }
             try self.callLinkStore.update(callLink, tx: tx.asV2Write)
         } catch {

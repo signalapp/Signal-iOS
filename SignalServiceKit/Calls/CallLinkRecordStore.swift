@@ -16,6 +16,7 @@ public protocol CallLinkRecordStore {
 
     func fetchAll(tx: any DBReadTransaction) throws -> [CallLinkRecord]
     func fetchWhere(adminDeletedAtTimestampMsIsLessThan thresholdMs: UInt64, tx: any DBReadTransaction) throws -> [CallLinkRecord]
+    func fetchAnyPendingRecord(tx: any DBReadTransaction) throws -> CallLinkRecord?
 }
 
 public class CallLinkRecordStoreImpl: CallLinkRecordStore {
@@ -72,6 +73,18 @@ public class CallLinkRecordStoreImpl: CallLinkRecordStore {
         let db = SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database
         do {
             return try CallLinkRecord.filter(Column(CallLinkRecord.CodingKeys.adminDeletedAtTimestampMs) < Int64(bitPattern: thresholdMs)).fetchAll(db)
+        } catch {
+            throw error.grdbErrorForLogging
+        }
+    }
+
+    public func fetchAnyPendingRecord(tx: any DBReadTransaction) throws -> CallLinkRecord? {
+        guard FeatureFlags.callLinkRecordTable else {
+            return nil
+        }
+        let db = SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database
+        do {
+            return try CallLinkRecord.filter(Column(CallLinkRecord.CodingKeys.pendingFetchCounter) > 0).fetchOne(db)
         } catch {
             throw error.grdbErrorForLogging
         }

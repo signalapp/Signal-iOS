@@ -389,6 +389,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 appContext: launchContext.appContext,
                 authCredentialManager: databaseContinuation.authCredentialManager,
                 callLinkPublicParams: databaseContinuation.callLinkPublicParams,
+                callLinkStore: DependenciesBridge.shared.callLinkStore,
+                db: DependenciesBridge.shared.db,
                 mutableCurrentCall: _currentCall,
                 networkManager: NSObject.networkManager,
                 tsAccountManager: DependenciesBridge.shared.tsAccountManager
@@ -608,6 +610,17 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
             AttachmentDownloadRetryRunner.shared.beginObserving()
+        }
+
+        AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
+            let fetchJobRunner = CallLinkFetchJobRunner(
+                callLinkStore: DependenciesBridge.shared.callLinkStore,
+                callLinkStateUpdater: AppEnvironment.shared.callService.callLinkStateUpdater,
+                db: DependenciesBridge.shared.db
+            )
+            fetchJobRunner.observeDatabase(NSObject.databaseStorage)
+            fetchJobRunner.setMightHavePendingFetchAndFetch()
+            AppEnvironment.shared.ownedObjects.append(fetchJobRunner)
         }
 
         // Note that this does much more than set a flag; it will also run all deferred blocks.

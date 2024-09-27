@@ -351,12 +351,12 @@ class CreateCallLinkViewController: InteractiveSheetViewController {
     private func _updateCallLink(
         _ performUpdate: (CallLinkManager, SignalServiceKit.CallLinkAuthCredential) async throws -> CallLinkState
     ) async throws {
-        let authCredentialManager = AppEnvironment.shared.callService.authCredentialManager
         let callLinkManager = AppEnvironment.shared.callService.callLinkManager
-        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        let localIdentifiers = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!
-        let authCredential = try await authCredentialManager.fetchCallLinkAuthCredential(localIdentifiers: localIdentifiers)
-        self.callLinkState = try await performUpdate(callLinkManager, authCredential)
+        let callLinkStateUpdater = AppEnvironment.shared.callService.callLinkStateUpdater
+
+        self.callLinkState = try await callLinkStateUpdater.updateExclusively(rootKey: callLink.rootKey) { authCredential in
+            return try await performUpdate(callLinkManager, authCredential)
+        }
         updateContents(shouldReload: true)
     }
 

@@ -17,6 +17,10 @@ public class AppEnvironment: NSObject {
     @objc
     public class var shared: AppEnvironment { _shared! }
 
+    /// Objects tied to this AppEnvironment that simply need to be retained.
+    @MainActor
+    var ownedObjects = [AnyObject]()
+
     let pushRegistrationManagerRef: PushRegistrationManager
 
     var callService: CallService!

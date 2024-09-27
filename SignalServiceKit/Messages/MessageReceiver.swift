@@ -717,7 +717,7 @@ public final class MessageReceiver: Dependencies {
             }
             var callLink = try callLinkStore.fetchOrInsert(rootKey: rootKey, tx: tx.asV2Write)
             callLink.adminPasskey = callLink.adminPasskey ?? callLinkUpdate.adminPasskey
-            // [CallLink] TODO: Schedule a name/restrictions/etc. fetch.
+            callLink.setNeedsFetch()
             try callLinkStore.update(callLink, tx: tx.asV2Write)
         } catch {
             Logger.warn("Ignoring CallLinkUpdate: \(error)")

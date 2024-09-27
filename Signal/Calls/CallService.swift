@@ -36,6 +36,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     let groupCallRemoteVideoManager: GroupCallRemoteVideoManager
     let callLinkManager: CallLinkManagerImpl
     let callLinkFetcher: CallLinkFetcherImpl
+    let callLinkStateUpdater: CallLinkStateUpdater
 
     /// Needs to be lazily initialized, because it uses singletons that are not
     /// available when this class is initialized.
@@ -75,6 +76,8 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         appContext: any AppContext,
         authCredentialManager: any AuthCredentialManager,
         callLinkPublicParams: GenericServerPublicParams,
+        callLinkStore: any CallLinkRecordStore,
+        db: any DB,
         mutableCurrentCall: AtomicValue<SignalCall?>,
         networkManager: NetworkManager,
         tsAccountManager: any TSAccountManager
@@ -100,6 +103,13 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         self.callLinkManager = CallLinkManagerImpl(
             networkManager: networkManager,
             serverParams: callLinkPublicParams,
+            tsAccountManager: tsAccountManager
+        )
+        self.callLinkStateUpdater = CallLinkStateUpdater(
+            authCredentialManager: authCredentialManager,
+            callLinkFetcher: self.callLinkFetcher,
+            callLinkStore: callLinkStore,
+            db: db,
             tsAccountManager: tsAccountManager
         )
         self.callManager.delegate = self
@@ -532,15 +542,15 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         adminPasskey: Data?,
         callLinkStateRetrievalStrategy: CallLinkStateRetrievalStrategy
     ) async throws -> (SignalCall, CallLinkCall)? {
-        let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!
-        let authCredential = try await authCredentialManager.fetchCallLinkAuthCredential(localIdentifiers: localIdentifiers)
         let state: SignalServiceKit.CallLinkState
         switch callLinkStateRetrievalStrategy {
         case .reuse(let callLinkState):
             state = callLinkState
         case .fetch:
-            state = try await callLinkFetcher.readCallLink(callLink.rootKey, authCredential: authCredential)
+            state = try await callLinkStateUpdater.readCallLink(rootKey: callLink.rootKey)
         }
+        let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!
+        let authCredential = try await authCredentialManager.fetchCallLinkAuthCredential(localIdentifiers: localIdentifiers)
         return _buildAndConnectGroupCall(isOutgoingVideoMuted: false) { () -> (SignalCall, CallLinkCall)? in
             // [CallLink] TODO: Read adminPasskey from disk instead of a parameter.
             let videoCaptureController = VideoCaptureController()
