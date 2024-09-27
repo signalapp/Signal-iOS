@@ -276,7 +276,7 @@ class MessageDecryptionTest: SSKBaseTest {
     }
 
     func testMissingSignedPreKey() {
-        SSKEnvironment.shared.messageSenderJobQueueRef.setup()
+        SSKEnvironment.shared.messageSenderJobQueueRef.setup(appReadiness: AppReadinessMock())
 
         let requestRatchetKey = waitForResendRequestRatchetKey()
 
@@ -316,7 +316,7 @@ class MessageDecryptionTest: SSKBaseTest {
     }
 
     func testMissingOneTimePreKey() {
-        SSKEnvironment.shared.messageSenderJobQueueRef.setup()
+        SSKEnvironment.shared.messageSenderJobQueueRef.setup(appReadiness: AppReadinessMock())
 
         let requestRatchetKey = waitForResendRequestRatchetKey()
 

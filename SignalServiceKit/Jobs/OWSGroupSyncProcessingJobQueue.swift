@@ -30,12 +30,12 @@ public class IncomingGroupSyncJobQueue: NSObject, JobQueue {
         super.init()
 
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            self.setup()
+            self.setup(appReadiness: appReadiness)
         }
     }
 
-    public func setup() {
-        defaultSetup()
+    public func setup(appReadiness: AppReadiness) {
+        defaultSetup(appReadiness: appReadiness)
     }
 
     public func didMarkAsReady(oldJobRecord: IncomingGroupSyncJobRecord, transaction: SDSAnyWriteTransaction) {}

@@ -57,7 +57,7 @@ public protocol JobQueue: DurableOperationDelegate, Dependencies {
     var runningOperations: AtomicArray<DurableOperationType> { get set }
 
     var isSetup: AtomicBool { get }
-    func setup()
+    func setup(appReadiness: AppReadiness)
     func didMarkAsReady(oldJobRecord: JobRecordType, transaction: SDSAnyWriteTransaction)
 
     func operationQueue(jobRecord: JobRecordType) -> OperationQueue
@@ -79,6 +79,7 @@ public extension JobQueue {
 
     func add(
         jobRecord: JobRecordType,
+        appReadiness: AppReadiness,
         transaction: SDSAnyWriteTransaction
     ) {
         owsAssertDebug(jobRecord.status == .ready)
@@ -88,23 +89,26 @@ public extension JobQueue {
         transaction.addTransactionFinalizationBlock(
             forKey: "jobQueue.\(JobRecordType.jobRecordType.jobRecordLabel).startWorkImmediatelyIfAppIsReady"
         ) { transaction in
-            self.startWorkImmediatelyIfAppIsReady(transaction: transaction)
+            self.startWorkImmediatelyIfAppIsReady(appReadiness: appReadiness, transaction: transaction)
         }
 
         transaction.addAsyncCompletion(queue: .global()) {
-            self.startWorkWhenAppIsReady()
+            self.startWorkWhenAppIsReady(appReadiness: appReadiness)
         }
     }
 
-    func startWorkImmediatelyIfAppIsReady(transaction: SDSAnyWriteTransaction) {
+    func startWorkImmediatelyIfAppIsReady(
+        appReadiness: AppReadiness,
+        transaction: SDSAnyWriteTransaction
+    ) {
         guard isEnabled else { return }
         guard !CurrentAppContext().isRunningTests else { return }
-        guard AppReadinessGlobal.isAppReady else { return }
+        guard appReadiness.isAppReady else { return }
         guard isSetup.get() else { return }
         workStep(transaction: transaction)
     }
 
-    func startWorkWhenAppIsReady() {
+    func startWorkWhenAppIsReady(appReadiness: AppReadiness) {
         guard isEnabled else { return }
 
         guard !CurrentAppContext().isRunningTests else {
@@ -114,7 +118,7 @@ public extension JobQueue {
             return
         }
 
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             guard self.isSetup.get() else {
                 return
             }
@@ -241,7 +245,7 @@ public extension JobQueue {
     /// So you might ask, why not just rename this method to `setup`? Because
     /// `setup` is called from objc, and default implementations from a protocol
     /// cannot be marked as @objc.
-    func defaultSetup() {
+    func defaultSetup(appReadiness: AppReadiness) {
         guard isEnabled else { return }
 
         guard !isSetup.get() else {
@@ -271,7 +275,7 @@ public extension JobQueue {
             }
 
             self.isSetup.set(true)
-            self.startWorkWhenAppIsReady()
+            self.startWorkWhenAppIsReady(appReadiness: appReadiness)
         }
     }
 

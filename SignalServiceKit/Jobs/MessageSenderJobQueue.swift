@@ -31,7 +31,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
         super.init()
 
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            self.setup()
+            self.setup(appReadiness: appReadiness)
         }
     }
 
@@ -90,7 +90,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
         if exclusiveToCurrentProcessIdentifier {
             jobRecord.flagAsExclusiveForCurrentProcessIdentifier()
         }
-        self.add(jobRecord: jobRecord, transaction: transaction)
+        self.add(jobRecord: jobRecord, appReadiness: appReadiness, transaction: transaction)
         if let future {
             jobFutures[jobRecord.uniqueId] = future
         }
@@ -103,9 +103,8 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
     public var isEnabled: Bool { true }
     public var runningOperations = AtomicArray<MessageSenderOperation>(lock: .sharedGlobal)
 
-    @objc
-    public func setup() {
-        defaultSetup()
+    public func setup(appReadiness: AppReadiness) {
+        defaultSetup(appReadiness: appReadiness)
     }
 
     public let isSetup = AtomicBool(false, lock: .sharedGlobal)
