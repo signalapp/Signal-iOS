@@ -1290,7 +1290,7 @@ public class AppSetup {
             versionedProfiles: versionedProfiles
         )
         let messagePipelineSupervisor = MessagePipelineSupervisor()
-        let paymentsCurrencies = testDependencies.paymentsCurrencies ?? PaymentsCurrenciesImpl()
+        let paymentsCurrencies = testDependencies.paymentsCurrencies ?? PaymentsCurrenciesImpl(appReadiness: appReadiness)
         let spamChallengeResolver = SpamChallengeResolver(appReadiness: appReadiness)
         let phoneNumberUtil = PhoneNumberUtil(swiftValues: PhoneNumberUtilSwiftValues())
         let legacyChangePhoneNumber = LegacyChangePhoneNumber(appReadiness: appReadiness)

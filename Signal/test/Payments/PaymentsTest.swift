@@ -15,7 +15,7 @@ class PaymentsTest: SignalBaseTest {
         super.setUp()
 
         SSKEnvironment.shared.setPaymentsHelperForUnitTests(PaymentsHelperImpl())
-        SUIEnvironment.shared.paymentsRef = PaymentsImpl()
+        SUIEnvironment.shared.paymentsRef = PaymentsImpl(appReadiness: AppReadinessMock())
     }
 
     func test_urlRoundtrip() {

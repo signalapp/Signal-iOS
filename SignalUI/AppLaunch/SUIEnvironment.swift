@@ -52,7 +52,7 @@ public class SUIEnvironment: NSObject {
             linkPreviewSettingStore: DependenciesBridge.shared.linkPreviewSettingStore,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager
         )
-        self.paymentsRef = PaymentsImpl()
+        self.paymentsRef = PaymentsImpl(appReadiness: appReadiness)
     }
 
     private func registerCustomFonts() {

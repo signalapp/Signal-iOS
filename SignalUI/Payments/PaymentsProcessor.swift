@@ -8,13 +8,16 @@ import SignalServiceKit
 
 public class PaymentsProcessor: NSObject {
 
-    public override init() {
+    private let appReadiness: AppReadiness
+
+    public init(appReadiness: AppReadiness) {
+        self.appReadiness = appReadiness
         super.init()
 
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync {
+        appReadiness.runNowOrWhenAppDidBecomeReadySync {
             Self.databaseStorage.appendDatabaseChangeDelegate(self)
         }
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             self.process()
         }
 
@@ -96,7 +99,7 @@ public class PaymentsProcessor: NSObject {
     // although the operations may fail to do so.
     @objc
     public func process() {
-        DispatchQueue.global().async {
+        DispatchQueue.global().async { [appReadiness] in
             guard !CurrentAppContext().isRunningTests else {
                 return
             }
@@ -104,7 +107,7 @@ public class PaymentsProcessor: NSObject {
                 return
             }
             guard
-                AppReadinessGlobal.isAppReady,
+                appReadiness.isAppReady,
                 CurrentAppContext().isMainAppAndActive,
                 DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
             else {
@@ -252,7 +255,7 @@ extension PaymentsProcessor: DatabaseChangeDelegate {
 
     public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()
-        owsAssertDebug(AppReadinessGlobal.isAppReady)
+        owsAssertDebug(appReadiness.isAppReady)
 
         guard databaseChanges.didUpdate(tableName: TSPaymentModel.table.tableName) else {
             return
@@ -263,14 +266,14 @@ extension PaymentsProcessor: DatabaseChangeDelegate {
 
     public func databaseChangesDidUpdateExternally() {
         AssertIsOnMainThread()
-        owsAssertDebug(AppReadinessGlobal.isAppReady)
+        owsAssertDebug(appReadiness.isAppReady)
 
         process()
     }
 
     public func databaseChangesDidReset() {
         AssertIsOnMainThread()
-        owsAssertDebug(AppReadinessGlobal.isAppReady)
+        owsAssertDebug(appReadiness.isAppReady)
 
         process()
     }

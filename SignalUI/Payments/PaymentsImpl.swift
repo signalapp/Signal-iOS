@@ -10,15 +10,19 @@ import SignalServiceKit
 
 public class PaymentsImpl: NSObject, PaymentsSwift {
 
+    private let appReadiness: AppReadiness
     private var refreshBalanceEvent: RefreshEvent?
 
-    fileprivate let paymentsReconciliation = PaymentsReconciliation()
+    fileprivate let paymentsReconciliation: PaymentsReconciliation
 
-    private let paymentsProcessor = PaymentsProcessor()
+    private let paymentsProcessor: PaymentsProcessor
 
     public static let maxPaymentMemoMessageLength: Int = 32
 
-    public override init() {
+    public init(appReadiness: AppReadiness) {
+        self.appReadiness = appReadiness
+        self.paymentsReconciliation = PaymentsReconciliation(appReadiness: appReadiness)
+        self.paymentsProcessor = PaymentsProcessor(appReadiness: appReadiness)
         super.init()
 
         // Note: this isn't how often we refresh the balance, it's how often we
@@ -32,7 +36,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
 
         MobileCoinAPI.configureSDKLogging()
 
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             DispatchQueue.global().async {
                 self.updateLastKnownLocalPaymentAddressProtoDataIfNecessary()
             }
@@ -47,7 +51,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
             return
         }
-        guard AppReadinessGlobal.isAppReady else {
+        guard appReadiness.isAppReady else {
             return
         }
 
@@ -257,7 +261,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
             return
         }
         guard
-            AppReadinessGlobal.isAppReady,
+            appReadiness.isAppReady,
             CurrentAppContext().isMainAppAndActive,
             DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
         else {

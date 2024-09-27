@@ -5,9 +5,11 @@
 
 public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift, PaymentsCurrencies {
 
+    private let appReadiness: AppReadiness
     private var refreshEvent: RefreshEvent?
 
-    public override init() {
+    public init(appReadiness: AppReadiness) {
+        self.appReadiness = appReadiness
         super.init()
 
         // TODO: Tune.
@@ -164,7 +166,7 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift, Payments
 
     func updateConversationRates() {
         guard
-            AppReadinessGlobal.isAppReady,
+            appReadiness.isAppReady,
             CurrentAppContext().isMainAppAndActive,
             DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
         else {

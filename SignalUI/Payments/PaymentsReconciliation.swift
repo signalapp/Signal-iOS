@@ -9,10 +9,12 @@ import SignalServiceKit
 
 public class PaymentsReconciliation: Dependencies {
 
+    private let appReadiness: AppReadiness
     private var refreshEvent: RefreshEvent?
 
-    public init() {
-        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
+    public init(appReadiness: AppReadiness) {
+        self.appReadiness = appReadiness
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             // Note: this isn't how often we perform reconciliation, it's how often we
             // check whether we should perform reconciliation.
             //
@@ -33,7 +35,7 @@ public class PaymentsReconciliation: Dependencies {
         if CurrentAppContext().isNSE {
             return
         }
-        operationQueue.addOperation(PaymentsReconciliationOperation())
+        operationQueue.addOperation(PaymentsReconciliationOperation(appReadiness: appReadiness))
     }
 
     let operationQueue: OperationQueue = {
@@ -44,9 +46,16 @@ public class PaymentsReconciliation: Dependencies {
     }()
 
     public class PaymentsReconciliationOperation: OWSOperation, @unchecked Sendable {
+
+        private let appReadiness: AppReadiness
+
+        init(appReadiness: AppReadiness) {
+            self.appReadiness = appReadiness
+        }
+
         override public func run() {
-            firstly(on: DispatchQueue.global()) {
-                PaymentsReconciliation.reconciliationPromise()
+            firstly(on: DispatchQueue.global()) { [appReadiness] in
+                PaymentsReconciliation.reconciliationPromise(appReadiness: appReadiness)
             }.done(on: DispatchQueue.global()) { _ in
                 self.reportSuccess()
             }.catch(on: DispatchQueue.global()) { error in
@@ -57,7 +66,7 @@ public class PaymentsReconciliation: Dependencies {
         }
     }
 
-    private static var shouldReconcile: Bool {
+    private static func shouldReconcile(appReadiness: AppReadiness) -> Bool {
         guard !CurrentAppContext().isRunningTests else {
             return false
         }
@@ -65,7 +74,7 @@ public class PaymentsReconciliation: Dependencies {
             return false
         }
         guard
-            AppReadinessGlobal.isAppReady,
+            appReadiness.isAppReady,
             CurrentAppContext().isMainAppAndActive,
             DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
         else {
@@ -77,10 +86,10 @@ public class PaymentsReconciliation: Dependencies {
         return true
     }
 
-    private static func reconciliationPromise() -> Promise<Void> {
+    private static func reconciliationPromise(appReadiness: AppReadiness) -> Promise<Void> {
         owsAssertDebug(!Thread.isMainThread)
 
-        guard shouldReconcile else {
+        guard shouldReconcile(appReadiness: appReadiness) else {
             return Promise.value(())
         }
         return firstly { () -> Promise<MobileCoinAPI> in
