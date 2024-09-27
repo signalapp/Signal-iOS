@@ -9,8 +9,6 @@ public class AppReadiness: NSObject {
 
     private static let shared = AppReadiness()
 
-    public typealias BlockType = @MainActor () -> Void
-
     private override init() {
         super.init()
 
@@ -67,71 +65,59 @@ public class AppReadiness: NSObject {
     //   since they avoid a stampede of activity on launch.
 
     public static func runNowOrWhenAppWillBecomeReady(
-        _ block: @escaping BlockType,
+        _ block: @escaping @MainActor () -> Void,
         file: String = #file,
         function: String = #function,
         line: Int = #line
     ) {
+        guard !CurrentAppContext().isRunningTests else {
+            // We don't need to do any "on app ready" work in the tests.
+            return
+        }
+
         let label = Self.buildLabel(file: file, function: function, line: line)
         DispatchMainThreadSafe {
-            shared.runNowOrWhenAppWillBecomeReady(
+            shared.readyFlag.runNowOrWhenWillBecomeReady(
                 block,
                 label: label
             )
         }
     }
 
-    @MainActor
-    private func runNowOrWhenAppWillBecomeReady(
-        _ block: @escaping BlockType,
-        label: String
+    // MARK: -
+
+    public static func runNowOrWhenUIDidBecomeReadySync(
+        _ block: @escaping @MainActor () -> Void,
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line
     ) {
         guard !CurrentAppContext().isRunningTests else {
             // We don't need to do any "on app ready" work in the tests.
             return
         }
 
-        readyFlag.runNowOrWhenWillBecomeReady(block, label: label)
-    }
-
-    // MARK: -
-
-    public static func runNowOrWhenUIDidBecomeReadySync(
-        _ block: @escaping BlockType,
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line
-    ) {
         let label = Self.buildLabel(file: file, function: function, line: line)
         DispatchMainThreadSafe {
-            shared.runNowOrWhenAppDidBecomeReadySync(block, flag: shared.readyFlagUI, label: label)
+            shared.readyFlagUI.runNowOrWhenDidBecomeReadySync(block, label: label)
         }
     }
 
     public static func runNowOrWhenAppDidBecomeReadySync(
-        _ block: @escaping BlockType,
+        _ block: @escaping @MainActor () -> Void,
         file: String = #file,
         function: String = #function,
         line: Int = #line
-    ) {
-        let label = Self.buildLabel(file: file, function: function, line: line)
-        DispatchMainThreadSafe {
-            shared.runNowOrWhenAppDidBecomeReadySync(block, flag: shared.readyFlag, label: label)
-        }
-    }
-
-    @MainActor
-    private func runNowOrWhenAppDidBecomeReadySync(
-        _ block: @escaping BlockType,
-        flag: ReadyFlag,
-        label: String
     ) {
         guard !CurrentAppContext().isRunningTests else {
             // We don't need to do any "on app ready" work in the tests.
             return
         }
 
-        flag.runNowOrWhenDidBecomeReadySync(block, label: label)
+        let label = Self.buildLabel(file: file, function: function, line: line)
+        DispatchMainThreadSafe {
+            shared.readyFlag.runNowOrWhenDidBecomeReadySync(block, label: label)
+        }
     }
 
     // MARK: -
@@ -153,22 +139,24 @@ public class AppReadiness: NSObject {
     // any given block is expensive.
 
     public static func runNowOrWhenAppDidBecomeReadyAsync(
-        _ block: @escaping BlockType,
+        _ block: @escaping @MainActor () -> Void,
         file: String = #file,
         function: String = #function,
         line: Int = #line
     ) {
+        guard !CurrentAppContext().isRunningTests else {
+            // We don't need to do any "on app ready" work in the tests.
+            return
+        }
+
         let label = Self.buildLabel(file: file, function: function, line: line)
         DispatchMainThreadSafe {
-            shared.runNowOrWhenAppDidBecomeReadyAsync(
-                block,
-                label: label
-            )
+            shared.readyFlag.runNowOrWhenDidBecomeReadyAsync(block, label: label)
         }
     }
 
     public static func runNowOrWhenMainAppDidBecomeReadyAsync(
-        _ block: @escaping BlockType,
+        _ block: @escaping @MainActor () -> Void,
         file: String = #file,
         function: String = #function,
         line: Int = #line
@@ -182,20 +170,6 @@ public class AppReadiness: NSObject {
             function: function,
             line: line
         )
-    }
-
-    private func runNowOrWhenAppDidBecomeReadyAsync(
-        _ block: @escaping BlockType,
-        label: String
-    ) {
-        AssertIsOnMainThread()
-
-        guard !CurrentAppContext().isRunningTests else {
-            // We don't need to do any "on app ready" work in the tests.
-            return
-        }
-
-        readyFlag.runNowOrWhenDidBecomeReadyAsync(block, label: label)
     }
 
     private static func buildLabel(file: String, function: String, line: Int) -> String {
