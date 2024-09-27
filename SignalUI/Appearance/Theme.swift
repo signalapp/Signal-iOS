@@ -24,7 +24,9 @@ final public class Theme: NSObject {
 
     private override init() {
         super.init()
+    }
 
+    public static func performInitialSetup() {
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
             // IOS-782: +[Theme shared] re-enterant initialization
             // AppReadiness will invoke the block synchronously if the app is already ready.
@@ -36,7 +38,7 @@ final public class Theme: NSObject {
             // asyncing always to ensure the dependency chain is broken. We're okay waiting, since
             // there's no guarantee that this block in synchronously executed anyway.
             DispatchQueue.main.async {
-                self.notifyIfThemeModeIsNotDefault()
+                Self.shared.notifyIfThemeModeIsNotDefault()
             }
         }
     }

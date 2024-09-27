@@ -42,6 +42,8 @@ public class SUIEnvironment: NSObject {
     ) {
         registerCustomFonts()
 
+        Theme.performInitialSetup()
+
         self.linkPreviewFetcher = LinkPreviewFetcherImpl(
             authCredentialManager: authCredentialManager,
             db: DependenciesBridge.shared.db,
