@@ -164,7 +164,7 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift, Payments
 
     func updateConversationRates() {
         guard
-            AppReadiness.isAppReady,
+            AppReadinessGlobal.isAppReady,
             CurrentAppContext().isMainAppAndActive,
             DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
         else {

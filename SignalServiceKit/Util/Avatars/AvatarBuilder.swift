@@ -55,7 +55,7 @@ public class AvatarBuilder: NSObject {
 
         SwiftSingletons.register(self)
 
-        AppReadiness.runNowOrWhenAppWillBecomeReady {
+        AppReadinessGlobal.runNowOrWhenAppWillBecomeReady {
             self.addObservers()
         }
     }

@@ -54,7 +54,7 @@ enum OWSOrphanDataCleaner {
     static func auditAndCleanup(_ shouldRemoveOrphans: Bool, completion: (() -> Void)? = nil) {
         AssertIsOnMainThread()
 
-        guard AppReadiness.isAppReady else {
+        guard AppReadinessGlobal.isAppReady else {
             owsFailDebug("can't audit orphan data until app is ready.")
             return
         }

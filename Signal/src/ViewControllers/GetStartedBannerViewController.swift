@@ -352,7 +352,7 @@ extension GetStartedBannerViewController: DatabaseChangeDelegate {
 
     public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()
-        owsAssertDebug(AppReadiness.isAppReady)
+        owsAssertDebug(AppReadinessGlobal.isAppReady)
         if databaseChanges.didUpdateThreads {
             updateContent()
         }
@@ -360,27 +360,27 @@ extension GetStartedBannerViewController: DatabaseChangeDelegate {
 
     public func databaseChangesDidUpdateExternally() {
         AssertIsOnMainThread()
-        owsAssertDebug(AppReadiness.isAppReady)
+        owsAssertDebug(AppReadinessGlobal.isAppReady)
         updateContent()
     }
 
     public func databaseChangesDidReset() {
         AssertIsOnMainThread()
-        owsAssertDebug(AppReadiness.isAppReady)
+        owsAssertDebug(AppReadinessGlobal.isAppReady)
         updateContent()
     }
 
     @objc
     private func activeCardsDidChange() {
         AssertIsOnMainThread()
-        owsAssertDebug(AppReadiness.isAppReady)
+        owsAssertDebug(AppReadinessGlobal.isAppReady)
         updateContent()
     }
 
     @objc
     private func localProfileDidChange() {
         AssertIsOnMainThread()
-        owsAssertDebug(AppReadiness.isAppReady)
+        owsAssertDebug(AppReadinessGlobal.isAppReady)
         updateContent()
     }
 }

@@ -22,7 +22,7 @@ public class OWSMessageDecrypter: Dependencies {
             object: nil
         )
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync { [weak self] in
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync { [weak self] in
             guard let self = self else { return }
             guard CurrentAppContext().isMainApp else { return }
             self.cleanUpExpiredPlaceholders()

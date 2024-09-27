@@ -173,14 +173,14 @@ final class OutgoingCallEventSyncMessageManagerImpl: OutgoingCallEventSyncMessag
     ) {
         let syncTx = SDSDB.shimOnlyBridge(syncTx)
 
-        if AppReadiness.isAppReady {
+        if AppReadinessGlobal.isAppReady {
             logger.info("Enqueuing call event sync message: \(callEvent.callType), \(callEvent.eventDirection), \(callEvent.eventType).")
 
             _sendSyncMessage(outgoingCallEvent: callEvent, tx: syncTx)
         } else {
             logger.info("Delaying call event sync message because app isn't ready.")
 
-            AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+            AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
                 self.databaseStorage.write { asyncTx in
                     self._sendSyncMessage(outgoingCallEvent: callEvent, tx: asyncTx)
                 }

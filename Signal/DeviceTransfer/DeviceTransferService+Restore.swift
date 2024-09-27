@@ -510,7 +510,7 @@ extension DeviceTransferService {
         resetTransferDirectory(createNewTransferDirectory: false)
 
         let (promise, future) = Guarantee<Void>.pending()
-        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync {
             DependenciesBridge.shared.db.write { tx in
                 DependenciesBridge.shared.registrationStateChangeManager.setIsTransferComplete(
                     sendStateUpdateNotification: true,

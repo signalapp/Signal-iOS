@@ -23,7 +23,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
 
         SwiftSingletons.register(self)
 
-        AppReadiness.runNowOrWhenAppWillBecomeReady {
+        AppReadinessGlobal.runNowOrWhenAppWillBecomeReady {
             guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
                 return
             }
@@ -37,7 +37,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
             }
         }
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
             Self.enqueueRestoreGroupPass(authedAccount: .implicit())
         }
 

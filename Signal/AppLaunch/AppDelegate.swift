@@ -87,7 +87,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             return
         }
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadySync { self.handleActivation() }
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync { self.handleActivation() }
 
         // Clear all notifications whenever we become active.
         // When opening the app from a notification,
@@ -142,6 +142,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
     // MARK: - App Launch
 
+    private var appReadiness: AppReadinessSetter!
+
     func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
@@ -153,6 +155,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         // This should be the first thing we do.
         let mainAppContext = MainAppContext()
         SetCurrentAppContext(mainAppContext)
+        appReadiness = AppReadinessImpl.createSingleton()
 
         let debugLogger = DebugLogger.shared
         debugLogger.enableTTYLoggingIfNeeded()
@@ -175,7 +178,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         defer { Logger.info("Synchronous launch finished") }
 
         BenchEventStart(title: "Presenting HomeView", eventId: "AppStart", logInProduction: true)
-        AppReadiness.runNowOrWhenUIDidBecomeReadySync { BenchEventComplete(eventId: "AppStart") }
+        AppReadinessGlobal.runNowOrWhenUIDidBecomeReadySync { BenchEventComplete(eventId: "AppStart") }
 
         MessageFetchBGRefreshTask.register()
 
@@ -291,7 +294,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             store: attachmentBackfillStore,
             migrator: Task {
                 await withCheckedContinuation { continuation in
-                    AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
+                    AppReadinessGlobal.runNowOrWhenMainAppDidBecomeReadyAsync {
                         continuation.resume(with: .success(
                             DependenciesBridge.shared.attachmentValidationBackfillMigrator
                         ))
@@ -301,7 +304,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             db: databaseStorage
         )
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
             IncrementalMessageTSAttachmentMigrationRunner.scheduleBGProcessingTaskIfNeeded(
                 store: incrementalMessageTSAttachmentMigrationStore,
                 db: databaseStorage
@@ -430,7 +433,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             // does not attempt to process messages while we are active.
             DarwinNotificationCenter.postNotification(name: .mainAppHandledNotification)
 
-            AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+            AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync {
                 _ = self.messageFetcherJob.run()
             }
         }
@@ -510,7 +513,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         launchContext: LaunchContext
     ) {
         Logger.info("")
-        owsPrecondition(!AppReadiness.isAppReady)
+        owsPrecondition(!AppReadinessGlobal.isAppReady)
         owsPrecondition(!CurrentAppContext().isRunningTests)
 
         let appContext = launchContext.appContext
@@ -521,17 +524,17 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         SignalApp.shared.performInitialSetup()
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
             // This runs every 24 hours or so.
             let messageSendLog = SSKEnvironment.shared.messageSendLogRef
             messageSendLog.cleanUpAndScheduleNextOccurrence(on: DependenciesBridge.shared.schedulers)
         }
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
             OWSOrphanDataCleaner.auditOnLaunchIfNecessary()
         }
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
             Task.detached(priority: .low) {
                 await FullTextSearchOptimizer(
                     appContext: appContext,
@@ -541,7 +544,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
             Task.detached(priority: .low) {
                 await AuthorMergeHelperBuilder(
                     appContext: appContext,
@@ -561,7 +564,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         // Once all builds are PNP enabled, we can remove this explicit migration
         // and simply treat the default as "nobody". The migration exists to ensure
         // old linked devices respect the setting before they upgrade.
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
             let db = DependenciesBridge.shared.db
             guard db.read(block: self.udManager.phoneNumberSharingMode(tx:)) == nil else {
                 return
@@ -578,7 +581,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
             StaleProfileFetcher(
                 db: DependenciesBridge.shared.db,
                 profileFetcher: SSKEnvironment.shared.profileFetcherRef,
@@ -586,7 +589,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             ).scheduleProfileFetches()
         }
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
             Task.detached(priority: .low) {
                 YDBStorage.deleteYDBStorage()
                 SSKPreferences.clearLegacyDatabaseFlags(from: appContext.appUserDefaults())
@@ -595,7 +598,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
             Task {
                 try? await RemoteMegaphoneFetcher(
                     databaseStorage: NSObject.databaseStorage,
@@ -604,15 +607,15 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
             DependenciesBridge.shared.orphanedAttachmentCleaner.beginObserving()
         }
 
-        AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
+        AppReadinessGlobal.runNowOrWhenMainAppDidBecomeReadyAsync {
             AttachmentDownloadRetryRunner.shared.beginObserving()
         }
 
-        AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
+        AppReadinessGlobal.runNowOrWhenMainAppDidBecomeReadyAsync {
             let fetchJobRunner = CallLinkFetchJobRunner(
                 callLinkStore: DependenciesBridge.shared.callLinkStore,
                 callLinkStateUpdater: AppEnvironment.shared.callService.callLinkStateUpdater,
@@ -624,7 +627,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         // Note that this does much more than set a flag; it will also run all deferred blocks.
-        AppReadiness.setAppIsReadyUIStillPending()
+        AppReadinessGlobal.setAppIsReadyUIStillPending()
 
         appContext.appUserDefaults().removeObject(forKey: Constants.appLaunchesAttemptedKey)
 
@@ -1102,7 +1105,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         willPresent notification: UNNotification,
         withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
     ) {
-        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync {
             // We need to respect the in-app notification sound preference. This method, which is called
             // for modern UNUserNotification users, could be a place to do that, but since we'd still
             // need to handle this behavior for legacy UINotification users anyway, we "allow" all
@@ -1192,7 +1195,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         // The call-banner window is only suitable for portrait display on iPhone
-        if AppReadiness.isAppReady, AppEnvironment.shared.callService.callServiceState.currentCall != nil, !UIDevice.current.isIPad {
+        if AppReadinessGlobal.isAppReady, AppEnvironment.shared.callService.callServiceState.currentCall != nil, !UIDevice.current.isIPad {
             return .portrait
         }
 
@@ -1243,7 +1246,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         // Mark down that the APNS token is working because we got a push.
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
             self.databaseStorage.asyncWrite { tx in
                 APNSRotationStore.didReceiveAPNSPush(transaction: tx)
             }
@@ -1265,7 +1268,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     private func processRemoteNotification(_ remoteNotification: [AnyHashable: Any], completion: @escaping () -> Void) {
         AssertIsOnMainThread()
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync {
             // TODO: Wait to invoke this until we've finished fetching messages.
             defer { completion() }
 
@@ -1303,7 +1306,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     private func clearAllNotificationsAndRestoreBadgeCount() {
         AssertIsOnMainThread()
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync {
             let oldBadgeValue = UIApplication.shared.applicationIconBadgeNumber
             NSObject.notificationPresenter.clearAllNotifications()
             UIApplication.shared.applicationIconBadgeNumber = oldBadgeValue
@@ -1346,7 +1349,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 owsFailDebug("Missing threadUniqueId for intent")
                 return false
             }
-            AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+            AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync {
                 let tsAccountManager = DependenciesBridge.shared.tsAccountManager
                 guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
                     Logger.warn("Ignoring user activity; not registered.")
@@ -1403,7 +1406,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             return false
         }
         let isVideo = isVideoCall(intent)
-        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync {
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
             guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
                 Logger.warn("Ignoring user activity; not registered.")
@@ -1450,7 +1453,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         let isRegistered = tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
         if isRegistered {
-            AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+            AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync {
                 self.databaseStorage.write { transaction in
                     let localAddress = tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress
                     Logger.info("localAddress: \(String(describing: localAddress))")
@@ -1481,7 +1484,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             return
         }
 
-        AppReadiness.runNowOrWhenUIDidBecomeReadySync {
+        AppReadinessGlobal.runNowOrWhenUIDidBecomeReadySync {
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
             guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
                 let controller = ActionSheetController(
@@ -1534,7 +1537,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         guard let parsedUrl = UrlOpener.parseUrl(url) else {
             return false
         }
-        AppReadiness.runNowOrWhenUIDidBecomeReadySync {
+        AppReadinessGlobal.runNowOrWhenUIDidBecomeReadySync {
             let urlOpener = UrlOpener(
                 databaseStorage: self.databaseStorage,
                 tsAccountManager: DependenciesBridge.shared.tsAccountManager
@@ -1556,7 +1559,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             switch GRDBDatabaseStorageAdapter.checkIntegrity(databaseStorage: databaseStorage) {
             case .ok: break
             case .notOk:
-                AppReadiness.runNowOrWhenUIDidBecomeReadySync {
+                AppReadinessGlobal.runNowOrWhenUIDidBecomeReadySync {
                     OWSActionSheets.showActionSheet(
                         title: "Database corrupted!",
                         message: "We have detected database corruption on your device. Please submit debug logs to the iOS team."
@@ -1578,7 +1581,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         didReceive response: UNNotificationResponse,
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
-        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync {
             NotificationActionHandler.handleNotificationResponse(response, completionHandler: completionHandler)
         }
     }

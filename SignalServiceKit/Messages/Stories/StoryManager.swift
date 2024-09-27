@@ -15,7 +15,7 @@ public class StoryManager: NSObject {
         cacheAreStoriesEnabled()
         cacheAreViewReceiptsEnabled()
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
             Self.databaseStorage.asyncWrite { transaction in
                 // Create My Story thread if necessary
                 TSPrivateStoryThread.getOrCreateMyStory(transaction: transaction)

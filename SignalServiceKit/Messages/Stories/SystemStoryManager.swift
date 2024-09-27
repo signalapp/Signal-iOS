@@ -99,7 +99,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
         super.init()
 
         if CurrentAppContext().isMainApp {
-            AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
+            AppReadinessGlobal.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
                 guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
                     // Observe when the account is ready before we try and download.
                     self?.observeRegistrationChanges()

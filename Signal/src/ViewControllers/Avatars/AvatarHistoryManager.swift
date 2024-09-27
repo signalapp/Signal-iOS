@@ -27,7 +27,7 @@ public class AvatarHistoryManager: NSObject {
         super.init()
         SwiftSingletons.register(self)
 
-        AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
+        AppReadinessGlobal.runNowOrWhenMainAppDidBecomeReadyAsync {
             DispatchQueue.global().async {
                 self.cleanupOrphanedImages()
             }

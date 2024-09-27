@@ -11,10 +11,10 @@ public class PaymentsProcessor: NSObject {
     public override init() {
         super.init()
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync {
             Self.databaseStorage.appendDatabaseChangeDelegate(self)
         }
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
             self.process()
         }
 
@@ -104,7 +104,7 @@ public class PaymentsProcessor: NSObject {
                 return
             }
             guard
-                AppReadiness.isAppReady,
+                AppReadinessGlobal.isAppReady,
                 CurrentAppContext().isMainAppAndActive,
                 DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
             else {
@@ -252,7 +252,7 @@ extension PaymentsProcessor: DatabaseChangeDelegate {
 
     public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()
-        owsAssertDebug(AppReadiness.isAppReady)
+        owsAssertDebug(AppReadinessGlobal.isAppReady)
 
         guard databaseChanges.didUpdate(tableName: TSPaymentModel.table.tableName) else {
             return
@@ -263,14 +263,14 @@ extension PaymentsProcessor: DatabaseChangeDelegate {
 
     public func databaseChangesDidUpdateExternally() {
         AssertIsOnMainThread()
-        owsAssertDebug(AppReadiness.isAppReady)
+        owsAssertDebug(AppReadinessGlobal.isAppReady)
 
         process()
     }
 
     public func databaseChangesDidReset() {
         AssertIsOnMainThread()
-        owsAssertDebug(AppReadiness.isAppReady)
+        owsAssertDebug(AppReadinessGlobal.isAppReady)
 
         process()
     }

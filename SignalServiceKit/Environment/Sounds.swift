@@ -305,7 +305,7 @@ public class Sounds: Dependencies {
     private init() { }
 
     public static func performStartupTasks() {
-        AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
+        AppReadinessGlobal.runNowOrWhenMainAppDidBecomeReadyAsync {
             Sounds.migrateLegacySounds()
             Sounds.cleanupOrphanedSounds()
         }

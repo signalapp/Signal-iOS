@@ -211,7 +211,7 @@ public class OWSChatConnection: NSObject {
 
         super.init()
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadySync { [weak self] in
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync { [weak self] in
             guard let self = self else { return }
             self.appDidBecomeReady()
             self.applyDesiredSocketState()
@@ -353,7 +353,7 @@ public class OWSChatConnection: NSObject {
 
     // This method is thread-safe.
     fileprivate var desiredSocketState: DesiredSocketState? {
-        guard AppReadiness.isAppReady else {
+        guard AppReadinessGlobal.isAppReady else {
             return .closed(reason: "!isAppReady")
         }
 
@@ -393,7 +393,7 @@ public class OWSChatConnection: NSObject {
 
     // This method is thread-safe.
     public func didReceivePush() {
-        owsAssertDebug(AppReadiness.isAppReady)
+        owsAssertDebug(AppReadinessGlobal.isAppReady)
 
         self.ensureBackgroundKeepAlive(.didReceivePush)
     }
@@ -403,8 +403,8 @@ public class OWSChatConnection: NSObject {
     // This method is thread-safe.
     fileprivate func applyDesiredSocketState(completion: (() -> Void)? = nil) {
 
-        guard AppReadiness.isAppReady else {
-            AppReadiness.runNowOrWhenAppDidBecomeReadySync { [weak self] in
+        guard AppReadinessGlobal.isAppReady else {
+            AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync { [weak self] in
                 self?.applyDesiredSocketState(completion: completion)
             }
             return

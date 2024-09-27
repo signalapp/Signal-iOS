@@ -32,7 +32,7 @@ public class OWSPaymentsLock: NSObject, Dependencies {
     public func isPaymentsLockEnabled() -> Bool {
         AssertIsOnMainThread()
 
-        guard AppReadiness.isAppReady else {
+        guard AppReadinessGlobal.isAppReady else {
             owsFailDebug("accessed payments lock state before storage is ready.")
             // `true` is a more secure default
             return true
@@ -54,7 +54,7 @@ public class OWSPaymentsLock: NSObject, Dependencies {
 
     public func setIsPaymentsLockEnabled(_ value: Bool, transaction: SDSAnyWriteTransaction) {
         AssertIsOnMainThread()
-        assert(AppReadiness.isAppReady)
+        assert(AppReadinessGlobal.isAppReady)
 
         self.keyValueStore.setBool(value,
                                    key: .isPaymentsLockEnabledKey,
@@ -64,7 +64,7 @@ public class OWSPaymentsLock: NSObject, Dependencies {
     public func isTimeToShowSuggestion() -> Bool {
         AssertIsOnMainThread()
 
-        if !AppReadiness.isAppReady {
+        if !AppReadinessGlobal.isAppReady {
             owsFailDebug("accessed payments lock state before storage is ready.")
             return false
         }
@@ -80,7 +80,7 @@ public class OWSPaymentsLock: NSObject, Dependencies {
 
     public func snoozeSuggestion(transaction: SDSAnyWriteTransaction) {
         AssertIsOnMainThread()
-        assert(AppReadiness.isAppReady)
+        assert(AppReadinessGlobal.isAppReady)
 
         let currentDate = Date()
         let numberOfSnoozeDays = 30.0

@@ -15,6 +15,7 @@ public class MockSSKEnvironment: NSObject {
     public static func activate() {
         let testAppContext = TestAppContext()
         SetCurrentAppContext(testAppContext)
+        _ = AppReadinessImpl.createSingleton()
 
         let finalContinuation = AppSetup().start(
             appContext: testAppContext,

@@ -50,7 +50,7 @@ public class ScreenLock: NSObject {
     public func isScreenLockEnabled() -> Bool {
         AssertIsOnMainThread()
 
-        if !AppReadiness.isAppReady {
+        if !AppReadinessGlobal.isAppReady {
             owsFailDebug("accessed screen lock state before storage is ready.")
             return false
         }
@@ -64,7 +64,7 @@ public class ScreenLock: NSObject {
 
     public func setIsScreenLockEnabled(_ value: Bool) {
         AssertIsOnMainThread()
-        assert(AppReadiness.isAppReady)
+        assert(AppReadinessGlobal.isAppReady)
 
         databaseStorage.write { transaction in
             self.keyValueStore.setBool(value,
@@ -78,7 +78,7 @@ public class ScreenLock: NSObject {
     public func screenLockTimeout() -> TimeInterval {
         AssertIsOnMainThread()
 
-        if !AppReadiness.isAppReady {
+        if !AppReadinessGlobal.isAppReady {
             owsFailDebug("accessed screen lock state before storage is ready.")
             return 0
         }
@@ -92,7 +92,7 @@ public class ScreenLock: NSObject {
 
     public func setScreenLockTimeout(_ value: TimeInterval) {
         AssertIsOnMainThread()
-        assert(AppReadiness.isAppReady)
+        assert(AppReadinessGlobal.isAppReady)
 
         databaseStorage.write { transaction in
             self.keyValueStore.setDouble(value,

@@ -281,7 +281,7 @@ public class RemoteConfig {
         forFlag flag: ValueFlag,
         defaultValue: V
     ) -> V where V: LosslessStringConvertible {
-        guard AppReadiness.isAppReady else {
+        guard AppReadinessGlobal.isAppReady else {
             owsFailDebug("Storage is not yet ready.")
             return defaultValue
         }
@@ -677,7 +677,7 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
         self.tsAccountManager = tsAccountManager
         self.serviceClient = serviceClient
 
-        AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
+        AppReadinessGlobal.runNowOrWhenMainAppDidBecomeReadyAsync {
             guard self.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
                 return
             }
@@ -740,7 +740,7 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
         updateCachedConfig { _ in remoteConfig }
         warmSecondaryCaches(valueFlags: valueFlags ?? [:])
 
-        AppReadiness.runNowOrWhenAppWillBecomeReady {
+        AppReadinessGlobal.runNowOrWhenAppWillBecomeReady {
             RemoteConfig.current.logFlags()
         }
     }

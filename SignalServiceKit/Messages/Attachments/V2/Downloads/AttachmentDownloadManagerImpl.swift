@@ -2057,7 +2057,7 @@ public class _AttachmentDownloadManagerImpl_AppReadinessWrapper: _AttachmentDown
     public init() {}
 
     public func runNowOrWhenMainAppDidBecomeReadyAsync(_ block: @escaping () -> Void) {
-        AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync(block)
+        AppReadinessGlobal.runNowOrWhenMainAppDidBecomeReadyAsync(block)
     }
 }
 

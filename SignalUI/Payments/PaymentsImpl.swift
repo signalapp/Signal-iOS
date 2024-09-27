@@ -32,7 +32,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
 
         MobileCoinAPI.configureSDKLogging()
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
             DispatchQueue.global().async {
                 self.updateLastKnownLocalPaymentAddressProtoDataIfNecessary()
             }
@@ -47,7 +47,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
             return
         }
-        guard AppReadiness.isAppReady else {
+        guard AppReadinessGlobal.isAppReady else {
             return
         }
 
@@ -257,7 +257,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
             return
         }
         guard
-            AppReadiness.isAppReady,
+            AppReadinessGlobal.isAppReady,
             CurrentAppContext().isMainAppAndActive,
             DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
         else {

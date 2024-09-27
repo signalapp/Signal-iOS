@@ -356,7 +356,7 @@ class ModelReadCache<KeyType: Hashable & Equatable, ValueType>: Dependencies {
     }
 
     var isAppReady: Bool {
-        return AppReadiness.isAppReady
+        return AppReadinessGlobal.isAppReady
     }
 
     private func canUseCache(cacheKey: ModelCacheKey<KeyType>,

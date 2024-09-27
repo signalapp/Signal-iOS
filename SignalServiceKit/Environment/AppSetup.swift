@@ -1507,7 +1507,7 @@ extension AppSetup.FinalContinuation {
             return .corruptRegistrationState
         }
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync { [dependenciesBridge] in
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync { [dependenciesBridge] in
             let preKeyManager = dependenciesBridge.preKeyManager
             Task {
                 // Rotate ACI keys first since PNI keys may block on incoming messages.

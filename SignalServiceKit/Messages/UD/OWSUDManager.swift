@@ -176,13 +176,13 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
         SwiftSingletons.register(self)
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync {
             self.setup()
         }
     }
 
     private func setup() {
-        owsAssertDebug(AppReadiness.isAppReady)
+        owsAssertDebug(AppReadinessGlobal.isAppReady)
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(registrationStateDidChange),
@@ -202,7 +202,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     @objc
     private func registrationStateDidChange() {
-        owsAssertDebug(AppReadiness.isAppReady)
+        owsAssertDebug(AppReadinessGlobal.isAppReady)
 
         Task {
             _ = try? await fetchSenderCertificates(certificateExpirationPolicy: .strict)
@@ -211,7 +211,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     @objc
     private func didBecomeActive() {
-        owsAssertDebug(AppReadiness.isAppReady)
+        owsAssertDebug(AppReadinessGlobal.isAppReady)
 
         Task {
             _ = try? await fetchSenderCertificates(certificateExpirationPolicy: .strict)

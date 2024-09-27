@@ -93,8 +93,8 @@ public class DatabaseChangeObserver: NSObject {
             // Never notify delegates until the app is ready.
             // This prevents us from shooting ourselves in the foot
             // and registering for database changes too early.
-            assert(AppReadiness.isAppReady)
-            AppReadiness.runNowOrWhenAppWillBecomeReady(append)
+            assert(AppReadinessGlobal.isAppReady)
+            AppReadinessGlobal.runNowOrWhenAppWillBecomeReady(append)
         }
     }
 
@@ -141,7 +141,7 @@ public class DatabaseChangeObserver: NSObject {
                                                name: .OWSApplicationWillEnterForeground,
                                                object: nil)
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync {
             DispatchQueue.main.async {
                 self.ensureDisplayLink()
             }
@@ -179,7 +179,7 @@ public class DatabaseChangeObserver: NSObject {
             default:
                 break
             }
-            guard AppReadiness.isAppReady else {
+            guard AppReadinessGlobal.isAppReady else {
                 return false
             }
             guard !CurrentAppContext().isInBackground() else {

@@ -44,7 +44,7 @@ public class TSAttachmentDownloadManager: NSObject {
             object: nil
         )
 
-        AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { self.startPendingMessageDownloads() }
+        AppReadinessGlobal.runNowOrWhenMainAppDidBecomeReadyAsync { self.startPendingMessageDownloads() }
     }
 
     @objc
@@ -77,7 +77,7 @@ public class TSAttachmentDownloadManager: NSObject {
 
     @objc
     func applicationDidBecomeActive() {
-        AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { self.startPendingMessageDownloads() }
+        AppReadinessGlobal.runNowOrWhenMainAppDidBecomeReadyAsync { self.startPendingMessageDownloads() }
     }
 
     // MARK: -

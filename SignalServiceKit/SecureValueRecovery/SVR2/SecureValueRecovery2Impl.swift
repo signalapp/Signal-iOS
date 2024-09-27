@@ -1647,7 +1647,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         storageServiceManager.resetLocalData(transaction: transaction)
 
         // If the app is ready start that restoration.
-        guard AppReadiness.isAppReady else { return }
+        guard AppReadinessGlobal.isAppReady else { return }
 
         switch mode {
         case .syncStorageService(let authedAccount):

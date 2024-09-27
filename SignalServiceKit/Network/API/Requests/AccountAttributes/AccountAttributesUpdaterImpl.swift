@@ -234,10 +234,10 @@ public class _AccountAttributesUpdater_AppReadinessWrapper: _AccountAttributesUp
     public init() {}
 
     public func isAppReady() -> Bool {
-        return AppReadiness.isAppReady
+        return AppReadinessGlobal.isAppReady
     }
 
     public func runNowOrWhenAppBecomesReadyAsync(_ block: @escaping () -> Void) {
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync(block)
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync(block)
     }
 }

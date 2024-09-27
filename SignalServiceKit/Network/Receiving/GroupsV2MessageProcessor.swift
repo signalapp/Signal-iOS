@@ -61,7 +61,7 @@ class IncomingGroupsV2MessageQueue: MessageProcessingPipelineStage {
             object: nil
         )
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync {
             NSObject.messagePipelineSupervisor.register(pipelineStage: self)
         }
     }
@@ -134,7 +134,7 @@ class IncomingGroupsV2MessageQueue: MessageProcessingPipelineStage {
         guard CurrentAppContext().shouldProcessIncomingMessages else {
             return
         }
-        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync {
             DispatchQueue.global().async {
                 self.drainQueues()
             }
@@ -156,7 +156,7 @@ class IncomingGroupsV2MessageQueue: MessageProcessingPipelineStage {
     private func drainQueues() {
         owsAssertDebug(!Thread.isMainThread)
 
-        guard AppReadiness.isAppReady || CurrentAppContext().isRunningTests else {
+        guard AppReadinessGlobal.isAppReady || CurrentAppContext().isRunningTests else {
             owsFailDebug("App is not ready.")
             return
         }
@@ -273,7 +273,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
             object: nil
         )
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync {
             self.messagePipelineSupervisor.register(pipelineStage: self)
         }
     }

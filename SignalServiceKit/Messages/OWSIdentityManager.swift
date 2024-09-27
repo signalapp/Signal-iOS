@@ -577,7 +577,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
 
     public func tryToSyncQueuedVerificationStates() {
         AssertIsOnMainThread()
-        AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
+        AppReadinessGlobal.runNowOrWhenMainAppDidBecomeReadyAsync {
             self.schedulers.global().async { self.syncQueuedVerificationStates() }
         }
     }

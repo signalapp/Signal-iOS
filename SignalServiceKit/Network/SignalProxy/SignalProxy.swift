@@ -49,7 +49,7 @@ public class SignalProxy: NSObject {
 
     @objc
     public class func warmCaches() {
-        AppReadiness.runNowOrWhenAppWillBecomeReady {
+        AppReadinessGlobal.runNowOrWhenAppWillBecomeReady {
             databaseStorage.read { transaction in
                 host = keyValueStore.getString(proxyHostKey, transaction: transaction)
                 useProxy = keyValueStore.getBool(proxyUseKey, defaultValue: false, transaction: transaction)

@@ -8,7 +8,7 @@ import LibSignalClient
 public class MessageRequestPendingReceipts: Dependencies, PendingReceiptRecorder {
 
     public init() {
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
             NotificationCenter.default.addObserver(self,
                                                    selector: #selector(self.profileWhitelistDidChange(notification:)),
                                                    name: UserProfileNotifications.profileWhitelistDidChange,

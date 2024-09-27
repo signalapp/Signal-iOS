@@ -49,7 +49,7 @@ public class OWSProfileManager: NSObject, ProfileManagerProtocol {
 
         SwiftSingletons.register(self)
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
             self.rotateLocalProfileKeyIfNecessary()
             self.updateProfileOnServiceIfNecessary(authedAccount: .implicit())
             Self.updateStorageServiceIfNecessary()
@@ -700,7 +700,7 @@ public class OWSProfileManager: NSObject, ProfileManagerProtocol {
     @objc
     private func blockListDidChange(_ notification: NSNotification) {
         AssertIsOnMainThread()
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
             self.rotateLocalProfileKeyIfNecessary()
         }
     }
@@ -947,7 +947,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
     }
 
     private func rotateProfileKeyIfNecessary(tx: SDSAnyWriteTransaction) {
-        if CurrentAppContext().isNSE || !AppReadiness.isAppReady {
+        if CurrentAppContext().isNSE || !AppReadinessGlobal.isAppReady {
             return
         }
 
@@ -1505,7 +1505,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
     private func _updateProfileOnServiceIfNecessary(retryDelay: TimeInterval = 1) -> UpdateProfileStatus {
         AssertIsOnMainThread()
 
-        guard AppReadiness.isAppReady else {
+        guard AppReadinessGlobal.isAppReady else {
             return .notReady
         }
         guard !isUpdatingProfileOnService else {

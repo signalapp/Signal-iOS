@@ -24,7 +24,7 @@ public class OWS2FAManager: Dependencies {
     init() {
         SwiftSingletons.register(self)
 
-        AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
+        AppReadinessGlobal.runNowOrWhenMainAppDidBecomeReadyAsync {
             if self.mode == .V1 {
                 Logger.info("Migrating V1 reglock to V2 reglock")
 

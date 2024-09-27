@@ -99,7 +99,7 @@ public extension JobQueue {
     func startWorkImmediatelyIfAppIsReady(transaction: SDSAnyWriteTransaction) {
         guard isEnabled else { return }
         guard !CurrentAppContext().isRunningTests else { return }
-        guard AppReadiness.isAppReady else { return }
+        guard AppReadinessGlobal.isAppReady else { return }
         guard isSetup.get() else { return }
         workStep(transaction: transaction)
     }
@@ -114,7 +114,7 @@ public extension JobQueue {
             return
         }
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
             guard self.isSetup.get() else {
                 return
             }

@@ -12,7 +12,7 @@ public class PaymentsReconciliation: Dependencies {
     private var refreshEvent: RefreshEvent?
 
     public init() {
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
             // Note: this isn't how often we perform reconciliation, it's how often we
             // check whether we should perform reconciliation.
             //
@@ -65,7 +65,7 @@ public class PaymentsReconciliation: Dependencies {
             return false
         }
         guard
-            AppReadiness.isAppReady,
+            AppReadinessGlobal.isAppReady,
             CurrentAppContext().isMainAppAndActive,
             DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
         else {

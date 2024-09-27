@@ -246,7 +246,7 @@ public class SSKEnvironment: NSObject {
         StoryManager.setup()
         DependenciesBridge.shared.db.read { tx in appExpiryRef.warmCaches(with: tx) }
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
             self.localUserLeaveGroupJobQueueRef.start(appContext: CurrentAppContext())
             self.callRecordDeleteAllJobQueueRef.start(appContext: CurrentAppContext())
             self.bulkDeleteInteractionJobQueueRef.start(appContext: CurrentAppContext())

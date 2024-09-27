@@ -29,7 +29,7 @@ public class RefreshEvent: Dependencies {
         self.refreshInterval = refreshInterval
         self.block = block
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync { [weak self] in
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync { [weak self] in
             self?.ensureRefreshTimer()
         }
         NotificationCenter.default.addObserver(
@@ -53,7 +53,7 @@ public class RefreshEvent: Dependencies {
 
     private var canFire: Bool {
         guard
-            AppReadiness.isAppReady,
+            AppReadinessGlobal.isAppReady,
             CurrentAppContext().isMainAppAndActive,
             DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
         else {

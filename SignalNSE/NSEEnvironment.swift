@@ -7,11 +7,13 @@ import Foundation
 import SignalServiceKit
 
 class NSEEnvironment: Dependencies {
+    let appReadiness: AppReadinessSetter
     let appContext: NSEContext
 
     init() {
         self.appContext = NSEContext()
         SetCurrentAppContext(self.appContext)
+        appReadiness = AppReadinessImpl.createSingleton()
     }
 
     // MARK: -
@@ -163,10 +165,10 @@ class NSEEnvironment: Dependencies {
 
     @MainActor
     private func setAppIsReady() {
-        owsPrecondition(!AppReadiness.isAppReady)
+        owsPrecondition(!AppReadinessGlobal.isAppReady)
 
         // Note that this does much more than set a flag; it will also run all deferred blocks.
-        AppReadiness.setAppIsReady()
+        AppReadinessGlobal.setAppIsReady()
 
         AppVersionImpl.shared.nseLaunchDidComplete()
     }

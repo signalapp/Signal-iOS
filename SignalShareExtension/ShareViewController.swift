@@ -45,12 +45,15 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     public var shareViewNavigationController: OWSNavigationController?
     private var loadTask: Task<Void, any Error>?
 
+    private var appReadiness: AppReadinessSetter!
+
     override open func loadView() {
         super.loadView()
 
         // This should be the first thing we do.
         let appContext = ShareAppExtensionContext(rootViewController: self)
         SetCurrentAppContext(appContext)
+        self.appReadiness = AppReadinessImpl.createSingleton()
 
         let debugLogger = DebugLogger.shared
         debugLogger.enableTTYLoggingIfNeeded()
@@ -206,12 +209,12 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     private func setAppIsReady() {
         Logger.debug("")
         AssertIsOnMainThread()
-        owsPrecondition(!AppReadiness.isAppReady)
+        owsPrecondition(!AppReadinessGlobal.isAppReady)
 
         // We don't need to use LaunchJobs in the SAE.
 
         // Note that this does much more than set a flag; it will also run all deferred blocks.
-        AppReadiness.setAppIsReady()
+        AppReadinessGlobal.setAppIsReady()
 
         if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered {
             Logger.info("localAddress: \(String(describing: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress))")
@@ -250,7 +253,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         Logger.debug("")
 
-        guard AppReadiness.isAppReady else {
+        guard AppReadinessGlobal.isAppReady else {
             return
         }
         guard !hasInitialRootViewController else {
@@ -340,7 +343,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         Logger.debug("")
 
         if isReadyForAppExtensions {
-            AppReadiness.runNowOrWhenAppDidBecomeReadySync { [weak self] in
+            AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync { [weak self] in
                 AssertIsOnMainThread()
                 self?.activate()
             }

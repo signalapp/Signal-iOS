@@ -28,7 +28,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
     public override init() {
         super.init()
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
             self.setup()
         }
     }
@@ -74,7 +74,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
         future: Future<Void>?,
         transaction: SDSAnyWriteTransaction
     ) {
-        assert(AppReadiness.isAppReady || CurrentAppContext().isRunningTests)
+        assert(AppReadinessGlobal.isAppReady || CurrentAppContext().isRunningTests)
         // Mark as sending now so the UI updates immediately.
         message.updateAllUnsentRecipientsAsSending(tx: transaction)
         let jobRecord: MessageSenderJobRecord

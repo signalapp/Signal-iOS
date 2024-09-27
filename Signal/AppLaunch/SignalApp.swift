@@ -25,7 +25,7 @@ public class SignalApp: NSObject {
     }
 
     public func performInitialSetup() {
-        AppReadiness.runNowOrWhenUIDidBecomeReadySync {
+        AppReadinessGlobal.runNowOrWhenUIDidBecomeReadySync {
             self.warmCachesAsync()
         }
     }
@@ -68,7 +68,7 @@ extension SignalApp {
 
     @MainActor
     func showLaunchInterface(_ launchInterface: LaunchInterface, launchStartedAt: TimeInterval) {
-        owsPrecondition(AppReadiness.isAppReady)
+        owsPrecondition(AppReadinessGlobal.isAppReady)
 
         let startupDuration = CACurrentMediaTime() - launchStartedAt
         let formattedStartupDuration = String(format: "%.3f", startupDuration)
@@ -84,10 +84,10 @@ extension SignalApp {
         switch launchInterface {
         case .registration(let registrationLoader, let desiredMode):
             showRegistration(loader: registrationLoader, desiredMode: desiredMode)
-            AppReadiness.setUIIsReady()
+            AppReadinessGlobal.setUIIsReady()
         case .secondaryProvisioning:
             showSecondaryProvisioning()
-            AppReadiness.setUIIsReady()
+            AppReadinessGlobal.setUIIsReady()
         case .chatList:
             showConversationSplitView()
         }

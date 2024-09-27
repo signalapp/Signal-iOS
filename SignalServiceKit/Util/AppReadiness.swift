@@ -5,45 +5,11 @@
 
 import Foundation
 
-public class AppReadiness: NSObject {
+public protocol AppReadiness {
 
-    private static let shared = AppReadiness()
+    var isAppReady: Bool { get }
 
-    private override init() {
-        super.init()
-
-        SwiftSingletons.register(self)
-    }
-
-    private let readyFlag = ReadyFlag(name: "AppReadiness")
-    private let readyFlagUI = ReadyFlag(name: "AppReadinessUI")
-
-    public static var isAppReady: Bool { shared.readyFlag.isSet }
-
-    public static var isUIReady: Bool { shared.readyFlagUI.isSet }
-
-    @MainActor
-    public static func setAppIsReady() {
-        owsAssertDebug(!shared.readyFlag.isSet)
-        owsAssertDebug(!shared.readyFlagUI.isSet)
-
-        shared.readyFlag.setIsReady()
-        shared.readyFlagUI.setIsReady()
-    }
-
-    @MainActor
-    public static func setAppIsReadyUIStillPending() {
-        owsAssertDebug(!shared.readyFlag.isSet)
-
-        shared.readyFlag.setIsReady()
-    }
-
-    @MainActor
-    public static func setUIIsReady() {
-        shared.readyFlagUI.setIsReady()
-    }
-
-    // MARK: - Readiness Blocks
+    var isUIReady: Bool { get }
 
     // If the app and it's UI is ready, the block is called immediately;
     // otherwise it is called when the app and the UI becomes ready.
@@ -64,63 +30,26 @@ public class AppReadiness: NSObject {
     // * We should use the "polite" flavor of "did become ready" blocks wherever possible
     //   since they avoid a stampede of activity on launch.
 
-    public static func runNowOrWhenAppWillBecomeReady(
+    func runNowOrWhenAppWillBecomeReady(
         _ block: @escaping @MainActor () -> Void,
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line
-    ) {
-        guard !CurrentAppContext().isRunningTests else {
-            // We don't need to do any "on app ready" work in the tests.
-            return
-        }
+        file: String,
+        function: String,
+        line: Int
+    )
 
-        let label = Self.buildLabel(file: file, function: function, line: line)
-        DispatchMainThreadSafe {
-            shared.readyFlag.runNowOrWhenWillBecomeReady(
-                block,
-                label: label
-            )
-        }
-    }
-
-    // MARK: -
-
-    public static func runNowOrWhenUIDidBecomeReadySync(
+    func runNowOrWhenUIDidBecomeReadySync(
         _ block: @escaping @MainActor () -> Void,
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line
-    ) {
-        guard !CurrentAppContext().isRunningTests else {
-            // We don't need to do any "on app ready" work in the tests.
-            return
-        }
+        file: String,
+        function: String,
+        line: Int
+    )
 
-        let label = Self.buildLabel(file: file, function: function, line: line)
-        DispatchMainThreadSafe {
-            shared.readyFlagUI.runNowOrWhenDidBecomeReadySync(block, label: label)
-        }
-    }
-
-    public static func runNowOrWhenAppDidBecomeReadySync(
+    func runNowOrWhenAppDidBecomeReadySync(
         _ block: @escaping @MainActor () -> Void,
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line
-    ) {
-        guard !CurrentAppContext().isRunningTests else {
-            // We don't need to do any "on app ready" work in the tests.
-            return
-        }
-
-        let label = Self.buildLabel(file: file, function: function, line: line)
-        DispatchMainThreadSafe {
-            shared.readyFlag.runNowOrWhenDidBecomeReadySync(block, label: label)
-        }
-    }
-
-    // MARK: -
+        file: String,
+        function: String,
+        line: Int
+    )
 
     // We now have many (36+ in best case; many more in worst case)
     // "app did become ready" blocks, many of which
@@ -138,7 +67,150 @@ public class AppReadiness: NSObject {
     // reduce the risk of starving the main thread, especially if
     // any given block is expensive.
 
-    public static func runNowOrWhenAppDidBecomeReadyAsync(
+    func runNowOrWhenAppDidBecomeReadyAsync(
+        _ block: @escaping @MainActor () -> Void,
+        file: String,
+        function: String,
+        line: Int
+    )
+
+    func runNowOrWhenMainAppDidBecomeReadyAsync(
+        _ block: @escaping @MainActor () -> Void,
+        file: String,
+        function: String,
+        line: Int
+    )
+}
+
+extension AppReadiness {
+    public func runNowOrWhenAppWillBecomeReady(
+        _ block: @escaping @MainActor () -> Void,
+        _file: String = #file,
+        _function: String = #function,
+        _line: Int = #line
+    ) {
+        self.runNowOrWhenAppWillBecomeReady(
+            block,
+            file: _file,
+            function: _function,
+            line: _line
+        )
+    }
+
+    public func runNowOrWhenUIDidBecomeReadySync(
+        _ block: @escaping @MainActor () -> Void,
+        _file: String = #file,
+        _function: String = #function,
+        _line: Int = #line
+    ) {
+        self.runNowOrWhenUIDidBecomeReadySync(
+            block,
+            file: _file,
+            function: _function,
+            line: _line
+        )
+    }
+
+    public func runNowOrWhenAppDidBecomeReadySync(
+        _ block: @escaping @MainActor () -> Void,
+        _file: String = #file,
+        _function: String = #function,
+        _line: Int = #line
+    ) {
+        self.runNowOrWhenAppDidBecomeReadySync(
+            block,
+            file: _file,
+            function: _function,
+            line: _line
+        )
+    }
+
+    public func runNowOrWhenAppDidBecomeReadyAsync(
+        _ block: @escaping @MainActor () -> Void,
+        _file: String = #file,
+        _function: String = #function,
+        _line: Int = #line
+    ) {
+        self.runNowOrWhenAppDidBecomeReadyAsync(
+            block,
+            file: _file,
+            function: _function,
+            line: _line
+        )
+    }
+
+    public func runNowOrWhenMainAppDidBecomeReadyAsync(
+        _ block: @escaping @MainActor () -> Void,
+        _file: String = #file,
+        _function: String = #function,
+        _line: Int = #line
+    ) {
+        self.runNowOrWhenMainAppDidBecomeReadyAsync(
+            block,
+            file: _file,
+            function: _function,
+            line: _line
+        )
+    }
+}
+
+public protocol AppReadinessSetter: AppReadiness {
+
+    @MainActor
+    func setAppIsReady()
+
+    @MainActor
+    func setAppIsReadyUIStillPending()
+
+    @MainActor
+    func setUIIsReady()
+}
+
+public class AppReadinessImpl: AppReadinessSetter {
+
+    private init() {}
+
+    public static func createSingleton() -> AppReadinessImpl {
+        let appReadiness = AppReadinessImpl()
+        AppReadinessGlobal.shared = appReadiness
+        return appReadiness
+    }
+
+    private let readyFlag = ReadyFlag(name: "AppReadiness")
+    private let readyFlagUI = ReadyFlag(name: "AppReadinessUI")
+
+    public var isAppReady: Bool { readyFlag.isSet }
+
+    public var isUIReady: Bool { readyFlagUI.isSet }
+
+    // MARK: - AppReadinessSetter
+
+    @MainActor
+    public func setAppIsReady() {
+        owsAssertDebug(!readyFlag.isSet)
+        owsAssertDebug(!readyFlagUI.isSet)
+
+        readyFlag.setIsReady()
+        readyFlagUI.setIsReady()
+    }
+
+    @MainActor
+    public func setAppIsReadyUIStillPending() {
+        owsAssertDebug(!readyFlag.isSet)
+
+        readyFlag.setIsReady()
+    }
+
+    @MainActor
+    public func setUIIsReady() {
+        readyFlagUI.setIsReady()
+    }
+
+    // MARK: - AppReadiness
+
+    // MARK: - Readiness Blocks
+
+    public func runNowOrWhenAppWillBecomeReady(
         _ block: @escaping @MainActor () -> Void,
         file: String = #file,
         function: String = #function,
@@ -151,11 +223,69 @@ public class AppReadiness: NSObject {
 
         let label = Self.buildLabel(file: file, function: function, line: line)
         DispatchMainThreadSafe {
-            shared.readyFlag.runNowOrWhenDidBecomeReadyAsync(block, label: label)
+            self.readyFlag.runNowOrWhenWillBecomeReady(
+                block,
+                label: label
+            )
         }
     }
 
-    public static func runNowOrWhenMainAppDidBecomeReadyAsync(
+    // MARK: -
+
+    public func runNowOrWhenUIDidBecomeReadySync(
+        _ block: @escaping @MainActor () -> Void,
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line
+    ) {
+        guard !CurrentAppContext().isRunningTests else {
+            // We don't need to do any "on app ready" work in the tests.
+            return
+        }
+
+        let label = Self.buildLabel(file: file, function: function, line: line)
+        DispatchMainThreadSafe {
+            self.readyFlagUI.runNowOrWhenDidBecomeReadySync(block, label: label)
+        }
+    }
+
+    public func runNowOrWhenAppDidBecomeReadySync(
+        _ block: @escaping @MainActor () -> Void,
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line
+    ) {
+        guard !CurrentAppContext().isRunningTests else {
+            // We don't need to do any "on app ready" work in the tests.
+            return
+        }
+
+        let label = Self.buildLabel(file: file, function: function, line: line)
+        DispatchMainThreadSafe {
+            self.readyFlag.runNowOrWhenDidBecomeReadySync(block, label: label)
+        }
+    }
+
+    // MARK: -
+
+    public func runNowOrWhenAppDidBecomeReadyAsync(
+        _ block: @escaping @MainActor () -> Void,
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line
+    ) {
+        guard !CurrentAppContext().isRunningTests else {
+            // We don't need to do any "on app ready" work in the tests.
+            return
+        }
+
+        let label = Self.buildLabel(file: file, function: function, line: line)
+        DispatchMainThreadSafe {
+            self.readyFlag.runNowOrWhenDidBecomeReadyAsync(block, label: label)
+        }
+    }
+
+    public func runNowOrWhenMainAppDidBecomeReadyAsync(
         _ block: @escaping @MainActor () -> Void,
         file: String = #file,
         function: String = #function,
@@ -180,6 +310,100 @@ public class AppReadiness: NSObject {
     }
 }
 
+public class AppReadinessGlobal: NSObject {
+
+    fileprivate static var shared: AppReadinessImpl!
+
+    public static var isAppReady: Bool { shared.isAppReady }
+
+    public static var isUIReady: Bool { shared.isUIReady }
+
+    @MainActor
+    public static func setAppIsReady() {
+        shared.setAppIsReady()
+    }
+
+    @MainActor
+    public static func setAppIsReadyUIStillPending() {
+        shared.setAppIsReadyUIStillPending()
+    }
+
+    @MainActor
+    public static func setUIIsReady() {
+        shared.setUIIsReady()
+    }
+
+    public static func runNowOrWhenAppWillBecomeReady(
+        _ block: @escaping @MainActor () -> Void,
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line
+    ) {
+        shared.runNowOrWhenAppWillBecomeReady(
+            block,
+            file: file,
+            function: function,
+            line: line
+        )
+    }
+
+    public static func runNowOrWhenUIDidBecomeReadySync(
+        _ block: @escaping @MainActor () -> Void,
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line
+    ) {
+        shared.runNowOrWhenUIDidBecomeReadySync(
+            block,
+            file: file,
+            function: function,
+            line: line
+        )
+    }
+
+    public static func runNowOrWhenAppDidBecomeReadySync(
+        _ block: @escaping @MainActor () -> Void,
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line
+    ) {
+        shared.runNowOrWhenAppDidBecomeReadySync(
+            block,
+            file: file,
+            function: function,
+            line: line
+        )
+    }
+
+    public static func runNowOrWhenAppDidBecomeReadyAsync(
+        _ block: @escaping @MainActor () -> Void,
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line
+    ) {
+        shared.runNowOrWhenAppDidBecomeReadyAsync(
+            block,
+            file: file,
+            function: function,
+            line: line
+        )
+    }
+
+    public static func runNowOrWhenMainAppDidBecomeReadyAsync(
+        _ block: @escaping @MainActor () -> Void,
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line
+    ) {
+        shared.runNowOrWhenMainAppDidBecomeReadyAsync(
+            block,
+            file: file,
+            function: function,
+            line: line
+        )
+    }
+}
+
 @objcMembers
 class AppReadinessObjcBridge: NSObject {
 
@@ -196,11 +420,70 @@ class AppReadinessObjcBridge: NSObject {
         super.init()
     }
 
-    var isAppReady: Bool { AppReadiness.isAppReady }
+    var isAppReady: Bool { AppReadinessGlobal.isAppReady }
 
     static var isAppReady: Bool { shared?.isAppReady ?? false }
 
     func runNowOrWhenAppDidBecomeReadyAsync(_ block: @escaping () -> Void) {
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync(block)
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync(block)
     }
 }
+
+#if TESTABLE_BUILD
+
+open class AppReadinessMock: AppReadiness {
+
+    public init() {}
+
+    public var isAppReady: Bool = false
+
+    public var isUIReady: Bool = false
+
+    open func runNowOrWhenAppWillBecomeReady(
+        _ block: @escaping @MainActor () -> Void,
+        file: String,
+        function: String,
+        line: Int
+    ) {
+        // Do nothing
+    }
+
+    open func runNowOrWhenUIDidBecomeReadySync(
+        _ block: @escaping @MainActor () -> Void,
+        file: String,
+        function: String,
+        line: Int
+    ) {
+        // Do nothing
+    }
+
+    open func runNowOrWhenAppDidBecomeReadySync(
+        _ block: @escaping @MainActor () -> Void,
+        file: String,
+        function: String,
+        line: Int
+    ) {
+        // Do nothing
+    }
+
+    open func runNowOrWhenAppDidBecomeReadyAsync(
+        _ block: @escaping @MainActor () -> Void,
+        file: String,
+        function: String,
+        line: Int
+    ) {
+        // Do nothing
+    }
+
+    open func runNowOrWhenMainAppDidBecomeReadyAsync(
+        _ block: @escaping @MainActor () -> Void,
+        file: String,
+        function: String,
+        line: Int
+    ) {
+        // Do nothing
+    }
+
+}
+
+#endif

@@ -33,7 +33,7 @@ public class _SVR2_AppReadinessWrapper: _SVR2_AppReadinessShim {
     }
 
     public func runNowOrWhenMainAppDidBecomeReadyAsync(_ block: @escaping () -> Void) {
-        AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync(block)
+        AppReadinessGlobal.runNowOrWhenMainAppDidBecomeReadyAsync(block)
     }
 }
 

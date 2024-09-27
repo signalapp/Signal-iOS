@@ -15,7 +15,7 @@ public class MessageFetcherJob: NSObject {
         SwiftSingletons.register(self)
 
         if CurrentAppContext().shouldProcessIncomingMessages && CurrentAppContext().isMainApp {
-            AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+            AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync {
                 // Fetch messages as soon as possible after launching. In particular, when
                 // launching from the background, without this, we end up waiting some extra
                 // seconds before receiving an actionable push notification.
@@ -121,7 +121,7 @@ public class MessageFetcherJob: NSObject {
         }
 
         guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
-            assert(AppReadiness.isAppReady)
+            assert(AppReadinessGlobal.isAppReady)
             Logger.warn("Not registered.")
             return
         }

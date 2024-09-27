@@ -36,7 +36,7 @@ public class BlockingManager: NSObject {
         super.init()
 
         SwiftSingletons.register(self)
-        AppReadiness.runNowOrWhenAppWillBecomeReady {
+        AppReadinessGlobal.runNowOrWhenAppWillBecomeReady {
             self.observeNotifications()
             self.loadStateOnLaunch()
         }
@@ -53,7 +53,7 @@ public class BlockingManager: NSObject {
             withCurrentState(transaction: $0) { _ in }
         }
         // Once we're ready to send a message, check to see if we need to sync.
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
             DispatchQueue.global().async {
                 self.sendBlockListSyncMessage(force: false)
             }
@@ -495,7 +495,7 @@ extension BlockingManager {
 
     @objc
     private func applicationDidBecomeActive() {
-        AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
+        AppReadinessGlobal.runNowOrWhenMainAppDidBecomeReadyAsync {
             DispatchQueue.global().async {
                 self.sendBlockListSyncMessage(force: false)
             }

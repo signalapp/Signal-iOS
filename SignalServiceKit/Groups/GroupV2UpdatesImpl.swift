@@ -32,7 +32,7 @@ public class GroupV2UpdatesImpl: Dependencies {
     public init() {
         SwiftSingletons.register(self)
 
-        AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
+        AppReadinessGlobal.runNowOrWhenMainAppDidBecomeReadyAsync {
             Task { await self.autoRefreshGroupOnLaunch() }
         }
     }

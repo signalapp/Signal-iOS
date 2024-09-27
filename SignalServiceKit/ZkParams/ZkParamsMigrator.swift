@@ -77,7 +77,7 @@ class ZkParamsMigrator {
     // MARK: - Helpers
 
     private func reuploadLocalProfile() {
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync { [db, profileManager, tsAccountManager] in
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync { [db, profileManager, tsAccountManager] in
             guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
                 return
             }

@@ -168,7 +168,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        AppReadiness.setUIIsReady()
+        AppReadinessGlobal.setUIIsReady()
 
         if getStartedBanner == nil && !hasEverPresentedExperienceUpgrade && ExperienceUpgradeManager.presentNext(fromViewController: self) {
             hasEverPresentedExperienceUpgrade = true

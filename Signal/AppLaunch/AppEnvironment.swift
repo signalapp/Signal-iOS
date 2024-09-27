@@ -62,12 +62,12 @@ public class AppEnvironment: NSObject {
             database: DependenciesBridge.shared.db
         )
 
-        AppReadiness.runNowOrWhenAppWillBecomeReady {
+        AppReadinessGlobal.runNowOrWhenAppWillBecomeReady {
             self.badgeManager.startObservingChanges(in: self.databaseStorage)
             self.appIconBadgeUpdater.startObserving()
         }
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
             let isPrimaryDevice = self.databaseStorage.read { tx -> Bool in
                 return DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx.asV2Read).isPrimaryDevice ?? true
             }

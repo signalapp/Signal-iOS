@@ -15,7 +15,7 @@ public class UsernameValidationObserver {
 
         observeNotifications()
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
             self.database.read { transaction in
                 self.manager.validateUsernameIfNecessary(transaction)
             }
@@ -35,7 +35,7 @@ public class UsernameValidationObserver {
     @objc
     func didBecomeActive() {
         AssertIsOnMainThread()
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
             self.database.read { transaction in
                 self.manager.validateUsernameIfNecessary(transaction)
             }

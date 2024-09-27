@@ -27,7 +27,7 @@ final public class Theme: NSObject {
     }
 
     public static func performInitialSetup() {
-        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync {
             // IOS-782: +[Theme shared] re-enterant initialization
             // AppReadiness will invoke the block synchronously if the app is already ready.
             // This doesn't work here, because we'll end up reenterantly calling +shared
@@ -117,7 +117,7 @@ final public class Theme: NSObject {
 #endif
 
         // Don't cache this value until it reflects the data store.
-        guard AppReadiness.isAppReady else {
+        guard AppReadinessGlobal.isAppReady else {
             return isSystemDarkThemeEnabled()
         }
 
@@ -151,7 +151,7 @@ final public class Theme: NSObject {
             return cachedCurrentMode
         }
 
-        guard AppReadiness.isAppReady else {
+        guard AppReadinessGlobal.isAppReady else {
             return defaultMode
         }
 

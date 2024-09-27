@@ -104,7 +104,7 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
 
     @objc
     public func didReceiveVanillaPreAuthChallengeToken(_ challenge: String) {
-        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync {
             AssertIsOnMainThread()
             Logger.info("received vanilla preauth challenge")
             self.preauthChallengeFuture.resolve(challenge)
@@ -149,7 +149,7 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
 
         // Synchronously wait until the app is ready.
         let appReady = DispatchSemaphore(value: 0)
-        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync {
             appReady.signal()
         }
         appReady.wait()

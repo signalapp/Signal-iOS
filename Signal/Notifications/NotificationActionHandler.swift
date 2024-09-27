@@ -24,7 +24,7 @@ public class NotificationActionHandler: Dependencies {
 
     @MainActor
     private class func handleNotificationResponse( _ response: UNNotificationResponse) throws -> Promise<Void> {
-        owsAssertDebug(AppReadiness.isAppReady)
+        owsAssertDebug(AppReadinessGlobal.isAppReady)
 
         let userInfo = response.notification.request.content.userInfo
 
@@ -176,7 +176,7 @@ public class NotificationActionHandler: Dependencies {
 
     private class func showMyStories() -> Promise<Void> {
         return Promise { future in
-            AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
+            AppReadinessGlobal.runNowOrWhenMainAppDidBecomeReadyAsync {
                 SignalApp.shared.showMyStories(animated: UIApplication.shared.applicationState == .active)
                 future.resolve()
             }
@@ -304,7 +304,7 @@ public class NotificationActionHandler: Dependencies {
 
     private class func reregister() -> Promise<Void> {
         Promise { future in
-            AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
+            AppReadinessGlobal.runNowOrWhenMainAppDidBecomeReadyAsync {
                 guard let viewController = CurrentAppContext().frontmostViewController() else {
                     Logger.error("Responding to reregister notification action without a view controller!")
                     future.resolve()

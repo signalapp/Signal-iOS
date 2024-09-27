@@ -27,7 +27,7 @@ public class LegacyChangePhoneNumber: NSObject {
 
         SwiftSingletons.register(self)
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
             self.recoverInterruptedChangeNumberIfNecessary()
         }
     }
@@ -124,7 +124,7 @@ public class LegacyChangePhoneNumber: NSObject {
     }
 
     private func recoverInterruptedChangeNumberIfNecessary() {
-        guard AppReadiness.isAppReady else {
+        guard AppReadinessGlobal.isAppReady else {
             owsFailDebug("isAppReady.")
             return
         }

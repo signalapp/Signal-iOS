@@ -69,7 +69,7 @@ public class AudioSession: NSObject {
         super.init()
 
         if CurrentAppContext().isMainApp {
-            AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+            AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync {
                 self.setup()
             }
         }

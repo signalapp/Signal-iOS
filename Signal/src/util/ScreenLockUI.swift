@@ -132,7 +132,7 @@ class ScreenLockUI: Dependencies {
         //
         // It's not safe to access OWSScreenLock.isScreenLockEnabled
         // until the app is ready.
-        AppReadiness.runNowOrWhenAppWillBecomeReady {
+        AppReadinessGlobal.runNowOrWhenAppWillBecomeReady {
             self.isScreenLockLocked = ScreenLock.shared.isScreenLockEnabled()
             self.ensureUI()
         }
@@ -179,8 +179,8 @@ class ScreenLockUI: Dependencies {
     private func ensureUI() {
         AssertIsOnMainThread()
 
-        guard AppReadiness.isAppReady else {
-            AppReadiness.runNowOrWhenAppWillBecomeReady {
+        guard AppReadinessGlobal.isAppReady else {
+            AppReadinessGlobal.runNowOrWhenAppWillBecomeReady {
                 self.ensureUI()
             }
             return
@@ -305,7 +305,7 @@ class ScreenLockUI: Dependencies {
         owsAssertBeta(!appIsInBackground)
         AssertIsOnMainThread()
 
-        guard AppReadiness.isAppReady else {
+        guard AppReadinessGlobal.isAppReady else {
             // It's not safe to access OWSScreenLock.isScreenLockEnabled
             // until the app is ready.
             //

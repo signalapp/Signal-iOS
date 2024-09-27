@@ -31,6 +31,6 @@ public class _TSAccountManagerImpl_AppReadinessWrapper: _TSAccountManagerImpl_Ap
     }
 
     public func runNowOrWhenAppDidBecomeReadyAsync(_ block: @escaping () -> Void) {
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync(block)
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync(block)
     }
 }

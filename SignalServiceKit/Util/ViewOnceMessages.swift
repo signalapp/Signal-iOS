@@ -14,7 +14,7 @@ public class ViewOnceMessages: NSObject {
         super.init()
 
         if CurrentAppContext().isMainApp {
-            AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+            AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync {
                 Self.appDidBecomeReady()
             }
         }

@@ -26,7 +26,7 @@ public class MessageFetchBGRefreshTask {
     }()
 
     public static var shared: MessageFetchBGRefreshTask? {
-        guard AppReadiness.isAppReady else {
+        guard AppReadinessGlobal.isAppReady else {
             return nil
         }
         return _shared
@@ -57,7 +57,7 @@ public class MessageFetchBGRefreshTask {
             forTaskWithIdentifier: Self.taskIdentifier,
             using: nil,
             launchHandler: { task in
-                AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+                AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
                     Self.shared!.performTask(task)
                 }
             }
@@ -101,7 +101,7 @@ public class MessageFetchBGRefreshTask {
 
     private func performTask(_ task: BGTask) {
         Logger.info("performing background fetch")
-        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync {
             self.messageFetcherJob.run()
                 .then {
                     return NSObject.messageProcessor.waitForFetchingAndProcessing()

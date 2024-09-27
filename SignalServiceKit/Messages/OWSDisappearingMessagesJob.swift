@@ -34,7 +34,7 @@ public final class OWSDisappearingMessagesJob: NSObject {
 
         SwiftSingletons.register(self)
 
-        AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { @MainActor in
+        AppReadinessGlobal.runNowOrWhenMainAppDidBecomeReadyAsync { @MainActor in
             self.fallbackTimer = .scheduledTimer(withTimeInterval: 5 * kMinuteInterval, repeats: true) { [weak self] timer in
                 guard let self else {
                     timer.invalidate()
@@ -120,7 +120,7 @@ public final class OWSDisappearingMessagesJob: NSObject {
     /// Clean up any messages that expired since last launch immediately
     /// and continue cleaning in the background.
     public func startIfNecessary() {
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync { [self] in
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync { [self] in
             guard !hasStarted else { return }
             guard !Self.isDatabaseCorrupted() else { return }
             hasStarted = true
@@ -179,7 +179,7 @@ public final class OWSDisappearingMessagesJob: NSObject {
 
     @MainActor
     private func applicationDidBecomeActive() {
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
             Self.serialQueue.async {
                 _ = self.runLoop()
             }
@@ -201,7 +201,7 @@ public final class OWSDisappearingMessagesJob: NSObject {
             return
         }
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync { @MainActor in
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync { @MainActor in
             self.resetNextDisapperanceTimer()
             Self.serialQueue.async {
                 _ = self.runLoop()
@@ -219,7 +219,7 @@ public final class OWSDisappearingMessagesJob: NSObject {
         // apparently recently means within the last second; although not having one set is apparently also true
         let recentlyScheduledDisappearanceTimer = fabs(self.nextDisappearanceDate?.timeIntervalSinceNow ?? 0.0) < 1.0
 
-        AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
+        AppReadinessGlobal.runNowOrWhenMainAppDidBecomeReadyAsync {
             Self.serialQueue.async {
                 let deletedCount = self.runLoop()
 

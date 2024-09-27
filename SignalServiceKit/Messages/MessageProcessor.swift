@@ -136,7 +136,7 @@ public class MessageProcessor: NSObject {
             object: nil
         )
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync {
             Self.messagePipelineSupervisor.register(pipelineStage: self)
 
             SDSDatabaseStorage.shared.read { transaction in
@@ -445,7 +445,7 @@ public class MessageProcessor: NSObject {
 
     @objc
     private func registrationStateDidChange() {
-        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadySync {
             self.drainPendingEnvelopes()
         }
     }

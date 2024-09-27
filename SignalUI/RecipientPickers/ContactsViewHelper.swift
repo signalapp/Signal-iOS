@@ -17,7 +17,7 @@ public protocol ContactsViewHelperObserver: AnyObject {
 public class ContactsViewHelper: Dependencies {
 
     public init() {
-        AppReadiness.runNowOrWhenUIDidBecomeReadySync {
+        AppReadinessGlobal.runNowOrWhenUIDidBecomeReadySync {
             self.setup()
         }
     }

@@ -173,7 +173,7 @@ public class EarlyMessageManager: NSObject {
 
         SwiftSingletons.register(self)
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
             self.cleanupStaleMessages()
         }
     }

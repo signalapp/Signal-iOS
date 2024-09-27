@@ -143,13 +143,13 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             })
         }
 
-        AppReadiness.runNowOrWhenAppWillBecomeReady {
+        AppReadinessGlobal.runNowOrWhenAppWillBecomeReady {
             if let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci {
                 self.callManager.setSelfUuid(localAci.rawUUID)
             }
         }
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
             SDSDatabaseStorage.shared.appendDatabaseChangeDelegate(self)
 
             self.callServiceState.addObserver(self.groupCallAccessoryMessageDelegate, syncStateImmediately: true)
@@ -368,7 +368,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
 
     @MainActor
     private func configureDataMode() {
-        guard AppReadiness.isAppReady else { return }
+        guard AppReadinessGlobal.isAppReady else { return }
         guard let currentCall = callServiceState.currentCall else { return }
 
         switch currentCall.mode {
@@ -1049,7 +1049,7 @@ extension CallService: DatabaseChangeDelegate {
 
     public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()
-        owsAssertDebug(AppReadiness.isAppReady)
+        owsAssertDebug(AppReadinessGlobal.isAppReady)
 
         switch callServiceState.currentCall?.mode {
         case nil, .individual, .callLink:
@@ -1063,14 +1063,14 @@ extension CallService: DatabaseChangeDelegate {
 
     public func databaseChangesDidUpdateExternally() {
         AssertIsOnMainThread()
-        owsAssertDebug(AppReadiness.isAppReady)
+        owsAssertDebug(AppReadinessGlobal.isAppReady)
 
         updateGroupMembersForCurrentCallIfNecessary()
     }
 
     public func databaseChangesDidReset() {
         AssertIsOnMainThread()
-        owsAssertDebug(AppReadiness.isAppReady)
+        owsAssertDebug(AppReadinessGlobal.isAppReady)
 
         updateGroupMembersForCurrentCallIfNecessary()
     }

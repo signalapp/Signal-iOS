@@ -77,7 +77,7 @@ public class ReceiptSender: NSObject {
             using: { [weak self] _ in self?.sendPendingReceiptsIfNeeded(pendingTask: nil) }
         ))
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+        AppReadinessGlobal.runNowOrWhenAppDidBecomeReadyAsync {
             self.sendPendingReceiptsIfNeeded(pendingTask: nil)
         }
     }
@@ -193,7 +193,7 @@ public class ReceiptSender: NSObject {
         do {
             defer { pendingTask?.complete() }
 
-            guard AppReadiness.isAppReady, reachabilityManager.isReachable else {
+            guard AppReadinessGlobal.isAppReady, reachabilityManager.isReachable else {
                 return
             }
             guard sendingState.update(block: { $0.startIfPossible() }) else {
