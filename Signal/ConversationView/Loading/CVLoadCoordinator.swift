@@ -582,7 +582,6 @@ extension CVLoadCoordinator: DatabaseChangeDelegate {
 
     public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()
-        owsAssertDebug(AppReadinessGlobal.isAppReady)
 
         guard databaseChanges.threadUniqueIds.contains(threadUniqueId) else {
             return
@@ -593,14 +592,12 @@ extension CVLoadCoordinator: DatabaseChangeDelegate {
 
     public func databaseChangesDidUpdateExternally() {
         AssertIsOnMainThread()
-        owsAssertDebug(AppReadinessGlobal.isAppReady)
 
         enqueueReloadWithoutCaches()
     }
 
     public func databaseChangesDidReset() {
         AssertIsOnMainThread()
-        owsAssertDebug(AppReadinessGlobal.isAppReady)
 
         enqueueReloadWithoutCaches()
     }

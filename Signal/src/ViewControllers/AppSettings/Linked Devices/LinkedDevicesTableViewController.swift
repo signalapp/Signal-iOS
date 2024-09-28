@@ -346,7 +346,6 @@ extension LinkedDevicesTableViewController: DatabaseChangeDelegate {
 
     func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()
-        owsAssertDebug(AppReadinessGlobal.isAppReady)
 
         guard databaseChanges.didUpdate(tableName: OWSDevice.databaseTableName) else {
             return
@@ -357,14 +356,12 @@ extension LinkedDevicesTableViewController: DatabaseChangeDelegate {
 
     func databaseChangesDidUpdateExternally() {
         AssertIsOnMainThread()
-        owsAssertDebug(AppReadinessGlobal.isAppReady)
 
         updateDeviceList()
     }
 
     func databaseChangesDidReset() {
         AssertIsOnMainThread()
-        owsAssertDebug(AppReadinessGlobal.isAppReady)
 
         updateDeviceList()
     }
