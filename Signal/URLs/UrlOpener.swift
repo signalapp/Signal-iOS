@@ -19,13 +19,16 @@ private enum OpenableUrl {
 }
 
 class UrlOpener {
+    private let appReadiness: AppReadinessSetter
     private let databaseStorage: SDSDatabaseStorage
     private let tsAccountManager: TSAccountManager
 
     init(
+        appReadiness: AppReadinessSetter,
         databaseStorage: SDSDatabaseStorage,
         tsAccountManager: TSAccountManager
     ) {
+        self.appReadiness = appReadiness
         self.databaseStorage = databaseStorage
         self.tsAccountManager = tsAccountManager
     }
@@ -176,7 +179,7 @@ class UrlOpener {
             let linkDeviceViewController = LinkDeviceViewController()
             linkDeviceViewController.delegate = linkedDevicesViewController
 
-            let navigationController = AppSettingsViewController.inModalNavigationController()
+            let navigationController = AppSettingsViewController.inModalNavigationController(appReadiness: appReadiness)
             var viewControllers = navigationController.viewControllers
             viewControllers.append(linkedDevicesViewController)
             viewControllers.append(linkDeviceViewController)
@@ -199,7 +202,8 @@ class UrlOpener {
                 return DonationViewsUtil.restartAndCompleteInterruptedIDEALDonation(
                     type: donationType,
                     rootViewController: rootViewController,
-                    databaseStorage: self.databaseStorage
+                    databaseStorage: self.databaseStorage,
+                    appReadiness: appReadiness
                 )
             }.done {
                 Logger.info("[Donations] Completed iDEAL donation")

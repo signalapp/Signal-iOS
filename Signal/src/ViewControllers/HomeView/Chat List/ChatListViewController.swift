@@ -8,7 +8,14 @@ import SignalUI
 import StoreKit
 
 public class ChatListViewController: OWSViewController, HomeTabViewController {
-    init(chatListMode: ChatListMode) {
+
+    let appReadiness: AppReadinessSetter
+
+    init(
+        chatListMode: ChatListMode,
+        appReadiness: AppReadinessSetter
+    ) {
+        self.appReadiness = appReadiness
         self.viewState = CLVViewState(chatListMode: chatListMode, inboxFilter: nil)
 
         super.init()
@@ -168,7 +175,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        AppReadinessGlobal.setUIIsReady()
+        appReadiness.setUIIsReady()
 
         if getStartedBanner == nil && !hasEverPresentedExperienceUpgrade && ExperienceUpgradeManager.presentNext(fromViewController: self) {
             hasEverPresentedExperienceUpgrade = true
@@ -1414,7 +1421,7 @@ extension ChatListViewController {
         conversationSplitViewController?.selectedConversationViewController?
             .dismissMessageContextMenu(animated: true)
 
-        let appSettingsViewController = AppSettingsViewController()
+        let appSettingsViewController = AppSettingsViewController(appReadiness: appReadiness)
 
         var completion: (() -> Void)?
         var viewControllers: [UIViewController] = [ appSettingsViewController ]
@@ -1423,14 +1430,14 @@ extension ChatListViewController {
         case .none:
             break
         case .payments:
-            let paymentsSettings = PaymentsSettingsViewController(mode: .inAppSettings)
+            let paymentsSettings = PaymentsSettingsViewController(mode: .inAppSettings, appReadiness: appReadiness)
             viewControllers += [ paymentsSettings ]
         case .payment(let paymentsHistoryItem):
-            let paymentsSettings = PaymentsSettingsViewController(mode: .inAppSettings)
+            let paymentsSettings = PaymentsSettingsViewController(mode: .inAppSettings, appReadiness: appReadiness)
             let paymentsDetail = PaymentsDetailViewController(paymentItem: paymentsHistoryItem)
             viewControllers += [ paymentsSettings, paymentsDetail ]
         case .paymentsTransferIn:
-            let paymentsSettings = PaymentsSettingsViewController(mode: .inAppSettings)
+            let paymentsSettings = PaymentsSettingsViewController(mode: .inAppSettings, appReadiness: appReadiness)
             let paymentsTransferIn = PaymentsTransferInViewController()
             viewControllers += [ paymentsSettings, paymentsTransferIn ]
         case .appearance:

@@ -24,6 +24,8 @@ public class ProvisioningNavigationController: OWSNavigationController {
 
 public class ProvisioningController: NSObject {
 
+    private let appReadiness: AppReadinessSetter
+
     private let provisioningCipher: ProvisioningCipher
     private let provisioningSocket: ProvisioningSocket
 
@@ -56,7 +58,8 @@ public class ProvisioningController: NSObject {
         )
     }()
 
-    private override init() {
+    private init(appReadiness: AppReadinessSetter) {
+        self.appReadiness = appReadiness
         provisioningCipher = ProvisioningCipher.generate()
 
         (self.deviceIdPromise, self.deviceIdFuture) = Promise.pending()
@@ -75,8 +78,8 @@ public class ProvisioningController: NSObject {
         (self.provisionEnvelopePromise, self.provisionEnvelopeFuture) = Promise.pending()
     }
 
-    public static func presentProvisioningFlow() {
-        let provisioningController = ProvisioningController()
+    public static func presentProvisioningFlow(appReadiness: AppReadinessSetter) {
+        let provisioningController = ProvisioningController(appReadiness: appReadiness)
         let navController = ProvisioningNavigationController(provisioningController: provisioningController)
         provisioningController.setUpDebugLogsGesture(on: navController)
 
@@ -86,8 +89,8 @@ public class ProvisioningController: NSObject {
         CurrentAppContext().mainWindow?.rootViewController = navController
     }
 
-    public static func presentRelinkingFlow() {
-        let provisioningController = ProvisioningController()
+    public static func presentRelinkingFlow(appReadiness: AppReadinessSetter) {
+        let provisioningController = ProvisioningController(appReadiness: appReadiness)
         let navController = ProvisioningNavigationController(provisioningController: provisioningController)
         provisioningController.setUpDebugLogsGesture(on: navController)
 
@@ -128,7 +131,7 @@ public class ProvisioningController: NSObject {
 
         Logger.info("")
         let loader = RegistrationCoordinatorLoaderImpl(dependencies: .from(self))
-        SignalApp.shared.showRegistration(loader: loader, desiredMode: .registering)
+        SignalApp.shared.showRegistration(loader: loader, desiredMode: .registering, appReadiness: appReadiness)
     }
 
     public func provisioningSplashDidComplete(viewController: UIViewController) {
@@ -360,7 +363,7 @@ public class ProvisioningController: NSObject {
     }
 
     public func provisioningDidComplete(from viewController: UIViewController) {
-        SignalApp.shared.showConversationSplitView()
+        SignalApp.shared.showConversationSplitView(appReadiness: appReadiness)
     }
 
     private static func resetDeviceState() {

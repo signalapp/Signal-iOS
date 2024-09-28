@@ -28,7 +28,7 @@ class DebugUITableViewController: OWSTableViewController {
 
     // MARK: Public
 
-    static func presentDebugUI(from fromViewController: UIViewController) {
+    static func presentDebugUI(from fromViewController: UIViewController, appReadiness: AppReadinessSetter) {
         let viewController = DebugUITableViewController()
 
         let subsectionItems: [OWSTableItem] = [
@@ -39,7 +39,7 @@ class DebugUITableViewController: OWSTableViewController {
             itemForSubsection(DebugUISyncMessages(), viewController: viewController),
             itemForSubsection(DebugUIGroupsV2(), viewController: viewController),
             itemForSubsection(DebugUIPayments(), viewController: viewController),
-            itemForSubsection(DebugUIMisc(), viewController: viewController)
+            itemForSubsection(DebugUIMisc(appReadiness: appReadiness), viewController: viewController)
         ]
         viewController.contents = OWSTableContents(
             title: "Debug UI",
@@ -85,7 +85,7 @@ class DebugUITableViewController: OWSTableViewController {
 
             itemForSubsection(DebugUIGroupsV2(), viewController: viewController, thread: thread),
             itemForSubsection(DebugUIPayments(), viewController: viewController, thread: thread),
-            itemForSubsection(DebugUIMisc(), viewController: viewController, thread: thread)
+            itemForSubsection(DebugUIMisc(appReadiness: nil), viewController: viewController, thread: thread)
         ]
 
         viewController.contents = OWSTableContents(

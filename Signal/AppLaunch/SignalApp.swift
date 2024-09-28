@@ -43,8 +43,8 @@ extension SignalApp {
         return conversationSplitViewController?.selectedThread != nil
     }
 
-    func showConversationSplitView() {
-        let splitViewController = ConversationSplitViewController()
+    func showConversationSplitView(appReadiness: AppReadinessSetter) {
+        let splitViewController = ConversationSplitViewController(appReadiness: appReadiness)
         UIApplication.shared.delegate?.window??.rootViewController = splitViewController
         self.conversationSplitViewController = splitViewController
     }
@@ -83,13 +83,13 @@ extension SignalApp {
 
         switch launchInterface {
         case .registration(let registrationLoader, let desiredMode):
-            showRegistration(loader: registrationLoader, desiredMode: desiredMode)
+            showRegistration(loader: registrationLoader, desiredMode: desiredMode, appReadiness: appReadiness)
             appReadiness.setUIIsReady()
         case .secondaryProvisioning:
-            showSecondaryProvisioning()
+            showSecondaryProvisioning(appReadiness: appReadiness)
             appReadiness.setUIIsReady()
         case .chatList:
-            showConversationSplitView()
+            showConversationSplitView(appReadiness: appReadiness)
         }
 
         AppUpdateNag.shared.showAppUpgradeNagIfNecessary()
@@ -105,7 +105,11 @@ extension SignalApp {
         conversationSplitViewController.showAppSettingsWithMode(mode)
     }
 
-    func showRegistration(loader: RegistrationCoordinatorLoader, desiredMode: RegistrationMode) {
+    func showRegistration(
+        loader: RegistrationCoordinatorLoader,
+        desiredMode: RegistrationMode,
+        appReadiness: AppReadinessSetter
+    ) {
         switch desiredMode {
         case .registering:
             Logger.info("Attempting initial registration on app launch")
@@ -117,7 +121,7 @@ extension SignalApp {
         let coordinator = databaseStorage.write { tx in
             return loader.coordinator(forDesiredMode: desiredMode, transaction: tx.asV2Write)
         }
-        let navController = RegistrationNavigationController.withCoordinator(coordinator)
+        let navController = RegistrationNavigationController.withCoordinator(coordinator, appReadiness: appReadiness)
 
         UIApplication.shared.delegate?.window??.rootViewController = navController
 
@@ -306,8 +310,8 @@ extension SignalApp {
 
 extension SignalApp {
 
-    func showSecondaryProvisioning() {
-        ProvisioningController.presentProvisioningFlow()
+    func showSecondaryProvisioning(appReadiness: AppReadinessSetter) {
+        ProvisioningController.presentProvisioningFlow(appReadiness: appReadiness)
         conversationSplitViewController = nil
     }
 }

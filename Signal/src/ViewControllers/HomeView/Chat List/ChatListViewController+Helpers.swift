@@ -131,7 +131,7 @@ public extension ChatListViewController {
         applyArchiveBackButton()
 
         // Push a separate instance of this view using "archive" mode.
-        let chatList = ChatListViewController(chatListMode: .archive)
+        let chatList = ChatListViewController(chatListMode: .archive, appReadiness: appReadiness)
         chatList.hidesBottomBarWhenPushed = true
 
         if offerMultiSelectMode {
@@ -184,6 +184,7 @@ extension ChatListViewController {
         }
         let vc = databaseStorage.read { tx in
             ConversationViewController.load(
+                appReadiness: appReadiness,
                 threadViewModel: threadViewModel,
                 action: .none,
                 focusMessageId: nil,

@@ -13,6 +13,12 @@ class DebugUIMisc: NSObject, DebugUIPage, Dependencies {
 
     let name = "Misc."
 
+    private let appReadiness: AppReadinessSetter?
+
+    init(appReadiness: AppReadinessSetter?) {
+        self.appReadiness = appReadiness
+    }
+
     func section(thread: TSThread?) -> OWSTableSection? {
         var items = [OWSTableItem]()
 
@@ -37,20 +43,24 @@ class DebugUIMisc: NSObject, DebugUIPage, Dependencies {
                     DependenciesBridge.shared.inactiveLinkedDeviceFinder
                         .reenablePermanentlyDisabledFinders(tx: tx.asV2Write)
                 }
-            }),
+            })
+        ]
 
-            OWSTableItem(title: "Re-register", actionBlock: {
+        if let appReadiness {
+            items.append(OWSTableItem(title: "Re-register", actionBlock: { [appReadiness] in
                 OWSActionSheets.showConfirmationAlert(
                     title: "Re-register?",
                     message: "If you proceed, you will not lose any of your current messages, " +
                     "but your account will be deactivated until you complete re-registration.",
                     proceedTitle: "Proceed",
                     proceedAction: { _ in
-                        DebugUIMisc.reregister()
+                        DebugUIMisc.reregister(appReadiness: appReadiness)
                     }
                 )
-            }),
+            }))
+        }
 
+        items += [
             OWSTableItem(title: "Show 2FA Reminder", actionBlock: {
                 DebugUIMisc.showPinReminder()
             }),
@@ -283,9 +293,12 @@ class DebugUIMisc: NSObject, DebugUIPage, Dependencies {
 
     // MARK: -
 
-    private static func reregister() {
+    private static func reregister(appReadiness: AppReadinessSetter) {
         Logger.info("Re-registering.")
-        RegistrationUtils.reregister(fromViewController: SignalApp.shared.conversationSplitViewController!)
+        RegistrationUtils.reregister(
+            fromViewController: SignalApp.shared.conversationSplitViewController!,
+            appReadiness: appReadiness
+        )
     }
 
     private static func enableExternalDatabaseAccess() {

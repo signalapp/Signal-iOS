@@ -38,6 +38,7 @@ public final class ConversationViewController: OWSViewController {
 
     internal let context: ViewControllerContext
 
+    public let appReadiness: AppReadinessSetter
     public let viewState: CVViewState
     public let loadCoordinator: CVLoadCoordinator
     public let layout: ConversationViewLayout
@@ -60,6 +61,7 @@ public final class ConversationViewController: OWSViewController {
     // MARK: -
 
     public static func load(
+        appReadiness: AppReadinessSetter,
         threadViewModel: ThreadViewModel,
         action: ConversationViewAction,
         focusMessageId: String?,
@@ -100,6 +102,7 @@ public final class ConversationViewController: OWSViewController {
         let didAlreadyShowGroupCallTooltipEnoughTimes = preferences.wasGroupCallTooltipShown(withTransaction: tx)
 
         let cvc = ConversationViewController(
+            appReadiness: appReadiness,
             threadViewModel: threadViewModel,
             conversationViewModel: conversationViewModel,
             action: action,
@@ -127,6 +130,7 @@ public final class ConversationViewController: OWSViewController {
     }
 
     private init(
+        appReadiness: AppReadinessSetter,
         threadViewModel: ThreadViewModel,
         conversationViewModel: ConversationViewModel,
         action: ConversationViewAction,
@@ -140,6 +144,7 @@ public final class ConversationViewController: OWSViewController {
     ) {
         AssertIsOnMainThread()
 
+        self.appReadiness = appReadiness
         self.context = ViewControllerContext.shared
 
         self.viewState = CVViewState(

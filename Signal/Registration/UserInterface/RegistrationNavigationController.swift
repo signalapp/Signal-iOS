@@ -8,14 +8,19 @@ import SignalUI
 
 public class RegistrationNavigationController: OWSNavigationController {
 
+    private let appReadiness: AppReadinessSetter
     private let coordinator: RegistrationCoordinator
 
-    public static func withCoordinator(_ coordinator: RegistrationCoordinator) -> RegistrationNavigationController {
-        let vc = RegistrationNavigationController(coordinator: coordinator)
+    public static func withCoordinator(
+        _ coordinator: RegistrationCoordinator,
+        appReadiness: AppReadinessSetter
+    ) -> RegistrationNavigationController {
+        let vc = RegistrationNavigationController(coordinator: coordinator, appReadiness: appReadiness)
         return vc
     }
 
-    private init(coordinator: RegistrationCoordinator) {
+    private init(coordinator: RegistrationCoordinator, appReadiness: AppReadinessSetter) {
+        self.appReadiness = appReadiness
         self.coordinator = coordinator
         super.init()
     }
@@ -349,7 +354,7 @@ public class RegistrationNavigationController: OWSNavigationController {
             return nil
         case .done:
             Logger.info("Finished with registration!")
-            SignalApp.shared.showConversationSplitView()
+            SignalApp.shared.showConversationSplitView(appReadiness: appReadiness)
             return nil
         }
     }
@@ -368,10 +373,10 @@ public class RegistrationNavigationController: OWSNavigationController {
                 comment: "Label for re-registration button."
             ),
             style: .default,
-            handler: { [weak self] _ in
+            handler: { [weak self, appReadiness] _ in
                 guard let self else { return }
                 let loader = RegistrationCoordinatorLoaderImpl(dependencies: .from(self))
-                SignalApp.shared.showRegistration(loader: loader, desiredMode: .reRegistering(reregParams))
+                SignalApp.shared.showRegistration(loader: loader, desiredMode: .reRegistering(reregParams), appReadiness: appReadiness)
             }
         ))
         // We explicitly don't want the user to be able to dismiss.
@@ -412,7 +417,7 @@ extension RegistrationNavigationController: RegistrationConfimModeSwitchPresente
             owsFailBeta("Can't switch to secondary device linking")
             return
         }
-        SignalApp.shared.showSecondaryProvisioning()
+        SignalApp.shared.showSecondaryProvisioning(appReadiness: appReadiness)
     }
 }
 
@@ -438,7 +443,7 @@ extension RegistrationNavigationController: RegistrationPhoneNumberPresenter {
             return
         }
         Logger.info("Early exiting registration")
-        SignalApp.shared.showConversationSplitView()
+        SignalApp.shared.showConversationSplitView(appReadiness: appReadiness)
     }
 }
 
@@ -563,7 +568,7 @@ extension RegistrationNavigationController: RegistrationReglockTimeoutPresenter 
             return
         case .exitRegistration:
             Logger.info("Exiting registration after reglock timeout")
-            SignalApp.shared.showConversationSplitView()
+            SignalApp.shared.showConversationSplitView(appReadiness: appReadiness)
         case .restartRegistration(let nextStepGuarantee):
             pushNextController(nextStepGuarantee)
         }

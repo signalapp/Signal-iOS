@@ -1556,8 +1556,10 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         guard let parsedUrl = UrlOpener.parseUrl(url) else {
             return false
         }
+        let appReadiness: AppReadinessSetter = self.appReadiness
         appReadiness.runNowOrWhenUIDidBecomeReadySync {
             let urlOpener = UrlOpener(
+                appReadiness: appReadiness,
                 databaseStorage: self.databaseStorage,
                 tsAccountManager: DependenciesBridge.shared.tsAccountManager
             )
@@ -1601,7 +1603,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         didReceive response: UNNotificationResponse,
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
-        let appReadiness: AppReadiness = self.appReadiness
+        let appReadiness: AppReadinessSetter = self.appReadiness
         appReadiness.runNowOrWhenAppDidBecomeReadySync {
             NotificationActionHandler.handleNotificationResponse(
                 response,

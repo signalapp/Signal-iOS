@@ -9,6 +9,19 @@ import SignalServiceKit
 import SignalUI
 
 class HomeTabBarController: UITabBarController {
+
+    private let appReadiness: AppReadinessSetter
+
+    init(appReadiness: AppReadinessSetter) {
+        self.appReadiness = appReadiness
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     enum Tabs: Int {
         case chatList = 0
         case calls = 1
@@ -76,16 +89,19 @@ class HomeTabBarController: UITabBarController {
         }
     }
 
-    lazy var chatListViewController = ChatListViewController(chatListMode: .inbox)
+    lazy var chatListViewController = ChatListViewController(chatListMode: .inbox, appReadiness: appReadiness)
     lazy var chatListNavController = OWSNavigationController(rootViewController: chatListViewController)
     lazy var chatListTabBarItem = Tabs.chatList.tabBarItem
 
     // No need to share spoiler render state across the whole app.
-    lazy var storiesViewController = StoriesViewController(spoilerState: SpoilerRenderState())
+    lazy var storiesViewController = StoriesViewController(
+        appReadiness: appReadiness,
+        spoilerState: SpoilerRenderState()
+    )
     lazy var storiesNavController = OWSNavigationController(rootViewController: storiesViewController)
     lazy var storiesTabBarItem = Tabs.stories.tabBarItem
 
-    lazy var callsListViewController = CallsListViewController()
+    lazy var callsListViewController = CallsListViewController(appReadiness: appReadiness)
     lazy var callsListNavController = OWSNavigationController(rootViewController: callsListViewController)
     lazy var callsListTabBarItem = Tabs.calls.tabBarItem
 

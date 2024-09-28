@@ -14,7 +14,8 @@ extension DonationViewsUtil {
     static func restartAndCompleteInterruptedIDEALDonation(
         type donationType: Stripe.IDEALCallbackType,
         rootViewController: UIViewController,
-        databaseStorage: SDSDatabaseStorage
+        databaseStorage: SDSDatabaseStorage,
+        appReadiness: AppReadinessSetter
     ) -> Promise<Void> {
         let donationStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
         let (success, intent, localIntent) = databaseStorage.read { tx in
@@ -37,7 +38,7 @@ extension DonationViewsUtil {
             }
 
             // Build up the Donation UI
-            let appSettings = AppSettingsViewController.inModalNavigationController()
+            let appSettings = AppSettingsViewController.inModalNavigationController(appReadiness: appReadiness)
             let donationsVC = DonationSettingsViewController()
             donationsVC.showExpirationSheet = false
             appSettings.viewControllers += [ donationsVC ]

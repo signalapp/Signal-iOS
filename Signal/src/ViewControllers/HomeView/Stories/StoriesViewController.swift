@@ -31,9 +31,11 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate, Hom
 
     private lazy var contextMenuGenerator = StoryContextMenuGenerator(presentingController: self, delegate: self)
 
+    private let appReadiness: AppReadinessSetter
     private let spoilerState: SpoilerRenderState
 
-    public init(spoilerState: SpoilerRenderState) {
+    public init(appReadiness: AppReadinessSetter, spoilerState: SpoilerRenderState) {
+        self.appReadiness = appReadiness
         self.spoilerState = spoilerState
         super.init()
         // Want to start loading right away to prevent cases where things aren't loaded
@@ -255,7 +257,7 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate, Hom
         AssertIsOnMainThread()
 
         conversationSplitViewController?.selectedConversationViewController?.dismissMessageContextMenu(animated: true)
-        presentFormSheet(AppSettingsViewController.inModalNavigationController(), animated: true)
+        presentFormSheet(AppSettingsViewController.inModalNavigationController(appReadiness: appReadiness), animated: true)
     }
 
     func showPrivacySettings() {

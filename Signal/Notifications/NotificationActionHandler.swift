@@ -13,7 +13,7 @@ public class NotificationActionHandler: Dependencies {
     @MainActor
     class func handleNotificationResponse(
         _ response: UNNotificationResponse,
-        appReadiness: AppReadiness,
+        appReadiness: AppReadinessSetter,
         completionHandler: @escaping () -> Void
     ) {
         firstly {
@@ -29,7 +29,7 @@ public class NotificationActionHandler: Dependencies {
     @MainActor
     private class func handleNotificationResponse(
         _ response: UNNotificationResponse,
-        appReadiness: AppReadiness
+        appReadiness: AppReadinessSetter
     ) throws -> Promise<Void> {
         owsAssertDebug(appReadiness.isAppReady)
 
@@ -309,7 +309,7 @@ public class NotificationActionHandler: Dependencies {
         }
     }
 
-    private class func reregister(appReadiness: AppReadiness) -> Promise<Void> {
+    private class func reregister(appReadiness: AppReadinessSetter) -> Promise<Void> {
         Promise { future in
             appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
                 guard let viewController = CurrentAppContext().frontmostViewController() else {
@@ -318,7 +318,7 @@ public class NotificationActionHandler: Dependencies {
                     return
                 }
                 Logger.info("Reregistering from deregistered notification")
-                RegistrationUtils.reregister(fromViewController: viewController)
+                RegistrationUtils.reregister(fromViewController: viewController, appReadiness: appReadiness)
                 future.resolve()
             }
         }

@@ -8,6 +8,14 @@ import SignalServiceKit
 import SignalUI
 
 class InternalSettingsViewController: OWSTableViewController2 {
+
+    private let appReadiness: AppReadinessSetter
+
+    init(appReadiness: AppReadinessSetter) {
+        self.appReadiness = appReadiness
+        super.init()
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -24,9 +32,9 @@ class InternalSettingsViewController: OWSTableViewController2 {
         #if USE_DEBUG_UI
         debugSection.add(.disclosureItem(
             withText: "Debug UI",
-            actionBlock: { [weak self] in
+            actionBlock: { [weak self, appReadiness] in
                 guard let self = self else { return }
-                DebugUITableViewController.presentDebugUI(from: self)
+                DebugUITableViewController.presentDebugUI(from: self, appReadiness: appReadiness)
             }
         ))
         #endif

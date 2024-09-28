@@ -72,6 +72,13 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         tsAccountManager: DependenciesBridge.shared.tsAccountManager
     )
 
+    private let appReadiness: AppReadinessSetter
+
+    init(appReadiness: AppReadinessSetter) {
+        self.appReadiness = appReadiness
+        super.init()
+    }
+
     // MARK: - Lifecycle
 
     private var logger: PrefixedLogger = PrefixedLogger(prefix: "[CallsListVC]")
@@ -174,7 +181,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         AssertIsOnMainThread()
 
         conversationSplitViewController?.selectedConversationViewController?.dismissMessageContextMenu(animated: true)
-        presentFormSheet(AppSettingsViewController.inModalNavigationController(), animated: true)
+        presentFormSheet(AppSettingsViewController.inModalNavigationController(appReadiness: appReadiness), animated: true)
     }
 
     private func startMultiselect() {

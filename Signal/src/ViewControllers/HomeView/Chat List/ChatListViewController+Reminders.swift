@@ -142,7 +142,10 @@ public class CLVReminderViews: Dependencies {
             return
         }
 
-        RegistrationUtils.showReregistrationUI(fromViewController: chatListViewController)
+        RegistrationUtils.showReregistrationUI(
+            fromViewController: chatListViewController,
+            appReadiness: chatListViewController.appReadiness
+        )
     }
 
     @objc

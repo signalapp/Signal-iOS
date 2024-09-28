@@ -11,7 +11,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
 
     fileprivate var deviceTransferNavController: OutgoingDeviceTransferNavigationController?
 
-    let homeVC = HomeTabBarController()
+    let homeVC: HomeTabBarController
     private let detailPlaceholderVC = NoSelectedConversationViewController()
 
     private var chatListNavController: OWSNavigationController { homeVC.chatListNavController }
@@ -53,7 +53,11 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         return detailNavController.topViewController ?? chatListNavController.topViewController
     }
 
-    init() {
+    private let appReadiness: AppReadinessSetter
+
+    init(appReadiness: AppReadinessSetter) {
+        self.appReadiness = appReadiness
+        self.homeVC = HomeTabBarController(appReadiness: appReadiness)
         super.init(nibName: nil, bundle: nil)
 
         viewControllers = [homeVC, detailPlaceholderVC]
@@ -167,6 +171,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
 
         let vc = databaseStorage.read { tx in
             ConversationViewController.load(
+                appReadiness: appReadiness,
                 threadViewModel: ThreadViewModel(thread: thread, forChatList: false, transaction: tx),
                 action: action,
                 focusMessageId: focusMessageId,

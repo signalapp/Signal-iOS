@@ -11,12 +11,12 @@ public class RegistrationUtils: Dependencies {
 
     private init() {}
 
-    class func reregister(fromViewController: UIViewController) {
+    class func reregister(fromViewController: UIViewController, appReadiness: AppReadinessSetter) {
         AssertIsOnMainThread()
 
         // If this is not the primary device, jump directly to the re-linking flow.
         guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice == true else {
-            showRelinkingUI()
+            showRelinkingUI(appReadiness: appReadiness)
             return
         }
 
@@ -32,13 +32,13 @@ public class RegistrationUtils: Dependencies {
 
         preferences.unsetRecordedAPNSTokens()
 
-        showReRegistration(e164: e164, aci: localIdentifiers.aci)
+        showReRegistration(e164: e164, aci: localIdentifiers.aci, appReadiness: appReadiness)
     }
 
-    class func showReregistrationUI(fromViewController viewController: UIViewController) {
+    class func showReregistrationUI(fromViewController viewController: UIViewController, appReadiness: AppReadinessSetter) {
         // If this is not the primary device, jump directly to the re-linking flow.
         guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice == true else {
-            showRelinkingUI()
+            showRelinkingUI(appReadiness: appReadiness)
             return
         }
 
@@ -51,14 +51,14 @@ public class RegistrationUtils: Dependencies {
             style: .destructive,
             handler: { _ in
                 Logger.info("Reregistering from banner")
-                RegistrationUtils.reregister(fromViewController: viewController)
+                RegistrationUtils.reregister(fromViewController: viewController, appReadiness: appReadiness)
             }
         ))
         actionSheet.addAction(OWSActionSheets.cancelAction)
         viewController.presentActionSheet(actionSheet)
     }
 
-    private class func showRelinkingUI() {
+    private class func showRelinkingUI(appReadiness: AppReadinessSetter) {
         Logger.info("showRelinkingUI")
 
         let success = DependenciesBridge.shared.db.write { tx -> Bool in
@@ -82,10 +82,10 @@ public class RegistrationUtils: Dependencies {
         }
 
         preferences.unsetRecordedAPNSTokens()
-        ProvisioningController.presentRelinkingFlow()
+        ProvisioningController.presentRelinkingFlow(appReadiness: appReadiness)
     }
 
-    private class func showReRegistration(e164: E164, aci: Aci) {
+    private class func showReRegistration(e164: E164, aci: Aci, appReadiness: AppReadinessSetter) {
         Logger.info("Attempting to start re-registration")
         let dependencies = RegistrationCoordinatorDependencies.from(NSObject())
         let desiredMode = RegistrationMode.reRegistering(.init(e164: e164, aci: aci))
@@ -96,7 +96,7 @@ public class RegistrationUtils: Dependencies {
                 transaction: $0.asV2Write
             )
         }
-        let navController = RegistrationNavigationController.withCoordinator(coordinator)
+        let navController = RegistrationNavigationController.withCoordinator(coordinator, appReadiness: appReadiness)
         let window: UIWindow = CurrentAppContext().mainWindow!
         window.rootViewController = navController
     }

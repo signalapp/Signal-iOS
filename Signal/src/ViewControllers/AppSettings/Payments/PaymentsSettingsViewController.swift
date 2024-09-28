@@ -27,6 +27,7 @@ public enum PaymentsSettingsMode: UInt, CustomStringConvertible {
 
 public class PaymentsSettingsViewController: OWSTableViewController2 {
 
+    private let appReadiness: AppReadinessSetter
     private let mode: PaymentsSettingsMode
 
     private let paymentsHistoryDataSource = PaymentsHistoryDataSource()
@@ -42,8 +43,12 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
 
     private var outdatedClientReminderView: ReminderView?
 
-    public init(mode: PaymentsSettingsMode) {
+    public init(
+        mode: PaymentsSettingsMode,
+        appReadiness: AppReadinessSetter
+    ) {
         self.mode = mode
+        self.appReadiness = appReadiness
 
         super.init()
 
@@ -1250,13 +1255,13 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         }
         switch mode {
         case .inAppSettings:
-            navigationController.popViewController(animated: true) {
-                let accountSettingsView = AccountSettingsViewController()
+            navigationController.popViewController(animated: true) { [appReadiness] in
+                let accountSettingsView = AccountSettingsViewController(appReadiness: appReadiness)
                 navigationController.pushViewController(accountSettingsView, animated: true)
                 accountSettingsView.showCreateOrChangePin()
             }
         case .standalone:
-            let accountSettingsView = AccountSettingsViewController()
+            let accountSettingsView = AccountSettingsViewController(appReadiness: appReadiness)
             navigationController.pushViewController(accountSettingsView, animated: true)
             accountSettingsView.showCreateOrChangePin()
         }
