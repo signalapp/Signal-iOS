@@ -41,19 +41,6 @@ public class ScreenLock: NSObject {
         SwiftSingletons.register(self)
     }
 
-    // MARK: - App Readiness
-
-    private var appReadiness: AppReadiness?
-
-    private var isAppReady: Bool {
-        // If AppReadiness hasn't been set, the app is definitely not ready.
-        appReadiness?.isAppReady ?? false
-    }
-
-    public static func performInitialSetup(appReadiness: AppReadiness) {
-        shared.appReadiness = appReadiness
-    }
-
     // MARK: - KV Store
 
     public let keyValueStore = SDSKeyValueStore(collection: "OWSScreenLock_Collection")
@@ -62,11 +49,6 @@ public class ScreenLock: NSObject {
 
     public func isScreenLockEnabled() -> Bool {
         AssertIsOnMainThread()
-
-        if !isAppReady {
-            owsFailDebug("accessed screen lock state before storage is ready.")
-            return false
-        }
 
         return databaseStorage.read { transaction in
             return self.keyValueStore.getBool(ScreenLock.OWSScreenLock_Key_IsScreenLockEnabled,
@@ -77,7 +59,6 @@ public class ScreenLock: NSObject {
 
     public func setIsScreenLockEnabled(_ value: Bool) {
         AssertIsOnMainThread()
-        assert(isAppReady)
 
         databaseStorage.write { transaction in
             self.keyValueStore.setBool(value,
@@ -91,11 +72,6 @@ public class ScreenLock: NSObject {
     public func screenLockTimeout() -> TimeInterval {
         AssertIsOnMainThread()
 
-        if !isAppReady {
-            owsFailDebug("accessed screen lock state before storage is ready.")
-            return 0
-        }
-
         return databaseStorage.read { transaction in
             return self.keyValueStore.getDouble(ScreenLock.OWSScreenLock_Key_ScreenLockTimeoutSeconds,
                                                 defaultValue: ScreenLock.screenLockTimeoutDefault,
@@ -105,7 +81,6 @@ public class ScreenLock: NSObject {
 
     public func setScreenLockTimeout(_ value: TimeInterval) {
         AssertIsOnMainThread()
-        assert(isAppReady)
 
         databaseStorage.write { transaction in
             self.keyValueStore.setDouble(value,

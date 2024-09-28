@@ -1392,7 +1392,6 @@ public class AppSetup {
         NSKeyedUnarchiver.setClass(PendingProfileUpdate.self, forClassName: "SignalMessaging.PendingProfileUpdate")
 
         Sounds.performStartupTasks(appReadiness: appReadiness)
-        ScreenLock.performInitialSetup(appReadiness: appReadiness)
 
         return AppSetup.DatabaseContinuation(
             appContext: appContext,
