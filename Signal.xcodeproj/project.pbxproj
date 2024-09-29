@@ -19157,7 +19157,7 @@
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Signal Messenger, LLC";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Signal Messenger, LLC";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_TREAT_WARNINGS_AS_ERRORS = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -19413,7 +19413,7 @@
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Signal Messenger, LLC";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Signal Messenger, LLC";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_TREAT_WARNINGS_AS_ERRORS = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -19673,7 +19673,7 @@
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Signal Messenger, LLC";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Signal Messenger, LLC";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_TREAT_WARNINGS_AS_ERRORS = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -19758,7 +19758,7 @@
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Signal Messenger, LLC";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Signal Messenger, LLC";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_TREAT_WARNINGS_AS_ERRORS = YES;
 				ONLY_ACTIVE_ARCH = NO;
@@ -20021,7 +20021,6 @@
 				GCC_PREFIX_HEADER = "SignalServiceKit/SignalServiceKit-Prefix.pch";
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Signal Messenger, LLC";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -20067,7 +20066,6 @@
 				GCC_PREFIX_HEADER = "SignalServiceKit/SignalServiceKit-Prefix.pch";
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Signal Messenger, LLC";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -20113,7 +20111,6 @@
 				GCC_PREFIX_HEADER = "SignalServiceKit/SignalServiceKit-Prefix.pch";
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Signal Messenger, LLC";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -20159,7 +20156,6 @@
 				GCC_PREFIX_HEADER = "SignalServiceKit/SignalServiceKit-Prefix.pch";
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Signal Messenger, LLC";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
