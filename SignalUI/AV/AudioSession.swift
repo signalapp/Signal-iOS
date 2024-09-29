@@ -5,7 +5,7 @@
 
 import AVFoundation
 import Foundation
-import SignalServiceKit
+public import SignalServiceKit
 
 public class AudioActivity: NSObject {
     let audioDescription: String

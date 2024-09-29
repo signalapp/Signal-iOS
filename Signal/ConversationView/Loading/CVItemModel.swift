@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalServiceKit
-import SignalUI
+public import SignalServiceKit
+public import SignalUI
 
 // Represents a single item in the conversation history.
 // Could be a date header or a unread indicator.

@@ -4,8 +4,8 @@
 //
 
 import Foundation
-import GRDB
-import LibSignalClient
+public import GRDB
+public import LibSignalClient
 
 public protocol SearchableNameIndexer {
     /// Searches for `searchText` in the FTS index.

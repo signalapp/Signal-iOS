@@ -4,7 +4,7 @@
 //
 
 import SignalServiceKit
-import SignalUI
+public import SignalUI
 import StoreKit
 
 public class ChatListViewController: OWSViewController, HomeTabViewController {

@@ -4,7 +4,7 @@
 //
 
 import SignalServiceKit
-import SignalUI
+public import SignalUI
 
 public class LogPickerViewController: OWSTableViewController2 {
     let logDirUrl: URL

@@ -4,7 +4,7 @@
 //
 
 import SignalServiceKit
-import SignalUI
+public import SignalUI
 
 public protocol PaymentsRestoreWalletDelegate: AnyObject {
     func restoreWalletDidComplete()

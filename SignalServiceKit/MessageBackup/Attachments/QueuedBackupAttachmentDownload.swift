@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import GRDB
+public import GRDB
 
 /// Record type for BackupAttachmentDownloadQueue rows.
 ///

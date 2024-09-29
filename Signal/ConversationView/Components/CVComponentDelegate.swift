@@ -3,9 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import LibSignalClient
-import SignalServiceKit
-import SignalUI
+public import Foundation
+public import LibSignalClient
+public import SignalServiceKit
+public import SignalUI
 
 public enum CVAttachmentTapAction: Int {
     case handledByDelegate

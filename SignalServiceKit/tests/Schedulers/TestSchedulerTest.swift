@@ -5,7 +5,7 @@
 
 import Foundation
 @testable import SignalServiceKit
-import XCTest
+public import XCTest
 
 struct FakeError: Error {}
 

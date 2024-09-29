@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import SignalServiceKit
+public import SignalServiceKit
 
 /// Handles fetching and parsing remote megaphones.
 public class RemoteMegaphoneFetcher {

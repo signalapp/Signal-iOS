@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Lottie
-import SignalServiceKit
+public import Lottie
+public import SignalServiceKit
 
 public class CVMediaCache: NSObject {
 

@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import SignalUI
+public import SignalUI
 import UIKit
 
 public protocol ConversationHeaderViewDelegate: AnyObject {

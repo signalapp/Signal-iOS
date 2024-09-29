@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import LibSignalClient
-import SignalServiceKit
+public import LibSignalClient
+public import SignalServiceKit
 
 public enum RegistrationMode {
     case registering

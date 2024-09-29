@@ -5,7 +5,7 @@
 
 import MultipeerConnectivity
 import SignalServiceKit
-import SignalUI
+public import SignalUI
 import UIKit
 
 public class RegistrationTransferProgressViewController: OWSViewController {

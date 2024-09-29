@@ -4,8 +4,8 @@
 //
 
 import Foundation
-import GRDB
-import LibSignalClient
+public import GRDB
+public import LibSignalClient
 
 /// A point-in-time result of performing a lookup for a given username.
 ///

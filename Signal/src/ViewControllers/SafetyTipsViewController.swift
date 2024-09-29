@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import SignalUI
+public import SignalUI
 import SignalServiceKit
 
 public enum SafetyTipsType {

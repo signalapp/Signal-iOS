@@ -4,7 +4,7 @@
 //
 
 import BackgroundTasks
-import SignalServiceKit
+public import SignalServiceKit
 
 /**
  * Utility class for managing the BGAppRefreshTask we use as a "keepalive" for

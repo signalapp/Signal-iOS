@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import AVKit
-import SignalServiceKit
+public import AVKit
+public import SignalServiceKit
 import YYImage
 
 /// Model object for a looping video asset

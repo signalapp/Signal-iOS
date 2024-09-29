@@ -4,8 +4,8 @@
 //
 
 import Foundation
-import LibSignalClient
-import SwiftProtobuf
+public import LibSignalClient
+public import SwiftProtobuf
 
 /// Defines configuration for a websocket connection to an `SgxClient`-compliant server.
 /// Besides defining constant values used to establish the connection (url, mrenclave),

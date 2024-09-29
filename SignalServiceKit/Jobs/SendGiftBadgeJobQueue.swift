@@ -4,7 +4,7 @@
 //
 
 import GRDB
-import LibSignalClient
+public import LibSignalClient
 
 // MARK: - Job Queue
 

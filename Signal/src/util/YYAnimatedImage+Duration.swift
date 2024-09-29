@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import YYImage
+public import YYImage
 
 public extension YYAnimatedImage {
 

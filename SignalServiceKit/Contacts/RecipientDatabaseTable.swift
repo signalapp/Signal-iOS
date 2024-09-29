@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 public protocol RecipientDatabaseTable {
     func fetchRecipient(rowId: Int64, tx: DBReadTransaction) -> SignalRecipient?

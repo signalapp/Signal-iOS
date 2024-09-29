@@ -5,7 +5,7 @@
 
 import LibSignalClient
 import SignalServiceKit
-import SignalUI
+public import SignalUI
 
 extension ConversationViewController {
     public func updateNavigationTitle() {

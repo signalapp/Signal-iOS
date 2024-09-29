@@ -4,7 +4,7 @@
 //
 
 import CryptoKit
-import LibSignalClient
+public import LibSignalClient
 
 public enum IdentityManagerError: Error, IsRetryableProvider {
     case identityKeyMismatchForOutgoingMessage

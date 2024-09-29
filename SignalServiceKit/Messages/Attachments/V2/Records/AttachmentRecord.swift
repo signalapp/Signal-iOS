@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import GRDB
+public import GRDB
 
 extension Attachment {
     public struct Record: Codable, MutablePersistableRecord, FetchableRecord, Equatable, UInt64SafeRecord {

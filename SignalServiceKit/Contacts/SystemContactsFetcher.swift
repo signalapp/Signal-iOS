@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import Contacts
+public import Contacts
 import ContactsUI
 
 protocol ContactStoreAdaptee {

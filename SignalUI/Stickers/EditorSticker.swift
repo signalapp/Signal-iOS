@@ -4,7 +4,7 @@
 //
 
 import UIKit
-import SignalServiceKit
+public import SignalServiceKit
 
 private class LayerContainerView: UIView {
     let contentLayer: CALayer

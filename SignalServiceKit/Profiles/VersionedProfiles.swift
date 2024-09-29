@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 public struct VersionedProfileUpdate {
     // This will only be set if there is a profile avatar.

@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 /// Encodes CallEvent.type & CallEvent.conversationId fields.
 ///

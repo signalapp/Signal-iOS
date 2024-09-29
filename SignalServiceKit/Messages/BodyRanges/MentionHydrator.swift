@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 public enum MentionHydrationOption {
     /// Do not hydrate the mention; this leaves the string as it was in the original,

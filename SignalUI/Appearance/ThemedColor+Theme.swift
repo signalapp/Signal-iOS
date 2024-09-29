@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import SignalServiceKit
+public import SignalServiceKit
 
 extension ThemedColor {
 

@@ -4,7 +4,7 @@
 //
 
 import SignalServiceKit
-import SignalUI
+public import SignalUI
 
 extension ChatListViewController: OWSNavigationChildController {
     func focusSearch() {

@@ -6,6 +6,7 @@
 import SafariServices
 import SignalServiceKit
 import SignalUI
+public import UIKit
 
 public class ProvisioningSplashViewController: ProvisioningBaseViewController {
 

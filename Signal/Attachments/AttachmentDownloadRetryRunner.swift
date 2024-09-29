@@ -5,7 +5,7 @@
 
 import Foundation
 import GRDB
-import SignalServiceKit
+public import SignalServiceKit
 
 public class AttachmentDownloadRetryRunner {
 

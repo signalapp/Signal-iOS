@@ -5,7 +5,7 @@
 
 import SignalServiceKit
 import UIKit
-import YYImage
+public import YYImage
 
 public class CVUtils {
 

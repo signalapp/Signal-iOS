@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import PassKit
+public import PassKit
 
 public class DonationUtilities: Dependencies {
     public static var sendGiftBadgeJobQueue: SendGiftBadgeJobQueue { smJobQueues.sendGiftBadgeJobQueue }

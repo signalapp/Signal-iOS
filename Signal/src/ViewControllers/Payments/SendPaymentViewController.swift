@@ -4,8 +4,8 @@
 //
 
 import Lottie
-import SignalServiceKit
-import SignalUI
+public import SignalServiceKit
+public import SignalUI
 
 public protocol SendPaymentViewDelegate: AnyObject {
     func didSendPayment(success: Bool)

@@ -4,7 +4,7 @@
 //
 
 import SignalServiceKit
-import SignalUI
+public import SignalUI
 
 public enum TextFieldHelper {
     /// Used to implement the UITextFieldDelegate method: `textField:shouldChangeCharactersInRange:replacementString`

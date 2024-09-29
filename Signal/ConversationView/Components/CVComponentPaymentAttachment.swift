@@ -9,7 +9,7 @@
 
 import Foundation
 import SignalServiceKit
-import SignalUI
+public import SignalUI
 
 @objc
 public class CVComponentPaymentAttachment: CVComponentBase, CVComponent {

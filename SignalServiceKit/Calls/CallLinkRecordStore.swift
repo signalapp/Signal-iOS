@@ -5,7 +5,7 @@
 
 import Foundation
 import GRDB
-import SignalRingRTC
+public import SignalRingRTC
 
 public protocol CallLinkRecordStore {
     func fetch(roomId: Data, tx: any DBReadTransaction) throws -> CallLinkRecord?

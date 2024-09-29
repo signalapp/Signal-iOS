@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalServiceKit
+public import SignalServiceKit
 
 /// Manages the step-to-step state of primary device registration,
 /// including re-registration and change number.

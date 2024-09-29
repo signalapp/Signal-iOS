@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import AVFAudio
+public import AVFAudio
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 /// The result of stripping, filtering, and hydrating mentions in a `MessageBody`.
 /// This object can be held durably in memory as a way to cache mention hydrations

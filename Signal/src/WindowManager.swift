@@ -5,6 +5,7 @@
 
 import SignalServiceKit
 import SignalUI
+public import UIKit
 
 extension UIWindow.Level {
 

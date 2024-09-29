@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import XCTest
+public import XCTest
 @testable import SignalServiceKit
 
 public class TaskQueueLoaderTest: XCTestCase {

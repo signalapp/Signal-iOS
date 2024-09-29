@@ -6,7 +6,7 @@
 import Contacts
 import Foundation
 import LibSignalClient
-import SignalServiceKit
+public import SignalServiceKit
 
 extension RegistrationCoordinatorImpl {
 

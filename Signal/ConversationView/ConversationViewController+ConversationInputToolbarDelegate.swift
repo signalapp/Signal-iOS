@@ -4,9 +4,9 @@
 //
 
 import CoreServices
-import Photos
-import SignalServiceKit
-import SignalUI
+public import Photos
+public import SignalServiceKit
+public import SignalUI
 import UniformTypeIdentifiers
 
 extension ConversationViewController: ConversationInputToolbarDelegate {

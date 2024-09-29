@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import AuthenticationServices
+public import AuthenticationServices
 import Foundation
 
 // MARK: - Present a new auth session

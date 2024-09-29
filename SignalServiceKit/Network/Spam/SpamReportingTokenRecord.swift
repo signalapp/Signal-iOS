@@ -4,8 +4,8 @@
 //
 
 import Foundation
-import GRDB
-import LibSignalClient
+public import GRDB
+public import LibSignalClient
 
 public struct SpamReportingTokenRecord: Codable, FetchableRecord, PersistableRecord {
     public static let databaseTableName = "spamReportingTokenRecords"

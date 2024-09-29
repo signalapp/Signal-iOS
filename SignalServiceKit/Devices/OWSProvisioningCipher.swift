@@ -5,7 +5,7 @@
 
 import CommonCrypto
 import CryptoKit
-import LibSignalClient
+public import LibSignalClient
 
 public class OWSProvisioningCipher: NSObject {
     // Local errors for logging purposes only.

@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalServiceKit
-import YYImage
+public import SignalServiceKit
+public import YYImage
 
 public class AttachmentSharing {
 

@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 public extension NSNotification.Name {
     /// Posted when registration state changes (e.g. the user becomes registered, or deregistered).

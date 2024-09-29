@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import SignalServiceKit
+public import SignalServiceKit
 
 // Supplies sticker pack data
 public protocol StickerPackDataSourceDelegate: AnyObject {

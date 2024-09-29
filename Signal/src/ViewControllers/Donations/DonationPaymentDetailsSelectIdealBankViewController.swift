@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalServiceKit
-import SignalUI
+public import SignalServiceKit
+public import SignalUI
 
 public protocol DonationPaymentDetailsSelectIdealBankDelegate: AnyObject {
     func viewController(_ viewController: DonationPaymentDetailsSelectIdealBankViewController, didSelect iDEALBank: Stripe.PaymentMethod.IDEALBank)

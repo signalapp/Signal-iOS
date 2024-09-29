@@ -7,7 +7,7 @@ import Foundation
 import LibSignalClient
 import MessageUI
 import SignalServiceKit
-import SignalUI
+public import SignalUI
 
 // This extension reproduces some of the UITextView link interaction behavior.
 // This is how UITextView behaves:

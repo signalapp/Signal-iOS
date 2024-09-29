@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import GRDB
+public import GRDB
 
 /// Represents "orphaned" files that one belonged to an Attachment that has since been deleted.
 /// Consumers of this table should delete the associate file(s) and _then_ delete the row from this table.

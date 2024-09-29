@@ -4,7 +4,7 @@
 //
 
 import MobileCoin
-import SignalServiceKit
+public import SignalServiceKit
 
 public class PaymentsProcessor: NSObject {
 

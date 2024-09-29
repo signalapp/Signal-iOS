@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import LibSignalClient
-import SignalServiceKit
+public import LibSignalClient
+public import SignalServiceKit
 
 /// Loads a `RegistrationCoordinator`.
 /// This class exists separately from the coordinator itself so that we separate

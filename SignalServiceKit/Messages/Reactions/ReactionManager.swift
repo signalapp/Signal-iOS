@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 @objc(OWSReactionManager)
 public class ReactionManager: NSObject {

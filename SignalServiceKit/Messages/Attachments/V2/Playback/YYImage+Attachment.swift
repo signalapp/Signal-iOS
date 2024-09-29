@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import YYImage
+public import YYImage
 
 extension YYImage {
 

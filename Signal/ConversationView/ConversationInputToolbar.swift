@@ -4,8 +4,8 @@
 //
 
 import Photos
-import SignalServiceKit
-import SignalUI
+public import SignalServiceKit
+public import SignalUI
 
 protocol ConversationInputToolbarDelegate: AnyObject {
 

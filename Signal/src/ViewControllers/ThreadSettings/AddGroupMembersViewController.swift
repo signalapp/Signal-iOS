@@ -4,7 +4,7 @@
 //
 
 import LibSignalClient
-import SignalServiceKit
+public import SignalServiceKit
 import SignalUI
 
 protocol AddGroupMembersViewControllerDelegate: AnyObject {

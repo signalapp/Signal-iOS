@@ -4,11 +4,11 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 import Lottie
 import PureLayout
 import SafariServices
-import SignalServiceKit
+public import SignalServiceKit
 import UIKit
 
 public class FingerprintViewController: OWSViewController, OWSNavigationChildController {

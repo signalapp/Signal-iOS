@@ -4,7 +4,7 @@
 //
 
 import SignalServiceKit
-import SignalUI
+public import SignalUI
 
 public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
     typealias GiftConfiguration = SubscriptionManagerImpl.DonationConfiguration.GiftConfiguration

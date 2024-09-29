@@ -5,7 +5,7 @@
 
 import CryptoKit
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 public enum DeviceNameError: Error {
     case assertionFailure

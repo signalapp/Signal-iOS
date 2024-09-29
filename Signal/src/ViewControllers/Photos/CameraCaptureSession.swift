@@ -3,13 +3,13 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import AVFoundation
+public import AVFoundation
 import CoreMotion
 import CoreServices
 import Foundation
 import SignalServiceKit
 import SignalUI
-import UIKit
+public import UIKit
 
 enum PhotoCaptureError: Error {
     case assertionError(description: String)

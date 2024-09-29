@@ -5,8 +5,8 @@
 
 import Foundation
 import LibSignalClient
-import SignalRingRTC
-import SignalServiceKit
+public import SignalRingRTC
+public import SignalServiceKit
 
 public class CallLinkFetcherImpl {
     private let sfuClient: SFUClient

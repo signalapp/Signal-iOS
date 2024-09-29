@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalServiceKit
+public import SignalServiceKit
 
 public extension Notification.Name {
     static let themeDidChange = Notification.Name("ThemeDidChangeNotification")

@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import AVFoundation
+public import AVFoundation
 import Foundation
-import YYImage
+public import YYImage
 
 extension TSAttachment: TSResource {
 

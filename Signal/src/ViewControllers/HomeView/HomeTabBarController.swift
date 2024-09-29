@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-import UIKit
+public import Foundation
+public import UIKit
 import SignalServiceKit
 import SignalUI
 

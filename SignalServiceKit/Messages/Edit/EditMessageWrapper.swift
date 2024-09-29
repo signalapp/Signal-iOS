@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 /// Wrapper that preserves the type information of the message
 /// being targeted for editing.  This wrapper prevents a lot of unecessary

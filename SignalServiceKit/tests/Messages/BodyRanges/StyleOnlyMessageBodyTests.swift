@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import XCTest
+public import XCTest
 @testable import SignalServiceKit
 
 public class StyleOnlyMessageBodyTests: XCTestCase {

@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 /// MessageBodyRanges is the result of parsing `SSKProtoBodyRange` from a message;
 /// it performs some cleanups for overlaps and such, ensuring that we have a standard

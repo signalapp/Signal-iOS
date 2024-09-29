@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import GRDB
+public import GRDB
 
 public final class DonationReceipt: NSObject, SDSCodableModel, Decodable {
     public static var recordType: UInt { 0 }

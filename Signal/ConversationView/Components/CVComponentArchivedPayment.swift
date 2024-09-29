@@ -5,7 +5,7 @@
 
 import Foundation
 import SignalServiceKit
-import SignalUI
+public import SignalUI
 
 @objc
 public class CVComponentArchivedPayment: CVComponentBase, CVComponent {

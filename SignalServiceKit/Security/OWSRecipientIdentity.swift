@@ -5,7 +5,7 @@
 
 import Foundation
 import GRDB
-import LibSignalClient
+public import LibSignalClient
 
 public enum VerificationState: Equatable {
     case verified

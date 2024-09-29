@@ -4,7 +4,7 @@
 //
 
 import SignalServiceKit
-import SignalUI
+public import SignalUI
 
 public protocol PaymentsQRScanDelegate: AnyObject {
     func didScanPaymentAddressQRCode(publicAddressBase58: String)

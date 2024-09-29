@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import GRDB
+public import GRDB
 
 /// An EditRecord represent a 1:N relationship between a the current version of a message and
 /// any prior versions of the message.  Both `latestRevisionId` and `pastRevisionId` refer

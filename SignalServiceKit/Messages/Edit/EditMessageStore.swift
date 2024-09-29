@@ -5,7 +5,7 @@
 
 import Foundation
 import GRDB
-import LibSignalClient
+public import LibSignalClient
 
 public enum EditMessageTarget {
     case outgoingMessage(OutgoingEditMessageWrapper)

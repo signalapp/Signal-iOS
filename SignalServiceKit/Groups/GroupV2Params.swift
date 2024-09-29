@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 public struct GroupV2Params {
     public let groupSecretParams: GroupSecretParams

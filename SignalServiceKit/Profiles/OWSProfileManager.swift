@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 /// This class has been ported over from objc and the notes attached to that are reproduced below.
 /// Note that the veracity of the thread safety claims seems dubious.

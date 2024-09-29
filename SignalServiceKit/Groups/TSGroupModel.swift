@@ -5,7 +5,7 @@
 
 import CryptoKit
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 // Like TSGroupModel, TSGroupModelV2 is intended to be immutable.
 //

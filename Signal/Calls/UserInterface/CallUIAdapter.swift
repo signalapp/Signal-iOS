@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+public import Foundation
 import CallKit
-import SignalServiceKit
+public import SignalServiceKit
 import WebRTC
 import UIKit
 

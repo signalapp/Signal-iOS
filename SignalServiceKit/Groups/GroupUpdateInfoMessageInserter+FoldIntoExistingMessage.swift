@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 extension GroupUpdateInfoMessageInserterImpl {
     /// Represents updates to a group's membership that may be possible to

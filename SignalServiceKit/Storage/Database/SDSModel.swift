@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import GRDB
+public import GRDB
 
 public protocol SDSModel: TSYapDatabaseObject, SDSIdentifiableModel {
     var sdsTableName: String { get }

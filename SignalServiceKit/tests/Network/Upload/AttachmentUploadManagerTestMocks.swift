@@ -5,7 +5,7 @@
 
 import Foundation
 import LibSignalClient
-@testable import SignalServiceKit
+@testable public import SignalServiceKit
 
 extension AttachmentUploadManagerImpl {
     enum Mocks {

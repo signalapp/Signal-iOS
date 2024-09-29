@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import GRDB
+public import GRDB
 
 /// A bucket for SQLite utilities.
 public enum SqliteUtil {

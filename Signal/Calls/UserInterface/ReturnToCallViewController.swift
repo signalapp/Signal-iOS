@@ -5,6 +5,7 @@
 
 import SignalServiceKit
 import SignalUI
+public import UIKit
 
 protocol CallViewControllerWindowReference: AnyObject {
     var localVideoViewReference: CallMemberView { get }

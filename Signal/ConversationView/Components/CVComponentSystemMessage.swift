@@ -5,7 +5,7 @@
 
 import LibSignalClient
 import SignalServiceKit
-import SignalUI
+public import SignalUI
 
 public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
 

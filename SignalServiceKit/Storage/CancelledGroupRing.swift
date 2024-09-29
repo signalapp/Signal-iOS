@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import GRDB
+public import GRDB
 
 // Used by CallService
 public struct CancelledGroupRing: Identifiable, Codable, FetchableRecord, PersistableRecord {

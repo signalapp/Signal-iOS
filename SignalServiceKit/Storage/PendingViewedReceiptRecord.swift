@@ -4,8 +4,8 @@
 //
 
 import Foundation
-import GRDB
-import LibSignalClient
+public import GRDB
+public import LibSignalClient
 
 public struct PendingViewedReceiptRecord: Codable, FetchableRecord, PersistableRecord {
     public static let databaseTableName = "pending_viewed_receipts"

@@ -4,7 +4,7 @@
 //
 
 import LibSignalClient
-import SignalServiceKit
+public import SignalServiceKit
 
 /// Manages state for banners that might be hidden.
 private class BannerHiding {

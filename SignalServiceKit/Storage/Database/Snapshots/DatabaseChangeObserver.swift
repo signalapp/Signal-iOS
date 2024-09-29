@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import GRDB
+public import GRDB
 
 public protocol DatabaseChangeDelegate: AnyObject {
     func databaseChangesDidUpdate(databaseChanges: DatabaseChanges)

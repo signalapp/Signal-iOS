@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalServiceKit
-import XCTest
+public import SignalServiceKit
+public import XCTest
 
 extension Thenable {
     func expect(timeout: TimeInterval, file: StaticString = #filePath, line: UInt = #line) -> Value {

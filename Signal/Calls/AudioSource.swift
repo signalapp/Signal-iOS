@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import AVFoundation
+public import AVFoundation
 import SignalServiceKit
 
 public struct AudioSource: Hashable, CustomDebugStringConvertible {

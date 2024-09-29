@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 public struct ProfileFetchOptions: OptionSet {
     public var rawValue: Int

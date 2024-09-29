@@ -5,7 +5,7 @@
 
 import BackgroundTasks
 import Foundation
-import SignalServiceKit
+public import SignalServiceKit
 
 /// Base protocol for classes that manage running a BGProcessingTask.
 /// Implement the protocol methods and let the extension methods handle

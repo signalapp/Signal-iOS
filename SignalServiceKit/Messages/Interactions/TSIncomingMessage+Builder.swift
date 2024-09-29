@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 @objcMembers
 public class TSIncomingMessageBuilder: TSMessageBuilder {

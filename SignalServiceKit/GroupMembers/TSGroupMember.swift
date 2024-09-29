@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import GRDB
-import LibSignalClient
+public import GRDB
+public import LibSignalClient
 
 /// Represents a full member of a group.
 ///

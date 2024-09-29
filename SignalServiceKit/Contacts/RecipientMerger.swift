@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 public protocol RecipientMerger {
     /// We're registering, linking, changing our number, etc. This is the only

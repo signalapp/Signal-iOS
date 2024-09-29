@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 public protocol RecipientFetcher {
     func fetchOrCreate(serviceId: ServiceId, tx: DBWriteTransaction) -> SignalRecipient

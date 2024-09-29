@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import PassKit
+public import PassKit
 
 /// A fully valid payment method, ready to submit to Stripe.
 ///

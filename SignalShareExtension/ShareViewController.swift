@@ -5,9 +5,9 @@
 
 import CoreServices
 import Intents
-import PureLayout
+public import PureLayout
 import SignalServiceKit
-import SignalUI
+public import SignalUI
 import UniformTypeIdentifiers
 
 public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailedViewDelegate {

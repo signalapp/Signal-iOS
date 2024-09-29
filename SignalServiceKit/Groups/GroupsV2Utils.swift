@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 public extension ProfileKeyVersion {
     // GroupsV2 TODO: We might move this to the wrappers.

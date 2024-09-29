@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import GRDB
+public import GRDB
 
 @available(swift, obsoleted: 1.0)
 @objcMembers

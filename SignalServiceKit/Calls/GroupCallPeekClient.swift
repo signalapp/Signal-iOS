@@ -4,7 +4,7 @@
 //
 
 import LibSignalClient
-import SignalRingRTC
+public import SignalRingRTC
 
 public class GroupCallPeekLogger: PrefixedLogger {
     public static let shared = GroupCallPeekLogger()

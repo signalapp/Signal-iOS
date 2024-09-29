@@ -6,7 +6,7 @@
 import Foundation
 import Lottie
 import SignalServiceKit
-import SignalUI
+public import SignalUI
 
 public protocol SendPaymentCompletionDelegate: AnyObject {
     func didSendPayment(success: Bool)

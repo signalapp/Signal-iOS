@@ -4,8 +4,8 @@
 //
 
 import UIKit
-import Contacts
-import SignalServiceKit
+public import Contacts
+public import SignalServiceKit
 
 public class ContactCell: UITableViewCell, ReusableTableViewCell {
     public static let reuseIdentifier = "ContactCell"

@@ -4,8 +4,8 @@
 //
 
 import Foundation
-import GRDB
-import LibSignalClient
+public import GRDB
+public import LibSignalClient
 
 /// A record of incomplete payments activation requests.
 /// When we activate payments, we use these to find the senders that requested we

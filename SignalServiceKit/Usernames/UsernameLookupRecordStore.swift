@@ -5,7 +5,7 @@
 
 import Foundation
 import GRDB
-import LibSignalClient
+public import LibSignalClient
 
 public protocol UsernameLookupRecordStore {
     func fetchOne(forAci aci: Aci, tx: DBReadTransaction) -> UsernameLookupRecord?

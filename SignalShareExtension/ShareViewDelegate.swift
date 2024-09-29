@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import SignalUI
+public import SignalUI
 
 // All Observer methods will be invoked from the main thread.
 public protocol ShareViewDelegate: AnyObject {

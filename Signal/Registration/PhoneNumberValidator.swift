@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-import SignalServiceKit
+public import Foundation
+public import SignalServiceKit
 
 public enum ValidatedCallingCode: UInt {
     case unitedStates = 1

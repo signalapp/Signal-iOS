@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 private class LocalUserLeaveGroupJobRunnerFactory: JobRunnerFactory {
     func buildRunner() -> LocalUserLeaveGroupJobRunner { buildRunner(future: nil) }

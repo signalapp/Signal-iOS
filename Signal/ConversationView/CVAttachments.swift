@@ -5,7 +5,7 @@
 
 import AVFoundation
 import Foundation
-import SignalServiceKit
+public import SignalServiceKit
 
 // Represents a _playable_ audio attachment.
 public class AudioAttachment {

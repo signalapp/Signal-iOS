@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import GRDB
+public import GRDB
 
 /// Represents an attempt to upload an attachment
 public struct AttachmentUploadRecord: Codable, FetchableRecord, MutablePersistableRecord {

@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import GRDB
+public import GRDB
 
 // Any enum used by SDS extensions must be declared to conform
 // to Codable and DatabaseValueConvertible.

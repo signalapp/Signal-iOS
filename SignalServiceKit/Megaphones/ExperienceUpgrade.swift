@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import GRDB
+public import GRDB
 
 public class ExperienceUpgrade: SDSCodableModel, Decodable {
     public static let databaseTableName = "model_ExperienceUpgrade"

@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import SignalServiceKit
+public import SignalServiceKit
 import SignalUI
 
 // Caching builder used for a single CVC load.

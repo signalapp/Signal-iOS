@@ -3,10 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import PassKit
-import QuickLook
+public import PassKit
+public import QuickLook
 import SignalServiceKit
-import SignalUI
+public import SignalUI
 
 public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
 

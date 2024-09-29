@@ -4,7 +4,7 @@
 //
 
 import SignalServiceKit
-import SignalUI
+public import SignalUI
 
 public class CVComponentReactions: CVComponentBase, CVComponent, CVAccessibilityComponent {
 

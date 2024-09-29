@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 /// Credentials to use on a TSRequest to the chat server.
 @objc

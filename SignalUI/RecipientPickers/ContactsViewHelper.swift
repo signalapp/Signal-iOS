@@ -7,7 +7,7 @@ import Contacts
 import ContactsUI
 import LibSignalClient
 import SafariServices
-import SignalServiceKit
+public import SignalServiceKit
 
 @objc
 public protocol ContactsViewHelperObserver: AnyObject {

@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import GRDB
+public import GRDB
 
 public struct QueuedAttachmentDownloadRecord: Codable, FetchableRecord, MutablePersistableRecord {
 

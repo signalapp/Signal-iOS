@@ -5,7 +5,7 @@
 
 import Foundation
 import LibSignalClient
-import SignalServiceKit
+public import SignalServiceKit
 
 public class LinkPreviewFetchState {
 

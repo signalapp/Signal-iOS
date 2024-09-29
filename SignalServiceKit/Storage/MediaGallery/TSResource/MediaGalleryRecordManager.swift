@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import GRDB
+public import GRDB
 
 public final class MediaGalleryRecordManager: NSObject {
     public static func setupDatabaseFunction(database: GRDB.Database) {

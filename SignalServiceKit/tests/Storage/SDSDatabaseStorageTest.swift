@@ -5,7 +5,7 @@
 
 import Foundation
 import XCTest
-@testable import SignalServiceKit
+@testable public import SignalServiceKit
 
 extension TSThread {
     @objc

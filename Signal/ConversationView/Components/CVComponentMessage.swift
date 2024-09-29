@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-import SignalServiceKit
-import SignalUI
+public import Foundation
+public import SignalServiceKit
+public import SignalUI
 import UIKit
 
 public class CVComponentMessage: CVComponentBase, CVRootComponent {

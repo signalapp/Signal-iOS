@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import GRDB
-import LibSignalClient
+public import GRDB
+public import LibSignalClient
 
 /// Represents a record of a call, either 1:1 or in a group.
 ///

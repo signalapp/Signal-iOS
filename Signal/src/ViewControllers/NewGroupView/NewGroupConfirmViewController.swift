@@ -5,7 +5,7 @@
 
 import SafariServices
 import SignalServiceKit
-import SignalUI
+public import SignalUI
 
 public class NewGroupConfirmViewController: OWSTableViewController2 {
 

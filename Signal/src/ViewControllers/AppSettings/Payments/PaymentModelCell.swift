@@ -5,6 +5,7 @@
 
 import SignalServiceKit
 import SignalUI
+public import UIKit
 
 public class PaymentModelCell: UITableViewCell {
     static let reuseIdentifier = "PaymentModelCell"

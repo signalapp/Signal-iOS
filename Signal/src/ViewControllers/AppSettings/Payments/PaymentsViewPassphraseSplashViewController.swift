@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalServiceKit
-import SignalUI
+public import SignalServiceKit
+public import SignalUI
 
 public protocol PaymentsViewPassphraseDelegate: AnyObject {
     func viewPassphraseDidCancel(viewController: PaymentsViewPassphraseSplashViewController)

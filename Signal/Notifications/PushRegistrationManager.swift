@@ -4,8 +4,8 @@
 //
 
 import Foundation
-import PushKit
-import SignalServiceKit
+public import PushKit
+public import SignalServiceKit
 
 public enum PushRegistrationError: Error {
     case assertionError(description: String)

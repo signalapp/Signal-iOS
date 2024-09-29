@@ -4,7 +4,7 @@
 //
 
 import LibSignalClient
-import SignalServiceKit
+public import SignalServiceKit
 
 public protocol BodyRangesTextViewDelegate: UITextViewDelegate {
     func textViewDidBeginTypingMention(_ textView: BodyRangesTextView)

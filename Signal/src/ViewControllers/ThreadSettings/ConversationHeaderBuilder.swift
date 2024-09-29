@@ -6,7 +6,7 @@
 import Foundation
 import SignalServiceKit
 import SignalUI
-import UIKit
+public import UIKit
 
 struct ConversationHeaderBuilder: Dependencies {
     weak var delegate: ConversationHeaderDelegate!

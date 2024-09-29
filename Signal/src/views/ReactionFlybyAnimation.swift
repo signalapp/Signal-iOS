@@ -5,6 +5,7 @@
 
 import SignalServiceKit
 import SignalUI
+public import UIKit
 
 public class ReactionFlybyAnimation: UIView {
     private static let maxWidth: CGFloat = 500

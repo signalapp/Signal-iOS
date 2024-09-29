@@ -4,8 +4,8 @@
 //
 
 import ContactsUI
-import SignalServiceKit
-import SignalUI
+public import SignalServiceKit
+public import SignalUI
 
 public extension ConversationViewController {
 

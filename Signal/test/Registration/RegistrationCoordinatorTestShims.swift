@@ -5,8 +5,8 @@
 
 import Foundation
 import LibSignalClient
-@testable import SignalServiceKit
-@testable import Signal
+@testable public import SignalServiceKit
+@testable public import Signal
 
 extension RegistrationCoordinatorImpl {
 

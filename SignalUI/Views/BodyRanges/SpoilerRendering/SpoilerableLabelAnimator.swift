@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import SignalServiceKit
+public import SignalServiceKit
 import UIKit
 
 /// Defines values needed to apply spoilers to a UITextView or UILabel.

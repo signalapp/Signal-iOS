@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import SwiftProtobuf
+public import SwiftProtobuf
 
 // WARNING: This code is generated. Only edit within the markers.
 

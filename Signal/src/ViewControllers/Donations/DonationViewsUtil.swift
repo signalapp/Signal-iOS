@@ -6,8 +6,8 @@
 import BonMot
 import Foundation
 import Lottie
-import SignalServiceKit
-import SignalUI
+public import SignalServiceKit
+public import SignalUI
 import UIKit
 import SafariServices
 

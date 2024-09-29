@@ -4,7 +4,7 @@
 //
 
 import SignalServiceKit
-import SignalUI
+public import SignalUI
 
 public protocol CVBackgroundContainerDelegate: AnyObject {
     func updateScrollingContent()

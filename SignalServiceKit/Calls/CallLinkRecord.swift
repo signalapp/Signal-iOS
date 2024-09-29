@@ -4,8 +4,8 @@
 //
 
 import Foundation
-import GRDB
-import SignalRingRTC
+public import GRDB
+public import SignalRingRTC
 
 public struct CallLinkRecord: Codable, PersistableRecord, FetchableRecord {
     public static let databaseTableName: String = "CallLink"

@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import libPhoneNumber_iOS
+public import libPhoneNumber_iOS
 
 private let rpDefaultsKeyPhoneNumberString = "RPDefaultsKeyPhoneNumberString"
 private let rpDefaultsKeyPhoneNumberCanonical = "RPDefaultsKeyPhoneNumberCanonical"

@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 public enum TSRegistrationState: Equatable {
     /// We are unregistered and never have been.

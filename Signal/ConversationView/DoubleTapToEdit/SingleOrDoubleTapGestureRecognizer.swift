@@ -3,7 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import UIKit
+public import UIKit
+
 public protocol SingleOrDoubleTapGestureDelegate: AnyObject {
 
     /// A single tap was recognized; return true if handled to end the gesture immediately.

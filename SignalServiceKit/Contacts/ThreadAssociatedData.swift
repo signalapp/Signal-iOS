@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import GRDB
+public import GRDB
 
 @objc
 public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, PersistableRecord {

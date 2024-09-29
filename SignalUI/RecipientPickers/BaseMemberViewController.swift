@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalServiceKit
+public import SignalServiceKit
 
 // I don't like how I implemented this, but passing a delegate all the way here
 // and to every BaseMemberViewController subclass with a method to open the QR

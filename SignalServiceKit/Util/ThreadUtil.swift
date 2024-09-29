@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import LibSignalClient
+public import LibSignalClient
 
 // MARK: - Enqueue messages
 
@@ -327,7 +327,7 @@ extension ThreadUtil {
 
 // MARK: - Sharing Suggestions
 
-import Intents
+public import Intents
 
 extension TSThread {
 

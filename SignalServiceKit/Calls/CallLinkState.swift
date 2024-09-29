@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import SignalRingRTC
+public import SignalRingRTC
 
 public struct CallLinkState {
     public let name: String?

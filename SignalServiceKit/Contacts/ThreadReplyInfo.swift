@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 /// Describes a message that is being replied to in a draft.
 public struct ThreadReplyInfo: Codable {

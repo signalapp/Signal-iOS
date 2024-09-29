@@ -5,7 +5,7 @@
 
 import Foundation
 import SignalUI
-import UIKit
+public import UIKit
 
 #if USE_DEBUG_UI
 

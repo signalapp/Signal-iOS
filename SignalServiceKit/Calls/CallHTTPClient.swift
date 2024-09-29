@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import SignalRingRTC
+public import SignalRingRTC
 
 public class CallHTTPClient {
     public let ringRtcHttpClient: SignalRingRTC.HTTPClient

@@ -4,7 +4,7 @@
 //
 
 import CryptoKit
-import LibSignalClient
+public import LibSignalClient
 
 public class OWSFingerprint {
     public let myAci: Aci

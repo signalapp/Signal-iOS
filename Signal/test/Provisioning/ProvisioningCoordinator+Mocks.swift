@@ -4,8 +4,8 @@
 //
 
 import Foundation
-@testable import Signal
-@testable import SignalServiceKit
+@testable public import Signal
+@testable public import SignalServiceKit
 
 extension ProvisioningCoordinatorImpl {
     public enum Mocks {

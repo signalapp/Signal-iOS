@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import AVFoundation
+public import AVFoundation
 
 extension AVAssetExportSession {
     /// Workaround for `export(to:as:)` not being back-deployed before iOS 18.

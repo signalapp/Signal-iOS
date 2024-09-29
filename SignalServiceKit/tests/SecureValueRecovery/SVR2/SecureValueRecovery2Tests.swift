@@ -6,7 +6,7 @@
 import Foundation
 import XCTest
 
-@testable import SignalServiceKit
+@testable public import SignalServiceKit
 
 class SecureValueRecovery2Tests: XCTestCase {
 

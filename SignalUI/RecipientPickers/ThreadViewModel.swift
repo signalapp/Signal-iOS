@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import SignalServiceKit
+public import SignalServiceKit
 
 public class ThreadViewModel: NSObject {
     public let hasUnreadMessages: Bool

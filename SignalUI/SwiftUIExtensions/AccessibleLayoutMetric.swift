@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SwiftUI
+public import SwiftUI
 
 /// A value that is automatically scaled down at accessibility dynamic type sizes.
 ///

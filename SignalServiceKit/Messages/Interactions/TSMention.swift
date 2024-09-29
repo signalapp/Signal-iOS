@@ -4,8 +4,8 @@
 //
 
 import Foundation
-import GRDB
-import LibSignalClient
+public import GRDB
+public import LibSignalClient
 
 @objc
 public final class TSMention: NSObject, SDSCodableModel, Decodable {

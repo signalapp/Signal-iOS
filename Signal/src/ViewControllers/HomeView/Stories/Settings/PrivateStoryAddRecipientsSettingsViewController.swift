@@ -4,8 +4,8 @@
 //
 
 import Foundation
-import SignalServiceKit
-import SignalUI
+public import SignalServiceKit
+public import SignalUI
 
 public class PrivateStoryAddRecipientsSettingsViewController: BaseMemberViewController {
     let thread: TSPrivateStoryThread

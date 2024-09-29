@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import GRDB
+public import GRDB
 
 extension JobRecord {
     /// Represents all of the columns in the job record database table. There

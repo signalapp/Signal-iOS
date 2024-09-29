@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import AVFoundation
+public import AVFoundation
 import Foundation
-import YYImage
+public import YYImage
 
 /// When presenting a view-once message, we:
 /// 1. copy the displayable attachment contents to a tmp file

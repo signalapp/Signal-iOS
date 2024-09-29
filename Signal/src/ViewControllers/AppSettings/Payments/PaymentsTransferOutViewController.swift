@@ -5,8 +5,8 @@
 
 import Lottie
 import MobileCoin
-import SignalServiceKit
-import SignalUI
+public import SignalServiceKit
+public import SignalUI
 
 public class PaymentsTransferOutViewController: OWSTableViewController2 {
 

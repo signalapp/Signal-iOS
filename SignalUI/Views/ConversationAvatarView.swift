@@ -6,7 +6,7 @@
 import GRDB
 import LibSignalClient
 import UIKit
-import SignalServiceKit
+public import SignalServiceKit
 
 // swiftlint:disable:next class_delegate_protocol
 public protocol ConversationAvatarViewDelegate: UIViewController {

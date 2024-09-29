@@ -4,8 +4,8 @@
 //
 
 import Foundation
-import MobileCoin
-import SignalServiceKit
+public import MobileCoin
+public import SignalServiceKit
 
 public class PaymentsReconciliation: Dependencies {
 

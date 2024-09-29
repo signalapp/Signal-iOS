@@ -3,11 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import LibSignalClient
+public import LibSignalClient
 import PassKit
 import QuickLook
-import SignalServiceKit
-import SignalUI
+public import SignalServiceKit
+public import SignalUI
 
 extension ConversationViewController: CVComponentDelegate {
 

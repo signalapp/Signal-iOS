@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import LibSignalClient
-import SignalRingRTC
+public import LibSignalClient
+public import SignalRingRTC
 
 /// Responsible for updating ``CallRecord``s in response to ring updates.
 @available(iOSApplicationExtension, unavailable)

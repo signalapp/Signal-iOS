@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import GRDB
+public import GRDB
 
 public protocol SDSRecord: Codable, FetchableRecord, PersistableRecord {
     var delegate: SDSRecordDelegate? { get set }

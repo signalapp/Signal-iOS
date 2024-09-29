@@ -6,7 +6,7 @@
 import AVKit
 import Foundation
 import LibSignalClient
-import SignalServiceKit
+public import SignalServiceKit
 import UIKit
 
 public protocol ConversationPickerDelegate: AnyObject {

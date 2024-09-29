@@ -6,7 +6,7 @@
 import CommonCrypto
 import CryptoKit
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 public struct ProvisionMessage {
     public let aci: Aci?

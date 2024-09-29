@@ -4,7 +4,7 @@
 //
 
 import SignalUI
-import UIKit
+public import UIKit
 
 public class ConversationScrollButton: UIButton {
 

@@ -4,7 +4,7 @@
 //
 
 import LibSignalClient
-import SignalRingRTC
+public import SignalRingRTC
 
 public protocol CurrentCallProvider {
     var hasCurrentCall: Bool { get }

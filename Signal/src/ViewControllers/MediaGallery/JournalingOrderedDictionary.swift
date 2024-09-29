@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import SignalServiceKit
+public import SignalServiceKit
 
 public enum JournalingOrderedDictionaryChange<ChangeType: Equatable>: Equatable, CustomDebugStringConvertible {
     public var debugDescription: String {

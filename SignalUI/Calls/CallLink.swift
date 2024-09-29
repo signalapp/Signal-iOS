@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import SignalRingRTC
+public import SignalRingRTC
 import SignalServiceKit
 
 public struct CallLink {

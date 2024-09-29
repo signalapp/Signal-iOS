@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 public class GroupsV2Impl: GroupsV2, Dependencies {
     private var urlSession: OWSURLSessionProtocol {

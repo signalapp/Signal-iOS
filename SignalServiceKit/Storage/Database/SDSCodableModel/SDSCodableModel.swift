@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import GRDB
+public import GRDB
 
 /// Provides serialization for SDS models using Swift's ``Codable``.
 ///

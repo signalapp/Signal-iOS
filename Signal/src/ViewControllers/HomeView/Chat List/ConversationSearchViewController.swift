@@ -5,7 +5,7 @@
 
 import BonMot
 import Foundation
-import SignalServiceKit
+public import SignalServiceKit
 import SignalUI
 
 /* From BonMot 6.0.0: If you're targeting iOS 15 or higher, you may want to check out [AttributedString](https://developer.apple.com/documentation/foundation/attributedstring) instead.

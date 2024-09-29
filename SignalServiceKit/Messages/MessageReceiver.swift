@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import LibSignalClient
+public import LibSignalClient
 import SignalRingRTC
 
 /// An ObjC wrapper around UnidentifiedSenderMessageContent.ContentHint

@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 public protocol MessageBackupAuthCredentialManager {
     func fetchBackupCredential(localAci: Aci, auth: ChatServiceAuth) async throws -> BackupAuthCredential

@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 import SignalRingRTC
 
 public class CallOfferHandlerImpl {

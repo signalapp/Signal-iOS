@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import LibSignalClient
+public import LibSignalClient
 
 public protocol GroupCallRecordManager {
     /// Create or update a group call record with the given parameters.

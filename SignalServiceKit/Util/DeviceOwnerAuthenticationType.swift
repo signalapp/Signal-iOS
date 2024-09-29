@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import LocalAuthentication
+public import LocalAuthentication
 
 public enum DeviceOwnerAuthenticationType {
     case unknown, passcode, faceId, touchId, opticId

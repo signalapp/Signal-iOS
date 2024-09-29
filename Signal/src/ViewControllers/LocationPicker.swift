@@ -11,8 +11,8 @@
 import Contacts
 import CoreLocation
 import CoreServices
-import MapKit
-import SignalServiceKit
+public import MapKit
+public import SignalServiceKit
 import SignalUI
 import UniformTypeIdentifiers
 

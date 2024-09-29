@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import AVFoundation
+public import AVFoundation
 
 public enum OWSMediaError: Error {
     case failure(description: String)

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import AVFAudio
+public import AVFAudio
 import SignalServiceKit
 
 public class SpeechManager: NSObject, AVSpeechSynthesizerDelegate {

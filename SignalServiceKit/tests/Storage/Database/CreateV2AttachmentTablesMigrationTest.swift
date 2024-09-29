@@ -5,7 +5,7 @@
 
 import GRDB
 @testable import SignalServiceKit
-import XCTest
+public import XCTest
 
 public class AttachmentV2MigrationTest: XCTestCase {
 

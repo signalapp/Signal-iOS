@@ -5,7 +5,7 @@
 
 import Foundation
 import MobileCoin
-import SignalServiceKit
+public import SignalServiceKit
 
 public class MobileCoinAPI: Dependencies {
 

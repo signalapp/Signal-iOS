@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 // * The "local" methods are used in response to the local user's interactions.
 // * The "remote" methods are used in response to remote activity (incoming messages,

@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 public enum MessageSenderError: Error, IsRetryableProvider, UserErrorDescriptionProvider {
     case prekeyRateLimit

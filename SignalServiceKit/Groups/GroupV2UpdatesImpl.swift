@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 public class GroupV2UpdatesImpl: Dependencies {
 

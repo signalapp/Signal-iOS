@@ -5,8 +5,8 @@
 
 import ContactsUI
 import Foundation
-import MessageUI
-import SignalServiceKit
+public import MessageUI
+public import SignalServiceKit
 
 public class InviteFlow: NSObject {
     private enum Channel {

@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 /// MessageBody is a container for a message's body as well as the `MessageBodyRanges` that
 /// apply to it.

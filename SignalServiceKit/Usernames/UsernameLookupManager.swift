@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 /// An interface for fetching and storing usernames. Note that with the
 /// exception of the local user, any stored data about an account's username is

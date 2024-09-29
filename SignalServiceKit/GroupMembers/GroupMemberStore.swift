@@ -4,7 +4,7 @@
 //
 
 import GRDB
-import LibSignalClient
+public import LibSignalClient
 
 public protocol GroupMemberStore {
     func insert(fullGroupMember: TSGroupMember, tx: DBWriteTransaction)

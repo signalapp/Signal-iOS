@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 /// Used to uniquely identify one iteration of an interaction even if edits are applied.
 /// Note that the interaction's uniqueId, rowId, and sortId always point to the latest edit,

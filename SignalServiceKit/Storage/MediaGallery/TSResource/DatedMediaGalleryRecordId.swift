@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import GRDB
+public import GRDB
 
 public struct DatedMediaGalleryRecordId: Codable, FetchableRecord {
     public var rowid: Int64 // sqlite row id of the MediaGalleryRecord

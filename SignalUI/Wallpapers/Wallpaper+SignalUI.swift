@@ -5,7 +5,7 @@
 
 import Foundation
 import PureLayout
-import SignalServiceKit
+public import SignalServiceKit
 
 extension Wallpaper {
 

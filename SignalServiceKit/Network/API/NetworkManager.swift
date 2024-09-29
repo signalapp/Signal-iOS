@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 // A class used for making HTTP requests against the main service.
 @objc

@@ -5,7 +5,7 @@
 
 import Foundation
 import LibSignalClient
-import SignalRingRTC
+public import SignalRingRTC
 import SwiftProtobuf
 
 public class StorageServiceManagerImpl: NSObject, StorageServiceManager {

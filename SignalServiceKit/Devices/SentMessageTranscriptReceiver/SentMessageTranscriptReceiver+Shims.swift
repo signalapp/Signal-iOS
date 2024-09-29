@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 extension SentMessageTranscriptReceiverImpl {
     public enum Shims {

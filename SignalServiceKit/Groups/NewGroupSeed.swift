@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 // This seed can be used to pre-generate the key group
 // state before the group is created.  This allows us

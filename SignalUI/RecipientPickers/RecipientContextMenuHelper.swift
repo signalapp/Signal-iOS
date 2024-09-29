@@ -4,7 +4,7 @@
 //
 
 import LibSignalClient
-import SignalServiceKit
+public import SignalServiceKit
 
 public protocol RecipientContextMenuHelperDelegate: AnyObject {
     func additionalActions(for address: SignalServiceAddress) -> [UIAction]

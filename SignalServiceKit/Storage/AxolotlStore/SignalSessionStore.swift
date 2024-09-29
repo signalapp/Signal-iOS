@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 public protocol SignalSessionStore: LibSignalClient.SessionStore {
     func mightContainSession(

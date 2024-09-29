@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Contacts
+public import Contacts
 
 @objc(OWSContactPhoneNumber)
 public class OWSContactPhoneNumber: MTLModel, OWSContactField {

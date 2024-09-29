@@ -4,7 +4,7 @@
 //
 
 import Contacts
-import SignalServiceKit
+public import SignalServiceKit
 
 public class ContactFieldViewHelper {
 

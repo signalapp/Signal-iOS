@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import AVFoundation
+public import AVFoundation
 import Foundation
-import YYImage
+public import YYImage
 
 /// A TSResource for which we have the fullsize data on local disk.
 public protocol TSResourceStream: TSResource {

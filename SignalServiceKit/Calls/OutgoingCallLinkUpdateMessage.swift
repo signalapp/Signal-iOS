@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import SignalRingRTC
+public import SignalRingRTC
 
 @objc(OutgoingCallLinkUpdateMessage)
 public class OutgoingCallLinkUpdateMessage: OWSOutgoingSyncMessage {

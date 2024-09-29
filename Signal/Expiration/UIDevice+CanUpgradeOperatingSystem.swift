@@ -4,6 +4,7 @@
 //
 
 import SignalServiceKit
+public import UIKit
 
 // MARK: - Protocol
 

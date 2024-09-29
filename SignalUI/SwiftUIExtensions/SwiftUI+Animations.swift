@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SwiftUI
+public import SwiftUI
 
 public extension Animation {
     static func quickSpring() -> Animation {

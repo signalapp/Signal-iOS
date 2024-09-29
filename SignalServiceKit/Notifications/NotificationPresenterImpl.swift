@@ -5,7 +5,7 @@
 
 import Foundation
 import Intents
-import LibSignalClient
+public import LibSignalClient
 
 /// There are two primary components in our system notification integration:
 ///

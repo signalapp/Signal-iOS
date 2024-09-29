@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import WebKit
+public import WebKit
 import SignalServiceKit
 
 public protocol CaptchaViewDelegate: NSObjectProtocol {

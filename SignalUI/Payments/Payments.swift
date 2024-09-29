@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import MobileCoin
-import SignalServiceKit
+public import MobileCoin
+public import SignalServiceKit
 
 @objc
 public protocol Payments: AnyObject {

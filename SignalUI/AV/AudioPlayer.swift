@@ -5,7 +5,7 @@
 
 import AVFoundation
 import MediaPlayer
-import SignalServiceKit
+public import SignalServiceKit
 
 public enum AudioBehavior {
     case unknown

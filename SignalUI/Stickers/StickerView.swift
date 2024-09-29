@@ -4,7 +4,7 @@
 //
 
 import Lottie
-import SignalServiceKit
+public import SignalServiceKit
 import YYImage
 
 public class StickerView {

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalServiceKit
+public import SignalServiceKit
 
 // TODO: This will be part of our reuse strategy.
 // We'll probably want to have reuse identifiers

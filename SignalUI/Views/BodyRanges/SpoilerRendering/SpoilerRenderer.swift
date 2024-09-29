@@ -5,7 +5,7 @@
 
 import Foundation
 import MetalKit
-import SignalServiceKit
+public import SignalServiceKit
 
 /// Produces the actual particle effects used to tile spoilered regions.
 public class SpoilerRenderer {

@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import SignalServiceKit
+public import SignalServiceKit
 
 /// Container for stateful objects needed to render spoilers.
 public class SpoilerRenderState {

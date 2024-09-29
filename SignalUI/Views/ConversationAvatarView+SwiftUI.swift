@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SwiftUI
-import SignalServiceKit
+public import SwiftUI
+public import SignalServiceKit
 
 public struct AvatarView: View {
     public typealias Configuration = ConversationAvatarView.Configuration

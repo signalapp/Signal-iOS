@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 public class OutgoingStorySentMessageTranscript: OWSOutgoingSyncMessage {
     // Exposed to ObjC and made optional for MTLModel serialization

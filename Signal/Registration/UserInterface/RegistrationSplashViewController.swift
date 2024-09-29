@@ -6,7 +6,7 @@
 import PureLayout
 import SafariServices
 import SignalServiceKit
-import SignalUI
+public import SignalUI
 
 // MARK: - RegistrationSplashPresenter
 

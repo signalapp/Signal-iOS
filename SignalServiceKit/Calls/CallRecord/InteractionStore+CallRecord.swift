@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import LibSignalClient
+public import LibSignalClient
 
 public extension InteractionStore {
     /// Fetch the interaction, of the specified type, associated with the given

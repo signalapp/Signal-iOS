@@ -5,7 +5,7 @@
 
 import BackgroundTasks
 import Foundation
-import SignalServiceKit
+public import SignalServiceKit
 
 /// Manages the BGProcessingTask for doing the migration as well as the runner for
 /// doing so while the main app is running.

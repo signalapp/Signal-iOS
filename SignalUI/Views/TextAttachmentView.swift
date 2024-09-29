@@ -5,7 +5,7 @@
 
 import Foundation
 import UIKit
-import SignalServiceKit
+public import SignalServiceKit
 
 open class TextAttachmentView: UIView {
 

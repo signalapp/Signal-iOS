@@ -4,7 +4,7 @@
 //
 
 import MobileCoin
-import SignalServiceKit
+public import SignalServiceKit
 import SignalUI
 
 public enum CVAttachment: Equatable {

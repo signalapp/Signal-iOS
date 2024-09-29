@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import GRDB
+public import GRDB
 
 public struct NicknameRecord: Codable, FetchableRecord, PersistableRecord, Equatable {
     public static let databaseTableName: String = "NicknameRecord"
