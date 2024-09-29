@@ -147,7 +147,7 @@ public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
     private actor JobRunner {
 
         private let dbProvider: () -> DatabaseWriter
-        private let fileSystem: Shims.OWSFileSystem
+        private nonisolated let fileSystem: Shims.OWSFileSystem
         private weak var cleaner: OrphanedAttachmentCleanerImpl?
 
         init(
