@@ -113,12 +113,12 @@ class DisplayableTextTest: XCTestCase {
     }
 
     func test_shouldAllowLinkification() {
-        func assertLinkifies(_ text: String, file: StaticString = #file, line: UInt = #line) {
+        func assertLinkifies(_ text: String, file: StaticString = #filePath, line: UInt = #line) {
             let displayableText = DisplayableText.testOnlyInit(fullContent: .text(text), truncatedContent: nil)
             XCTAssert(displayableText.shouldAllowLinkification, "was not linkifiable text: \(text)", file: file, line: line)
         }
 
-        func assertNotLinkifies(_ text: String, file: StaticString = #file, line: UInt = #line) {
+        func assertNotLinkifies(_ text: String, file: StaticString = #filePath, line: UInt = #line) {
             let displayableText = DisplayableText.testOnlyInit(fullContent: .text(text), truncatedContent: nil)
             XCTAssertFalse(displayableText.shouldAllowLinkification, "was linkifiable text: \(text)", file: file, line: line)
         }

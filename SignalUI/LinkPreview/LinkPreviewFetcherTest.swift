@@ -8,7 +8,7 @@ import Foundation
 @testable import SignalUI
 import XCTest
 
-func XCTAssertMatch(expectedPattern: String, actualText: String, file: StaticString = #file, line: UInt = #line) {
+func XCTAssertMatch(expectedPattern: String, actualText: String, file: StaticString = #filePath, line: UInt = #line) {
     let regex = try! NSRegularExpression(pattern: expectedPattern, options: [])
     XCTAssert(regex.hasMatch(input: actualText), "\(actualText) did not match pattern \(expectedPattern)", file: file, line: line)
 }

@@ -182,7 +182,7 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
 
     // MARK: Tests
 
-    private func AssertEqualThreadLists(_ left: [ThreadViewModel], _ right: [ThreadViewModel], file: StaticString = #file, line: UInt = #line) {
+    private func AssertEqualThreadLists(_ left: [ThreadViewModel], _ right: [ThreadViewModel], file: StaticString = #filePath, line: UInt = #line) {
         XCTAssertEqual(left.count, right.count, file: file, line: line)
         guard left.count != right.count else {
             return
@@ -479,7 +479,7 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
         XCTAssertEqual(1, getResultSet(searchText: "Bjork").messageResults.count)
     }
 
-    private func AssertValidResultSet(query: String, expectedResultCount: Int, file: StaticString = #file, line: UInt = #line) {
+    private func AssertValidResultSet(query: String, expectedResultCount: Int, file: StaticString = #filePath, line: UInt = #line) {
         // For these simple test cases, the snippet should contain the entire query.
         let expectedSnippetContent: String = query
 

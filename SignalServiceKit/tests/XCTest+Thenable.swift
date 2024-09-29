@@ -7,7 +7,7 @@ import SignalServiceKit
 import XCTest
 
 extension Thenable {
-    func expect(timeout: TimeInterval, file: StaticString = #file, line: UInt = #line) -> Value {
+    func expect(timeout: TimeInterval, file: StaticString = #filePath, line: UInt = #line) -> Value {
         let expectation = XCTestExpectation(description: "\(file):\(line)")
         var result: Value?
         self.done {

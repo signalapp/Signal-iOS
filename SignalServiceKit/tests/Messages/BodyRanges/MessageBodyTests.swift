@@ -1096,7 +1096,7 @@ final class MessageBodyTests: XCTestCase {
         names: [Aci: String],
         output: HydratedMessageBody,
         isRTL: Bool = false,
-        file: StaticString = #file,
+        file: StaticString = #filePath,
         line: UInt = #line
     ) {
         let hydrated = input.hydrating(

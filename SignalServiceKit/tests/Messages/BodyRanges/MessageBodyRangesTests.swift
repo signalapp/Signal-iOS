@@ -332,7 +332,7 @@ final class MessageBodyRangesTests: XCTestCase {
     private func assertStylesEqual(
         _ lhs: [NSRangedValue<CollapsedStyle>],
         _ rhs: [NSRangedValue<CollapsedStyle>],
-        file: StaticString = #file,
+        file: StaticString = #filePath,
         line: UInt = #line
     ) {
         XCTAssertEqual(lhs.count, rhs.count, file: file, line: line)

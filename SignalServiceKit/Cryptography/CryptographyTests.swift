@@ -9,11 +9,11 @@ import XCTest
 
 class CryptographyTestsSwift: XCTestCase {
 
-    private func Assert(unpaddedSize: UInt, hasPaddedSize paddedSize: UInt, file: StaticString = #file, line: UInt = #line) {
+    private func Assert(unpaddedSize: UInt, hasPaddedSize paddedSize: UInt, file: StaticString = #filePath, line: UInt = #line) {
         XCTAssertEqual(paddedSize, Cryptography.paddedSize(unpaddedSize: unpaddedSize), file: file, line: line)
     }
 
-    private func AssertFalse(unpaddedSize: UInt, hasPaddedSize paddedSize: UInt, file: StaticString = #file, line: UInt = #line) {
+    private func AssertFalse(unpaddedSize: UInt, hasPaddedSize paddedSize: UInt, file: StaticString = #filePath, line: UInt = #line) {
         XCTAssertNotEqual(paddedSize, Cryptography.paddedSize(unpaddedSize: unpaddedSize), file: file, line: line)
     }
 
