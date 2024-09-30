@@ -298,8 +298,11 @@ class CallLinkBulkApprovalSheet: InteractiveSheetViewController {
             return owsFailDebug("Missing parent view controller")
         }
 
-        // [CallLink] TODO: Force dark mode
-        let actionSheet = ActionSheetController(title: title, message: message)
+        let actionSheet = ActionSheetController(
+            title: title,
+            message: message,
+            theme: .translucentDark
+        )
         actionSheet.addAction(.init(title: confirmButtonTitle) { _ in action() })
         actionSheet.addAction(.cancel)
 

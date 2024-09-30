@@ -444,6 +444,8 @@ public class ActionSheetAction: NSObject {
         let style: Style
         public var releaseAction: (() -> Void)?
 
+        var theme: Theme.ActionSheet = .default
+
         var trailingIcon: ThemeIcon? {
             didSet {
                 trailingIconView.isHidden = trailingIcon == nil
@@ -451,7 +453,7 @@ public class ActionSheetAction: NSObject {
                 if let trailingIcon = trailingIcon {
                     trailingIconView.setTemplateImage(
                         Theme.iconImage(trailingIcon),
-                        tintColor: Theme.ActionSheet.default.buttonTextColor
+                        tintColor: theme.buttonTextColor
                     )
                 }
 
@@ -466,7 +468,7 @@ public class ActionSheetAction: NSObject {
                 if let leadingIcon = leadingIcon {
                     leadingIconView.setTemplateImage(
                         Theme.iconImage(leadingIcon),
-                        tintColor: Theme.ActionSheet.default.buttonTextColor
+                        tintColor: theme.buttonTextColor
                     )
                 }
 
@@ -504,7 +506,7 @@ public class ActionSheetAction: NSObject {
             style = action.style
             super.init(frame: .zero)
 
-            setBackgroundImage(UIImage.image(color: Theme.ActionSheet.default.buttonHighlightColor), for: .highlighted)
+            setBackgroundImage(UIImage.image(color: theme.buttonHighlightColor), for: .highlighted)
 
             [leadingIconView, trailingIconView].forEach { iconView in
                 addSubview(iconView)
@@ -537,17 +539,19 @@ public class ActionSheetAction: NSObject {
             switch style {
             case .default:
                 titleLabel?.font = isSingletonButton ? .dynamicTypeBodyClamped.semibold() : .dynamicTypeBodyClamped
-                setTitleColor(Theme.ActionSheet.default.buttonTextColor, for: .init())
+                setTitleColor(theme.buttonTextColor, for: .init())
             case .cancel:
                 titleLabel?.font = .dynamicTypeBodyClamped.semibold()
-                setTitleColor(Theme.ActionSheet.default.buttonTextColor, for: .init())
+                setTitleColor(theme.buttonTextColor, for: .init())
             case .destructive:
                 titleLabel?.font = isSingletonButton ? .dynamicTypeBodyClamped.semibold() : .dynamicTypeBodyClamped
-                setTitleColor(Theme.ActionSheet.default.destructiveButtonTextColor, for: .init())
+                setTitleColor(theme.destructiveButtonTextColor, for: .init())
             }
         }
 
         public func applyActionSheetTheme(_ theme: Theme.ActionSheet) {
+            self.theme = theme
+
             // Recolor everything based on the requested theme
             setBackgroundImage(UIImage.image(color: theme.buttonHighlightColor), for: .highlighted)
 

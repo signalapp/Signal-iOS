@@ -534,12 +534,14 @@ extension CallDrawerSheet: GroupCallMemberCellDelegate {
             return owsFailDebug("Missing view model for demux ID")
         }
 
-        // [CallLink] TODO: Dark theme
         // [CallLink] TODO: Localize
-        let actionSheet = ActionSheetController(title: String(
-            format: "Remove %@ from the call?",
-            name
-        ))
+        let actionSheet = ActionSheetController(
+            title: String(
+                format: "Remove %@ from the call?",
+                name
+            ),
+            theme: .translucentDark
+        )
         // [CallLink] TODO: Localize
         actionSheet.addAction(.init(
             title: "Remove"
