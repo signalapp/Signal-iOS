@@ -450,7 +450,7 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
 
     // MARK: Card number
 
-    static func formatCardNumber(unformatted: String) -> String {
+    nonisolated static func formatCardNumber(unformatted: String) -> String {
         var gaps: Set<Int>
         switch CreditAndDebitCards.cardType(ofNumber: unformatted) {
         case .americanExpress: gaps = [4, 10]
@@ -485,7 +485,7 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
 
     // MARK: Expiration date
 
-    static func formatExpirationDate(unformatted: String) -> String {
+    nonisolated static func formatExpirationDate(unformatted: String) -> String {
         switch unformatted.count {
         case 0:
             return unformatted
@@ -574,7 +574,7 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
 
     // MARK: IBAN
 
-    static func formatIBAN(unformatted: String) -> String {
+    nonisolated private static func formatIBAN(unformatted: String) -> String {
         let gaps: Set<Int> = [4, 8, 12, 16, 20, 24, 28, 32]
 
         var result = unformatted.enumerated().reduce(into: [Character]()) { (partialResult, item) in
