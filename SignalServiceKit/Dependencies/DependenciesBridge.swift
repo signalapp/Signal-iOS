@@ -56,7 +56,7 @@ public class DependenciesBridge {
     public let backupAttachmentUploadManager: BackupAttachmentUploadManager
     public let badgeCountFetcher: BadgeCountFetcher
     public let callLinkStore: any CallLinkRecordStore
-    public let callRecordDeleteManager: CallRecordDeleteManager
+    let callRecordDeleteManager: any CallRecordDeleteManager
     public let callRecordMissedCallManager: CallRecordMissedCallManager
     public let callRecordQuerier: CallRecordQuerier
     public let callRecordStore: CallRecordStore

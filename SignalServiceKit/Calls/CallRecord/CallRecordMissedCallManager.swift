@@ -130,11 +130,16 @@ class CallRecordMissedCallManagerImpl: CallRecordMissedCallManager {
         sendSyncMessage: Bool,
         tx: DBWriteTransaction
     ) {
+        let threadRowId: Int64
+        switch beforeCallRecord.conversationId {
+        case .thread(let threadRowId2):
+            threadRowId = threadRowId2
+        }
         let markedAsReadCount = _markUnreadCallsAsRead(
             fetchOrdering: fetchOrdering(
                 forBeforeTimestamp: beforeCallRecord.callBeganTimestamp
             ),
-            threadRowId: beforeCallRecord.threadRowId,
+            threadRowId: threadRowId,
             tx: tx
         )
 

@@ -478,8 +478,8 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         }
 
         let callRecordIdForGroupCall = CallRecord.ID(
-            callId: notification.callId,
-            threadRowId: notification.groupThreadRowId
+            conversationId: .thread(threadRowId: notification.groupThreadRowId),
+            callId: notification.callId
         )
 
         reloadRows(callRecordIds: [callRecordIdForGroupCall])
@@ -765,8 +765,8 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     ) -> CallViewModel {
         owsPrecondition(!callRecords.isEmpty)
         owsPrecondition(
-            Set(callRecords.map(\.threadRowId)).count == 1,
-            "Coalesced call records were for a different thread than the primary!"
+            Set(callRecords.map(\.conversationId)).count == 1,
+            "Coalesced call records were for a different conversation than the primary!"
         )
         owsPrecondition(
             Set(callRecords.map(\.callDirection)).count == 1,
@@ -783,8 +783,14 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
         let mostRecentCallRecord = callRecords.first!
 
+        let threadRowId: Int64
+        switch mostRecentCallRecord.conversationId {
+        case .thread(let threadRowId2):
+            threadRowId = threadRowId2
+        }
+
         guard let callThread = deps.threadStore.fetchThread(
-            rowId: mostRecentCallRecord.threadRowId,
+            rowId: threadRowId,
             tx: tx.asV2Read
         ) else {
             owsFail("Missing thread for call record! This should be impossible, per the DB schema.")
@@ -1166,15 +1172,15 @@ private extension SignalCall {
 
     var callRecordId: CallRecord.ID? {
         guard let callId else { return nil }
-        return CallRecord.ID(callId: callId, threadRowId: threadRowId)
+        return CallRecord.ID(conversationId: conversationId, callId: callId)
     }
 
-    private var threadRowId: Int64 {
+    private var conversationId: CallRecord.ConversationID {
         switch mode {
         case .individual(let call):
-            return call.thread.sqliteRowId!
+            return .thread(threadRowId: call.thread.sqliteRowId!)
         case .groupThread(let call):
-            return call.groupThread.sqliteRowId!
+            return .thread(threadRowId: call.groupThread.sqliteRowId!)
         case .callLink:
             owsFail("[CallLink] TODO: Can't fetch threadRowId for a CallLink call")
         }
@@ -1188,7 +1194,7 @@ private extension CallRecordStore {
     ) -> CallRecordStore.MaybeDeletedFetchResult {
         return fetch(
             callId: callRecordId.callId,
-            threadRowId: callRecordId.threadRowId,
+            conversationId: callRecordId.conversationId,
             tx: tx.asV2Read
         )
     }

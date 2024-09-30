@@ -73,11 +73,12 @@ final class IncomingCallEventSyncMessageManagerImpl: IncomingCallEventSyncMessag
                 logger.error("Missing contact thread for incoming call event sync message!")
                 return
             }
+            let contactThreadReference = CallRecord.ConversationID.thread(threadRowId: contactThreadRowId)
 
             if case .deleted = syncMessageEvent {
                 deleteCallRecordForIncomingSyncMessage(
                     callId: callId,
-                    threadRowId: contactThreadRowId,
+                    conversationId: contactThreadReference,
                     logger: logger,
                     tx: tx
                 )
@@ -104,7 +105,7 @@ final class IncomingCallEventSyncMessageManagerImpl: IncomingCallEventSyncMessag
 
             switch callRecordStore.fetch(
                 callId: callId,
-                threadRowId: contactThreadRowId,
+                conversationId: contactThreadReference,
                 tx: tx
             ) {
             case .matchDeleted:
@@ -150,11 +151,12 @@ final class IncomingCallEventSyncMessageManagerImpl: IncomingCallEventSyncMessag
                 logger.error("Missing group thread for incoming call event sync message!")
                 return
             }
+            let groupThreadReference = CallRecord.ConversationID.thread(threadRowId: groupThreadRowId)
 
             if case .deleted = syncMessageEvent {
                 deleteCallRecordForIncomingSyncMessage(
                     callId: callId,
-                    threadRowId: groupThreadRowId,
+                    conversationId: groupThreadReference,
                     logger: logger,
                     tx: tx
                 )
@@ -163,7 +165,7 @@ final class IncomingCallEventSyncMessageManagerImpl: IncomingCallEventSyncMessag
 
             switch callRecordStore.fetch(
                 callId: callId,
-                threadRowId: groupThreadRowId,
+                conversationId: groupThreadReference,
                 tx: tx
             ) {
             case .matchDeleted:
@@ -294,13 +296,13 @@ final class IncomingCallEventSyncMessageManagerImpl: IncomingCallEventSyncMessag
 private extension IncomingCallEventSyncMessageManagerImpl {
     func deleteCallRecordForIncomingSyncMessage(
         callId: UInt64,
-        threadRowId: Int64,
+        conversationId: CallRecord.ConversationID,
         logger: PrefixedLogger,
         tx: DBWriteTransaction
     ) {
         switch callRecordStore.fetch(
             callId: callId,
-            threadRowId: threadRowId,
+            conversationId: conversationId,
             tx: tx
         ) {
         case .matchDeleted:
@@ -318,7 +320,7 @@ private extension IncomingCallEventSyncMessageManagerImpl {
         case .matchNotFound:
             callRecordDeleteManager.markCallAsDeleted(
                 callId: callId,
-                threadRowId: threadRowId,
+                conversationId: conversationId,
                 tx: tx
             )
         }

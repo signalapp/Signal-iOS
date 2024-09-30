@@ -476,15 +476,17 @@ private extension CallRecord {
 
     /// Whether the given call record can be coalesced under this call record.
     func isValidCoalescingAnchor(for otherCallRecord: CallRecord) -> Bool {
-        guard
-            threadRowId == otherCallRecord.threadRowId,
-            callDirection == otherCallRecord.callDirection,
-            callStatus.isMissedCall == otherCallRecord.callStatus.isMissedCall,
-            callBeganDate.addingTimeInterval(-Constants.coalescingTimeWindow) < otherCallRecord.callBeganDate
-        else {
+        switch (conversationId, otherCallRecord.conversationId) {
+        case (.thread(let threadRowId), .thread(let otherThreadRowId)) where threadRowId == otherThreadRowId:
+            break
+        case (.thread(_), .thread(_)):
             return false
         }
-        return true
+        return (
+            callDirection == otherCallRecord.callDirection
+            && callStatus.isMissedCall == otherCallRecord.callStatus.isMissedCall
+            && callBeganDate.addingTimeInterval(-Constants.coalescingTimeWindow) < otherCallRecord.callBeganDate
+        )
     }
 }
 

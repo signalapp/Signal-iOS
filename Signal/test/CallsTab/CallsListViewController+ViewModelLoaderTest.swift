@@ -569,8 +569,8 @@ private struct SequentialTimestampBuilder {
 private extension CallRecord.ID {
     static func fixture(callId: UInt64, threadRowId: Int64 = 0) -> CallRecord.ID {
         return CallRecord.ID(
-            callId: callId,
-            threadRowId: threadRowId
+            conversationId: .thread(threadRowId: threadRowId),
+            callId: callId
         )
     }
 }

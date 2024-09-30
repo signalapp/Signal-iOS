@@ -201,7 +201,7 @@ public class GroupCallManager {
             // interaction.
             switch self.callRecordStore.fetch(
                 callId: currentCallId.rawValue,
-                threadRowId: groupThreadRowId,
+                conversationId: .thread(threadRowId: groupThreadRowId),
                 tx: tx.asV2Write
             ) {
             case .matchNotFound:
@@ -419,7 +419,7 @@ public class GroupCallManager {
 
             switch self.callRecordStore.fetch(
                 callId: callId.rawValue,
-                threadRowId: groupThreadRowId,
+                conversationId: .thread(threadRowId: groupThreadRowId),
                 tx: tx.asV2Read
             ) {
             case .matchDeleted:

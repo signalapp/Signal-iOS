@@ -104,13 +104,15 @@ class GroupCallRecordRingingCleanupManager {
         /// groupings to load the group thread for each row ID.
         let callRecordsByGroupThread: [(TSGroupThread, [CallRecord])] = Dictionary(
             grouping: callRecordsToPeek,
-            by: { $0.threadRowId }
-        ).compactMap { (threadRowId, callRecords) -> (TSGroupThread, [CallRecord])? in
-            guard let groupThread = threadStore.fetchThread(
-                rowId: threadRowId, tx: tx
-            ) as? TSGroupThread else { return nil }
-
-            return (groupThread, callRecords)
+            by: { $0.conversationId }
+        ).compactMap { (conversationId, callRecords) -> (TSGroupThread, [CallRecord])? in
+            switch conversationId {
+            case .thread(let threadRowId):
+                guard let groupThread = threadStore.fetchThread(
+                    rowId: threadRowId, tx: tx
+                ) as? TSGroupThread else { return nil }
+                return (groupThread, callRecords)
+            }
         }
 
         for (groupThread, callRecords) in callRecordsByGroupThread {
@@ -131,7 +133,7 @@ class GroupCallRecordRingingCleanupManager {
         groupThread: TSGroupThread,
         callRecords: [CallRecord]
     ) async throws {
-        owsPrecondition(callRecords.allSatisfy { $0.threadRowId == groupThread.sqliteRowId! })
+        owsPrecondition(callRecords.allSatisfy { $0.conversationId == .thread(threadRowId: groupThread.sqliteRowId!) })
 
         let peekInfo = try await self.groupCallPeekClient.fetchPeekInfo(
             groupThread: groupThread

@@ -81,7 +81,7 @@ public final class GroupCallRecordRingUpdateHandler: GroupCallRecordRingUpdateDe
 
         switch callRecordStore.fetch(
             callId: callId,
-            threadRowId: groupThreadRowId,
+            conversationId: .thread(threadRowId: groupThreadRowId),
             tx: tx
         ) {
         case .matchDeleted:

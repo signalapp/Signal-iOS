@@ -14,9 +14,9 @@ final class MockCallRecordDeleteManager: CallRecordDeleteManager {
         deleteCallRecordMock!(callRecord, sendSyncMessageOnDelete)
     }
 
-    var markCallAsDeletedMock: ((_ callId: UInt64, _ threadRowId: Int64) -> Void)?
-    func markCallAsDeleted(callId: UInt64, threadRowId: Int64, tx: DBWriteTransaction) {
-        markCallAsDeletedMock!(callId, threadRowId)
+    var markCallAsDeletedMock: ((_ callId: UInt64, _ conversationId: CallRecord.ConversationID) -> Void)?
+    func markCallAsDeleted(callId: UInt64, conversationId: CallRecord.ConversationID, tx: DBWriteTransaction) {
+        markCallAsDeletedMock!(callId, conversationId)
     }
 }
 

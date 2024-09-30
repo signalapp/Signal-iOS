@@ -131,7 +131,7 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
 
         switch callRecordStore.fetch(
             callId: callId,
-            threadRowId: contactThreadRowId,
+            conversationId: .thread(threadRowId: contactThreadRowId),
             tx: tx
         ) {
         case .matchDeleted:

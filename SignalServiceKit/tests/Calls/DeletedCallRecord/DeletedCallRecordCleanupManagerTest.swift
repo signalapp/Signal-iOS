@@ -172,7 +172,7 @@ private extension DeletedCallRecord {
     static func fixture(deletedAtSeconds: UInt64) -> DeletedCallRecord {
         return DeletedCallRecord(
             callId: .maxRandom,
-            threadRowId: .maxRandom,
+            conversationId: .thread(threadRowId: .maxRandom),
             deletedAtTimestamp: deletedAtSeconds.milliseconds
         )
     }

@@ -46,7 +46,7 @@ final class DeletedCallRecordStoreTest: XCTestCase {
         _ = inMemoryDB.read { tx in
             deletedCallRecordStore.fetch(
                 callId: 1234,
-                threadRowId: 6789,
+                conversationId: .thread(threadRowId: 6789),
                 db: InMemoryDB.shimOnlyBridge(tx).db
             )
         }
@@ -59,7 +59,7 @@ final class DeletedCallRecordStoreTest: XCTestCase {
 
         let inserted = DeletedCallRecord(
             callId: 1234,
-            threadRowId: threadRowId,
+            conversationId: .thread(threadRowId: threadRowId),
             deletedAtTimestamp: 9
         )
 
@@ -73,7 +73,7 @@ final class DeletedCallRecordStoreTest: XCTestCase {
         inMemoryDB.read(block: { tx in
             XCTAssertTrue(deletedCallRecordStore.contains(
                 callId: 1234,
-                threadRowId: threadRowId,
+                conversationId: .thread(threadRowId: threadRowId),
                 db: InMemoryDB.shimOnlyBridge(tx).db
             ))
         })
@@ -83,7 +83,7 @@ final class DeletedCallRecordStoreTest: XCTestCase {
         let threadRowId = insertThread()
         let record = DeletedCallRecord(
             callId: 1234,
-            threadRowId: threadRowId,
+            conversationId: .thread(threadRowId: threadRowId),
             deletedAtTimestamp: 9
         )
 
@@ -104,7 +104,7 @@ final class DeletedCallRecordStoreTest: XCTestCase {
         inMemoryDB.read(block: { tx in
             XCTAssertFalse(deletedCallRecordStore.contains(
                 callId: 1234,
-                threadRowId: threadRowId,
+                conversationId: .thread(threadRowId: threadRowId),
                 db: InMemoryDB.shimOnlyBridge(tx).db
             ))
         })
@@ -114,9 +114,9 @@ final class DeletedCallRecordStoreTest: XCTestCase {
 
     func testNextDeletedRecordUsesIndex() {
         let records: [DeletedCallRecord] = [
-            .init(callId: 2, threadRowId: insertThread(), deletedAtTimestamp: 2),
-            .init(callId: 1, threadRowId: insertThread(), deletedAtTimestamp: 1),
-            .init(callId: 3, threadRowId: insertThread(), deletedAtTimestamp: 3),
+            .init(callId: 2, conversationId: .thread(threadRowId: insertThread()), deletedAtTimestamp: 2),
+            .init(callId: 1, conversationId: .thread(threadRowId: insertThread()), deletedAtTimestamp: 1),
+            .init(callId: 3, conversationId: .thread(threadRowId: insertThread()), deletedAtTimestamp: 3),
         ]
 
         inMemoryDB.write { tx in
@@ -147,7 +147,7 @@ final class DeletedCallRecordStoreTest: XCTestCase {
 
         let deletedCallRecord = DeletedCallRecord(
             callId: .maxRandom,
-            threadRowId: fromThreadRowId,
+            conversationId: .thread(threadRowId: fromThreadRowId),
             deletedAtTimestamp: 9
         )
 
@@ -161,7 +161,7 @@ final class DeletedCallRecordStoreTest: XCTestCase {
         inMemoryDB.read { tx in
             XCTAssertTrue(deletedCallRecordStore.contains(
                 callId: deletedCallRecord.callId,
-                threadRowId: fromThreadRowId,
+                conversationId: .thread(threadRowId: fromThreadRowId),
                 db: InMemoryDB.shimOnlyBridge(tx).db
             ))
         }
@@ -177,13 +177,13 @@ final class DeletedCallRecordStoreTest: XCTestCase {
         inMemoryDB.read { tx in
             XCTAssertFalse(deletedCallRecordStore.contains(
                 callId: deletedCallRecord.callId,
-                threadRowId: fromThreadRowId,
+                conversationId: .thread(threadRowId: fromThreadRowId),
                 db: InMemoryDB.shimOnlyBridge(tx).db
             ))
 
             XCTAssertTrue(deletedCallRecordStore.contains(
                 callId: deletedCallRecord.callId,
-                threadRowId: toThreadRowId,
+                conversationId: .thread(threadRowId: toThreadRowId),
                 db: InMemoryDB.shimOnlyBridge(tx).db
             ))
         }

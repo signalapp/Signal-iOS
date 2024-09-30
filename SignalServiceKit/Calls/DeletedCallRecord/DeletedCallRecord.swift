@@ -32,17 +32,10 @@ final class DeletedCallRecord: Codable, PersistableRecord, FetchableRecord {
     /// been inserted.
     private(set) var id: Int64?
 
-    /// A string representation of the UInt64 ID for this call.
-    ///
-    /// SQLite stores values as Int64 and we've had issues with UInt64 and GRDB,
-    /// so as a workaround we store it as a string.
-    private let callIdString: String
-
     /// The unique ID of this call, shared across clients.
-    var callId: UInt64 { return UInt64(callIdString)! }
+    let callId: UInt64
 
-    /// The SQLite row ID of the thread this call belongs to.
-    let threadRowId: Int64
+    let conversationId: CallRecord.ConversationID
 
     /// The timestamp at which the ``CallRecord`` this record represents was
     /// deleted.
@@ -50,23 +43,42 @@ final class DeletedCallRecord: Codable, PersistableRecord, FetchableRecord {
 
     init(
         callId: UInt64,
-        threadRowId: Int64,
+        conversationId: CallRecord.ConversationID,
         deletedAtTimestamp: UInt64 = Date().ows_millisecondsSince1970
     ) {
-        self.callIdString = String(callId)
-        self.threadRowId = threadRowId
+        self.callId = callId
+        self.conversationId = conversationId
         self.deletedAtTimestamp = deletedAtTimestamp
     }
 
     convenience init(callRecord: CallRecord) {
         self.init(
             callId: callRecord.callId,
-            threadRowId: callRecord.threadRowId
+            conversationId: callRecord.conversationId
         )
     }
 
     public func didInsert(with rowID: Int64, for column: String?) {
         id = rowID
+    }
+
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try container.decodeIfPresent(Int64.self, forKey: .id)
+        self.callId = UInt64(try container.decode(String.self, forKey: .callIdString))!
+        self.conversationId = .thread(threadRowId: try container.decode(Int64.self, forKey: .threadRowId))
+        self.deletedAtTimestamp = UInt64(bitPattern: try container.decode(Int64.self, forKey: .deletedAtTimestamp))
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encodeIfPresent(self.id, forKey: .id)
+        try container.encode(String(self.callId), forKey: .callIdString)
+        switch self.conversationId {
+        case .thread(let threadRowId):
+            try container.encode(threadRowId, forKey: .threadRowId)
+        }
+        try container.encode(Int64(bitPattern: self.deletedAtTimestamp), forKey: .deletedAtTimestamp)
     }
 }
 
@@ -74,27 +86,19 @@ final class DeletedCallRecord: Codable, PersistableRecord, FetchableRecord {
 
 extension DeletedCallRecord {
     func matches(callRecord: CallRecord) -> Bool {
-        if
-            callId == callRecord.callId,
-            threadRowId == callRecord.threadRowId
-        {
-            return true
-        }
-
-        return false
+        return (
+            self.callId == callRecord.callId
+            && self.conversationId == callRecord.conversationId
+        )
     }
 
     func matches(_ other: DeletedCallRecord) -> Bool {
-        if
-            id == other.id,
-            callId == other.callId,
-            threadRowId == other.threadRowId,
-            deletedAtTimestamp == other.deletedAtTimestamp
-        {
-            return true
-        }
-
-        return false
+        return (
+            self.id == other.id
+            && self.callId == other.callId
+            && self.conversationId == other.conversationId
+            && self.deletedAtTimestamp == other.deletedAtTimestamp
+        )
     }
 }
 

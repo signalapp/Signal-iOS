@@ -59,7 +59,7 @@ final class CallRecordStoreTest: XCTestCase {
         _ = inMemoryDB.read { tx in
             callRecordStore.fetch(
                 callId: 1234,
-                threadRowId: 6789,
+                conversationId: .thread(threadRowId: 6789),
                 db: InMemoryDB.shimOnlyBridge(tx).db
             )
         }
@@ -101,7 +101,7 @@ final class CallRecordStoreTest: XCTestCase {
         let fetchedByCallId = inMemoryDB.read { tx in
             callRecordStore.fetch(
                 callId: callRecord.callId,
-                threadRowId: callRecord.threadRowId,
+                conversationId: .thread(threadRowId: callRecord.threadRowId),
                 db: InMemoryDB.shimOnlyBridge(tx).db
             ).unwrapped
         }
@@ -119,14 +119,14 @@ final class CallRecordStoreTest: XCTestCase {
 
         mockDeletedCallRecordStore.deletedCallRecords.append(DeletedCallRecord(
             callId: callId,
-            threadRowId: threadRowId,
+            conversationId: .thread(threadRowId: threadRowId),
             deletedAtTimestamp: 9
         ))
 
         inMemoryDB.read { tx in
             switch callRecordStore.fetch(
                 callId: callId,
-                threadRowId: threadRowId,
+                conversationId: .thread(threadRowId: threadRowId),
                 db: InMemoryDB.shimOnlyBridge(tx).db
             ) {
             case .matchFound, .matchNotFound:
@@ -162,7 +162,7 @@ final class CallRecordStoreTest: XCTestCase {
 
                 switch callRecordStore.fetch(
                     callId: callRecord.callId,
-                    threadRowId: callRecord.threadRowId,
+                    conversationId: .thread(threadRowId: callRecord.threadRowId),
                     db: InMemoryDB.shimOnlyBridge(tx).db
                 ) {
                 case .matchNotFound:
@@ -195,7 +195,7 @@ final class CallRecordStoreTest: XCTestCase {
         let fetched = inMemoryDB.read { tx in
             callRecordStore.fetch(
                 callId: callRecord.callId,
-                threadRowId: callRecord.threadRowId,
+                conversationId: .thread(threadRowId: callRecord.threadRowId),
                 db: InMemoryDB.shimOnlyBridge(tx).db
             ).unwrapped
         }
@@ -251,7 +251,7 @@ final class CallRecordStoreTest: XCTestCase {
 
                 let fetched = callRecordStore.fetch(
                     callId: callRecord.callId,
-                    threadRowId: callRecord.threadRowId,
+                    conversationId: .thread(threadRowId: callRecord.threadRowId),
                     db: InMemoryDB.shimOnlyBridge(tx).db
                 ).unwrapped
                 XCTAssertTrue(callRecord.matches(fetched))
@@ -275,7 +275,7 @@ final class CallRecordStoreTest: XCTestCase {
         let fetched = inMemoryDB.read { tx in
             callRecordStore.fetch(
                 callId: unreadCallRecord.callId,
-                threadRowId: unreadCallRecord.threadRowId,
+                conversationId: .thread(threadRowId: unreadCallRecord.threadRowId),
                 db: InMemoryDB.shimOnlyBridge(tx).db
             ).unwrapped
         }
@@ -304,7 +304,7 @@ final class CallRecordStoreTest: XCTestCase {
         let fetched = inMemoryDB.read { tx in
             callRecordStore.fetch(
                 callId: callRecord.callId,
-                threadRowId: newThreadRowId,
+                conversationId: .thread(threadRowId: newThreadRowId),
                 db: InMemoryDB.shimOnlyBridge(tx).db
             ).unwrapped
         }
@@ -335,7 +335,7 @@ final class CallRecordStoreTest: XCTestCase {
         inMemoryDB.read { tx in
             switch callRecordStore.fetch(
                 callId: callRecord.callId,
-                threadRowId: callRecord.threadRowId,
+                conversationId: .thread(threadRowId: callRecord.threadRowId),
                 db: InMemoryDB.shimOnlyBridge(tx).db
             ) {
             case .matchNotFound:
@@ -555,5 +555,19 @@ private extension CallRecord {
         record.sqliteRowId = id
 
         return record
+    }
+
+    var threadRowId: Int64 {
+        switch conversationId {
+        case .thread(let threadRowId):
+            return threadRowId
+        }
+    }
+
+    var interactionRowId: Int64 {
+        switch interactionReference {
+        case .thread(threadRowId: _, let interactionRowId):
+            return interactionRowId
+        }
     }
 }

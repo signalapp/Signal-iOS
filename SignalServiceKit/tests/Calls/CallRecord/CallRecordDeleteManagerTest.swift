@@ -149,7 +149,7 @@ final class CallRecordDeleteManagerTest: XCTestCase {
         XCTAssertEqual(mockDeletedCallRecordStore.deletedCallRecords.count, 0)
 
         mockDB.write { tx in
-            deleteManager.markCallAsDeleted(callId: .maxRandom, threadRowId: .maxRandom, tx: tx)
+            deleteManager.markCallAsDeleted(callId: .maxRandom, conversationId: .thread(threadRowId: .maxRandom), tx: tx)
 
             XCTAssertEqual(mockOutgoingCallEventSyncMessageManager.syncMessageSendCount, 0)
             XCTAssertEqual(mockDeletedCallRecordCleanupManager.cleanupStartCount, 1)

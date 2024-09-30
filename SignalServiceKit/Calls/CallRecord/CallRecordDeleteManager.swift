@@ -14,7 +14,7 @@ import LibSignalClient
 /// - SeeAlso ``DeletedCallRecord``
 /// - SeeAlso ``DeletedCallRecordCleanupManager``
 /// - SeeAlso ``CallRecordStore/delete(callRecords:tx:)``
-public protocol CallRecordDeleteManager {
+protocol CallRecordDeleteManager {
     /// Delete the given call record.
     ///
     /// - Important
@@ -46,7 +46,7 @@ public protocol CallRecordDeleteManager {
     /// delete, as it isn't actually deleting a call this device knows about.
     func markCallAsDeleted(
         callId: UInt64,
-        threadRowId: Int64,
+        conversationId: CallRecord.ConversationID,
         tx: DBWriteTransaction
     )
 }
@@ -90,14 +90,14 @@ final class CallRecordDeleteManagerImpl: CallRecordDeleteManager {
 
     func markCallAsDeleted(
         callId: UInt64,
-        threadRowId: Int64,
+        conversationId: CallRecord.ConversationID,
         tx: DBWriteTransaction
     ) {
         insertDeletedCallRecords(
             deletedCallRecords: [
                 DeletedCallRecord(
                     callId: callId,
-                    threadRowId: threadRowId
+                    conversationId: conversationId
                 )
             ],
             tx: tx
@@ -122,8 +122,13 @@ final class CallRecordDeleteManagerImpl: CallRecordDeleteManager {
 
         if sendSyncMessageOnDelete {
             for callRecord in callRecords {
+                let threadRowId: Int64
+                switch callRecord.conversationId {
+                case .thread(let threadRowId2):
+                    threadRowId = threadRowId2
+                }
                 guard let thread = threadStore.fetchThread(
-                    rowId: callRecord.threadRowId, tx: tx
+                    rowId: threadRowId, tx: tx
                 ) else {
                     owsFailBeta("Missing thread for call record!")
                     continue

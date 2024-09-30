@@ -2163,7 +2163,6 @@
 		D9750FBB2C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_09.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9750F9D2C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_09.binproto */; };
 		D9750FBC2C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_06.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9750F9E2C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_06.txtproto */; };
 		D979CC262AD3933B006AAC49 /* IndividualCallRecordManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC1F2AD3933B006AAC49 /* IndividualCallRecordManager.swift */; };
-		D979CC282AD3933B006AAC49 /* ThreadStore+CallRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC212AD3933B006AAC49 /* ThreadStore+CallRecord.swift */; };
 		D979CC292AD3933B006AAC49 /* OutgoingCallEventSyncMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC222AD3933B006AAC49 /* OutgoingCallEventSyncMessageManager.swift */; };
 		D979CC2B2AD3933B006AAC49 /* InteractionStore+CallRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC242AD3933B006AAC49 /* InteractionStore+CallRecord.swift */; };
 		D979CC3A2AD3964E006AAC49 /* Numbers+Random.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC392AD3964E006AAC49 /* Numbers+Random.swift */; };
@@ -5791,7 +5790,6 @@
 		D9750F9E2C920A6400A4D4F0 /* chat_item_standard_message_special_attachments_06.txtproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = chat_item_standard_message_special_attachments_06.txtproto; path = "Signal-Message-Backup-Tests/test-cases/chat_item_standard_message_special_attachments_06.txtproto"; sourceTree = "<group>"; };
 		D979CC1F2AD3933B006AAC49 /* IndividualCallRecordManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndividualCallRecordManager.swift; sourceTree = "<group>"; };
 		D979CC202AD3933B006AAC49 /* IncomingCallEventSyncMessageManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IncomingCallEventSyncMessageManager.swift; sourceTree = "<group>"; };
-		D979CC212AD3933B006AAC49 /* ThreadStore+CallRecord.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ThreadStore+CallRecord.swift"; sourceTree = "<group>"; };
 		D979CC222AD3933B006AAC49 /* OutgoingCallEventSyncMessageManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutgoingCallEventSyncMessageManager.swift; sourceTree = "<group>"; };
 		D979CC242AD3933B006AAC49 /* InteractionStore+CallRecord.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "InteractionStore+CallRecord.swift"; sourceTree = "<group>"; };
 		D979CC252AD3933B006AAC49 /* IncomingCallEventSyncMessageParams.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IncomingCallEventSyncMessageParams.swift; sourceTree = "<group>"; };
@@ -11304,7 +11302,6 @@
 				D979CC1F2AD3933B006AAC49 /* IndividualCallRecordManager.swift */,
 				D979CC242AD3933B006AAC49 /* InteractionStore+CallRecord.swift */,
 				D979CC222AD3933B006AAC49 /* OutgoingCallEventSyncMessageManager.swift */,
-				D979CC212AD3933B006AAC49 /* ThreadStore+CallRecord.swift */,
 			);
 			path = CallRecord;
 			sourceTree = "<group>";
@@ -17559,7 +17556,6 @@
 				45161BA928A2E54B0055AB45 /* ThreadReplyInfo.swift in Sources */,
 				502D45482A0AD7BE00B8BCE0 /* ThreadReplyInfoStore.swift in Sources */,
 				D9F9A63F2C013EF100EF13EC /* ThreadSoftDeleteManager.swift in Sources */,
-				D979CC282AD3933B006AAC49 /* ThreadStore+CallRecord.swift in Sources */,
 				5033D46129D638FD007FEADA /* ThreadStore.swift in Sources */,
 				725465252BA017EF00EABFD2 /* ThreadUtil.swift in Sources */,
 				F9C5CD90289453B300548EEE /* TimeElapsedChallenge.swift in Sources */,

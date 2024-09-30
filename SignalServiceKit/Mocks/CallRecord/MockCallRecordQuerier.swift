@@ -38,11 +38,11 @@ public class MockCallRecordQuerier: CallRecordQuerier {
     }
 
     public func fetchCursor(threadRowId: Int64, ordering: FetchOrdering, tx: DBReadTransaction) -> CallRecordCursor? {
-        return Cursor(applyOrdering(mockCallRecords.filter { $0.threadRowId == threadRowId }, ordering: ordering))
+        return Cursor(applyOrdering(mockCallRecords.filter { $0.conversationId == .thread(threadRowId: threadRowId) }, ordering: ordering))
     }
 
     public func fetchCursor(threadRowId: Int64, callStatus: CallRecord.CallStatus, ordering: FetchOrdering, tx: DBReadTransaction) -> CallRecordCursor? {
-        return Cursor(applyOrdering(mockCallRecords.filter { $0.callStatus == callStatus && $0.threadRowId == threadRowId }, ordering: ordering))
+        return Cursor(applyOrdering(mockCallRecords.filter { $0.callStatus == callStatus && $0.conversationId == .thread(threadRowId: threadRowId) }, ordering: ordering))
     }
 
     public func fetchCursorForUnread(callStatus: CallRecord.CallStatus, ordering: FetchOrdering, tx: DBReadTransaction) -> CallRecordCursor? {
@@ -50,7 +50,7 @@ public class MockCallRecordQuerier: CallRecordQuerier {
     }
 
     public func fetchCursorForUnread(threadRowId: Int64, callStatus: CallRecord.CallStatus, ordering: FetchOrdering, tx: DBReadTransaction) -> CallRecordCursor? {
-        return Cursor(applyOrdering(mockCallRecords.filter { $0.threadRowId == threadRowId && $0.callStatus == callStatus && $0.unreadStatus == .unread }, ordering: ordering))
+        return Cursor(applyOrdering(mockCallRecords.filter { $0.conversationId == .thread(threadRowId: threadRowId) && $0.callStatus == callStatus && $0.unreadStatus == .unread }, ordering: ordering))
     }
 }
 

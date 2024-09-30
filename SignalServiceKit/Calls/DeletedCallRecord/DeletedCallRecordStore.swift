@@ -10,7 +10,7 @@ protocol DeletedCallRecordStore {
     /// one exists.
     func fetch(
         callId: UInt64,
-        threadRowId: Int64,
+        conversationId: CallRecord.ConversationID,
         db: Database
     ) -> DeletedCallRecord?
 
@@ -43,8 +43,8 @@ protocol DeletedCallRecordStore {
 extension DeletedCallRecordStore {
     /// Whether the store contains a deleted call record with the given
     /// identifying properties.
-    func contains(callId: UInt64, threadRowId: Int64, db: Database) -> Bool {
-        return fetch(callId: callId, threadRowId: threadRowId, db: db) != nil
+    func contains(callId: UInt64, conversationId: CallRecord.ConversationID, db: Database) -> Bool {
+        return fetch(callId: callId, conversationId: conversationId, db: db) != nil
     }
 }
 
@@ -75,16 +75,19 @@ class DeletedCallRecordStoreImpl: DeletedCallRecordStore {
 
     func fetch(
         callId: UInt64,
-        threadRowId: Int64,
+        conversationId: CallRecord.ConversationID,
         db: Database
     ) -> DeletedCallRecord? {
-        return fetch(
-            columnArgs: [
-                .equal(column: .callIdString, value: String(callId)),
-                .equal(column: .threadRowId, value: threadRowId)
-            ],
-            db: db
-        )
+        switch conversationId {
+        case .thread(let threadRowId):
+            return fetch(
+                columnArgs: [
+                    .equal(column: .callIdString, value: String(callId)),
+                    .equal(column: .threadRowId, value: threadRowId)
+                ],
+                db: db
+            )
+        }
     }
 
     // MARK: -

@@ -12,17 +12,13 @@ public extension InteractionStore {
         callRecord: CallRecord,
         tx: DBReadTransaction
     ) -> InteractionType? {
-        guard
-            let interaction = fetchInteraction(
-                rowId: callRecord.interactionRowId, tx: tx
-            ) as? InteractionType
-        else {
-            CallRecordLogger.shared.error(
-                "Missing associated interaction for call record. This should be impossible per the DB schema!"
-            )
-            return nil
+        let interactionRowId: Int64
+        switch callRecord.interactionReference {
+        case .thread(threadRowId: _, let interactionRowId2):
+            interactionRowId = interactionRowId2
         }
-
+        let interaction = fetchInteraction(rowId: interactionRowId, tx: tx) as? InteractionType
+        owsAssertDebug(interaction != nil, "Missing associated interaction for call record. This should be impossible per the DB schema!")
         return interaction
     }
 

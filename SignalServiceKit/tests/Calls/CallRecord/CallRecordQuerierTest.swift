@@ -381,3 +381,21 @@ private extension CallRecordCursor {
         return records
     }
 }
+
+// MARK: -
+
+private extension CallRecord {
+    var threadRowId: Int64 {
+        switch conversationId {
+        case .thread(let threadRowId):
+            return threadRowId
+        }
+    }
+
+    var interactionRowId: Int64 {
+        switch interactionReference {
+        case .thread(threadRowId: _, let interactionRowId):
+            return interactionRowId
+        }
+    }
+}

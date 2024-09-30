@@ -21,12 +21,12 @@ class MockCallRecordStore: CallRecordStore {
     }
 
     var fetchMock: (() -> MaybeDeletedFetchResult)?
-    func fetch(callId: UInt64, threadRowId: Int64, tx: DBReadTransaction) -> MaybeDeletedFetchResult {
+    func fetch(callId: UInt64, conversationId: CallRecord.ConversationID, tx: DBReadTransaction) -> MaybeDeletedFetchResult {
         if let fetchMock {
             return fetchMock()
         }
 
-        if let match = callRecords.first(where: { $0.callId == callId && $0.threadRowId == threadRowId }) {
+        if let match = callRecords.first(where: { $0.id == CallRecord.ID(conversationId: conversationId, callId: callId) }) {
             return .matchFound(match)
         }
 
@@ -34,7 +34,12 @@ class MockCallRecordStore: CallRecordStore {
     }
 
     func fetch(interactionRowId: Int64, tx: DBReadTransaction) -> CallRecord? {
-        return callRecords.first(where: { $0.interactionRowId == interactionRowId })
+        return callRecords.first(where: {
+            switch $0.interactionReference {
+            case .thread(threadRowId: _, let interactionRowId2):
+                return interactionRowId == interactionRowId2
+            }
+        })
     }
 
     var askedToUpdateRecordStatusTo: CallRecord.CallStatus?

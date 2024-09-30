@@ -11,6 +11,7 @@ import Foundation
 public class CallEventInserter {
     private var callRecordStore: any CallRecordStore { DependenciesBridge.shared.callRecordStore }
     private var individualCallRecordManager: any IndividualCallRecordManager { DependenciesBridge.shared.individualCallRecordManager }
+    private var interactionStore: any InteractionStore { DependenciesBridge.shared.interactionStore }
     private var notificationPresenter: any NotificationPresenter { NSObject.notificationPresenter }
 
     private let offerMediaType: TSRecentCallOfferType
@@ -103,10 +104,7 @@ public class CallEventInserter {
             // this happens if a call event sync message creates the record and
             // interaction before callkit callbacks.
             let callRecord = fetchCallRecord(tx: tx),
-            let existingCall = InteractionFinder.fetch(
-                rowId: callRecord.interactionRowId,
-                transaction: tx
-            ) as? TSCall
+            let existingCall = self.interactionStore.fetchAssociatedInteraction(callRecord: callRecord, tx: tx.asV2Read) as TSCall?
         {
             Logger.info("Existing call interaction found on disk, updating")
             self.callInteraction = existingCall
@@ -158,7 +156,7 @@ public class CallEventInserter {
 
         let callRecord: CallRecord? = {
             switch self.callRecordStore.fetch(
-                callId: callId, threadRowId: threadRowId, tx: tx.asV2Read
+                callId: callId, conversationId: .thread(threadRowId: threadRowId), tx: tx.asV2Read
             ) {
             case .matchFound(let callRecord):
                 return callRecord

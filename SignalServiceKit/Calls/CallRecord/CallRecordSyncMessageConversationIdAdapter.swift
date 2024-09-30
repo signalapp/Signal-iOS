@@ -66,7 +66,7 @@ class CallRecordSyncMessageConversationIdAdapterImpl: CallRecordSyncMessageConve
 
         return callRecordStore.fetch(
             callId: callId,
-            threadRowId: threadRowId,
+            conversationId: .thread(threadRowId: threadRowId),
             tx: tx
         ).unwrapped
     }
@@ -75,20 +75,19 @@ class CallRecordSyncMessageConversationIdAdapterImpl: CallRecordSyncMessageConve
         callRecord: CallRecord,
         tx: DBReadTransaction
     ) -> Data? {
-        // [CallLink] TODO: Generalize this because group IDs/room IDs are ambiguous.
-        guard let callThread = threadStore.fetchThread(rowId: callRecord.threadRowId, tx: tx) else {
-            return nil
+        switch callRecord.conversationId {
+        case .thread(let threadRowId):
+            switch threadStore.fetchThread(rowId: threadRowId, tx: tx) {
+            case let thread as TSContactThread:
+                if let serviceId = recipientDatabaseTable.fetchServiceId(contactThread: thread, tx: tx) {
+                    return serviceId.serviceIdBinary.asData
+                }
+            case let thread as TSGroupThread:
+                return thread.groupId
+            default:
+                break
+            }
         }
-
-        if
-            let contactThread = callThread as? TSContactThread,
-            let contactServiceId = recipientDatabaseTable.fetchServiceId(contactThread: contactThread, tx: tx)
-        {
-            return contactServiceId.serviceIdBinary.asData
-        } else if let groupThread = callThread as? TSGroupThread {
-            return groupThread.groupId
-        }
-
         owsFailBeta("Unexpected thread type for call record!")
         return nil
     }

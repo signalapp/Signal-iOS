@@ -128,7 +128,9 @@ public protocol CallRecordStore {
     /// Fetch the record for the given call ID in the given thread, if one
     /// exists.
     func fetch(
-        callId: UInt64, threadRowId: Int64, tx: DBReadTransaction
+        callId: UInt64,
+        conversationId: CallRecord.ConversationID,
+        tx: DBReadTransaction
     ) -> MaybeDeletedFetchResult
 
     /// Fetch the record referencing the given ``TSInteraction`` SQLite row ID,
@@ -260,11 +262,13 @@ class CallRecordStoreImpl: CallRecordStore {
     }
 
     func fetch(
-        callId: UInt64, threadRowId: Int64, tx: DBReadTransaction
+        callId: UInt64,
+        conversationId: CallRecord.ConversationID,
+        tx: DBReadTransaction
     ) -> MaybeDeletedFetchResult {
         return fetch(
             callId: callId,
-            threadRowId: threadRowId,
+            conversationId: conversationId,
             db: SDSDB.shimOnlyBridge(tx).database
         )
     }
@@ -353,7 +357,7 @@ class CallRecordStoreImpl: CallRecordStore {
         newGroupCallRingerAci: Aci,
         db: Database
     ) {
-        callRecord.groupCallRingerAci = newGroupCallRingerAci
+        callRecord.setGroupCallRingerAci(newGroupCallRingerAci)
         do {
             try callRecord.update(db)
         } catch let error {
@@ -405,24 +409,25 @@ class CallRecordStoreImpl: CallRecordStore {
     // MARK: - Queries (impl)
 
     func fetch(
-        callId: UInt64, threadRowId: Int64, db: Database
+        callId: UInt64,
+        conversationId: CallRecord.ConversationID,
+        db: Database
     ) -> MaybeDeletedFetchResult {
         if deletedCallRecordStore.contains(
             callId: callId,
-            threadRowId: threadRowId,
+            conversationId: conversationId,
             db: db
         ) {
             return .matchDeleted
-        } else if let found = fetch(
-            columnArgs: [
-                (.callIdString, String(callId)),
-                (.threadRowId, threadRowId),
-            ],
-            db: db
-        ) {
-            return .matchFound(found)
         }
-
+        let callRecord: CallRecord?
+        switch conversationId {
+        case .thread(let threadRowId):
+            callRecord = fetch(columnArgs: [(.callIdString, String(callId)), (.threadRowId, threadRowId)], db: db)
+        }
+        if let callRecord {
+            return .matchFound(callRecord)
+        }
         return .matchNotFound
     }
 

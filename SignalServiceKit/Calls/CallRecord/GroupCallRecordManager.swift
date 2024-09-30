@@ -135,7 +135,7 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
 
         switch callRecordStore.fetch(
             callId: callId,
-            threadRowId: groupThreadRowId,
+            conversationId: .thread(threadRowId: groupThreadRowId),
             tx: tx
         ) {
         case .matchDeleted:
