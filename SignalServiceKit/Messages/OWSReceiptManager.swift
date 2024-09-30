@@ -7,6 +7,11 @@ import Foundation
 import GRDB
 import LibSignalClient
 
+public protocol PendingReceiptRecorder {
+    func recordPendingReadReceipt(for message: TSIncomingMessage, thread: TSThread, transaction: GRDBWriteTransaction)
+    func recordPendingViewedReceipt(for message: TSIncomingMessage, thread: TSThread, transaction: GRDBWriteTransaction)
+}
+
 struct ReceiptForLinkedDevice: Codable {
     let senderAddress: SignalServiceAddress
     let messageUniqueId: String?            // Only nil when decoding old values
@@ -41,80 +46,281 @@ struct ReceiptForLinkedDevice: Codable {
     }
 }
 
-// MARK: -
+/// There are four kinds of read receipts:
+///
+/// * Read receipts that this client sends to linked
+///   devices to inform them that a message has been read.
+/// * Read receipts that this client receives from linked
+///   devices that inform this client that a message has been read.
+///    * These read receipts are saved so that they can be applied
+///      if they arrive before the corresponding message.
+/// * Read receipts that this client sends to other users
+///   to inform them that a message has been read.
+/// * Read receipts that this client receives from other users
+///   that inform this client that a message has been read.
+///    * These read receipts are saved so that they can be applied
+///      if they arrive before the corresponding message.
+///
+/// This manager is responsible for handling and emitting all four kinds.
+@objc
+public class OWSReceiptManager: NSObject {
 
-public extension OWSReceiptManager {
-
-    private var toLinkedDevicesReadReceiptMapStore: SDSKeyValueStore {
-        return SDSKeyValueStore(collection: "OWSReceiptManager.toLinkedDevicesReadReceiptMapStore")
+    private let appReadiness: any AppReadiness
+    private let messageSenderJobQueue: MessageSenderJobQueue
+    private var pendingReceiptRecorder: any PendingReceiptRecorder {
+        SSKEnvironment.shared.pendingReceiptRecorderRef
+    }
+    private var receiptSender: ReceiptSender {
+        SSKEnvironment.shared.receiptSenderRef
     }
 
-    private var toLinkedDevicesViewedReceiptMapStore: SDSKeyValueStore {
-        return SDSKeyValueStore(collection: "OWSReceiptManager.toLinkedDevicesViewedReceiptMapStore")
+    private var isProcessing = AtomicValue(false, lock: .init())
+    private var areReadReceiptsEnabledCached = AtomicOptional<Bool>(nil, lock: .init())
+
+    static let keyValueStore = SDSKeyValueStore(collection: "OWSReadReceiptManagerCollection")
+    private static let toLinkedDevicesReadReceiptMapStore = SDSKeyValueStore(collection: "OWSReceiptManager.toLinkedDevicesReadReceiptMapStore")
+    private static let toLinkedDevicesViewedReceiptMapStore = SDSKeyValueStore(collection: "OWSReceiptManager.toLinkedDevicesViewedReceiptMapStore")
+
+    private static let kOwsReceiptManagerAreReadReceiptsEnabled = "areReadReceiptsEnabled"
+
+    init(appReadiness: any AppReadiness,
+         databaseStorage: SDSDatabaseStorage,
+         messageSenderJobQueue: MessageSenderJobQueue,
+         notificationPresenter: NotificationPresenter) {
+        self.appReadiness = appReadiness
+        self.messageSenderJobQueue = messageSenderJobQueue
+
+        super.init()
+
+        SwiftSingletons.register(self)
+
+        self.appReadiness.runNowOrWhenAppDidBecomeReadyAsync { [self] in
+            scheduleProcessing()
+        }
+    }
+
+    /// Schedules a processing pass, unless one is already scheduled.
+    private func scheduleProcessing() {
+        owsAssertDebug(appReadiness.isAppReady)
+
+        Task(priority: .medium) {
+            do {
+                try isProcessing.transition(from: false, to: true)
+            } catch {
+                return
+            }
+            await processReceiptsForLinkedDevices()
+            do {
+                try isProcessing.transition(from: true, to: false)
+            } catch {
+                owsFailDebug("someone else overwrote isProcessing while we were processing")
+            }
+        }
+    }
+
+    // MARK: - Locally Read
+
+    @objc
+    public func messageWasRead(_ message: TSIncomingMessage, thread: TSThread, circumstance: OWSReceiptCircumstance, transaction: SDSAnyWriteTransaction) {
+        switch (circumstance) {
+        case .onLinkedDevice:
+            break
+        case .onLinkedDeviceWhilePendingMessageRequest:
+            if areReadReceiptsEnabled() {
+                pendingReceiptRecorder.recordPendingReadReceipt(for: message, thread: thread, transaction: transaction.unwrapGrdbWrite)
+            }
+        case .onThisDevice:
+            enqueueLinkedDeviceReadReceipt(forMessage: message, transaction: transaction)
+            transaction.addAsyncCompletionOffMain { self.scheduleProcessing() }
+            if message.authorAddress.isLocalAddress {
+                owsFailDebug("We don't support incoming messages from self.")
+                return
+            }
+            if areReadReceiptsEnabled() {
+                receiptSender.enqueueReadReceipt(for: message.authorAddress, timestamp: message.timestamp, messageUniqueId: message.uniqueId, tx: transaction)
+            }
+        case .onThisDeviceWhilePendingMessageRequest:
+            enqueueLinkedDeviceReadReceipt(forMessage: message, transaction: transaction)
+            if areReadReceiptsEnabled() {
+                pendingReceiptRecorder.recordPendingReadReceipt(for: message, thread: thread, transaction: transaction.unwrapGrdbWrite)
+            }
+        }
     }
 
     @objc
-    func processReceiptsForLinkedDevices(completion: @escaping () -> Void) {
-        let didWork = databaseStorage.write { transaction -> Bool in
-            let readReceiptsForLinkedDevices: [ReceiptForLinkedDevice]
-            do {
-                readReceiptsForLinkedDevices = try self.toLinkedDevicesReadReceiptMapStore.allCodableValues(transaction: transaction)
-            } catch {
-                owsFailDebug("Error: \(error).")
-                return false
+    public func messageWasViewed(_ message: TSIncomingMessage, thread: TSThread, circumstance: OWSReceiptCircumstance, transaction: SDSAnyWriteTransaction) {
+        switch (circumstance) {
+        case .onLinkedDevice:
+            break
+        case .onLinkedDeviceWhilePendingMessageRequest:
+            if areReadReceiptsEnabled() {
+                pendingReceiptRecorder.recordPendingViewedReceipt(for: message, thread: thread, transaction: transaction.unwrapGrdbWrite)
             }
-
-            let viewedReceiptsForLinkedDevices: [ReceiptForLinkedDevice]
-            do {
-                viewedReceiptsForLinkedDevices = try self.toLinkedDevicesViewedReceiptMapStore.allCodableValues(transaction: transaction)
-            } catch {
-                owsFailDebug("Error: \(error).")
-                return false
+        case .onThisDevice:
+            enqueueLinkedDeviceViewedReceipt(forIncomingMessage: message, transaction: transaction)
+            transaction.addAsyncCompletionOffMain { self.scheduleProcessing() }
+            if message.authorAddress.isLocalAddress {
+                owsFailDebug("We don't support incoming messages from self.")
+                return
             }
-
-            guard !readReceiptsForLinkedDevices.isEmpty || !viewedReceiptsForLinkedDevices.isEmpty else {
-                return false
+            if areReadReceiptsEnabled() {
+                receiptSender.enqueueViewedReceipt(for: message.authorAddress, timestamp: message.timestamp, messageUniqueId: message.uniqueId, tx: transaction)
             }
-
-            guard let thread = TSContactThread.getOrCreateLocalThread(transaction: transaction) else {
-                owsFailDebug("Missing thread.")
-                return false
+        case .onThisDeviceWhilePendingMessageRequest:
+            enqueueLinkedDeviceViewedReceipt(forIncomingMessage: message, transaction: transaction)
+            if areReadReceiptsEnabled() {
+                pendingReceiptRecorder.recordPendingViewedReceipt(for: message, thread: thread, transaction: transaction.unwrapGrdbWrite)
             }
-
-            if !readReceiptsForLinkedDevices.isEmpty {
-                let readReceiptsToSend = readReceiptsForLinkedDevices.compactMap { $0.asLinkedDeviceReadReceipt }
-                if !readReceiptsToSend.isEmpty {
-                    let message = OWSReadReceiptsForLinkedDevicesMessage(
-                        thread: thread,
-                        readReceipts: readReceiptsToSend,
-                        transaction: transaction
-                    )
-                    let preparedMessage = PreparedOutgoingMessage.preprepared(
-                        transientMessageWithoutAttachments: message
-                    )
-                    SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: transaction)
-                }
-                self.toLinkedDevicesReadReceiptMapStore.removeAll(transaction: transaction)
-            }
-
-            if !viewedReceiptsForLinkedDevices.isEmpty {
-                let viewedReceiptsToSend = viewedReceiptsForLinkedDevices.compactMap { $0.asLinkedDeviceViewedReceipt }
-                if !viewedReceiptsToSend.isEmpty {
-                    let message = OWSViewedReceiptsForLinkedDevicesMessage(
-                        thread: thread,
-                        viewedReceipts: viewedReceiptsToSend,
-                        transaction: transaction
-                    )
-                    let preparedMessage = PreparedOutgoingMessage.preprepared(
-                        transientMessageWithoutAttachments: message
-                    )
-                    SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: transaction)
-                }
-                self.toLinkedDevicesViewedReceiptMapStore.removeAll(transaction: transaction)
-            }
-
-            return true
         }
+    }
+
+    public func storyWasRead(_ storyMessage: StoryMessage, circumstance: OWSReceiptCircumstance, transaction: SDSAnyWriteTransaction) {
+        switch (circumstance) {
+        case .onLinkedDevice:
+            break
+        case .onLinkedDeviceWhilePendingMessageRequest:
+            owsFailDebug("Unexpectedly had story receipt blocked by message request.")
+        case .onThisDeviceWhilePendingMessageRequest:
+            owsFailDebug("Unexpectedly had story receipt blocked by message request.")
+        case .onThisDevice:
+            // We only send read receipts to linked devices, not to the author.
+            enqueueLinkedDeviceReadReceipt(forStoryMessage: storyMessage, transaction: transaction)
+            transaction.addAsyncCompletionOffMain { self.scheduleProcessing() }
+        }
+    }
+
+    public func storyWasViewed(_ storyMessage: StoryMessage, circumstance: OWSReceiptCircumstance, transaction: SDSAnyWriteTransaction) {
+        switch circumstance {
+        case .onLinkedDevice:
+            break
+        case .onLinkedDeviceWhilePendingMessageRequest:
+            owsFailDebug("Unexpectedly had story receipt blocked by message request.")
+        case .onThisDeviceWhilePendingMessageRequest:
+            owsFailDebug("Unexpectedly had story receipt blocked by message request.")
+        case .onThisDevice:
+            enqueueLinkedDeviceViewedReceipt(forStoryMessage: storyMessage, transaction: transaction)
+            transaction.addAsyncCompletionOffMain { self.scheduleProcessing() }
+
+            if StoryManager.areViewReceiptsEnabled {
+                enqueueSenderViewedReceipt(forStoryMessage: storyMessage, transaction: transaction)
+            }
+        }
+    }
+
+    public func incomingGiftWasRedeemed(_ incomingMessage: TSIncomingMessage, transaction: SDSAnyWriteTransaction) {
+        enqueueLinkedDeviceViewedReceipt(forIncomingMessage: incomingMessage, transaction: transaction)
+        transaction.addAsyncCompletionOffMain { self.scheduleProcessing() }
+    }
+
+    public func outgoingGiftWasOpened(_ outgoingMessage: TSOutgoingMessage, transaction: SDSAnyWriteTransaction) {
+        enqueueLinkedDeviceViewedReceipt(forOutgoingMessage: outgoingMessage, transaction: transaction)
+        transaction.addAsyncCompletionOffMain { self.scheduleProcessing() }
+    }
+
+    // MARK: - Settings
+
+    public func prepareCachedValues() {
+        // Clear out so we re-initialize if we ever re-run the "on launch" logic,
+        // such as after a completed database transfer.
+        areReadReceiptsEnabledCached.set(nil)
+        _ = self.areReadReceiptsEnabled()
+    }
+
+    public func areReadReceiptsEnabled() -> Bool {
+        // We don't need to worry about races around this cached value.
+        //
+        // ^ The above comment was copied from objc code... it seems... dubious.
+        if let result = areReadReceiptsEnabledCached.get() {
+            return result
+        }
+
+        return databaseStorage.read { [areReadReceiptsEnabledCached] transaction in
+            let result = Self.areReadReceiptsEnabled(transaction: transaction)
+            try? areReadReceiptsEnabledCached.setIfNil(result)
+            return result
+        }
+    }
+
+    public static func areReadReceiptsEnabled(transaction: SDSAnyReadTransaction) -> Bool {
+        keyValueStore.getBool(kOwsReceiptManagerAreReadReceiptsEnabled, defaultValue: false, transaction: transaction)
+    }
+
+    public func setAreReadReceiptsEnabledWithSneakyTransactionAndSyncConfiguration(_ value: Bool) {
+        Logger.info("setAreReadReceiptsEnabledWithSneakyTransactionAndSyncConfiguration: \(value)")
+        databaseStorage.write { self.setAreReadReceiptsEnabled(value, transaction: $0) }
+        syncManager.sendConfigurationSyncMessage()
+        storageServiceManager.recordPendingLocalAccountUpdates()
+    }
+
+    public func setAreReadReceiptsEnabled(_ value: Bool, transaction: SDSAnyWriteTransaction) {
+        Self.keyValueStore.setBool(value, key: Self.kOwsReceiptManagerAreReadReceiptsEnabled, transaction: transaction)
+        areReadReceiptsEnabledCached.set(value)
+    }
+}
+
+// MARK: -
+
+extension OWSReceiptManager {
+
+    private func processReceiptsForLinkedDevices(transaction: SDSAnyWriteTransaction) -> Bool {
+        let readReceiptsForLinkedDevices: [ReceiptForLinkedDevice]
+        do {
+            readReceiptsForLinkedDevices = try Self.toLinkedDevicesReadReceiptMapStore.allCodableValues(transaction: transaction)
+        } catch {
+            owsFailDebug("Error: \(error).")
+            return false
+        }
+
+        let viewedReceiptsForLinkedDevices: [ReceiptForLinkedDevice]
+        do {
+            viewedReceiptsForLinkedDevices = try Self.toLinkedDevicesViewedReceiptMapStore.allCodableValues(transaction: transaction)
+        } catch {
+            owsFailDebug("Error: \(error).")
+            return false
+        }
+
+        guard !readReceiptsForLinkedDevices.isEmpty || !viewedReceiptsForLinkedDevices.isEmpty else {
+            return false
+        }
+
+        guard let thread = TSContactThread.getOrCreateLocalThread(transaction: transaction) else {
+            owsFailDebug("Missing thread.")
+            return false
+        }
+
+        if !readReceiptsForLinkedDevices.isEmpty {
+            let readReceiptsToSend = readReceiptsForLinkedDevices.compactMap { $0.asLinkedDeviceReadReceipt }
+            if !readReceiptsToSend.isEmpty {
+                let message = OWSReadReceiptsForLinkedDevicesMessage(
+                    thread: thread,
+                    readReceipts: readReceiptsToSend,
+                    transaction: transaction
+                )
+                let preparedMessage = PreparedOutgoingMessage.preprepared(transientMessageWithoutAttachments: message)
+                messageSenderJobQueue.add(message: preparedMessage, transaction: transaction)
+            }
+            Self.toLinkedDevicesReadReceiptMapStore.removeAll(transaction: transaction)
+        }
+
+        if !viewedReceiptsForLinkedDevices.isEmpty {
+            let viewedReceiptsToSend = viewedReceiptsForLinkedDevices.compactMap { $0.asLinkedDeviceViewedReceipt }
+            if !viewedReceiptsToSend.isEmpty {
+                let message = OWSViewedReceiptsForLinkedDevicesMessage(
+                    thread: thread,
+                    viewedReceipts: viewedReceiptsToSend,
+                    transaction: transaction
+                )
+                let preparedMessage = PreparedOutgoingMessage.preprepared(transientMessageWithoutAttachments: message)
+                messageSenderJobQueue.add(message: preparedMessage, transaction: transaction)
+            }
+            Self.toLinkedDevicesViewedReceiptMapStore.removeAll(transaction: transaction)
+        }
+
+        return true
+    }
+
+    func processReceiptsForLinkedDevices() async {
+        let didWork = await databaseStorage.awaitableWrite { self.processReceiptsForLinkedDevices(transaction: $0) }
 
         if didWork {
             // Wait N seconds before processing read receipts again.
@@ -123,16 +329,13 @@ public extension OWSReceiptManager {
             // We want a value high enough to allow us to effectively de-duplicate,
             // read receipts without being so high that we risk not sending read
             // receipts due to app exit.
-            let kProcessingFrequencySeconds: TimeInterval = 3
-            DispatchQueue.global().asyncAfter(deadline: .now() + kProcessingFrequencySeconds) {
-                self.processReceiptsForLinkedDevices(completion: completion)
-            }
-        } else {
-            completion()
+            do {
+                try await Task.sleep(nanoseconds: 3 * NSEC_PER_SEC)
+                await processReceiptsForLinkedDevices()
+            } catch {}
         }
     }
 
-    @objc
     func enqueueLinkedDeviceReadReceipt(forMessage message: TSIncomingMessage,
                                         transaction: SDSAnyWriteTransaction) {
         let threadUniqueId = message.uniqueThreadId
@@ -148,19 +351,18 @@ public extension OWSReceiptManager {
         )
 
         do {
-            if let oldReadReceipt: ReceiptForLinkedDevice = try toLinkedDevicesReadReceiptMapStore.getCodableValue(forKey: threadUniqueId, transaction: transaction),
+            if let oldReadReceipt: ReceiptForLinkedDevice = try Self.toLinkedDevicesReadReceiptMapStore.getCodableValue(forKey: threadUniqueId, transaction: transaction),
                 oldReadReceipt.messageIdTimestamp > newReadReceipt.messageIdTimestamp {
                 // If there's an existing "linked device" read receipt for the same thread with
                 // a newer timestamp, discard this "linked device" read receipt.
             } else {
-                try toLinkedDevicesReadReceiptMapStore.setCodable(newReadReceipt, key: threadUniqueId, transaction: transaction)
+                try Self.toLinkedDevicesReadReceiptMapStore.setCodable(newReadReceipt, key: threadUniqueId, transaction: transaction)
             }
         } catch {
             owsFailDebug("Error: \(error).")
         }
     }
 
-    @objc
     func enqueueLinkedDeviceViewedReceipt(forIncomingMessage message: TSIncomingMessage,
                                           transaction: SDSAnyWriteTransaction) {
 
@@ -172,7 +374,6 @@ public extension OWSReceiptManager {
         )
     }
 
-    @objc
     func enqueueLinkedDeviceViewedReceipt(forOutgoingMessage message: TSOutgoingMessage,
                                           transaction: SDSAnyWriteTransaction) {
 
@@ -189,7 +390,6 @@ public extension OWSReceiptManager {
         )
     }
 
-    @objc
     func enqueueLinkedDeviceReadReceipt(
         forStoryMessage message: StoryMessage,
         transaction: SDSAnyWriteTransaction
@@ -214,13 +414,12 @@ public extension OWSReceiptManager {
         // On the receiving end we keep track of the latest read timestamp per context and should
         // be fine whether we send every read receipt or just the latest; its purely a bandwidth/perf difference.
         do {
-            try toLinkedDevicesReadReceiptMapStore.setCodable(newReadReceipt, key: message.uniqueId, transaction: transaction)
+            try Self.toLinkedDevicesReadReceiptMapStore.setCodable(newReadReceipt, key: message.uniqueId, transaction: transaction)
         } catch {
             owsFailDebug("Error: \(error)")
         }
     }
 
-    @objc
     func enqueueLinkedDeviceViewedReceipt(
         forStoryMessage message: StoryMessage,
         transaction: SDSAnyWriteTransaction
@@ -238,7 +437,6 @@ public extension OWSReceiptManager {
         )
     }
 
-    @objc
     func enqueueSenderViewedReceipt(
         forStoryMessage message: StoryMessage,
         transaction: SDSAnyWriteTransaction
@@ -252,7 +450,6 @@ public extension OWSReceiptManager {
             return
         }
 
-        let receiptSender = SSKEnvironment.shared.receiptSenderRef
         receiptSender.enqueueViewedReceipt(
             for: message.authorAddress,
             timestamp: message.timestamp,
@@ -284,7 +481,7 @@ public extension OWSReceiptManager {
         // once, voice note, etc.), this has no bearing on whether or not you've
         // viewed other messages in the chat.
         do {
-            try toLinkedDevicesViewedReceiptMapStore.setCodable(newViewedReceipt, key: messageUniqueId, transaction: transaction)
+            try Self.toLinkedDevicesViewedReceiptMapStore.setCodable(newViewedReceipt, key: messageUniqueId, transaction: transaction)
         } catch {
             owsFailDebug("Error: \(error)")
         }
@@ -391,7 +588,7 @@ public extension OWSReceiptManager {
 
     // MARK: - Mark as read
 
-    func markAsReadLocally(
+    public func markAsReadLocally(
         beforeSortId sortId: UInt64,
         thread: TSThread,
         hasPendingMessageRequest: Bool,
@@ -491,7 +688,7 @@ public extension OWSReceiptManager {
                         let preparedMessage = PreparedOutgoingMessage.preprepared(
                             transientMessageWithoutAttachments: message
                         )
-                        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: transaction)
+                        self.messageSenderJobQueue.add(message: preparedMessage, transaction: transaction)
                     }
                 }
                 // Continue until we process a batch and have some quota left.

@@ -3,11 +3,17 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-#import <SignalServiceKit/OWSReceiptManager.h>
-
 NS_ASSUME_NONNULL_BEGIN
 
 @class SDSAnyWriteTransaction;
+@class TSThread;
+
+typedef NS_CLOSED_ENUM(NSInteger, OWSReceiptCircumstance) {
+    OWSReceiptCircumstanceOnLinkedDevice,
+    OWSReceiptCircumstanceOnLinkedDeviceWhilePendingMessageRequest,
+    OWSReceiptCircumstanceOnThisDevice,
+    OWSReceiptCircumstanceOnThisDeviceWhilePendingMessageRequest
+};
 
 /**
  * Some interactions track read/unread status.

@@ -416,7 +416,7 @@ extension StoryManager {
     @Atomic public private(set) static var areViewReceiptsEnabled: Bool = false
 
     public static func areViewReceiptsEnabled(transaction: SDSAnyReadTransaction) -> Bool {
-        keyValueStore.getBool(areViewReceiptsEnabledKey, transaction: transaction) ?? receiptManager.areReadReceiptsEnabled(transaction: transaction)
+        keyValueStore.getBool(areViewReceiptsEnabledKey, transaction: transaction) ?? OWSReceiptManager.areReadReceiptsEnabled(transaction: transaction)
     }
 
     // TODO: should this live on OWSReceiptManager?

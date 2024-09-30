@@ -1202,7 +1202,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             builder.setNoteToSelfMarkedUnread(threadAssociatedData.isMarkedUnread)
         }
 
-        let readReceiptsEnabled = receiptManager.areReadReceiptsEnabled(transaction: transaction)
+        let readReceiptsEnabled = OWSReceiptManager.areReadReceiptsEnabled(transaction: transaction)
         builder.setReadReceipts(readReceiptsEnabled)
 
         let storyViewReceiptsEnabled = StoryManager.areViewReceiptsEnabled(transaction: transaction)

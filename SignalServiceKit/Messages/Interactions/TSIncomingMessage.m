@@ -5,7 +5,6 @@
 
 #import "TSIncomingMessage.h"
 #import "OWSDisappearingMessagesConfiguration.h"
-#import "OWSReceiptManager.h"
 #import "TSAttachmentPointer.h"
 #import "TSContactThread.h"
 #import "TSGroupThread.h"

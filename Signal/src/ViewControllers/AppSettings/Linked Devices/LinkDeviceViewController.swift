@@ -145,7 +145,7 @@ class LinkDeviceViewController: OWSViewController {
             let identityManager = DependenciesBridge.shared.identityManager
             aciIdentityKeyPair = identityManager.identityKeyPair(for: .aci, tx: tx.asV2Read)
             pniIdentityKeyPair = identityManager.identityKeyPair(for: .pni, tx: tx.asV2Read)
-            areReadReceiptsEnabled = receiptManager.areReadReceiptsEnabled(transaction: tx)
+            areReadReceiptsEnabled = OWSReceiptManager.areReadReceiptsEnabled(transaction: tx)
             masterKey = DependenciesBridge.shared.svr.masterKeyDataForKeysSyncMessage(tx: tx.asV2Read)
         }
         let myProfileKeyData = profileManager.localProfileKey.keyData

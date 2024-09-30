@@ -100,10 +100,12 @@ public extension NSObject {
         SSKEnvironment.shared.networkManagerRef
     }
 
+    @nonobjc
     final var receiptManager: OWSReceiptManager {
         .shared
     }
 
+    @nonobjc
     static var receiptManager: OWSReceiptManager {
         .shared
     }
@@ -260,14 +262,6 @@ public extension NSObject {
 
     static var earlyMessageManager: EarlyMessageManager {
         SSKEnvironment.shared.earlyMessageManagerRef
-    }
-
-    final var pendingReceiptRecorder: PendingReceiptRecorder {
-        SSKEnvironment.shared.pendingReceiptRecorderRef
-    }
-
-    static var pendingReceiptRecorder: PendingReceiptRecorder {
-        SSKEnvironment.shared.pendingReceiptRecorderRef
     }
 
     @nonobjc

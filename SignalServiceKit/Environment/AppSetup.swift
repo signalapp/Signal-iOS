@@ -183,12 +183,12 @@ public class AppSetup {
 
         // NOTE: TSThead accesses AppReadinessObjcBridge.shared and relies on this having been called
         // in this method, even things change such that nothing else here needs the instance.
-        let appReadinessObjc = AppReadinessObjcBridge.setShared(
+        _ = AppReadinessObjcBridge.setShared(
             appReadiness: appReadiness,
             isRunningTests: appContext.isRunningTests
         )
 
-        let receiptManager = OWSReceiptManager(appReadiness: appReadinessObjc)
+        let receiptManager = OWSReceiptManager(appReadiness: appReadiness, databaseStorage: databaseStorage, messageSenderJobQueue: messageSenderJobQueue, notificationPresenter: notificationPresenter)
         let senderKeyStore = SenderKeyStore()
         let signalProtocolStoreManager = SignalProtocolStoreManagerImpl(
             aciProtocolStore: aciSignalProtocolStore,

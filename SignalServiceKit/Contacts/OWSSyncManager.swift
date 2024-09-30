@@ -94,7 +94,7 @@ extension OWSSyncManager: SyncManagerProtocolObjc {
         }
 
         let linkPreviews = DependenciesBridge.shared.linkPreviewSettingStore.areLinkPreviewsEnabled(tx: tx.asV2Read)
-        let readReceipts = receiptManager.areReadReceiptsEnabled(transaction: tx)
+        let readReceipts = OWSReceiptManager.areReadReceiptsEnabled(transaction: tx)
         let sealedSenderIndicators = preferences.shouldShowUnidentifiedDeliveryIndicators(transaction: tx)
         let typingIndicators = typingIndicatorsImpl.areTypingIndicatorsEnabled()
 

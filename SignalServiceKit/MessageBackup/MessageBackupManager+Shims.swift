@@ -268,7 +268,7 @@ public class _MessageBackup_AccountData_ReceiptManagerWrapper: _MessageBackup_Ac
     }
 
     public func areReadReceiptsEnabled(tx: DBReadTransaction) -> Bool {
-        receiptManager.areReadReceiptsEnabled(transaction: SDSDB.shimOnlyBridge(tx))
+        OWSReceiptManager.areReadReceiptsEnabled(transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     public func setAreReadReceiptsEnabled(value: Bool, tx: DBWriteTransaction) {
