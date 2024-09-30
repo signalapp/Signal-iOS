@@ -212,10 +212,18 @@ public class TaskQueueLoaderTest: XCTestCase {
 
         struct MockError: Error {}
 
+        // Don't cancel until we've started one of the tasks.
+        var cancelContinuation: CheckedContinuation<Void, Never>?
+
         // Make the actual tasks spin forever (but allow for cancellation)
         runner.taskRunner = { _ in
             while true {
                 do {
+                    if cancelContinuation != nil {
+                        cancelContinuation?.resume()
+                        cancelContinuation = nil
+                    }
+
                     try Task.checkCancellation()
                     await Task.yield()
                 } catch {
@@ -231,6 +239,9 @@ public class TaskQueueLoaderTest: XCTestCase {
                     try await loader.loadAndRunTasks()
                 }
                 taskGroup.addTask {
+                    await withCheckedContinuation { continuation in
+                        cancelContinuation = continuation
+                    }
                     try await loader.stop(reason: MockError())
                 }
                 try await taskGroup.waitForAll()
