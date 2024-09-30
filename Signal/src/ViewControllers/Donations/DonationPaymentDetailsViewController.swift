@@ -511,36 +511,52 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
         }
     }
 
-    private lazy var expirationView = FormFieldView(
-        title: Self.expirationTitle,
-        titleLayout: self.cardFormTitleLayout,
-        placeholder: OWSLocalizedString(
-            "CARD_DONATION_EXPIRATION_DATE_PLACEHOLDER",
-            comment: "Users can donate to Signal with a credit or debit card. This is the label for the card expiration date field on that screen."
-        ),
-        style: .formatted(
-            format: Self.formatExpirationDate(unformatted:),
-            allowedCharacters: .numbers,
-            maxDigits: 4
-        ),
-        textContentType: nil, // TODO: Add content type for iOS 17
-        delegate: self
-    )
+    private lazy var expirationView = {
+        let textContentType: UITextContentType?
+        if #available (iOS 17.0, *) {
+            textContentType = .creditCardExpiration
+        } else {
+            textContentType = nil
+        }
+        return FormFieldView(
+            title: Self.expirationTitle,
+            titleLayout: self.cardFormTitleLayout,
+            placeholder: OWSLocalizedString(
+                "CARD_DONATION_EXPIRATION_DATE_PLACEHOLDER",
+                comment: "Users can donate to Signal with a credit or debit card. This is the label for the card expiration date field on that screen."
+            ),
+            style: .formatted(
+                format: Self.formatExpirationDate(unformatted:),
+                allowedCharacters: .numbers,
+                maxDigits: 4
+            ),
+            textContentType: textContentType,
+            delegate: self
+        )
+    }()
 
     // MARK: CVV
 
-    private lazy var cvvView = FormFieldView(
-        title: Self.cvvTitle,
-        titleLayout: self.cardFormTitleLayout,
-        placeholder: "123",
-        style: .formatted(
-            format: { $0 },
-            allowedCharacters: .numbers,
-            maxDigits: 4
-        ),
-        textContentType: nil, // TODO: Add content type for iOS 17,
-        delegate: self
-    )
+    private lazy var cvvView = {
+        let textContentType: UITextContentType?
+        if #available(iOS 17.0, *) {
+            textContentType = .creditCardSecurityCode
+        } else {
+            textContentType = nil
+        }
+        return FormFieldView(
+            title: Self.cvvTitle,
+            titleLayout: self.cardFormTitleLayout,
+            placeholder: "123",
+            style: .formatted(
+                format: { $0 },
+                allowedCharacters: .numbers,
+                maxDigits: 4
+            ),
+            textContentType: textContentType,
+            delegate: self
+        )
+    }()
 
     // MARK: - SEPA form
 
