@@ -951,21 +951,18 @@ public class OWSChatConnectionUsingSSKWebSocket: OWSChatConnection {
         }
     }
 
-    // This method is thread-safe.
-    private var webSocketAuthenticationQueryItems: [URLQueryItem]? {
+    private var webSocketAuthenticationHeaders: [String: String] {
         switch type {
         case .unidentified:
-            // UD socket is unauthenticated.
-            return nil
+            return [:]
         case .identified:
             let login = accountManager.storedServerUsernameWithMaybeTransaction ?? ""
             let password = accountManager.storedServerAuthTokenWithMaybeTransaction ?? ""
             owsAssertDebug(login.nilIfEmpty != nil)
             owsAssertDebug(password.nilIfEmpty != nil)
-            return [
-                URLQueryItem(name: "login", value: login),
-                URLQueryItem(name: "password", value: password)
-            ]
+            let authorizationRawValue = "\(login):\(password)"
+            let authorizationEncoded = Data(authorizationRawValue.utf8).base64EncodedString()
+            return ["Authorization": "Basic \(authorizationEncoded)"]
         }
     }
 
@@ -1001,8 +998,8 @@ public class OWSChatConnectionUsingSSKWebSocket: OWSChatConnection {
         let request = WebSocketRequest(
             signalService: signalServiceType,
             urlPath: "v1/websocket/",
-            urlQueryItems: webSocketAuthenticationQueryItems,
-            extraHeaders: StoryManager.buildStoryHeaders()
+            urlQueryItems: nil,
+            extraHeaders: webSocketAuthenticationHeaders.merging(StoryManager.buildStoryHeaders()) { (old, _) in old }
         )
 
         guard let webSocket = GlobalDependencies.webSocketFactory.buildSocket(
