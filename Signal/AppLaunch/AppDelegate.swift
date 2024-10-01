@@ -142,7 +142,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
     // MARK: - App Launch
 
-    private var appReadiness: AppReadinessSetter!
+    private lazy var appReadiness = AppReadinessImpl()
 
     func application(
         _ application: UIApplication,
@@ -155,7 +155,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         // This should be the first thing we do.
         let mainAppContext = MainAppContext()
         SetCurrentAppContext(mainAppContext)
-        appReadiness = AppReadinessImpl.createSingleton()
 
         let debugLogger = DebugLogger.shared
         debugLogger.enableTTYLoggingIfNeeded()

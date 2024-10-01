@@ -13,7 +13,7 @@ class NSEEnvironment: Dependencies {
     init() {
         self.appContext = NSEContext()
         SetCurrentAppContext(self.appContext)
-        appReadiness = AppReadinessImpl.createSingleton()
+        appReadiness = AppReadinessImpl()
     }
 
     // MARK: -

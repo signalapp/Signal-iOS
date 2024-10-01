@@ -168,13 +168,7 @@ public protocol AppReadinessSetter: AppReadiness {
 
 public class AppReadinessImpl: AppReadinessSetter {
 
-    private init() {}
-
-    public static func createSingleton() -> AppReadinessImpl {
-        let appReadiness = AppReadinessImpl()
-        AppReadinessGlobal.shared = appReadiness
-        return appReadiness
-    }
+    public init() {}
 
     private let readyFlag = ReadyFlag(name: "AppReadiness")
     private let readyFlagUI = ReadyFlag(name: "AppReadinessUI")
@@ -190,6 +184,7 @@ public class AppReadinessImpl: AppReadinessSetter {
         owsAssertDebug(!readyFlag.isSet)
         owsAssertDebug(!readyFlagUI.isSet)
 
+        AppReadinessObjcBridge.readyFlag = readyFlag
         readyFlag.setIsReady()
         readyFlagUI.setIsReady()
     }
@@ -198,6 +193,7 @@ public class AppReadinessImpl: AppReadinessSetter {
     public func setAppIsReadyUIStillPending() {
         owsAssertDebug(!readyFlag.isSet)
 
+        AppReadinessObjcBridge.readyFlag = readyFlag
         readyFlag.setIsReady()
     }
 
@@ -310,126 +306,16 @@ public class AppReadinessImpl: AppReadinessSetter {
     }
 }
 
-public class AppReadinessGlobal: NSObject {
+@objc
+public class AppReadinessObjcBridge: NSObject {
 
-    fileprivate static var shared: AppReadinessImpl!
+    fileprivate static var readyFlag: ReadyFlag?
 
-    public static var isAppReady: Bool { shared.isAppReady }
-
-    public static var isUIReady: Bool { shared.isUIReady }
-
-    @MainActor
-    public static func setAppIsReady() {
-        shared.setAppIsReady()
-    }
-
-    @MainActor
-    public static func setAppIsReadyUIStillPending() {
-        shared.setAppIsReadyUIStillPending()
-    }
-
-    @MainActor
-    public static func setUIIsReady() {
-        shared.setUIIsReady()
-    }
-
-    public static func runNowOrWhenAppWillBecomeReady(
-        _ block: @escaping @MainActor () -> Void,
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line
-    ) {
-        shared.runNowOrWhenAppWillBecomeReady(
-            block,
-            file: file,
-            function: function,
-            line: line
-        )
-    }
-
-    public static func runNowOrWhenUIDidBecomeReadySync(
-        _ block: @escaping @MainActor () -> Void,
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line
-    ) {
-        shared.runNowOrWhenUIDidBecomeReadySync(
-            block,
-            file: file,
-            function: function,
-            line: line
-        )
-    }
-
-    public static func runNowOrWhenAppDidBecomeReadySync(
-        _ block: @escaping @MainActor () -> Void,
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line
-    ) {
-        shared.runNowOrWhenAppDidBecomeReadySync(
-            block,
-            file: file,
-            function: function,
-            line: line
-        )
-    }
-
-    public static func runNowOrWhenAppDidBecomeReadyAsync(
-        _ block: @escaping @MainActor () -> Void,
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line
-    ) {
-        shared.runNowOrWhenAppDidBecomeReadyAsync(
-            block,
-            file: file,
-            function: function,
-            line: line
-        )
-    }
-
-    public static func runNowOrWhenMainAppDidBecomeReadyAsync(
-        _ block: @escaping @MainActor () -> Void,
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line
-    ) {
-        shared.runNowOrWhenMainAppDidBecomeReadyAsync(
-            block,
-            file: file,
-            function: function,
-            line: line
-        )
-    }
-}
-
-@objcMembers
-class AppReadinessObjcBridge: NSObject {
-
-    private static var shared: AppReadinessObjcBridge?
-
-    public static func setShared(appReadiness: AppReadiness, isRunningTests: Bool) -> AppReadinessObjcBridge {
-        owsPrecondition(shared == nil || isRunningTests)
-        let value = AppReadinessObjcBridge(appReadiness: appReadiness)
-        shared = value
-        return value
-    }
-
-    private let appReadiness: AppReadiness
-
-    private init(appReadiness: AppReadiness) {
-        self.appReadiness = appReadiness
-        super.init()
-    }
-
-    var isAppReady: Bool { appReadiness.isAppReady }
-
-    static var isAppReady: Bool { shared?.isAppReady ?? false }
-
-    func runNowOrWhenAppDidBecomeReadyAsync(_ block: @escaping () -> Void) {
-        appReadiness.runNowOrWhenAppDidBecomeReadyAsync(block)
-    }
+    /// Global static state exposing ``AppReadiness/isAppReady``.
+    /// If possible, take ``AppReadiness`` as a dependency and access it as an instance instead.
+    /// This type exists to bridge to objc code and legacy code requiring globals access.
+    @objc
+    public static var isAppReady: Bool { readyFlag?.isSet ?? false }
 }
 
 #if TESTABLE_BUILD

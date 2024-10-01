@@ -45,7 +45,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     public var shareViewNavigationController: OWSNavigationController?
     private var loadTask: Task<Void, any Error>?
 
-    private var appReadiness: AppReadinessSetter!
+    private lazy var appReadiness = AppReadinessImpl()
 
     override open func loadView() {
         super.loadView()
@@ -53,7 +53,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         // This should be the first thing we do.
         let appContext = ShareAppExtensionContext(rootViewController: self)
         SetCurrentAppContext(appContext)
-        self.appReadiness = AppReadinessImpl.createSingleton()
 
         let debugLogger = DebugLogger.shared
         debugLogger.enableTTYLoggingIfNeeded()

@@ -22,14 +22,11 @@ final public class Theme: NSObject {
 
     private static var shared = Theme()
 
-    private var appReadiness: AppReadiness?
-
     private override init() {
         super.init()
     }
 
     public static func performInitialSetup(appReadiness: AppReadiness) {
-        shared.appReadiness = appReadiness
         appReadiness.runNowOrWhenAppDidBecomeReadySync {
             // IOS-782: +[Theme shared] re-enterant initialization
             // AppReadiness will invoke the block synchronously if the app is already ready.
@@ -119,11 +116,8 @@ final public class Theme: NSObject {
         }
 #endif
 
-        // If AppReadiness is nil, we definitely aren't ready.
-        let isAppReady = appReadiness?.isAppReady ?? false
-
         // Don't cache this value until it reflects the data store.
-        guard isAppReady else {
+        guard AppReadinessObjcBridge.isAppReady else {
             return isSystemDarkThemeEnabled()
         }
 
@@ -157,10 +151,7 @@ final public class Theme: NSObject {
             return cachedCurrentMode
         }
 
-        // If AppReadiness is nil, we definitely aren't ready.
-        let isAppReady = appReadiness?.isAppReady ?? false
-
-        guard isAppReady else {
+        guard AppReadinessObjcBridge.isAppReady else {
             return defaultMode
         }
 

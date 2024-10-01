@@ -281,7 +281,7 @@ public class RemoteConfig {
         forFlag flag: ValueFlag,
         defaultValue: V
     ) -> V where V: LosslessStringConvertible {
-        guard AppReadinessGlobal.isAppReady else {
+        guard AppReadinessObjcBridge.isAppReady else {
             owsFailDebug("Storage is not yet ready.")
             return defaultValue
         }
