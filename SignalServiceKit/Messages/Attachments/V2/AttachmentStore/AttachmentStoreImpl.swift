@@ -33,6 +33,17 @@ public class AttachmentStoreImpl: AttachmentStore {
         )
     }
 
+    public func fetchAttachment(
+        mediaName: String,
+        tx: DBReadTransaction
+    ) -> Attachment? {
+        try? fetchAttachment(
+            mediaName: mediaName,
+            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database,
+            tx: tx
+        )
+    }
+
     public func enumerateAllReferences(
         toAttachmentId attachmentId: Attachment.IDType,
         tx: DBReadTransaction,
@@ -302,6 +313,17 @@ public class AttachmentStoreImpl: AttachmentStore {
     ) throws -> Attachment? {
         return try Attachment.Record
             .filter(Column(Attachment.Record.CodingKeys.sha256ContentHash) == sha256ContentHash)
+            .fetchOne(db)
+            .map(Attachment.init(record:))
+    }
+
+    func fetchAttachment(
+        mediaName: String,
+        db: GRDB.Database,
+        tx: DBReadTransaction
+    ) throws -> Attachment? {
+        return try Attachment.Record
+            .filter(Column(Attachment.Record.CodingKeys.mediaName) == mediaName)
             .fetchOne(db)
             .map(Attachment.init(record:))
     }

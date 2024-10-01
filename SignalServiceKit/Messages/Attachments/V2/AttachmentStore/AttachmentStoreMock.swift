@@ -31,6 +31,13 @@ open class AttachmentStoreMock: AttachmentStore {
         return nil
     }
 
+    open func fetchAttachment(
+        mediaName: String,
+        tx: DBReadTransaction
+    ) -> Attachment? {
+        return nil
+    }
+
     open func enumerateAllReferences(
         toAttachmentId: Attachment.IDType,
         tx: DBReadTransaction,

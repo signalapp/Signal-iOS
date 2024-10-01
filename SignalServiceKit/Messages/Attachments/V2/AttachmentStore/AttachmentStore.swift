@@ -33,6 +33,12 @@ public protocol AttachmentStore {
         tx: DBReadTransaction
     ) -> Attachment?
 
+    /// Fetch attachment by media name. There can be only one match.
+    func fetchAttachment(
+        mediaName: String,
+        tx: DBReadTransaction
+    ) -> Attachment?
+
     /// Enumerate all references to a given attachment id, calling the block for each one.
     /// Blocks until all references have been enumerated.
     func enumerateAllReferences(
