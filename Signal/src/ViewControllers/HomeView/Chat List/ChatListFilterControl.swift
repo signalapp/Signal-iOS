@@ -102,7 +102,7 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
     private let imageViews: [UIImageView]
     private let clearButton: ChatListFilterButton
     private let animationFrames: [AnimationFrame]
-    private let filterIconAnimator: UIViewPropertyAnimator
+    private var filterIconAnimator: UIViewPropertyAnimator!
     private var feedback: UIImpactFeedbackGenerator?
     private var previousContentHeight = CGFloat(0)
     private var state = State.inactive
@@ -151,7 +151,6 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
         animationFrames = AnimationFrame.allCases
         imageViews = animationFrames.map { UIImageView(image: $0.image) }
         imageContainer = UIView()
-        filterIconAnimator = UIViewPropertyAnimator()
         clearButton = ChatListFilterButton()
         clearButton.alpha = 0
         clearButton.configuration?.title = OWSLocalizedString("CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON", comment: "Button at top of chat list indicating the active filter is 'Filtered by Unread' and tapping will clear the filter")
@@ -171,24 +170,14 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
         contentView.addSubview(imageContainer)
         contentView.insertSubview(clearButton, aboveSubview: imageContainer)
 
-        for (imageView, frame) in zip(imageViews, animationFrames) {
+        for imageView in imageViews {
             imageContainer.addSubview(imageView)
-            imageView.sizeToFit()
-            frame.configure(imageView)
         }
 
-        filterIconAnimator.addAnimations { [unowned self] in
-            UIView.animateKeyframes(withDuration: animationDuration, delay: 0) { [imageViews, animationFrames] in
-                for (imageView, frame) in zip(imageViews, animationFrames) {
-                    UIView.addKeyframe(withRelativeStartTime: frame.relativeStartTime, relativeDuration: frame.relativeDuration) {
-                        frame.animate(imageView)
-                    }
-                }
-            }
-        }
+        resetFilterIconAnimator()
 
-        // Activate the animation but leave it paused to advance it manually.
-        filterIconAnimator.pauseAnimation()
+        NotificationCenter.default.addObserver(self, selector: #selector(cancelFilterIconAnimator), name: UIApplication.didEnterBackgroundNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(resetFilterIconAnimator), name: UIApplication.didBecomeActiveNotification, object: nil)
     }
 
     @available(*, unavailable)
@@ -204,6 +193,38 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
 
     override var intrinsicContentSize: CGSize {
         CGSize(width: UIView.noIntrinsicMetric, height: Self.minimumContentHeight)
+    }
+
+    // Animations are removed when the app enters the background, so we need to
+    // properly clean up our `UIViewPropertyAnimator` or the UI will be in an
+    // invalid state even if the animator is recreated.
+    @objc private func cancelFilterIconAnimator() {
+        filterIconAnimator.stopAnimation(true)
+        filterIconAnimator.finishAnimation(at: .start)
+    }
+
+    // The animator needs to be reset any time the app resumes from the background,
+    // because long-running animations are removed when the app is backgrounded.
+    @objc private func resetFilterIconAnimator() {
+        assert(filterIconAnimator == nil || filterIconAnimator.state == .inactive, "Animator should be inactive before being reset")
+        filterIconAnimator = UIViewPropertyAnimator(duration: 1, timingParameters: UICubicTimingParameters())
+
+        for (imageView, frame) in zip(imageViews, animationFrames) {
+            frame.configure(imageView)
+        }
+
+        filterIconAnimator.addAnimations { [imageViews, animationFrames] in
+            UIView.animateKeyframes(withDuration: UIView.inheritedAnimationDuration, delay: 0) {
+                for (imageView, frame) in zip(imageViews, animationFrames) {
+                    UIView.addKeyframe(withRelativeStartTime: frame.relativeStartTime, relativeDuration: frame.relativeDuration) {
+                        frame.animate(imageView)
+                    }
+                }
+            }
+        }
+
+        // Activate the animation but leave it paused to advance it manually.
+        filterIconAnimator.pauseAnimation()
     }
 
     override func layoutSubviews() {
