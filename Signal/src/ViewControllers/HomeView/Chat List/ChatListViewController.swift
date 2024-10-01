@@ -8,7 +8,6 @@ public import SignalUI
 import StoreKit
 
 public class ChatListViewController: OWSViewController, HomeTabViewController {
-
     let appReadiness: AppReadinessSetter
 
     init(
@@ -36,6 +35,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
     // MARK: View Lifecycle
 
     private lazy var filterControl = ChatListFilterControl()
+    private var filterControlNeedsSizeChange = true
 
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -62,6 +62,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         tableView.allowsSelectionDuringEditing = true
         tableView.allowsMultipleSelectionDuringEditing = true
         tableView.tableHeaderView = filterControl
+        filterControl.clearAction = .disableChatListFilter(target: self)
         filterControl.delegate = self
 
         // Empty Inbox
@@ -241,8 +242,13 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             CGFloat(0.0)
         }
 
+        if filterControlNeedsSizeChange {
+            let searchBarHeight = searchBar.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).height
+            filterControl.frame.size = CGSize(width: tableView.bounds.width, height: searchBarHeight)
+            filterControlNeedsSizeChange = false
+        }
+
         if !hasEverAppeared {
-            filterControl.sizeToFit()
             updateFilterControl(animated: false)
         }
 
@@ -309,6 +315,17 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                     getStartedBanner.view.alpha = 1
                 }
             }
+        }
+    }
+
+    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+
+        if traitCollection.preferredContentSizeCategory != previousTraitCollection?.preferredContentSizeCategory {
+            // The filter control needs to match the size of the search bar, which
+            // changes depending on dynamic type. Set a flag so that we can
+            // calculate the new search bar size in `viewDidLayoutSubviews()`.
+            filterControlNeedsSizeChange = true
         }
     }
 
@@ -1660,6 +1677,10 @@ extension ChatListViewController: UIScrollViewDelegate {
 
     public func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
         filterControl.draggingWillEnd(in: scrollView)
+    }
+
+    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        filterControl.scrollingDidStop(in: scrollView)
     }
 }
 

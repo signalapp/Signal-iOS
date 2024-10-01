@@ -82,6 +82,7 @@ extension UIButton.Configuration {
         configuration.baseBackgroundColor = .secondarySystemBackground
         configuration.baseForegroundColor = .label
         configuration.buttonSize = .small
+        configuration.titleLineBreakMode = .byTruncatingMiddle
         let horizontalInset = fontMetrics.scaledValue(for: 12, compatibleWith: traitCollection)
         configuration.contentInsets.leading = horizontalInset
         configuration.contentInsets.trailing = horizontalInset

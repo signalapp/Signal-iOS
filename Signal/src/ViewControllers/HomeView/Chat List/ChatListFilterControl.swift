@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Symbols
+import SignalServiceKit
 import UIKit
 
 protocol ChatListFilterControlDelegate: AnyObject {
@@ -81,23 +81,30 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
 
         mutating func startOrContinueTracking() -> Bool {
             switch self {
-            case .pending, .filtering, .stopping, .starting:
+            case .pending, .filtering, .starting:
                 return false
             case .inactive:
                 self = .tracking
                 fallthrough
-            case .tracking:
+            case .tracking, .stopping:
                 return true
             }
         }
     }
 
+    static var minimumContentHeight: CGFloat {
+        52
+    }
+
     private let contentView: UIView
     private let overlayView: UIView
+    private let imageContainer: UIView
     private let imageViews: [UIImageView]
+    private let clearButton: ChatListFilterButton
     private let animationFrames: [AnimationFrame]
-    private let animator: UIViewPropertyAnimator
+    private let filterIconAnimator: UIViewPropertyAnimator
     private var feedback: UIImpactFeedbackGenerator?
+    private var previousContentHeight = CGFloat(0)
     private var state = State.inactive
 
     weak var delegate: (any ChatListFilterControlDelegate)?
@@ -106,13 +113,33 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
         UIView.inheritedAnimationDuration == 0 ? CATransaction.animationDuration() : UIView.inheritedAnimationDuration
     }
 
+    private var contentHeight: CGFloat {
+        get { frame.size.height }
+        set { frame.size.height = newValue }
+    }
+
     private var scrollView: UIScrollView? {
         superview as? UIScrollView
     }
 
+    /// An action to perform when the clear button is triggered while in the filtering state.
+    var clearAction: UIAction? {
+        didSet {
+            if let oldValue {
+                clearButton.removeAction(oldValue, for: .primaryActionTriggered)
+            }
+            if let clearAction {
+                clearButton.addAction(clearAction, for: .primaryActionTriggered)
+            }
+        }
+    }
+
+    /// Whether the control is in the filtering state or transitioning into it (i.e., pending).
+    var isFiltering: Bool {
+        state.isFiltering
+    }
+
     override init(frame: CGRect) {
-        var frame = frame
-        frame.size.height = 52
         let bounds = CGRect(origin: .zero, size: frame.size)
         contentView = UIView(frame: bounds)
         contentView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
@@ -123,22 +150,34 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
         overlayView.backgroundColor = .Signal.background
         animationFrames = AnimationFrame.allCases
         imageViews = animationFrames.map { UIImageView(image: $0.image) }
-        animator = UIViewPropertyAnimator()
+        imageContainer = UIView()
+        filterIconAnimator = UIViewPropertyAnimator()
+        clearButton = ChatListFilterButton()
+        clearButton.alpha = 0
+        clearButton.configuration?.title = OWSLocalizedString("CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON", comment: "Button at top of chat list indicating the active filter is 'Filtered by Unread' and tapping will clear the filter")
+        clearButton.isUserInteractionEnabled = false
+        clearButton.showsClearIcon = true
         super.init(frame: frame)
 
+        maximumContentSizeCategory = .extraExtraLarge
         preservesSuperviewLayoutMargins = true
         setContentHuggingPriority(.required, for: .vertical)
+        ensureMinimumContentHeight()
+        previousContentHeight = contentHeight
+
         addSubview(contentView)
         addSubview(overlayView)
         contentView.autoPinEdgesToSuperviewEdges()
+        contentView.addSubview(imageContainer)
+        contentView.insertSubview(clearButton, aboveSubview: imageContainer)
 
         for (imageView, frame) in zip(imageViews, animationFrames) {
-            contentView.addSubview(imageView)
+            imageContainer.addSubview(imageView)
             imageView.sizeToFit()
             frame.configure(imageView)
         }
 
-        animator.addAnimations { [unowned self] in
+        filterIconAnimator.addAnimations { [unowned self] in
             UIView.animateKeyframes(withDuration: animationDuration, delay: 0) { [imageViews, animationFrames] in
                 for (imageView, frame) in zip(imageViews, animationFrames) {
                     UIView.addKeyframe(withRelativeStartTime: frame.relativeStartTime, relativeDuration: frame.relativeDuration) {
@@ -149,54 +188,7 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
         }
 
         // Activate the animation but leave it paused to advance it manually.
-        animator.pauseAnimation()
-    }
-
-    /// Whether the control is in the filtering state or transitioning into it (i.e., pending).
-    var isFiltering: Bool {
-        state.isFiltering
-    }
-
-    func startFiltering(animated: Bool) {
-        func startFiltering() {
-            scrollView?.contentInset.top = 0
-        }
-
-        if animated {
-            UIView.animate(withDuration: animationDuration) { [self] in
-                state = .starting
-                startFiltering()
-                UIView.performWithoutAnimation {
-                    animator.fractionComplete = 1
-                }
-            } completion: { [self] _ in
-                state = .filtering
-            }
-        } else {
-            state = .filtering
-            startFiltering()
-            animator.fractionComplete = 1
-        }
-    }
-
-    func stopFiltering(animated: Bool) {
-        func stopFiltering() {
-            scrollView?.contentInset.top = -frame.height
-        }
-
-        if animated {
-            UIView.animate(withDuration: animationDuration) { [self] in
-                state = .stopping
-                stopFiltering()
-            } completion: { [self] _ in
-                state = .inactive
-                animator.fractionComplete = 0
-            }
-        } else {
-            state = .inactive
-            stopFiltering()
-            animator.fractionComplete = 0
-        }
+        filterIconAnimator.pauseAnimation()
     }
 
     @available(*, unavailable)
@@ -204,28 +196,112 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
         fatalError("unimplemented")
     }
 
-    override var intrinsicContentSize: CGSize {
-        CGSize(width: UIView.noIntrinsicMetric, height: 52)
+    private func ensureMinimumContentHeight() {
+        if contentHeight < Self.minimumContentHeight {
+            contentHeight = Self.minimumContentHeight
+        }
     }
 
-    override func sizeThatFits(_ size: CGSize) -> CGSize {
-        CGSize(width: max(size.width, 52), height: 52)
+    override var intrinsicContentSize: CGSize {
+        CGSize(width: UIView.noIntrinsicMetric, height: Self.minimumContentHeight)
     }
 
     override func layoutSubviews() {
         super.layoutSubviews()
 
+        ensureMinimumContentHeight()
+
+        if contentHeight != previousContentHeight {
+            contentView.frame.size = bounds.size
+            overlayView.frame.size = bounds.size
+
+            // If the first layout is in the filtering state, we can't rely on
+            // updateScrollPosition() to have been called in order to set the
+            // position of the overlay view. Manually adjust the position so
+            // it doesn't obscure the content before interactive scrolling occurs.
+            if state == .filtering {
+                overlayView.frame.origin.y = -contentHeight
+            }
+
+            previousContentHeight = contentHeight
+        }
+
+        // Ensure that the content inset stays in sync with the content height
+        // whenever the frame changes (e.g., when dynamic type changes the size
+        // of the search bar).
+        if let scrollView, state != .filtering && abs(scrollView.contentInset.top) != contentHeight {
+            scrollView.contentInset.top = -contentHeight
+        }
+
+        let layoutMargins = contentView.layoutMargins
+        let horizontalMargins = UIEdgeInsets(top: 0, left: layoutMargins.left, bottom: 0, right: layoutMargins.right)
+        let fullBleedRect = contentView.bounds.inset(by: horizontalMargins)
+
+        clearButton.frame = fullBleedRect
+        clearButton.sizeToFit()
+        clearButton.center = contentView.center
+
+        let imageHeight = clearButton.frame.height
+        let imageSize = CGSize(width: imageHeight, height: imageHeight)
         for imageView in imageViews {
-            let imageHeight = contentView.bounds.inset(by: contentView.layoutMargins).height
-            imageView.frame.size = CGSize(width: imageHeight, height: imageHeight)
-            imageView.center = contentView.center
+            imageView.frame.size = imageSize
+        }
+        imageContainer.frame.size = imageSize
+        imageContainer.center = contentView.center
+    }
+
+    func startFiltering(animated: Bool) {
+        func startFiltering() {
+            scrollView?.contentInset.top = 0
+        }
+
+        showClearButton(animated: false)
+
+        if animated {
+            UIView.animate(withDuration: animationDuration) { [self] in
+                state = .starting
+                startFiltering()
+            } completion: { [self] _ in
+                state = .filtering
+            }
+        } else {
+            state = .filtering
+            startFiltering()
+            filterIconAnimator.fractionComplete = 1
+        }
+    }
+
+    func stopFiltering(animated: Bool) {
+        func stopFiltering() {
+            clearButton.alpha = 0
+            clearButton.isUserInteractionEnabled = false
+            scrollView?.contentInset.top = -contentHeight
+        }
+
+        func cleanUp() {
+            filterIconAnimator.fractionComplete = 0
+            contentView.backgroundColor = .Signal.background
+            imageContainer.alpha = 1
+            state = .inactive
+        }
+
+        if animated {
+            UIView.animate(withDuration: animationDuration) { [self] in
+                state = .stopping
+                stopFiltering()
+            } completion: { _ in
+                cleanUp()
+            }
+        } else {
+            stopFiltering()
+            cleanUp()
         }
     }
 
     func updateScrollPosition(in scrollView: UIScrollView) {
         let adjustedOffset = scrollView.adjustedContentInset.top + scrollView.contentOffset.y
 
-        overlayView.frame.origin.y = if scrollView.contentInset.top == 0 {
+        overlayView.frame.origin.y = if state == .filtering {
             // When filtering/"docked", contentView is part of the content area,
             // so make sure overlayView doesn't obscure it.
             adjustedOffset - overlayView.frame.height
@@ -247,16 +323,18 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
         let progress = min(1, position / limit)
         var didStartFiltering = false
 
-        if progress == 1 {
-            self.feedback?.impactOccurred()
+        if state == .stopping {
             self.feedback = nil
+        } else if progress == 1 {
             state = .pending
             didStartFiltering = true
         }
 
-        animator.fractionComplete = progress
+        filterIconAnimator.fractionComplete = progress
 
         if didStartFiltering {
+            feedback?.impactOccurred()
+            feedback = nil
             delegate?.filterControlDidStartFiltering()
         }
     }
@@ -266,11 +344,62 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
         case .pending:
             state = .filtering
             scrollView.contentInset.top = 0
+            showClearButton(animated: true)
+
         case .inactive, .filtering, .stopping, .starting:
             break
+
         case .tracking:
+            state = .stopping
+        }
+    }
+
+    func scrollingDidStop(in scrollView: UIScrollView) {
+        if state == .stopping {
             state = .inactive
         }
+    }
+
+    private func showClearButton(animated: Bool) {
+        guard animated else {
+            clearButton.alpha = 1
+            clearButton.isUserInteractionEnabled = true
+            imageContainer.alpha = 0
+            return
+        }
+
+        let startFrame = imageContainer.frame.intersection(clearButton.frame)
+        let transitionView = UIView(frame: startFrame)
+        transitionView.layer.cornerRadius = startFrame.height / 2
+        contentView.insertSubview(transitionView, belowSubview: imageContainer)
+        let backgroundColor = clearButton.configuration?.baseBackgroundColor
+        transitionView.backgroundColor = backgroundColor
+        let endFrame = clearButton.frame
+        clearButton.configuration?.baseBackgroundColor = .clear
+
+        let transitionAnimator = UIViewPropertyAnimator(duration: 0.7, dampingRatio: 0.75) { [clearButton, imageContainer] in
+            let duration = UIView.inheritedAnimationDuration
+
+            UIView.animate(withDuration: 0.1 * duration, delay: 0) {
+                imageContainer.alpha = 0
+            }
+
+            UIView.animate(withDuration: duration, delay: 0) {
+                transitionView.frame = endFrame
+            }
+
+            UIView.animate(withDuration: 0.67 * duration, delay: 0.33 * duration) {
+                clearButton.alpha = 1
+            }
+        }
+
+        transitionAnimator.addCompletion { [clearButton] _ in
+            clearButton.configuration?.baseBackgroundColor = backgroundColor
+            clearButton.isUserInteractionEnabled = true
+            transitionView.removeFromSuperview()
+        }
+
+        transitionAnimator.startAnimation()
     }
 }
 
