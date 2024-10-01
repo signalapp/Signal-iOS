@@ -210,7 +210,7 @@ internal struct OWSNavigationBarAppearance: Equatable {
         } else {
             appearance.backgroundStyle = .blur(Theme.barBlurEffect)
         }
-        appearance.titleTextColor = Theme.primaryTextColor
+        appearance.titleTextColor = .label
         appearance.clipsToBounds = false
         appearance.hasShadowImage = false
         appearance.isTranslucent = false

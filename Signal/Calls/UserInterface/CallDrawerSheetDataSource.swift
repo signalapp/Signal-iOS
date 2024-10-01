@@ -7,6 +7,7 @@ import Foundation
 import SignalRingRTC
 import SignalServiceKit
 import LibSignalClient
+import SignalUI
 import UIKit
 
 // MARK: - Call Drawer Protocols
@@ -187,8 +188,20 @@ extension CallLinkSheetDataSource {
         return self.groupCall.callLink.url()
     }
 
+    var callLink: CallLink {
+        self.groupCall.callLink
+    }
+
     var isAdmin: Bool {
-        return self.groupCall.adminPasskey != nil
+        self.groupCall.adminPasskey != nil
+    }
+
+    var adminPasskey: Data? {
+        self.groupCall.adminPasskey
+    }
+
+    var callLinkState: SignalServiceKit.CallLinkState {
+        self.groupCall.callLinkState
     }
 
     func removeMember(demuxId: DemuxId) {

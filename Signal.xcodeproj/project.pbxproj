@@ -1719,6 +1719,7 @@
 		B9A87A362A9D1D25009FCA13 /* EditorSticker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A87A352A9D1D25009FCA13 /* EditorSticker.swift */; };
 		B9A87A382A9E34BD009FCA13 /* Hatsuishi-UPM800.otf in Resources */ = {isa = PBXBuildFile; fileRef = B9A87A372A9E34BD009FCA13 /* Hatsuishi-UPM800.otf */; };
 		B9B2AA942BC598B60060B56C /* ContactNoteSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B2AA932BC598B60060B56C /* ContactNoteSheet.swift */; };
+		B9B45CF72CAB5F26005DE286 /* CallLinkAdminManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B45CF62CAB5F26005DE286 /* CallLinkAdminManager.swift */; };
 		B9B89EEB2BFFD3430093A2FA /* RaisedHandsToast.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B89EEA2BFFD3430093A2FA /* RaisedHandsToast.swift */; };
 		B9B89EED2C064E760093A2FA /* notification_simple-01.caf in Resources */ = {isa = PBXBuildFile; fileRef = B9B89EEC2C064E700093A2FA /* notification_simple-01.caf */; };
 		B9C0A96D2C6D3F63001FD0AA /* CallLinkApprovalRequestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C0A96C2C6D3F63001FD0AA /* CallLinkApprovalRequestView.swift */; };
@@ -5334,6 +5335,7 @@
 		B9A87A352A9D1D25009FCA13 /* EditorSticker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorSticker.swift; sourceTree = "<group>"; };
 		B9A87A372A9E34BD009FCA13 /* Hatsuishi-UPM800.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Hatsuishi-UPM800.otf"; sourceTree = "<group>"; };
 		B9B2AA932BC598B60060B56C /* ContactNoteSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactNoteSheet.swift; sourceTree = "<group>"; };
+		B9B45CF62CAB5F26005DE286 /* CallLinkAdminManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallLinkAdminManager.swift; sourceTree = "<group>"; };
 		B9B89EEA2BFFD3430093A2FA /* RaisedHandsToast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaisedHandsToast.swift; sourceTree = "<group>"; };
 		B9B89EEC2C064E700093A2FA /* notification_simple-01.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "notification_simple-01.caf"; sourceTree = "<group>"; };
 		B9C0A96C2C6D3F63001FD0AA /* CallLinkApprovalRequestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallLinkApprovalRequestView.swift; sourceTree = "<group>"; };
@@ -10547,6 +10549,7 @@
 				88D23D2B23CEC17400B0E74B /* CallAudioService.swift */,
 				88D23D1A23CEC0C700B0E74B /* CallKitCallManager.swift */,
 				50EF680C2C1A353D00BEB3B5 /* CallKitIdStore.swift */,
+				B9B45CF62CAB5F26005DE286 /* CallLinkAdminManager.swift */,
 				50A7830D2C0128D70008030E /* CallLinkCall.swift */,
 				500504AD2CA32969003D27ED /* CallLinkFetchJobRunner.swift */,
 				50733B1D2BAD038D00CEEC1F /* CallLinkManager.swift */,
@@ -15827,6 +15830,7 @@
 				88D23D2423CEC0C700B0E74B /* CallKitCallManager.swift in Sources */,
 				88D23D2523CEC0C700B0E74B /* CallKitCallUIAdaptee.swift in Sources */,
 				50EF680D2C1A353D00BEB3B5 /* CallKitIdStore.swift in Sources */,
+				B9B45CF72CAB5F26005DE286 /* CallLinkAdminManager.swift in Sources */,
 				B9D721782C87C8AF007EDA85 /* CallLinkApprovalRequestDetailsSheet.swift in Sources */,
 				B9C0A96D2C6D3F63001FD0AA /* CallLinkApprovalRequestView.swift in Sources */,
 				B93E4B2C2C9A3298005989B6 /* CallLinkApprovalViewModel.swift in Sources */,

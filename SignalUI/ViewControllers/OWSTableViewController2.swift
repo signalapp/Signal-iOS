@@ -248,7 +248,17 @@ open class OWSTableViewController2: OWSViewController {
     }
 
     open var navbarBackgroundColorOverride: UIColor? {
-        return usesSolidNavbarStyle ? tableBackgroundColor : nil
+        if usesSolidNavbarStyle {
+            tableBackgroundColor
+        } else if forceDarkMode {
+            Theme.darkThemeNavbarBackgroundColor
+        } else {
+            nil
+        }
+    }
+
+    open var navbarTintColorOverride: UIColor? {
+        forceDarkMode ? Theme.darkThemePrimaryColor : nil
     }
 
     private var hasViewAppeared = false

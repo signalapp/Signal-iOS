@@ -53,7 +53,10 @@ class EditCallLinkNameViewController: OWSTableViewController2 {
         self.contents = OWSTableContents(
             title: self.oldCallName.isEmpty ? CallStrings.addCallName : CallStrings.editCallName,
             sections: [
-                OWSTableSection(items: [.textFieldItem(self.callNameField)]),
+                OWSTableSection(items: [.textFieldItem(
+                    self.callNameField,
+                    textColor: UIColor.Signal.label
+                )]),
             ]
         )
     }

@@ -24,6 +24,44 @@ class CallDrawerSheet: InteractiveSheetViewController {
         return true
     }
 
+    private lazy var tableViewContainer: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.spacing = HeightConstants.titleViewBottomPadding
+        stackView.addArrangedSubview(self.tableHeaderContainer)
+        stackView.addArrangedSubview(self.tableView)
+        return stackView
+    }()
+    private lazy var tableHeaderContainer: UIView = {
+        let container = UIView()
+        container.layoutMargins = .init(hMargin: 21, vMargin: 0)
+        container.addSubview(self.sheetTitleLabel)
+        self.sheetTitleLabel.autoHCenterInSuperview()
+        self.sheetTitleLabel.autoPinHeightToSuperviewMargins()
+
+        let doneButton = UIButton(primaryAction: .init(
+            title: CommonStrings.doneButton
+        ) { [weak self] _ in
+            self?.minimizeHeight()
+        })
+        container.addSubview(doneButton)
+        doneButton.setTitleColor(UIColor.Signal.label, for: .normal)
+        doneButton.autoAlignAxis(.horizontal, toSameAxisOf: self.sheetTitleLabel)
+        doneButton.autoPinEdge(toSuperviewMargin: .trailing)
+        doneButton.autoPinEdge(.leading, to: .trailing, of: sheetTitleLabel, withOffset: 8, relation: .greaterThanOrEqual)
+
+        return container
+    }()
+    private let sheetTitleLabel: UILabel = {
+        let label = UILabel()
+        // "Call Info" for normal group calls. Will be
+        // overwritten by call link state otherwise.
+        // [CallLink] TODO: Localize
+        label.text = "Call Info"
+        label.font = .dynamicTypeHeadline
+        label.textColor = UIColor.Signal.label
+        return label
+    }()
     private let tableView = UITableView(frame: .zero, style: .insetGrouped)
     private let call: SignalCall
     private let callSheetDataSource: CallDrawerSheetDataSource
@@ -31,6 +69,20 @@ class CallDrawerSheet: InteractiveSheetViewController {
     private var callLinkDataSource: CallLinkSheetDataSource? {
         self.callSheetDataSource as? CallLinkSheetDataSource
     }
+
+    private lazy var callLinkAdminManager: CallLinkAdminManager? = {
+        guard
+            let callLinkDataSource,
+            let adminPasskey = callLinkDataSource.adminPasskey
+        else { return nil }
+        return CallLinkAdminManager(
+            callLink: callLinkDataSource.callLink,
+            adminPasskey: adminPasskey,
+            callLinkState: callLinkDataSource.callLinkState
+        )
+    }()
+
+    private var callLinkStateSubscription: AnyCancellable?
 
     private var didPresentViewController: ((UIViewController) -> Void)?
 
@@ -65,7 +117,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
         self.overrideUserInterfaceStyle = .dark
         callSheetDataSource.addObserver(self, syncStateImmediately: true)
         callControls.addHeightObserver(self)
-        self.tableView.alpha = 0
+        self.tableViewContainer.alpha = 0
         // Don't add a dim visual effect to the call when the sheet is open.
         self.backdropColor = .clear
     }
@@ -76,7 +128,12 @@ class CallDrawerSheet: InteractiveSheetViewController {
         }
         let halfHeight = windowHeight / 2
         let twoThirdsHeight = 2 * windowHeight / 3
-        let tableHeight = tableView.contentSize.height + tableView.safeAreaInsets.totalHeight + Constants.handleHeight
+        let tableHeight = tableView.contentSize.height
+        + tableView.safeAreaInsets.totalHeight
+        + Constants.handleHeight
+        + tableHeaderContainer.frame.height
+        + HeightConstants.titleViewBottomPadding
+        + HeightConstants.tableViewTopPadding
         if tableHeight >= twoThirdsHeight {
             return twoThirdsHeight
         } else if tableHeight > halfHeight {
@@ -99,6 +156,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
     private enum Section: Hashable {
         case callLink
         case members(MembersSection)
+        case admin
     }
 
     private enum MembersSection: Hashable {
@@ -112,6 +170,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
 
         enum CallLinkRow: Hashable {
             case share
+            case editName
         }
     }
 
@@ -148,8 +207,15 @@ class CallDrawerSheet: InteractiveSheetViewController {
             )
 
             return cell
-        case let .callLink(row):
+        case .callLink(.share):
             return tableView.dequeueReusableCell(CallLinkURLCell.self, for: indexPath)
+        case .callLink(.editName):
+            let cell = tableView.dequeueReusableCell(withIdentifier: "UITableViewCell", for: indexPath)
+            var config = cell.defaultContentConfiguration()
+            config.text = self?.callLinkAdminManager?.editCallNameButtonTitle
+            cell.contentConfiguration = config
+            cell.accessoryType = .disclosureIndicator
+            return cell
         }
     }
 
@@ -168,6 +234,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
             super.init(frame: .zero)
 
             self.addSubview(self.label)
+            self.layoutMargins.top = 0
             self.label.autoPinEdgesToSuperviewMargins()
             self.updateText()
         }
@@ -215,7 +282,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
     }
 
     private func setTableViewTopTranslation(to translation: CGFloat) {
-        tableView.transform = .translate(.init(x: 0, y: translation))
+        tableViewContainer.transform = .translate(.init(x: 0, y: translation))
     }
 
     override public func viewDidLoad() {
@@ -224,11 +291,21 @@ class CallDrawerSheet: InteractiveSheetViewController {
         tableView.delegate = self
         tableView.tableHeaderView = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 0, height: CGFloat.leastNormalMagnitude)))
         tableView.backgroundColor = sheetBackgroundColor
-        contentView.addSubview(tableView)
-        tableView.autoPinEdgesToSuperviewEdges()
+        contentView.addSubview(tableViewContainer)
+        tableViewContainer.autoPinEdgesToSuperviewEdges()
+
+        if let callLinkAdminManager {
+            callLinkStateSubscription = callLinkAdminManager.callLinkStatePublisher
+                .removeDuplicates { $0.name == $1.name }
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] callLinkState in
+                    self?.callLinkStateDidChange(callLinkState)
+                }
+        }
 
         tableView.register(CallLinkURLCell.self)
         tableView.register(GroupCallMemberCell.self)
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "UITableViewCell")
 
         tableView.dataSource = self.dataSource
 
@@ -301,15 +378,20 @@ class CallDrawerSheet: InteractiveSheetViewController {
 
     private var previousSnapshotItems: [RowID]?
 
+    @MainActor
     private func updateSnapshotAndHeaders() {
         AssertIsOnMainThread()
         var snapshot = Snapshot()
 
-        if self.callSheetDataSource is GroupCallSheetDataSource<CallLinkCall> {
+        let isCallAdmin = callLinkDataSource?.isAdmin ?? false
+
+        // Call link info
+        if callLinkDataSource != nil {
             snapshot.appendSections([.callLink])
             snapshot.appendItems([.callLink(.share)], toSection: .callLink)
         }
 
+        // Raised hands
         let raiseHandMemberIds = callSheetDataSource.raisedHandMemberIds()
         if !raiseHandMemberIds.isEmpty {
             snapshot.appendSections([.members(.raisedHands)])
@@ -323,19 +405,28 @@ class CallDrawerSheet: InteractiveSheetViewController {
             raisedHandsHeader.memberCount = raiseHandMemberIds.count
         }
 
-        snapshot.appendSections([.members(.inCall)])
-        snapshot.appendItems(
-            sortedMembers.map { RowID.member(section: .inCall, id: $0.id) },
-            toSection: .members(.inCall)
-        )
+        // Call members
+        let shouldHideMembersSection = isCallAdmin && sortedMembers.isEmpty
+        if !shouldHideMembersSection {
+            snapshot.appendSections([.members(.inCall)])
+            snapshot.appendItems(
+                sortedMembers.map { RowID.member(section: .inCall, id: $0.id) },
+                toSection: .members(.inCall)
+            )
+        }
 
         inCallHeader.memberCount = sortedMembers.count
 
-        Logger.info("animation duration: \(UIView.inheritedAnimationDuration)")
-        if self.previousSnapshotItems == snapshot.itemIdentifiers {
-            Logger.info("applying duplicate snapshot")
-        } else {
-            Logger.info("applying new snapshot")
+        // Call link admin
+        if isCallAdmin {
+            snapshot.appendSections([.admin])
+            snapshot.appendItems([
+                .callLink(.editName),
+            ])
+        }
+
+        // Apply snapshot
+        if self.previousSnapshotItems != snapshot.itemIdentifiers {
             self.previousSnapshotItems = snapshot.itemIdentifiers
             dataSource.apply(snapshot, animatingDifferences: true) { [weak self] in
                 self?.refreshMaxHeight()
@@ -343,15 +434,22 @@ class CallDrawerSheet: InteractiveSheetViewController {
         }
     }
 
+    private func callLinkStateDidChange(_ callLinkState: SignalServiceKit.CallLinkState) {
+        sheetTitleLabel.text = callLinkState.localizedName
+        var snapshot = dataSource.snapshot()
+        snapshot.reloadSections([.admin])
+        dataSource.apply(snapshot, animatingDifferences: false)
+    }
+
     private func changesForSnapToMax() {
-        self.tableView.alpha = 1
+        self.tableViewContainer.alpha = 1
         self.callControls.alpha = 0
         self.setTableViewTopTranslation(to: 0)
         self.view.layoutIfNeeded()
     }
 
     private func changesForSnapToMin() {
-        self.tableView.alpha = 0
+        self.tableViewContainer.alpha = 0
         self.callControls.alpha = 1
         self.setTableViewTopTranslation(to: HeightConstants.initialTableInset)
         self.view.layoutIfNeeded()
@@ -381,7 +479,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
             // Inherit the animation
             UIView.animateKeyframes(withDuration: 0, delay: 0) {
                 UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: tableFadePortion) {
-                    self.tableView.alpha = 0
+                    self.tableViewContainer.alpha = 0
                     self.setTableViewTopTranslation(to: HeightConstants.initialTableInset)
                 }
                 UIView.addKeyframe(withRelativeStartTime: tableFadePortion, relativeDuration: controlsFadePortion) {
@@ -398,7 +496,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
             if height <= self.minimizedHeight {
                 changesForSnapToMin()
             } else if height > self.minimizedHeight && height < pivotPoint {
-                tableView.alpha = 0
+                tableViewContainer.alpha = 0
                 let denominator = pivotPoint - self.minimizedHeight
                 if denominator <= 0 {
                     owsFailBeta("You've changed the conditions of this if-branch such that the denominator could be zero!")
@@ -413,9 +511,9 @@ class CallDrawerSheet: InteractiveSheetViewController {
                 let denominator = maxHeight - pivotPoint
                 if denominator <= 0 {
                     owsFailBeta("You've changed the conditions of this if-branch such that the denominator could be zero!")
-                    tableView.alpha = 0
+                    tableViewContainer.alpha = 0
                 } else {
-                    tableView.alpha = max(0.1, (height - pivotPoint) / denominator)
+                    tableViewContainer.alpha = max(0.1, (height - pivotPoint) / denominator)
                 }
 
                 // Table view slides up via a y-shift to its final position as the sheet opens.
@@ -455,7 +553,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
                     self.callControls.alpha = 0
                 }
                 UIView.addKeyframe(withRelativeStartTime: controlsFadePortion, relativeDuration: tableFadePortion) {
-                    self.tableView.alpha = 1
+                    self.tableViewContainer.alpha = 1
                     self.setTableViewTopTranslation(to: 0)
                 }
             }
@@ -476,7 +574,7 @@ extension CallDrawerSheet: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let section = dataSource.snapshot().sectionIdentifiers[section]
         switch section {
-        case .callLink:
+        case .callLink, .admin:
             return nil
         case .members(.raisedHands):
             return raisedHandsHeader
@@ -486,7 +584,13 @@ extension CallDrawerSheet: UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return UITableView.automaticDimension
+        let section = dataSource.snapshot().sectionIdentifiers[section]
+        switch section {
+        case .callLink:
+            return HeightConstants.tableViewTopPadding
+        case .members, .admin:
+            return UITableView.automaticDimension
+        }
     }
 
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
@@ -495,11 +599,15 @@ extension CallDrawerSheet: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let section = dataSource.snapshot().sectionIdentifiers[indexPath.section]
-        switch section {
-        case .callLink:
+        let row = dataSource.snapshot().itemIdentifiers(inSection: section)[indexPath.row]
+        switch row {
+        case .callLink(.share):
             tableView.deselectRow(at: indexPath, animated: true)
             self.shareCallLink()
-        case .members:
+        case .callLink(.editName):
+            tableView.deselectRow(at: indexPath, animated: true)
+            self.editCallName()
+        case .member:
             tableView.deselectRow(at: indexPath, animated: false)
         }
     }
@@ -516,6 +624,26 @@ extension CallDrawerSheet: UITableViewDelegate {
             applicationActivities: nil
         )
         present(shareSheet, animated: true)
+    }
+
+    private func editCallName() {
+        guard let callLinkAdminManager else {
+            owsFailDebug("Contains call admin section without a call link admin manager")
+            return
+        }
+
+        let editNameViewController = EditCallLinkNameViewController(
+            oldCallName: callLinkAdminManager.callLinkState.name ?? "",
+            setNewCallName: { name in
+                try await callLinkAdminManager.updateName(name)
+            }
+        )
+        editNameViewController.forceDarkMode = true
+
+        let navigationController = OWSNavigationController(rootViewController: editNameViewController)
+        navigationController.overrideUserInterfaceStyle = .dark
+
+        self.presentFormSheet(navigationController, animated: true)
     }
 }
 
@@ -629,7 +757,8 @@ private class CallLinkURLCell: UITableViewCell, ReusableTableViewCell {
         )
 
         self.contentView.addSubview(hStack)
-        hStack.autoPinEdgesToSuperviewMargins()
+        hStack.autoPinWidthToSuperviewMargins()
+        hStack.autoPinHeightToSuperview(withMargin: 7)
     }
 
     required init?(coder: NSCoder) {
@@ -860,5 +989,7 @@ extension CallDrawerSheet: CallControlsHeightObserver {
         static let bottomPadding: CGFloat = 14
         static let minimumBottomPaddingIncludingSafeArea: CGFloat = 30
         static let initialTableInset: CGFloat = 25
+        static let titleViewBottomPadding: CGFloat = 16
+        static let tableViewTopPadding: CGFloat = 8
     }
 }
