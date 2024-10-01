@@ -1,1 +1,1 @@
-• We fixed a bug that prevented the dark theme from working correctly during the initial registration and setup process. Just because someone has seen the light and decided to sign up for Signal, that no longer means they have to see the light theme too.
+• 我们修复了一个漏洞，该漏洞会在初始注册和设置过程中导致夜间模式无法正常运行。

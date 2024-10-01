@@ -719,28 +719,28 @@
 "CALL_LINK_CREATE" = "Cruthaigh Nasc Glao";
 
 /* Description of sheet presented when call link creation fails. */
-"CALL_LINK_CREATION_FAILURE_SHEET_DESCRIPTION" = "Call link could not be created. Check your internet connection and try again.";
+"CALL_LINK_CREATION_FAILURE_SHEET_DESCRIPTION" = "Níorbh fhéidir nasc glao a chruthú. Seiceáil do nasc Idirlín agus triail arís.";
 
 /* Title of sheet presented when call link creation or update fails. */
-"CALL_LINK_CREATION_OR_UPDATE_FAILURE_SHEET_TITLE" = "Network Error";
+"CALL_LINK_CREATION_OR_UPDATE_FAILURE_SHEET_TITLE" = "Earráid Líonra";
 
 /* Button to open a screen to edit the name of a Call Link. Also used as the title of that screen once it opens. */
 "CALL_LINK_EDIT_NAME" = "Cuir Ainm Glao in Eagar";
 
 /* Description of sheet presented when joining call from call link sheet fails. */
-"CALL_LINK_JOIN_CALL_FAILURE_SHEET_DESCRIPTION" = "Could not join call. Check your internet connection and try again.";
+"CALL_LINK_JOIN_CALL_FAILURE_SHEET_DESCRIPTION" = "Níorbh fhéidir dul isteach sa ghlao. Seiceáil do nasc Idirlín agus triail arís.";
 
 /* Shown in a message bubble when you send a call link in a Signal chat */
 "CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "Úsáid an nasc seo le dul isteach i nglao Signal";
 
 /* Title for button to approve all requests to join a call. */
-"CALL_LINK_REQUEST_SHEET_APPROVE_ALL_BUTTON" = "Approve All";
+"CALL_LINK_REQUEST_SHEET_APPROVE_ALL_BUTTON" = "Faomh gach ceann";
 
 /* Title for button to deny all requests to join a call. */
-"CALL_LINK_REQUEST_SHEET_DENY_ALL_BUTTON" = "Deny All";
+"CALL_LINK_REQUEST_SHEET_DENY_ALL_BUTTON" = "Diúltaigh do gach ceann";
 
 /* Header for the sheet displaying a list of requests to join a call. */
-"CALL_LINK_REQUEST_SHEET_HEADER" = "Requests to Join this Call";
+"CALL_LINK_REQUEST_SHEET_HEADER" = "Iarratais ar dhul isteach sa ghlao seo";
 
 /* Name of a toggle switch to enable/disable admin approval for joining a Call Link. */
 "CALL_LINK_REQUIRE_APPROVAL" = "Éiligh Faomhadh Riarthóra";
@@ -752,7 +752,7 @@
 "CALL_LINK_SHARE_VIA_SYSTEM" = "Comhroinn Nasc";
 
 /* Description of sheet presented when call link update fails. */
-"CALL_LINK_UPDATE_FAILURE_SHEET_DESCRIPTION" = "Call link could not be updated. Check your internet connection and try again.";
+"CALL_LINK_UPDATE_FAILURE_SHEET_DESCRIPTION" = "Níorbh fhéidir nasc glao a nuashonrú. Seiceáil do nasc Idirlín agus triail arís.";
 
 /* Label on button for lowering hand in call. */
 "CALL_LOWER_HAND_BUTTON_LABEL" = "Ísligh Lámh";

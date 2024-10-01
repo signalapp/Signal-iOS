@@ -719,28 +719,28 @@
 "CALL_LINK_CREATE" = "Criar link de chamada";
 
 /* Description of sheet presented when call link creation fails. */
-"CALL_LINK_CREATION_FAILURE_SHEET_DESCRIPTION" = "Call link could not be created. Check your internet connection and try again.";
+"CALL_LINK_CREATION_FAILURE_SHEET_DESCRIPTION" = "Não foi possível criar um link de chamada. Verifique a sua ligação à internet e tente novamente.";
 
 /* Title of sheet presented when call link creation or update fails. */
-"CALL_LINK_CREATION_OR_UPDATE_FAILURE_SHEET_TITLE" = "Network Error";
+"CALL_LINK_CREATION_OR_UPDATE_FAILURE_SHEET_TITLE" = "Erro de rede";
 
 /* Button to open a screen to edit the name of a Call Link. Also used as the title of that screen once it opens. */
 "CALL_LINK_EDIT_NAME" = "Editar nome da chamada";
 
 /* Description of sheet presented when joining call from call link sheet fails. */
-"CALL_LINK_JOIN_CALL_FAILURE_SHEET_DESCRIPTION" = "Could not join call. Check your internet connection and try again.";
+"CALL_LINK_JOIN_CALL_FAILURE_SHEET_DESCRIPTION" = "Não foi possível entrar na chamada. Verifique a sua ligação à internet e tente novamente.";
 
 /* Shown in a message bubble when you send a call link in a Signal chat */
 "CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "Use este link para se juntar à chamada do Signal";
 
 /* Title for button to approve all requests to join a call. */
-"CALL_LINK_REQUEST_SHEET_APPROVE_ALL_BUTTON" = "Approve All";
+"CALL_LINK_REQUEST_SHEET_APPROVE_ALL_BUTTON" = "Aprovar todos";
 
 /* Title for button to deny all requests to join a call. */
-"CALL_LINK_REQUEST_SHEET_DENY_ALL_BUTTON" = "Deny All";
+"CALL_LINK_REQUEST_SHEET_DENY_ALL_BUTTON" = "Recusar todos";
 
 /* Header for the sheet displaying a list of requests to join a call. */
-"CALL_LINK_REQUEST_SHEET_HEADER" = "Requests to Join this Call";
+"CALL_LINK_REQUEST_SHEET_HEADER" = "Pedidos para entrar nesta chamada";
 
 /* Name of a toggle switch to enable/disable admin approval for joining a Call Link. */
 "CALL_LINK_REQUIRE_APPROVAL" = "Requerer aprovação do administrador";
@@ -752,7 +752,7 @@
 "CALL_LINK_SHARE_VIA_SYSTEM" = "Partilhar ligação";
 
 /* Description of sheet presented when call link update fails. */
-"CALL_LINK_UPDATE_FAILURE_SHEET_DESCRIPTION" = "Call link could not be updated. Check your internet connection and try again.";
+"CALL_LINK_UPDATE_FAILURE_SHEET_DESCRIPTION" = "Não foi possível criar um link de chamada. Verifique a sua ligação à internet e tente novamente.";
 
 /* Label on button for lowering hand in call. */
 "CALL_LOWER_HAND_BUTTON_LABEL" = "Baixar mão";

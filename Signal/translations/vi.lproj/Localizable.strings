@@ -719,28 +719,28 @@
 "CALL_LINK_CREATE" = "Tạo đường dẫn cuộc gọi";
 
 /* Description of sheet presented when call link creation fails. */
-"CALL_LINK_CREATION_FAILURE_SHEET_DESCRIPTION" = "Call link could not be created. Check your internet connection and try again.";
+"CALL_LINK_CREATION_FAILURE_SHEET_DESCRIPTION" = "Không thể tạo đường dẫn cuộc gọi. Kiểm tra kết nối internet của bạn và thử lại.";
 
 /* Title of sheet presented when call link creation or update fails. */
-"CALL_LINK_CREATION_OR_UPDATE_FAILURE_SHEET_TITLE" = "Network Error";
+"CALL_LINK_CREATION_OR_UPDATE_FAILURE_SHEET_TITLE" = "Lỗi Kết nối mạng";
 
 /* Button to open a screen to edit the name of a Call Link. Also used as the title of that screen once it opens. */
 "CALL_LINK_EDIT_NAME" = "Sửa tên cuộc gọi";
 
 /* Description of sheet presented when joining call from call link sheet fails. */
-"CALL_LINK_JOIN_CALL_FAILURE_SHEET_DESCRIPTION" = "Could not join call. Check your internet connection and try again.";
+"CALL_LINK_JOIN_CALL_FAILURE_SHEET_DESCRIPTION" = "Không thể tham gia cuộc gọi. Kiểm kết nối internet của bạn và thử lại.";
 
 /* Shown in a message bubble when you send a call link in a Signal chat */
 "CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "Sử dụng đường dẫn này để tham gia cuộc gọi Signal";
 
 /* Title for button to approve all requests to join a call. */
-"CALL_LINK_REQUEST_SHEET_APPROVE_ALL_BUTTON" = "Approve All";
+"CALL_LINK_REQUEST_SHEET_APPROVE_ALL_BUTTON" = "Chấp nhận tất cả";
 
 /* Title for button to deny all requests to join a call. */
-"CALL_LINK_REQUEST_SHEET_DENY_ALL_BUTTON" = "Deny All";
+"CALL_LINK_REQUEST_SHEET_DENY_ALL_BUTTON" = "Từ chối tất cả";
 
 /* Header for the sheet displaying a list of requests to join a call. */
-"CALL_LINK_REQUEST_SHEET_HEADER" = "Requests to Join this Call";
+"CALL_LINK_REQUEST_SHEET_HEADER" = "Yêu cầu tham gia cuộc gọi này";
 
 /* Name of a toggle switch to enable/disable admin approval for joining a Call Link. */
 "CALL_LINK_REQUIRE_APPROVAL" = "Cần quản trị viên chấp duyệt";
@@ -752,7 +752,7 @@
 "CALL_LINK_SHARE_VIA_SYSTEM" = "Chia sẻ Đường dẫn";
 
 /* Description of sheet presented when call link update fails. */
-"CALL_LINK_UPDATE_FAILURE_SHEET_DESCRIPTION" = "Call link could not be updated. Check your internet connection and try again.";
+"CALL_LINK_UPDATE_FAILURE_SHEET_DESCRIPTION" = "Không thể cập nhật đường dẫn cuộc gọi. Kiểm tra kết nối internet của bạn và thử lại.";
 
 /* Label on button for lowering hand in call. */
 "CALL_LOWER_HAND_BUTTON_LABEL" = "Hạ Tay";

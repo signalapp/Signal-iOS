@@ -1,1 +1,1 @@
-• We fixed a bug that prevented the dark theme from working correctly during the initial registration and setup process. Just because someone has seen the light and decided to sign up for Signal, that no longer means they have to see the light theme too.
+• Hemos corregido un error que impedía que el tema oscuro funcionara correctamente durante el proceso de registro y configuración inicial. El hecho de que alguien se haya iluminado y haya decidido unirse en Signal no implica que quiera abandonar el lado oscuro.

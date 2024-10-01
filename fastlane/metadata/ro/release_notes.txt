@@ -1,1 +1,1 @@
-• We fixed a bug that prevented the dark theme from working correctly during the initial registration and setup process. Just because someone has seen the light and decided to sign up for Signal, that no longer means they have to see the light theme too.
+• Am remediat o eroare care împiedica modul întunecat să funcționeze corect în timpul procesului inițial de înregistrare și configurare. Doar pentru că unei persoane i s-a luminat mintea și a decis să se înscrie la Signal, asta nu înseamnă că trebuie să vadă și modul luminos.

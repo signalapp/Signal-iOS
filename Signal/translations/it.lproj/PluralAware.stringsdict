@@ -77,9 +77,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$ld person will be added to the call.</string>
+			<string>%1$ld persona verrà aggiunta alla chiamata.</string>
 			<key>other</key>
-			<string>%1$ld people will be added to the call.</string>
+			<string>%1$ld persone verranno aggiunte alla chiamata.</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_APPROVE_ALL_REQUESTS_CONFIRMATION_TITLE_%ld</key>
@@ -93,9 +93,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Approve %1$ld Request?</string>
+			<string>Approvi %1$ld richiesta?</string>
 			<key>other</key>
-			<string>Approve %1$ld Requests?</string>
+			<string>Approvi %1$ld richieste?</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_DENY_ALL_REQUESTS_CONFIRMATION_BODY_%ld</key>
@@ -109,9 +109,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$ld person will not be added to the call.</string>
+			<string>%1$ld persona non verrà aggiunta alla chiamata.</string>
 			<key>other</key>
-			<string>%1$ld people will not be added to the call.</string>
+			<string>%1$ld persone non verranno aggiunte alla chiamata.</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_DENY_ALL_REQUESTS_CONFIRMATION_TITLE_%ld</key>
@@ -125,9 +125,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Deny %1$ld Request?</string>
+			<string>Rifiuti %1$ld richiesta?</string>
 			<key>other</key>
-			<string>Deny %1$ld Requests?</string>
+			<string>Rifiuti %1$ld richieste?</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_REQUEST_HEADER_COUNT_%d</key>
@@ -141,9 +141,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$ld Person Waiting</string>
+			<string>%1$ld persona in attesa</string>
 			<key>other</key>
-			<string>%1$ld People Waiting</string>
+			<string>%1$ld persone in attesa</string>
 		</dict>
 	</dict>
 	<key>CALL_PEOPLE_HERE</key>

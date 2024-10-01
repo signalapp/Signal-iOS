@@ -1,1 +1,1 @@
-• We fixed a bug that prevented the dark theme from working correctly during the initial registration and setup process. Just because someone has seen the light and decided to sign up for Signal, that no longer means they have to see the light theme too.
+• Wir haben einen Fehler behoben, der verhinderte, dass das dunkle Design beim ersten Registrierungs- und Einrichtungsprozess korrekt funktionierte. Nur weil jemand einen lichten Moment hatte und sich bei Signal registriert hat, bedeutet das nicht mehr, dass nur das helle Design zum Einsatz kommen darf.

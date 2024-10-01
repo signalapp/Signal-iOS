@@ -93,13 +93,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$ld person will be added to the call.</string>
+			<string>%1$ld osoba bit će dodana pozivu.</string>
 			<key>few</key>
-			<string>%1$ld people will be added to the call.</string>
+			<string>%1$ld osobe bit će dodane pozivu.</string>
 			<key>many</key>
-			<string>%1$ld people will be added to the call.</string>
+			<string>%1$ld osoba bit će dodano pozivu.</string>
 			<key>other</key>
-			<string>%1$ld people will be added to the call.</string>
+			<string>%1$ld osoba bit će dodano pozivu.</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_APPROVE_ALL_REQUESTS_CONFIRMATION_TITLE_%ld</key>
@@ -113,13 +113,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Approve %1$ld Request?</string>
+			<string>Odobriti %1$ld zahtjev?</string>
 			<key>few</key>
-			<string>Approve %1$ld Requests?</string>
+			<string>Odobriti %1$ld zahtjeva?</string>
 			<key>many</key>
-			<string>Approve %1$ld Requests?</string>
+			<string>Odobriti %1$ld zahtjeva?</string>
 			<key>other</key>
-			<string>Approve %1$ld Requests?</string>
+			<string>Odobriti %1$ld zahtjeva?</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_DENY_ALL_REQUESTS_CONFIRMATION_BODY_%ld</key>
@@ -133,13 +133,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$ld person will not be added to the call.</string>
+			<string>%1$ld osoba neće biti dodana pozivu.</string>
 			<key>few</key>
-			<string>%1$ld people will not be added to the call.</string>
+			<string>%1$ld osobe neće biti dodane pozivu.</string>
 			<key>many</key>
-			<string>%1$ld people will not be added to the call.</string>
+			<string>%1$ld osoba neće biti dodano pozivu.</string>
 			<key>other</key>
-			<string>%1$ld people will not be added to the call.</string>
+			<string>%1$ld osoba neće biti dodano pozivu.</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_DENY_ALL_REQUESTS_CONFIRMATION_TITLE_%ld</key>
@@ -153,13 +153,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Deny %1$ld Request?</string>
+			<string>Odbiti %1$ld zahtjev?</string>
 			<key>few</key>
-			<string>Deny %1$ld Requests?</string>
+			<string>Odbiti %1$ld zahtjeva?</string>
 			<key>many</key>
-			<string>Deny %1$ld Requests?</string>
+			<string>Odbiti %1$ld zahtjeva?</string>
 			<key>other</key>
-			<string>Deny %1$ld Requests?</string>
+			<string>Odbiti %1$ld zahtjeva?</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_REQUEST_HEADER_COUNT_%d</key>
@@ -173,13 +173,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$ld Person Waiting</string>
+			<string>%1$ld osoba na čekanju</string>
 			<key>few</key>
-			<string>%1$ld People Waiting</string>
+			<string>%1$ld osobe na čekanju</string>
 			<key>many</key>
-			<string>%1$ld People Waiting</string>
+			<string>%1$ld osoba na čekanju</string>
 			<key>other</key>
-			<string>%1$ld People Waiting</string>
+			<string>%1$ld osoba na čekanju</string>
 		</dict>
 	</dict>
 	<key>CALL_PEOPLE_HERE</key>

@@ -1,1 +1,1 @@
-• We fixed a bug that prevented the dark theme from working correctly during the initial registration and setup process. Just because someone has seen the light and decided to sign up for Signal, that no longer means they have to see the light theme too.
+• 我們修正了一個導致深色主題無法在最初註冊和設定過程中正常運作的錯誤。

@@ -85,11 +85,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$ld person will be added to the call.</string>
+			<string>%1$ld persoană va fi adăugată la apel.</string>
 			<key>few</key>
-			<string>%1$ld people will be added to the call.</string>
+			<string>%1$ld persoane vor fi adăugate la apel.</string>
 			<key>other</key>
-			<string>%1$ld people will be added to the call.</string>
+			<string>%1$ld de persoane vor fi adăugate la apel.</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_APPROVE_ALL_REQUESTS_CONFIRMATION_TITLE_%ld</key>
@@ -103,11 +103,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Approve %1$ld Request?</string>
+			<string>Aprobi solicitarea lui %1$ld ?</string>
 			<key>few</key>
-			<string>Approve %1$ld Requests?</string>
+			<string>Aprobi solicitarile %1$ld?</string>
 			<key>other</key>
-			<string>Approve %1$ld Requests?</string>
+			<string>Aprobi solicitarile %1$ld?</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_DENY_ALL_REQUESTS_CONFIRMATION_BODY_%ld</key>
@@ -121,11 +121,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$ld person will not be added to the call.</string>
+			<string>%1$ld persoană nu va fi adăugată la apel.</string>
 			<key>few</key>
-			<string>%1$ld people will not be added to the call.</string>
+			<string>%1$ld persoane nu vor fi adăugate la apel.</string>
 			<key>other</key>
-			<string>%1$ld people will not be added to the call.</string>
+			<string>%1$ld de persoane nu vor fi adăugate la apel.</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_DENY_ALL_REQUESTS_CONFIRMATION_TITLE_%ld</key>
@@ -139,11 +139,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Deny %1$ld Request?</string>
+			<string>Respingi solicitarea lui %1$ld?</string>
 			<key>few</key>
-			<string>Deny %1$ld Requests?</string>
+			<string>Respingi solicitările %1$ld?</string>
 			<key>other</key>
-			<string>Deny %1$ld Requests?</string>
+			<string>Respingi solicitările %1$ld?</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_REQUEST_HEADER_COUNT_%d</key>
@@ -157,11 +157,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$ld Person Waiting</string>
+			<string>%1$ld persoană în așteptare</string>
 			<key>few</key>
-			<string>%1$ld People Waiting</string>
+			<string>%1$ld persoane în așteptare</string>
 			<key>other</key>
-			<string>%1$ld People Waiting</string>
+			<string>%1$ld de persoane în așteptare</string>
 		</dict>
 	</dict>
 	<key>CALL_PEOPLE_HERE</key>

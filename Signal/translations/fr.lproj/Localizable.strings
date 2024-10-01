@@ -131,7 +131,7 @@
 "ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Impossible de distribuer du contenu de %1$@. Il peut s’agir d’un message, d’un sticker, d’une réaction, d’une confirmation de lecture ou d’un contenu multimédia que ce contact vous a envoyés directement ou dans un groupe.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
-"ALERT_DISCARD_BUTTON" = "Abandonner";
+"ALERT_DISCARD_BUTTON" = "Supprimer";
 
 /* The label for the 'don't save' button in action sheets. */
 "ALERT_DONT_SAVE" = "Ne pas enregistrer";
@@ -482,13 +482,13 @@
 "BADGE_DETAILS_TITLE_FOR_SUPPORTER" = "%1$@ soutient Signal";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXPIRED_BOOST_BODY" = "Votre macaron Coup de pouce a expiré et n’est plus visible sur votre profil.\n\nVous pouvez continuer à utiliser Signal, mais pour soutenir une technologie conçue pour vous, veuillez envisager de devenir donateur mensuel.";
+"BADGE_EXPIRED_BOOST_BODY" = "Votre macaron Coup de pouce est arrivé à expiration et n'est plus visible sur votre profil.\n\nVous pouvez bien sûr continuer d'utiliser Signal, mais n'hésitez pas à devenir donateur mensuel : vous soutiendrez ainsi une technologie conçue pour vous protéger.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "Votre macaron Coup de pouce a expiré et n’est plus visible sur votre profil.\n\nVous pouvez réactiver votre macaron Coup de pouce pour 30 jours supplémentaires en effectuant un don ponctuel.";
+"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "Votre macaron Coup de pouce est arrivé à expiration et n'est plus visible sur votre profil.\n\nVous pouvez le réactiver pour 30 jours de plus grâce à un don ponctuel.";
 
 /* Title for boost on the badge expiration sheet. */
-"BADGE_EXPIRED_BOOST_TITLE" = "Le macaron est expiré";
+"BADGE_EXPIRED_BOOST_TITLE" = "Expiration du macaron";
 
 /* Button text when a badge expires, asking users to donate */
 "BADGE_EXPIRED_DONATE_BUTTON" = "Faire un don";
@@ -503,25 +503,25 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Votre don mensuel a été annulé. %1$@\n\nVotre badge ne sera plus visible sur votre profil.";
 
 /* Body for a sheet explaining that a bank transfer donation is complete, and that you have received a badge. */
-"BADGE_THANKS_BANK_DONATION_COMPLETE_BODY" = "Votre virement a bien été reçu. Vous pouvez afficher ce macaron sur votre profil pour montrer votre soutien.";
+"BADGE_THANKS_BANK_DONATION_COMPLETE_BODY" = "Nous avons bien reçu votre virement. Vous pouvez afficher ce macaron sur votre profil pour montrer que vous soutenez Signal.";
 
 /* Title for a sheet explaining that a bank transfer donation is complete, and that you have received a badge. */
 "BADGE_THANKS_BANK_DONATION_COMPLETE_TITLE" = "Don effectué";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "Vous pouvez afficher ce macaron sur votre profil pour montrer votre soutien.";
+"BADGE_THANKS_BODY" = "Vous pouvez afficher ce macaron sur votre profil pour montrer que vous soutenez Signal.";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Afficher sur le profil";
 
 /* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_MAKE_FEATURED" = "Créer un macaron en vedette";
+"BADGE_THANKS_MAKE_FEATURED" = "Afficher ce macaron";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the title of that sheet. */
 "BADGE_THANKS_TITLE" = "Merci pour votre soutien !";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
-"BADGE_THANKS_TOGGLE_FOOTER" = "Si vous avez plus d’un macaron, vous pouvez en choisir un que les autres pourront voir sur votre profil.";
+"BADGE_THANKS_TOGGLE_FOOTER" = "Si vous avez plusieurs macarons, vous pouvez choisir celui que vous voulez afficher sur votre profil.";
 
 /* On the bank donation screen, show a link below the input form to show help about finding account info. */
 "BANK_DONATION_FOOTER_FIND_ACCOUNT_INFO" = "Trouver les détails du compte";
@@ -719,28 +719,28 @@
 "CALL_LINK_CREATE" = "Créer un lien d'appel";
 
 /* Description of sheet presented when call link creation fails. */
-"CALL_LINK_CREATION_FAILURE_SHEET_DESCRIPTION" = "Call link could not be created. Check your internet connection and try again.";
+"CALL_LINK_CREATION_FAILURE_SHEET_DESCRIPTION" = "Impossible de créer le lien d'appel. Vérifiez votre connexion Internet et réessayez.";
 
 /* Title of sheet presented when call link creation or update fails. */
-"CALL_LINK_CREATION_OR_UPDATE_FAILURE_SHEET_TITLE" = "Network Error";
+"CALL_LINK_CREATION_OR_UPDATE_FAILURE_SHEET_TITLE" = "Erreur réseau";
 
 /* Button to open a screen to edit the name of a Call Link. Also used as the title of that screen once it opens. */
 "CALL_LINK_EDIT_NAME" = "Renommer l'appel";
 
 /* Description of sheet presented when joining call from call link sheet fails. */
-"CALL_LINK_JOIN_CALL_FAILURE_SHEET_DESCRIPTION" = "Could not join call. Check your internet connection and try again.";
+"CALL_LINK_JOIN_CALL_FAILURE_SHEET_DESCRIPTION" = "Impossible de rejoindre l'appel. Vérifiez votre connexion Internet et réessayez.";
 
 /* Shown in a message bubble when you send a call link in a Signal chat */
 "CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "Utiliser ce lien pour rejoindre un appel Signal";
 
 /* Title for button to approve all requests to join a call. */
-"CALL_LINK_REQUEST_SHEET_APPROVE_ALL_BUTTON" = "Approve All";
+"CALL_LINK_REQUEST_SHEET_APPROVE_ALL_BUTTON" = "Tout accepter";
 
 /* Title for button to deny all requests to join a call. */
-"CALL_LINK_REQUEST_SHEET_DENY_ALL_BUTTON" = "Deny All";
+"CALL_LINK_REQUEST_SHEET_DENY_ALL_BUTTON" = "Tout refuser";
 
 /* Header for the sheet displaying a list of requests to join a call. */
-"CALL_LINK_REQUEST_SHEET_HEADER" = "Requests to Join this Call";
+"CALL_LINK_REQUEST_SHEET_HEADER" = "Demandes de participation à cet appel";
 
 /* Name of a toggle switch to enable/disable admin approval for joining a Call Link. */
 "CALL_LINK_REQUIRE_APPROVAL" = "Exiger l'approbation d'un admin";
@@ -752,7 +752,7 @@
 "CALL_LINK_SHARE_VIA_SYSTEM" = "Partager le lien";
 
 /* Description of sheet presented when call link update fails. */
-"CALL_LINK_UPDATE_FAILURE_SHEET_DESCRIPTION" = "Call link could not be updated. Check your internet connection and try again.";
+"CALL_LINK_UPDATE_FAILURE_SHEET_DESCRIPTION" = "Impossible de mettre à jour le lien d'appel. Vérifiez votre connexion Internet et réessayez.";
 
 /* Label on button for lowering hand in call. */
 "CALL_LOWER_HAND_BUTTON_LABEL" = "Baisser la main";
@@ -1457,7 +1457,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choisissez qui peut modifier le nom, la photo et la description du groupe, ou encore le délai avant disparition des messages éphémères.";
 
 /* Footer string for a contact's badges in conversation settings */
-"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Obtenez des macarons pour votre profil en soutenant Signal. Touchez un macaron pour en savoir plus.";
+"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Soutenez Signal et gagnez des macarons à afficher sur votre profil. Appuyez sur un macaron pour en savoir plus.";
 
 /* Header title for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_HEADER" = "Macarons";
@@ -1535,7 +1535,7 @@
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Toujours";
 
 /* Button to mute the chat */
-"CONVERSATION_SETTINGS_MUTE_BUTTON" = "muet";
+"CONVERSATION_SETTINGS_MUTE_BUTTON" = "sourdine";
 
 /* Label for button to mute a thread for eight hours. */
 "CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 heures";
@@ -2048,7 +2048,7 @@
 "DISAPPEARING_MESSAGES_DAYS" = "jours";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "Si cette option est activée, les nouveaux messages envoyés et reçus dans cette conversation disparaîtront après avoir été lus.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Si vous activez cette option, les nouveaux messages que vous enverrez et recevrez dans cette conversation disparaîtront une fois lus.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Actuellement, les messages disparaissent après %1$@";
@@ -2066,7 +2066,7 @@
 "DISAPPEARING_MESSAGES_SECONDS" = "seconde";
 
 /* subheading in privacy settings */
-"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "Si cette option est activée, les nouveaux messages envoyés et reçus dans les nouvelles conversations disparaîtront après avoir été lus.";
+"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "Si vous activez cette option et démarrez de nouvelles conversations, les nouveaux messages que vous enverrez et recevrez dans ces conversations disparaîtront une fois lus.";
 
 /* The unit for a number of weeks */
 "DISAPPEARING_MESSAGES_WEEKS" = "semaines";
@@ -2108,10 +2108,10 @@
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "De la part de %1$@";
 
 /* When users make monthly donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Planet\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_MONTHLY_DONATION" = "Obtenir le macaron %1$@";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_MONTHLY_DONATION" = "Gagner le macaron %1$@";
 
 /* When users make one-time donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge for a month. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Boost\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_ONE_TIME_DONATION" = "Obtenez le macaron %1$@ pendant 30 jours";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_ONE_TIME_DONATION" = "Gagnez le macaron %1$@ pour 30 jours";
 
 /* When users make donations on a friend's behalf, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money}}, such as \"$5\". */
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "Don de %1$@ à Signal";
@@ -2180,7 +2180,7 @@
 "DONATE_SCREEN_MONTHLY_SUBSCRIPTION_RENEWS_ON_DATE" = "Renouvellement le %1$@";
 
 /* On the donation screen, you can see a list of monthly subscription levels. This text will be shown in the subtitle of each level, telling you which badge you'll get. Embeds {{localized badge name}}, such as \"Planet\". */
-"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_SUBTITLE" = "Obtenez un macaron %1$@";
+"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_SUBTITLE" = "Gagnez un macaron %1$@";
 
 /* On the donation screen, you can see a list of monthly subscription levels. This text will be shown as the title for each level, telling you the price per month. Embeds {{currency string}}, such as \"$5\". */
 "DONATE_SCREEN_MONTHLY_SUBSCRIPTION_TITLE" = "%1$@/mois";
@@ -2201,10 +2201,10 @@
 "DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_PROCESSING_TITLE" = "Don en attente";
 
 /* Message for a sheet explaining that a one-time donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
-"DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "Votre don ponctuel est en attente. Une fois votre don reçu, vous pourrez afficher le macaron %1$@ dans votre profil.\n\nLe traitement des virements bancaires prend généralement 1 jour ouvré.";
+"DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "Votre don ponctuel est en attente. Vous pourrez afficher le macaron %1$@ sur votre profil dès que nous recevrons votre don.\n\nLe traitement des virements bancaires prend généralement 1 jour ouvré.";
 
 /* Message for a sheet explaining that a recurring donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
-"DONATION_BADGE_ISSUE_SHEET_RECURRING_BANK_PAYMENT_PROCESSING_MESSAGE" = "Votre don mensuel est en attente. Une fois votre don reçu, vous pourrez afficher le macaron %1$@ dans votre profil.\n\nLe traitement des virements bancaires prend généralement 1 jour ouvré.";
+"DONATION_BADGE_ISSUE_SHEET_RECURRING_BANK_PAYMENT_PROCESSING_MESSAGE" = "Votre don mensuel est en attente. Vous pourrez afficher le macaron %1$@ sur votre profil dès que nous recevrons votre don.\n\nLe traitement des virements bancaires prend généralement 1 jour ouvré.";
 
 /* Title for a button asking the user to renew their subscription, because it has expired. */
 "DONATION_BADGE_ISSUE_SHEET_RENEW_SUBSCRIPTION_BUTTON_TITLE" = "Renouveler l’abonnement";
@@ -2216,16 +2216,16 @@
 "DONATION_FOR_A_FRIEND_ROW_DURATION" = "Dure %1$@";
 
 /* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the text on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY" = "Le macaron de don a expiré et ne peut plus être affiché sur votre profil.";
+"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY" = "Votre macaron est arrivé à expiration et ne sera plus affiché sur votre profil.";
 
 /* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the title on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_TITLE" = "Votre macaron de don a expiré";
+"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_TITLE" = "Expiration de votre macaron";
 
 /* Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the text on that sheet. Embeds {{contact name}}. */
-"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_BODY_FORMAT" = "Le macaron de don associé au don effectué par %1$@ de votre part a expiré et vous ne pouvez plus le récupérer.";
+"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_BODY_FORMAT" = "Le macaron que vous a offert %1$@ est arrivé à expiration. Vous ne pouvez plus le récupérer.";
 
 /* Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the title on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_TITLE" = "Votre macaron de don a expiré";
+"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_TITLE" = "Expiration de votre macaron";
 
 /* Label for a button to see details about a badge you've already redeemed, received as a result of a donation from a friend. This text is shown next to a check mark. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_BADGE_REDEEMED" = "Récupéré";
@@ -2285,7 +2285,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE" = "Récupérer";
 
 /* When you receive a badge as a result of a donation from a friend, a screen is shown. This toast is shown when dismissing that screen if you do not redeem the badge. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_LATER" = "Vous pouvez récupérer votre macaron plus tard";
+"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_LATER" = "Vous pourrez récupérer votre macaron plus tard";
 
 /* A friend has donated on your behalf and you received a badge. A sheet opens for you to redeem this badge. Embeds {{contact's short name, such as a first name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_TITLE_FORMAT" = "%1$@ a effectué un don de votre part";
@@ -2720,7 +2720,7 @@
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Le numéro de sécurité associé à %1$@ a récemment changé. Vous pouvez vérifier le nouveau numéro avant de renvoyer ce message.";
 
 /* Shown as the body of an alert when failing to redeem a badge that was received after a friend donated on your behalf. */
-"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY" = "Votre macaron n’a pas pu être récupéré. Vérifiez votre connexion et réessayez.";
+"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY" = "Impossible de récupérer votre macaron. Vérifiez votre connexion et réessayez.";
 
 /* Shown as the title of an alert when failing to redeem a badge that was received after a friend donated on your behalf. */
 "FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_TITLE" = "Impossible de récupérer le macaron";
@@ -2732,7 +2732,7 @@
 "FEATURED_BADGE_SECTION_HEADER" = "Sélectionnez un macaron";
 
 /* The title for the featured badge settings page */
-"FEATURED_BADGE_SETTINGS_TITLE" = "Macarons mis en avant";
+"FEATURED_BADGE_SETTINGS_TITLE" = "Macaron affiché";
 
 /* Users can choose to learn more about how to find account info, which will open a sheet with additional information. This is the body of that sheet. */
 "FIND_ACCOUNT_INFO_SHEET_BODY" = "Votre numéro IBAN se trouve généralement en haut de vos relevés bancaires. Les numéros IBAN contiennent jusqu’à 34 caractères. Le nom que vous saisissez doit correspondre au nom complet associé à votre compte bancaire. Veuillez contacter votre banque pour plus d’informations.";
@@ -4973,19 +4973,19 @@
 "PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Pour utiliser la fonctionnalité de verrouillage des paiements, vous devez activer un code dans vos réglages iOS.";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE" = "Ajoutez une couche de sécurité supplémentaire et exigez la saisie de votre code d’accès ou l’utilisation de Touch ID pour envoyer des fonds.";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE" = "Pour plus de sécurité, exigez la saisie de votre code d'accès ou l'utilisation de Touch ID pour effectuer des paiements.";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_FACEID" = "Ajoutez une couche de sécurité supplémentaire et exigez l’utilisation de Face ID pour envoyer des fonds.";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_FACEID" = "Pour plus de sécurité, exigez l'utilisation de Face ID pour effectuer des paiements.";
 
 /* First time payments suggest payments lock message */
 "PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_OPTICID" = "Activez Optic ID pour renforcer la sécurité de vos paiements.";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_PASSCODE" = "Ajoutez une couche de sécurité supplémentaire et exigez la saisie de votre code d’accès pour envoyer des fonds.";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_PASSCODE" = "Pour plus de sécurité, exigez la saisie de votre code d'accès pour effectuer des paiements.";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_TOUCHID" = "Ajoutez une couche de sécurité supplémentaire et exigez l’utilisation de Touch ID pour envoyer des fonds.";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_TOUCHID" = "Pour plus de sécurité, exigez l'utilisation de Touch ID pour effectuer des paiements.";
 
 /* First time payments suggest payments lock title */
 "PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_TITLE" = "Activer le blocage des paiements pour les prochains envois ?";
@@ -4994,7 +4994,7 @@
 "PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION" = "Exigez la saisie de votre code d’accès ou l’utilisation de Touch ID pour l'envoi";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_FACEID" = "Exiger l’utilisation de Face ID pour l'envoi";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_FACEID" = "Exiger l'utilisation de Face ID pour effectuer des paiements";
 
 /* Affirmative action title to enable payments lock */
 "PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_OPTICID" = "Exiger Optic ID pour les paiements";
@@ -5204,7 +5204,7 @@
 "PAYMENTS_UNKNOWN_PAYMENT" = "Paiement invalide";
 
 /* The alert message if user tries to exit a task without saving changes. */
-"PENDING_CHANGES_ACTION_SHEET_MESSAGE" = "Voulez-vous abandonner ces changements ?";
+"PENDING_CHANGES_ACTION_SHEET_MESSAGE" = "Voulez-vous supprimer ces modifications ?";
 
 /* The alert title if user tries to exit a task without saving changes. */
 "PENDING_CHANGES_ACTION_SHEET_TITLE" = "Les changements n’ont pas été enregistrés";
@@ -6143,10 +6143,10 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Trop d’essais infructueux d’authentification. Veuillez réessayer plus tard.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Pour utiliser la fonctionnalité de verrouillage d’écran, vous devez activer un code dans vos réglages iOS.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Pour utiliser la fonctionnalité de verrouillage d'écran, vous devez activer un code dans vos réglages iOS.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "Pour utiliser la fonctionnalité de verrouillage d’écran, vous devez activer un code dans vos réglages•iOS.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "Pour utiliser la fonctionnalité de verrouillage d'écran, vous devez activer un code dans vos réglages•iOS.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Pour utiliser la fonctionnalité de verrouillage d’écran, vous devez activer un code dans vos réglages•iOS.";
@@ -6263,7 +6263,7 @@
 "SEND_INVITE_FAILURE" = "Échec d’envoi de l’invitation. Veuillez réessayer plus tard.";
 
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
-"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Abandonner le média";
+"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Supprimer le média";
 
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "Revenir à l’appareil photo";
@@ -6362,7 +6362,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY" = "Position";
 
 /* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Si cette option est activée, Signal tentera de contourner la censure. N’activez cette fonction que si vous êtes situé en un lieu où Signal est censurée.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Lorsque cette option est activée, Signal tente de contourner la censure. Ne l'activez que si vous vous trouvez dans une zone géographique où Signal est censuré.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Le contournement de la censure a été activé d’après le numéro de téléphone de votre compte.";
@@ -6515,7 +6515,7 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Réinitialiser les paramètres de téléchargement automatique";
 
 /* Item title for the sent media quality setting */
-"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Qualité de médias envoyés";
+"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Qualité des médias envoyés";
 
 /* Section footer for the sent media section in data settings */
 "SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Choisissez la qualité des photos et vidéos que vous envoyez.";
@@ -7016,7 +7016,7 @@
 "SETTINGS_PAYMENTS_SECURITY_DETAIL" = "Exigez la saisie de votre code d’accès ou l’utilisation de Touch ID pour transférer des fonds.";
 
 /* Caption for footer label beneath the payments lock privacy toggle for faceid biometry. */
-"SETTINGS_PAYMENTS_SECURITY_DETAIL_FACEID" = "Exigez l’utilisation de Face ID pour transférer des fonds.";
+"SETTINGS_PAYMENTS_SECURITY_DETAIL_FACEID" = "Exigez l'utilisation de Face ID pour effectuer des paiements.";
 
 /* Caption for footer label beneath the payments lock privacy toggle for opticid biometry */
 "SETTINGS_PAYMENTS_SECURITY_DETAIL_OPTICID" = "Exiger Optic ID pour les paiements.";
@@ -7169,13 +7169,13 @@
 "SETTINGS_PINS_TITLE" = "Code PIN Signal";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Paramètres de contournement de la censure, du proxy, des appels relayés et d’expéditeur scellé.";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Contournement de la censure, proxy, appels relayés et expéditeur scellé.";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "Paramètres avancés";
 
 /* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Afficher les appels dans Récents";
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Afficher les appels dans \"Récents\"";
 
 /* The title for the privacy settings. */
 "SETTINGS_PRIVACY_TITLE" = "Confidentialité";
@@ -7205,10 +7205,10 @@
 "SETTINGS_REREGISTER_BUTTON" = "S’inscrire de nouveau";
 
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Délai avant verrouillage de l’écran";
+"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Délai avant verrouillage de l'écran";
 
 /* Label for the 'enable screen lock' switch of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Verrouillage de l’écran";
+"SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Verrouillage de l'écran";
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY" = "Masquer l’écran dans le sélecteur d’app";
@@ -7226,7 +7226,7 @@
 "SETTINGS_SECURITY_DETAIL" = "Utilisez Touch ID, Face ID ou le mot de passe de votre appareil iOS pour déverrouiller Signal.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_FACEID" = "Utilisez Face ID pour déverrouiller Signal.";
+"SETTINGS_SECURITY_DETAIL_FACEID" = "Utilisez Face ID pour déverrouiller Signal.";
 
 /* Section footer */
 "SETTINGS_SECURITY_DETAIL_OPTICID" = "Utiliser Optic ID pour déverrouiller Signal.";
@@ -7238,7 +7238,7 @@
 "SETTINGS_SECURITY_DETAIL_TOUCHID" = "Utilise Touch ID pour déverrouiller Signal.";
 
 /* Section header */
-"SETTINGS_SECURITY_TITLE" = "Sécurité de l’appli";
+"SETTINGS_SECURITY_TITLE" = "Sécurité de l'app";
 
 /* The footer for the photos and videos section in the sent media quality settings. */
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Envoyer des médias de haute qualité demande plus de données.";
@@ -7772,16 +7772,16 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "Confirmer";
 
 /* Confirm Cancellation? Action sheet message */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Vous ne serez plus facturé. Votre macaron sera supprimé de votre profil à la fin de votre période de facturation.";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Vous ne serez plus facturé. Votre macaron sera supprimé de votre profil à la fin de la période de facturation.";
 
 /* Confirm Cancellation? Action sheet title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Confirmer l’annulation ?";
 
 /* Action sheet message for Couldn't Add Badge sheet */
-"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "Votre macaron n’a pas pu être ajouté à votre compte. Veuillez contacter l’assistance.";
+"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "Impossible d'ajouter votre macaron à votre compte. Nous vous invitons à contacter l'assistance.";
 
 /* Action sheet title for Couldn't Add Badge sheet */
-"SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Impossible d’ajouter le macaron";
+"SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Impossible d’ajouter le macaron.";
 
 /* Action sheet title for Error Authorizing Payment sheet */
 "SUSTAINER_VIEW_ERROR_AUTHORIZING_PAYMENT_TITLE" = "Erreur d’autorisation du paiement";

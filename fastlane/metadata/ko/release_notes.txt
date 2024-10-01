@@ -1,1 +1,1 @@
-• We fixed a bug that prevented the dark theme from working correctly during the initial registration and setup process. Just because someone has seen the light and decided to sign up for Signal, that no longer means they have to see the light theme too.
+• 첫 등록과 설정 과정에서 다크 테마가 제대로 작동하지 않는 버그를 수정했습니다.

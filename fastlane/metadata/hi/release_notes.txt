@@ -1,1 +1,1 @@
-• We fixed a bug that prevented the dark theme from working correctly during the initial registration and setup process. Just because someone has seen the light and decided to sign up for Signal, that no longer means they have to see the light theme too.
+• हमने उस गड़बड़ी को ठीक कर दिया है जो शुरुआती रजिस्ट्रेशन और सेटअप प्रक्रिया के दौरान गहरे रंग वाली थीम को सही तरीके से काम करने से रोकती थी। किसी ने अपने मन को हल्का करके Signal के लिए साइन अप करने का फ़ैसला लिया है, इसका मतलब यह तो नहीं है कि उन्हें हल्के रंग वाली थीम भी लगानी पड़ेगी।

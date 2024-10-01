@@ -1,1 +1,1 @@
-• We fixed a bug that prevented the dark theme from working correctly during the initial registration and setup process. Just because someone has seen the light and decided to sign up for Signal, that no longer means they have to see the light theme too.
+• İlk kayıt ve kurulum işlemi sırasında, koyu temanın düzgün çalışmasını engelleyen bir hatayı düzelttik. Bu sayede biri Signal'e kaydolmaya karar verdiğinde, açık temayı da görmesine gerek kalmayacak.

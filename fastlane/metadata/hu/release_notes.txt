@@ -1,1 +1,1 @@
-• We fixed a bug that prevented the dark theme from working correctly during the initial registration and setup process. Just because someone has seen the light and decided to sign up for Signal, that no longer means they have to see the light theme too.
+• Kijavítottunk egy hibát, amely megakadályozta, hogy a sötét téma megfelelően működjön a kezdeti regisztrációs és beállítási folyamat során.

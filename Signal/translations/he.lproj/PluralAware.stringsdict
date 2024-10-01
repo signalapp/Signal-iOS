@@ -93,13 +93,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$ld person will be added to the call.</string>
+			<string>%1$ld אחד יתווסף לשיחה.</string>
 			<key>two</key>
-			<string>%1$ld people will be added to the call.</string>
+			<string>%1$ld אנשים יתווספו לשיחה.</string>
 			<key>many</key>
-			<string>%1$ld people will be added to the call.</string>
+			<string>%1$ld אנשים יתווספו לשיחה.</string>
 			<key>other</key>
-			<string>%1$ld people will be added to the call.</string>
+			<string>%1$ld אנשים יתווספו לשיחה.</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_APPROVE_ALL_REQUESTS_CONFIRMATION_TITLE_%ld</key>
@@ -113,13 +113,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Approve %1$ld Request?</string>
+			<string>לאשר בקשה %1$ld?</string>
 			<key>two</key>
-			<string>Approve %1$ld Requests?</string>
+			<string>לאשר %1$ld בקשות?</string>
 			<key>many</key>
-			<string>Approve %1$ld Requests?</string>
+			<string>לאשר %1$ld בקשות?</string>
 			<key>other</key>
-			<string>Approve %1$ld Requests?</string>
+			<string>לאשר %1$ld בקשות?</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_DENY_ALL_REQUESTS_CONFIRMATION_BODY_%ld</key>
@@ -133,13 +133,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$ld person will not be added to the call.</string>
+			<string>%1$ld אחד לא יתווסף לשיחה.</string>
 			<key>two</key>
-			<string>%1$ld people will not be added to the call.</string>
+			<string>%1$ld אנשים לא יתווספו לשיחה.</string>
 			<key>many</key>
-			<string>%1$ld people will not be added to the call.</string>
+			<string>%1$ld אנשים לא יתווספו לשיחה.</string>
 			<key>other</key>
-			<string>%1$ld people will not be added to the call.</string>
+			<string>%1$ld אנשים לא יתווספו לשיחה.</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_DENY_ALL_REQUESTS_CONFIRMATION_TITLE_%ld</key>
@@ -153,13 +153,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Deny %1$ld Request?</string>
+			<string>לדחות בקשה %1$ld?</string>
 			<key>two</key>
-			<string>Deny %1$ld Requests?</string>
+			<string>לדחות %1$ld בקשות?</string>
 			<key>many</key>
-			<string>Deny %1$ld Requests?</string>
+			<string>לדחות %1$ld בקשות?</string>
 			<key>other</key>
-			<string>Deny %1$ld Requests?</string>
+			<string>לדחות %1$ld בקשות?</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_REQUEST_HEADER_COUNT_%d</key>
@@ -173,13 +173,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$ld Person Waiting</string>
+			<string>אדם %1$ld ממתין</string>
 			<key>two</key>
-			<string>%1$ld People Waiting</string>
+			<string>%1$ld אנשים ממתינים</string>
 			<key>many</key>
-			<string>%1$ld People Waiting</string>
+			<string>%1$ld אנשים ממתינים</string>
 			<key>other</key>
-			<string>%1$ld People Waiting</string>
+			<string>%1$ld אנשים ממתינים</string>
 		</dict>
 	</dict>
 	<key>CALL_PEOPLE_HERE</key>

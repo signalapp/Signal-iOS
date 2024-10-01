@@ -93,13 +93,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$ld person will be added to the call.</string>
+			<string>%1$ld osoba zostanie dodana do połączenia.</string>
 			<key>few</key>
-			<string>%1$ld people will be added to the call.</string>
+			<string>%1$ld osoby zostaną dodane do połączenia.</string>
 			<key>many</key>
-			<string>%1$ld people will be added to the call.</string>
+			<string>%1$ld osób zostanie dodanych do połączenia.</string>
 			<key>other</key>
-			<string>%1$ld people will be added to the call.</string>
+			<string>%1$ld osoby zostanie dodane do połączenia.</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_APPROVE_ALL_REQUESTS_CONFIRMATION_TITLE_%ld</key>
@@ -113,13 +113,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Approve %1$ld Request?</string>
+			<string>Zatwierdzić %1$ld prośbę?</string>
 			<key>few</key>
-			<string>Approve %1$ld Requests?</string>
+			<string>Zatwierdzić %1$ld prośby?</string>
 			<key>many</key>
-			<string>Approve %1$ld Requests?</string>
+			<string>Zatwierdzić %1$ld próśb?</string>
 			<key>other</key>
-			<string>Approve %1$ld Requests?</string>
+			<string>Zatwierdzić %1$ld prośby?</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_DENY_ALL_REQUESTS_CONFIRMATION_BODY_%ld</key>
@@ -133,13 +133,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$ld person will not be added to the call.</string>
+			<string>%1$ld osoba nie zostanie dodana do połączenia.</string>
 			<key>few</key>
-			<string>%1$ld people will not be added to the call.</string>
+			<string>%1$ld osoby nie zostaną dodane do połączenia.</string>
 			<key>many</key>
-			<string>%1$ld people will not be added to the call.</string>
+			<string>%1$ld osób nie zostanie dodanych do połączenia.</string>
 			<key>other</key>
-			<string>%1$ld people will not be added to the call.</string>
+			<string>%1$ld osoby nie zostanie dołączone do połączenia.</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_DENY_ALL_REQUESTS_CONFIRMATION_TITLE_%ld</key>
@@ -153,13 +153,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Deny %1$ld Request?</string>
+			<string>Odmówić %1$ld prośbie?</string>
 			<key>few</key>
-			<string>Deny %1$ld Requests?</string>
+			<string>Odmówić %1$ld prośbom?</string>
 			<key>many</key>
-			<string>Deny %1$ld Requests?</string>
+			<string>Odmówić %1$ld prośbom?</string>
 			<key>other</key>
-			<string>Deny %1$ld Requests?</string>
+			<string>Odmówić %1$ld prośby?</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_REQUEST_HEADER_COUNT_%d</key>
@@ -173,13 +173,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$ld Person Waiting</string>
+			<string>%1$ld osoba oczekuje</string>
 			<key>few</key>
-			<string>%1$ld People Waiting</string>
+			<string>%1$ld osoby oczekują</string>
 			<key>many</key>
-			<string>%1$ld People Waiting</string>
+			<string>%1$ld osób oczekuje</string>
 			<key>other</key>
-			<string>%1$ld People Waiting</string>
+			<string>%1$ld osoby oczekuje</string>
 		</dict>
 	</dict>
 	<key>CALL_PEOPLE_HERE</key>

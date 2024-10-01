@@ -77,9 +77,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$ld person will be added to the call.</string>
+			<string>%1$ld persoon wordt toegevoegd aan de oproep.</string>
 			<key>other</key>
-			<string>%1$ld people will be added to the call.</string>
+			<string>%1$ld personen worden toegevoegd aan de oproep.</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_APPROVE_ALL_REQUESTS_CONFIRMATION_TITLE_%ld</key>
@@ -93,9 +93,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Approve %1$ld Request?</string>
+			<string>%1$ld verzoek goedkeuren?</string>
 			<key>other</key>
-			<string>Approve %1$ld Requests?</string>
+			<string>%1$ld verzoeken goedkeuren?</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_DENY_ALL_REQUESTS_CONFIRMATION_BODY_%ld</key>
@@ -109,9 +109,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$ld person will not be added to the call.</string>
+			<string>%1$ld persoon wordt niet toegevoegd aan de oproep.</string>
 			<key>other</key>
-			<string>%1$ld people will not be added to the call.</string>
+			<string>%1$ld personen worden niet toegevoegd aan de oproep.</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_DENY_ALL_REQUESTS_CONFIRMATION_TITLE_%ld</key>
@@ -125,9 +125,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Deny %1$ld Request?</string>
+			<string>%1$ld verzoek afwijzen?</string>
 			<key>other</key>
-			<string>Deny %1$ld Requests?</string>
+			<string>%1$ld verzoeken afwijzen?</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_REQUEST_HEADER_COUNT_%d</key>
@@ -141,9 +141,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$ld Person Waiting</string>
+			<string>%1$ld wachtende persoon</string>
 			<key>other</key>
-			<string>%1$ld People Waiting</string>
+			<string>%1$ld wachtende personen</string>
 		</dict>
 	</dict>
 	<key>CALL_PEOPLE_HERE</key>
@@ -392,9 +392,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Je hebt de maximale groepsomvang van %1$d lid bereikt.</string>
+			<string>Je hebt de maximale groepsgrootte van %1$d lid bereikt.</string>
 			<key>other</key>
-			<string>Je hebt de maximale groepsomvang van %1$d leden bereikt.</string>
+			<string>Je hebt de maximale groepsgrootte van %1$d leden bereikt.</string>
 		</dict>
 	</dict>
 	<key>EDIT_MESSAGE_SEND_TOO_MANY_EDITS_ERROR</key>
@@ -600,9 +600,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Uitnodiging verzonden</string>
+			<string>Uitnodiging verstuurd</string>
 			<key>other</key>
-			<string>%1$d uitnodigingen verzonden</string>
+			<string>%1$d uitnodigingen verstuurd</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_COLLISIONS_BANNER_TITLE_%d</key>
@@ -968,9 +968,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d doorsturen</string>
+			<string>%1$d item doorsturen</string>
 			<key>other</key>
-			<string>%1$d doorsturen</string>
+			<string>%1$d items doorsturen</string>
 		</dict>
 	</dict>
 	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>

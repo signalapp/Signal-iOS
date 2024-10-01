@@ -77,9 +77,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$ld person will be added to the call.</string>
+			<string>Se añadirá %1$ld persona a la llamada.</string>
 			<key>other</key>
-			<string>%1$ld people will be added to the call.</string>
+			<string>Se añadirán %1$ld personas a la llamada.</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_APPROVE_ALL_REQUESTS_CONFIRMATION_TITLE_%ld</key>
@@ -93,9 +93,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Approve %1$ld Request?</string>
+			<string>¿Aprobar %1$ld solicitud?</string>
 			<key>other</key>
-			<string>Approve %1$ld Requests?</string>
+			<string>¿Aprobar %1$ld solicitudes?</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_DENY_ALL_REQUESTS_CONFIRMATION_BODY_%ld</key>
@@ -109,9 +109,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$ld person will not be added to the call.</string>
+			<string>No se añadirá %1$ld persona a la llamada.</string>
 			<key>other</key>
-			<string>%1$ld people will not be added to the call.</string>
+			<string>No se añadirán %1$ld personas a la llamada.</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_DENY_ALL_REQUESTS_CONFIRMATION_TITLE_%ld</key>
@@ -125,9 +125,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Deny %1$ld Request?</string>
+			<string>¿Rechazar %1$ld solicitud?</string>
 			<key>other</key>
-			<string>Deny %1$ld Requests?</string>
+			<string>¿Rechazar %1$ld solicitudes?</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_REQUEST_HEADER_COUNT_%d</key>
@@ -141,9 +141,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$ld Person Waiting</string>
+			<string>%1$ld persona esperando</string>
 			<key>other</key>
-			<string>%1$ld People Waiting</string>
+			<string>%1$ld personas esperando</string>
 		</dict>
 	</dict>
 	<key>CALL_PEOPLE_HERE</key>
@@ -664,9 +664,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Se encontró %1$d conflicto de nombre en este grupo. Revisa la lista de participantes debajo y selecciona la opción que desees.</string>
+			<string>Se encontró %1$d conflicto de nombre en este grupo. Revisa la siguiente lista de participantes y selecciona la opción que desees.</string>
 			<key>other</key>
-			<string>Se encontraron %1$d conflictos de nombre en este grupo. Revisa la lista de participantes debajo y selecciona la opción que desees.</string>
+			<string>Se encontraron %1$d conflictos de nombre en este grupo. Revisa la siguiente lista de participantes y selecciona la opción que desees.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
