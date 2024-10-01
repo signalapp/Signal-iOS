@@ -289,6 +289,7 @@ extension CallControlsOverflowView: ReactionPickerConfigurationListener {
 // MARK: ReactionSender
 
 protocol ReactionSender {
+    @MainActor
     func react(value: String)
 }
 
@@ -309,6 +310,7 @@ extension GroupCallViewController: EmojiPickerSheetPresenter {
 // MARK: Raise Hand Button
 
 protocol RaiseHandSender {
+    @MainActor
     func raiseHand(raise: Bool)
 }
 

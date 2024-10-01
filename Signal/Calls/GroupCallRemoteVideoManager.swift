@@ -54,53 +54,58 @@ class GroupCallRemoteVideoManager {
         videoViews[demuxId] = nil
     }
 
+    @MainActor
     private var updateVideoRequestsDebounceTimer: Timer?
+    @MainActor
     private func updateVideoRequests() {
         updateVideoRequestsDebounceTimer?.invalidate()
         updateVideoRequestsDebounceTimer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false, block: { [weak self] _ in
-            AssertIsOnMainThread()
             guard let self = self else { return }
-            guard let groupCall = self.currentRingRtcCall else { return }
 
-            var activeSpeakerHeight: UInt16 = 0
+            // scheduledTimer promises to schedule this block on the same run loop that called scheduled timer so we should be main actor here
+            MainActor.assumeIsolated {
+                guard let groupCall = self.currentRingRtcCall else { return }
 
-            let videoRequests: [VideoRequest] = groupCall.remoteDeviceStates.map { demuxId, _ in
-                guard
-                    let renderingVideoViews = self.videoViews[demuxId]?.filter({ $0.value.isRenderingVideo }),
-                    !renderingVideoViews.isEmpty
-                else {
-                    return VideoRequest(demuxId: demuxId, width: 0, height: 0, framerate: nil)
+                var activeSpeakerHeight: UInt16 = 0
+
+                let videoRequests: [VideoRequest] = groupCall.remoteDeviceStates.map { demuxId, _ in
+                    guard
+                        let renderingVideoViews = self.videoViews[demuxId]?.filter({ $0.value.isRenderingVideo }),
+                        !renderingVideoViews.isEmpty
+                    else {
+                        return VideoRequest(demuxId: demuxId, width: 0, height: 0, framerate: nil)
+                    }
+
+                    if let activeSpeakerVideoView = renderingVideoViews[.speaker] {
+                        activeSpeakerHeight = max(activeSpeakerHeight, UInt16(activeSpeakerVideoView.currentSize.height))
+                    }
+
+                    let size = renderingVideoViews.reduce(CGSize.zero) { partialResult, element in
+                        partialResult.max(element.value.currentSize)
+                    }
+
+                    return VideoRequest(
+                        demuxId: demuxId,
+                        width: UInt16(size.width),
+                        height: UInt16(size.height),
+                        framerate: size.height <= GroupCallVideoOverflow.itemHeight ? 15 : 30
+                    )
                 }
 
-                if let activeSpeakerVideoView = renderingVideoViews[.speaker] {
-                    activeSpeakerHeight = max(activeSpeakerHeight, UInt16(activeSpeakerVideoView.currentSize.height))
-                }
-
-                let size = renderingVideoViews.reduce(CGSize.zero) { partialResult, element in
-                    partialResult.max(element.value.currentSize)
-                }
-
-                return VideoRequest(
-                    demuxId: demuxId,
-                    width: UInt16(size.width),
-                    height: UInt16(size.height),
-                    framerate: size.height <= GroupCallVideoOverflow.itemHeight ? 15 : 30
-                )
+                groupCall.updateVideoRequests(resolutions: videoRequests, activeSpeakerHeight: activeSpeakerHeight)
             }
-
-            groupCall.updateVideoRequests(resolutions: videoRequests, activeSpeakerHeight: activeSpeakerHeight)
         })
     }
 }
 
 extension GroupCallRemoteVideoManager: GroupCallRemoteVideoViewSizeDelegate {
+    @MainActor
     func groupCallRemoteVideoViewDidChangeSize(remoteVideoView: GroupCallRemoteVideoView) {
-        AssertIsOnMainThread()
         updateVideoRequests()
     }
 
+    @MainActor
     func groupCallRemoteVideoViewDidChangeSuperview(remoteVideoView: GroupCallRemoteVideoView) {
-        AssertIsOnMainThread()
         guard let device = currentRingRtcCall?.remoteDeviceStates[remoteVideoView.demuxId] else { return }
         remoteVideoView.configure(for: device)
         updateVideoRequests()
@@ -142,7 +147,9 @@ extension GroupCallRemoteVideoManager: GroupCallObserver {
 }
 
 private protocol GroupCallRemoteVideoViewSizeDelegate: AnyObject {
+    @MainActor
     func groupCallRemoteVideoViewDidChangeSize(remoteVideoView: GroupCallRemoteVideoView)
+    @MainActor
     func groupCallRemoteVideoViewDidChangeSuperview(remoteVideoView: GroupCallRemoteVideoView)
 }
 

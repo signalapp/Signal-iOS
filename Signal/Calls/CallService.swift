@@ -87,7 +87,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         self.appReadiness = appReadiness
         self.authCredentialManager = authCredentialManager
         let httpClient = CallHTTPClient()
-        self.callManager = CallManager(
+        self.callManager = CallManager<SignalCall, CallService>(
             httpClient: httpClient.ringRtcHttpClient,
             fieldTrials: RingrtcFieldTrials.trials(with: appContext.appUserDefaults())
         )
@@ -643,6 +643,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         }
     }
 
+    @MainActor
     private func connectGroupCallIfNeeded(_ groupCall: GroupCall) -> Bool {
         if groupCall.hasInvokedConnectMethod {
             return true
@@ -1079,7 +1080,7 @@ extension CallService: DatabaseChangeDelegate {
     }
 }
 
-extension CallService: @preconcurrency CallManagerDelegate {
+extension CallService: CallManagerDelegate {
     public typealias CallManagerDelegateCallType = SignalCall
 
     /**

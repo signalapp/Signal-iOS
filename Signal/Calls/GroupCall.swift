@@ -39,7 +39,7 @@ extension GroupCallObserver {
     func handleUntrustedIdentityError(_ call: GroupCall) {}
 }
 
-class GroupCall: @preconcurrency SignalRingRTC.GroupCallDelegate {
+class GroupCall: SignalRingRTC.GroupCallDelegate {
     enum Constants {
         /// Automatically mute on join when seeing this many members in a call before we join.
         static let autoMuteThreshold = 8

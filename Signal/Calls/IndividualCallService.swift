@@ -138,8 +138,8 @@ final class IndividualCallService: CallServiceStateObserver {
     /**
      * Local user chose to end the call.
      */
+    @MainActor
     func handleLocalHangupCall(_ call: SignalCall) {
-        AssertIsOnMainThread()
         Logger.info("\(call)")
 
         guard call === callServiceState.currentCall else {
@@ -328,9 +328,8 @@ final class IndividualCallService: CallServiceStateObserver {
         }
     }
 
+    @MainActor
     private func _handleReceivedIceCandidates(callId: UInt64, sourceDevice: UInt32, iceCandidates: [Data]) {
-        AssertIsOnMainThread()
-
         do {
             try callManager.receivedIceCandidates(sourceDevice: sourceDevice, callId: callId, candidates: iceCandidates)
         } catch {
