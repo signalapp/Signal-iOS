@@ -373,7 +373,7 @@ public class SDSDatabaseStorage: NSObject {
         // tasks. This seems like a reasonable way to check for this in debug
         // builds without adding overhead for other types of builds.
         withUnsafeCurrentTask {
-            owsAssertDebug($0 == nil, "Must use awaitableWrite in Tasks.")
+            owsAssertDebug(Thread.isMainThread || $0 == nil, "Must use awaitableWrite in Tasks.")
         }
         #endif
 
