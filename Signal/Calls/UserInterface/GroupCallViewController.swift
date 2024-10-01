@@ -338,14 +338,15 @@ class GroupCallViewController: UIViewController {
                 }
             } catch {
                 Logger.warn("Call link lobby presentation failed with error \(error)")
-                OWSActionSheets.showActionSheet(
-                    title: CallStrings.callLinkErrorSheetTitle,
-                    message: OWSLocalizedString(
-                        "CALL_LINK_JOIN_CALL_FAILURE_SHEET_DESCRIPTION",
-                        comment: "Description of sheet presented when joining call from call link sheet fails."
+                return {
+                    OWSActionSheets.showActionSheet(
+                        title: CallStrings.callLinkErrorSheetTitle,
+                        message: OWSLocalizedString(
+                            "CALL_LINK_JOIN_CALL_FAILURE_SHEET_DESCRIPTION",
+                            comment: "Description of sheet presented when joining call from call link sheet fails."
+                        )
                     )
-                )
-                return nil
+                }
             }
         }
     }
