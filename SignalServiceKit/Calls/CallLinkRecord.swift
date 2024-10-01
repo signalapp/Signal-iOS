@@ -158,7 +158,7 @@ public struct CallLinkRecord: Codable, PersistableRecord, FetchableRecord {
     }
 
     public var isDeleted: Bool {
-        return self.adminDeletedAtTimestampMs == nil
+        return self.adminDeletedAtTimestampMs != nil
     }
 
     public mutating func markDeleted(atTimestampMs timestampMs: UInt64) {
