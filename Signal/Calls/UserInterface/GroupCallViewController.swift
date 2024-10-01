@@ -146,6 +146,22 @@ class GroupCallViewController: UIViewController {
     /// A view used in `bottomVStack` that takes the height of the approval stack. Does not actually hold any content.
     private let approvalStackHeightView = UIView()
 
+    private lazy var callLinkLobbyToastLabel = UILabel()
+    private lazy var callLinkLobbyToast: UIView = {
+        let backgroundView = UIVisualEffectView(effect: UIBlurEffect(style: .systemMaterialDark))
+        backgroundView.layer.cornerRadius = 10
+        backgroundView.clipsToBounds = true
+        backgroundView.contentView.addSubview(callLinkLobbyToastLabel)
+        backgroundView.contentView.layoutMargins = .init(margin: 12)
+        callLinkLobbyToastLabel.autoPinEdgesToSuperviewMargins()
+        callLinkLobbyToastLabel.font = .dynamicTypeFootnote
+        callLinkLobbyToastLabel.textColor = .white
+        callLinkLobbyToastLabel.textAlignment = .center
+        callLinkLobbyToastLabel.numberOfLines = 0
+
+        return backgroundView
+    }()
+
     private lazy var videoGrid: GroupCallVideoGrid = {
         let result = GroupCallVideoGrid(call: call, groupCall: groupCall)
         result.memberViewErrorPresenter = self
@@ -416,6 +432,11 @@ class GroupCallViewController: UIViewController {
         case .groupThread:
             break
         case .callLink:
+            // Lobby text
+            self.bottomVStack.addArrangedSubview(self.callLinkLobbyToast)
+            self.callLinkLobbyToast.autoPinWidthToSuperviewMargins()
+
+            // Approvals
             self.addChild(self.approvalStack)
 
             let passthroughView = PassthroughContainerView()
@@ -511,6 +532,7 @@ class GroupCallViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        var phoneNumberSharingMode: PhoneNumberSharingMode = .defaultValue
         SDSDatabaseStorage.shared.asyncRead { readTx in
             self.didUserEverSwipeToSpeakerView = Self.keyValueStore.getBool(
                 Self.didUserSwipeToSpeakerViewKey,
@@ -522,8 +544,19 @@ class GroupCallViewController: UIViewController {
                 defaultValue: false,
                 transaction: readTx
             )
+
+            phoneNumberSharingMode = NSObject.udManager
+                .phoneNumberSharingMode(tx: readTx.asV2Read).orDefault
         } completion: {
             self.updateSwipeToastView()
+
+            // [CallLink] TODO: Localize
+            self.callLinkLobbyToastLabel.text = switch phoneNumberSharingMode {
+            case .everybody:
+                "Anyone who joins this call via the link will see your name, photo, and phone number."
+            case .nobody:
+                "Anyone who joins this call via the link will see your name and photo."
+            }
         }
     }
 
@@ -713,7 +746,13 @@ class GroupCallViewController: UIViewController {
             guard fullscreenLocalMemberAddOnsView.superview != bottomVStack else { return }
 
             fullscreenLocalMemberAddOnsView.removeFromSuperview()
-            bottomVStack.addArrangedSubview(fullscreenLocalMemberAddOnsView)
+            if
+                case .callLink = groupCall.concreteType,
+                let toastIndex = bottomVStack.arrangedSubviews.firstIndex(of: callLinkLobbyToast) {
+                bottomVStack.insertArrangedSubview(fullscreenLocalMemberAddOnsView, at: toastIndex)
+            } else {
+                bottomVStack.addArrangedSubview(fullscreenLocalMemberAddOnsView)
+            }
             constrainAddOnsInsideBottomVStack()
         }
     }
@@ -1568,13 +1607,29 @@ extension GroupCallViewController: GroupCallObserver {
         let addOnsViewVisibilityWillChange = shouldHideAddOnsView != fullscreenLocalMemberAddOnsView.isHiddenInStackView
         updateCallUI(shouldAnimateViewFrames: addOnsViewVisibilityWillChange)
 
+        let isCallLink: Bool = switch groupCall.concreteType {
+        case .groupThread:
+            false
+        case .callLink:
+            true
+        }
+
+        Logger.debug("\(ringRtcCall.localDeviceState.joinState)\t\(hasDismissed)")
+
         switch ringRtcCall.localDeviceState.joinState {
         case .joined:
             if membersAtJoin == nil {
                 membersAtJoin = Set(ringRtcCall.remoteDeviceStates.lazy.map { $0.value.address })
             }
+
+            if isCallLink {
+                callLinkLobbyToast.isHiddenInStackView = true
+            }
         case .pending, .joining, .notJoined:
             membersAtJoin = nil
+            if isCallLink, !hasDismissed {
+                callLinkLobbyToast.isHiddenInStackView = false
+            }
         }
     }
 
