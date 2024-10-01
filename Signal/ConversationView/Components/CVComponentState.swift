@@ -1575,10 +1575,7 @@ fileprivate extension CVComponentState.Builder {
                 )
             }
         } else if let _ = CallLink(url: url) {
-            let state = LinkPreviewCallLink(
-                linkPreview: linkPreview,
-                conversationStyle: conversationStyle
-            )
+            let state = LinkPreviewCallLink(previewType: .sent(linkPreview, conversationStyle))
             self.linkPreview = LinkPreview(
                 linkPreview: linkPreview,
                 linkPreviewAttachment: nil,

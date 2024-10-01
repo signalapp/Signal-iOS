@@ -1872,7 +1872,13 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
     fileprivate var linkPreviewDraft: OWSLinkPreviewDraft? {
         didSet {
             if let linkPreviewDraft = linkPreviewDraft {
-                linkPreview = LinkPreviewDraft(linkPreviewDraft: linkPreviewDraft)
+                let state: LinkPreviewState
+                if let _ = CallLink(url: linkPreviewDraft.url) {
+                    state = LinkPreviewCallLink(previewType: .draft(linkPreviewDraft))
+                } else {
+                    state = LinkPreviewDraft(linkPreviewDraft: linkPreviewDraft)
+                }
+                linkPreview = state
             } else {
                 linkPreview = nil
             }

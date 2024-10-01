@@ -138,7 +138,13 @@ public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDe
             linkPreviewView.configureForNonCVC(state: LinkPreviewLoading(linkType: .preview), isDraft: true)
             linkPreviewView.isHidden = false
         case .loaded(let linkPreviewDraft):
-            linkPreviewView.configureForNonCVC(state: LinkPreviewDraft(linkPreviewDraft: linkPreviewDraft), isDraft: true)
+            let state: LinkPreviewState
+            if let _ = CallLink(url: linkPreviewDraft.url) {
+                state = LinkPreviewCallLink(previewType: .draft(linkPreviewDraft))
+            } else {
+                state = LinkPreviewDraft(linkPreviewDraft: linkPreviewDraft)
+            }
+            linkPreviewView.configureForNonCVC(state: state, isDraft: true)
             linkPreviewView.isHidden = false
         }
     }

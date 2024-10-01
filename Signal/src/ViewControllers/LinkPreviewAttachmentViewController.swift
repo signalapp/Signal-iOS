@@ -331,8 +331,14 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
                 case .loading:
                     return loadingView
                 case .draft(let linkPreviewDraft):
+                    let state: LinkPreviewState
+                    if let _ = CallLink(url: linkPreviewDraft.url) {
+                        state = LinkPreviewCallLink(previewType: .draft(linkPreviewDraft))
+                    } else {
+                        state = LinkPreviewDraft(linkPreviewDraft: linkPreviewDraft)
+                    }
                     return TextAttachmentView.LinkPreviewView(
-                        linkPreview: LinkPreviewDraft(linkPreviewDraft: linkPreviewDraft),
+                        linkPreview: state,
                         isDraft: true
                     )
                 case .error:

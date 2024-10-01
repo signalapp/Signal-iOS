@@ -124,7 +124,13 @@ open class TextAttachmentView: UIView {
                 conversationStyle: nil
             )
         } else if let linkPreviewDraft = linkPreviewDraft {
-            self.linkPreview = LinkPreviewDraft(linkPreviewDraft: linkPreviewDraft)
+            let state: LinkPreviewState
+            if let _ = CallLink(url: linkPreviewDraft.url) {
+                state = LinkPreviewCallLink(previewType: .draft(linkPreviewDraft))
+            } else {
+                state = LinkPreviewDraft(linkPreviewDraft: linkPreviewDraft)
+            }
+            self.linkPreview = state
         }
 
         updateTextAttributes()

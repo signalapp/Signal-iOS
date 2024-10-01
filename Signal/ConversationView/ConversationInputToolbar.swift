@@ -1167,7 +1167,13 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         case .loading:
             ensureLinkPreviewView(withState: LinkPreviewLoading(linkType: .preview))
         case .loaded(let linkPreviewDraft):
-            ensureLinkPreviewView(withState: LinkPreviewDraft(linkPreviewDraft: linkPreviewDraft))
+            let state: LinkPreviewState
+            if let _ = CallLink(url: linkPreviewDraft.url) {
+                state = LinkPreviewCallLink(previewType: .draft(linkPreviewDraft))
+            } else {
+                state = LinkPreviewDraft(linkPreviewDraft: linkPreviewDraft)
+            }
+            ensureLinkPreviewView(withState: state)
         }
     }
 

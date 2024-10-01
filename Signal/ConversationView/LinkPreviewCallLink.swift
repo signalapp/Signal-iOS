@@ -8,30 +8,50 @@ public import SignalServiceKit
 // MARK: -
 
 public class LinkPreviewCallLink: LinkPreviewState {
-    private let linkPreview: OWSLinkPreview
-
     public let conversationStyle: ConversationStyle?
 
-    public init(
-        linkPreview: OWSLinkPreview,
-        conversationStyle: ConversationStyle?
-    ) {
-        self.linkPreview = linkPreview
-        self.conversationStyle = conversationStyle
+    public enum PreviewType {
+        case sent(OWSLinkPreview, ConversationStyle)
+        case draft(OWSLinkPreviewDraft)
+    }
+
+    private let previewType: PreviewType
+
+    public init(previewType: PreviewType) {
+        self.previewType = previewType
+        switch previewType {
+        case .sent(_, let conversationStyle):
+            self.conversationStyle = conversationStyle
+        case .draft:
+            self.conversationStyle = nil
+        }
     }
 
     public var isLoaded: Bool { true }
 
     public var urlString: String? {
-        guard let urlString = linkPreview.urlString else {
-            owsFailDebug("Missing url")
-            return nil
+        switch previewType {
+        case .sent(let linkPreview, _):
+            guard let urlString = linkPreview.urlString else {
+                owsFailDebug("Missing url")
+                return nil
+            }
+            return urlString
+        case .draft(let linkPreviewDraft):
+            return linkPreviewDraft.urlString
         }
-        return urlString
     }
 
     public var displayDomain: String? {
-        guard let displayDomain = linkPreview.displayDomain else {
+        let displayDomain: String?
+        switch previewType {
+        case .sent(let linkPreview, _):
+            displayDomain = linkPreview.displayDomain
+        case .draft(let linkPreviewDraft):
+            displayDomain = linkPreviewDraft.displayDomain
+        }
+
+        guard let displayDomain else {
             Logger.error("Missing display domain")
             return nil
         }
@@ -39,7 +59,14 @@ public class LinkPreviewCallLink: LinkPreviewState {
     }
 
     public var title: String? {
-        linkPreview.title?.filterForDisplay.nilIfEmpty ?? CallStrings.signalCall
+        let title: String?
+        switch previewType {
+        case .sent(let linkPreview, _):
+            title = linkPreview.title
+        case .draft(let linkPreviewDraft):
+            title = linkPreviewDraft.title
+        }
+        return title?.filterForDisplay.nilIfEmpty ?? CallStrings.signalCall
     }
 
     public var imageState: LinkPreviewImageState {
@@ -60,10 +87,24 @@ public class LinkPreviewCallLink: LinkPreviewState {
     }
 
     public var previewDescription: String? {
-        return linkPreview.previewDescription?.filterForDisplay.nilIfEmpty ?? CallStrings.callLinkDescription
+        let description: String?
+        switch previewType {
+        case .sent(let linkPreview, _):
+            description = linkPreview.previewDescription
+        case .draft(let linkPreviewDraft):
+            description = linkPreviewDraft.previewDescription
+        }
+        return description?.filterForDisplay.nilIfEmpty ?? CallStrings.callLinkDescription
     }
 
-    public var date: Date? { linkPreview.date }
+    public var date: Date? {
+        switch previewType {
+        case .sent(let linkPreview, _):
+            linkPreview.date
+        case .draft(let linkPreviewDraft):
+            linkPreviewDraft.date
+        }
+    }
 
     public let isGroupInviteLink = false
 
