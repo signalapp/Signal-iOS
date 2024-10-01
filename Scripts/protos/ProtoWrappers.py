@@ -449,7 +449,7 @@ class FileContext(BaseContext):
 //
 
 import Foundation
-import SwiftProtobuf"""
+public import SwiftProtobuf"""
         )
 
         writer.newline()
