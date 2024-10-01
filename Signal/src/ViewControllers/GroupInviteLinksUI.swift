@@ -56,7 +56,6 @@ public class GroupInviteLinksUI: UIView {
 // MARK: -
 
 private class GroupInviteLinksActionSheet: ActionSheetController, Dependencies {
-
     private let groupInviteLinkInfo: GroupInviteLinkInfo
     private let groupV2ContextInfo: GroupV2ContextInfo
 
@@ -77,8 +76,6 @@ private class GroupInviteLinksActionSheet: ActionSheetController, Dependencies {
         isCancelable = true
 
         createContents()
-
-        loadDefaultContent()
         loadLinkPreview()
     }
 
@@ -86,21 +83,31 @@ private class GroupInviteLinksActionSheet: ActionSheetController, Dependencies {
 
     private let messageLabel = UILabel()
 
-    private var cancelButton: UIView?
-    private var joinButton: UIView?
-    private var invalidOkayButton: UIView?
+    private var cancelButton: UIView!
+    private var joinButton: OWSFlatButton!
+    private var invalidOkayButton: UIView!
 
+    /// Fills out this view's contents before any group-invite-link-preview info
+    /// fetches have been attempted.
     private func createContents() {
-
         let header = UIView()
         header.layoutMargins = UIEdgeInsets(hMargin: 32, vMargin: 32)
         header.backgroundColor = Theme.actionSheetBackgroundColor
         self.customHeader = header
 
+        avatarView.image = Self.avatarBuilder.avatarImage(
+            forGroupId: groupV2ContextInfo.groupId,
+            diameterPoints: Self.avatarSize
+        )
         avatarView.autoSetDimension(.width, toSize: CGFloat(Self.avatarSize))
 
         groupTitleLabel.font = UIFont.semiboldFont(ofSize: UIFont.dynamicTypeTitle1Clamped.pointSize * (13/14))
         groupTitleLabel.textColor = Theme.primaryTextColor
+        groupTitleLabel.text = OWSLocalizedString(
+            "GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE",
+            comment: "Label indicating that the group info is being loaded in the 'group invite link' action sheet."
+        )
+        groupSubtitleLabel.text = ""
 
         groupSubtitleLabel.font = UIFont.dynamicTypeSubheadline
         groupSubtitleLabel.textColor = Theme.secondaryTextAndIconColor
@@ -110,6 +117,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController, Dependencies {
         groupDescriptionPreview.numberOfLines = 2
         groupDescriptionPreview.textAlignment = .center
         groupDescriptionPreview.isHidden = true
+        groupDescriptionPreview.descriptionText = ""
 
         let headerStack = UIStackView(arrangedSubviews: [
             avatarView,
@@ -122,8 +130,6 @@ private class GroupInviteLinksActionSheet: ActionSheetController, Dependencies {
         headerStack.axis = .vertical
         headerStack.alignment = .center
 
-        messageLabel.text = OWSLocalizedString("GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE",
-                                              comment: "Message text for the 'group invite link' action sheet.")
         messageLabel.font = .dynamicTypeFootnote
         messageLabel.textColor = Theme.secondaryTextAndIconColor
         messageLabel.numberOfLines = 0
@@ -138,19 +144,21 @@ private class GroupInviteLinksActionSheet: ActionSheetController, Dependencies {
                                                 backgroundColor: buttonColor,
                                                 target: self,
                                                 selector: #selector(didTapCancel))
-        cancelButton.autoSetHeightUsingFont()
+        cancelButton.enableMultilineLabel()
+        cancelButton.autoSetMinimumHeighUsingFont()
         cancelButton.cornerRadius = 14
         self.cancelButton = cancelButton
 
-        let joinButton = OWSFlatButton.button(title: OWSLocalizedString("GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON",
-                                                                       comment: "Label for the 'join' button in the 'group invite link' action sheet."),
+        let joinButton = OWSFlatButton.button(title: "",
                                               font: UIFont.dynamicTypeBody.semibold(),
                                               titleColor: .ows_accentBlue,
                                               backgroundColor: buttonColor,
                                               target: self,
                                               selector: #selector(didTapJoin))
-        joinButton.autoSetHeightUsingFont()
+        joinButton.enableMultilineLabel()
+        joinButton.autoSetMinimumHeighUsingFont()
         joinButton.cornerRadius = 14
+        joinButton.isUserInteractionEnabled = false
         self.joinButton = joinButton
 
         let invalidOkayButton = OWSFlatButton.button(title: CommonStrings.okayButton,
@@ -159,7 +167,8 @@ private class GroupInviteLinksActionSheet: ActionSheetController, Dependencies {
                                               backgroundColor: buttonColor,
                                               target: self,
                                               selector: #selector(didTapInvalidOkay))
-        invalidOkayButton.autoSetHeightUsingFont()
+        invalidOkayButton.enableMultilineLabel()
+        invalidOkayButton.autoSetMinimumHeighUsingFont()
         invalidOkayButton.cornerRadius = 14
         invalidOkayButton.isHidden = true
         self.invalidOkayButton = invalidOkayButton
@@ -196,13 +205,12 @@ private class GroupInviteLinksActionSheet: ActionSheetController, Dependencies {
         stackView.setContentHuggingVerticalHigh()
     }
 
-    private func loadDefaultContent() {
-        avatarView.image = Self.avatarBuilder.avatarImage(forGroupId: groupV2ContextInfo.groupId,
-                                                          diameterPoints: Self.avatarSize)
-        groupTitleLabel.text = OWSLocalizedString("GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE",
-                                                 comment: "Label indicating that the group info is being loaded in the 'group invite link' action sheet.")
-        groupSubtitleLabel.text = ""
-        groupDescriptionPreview.descriptionText = ""
+    // MARK: - Load invite link preview
+
+    private enum LinkPreviewLoadResult {
+        case success(GroupInviteLinkPreview)
+        case expiredLink
+        case failure(Error)
     }
 
     private func loadLinkPreview() {
@@ -215,7 +223,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController, Dependencies {
                 )
             }
         }.done { [weak self] (groupInviteLinkPreview: GroupInviteLinkPreview) in
-            self?.applyGroupInviteLinkPreview(groupInviteLinkPreview)
+            self?.applyLinkPreviewLoadResult(.success(groupInviteLinkPreview))
 
             if let avatarUrlPath = groupInviteLinkPreview.avatarUrlPath {
                 self?.loadGroupAvatar(avatarUrlPath: avatarUrlPath)
@@ -223,7 +231,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController, Dependencies {
         }.catch { [weak self] error in
             switch error {
             case GroupsV2Error.expiredGroupInviteLink:
-                self?.applyExpiredGroupInviteLink()
+                self?.applyLinkPreviewLoadResult(.expiredLink)
             case GroupsV2Error.localUserBlockedFromJoining:
                 Logger.warn("User blocked: \(error)")
                 self?.dismiss(animated: true, completion: {
@@ -237,11 +245,88 @@ private class GroupInviteLinksActionSheet: ActionSheetController, Dependencies {
                 })
 
             default:
-                // TODO: Retry errors?
-                owsFailDebugUnlessNetworkFailure(error)
+                self?.applyLinkPreviewLoadResult(.failure(error))
             }
         }
     }
+
+    private func applyLinkPreviewLoadResult(_ result: LinkPreviewLoadResult) {
+        AssertIsOnMainThread()
+
+        let joinGroupMessage = OWSLocalizedString(
+            "GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE",
+            comment: "Message text for the 'group invite link' action sheet."
+        )
+        let joinGroupButtonTitle = OWSLocalizedString(
+            "GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON",
+            comment: "Label for the 'join' button in the 'group invite link' action sheet."
+        )
+        let requestToJoinGroupMessage = OWSLocalizedString(
+            "GROUP_LINK_ACTION_SHEET_VIEW_REQUEST_TO_JOIN_MESSAGE",
+            comment: "Message text for the 'group invite link' action sheet, if the user will be requesting to join."
+        )
+        let requestToJoinGroupButtonTitle = OWSLocalizedString(
+            "GROUP_LINK_ACTION_SHEET_VIEW_REQUEST_TO_JOIN_BUTTON",
+            comment: "Label for the 'request to join' button in the 'group invite link' action sheet."
+        )
+
+        switch result {
+        case .success(let groupInviteLinkPreview):
+            self.groupInviteLinkPreview = groupInviteLinkPreview
+
+            /// This button starts disabled since we don't know if it should be
+            /// "join" or "request to join", but now that we do we'll enable it.
+            joinButton.isUserInteractionEnabled = true
+            switch groupInviteLinkPreview.addFromInviteLinkAccess {
+            case .any:
+                joinButton.button.setTitle(joinGroupButtonTitle, for: .normal)
+                messageLabel.text = joinGroupMessage
+            case .administrator:
+                joinButton.button.setTitle(requestToJoinGroupButtonTitle, for: .normal)
+                messageLabel.text = requestToJoinGroupMessage
+            case .member, .unsatisfiable, .unknown:
+                owsFailDebug("Invalid addFromInviteLinkAccess!")
+            }
+
+            let groupName = groupInviteLinkPreview.title.filterForDisplay.nilIfEmpty ?? TSGroupThread.defaultGroupName
+            groupTitleLabel.text = groupName
+            groupSubtitleLabel.text = GroupViewUtils.formatGroupMembersLabel(
+                memberCount: Int(groupInviteLinkPreview.memberCount)
+            )
+            if let descriptionText = groupInviteLinkPreview.descriptionText?.filterForDisplay.nilIfEmpty {
+                groupDescriptionPreview.descriptionText = descriptionText
+                groupDescriptionPreview.groupName = groupName
+                groupDescriptionPreview.isHidden = false
+            }
+        case .expiredLink:
+            groupTitleLabel.text = OWSLocalizedString("GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE",
+                                                      comment: "Title indicating that you cannot join a group in the 'group invite link' action sheet.")
+            groupSubtitleLabel.text = OWSLocalizedString("GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE",
+                                                         comment: "Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet.")
+            messageLabel.textColor = Theme.backgroundColor
+            cancelButton?.isHidden = true
+            joinButton?.isHidden = true
+            invalidOkayButton?.isHidden = false
+        case .failure(let error):
+            owsFailDebugUnlessNetworkFailure(error)
+
+            /// We don't know what went wrong, but existing behavior at the time
+            /// of writing is that tapping the join button will make another
+            /// attempt to load the link preview, and automatically attempt to
+            /// join (or request to join) if possible. If this was a transient
+            /// network error, for example, then you may be able to recover by
+            /// hitting the join button.
+            ///
+            /// To that end, we'll enable it and default-populate it with the
+            /// "join" strings (since we won't know until that re-attempt if it
+            /// should've actually been "request to join").
+            joinButton.isUserInteractionEnabled = true
+            joinButton.button.setTitle(joinGroupButtonTitle, for: .normal)
+            messageLabel.text = joinGroupMessage
+        }
+    }
+
+    // MARK: - Group avatar
 
     private func loadGroupAvatar(avatarUrlPath: String) {
         firstly(on: DispatchQueue.global()) {
@@ -256,23 +341,6 @@ private class GroupInviteLinksActionSheet: ActionSheetController, Dependencies {
         }.catch { error in
             // TODO: Add retry?
             owsFailDebugUnlessNetworkFailure(error)
-        }
-    }
-
-    private func applyGroupInviteLinkPreview(_ groupInviteLinkPreview: GroupInviteLinkPreview) {
-        AssertIsOnMainThread()
-
-        self.groupInviteLinkPreview = groupInviteLinkPreview
-
-        let groupName = groupInviteLinkPreview.title.filterForDisplay.nilIfEmpty ?? TSGroupThread.defaultGroupName
-        groupTitleLabel.text = groupName
-        groupSubtitleLabel.text = GroupViewUtils.formatGroupMembersLabel(
-            memberCount: Int(groupInviteLinkPreview.memberCount)
-        )
-        if let descriptionText = groupInviteLinkPreview.descriptionText?.filterForDisplay.nilIfEmpty {
-            groupDescriptionPreview.descriptionText = descriptionText
-            groupDescriptionPreview.groupName = groupName
-            groupDescriptionPreview.isHidden = false
         }
     }
 
@@ -291,20 +359,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController, Dependencies {
         self.avatarData = groupAvatar
     }
 
-    private func applyExpiredGroupInviteLink() {
-        AssertIsOnMainThread()
-
-        self.groupInviteLinkPreview = nil
-
-        groupTitleLabel.text = OWSLocalizedString("GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE",
-                                                 comment: "Title indicating that you cannot join a group in the 'group invite link' action sheet.")
-        groupSubtitleLabel.text = OWSLocalizedString("GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE",
-                                                    comment: "Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet.")
-        messageLabel.textColor = Theme.backgroundColor
-        cancelButton?.isHidden = true
-        joinButton?.isHidden = true
-        invalidOkayButton?.isHidden = false
-    }
+    // MARK: - Actions
 
     @objc
     private func didTapCancel(_ sender: UIButton) {

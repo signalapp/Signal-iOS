@@ -259,13 +259,32 @@ public class OWSFlatButton: UIView {
     }
 
     public func enableMultilineLabel() {
-        button.titleLabel?.numberOfLines = 0
-        button.titleLabel?.lineBreakMode = .byWordWrapping
-        button.titleLabel?.textAlignment = .center
+        guard let titleLabel = button.titleLabel else { return }
+
+        titleLabel.numberOfLines = 0
+        titleLabel.lineBreakMode = .byWordWrapping
+        titleLabel.textAlignment = .center
+
+        button.autoPinHeight(
+            toHeightOf: titleLabel,
+            relation: .greaterThanOrEqual
+        )
     }
 
     public var font: UIFont? {
         return button.titleLabel?.font
+    }
+
+    public func autoSetMinimumHeighUsingFont(extraVerticalInsets: CGFloat = 0) {
+        guard let font = font else {
+            owsFailDebug("Missing button font.")
+            return
+        }
+        autoSetDimension(
+            .height,
+            toSize: Self.heightForFont(font) + CGFloat(extraVerticalInsets * 2.0),
+            relation: .greaterThanOrEqual
+        )
     }
 
     public func autoSetHeightUsingFont(extraVerticalInsets: CGFloat = 0) {
