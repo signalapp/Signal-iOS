@@ -42,26 +42,34 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
     private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
     private let dateProvider: DateProvider
     private let db: DB
+    private let mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore
+    private let reachabilityManager: SSKReachabilityManager
     private let taskQueue: TaskQueueLoader<TaskRunner>
 
     public init(
+        appReadiness: AppReadiness,
         attachmentStore: AttachmentStore,
         attachmentDownloadManager: AttachmentDownloadManager,
         backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
         dateProvider: @escaping DateProvider,
         db: DB,
+        mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore,
         messageBackupRequestManager: MessageBackupRequestManager,
+        reachabilityManager: SSKReachabilityManager,
         tsAccountManager: TSAccountManager
     ) {
         self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
         self.dateProvider = dateProvider
         self.db = db
+        self.mediaBandwidthPreferenceStore = mediaBandwidthPreferenceStore
+        self.reachabilityManager = reachabilityManager
         let taskRunner = TaskRunner(
             attachmentStore: attachmentStore,
             attachmentDownloadManager: attachmentDownloadManager,
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
             dateProvider: dateProvider,
             db: db,
+            mediaBandwidthPreferenceStore: mediaBandwidthPreferenceStore,
             messageBackupRequestManager: messageBackupRequestManager,
             tsAccountManager: tsAccountManager
         )
@@ -71,6 +79,13 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             runner: taskRunner
         )
         taskRunner.taskQueueLoader = taskQueue
+
+        appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
+            Task { [weak self] in
+                try await self?.restoreAttachmentsIfNeeded()
+            }
+            self?.startObservingReachability()
+        }
     }
 
     public func enqueueIfNeeded(
@@ -120,6 +135,14 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
     }
 
     public func restoreAttachmentsIfNeeded() async throws {
+        let downlodableSources = mediaBandwidthPreferenceStore.downloadableSources()
+        guard
+            downlodableSources.contains(.mediaTierFullsize)
+            || downlodableSources.contains(.mediaTierThumbnail)
+        else {
+            Logger.info("Skipping backup attachment downloads while not on wifi")
+            return
+        }
         try await taskQueue.loadAndRunTasks()
     }
 
@@ -127,6 +150,26 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         try await taskQueue.stop()
         try await db.awaitableWrite { tx in
             try self.backupAttachmentDownloadStore.removeAll(tx: tx)
+        }
+    }
+
+    // MARK: - Reachability
+
+    private func startObservingReachability() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(reachabililityDidChange),
+            name: SSKReachability.owsReachabilityDidChange,
+            object: nil
+        )
+    }
+
+    @objc
+    private func reachabililityDidChange() {
+        if reachabilityManager.isReachable(via: .wifi) {
+            Task {
+                try await self.restoreAttachmentsIfNeeded()
+            }
         }
     }
 
@@ -139,6 +182,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
         private let dateProvider: DateProvider
         private let db: DB
+        private let mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore
         private let messageBackupRequestManager: MessageBackupRequestManager
         private let tsAccountManager: TSAccountManager
 
@@ -152,6 +196,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
             dateProvider: @escaping DateProvider,
             db: DB,
+            mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore,
             messageBackupRequestManager: MessageBackupRequestManager,
             tsAccountManager: TSAccountManager
         ) {
@@ -160,6 +205,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
             self.dateProvider = dateProvider
             self.db = db
+            self.mediaBandwidthPreferenceStore = mediaBandwidthPreferenceStore
             self.messageBackupRequestManager = messageBackupRequestManager
             self.tsAccountManager = tsAccountManager
 
@@ -182,6 +228,23 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             }
             guard let eligibility, eligibility.canBeDownloadedAtAll else {
                 return .cancelled
+            }
+
+            // Separately from "eligibility" on a per-download basis, we check
+            // network state level eligibility (require wifi). If not capable,
+            // return a retryable error but stop running now. We will resume
+            // when reconnected.
+            let downlodableSources = mediaBandwidthPreferenceStore.downloadableSources()
+            guard
+                downlodableSources.contains(.mediaTierFullsize)
+                || downlodableSources.contains(.mediaTierThumbnail)
+            else {
+                struct NeedsWifiError: Error {}
+                let error = NeedsWifiError()
+                try? await loader.stop(reason: error)
+                // Retryable because we don't want to delete the enqueued record,
+                // just stop for now.
+                return .retryableError(error)
             }
 
             var didDownloadFullsize = false

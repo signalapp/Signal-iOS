@@ -26,6 +26,10 @@ open class MediaBandwidthPreferenceStoreMock: MediaBandwidthPreferenceStore {
         return Set()
     }
 
+    open func downloadableSources() -> Set<QueuedAttachmentDownloadRecord.SourceType> {
+        return Set()
+    }
+
     open func set(
         _ mediaBandwidthPreference: MediaBandwidthPreferences.Preference,
         for mediaDownloadType: MediaBandwidthPreferences.MediaType,

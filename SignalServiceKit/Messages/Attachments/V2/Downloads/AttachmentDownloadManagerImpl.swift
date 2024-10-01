@@ -187,6 +187,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             let downloadability = downloadabilityChecker.downloadability(
                 of: referencedAttachment.reference,
                 priority: priority,
+                source: .transitTier,
                 mimeType: referencedAttachment.attachment.mimeType,
                 tx: tx
             )
@@ -205,6 +206,8 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 Logger.info("Skipping enqueue of download due to pending message request")
             case .blockedByAutoDownloadSettings:
                 Logger.info("Skipping enqueue of download due to auto download settings")
+            case .blockedByNetworkState:
+                Logger.info("Skipping enqueue of download due to network state")
             }
         }
         if didEnqueueAnyDownloads {
@@ -527,6 +530,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             case .blockedByAutoDownloadSettings:
                 Logger.info("Skipping attachment download due to auto download settings \(record.attachmentId)")
                 // These can only be resolved by user action; cancel the enqueued download.
+                return .unretryableError(SkipDownloadError())
+            case .blockedByNetworkState:
+                Logger.info("Skipping attachment download due to network state \(record.attachmentId)")
                 return .unretryableError(SkipDownloadError())
             }
 
@@ -856,6 +862,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             case blockedByActiveCall
             case blockedByPendingMessageRequest
             case blockedByAutoDownloadSettings
+            case blockedByNetworkState
         }
 
         func downloadability(
@@ -884,6 +891,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     downloadability = self.downloadability(
                         of: reference,
                         priority: record.priority,
+                        source: record.sourceType,
                         mimeType: attachment.mimeType,
                         tx: tx
                     )
@@ -899,6 +907,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         func downloadability(
             of reference: AttachmentReference,
             priority: AttachmentDownloadPriority,
+            source: QueuedAttachmentDownloadRecord.SourceType,
             mimeType: String,
             tx: DBReadTransaction
         ) -> Downloadability {
@@ -910,6 +919,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             )
             if blockedByCall {
                 return .blockedByActiveCall
+            }
+
+            if !self.mediaBandwidthPreferenceStore.downloadableSources().contains(source) {
+                return .blockedByNetworkState
             }
 
             let blockedByAutoDownloadSettings = self.isDownloadBlockedByAutoDownloadSettings(

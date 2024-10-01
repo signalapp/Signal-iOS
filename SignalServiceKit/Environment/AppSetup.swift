@@ -930,12 +930,15 @@ public class AppSetup {
         )
         let backupAttachmentDownloadManager = testDependencies.backupAttachmentDownloadManager
             ?? BackupAttachmentDownloadManagerImpl(
+                appReadiness: appReadiness,
                 attachmentStore: attachmentStore,
                 attachmentDownloadManager: attachmentDownloadManager,
                 backupAttachmentDownloadStore: backupAttachmentDownloadStore,
                 dateProvider: dateProvider,
                 db: db,
+                mediaBandwidthPreferenceStore: mediaBandwidthPreferenceStore,
                 messageBackupRequestManager: messageBackupRequestManager,
+                reachabilityManager: reachabilityManager,
                 tsAccountManager: tsAccountManager
             )
         let backupAttachmentUploadStore = BackupAttachmentUploadStoreImpl()
