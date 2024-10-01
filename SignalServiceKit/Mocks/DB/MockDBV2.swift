@@ -4,6 +4,7 @@
 //
 
 import Foundation
+public import GRDB
 
 // TODO: [DBV2] Ideally, these would live in a test target.
 //
@@ -242,6 +243,13 @@ public class MockDB: DB {
     }
 
     public func appendDbChangeDelegate(_ dbChangeDelegate: DBChangeDelegate) {
+        // Do nothing.
+    }
+
+    public func add(
+        transactionObserver: TransactionObserver,
+        extent: Database.TransactionObservationExtent
+    ) {
         // Do nothing.
     }
 

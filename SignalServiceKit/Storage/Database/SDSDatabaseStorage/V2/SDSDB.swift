@@ -4,6 +4,7 @@
 //
 
 import Foundation
+public import GRDB
 
 public extension SDSAnyReadTransaction {
     /// Bridging from a SDS transaction to a DB transaction can be done at the seams;
@@ -164,6 +165,13 @@ public class SDSDB: DB {
 
     public func appendDbChangeDelegate(_ dbChangeDelegate: DBChangeDelegate) {
         self.databaseStorage.appendDatabaseChangeDelegate(DBChangeDelegateWrapper(dbChangeDelegate))
+    }
+
+    public func add(
+        transactionObserver: TransactionObserver,
+        extent: Database.TransactionObservationExtent
+    ) {
+        self.databaseStorage.grdbStorage.pool.add(transactionObserver: transactionObserver, extent: extent)
     }
 
     // MARK: - Touching

@@ -4,6 +4,7 @@
 //
 
 import Foundation
+public import GRDB
 
 public protocol DBChangeDelegate: AnyObject {
     func dbChangesDidUpdateExternally()
@@ -89,6 +90,11 @@ public protocol DB {
     // MARK: - Observation
 
     func appendDbChangeDelegate(_ dbChangeDelegate: DBChangeDelegate)
+
+    func add(
+        transactionObserver: TransactionObserver,
+        extent: Database.TransactionObservationExtent
+    )
 
     // MARK: - Touching
 
@@ -182,5 +188,11 @@ extension DB {
 
     public func touch(_ thread: TSThread, shouldReindex: Bool, tx: DBWriteTransaction) {
         self.touch(thread, shouldReindex: shouldReindex, shouldUpdateChatListUi: true, tx: tx)
+    }
+
+    // MARK: - Observation
+
+    public func add(transactionObserver: TransactionObserver) {
+        self.add(transactionObserver: transactionObserver, extent: .observerLifetime)
     }
 }

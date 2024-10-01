@@ -50,6 +50,13 @@ final class InMemoryDB: DB {
 
     func appendDbChangeDelegate(_ dbChangeDelegate: DBChangeDelegate) { fatalError() }
 
+    func add(
+        transactionObserver: TransactionObserver,
+        extent: Database.TransactionObservationExtent
+    ) {
+        databaseQueue.add(transactionObserver: transactionObserver, extent: extent)
+    }
+
     func asyncRead<T>(
         file: String,
         function: String,
