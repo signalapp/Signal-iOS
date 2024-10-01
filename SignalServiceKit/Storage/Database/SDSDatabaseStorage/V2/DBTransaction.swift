@@ -26,6 +26,7 @@ public protocol DBReadTransaction: AnyObject {}
 /// this is made intentionally cumbersome as it should **never** be used in
 /// any concrete class and **only** in shim classes that bridge to old-style code.
 public protocol DBWriteTransaction: DBReadTransaction {
+    func addFinalization(forKey key: String, block: @escaping () -> Void)
     func addSyncCompletion(_ block: @escaping () -> Void)
     func addAsyncCompletion(on scheduler: Scheduler, _ block: @escaping () -> Void)
 }

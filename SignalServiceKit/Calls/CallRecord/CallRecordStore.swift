@@ -168,13 +168,21 @@ class CallRecordStoreImpl: CallRecordStore {
         )
     }
 
+    private var deletedCallRecordIds = [CallRecord.ID]()
+
     func delete(callRecords: [CallRecord], tx: DBWriteTransaction) {
         delete(callRecords: callRecords, db: SDSDB.shimOnlyBridge(tx).database)
+        deletedCallRecordIds.append(contentsOf: callRecords.map(\.id))
 
-        postNotification(
-            updateType: .deleted(recordIds: callRecords.map { $0.id }),
-            tx: tx
-        )
+        tx.addFinalization(forKey: "\(#fileID):\(#line)") {
+            let deletedCallRecordIds = self.deletedCallRecordIds
+            self.deletedCallRecordIds = []
+            self.schedulers.main.async {
+                NotificationCenter.default.post(
+                    CallRecordStoreNotification(updateType: .deleted(recordIds: deletedCallRecordIds)).asNotification
+                )
+            }
+        }
     }
 
     func updateCallAndUnreadStatus(

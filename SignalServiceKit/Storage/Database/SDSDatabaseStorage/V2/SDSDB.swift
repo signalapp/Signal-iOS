@@ -41,6 +41,10 @@ public class SDSDB: DB {
         fileprivate let tx: SDSAnyWriteTransaction
         init(_ tx: SDSAnyWriteTransaction) { self.tx = tx }
 
+        func addFinalization(forKey key: String, block: @escaping () -> Void) {
+            tx.addTransactionFinalizationBlock(forKey: key, block: { _ in block() })
+        }
+
         func addSyncCompletion(_ block: @escaping () -> Void) {
             tx.addSyncCompletion(block)
         }

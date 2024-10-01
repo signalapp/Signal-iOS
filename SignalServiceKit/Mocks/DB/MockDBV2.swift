@@ -22,6 +22,10 @@ import Foundation
 private class MockTransaction: DBWriteTransaction {
     init() {}
 
+    func addFinalization(forKey key: String, block: @escaping () -> Void) {
+        fatalError()
+    }
+
     var syncCompletions = [() -> Void]()
 
     func addSyncCompletion(_ block: @escaping () -> Void) {

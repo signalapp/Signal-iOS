@@ -34,6 +34,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     private struct Dependencies {
         let badgeManager: BadgeManager
         let blockingManager: BlockingManager
+        let callLinkStore: any CallLinkRecordStore
         let callRecordDeleteAllJobQueue: CallRecordDeleteAllJobQueue
         let callRecordMissedCallManager: CallRecordMissedCallManager
         let callRecordQuerier: CallRecordQuerier
@@ -52,6 +53,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     private lazy var deps: Dependencies = Dependencies(
         badgeManager: AppEnvironment.shared.badgeManager,
         blockingManager: SSKEnvironment.shared.blockingManagerRef,
+        callLinkStore: DependenciesBridge.shared.callLinkStore,
         callRecordDeleteAllJobQueue: SSKEnvironment.shared.callRecordDeleteAllJobQueueRef,
         callRecordMissedCallManager: DependenciesBridge.shared.callRecordMissedCallManager,
         callRecordQuerier: DependenciesBridge.shared.callRecordQuerier,
@@ -691,6 +693,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
                 // Reset our loaded calls.
                 self.viewModelLoader = ViewModelLoader(
+                    callLinkStore: self.deps.callLinkStore,
                     callRecordLoader: callRecordLoader,
                     callViewModelForCallRecords: { callRecords, tx in
                         return Self.callViewModel(
@@ -699,13 +702,26 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                             tx: SDSDB.shimOnlyBridge(tx)
                         )
                     },
+                    callViewModelForUpcomingCallLink: { callLinkRecord, tx in
+                        return CallViewModel(
+                            reference: .callLink(roomId: callLinkRecord.roomId),
+                            callRecords: [],
+                            title: callLinkRecord.state?.localizedName ?? "",
+                            recipientType: .callLink(callLinkRecord.rootKey),
+                            direction: .outgoing,
+                            state: .inactive
+                        )
+                    },
                     fetchCallRecordBlock: { callRecordId, tx -> CallRecord? in
                         return capturedDeps.callRecordStore.fetch(
                             callRecordId: callRecordId,
                             tx: SDSDB.shimOnlyBridge(tx)
                         ).unwrapped
-                    }
+                    },
+                    shouldFetchUpcomingCallLinks: !onlyLoadMissedCalls
                 )
+
+                self.reloadUpcomingCallLinks()
 
                 // Load the initial page of records. We've thrown away all our
                 // existing calls, so we want to always update the snapshot.
@@ -726,6 +742,13 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             /// load another page of even-older calls.
             loadMoreCalls(direction: .older, animated: false)
         }
+    }
+
+    private func reloadUpcomingCallLinks() {
+        guard FeatureFlags.callLinkRecordTable else {
+            return
+        }
+        deps.db.read { tx in viewModelLoader.reloadUpcomingCallLinkReferences(tx: tx) }
     }
 
     /// Synchronously loads more calls, then asynchronously update the snapshot
@@ -934,6 +957,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     struct CallViewModel {
         enum Reference: Hashable {
             case callRecords(primaryId: CallRecord.ID, coalescedIds: [CallRecord.ID])
+            case callLink(roomId: Data)
         }
 
         enum Direction {
@@ -965,6 +989,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         enum RecipientType {
             case individual(type: CallType, contactThread: TSContactThread)
             case group(groupThread: TSGroupThread)
+            case callLink(CallLinkRootKey)
 
             enum CallType: Hashable {
                 case audio
@@ -1001,6 +1026,8 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             case let .individual(callType, _):
                 return callType
             case .group(_):
+                return .video
+            case .callLink(_):
                 return .video
             }
         }
@@ -1432,7 +1459,7 @@ extension CallsListViewController: UITableViewDelegate {
                     self?.startVoiceCall(from: viewModel)
                 }
                 actions.append(audioCallAction)
-            case .group:
+            case .group, .callLink:
                 break
             }
 
@@ -1522,8 +1549,8 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
                 withVideo: false,
                 context: self.callStarterContext
             ).startCall(from: self)
-        case .group:
-            owsFail("Shouldn't be able to start voice call from group")
+        case .group, .callLink:
+            owsFail("Shouldn't be able to start voice call")
         }
     }
 
@@ -1540,6 +1567,11 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
                 groupThread: groupThread,
                 context: self.callStarterContext
             ).startCall(from: self)
+        case .callLink(let rootKey):
+            CallStarter(
+                callLink: rootKey,
+                context: self.callStarterContext
+            ).startCall(from: self)
         }
     }
 
@@ -1549,6 +1581,9 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
                 switch reference {
                 case .callRecords(let primaryId, let coalescedIds):
                     return [primaryId] + coalescedIds
+                case .callLink(_):
+                    // [CallLink] TODO: Implement real deletion incl. sync messages.
+                    owsFail("[CallLink] TODO: Add deletion support")
                 }
             }
 
@@ -1598,6 +1633,8 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
         switch viewModel.recipientType {
         case .individual(type: _, let thread as TSThread), .group(let thread as TSThread):
             showCallInfo(for: thread, callRecords: viewModel.callRecords)
+        case .callLink(_):
+            owsFail("[CallLink] TODO: Show CallLink details.")
         }
     }
 
@@ -1633,6 +1670,8 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
         switch viewModel.recipientType {
         case .individual(type: _, let thread as TSThread), .group(let thread as TSThread):
             return thread
+        case .callLink(_):
+            return nil
         }
     }
 
@@ -1883,6 +1922,9 @@ private extension CallsListViewController {
                 switch viewModel.recipientType {
                 case .individual(type: _, let thread as TSThread), .group(let thread as TSThread):
                     configuration.dataSource = .thread(thread)
+                case .callLink(_):
+                    // [CallLink] TODO: Show the Call Link icon.
+                    configuration.dataSource = .none
                 }
             }
 

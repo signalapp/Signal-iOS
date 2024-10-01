@@ -12,6 +12,13 @@ public struct CallLinkState {
     public let revoked: Bool
     public let expiration: Date
 
+    init(name: String?, requiresAdminApproval: Bool, revoked: Bool, expiration: Date) {
+        self.name = name
+        self.requiresAdminApproval = requiresAdminApproval
+        self.revoked = revoked
+        self.expiration = expiration
+    }
+
     public init(_ rawValue: SignalRingRTC.CallLinkState) {
         self.name = rawValue.name.nilIfEmpty
         self.requiresAdminApproval = {

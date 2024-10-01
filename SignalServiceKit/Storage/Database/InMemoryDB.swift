@@ -22,6 +22,9 @@ final class InMemoryDB: DB {
     }
 
     final class WriteTransaction: ReadTransaction, DBWriteTransaction {
+        func addFinalization(forKey key: String, block: @escaping () -> Void) {
+            fatalError()
+        }
         func addSyncCompletion(_ block: @escaping () -> Void) {
             fatalError()
         }

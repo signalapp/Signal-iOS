@@ -15,6 +15,7 @@ public protocol CallLinkRecordStore {
     func delete(_ callLinkRecord: CallLinkRecord, tx: any DBWriteTransaction) throws
 
     func fetchAll(tx: any DBReadTransaction) throws -> [CallLinkRecord]
+    func fetchUpcoming(earlierThan expirationTimestamp: Date?, limit: Int, tx: any DBReadTransaction) throws -> [CallLinkRecord]
     func fetchWhere(adminDeletedAtTimestampMsIsLessThan thresholdMs: UInt64, tx: any DBReadTransaction) throws -> [CallLinkRecord]
     func fetchAnyPendingRecord(tx: any DBReadTransaction) throws -> CallLinkRecord?
 }
@@ -64,6 +65,22 @@ public class CallLinkRecordStoreImpl: CallLinkRecordStore {
         let db = SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database
         do {
             return try CallLinkRecord.fetchAll(db)
+        } catch {
+            throw error.grdbErrorForLogging
+        }
+    }
+
+    public func fetchUpcoming(earlierThan expirationTimestamp: Date?, limit: Int, tx: any DBReadTransaction) throws -> [CallLinkRecord] {
+        let db = SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database
+        do {
+            let isUpcomingColumn = Column(CallLinkRecord.CodingKeys.isUpcoming)
+            let expirationColumn = Column(CallLinkRecord.CodingKeys.expiration)
+
+            var baseQuery = CallLinkRecord.filter(isUpcomingColumn == true).order(expirationColumn.desc).limit(limit)
+            if let expirationTimestamp {
+                baseQuery = baseQuery.filter(expirationColumn < expirationTimestamp)
+            }
+            return try baseQuery.fetchAll(db)
         } catch {
             throw error.grdbErrorForLogging
         }

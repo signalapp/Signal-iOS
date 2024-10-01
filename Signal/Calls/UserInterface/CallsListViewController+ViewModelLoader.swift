@@ -29,6 +29,11 @@ extension CallsListViewController {
     /// changes. When the user scrolls to the bottom of the list, callers should
     /// request additional items.
     struct ViewModelLoader {
+        typealias CallViewModelForUpcomingCallLink = (
+            _ callLinkRecord: CallLinkRecord,
+            _ tx: DBReadTransaction
+        ) -> CallViewModel
+
         typealias CallViewModelForCallRecords = (
             _ callRecords: [CallRecord],
             _ tx: DBReadTransaction
@@ -44,39 +49,46 @@ extension CallsListViewController {
             case newer
         }
 
+        private let callLinkStore: any CallLinkRecordStore
         private let callRecordLoader: CallRecordLoader
         private let callViewModelForCallRecords: CallViewModelForCallRecords
+        private let callViewModelForUpcomingCallLink: CallViewModelForUpcomingCallLink
         private let fetchCallRecordBlock: FetchCallRecordBlock
+        private let shouldFetchUpcomingCallLinks: Bool
         private let viewModelPageSize: Int
-        private let maxCachedViewModelCount: Int
         private let maxCoalescedCallsInOneViewModel: Int
 
         init(
+            callLinkStore: any CallLinkRecordStore,
             callRecordLoader: CallRecordLoader,
             callViewModelForCallRecords: @escaping CallViewModelForCallRecords,
+            callViewModelForUpcomingCallLink: @escaping CallViewModelForUpcomingCallLink,
             fetchCallRecordBlock: @escaping FetchCallRecordBlock,
+            shouldFetchUpcomingCallLinks: Bool,
             viewModelPageSize: Int = 50,
-            maxCachedViewModelCount: Int = 150,
             maxCoalescedCallsInOneViewModel: Int = 50
         ) {
-            owsPrecondition(
-                maxCachedViewModelCount >= viewModelPageSize,
-                "Must be able to cache at least one page of view models!"
-            )
-
+            self.callLinkStore = callLinkStore
             self.callRecordLoader = callRecordLoader
             self.callViewModelForCallRecords = callViewModelForCallRecords
+            self.callViewModelForUpcomingCallLink = callViewModelForUpcomingCallLink
             self.fetchCallRecordBlock = fetchCallRecordBlock
+            self.shouldFetchUpcomingCallLinks = shouldFetchUpcomingCallLinks
             self.viewModelPageSize = viewModelPageSize
-            self.maxCachedViewModelCount = maxCachedViewModelCount
             self.maxCoalescedCallsInOneViewModel = maxCoalescedCallsInOneViewModel
 
             self.callHistoryItemReferences = []
-            self.viewModels = []
-            self.viewModelOffset = 0
+            self.upcomingCallLinkReferences = []
         }
 
         // MARK: - References
+
+        private struct UpcomingCallLinkReference {
+            let callLinkRoomId: Data
+
+            var viewModel: CallViewModel?
+            var viewModelReference: CallViewModel.Reference { .callLink(roomId: callLinkRoomId) }
+        }
 
         private struct CallHistoryItemReference {
             let callRecordIds: NonEmptyArray<CallRecord.ID>
@@ -85,55 +97,68 @@ extension CallsListViewController {
                 self.callRecordIds = callRecordIds
             }
 
+            var viewModel: CallViewModel?
             var viewModelReference: CallViewModel.Reference {
                 return .callRecords(primaryId: callRecordIds.first, coalescedIds: Array(callRecordIds.rawValue.dropFirst()))
             }
         }
 
+        private var upcomingCallLinkReferences: [UpcomingCallLinkReference]
+
         /// The range of `callBeganTimestamp`s that have been loaded. If nil,
         /// nothing has been fetched yet (or there wasn't anything to fetch).
         private var callHistoryItemTimestampRange: ClosedRange<UInt64>?
 
+        /// All the "call history items" we've loaded so far. This is generally
+        /// equivalent to allCallItems.prefix(…).
         private var callHistoryItemReferences: [CallHistoryItemReference]
 
-        var isEmpty: Bool { callHistoryItemReferences.isEmpty }
+        var isEmpty: Bool { upcomingCallLinkReferences.isEmpty && callHistoryItemReferences.isEmpty }
 
-        var totalCount: Int { callHistoryItemReferences.count }
+        var totalCount: Int { upcomingCallLinkReferences.count + callHistoryItemReferences.count }
 
         /// All the references known by this type.
         ///
         /// This value should be used as a the data source for a table view.
         func viewModelReferences() -> [CallViewModel.Reference] {
-            return callHistoryItemReferences.map(\.viewModelReference)
+            return upcomingCallLinkReferences.map(\.viewModelReference) + callHistoryItemReferences.map(\.viewModelReference)
         }
 
         func viewModelReference(at index: Int) -> CallViewModel.Reference {
-            return callHistoryItemReferences[index].viewModelReference
+            var internalIndex = index
+            if internalIndex < upcomingCallLinkReferences.count {
+                return upcomingCallLinkReferences[internalIndex].viewModelReference
+            }
+            internalIndex -= upcomingCallLinkReferences.count
+            if internalIndex < callHistoryItemReferences.count {
+                return callHistoryItemReferences[internalIndex].viewModelReference
+            }
+            owsFail("Must provide valid index.")
         }
 
         // MARK: - View Models
-
-        /// Tracks the correspondance between `viewModels` and the references.
-        ///
-        /// The invariant is that
-        ///     (upcomingCallLinkReferences + callHistoryItemReferences).dropFirst(viewModelOffset)
-        /// will correspond with viewModels.
-        private var viewModelOffset: Int
-
-        private var viewModelRange: Range<Int> { viewModelOffset..<(viewModelOffset + viewModels.count) }
-
-        /// All the hydrated view models we currently have loaded.
-        private var viewModels: [CallViewModel]
 
         /// Returns the view model at `index`.
         ///
         /// This fetches a new batch from the disk if `index` isn't yet loaded.
         mutating func viewModel(at index: Int, sneakyTransactionDb: any DB) -> CallViewModel? {
-            if let alreadyFetched = viewModels[safe: index - self.viewModelOffset] {
+            if let alreadyFetched = _viewModel(at: index) {
                 return alreadyFetched
             }
             sneakyTransactionDb.read { tx in self.loadUntilCached(at: index, tx: tx) }
-            return viewModels[safe: index - self.viewModelOffset]
+            return _viewModel(at: index)
+        }
+
+        private func _viewModel(at index: Int) -> CallViewModel? {
+            var internalIndex = index
+            if internalIndex < upcomingCallLinkReferences.count {
+                return upcomingCallLinkReferences[internalIndex].viewModel
+            }
+            internalIndex -= upcomingCallLinkReferences.count
+            if internalIndex < callHistoryItemReferences.count {
+                return callHistoryItemReferences[internalIndex].viewModel
+            }
+            return nil
         }
 
         // MARK: - Load more
@@ -143,44 +168,46 @@ extension CallsListViewController {
         /// This method is safe to call for any `index` less than `totalCount` or
         /// `viewModelReferences().count`.
         private mutating func loadUntilCached(at index: Int, tx: DBReadTransaction) {
-            let viewModelRange = self.viewModelRange
-
-            // For example, assume:
-            // - viewModelPageSize=25,
-            // - maxCachedViewModelCount=35,
-            // - viewModelRange=[20, 40)
-
-            // ... then newerRange will be [0, 20)
-            let newerRange = max(0, viewModelRange.lowerBound - viewModelPageSize)..<viewModelRange.lowerBound
-            // ... and if `index` is in that range ...
-            if newerRange.contains(index) {
-                let hydratedViewModels = self.hydrateViewModelReferences(inRange: newerRange, tx: tx)
-                // ... we load 20 new items, have 40 total, and then drop the last 5.
-                self.viewModels = Array((hydratedViewModels + self.viewModels).prefix(maxCachedViewModelCount))
-                // The first item is now earlier because we added items to the beginning.
-                self.viewModelOffset -= hydratedViewModels.count
-                return
-            }
-
-            // ... then olderRange will be [40, 65) ...
-            let olderRange = viewModelRange.upperBound..<(viewModelRange.upperBound + viewModelPageSize)
-            // ... and if `index` is in that range ...
-            if olderRange.contains(index) {
-                let hydratedViewModels = self.hydrateViewModelReferences(inRange: olderRange, tx: tx)
-                // ... we load 25 new items, have 45 total, and then drop the first 10.
-                self.viewModels = Array((self.viewModels + hydratedViewModels).suffix(maxCachedViewModelCount))
-                // The first item is now later because we dropped 20 + 25 - 35 = 10 items from the beginning.
-                self.viewModelOffset += max(0, viewModelRange.count + hydratedViewModels.count - maxCachedViewModelCount)
-                return
-            }
-
-            // ... otherwise we load a batch surrounding `index`
-            // (if index=837, pageIndex=33, pageRange=[825, 850))
+            // Ensure the page that contains `index` has been loaded.
             let pageIndex = index / viewModelPageSize
             let pageRange = (pageIndex * viewModelPageSize)..<((pageIndex + 1) * viewModelPageSize)
-            // ... and throw away all our items and jump directly to what we loaded.
-            self.viewModels = self.hydrateViewModelReferences(inRange: pageRange, tx: tx)
-            self.viewModelOffset = pageRange.lowerBound
+            for index in pageRange {
+                self.loadViewModel(at: index, tx: tx)
+            }
+
+            // Throw away cached view models if we have way too many.
+            let adjacentRange = (
+                max(0, pageRange.lowerBound - 2 * viewModelPageSize)
+                ..< min(totalCount, pageRange.upperBound + 2 * viewModelPageSize)
+            )
+            for internalIndex in upcomingCallLinkReferences.indices {
+                if adjacentRange.contains(internalIndex) {
+                    continue
+                }
+                upcomingCallLinkReferences[internalIndex].viewModel = nil
+            }
+            for internalIndex in callHistoryItemReferences.indices {
+                if adjacentRange.contains(internalIndex + upcomingCallLinkReferences.count) {
+                    continue
+                }
+                callHistoryItemReferences[internalIndex].viewModel = nil
+            }
+        }
+
+        mutating func reloadUpcomingCallLinkReferences(tx: DBReadTransaction) {
+            guard shouldFetchUpcomingCallLinks else {
+                return
+            }
+            let upcomingCallLinks: [CallLinkRecord]
+            do {
+                upcomingCallLinks = try callLinkStore.fetchUpcoming(earlierThan: nil, limit: 2048, tx: tx)
+            } catch {
+                Logger.warn("Couldn't fetch call links to show on the calls tab: \(error)")
+                return
+            }
+            self.upcomingCallLinkReferences = upcomingCallLinks.map {
+                return UpcomingCallLinkReference(callLinkRoomId: $0.roomId)
+            }
         }
 
         /// Load a page of call history items in the requested direction.
@@ -240,7 +267,7 @@ extension CallsListViewController {
             if
                 fetchDirection == .newer,
                 let oldestGroupOfNewCallRecords = fetchResult.last,
-                let newestGroupOfOldCallRecords = viewModels[safe: 0]?.callRecords,
+                let newestGroupOfOldCallRecords = callHistoryItemReferences.first?.viewModel?.callRecords,
                 let oldestOldCallRecord = newestGroupOfOldCallRecords.last,
                 oldestGroupOfNewCallRecords.first.isValidCoalescingAnchor(for: oldestOldCallRecord),
                 (oldestGroupOfNewCallRecords.rawValue.count + newestGroupOfOldCallRecords.count) <= maxCoalescedCallsInOneViewModel
@@ -248,10 +275,6 @@ extension CallsListViewController {
                 let combinedGroupOfCallRecords = oldestGroupOfNewCallRecords + newestGroupOfOldCallRecords
                 callHistoryItemReferences[0] = CallHistoryItemReference(
                     callRecordIds: combinedGroupOfCallRecords.map(\.id)
-                )
-                viewModels[0] = callViewModelForCallRecords(
-                    combinedGroupOfCallRecords.rawValue,
-                    tx
                 )
                 fetchResult = fetchResult.dropLast()
             }
@@ -267,7 +290,6 @@ extension CallsListViewController {
                 // swiftlint:enable shorthand_operator
             case .newer:
                 self.callHistoryItemReferences = fetchedCallHistoryItemReferences + self.callHistoryItemReferences
-                self.viewModelOffset += fetchedCallHistoryItemReferences.count
             }
 
             return true
@@ -275,38 +297,40 @@ extension CallsListViewController {
 
         // MARK: - Rehydration
 
-        /// "Hydrate" (ie load) view models in `range`.
+        /// "Hydrate" (ie load) the view model at `index`.
         ///
-        /// This fetches new ``CallViewModel`` instances even if they're already
-        /// loaded. Therefore, the caller shouldn't invoke this for already-loaded
-        /// view models unless they are explicitly trying to reload them.
-        private func hydrateViewModelReferences(
-            inRange range: Range<Int>,
-            tx: DBReadTransaction
-        ) -> [CallViewModel] {
-            var newViewModels = [CallViewModel]()
-
-            var remainingRange = range
-            newViewModels += callHistoryItemReferences[consume(upTo: callHistoryItemReferences.count, from: &remainingRange)].map { reference in
-                let callRecords = reference.callRecordIds.map {
-                    return fetchCallRecordBlock($0, tx)!
+        /// This is a no-op if it's already loaded.
+        private mutating func loadViewModel(at index: Int, tx: DBReadTransaction) {
+            var internalIndex = index
+            if internalIndex < upcomingCallLinkReferences.count {
+                let reference = upcomingCallLinkReferences[internalIndex]
+                if reference.viewModel == nil {
+                    let callLinkRecord: CallLinkRecord
+                    do {
+                        callLinkRecord = try callLinkStore.fetch(roomId: reference.callLinkRoomId, tx: tx) ?? {
+                            owsFail("Missing call link for existing reference!")
+                        }()
+                    } catch {
+                        owsFail("Couldn't fetch call link: \(error)")
+                    }
+                    upcomingCallLinkReferences[internalIndex].viewModel = callViewModelForUpcomingCallLink(callLinkRecord, tx)
                 }
-                return callViewModelForCallRecords(callRecords.rawValue, tx)
+                return
             }
-
-            return newViewModels
-        }
-
-        /// "Consume" `0..<bound` from `range`.
-        ///
-        /// Shifts `range` lower by `bound` and returns the overlap between
-        /// `0..<bound` and the original `range`.
-        ///
-        /// Returns an arbitrary empty range when there's no overlap.
-        private func consume(upTo bound: Int, from range: inout Range<Int>) -> Range<Int> {
-            let result = min(range.lowerBound, bound)..<min(range.upperBound, bound)
-            range = max(0, range.lowerBound - bound)..<max(0, range.upperBound - bound)
-            return result
+            internalIndex -= upcomingCallLinkReferences.count
+            if internalIndex < callHistoryItemReferences.count {
+                let reference = callHistoryItemReferences[internalIndex]
+                if reference.viewModel == nil {
+                    let callRecords = reference.callRecordIds.map {
+                        guard let callRecord = fetchCallRecordBlock($0, tx) else {
+                            owsFail("Missing call record for existing reference!")
+                        }
+                        return callRecord
+                    }
+                    callHistoryItemReferences[internalIndex].viewModel = callViewModelForCallRecords(callRecords.rawValue, tx)
+                }
+                return
+            }
         }
 
         // MARK: - Newly-Fetched References
@@ -403,33 +427,22 @@ extension CallsListViewController {
         ) {
             let callRecordIdsToDrop = Set(callRecordIdsToDrop)
 
-            var didTouchViewModels = false
-            let callHistoryItemOffset = 0
-            let viewModelRange = self.viewModelRange
-
             // Remove any IDs that were dropped from the references.
             var callHistoryItemIndicesToRemove = IndexSet()
-            for index in callHistoryItemReferences.indices {
-                let reference = callHistoryItemReferences[index]
+            for internalIndex in callHistoryItemReferences.indices {
+                let reference = callHistoryItemReferences[internalIndex]
                 guard reference.callRecordIds.rawValue.contains(where: { callRecordIdsToDrop.contains($0) }) else {
                     continue
                 }
-                didTouchViewModels = didTouchViewModels || viewModelRange.contains(callHistoryItemOffset + index)
                 if let callRecordIds = NonEmptyArray(reference.callRecordIds.rawValue.filter({ !callRecordIdsToDrop.contains($0) })) {
-                    callHistoryItemReferences[index] = CallHistoryItemReference(
+                    callHistoryItemReferences[internalIndex] = CallHistoryItemReference(
                         callRecordIds: callRecordIds
                     )
                 } else {
-                    callHistoryItemIndicesToRemove.insert(index)
+                    callHistoryItemIndicesToRemove.insert(internalIndex)
                 }
             }
             callHistoryItemReferences.remove(atOffsets: callHistoryItemIndicesToRemove)
-
-            // Drop the view models if they overlap. We'll refetch them when needed.
-            if didTouchViewModels {
-                self.viewModels = []
-                self.viewModelOffset = 0
-            }
         }
 
         /// Refreshes view models containing any of the given IDs. If no cached view
@@ -450,14 +463,17 @@ extension CallsListViewController {
 
             var refreshedViewModelReferences = [CallViewModel.Reference]()
 
-            for index in viewModels.indices {
-                let viewModel = viewModels[index]
+            for internalIndex in callHistoryItemReferences.indices {
+                guard let viewModel = callHistoryItemReferences[internalIndex].viewModel else {
+                    continue
+                }
                 guard viewModel.callRecords.contains(where: { callRecordsIdsToRefresh.contains($0.id) }) else {
                     continue
                 }
                 let newCallRecords = viewModel.callRecords.map(refreshIfPossible(_:))
-                viewModels[index] = callViewModelForCallRecords(newCallRecords, tx)
-                refreshedViewModelReferences.append(viewModels[index].reference)
+                let newViewModel = callViewModelForCallRecords(newCallRecords, tx)
+                callHistoryItemReferences[internalIndex].viewModel = newViewModel
+                refreshedViewModelReferences.append(newViewModel.reference)
             }
 
             return refreshedViewModelReferences

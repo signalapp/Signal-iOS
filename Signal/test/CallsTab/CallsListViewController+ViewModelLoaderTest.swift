@@ -59,15 +59,16 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
 
     private func setUpViewModelLoader(
         viewModelPageSize: Int,
-        maxCachedViewModelCount: Int,
         maxCoalescedCallsInOneViewModel: Int = 100
     ) {
         viewModelLoader = ViewModelLoader(
+            callLinkStore: CallLinkRecordStoreImpl(),
             callRecordLoader: mockCallRecordLoader,
             callViewModelForCallRecords: { self.callViewModelForCallRecords($0, $1) },
+            callViewModelForUpcomingCallLink: { _, _ in owsFail("Not implemented.") },
             fetchCallRecordBlock: { self.fetchCallRecordBlock($0, $1) },
+            shouldFetchUpcomingCallLinks: false,
             viewModelPageSize: viewModelPageSize,
-            maxCachedViewModelCount: maxCachedViewModelCount,
             maxCoalescedCallsInOneViewModel: maxCoalescedCallsInOneViewModel
         )
     }
@@ -77,6 +78,8 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
             switch reference {
             case .callRecords(let primaryId, let coalescedIds):
                 return [primaryId.callId] + coalescedIds.map(\.callId)
+            case .callLink(roomId: _):
+                owsFail("Not implemented.")
             }
         }
     }
@@ -126,6 +129,8 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
             switch reference {
             case .callRecords(let primaryId, let coalescedIds):
                 actualCallIds = [primaryId.callId] + coalescedIds.map(\.callId)
+            case .callLink(roomId: _):
+                owsFail("Not implemented.")
             }
             XCTAssertEqual(expectedCallIds, actualCallIds)
         }
@@ -138,7 +143,7 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
     }
 
     func testLoadingNoCallRecords() {
-        setUpViewModelLoader(viewModelPageSize: 10, maxCachedViewModelCount: 30)
+        setUpViewModelLoader(viewModelPageSize: 10)
 
         XCTAssertFalse(loadMore(direction: .older))
         XCTAssertTrue(viewModelLoader.viewModelReferences().isEmpty)
@@ -148,7 +153,7 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
     }
 
     func testBasicCoalescingRules() {
-        setUpViewModelLoader(viewModelPageSize: 100, maxCachedViewModelCount: 300)
+        setUpViewModelLoader(viewModelPageSize: 100)
 
         var timestamp = SequentialTimestampBuilder()
 
@@ -213,7 +218,7 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
             }
         }
 
-        setUpViewModelLoader(viewModelPageSize: 3, maxCachedViewModelCount: 6)
+        setUpViewModelLoader(viewModelPageSize: 3)
 
         /// Scroll backwards three pages, thereby dropping the first-loaded view
         /// models.
@@ -284,7 +289,7 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
     /// the top, then the bottom, by loading until the first, then the last,
     /// calls are cached.
     func testLoadUntilCached() {
-        setUpViewModelLoader(viewModelPageSize: 100, maxCachedViewModelCount: 300)
+        setUpViewModelLoader(viewModelPageSize: 100)
         var timestamp = SequentialTimestampBuilder()
 
         mockCallRecordLoader.callRecords = (1...5000).flatMap { idx -> [CallRecord] in
@@ -317,7 +322,7 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
     }
 
     func testNewerCallInserted() {
-        setUpViewModelLoader(viewModelPageSize: 2, maxCachedViewModelCount: 4)
+        setUpViewModelLoader(viewModelPageSize: 2)
         var timestamp = SequentialTimestampBuilder()
 
         let timestampToInsert0 = timestamp.uncoalescable()
@@ -349,8 +354,8 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
         mockCallRecordLoader.callRecords.insert(.fixture(callId: 2, timestamp: timestampToInsert2), at: 0)
         XCTAssertTrue(loadMore(direction: .newer))
         assertLoadedCallIds([2, 3, 4, 5], [6])
-        assertCached(loadedViewModelReferenceIndices: 0..<2)
         assertCachedCallIds([2, 3, 4, 5], atLoadedViewModelReferenceIndex: 0)
+        assertCached(loadedViewModelReferenceIndices: 0..<2)
         assertCachedCallIds([6], atLoadedViewModelReferenceIndex: 1)
 
         mockCallRecordLoader.callRecords.insert(.fixture(callId: 1, timestamp: timestampToInsert1), at: 0)
@@ -375,7 +380,7 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
         // Cache the default block, since we're gonna override it.
         let defaultFetchCallRecordBlock = fetchCallRecordBlock!
 
-        setUpViewModelLoader(viewModelPageSize: 2, maxCachedViewModelCount: 2)
+        setUpViewModelLoader(viewModelPageSize: 2)
         var timestamp = SequentialTimestampBuilder()
 
         let earlierTimestamp = timestamp.uncoalescable()
@@ -448,7 +453,7 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
     }
 
     func testDroppingViewModels() {
-        setUpViewModelLoader(viewModelPageSize: 6, maxCachedViewModelCount: 6)
+        setUpViewModelLoader(viewModelPageSize: 6)
         var timestamp = SequentialTimestampBuilder()
 
         mockCallRecordLoader.callRecords = [
@@ -519,15 +524,17 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
             [4, 6],
             [10, 11]
         )
+        assertCached(loadedViewModelReferenceIndices: 0..<2)
+        assertCached(loadedViewModelReferenceIndices: 4..<5)
         assertCachedCallIds([0], atLoadedViewModelReferenceIndex: 1)
-        assertCached(loadedViewModelReferenceIndices: 0..<5)
         assertCachedCallIds([2, 3], atLoadedViewModelReferenceIndex: 2)
+        assertCached(loadedViewModelReferenceIndices: 0..<5)
         assertCachedCallIds([4, 6], atLoadedViewModelReferenceIndex: 3)
         assertCachedCallIds([10, 11], atLoadedViewModelReferenceIndex: 4)
     }
 
     func testMaxCoalescedCallsInOneViewModel() {
-        setUpViewModelLoader(viewModelPageSize: 3, maxCachedViewModelCount: 3, maxCoalescedCallsInOneViewModel: 3)
+        setUpViewModelLoader(viewModelPageSize: 3, maxCoalescedCallsInOneViewModel: 3)
         var timestamp = SequentialTimestampBuilder()
 
         mockCallRecordLoader.callRecords = [

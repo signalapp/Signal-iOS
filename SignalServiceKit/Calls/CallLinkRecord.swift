@@ -140,6 +140,18 @@ public struct CallLinkRecord: Codable, PersistableRecord, FetchableRecord {
         self.didUpdateState()
     }
 
+    public var state: CallLinkState? {
+        if let restrictions, let revoked, let expiration {
+            return CallLinkState(
+                name: self.name,
+                requiresAdminApproval: restrictions == .adminApproval,
+                revoked: revoked,
+                expiration: Date(timeIntervalSince1970: TimeInterval(expiration))
+            )
+        }
+        return nil
+    }
+
     private mutating func didUpdateState() {
         // If we haven't used the link & we're an admin, mark it as upcoming.
         self.isUpcoming = self.isUpcoming ?? (self.adminPasskey != nil)
