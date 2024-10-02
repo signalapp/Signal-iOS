@@ -175,7 +175,7 @@ class HomeTabBarController: UITabBarController {
 
     private func updateTabBars(areStoriesEnabled: Bool) {
         let newTabs = tabsToShow(areStoriesEnabled: areStoriesEnabled)
-        if #available(iOS 18, *) {
+        if #available(iOS 18, *), UIDevice.current.isIPad {
             self.tabs = newTabs.map(uiTab(for:))
         } else {
             initializeCustomTabBar(tabs: newTabs)
