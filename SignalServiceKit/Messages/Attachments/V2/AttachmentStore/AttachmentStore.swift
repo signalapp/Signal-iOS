@@ -47,6 +47,13 @@ public protocol AttachmentStore {
         block: (AttachmentReference) -> Void
     ) throws
 
+    /// Enumerate all attachments, calling the block for each one.
+    /// Blocks until all attachments have been enumerated.
+    func enumerateAllAttachments(
+        tx: DBReadTransaction,
+        block: (Attachment) throws -> Void
+    ) throws
+
     /// Return all attachments that are themselves quoted replies
     /// of another attachment; provide the original attachment they point to.
     func allQuotedReplyAttachments(

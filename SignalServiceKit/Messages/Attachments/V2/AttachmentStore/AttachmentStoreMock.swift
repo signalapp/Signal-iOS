@@ -49,6 +49,13 @@ open class AttachmentStoreMock: AttachmentStore {
             .forEach(block)
     }
 
+    open func enumerateAllAttachments(
+        tx: DBReadTransaction,
+        block: (Attachment) throws -> Void
+    ) throws {
+        try attachments.forEach(block)
+    }
+
     open func allQuotedReplyAttachments(
         forOriginalAttachmentId: Attachment.IDType,
         tx: DBReadTransaction

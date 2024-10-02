@@ -57,6 +57,17 @@ public class AttachmentStoreImpl: AttachmentStore {
         )
     }
 
+    public func enumerateAllAttachments(
+        tx: DBReadTransaction,
+        block: (Attachment) throws -> Void
+    ) throws {
+        try enumerateAllAttachments(
+            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database,
+            tx: tx,
+            block: block
+        )
+    }
+
     public func allQuotedReplyAttachments(
         forOriginalAttachmentId originalAttachmentId: Attachment.IDType,
         tx: DBReadTransaction
@@ -354,6 +365,18 @@ public class AttachmentStoreImpl: AttachmentStore {
                 block: block
             )
         }
+    }
+
+    func enumerateAllAttachments(
+        db: GRDB.Database,
+        tx: DBReadTransaction,
+        block: (Attachment) throws -> Void
+    ) throws {
+        try Attachment.Record.fetchCursor(db)
+            .forEach {
+                let attachment = try Attachment(record: $0)
+                try block(attachment)
+            }
     }
 
     private func enumerateReferences<RecordType: FetchableAttachmentReferenceRecord>(
