@@ -39,12 +39,14 @@ public protocol BackupAttachmentDownloadManager {
 
 public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManager {
 
+    private let appReadiness: AppReadiness
     private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
     private let dateProvider: DateProvider
     private let db: DB
     private let mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore
     private let reachabilityManager: SSKReachabilityManager
     private let taskQueue: TaskQueueLoader<TaskRunner>
+    private let tsAccountManager: TSAccountManager
 
     public init(
         appReadiness: AppReadiness,
@@ -58,11 +60,13 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         reachabilityManager: SSKReachabilityManager,
         tsAccountManager: TSAccountManager
     ) {
+        self.appReadiness = appReadiness
         self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
         self.dateProvider = dateProvider
         self.db = db
         self.mediaBandwidthPreferenceStore = mediaBandwidthPreferenceStore
         self.reachabilityManager = reachabilityManager
+        self.tsAccountManager = tsAccountManager
         let taskRunner = TaskRunner(
             attachmentStore: attachmentStore,
             attachmentDownloadManager: attachmentDownloadManager,
@@ -84,7 +88,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             Task { [weak self] in
                 try await self?.restoreAttachmentsIfNeeded()
             }
-            self?.startObservingReachability()
+            self?.startObserving()
         }
     }
 
@@ -135,6 +139,13 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
     }
 
     public func restoreAttachmentsIfNeeded() async throws {
+        guard appReadiness.isAppReady else {
+            return
+        }
+        guard tsAccountManager.localIdentifiersWithMaybeSneakyTransaction != nil else {
+            return
+        }
+
         let downlodableSources = mediaBandwidthPreferenceStore.downloadableSources()
         guard
             downlodableSources.contains(.mediaTierFullsize)
@@ -155,11 +166,17 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
 
     // MARK: - Reachability
 
-    private func startObservingReachability() {
+    private func startObserving() {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(reachabililityDidChange),
             name: SSKReachability.owsReachabilityDidChange,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(didUpdateRegistrationState),
+            name: .registrationStateDidChange,
             object: nil
         )
     }
@@ -172,6 +189,13 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             }
         }
     }
+
+    @objc
+        private func didUpdateRegistrationState() {
+            Task {
+                try await restoreAttachmentsIfNeeded()
+            }
+        }
 
     // MARK: - TaskRecordRunner
 
