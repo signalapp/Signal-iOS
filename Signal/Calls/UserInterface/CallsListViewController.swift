@@ -991,7 +991,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             case group(groupThread: TSGroupThread)
             case callLink(CallLinkRootKey)
 
-            enum CallType: Hashable {
+            enum CallType {
                 case audio
                 case video
             }
@@ -1287,7 +1287,7 @@ extension CallsListViewController: UITableViewDelegate {
             guard let viewModel = viewModelWithSneakyTransaction(at: indexPath) else {
                 return
             }
-            callBack(from: viewModel)
+            startCall(from: viewModel)
         }
     }
 
@@ -1456,7 +1456,7 @@ extension CallsListViewController: UITableViewDelegate {
                     image: Theme.iconImage(.contextMenuVoiceCall),
                     attributes: []
                 ) { [weak self] _ in
-                    self?.startVoiceCall(from: viewModel)
+                    self?.startCall(from: viewModel, withVideo: false)
                 }
                 actions.append(audioCallAction)
             case .group, .callLink:
@@ -1468,7 +1468,7 @@ extension CallsListViewController: UITableViewDelegate {
                 image: Theme.iconImage(.contextMenuVideoCall),
                 attributes: []
             ) { [weak self] _ in
-                self?.startVideoCall(from: viewModel)
+                self?.startCall(from: viewModel, withVideo: true)
             }
             actions.append(videoCallAction)
         }
@@ -1524,15 +1524,6 @@ extension CallsListViewController: UITableViewDelegate {
 
 extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelegate {
 
-    private func callBack(from viewModel: CallViewModel) {
-        switch viewModel.callType {
-        case .audio:
-            startVoiceCall(from: viewModel)
-        case .video:
-            startVideoCall(from: viewModel)
-        }
-    }
-
     private var callStarterContext: CallStarter.Context {
         .init(
             blockingManager: deps.blockingManager,
@@ -1541,33 +1532,22 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
         )
     }
 
-    private func startVoiceCall(from viewModel: CallViewModel) {
+    private func startCall(from viewModel: CallViewModel, withVideo: Bool? = nil) {
         switch viewModel.recipientType {
-        case let .individual(_, contactThread):
+        case let .individual(type, contactThread):
             CallStarter(
                 contactThread: contactThread,
-                withVideo: false,
-                context: self.callStarterContext
-            ).startCall(from: self)
-        case .group, .callLink:
-            owsFail("Shouldn't be able to start voice call")
-        }
-    }
-
-    private func startVideoCall(from viewModel: CallViewModel) {
-        switch viewModel.recipientType {
-        case let .individual(_, contactThread):
-            CallStarter(
-                contactThread: contactThread,
-                withVideo: true,
+                withVideo: withVideo ?? (type == .video),
                 context: self.callStarterContext
             ).startCall(from: self)
         case let .group(groupThread):
+            owsPrecondition(withVideo != false, "Can't start voice call.")
             CallStarter(
                 groupThread: groupThread,
                 context: self.callStarterContext
             ).startCall(from: self)
         case .callLink(let rootKey):
+            owsPrecondition(withVideo != false, "Can't start voice call.")
             CallStarter(
                 callLink: rootKey,
                 context: self.callStarterContext
