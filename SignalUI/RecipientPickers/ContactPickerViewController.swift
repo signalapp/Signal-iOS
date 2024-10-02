@@ -50,7 +50,7 @@ open class ContactPickerViewController: OWSViewController, OWSNavigationChildCon
         }
 
         addChild(tableViewController)
-        view.addSubview(tableView)
+        view.addSubview(tableViewController.view)
         tableView.autoPinEdgesToSuperviewEdges()
 
         updateTableContents()
