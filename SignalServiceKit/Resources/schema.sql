@@ -2102,3 +2102,63 @@ CREATE
             ,"packKey" BLOB NOT NULL
         )
 ;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "OrphanedBackupAttachment" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            ,"cdnNumber" INTEGER NOT NULL
+            ,"mediaName" TEXT NOT NULL
+            ,"type" INTEGER NOT NULL
+            ,UNIQUE (
+                "mediaName"
+                ,"type"
+                ,"cdnNumber"
+            )
+                ON CONFLICT IGNORE
+        )
+;
+
+CREATE
+    TRIGGER "__Attachment_ad_backup_fullsize" AFTER DELETE
+                ON "Attachment" WHEN (
+                OLD.mediaTierCdnNumber IS NOT NULL
+                AND OLD.mediaName IS NOT NULL
+            ) BEGIN INSERT
+                INTO
+                    OrphanedBackupAttachment (
+                        cdnNumber
+                        ,mediaName
+                        ,type
+                    )
+                VALUES (
+                    OLD.mediaTierCdnNumber
+                    ,OLD.mediaName
+                    ,0
+                )
+;
+
+END
+;
+
+CREATE
+    TRIGGER "__Attachment_ad_backup_thumbnail" AFTER DELETE
+                ON "Attachment" WHEN (
+                OLD.thumbnailCdnNumber IS NOT NULL
+                AND OLD.mediaName IS NOT NULL
+            ) BEGIN INSERT
+                INTO
+                    OrphanedBackupAttachment (
+                        cdnNumber
+                        ,mediaName
+                        ,type
+                    )
+                VALUES (
+                    OLD.thumbnailCdnNumber
+                    ,OLD.mediaName
+                    ,1
+                )
+;
+
+END
+;

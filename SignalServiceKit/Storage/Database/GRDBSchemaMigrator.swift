@@ -299,6 +299,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addInKnownMessageRequestStateToHiddenRecipient
         case addBackupAttachmentUploadQueue
         case addBackupStickerPackDownloadQueue
+        case addOrphanedBackupAttachmentTable
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -360,7 +361,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 92
+    public static let grdbSchemaVersionLatest: UInt = 93
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -3544,6 +3545,63 @@ public class GRDBSchemaMigrator: NSObject {
                 table.column("packKey", .blob)
                     .notNull()
             }
+
+            return .success(())
+        }
+
+        migrator.registerMigration(.addOrphanedBackupAttachmentTable) { tx in
+            /// Rows are written into here to enqueue attachments for deletion from the media tier cdn.
+            try tx.database.create(table: "OrphanedBackupAttachment") { table in
+                table.autoIncrementedPrimaryKey("id").notNull()
+                table.column("cdnNumber", .integer).notNull()
+                table.column("mediaName", .text).notNull()
+                table.column("type", .integer).notNull()
+                /// Unique by mediaName _and_ cdnNumber. It is theoretically possible to end up with the
+                /// same mediaName on two CDN versions, and we may want to delete both.
+                table.uniqueKey(["mediaName", "type", "cdnNumber"], onConflict: .ignore)
+            }
+
+            /// When we delete an attachment row in the database, insert into the orphan backup table
+            /// so we can clean up the cdn upload later.
+            /// Note this doesn't cover if we start an upload/cdn copy and are interrupted. The attachment
+            /// could exist on the cdn but we don't know about it locally, and it later gets deleted locally.
+            /// We will pick up on this the next time we query the server list endpoint; this trigger doesn't handle it.
+            try tx.database.execute(sql: """
+                CREATE TRIGGER "__Attachment_ad_backup_fullsize" AFTER DELETE ON "Attachment"
+                    WHEN (
+                        OLD.mediaTierCdnNumber IS NOT NULL
+                        AND OLD.mediaName IS NOT NULL
+                    )
+                    BEGIN
+                    INSERT INTO OrphanedBackupAttachment (
+                      cdnNumber
+                      ,mediaName
+                      ,type
+                    ) VALUES (
+                      OLD.mediaTierCdnNumber
+                      ,OLD.mediaName
+                      ,0
+                    );
+                  END;
+            """)
+            try tx.database.execute(sql: """
+                CREATE TRIGGER "__Attachment_ad_backup_thumbnail" AFTER DELETE ON "Attachment"
+                    WHEN (
+                        OLD.thumbnailCdnNumber IS NOT NULL
+                        AND OLD.mediaName IS NOT NULL
+                    )
+                    BEGIN
+                    INSERT INTO OrphanedBackupAttachment (
+                      cdnNumber
+                      ,mediaName
+                      ,type
+                    ) VALUES (
+                      OLD.thumbnailCdnNumber
+                      ,OLD.mediaName
+                      ,1
+                    );
+                  END;
+            """)
 
             return .success(())
         }
