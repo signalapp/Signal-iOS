@@ -294,7 +294,6 @@ public class GroupCallManager {
             callId: callId.rawValue,
             groupCallInteraction: newGroupCallInteraction,
             groupCallInteractionRowId: interactionRowId,
-            groupThread: groupThread,
             groupThreadRowId: groupThreadRowId,
             tx: tx
         )

@@ -190,9 +190,9 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
 
         if shouldSendSyncMessage {
             outgoingSyncMessageManager.sendSyncMessage(
-                contactThread: contactThread,
                 callRecord: callRecord,
                 callEvent: .callUpdated,
+                callEventTimestamp: callRecord.callBeganTimestamp,
                 tx: tx
             )
         }
@@ -228,9 +228,9 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
 
         if shouldSendSyncMessage {
             outgoingSyncMessageManager.sendSyncMessage(
-                contactThread: contactThread,
                 callRecord: existingCallRecord,
                 callEvent: .callUpdated,
+                callEventTimestamp: existingCallRecord.callBeganTimestamp,
                 tx: tx
             )
         }

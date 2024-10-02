@@ -28,7 +28,6 @@ public protocol GroupCallRecordManager {
         callId: UInt64,
         groupCallInteraction: OWSGroupCallMessage,
         groupCallInteractionRowId: Int64,
-        groupThread: TSGroupThread,
         groupThreadRowId: Int64,
         callDirection: CallRecord.CallDirection,
         groupCallStatus: CallRecord.CallStatus.GroupCallStatus,
@@ -46,7 +45,6 @@ public protocol GroupCallRecordManager {
     /// ringing status. Otherwise, passing `nil` results in no change to the
     /// existing group call ringer.
     func updateGroupCallRecord(
-        groupThread: TSGroupThread,
         existingCallRecord: CallRecord,
         newCallDirection: CallRecord.CallDirection,
         newGroupCallStatus: CallRecord.CallStatus.GroupCallStatus,
@@ -81,7 +79,6 @@ public extension GroupCallRecordManager {
         callId: UInt64,
         groupCallInteraction: OWSGroupCallMessage,
         groupCallInteractionRowId: Int64,
-        groupThread: TSGroupThread,
         groupThreadRowId: Int64,
         tx: DBWriteTransaction
     ) -> CallRecord {
@@ -89,7 +86,6 @@ public extension GroupCallRecordManager {
             callId: callId,
             groupCallInteraction: groupCallInteraction,
             groupCallInteractionRowId: groupCallInteractionRowId,
-            groupThread: groupThread,
             groupThreadRowId: groupThreadRowId,
             callDirection: .incoming,
             groupCallStatus: .generic,
@@ -142,7 +138,6 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
             logger.warn("Ignoring: existing record was deleted!")
         case .matchFound(let existingCallRecord):
             updateGroupCallRecord(
-                groupThread: groupThread,
                 existingCallRecord: existingCallRecord,
                 newCallDirection: callDirection,
                 newGroupCallStatus: groupCallStatus,
@@ -162,7 +157,6 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
                 callId: callId,
                 groupCallInteraction: newGroupCallInteraction,
                 groupCallInteractionRowId: interactionRowId,
-                groupThread: groupThread,
                 groupThreadRowId: groupThreadRowId,
                 callDirection: callDirection,
                 groupCallStatus: groupCallStatus,
@@ -178,7 +172,6 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
         callId: UInt64,
         groupCallInteraction _: OWSGroupCallMessage,
         groupCallInteractionRowId: Int64,
-        groupThread: TSGroupThread,
         groupThreadRowId: Int64,
         callDirection: CallRecord.CallDirection,
         groupCallStatus: CallRecord.CallStatus.GroupCallStatus,
@@ -202,7 +195,6 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
 
         if shouldSendSyncMessage {
             outgoingSyncMessageManager.sendSyncMessage(
-                groupThread: groupThread,
                 callRecord: newCallRecord,
                 callEvent: .callUpdated,
                 callEventTimestamp: callEventTimestamp,
@@ -214,7 +206,6 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
     }
 
     public func updateGroupCallRecord(
-        groupThread: TSGroupThread,
         existingCallRecord: CallRecord,
         newCallDirection: CallRecord.CallDirection,
         newGroupCallStatus: CallRecord.CallStatus.GroupCallStatus,
@@ -277,7 +268,6 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
 
         if shouldSendSyncMessage {
             outgoingSyncMessageManager.sendSyncMessage(
-                groupThread: groupThread,
                 callRecord: existingCallRecord,
                 callEvent: .callUpdated,
                 callEventTimestamp: callEventTimestamp,

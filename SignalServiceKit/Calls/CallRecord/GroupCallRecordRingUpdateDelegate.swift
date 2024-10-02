@@ -169,7 +169,6 @@ public final class GroupCallRecordRingUpdateHandler: GroupCallRecordRingUpdateDe
 
             ringUpdateLogger.info("Updating group call record for ring update.")
             groupCallRecordManager.updateGroupCallRecord(
-                groupThread: groupThread,
                 existingCallRecord: existingCallRecord,
                 newCallDirection: existingCallRecord.callDirection,
                 newGroupCallStatus: newGroupCallStatus,
@@ -208,7 +207,6 @@ public final class GroupCallRecordRingUpdateHandler: GroupCallRecordRingUpdateDe
                 callId: callId,
                 groupCallInteraction: newGroupCallInteraction,
                 groupCallInteractionRowId: interactionRowId,
-                groupThread: groupThread,
                 groupThreadRowId: groupThreadRowId,
                 callDirection: .incoming,
                 groupCallStatus: groupCallStatus,

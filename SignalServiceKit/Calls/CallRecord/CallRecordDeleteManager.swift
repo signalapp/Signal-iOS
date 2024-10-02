@@ -122,36 +122,33 @@ final class CallRecordDeleteManagerImpl: CallRecordDeleteManager {
 
         if sendSyncMessageOnDelete {
             for callRecord in callRecords {
-                let threadRowId: Int64
-                switch callRecord.conversationId {
-                case .thread(let threadRowId2):
-                    threadRowId = threadRowId2
-                }
-                guard let thread = threadStore.fetchThread(
-                    rowId: threadRowId, tx: tx
-                ) else {
-                    owsFailBeta("Missing thread for call record!")
-                    continue
+                let callEventTimestamp: UInt64
+
+                switch callRecord.callType {
+                case .audioCall, .videoCall:
+                    // [Calls] TODO: pass through the "call event timestamp" for 1:1 call events
+                    //
+                    // We currently use the timestamp of the call record when sending all
+                    // sync messages related to a 1:1 call. That's not quite right – we
+                    // should be using the timestamp of the event that triggered the sync
+                    // message, such as the user declining.
+                    //
+                    // This isn't a big deal for 1:1 calls though, since all 1:1 calls have
+                    // a well-defined "start time" that both participants know about: the
+                    // timestamp of the call offer message. That means no one will in
+                    // practice consume this timestamp for 1:1 calls, and we can get away
+                    // with it for now.
+                    callEventTimestamp = callRecord.callBeganTimestamp
+                case .groupCall:
+                    callEventTimestamp = Date().ows_millisecondsSince1970
                 }
 
-                if let contactThread = thread as? TSContactThread {
-                    outgoingCallEventSyncMessageManager.sendSyncMessage(
-                        contactThread: contactThread,
-                        callRecord: callRecord,
-                        callEvent: .callDeleted,
-                        tx: tx
-                    )
-                } else if let groupThread = thread as? TSGroupThread {
-                    outgoingCallEventSyncMessageManager.sendSyncMessage(
-                        groupThread: groupThread,
-                        callRecord: callRecord,
-                        callEvent: .callDeleted,
-                        callEventTimestamp: Date().ows_millisecondsSince1970,
-                        tx: tx
-                    )
-                } else {
-                    owsFailBeta("Unexpected thread type! \(type(of: thread))")
-                }
+                outgoingCallEventSyncMessageManager.sendSyncMessage(
+                    callRecord: callRecord,
+                    callEvent: .callDeleted,
+                    callEventTimestamp: callEventTimestamp,
+                    tx: tx
+                )
             }
         }
     }

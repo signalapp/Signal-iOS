@@ -198,7 +198,6 @@ final class MessageBackupGroupCallArchiver {
                 callId: groupCall.callID,
                 groupCallInteraction: groupCallInteraction,
                 groupCallInteractionRowId: groupCallInteraction.sqliteRowId!,
-                groupThread: groupThread,
                 groupThreadRowId: chatThread.threadRowId,
                 callDirection: callDirection,
                 groupCallStatus: callStatus,

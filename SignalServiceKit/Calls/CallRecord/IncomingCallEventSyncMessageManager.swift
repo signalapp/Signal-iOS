@@ -440,7 +440,6 @@ private extension IncomingCallEventSyncMessageManagerImpl {
         tx: DBWriteTransaction
     ) {
         groupCallRecordManager.updateGroupCallRecord(
-            groupThread: existingGroupThread,
             existingCallRecord: existingCallRecord,
             newCallDirection: newCallDirection,
             newGroupCallStatus: newGroupCallStatus,
@@ -478,7 +477,6 @@ private extension IncomingCallEventSyncMessageManagerImpl {
             callId: callId,
             groupCallInteraction: newGroupCallInteraction,
             groupCallInteractionRowId: interactionRowId,
-            groupThread: groupThread,
             groupThreadRowId: groupThreadRowId,
             callDirection: callDirection,
             groupCallStatus: groupCallStatus,

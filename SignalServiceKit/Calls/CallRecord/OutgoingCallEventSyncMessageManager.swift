@@ -18,107 +18,33 @@ protocol OutgoingCallEventSyncMessageManager {
     /// - Parameter callEventTimestamp
     /// The time at which the event that triggered this sync message occurred.
     func sendSyncMessage(
-        conversation: CallEventConversation,
         callRecord: CallRecord,
         callEvent: CallEvent,
         callEventTimestamp: UInt64,
         tx: DBWriteTransaction
     )
-
-    func sendSyncMessage(
-        contactThread: TSContactThread,
-        callRecord: CallRecord,
-        callEvent: CallEvent,
-        tx: DBWriteTransaction
-    )
-}
-
-extension OutgoingCallEventSyncMessageManager {
-    func sendSyncMessage(
-        groupThread: TSGroupThread,
-        callRecord: CallRecord,
-        callEvent: CallEvent,
-        callEventTimestamp: UInt64,
-        tx: DBWriteTransaction
-    ) {
-        sendSyncMessage(
-            conversation: .groupThread(groupId: groupThread.groupId),
-            callRecord: callRecord,
-            callEvent: callEvent,
-            callEventTimestamp: callEventTimestamp,
-            tx: tx
-        )
-    }
 }
 
 final class OutgoingCallEventSyncMessageManagerImpl: OutgoingCallEventSyncMessageManager {
     private let appReadiness: AppReadiness
     private let databaseStorage: SDSDatabaseStorage
     private let messageSenderJobQueue: MessageSenderJobQueue
-    private let recipientDatabaseTable: RecipientDatabaseTable
-
+    private let callRecordConversationIdAdapter: any CallRecordSyncMessageConversationIdAdapter
     private var logger: CallRecordLogger { .shared }
 
     init(
         appReadiness: AppReadiness,
         databaseStorage: SDSDatabaseStorage,
         messageSenderJobQueue: MessageSenderJobQueue,
-        recipientDatabaseTable: RecipientDatabaseTable
+        callRecordConversationIdAdapter: any CallRecordSyncMessageConversationIdAdapter
     ) {
         self.appReadiness = appReadiness
         self.databaseStorage = databaseStorage
         self.messageSenderJobQueue = messageSenderJobQueue
-        self.recipientDatabaseTable = recipientDatabaseTable
+        self.callRecordConversationIdAdapter = callRecordConversationIdAdapter
     }
 
     func sendSyncMessage(
-        contactThread: TSContactThread,
-        callRecord: CallRecord,
-        callEvent: CallEvent,
-        tx: DBWriteTransaction
-    ) {
-        guard let contactServiceId = recipientDatabaseTable.fetchServiceId(
-            contactThread: contactThread, tx: tx
-        ) else {
-            owsFailBeta("Missing contact service ID - how did we get here?")
-            return
-        }
-
-        let isVideo: Bool
-        switch callRecord.callType {
-        case .audioCall:
-            isVideo = false
-        case .videoCall:
-            isVideo = true
-        case .groupCall:
-            owsFailDebug("Can't send individual sync message for group call.")
-            return
-        }
-
-        // [Calls] TODO: pass through the "call event timestamp" for 1:1 call events
-        //
-        // We currently use the timestamp of the call record when sending all
-        // sync messages related to a 1:1 call. That's not quite right – we
-        // should be using the timestamp of the event that triggered the sync
-        // message, such as the user declining.
-        //
-        // This isn't a big deal for 1:1 calls though, since all 1:1 calls have
-        // a well-defined "start time" that both participants know about: the
-        // timestamp of the call offer message. That means no one will in
-        // practice consume this timestamp for 1:1 calls, and we can get away
-        // with it for now.
-
-        sendSyncMessage(
-            conversation: .individualThread(serviceId: contactServiceId, isVideo: isVideo),
-            callRecord: callRecord,
-            callEvent: callEvent,
-            callEventTimestamp: callRecord.callBeganTimestamp,
-            tx: tx
-        )
-    }
-
-    func sendSyncMessage(
-        conversation: CallEventConversation,
         callRecord: CallRecord,
         callEvent: CallEvent,
         callEventTimestamp: UInt64,
@@ -136,17 +62,15 @@ final class OutgoingCallEventSyncMessageManagerImpl: OutgoingCallEventSyncMessag
             return
         }
 
-        let callType = OutgoingCallEvent.CallType(callRecord.callType)
-        guard callType.rawValue == conversation.type.rawValue else {
-            owsFailDebug("Can't send call event sync message with wrong type.")
+        guard let conversationId = callRecordConversationIdAdapter.getConversationId(callRecord: callRecord, tx: tx) else {
             return
         }
 
         let outgoingCallEvent = OutgoingCallEvent(
             timestamp: callEventTimestamp,
-            conversationId: conversation.id,
+            conversationId: conversationId,
             callId: callRecord.callId,
-            callType: callType,
+            callType: OutgoingCallEvent.CallType(callRecord.callType),
             eventDirection: OutgoingCallEvent.EventDirection(callRecord.callDirection),
             eventType: outgoingCallEventType
         )

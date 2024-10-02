@@ -10,20 +10,9 @@ class MockOutgoingCallEventSyncMessageManager: OutgoingCallEventSyncMessageManag
     var syncMessageSendCount: UInt = 0
 
     func sendSyncMessage(
-        conversation: CallEventConversation,
         callRecord: CallRecord,
         callEvent: CallEvent,
         callEventTimestamp: UInt64,
-        tx: DBWriteTransaction
-    ) {
-        owsPrecondition(expectedCallEvent == callEvent)
-        syncMessageSendCount += 1
-    }
-
-    func sendSyncMessage(
-        contactThread: TSContactThread,
-        callRecord: CallRecord,
-        callEvent: CallEvent,
         tx: DBWriteTransaction
     ) {
         owsPrecondition(expectedCallEvent == callEvent)
