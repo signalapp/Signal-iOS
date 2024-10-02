@@ -301,8 +301,13 @@ extension HomeTabBarController: BadgeObserver {
             return badgeValue > 0 ? "\(badgeValue)" : nil
         }
 
-        chatListTabBarItem.badgeValue = stringify(badgeCount.unreadChatCount)
-        callsListTabBarItem.badgeValue = stringify(badgeCount.unreadCallsCount)
+        if #available(iOS 18, *), UIDevice.current.isIPad {
+            uiTab(for: .chatList).badgeValue = stringify(badgeCount.unreadChatCount)
+            uiTab(for: .calls).badgeValue = stringify(badgeCount.unreadCallsCount)
+        } else {
+            chatListTabBarItem.badgeValue = stringify(badgeCount.unreadChatCount)
+            callsListTabBarItem.badgeValue = stringify(badgeCount.unreadCallsCount)
+        }
     }
 }
 
@@ -313,7 +318,11 @@ extension HomeTabBarController: StoryBadgeCountObserver {
     }
 
     public func didUpdateStoryBadge(_ badge: String?) {
-        storiesTabBarItem.badgeValue = badge
+        if #available(iOS 18, *), UIDevice.current.isIPad {
+            uiTab(for: .stories).badgeValue = badge
+        } else {
+            storiesTabBarItem.badgeValue = badge
+        }
         var views: [UIView] = [tabBar]
         var badgeViews = [UIView]()
         while let view = views.popLast() {
