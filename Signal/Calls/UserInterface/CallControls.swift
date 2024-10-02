@@ -536,7 +536,7 @@ private class CallControlsViewModel {
         case .individual(_):
             return true
         case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
-            // [Call Link] TODO: Figure out if this should be shown while pending.
+            // [CallLink] TODO: Figure out if this should be shown while pending.
             return call.ringRtcCall.localDeviceState.joinState != .joined
         }
     }

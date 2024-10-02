@@ -56,8 +56,10 @@ class CallDrawerSheet: InteractiveSheetViewController {
         let label = UILabel()
         // "Call Info" for normal group calls. Will be
         // overwritten by call link state otherwise.
-        // [CallLink] TODO: Localize
-        label.text = "Call Info"
+        label.text = OWSLocalizedString(
+            "GROUP_CALL_MEMBER_LIST_TITLE",
+            comment: "Title for the sheet showing the group call members list"
+        )
         label.font = .dynamicTypeHeadline
         label.textColor = UIColor.Signal.label
         return label
@@ -662,23 +664,29 @@ extension CallDrawerSheet: GroupCallMemberCellDelegate {
             return owsFailDebug("Missing view model for demux ID")
         }
 
-        // [CallLink] TODO: Localize
         let actionSheet = ActionSheetController(
             title: String(
-                format: "Remove %@ from the call?",
+                format: OWSLocalizedString(
+                    "GROUP_CALL_REMOVE_MEMBER_CONFIRMATION_ACTION_SHEET_TITLE",
+                    comment: "Title for action sheet confirming removal of a member from a group call. embeds {{ name }}"
+                ),
                 name
             ),
             theme: .translucentDark
         )
-        // [CallLink] TODO: Localize
         actionSheet.addAction(.init(
-            title: "Remove"
+            title: OWSLocalizedString(
+                "GROUP_CALL_REMOVE_MEMBER_CONFIRMATION_ACTION_SHEET_REMOVE_ACTION",
+                comment: "Label for the button to confirm removing a member from a group call."
+            )
         ) { [callLinkDataSource] _ in
             callLinkDataSource.removeMember(demuxId: demuxId)
         })
-        // [CallLink] TODO: Localize
         actionSheet.addAction(.init(
-            title: "Block From Call"
+            title: OWSLocalizedString(
+                "GROUP_CALL_REMOVE_MEMBER_CONFIRMATION_ACTION_SHEET_BLOCK_ACTION",
+                comment: "Label for a button to block a member from a group call."
+            )
         ) { [callLinkDataSource] _ in
             callLinkDataSource.blockMember(demuxId: demuxId)
         })

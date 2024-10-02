@@ -551,12 +551,17 @@ class GroupCallViewController: UIViewController {
         } completion: {
             self.updateSwipeToastView()
 
-            // [CallLink] TODO: Localize
             self.callLinkLobbyToastLabel.text = switch phoneNumberSharingMode {
             case .everybody:
-                "Anyone who joins this call via the link will see your name, photo, and phone number."
+                OWSLocalizedString(
+                    "CALL_LINK_LOBBY_SHARING_INFO_PHONE_NUMBER_SHARING_ON",
+                    comment: "Text that appears on a toast in a call lobby before joining a call link informing the user what information will be shared with other call members when they have phone number sharing turned on."
+                )
             case .nobody:
-                "Anyone who joins this call via the link will see your name and photo."
+                OWSLocalizedString(
+                    "CALL_LINK_LOBBY_SHARING_INFO_PHONE_NUMBER_SHARING_OFF",
+                    comment: "Text that appears on a toast in a call lobby before joining a call link informing the user what information will be shared with other call members when they have phone number sharing turned off."
+                )
             }
         }
     }

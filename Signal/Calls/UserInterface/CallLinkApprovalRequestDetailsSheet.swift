@@ -60,12 +60,14 @@ class CallLinkApprovalRequestDetailsSheet: OWSTableSheetViewController {
 
         contents.add(.init(
             items: [
-                // [CallLink] TODO: Localize
                 // TODO: It would be nice to eventually make OWSTableItem's default values not dependent on Theme and instead use dynamic colors
                 .item(
                     icon: .checkCircle,
                     tintColor: UIColor.Signal.label,
-                    name: "Approve Entry",
+                    name: OWSLocalizedString(
+                        "CALL_LINK_JOIN_REQUEST_APPROVE_BUTTON",
+                        comment: "Button on an action sheet to approve a request to join a call link."
+                    ),
                     textColor: UIColor.Signal.label
                 ) { [weak self] in
                     guard let self else { return }
@@ -75,7 +77,10 @@ class CallLinkApprovalRequestDetailsSheet: OWSTableSheetViewController {
                 .item(
                     icon: .xCircle,
                     tintColor: UIColor.Signal.label,
-                    name: "Deny Entry",
+                    name: OWSLocalizedString(
+                        "CALL_LINK_JOIN_REQUEST_DENY_BUTTON",
+                        comment: "Button on an action sheet to deny a request to join a call link."
+                    ),
                     textColor: UIColor.Signal.label
                 ) { [weak self] in
                     guard let self else { return }

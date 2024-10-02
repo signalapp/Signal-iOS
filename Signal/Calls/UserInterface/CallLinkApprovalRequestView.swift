@@ -66,10 +66,14 @@ private struct ApprovalRequestView: View {
                     }
 
                     self.profileDetailsButton {
-                        // [CallLink] TODO: Localize
-                        Text(verbatim: "Would like to join…")
-                            .multilineTextAlignment(.leading)
-                            .font(.subheadline)
+                        Text(
+                            OWSLocalizedString(
+                                "CALL_LINK_JOIN_REQUEST_PROMPT",
+                                comment: "Tappable label that appears below a user's name on a toast when they request to join a call link."
+                            )
+                        )
+                        .multilineTextAlignment(.leading)
+                        .font(.subheadline)
                     }
                 }
 
@@ -128,12 +132,11 @@ private struct ApprovalRequestView: View {
         var body: some View {
             Button(action: self.action) {
                 Group {
-                    // [CallLink] TODO: Localize
                     if #available(iOS 16.0, *) {
-                        Text(verbatim: "+\(self.amountMore) Requests")
+                        Text(CallStrings.callLinkMoreRequests(count: self.amountMore))
                             .contentTransition(.numericText())
                     } else {
-                        Text(verbatim: "+\(self.amountMore) Requests")
+                        Text(CallStrings.callLinkMoreRequests(count: self.amountMore))
                     }
                 }
                 .padding(.horizontal, 16)

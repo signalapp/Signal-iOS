@@ -118,4 +118,15 @@ extension CallStrings {
             comment: "Description of sheet presented when call link update fails."
         )
     }
+
+    static func callLinkMoreRequests(count: Int) -> String {
+        String(
+            format: OWSLocalizedString(
+                "CALL_LINK_JOIN_REQUEST_AMOUNT_MORE_BUTTON_%ld",
+                tableName: "PluralAware",
+                comment: "Label for button below a request to join a call link indicating how many more requests there are. Tapping it opens a list of requests. Embeds {{ count }}"
+            ),
+            count
+        )
+    }
 }
