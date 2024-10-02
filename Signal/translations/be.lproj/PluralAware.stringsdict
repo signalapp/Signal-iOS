@@ -93,13 +93,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$ld person will be added to the call.</string>
+			<string>%1$ld асоба будзе дададзена да гэтага званка.</string>
 			<key>few</key>
-			<string>%1$ld people will be added to the call.</string>
+			<string>%1$ld асобы будуць дададзены да гэтага званка.</string>
 			<key>many</key>
-			<string>%1$ld people will be added to the call.</string>
+			<string>%1$ld асоб будуць дададзены да гэтага званка.</string>
 			<key>other</key>
-			<string>%1$ld people will be added to the call.</string>
+			<string>%1$ld асоб будуць дададзены да гэтага званка.</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_APPROVE_ALL_REQUESTS_CONFIRMATION_TITLE_%ld</key>
@@ -113,13 +113,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Approve %1$ld Request?</string>
+			<string>Ухваліць %1$ld запыт?</string>
 			<key>few</key>
-			<string>Approve %1$ld Requests?</string>
+			<string>Ухваліць %1$ld запыты?</string>
 			<key>many</key>
-			<string>Approve %1$ld Requests?</string>
+			<string>Ухваліць %1$ld запытаў?</string>
 			<key>other</key>
-			<string>Approve %1$ld Requests?</string>
+			<string>Ухваліць %1$ld запытаў?</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_DENY_ALL_REQUESTS_CONFIRMATION_BODY_%ld</key>
@@ -133,13 +133,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$ld person will not be added to the call.</string>
+			<string>%1$ld асоба не будзе дададзена да гэтага званка.</string>
 			<key>few</key>
-			<string>%1$ld people will not be added to the call.</string>
+			<string>%1$ld асобы не будуць дададзены да гэтага званка.</string>
 			<key>many</key>
-			<string>%1$ld people will not be added to the call.</string>
+			<string>%1$ld асоб не будуць дададзены да гэтага званка.</string>
 			<key>other</key>
-			<string>%1$ld people will not be added to the call.</string>
+			<string>%1$ld асоб не будуць дададзены да гэтага званка.</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_DENY_ALL_REQUESTS_CONFIRMATION_TITLE_%ld</key>
@@ -153,13 +153,33 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Deny %1$ld Request?</string>
+			<string>Адхіліць %1$ld запыт?</string>
 			<key>few</key>
-			<string>Deny %1$ld Requests?</string>
+			<string>Адхіліць %1$ld запыты?</string>
 			<key>many</key>
-			<string>Deny %1$ld Requests?</string>
+			<string>Адхіліць %1$ld запытаў?</string>
 			<key>other</key>
-			<string>Deny %1$ld Requests?</string>
+			<string>Адхіліць %1$ld запытаў?</string>
+		</dict>
+	</dict>
+	<key>CALL_LINK_JOIN_REQUEST_AMOUNT_MORE_BUTTON_%ld</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>+%1$ld Request</string>
+			<key>few</key>
+			<string>+%1$ld Requests</string>
+			<key>many</key>
+			<string>+%1$ld Requests</string>
+			<key>other</key>
+			<string>+%1$ld Requests</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_REQUEST_HEADER_COUNT_%d</key>
@@ -173,13 +193,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$ld Person Waiting</string>
+			<string>%1$ld асоба чакае</string>
 			<key>few</key>
-			<string>%1$ld People Waiting</string>
+			<string>%1$ld асобы чакаюць</string>
 			<key>many</key>
-			<string>%1$ld People Waiting</string>
+			<string>%1$ld асоб чакаюць</string>
 			<key>other</key>
-			<string>%1$ld People Waiting</string>
+			<string>%1$ld асоб чакаюць</string>
 		</dict>
 	</dict>
 	<key>CALL_PEOPLE_HERE</key>

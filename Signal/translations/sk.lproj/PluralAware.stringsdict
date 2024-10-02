@@ -93,13 +93,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$ld person will be added to the call.</string>
+			<string>K hovoru sa pridá %1$ld osoba.</string>
 			<key>few</key>
-			<string>%1$ld people will be added to the call.</string>
+			<string>K hovoru sa pridajú %1$ld ľudia.</string>
 			<key>many</key>
-			<string>%1$ld people will be added to the call.</string>
+			<string>K hovoru sa pridá %1$ld osoby.</string>
 			<key>other</key>
-			<string>%1$ld people will be added to the call.</string>
+			<string>K hovoru sa pridá %1$ld ľudí.</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_APPROVE_ALL_REQUESTS_CONFIRMATION_TITLE_%ld</key>
@@ -113,13 +113,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Approve %1$ld Request?</string>
+			<string>Schváliť %1$ld žiadosť?</string>
 			<key>few</key>
-			<string>Approve %1$ld Requests?</string>
+			<string>Schváliť %1$ld žiadosti?</string>
 			<key>many</key>
-			<string>Approve %1$ld Requests?</string>
+			<string>Schváliť %1$ld žiadosti?</string>
 			<key>other</key>
-			<string>Approve %1$ld Requests?</string>
+			<string>Schváliť %1$ld žiadostí?</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_DENY_ALL_REQUESTS_CONFIRMATION_BODY_%ld</key>
@@ -133,13 +133,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$ld person will not be added to the call.</string>
+			<string>K hovoru sa nepridá %1$ld osoba.</string>
 			<key>few</key>
-			<string>%1$ld people will not be added to the call.</string>
+			<string>K hovoru sa nepridajú %1$ld ľudia.</string>
 			<key>many</key>
-			<string>%1$ld people will not be added to the call.</string>
+			<string>K hovoru sa nepridá %1$ld osoby.</string>
 			<key>other</key>
-			<string>%1$ld people will not be added to the call.</string>
+			<string>K hovoru sa nepridá %1$ld ľudí.</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_DENY_ALL_REQUESTS_CONFIRMATION_TITLE_%ld</key>
@@ -153,13 +153,33 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Deny %1$ld Request?</string>
+			<string>Odmietnuť %1$ld žiadosť?</string>
 			<key>few</key>
-			<string>Deny %1$ld Requests?</string>
+			<string>Odmietnuť %1$ld žiadosti?</string>
 			<key>many</key>
-			<string>Deny %1$ld Requests?</string>
+			<string>Odmietnuť %1$ld žiadosti?</string>
 			<key>other</key>
-			<string>Deny %1$ld Requests?</string>
+			<string>Odmietnuť %1$ld žiadostí?</string>
+		</dict>
+	</dict>
+	<key>CALL_LINK_JOIN_REQUEST_AMOUNT_MORE_BUTTON_%ld</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>+%1$ld Request</string>
+			<key>few</key>
+			<string>+%1$ld Requests</string>
+			<key>many</key>
+			<string>+%1$ld Requests</string>
+			<key>other</key>
+			<string>+%1$ld Requests</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_REQUEST_HEADER_COUNT_%d</key>
@@ -173,13 +193,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$ld Person Waiting</string>
+			<string>Čaká %1$ld osoba</string>
 			<key>few</key>
-			<string>%1$ld People Waiting</string>
+			<string>Čakajú %1$ld ľudia</string>
 			<key>many</key>
-			<string>%1$ld People Waiting</string>
+			<string>Čaká %1$ld osoby</string>
 			<key>other</key>
-			<string>%1$ld People Waiting</string>
+			<string>Čaká %1$ld ľudí</string>
 		</dict>
 	</dict>
 	<key>CALL_PEOPLE_HERE</key>

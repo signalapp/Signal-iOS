@@ -101,15 +101,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$ld person will be added to the call.</string>
+			<string>Cuirfear %1$ld duine leis an nglao.</string>
 			<key>two</key>
-			<string>%1$ld people will be added to the call.</string>
+			<string>Cuirfear %1$ld dhuine leis an nglao.</string>
 			<key>few</key>
-			<string>%1$ld people will be added to the call.</string>
+			<string>Cuirfear %1$ld dhuine leis an nglao.</string>
 			<key>many</key>
-			<string>%1$ld people will be added to the call.</string>
+			<string>Cuirfear %1$ld nduine leis an nglao.</string>
 			<key>other</key>
-			<string>%1$ld people will be added to the call.</string>
+			<string>Cuirfear %1$ld duine leis an nglao.</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_APPROVE_ALL_REQUESTS_CONFIRMATION_TITLE_%ld</key>
@@ -123,15 +123,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Approve %1$ld Request?</string>
+			<string>Faomh %1$ld iarratas?</string>
 			<key>two</key>
-			<string>Approve %1$ld Requests?</string>
+			<string>Faomh %1$ld iarratas?</string>
 			<key>few</key>
-			<string>Approve %1$ld Requests?</string>
+			<string>Faomh %1$ld iarratas?</string>
 			<key>many</key>
-			<string>Approve %1$ld Requests?</string>
+			<string>Faomh %1$ld n-iarratas?</string>
 			<key>other</key>
-			<string>Approve %1$ld Requests?</string>
+			<string>Faomh %1$ld iarratas?</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_DENY_ALL_REQUESTS_CONFIRMATION_BODY_%ld</key>
@@ -145,15 +145,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$ld person will not be added to the call.</string>
+			<string>Ní chuirfear %1$ld duine leis an nglao.</string>
 			<key>two</key>
-			<string>%1$ld people will not be added to the call.</string>
+			<string>Ní chuirfear %1$ld dhuine leis an nglao.</string>
 			<key>few</key>
-			<string>%1$ld people will not be added to the call.</string>
+			<string>Ní chuirfear %1$ld dhuine leis an nglao.</string>
 			<key>many</key>
-			<string>%1$ld people will not be added to the call.</string>
+			<string>Ní chuirfear %1$ld nduine leis an nglao.</string>
 			<key>other</key>
-			<string>%1$ld people will not be added to the call.</string>
+			<string>Ní chuirfear %1$ld duine leis an nglao.</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_DENY_ALL_REQUESTS_CONFIRMATION_TITLE_%ld</key>
@@ -167,15 +167,37 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Deny %1$ld Request?</string>
+			<string>Diúltaigh do %1$ld iarratas?</string>
 			<key>two</key>
-			<string>Deny %1$ld Requests?</string>
+			<string>Diúltaigh do %1$ld iarratas?</string>
 			<key>few</key>
-			<string>Deny %1$ld Requests?</string>
+			<string>Diúltaigh do %1$ld iarratas?</string>
 			<key>many</key>
-			<string>Deny %1$ld Requests?</string>
+			<string>Diúltaigh do %1$ld n-iarratas?</string>
 			<key>other</key>
-			<string>Deny %1$ld Requests?</string>
+			<string>Diúltaigh do %1$ld iarratas?</string>
+		</dict>
+	</dict>
+	<key>CALL_LINK_JOIN_REQUEST_AMOUNT_MORE_BUTTON_%ld</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>+%1$ld Request</string>
+			<key>two</key>
+			<string>+%1$ld Requests</string>
+			<key>few</key>
+			<string>+%1$ld Requests</string>
+			<key>many</key>
+			<string>+%1$ld Requests</string>
+			<key>other</key>
+			<string>+%1$ld Requests</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_REQUEST_HEADER_COUNT_%d</key>
@@ -189,15 +211,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$ld Person Waiting</string>
+			<string>%1$ld duine ag fanacht</string>
 			<key>two</key>
-			<string>%1$ld People Waiting</string>
+			<string>%1$ld dhuine ag fanacht</string>
 			<key>few</key>
-			<string>%1$ld People Waiting</string>
+			<string>%1$ld dhuine ag fanacht</string>
 			<key>many</key>
-			<string>%1$ld People Waiting</string>
+			<string>%1$ld nduine ag fanacht</string>
 			<key>other</key>
-			<string>%1$ld People Waiting</string>
+			<string>%1$ld duine ag fanacht</string>
 		</dict>
 	</dict>
 	<key>CALL_PEOPLE_HERE</key>
