@@ -304,6 +304,9 @@ final class IncomingCallEventSyncMessageManagerImpl: IncomingCallEventSyncMessag
                     tx: tx
                 )
             }
+
+        case .adHoc(let roomId):
+            logger.warn("Ignoring call link sync message.")
         }
     }
 }
@@ -542,7 +545,7 @@ private extension CallRecord.CallType {
         switch self {
         case .audioCall: return .audio
         case .videoCall: return .video
-        case .groupCall:
+        case .groupCall, .adHocCall:
             owsFailDebug("Should never ask for an individual call type for a group call!")
             return .video
         }

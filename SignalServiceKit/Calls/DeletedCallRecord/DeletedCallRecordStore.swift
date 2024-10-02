@@ -87,6 +87,14 @@ class DeletedCallRecordStoreImpl: DeletedCallRecordStore {
                 ],
                 db: db
             )
+        case .callLink(let callLinkRowId):
+            return fetch(
+                columnArgs: [
+                    .equal(column: .callIdString, value: String(callId)),
+                    .equal(column: .callLinkRowId, value: callLinkRowId)
+                ],
+                db: db
+            )
         }
     }
 

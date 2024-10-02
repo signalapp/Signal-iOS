@@ -66,6 +66,7 @@ final class CallRecordQuerierTest: XCTestCase {
                     switch callStatus {
                     case .individual: return .videoCall
                     case .group: return .groupCall
+                    case .callLink: return .adHocCall
                     }
                 }()
 
@@ -389,6 +390,8 @@ private extension CallRecord {
         switch conversationId {
         case .thread(let threadRowId):
             return threadRowId
+        case .callLink(_):
+            fatalError()
         }
     }
 
@@ -396,6 +399,8 @@ private extension CallRecord {
         switch interactionReference {
         case .thread(threadRowId: _, let interactionRowId):
             return interactionRowId
+        case .none:
+            fatalError()
         }
     }
 }

@@ -92,7 +92,7 @@ private extension CallRecord.CallType {
         case .audioCall: self = .audioCall
         case .videoCall: self = .videoCall
         case .groupCall: self = .groupCall
-        case .adHocCall: return nil
+        case .adHocCall: self = .adHocCall
         }
     }
 }

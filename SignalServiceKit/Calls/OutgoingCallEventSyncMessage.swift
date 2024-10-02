@@ -11,6 +11,7 @@ class OutgoingCallEvent: NSObject, NSCoding {
         case audio
         case video
         case group
+        case adHocCall
     }
 
     enum EventDirection: UInt {
@@ -22,6 +23,7 @@ class OutgoingCallEvent: NSObject, NSCoding {
         case accepted
         case notAccepted
         case deleted
+        case observed
     }
 
     let timestamp: UInt64
@@ -157,6 +159,8 @@ fileprivate extension OutgoingCallEvent.CallType {
             return .videoCall
         case .group:
             return .groupCall
+        case .adHocCall:
+            return .adHocCall
         }
     }
 }
@@ -181,6 +185,8 @@ fileprivate extension OutgoingCallEvent.EventType {
             return .notAccepted
         case .deleted:
             return .deleted
+        case .observed:
+            return .observed
         }
     }
 }

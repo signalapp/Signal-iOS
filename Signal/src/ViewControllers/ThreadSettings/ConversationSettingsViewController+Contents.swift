@@ -115,7 +115,7 @@ extension ConversationSettingsViewController {
             let icon: ThemeIcon = switch callRecord.callType {
             case .audioCall:
                 .phone16
-            case .groupCall, .videoCall:
+            case .adHocCall, .groupCall, .videoCall:
                 .video16
             }
 
@@ -127,7 +127,7 @@ extension ConversationSettingsViewController {
                         "CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VOICE_CALL",
                         comment: "A label indicating that a call was an outgoing voice call"
                     )
-                case .videoCall, .groupCall:
+                case .adHocCall, .groupCall, .videoCall:
                     OWSLocalizedString(
                         "CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VIDEO_CALL",
                         comment: "A label indicating that a call was an outgoing video call"
@@ -140,7 +140,7 @@ extension ConversationSettingsViewController {
                         "CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VOICE_CALL",
                         comment: "A label indicating that a call was an incoming voice call"
                     )
-                case .videoCall, .groupCall:
+                case .adHocCall, .videoCall, .groupCall:
                     OWSLocalizedString(
                         "CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VIDEO_CALL",
                         comment: "A label indicating that a call was an incoming video call"
@@ -153,7 +153,7 @@ extension ConversationSettingsViewController {
                         "CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VOICE_CALL",
                         comment: "A label indicating that a call was an missed voice call"
                     )
-                case .videoCall, .groupCall:
+                case .adHocCall, .videoCall, .groupCall:
                     OWSLocalizedString(
                         "CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VIDEO_CALL",
                         comment: "A label indicating that a call was an missed video call"

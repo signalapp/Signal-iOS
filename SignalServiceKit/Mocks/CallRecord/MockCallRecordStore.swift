@@ -38,6 +38,8 @@ class MockCallRecordStore: CallRecordStore {
             switch $0.interactionReference {
             case .thread(threadRowId: _, let interactionRowId2):
                 return interactionRowId == interactionRowId2
+            case .none:
+                return false
             }
         })
     }

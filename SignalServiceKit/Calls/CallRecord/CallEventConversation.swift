@@ -14,6 +14,7 @@ public import LibSignalClient
 public enum CallEventConversation {
     case individualThread(serviceId: ServiceId, isVideo: Bool)
     case groupThread(groupId: Data)
+    case adHoc(roomId: Data)
 
     init(type: CallRecord.CallType, conversationId: Data) throws {
         switch type {
@@ -26,6 +27,8 @@ public enum CallEventConversation {
         case .groupCall:
             let groupIdentifier = try GroupIdentifier(contents: [UInt8](conversationId))
             self = .groupThread(groupId: groupIdentifier.serialize().asData)
+        case .adHocCall:
+            self = .adHoc(roomId: conversationId)
         }
     }
 
@@ -35,6 +38,8 @@ public enum CallEventConversation {
             return isVideo ? .videoCall : .audioCall
         case .groupThread:
             return .groupCall
+        case .adHoc:
+            return .adHocCall
         }
     }
 
@@ -44,6 +49,8 @@ public enum CallEventConversation {
             return Data(serviceId.serviceIdBinary)
         case .groupThread(let groupId):
             return groupId
+        case .adHoc(let roomId):
+            return roomId
         }
     }
 }

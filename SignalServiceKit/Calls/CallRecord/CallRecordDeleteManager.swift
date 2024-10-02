@@ -139,7 +139,7 @@ final class CallRecordDeleteManagerImpl: CallRecordDeleteManager {
                     // practice consume this timestamp for 1:1 calls, and we can get away
                     // with it for now.
                     callEventTimestamp = callRecord.callBeganTimestamp
-                case .groupCall:
+                case .groupCall, .adHocCall:
                     callEventTimestamp = Date().ows_millisecondsSince1970
                 }
 

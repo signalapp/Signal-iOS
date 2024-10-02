@@ -8,16 +8,17 @@ public import LibSignalClient
 public extension InteractionStore {
     /// Fetch the interaction, of the specified type, associated with the given
     /// call record.
-    func fetchAssociatedInteraction<InteractionType>(
+    func fetchAssociatedInteraction<InteractionType: TSInteraction>(
         callRecord: CallRecord,
         tx: DBReadTransaction
     ) -> InteractionType? {
-        let interactionRowId: Int64
+        let interaction: InteractionType?
         switch callRecord.interactionReference {
-        case .thread(threadRowId: _, let interactionRowId2):
-            interactionRowId = interactionRowId2
+        case .thread(threadRowId: _, let interactionRowId):
+            interaction = fetchInteraction(rowId: interactionRowId, tx: tx) as? InteractionType
+        case .none:
+            interaction = nil
         }
-        let interaction = fetchInteraction(rowId: interactionRowId, tx: tx) as? InteractionType
         owsAssertDebug(interaction != nil, "Missing associated interaction for call record. This should be impossible per the DB schema!")
         return interaction
     }

@@ -55,6 +55,7 @@ public final class CallRecord: Codable, PersistableRecord, FetchableRecord {
         case callIdString = "callId"
         case interactionRowId
         case threadRowId
+        case callLinkRowId
         case callType = "type"
         case callDirection = "direction"
         case callStatus = "status"
@@ -76,6 +77,7 @@ public final class CallRecord: Codable, PersistableRecord, FetchableRecord {
     public enum ConversationID: Equatable, Hashable {
         /// The SQLite row ID of the thread this call belongs to.
         case thread(threadRowId: Int64)
+        case callLink(callLinkRowId: Int64)
     }
 
     public enum InteractionReference: Equatable {
@@ -89,6 +91,7 @@ public final class CallRecord: Codable, PersistableRecord, FetchableRecord {
         /// corresponding interaction; however, the ``CallRecord`` should be
         /// considered the source of truth.
         case thread(threadRowId: Int64, interactionRowId: Int64)
+        case none
     }
 
     public let conversationId: ConversationID
@@ -129,7 +132,7 @@ public final class CallRecord: Codable, PersistableRecord, FetchableRecord {
         switch callStatus {
         case .group(.ringing), .group(.ringingAccepted), .group(.ringingDeclined), .group(.ringingMissed), .group(.ringingMissedNotificationProfile):
             return true
-        case .individual, .group(.generic), .group(.joined):
+        case .individual, .callLink, .group(.generic), .group(.joined):
             return false
         }
     }
@@ -214,12 +217,16 @@ public final class CallRecord: Codable, PersistableRecord, FetchableRecord {
         self.sqliteRowId = try container.decode(Int64.self, forKey: .sqliteRowId)
         // We store this as a String because SQLite stores values as Int64 and we've had issues with UInt64 and GRDB.
         self.callId = UInt64(try container.decode(String.self, forKey: .callIdString))!
-        let threadRowId: Int64 = try container.decode(Int64.self, forKey: .threadRowId)
-        self.conversationId = .thread(threadRowId: threadRowId)
-        self.interactionReference = .thread(
-            threadRowId: threadRowId,
-            interactionRowId: try container.decode(Int64.self, forKey: .interactionRowId)
-        )
+        if let threadRowId = try container.decodeIfPresent(Int64.self, forKey: .threadRowId) {
+            self.conversationId = .thread(threadRowId: threadRowId)
+            self.interactionReference = .thread(
+                threadRowId: threadRowId,
+                interactionRowId: try container.decode(Int64.self, forKey: .interactionRowId)
+            )
+        } else {
+            self.conversationId = .callLink(callLinkRowId: try container.decode(Int64.self, forKey: .callLinkRowId))
+            self.interactionReference = .none
+        }
         self.callType = try container.decode(CallType.self, forKey: .callType)
         self.callDirection = try container.decode(CallDirection.self, forKey: .callDirection)
         self.callStatus = try container.decode(CallStatus.self, forKey: .callStatus)
@@ -234,10 +241,17 @@ public final class CallRecord: Codable, PersistableRecord, FetchableRecord {
         try container.encodeIfPresent(self.sqliteRowId, forKey: .sqliteRowId)
         // We store this as a String because SQLite stores values as Int64 and we've had issues with UInt64 and GRDB.
         try container.encode(String(self.callId), forKey: .callIdString)
-        switch self.interactionReference {
-        case .thread(let threadRowId, let interactionRowId):
+        switch self.conversationId {
+        case .thread(let threadRowId):
             try container.encode(threadRowId, forKey: .threadRowId)
+        case .callLink(let callLinkRowId):
+            try container.encode(callLinkRowId, forKey: .callLinkRowId)
+        }
+        switch self.interactionReference {
+        case .thread(threadRowId: _, let interactionRowId):
             try container.encode(interactionRowId, forKey: .interactionRowId)
+        case .none:
+            break
         }
         try container.encode(self.callType, forKey: .callType)
         try container.encode(self.callDirection, forKey: .callDirection)
@@ -256,7 +270,7 @@ extension CallRecord {
         case audioCall = 0
         case videoCall = 1
         case groupCall = 2
-        // [Calls] TODO: add call links here
+        case adHocCall = 3
     }
 
     public enum CallDirection: Int, Codable, CaseIterable {

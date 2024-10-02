@@ -33,6 +33,8 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
                 ))
             case .group:
                 return .group(groupThread: TSGroupThread.forUnitTest())
+            case .callLink:
+                fatalError()
             }
         }()
 
@@ -599,6 +601,7 @@ private extension CallRecord {
                 switch status {
                 case .individual: return .audioCall
                 case .group: return .groupCall
+                case .callLink: return .adHocCall
                 }
             }(),
             callDirection: direction,

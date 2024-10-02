@@ -7,6 +7,7 @@ extension CallRecord {
     public enum CallStatus: Codable, Equatable {
         case individual(IndividualCallStatus)
         case group(GroupCallStatus)
+        case callLink(CallLinkCallStatus)
 
         /// Represents the states that an individual (1:1) call may be in.
         ///
@@ -122,12 +123,26 @@ extension CallRecord {
             case ringingMissedNotificationProfile = 10
         }
 
+        /// Represents the states that a call link call may be in.
+        ///
+        /// - Important
+        /// The raw values of the cases of this enum must not overlap with the enums
+        /// for the other types of calls in this file.
+        public enum CallLinkCallStatus: Int, CaseIterable {
+            /// We've tapped the join button but haven't been let into the call yet.
+            case generic = 11
+
+            /// We've joined the call.
+            case joined = 12
+        }
+
         // MARK: Codable
 
         var intValue: Int {
             switch self {
             case .individual(let individualCallStatus): return individualCallStatus.rawValue
             case .group(let groupCallStatus): return groupCallStatus.rawValue
+            case .callLink(let callLinkCallStatus): return callLinkCallStatus.rawValue
             }
         }
 
@@ -136,6 +151,8 @@ extension CallRecord {
                 self = .individual(individualCallStatus)
             } else if let groupCallStatus = GroupCallStatus(rawValue: intValue) {
                 self = .group(groupCallStatus)
+            } else if let callLinkCallStatus = CallLinkCallStatus(rawValue: intValue) {
+                self = .callLink(callLinkCallStatus)
             } else {
                 owsFailDebug("Unexpected int value: \(intValue)")
                 return nil
@@ -171,8 +188,10 @@ public extension CallRecord.CallStatus {
             .map { .individual($0) }
         let allGroupCases: [CallRecord.CallStatus] = GroupCallStatus.allCases
             .map { .group($0) }
+        let allCallLinkCases: [CallRecord.CallStatus] = CallLinkCallStatus.allCases
+            .map { .callLink($0) }
 
-        return allIndividualCases + allGroupCases
+        return allIndividualCases + allGroupCases + allCallLinkCases
     }
 }
 

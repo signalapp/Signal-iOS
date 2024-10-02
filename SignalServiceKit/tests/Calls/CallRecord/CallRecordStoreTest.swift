@@ -229,8 +229,9 @@ final class CallRecordStoreTest: XCTestCase {
             (.group(.ringingMissed), .unread, .group(.ringingAccepted), .read),
             (.group(.ringingMissed), .unread, .group(.ringingDeclined), .read),
         ]
+        // [CallLink] TODO: Add support for these tests if needed.
         XCTAssertEqual(
-            testCases.count,
+            testCases.count + 2,
             CallRecord.CallStatus.allCases.count
         )
 
@@ -561,6 +562,8 @@ private extension CallRecord {
         switch conversationId {
         case .thread(let threadRowId):
             return threadRowId
+        case .callLink(_):
+            fatalError()
         }
     }
 
@@ -568,6 +571,8 @@ private extension CallRecord {
         switch interactionReference {
         case .thread(threadRowId: _, let interactionRowId):
             return interactionRowId
+        case .none:
+            fatalError()
         }
     }
 }

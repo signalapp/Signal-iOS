@@ -47,9 +47,9 @@ final class MessageBackupGroupCallArchiver {
             case .group(.ringingDeclined): groupCallState = .declined
             case .group(.ringingMissed): groupCallState = .missed
             case .group(.ringingMissedNotificationProfile): groupCallState = .missedNotificationProfile
-            case .individual:
+            case .individual, .callLink:
                 return .messageFailure([.archiveFrameError(
-                    .groupCallRecordHadIndividualCallStatus,
+                    .groupCallRecordHadInvalidCallStatus,
                     MessageBackup.InteractionUniqueId(interaction: groupCallInteraction)
                 )])
             }

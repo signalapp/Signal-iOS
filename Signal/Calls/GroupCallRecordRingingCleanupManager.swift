@@ -112,6 +112,8 @@ class GroupCallRecordRingingCleanupManager {
                     rowId: threadRowId, tx: tx
                 ) as? TSGroupThread else { return nil }
                 return (groupThread, callRecords)
+            case .callLink(_):
+                return nil
             }
         }
 
@@ -133,17 +135,24 @@ class GroupCallRecordRingingCleanupManager {
         groupThread: TSGroupThread,
         callRecords: [CallRecord]
     ) async throws {
-        owsPrecondition(callRecords.allSatisfy { $0.conversationId == .thread(threadRowId: groupThread.sqliteRowId!) })
-
         let peekInfo = try await self.groupCallPeekClient.fetchPeekInfo(
             groupThread: groupThread
         )
 
-        let callRecordsMatchingCurrentCall = callRecords.filter { callRecord in
-            return callRecord.callId == peekInfo.eraId.map { callIdFromEra($0) }
+        let interactionRowIdsMatchingCurrentCall = callRecords.compactMap { callRecord -> Int64? in
+            switch callRecord.interactionReference {
+            case .thread(let threadRowId, let interactionRowId):
+                owsPrecondition(threadRowId == groupThread.sqliteRowId!)
+                guard callRecord.callId == peekInfo.eraId.map({ callIdFromEra($0) }) else {
+                    return nil
+                }
+                return interactionRowId
+            case .none:
+                owsFail("Must pass callRecords for groupThread.")
+            }
         }
 
-        owsAssertDebug(callRecordsMatchingCurrentCall.count <= 1)
+        owsAssertDebug(interactionRowIdsMatchingCurrentCall.count <= 1)
 
         await self.db.awaitableWrite { tx in
             // Reload the group thread, since it may have changed.
@@ -152,12 +161,11 @@ class GroupCallRecordRingingCleanupManager {
                 tx: tx
             ) else { owsFail("Where did the thread go?") }
 
-            for currentCallRecord in callRecordsMatchingCurrentCall {
-                guard let groupCallInteraction: OWSGroupCallMessage = self.interactionStore
-                    .fetchAssociatedInteraction(
-                        callRecord: currentCallRecord, tx: tx
-                    )
-                else { continue }
+            for interactionRowId in interactionRowIdsMatchingCurrentCall {
+                let interaction = self.interactionStore.fetchInteraction(rowId: interactionRowId, tx: tx)
+                guard let groupCallInteraction = interaction as? OWSGroupCallMessage else {
+                    continue
+                }
 
                 self.notificationPresenter.notifyUserGroupCallStarted(
                     groupCallInteraction: groupCallInteraction,

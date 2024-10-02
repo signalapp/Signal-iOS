@@ -86,8 +86,8 @@ extension MessageBackup {
             /// Parameters required to archive a GV2 group member are missing
             case missingRequiredGroupMemberParams
 
-            /// A group call record had an invalid individual-call status.
-            case groupCallRecordHadIndividualCallStatus
+            /// A group call record had an invalid call status.
+            case groupCallRecordHadInvalidCallStatus
 
             /// A distributionListIdentifier memberRecipientId was invalid
             case invalidDistributionListMemberAddress
@@ -240,7 +240,7 @@ extension MessageBackup {
                     .missingLocalProfile,
                     .missingLocalProfileKey,
                     .missingRequiredGroupMemberParams,
-                    .groupCallRecordHadIndividualCallStatus,
+                    .groupCallRecordHadInvalidCallStatus,
                     .verificationStateUpdateInteractionMissingAuthor,
                     .phoneNumberChangeInteractionMissingAuthor,
                     .identityKeyChangeInteractionMissingAuthor,

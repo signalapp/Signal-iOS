@@ -810,6 +810,8 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         switch mostRecentCallRecord.conversationId {
         case .thread(let threadRowId2):
             threadRowId = threadRowId2
+        case .callLink(_):
+            owsFail("[CallLink] TODO: Add rendering support.")
         }
 
         guard let callThread = deps.threadStore.fetchThread(
@@ -863,6 +865,8 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
                     return .active
                 }
+            case .callLink:
+                owsFail("[CallLink] TODO: Handle Call Links.")
             }
 
             return .inactive
@@ -878,7 +882,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                 switch mostRecentCallRecord.callType {
                 case .audioCall:
                     return .audio
-                case .groupCall:
+                case .adHocCall, .groupCall:
                     owsFailDebug("Had group call type for 1:1 call!")
                     fallthrough
                 case .videoCall:

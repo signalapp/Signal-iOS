@@ -23,6 +23,7 @@ final class DeletedCallRecord: Codable, PersistableRecord, FetchableRecord {
         case id
         case callIdString = "callId"
         case threadRowId
+        case callLinkRowId
         case deletedAtTimestamp
     }
 
@@ -66,7 +67,11 @@ final class DeletedCallRecord: Codable, PersistableRecord, FetchableRecord {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.id = try container.decodeIfPresent(Int64.self, forKey: .id)
         self.callId = UInt64(try container.decode(String.self, forKey: .callIdString))!
-        self.conversationId = .thread(threadRowId: try container.decode(Int64.self, forKey: .threadRowId))
+        if let threadRowId = try container.decodeIfPresent(Int64.self, forKey: .threadRowId) {
+            self.conversationId = .thread(threadRowId: threadRowId)
+        } else {
+            self.conversationId = .callLink(callLinkRowId: try container.decode(Int64.self, forKey: .callLinkRowId))
+        }
         self.deletedAtTimestamp = UInt64(bitPattern: try container.decode(Int64.self, forKey: .deletedAtTimestamp))
     }
 
@@ -77,6 +82,8 @@ final class DeletedCallRecord: Codable, PersistableRecord, FetchableRecord {
         switch self.conversationId {
         case .thread(let threadRowId):
             try container.encode(threadRowId, forKey: .threadRowId)
+        case .callLink(let callLinkRowId):
+            try container.encode(callLinkRowId, forKey: .callLinkRowId)
         }
         try container.encode(Int64(bitPattern: self.deletedAtTimestamp), forKey: .deletedAtTimestamp)
     }

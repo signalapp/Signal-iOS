@@ -134,6 +134,9 @@ class CallRecordMissedCallManagerImpl: CallRecordMissedCallManager {
         switch beforeCallRecord.conversationId {
         case .thread(let threadRowId2):
             threadRowId = threadRowId2
+        case .callLink(_):
+            owsFailDebug("Can't mark call links as read within a conversation.")
+            return
         }
         let markedAsReadCount = _markUnreadCallsAsRead(
             fetchOrdering: fetchOrdering(

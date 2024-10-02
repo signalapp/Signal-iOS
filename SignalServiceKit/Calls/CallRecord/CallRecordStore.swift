@@ -432,6 +432,8 @@ class CallRecordStoreImpl: CallRecordStore {
         switch conversationId {
         case .thread(let threadRowId):
             callRecord = fetch(columnArgs: [(.callIdString, String(callId)), (.threadRowId, threadRowId)], db: db)
+        case .callLink(let callLinkRowId):
+            callRecord = fetch(columnArgs: [(.callIdString, String(callId)), (.callLinkRowId, callLinkRowId)], db: db)
         }
         if let callRecord {
             return .matchFound(callRecord)

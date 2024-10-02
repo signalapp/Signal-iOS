@@ -497,6 +497,9 @@ private extension CallRecord {
             break
         case (.thread(_), .thread(_)):
             return false
+        case (.callLink(_), _), (_, .callLink(_)):
+            // Call links are never coalesced.
+            return false
         }
         return (
             callDirection == otherCallRecord.callDirection

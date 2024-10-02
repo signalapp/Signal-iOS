@@ -82,13 +82,17 @@ class CallRecordSyncMessageConversationIdAdapterImpl: CallRecordSyncMessageConve
                 if let serviceId = recipientDatabaseTable.fetchServiceId(contactThread: thread, tx: tx) {
                     return serviceId.serviceIdBinary.asData
                 }
+                owsFailBeta("Missing contact service ID - how did we get here?")
+                return nil
             case let thread as TSGroupThread:
                 return thread.groupId
             default:
-                break
+                owsFailBeta("Unexpected thread type for call record!")
+                return nil
             }
+        case .callLink(_):
+            // [CallLink] TODO: .
+            return nil
         }
-        owsFailBeta("Unexpected thread type for call record!")
-        return nil
     }
 }

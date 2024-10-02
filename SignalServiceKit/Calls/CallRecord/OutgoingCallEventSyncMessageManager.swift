@@ -146,6 +146,7 @@ private extension OutgoingCallEvent.CallType {
         case .audioCall: self = .audio
         case .videoCall: self = .video
         case .groupCall: self = .group
+        case .adHocCall: self = .adHocCall
         }
     }
 }
@@ -174,12 +175,17 @@ private extension OutgoingCallEvent.EventType {
         case
                 .individual(.accepted),
                 .group(.joined),
+                .callLink(.joined),
                 .group(.ringingAccepted):
             self = .accepted
         case
                 .individual(.notAccepted),
                 .group(.ringingDeclined):
             self = .notAccepted
+        case
+                .callLink(.generic):
+            // [CallLink] TODO: Verify the correct message is sent in this case.
+            self = .observed
         }
     }
 }
