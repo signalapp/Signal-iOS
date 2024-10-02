@@ -129,7 +129,7 @@ public extension ContactsViewHelper {
         switch contactsManagerImpl.editingAuthorization {
         case .notAllowed:
             Self.presentContactAccessNotAllowedAlert(from: viewController)
-        case .denied, .restricted:
+        case .notAuthorized:
             Self.presentContactAccessDeniedAlert(from: viewController, access: .edit)
         case .authorized:
             performWhenAllowed()
@@ -158,11 +158,7 @@ public extension ContactsViewHelper {
             }
         case .authorized:
             performWhenAllowed()
-        case .limited:
-            performWhenAllowed()
         case .denied:
-            deniedBlock()
-        case .notAllowed:
             deniedBlock()
         }
     }

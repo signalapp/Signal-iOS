@@ -22,26 +22,32 @@ public enum ContactAuthorizationForEditing {
     // Contact edit access not supported by this device (e.g. a linked device)
     case notAllowed
     // Contact edit access explicitly denied by user
-    case denied
-    // Contact access restricted by actions outside the control of the user (see CNAuthorizationStatus.restricted)
-    case restricted
+    case notAuthorized
     // Contact read access explicitly allowed by user to some or all of the system contacts.
     // In both of these situations, the user can write to system contacts.
     case authorized
 }
 
+public enum ContactAuthorizationForSyncing {
+    // Contact edit access not supported by this device (e.g. a linked device)
+    case notAllowed
+    // Contact edit access explicitly denied by user
+    case denied
+    // Contact access restricted by actions outside the control of the user (see CNAuthorizationStatus.restricted)
+    case restricted
+    // Contact read access explicitly allowed by user to all of the system contacts.
+    case authorized
+    // Contact read access explicitly allowed by user to some of the system contacts.
+    case limited
+}
+
 public enum ContactAuthorizationForSharing {
     // Authorization hasn't yet been requested
     case notDetermined
-    // Contact read access not supported by this device (e.g. a linked device)
-    case notAllowed
     // Contact read access explicitly denied by user
     case denied
-    // Contact read access explicitly allowed by user
+    // Some type of contact read access explicitly allowed by user
     case authorized
-    // Contact read access allowed to a user-selected list of contacts.
-    // Note: Under limited access, write access is still allowed
-    case limited
 }
 
 @objc
@@ -49,12 +55,36 @@ public class OWSContactsManager: NSObject, ContactsManagerProtocol {
     let swiftValues: OWSContactsManagerSwiftValues
     let systemContactsFetcher: SystemContactsFetcher
     let keyValueStore: SDSKeyValueStore
+
     public var isEditingAllowed: Bool {
-        TSAccountManagerObjcBridge.isPrimaryDeviceWithMaybeTransaction
+        // We're only allowed to edit contacts on devices that can sync them. Otherwise the UX doesn't make sense.
+        return isSyncingAllowed
     }
+
+    public var isSyncingAllowed: Bool {
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        return tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice ?? false
+    }
+
     /// Must call `requestSystemContactsOnce` before accessing this method
     public var editingAuthorization: ContactAuthorizationForEditing {
         guard isEditingAllowed else {
+            return .notAllowed
+        }
+        switch systemContactsFetcher.rawAuthorizationStatus {
+        case .notDetermined:
+            owsFailDebug("should have called `requestOnce` before checking authorization status.")
+            fallthrough
+        case .denied, .restricted:
+            return .notAuthorized
+        case .authorized, .limited:
+            return .authorized
+        }
+    }
+
+    /// Must call `requestSystemContactsOnce` before accessing this method
+    public var syncingAuthorization: ContactAuthorizationForSyncing {
+        guard isSyncingAllowed else {
             return .notAllowed
         }
         switch systemContactsFetcher.rawAuthorizationStatus {
@@ -65,26 +95,21 @@ public class OWSContactsManager: NSObject, ContactsManagerProtocol {
             return .denied
         case .restricted:
             return .restricted
-        case .authorized, .limited:
+        case .limited:
+            return .limited
+        case .authorized:
             return .authorized
         }
     }
-    public var isReadingAllowed: Bool {
-        TSAccountManagerObjcBridge.isPrimaryDeviceWithMaybeTransaction
-    }
+
     public var sharingAuthorization: ContactAuthorizationForSharing {
-        guard isReadingAllowed else {
-            return .notAllowed
-        }
         switch self.systemContactsFetcher.rawAuthorizationStatus {
         case .notDetermined:
             return .notDetermined
         case .denied, .restricted:
             return .denied
-        case .authorized:
+        case .authorized, .limited:
             return .authorized
-        case .limited:
-            return .limited
         }
     }
     /// Whether or not we've fetched system contacts on this launch.
@@ -111,7 +136,7 @@ public class OWSContactsManager: NSObject, ContactsManagerProtocol {
     public func requestSystemContactsOnce(completion: (((any Error)?) -> Void)? = nil) {
         AssertIsOnMainThread()
 
-        guard isReadingAllowed else {
+        guard isSyncingAllowed else {
             if let completion = completion {
                 Logger.warn("Editing contacts isn't available on linked devices.")
                 completion(OWSError.makeGenericError())
@@ -124,7 +149,7 @@ public class OWSContactsManager: NSObject, ContactsManagerProtocol {
     /// Ensure's the app has the latest contacts, but won't prompt the user for contact
     /// access if they haven't granted it.
     public func fetchSystemContactsOnceIfAlreadyAuthorized() {
-        guard isReadingAllowed else {
+        guard isSyncingAllowed else {
             return
         }
         systemContactsFetcher.fetchOnceIfAlreadyAuthorized()
@@ -134,7 +159,7 @@ public class OWSContactsManager: NSObject, ContactsManagerProtocol {
     /// but not prompt for contact access. Also, it will always notify delegates, even if
     /// contacts haven't changed, and will clear out any stale cached SignalAccounts
     public func userRequestedSystemContactsRefresh() -> Promise<Void> {
-        guard isReadingAllowed else {
+        guard isSyncingAllowed else {
             owsFailDebug("Editing contacts isn't available on linked devices.")
             return Promise<Void>(error: OWSError.makeAssertionError())
         }

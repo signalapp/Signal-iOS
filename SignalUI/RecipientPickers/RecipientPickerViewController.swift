@@ -800,11 +800,11 @@ extension RecipientPickerViewController {
     /// prevented Signal from accessing their contacts, we don't show the
     /// special UX and instead allow the banner to be visible.
     private func shouldNoContactsModeBeActive() -> Bool {
-        switch contactsManagerImpl.sharingAuthorization {
-        case .denied, .limited:
+        switch contactsManagerImpl.syncingAuthorization {
+        case .denied, .restricted:
             // Return false so `contactAccessReminderSection` is invoked.
             return false
-        case .notDetermined:
+        case .limited:
             // Return false so `contactAccessReminderSection` is invoked.
             return false
         case .notAllowed where shouldShowContactAccessNotAllowedReminderItemWithSneakyTransaction():
@@ -835,10 +835,10 @@ extension RecipientPickerViewController {
     /// Works closely with `shouldNoContactsModeBeActive` and therefore might
     /// not be invoked even if the user has no contacts.
     private func noContactsTableSection() -> OWSTableSection {
-        switch contactsManagerImpl.sharingAuthorization {
-        case .notDetermined:
+        switch contactsManagerImpl.syncingAuthorization {
+        case .denied, .restricted:
             return OWSTableSection()
-        case .denied, .limited:
+        case .limited:
             return OWSTableSection()
         case .authorized where !contactsManagerImpl.hasLoadedSystemContacts:
             return OWSTableSection(items: [loadingContactsTableItem()])
@@ -852,7 +852,7 @@ extension RecipientPickerViewController {
     /// Works closely with `shouldNoContactsModeBeActive`.
     private func contactAccessReminderSection() -> OWSTableSection? {
         let tableItem: OWSTableItem
-        switch contactsManagerImpl.sharingAuthorization {
+        switch contactsManagerImpl.syncingAuthorization {
         case .denied:
             tableItem = contactAccessDeniedReminderItem()
         case .limited:
@@ -861,7 +861,7 @@ extension RecipientPickerViewController {
             } else {
                 return nil
             }
-        case .notDetermined:
+        case .restricted:
             // TODO: We don't show a reminder when the user isn't allowed to give
             // contacts permission. Should we?
             return nil
