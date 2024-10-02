@@ -3474,6 +3474,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
       case audioCall // = 1
       case videoCall // = 2
       case groupCall // = 3
+      case adHocCall // = 4
 
       init() {
         self = .unknownType
@@ -3485,6 +3486,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
         case 1: self = .audioCall
         case 2: self = .videoCall
         case 3: self = .groupCall
+        case 4: self = .adHocCall
         default: return nil
         }
       }
@@ -3495,6 +3497,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
         case .audioCall: return 1
         case .videoCall: return 2
         case .groupCall: return 3
+        case .adHocCall: return 4
         }
       }
 
@@ -3535,6 +3538,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
       case accepted // = 1
       case notAccepted // = 2
       case deleted // = 3
+      case observed // = 4
 
       init() {
         self = .unknownAction
@@ -3546,6 +3550,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
         case 1: self = .accepted
         case 2: self = .notAccepted
         case 3: self = .deleted
+        case 4: self = .observed
         default: return nil
         }
       }
@@ -3556,6 +3561,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
         case .accepted: return 1
         case .notAccepted: return 2
         case .deleted: return 3
+        case .observed: return 4
         }
       }
 
@@ -8487,6 +8493,7 @@ extension SignalServiceProtos_SyncMessage.CallEvent.TypeEnum: SwiftProtobuf._Pro
     1: .same(proto: "AUDIO_CALL"),
     2: .same(proto: "VIDEO_CALL"),
     3: .same(proto: "GROUP_CALL"),
+    4: .same(proto: "AD_HOC_CALL"),
   ]
 }
 
@@ -8504,6 +8511,7 @@ extension SignalServiceProtos_SyncMessage.CallEvent.Event: SwiftProtobuf._ProtoN
     1: .same(proto: "ACCEPTED"),
     2: .same(proto: "NOT_ACCEPTED"),
     3: .same(proto: "DELETED"),
+    4: .same(proto: "OBSERVED"),
   ]
 }
 

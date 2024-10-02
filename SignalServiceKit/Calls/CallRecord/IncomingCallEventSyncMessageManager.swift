@@ -62,6 +62,11 @@ final class IncomingCallEventSyncMessageManagerImpl: IncomingCallEventSyncMessag
         let syncMessageConversation = syncMessage.conversation
         let syncMessageEvent = syncMessage.callEvent
 
+        enum FilteredCallEvent {
+            case accepted
+            case notAccepted
+        }
+
         let logger = CallRecordLogger.shared.suffixed(with: "\(callDirection), \(syncMessageEvent)")
 
         switch syncMessageConversation {
@@ -75,7 +80,12 @@ final class IncomingCallEventSyncMessageManagerImpl: IncomingCallEventSyncMessag
             }
             let contactThreadReference = CallRecord.ConversationID.thread(threadRowId: contactThreadRowId)
 
-            if case .deleted = syncMessageEvent {
+            let filteredSyncMessageEvent: FilteredCallEvent
+            switch syncMessageEvent {
+            case .observed:
+                logger.error("Ignoring OBSERVED event for individual call.")
+                return
+            case .deleted:
                 deleteCallRecordForIncomingSyncMessage(
                     callId: callId,
                     conversationId: contactThreadReference,
@@ -83,19 +93,21 @@ final class IncomingCallEventSyncMessageManagerImpl: IncomingCallEventSyncMessag
                     tx: tx
                 )
                 return
+            case .accepted:
+                filteredSyncMessageEvent = .accepted
+            case .notAccepted:
+                filteredSyncMessageEvent = .notAccepted
             }
 
             let individualCallStatus: CallRecord.CallStatus.IndividualCallStatus = {
-                switch syncMessageEvent {
-                case .deleted: owsFail("Checked above – how did we get here?")
+                switch filteredSyncMessageEvent {
                 case .accepted: return .accepted
                 case .notAccepted: return .notAccepted
                 }
             }()
 
             let individualCallInteractionType: RPRecentCallType = {
-                switch (callDirection, syncMessageEvent) {
-                case (_, .deleted): owsFail("Checked above – how did we get here?")
+                switch (callDirection, filteredSyncMessageEvent) {
                 case (.incoming, .accepted): return .incomingAnsweredElsewhere
                 case (.incoming, .notAccepted): return .incomingDeclinedElsewhere
                 case (.outgoing, .accepted): return .outgoing
@@ -153,7 +165,12 @@ final class IncomingCallEventSyncMessageManagerImpl: IncomingCallEventSyncMessag
             }
             let groupThreadReference = CallRecord.ConversationID.thread(threadRowId: groupThreadRowId)
 
-            if case .deleted = syncMessageEvent {
+            let filteredSyncMessageEvent: FilteredCallEvent
+            switch syncMessageEvent {
+            case .observed:
+                logger.error("Ignoring OBSERVED event for group call.")
+                return
+            case .deleted:
                 deleteCallRecordForIncomingSyncMessage(
                     callId: callId,
                     conversationId: groupThreadReference,
@@ -161,6 +178,10 @@ final class IncomingCallEventSyncMessageManagerImpl: IncomingCallEventSyncMessag
                     tx: tx
                 )
                 return
+            case .accepted:
+                filteredSyncMessageEvent = .accepted
+            case .notAccepted:
+                filteredSyncMessageEvent = .notAccepted
             }
 
             switch callRecordStore.fetch(
@@ -186,9 +207,7 @@ final class IncomingCallEventSyncMessageManagerImpl: IncomingCallEventSyncMessag
                 var newCallDirection = existingCallRecord.callDirection
                 let newGroupCallStatus: CallRecord.CallStatus.GroupCallStatus
 
-                switch syncMessageEvent {
-                case .deleted:
-                    owsFail("Checked above – how did we get here?")
+                switch filteredSyncMessageEvent {
                 case .accepted:
                     switch callDirection {
                     case .incoming:
@@ -254,9 +273,7 @@ final class IncomingCallEventSyncMessageManagerImpl: IncomingCallEventSyncMessag
             case .matchNotFound:
                 let groupCallStatus: CallRecord.CallStatus.GroupCallStatus
 
-                switch (callDirection, syncMessageEvent) {
-                case (_, .deleted):
-                    owsFail("Checked above – how did we get here?")
+                switch (callDirection, filteredSyncMessageEvent) {
                 case (.outgoing, .notAccepted):
                     logger.error("How did we decline a call we started?")
                     return

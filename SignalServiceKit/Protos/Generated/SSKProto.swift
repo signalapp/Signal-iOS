@@ -12568,6 +12568,7 @@ public enum SSKProtoSyncMessageCallEventType: Int32 {
     case audioCall = 1
     case videoCall = 2
     case groupCall = 3
+    case adHocCall = 4
 }
 
 private func SSKProtoSyncMessageCallEventTypeWrap(_ value: SignalServiceProtos_SyncMessage.CallEvent.TypeEnum) -> SSKProtoSyncMessageCallEventType {
@@ -12576,6 +12577,7 @@ private func SSKProtoSyncMessageCallEventTypeWrap(_ value: SignalServiceProtos_S
     case .audioCall: return .audioCall
     case .videoCall: return .videoCall
     case .groupCall: return .groupCall
+    case .adHocCall: return .adHocCall
     }
 }
 
@@ -12585,6 +12587,7 @@ private func SSKProtoSyncMessageCallEventTypeUnwrap(_ value: SSKProtoSyncMessage
     case .audioCall: return .audioCall
     case .videoCall: return .videoCall
     case .groupCall: return .groupCall
+    case .adHocCall: return .adHocCall
     }
 }
 
@@ -12621,6 +12624,7 @@ public enum SSKProtoSyncMessageCallEventEvent: Int32 {
     case accepted = 1
     case notAccepted = 2
     case deleted = 3
+    case observed = 4
 }
 
 private func SSKProtoSyncMessageCallEventEventWrap(_ value: SignalServiceProtos_SyncMessage.CallEvent.Event) -> SSKProtoSyncMessageCallEventEvent {
@@ -12629,6 +12633,7 @@ private func SSKProtoSyncMessageCallEventEventWrap(_ value: SignalServiceProtos_
     case .accepted: return .accepted
     case .notAccepted: return .notAccepted
     case .deleted: return .deleted
+    case .observed: return .observed
     }
 }
 
@@ -12638,6 +12643,7 @@ private func SSKProtoSyncMessageCallEventEventUnwrap(_ value: SSKProtoSyncMessag
     case .accepted: return .accepted
     case .notAccepted: return .notAccepted
     case .deleted: return .deleted
+    case .observed: return .observed
     }
 }
 

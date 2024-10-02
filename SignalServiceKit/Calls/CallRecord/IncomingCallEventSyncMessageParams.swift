@@ -17,6 +17,7 @@ public struct IncomingCallEventSyncMessageParams {
         case accepted
         case notAccepted
         case deleted
+        case observed
 
         init?(protoCallEvent: SSKProtoSyncMessageCallEventEvent) {
             switch protoCallEvent {
@@ -24,6 +25,7 @@ public struct IncomingCallEventSyncMessageParams {
             case .accepted: self = .accepted
             case .notAccepted: self = .notAccepted
             case .deleted: self = .deleted
+            case .observed: self = .observed
             }
         }
     }
@@ -90,6 +92,7 @@ private extension CallRecord.CallType {
         case .audioCall: self = .audioCall
         case .videoCall: self = .videoCall
         case .groupCall: self = .groupCall
+        case .adHocCall: return nil
         }
     }
 }
