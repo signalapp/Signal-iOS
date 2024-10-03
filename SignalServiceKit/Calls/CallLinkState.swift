@@ -39,3 +39,9 @@ public struct CallLinkState {
         return CallStrings.signalCall
     }
 }
+
+extension Optional<CallLinkState> {
+    public var localizedName: String {
+        return self?.localizedName ?? CallLinkState.defaultLocalizedName
+    }
+}

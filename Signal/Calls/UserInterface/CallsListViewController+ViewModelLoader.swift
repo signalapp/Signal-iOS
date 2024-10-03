@@ -30,7 +30,7 @@ extension CallsListViewController {
     /// request additional items.
     struct ViewModelLoader {
         typealias CallViewModelForUpcomingCallLink = (
-            _ callLinkRecord: CallLinkRecord,
+            _ callLinkRowId: Int64,
             _ tx: DBReadTransaction
         ) -> CallViewModel
 
@@ -84,22 +84,28 @@ extension CallsListViewController {
         // MARK: - References
 
         private struct UpcomingCallLinkReference {
-            let callLinkRoomId: Data
+            let callLinkRowId: Int64
 
             var viewModel: CallViewModel?
-            var viewModelReference: CallViewModel.Reference { .callLink(roomId: callLinkRoomId) }
+            var viewModelReference: CallViewModel.Reference { .callLink(rowId: callLinkRowId) }
         }
 
         private struct CallHistoryItemReference {
             let callRecordIds: NonEmptyArray<CallRecord.ID>
+            let callLinkRowId: Int64?
 
-            init(callRecordIds: NonEmptyArray<CallRecord.ID>) {
+            init(callRecordIds: NonEmptyArray<CallRecord.ID>, callLinkRowId: Int64?) {
                 self.callRecordIds = callRecordIds
+                self.callLinkRowId = callLinkRowId
             }
 
             var viewModel: CallViewModel?
             var viewModelReference: CallViewModel.Reference {
-                return .callRecords(primaryId: callRecordIds.first, coalescedIds: Array(callRecordIds.rawValue.dropFirst()))
+                if let callLinkRowId {
+                    return .callLink(rowId: callLinkRowId)
+                } else {
+                    return .callRecords(primaryId: callRecordIds.first, coalescedIds: Array(callRecordIds.rawValue.dropFirst()))
+                }
             }
         }
 
@@ -206,7 +212,7 @@ extension CallsListViewController {
                 return
             }
             self.upcomingCallLinkReferences = upcomingCallLinks.map {
-                return UpcomingCallLinkReference(callLinkRoomId: $0.roomId)
+                return UpcomingCallLinkReference(callLinkRowId: $0.id)
             }
         }
 
@@ -267,20 +273,32 @@ extension CallsListViewController {
             if
                 fetchDirection == .newer,
                 let oldestGroupOfNewCallRecords = fetchResult.last,
-                let newestGroupOfOldCallRecords = callHistoryItemReferences.first?.viewModel?.callRecords,
+                let newestReference = callHistoryItemReferences.first,
+                let newestGroupOfOldCallRecords = newestReference.viewModel?.callRecords,
                 let oldestOldCallRecord = newestGroupOfOldCallRecords.last,
                 oldestGroupOfNewCallRecords.first.isValidCoalescingAnchor(for: oldestOldCallRecord),
                 (oldestGroupOfNewCallRecords.rawValue.count + newestGroupOfOldCallRecords.count) <= maxCoalescedCallsInOneViewModel
             {
                 let combinedGroupOfCallRecords = oldestGroupOfNewCallRecords + newestGroupOfOldCallRecords
                 callHistoryItemReferences[0] = CallHistoryItemReference(
-                    callRecordIds: combinedGroupOfCallRecords.map(\.id)
+                    callRecordIds: combinedGroupOfCallRecords.map(\.id),
+                    callLinkRowId: newestReference.callLinkRowId
                 )
                 fetchResult = fetchResult.dropLast()
             }
 
-            let fetchedCallHistoryItemReferences = fetchResult.map {
-                return CallHistoryItemReference(callRecordIds: $0.map(\.id))
+            let fetchedCallHistoryItemReferences = fetchResult.map { callRecord in
+                return CallHistoryItemReference(
+                    callRecordIds: callRecord.map(\.id),
+                    callLinkRowId: { () -> Int64? in
+                        switch callRecord.first.conversationId {
+                        case .thread(threadRowId: _):
+                            return nil
+                        case .callLink(let callLinkRowId):
+                            return callLinkRowId
+                        }
+                    }()
+                )
             }
 
             switch fetchDirection {
@@ -305,15 +323,7 @@ extension CallsListViewController {
             if internalIndex < upcomingCallLinkReferences.count {
                 let reference = upcomingCallLinkReferences[internalIndex]
                 if reference.viewModel == nil {
-                    let callLinkRecord: CallLinkRecord
-                    do {
-                        callLinkRecord = try callLinkStore.fetch(roomId: reference.callLinkRoomId, tx: tx) ?? {
-                            owsFail("Missing call link for existing reference!")
-                        }()
-                    } catch {
-                        owsFail("Couldn't fetch call link: \(error)")
-                    }
-                    upcomingCallLinkReferences[internalIndex].viewModel = callViewModelForUpcomingCallLink(callLinkRecord, tx)
+                    upcomingCallLinkReferences[internalIndex].viewModel = callViewModelForUpcomingCallLink(reference.callLinkRowId, tx)
                 }
                 return
             }
@@ -436,7 +446,8 @@ extension CallsListViewController {
                 }
                 if let callRecordIds = NonEmptyArray(reference.callRecordIds.rawValue.filter({ !callRecordIdsToDrop.contains($0) })) {
                     callHistoryItemReferences[internalIndex] = CallHistoryItemReference(
-                        callRecordIds: callRecordIds
+                        callRecordIds: callRecordIds,
+                        callLinkRowId: reference.callLinkRowId
                     )
                 } else {
                     callHistoryItemIndicesToRemove.insert(internalIndex)

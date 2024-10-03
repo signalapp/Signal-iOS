@@ -27,7 +27,7 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
         let recipientType: CallViewModel.RecipientType = {
             switch callRecords.first!.callStatus {
             case .individual:
-                return .individual(type: .audio, contactThread: TSContactThread(
+                return .individual(type: .video, contactThread: TSContactThread(
                     contactUUID: UUID().uuidString,
                     contactPhoneNumber: nil
                 ))
@@ -55,6 +55,7 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
             title: "Hey, I just met you, and this is crazy, but here's my number, so call me maybe?",
             recipientType: recipientType,
             direction: direction,
+            medium: .video,
             state: .inactive
         )
     }
@@ -80,7 +81,7 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
             switch reference {
             case .callRecords(let primaryId, let coalescedIds):
                 return [primaryId.callId] + coalescedIds.map(\.callId)
-            case .callLink(roomId: _):
+            case .callLink(rowId: _):
                 owsFail("Not implemented.")
             }
         }
@@ -131,7 +132,7 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
             switch reference {
             case .callRecords(let primaryId, let coalescedIds):
                 actualCallIds = [primaryId.callId] + coalescedIds.map(\.callId)
-            case .callLink(roomId: _):
+            case .callLink(rowId: _):
                 owsFail("Not implemented.")
             }
             XCTAssertEqual(expectedCallIds, actualCallIds)

@@ -112,54 +112,72 @@ extension ConversationSettingsViewController {
 
         typealias CallRow = (icon: ThemeIcon, description: String, timestamp: String)
         let callRows: [CallRow] = callRecords.map { callRecord in
-            let icon: ThemeIcon = switch callRecord.callType {
-            case .audioCall:
-                .phone16
-            case .adHocCall, .groupCall, .videoCall:
-                .video16
-            }
-
-            let description: String = switch (callRecord.callStatus.isMissedCall, callRecord.callDirection) {
-            case (false, .outgoing):
+            let icon: ThemeIcon = {
                 switch callRecord.callType {
                 case .audioCall:
-                    OWSLocalizedString(
-                        "CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VOICE_CALL",
-                        comment: "A label indicating that a call was an outgoing voice call"
-                    )
+                    return .phone16
                 case .adHocCall, .groupCall, .videoCall:
-                    OWSLocalizedString(
-                        "CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VIDEO_CALL",
-                        comment: "A label indicating that a call was an outgoing video call"
-                    )
+                    return .video16
                 }
-            case (false, .incoming):
+            }()
+
+            let description: String = {
+                enum CallMedium {
+                    case audioCall
+                    case videoCall
+                }
+                let callMedium: CallMedium
                 switch callRecord.callType {
+                case .adHocCall:
+                    return CallStrings.callLink
                 case .audioCall:
-                    OWSLocalizedString(
-                        "CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VOICE_CALL",
-                        comment: "A label indicating that a call was an incoming voice call"
-                    )
-                case .adHocCall, .videoCall, .groupCall:
-                    OWSLocalizedString(
-                        "CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VIDEO_CALL",
-                        comment: "A label indicating that a call was an incoming video call"
-                    )
+                    callMedium = .audioCall
+                case .groupCall, .videoCall:
+                    callMedium = .videoCall
                 }
-            case (true, _):
-                switch callRecord.callType {
-                case .audioCall:
-                    OWSLocalizedString(
-                        "CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VOICE_CALL",
-                        comment: "A label indicating that a call was an missed voice call"
-                    )
-                case .adHocCall, .videoCall, .groupCall:
-                    OWSLocalizedString(
-                        "CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VIDEO_CALL",
-                        comment: "A label indicating that a call was an missed video call"
-                    )
+                if callRecord.callStatus.isMissedCall {
+                    switch callMedium {
+                    case .audioCall:
+                        return OWSLocalizedString(
+                            "CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VOICE_CALL",
+                            comment: "A label indicating that a call was an missed voice call"
+                        )
+                    case .videoCall:
+                        return OWSLocalizedString(
+                            "CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VIDEO_CALL",
+                            comment: "A label indicating that a call was an missed video call"
+                        )
+                    }
                 }
-            }
+                switch callRecord.callDirection {
+                case .outgoing:
+                    switch callMedium {
+                    case .audioCall:
+                        return OWSLocalizedString(
+                            "CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VOICE_CALL",
+                            comment: "A label indicating that a call was an outgoing voice call"
+                        )
+                    case .videoCall:
+                        return OWSLocalizedString(
+                            "CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VIDEO_CALL",
+                            comment: "A label indicating that a call was an outgoing video call"
+                        )
+                    }
+                case .incoming:
+                    switch callMedium {
+                    case .audioCall:
+                        return OWSLocalizedString(
+                            "CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VOICE_CALL",
+                            comment: "A label indicating that a call was an incoming voice call"
+                        )
+                    case .videoCall:
+                        return OWSLocalizedString(
+                            "CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VIDEO_CALL",
+                            comment: "A label indicating that a call was an incoming video call"
+                        )
+                    }
+                }
+            }()
 
             let timestamp = DateUtil.formatDateAsTime(callRecord.callBeganDate)
             return (icon, description, timestamp)

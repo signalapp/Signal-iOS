@@ -19,6 +19,7 @@ public struct CallLinkRecord: Codable, PersistableRecord, FetchableRecord {
     public let rootKey: CallLinkRootKey
     public var adminPasskey: Data?
     private(set) public var adminDeletedAtTimestampMs: UInt64?
+    private(set) public var activeCallId: UInt64?
     private(set) public var pendingFetchCounter: Int64
     private(set) public var isUpcoming: Bool?
     private(set) public var name: String?
@@ -32,6 +33,7 @@ public struct CallLinkRecord: Codable, PersistableRecord, FetchableRecord {
         rootKey: CallLinkRootKey,
         adminPasskey: Data?,
         adminDeletedAtTimestampMs: UInt64?,
+        activeCallId: UInt64?,
         pendingFetchCounter: Int64,
         isUpcoming: Bool?,
         name: String?,
@@ -44,6 +46,7 @@ public struct CallLinkRecord: Codable, PersistableRecord, FetchableRecord {
         self.rootKey = rootKey
         self.adminPasskey = adminPasskey
         self.adminDeletedAtTimestampMs = adminDeletedAtTimestampMs
+        self.activeCallId = activeCallId
         self.pendingFetchCounter = pendingFetchCounter
         self.isUpcoming = isUpcoming
         self.name = name
@@ -58,6 +61,7 @@ public struct CallLinkRecord: Codable, PersistableRecord, FetchableRecord {
         case rootKey
         case adminPasskey
         case adminDeletedAtTimestampMs
+        case activeCallId
         case pendingFetchCounter
         case isUpcoming
         case name
@@ -73,6 +77,7 @@ public struct CallLinkRecord: Codable, PersistableRecord, FetchableRecord {
         try container.encode(self.rootKey.bytes, forKey: .rootKey)
         try container.encodeIfPresent(self.adminPasskey, forKey: .adminPasskey)
         try container.encodeIfPresent(self.adminDeletedAtTimestampMs.map(Int64.init(bitPattern:)), forKey: .adminDeletedAtTimestampMs)
+        try container.encodeIfPresent(self.activeCallId.map(Int64.init(bitPattern:)), forKey: .activeCallId)
         try container.encode(self.pendingFetchCounter, forKey: .pendingFetchCounter)
         try container.encodeIfPresent(self.isUpcoming, forKey: .isUpcoming)
         try container.encodeIfPresent(self.name, forKey: .name)
@@ -88,6 +93,7 @@ public struct CallLinkRecord: Codable, PersistableRecord, FetchableRecord {
         self.rootKey = try CallLinkRootKey(container.decode(Data.self, forKey: .rootKey))
         self.adminPasskey = try container.decodeIfPresent(Data.self, forKey: .adminPasskey)
         self.adminDeletedAtTimestampMs = try container.decodeIfPresent(Int64.self, forKey: .adminDeletedAtTimestampMs).map(UInt64.init(bitPattern:))
+        self.activeCallId = try container.decodeIfPresent(Int64.self, forKey: .activeCallId).map(UInt64.init(bitPattern:))
         self.pendingFetchCounter = try container.decode(Int64.self, forKey: .pendingFetchCounter)
         self.isUpcoming = try container.decodeIfPresent(Bool.self, forKey: .isUpcoming)
         self.name = try container.decodeIfPresent(String.self, forKey: .name)

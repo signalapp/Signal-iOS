@@ -129,4 +129,11 @@ extension CallStrings {
             count
         )
     }
+
+    static var callLink: String {
+        return OWSLocalizedString(
+            "CALL_LINK",
+            comment: "Label used to represent a call that used a call link."
+        )
+    }
 }

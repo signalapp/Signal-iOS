@@ -698,18 +698,17 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                     callViewModelForCallRecords: { callRecords, tx in
                         return Self.callViewModel(
                             forCallRecords: callRecords,
+                            upcomingCallLinkRowId: nil,
                             deps: capturedDeps,
                             tx: SDSDB.shimOnlyBridge(tx)
                         )
                     },
-                    callViewModelForUpcomingCallLink: { callLinkRecord, tx in
-                        return CallViewModel(
-                            reference: .callLink(roomId: callLinkRecord.roomId),
-                            callRecords: [],
-                            title: callLinkRecord.state?.localizedName ?? "",
-                            recipientType: .callLink(callLinkRecord.rootKey),
-                            direction: .outgoing,
-                            state: .inactive
+                    callViewModelForUpcomingCallLink: { callLinkRowId, tx in
+                        return Self.callViewModel(
+                            forCallRecords: [],
+                            upcomingCallLinkRowId: callLinkRowId,
+                            deps: capturedDeps,
+                            tx: SDSDB.shimOnlyBridge(tx)
                         )
                     },
                     fetchCallRecordBlock: { callRecordId, tx -> CallRecord? in
@@ -783,20 +782,20 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     /// thread, direction, missed status, and call type.
     private static func callViewModel(
         forCallRecords callRecords: [CallRecord],
+        upcomingCallLinkRowId: Int64?,
         deps: Dependencies,
         tx: SDSAnyReadTransaction
     ) -> CallViewModel {
-        owsPrecondition(!callRecords.isEmpty)
         owsPrecondition(
-            Set(callRecords.map(\.conversationId)).count == 1,
+            Set(callRecords.map(\.conversationId)).count <= 1,
             "Coalesced call records were for a different conversation than the primary!"
         )
         owsPrecondition(
-            Set(callRecords.map(\.callDirection)).count == 1,
+            Set(callRecords.map(\.callDirection)).count <= 1,
             "Coalesced call records were of a different direction than the primary!"
         )
         owsPrecondition(
-            Set(callRecords.map(\.callStatus.isMissedCall)).count == 1,
+            Set(callRecords.map(\.callStatus.isMissedCall)).count <= 1,
             "Coalesced call records were of a different missed status than the primary!"
         )
         owsPrecondition(
@@ -804,29 +803,53 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             "Primary and coalesced call records were not ordered descending by timestamp!"
         )
 
-        let mostRecentCallRecord = callRecords.first!
+        let callLinkRecord = { () -> CallLinkRecord? in
+            let callLinkRowId: Int64
+            if let upcomingCallLinkRowId {
+                callLinkRowId = upcomingCallLinkRowId
+            } else if case .callLink(let callLinkRowId2) = callRecords.first!.conversationId {
+                callLinkRowId = callLinkRowId2
+            } else {
+                return nil
+            }
+            do {
+                return try deps.callLinkStore.fetch(rowId: callLinkRowId, tx: tx.asV2Read) ?? {
+                    owsFail("Couldn't load CallLinkRecord that must exist!")
+                }()
+            } catch {
+                owsFail("Couldn't load CallLinkRecord that must exist: \(error)")
+            }
+        }()
 
-        let threadRowId: Int64
-        switch mostRecentCallRecord.conversationId {
-        case .thread(let threadRowId2):
-            threadRowId = threadRowId2
-        case .callLink(_):
-            owsFail("[CallLink] TODO: Add rendering support.")
+        if let callLinkRecord {
+            return CallViewModel(
+                reference: .callLink(rowId: callLinkRecord.id),
+                callRecords: callRecords,
+                title: callLinkRecord.state.localizedName,
+                recipientType: .callLink(callLinkRecord.rootKey),
+                direction: .callLink,
+                medium: .link,
+                state: { () -> CallViewModel.State in
+                    if let activeCallId = callLinkRecord.activeCallId {
+                        if deps.callService.callServiceState.currentCall?.callId == activeCallId {
+                            return .participating
+                        }
+                        return .active
+                    }
+                    return .inactive
+                }()
+            )
         }
 
-        guard let callThread = deps.threadStore.fetchThread(
-            rowId: threadRowId,
-            tx: tx.asV2Read
-        ) else {
-            owsFail("Missing thread for call record! This should be impossible, per the DB schema.")
-        }
+        // If it's not a CallLink, we MUST have at least one CallRecord.
+        let callRecord = callRecords.first!
 
         let callDirection: CallViewModel.Direction = {
-            if mostRecentCallRecord.callStatus.isMissedCall {
+            if callRecord.callStatus.isMissedCall {
                 return .missed
             }
 
-            switch mostRecentCallRecord.callDirection {
+            switch callRecord.callDirection {
             case .incoming: return .incoming
             case .outgoing: return .outgoing
             }
@@ -837,19 +860,18 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         let callState: CallViewModel.State = {
             let currentCallId: UInt64? = deps.callService.callServiceState.currentCall?.callId
 
-            switch mostRecentCallRecord.callStatus {
+            switch callRecord.callStatus {
             case .individual:
-                if mostRecentCallRecord.callId == currentCallId {
+                if callRecord.callId == currentCallId {
                     // We can have at most one 1:1 call active at a time, and if
                     // we have an active 1:1 call we must be in it. All other
                     // 1:1 calls must have ended.
                     return .participating
                 }
             case .group:
-                guard let groupCallInteraction: OWSGroupCallMessage = deps.interactionStore
-                    .fetchAssociatedInteraction(
-                        callRecord: mostRecentCallRecord, tx: tx.asV2Read
-                    )
+                guard
+                    let groupCallInteraction: OWSGroupCallMessage = deps.interactionStore
+                        .fetchAssociatedInteraction(callRecord: callRecord, tx: tx.asV2Read)
                 else {
                     owsFail("Missing interaction for group call. This should be impossible per the DB schema!")
                 }
@@ -859,50 +881,65 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                 // leetle wonky that we use the interaction to store that info,
                 // but such is life.
                 if !groupCallInteraction.hasEnded {
-                    if mostRecentCallRecord.callId == currentCallId {
+                    if callRecord.callId == currentCallId {
                         return .participating
                     }
 
                     return .active
                 }
             case .callLink:
-                owsFail("[CallLink] TODO: Handle Call Links.")
+                owsFail("Can't reach this point because we've already handled Call Links.")
             }
 
             return .inactive
         }()
 
         let title: String
+        let medium: CallViewModel.Medium
         let recipientType: CallViewModel.RecipientType
 
-        switch callThread {
-        case let contactThread as TSContactThread:
-            title = deps.contactsManager.displayName(for: contactThread.contactAddress, tx: tx).resolvedValue()
-            let callType: CallViewModel.RecipientType.CallType = {
-                switch mostRecentCallRecord.callType {
+        switch callRecord.conversationId {
+        case .thread(let threadRowId):
+            guard let callThread = deps.threadStore.fetchThread(
+                rowId: threadRowId,
+                tx: tx.asV2Read
+            ) else {
+                owsFail("Missing thread for call record! This should be impossible, per the DB schema.")
+            }
+            switch callThread {
+            case let contactThread as TSContactThread:
+                title = deps.contactsManager.displayName(for: contactThread.contactAddress, tx: tx).resolvedValue()
+                let callType: CallViewModel.RecipientType.IndividualCallType
+                switch callRecords.first!.callType {
                 case .audioCall:
-                    return .audio
+                    medium = .audio
+                    callType = .audio
                 case .adHocCall, .groupCall:
                     owsFailDebug("Had group call type for 1:1 call!")
                     fallthrough
                 case .videoCall:
-                    return .video
+                    medium = .video
+                    callType = .video
                 }
-            }()
-            recipientType = .individual(type: callType, contactThread: contactThread)
-        case let groupThread as TSGroupThread:
-            title = groupThread.groupModel.groupNameOrDefault
-            recipientType = .group(groupThread: groupThread)
-        default:
-            owsFail("Call thread was neither contact nor group! This should be impossible.")
+                recipientType = .individual(type: callType, contactThread: contactThread)
+            case let groupThread as TSGroupThread:
+                title = groupThread.groupModel.groupNameOrDefault
+                medium = .video
+                recipientType = .group(groupThread: groupThread)
+            default:
+                owsFail("Call thread was neither contact nor group! This should be impossible.")
+            }
+        case .callLink(_):
+            owsFail("Can't reach this point because we've already handled Call Links.")
         }
 
         return CallViewModel(
-            reference: .callRecords(primaryId: mostRecentCallRecord.id, coalescedIds: callRecords.dropFirst().map(\.id)),
+            reference: .callRecords(primaryId: callRecord.id, coalescedIds: callRecords.dropFirst().map(\.id)),
             callRecords: callRecords,
             title: title,
             recipientType: recipientType,
             direction: callDirection,
+            medium: medium,
             state: callState
         )
     }
@@ -961,13 +998,14 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     struct CallViewModel {
         enum Reference: Hashable {
             case callRecords(primaryId: CallRecord.ID, coalescedIds: [CallRecord.ID])
-            case callLink(roomId: Data)
+            case callLink(rowId: Int64)
         }
 
         enum Direction {
             case outgoing
             case incoming
             case missed
+            case callLink
 
             var label: String {
                 switch self {
@@ -977,8 +1015,16 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                     return Strings.callDirectionLabelIncoming
                 case .missed:
                     return Strings.callDirectionLabelMissed
+                case .callLink:
+                    return CallStrings.callLink
                 }
             }
+        }
+
+        enum Medium {
+            case audio
+            case video
+            case link
         }
 
         enum State {
@@ -991,11 +1037,11 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         }
 
         enum RecipientType {
-            case individual(type: CallType, contactThread: TSContactThread)
+            case individual(type: IndividualCallType, contactThread: TSContactThread)
             case group(groupThread: TSGroupThread)
             case callLink(CallLinkRootKey)
 
-            enum CallType {
+            enum IndividualCallType {
                 case audio
                 case video
             }
@@ -1007,6 +1053,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         let title: String
         let recipientType: RecipientType
         let direction: Direction
+        let medium: Medium
         let state: State
 
         init(
@@ -1015,6 +1062,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             title: String,
             recipientType: RecipientType,
             direction: Direction,
+            medium: Medium,
             state: State
         ) {
             self.reference = reference
@@ -1022,23 +1070,13 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             self.title = title
             self.recipientType = recipientType
             self.direction = direction
+            self.medium = medium
             self.state = state
-        }
-
-        var callType: RecipientType.CallType {
-            switch recipientType {
-            case let .individual(callType, _):
-                return callType
-            case .group(_):
-                return .video
-            case .callLink(_):
-                return .video
-            }
         }
 
         var isMissed: Bool {
             switch direction {
-            case .outgoing, .incoming:
+            case .outgoing, .incoming, .callLink:
                 return false
             case .missed:
                 return true
@@ -1420,11 +1458,12 @@ extension CallsListViewController: UITableViewDelegate {
         case .active:
             let joinCallTitle: String
             let joinCallIconName: String
-            switch viewModel.callType {
+            switch viewModel.medium {
             case .audio:
                 joinCallTitle = Strings.joinVoiceCallActionTitle
                 joinCallIconName = Theme.iconName(.contextMenuVoiceCall)
-            case .video:
+            case .video, .link:
+                // [CallLink] TODO: Use "Start Call" instead of "Start Video Call".
                 joinCallTitle = Strings.joinVideoCallActionTitle
                 joinCallIconName = Theme.iconName(.contextMenuVideoCall)
             }
@@ -1438,10 +1477,10 @@ extension CallsListViewController: UITableViewDelegate {
             actions.append(joinCallAction)
         case .participating:
             let returnToCallIconName: String
-            switch viewModel.callType {
+            switch viewModel.medium {
             case .audio:
                 returnToCallIconName = Theme.iconName(.contextMenuVoiceCall)
-            case .video:
+            case .video, .link:
                 returnToCallIconName = Theme.iconName(.contextMenuVideoCall)
             }
             let returnToCallAction = UIAction(
@@ -1745,10 +1784,10 @@ private extension CallsListViewController {
             guard let viewModel else { return nil }
 
             let icon: UIImage
-            switch viewModel.callType {
+            switch viewModel.medium {
             case .audio:
                 icon = Theme.iconImage(.phoneFill16)
-            case .video:
+            case .video, .link:
                 icon = Theme.iconImage(.videoFill16)
             }
 
@@ -1907,8 +1946,7 @@ private extension CallsListViewController {
                 case .individual(type: _, let thread as TSThread), .group(let thread as TSThread):
                     configuration.dataSource = .thread(thread)
                 case .callLink(_):
-                    // [CallLink] TODO: Show the Call Link icon.
-                    configuration.dataSource = .none
+                    configuration.dataSource = .asset(avatar: CommonCallLinksUI.callLinkIcon(), badge: nil)
                 }
             }
 
@@ -1922,7 +1960,7 @@ private extension CallsListViewController {
             self.titleLabel.text = titleText
 
             switch viewModel.direction {
-            case .incoming, .outgoing:
+            case .incoming, .outgoing, .callLink:
                 titleLabel.textColor = Theme.primaryTextColor
             case .missed:
                 titleLabel.textColor = .ows_accentRed
@@ -1930,11 +1968,13 @@ private extension CallsListViewController {
 
             self.subtitleLabel.attributedText = {
                 let icon: ThemeIcon
-                switch viewModel.callType {
+                switch viewModel.medium {
                 case .audio:
                     icon = .phone16
                 case .video:
                     icon = .video16
+                case .link:
+                    icon = .link16
                 }
 
                 return .composed(of: [

@@ -8,6 +8,7 @@ import GRDB
 public import SignalRingRTC
 
 public protocol CallLinkRecordStore {
+    func fetch(rowId: Int64, tx: any DBReadTransaction) throws -> CallLinkRecord?
     func fetch(roomId: Data, tx: any DBReadTransaction) throws -> CallLinkRecord?
     func fetchOrInsert(rootKey: CallLinkRootKey, tx: any DBWriteTransaction) throws -> CallLinkRecord
 
@@ -22,6 +23,15 @@ public protocol CallLinkRecordStore {
 
 public class CallLinkRecordStoreImpl: CallLinkRecordStore {
     public init() {}
+
+    public func fetch(rowId: Int64, tx: any DBReadTransaction) throws -> CallLinkRecord? {
+        let db = SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database
+        do {
+            return try CallLinkRecord.fetchOne(db, key: rowId)
+        } catch {
+            throw error.grdbErrorForLogging
+        }
+    }
 
     public func fetch(roomId: Data, tx: any DBReadTransaction) throws -> CallLinkRecord? {
         let db = SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database
