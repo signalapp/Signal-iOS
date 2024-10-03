@@ -1260,6 +1260,8 @@ extension MessageDetailViewController: CVComponentDelegate {
     func didTapReportSpamLearnMore() {}
 
     func didTapMessageRequestAcceptedOptions() {}
+
+    func didTapJoinCallLinkCall(callLink: CallLink) {}
 }
 
 extension MessageDetailViewController: UINavigationControllerDelegate {

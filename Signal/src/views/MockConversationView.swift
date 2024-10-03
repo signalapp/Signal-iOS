@@ -467,4 +467,6 @@ extension MockConversationView: CVComponentDelegate {
     func didTapReportSpamLearnMore() {}
 
     func didTapMessageRequestAcceptedOptions() {}
+
+    func didTapJoinCallLinkCall(callLink: CallLink) {}
 }

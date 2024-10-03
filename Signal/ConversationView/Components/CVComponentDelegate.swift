@@ -230,6 +230,8 @@ public protocol CVComponentDelegate: AnyObject, AudioMessageViewDelegate {
     func didTapReportSpamLearnMore()
 
     func didTapMessageRequestAcceptedOptions()
+
+    func didTapJoinCallLinkCall(callLink: CallLink)
 }
 
 // MARK: -
@@ -273,6 +275,7 @@ struct CVMessageAction: Equatable {
         case didTapThreadMergeLearnMore(phoneNumber: String)
         case didTapReportSpamLearnMore
         case didTapMessageRequestAcceptedOptions
+        case didTapJoinCallLinkCall(callLink: CallLink)
 
         func perform(delegate: CVComponentDelegate) {
             switch self {
@@ -334,6 +337,8 @@ struct CVMessageAction: Equatable {
                 delegate.didTapReportSpamLearnMore()
             case .didTapMessageRequestAcceptedOptions:
                 delegate.didTapMessageRequestAcceptedOptions()
+            case .didTapJoinCallLinkCall(let callLink):
+                delegate.didTapJoinCallLinkCall(callLink: callLink)
             }
         }
     }

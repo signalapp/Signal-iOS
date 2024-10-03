@@ -1131,4 +1131,8 @@ extension ConversationViewController: CVComponentDelegate {
         dismissKeyBoard()
         presentActionSheet(alert)
     }
+
+    public func didTapJoinCallLinkCall(callLink: CallLink) {
+        GroupCallViewController.presentLobby(for: callLink)
+    }
 }

@@ -7,7 +7,8 @@ import Foundation
 public import SignalRingRTC
 import SignalServiceKit
 
-public struct CallLink {
+public struct CallLink: Equatable {
+
     // MARK: -
 
     private enum Constants {
@@ -69,5 +70,11 @@ public struct CallLink {
         components.percentEncodedFragment = components.percentEncodedQuery
         components.query = nil
         return components.url!
+    }
+
+    // MARK: - Equatable
+
+    public static func == (lhs: CallLink, rhs: CallLink) -> Bool {
+        lhs.url() == rhs.url()
     }
 }

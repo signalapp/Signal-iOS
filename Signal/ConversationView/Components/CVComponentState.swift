@@ -1574,7 +1574,16 @@ fileprivate extension CVComponentState.Builder {
                     state: state
                 )
             }
-        } else if let _ = CallLink(url: url) {
+        } else if let callLink = CallLink(url: url) {
+            let bottomButtonAction = CVMessageAction(
+                title: OWSLocalizedString(
+                    "CONVERSATION_VIEW_JOIN_CALL",
+                    comment: "Message shown in conversation view that offers to join a Call Link call."
+                ),
+                accessibilityIdentifier: "join_call_link_call",
+                action: .didTapJoinCallLinkCall(callLink: callLink)
+            )
+            bottomButtonsActions.append(bottomButtonAction)
             let state = LinkPreviewCallLink(previewType: .sent(linkPreview, conversationStyle))
             self.linkPreview = LinkPreview(
                 linkPreview: linkPreview,
