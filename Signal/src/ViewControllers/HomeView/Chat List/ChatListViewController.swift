@@ -35,7 +35,11 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
     // MARK: View Lifecycle
 
-    private lazy var filterControl = ChatListFilterControl()
+    private lazy var filterControl: ChatListFilterControl? = if FeatureFlags.chatListFilter {
+        ChatListFilterControl()
+    } else {
+        nil
+    }
 
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -61,8 +65,10 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         tableView.estimatedRowHeight = 60
         tableView.allowsSelectionDuringEditing = true
         tableView.allowsMultipleSelectionDuringEditing = true
-        tableView.tableHeaderView = filterControl
-        filterControl.delegate = self
+        if let filterControl {
+            tableView.tableHeaderView = filterControl
+            filterControl.delegate = self
+        }
 
         // Empty Inbox
         view.addSubview(emptyInboxView)
@@ -241,7 +247,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             CGFloat(0.0)
         }
 
-        if !hasEverAppeared {
+        if let filterControl, !hasEverAppeared {
             filterControl.sizeToFit()
             updateFilterControl(animated: false)
         }
@@ -1341,13 +1347,13 @@ extension ChatListViewController {
         updateChatListFilter(.unread)
         updateBarButtonItems()
 
-        if filterControl.isFiltering {
+        if filterControl?.isFiltering == true {
             // No need to update the filter control if it's already in the
             // filtering state.
             loadCoordinator.loadIfNecessary()
         } else {
             tableView.performBatchUpdates { [self] in
-                filterControl.startFiltering(animated: true)
+                filterControl?.startFiltering(animated: true)
                 loadCoordinator.loadIfNecessary()
             }
         }
@@ -1357,12 +1363,13 @@ extension ChatListViewController {
         updateChatListFilter(.none)
         updateBarButtonItems()
         tableView.performBatchUpdates { [self] in
-            filterControl.stopFiltering(animated: true)
+            filterControl?.stopFiltering(animated: true)
             loadCoordinator.loadIfNecessary()
         }
     }
 
     private func updateFilterControl(animated: Bool) {
+        guard let filterControl else { return }
         if viewState.inboxFilter == .unread {
             filterControl.startFiltering(animated: animated)
         } else {
@@ -1655,11 +1662,11 @@ extension ChatListViewController: UIScrollViewDelegate {
     }
 
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        filterControl.updateScrollPosition(in: scrollView)
+        filterControl?.updateScrollPosition(in: scrollView)
     }
 
     public func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
-        filterControl.draggingWillEnd(in: scrollView)
+        filterControl?.draggingWillEnd(in: scrollView)
     }
 }
 
