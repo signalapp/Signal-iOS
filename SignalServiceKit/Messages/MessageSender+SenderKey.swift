@@ -100,7 +100,7 @@ extension MessageSender {
         senderKeyRecipients: [ServiceId],
         sendSenderKeyMessage: (@Sendable () async -> [(ServiceId, any Error)])?
     ) {
-        self.senderKeyStore.expireSendingKeyIfNecessary(for: thread, writeTx: tx)
+        self.senderKeyStore.expireSendingKeyIfNecessary(for: thread, maxSenderKeyAge: RemoteConfig.current.maxSenderKeyAge, tx: tx)
 
         let threadRecipients = thread.recipientAddresses(with: tx).compactMap { $0.serviceId }
         let senderKeyRecipients = recipients.filter { serviceId in

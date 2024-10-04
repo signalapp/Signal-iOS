@@ -181,6 +181,10 @@ public class RemoteConfig {
         interval(.messageSendLogEntryLifetime, defaultInterval: 2 * kWeekInterval)
     }
 
+    public var maxSenderKeyAge: TimeInterval {
+        return Double(getStringConvertibleValue(forFlag: .maxSenderKeyAge, defaultValue: 2 * kWeekInMs)) / 1000
+    }
+
     public var maxGroupCallRingSize: UInt {
         getUIntValue(forFlag: .maxGroupCallRingSize, defaultValue: 16)
     }
@@ -521,6 +525,7 @@ private enum ValueFlag: String, FlagType {
     case maxAttachmentDownloadSizeBytes = "global.attachments.maxBytes"
     case maxGroupCallRingSize = "global.calling.maxGroupCallRingSize"
     case maxNicknameLength = "global.nicknames.max"
+    case maxSenderKeyAge = "ios.maxSenderKeyAge"
     case messageSendLogEntryLifetime = "ios.messageSendLogEntryLifetime"
     case minNicknameLength = "global.nicknames.min"
     case paymentsDisabledRegions = "global.payments.disabledRegions"
@@ -545,6 +550,7 @@ private enum ValueFlag: String, FlagType {
         case .maxAttachmentDownloadSizeBytes: false
         case .maxGroupCallRingSize: false
         case .maxNicknameLength: false
+        case .maxSenderKeyAge: false
         case .messageSendLogEntryLifetime: false
         case .minNicknameLength: false
         case .paymentsDisabledRegions: false
@@ -571,6 +577,7 @@ private enum ValueFlag: String, FlagType {
         case .maxAttachmentDownloadSizeBytes: false
         case .maxGroupCallRingSize: true
         case .maxNicknameLength: false
+        case .maxSenderKeyAge: true
         case .messageSendLogEntryLifetime: false
         case .minNicknameLength: false
         case .paymentsDisabledRegions: true

@@ -109,31 +109,30 @@ public class SenderKeyStore {
         setMetadata(updatedMetadata, writeTx: writeTx)
     }
 
-    private func _locked_isKeyValid(for thread: TSThread, readTx: SDSAnyReadTransaction) -> Bool {
+    private func isKeyValid(for thread: TSThread, maxSenderKeyAge: TimeInterval, tx: SDSAnyReadTransaction) -> Bool {
         guard
-            let keyId = keyIdForSendingToThreadId(thread.threadUniqueId, readTx: readTx),
-            let keyMetadata = getKeyMetadata(for: keyId, readTx: readTx)
+            let keyId = keyIdForSendingToThreadId(thread.threadUniqueId, readTx: tx),
+            let keyMetadata = getKeyMetadata(for: keyId, readTx: tx)
         else {
             return false
         }
 
-        guard keyMetadata.isValid else {
+        guard keyMetadata.isValid(maxSenderKeyAge: maxSenderKeyAge) else {
             return false
         }
 
-        let currentRecipients = thread.recipientAddresses(with: readTx)
-        let wasRecipientRemovedFromThread = keyMetadata.currentRecipients.subtracting(currentRecipients).count > 0
-
-        return keyMetadata.isValid && !wasRecipientRemovedFromThread
+        // It's valid if the recipients for the key are still in the group.
+        let currentRecipients = thread.recipientAddresses(with: tx)
+        return keyMetadata.currentRecipients.subtracting(currentRecipients).isEmpty
     }
 
-    public func expireSendingKeyIfNecessary(for thread: TSThread, writeTx: SDSAnyWriteTransaction) {
-        guard let keyId = keyIdForSendingToThreadId(thread.threadUniqueId, readTx: writeTx) else {
+    public func expireSendingKeyIfNecessary(for thread: TSThread, maxSenderKeyAge: TimeInterval, tx: SDSAnyWriteTransaction) {
+        guard let keyId = keyIdForSendingToThreadId(thread.threadUniqueId, readTx: tx) else {
             return
         }
 
-        if !_locked_isKeyValid(for: thread, readTx: writeTx) {
-            setMetadata(nil, for: keyId, writeTx: writeTx)
+        if !isKeyValid(for: thread, maxSenderKeyAge: maxSenderKeyAge, tx: tx) {
+            setMetadata(nil, for: keyId, writeTx: tx)
         }
     }
 
@@ -524,13 +523,14 @@ private struct KeyMetadata {
         self.sentKeyInfo = [:]
     }
 
-    var isValid: Bool {
-        // Keys we've received from others are always valid
-        guard isForEncrypting else { return true }
-
-        // If we're using it for encryption, it must be less than a month old
-        let expirationDate = creationDate.addingTimeInterval(kMonthInterval)
-        return (expirationDate.isAfterNow && isForEncrypting)
+    func isValid(maxSenderKeyAge: TimeInterval) -> Bool {
+        switch isForEncrypting {
+        case true:
+            return -creationDate.timeIntervalSinceNow < maxSenderKeyAge
+        case false:
+            // Keys we've received from others are always valid
+            return true
+        }
     }
 
     mutating func resetDeliveryRecord(for serviceId: ServiceId) {
