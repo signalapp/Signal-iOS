@@ -426,7 +426,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             }
 
             let canDownloadThumbnail =
-                MimeTypeUtil.isSupportedVisualMediaMimeType(attachment.mimeType)
+                AttachmentBackupThumbnail.canBeThumbnailed(attachment)
                 && attachment.thumbnailMediaTierInfo != nil
 
             let downloadPriority: AttachmentDownloadPriority =

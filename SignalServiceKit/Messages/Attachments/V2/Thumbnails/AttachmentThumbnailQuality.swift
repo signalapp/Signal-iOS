@@ -52,10 +52,11 @@ extension AttachmentThumbnailQuality {
         return max(screenSizePoints.width, screenSizePoints.height)
     }
 
+    public static let backupThumbnailDimensionPixels: CGFloat = 256
+
     private static func thumbnailDimensionPointsBackupThumbnail() -> CGFloat {
         let screenScale = UIScreen.main.scale
-        let desiredPixelSize: CGFloat = 256
-        return desiredPixelSize / screenScale
+        return Self.backupThumbnailDimensionPixels / screenScale
     }
 
     public func thumbnailDimensionPoints() -> CGFloat {

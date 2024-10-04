@@ -323,8 +323,7 @@ fileprivate extension AttachmentStream {
         if let thumbnailMediaTierInfo = attachment.thumbnailMediaTierInfo {
             return thumbnailMediaTierInfo.uploadEra != currentUploadEra
         } else {
-            // We only generate thumbnails for visual media.
-            return contentType.isVisualMedia
+            return AttachmentBackupThumbnail.canBeThumbnailed(self.attachment)
         }
     }
 }

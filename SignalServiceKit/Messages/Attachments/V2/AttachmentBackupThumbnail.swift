@@ -48,4 +48,24 @@ public class AttachmentBackupThumbnail {
     public static func thumbnailMediaName(fullsizeMediaName: String) -> String {
         return fullsizeMediaName + "_thumbnail"
     }
+
+    public static func canBeThumbnailed(_ attachment: Attachment) -> Bool {
+        guard let stream = attachment.asStream() else {
+            // All we have to go off is mimeType and whether we had a thumbnail before.
+            return MimeTypeUtil.isSupportedVisualMediaMimeType(attachment.mimeType)
+                || attachment.thumbnailMediaTierInfo != nil
+        }
+
+        switch stream.contentType {
+        case .invalid, .file, .audio:
+            return false
+        case .image(let pixelSize):
+            // If the image itself is small enough to fit the thumbnail
+            // size, no need for a thumbnail.
+            return pixelSize.largerAxis > AttachmentThumbnailQuality.backupThumbnailDimensionPixels
+        case .video, .animatedImage:
+            // Visual but require conversion to still image.
+            return true
+        }
+    }
 }
