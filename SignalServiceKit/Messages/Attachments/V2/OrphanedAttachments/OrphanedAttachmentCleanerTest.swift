@@ -42,7 +42,6 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
             try attachmentStore.insert(
                 attachmentParams,
                 reference: referenceParams,
-                db: InMemoryDB.shimOnlyBridge(tx).db,
                 tx: tx
             )
         }

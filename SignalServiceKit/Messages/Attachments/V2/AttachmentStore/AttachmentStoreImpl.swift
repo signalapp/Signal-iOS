@@ -4,221 +4,11 @@
 //
 
 import Foundation
-public import GRDB
+import GRDB
 
 public class AttachmentStoreImpl: AttachmentStore {
 
     public init() {}
-
-    public func fetchReferences(
-        owners: [AttachmentReference.OwnerId],
-        tx: DBReadTransaction
-    ) -> [AttachmentReference] {
-        fetchReferences(
-            owners: owners,
-            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database,
-            tx: tx
-        )
-    }
-
-    public func fetch(ids: [Attachment.IDType], tx: DBReadTransaction) -> [Attachment] {
-        fetch(ids: ids, db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database, tx: tx)
-    }
-
-    public func fetchAttachment(sha256ContentHash: Data, tx: DBReadTransaction) -> Attachment? {
-        try? fetchAttachment(
-            sha256ContentHash: sha256ContentHash,
-            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database,
-            tx: tx
-        )
-    }
-
-    public func fetchAttachment(
-        mediaName: String,
-        tx: DBReadTransaction
-    ) -> Attachment? {
-        try? fetchAttachment(
-            mediaName: mediaName,
-            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database,
-            tx: tx
-        )
-    }
-
-    public func enumerateAllReferences(
-        toAttachmentId attachmentId: Attachment.IDType,
-        tx: DBReadTransaction,
-        block: (AttachmentReference) -> Void
-    ) throws {
-        try enumerateAllReferences(
-            toAttachmentId: attachmentId,
-            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database,
-            tx: tx,
-            block: block
-        )
-    }
-
-    public func enumerateAllAttachments(
-        tx: DBReadTransaction,
-        block: (Attachment) throws -> Void
-    ) throws {
-        try enumerateAllAttachments(
-            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database,
-            tx: tx,
-            block: block
-        )
-    }
-
-    public func allQuotedReplyAttachments(
-        forOriginalAttachmentId originalAttachmentId: Attachment.IDType,
-        tx: DBReadTransaction
-    ) throws -> [Attachment] {
-        return try allQuotedReplyAttachments(
-            forOriginalAttachmentId: originalAttachmentId,
-            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database,
-            tx: tx
-        )
-    }
-
-    // MARK: - Writes
-
-    public func duplicateExistingMessageOwner(
-        _ existingOwnerSource: AttachmentReference.Owner.MessageSource,
-        with reference: AttachmentReference,
-        newOwnerMessageRowId: Int64,
-        newOwnerThreadRowId: Int64,
-        tx: DBWriteTransaction
-    ) throws {
-        try duplicateExistingMessageOwner(
-            existingOwnerSource,
-            with: reference,
-            newOwnerMessageRowId: newOwnerMessageRowId,
-            newOwnerThreadRowId: newOwnerThreadRowId,
-            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database,
-            tx: tx
-        )
-    }
-
-    public func duplicateExistingThreadOwner(
-        _ existingOwnerSource: AttachmentReference.Owner.ThreadSource,
-        with reference: AttachmentReference,
-        newOwnerThreadRowId: Int64,
-        tx: DBWriteTransaction
-    ) throws {
-        try duplicateExistingThreadOwner(
-            existingOwnerSource,
-            with: reference,
-            newOwnerThreadRowId: newOwnerThreadRowId,
-            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database,
-            tx: tx
-        )
-    }
-
-    public func update(
-        _ reference: AttachmentReference,
-        withReceivedAtTimestamp receivedAtTimestamp: UInt64,
-        tx: DBWriteTransaction
-    ) throws {
-        try update(
-            reference,
-            withReceivedAtTimestamp: receivedAtTimestamp,
-            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database,
-            tx: tx
-        )
-    }
-
-    public func updateAttachmentAsDownloaded(
-        from source: QueuedAttachmentDownloadRecord.SourceType,
-        id: Attachment.IDType,
-        validatedMimeType: String,
-        streamInfo: Attachment.StreamInfo,
-        tx: DBWriteTransaction
-    ) throws {
-        try self.updateAttachmentAsDownloaded(
-            from: source,
-            id: id,
-            validatedMimeType: validatedMimeType,
-            streamInfo: streamInfo,
-            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database,
-            tx: tx
-        )
-    }
-
-    public func updateAttachmentAsFailedToDownload(
-        from source: QueuedAttachmentDownloadRecord.SourceType,
-        id: Attachment.IDType,
-        timestamp: UInt64,
-        tx: DBWriteTransaction
-    ) throws {
-        try self.updateAttachmentAsFailedToDownload(
-            from: source,
-            id: id,
-            timestamp: timestamp,
-            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database,
-            tx: tx
-        )
-    }
-
-    public func updateAttachment(
-        _ attachment: Attachment,
-        revalidatedContentType contentType: Attachment.ContentType,
-        mimeType: String,
-        blurHash: String?,
-        tx: DBWriteTransaction
-    ) throws {
-        try updateAttachment(
-            attachment,
-            revalidatedContentType: contentType,
-            mimeType: mimeType,
-            blurHash: blurHash,
-            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database,
-            tx: tx
-        )
-    }
-
-    public func addOwner(
-        _ reference: AttachmentReference.ConstructionParams,
-        for attachmentId: Attachment.IDType,
-        tx: DBWriteTransaction
-    ) throws {
-        try addOwner(
-            reference,
-            for: attachmentId,
-            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database,
-            tx: tx
-        )
-    }
-
-    public func removeOwner(
-        _ owner: AttachmentReference.OwnerId,
-        for attachmentId: Attachment.IDType,
-        tx: DBWriteTransaction
-    ) throws {
-        try removeOwner(
-            owner,
-            for: attachmentId,
-            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database,
-            tx: tx
-        )
-    }
-
-    public func insert(
-        _ attachment: Attachment.ConstructionParams,
-        reference: AttachmentReference.ConstructionParams,
-        tx: DBWriteTransaction
-    ) throws {
-        try insert(
-            attachment,
-            reference: reference,
-            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database,
-            tx: tx
-        )
-    }
-
-    public func removeAllThreadOwners(tx: DBWriteTransaction) throws {
-        try removeAllThreadOwners(db: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database, tx: tx)
-    }
-
-    // MARK: - Implementation
 
     typealias MessageAttachmentReferenceRecord = AttachmentReference.MessageAttachmentReferenceRecord
     typealias MessageOwnerTypeRaw = AttachmentReference.MessageOwnerTypeRaw
@@ -226,16 +16,14 @@ public class AttachmentStoreImpl: AttachmentStore {
     typealias StoryMessageOwnerTypeRaw = AttachmentReference.StoryMessageOwnerTypeRaw
     typealias ThreadAttachmentReferenceRecord = AttachmentReference.ThreadAttachmentReferenceRecord
 
-    func fetchReferences(
+    public func fetchReferences(
         owners: [AttachmentReference.OwnerId],
-        db: GRDB.Database,
         tx: DBReadTransaction
     ) -> [AttachmentReference] {
         return AttachmentReference.recordTypes.flatMap { recordType in
             return fetchReferences(
                 owners: owners,
                 recordType: recordType,
-                db: db,
                 tx: tx
             )
         }
@@ -244,7 +32,6 @@ public class AttachmentStoreImpl: AttachmentStore {
     private func fetchReferences<RecordType: FetchableAttachmentReferenceRecord>(
         owners: [AttachmentReference.OwnerId],
         recordType: RecordType.Type,
-        db: GRDB.Database,
         tx: DBReadTransaction
     ) -> [AttachmentReference] {
         var filterClauses = [String]()
@@ -271,7 +58,7 @@ public class AttachmentStoreImpl: AttachmentStore {
         let sql = "SELECT * FROM \(recordType.databaseTableName) WHERE \(filterClauses.joined(separator: " OR "));"
         do {
             var results = try RecordType
-                .fetchAll(db, sql: sql, arguments: arguments)
+                .fetchAll(databaseConnection(tx), sql: sql, arguments: arguments)
 
             // If we have one owner and are capable of sorting, sort in ascending order.
             if owners.count == 1, let orderInOwnerKey = RecordType.orderInOwnerKey {
@@ -294,15 +81,14 @@ public class AttachmentStoreImpl: AttachmentStore {
         }
     }
 
-    func fetch(
+    public func fetch(
         ids: [Attachment.IDType],
-        db: GRDB.Database,
         tx: DBReadTransaction
     ) -> [Attachment] {
         do {
             return try Attachment.Record
                 .fetchAll(
-                    db,
+                    databaseConnection(tx),
                     keys: ids
                 )
                 .compactMap { record in
@@ -317,42 +103,52 @@ public class AttachmentStoreImpl: AttachmentStore {
         }
     }
 
-    func fetchAttachment(
+    public func fetchAttachment(
         sha256ContentHash: Data,
-        db: GRDB.Database,
+        tx: DBReadTransaction
+    ) -> Attachment? {
+        return try? fetchAttachmentThrows(sha256ContentHash: sha256ContentHash, tx: tx)
+    }
+
+    private func fetchAttachmentThrows(
+        sha256ContentHash: Data,
         tx: DBReadTransaction
     ) throws -> Attachment? {
         return try Attachment.Record
             .filter(Column(Attachment.Record.CodingKeys.sha256ContentHash) == sha256ContentHash)
-            .fetchOne(db)
+            .fetchOne(databaseConnection(tx))
             .map(Attachment.init(record:))
     }
 
-    func fetchAttachment(
+    public func fetchAttachment(
         mediaName: String,
-        db: GRDB.Database,
+        tx: DBReadTransaction
+    ) -> Attachment? {
+        return try? fetchAttachmentThrows(mediaName: mediaName, tx: tx)
+    }
+
+    private func fetchAttachmentThrows(
+        mediaName: String,
         tx: DBReadTransaction
     ) throws -> Attachment? {
         return try Attachment.Record
             .filter(Column(Attachment.Record.CodingKeys.mediaName) == mediaName)
-            .fetchOne(db)
+            .fetchOne(databaseConnection(tx))
             .map(Attachment.init(record:))
     }
 
-    func allQuotedReplyAttachments(
+    public func allQuotedReplyAttachments(
         forOriginalAttachmentId originalAttachmentId: Attachment.IDType,
-        db: GRDB.Database,
         tx: DBReadTransaction
     ) throws -> [Attachment] {
         return try Attachment.Record
             .filter(Column(Attachment.Record.CodingKeys.originalAttachmentIdForQuotedReply) == originalAttachmentId)
-            .fetchAll(db)
+            .fetchAll(databaseConnection(tx))
             .map(Attachment.init(record:))
     }
 
-    func enumerateAllReferences(
+    public func enumerateAllReferences(
         toAttachmentId attachmentId: Attachment.IDType,
-        db: GRDB.Database,
         tx: DBReadTransaction,
         block: (AttachmentReference) -> Void
     ) throws {
@@ -360,19 +156,17 @@ public class AttachmentStoreImpl: AttachmentStore {
             try enumerateReferences(
                 attachmentId: attachmentId,
                 recordType: recordType,
-                db: db,
                 tx: tx,
                 block: block
             )
         }
     }
 
-    func enumerateAllAttachments(
-        db: GRDB.Database,
+    public func enumerateAllAttachments(
         tx: DBReadTransaction,
         block: (Attachment) throws -> Void
     ) throws {
-        try Attachment.Record.fetchCursor(db)
+        try Attachment.Record.fetchCursor(databaseConnection(tx))
             .forEach {
                 let attachment = try Attachment(record: $0)
                 try block(attachment)
@@ -382,13 +176,12 @@ public class AttachmentStoreImpl: AttachmentStore {
     private func enumerateReferences<RecordType: FetchableAttachmentReferenceRecord>(
         attachmentId: Attachment.IDType,
         recordType: RecordType.Type,
-        db: GRDB.Database,
         tx: DBReadTransaction,
         block: (AttachmentReference) -> Void
     ) throws {
         let cursor = try recordType
             .filter(recordType.attachmentRowIdColumn == attachmentId)
-            .fetchCursor(db)
+            .fetchCursor(databaseConnection(tx))
 
         while let record = try cursor.next() {
             let reference = try record.asReference()
@@ -398,12 +191,11 @@ public class AttachmentStoreImpl: AttachmentStore {
 
     // MARK: Writes
 
-    func duplicateExistingMessageOwner(
+    public func duplicateExistingMessageOwner(
         _ existingOwnerSource: AttachmentReference.Owner.MessageSource,
         with existingReference: AttachmentReference,
         newOwnerMessageRowId: Int64,
         newOwnerThreadRowId: Int64,
-        db: GRDB.Database,
         tx: DBWriteTransaction
     ) throws {
         var newRecord = MessageAttachmentReferenceRecord(
@@ -418,14 +210,13 @@ public class AttachmentStoreImpl: AttachmentStore {
             throw OWSAssertionError("Copying reference to a message on another thread!")
         }
         newRecord.ownerRowId = newOwnerMessageRowId
-        try newRecord.insert(db)
+        try newRecord.insert(databaseConnection(tx))
     }
 
-    func duplicateExistingThreadOwner(
+    public func duplicateExistingThreadOwner(
         _ existingOwnerSource: AttachmentReference.Owner.ThreadSource,
         with existingReference: AttachmentReference,
         newOwnerThreadRowId: Int64,
-        db: GRDB.Database,
         tx: DBWriteTransaction
     ) throws {
         var newRecord = ThreadAttachmentReferenceRecord(
@@ -433,13 +224,12 @@ public class AttachmentStoreImpl: AttachmentStore {
             threadSource: existingOwnerSource
         )
         newRecord.ownerRowId = newOwnerThreadRowId
-        try newRecord.insert(db)
+        try newRecord.insert(databaseConnection(tx))
     }
 
-    func update(
+    public func update(
         _ reference: AttachmentReference,
         withReceivedAtTimestamp receivedAtTimestamp: UInt64,
-        db: GRDB.Database,
         tx: DBWriteTransaction
     ) throws {
         guard SDS.fitsInInt64(receivedAtTimestamp) else {
@@ -453,7 +243,7 @@ public class AttachmentStoreImpl: AttachmentStore {
             let receivedAtTimestampColumn = Column(MessageAttachmentReferenceRecord.CodingKeys.receivedAtTimestamp)
             let ownerTypeColumn = Column(MessageAttachmentReferenceRecord.CodingKeys.ownerType)
             let ownerRowIdColumn = Column(MessageAttachmentReferenceRecord.CodingKeys.ownerRowId)
-            try db.execute(
+            try databaseConnection(tx).execute(
                 sql:
                     "UPDATE \(MessageAttachmentReferenceRecord.databaseTableName) "
                     + "SET \(receivedAtTimestampColumn.name) = ? "
@@ -471,15 +261,14 @@ public class AttachmentStoreImpl: AttachmentStore {
         }
     }
 
-    private func updateAttachmentAsDownloaded(
+    public func updateAttachmentAsDownloaded(
         from source: QueuedAttachmentDownloadRecord.SourceType,
         id: Attachment.IDType,
         validatedMimeType: String,
         streamInfo: Attachment.StreamInfo,
-        db: GRDB.Database,
         tx: DBWriteTransaction
     ) throws {
-        let existingAttachment = fetch(ids: [id], db: db, tx: tx).first
+        let existingAttachment = fetch(ids: [id], tx: tx).first
         guard let existingAttachment else {
             throw OWSAssertionError("Attachment does not exist")
         }
@@ -488,9 +277,8 @@ public class AttachmentStoreImpl: AttachmentStore {
         }
 
         // Find if there is already an attachment with the same plaintext hash.
-        let existingRecord = try fetchAttachment(
+        let existingRecord = try fetchAttachmentThrows(
             sha256ContentHash: streamInfo.sha256ContentHash,
-            db: db,
             tx: tx
         ).map(Attachment.Record.init(attachment:))
 
@@ -530,17 +318,16 @@ public class AttachmentStoreImpl: AttachmentStore {
         }
         newRecord.sqliteId = id
         try newRecord.checkAllUInt64FieldsFitInInt64()
-        try newRecord.update(db)
+        try newRecord.update(databaseConnection(tx))
     }
 
-    private func updateAttachmentAsFailedToDownload(
+    public func updateAttachmentAsFailedToDownload(
         from source: QueuedAttachmentDownloadRecord.SourceType,
         id: Attachment.IDType,
         timestamp: UInt64,
-        db: GRDB.Database,
         tx: DBWriteTransaction
     ) throws {
-        let existingAttachment = fetch(ids: [id], db: db, tx: tx).first
+        let existingAttachment = fetch(ids: [id], tx: tx).first
         guard let existingAttachment else {
             throw OWSAssertionError("Attachment does not exist")
         }
@@ -574,15 +361,14 @@ public class AttachmentStoreImpl: AttachmentStore {
         }
         newRecord.sqliteId = id
         try newRecord.checkAllUInt64FieldsFitInInt64()
-        try newRecord.update(db)
+        try newRecord.update(databaseConnection(tx))
     }
 
-    private func updateAttachment(
+    public func updateAttachment(
         _ attachment: Attachment,
         revalidatedContentType contentType: Attachment.ContentType,
         mimeType: String,
         blurHash: String?,
-        db: GRDB.Database,
         tx: DBWriteTransaction
     ) throws {
         var newRecord = Attachment.Record(
@@ -597,13 +383,12 @@ public class AttachmentStoreImpl: AttachmentStore {
         try newRecord.checkAllUInt64FieldsFitInInt64()
         // NOTE: a sqlite trigger handles updating all attachment reference rows
         // with the new content type.
-        try newRecord.update(db)
+        try newRecord.update(databaseConnection(tx))
     }
 
-    func addOwner(
+    public func addOwner(
         _ referenceParams: AttachmentReference.ConstructionParams,
         for attachmentRowId: Attachment.IDType,
-        db: GRDB.Database,
         tx: DBWriteTransaction
     ) throws {
         switch referenceParams.owner {
@@ -612,20 +397,18 @@ public class AttachmentStoreImpl: AttachmentStore {
             try insertGlobalThreadAttachmentReference(
                 referenceParams: referenceParams,
                 attachmentRowId: attachmentRowId,
-                db: db,
                 tx: tx
             )
         default:
             let referenceRecord = try referenceParams.buildRecord(attachmentRowId: attachmentRowId)
             try referenceRecord.checkAllUInt64FieldsFitInInt64()
-            try referenceRecord.insert(db)
+            try referenceRecord.insert(databaseConnection(tx))
         }
     }
 
-    func removeOwner(
+    public func removeOwner(
         _ owner: AttachmentReference.OwnerId,
         for attachmentId: Attachment.IDType,
-        db: GRDB.Database,
         tx: DBWriteTransaction
     ) throws {
         try AttachmentReference.recordTypes.forEach { recordType in
@@ -633,7 +416,6 @@ public class AttachmentStoreImpl: AttachmentStore {
                 owner,
                 for: attachmentId,
                 recordType: recordType,
-                db: db,
                 tx: tx
             )
         }
@@ -643,7 +425,6 @@ public class AttachmentStoreImpl: AttachmentStore {
         _ owner: AttachmentReference.OwnerId,
         for attachmentId: Attachment.IDType,
         recordType: RecordType.Type,
-        db: GRDB.Database,
         tx: DBWriteTransaction
     ) throws {
         // GRDB's swift query API can't help us here because the AttachmentReference tables
@@ -667,23 +448,21 @@ public class AttachmentStoreImpl: AttachmentStore {
             _ = arguments.append(contentsOf: [ownerType, ownerRowId])
         }
         sql += ";"
-        try db.execute(
+        try databaseConnection(tx).execute(
             sql: sql,
             arguments: arguments
         )
     }
 
-    func insert(
+    public func insert(
         _ attachmentParams: Attachment.ConstructionParams,
         reference referenceParams: AttachmentReference.ConstructionParams,
-        db: GRDB.Database,
         tx: DBWriteTransaction
     ) throws {
         // Find if there is already an attachment with the same plaintext hash.
         let existingRecord = try attachmentParams.streamInfo.map { streamInfo in
-            return try fetchAttachment(
+            return try fetchAttachmentThrows(
                 sha256ContentHash: streamInfo.sha256ContentHash,
-                db: db,
                 tx: tx
             ).map(Attachment.Record.init(attachment:))
         } ?? nil
@@ -697,7 +476,7 @@ public class AttachmentStoreImpl: AttachmentStore {
 
         // Note that this will fail if we have collisions in medianame (unique constraint)
         // but thats a hash so we just ignore that possibility.
-        try attachmentRecord.insert(db)
+        try attachmentRecord.insert(databaseConnection(tx))
 
         guard let attachmentRowId = attachmentRecord.sqliteId else {
             throw OWSAssertionError("No sqlite id assigned to inserted attachment")
@@ -706,7 +485,6 @@ public class AttachmentStoreImpl: AttachmentStore {
         try addOwner(
             referenceParams,
             for: attachmentRowId,
-            db: db,
             tx: tx
         )
     }
@@ -719,10 +497,9 @@ public class AttachmentStoreImpl: AttachmentStore {
     private func insertGlobalThreadAttachmentReference(
         referenceParams: AttachmentReference.ConstructionParams,
         attachmentRowId: Attachment.IDType,
-        db: GRDB.Database,
         tx: DBWriteTransaction
     ) throws {
-
+        let db = databaseConnection(tx)
         let ownerRowIdColumn = Column(ThreadAttachmentReferenceRecord.CodingKeys.ownerRowId)
         let timestampColumn = Column(ThreadAttachmentReferenceRecord.CodingKeys.creationTimestamp)
         let attachmentRowIdColumn = Column(ThreadAttachmentReferenceRecord.CodingKeys.attachmentRowId)
@@ -756,8 +533,8 @@ public class AttachmentStoreImpl: AttachmentStore {
         }
     }
 
-    func removeAllThreadOwners(db: GRDB.Database, tx: DBWriteTransaction) throws {
-        try ThreadAttachmentReferenceRecord.deleteAll(db)
+    public func removeAllThreadOwners(tx: DBWriteTransaction) throws {
+        try ThreadAttachmentReferenceRecord.deleteAll(databaseConnection(tx))
     }
 }
 
@@ -768,20 +545,6 @@ extension AttachmentStoreImpl: AttachmentUploadStore {
         info transitTierInfo: Attachment.TransitTierInfo,
         tx: DBWriteTransaction
     ) throws {
-        try markUploadedToTransitTier(
-            attachmentStream: attachmentStream,
-            info: transitTierInfo,
-            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database,
-            tx: tx
-        )
-    }
-
-    func markUploadedToTransitTier(
-        attachmentStream: AttachmentStream,
-        info transitTierInfo: Attachment.TransitTierInfo,
-        db: GRDB.Database,
-        tx: DBWriteTransaction
-    ) throws {
         var record = Attachment.Record(attachment: attachmentStream.attachment)
         record.transitCdnKey = transitTierInfo.cdnKey
         record.transitCdnNumber = transitTierInfo.cdnNumber
@@ -790,26 +553,12 @@ extension AttachmentStoreImpl: AttachmentUploadStore {
         record.transitUnencryptedByteCount = transitTierInfo.unencryptedByteCount
         record.transitDigestSHA256Ciphertext = transitTierInfo.digestSHA256Ciphertext
         record.lastTransitDownloadAttemptTimestamp = transitTierInfo.lastDownloadAttemptTimestamp
-        try record.update(db)
+        try record.update(databaseConnection(tx))
     }
 
     public func markTransitTierUploadExpired(
         attachment: Attachment,
         info: Attachment.TransitTierInfo,
-        tx: DBWriteTransaction
-    ) throws {
-        try markTransitTierUploadExpired(
-            attachment: attachment,
-            info: info,
-            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database,
-            tx: tx
-        )
-    }
-
-    func markTransitTierUploadExpired(
-        attachment: Attachment,
-        info: Attachment.TransitTierInfo,
-        db: GRDB.Database,
         tx: DBWriteTransaction
     ) throws {
         // Refetch the attachment in case the passed in transit tier
@@ -829,7 +578,7 @@ extension AttachmentStoreImpl: AttachmentUploadStore {
         record.transitUnencryptedByteCount = nil
         record.transitDigestSHA256Ciphertext = nil
         record.lastTransitDownloadAttemptTimestamp = nil
-        try record.update(db)
+        try record.update(databaseConnection(tx))
     }
 
     public func markUploadedToMediaTier(
@@ -837,26 +586,12 @@ extension AttachmentStoreImpl: AttachmentUploadStore {
         mediaTierInfo: Attachment.MediaTierInfo,
         tx: DBWriteTransaction
     ) throws {
-        try markUploadedToMediaTier(
-            attachmentStream: attachmentStream,
-            mediaTierInfo: mediaTierInfo,
-            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database,
-            tx: tx
-        )
-    }
-
-    func markUploadedToMediaTier(
-        attachmentStream: AttachmentStream,
-        mediaTierInfo: Attachment.MediaTierInfo,
-        db: GRDB.Database,
-        tx: DBWriteTransaction
-    ) throws {
         var record = Attachment.Record(attachment: attachmentStream.attachment)
         record.mediaTierCdnNumber = mediaTierInfo.cdnNumber
         record.mediaTierUploadEra = mediaTierInfo.uploadEra
         record.mediaTierUnencryptedByteCount = mediaTierInfo.unencryptedByteCount
         record.lastMediaTierDownloadAttemptTimestamp = mediaTierInfo.lastDownloadAttemptTimestamp
-        try record.update(db)
+        try record.update(databaseConnection(tx))
     }
 
     public func markThumbnailUploadedToMediaTier(
@@ -864,40 +599,14 @@ extension AttachmentStoreImpl: AttachmentUploadStore {
         thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo,
         tx: DBWriteTransaction
     ) throws {
-        try markThumbnailUploadedToMediaTier(
-            attachmentStream: attachmentStream,
-            thumbnailMediaTierInfo: thumbnailMediaTierInfo,
-            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database,
-            tx: tx
-        )
-    }
-
-    private func markThumbnailUploadedToMediaTier(
-        attachmentStream: AttachmentStream,
-        thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo,
-        db: GRDB.Database,
-        tx: DBWriteTransaction
-    ) throws {
         var record = Attachment.Record(attachment: attachmentStream.attachment)
         record.thumbnailCdnNumber = thumbnailMediaTierInfo.cdnNumber
         record.thumbnailUploadEra = thumbnailMediaTierInfo.uploadEra
         record.lastThumbnailDownloadAttemptTimestamp = thumbnailMediaTierInfo.lastDownloadAttemptTimestamp
-        try record.update(db)
+        try record.update(databaseConnection(tx))
     }
 
     public func upsert(record: AttachmentUploadRecord, tx: DBWriteTransaction) throws {
-        try upsert(
-            record: record,
-            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database,
-            tx: tx
-        )
-    }
-
-    public func upsert(
-        record: AttachmentUploadRecord,
-        db: GRDB.Database,
-        tx: any DBWriteTransaction
-    ) throws {
         var newRecord = AttachmentUploadRecord(sourceType: record.sourceType, attachmentId: record.attachmentId)
         newRecord.sqliteId = record.sqliteId
         newRecord.uploadForm = record.uploadForm
@@ -905,32 +614,18 @@ extension AttachmentStoreImpl: AttachmentUploadStore {
         newRecord.localMetadata = record.localMetadata
         newRecord.uploadSessionUrl = record.uploadSessionUrl
         newRecord.attempt = record.attempt
-        try newRecord.save(db)
+        try newRecord.save(databaseConnection(tx))
     }
 
     public func removeRecord(
         for attachmentId: Attachment.IDType,
         sourceType: AttachmentUploadRecord.SourceType,
-        tx: DBWriteTransaction
-    ) throws {
-        return try removeRecord(
-            for: attachmentId,
-            sourceType: sourceType,
-            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database,
-            tx: tx
-        )
-    }
-
-    public func removeRecord(
-        for attachmentId: Attachment.IDType,
-        sourceType: AttachmentUploadRecord.SourceType,
-        db: GRDB.Database,
         tx: any DBWriteTransaction
     ) throws {
         try AttachmentUploadRecord
             .filter(Column(AttachmentUploadRecord.CodingKeys.attachmentId) == attachmentId)
             .filter(Column(AttachmentUploadRecord.CodingKeys.sourceType) == sourceType.rawValue)
-            .deleteAll(db)
+            .deleteAll(databaseConnection(tx))
     }
 
     public func fetchAttachmentUploadRecord(
@@ -938,23 +633,9 @@ extension AttachmentStoreImpl: AttachmentUploadStore {
         sourceType: AttachmentUploadRecord.SourceType,
         tx: DBReadTransaction
     ) throws -> AttachmentUploadRecord? {
-        return try fetchAttachmentUploadRecord(
-            for: attachmentId,
-            sourceType: sourceType,
-            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database,
-            tx: tx
-        )
-    }
-
-    public func fetchAttachmentUploadRecord(
-        for attachmentId: Attachment.IDType,
-        sourceType: AttachmentUploadRecord.SourceType,
-        db: GRDB.Database,
-        tx: any DBReadTransaction
-    ) throws -> AttachmentUploadRecord? {
         return try AttachmentUploadRecord
             .filter(Column(AttachmentUploadRecord.CodingKeys.attachmentId) == attachmentId)
             .filter(Column(AttachmentUploadRecord.CodingKeys.sourceType) == sourceType.rawValue)
-            .fetchOne(db)
+            .fetchOne(databaseConnection(tx))
     }
 }

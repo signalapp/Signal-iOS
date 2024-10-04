@@ -291,7 +291,6 @@ class AttachmentDownloadStoreTests: XCTestCase {
         try attachmentStore.insert(
             attachmentParams,
             reference: referenceParams,
-            db: tx.db,
             tx: tx
         )
         return tx.db.lastInsertedRowID

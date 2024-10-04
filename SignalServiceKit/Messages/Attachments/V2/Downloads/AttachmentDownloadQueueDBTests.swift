@@ -31,7 +31,6 @@ class AttachmentDownloadQueueDBTests: XCTestCase {
             try attachmentStore.insert(
                 attachmentParams,
                 reference: referenceParams,
-                db: InMemoryDB.shimOnlyBridge(tx).db,
                 tx: tx
             )
             return try Int64.fetchOne(
