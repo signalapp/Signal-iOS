@@ -20,7 +20,7 @@ final class DeletedCallRecordStoreTest: XCTestCase {
         let thread = TSThread(uniqueId: UUID().uuidString)
 
         inMemoryDB.write { tx in
-            try! thread.asRecord().insert(InMemoryDB.shimOnlyBridge(tx).db)
+            try! thread.asRecord().insert(tx.db)
         }
 
         return thread.sqliteRowId!
@@ -47,7 +47,7 @@ final class DeletedCallRecordStoreTest: XCTestCase {
             deletedCallRecordStore.fetch(
                 callId: 1234,
                 conversationId: .thread(threadRowId: 6789),
-                db: InMemoryDB.shimOnlyBridge(tx).db
+                db: tx.db
             )
         }
 
@@ -66,7 +66,7 @@ final class DeletedCallRecordStoreTest: XCTestCase {
         inMemoryDB.write { tx in
             deletedCallRecordStore.insert(
                 deletedCallRecord: inserted,
-                db: InMemoryDB.shimOnlyBridge(tx).db
+                db: tx.db
             )
         }
 
@@ -74,7 +74,7 @@ final class DeletedCallRecordStoreTest: XCTestCase {
             XCTAssertTrue(deletedCallRecordStore.contains(
                 callId: 1234,
                 conversationId: .thread(threadRowId: threadRowId),
-                db: InMemoryDB.shimOnlyBridge(tx).db
+                db: tx.db
             ))
         })
     }
@@ -90,14 +90,14 @@ final class DeletedCallRecordStoreTest: XCTestCase {
         inMemoryDB.write { tx in
             deletedCallRecordStore.insert(
                 deletedCallRecord: record,
-                db: InMemoryDB.shimOnlyBridge(tx).db
+                db: tx.db
             )
         }
 
         inMemoryDB.write { tx in
             deletedCallRecordStore.delete(
                 expiredDeletedCallRecord: record,
-                db: InMemoryDB.shimOnlyBridge(tx).db
+                db: tx.db
             )
         }
 
@@ -105,7 +105,7 @@ final class DeletedCallRecordStoreTest: XCTestCase {
             XCTAssertFalse(deletedCallRecordStore.contains(
                 callId: 1234,
                 conversationId: .thread(threadRowId: threadRowId),
-                db: InMemoryDB.shimOnlyBridge(tx).db
+                db: tx.db
             ))
         })
     }
@@ -123,13 +123,13 @@ final class DeletedCallRecordStoreTest: XCTestCase {
             for record in records {
                 deletedCallRecordStore.insert(
                     deletedCallRecord: record,
-                    db: InMemoryDB.shimOnlyBridge(tx).db
+                    db: tx.db
                 )
             }
         }
 
         let nextDeletedRecord = inMemoryDB.read { tx in
-            deletedCallRecordStore.nextDeletedRecord(db: InMemoryDB.shimOnlyBridge(tx).db)
+            deletedCallRecordStore.nextDeletedRecord(db: tx.db)
         }
 
         assertExplanation(contains: "index_deleted_call_record_on_deletedAtTimestamp")
@@ -154,7 +154,7 @@ final class DeletedCallRecordStoreTest: XCTestCase {
         inMemoryDB.write { tx in
             deletedCallRecordStore.insert(
                 deletedCallRecord: deletedCallRecord,
-                db: InMemoryDB.shimOnlyBridge(tx).db
+                db: tx.db
             )
         }
 
@@ -162,7 +162,7 @@ final class DeletedCallRecordStoreTest: XCTestCase {
             XCTAssertTrue(deletedCallRecordStore.contains(
                 callId: deletedCallRecord.callId,
                 conversationId: .thread(threadRowId: fromThreadRowId),
-                db: InMemoryDB.shimOnlyBridge(tx).db
+                db: tx.db
             ))
         }
 
@@ -170,7 +170,7 @@ final class DeletedCallRecordStoreTest: XCTestCase {
             deletedCallRecordStore.updateWithMergedThread(
                 fromThreadRowId: fromThreadRowId,
                 intoThreadRowId: toThreadRowId,
-                db: InMemoryDB.shimOnlyBridge(tx).db
+                db: tx.db
             )
         }
 
@@ -178,13 +178,13 @@ final class DeletedCallRecordStoreTest: XCTestCase {
             XCTAssertFalse(deletedCallRecordStore.contains(
                 callId: deletedCallRecord.callId,
                 conversationId: .thread(threadRowId: fromThreadRowId),
-                db: InMemoryDB.shimOnlyBridge(tx).db
+                db: tx.db
             ))
 
             XCTAssertTrue(deletedCallRecordStore.contains(
                 callId: deletedCallRecord.callId,
                 conversationId: .thread(threadRowId: toThreadRowId),
-                db: InMemoryDB.shimOnlyBridge(tx).db
+                db: tx.db
             ))
         }
     }

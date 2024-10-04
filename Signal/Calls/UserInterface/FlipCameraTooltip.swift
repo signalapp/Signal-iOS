@@ -7,9 +7,9 @@ import SignalServiceKit
 import SignalUI
 
 class FlipCameraTooltipManager {
-    private let db: DB
+    private let db: any DB
 
-    init(db: DB) {
+    init(db: any DB) {
         self.db = db
     }
 

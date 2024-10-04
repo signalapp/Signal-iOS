@@ -28,7 +28,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
 
         try db.write { tx in
             try attachmentRecord.insert(
-                InMemoryDB.shimOnlyBridge(tx).db
+                tx.db
             )
             let reference = try insertMessageAttachmentReferenceRecord(
                 attachmentRowId: attachmentRecord.sqliteId!,
@@ -46,7 +46,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
             )
 
             // Ensure the row exists.
-            let row = try QueuedBackupAttachmentUpload.fetchOne(InMemoryDB.shimOnlyBridge(tx).db)
+            let row = try QueuedBackupAttachmentUpload.fetchOne(tx.db)
             XCTAssertNotNil(row)
             XCTAssertEqual(row?.attachmentRowId, attachmentRecord.sqliteId)
             switch row!.sourceType {
@@ -74,7 +74,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                 tx: tx
             )
 
-            let row = try QueuedBackupAttachmentUpload.fetchOne(InMemoryDB.shimOnlyBridge(tx).db)
+            let row = try QueuedBackupAttachmentUpload.fetchOne(tx.db)
             XCTAssertNotNil(row)
             XCTAssertEqual(row?.attachmentRowId, attachmentRecord.sqliteId)
             switch row!.sourceType {
@@ -93,7 +93,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                 // for the backup attachment upload queue.
                 threadSource: .globalThreadWallpaperImage(creationTimestamp: 1)
             )
-            try referenceRecord.insert(InMemoryDB.shimOnlyBridge(tx).db)
+            try referenceRecord.insert(tx.db)
             try store.enqueue(
                 .init(
                     reference: AttachmentReference(record: referenceRecord),
@@ -102,7 +102,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                 tx: tx
             )
 
-            let row = try QueuedBackupAttachmentUpload.fetchOne(InMemoryDB.shimOnlyBridge(tx).db)
+            let row = try QueuedBackupAttachmentUpload.fetchOne(tx.db)
             XCTAssertNotNil(row)
             XCTAssertEqual(row?.attachmentRowId, attachmentRecord.sqliteId)
             switch row!.sourceType {
@@ -130,7 +130,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                 tx: tx
             )
 
-            let row = try QueuedBackupAttachmentUpload.fetchOne(InMemoryDB.shimOnlyBridge(tx).db)
+            let row = try QueuedBackupAttachmentUpload.fetchOne(tx.db)
             XCTAssertNotNil(row)
             XCTAssertEqual(row?.attachmentRowId, attachmentRecord.sqliteId)
             // should not have overriden the nil timestamp
@@ -151,7 +151,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
 
             try db.write { tx in
                 try attachmentRecord.insert(
-                    InMemoryDB.shimOnlyBridge(tx).db
+                    tx.db
                 )
                 let reference: AttachmentReference = try {
                     if let timestamp {
@@ -169,7 +169,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                             // for the backup attachment upload queue.
                             threadSource: .globalThreadWallpaperImage(creationTimestamp: 1)
                         )
-                        try referenceRecord.insert(InMemoryDB.shimOnlyBridge(tx).db)
+                        try referenceRecord.insert(tx.db)
                         return try AttachmentReference(record: referenceRecord)
                     }
                 }()
@@ -187,7 +187,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
         try db.read { tx in
             XCTAssertEqual(
                 timestamps.count,
-                try QueuedBackupAttachmentUpload.fetchCount(InMemoryDB.shimOnlyBridge(tx).db)
+                try QueuedBackupAttachmentUpload.fetchCount(tx.db)
             )
 
             dequeuedRecords = try store.fetchNextUploads(
@@ -222,7 +222,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
             // all rows but one should be deleted.
             XCTAssertEqual(
                 1,
-                try QueuedBackupAttachmentUpload.fetchCount(InMemoryDB.shimOnlyBridge(tx).db)
+                try QueuedBackupAttachmentUpload.fetchCount(tx.db)
             )
         }
     }
@@ -237,15 +237,15 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
         }
     }
 
-    private func insertThread(tx: DBWriteTransaction) -> TSThread {
+    private func insertThread(tx: InMemoryDB.WriteTransaction) -> TSThread {
         let thread = TSThread(uniqueId: UUID().uuidString)
-        try! thread.asRecord().insert(InMemoryDB.shimOnlyBridge(tx).db)
+        try! thread.asRecord().insert(tx.db)
         return thread
     }
 
-    private func insertInteraction(thread: TSThread, tx: DBWriteTransaction) -> Int64 {
+    private func insertInteraction(thread: TSThread, tx: InMemoryDB.WriteTransaction) -> Int64 {
         let interaction = TSInteraction(timestamp: 0, receivedAtTimestamp: 0, thread: thread)
-        try! interaction.asRecord().insert(InMemoryDB.shimOnlyBridge(tx).db)
+        try! interaction.asRecord().insert(tx.db)
         return interaction.sqliteRowId!
     }
 
@@ -254,7 +254,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
         messageRowId: Int64,
         threadRowId: Int64,
         timestamp: UInt64,
-        tx: DBWriteTransaction
+        tx: InMemoryDB.WriteTransaction
     ) throws -> AttachmentReference {
         let record = AttachmentReference.MessageAttachmentReferenceRecord.init(
             attachmentRowId: attachmentRowId,
@@ -268,7 +268,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                 contentType: nil
             ))
         )
-        try record.insert(InMemoryDB.shimOnlyBridge(tx).db)
+        try record.insert(tx.db)
         return try AttachmentReference(record: record)
     }
 }

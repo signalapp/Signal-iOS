@@ -135,7 +135,7 @@ public struct MessageBackupRequestManagerImpl: MessageBackupRequestManager {
     }
 
     private let dateProvider: DateProvider
-    private let db: DB
+    private let db: any DB
     private let kvStore: KeyValueStore
     private let messageBackupAuthCredentialManager: MessageBackupAuthCredentialManager
     private let messageBackupKeyMaterial: MessageBackupKeyMaterial
@@ -143,7 +143,7 @@ public struct MessageBackupRequestManagerImpl: MessageBackupRequestManager {
 
     init(
         dateProvider: @escaping DateProvider,
-        db: DB,
+        db: any DB,
         keyValueStoreFactory: KeyValueStoreFactory,
         messageBackupAuthCredentialManager: MessageBackupAuthCredentialManager,
         messageBackupKeyMaterial: MessageBackupKeyMaterial,

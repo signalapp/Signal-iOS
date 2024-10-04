@@ -30,7 +30,7 @@ public class PreKeyManagerImpl: PreKeyManager {
     /// complete before starting any other pre-key operation. That's why they must run in serial.
     private static let taskQueue = SerialTaskQueue()
 
-    private let db: DB
+    private let db: any DB
     private let identityManager: PreKey.Shims.IdentityManager
     private let keyValueStore: any KeyValueStore
     private let protocolStoreManager: SignalProtocolStoreManager
@@ -41,7 +41,7 @@ public class PreKeyManagerImpl: PreKeyManager {
 
     init(
         dateProvider: @escaping DateProvider,
-        db: DB,
+        db: any DB,
         identityManager: PreKey.Shims.IdentityManager,
         keyValueStoryFactory: any KeyValueStoreFactory,
         linkedDevicePniKeyManager: LinkedDevicePniKeyManager,

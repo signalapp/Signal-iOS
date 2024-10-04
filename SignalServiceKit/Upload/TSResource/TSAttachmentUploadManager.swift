@@ -17,7 +17,7 @@ public protocol TSAttachmentUploadManager {
 
 public actor TSAttachmentUploadManagerImpl: TSAttachmentUploadManager {
 
-    private let db: DB
+    private let db: any DB
     private let interactionStore: InteractionStore
     private let networkManager: NetworkManager
     private let chatConnectionManager: ChatConnectionManager
@@ -28,7 +28,7 @@ public actor TSAttachmentUploadManagerImpl: TSAttachmentUploadManager {
     private let tsResourceStore: TSResourceUploadStore
 
     public init(
-        db: DB,
+        db: any DB,
         interactionStore: InteractionStore,
         networkManager: NetworkManager,
         chatConnectionManager: ChatConnectionManager,

@@ -11,14 +11,14 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
     private let attachmentManager: TSResourceManager
     private let attachmentStore: TSResourceStore
     private let attachmentValidator: TSResourceContentValidator
-    private let db: DB
+    private let db: any DB
     private let tsAccountManager: TSAccountManager
 
     public init(
         attachmentManager: TSResourceManager,
         attachmentStore: TSResourceStore,
         attachmentValidator: TSResourceContentValidator,
-        db: DB,
+        db: any DB,
         tsAccountManager: TSAccountManager
     ) {
         self.attachmentManager = attachmentManager

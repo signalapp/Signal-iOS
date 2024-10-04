@@ -12,10 +12,10 @@ final class LinkedDevicePniKeyManagerTest: XCTestCase {
     private struct TestKVStore {
         private static let hasSuspectedIssueKey = "hasSuspectedIssue"
 
-        private let db: DB
+        private let db: any DB
         private let kvStore: KeyValueStore
 
-        init(db: DB, kvStoreFactory: KeyValueStoreFactory) {
+        init(db: any DB, kvStoreFactory: KeyValueStoreFactory) {
             self.db = db
             self.kvStore = kvStoreFactory.keyValueStore(collection: "LinkedDevicePniKeyManagerImpl")
         }

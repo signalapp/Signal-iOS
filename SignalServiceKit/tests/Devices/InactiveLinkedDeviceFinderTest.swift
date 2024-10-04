@@ -9,7 +9,7 @@ import XCTest
 
 final class InactiveLinkedDeviceFinderTest: XCTestCase {
     private var mockDateProvider: DateProvider!
-    private var mockDB: DB!
+    private var mockDB: (any DB)!
     private var mockDeviceNameDecrypter: MockDeviceNameDecrypter!
     private var mockDeviceStore: MockDeviceStore!
     private var mockDevicesService: MockDevicesService!

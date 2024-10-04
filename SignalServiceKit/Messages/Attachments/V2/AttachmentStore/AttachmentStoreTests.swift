@@ -371,7 +371,7 @@ class AttachmentStoreTests: XCTestCase {
                             reference: attachmentReferenceParams,
                             tx: tx
                         )
-                        attachmentRowId = InMemoryDB.shimOnlyBridge(tx).db.lastInsertedRowID
+                        attachmentRowId = tx.db.lastInsertedRowID
                     }
                     return attachmentIdInOwner
                 }
@@ -606,7 +606,7 @@ class AttachmentStoreTests: XCTestCase {
                 ),
                 tx: tx
             )
-            let attachmentId = InMemoryDB.shimOnlyBridge(tx).db.lastInsertedRowID
+            let attachmentId = tx.db.lastInsertedRowID
             try attachmentStore.addOwner(
                 AttachmentReference.ConstructionParams.mockMessageBodyAttachmentReference(
                     messageRowId: messageId2,
@@ -914,15 +914,15 @@ class AttachmentStoreTests: XCTestCase {
         }
     }
 
-    private func insertThread(tx: DBWriteTransaction) -> TSThread {
+    private func insertThread(tx: InMemoryDB.WriteTransaction) -> TSThread {
         let thread = TSThread(uniqueId: UUID().uuidString)
-        try! thread.asRecord().insert(InMemoryDB.shimOnlyBridge(tx).db)
+        try! thread.asRecord().insert(tx.db)
         return thread
     }
 
-    private func insertInteraction(thread: TSThread, tx: DBWriteTransaction) -> Int64 {
+    private func insertInteraction(thread: TSThread, tx: InMemoryDB.WriteTransaction) -> Int64 {
         let interaction = TSInteraction(timestamp: 0, receivedAtTimestamp: 0, thread: thread)
-        try! interaction.asRecord().insert(InMemoryDB.shimOnlyBridge(tx).db)
+        try! interaction.asRecord().insert(tx.db)
         return interaction.sqliteRowId!
     }
 

@@ -9,14 +9,14 @@ import CoreTelephony
 public class RegistrationSessionManagerImpl: RegistrationSessionManager {
 
     private let dateProvider: DateProvider
-    private let db: DB
+    private let db: any DB
     private let kvStore: KeyValueStore
     private let schedulers: Schedulers
     private let signalService: OWSSignalServiceProtocol
 
     public init(
         dateProvider: @escaping DateProvider = Date.provider,
-        db: DB,
+        db: any DB,
         keyValueStoreFactory: KeyValueStoreFactory,
         schedulers: Schedulers,
         signalService: OWSSignalServiceProtocol

@@ -26,13 +26,17 @@ public protocol DBChangeDelegate: AnyObject {
 /// Check out ToyExample.swift in the SDSDatabaseStorage/V2 directory under SignalServiceKitTests for a walkthrough
 /// of the reasoning and how to use this class.
 public protocol DB {
+
+    associatedtype ReadTransaction: DBReadTransaction
+    associatedtype WriteTransaction: DBWriteTransaction
+
     // MARK: - Async Methods
 
     func asyncRead<T>(
         file: String,
         function: String,
         line: Int,
-        block: @escaping (DBReadTransaction) -> T,
+        block: @escaping (ReadTransaction) -> T,
         completionQueue: DispatchQueue,
         completion: ((T) -> Void)?
     )
@@ -41,7 +45,7 @@ public protocol DB {
         file: String,
         function: String,
         line: Int,
-        block: @escaping (DBWriteTransaction) -> T,
+        block: @escaping (WriteTransaction) -> T,
         completionQueue: DispatchQueue,
         completion: ((T) -> Void)?
     )
@@ -52,7 +56,7 @@ public protocol DB {
         file: String,
         function: String,
         line: Int,
-        block: @escaping (DBWriteTransaction) throws -> T
+        block: @escaping (WriteTransaction) throws -> T
     ) async rethrows -> T
 
     // MARK: - Promises
@@ -61,14 +65,14 @@ public protocol DB {
         file: String,
         function: String,
         line: Int,
-        _ block: @escaping (DBReadTransaction) throws -> T
+        _ block: @escaping (ReadTransaction) throws -> T
     ) -> Promise<T>
 
     func writePromise<T>(
         file: String,
         function: String,
         line: Int,
-        _ block: @escaping (DBWriteTransaction) throws -> T
+        _ block: @escaping (WriteTransaction) throws -> T
     ) -> Promise<T>
 
     // MARK: - Value Methods
@@ -77,14 +81,14 @@ public protocol DB {
         file: String,
         function: String,
         line: Int,
-        block: (DBReadTransaction) throws -> T
+        block: (ReadTransaction) throws -> T
     ) rethrows -> T
 
     func write<T>(
         file: String,
         function: String,
         line: Int,
-        block: (DBWriteTransaction) throws -> T
+        block: (WriteTransaction) throws -> T
     ) rethrows -> T
 
     // MARK: - Observation
@@ -115,7 +119,7 @@ extension DB {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: @escaping (DBReadTransaction) -> T,
+        block: @escaping (ReadTransaction) -> T,
         completionQueue: DispatchQueue = .main,
         completion: ((T) -> Void)? = nil
     ) {
@@ -126,7 +130,7 @@ extension DB {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: @escaping (DBWriteTransaction) -> T,
+        block: @escaping (WriteTransaction) -> T,
         completionQueue: DispatchQueue = .main,
         completion: ((T) -> Void)? = nil
     ) {
@@ -139,7 +143,7 @@ extension DB {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: @escaping (DBWriteTransaction) throws -> T
+        block: @escaping (WriteTransaction) throws -> T
     ) async rethrows -> T {
         return try await awaitableWrite(file: file, function: function, line: line, block: block)
     }
@@ -150,7 +154,7 @@ extension DB {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        _ block: @escaping (DBReadTransaction) throws -> T
+        _ block: @escaping (ReadTransaction) throws -> T
     ) -> Promise<T> {
         return readPromise(file: file, function: function, line: line, block)
     }
@@ -159,7 +163,7 @@ extension DB {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        _ block: @escaping (DBWriteTransaction) throws -> T
+        _ block: @escaping (WriteTransaction) throws -> T
     ) -> Promise<T> {
         return writePromise(file: file, function: function, line: line, block)
     }
@@ -170,7 +174,7 @@ extension DB {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: (DBReadTransaction) throws -> T
+        block: (ReadTransaction) throws -> T
     ) rethrows -> T {
         return try read(file: file, function: function, line: line, block: block)
     }
@@ -179,7 +183,7 @@ extension DB {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: (DBWriteTransaction) throws -> T
+        block: (WriteTransaction) throws -> T
     ) rethrows -> T {
         return try write(file: file, function: function, line: line, block: block)
     }

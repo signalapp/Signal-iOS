@@ -62,7 +62,7 @@ class LinkedDevicePniKeyManagerImpl: LinkedDevicePniKeyManager {
 
     private let logger = PrefixedLogger(prefix: "LDPKM")
 
-    private let db: DB
+    private let db: any DB
     private let kvStore: KeyValueStore
     private let messageProcessor: Shims.MessageProcessor
     private let pniIdentityKeyChecker: PniIdentityKeyChecker
@@ -73,7 +73,7 @@ class LinkedDevicePniKeyManagerImpl: LinkedDevicePniKeyManager {
     private let isValidating = AtomicBool(false, lock: .init())
 
     init(
-        db: DB,
+        db: any DB,
         keyValueStoreFactory: KeyValueStoreFactory,
         messageProcessor: Shims.MessageProcessor,
         pniIdentityKeyChecker: PniIdentityKeyChecker,

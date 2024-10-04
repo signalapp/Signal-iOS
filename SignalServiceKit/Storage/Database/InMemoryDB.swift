@@ -17,10 +17,6 @@ final class InMemoryDB: DB {
         }
     }
 
-    static func shimOnlyBridge(_ tx: DBReadTransaction) -> ReadTransaction {
-        return tx as! ReadTransaction
-    }
-
     final class WriteTransaction: ReadTransaction, DBWriteTransaction {
         func addFinalization(forKey key: String, block: @escaping () -> Void) {
             fatalError()
@@ -31,10 +27,6 @@ final class InMemoryDB: DB {
         func addAsyncCompletion(on scheduler: Scheduler, _ block: @escaping () -> Void) {
             fatalError()
         }
-    }
-
-    static func shimOnlyBridge(_ tx: DBWriteTransaction) -> WriteTransaction {
-        return tx as! WriteTransaction
     }
 
     // MARK: - State
@@ -61,7 +53,7 @@ final class InMemoryDB: DB {
         file: String,
         function: String,
         line: Int,
-        block: @escaping (DBReadTransaction) -> T,
+        block: @escaping (ReadTransaction) -> T,
         completionQueue: DispatchQueue,
         completion: ((T) -> Void)?
     ) {
@@ -75,7 +67,7 @@ final class InMemoryDB: DB {
         file: String,
         function: String,
         line: Int,
-        block: @escaping (DBWriteTransaction) -> T,
+        block: @escaping (WriteTransaction) -> T,
         completionQueue: DispatchQueue,
         completion: ((T) -> Void)?
     ) {
@@ -89,7 +81,7 @@ final class InMemoryDB: DB {
         file: String,
         function: String,
         line: Int,
-        block: @escaping (DBWriteTransaction) throws -> T
+        block: @escaping (WriteTransaction) throws -> T
     ) async rethrows -> T {
         await Task.yield()
         return try write(file: file, function: function, line: line, block: block)
@@ -99,7 +91,7 @@ final class InMemoryDB: DB {
         file: String,
         function: String,
         line: Int,
-        _ block: @escaping (DBReadTransaction) throws -> T
+        _ block: @escaping (ReadTransaction) throws -> T
     ) -> Promise<T> {
         return Promise.wrapAsync { try self.read(file: file, function: function, line: line, block: block) }
     }
@@ -108,7 +100,7 @@ final class InMemoryDB: DB {
         file: String,
         function: String,
         line: Int,
-        _ block: @escaping (DBWriteTransaction) throws -> T
+        _ block: @escaping (WriteTransaction) throws -> T
     ) -> Promise<T> {
         return Promise.wrapAsync { try await self.awaitableWrite(file: file, function: function, line: line, block: block) }
     }
@@ -119,12 +111,12 @@ final class InMemoryDB: DB {
         file: String,
         function: String,
         line: Int,
-        block: (DBReadTransaction) throws -> T
+        block: (ReadTransaction) throws -> T
     ) rethrows -> T {
         return try _read(block: block, rescue: { throw $0 })
     }
 
-    private func _read<T>(block: (DBReadTransaction) throws -> T, rescue: (Error) throws -> Never) rethrows -> T {
+    private func _read<T>(block: (ReadTransaction) throws -> T, rescue: (Error) throws -> Never) rethrows -> T {
         var thrownError: Error?
         let result: T? = try! databaseQueue.read { db in
             do {
@@ -144,13 +136,13 @@ final class InMemoryDB: DB {
         file: String,
         function: String,
         line: Int,
-        block: (DBWriteTransaction) throws -> T
+        block: (WriteTransaction) throws -> T
     ) rethrows -> T {
         return try _write(block: block, rescue: { throw $0 })
     }
 
     private func _write<T>(
-        block: (DBWriteTransaction) throws -> T,
+        block: (WriteTransaction) throws -> T,
         rescue: (Error) throws -> Never
     ) rethrows -> T {
         var thrownError: Error?
@@ -171,21 +163,21 @@ final class InMemoryDB: DB {
     // MARK: - Helpers
 
     func fetchExactlyOne<T: SDSCodableModel>(modelType: T.Type) -> T? {
-        let all = try! read { tx in try modelType.fetchAll(Self.shimOnlyBridge(tx).db) }
+        let all = try! read { tx in try modelType.fetchAll(tx.db) }
         guard all.count == 1 else { return nil }
         return all.first!
     }
 
     func insert<T: PersistableRecord>(record: T) {
-        try! write { tx in try record.insert(Self.shimOnlyBridge(tx).db) }
+        try! write { tx in try record.insert(tx.db) }
     }
 
     func update<T: PersistableRecord>(record: T) {
-        try! write { tx in try record.update(Self.shimOnlyBridge(tx).db) }
+        try! write { tx in try record.update(tx.db) }
     }
 
     func remove<T: PersistableRecord>(model record: T) {
-        _ = try! write { tx in try record.delete(Self.shimOnlyBridge(tx).db) }
+        _ = try! write { tx in try record.delete(tx.db) }
     }
 
     func touch(_ interaction: TSInteraction, shouldReindex: Bool, tx: DBWriteTransaction) {

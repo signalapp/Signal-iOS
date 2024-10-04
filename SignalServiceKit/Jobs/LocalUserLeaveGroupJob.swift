@@ -99,7 +99,7 @@ public class LocalUserLeaveGroupJobQueue {
     >
     private let jobRunnerFactory: LocalUserLeaveGroupJobRunnerFactory
 
-    public init(db: DB, reachabilityManager: SSKReachabilityManager) {
+    public init(db: any DB, reachabilityManager: SSKReachabilityManager) {
         self.jobRunnerFactory = LocalUserLeaveGroupJobRunnerFactory()
         self.jobQueueRunner = JobQueueRunner(
             canExecuteJobsConcurrently: false,

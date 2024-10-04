@@ -16,7 +16,7 @@ public import SignalServiceKit
 ///   explicitly on initialization, encapsulated for easy testing.
 public class ViewControllerContext {
 
-    public let db: DB
+    public let db: any DB
 
     public let editManager: EditManager
 
@@ -30,7 +30,7 @@ public class ViewControllerContext {
     public let localUsernameManager: LocalUsernameManager
 
     public init(
-        db: DB,
+        db: any DB,
         editManager: EditManager,
         svr: SecureValueRecovery,
         schedulers: Schedulers,

@@ -27,7 +27,7 @@ final class AuthorMergeHelperBuilderTest: XCTestCase {
         }
 
         inMemoryDb.write { tx in
-            let db = InMemoryDB.shimOnlyBridge(tx).db
+            let db = tx.db
             insertObject(rowId: 1, aci: aci1, phoneNumber: phoneNumber1, db: db)
             insertObject(rowId: 2, aci: aci1, phoneNumber: phoneNumber2, db: db)
             insertObject(rowId: 3, aci: aci2, phoneNumber: phoneNumber1, db: db)
@@ -43,7 +43,6 @@ final class AuthorMergeHelperBuilderTest: XCTestCase {
             appContext: appContext,
             authorMergeHelper: authorMergeHelper,
             db: inMemoryDb,
-            dbFromTx: { tx in InMemoryDB.shimOnlyBridge(tx).db },
             modelReadCaches: AuthorMergeHelperBuilder_MockModelReadCaches(),
             recipientDatabaseTable: recipientDatabaseTable
         ).buildTableIfNeeded()
@@ -52,7 +51,7 @@ final class AuthorMergeHelperBuilderTest: XCTestCase {
             XCTAssertEqual(authorMergeHelper.shouldCleanUp(phoneNumber: phoneNumber1.stringValue, tx: tx), false)
             XCTAssertEqual(authorMergeHelper.shouldCleanUp(phoneNumber: phoneNumber2.stringValue, tx: tx), true)
 
-            let db = InMemoryDB.shimOnlyBridge(tx).db
+            let db = tx.db
             XCTAssert(containsObject(rowId: 1, aci: aci1, phoneNumber: nil, db: db))
             XCTAssert(containsObject(rowId: 2, aci: aci1, phoneNumber: nil, db: db))
             XCTAssert(containsObject(rowId: 3, aci: aci2, phoneNumber: nil, db: db))

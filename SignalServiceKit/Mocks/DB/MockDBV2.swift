@@ -20,16 +20,16 @@ public import GRDB
 ///
 /// Empty stub that does nothing, serving only to crash and fail tests if it is
 /// ever unwrapped as a real SDS transaction.
-private class MockTransaction: DBWriteTransaction {
+public final class MockTransaction: DBWriteTransaction {
     init() {}
 
-    func addFinalization(forKey key: String, block: @escaping () -> Void) {
+    public func addFinalization(forKey key: String, block: @escaping () -> Void) {
         fatalError()
     }
 
     var syncCompletions = [() -> Void]()
 
-    func addSyncCompletion(_ block: @escaping () -> Void) {
+    public func addSyncCompletion(_ block: @escaping () -> Void) {
         syncCompletions.append(block)
     }
 
@@ -40,7 +40,7 @@ private class MockTransaction: DBWriteTransaction {
 
     var asyncCompletions = [AsyncCompletion]()
 
-    func addAsyncCompletion(on scheduler: Scheduler, _ block: @escaping () -> Void) {
+    public func addAsyncCompletion(on scheduler: Scheduler, _ block: @escaping () -> Void) {
         asyncCompletions.append(AsyncCompletion(scheduler: scheduler, block: block))
     }
 }
@@ -79,11 +79,11 @@ public class MockDB: DB {
 
     private var weaklyHeldTransactions = WeakArray<MockTransaction>()
 
-    private func performRead<R>(block: (DBReadTransaction) throws -> R) rethrows -> R {
+    private func performRead<R>(block: (MockTransaction) throws -> R) rethrows -> R {
         return try performWrite(block: block)
     }
 
-    private func performWrite<R>(block: (DBWriteTransaction) throws -> R) rethrows -> R {
+    private func performWrite<R>(block: (MockTransaction) throws -> R) rethrows -> R {
         var callIsReentrant = false
 
         if !weaklyHeldTransactions.elements.isEmpty {
@@ -138,7 +138,7 @@ public class MockDB: DB {
         file: String,
         function: String,
         line: Int,
-        block: @escaping (DBReadTransaction) -> T,
+        block: @escaping (MockTransaction) -> T,
         completionQueue: DispatchQueue,
         completion: ((T) -> Void)?
     ) {
@@ -157,7 +157,7 @@ public class MockDB: DB {
         file: String,
         function: String,
         line: Int,
-        block: @escaping (DBWriteTransaction) -> T,
+        block: @escaping (MockTransaction) -> T,
         completionQueue: DispatchQueue,
         completion: ((T) -> Void)?
     ) {
@@ -176,7 +176,7 @@ public class MockDB: DB {
         file: String,
         function: String,
         line: Int,
-        block: @escaping (DBWriteTransaction) throws -> T
+        block: @escaping (MockTransaction) throws -> T
     ) async rethrows -> T {
         await Task.yield()
         return try queue.sync {
@@ -190,7 +190,7 @@ public class MockDB: DB {
         file: String,
         function: String,
         line: Int,
-        _ block: @escaping (DBReadTransaction) throws -> T
+        _ block: @escaping (MockTransaction) throws -> T
     ) -> Promise<T> {
         do {
             let t = try queue.sync {
@@ -206,7 +206,7 @@ public class MockDB: DB {
         file: String,
         function: String,
         line: Int,
-        _ block: @escaping (DBWriteTransaction) throws -> T
+        _ block: @escaping (MockTransaction) throws -> T
     ) -> Promise<T> {
         do {
             let t = try queue.sync {
@@ -224,7 +224,7 @@ public class MockDB: DB {
         file: String,
         function: String,
         line: Int,
-        block: (DBReadTransaction) throws -> T
+        block: (MockTransaction) throws -> T
     ) rethrows -> T {
         return try queue.sync {
             return try performRead(block: block)
@@ -235,7 +235,7 @@ public class MockDB: DB {
         file: String,
         function: String,
         line: Int,
-        block: (DBWriteTransaction) throws -> T
+        block: (MockTransaction) throws -> T
     ) rethrows -> T {
         return try queue.sync {
             return try performWrite(block: block)

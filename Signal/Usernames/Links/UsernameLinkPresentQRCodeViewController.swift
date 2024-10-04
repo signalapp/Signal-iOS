@@ -45,7 +45,7 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
         }
     }
 
-    private let db: DB
+    private let db: any DB
     private let localUsernameManager: LocalUsernameManager
     private let schedulers: Schedulers
 
@@ -74,7 +74,7 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
     /// The user's current username link, if available. If `nil` is passed, the
     /// link will be reset when this controller loads.
     init(
-        db: DB,
+        db: any DB,
         localUsernameManager: LocalUsernameManager,
         schedulers: Schedulers,
         username: String,

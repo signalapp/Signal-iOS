@@ -10,7 +10,7 @@ public class TSAccountManagerImpl: TSAccountManager {
 
     private let appReadiness: AppReadiness
     private let dateProvider: DateProvider
-    private let db: DB
+    private let db: any DB
     private let schedulers: Schedulers
 
     private let kvStore: KeyValueStore
@@ -21,7 +21,7 @@ public class TSAccountManagerImpl: TSAccountManager {
     public init(
         appReadiness: AppReadiness,
         dateProvider: @escaping DateProvider,
-        db: DB,
+        db: any DB,
         keyValueStoreFactory: KeyValueStoreFactory,
         schedulers: Schedulers
     ) {

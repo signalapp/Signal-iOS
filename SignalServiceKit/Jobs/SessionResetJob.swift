@@ -6,7 +6,7 @@
 public class SessionResetJobQueue {
     private let jobQueueRunner: JobQueueRunner<JobRecordFinderImpl<SessionResetJobRecord>, SessionResetJobRunnerFactory>
 
-    public init(db: DB, reachabilityManager: SSKReachabilityManager) {
+    public init(db: any DB, reachabilityManager: SSKReachabilityManager) {
         self.jobQueueRunner = JobQueueRunner(
             canExecuteJobsConcurrently: true,
             db: db,

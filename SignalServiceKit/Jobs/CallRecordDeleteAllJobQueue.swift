@@ -30,7 +30,7 @@ public class CallRecordDeleteAllJobQueue {
     public init(
         callRecordConversationIdAdapter: CallRecordSyncMessageConversationIdAdapter,
         callRecordQuerier: CallRecordQuerier,
-        db: DB,
+        db: any DB,
         interactionDeleteManager: InteractionDeleteManager,
         messageSenderJobQueue: MessageSenderJobQueue
     ) {
@@ -113,14 +113,14 @@ private class CallRecordDeleteAllJobRunner: JobRunner {
 
     private let callRecordConversationIdAdapter: CallRecordSyncMessageConversationIdAdapter
     private let callRecordQuerier: CallRecordQuerier
-    private let db: DB
+    private let db: any DB
     private let interactionDeleteManager: InteractionDeleteManager
     private let messageSenderJobQueue: MessageSenderJobQueue
 
     init(
         callRecordConversationIdAdapter: CallRecordSyncMessageConversationIdAdapter,
         callRecordQuerier: CallRecordQuerier,
-        db: DB,
+        db: any DB,
         interactionDeleteManager: InteractionDeleteManager,
         messageSenderJobQueue: MessageSenderJobQueue
     ) {
@@ -297,14 +297,14 @@ private class CallRecordDeleteAllJobRunnerFactory: JobRunnerFactory {
 
     private let callRecordConversationIdAdapter: CallRecordSyncMessageConversationIdAdapter
     private let callRecordQuerier: CallRecordQuerier
-    private let db: DB
+    private let db: any DB
     private let interactionDeleteManager: InteractionDeleteManager
     private let messageSenderJobQueue: MessageSenderJobQueue
 
     init(
         callRecordConversationIdAdapter: CallRecordSyncMessageConversationIdAdapter,
         callRecordQuerier: CallRecordQuerier,
-        db: DB,
+        db: any DB,
         interactionDeleteManager: InteractionDeleteManager,
         messageSenderJobQueue: MessageSenderJobQueue
     ) {

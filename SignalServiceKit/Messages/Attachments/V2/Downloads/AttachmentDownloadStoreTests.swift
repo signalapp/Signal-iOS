@@ -268,7 +268,7 @@ class AttachmentDownloadStoreTests: XCTestCase {
         return try db.write(block: insertAttachment(tx:))
     }
 
-    private func insertAttachment(tx: DBWriteTransaction) throws -> Attachment.IDType {
+    private func insertAttachment(tx: InMemoryDB.WriteTransaction) throws -> Attachment.IDType {
         let thread = TSThread(uniqueId: UUID().uuidString)
         try thread.asRecord().insert(tx.db)
         let interaction = TSInteraction(timestamp: 0, receivedAtTimestamp: 0, thread: thread)
@@ -295,14 +295,4 @@ class AttachmentDownloadStoreTests: XCTestCase {
         )
         return tx.db.lastInsertedRowID
     }
-}
-
-fileprivate extension DBReadTransaction {
-
-    var db: Database { InMemoryDB.shimOnlyBridge(self).db }
-}
-
-fileprivate extension DBWriteTransaction {
-
-    var db: Database { InMemoryDB.shimOnlyBridge(self).db }
 }

@@ -35,7 +35,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     private let chatItemArchiver: MessageBackupChatItemArchiver
     private let contactRecipientArchiver: MessageBackupContactRecipientArchiver
     private let dateProvider: DateProvider
-    private let db: DB
+    private let db: any DB
     private let distributionListRecipientArchiver: MessageBackupDistributionListRecipientArchiver
     private let encryptedStreamProvider: MessageBackupEncryptedProtoStreamProvider
     private let groupRecipientArchiver: MessageBackupGroupRecipientArchiver
@@ -60,7 +60,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         chatItemArchiver: MessageBackupChatItemArchiver,
         contactRecipientArchiver: MessageBackupContactRecipientArchiver,
         dateProvider: @escaping DateProvider,
-        db: DB,
+        db: any DB,
         distributionListRecipientArchiver: MessageBackupDistributionListRecipientArchiver,
         encryptedStreamProvider: MessageBackupEncryptedProtoStreamProvider,
         groupRecipientArchiver: MessageBackupGroupRecipientArchiver,

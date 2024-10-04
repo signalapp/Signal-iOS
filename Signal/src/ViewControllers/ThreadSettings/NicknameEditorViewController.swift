@@ -14,7 +14,7 @@ class NicknameEditorViewController: OWSTableViewController2 {
     static let maxNoteLengthBytes: Int = 2048
 
     struct Context {
-        let db: DB
+        let db: any DB
         let nicknameManager: any NicknameManager
     }
 

@@ -15,7 +15,7 @@ public class SendGiftBadgeJobQueue {
     >
     private let jobRunnerFactory: SendGiftBadgeJobRunnerFactory
 
-    public init(db: DB, reachabilityManager: SSKReachabilityManager) {
+    public init(db: any DB, reachabilityManager: SSKReachabilityManager) {
         self.jobRunnerFactory = SendGiftBadgeJobRunnerFactory()
         self.jobQueueRunner = JobQueueRunner(
             canExecuteJobsConcurrently: true,

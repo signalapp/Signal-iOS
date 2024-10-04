@@ -45,7 +45,7 @@ public class ReceiptCredentialRedemptionJobQueue {
     >
     private let jobRunnerFactory: ReceiptCredentialRedemptionJobRunnerFactory
 
-    public init(db: DB, reachabilityManager: SSKReachabilityManager) {
+    public init(db: any DB, reachabilityManager: SSKReachabilityManager) {
         self.jobRunnerFactory = ReceiptCredentialRedemptionJobRunnerFactory()
         self.jobQueueRunner = JobQueueRunner(
             canExecuteJobsConcurrently: true,

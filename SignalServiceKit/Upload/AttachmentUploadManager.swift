@@ -43,7 +43,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
     private let attachmentThumbnailService: AttachmentThumbnailService
     private let chatConnectionManager: ChatConnectionManager
     private let dateProvider: DateProvider
-    private let db: DB
+    private let db: any DB
     private let fileSystem: Upload.Shims.FileSystem
     private let interactionStore: InteractionStore
     private let messageBackupKeyMaterial: MessageBackupKeyMaterial
@@ -76,7 +76,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         attachmentThumbnailService: AttachmentThumbnailService,
         chatConnectionManager: ChatConnectionManager,
         dateProvider: @escaping DateProvider,
-        db: DB,
+        db: any DB,
         fileSystem: Upload.Shims.FileSystem,
         interactionStore: InteractionStore,
         messageBackupKeyMaterial: MessageBackupKeyMaterial,
@@ -587,7 +587,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
     private func fetchOrCreateAttachmentRecord(
         for attachmentId: Attachment.IDType,
         sourceType: AttachmentUploadRecord.SourceType,
-        db: DB
+        db: any DB
     ) throws -> AttachmentUploadRecord {
         var attachmentUploadRecord: AttachmentUploadRecord
         if let record = try db.read(block: { tx in

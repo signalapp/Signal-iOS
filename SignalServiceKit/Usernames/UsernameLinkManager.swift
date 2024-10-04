@@ -45,12 +45,12 @@ public protocol UsernameLinkManager {
 }
 
 public final class UsernameLinkManagerImpl: UsernameLinkManager {
-    private let db: DB
+    private let db: any DB
     private let apiClient: UsernameApiClient
     private let schedulers: Schedulers
 
     init(
-        db: DB,
+        db: any DB,
         apiClient: UsernameApiClient,
         schedulers: Schedulers
     ) {

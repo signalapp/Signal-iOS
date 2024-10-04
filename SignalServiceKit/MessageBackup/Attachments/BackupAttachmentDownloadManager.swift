@@ -42,7 +42,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
     private let appReadiness: AppReadiness
     private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
     private let dateProvider: DateProvider
-    private let db: DB
+    private let db: any DB
     private let mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore
     private let reachabilityManager: SSKReachabilityManager
     private let taskQueue: TaskQueueLoader<TaskRunner>
@@ -54,7 +54,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         attachmentDownloadManager: AttachmentDownloadManager,
         backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
         dateProvider: @escaping DateProvider,
-        db: DB,
+        db: any DB,
         mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore,
         messageBackupRequestManager: MessageBackupRequestManager,
         reachabilityManager: SSKReachabilityManager,
@@ -205,7 +205,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         private let attachmentDownloadManager: AttachmentDownloadManager
         private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
         private let dateProvider: DateProvider
-        private let db: DB
+        private let db: any DB
         private let mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore
         private let messageBackupRequestManager: MessageBackupRequestManager
         private let tsAccountManager: TSAccountManager
@@ -219,7 +219,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             attachmentDownloadManager: AttachmentDownloadManager,
             backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
             dateProvider: @escaping DateProvider,
-            db: DB,
+            db: any DB,
             mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore,
             messageBackupRequestManager: MessageBackupRequestManager,
             tsAccountManager: TSAccountManager

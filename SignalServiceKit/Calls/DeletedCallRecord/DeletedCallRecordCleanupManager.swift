@@ -60,7 +60,7 @@ final class DeletedCallRecordCleanupManagerImpl: DeletedCallRecordCleanupManager
 
     private let minimumSecondsBetweenCleanupPasses: TimeIntervalProvider
     private let dateProvider: DateProvider
-    private let db: DB
+    private let db: any DB
     private let deletedCallRecordStore: DeletedCallRecordStore
     private let schedulers: Schedulers
 
@@ -73,7 +73,7 @@ final class DeletedCallRecordCleanupManagerImpl: DeletedCallRecordCleanupManager
     init(
         minimumSecondsBetweenCleanupPasses: @escaping TimeIntervalProvider = { 1 },
         dateProvider: @escaping DateProvider,
-        db: DB,
+        db: any DB,
         deletedCallRecordStore: DeletedCallRecordStore,
         schedulers: Schedulers
     ) {

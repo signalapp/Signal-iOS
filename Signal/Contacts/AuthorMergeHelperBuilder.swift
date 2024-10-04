@@ -10,23 +10,20 @@ import SignalServiceKit
 final class AuthorMergeHelperBuilder {
     private let appContext: AppContext
     private let authorMergeHelper: AuthorMergeHelper
-    private let db: DB
-    private let dbFromTx: (DBReadTransaction) -> Database
+    private let db: any DB
     private let modelReadCaches: Shims.ModelReadCaches
     private let recipientDatabaseTable: RecipientDatabaseTable
 
     init(
         appContext: AppContext,
         authorMergeHelper: AuthorMergeHelper,
-        db: DB,
-        dbFromTx: @escaping (DBReadTransaction) -> Database,
+        db: any DB,
         modelReadCaches: Shims.ModelReadCaches,
         recipientDatabaseTable: RecipientDatabaseTable
     ) {
         self.appContext = appContext
         self.authorMergeHelper = authorMergeHelper
         self.db = db
-        self.dbFromTx = dbFromTx
         self.modelReadCaches = modelReadCaches
         self.recipientDatabaseTable = recipientDatabaseTable
     }
@@ -127,7 +124,7 @@ final class AuthorMergeHelperBuilder {
     private func cursorForBatch(table: AuthorDatabaseTable, tx: DBReadTransaction) throws -> RowCursor {
         let nextRowId = authorMergeHelper.nextRowIdStore.getInt64(table.name, transaction: tx)
         let (sqlQuery, sqlArguments) = sqlQueryForBatch(table: table, nextRowId: nextRowId)
-        return try Row.fetchCursor(dbFromTx(tx), sql: sqlQuery, arguments: sqlArguments)
+        return try Row.fetchCursor(databaseConnection(tx), sql: sqlQuery, arguments: sqlArguments)
     }
 
     private func sqlQueryForBatch(table: AuthorDatabaseTable, nextRowId: Int64?) -> (String, StatementArguments) {
@@ -151,7 +148,7 @@ final class AuthorMergeHelperBuilder {
         let sqlQuery = """
             UPDATE "\(table.name)" SET "\(table.aciColumn)" = ?, "\(table.phoneNumberColumn)" = NULL WHERE "id" = ?
         """
-        try dbFromTx(tx).execute(sql: sqlQuery, arguments: [aciString, rowId])
+        try databaseConnection(tx).execute(sql: sqlQuery, arguments: [aciString, rowId])
     }
 
 }

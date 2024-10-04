@@ -22,7 +22,7 @@ public struct MessageBackupAuthCredentialManagerImpl: MessageBackupAuthCredentia
 
     private let authCredentialStore: AuthCredentialStore
     private let dateProvider: DateProvider
-    private let db: DB
+    private let db: any DB
     private let kvStore: KeyValueStore
     private let messageBackupKeyMaterial: MessageBackupKeyMaterial
     private let networkManager: NetworkManager
@@ -30,7 +30,7 @@ public struct MessageBackupAuthCredentialManagerImpl: MessageBackupAuthCredentia
     init(
         authCredentialStore: AuthCredentialStore,
         dateProvider: @escaping DateProvider,
-        db: DB,
+        db: any DB,
         keyValueStoreFactory: KeyValueStoreFactory,
         messageBackupKeyMaterial: MessageBackupKeyMaterial,
         networkManager: NetworkManager

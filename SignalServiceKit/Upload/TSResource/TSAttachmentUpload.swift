@@ -12,7 +12,7 @@ extension Upload.Constants {
 
 public struct TSAttachmentUpload {
 
-    private let db: DB
+    private let db: any DB
     private let signalService: OWSSignalServiceProtocol
     private let networkManager: NetworkManager
     private let chatConnectionManager: ChatConnectionManager
@@ -25,7 +25,7 @@ public struct TSAttachmentUpload {
     private let logger: PrefixedLogger
 
     public init(
-        db: DB,
+        db: any DB,
         signalService: OWSSignalServiceProtocol,
         networkManager: NetworkManager,
         chatConnectionManager: ChatConnectionManager,

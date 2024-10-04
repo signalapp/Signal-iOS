@@ -16,7 +16,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     private let attachmentDownloadStore: AttachmentDownloadStore
     private let attachmentStore: AttachmentStore
     private let attachmentUpdater: AttachmentUpdater
-    private let db: DB
+    private let db: any DB
     private let decrypter: Decrypter
     private let downloadQueue: DownloadQueue
     private let downloadabilityChecker: DownloadabilityChecker
@@ -31,7 +31,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         attachmentValidator: AttachmentContentValidator,
         currentCallProvider: CurrentCallProvider,
         dateProvider: @escaping DateProvider,
-        db: DB,
+        db: any DB,
         interactionStore: InteractionStore,
         mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore,
         messageBackupKeyMaterial: MessageBackupKeyMaterial,
@@ -346,7 +346,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         private let attachmentStore: AttachmentStore
         private let attachmentUpdater: AttachmentUpdater
         private let dateProvider: DateProvider
-        private let db: DB
+        private let db: any DB
         private let decrypter: Decrypter
         private let downloadabilityChecker: DownloadabilityChecker
         private let downloadQueue: DownloadQueue
@@ -361,7 +361,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             attachmentStore: AttachmentStore,
             attachmentUpdater: AttachmentUpdater,
             dateProvider: @escaping DateProvider,
-            db: DB,
+            db: any DB,
             decrypter: Decrypter,
             downloadQueue: DownloadQueue,
             downloadabilityChecker: DownloadabilityChecker,
@@ -836,7 +836,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
         private let attachmentStore: AttachmentStore
         private let currentCallProvider: CurrentCallProvider
-        private let db: DB
+        private let db: any DB
         private let mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore
         private let profileManager: Shims.ProfileManager
         private let threadStore: ThreadStore
@@ -844,7 +844,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         init(
             attachmentStore: AttachmentStore,
             currentCallProvider: CurrentCallProvider,
-            db: DB,
+            db: any DB,
             mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore,
             profileManager: Shims.ProfileManager,
             threadStore: ThreadStore
@@ -1599,7 +1599,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     private class AttachmentUpdater {
 
         private let attachmentStore: AttachmentStore
-        private let db: DB
+        private let db: any DB
         private let decrypter: Decrypter
         private let interactionStore: InteractionStore
         private let orphanedAttachmentCleaner: OrphanedAttachmentCleaner
@@ -1609,7 +1609,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
         public init(
             attachmentStore: AttachmentStore,
-            db: DB,
+            db: any DB,
             decrypter: Decrypter,
             interactionStore: InteractionStore,
             orphanedAttachmentCleaner: OrphanedAttachmentCleaner,

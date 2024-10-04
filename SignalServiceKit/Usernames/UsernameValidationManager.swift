@@ -41,7 +41,7 @@ public class UsernameValidationManagerImpl: UsernameValidationManager {
 
     internal struct Context {
         let accountServiceClient: Usernames.Validation.Shims.AccountServiceClient
-        let database: DB
+        let database: any DB
         let keyValueStoreFactory: KeyValueStoreFactory
         let localUsernameManager: LocalUsernameManager
         let messageProcessor: Usernames.Validation.Shims.MessageProcessor

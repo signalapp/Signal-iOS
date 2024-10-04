@@ -267,7 +267,7 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
     /// username/link corrupted when the request fails.
     private struct NoReachabilityError: Error {}
 
-    private let db: DB
+    private let db: any DB
     private let reachabilityManager: SSKReachabilityManager
     private let schedulers: Schedulers
     private let storageServiceManager: StorageServiceManager
@@ -282,7 +282,7 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
     private var logger: PrefixedLogger { UsernameLogger.shared }
 
     init(
-        db: DB,
+        db: any DB,
         kvStoreFactory: KeyValueStoreFactory,
         reachabilityManager: SSKReachabilityManager,
         schedulers: Schedulers,

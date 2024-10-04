@@ -54,7 +54,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
         mockTaskScheduler.tasks = []
 
         try db.write { tx in
-            try Attachment.Record.deleteAll(InMemoryDB.shimOnlyBridge(tx).db)
+            try Attachment.Record.deleteAll(tx.db)
 
             // No deletions until the transaction commits!
             XCTAssertEqual(mockTaskScheduler.tasks.count, 0)
@@ -72,7 +72,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
 
         // And no rows left.
         try db.read { tx in
-            XCTAssertNil(try OrphanedAttachmentRecord.fetchOne(InMemoryDB.shimOnlyBridge(tx).db))
+            XCTAssertNil(try OrphanedAttachmentRecord.fetchOne(tx.db))
         }
     }
 
@@ -87,7 +87,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
                     localRelativeFilePathAudioWaveform: nil,
                     localRelativeFilePathVideoStillFrame: nil
                 )
-                try record.insert(InMemoryDB.shimOnlyBridge(tx).db)
+                try record.insert(tx.db)
             }
         }
 
@@ -107,7 +107,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
 
         // And no rows left.
         try db.read { tx in
-            XCTAssertNil(try OrphanedAttachmentRecord.fetchOne(InMemoryDB.shimOnlyBridge(tx).db))
+            XCTAssertNil(try OrphanedAttachmentRecord.fetchOne(tx.db))
         }
     }
 
@@ -125,7 +125,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
                     localRelativeFilePathAudioWaveform: nil,
                     localRelativeFilePathVideoStillFrame: nil
                 )
-                try record.insert(InMemoryDB.shimOnlyBridge(tx).db)
+                try record.insert(tx.db)
             }
         }
 
@@ -166,7 +166,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
 
         // The first row should still be around.
         try db.read { tx in
-            let record = try OrphanedAttachmentRecord.fetchOne(InMemoryDB.shimOnlyBridge(tx).db)
+            let record = try OrphanedAttachmentRecord.fetchOne(tx.db)
             XCTAssertEqual(record?.localRelativeFilePath, filePath1)
         }
 
@@ -193,7 +193,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
                 localRelativeFilePathAudioWaveform: nil,
                 localRelativeFilePathVideoStillFrame: nil
             )
-            try record.insert(InMemoryDB.shimOnlyBridge(tx).db)
+            try record.insert(tx.db)
         }
 
         XCTAssertEqual(mockTaskScheduler.tasks.count, 1)
@@ -208,7 +208,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
 
         // The first row should still be around.
         try db.read { tx in
-            let record = try OrphanedAttachmentRecord.fetchOne(InMemoryDB.shimOnlyBridge(tx).db)
+            let record = try OrphanedAttachmentRecord.fetchOne(tx.db)
             XCTAssertEqual(record?.localRelativeFilePath, filePath1)
         }
     }
@@ -222,7 +222,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
         )
 
         try db.write { tx in
-            try record.insert(InMemoryDB.shimOnlyBridge(tx).db)
+            try record.insert(tx.db)
         }
 
         // Should delete all existing rows as soon as we start observing.

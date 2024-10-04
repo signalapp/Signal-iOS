@@ -34,7 +34,7 @@ class GroupCallRecordRingingCleanupManager {
 
     private let callRecordStore: CallRecordStore
     private let callRecordQuerier: CallRecordQuerier
-    private let db: DB
+    private let db: any DB
     private let interactionStore: InteractionStore
     private let groupCallPeekClient: GroupCallPeekClient
     private let notificationPresenter: Shims.NotificationPresenter
@@ -43,7 +43,7 @@ class GroupCallRecordRingingCleanupManager {
     init(
         callRecordStore: CallRecordStore,
         callRecordQuerier: CallRecordQuerier,
-        db: DB,
+        db: any DB,
         interactionStore: InteractionStore,
         groupCallPeekClient: GroupCallPeekClient,
         notificationPresenter: Shims.NotificationPresenter,

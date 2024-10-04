@@ -34,7 +34,7 @@ enum TimeGatedBatch {
     /// never return or may run extremely slow queries.
     public static func enumerateObjects<T>(
         _ objects: some Sequence<T>,
-        db: DB,
+        db: any DB,
         yieldTxAfter: TimeInterval = 1.0,
         file: String = #file,
         function: String = #function,
@@ -70,7 +70,7 @@ enum TimeGatedBatch {
     /// ``TimeGatedBatch/processAll(db:yieldTxAfter:processBatch)``. This method
     /// is an `async` variant of that method; see its docs for more details.
     static func processAllAsync(
-        db: DB,
+        db: any DB,
         yieldTxAfter maximumDuration: TimeInterval = 0.5,
         processBatch: @escaping (DBWriteTransaction) throws -> Int
     ) async rethrows -> Int {
@@ -108,7 +108,7 @@ enum TimeGatedBatch {
     ///
     /// - Returns: The total number of items processed across all batches.
     static func processAll(
-        db: DB,
+        db: any DB,
         yieldTxAfter maximumDuration: TimeInterval = 0.5,
         processBatch: (DBWriteTransaction) throws -> Int
     ) rethrows -> Int {

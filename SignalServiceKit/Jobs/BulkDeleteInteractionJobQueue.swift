@@ -12,7 +12,7 @@ public final class BulkDeleteInteractionJobQueue {
 
     init(
         addressableMessageFinder: DeleteForMeAddressableMessageFinder,
-        db: DB,
+        db: any DB,
         interactionDeleteManager: InteractionDeleteManager,
         threadSoftDeleteManager: ThreadSoftDeleteManager,
         threadStore: ThreadStore
@@ -74,7 +74,7 @@ private class BulkDeleteInteractionJobRunner: JobRunner {
     }
 
     private let addressableMessageFinder: DeleteForMeAddressableMessageFinder
-    private let db: DB
+    private let db: any DB
     private let interactionDeleteManager: InteractionDeleteManager
     private let threadSoftDeleteManager: ThreadSoftDeleteManager
     private let threadStore: ThreadStore
@@ -83,7 +83,7 @@ private class BulkDeleteInteractionJobRunner: JobRunner {
 
     init(
         addressableMessageFinder: DeleteForMeAddressableMessageFinder,
-        db: DB,
+        db: any DB,
         interactionDeleteManager: InteractionDeleteManager,
         threadSoftDeleteManager: ThreadSoftDeleteManager,
         threadStore: ThreadStore
@@ -260,14 +260,14 @@ private class BulkDeleteInteractionJobRunnerFactory: JobRunnerFactory {
     typealias JobRunnerType = BulkDeleteInteractionJobRunner
 
     private let addressableMessageFinder: DeleteForMeAddressableMessageFinder
-    private let db: DB
+    private let db: any DB
     private let interactionDeleteManager: InteractionDeleteManager
     private let threadSoftDeleteManager: ThreadSoftDeleteManager
     private let threadStore: ThreadStore
 
     init(
         addressableMessageFinder: DeleteForMeAddressableMessageFinder,
-        db: DB,
+        db: any DB,
         interactionDeleteManager: InteractionDeleteManager,
         threadSoftDeleteManager: ThreadSoftDeleteManager,
         threadStore: ThreadStore

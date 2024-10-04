@@ -21,12 +21,12 @@ final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
     private let registrationStateChangeManager: RegistrationStateChangeManager
     private let tsAccountManager: TSAccountManager
 
-    private let db: DB
+    private let db: any DB
     private let schedulers: Schedulers
 
     init(
         accountServiceClient: Shims.AccountServiceClient,
-        db: DB,
+        db: any DB,
         registrationStateChangeManager: RegistrationStateChangeManager,
         schedulers: Schedulers,
         tsAccountManager: TSAccountManager

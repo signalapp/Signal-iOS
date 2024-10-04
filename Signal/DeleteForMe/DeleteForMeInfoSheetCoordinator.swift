@@ -20,7 +20,7 @@ final class DeleteForMeInfoSheetCoordinator {
         static let hasShownDeleteForMeInfoSheet = "hasShownDeleteForMeInfoSheet"
     }
 
-    private let db: DB
+    private let db: any DB
     private let deleteForMeSyncMessageSettingsStore: DeleteForMeSyncMessageSettingsStore
     private let deviceStore: OWSDeviceStore
     private let interactionDeleteManager: InteractionDeleteManager
@@ -28,7 +28,7 @@ final class DeleteForMeInfoSheetCoordinator {
     private let threadSoftDeleteManager: ThreadSoftDeleteManager
 
     init(
-        db: DB,
+        db: any DB,
         deleteForMeSyncMessageSettingsStore: DeleteForMeSyncMessageSettingsStore,
         deviceStore: OWSDeviceStore,
         interactionDeleteManager: InteractionDeleteManager,

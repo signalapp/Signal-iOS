@@ -12,8 +12,8 @@ public protocol AppExpiry {
     var isExpired: Bool { get }
 
     func warmCaches(with: DBReadTransaction)
-    func setHasAppExpiredAtCurrentVersion(db: DB)
-    func setExpirationDateForCurrentVersion(_ newExpirationDate: Date?, db: DB)
+    func setHasAppExpiredAtCurrentVersion(db: any DB)
+    func setExpirationDateForCurrentVersion(_ newExpirationDate: Date?, db: any DB)
 }
 
 // MARK: - AppExpiry implementation
@@ -90,7 +90,7 @@ public class AppExpiryImpl: AppExpiry {
         expirationState.set(persistedExpirationState)
     }
 
-    private func updateExpirationState(_ state: ExpirationState, db: DB) {
+    private func updateExpirationState(_ state: ExpirationState, db: any DB) {
         expirationState.set(state)
 
         db.asyncWrite { transaction in
@@ -125,14 +125,14 @@ public class AppExpiryImpl: AppExpiry {
         }
     }
 
-    public func setHasAppExpiredAtCurrentVersion(db: DB) {
+    public func setHasAppExpiredAtCurrentVersion(db: any DB) {
         Logger.warn("")
 
         let newState = ExpirationState(appVersion: appVersion.currentAppVersion, mode: .immediately)
         updateExpirationState(newState, db: db)
     }
 
-    public func setExpirationDateForCurrentVersion(_ newExpirationDate: Date?, db: DB) {
+    public func setExpirationDateForCurrentVersion(_ newExpirationDate: Date?, db: any DB) {
         guard !isExpired else {
             owsFailDebug("Ignoring expiration date change for expired build.")
             return

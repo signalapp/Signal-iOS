@@ -8,7 +8,7 @@ import Foundation
 class ZkParamsMigrator {
     private let appReadiness: AppReadiness
     private let authCredentialStore: AuthCredentialStore
-    private let db: DB
+    private let db: any DB
     private let migrationStore: KeyValueStore
     private let profileManager: ProfileManager
     private let tsAccountManager: TSAccountManager
@@ -17,7 +17,7 @@ class ZkParamsMigrator {
     init(
         appReadiness: AppReadiness,
         authCredentialStore: AuthCredentialStore,
-        db: DB,
+        db: any DB,
         keyValueStoreFactory: KeyValueStoreFactory,
         profileManager: ProfileManager,
         tsAccountManager: TSAccountManager,

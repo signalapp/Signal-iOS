@@ -10,7 +10,7 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
     private let appReadiness: AppReadiness
     private let appVersion: AppVersion
     private let dateProvider: DateProvider
-    private let db: DB
+    private let db: any DB
     private let profileManager: ProfileManager
     private let serviceClient: SignalServiceClient
     private let schedulers: Schedulers
@@ -24,7 +24,7 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
         appReadiness: AppReadiness,
         appVersion: AppVersion,
         dateProvider: @escaping DateProvider,
-        db: DB,
+        db: any DB,
         profileManager: ProfileManager,
         keyValueStoreFactory: KeyValueStoreFactory,
         serviceClient: SignalServiceClient,

@@ -16,7 +16,7 @@
 /// 7. Store the new keys and run any cleanup logic
 internal struct PreKeyTaskManager {
     private let dateProvider: DateProvider
-    private let db: DB
+    private let db: any DB
     private let identityManager: PreKey.Shims.IdentityManager
     private let linkedDevicePniKeyManager: LinkedDevicePniKeyManager
     private let messageProcessor: PreKey.Shims.MessageProcessor
@@ -26,7 +26,7 @@ internal struct PreKeyTaskManager {
 
     init(
         dateProvider: @escaping DateProvider,
-        db: DB,
+        db: any DB,
         identityManager: PreKey.Shims.IdentityManager,
         linkedDevicePniKeyManager: LinkedDevicePniKeyManager,
         messageProcessor: PreKey.Shims.MessageProcessor,

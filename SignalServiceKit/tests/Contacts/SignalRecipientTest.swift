@@ -646,7 +646,7 @@ final class SignalRecipient2Test: XCTestCase {
     func testDecodeStableRow() throws {
         let inMemoryDB = InMemoryDB()
         try inMemoryDB.write { tx in
-            try InMemoryDB.shimOnlyBridge(tx).db.execute(sql: """
+            try tx.db.execute(sql: """
                 INSERT INTO "model_SignalRecipient" (
                     "id", "recordType", "uniqueId", "devices", "recipientPhoneNumber", "recipientUUID", "unregisteredAtTimestamp"
                 ) VALUES (
@@ -670,7 +670,7 @@ final class SignalRecipient2Test: XCTestCase {
             """)
         }
         inMemoryDB.read { tx in
-            let signalRecipients = try! SignalRecipient.fetchAll(InMemoryDB.shimOnlyBridge(tx).db)
+            let signalRecipients = try! SignalRecipient.fetchAll(tx.db)
             XCTAssertEqual(signalRecipients.count, 2)
 
             XCTAssertEqual(signalRecipients[0].id, 18)
@@ -694,7 +694,7 @@ final class SignalRecipient2Test: XCTestCase {
     func testDecodePni() throws {
         let inMemoryDB = InMemoryDB()
         try inMemoryDB.write { tx in
-            try InMemoryDB.shimOnlyBridge(tx).db.execute(sql: """
+            try tx.db.execute(sql: """
                 INSERT INTO "model_SignalRecipient" (
                     "id", "recordType", "uniqueId", "devices", "pni"
                 ) VALUES (
@@ -707,7 +707,7 @@ final class SignalRecipient2Test: XCTestCase {
             """)
         }
         inMemoryDB.read { tx in
-            let signalRecipients = try! SignalRecipient.fetchAll(InMemoryDB.shimOnlyBridge(tx).db)
+            let signalRecipients = try! SignalRecipient.fetchAll(tx.db)
             XCTAssertEqual(signalRecipients.count, 1)
 
             XCTAssertEqual(signalRecipients[0].id, 1)
@@ -722,7 +722,7 @@ final class SignalRecipient2Test: XCTestCase {
         let pni = Pni.constantForTesting("PNI:30000000-5000-4000-8000-3000000000A9")
         inMemoryDB.insert(record: SignalRecipient(aci: nil, pni: pni, phoneNumber: nil))
         inMemoryDB.read { tx in
-            let db = InMemoryDB.shimOnlyBridge(tx).db
+            let db = tx.db
             let rawPniValue = try! String.fetchOne(db, sql: #"SELECT "pni" FROM "model_SignalRecipient""#)!
             XCTAssertEqual(rawPniValue, pni.serviceIdUppercaseString)
         }

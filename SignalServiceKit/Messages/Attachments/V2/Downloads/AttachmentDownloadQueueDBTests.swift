@@ -34,7 +34,7 @@ class AttachmentDownloadQueueDBTests: XCTestCase {
                 tx: tx
             )
             return try Int64.fetchOne(
-                InMemoryDB.shimOnlyBridge(tx).db,
+                tx.db,
                 sql: "SELECT \(Attachment.Record.CodingKeys.sqliteId.rawValue) from \(Attachment.Record.databaseTableName)"
             )!
         }
@@ -45,18 +45,18 @@ class AttachmentDownloadQueueDBTests: XCTestCase {
             sourceType: .transitTier
         )
         try db.write { tx in
-            try download.insert(InMemoryDB.shimOnlyBridge(tx).db)
+            try download.insert(tx.db)
         }
 
         // Now delete the attachment.
         try db.write { tx in
-            try InMemoryDB.shimOnlyBridge(tx).db.execute(sql: "DELETE FROM \(Attachment.Record.databaseTableName)")
+            try tx.db.execute(sql: "DELETE FROM \(Attachment.Record.databaseTableName)")
         }
 
         // The download should be deleted.
         try db.read { tx in
             XCTAssertNil(try QueuedAttachmentDownloadRecord
-                .fetchOne(InMemoryDB.shimOnlyBridge(tx).db)
+                .fetchOne(tx.db)
             )
         }
 
@@ -65,7 +65,7 @@ class AttachmentDownloadQueueDBTests: XCTestCase {
             XCTAssertEqual(
                 download.partialDownloadRelativeFilePath,
                 try String.fetchOne(
-                    InMemoryDB.shimOnlyBridge(tx).db,
+                    tx.db,
                     sql: "SELECT \(OrphanedAttachmentRecord.CodingKeys.localRelativeFilePath.rawValue) FROM \(OrphanedAttachmentRecord.databaseTableName)"
                 )
             )
@@ -76,7 +76,7 @@ class AttachmentDownloadQueueDBTests: XCTestCase {
         try db.read { tx in
             func getQueryPlan(sql: String) throws -> String {
                 let queryPlan: String = try Row
-                    .fetchAll(InMemoryDB.shimOnlyBridge(tx).db, sql: """
+                    .fetchAll(tx.db, sql: """
                         EXPLAIN QUERY PLAN \(sql)
                     """)
                     .map { row -> String in row["detail"] }

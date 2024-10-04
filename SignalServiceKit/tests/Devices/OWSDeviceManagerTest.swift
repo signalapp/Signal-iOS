@@ -7,7 +7,7 @@
 import XCTest
 
 class OWSDeviceManagerTest: XCTestCase {
-    private let db: DB = MockDB()
+    private let db: any DB = MockDB()
     private var deviceManager: OWSDeviceManager!
 
     override func setUp() {

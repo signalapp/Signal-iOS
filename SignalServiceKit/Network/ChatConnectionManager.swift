@@ -22,7 +22,7 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
     private let connectionUnidentified: OWSChatConnection
     private var connections: [OWSChatConnection] { [ connectionIdentified, connectionUnidentified ]}
 
-    public init(accountManager: TSAccountManager, appExpiry: AppExpiry, appReadiness: AppReadiness, currentCallProvider: any CurrentCallProvider, db: DB, libsignalNet: Net, registrationStateChangeManager: RegistrationStateChangeManager, userDefaults: UserDefaults) {
+    public init(accountManager: TSAccountManager, appExpiry: AppExpiry, appReadiness: AppReadiness, currentCallProvider: any CurrentCallProvider, db: any DB, libsignalNet: Net, registrationStateChangeManager: RegistrationStateChangeManager, userDefaults: UserDefaults) {
         AssertIsOnMainThread()
         if userDefaults.bool(forKey: Self.shouldUseLibsignalForIdentifiedDefaultsKey) {
             connectionIdentified = OWSAuthConnectionUsingLibSignal(libsignalNet: libsignalNet, accountManager: accountManager, appExpiry: appExpiry, appReadiness: appReadiness, currentCallProvider: currentCallProvider, db: db, registrationStateChangeManager: registrationStateChangeManager)

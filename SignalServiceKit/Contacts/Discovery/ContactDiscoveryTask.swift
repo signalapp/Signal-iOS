@@ -12,7 +12,7 @@ protocol ContactDiscoveryTaskQueue {
 }
 
 final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
-    private let db: DB
+    private let db: any DB
     private let recipientDatabaseTable: RecipientDatabaseTable
     private let recipientFetcher: RecipientFetcher
     private let recipientManager: any SignalRecipientManager
@@ -23,7 +23,7 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
     private let libsignalNet: Net
 
     init(
-        db: DB,
+        db: any DB,
         recipientDatabaseTable: RecipientDatabaseTable,
         recipientFetcher: RecipientFetcher,
         recipientManager: any SignalRecipientManager,

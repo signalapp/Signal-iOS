@@ -14,7 +14,7 @@ final class UsernameValidationManagerTest: XCTestCase {
 
     private var mockAccountServiceClient: MockAccountServiceClient!
     private var mockContext: UsernameValidationManagerImpl.Context!
-    private var mockDB: DB!
+    private var mockDB: (any DB)!
     private var mockLocalUsernameManager: MockLocalUsernameManager!
     private var mockMessageProcessor: MockMessageProcessor!
     private var mockScheduler: TestScheduler!

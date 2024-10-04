@@ -100,7 +100,7 @@ public final class ContactDiscoveryManagerImpl: NSObject, ContactDiscoveryManage
     }
 
     public convenience init(
-        db: DB,
+        db: any DB,
         recipientDatabaseTable: RecipientDatabaseTable,
         recipientFetcher: RecipientFetcher,
         recipientManager: any SignalRecipientManager,

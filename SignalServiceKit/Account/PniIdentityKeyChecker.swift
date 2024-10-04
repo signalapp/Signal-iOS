@@ -15,13 +15,13 @@ protocol PniIdentityKeyChecker {
 class PniIdentityKeyCheckerImpl: PniIdentityKeyChecker {
     fileprivate static let logger = PrefixedLogger(prefix: "PIKC")
 
-    private let db: DB
+    private let db: any DB
     private let identityManager: Shims.IdentityManager
     private let profileFetcher: Shims.ProfileFetcher
     private let schedulers: Schedulers
 
     init(
-        db: DB,
+        db: any DB,
         identityManager: Shims.IdentityManager,
         profileFetcher: Shims.ProfileFetcher,
         schedulers: Schedulers

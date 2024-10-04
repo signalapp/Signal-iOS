@@ -9,7 +9,7 @@ import XCTest
 final class AppExpiryTest: XCTestCase {
     private let appVersion = AppVersionImpl.shared
     private var date: Date!
-    private var db: DB!
+    private var db: (any DB)!
     private var keyValueStoreFactory: InMemoryKeyValueStoreFactory!
     private var keyValueStore: KeyValueStore!
     private var scheduler: TestScheduler!

@@ -17,7 +17,7 @@ public class TSAttachmentMultisendJobQueue {
     >
     private let jobRunnerFactory: TSAttachmentMultisendJobRunnerFactory
 
-    public init(db: DB, reachabilityManager: SSKReachabilityManager) {
+    public init(db: any DB, reachabilityManager: SSKReachabilityManager) {
         self.jobRunnerFactory = TSAttachmentMultisendJobRunnerFactory()
         self.jobQueueRunner = JobQueueRunner(
             canExecuteJobsConcurrently: false,

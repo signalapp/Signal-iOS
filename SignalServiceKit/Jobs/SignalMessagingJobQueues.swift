@@ -7,7 +7,7 @@ import Foundation
 
 public class SignalMessagingJobQueues: NSObject {
 
-    public init(appReadiness: AppReadiness, db: DB, reachabilityManager: SSKReachabilityManager) {
+    public init(appReadiness: AppReadiness, db: any DB, reachabilityManager: SSKReachabilityManager) {
         incomingContactSyncJobQueue = IncomingContactSyncJobQueue(appReadiness: appReadiness, db: db, reachabilityManager: reachabilityManager)
         incomingGroupSyncJobQueue = IncomingGroupSyncJobQueue(appReadiness: appReadiness)
         sessionResetJobQueue = SessionResetJobQueue(db: db, reachabilityManager: reachabilityManager)

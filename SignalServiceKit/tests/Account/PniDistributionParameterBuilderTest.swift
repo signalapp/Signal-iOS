@@ -15,7 +15,7 @@ class PniDistributionParameterBuilderTest: XCTestCase {
     private var registrationIdGeneratorMock: MockRegistrationIdGenerator!
 
     private var dateProvider: DateProvider!
-    private var db: DB!
+    private var db: (any DB)!
 
     private var pniDistributionParameterBuilder: PniDistributionParameterBuilderImpl!
 

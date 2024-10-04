@@ -563,7 +563,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                     appContext: appContext,
                     authorMergeHelper: DependenciesBridge.shared.authorMergeHelper,
                     db: DependenciesBridge.shared.db,
-                    dbFromTx: { tx in SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database },
                     modelReadCaches: AuthorMergeHelperBuilder.Wrappers.ModelReadCaches(ModelReadCaches.shared),
                     recipientDatabaseTable: DependenciesBridge.shared.recipientDatabaseTable
                 ).buildTableIfNeeded()

@@ -10,13 +10,13 @@ public class WallpaperImageStoreImpl: WallpaperImageStore {
     private let attachmentManager: AttachmentManager
     private let attachmentStore: AttachmentStore
     private let attachmentValidator: AttachmentContentValidator
-    private let db: DB
+    private let db: any DB
 
     public init(
         attachmentManager: AttachmentManager,
         attachmentStore: AttachmentStore,
         attachmentValidator: AttachmentContentValidator,
-        db: DB
+        db: any DB
     ) {
         self.attachmentManager = attachmentManager
         self.attachmentStore = attachmentStore

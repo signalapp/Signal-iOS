@@ -618,10 +618,10 @@ protocol _ContactDiscoveryV2Operation_UDManagerShim {
 }
 
 class _ContactDiscoveryV2Operation_UDManagerWrapper: _ContactDiscoveryV2Operation_UDManagerShim {
-    private let db: DB
+    private let db: any DB
     private let udManager: OWSUDManager
 
-    init(db: DB, udManager: OWSUDManager) {
+    init(db: any DB, udManager: OWSUDManager) {
         self.db = db
         self.udManager = udManager
     }

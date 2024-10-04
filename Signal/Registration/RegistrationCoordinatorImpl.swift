@@ -555,7 +555,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private let kvStore: KeyValueStore
 
     // Shortcuts for the commonly used ones.
-    private var db: DB { deps.db }
+    private var db: any DB { deps.db }
     private var schedulers: Schedulers { deps.schedulers }
 
     // MARK: - In Memory State

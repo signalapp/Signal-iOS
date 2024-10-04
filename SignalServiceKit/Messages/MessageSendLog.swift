@@ -27,11 +27,11 @@ class MessageSendLogObjC: NSObject {
 }
 
 public class MessageSendLog {
-    private let db: DB
+    private let db: any DB
     private let dateProvider: DateProvider
 
     public init(
-        db: DB,
+        db: any DB,
         dateProvider: @escaping DateProvider
     ) {
         self.db = db

@@ -52,7 +52,7 @@ class UsernameLinkQRCodeContentController: OWSViewController, OWSNavigationChild
     /// The user's current username link, if available. If `nil` is passed, the
     /// link will be reset when this controller loads.
     init(
-        db: DB,
+        db: any DB,
         localUsernameManager: LocalUsernameManager,
         schedulers: Schedulers,
         username: String,

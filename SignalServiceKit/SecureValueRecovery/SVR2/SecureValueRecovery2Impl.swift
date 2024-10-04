@@ -16,7 +16,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     private let clientWrapper: SVR2ClientWrapper
     private let connectionFactory: SgxWebsocketConnectionFactory
     private let credentialStorage: SVRAuthCredentialStorage
-    private let db: DB
+    private let db: any DB
     private let keyValueStoreFactory: KeyValueStoreFactory
     private let localStorage: SVRLocalStorageInternal
     private let schedulers: Schedulers
@@ -33,7 +33,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         appVersion: AppVersion,
         connectionFactory: SgxWebsocketConnectionFactory,
         credentialStorage: SVRAuthCredentialStorage,
-        db: DB,
+        db: any DB,
         keyValueStoreFactory: KeyValueStoreFactory,
         schedulers: Schedulers,
         storageServiceManager: StorageServiceManager,
@@ -73,7 +73,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         clientWrapper: SVR2ClientWrapper,
         connectionFactory: SgxWebsocketConnectionFactory,
         credentialStorage: SVRAuthCredentialStorage,
-        db: DB,
+        db: any DB,
         keyValueStoreFactory: KeyValueStoreFactory,
         schedulers: Schedulers,
         storageServiceManager: StorageServiceManager,

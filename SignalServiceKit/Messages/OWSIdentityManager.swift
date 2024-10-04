@@ -195,7 +195,7 @@ extension OWSIdentityManager {
 public class OWSIdentityManagerImpl: OWSIdentityManager {
     private let aciProtocolStore: SignalProtocolStore
     private let appReadiness: AppReadiness
-    private let db: DB
+    private let db: any DB
     private let messageSenderJobQueue: MessageSenderJobQueue
     private let networkManager: NetworkManager
     private let notificationPresenter: any NotificationPresenter
@@ -212,7 +212,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     public init(
         aciProtocolStore: SignalProtocolStore,
         appReadiness: AppReadiness,
-        db: DB,
+        db: any DB,
         keyValueStoreFactory: KeyValueStoreFactory,
         messageSenderJobQueue: MessageSenderJobQueue,
         networkManager: NetworkManager,

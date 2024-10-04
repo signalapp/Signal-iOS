@@ -28,7 +28,7 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
 
     private let logger = PrefixedLogger(prefix: "PHWM")
 
-    private let database: DB
+    private let database: any DB
     private let identityManager: any OWSIdentityManager
     private let keyValueStore: KeyValueStore
     private let networkManager: Shims.NetworkManager
@@ -40,7 +40,7 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
     private let tsAccountManager: TSAccountManager
 
     init(
-        database: DB,
+        database: any DB,
         identityManager: any OWSIdentityManager,
         keyValueStoreFactory: KeyValueStoreFactory,
         networkManager: Shims.NetworkManager,

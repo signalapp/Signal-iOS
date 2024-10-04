@@ -139,7 +139,7 @@ public actor TaskQueueLoader<Runner: TaskRecordRunner> {
 
     public let maxConcurrentTasks: UInt
 
-    private let db: DB
+    private let db: any DB
     private let runner: Runner
     private var store: Store { runner.store }
 
@@ -147,7 +147,7 @@ public actor TaskQueueLoader<Runner: TaskRecordRunner> {
     /// captured by this class and will be retained for its lifetime.
     public init(
         maxConcurrentTasks: UInt,
-        db: DB,
+        db: any DB,
         runner: Runner
     ) {
         self.maxConcurrentTasks = maxConcurrentTasks

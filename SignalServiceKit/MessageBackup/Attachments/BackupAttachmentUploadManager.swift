@@ -41,7 +41,7 @@ public protocol BackupAttachmentUploadManager {
 public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
 
     private let backupAttachmentUploadStore: BackupAttachmentUploadStore
-    private let db: DB
+    private let db: any DB
     private let taskQueue: TaskQueueLoader<TaskRunner>
 
     public init(
@@ -49,7 +49,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         attachmentUploadManager: AttachmentUploadManager,
         backupAttachmentUploadStore: BackupAttachmentUploadStore,
         dateProvider: @escaping DateProvider,
-        db: DB,
+        db: any DB,
         messageBackupRequestManager: MessageBackupRequestManager,
         tsAccountManager: TSAccountManager
     ) {
@@ -113,7 +113,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         private let attachmentUploadManager: AttachmentUploadManager
         private let backupAttachmentUploadStore: BackupAttachmentUploadStore
         private let dateProvider: DateProvider
-        private let db: DB
+        private let db: any DB
         private let messageBackupRequestManager: MessageBackupRequestManager
         private let tsAccountManager: TSAccountManager
 
@@ -124,7 +124,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
             attachmentUploadManager: AttachmentUploadManager,
             backupAttachmentUploadStore: BackupAttachmentUploadStore,
             dateProvider: @escaping DateProvider,
-            db: DB,
+            db: any DB,
             messageBackupRequestManager: MessageBackupRequestManager,
             tsAccountManager: TSAccountManager
         ) {

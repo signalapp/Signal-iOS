@@ -650,7 +650,7 @@ public class StubbableRemoteConfigManager: RemoteConfigManager {
 public class RemoteConfigManagerImpl: RemoteConfigManager {
     private let appExpiry: AppExpiry
     private let appReadiness: AppReadiness
-    private let db: DB
+    private let db: any DB
     private let keyValueStore: KeyValueStore
     private let tsAccountManager: TSAccountManager
     private let serviceClient: SignalServiceClient
@@ -675,7 +675,7 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
     public init(
         appExpiry: AppExpiry,
         appReadiness: AppReadiness,
-        db: DB,
+        db: any DB,
         keyValueStoreFactory: KeyValueStoreFactory,
         tsAccountManager: TSAccountManager,
         serviceClient: SignalServiceClient

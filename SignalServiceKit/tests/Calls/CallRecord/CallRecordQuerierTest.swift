@@ -46,7 +46,7 @@ final class CallRecordQuerierTest: XCTestCase {
         knownThreadRowId: Int64? = nil
     ) -> Int64 {
         return inMemoryDB.write { tx -> Int64 in
-            let db = InMemoryDB.shimOnlyBridge(tx).db
+            let db = tx.db
 
             let (thread, threadRowId): (TSThread, Int64) = {
                 if let knownThreadRowId {
@@ -364,12 +364,6 @@ final class CallRecordQuerierTest: XCTestCase {
             explanation.contains(substring),
             "\(explanation) did not contain \(substring)!"
         )
-    }
-}
-
-private extension DBReadTransaction {
-    var database: Database {
-        return InMemoryDB.shimOnlyBridge(self).db
     }
 }
 

@@ -34,12 +34,12 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
     // MARK: - Init
 
     // DB reference so we can hydrate mentions.
-    private let db: DB
+    private let db: any DB
 
     public weak var editableBodyDelegate: EditableMessageBodyDelegate?
 
     public init(
-        db: DB
+        db: any DB
     ) {
         self.db = db
         super.init()

@@ -422,9 +422,9 @@ private enum Constants {
 }
 
 public class JobRecordFinderImpl<JobRecordType>: JobRecordFinder where JobRecordType: JobRecord {
-    private let db: DB
+    private let db: any DB
 
-    public init(db: DB) {
+    public init(db: any DB) {
         self.db = db
     }
 

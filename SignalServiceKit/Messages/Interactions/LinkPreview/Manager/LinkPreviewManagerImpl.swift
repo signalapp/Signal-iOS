@@ -9,14 +9,14 @@ public class LinkPreviewManagerImpl: LinkPreviewManager {
     private let attachmentManager: TSResourceManager
     private let attachmentStore: TSResourceStore
     private let attachmentValidator: AttachmentContentValidator
-    private let db: DB
+    private let db: any DB
     private let linkPreviewSettingStore: LinkPreviewSettingStore
 
     public init(
         attachmentManager: TSResourceManager,
         attachmentStore: TSResourceStore,
         attachmentValidator: AttachmentContentValidator,
-        db: DB,
+        db: any DB,
         linkPreviewSettingStore: LinkPreviewSettingStore
     ) {
         self.attachmentManager = attachmentManager

@@ -25,7 +25,7 @@ public enum JobAttemptResult {
     public static func executeBlockWithDefaultErrorHandler(
         jobRecord: JobRecord,
         retryLimit: UInt,
-        db: DB,
+        db: any DB,
         block: () async throws -> Void
     ) async -> JobAttemptResult {
         do {
@@ -147,7 +147,7 @@ public class JobQueueRunner<
     JobFinderType: JobRecordFinder,
     JobRunnerFactoryType: JobRunnerFactory
 > where JobFinderType.JobRecordType == JobRunnerFactoryType.JobRunnerType.JobRecordType {
-    private let db: DB
+    private let db: any DB
     private let jobFinder: JobFinderType
     private let jobRunnerFactory: JobRunnerFactoryType
     private var observers = [NSObjectProtocol]()
@@ -189,7 +189,7 @@ public class JobQueueRunner<
 
     private let state: AtomicValue<State>
 
-    public init(canExecuteJobsConcurrently: Bool, db: DB, jobFinder: JobFinderType, jobRunnerFactory: JobRunnerFactoryType) {
+    public init(canExecuteJobsConcurrently: Bool, db: any DB, jobFinder: JobFinderType, jobRunnerFactory: JobRunnerFactoryType) {
         let mode: Mode = .loading(canExecuteJobsConcurrently: canExecuteJobsConcurrently, jobsToEnqueueAfterLoading: [])
         self.state = AtomicValue<State>(State(mode: mode), lock: .init())
         self.db = db

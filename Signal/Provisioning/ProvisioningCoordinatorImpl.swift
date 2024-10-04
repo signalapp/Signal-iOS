@@ -9,7 +9,7 @@ public import SignalServiceKit
 public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
 
     private let chatConnectionManager: ChatConnectionManager
-    private let db: DB
+    private let db: any DB
     private let identityManager: OWSIdentityManager
     private let messageFactory: Shims.MessageFactory
     private let preKeyManager: PreKeyManager
@@ -27,7 +27,7 @@ public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
 
     public init(
         chatConnectionManager: ChatConnectionManager,
-        db: DB,
+        db: any DB,
         identityManager: OWSIdentityManager,
         messageFactory: Shims.MessageFactory,
         preKeyManager: PreKeyManager,

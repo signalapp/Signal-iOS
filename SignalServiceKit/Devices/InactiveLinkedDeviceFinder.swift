@@ -70,7 +70,7 @@ class InactiveLinkedDeviceFinderImpl: InactiveLinkedDeviceFinder {
     }
 
     private let dateProvider: DateProvider
-    private let db: DB
+    private let db: any DB
     private let deviceNameDecrypter: Shims.OWSDeviceNameDecrypter
     private let deviceStore: OWSDeviceStore
     private let devicesService: Shims.OWSDevicesService
@@ -90,7 +90,7 @@ class InactiveLinkedDeviceFinderImpl: InactiveLinkedDeviceFinder {
 
     init(
         dateProvider: @escaping DateProvider,
-        db: DB,
+        db: any DB,
         deviceNameDecrypter: Shims.OWSDeviceNameDecrypter,
         deviceStore: OWSDeviceStore,
         devicesService: Shims.OWSDevicesService,

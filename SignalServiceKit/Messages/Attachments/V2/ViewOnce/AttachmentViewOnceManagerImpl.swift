@@ -8,12 +8,12 @@ import Foundation
 public class AttachmentViewOnceManagerImpl: AttachmentViewOnceManager {
 
     private let attachmentStore: AttachmentStore
-    private let db: DB
+    private let db: any DB
     private let interactionStore: InteractionStore
 
     public init(
         attachmentStore: AttachmentStore,
-        db: DB,
+        db: any DB,
         interactionStore: InteractionStore
     ) {
         self.attachmentStore = attachmentStore

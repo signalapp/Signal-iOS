@@ -12,7 +12,7 @@ public struct RegistrationCoordinatorDependencies {
     public let contactsManager: RegistrationCoordinatorImpl.Shims.ContactsManager
     public let contactsStore: RegistrationCoordinatorImpl.Shims.ContactsStore
     public let dateProvider: DateProvider
-    public let db: DB
+    public let db: any DB
     public let experienceManager: RegistrationCoordinatorImpl.Shims.ExperienceManager
     public let featureFlags: RegistrationCoordinatorImpl.Shims.FeatureFlags
     public let keyValueStoreFactory: KeyValueStoreFactory

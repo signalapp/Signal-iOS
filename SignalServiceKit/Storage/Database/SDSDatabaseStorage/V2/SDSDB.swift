@@ -33,24 +33,24 @@ public extension SDSAnyWriteTransaction {
 /// mocked doesn't work!), and ensures your tests aren't subject to random external behavior changes.
 public class SDSDB: DB {
 
-    fileprivate final class ReadTx: DBReadTransaction {
+    public final class ReadTx: DBReadTransaction {
         fileprivate let tx: SDSAnyReadTransaction
-        init(_ tx: SDSAnyReadTransaction) { self.tx = tx }
+        fileprivate init(_ tx: SDSAnyReadTransaction) { self.tx = tx }
     }
 
-    fileprivate final class WriteTx: DBWriteTransaction {
+    public final class WriteTx: DBWriteTransaction {
         fileprivate let tx: SDSAnyWriteTransaction
-        init(_ tx: SDSAnyWriteTransaction) { self.tx = tx }
+        fileprivate init(_ tx: SDSAnyWriteTransaction) { self.tx = tx }
 
-        func addFinalization(forKey key: String, block: @escaping () -> Void) {
+        public func addFinalization(forKey key: String, block: @escaping () -> Void) {
             tx.addTransactionFinalizationBlock(forKey: key, block: { _ in block() })
         }
 
-        func addSyncCompletion(_ block: @escaping () -> Void) {
+        public func addSyncCompletion(_ block: @escaping () -> Void) {
             tx.addSyncCompletion(block)
         }
 
-        func addAsyncCompletion(on scheduler: Scheduler, _ block: @escaping () -> Void) {
+        public func addAsyncCompletion(on scheduler: Scheduler, _ block: @escaping () -> Void) {
             tx.addAsyncCompletion(on: scheduler, block: block)
         }
     }
@@ -92,7 +92,7 @@ public class SDSDB: DB {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: @escaping (DBReadTransaction) -> T,
+        block: @escaping (ReadTx) -> T,
         completionQueue: DispatchQueue = .main,
         completion: ((T) -> Void)? = nil
     ) {
@@ -103,7 +103,7 @@ public class SDSDB: DB {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: @escaping (DBWriteTransaction) -> T,
+        block: @escaping (WriteTx) -> T,
         completionQueue: DispatchQueue = .main,
         completion: ((T) -> Void)? = nil
     ) {
@@ -116,7 +116,7 @@ public class SDSDB: DB {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: @escaping (DBWriteTransaction) throws -> T
+        block: @escaping (WriteTx) throws -> T
     ) async rethrows -> T {
         return try await databaseStorage.awaitableWrite(file: file, function: function, line: line, block: {try block(WriteTx($0))})
     }
@@ -127,7 +127,7 @@ public class SDSDB: DB {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        _ block: @escaping (DBReadTransaction) throws -> T
+        _ block: @escaping (ReadTx) throws -> T
     ) -> Promise<T> {
         return databaseStorage.read(.promise, file: file, function: function, line: line, {try block(ReadTx($0))})
     }
@@ -136,7 +136,7 @@ public class SDSDB: DB {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        _ block: @escaping (DBWriteTransaction) throws -> T
+        _ block: @escaping (WriteTx) throws -> T
     ) -> Promise<T> {
         return databaseStorage.write(.promise, file: file, function: function, line: line, {try block(WriteTx($0))})
     }
@@ -147,7 +147,7 @@ public class SDSDB: DB {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: (DBReadTransaction) throws -> T
+        block: (ReadTx) throws -> T
     ) rethrows -> T {
         return try databaseStorage.read(file: file, function: function, line: line, block: {try block(ReadTx($0))})
     }
@@ -156,7 +156,7 @@ public class SDSDB: DB {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: (DBWriteTransaction) throws -> T
+        block: (WriteTx) throws -> T
     ) rethrows -> T {
         return try databaseStorage.write(file: file, function: function, line: line, block: {try block(WriteTx($0))})
     }

@@ -108,7 +108,7 @@ protocol PniDistributionParamaterBuilder {
 final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder {
     private let logger = PrefixedLogger(prefix: "PDPBI")
 
-    private let db: DB
+    private let db: any DB
     private let messageSender: Shims.MessageSender
     private let pniSignedPreKeyStore: SignalSignedPreKeyStore
     private let pniKyberPreKeyStore: SignalKyberPreKeyStore
@@ -116,7 +116,7 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
     private let schedulers: Schedulers
 
     init(
-        db: DB,
+        db: any DB,
         messageSender: Shims.MessageSender,
         pniSignedPreKeyStore: SignalSignedPreKeyStore,
         pniKyberPreKeyStore: SignalKyberPreKeyStore,

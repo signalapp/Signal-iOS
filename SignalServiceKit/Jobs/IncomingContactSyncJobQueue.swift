@@ -17,7 +17,7 @@ public class IncomingContactSyncJobQueue: NSObject {
         IncomingContactSyncJobRunnerFactory
     >
 
-    public init(appReadiness: AppReadiness, db: DB, reachabilityManager: SSKReachabilityManager) {
+    public init(appReadiness: AppReadiness, db: any DB, reachabilityManager: SSKReachabilityManager) {
         self.jobQueueRunner = JobQueueRunner(
             canExecuteJobsConcurrently: false,
             db: db,
