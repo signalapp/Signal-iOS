@@ -415,11 +415,11 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
 
             let canDownloadTransitTierFullsize: Bool
             if let transitTierInfo = attachment.transitTierInfo {
-                // Download if the upload was < 30 days old,
+                // Download if the upload was < 45 days old,
                 // otherwise don't bother trying automatically.
                 // (The user could still try a manual download later).
                 canDownloadTransitTierFullsize = Date(millisecondsSince1970: transitTierInfo.uploadTimestamp)
-                    .addingTimeInterval(kMonthInterval)
+                    .addingTimeInterval(45 * kDayInterval)
                     .isAfter(dateProvider())
             } else {
                 canDownloadTransitTierFullsize = false
