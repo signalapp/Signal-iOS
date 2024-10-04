@@ -330,7 +330,7 @@ class AudioAllMediaPresenter: AudioPresenter {
         return CVLabelConfig.unstyledText(
             text,
             font: Constants.filenameFont,
-            textColor: conversationStyle?.bubbleTextColor(isIncoming: false) ?? .label
+            textColor: .label
         )
     }
 

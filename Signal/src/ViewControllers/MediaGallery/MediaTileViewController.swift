@@ -679,7 +679,7 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
                 return defaultView()
             }
             sectionHeader.contentType = mediaCategory
-            sectionHeader.isFilterOn = isFiltering
+            sectionHeader.isFilterOn = mediaGallery.isFiltering
             sectionHeader.clearFilterAction = { [weak self] in
                 self?.disableFiltering()
             }
@@ -1498,10 +1498,6 @@ extension MediaTileViewController: MediaGalleryPrimaryViewController {
 
     var scrollView: UIScrollView { return collectionView }
 
-    var isFiltering: Bool {
-        return mediaGallery.mediaFilter != AllMediaFilter.defaultMediaType(for: mediaCategory)
-    }
-
     var isEmpty: Bool {
         return mediaGallery.galleryDates.isEmpty
     }
@@ -1528,52 +1524,95 @@ extension MediaTileViewController: MediaGalleryPrimaryViewController {
     }
 
     var mediaGalleryFilterMenuItems: [MediaGalleryAccessoriesHelper.MenuItem] {
-        return [
-            MenuItem(
-                title:
-                    OWSLocalizedString(
-                        "ALL_MEDIA_FILTER_NONE",
-                        comment: "Menu option to remove content type restriction in All Media view"
-                    ),
-                isChecked: mediaGallery.mediaFilter == AllMediaFilter.defaultMediaType(for: mediaCategory),
-                handler: { [weak self] in
-                    self?.disableFiltering()
-                }
-            ),
-            MenuItem(
-                title:
-                    OWSLocalizedString(
-                        "ALL_MEDIA_FILTER_PHOTOS",
-                        comment: "Menu option to limit All Media view to displaying only photos"
-                    ),
-                isChecked: mediaGallery.mediaFilter == .photos,
-                handler: { [weak self] in
-                    self?.filter(.photos)
-                }
-            ),
-            MenuItem(
-                title:
-                    OWSLocalizedString(
-                        "ALL_MEDIA_FILTER_VIDEOS",
-                        comment: "Menu option to limit All Media view to displaying only videos"
-                    ),
-                isChecked: mediaGallery.mediaFilter == .videos,
-                handler: { [weak self] in
-                    self?.filter(.videos)
-                }
-            ),
-            MenuItem(
-                title:
-                    OWSLocalizedString(
-                        "ALL_MEDIA_FILTER_GIFS",
-                        comment: "Menu option to limit All Media view to displaying only GIFs"
-                    ),
-                isChecked: mediaGallery.mediaFilter == .gifs,
-                handler: { [weak self] in
-                    self?.filter(.gifs)
-                }
-            )
-        ]
+        let menuItems: [MenuItem]
+        switch mediaCategory {
+        case .photoVideo:
+            menuItems = [
+                MenuItem(
+                    title:
+                        OWSLocalizedString(
+                            "ALL_MEDIA_FILTER_NONE",
+                            comment: "Menu option to remove content type restriction in All Media view"
+                        ),
+                    isChecked: mediaGallery.mediaFilter == AllMediaFilter.defaultMediaType(for: mediaCategory),
+                    handler: { [weak self] in
+                        self?.disableFiltering()
+                    }
+                ),
+                MenuItem(
+                    title:
+                        OWSLocalizedString(
+                            "ALL_MEDIA_FILTER_PHOTOS",
+                            comment: "Menu option to limit All Media view to displaying only photos"
+                        ),
+                    isChecked: mediaGallery.mediaFilter == .photos,
+                    handler: { [weak self] in
+                        self?.filter(.photos)
+                    }
+                ),
+                MenuItem(
+                    title:
+                        OWSLocalizedString(
+                            "ALL_MEDIA_FILTER_VIDEOS",
+                            comment: "Menu option to limit All Media view to displaying only videos"
+                        ),
+                    isChecked: mediaGallery.mediaFilter == .videos,
+                    handler: { [weak self] in
+                        self?.filter(.videos)
+                    }
+                ),
+                MenuItem(
+                    title:
+                        OWSLocalizedString(
+                            "ALL_MEDIA_FILTER_GIFS",
+                            comment: "Menu option to limit All Media view to displaying only GIFs"
+                        ),
+                    isChecked: mediaGallery.mediaFilter == .gifs,
+                    handler: { [weak self] in
+                        self?.filter(.gifs)
+                    }
+                )
+            ]
+
+        case .audio:
+            menuItems = [
+                MenuItem(
+                    title:
+                        OWSLocalizedString(
+                            "ALL_MEDIA_AUDIO_FILTER_ALL",
+                            comment: "Menu option to remove content type restriction in All Media (Audio) view"
+                        ),
+                    isChecked: mediaGallery.mediaFilter == AllMediaFilter.defaultMediaType(for: mediaCategory),
+                    handler: { [weak self] in
+                        self?.disableFiltering()
+                    }
+                ),
+                MenuItem(
+                    title:
+                        OWSLocalizedString(
+                            "ALL_MEDIA_AUDIO_FILTER_VOICE_MSG",
+                            comment: "Menu option to limit All Media (Audio) view to displaying only Voice Messages"
+                        ),
+                    isChecked: mediaGallery.mediaFilter == .voiceMessages,
+                    handler: { [weak self] in
+                        self?.filter(.voiceMessages)
+                    }
+                ),
+                MenuItem(
+                    title:
+                        OWSLocalizedString(
+                            "ALL_MEDIA_AUDIO_FILTER_AUDIO_FILES",
+                            comment: "Menu option to limit All Media (Audio) view to displaying non-voice message audio files"
+                        ),
+                    isChecked: mediaGallery.mediaFilter == .audioFiles,
+                    handler: { [weak self] in
+                        self?.filter(.audioFiles)
+                    }
+                )
+            ]
+        }
+
+        return menuItems
     }
 
     func disableFiltering() {

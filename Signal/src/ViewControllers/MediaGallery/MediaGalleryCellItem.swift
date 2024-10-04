@@ -66,20 +66,14 @@ struct MediaGalleryCellItemAudio {
         }
     }
 
-    enum AttachmentType {
-        case file
-        case voiceMessage
-    }
-    var attachmentType: AttachmentType {
-        return isVoiceMessage ? .voiceMessage : .file
-    }
-
     var localizedString: String {
-        switch attachmentType {
-        case .file:
-            return "Audio file"  // ATTACHMENT_TYPE_AUDIO
-        case .voiceMessage:
-            return "Voice message"  // ATTACHMENT_TYPE_VOICE_MESSAGE
+        if isVoiceMessage {
+            return OWSLocalizedString("MEDIA_GALLERY_A11Y_VOICE_MESSAGE",
+                                      comment: "VoiceOver description for a voice messages in All Media")
+        } else {
+            return OWSLocalizedString("MEDIA_GALLERY_A11Y_AUDIO_FILE",
+                                      comment: "VoiceOver description for a generic audio file in All Media")
+
         }
     }
 }

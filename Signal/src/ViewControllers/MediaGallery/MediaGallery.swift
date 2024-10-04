@@ -99,7 +99,7 @@ class MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
         case .animatedImage:
             return true
         case .video:
-            return  renderingFlag == .shouldLoop
+            return renderingFlag == .shouldLoop
         case .file, .invalid, .image, .audio:
             return false
         case nil:
@@ -964,6 +964,10 @@ class MediaGallery: Dependencies {
 
     internal func galleryItemWithoutLoading(at path: MediaGalleryIndexPath) -> MediaGalleryItem? {
         return sections.itemsBySection[path.section].value[path.item].item
+    }
+
+    var isFiltering: Bool {
+        return mediaFilter != AllMediaFilter.defaultMediaType(for: mediaCategory)
     }
 
     /// Change what media is filtered out.

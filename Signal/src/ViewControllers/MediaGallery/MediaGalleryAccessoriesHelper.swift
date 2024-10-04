@@ -6,23 +6,9 @@
 import SignalServiceKit
 import SignalUI
 
-fileprivate extension AllMediaCategory {
-    var titleString: String {
-        switch self {
-        case .photoVideo:
-            return OWSLocalizedString("ALL_MEDIA_FILE_TYPE_MEDIA",
-                                      comment: "Media (i.e., graphical) file type in All Meda file type picker.")
-        case .audio:
-            return OWSLocalizedString("ALL_MEDIA_FILE_TYPE_AUDIO",
-                                      comment: "Audio file type in All Meda file type picker.")
-        }
-    }
-}
-
 protocol MediaGalleryPrimaryViewController: UIViewController {
     var scrollView: UIScrollView { get }
     var mediaGalleryFilterMenuItems: [MediaGalleryAccessoriesHelper.MenuItem] { get }
-    var isFiltering: Bool { get }
     var isEmpty: Bool { get }
     var hasSelection: Bool { get }
     func selectionInfo() -> (count: Int, totalSize: Int64)?
@@ -229,16 +215,12 @@ public class MediaGalleryAccessoriesHelper {
     }
 
     private lazy var filterButton: UIBarButtonItem = {
-        let (buttonTitle, menuItems) = filterMenuItemsAndCurrentValue()
-
         var configuration = UIButton.Configuration.plain()
         configuration.imagePlacement = .trailing
         configuration.image = UIImage(imageLiteralResourceName: "chevron-down-compact-bold")
         configuration.imagePadding = 4
-        configuration.attributedTitle = AttributedString(buttonTitle)
 
         let button = UIButton(configuration: configuration, primaryAction: nil)
-        button.menu = menuItems.menu(with: .singleSelection)
         button.showsMenuAsPrimaryAction = true
         return UIBarButtonItem(customView: button)
     }()
@@ -249,6 +231,7 @@ public class MediaGalleryAccessoriesHelper {
             button.setAttributedTitle(buttonTitle, for: .normal)
             button.menu = menuItems.menu()
             button.sizeToFit()
+            button.isHidden = menuItems.isEmpty
         }
     }
 
@@ -329,21 +312,6 @@ public class MediaGalleryAccessoriesHelper {
         }
     }
 
-    private var isGridViewAllowed: Bool {
-        return mediaCategory.supportsGridView
-    }
-
-    private var currentFileTypeSupportsFiltering: Bool {
-        switch AllMediaCategory(rawValue: headerView.selectedSegmentIndex) {
-        case .audio:
-            return false
-        case .photoVideo:
-            return true
-        case .none:
-            return false
-        }
-    }
-
     private func updateBottomToolbarControls() {
         guard footerBarState != .hidden else { return }
 
@@ -356,18 +324,18 @@ public class MediaGalleryAccessoriesHelper {
                 return [ shareButton, .flexibleSpace(), selectionInfoButton, .flexibleSpace(), deleteButton ]
             case .regular:
                 let firstItem: UIBarButtonItem
-                if isGridViewAllowed {
+                if mediaCategory.supportsGridView {
                     firstItem = layout == .list ? listViewButton : gridViewButton
                 } else {
                     firstItem = fixedSpace()
                 }
-                if currentFileTypeSupportsFiltering {
-                    updateFilterButton()
-                }
+
+                updateFilterButton()
+
                 return [
                     firstItem,
                     .flexibleSpace(),
-                    currentFileTypeSupportsFiltering ? filterButton : fixedSpace(),
+                    filterButton,
                     .flexibleSpace(),
                     selectButton
                 ]
@@ -560,6 +528,17 @@ extension AllMediaCategory {
             return true
         case .audio:
             return false
+        }
+    }
+
+    var titleString: String {
+        switch self {
+        case .photoVideo:
+            return OWSLocalizedString("ALL_MEDIA_FILE_TYPE_MEDIA",
+                                      comment: "Media (i.e., graphical) file type in All Meda file type picker.")
+        case .audio:
+            return OWSLocalizedString("ALL_MEDIA_FILE_TYPE_AUDIO",
+                                      comment: "Audio file type in All Meda file type picker.")
         }
     }
 }
