@@ -57,7 +57,8 @@ public protocol MessageBackupAccountDataArchiver: MessageBackupProtoArchiver {
 
     func restore(
         _ accountData: BackupProto_AccountData,
-        context: MessageBackup.CustomChatColorRestoringContext
+        chatColorsContext: MessageBackup.CustomChatColorRestoringContext,
+        chatItemContext: MessageBackup.ChatItemRestoringContext
     ) -> MessageBackup.RestoreAccountDataResult
 }
 
@@ -265,7 +266,8 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
 
     public func restore(
         _ accountData: BackupProto_AccountData,
-        context: MessageBackup.CustomChatColorRestoringContext
+        chatColorsContext context: MessageBackup.CustomChatColorRestoringContext,
+        chatItemContext: MessageBackup.ChatItemRestoringContext
     ) -> MessageBackup.RestoreAccountDataResult {
         guard let profileKey = Aes256Key(data: accountData.profileKey) else {
             return .failure([.restoreFrameError(
@@ -293,6 +295,26 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
             subscriptionManager.setSubscriberCurrencyCode(currencyCode: donationSubscriberData.currencyCode, tx: context.tx)
             subscriptionManager.setUserManuallyCancelledSubscription(value: donationSubscriberData.manuallyCancelled, tx: context.tx)
         }
+
+        let uploadEra: MessageBackup.RestoredAttachmentUploadEra
+        if accountData.hasBackupsSubscriberData {
+            let backupsSubscriberData = accountData.backupsSubscriberData
+            do {
+                uploadEra = .fromProtoSubscriberId(try Attachment.uploadEra(
+                    backupSubscriptionId: backupsSubscriberData.subscriberID
+                ))
+            } catch {
+                return .failure([.restoreFrameError(
+                    .uploadEraDerivationFailed(error),
+                    .localUser
+                )])
+            }
+        } else {
+            uploadEra = .random(UUID().uuidString)
+        }
+        // This MUST get set before we restore custom chat colors/wallpapers.
+        context.uploadEra = uploadEra
+        chatItemContext.uploadEra = uploadEra
 
         // Restore local settings
         if accountData.hasAccountSettings {

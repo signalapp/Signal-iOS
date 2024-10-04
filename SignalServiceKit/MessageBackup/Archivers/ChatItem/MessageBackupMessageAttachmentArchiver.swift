@@ -181,7 +181,7 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
         messageRowId: Int64,
         message: TSMessage,
         thread: MessageBackup.ChatThread,
-        context: MessageBackup.RestoringContext
+        context: MessageBackup.ChatItemRestoringContext
     ) -> MessageBackup.RestoreInteractionResult<Void> {
         var uuidErrors = [MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>.ErrorType.InvalidProtoDataError]()
         let withUnwrappedUUIDs: [(BackupProto_MessageAttachment, UUID?)]
@@ -229,7 +229,7 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
         messageRowId: Int64,
         message: TSMessage,
         thread: MessageBackup.ChatThread,
-        context: MessageBackup.RestoringContext
+        context: MessageBackup.ChatItemRestoringContext
     ) -> MessageBackup.RestoreInteractionResult<Void> {
         let ownedAttachment = OwnedAttachmentBackupPointerProto(
             proto: attachment,
@@ -257,7 +257,7 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
         messageRowId: Int64,
         message: TSMessage,
         thread: MessageBackup.ChatThread,
-        context: MessageBackup.RestoringContext
+        context: MessageBackup.ChatItemRestoringContext
     ) -> MessageBackup.RestoreInteractionResult<Void> {
         let clientUUID: UUID?
         if attachment.hasClientUuid {
@@ -296,7 +296,7 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
         messageRowId: Int64,
         message: TSMessage,
         thread: MessageBackup.ChatThread,
-        context: MessageBackup.RestoringContext
+        context: MessageBackup.ChatItemRestoringContext
     ) -> MessageBackup.RestoreInteractionResult<Void> {
         let ownedAttachment = OwnedAttachmentBackupPointerProto(
             proto: attachment,
@@ -324,7 +324,7 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
         messageRowId: Int64,
         message: TSMessage,
         thread: MessageBackup.ChatThread,
-        context: MessageBackup.RestoringContext
+        context: MessageBackup.ChatItemRestoringContext
     ) -> MessageBackup.RestoreInteractionResult<Void> {
         let ownedAttachment = OwnedAttachmentBackupPointerProto(
             proto: attachment,
@@ -354,7 +354,7 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
         messageRowId: Int64,
         message: TSMessage,
         thread: MessageBackup.ChatThread,
-        context: MessageBackup.RestoringContext
+        context: MessageBackup.ChatItemRestoringContext
     ) -> MessageBackup.RestoreInteractionResult<Void> {
         let ownedAttachment = OwnedAttachmentBackupPointerProto(
             proto: attachment,
@@ -380,7 +380,7 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
 
     // MARK: - Private
 
-    internal static func uploadEra() throws -> String {
+    internal static func currentUploadEra() throws -> String {
         // TODO: [Backups] use actual subscription id. For now use a fixed,
         // arbitrary id, so that it never changes.
         let backupSubscriptionId = Data(repeating: 5, count: 32)
@@ -436,16 +436,14 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
     private func restoreAttachments(
         _ attachments: [OwnedAttachmentBackupPointerProto],
         chatItemId: MessageBackup.ChatItemId,
-        context: MessageBackup.RestoringContext
+        context: MessageBackup.ChatItemRestoringContext
     ) -> MessageBackup.RestoreInteractionResult<Void> {
         let uploadEra: String
-        do {
-            uploadEra = try Self.uploadEra()
-        } catch {
-            return .messageFailure([.restoreFrameError(
-                .uploadEraDerivationFailed(error),
-                chatItemId
-            )])
+        switch context.uploadEra {
+        case nil:
+            return .messageFailure([.restoreFrameError(.invalidProtoData(.accountDataNotFound), chatItemId)])
+        case .fromProtoSubscriberId(let value), .random(let value):
+            uploadEra = value
         }
 
         let errors = attachmentManager.createAttachmentPointers(

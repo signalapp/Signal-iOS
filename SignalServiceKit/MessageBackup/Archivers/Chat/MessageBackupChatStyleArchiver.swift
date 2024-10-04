@@ -483,14 +483,15 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
         _ attachment: BackupProto_FilePointer,
         thread: MessageBackup.ChatThread?,
         errorId: IDType,
-        context: MessageBackup.RestoringContext
+        context: MessageBackup.CustomChatColorRestoringContext
     ) -> MessageBackup.RestoreFrameResult<IDType> {
         let uploadEra: String
-        do {
-            uploadEra = try MessageBackupMessageAttachmentArchiver.uploadEra()
-        } catch {
+        switch context.uploadEra {
+        case .fromProtoSubscriberId(let value), .random(let value):
+            uploadEra = value
+        case nil:
             return .failure([.restoreFrameError(
-                .uploadEraDerivationFailed(error),
+                .invalidProtoData(.accountDataNotFound),
                 errorId
             )])
         }

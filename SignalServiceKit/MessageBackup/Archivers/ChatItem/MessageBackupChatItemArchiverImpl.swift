@@ -300,7 +300,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
 
     public func restore(
         _ chatItem: BackupProto_ChatItem,
-        context: MessageBackup.ChatRestoringContext
+        context: MessageBackup.ChatItemRestoringContext
     ) -> RestoreFrameResult {
         func restoreFrameError(
             _ error: MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>.ErrorType,
@@ -320,7 +320,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
             break
         }
 
-        guard let threadUniqueId = context[chatItem.typedChatId] else {
+        guard let threadUniqueId = context.chatContext[chatItem.typedChatId] else {
             return restoreFrameError(.invalidProtoData(.chatIdNotFound(chatItem.typedChatId)))
         }
 

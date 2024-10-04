@@ -699,7 +699,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         _ chatItemType: ChatItemType,
         chatItemId: MessageBackup.ChatItemId,
         chatThread: MessageBackup.ChatThread,
-        context: MessageBackup.ChatRestoringContext
+        context: MessageBackup.ChatItemRestoringContext
     ) -> RestoreInteractionResult<MessageBackup.RestoredMessageContents> {
         switch chatItemType {
         case .paymentNotification(let paymentNotification):
@@ -760,7 +760,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         thread: MessageBackup.ChatThread,
         chatItemId: MessageBackup.ChatItemId,
         restoredContents: MessageBackup.RestoredMessageContents,
-        context: MessageBackup.ChatRestoringContext
+        context: MessageBackup.ChatItemRestoringContext
     ) -> RestoreInteractionResult<Void> {
         guard let messageRowId = message.sqliteRowId else {
             return .messageFailure([.restoreFrameError(
@@ -922,7 +922,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         _ paymentNotification: BackupProto_PaymentNotification,
         chatItemId: MessageBackup.ChatItemId,
         thread: MessageBackup.ChatThread,
-        context: MessageBackup.ChatRestoringContext
+        context: MessageBackup.ChatItemRestoringContext
     ) -> RestoreInteractionResult<MessageBackup.RestoredMessageContents> {
         let status: MessageBackup.RestoredMessageContents.Payment.Status
         let paymentTransaction: BackupProto_PaymentNotification.TransactionDetails.Transaction?
@@ -959,7 +959,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         _ remoteDeleteTombstone: BackupProto_RemoteDeletedMessage,
         chatItemId: MessageBackup.ChatItemId,
         chatThread: MessageBackup.ChatThread,
-        context: MessageBackup.ChatRestoringContext
+        context: MessageBackup.ChatItemRestoringContext
     ) -> RestoreInteractionResult<MessageBackup.RestoredMessageContents> {
         return .success(.remoteDeleteTombstone)
     }
@@ -970,7 +970,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         _ standardMessage: BackupProto_StandardMessage,
         chatItemId: MessageBackup.ChatItemId,
         chatThread: MessageBackup.ChatThread,
-        context: MessageBackup.ChatRestoringContext
+        context: MessageBackup.ChatItemRestoringContext
     ) -> RestoreInteractionResult<MessageBackup.RestoredMessageContents> {
         var partialErrors = [RestoreFrameError]()
 
@@ -1168,7 +1168,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         _ quote: BackupProto_Quote,
         chatItemId: MessageBackup.ChatItemId,
         thread: MessageBackup.ChatThread,
-        context: MessageBackup.ChatRestoringContext
+        context: MessageBackup.ChatItemRestoringContext
     ) -> RestoreInteractionResult<(TSQuotedMessage, BackupProto_MessageAttachment?)> {
         let authorAddress: MessageBackup.InteropAddress
         switch context.recipientContext[quote.authorRecipientId] {
@@ -1382,7 +1382,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         _ contactMessage: BackupProto_ContactMessage,
         chatItemId: MessageBackup.ChatItemId,
         chatThread: MessageBackup.ChatThread,
-        context: MessageBackup.ChatRestoringContext
+        context: MessageBackup.ChatItemRestoringContext
     ) -> RestoreInteractionResult<MessageBackup.RestoredMessageContents> {
         var partialErrors = [RestoreFrameError]()
 
@@ -1429,7 +1429,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         _ stickerMessage: BackupProto_StickerMessage,
         chatItemId: MessageBackup.ChatItemId,
         chatThread: MessageBackup.ChatThread,
-        context: MessageBackup.ChatRestoringContext
+        context: MessageBackup.ChatItemRestoringContext
     ) -> RestoreInteractionResult<MessageBackup.RestoredMessageContents> {
         let stickerProto = stickerMessage.sticker
         let messageSticker = MessageSticker.withForeignReferenceAttachment(
@@ -1453,7 +1453,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
     private func restoreGiftBadge(
         _ giftBadgeProto: BackupProto_GiftBadge,
         chatItemId: MessageBackup.ChatItemId,
-        context: MessageBackup.ChatRestoringContext
+        context: MessageBackup.ChatItemRestoringContext
     ) -> RestoreInteractionResult<MessageBackup.RestoredMessageContents> {
         let giftBadge: OWSGiftBadge
         switch giftBadgeProto.state {

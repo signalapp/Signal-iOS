@@ -239,6 +239,10 @@ extension MessageBackup {
 
         private let map = SharedMap<CustomChatColorId, CustomChatColor.Key>()
 
+        /// Will only be nil if there was no earier AccountData frame to set it, which
+        /// should be treated as an error at read time when processing all subsequent frames.
+        var uploadEra: RestoredAttachmentUploadEra?
+
         internal override init(tx: DBWriteTransaction) {
             super.init(tx: tx)
         }

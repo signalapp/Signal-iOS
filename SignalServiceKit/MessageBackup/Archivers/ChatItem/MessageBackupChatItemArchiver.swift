@@ -53,6 +53,6 @@ public protocol MessageBackupChatItemArchiver: MessageBackupProtoArchiver {
     /// but typically an error will be shown to the user, but the restore will be allowed to proceed.
     func restore(
         _ chatItem: BackupProto_ChatItem,
-        context: MessageBackup.ChatRestoringContext
+        context: MessageBackup.ChatItemRestoringContext
     ) -> RestoreFrameResult
 }

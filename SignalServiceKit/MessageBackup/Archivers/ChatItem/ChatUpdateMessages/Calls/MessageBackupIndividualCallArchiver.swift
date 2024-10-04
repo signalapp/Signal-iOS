@@ -118,7 +118,7 @@ final class MessageBackupIndividualCallArchiver {
         _ individualCall: BackupProto_IndividualCall,
         chatItem: BackupProto_ChatItem,
         chatThread: MessageBackup.ChatThread,
-        context: MessageBackup.ChatRestoringContext
+        context: MessageBackup.ChatItemRestoringContext
     ) -> RestoreChatUpdateMessageResult {
         let contactThread: TSContactThread
         switch chatThread.threadType {

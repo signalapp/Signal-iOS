@@ -198,7 +198,7 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupProtoArchiver {
     func restoreChatItem(
         _ chatItem: BackupProto_ChatItem,
         chatThread: MessageBackup.ChatThread,
-        context: MessageBackup.ChatRestoringContext
+        context: MessageBackup.ChatItemRestoringContext
     ) -> RestoreChatUpdateMessageResult {
         let chatUpdateMessage: BackupProto_ChatUpdateMessage
         do {

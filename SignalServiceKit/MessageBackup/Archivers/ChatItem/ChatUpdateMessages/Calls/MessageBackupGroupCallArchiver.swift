@@ -115,7 +115,7 @@ final class MessageBackupGroupCallArchiver {
         _ groupCall: BackupProto_GroupCall,
         chatItem: BackupProto_ChatItem,
         chatThread: MessageBackup.ChatThread,
-        context: MessageBackup.ChatRestoringContext
+        context: MessageBackup.ChatItemRestoringContext
     ) -> RestoreChatUpdateMessageResult {
         let groupThread: TSGroupThread
         switch chatThread.threadType {

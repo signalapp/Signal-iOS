@@ -61,7 +61,7 @@ class MessageBackupTSIncomingMessageArchiver {
     func restoreIncomingChatItem(
         _ topLevelChatItem: BackupProto_ChatItem,
         chatThread: MessageBackup.ChatThread,
-        context: MessageBackup.ChatRestoringContext
+        context: MessageBackup.ChatItemRestoringContext
     ) -> MessageBackup.RestoreInteractionResult<Void> {
         var partialErrors = [RestoreFrameError]()
 
@@ -171,7 +171,7 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
         isPastRevision: Bool,
         hasPastRevisions: Bool,
         chatThread: MessageBackup.ChatThread,
-        context: MessageBackup.ChatRestoringContext
+        context: MessageBackup.ChatItemRestoringContext
     ) -> MessageBackup.RestoreInteractionResult<EditHistoryMessageType> {
         guard let chatItemItem = chatItem.item else {
             return .messageFailure([.restoreFrameError(

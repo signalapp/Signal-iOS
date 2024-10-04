@@ -172,7 +172,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
             // TODO: [Backups] get the real upload era
             let currentUploadEra: String
             do {
-                currentUploadEra = try MessageBackupMessageAttachmentArchiver.uploadEra()
+                currentUploadEra = try MessageBackupMessageAttachmentArchiver.currentUploadEra()
             } catch let error {
                 try? await loader.stop(reason: error)
                 return .unretryableError(OWSAssertionError("Unable to get current upload era: \(error)"))

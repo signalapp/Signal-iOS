@@ -76,7 +76,7 @@ final class MessageBackupThreadMergeChatUpdateArchiver {
         _ threadMergeUpdateProto: BackupProto_ThreadMergeChatUpdate,
         chatItem: BackupProto_ChatItem,
         chatThread: MessageBackup.ChatThread,
-        context: MessageBackup.ChatRestoringContext
+        context: MessageBackup.ChatItemRestoringContext
     ) -> RestoreChatUpdateMessageResult {
         func invalidProtoData(
             _ error: RestoreFrameError.ErrorType.InvalidProtoDataError,

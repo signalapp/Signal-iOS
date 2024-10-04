@@ -61,7 +61,7 @@ class MessageBackupTSOutgoingMessageArchiver {
     func restoreChatItem(
         _ topLevelChatItem: BackupProto_ChatItem,
         chatThread: MessageBackup.ChatThread,
-        context: MessageBackup.ChatRestoringContext
+        context: MessageBackup.ChatItemRestoringContext
     ) -> MessageBackup.RestoreInteractionResult<Void> {
         var partialErrors = [RestoreFrameError]()
 
@@ -293,7 +293,7 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
         isPastRevision: Bool,
         hasPastRevisions: Bool,
         chatThread: MessageBackup.ChatThread,
-        context: MessageBackup.ChatRestoringContext
+        context: MessageBackup.ChatItemRestoringContext
     ) -> MessageBackup.RestoreInteractionResult<EditHistoryMessageType> {
         guard let chatItemType = chatItem.item else {
             // Unrecognized item type!
@@ -375,7 +375,7 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
         contents: MessageBackup.RestoredMessageContents,
         outgoingDetails: BackupProto_ChatItem.OutgoingMessageDetails,
         editState: TSEditState,
-        context: MessageBackup.ChatRestoringContext,
+        context: MessageBackup.ChatItemRestoringContext,
         chatThread: MessageBackup.ChatThread
     ) -> MessageBackup.RestoreInteractionResult<TSOutgoingMessage> {
         guard SDS.fitsInInt64(chatItem.dateSent), chatItem.dateSent > 0 else {

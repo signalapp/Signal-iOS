@@ -43,7 +43,7 @@ protocol MessageBackupTSMessageEditHistoryBuilder<EditHistoryMessageType>: AnyOb
         isPastRevision: Bool,
         hasPastRevisions: Bool,
         chatThread: MessageBackup.ChatThread,
-        context: MessageBackup.ChatRestoringContext
+        context: MessageBackup.ChatItemRestoringContext
     ) -> MessageBackup.RestoreInteractionResult<EditHistoryMessageType>
 }
 
@@ -250,7 +250,7 @@ final class MessageBackupTSMessageEditHistoryArchiver<MessageType: TSMessage>
     >(
         _ topLevelChatItem: BackupProto_ChatItem,
         chatThread: MessageBackup.ChatThread,
-        context: MessageBackup.ChatRestoringContext,
+        context: MessageBackup.ChatItemRestoringContext,
         builder: Builder
     ) -> MessageBackup.RestoreInteractionResult<Void> {
         var partialErrors = [RestoreFrameError]()
