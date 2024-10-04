@@ -981,14 +981,14 @@ extension OWSContactsManager: ContactManager {
             // Save names to the database before generating notifications.
             self.buildSignalAccountsAndUpdatePersistedState(for: fetchedSystemContacts)
 
-            self.databaseStorage.write { tx in
+            try self.databaseStorage.write { tx in
                 self.postJoinNotificationsIfNeeded(
                     addressBookPhoneNumbers: systemContactPhoneNumbers,
                     phoneNumberRegistrationStatus: signalRecipientPhoneNumbers,
                     intersectedRecipients: intersectedRecipients,
                     tx: tx
                 )
-                self.unhideRecipientsIfNeeded(
+                try self.unhideRecipientsIfNeeded(
                     addressBookPhoneNumbers: systemContactPhoneNumbers,
                     tx: tx.asV2Write
                 )
@@ -1035,7 +1035,7 @@ extension OWSContactsManager: ContactManager {
     private func unhideRecipientsIfNeeded(
         addressBookPhoneNumbers: some Sequence<CanonicalPhoneNumber>,
         tx: DBWriteTransaction
-    ) {
+    ) throws {
         let recipientHidingManager = DependenciesBridge.shared.recipientHidingManager
         let phoneNumbers = Set(addressBookPhoneNumbers.lazy.map { $0.rawValue.stringValue })
         for hiddenRecipient in recipientHidingManager.hiddenRecipients(tx: tx) {
@@ -1048,7 +1048,7 @@ extension OWSContactsManager: ContactManager {
             guard phoneNumbers.contains(phoneNumber.stringValue) else {
                 continue  // Not in the address book -- no unhiding.
             }
-            DependenciesBridge.shared.recipientHidingManager.removeHiddenRecipient(
+            try DependenciesBridge.shared.recipientHidingManager.removeHiddenRecipient(
                 hiddenRecipient,
                 wasLocallyInitiated: true,
                 tx: tx

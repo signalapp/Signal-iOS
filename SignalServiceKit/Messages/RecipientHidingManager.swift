@@ -72,7 +72,11 @@ public protocol RecipientHidingManager {
     /// - Parameter wasLocallyInitiated: Whether the user initiated
     ///   the hide on this device (true) or a linked device (false).
     /// - Parameter tx: The transaction to use for database operations.
-    func removeHiddenRecipient(_ recipient: SignalRecipient, wasLocallyInitiated: Bool, tx: DBWriteTransaction)
+    func removeHiddenRecipient(
+        _ recipient: SignalRecipient,
+        wasLocallyInitiated: Bool,
+        tx: DBWriteTransaction
+    ) throws
 }
 
 public extension RecipientHidingManager {
@@ -293,14 +297,14 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
         _ recipient: SignalRecipient,
         wasLocallyInitiated: Bool,
         tx: DBWriteTransaction
-    ) {
+    ) throws {
         if let id = recipient.id, isHiddenRecipient(recipient, tx: tx) {
             Logger.info("Unhiding recipient")
             let sql = """
                 DELETE FROM \(HiddenRecipient.databaseTableName)
                 WHERE \(HiddenRecipient.CodingKeys.signalRecipientRowId.stringValue) = ?
             """
-            SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.execute(sql: sql, arguments: [id])
+            try databaseConnection(tx).execute(sql: sql, arguments: [id])
             didSetAsUnhidden(recipient: recipient, wasLocallyInitiated: wasLocallyInitiated, tx: tx)
         }
     }

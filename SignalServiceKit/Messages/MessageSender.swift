@@ -1083,14 +1083,14 @@ public class MessageSender: Dependencies {
     }
 
     private func handleMessageSentLocally(_ message: TSOutgoingMessage) async throws {
-        await databaseStorage.awaitableWrite { tx in
+        try await databaseStorage.awaitableWrite { tx in
             if
                 let thread = message.thread(tx: tx) as? TSContactThread,
                 self.shouldMessageSendUnhideRecipient(message, tx: tx),
                 let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aciAddress,
                 !localAddress.isEqualToAddress(thread.contactAddress)
             {
-                DependenciesBridge.shared.recipientHidingManager.removeHiddenRecipient(
+                try DependenciesBridge.shared.recipientHidingManager.removeHiddenRecipient(
                     thread.contactAddress,
                     wasLocallyInitiated: true,
                     tx: tx.asV2Write

@@ -92,7 +92,11 @@ extension RecipientHidingManager {
     /// - Parameter wasLocallyInitiated: Whether the user initiated
     ///   the hide on this device (true) or a linked device (false).
     /// - Parameter tx: The transaction to use for database operations.
-    public func removeHiddenRecipient(_ address: SignalServiceAddress, wasLocallyInitiated: Bool, tx: DBWriteTransaction) {
+    public func removeHiddenRecipient(
+        _ address: SignalServiceAddress,
+        wasLocallyInitiated: Bool,
+        tx: DBWriteTransaction
+    ) throws {
         guard
             let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.aciAddress,
             !localAddress.isEqualToAddress(address)
@@ -101,7 +105,7 @@ extension RecipientHidingManager {
             return
         }
         if let recipient = recipient(from: address, tx: tx) {
-            removeHiddenRecipient(recipient, wasLocallyInitiated: wasLocallyInitiated, tx: tx)
+            try removeHiddenRecipient(recipient, wasLocallyInitiated: wasLocallyInitiated, tx: tx)
         }
     }
 

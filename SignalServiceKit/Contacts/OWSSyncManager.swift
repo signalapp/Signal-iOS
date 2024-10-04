@@ -292,11 +292,15 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
                 /// since the linked device should mark unhidden in
                 /// StorageService. But it doesn't hurt to get ahead of the
                 /// game and unhide here.
-                DependenciesBridge.shared.recipientHidingManager.removeHiddenRecipient(
-                    thread.contactAddress,
-                    wasLocallyInitiated: false,
-                    tx: transaction.asV2Write
-                )
+                do {
+                    try DependenciesBridge.shared.recipientHidingManager.removeHiddenRecipient(
+                        thread.contactAddress,
+                        wasLocallyInitiated: false,
+                        tx: transaction.asV2Write
+                    )
+                } catch {
+                    owsFailDebug("Unable to unhide recipient after accept sync message")
+                }
             }
             profileManager.addThread(
                 toProfileWhitelist: thread,

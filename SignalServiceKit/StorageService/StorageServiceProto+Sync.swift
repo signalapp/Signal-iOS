@@ -592,7 +592,11 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
                     Logger.warn("Recipient hidden remotely could not be hidden locally.")
                 }
             } else {
-                recipientHidingManager.removeHiddenRecipient(anyAddress, wasLocallyInitiated: false, tx: tx)
+                do {
+                    try recipientHidingManager.removeHiddenRecipient(anyAddress, wasLocallyInitiated: false, tx: tx)
+                } catch {
+                    Logger.warn("Recipient hidden remotely could not be unhidden locally.")
+                }
             }
         }
 
