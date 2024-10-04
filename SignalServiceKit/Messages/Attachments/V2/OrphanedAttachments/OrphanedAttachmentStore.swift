@@ -29,7 +29,7 @@ public class OrphanedAttachmentStoreImpl: OrphanedAttachmentStore {
         tx: DBReadTransaction
     ) -> Bool {
         return (try? OrphanedAttachmentRecord.exists(
-            SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database,
+            databaseConnection(tx),
             key: id
         )) ?? false
     }
@@ -38,7 +38,7 @@ public class OrphanedAttachmentStoreImpl: OrphanedAttachmentStore {
         _ record: inout OrphanedAttachmentRecord,
         tx: DBWriteTransaction
     ) throws {
-        try record.insert(SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database)
+        try record.insert(databaseConnection(tx))
     }
 }
 

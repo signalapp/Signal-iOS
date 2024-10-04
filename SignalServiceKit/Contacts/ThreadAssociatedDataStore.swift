@@ -13,7 +13,7 @@ public protocol ThreadAssociatedDataStore {
 
 class ThreadAssociatedDataStoreImpl: ThreadAssociatedDataStore {
     func fetch(for threadUniqueId: String, tx: DBReadTransaction) -> ThreadAssociatedData? {
-        let db = SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database
+        let db = databaseConnection(tx)
         do {
             return try ThreadAssociatedData.filter(Column("threadUniqueId") == threadUniqueId).fetchOne(db)
         } catch {
@@ -23,7 +23,7 @@ class ThreadAssociatedDataStoreImpl: ThreadAssociatedDataStore {
     }
 
     func remove(for threadUniqueId: String, tx: DBWriteTransaction) {
-        let db = SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database
+        let db = databaseConnection(tx)
         do {
             try ThreadAssociatedData.filter(Column("threadUniqueId") == threadUniqueId).deleteAll(db)
         } catch {

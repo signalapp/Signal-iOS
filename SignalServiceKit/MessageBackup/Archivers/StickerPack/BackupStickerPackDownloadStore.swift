@@ -44,11 +44,7 @@ public class BackupStickerPackDownloadStoreImpl: BackupStickerPackDownloadStore 
     public typealias Record = QueuedBackupStickerPackDownload
 
     public func enqueue(packId: Data, packKey: Data, tx: DBWriteTransaction) throws {
-        let db = SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database
-        try enqueue(packId: packId, packKey: packKey, db: db)
-    }
-
-    internal func enqueue(packId: Data, packKey: Data, db: Database) throws {
+        let db = databaseConnection(tx)
         var record = Record(packId: packId, packKey: packKey)
 
         // If this record is already in the queue, don't insert a second copy
@@ -66,15 +62,8 @@ public class BackupStickerPackDownloadStoreImpl: BackupStickerPackDownloadStore 
         tx: DBReadTransaction,
         block: (QueuedBackupStickerPackDownload) throws -> Void
     ) throws {
-        let db = SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database
-        try iterateAllEnqueued(db: db, block: block)
-    }
-
-    internal func iterateAllEnqueued(
-        db: Database,
-        block: (QueuedBackupStickerPackDownload) throws -> Void
-    ) throws {
-         let cursor = try Record
+        let db = databaseConnection(tx)
+        let cursor = try Record
             .order([Column(Record.CodingKeys.id).desc])
             .fetchCursor(db)
 
@@ -87,15 +76,8 @@ public class BackupStickerPackDownloadStoreImpl: BackupStickerPackDownloadStore 
         count: UInt,
         tx: DBReadTransaction
     ) throws -> [QueuedBackupStickerPackDownload] {
-        let db = SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database
-        return try peek(count: count, db: db)
-    }
-
-    internal func peek(
-        count: UInt,
-        db: Database
-    ) throws -> [QueuedBackupStickerPackDownload] {
-        try Record
+        let db = databaseConnection(tx)
+        return try Record
             .order([Column(Record.CodingKeys.id).asc])
             .limit(Int(count))
             .fetchAll(db)
@@ -105,14 +87,7 @@ public class BackupStickerPackDownloadStoreImpl: BackupStickerPackDownloadStore 
         record: QueuedBackupStickerPackDownload,
         tx: DBWriteTransaction
     ) throws {
-        let db = SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database
-        try removeRecordFromQueue(record: record, db: db)
-    }
-
-    internal func removeRecordFromQueue(
-        record: QueuedBackupStickerPackDownload,
-        db: Database
-    ) throws {
+        let db = databaseConnection(tx)
         try Record
             .filter(Column(Record.CodingKeys.id) == record.id)
             .deleteAll(db)

@@ -156,7 +156,7 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
                     ON hiddenRecipient.recipientId = \(signalRecipientColumn: .id)
             """
             return Set(
-                try SignalRecipient.fetchAll(SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database, sql: sql)
+                try SignalRecipient.fetchAll(databaseConnection(tx), sql: sql)
             )
         } catch {
             Logger.warn("Could not fetch hidden recipient records: \(error.grdbErrorForLogging)")
@@ -172,7 +172,7 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
             return nil
         }
 
-        let db = SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database
+        let db = databaseConnection(tx)
 
         do {
             return try HiddenRecipient.fetchOne(db, key: signalRecipientRowId)
@@ -284,7 +284,7 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
             signalRecipientRowId: signalRecipientRowId,
             inKnownMessageRequestState: inKnownMessageRequestState
         )
-        try record.save(SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database)
+        try record.save(databaseConnection(tx))
 
         didSetAsHidden(recipient: recipient, wasLocallyInitiated: wasLocallyInitiated, tx: tx)
     }

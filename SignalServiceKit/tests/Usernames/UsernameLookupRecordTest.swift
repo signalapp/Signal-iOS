@@ -18,13 +18,14 @@ final class UsernameLookupRecordTest: XCTestCase {
     }
 
     func testRoundTrip() throws {
+        let store = UsernameLookupRecordStoreImpl()
         for (idx, (constant, _)) in UsernameLookupRecord.constants.enumerated() {
             inMemoryDB.insert(record: constant)
 
             let deserialized = inMemoryDB.read { tx in
-                return UsernameLookupRecordStoreImpl._fetchOne(
+                return store.fetchOne(
                     forAci: Aci(fromUUID: constant.aci),
-                    database: InMemoryDB.shimOnlyBridge(tx).db
+                    tx: tx
                 )
             }
 
@@ -42,16 +43,16 @@ final class UsernameLookupRecordTest: XCTestCase {
             }
 
             inMemoryDB.write { tx in
-                UsernameLookupRecordStoreImpl._deleteOne(
+                store.deleteOne(
                     forAci: Aci(fromUUID: constant.aci),
-                    database: InMemoryDB.shimOnlyBridge(tx).db
+                    tx: tx
                 )
             }
 
             XCTAssertNil(inMemoryDB.read { tx in
-                return UsernameLookupRecordStoreImpl._fetchOne(
+                return store.fetchOne(
                     forAci: Aci(fromUUID: constant.aci),
-                    database: InMemoryDB.shimOnlyBridge(tx).db
+                    tx: tx
                 )
             })
         }

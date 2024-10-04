@@ -124,7 +124,7 @@ public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
     }
 
     public func releasePendingAttachment(withId id: OrphanedAttachmentRecord.IDType, tx: any DBWriteTransaction) throws {
-        let db = SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database
+        let db = databaseConnection(tx)
         let foundRecord = try OrphanedAttachmentRecord.fetchOne(db, key: id)
         guard let foundRecord else {
             throw OWSAssertionError("Pending attachment not marked for deletion")

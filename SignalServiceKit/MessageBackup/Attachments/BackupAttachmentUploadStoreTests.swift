@@ -42,8 +42,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                     reference: reference,
                     attachmentStream: Attachment(record: attachmentRecord).asStream()!
                 ),
-                tx: tx,
-                db: InMemoryDB.shimOnlyBridge(tx).db
+                tx: tx
             )
 
             // Ensure the row exists.
@@ -72,8 +71,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                     reference: reference,
                     attachmentStream: Attachment(record: attachmentRecord).asStream()!
                 ),
-                tx: tx,
-                db: InMemoryDB.shimOnlyBridge(tx).db
+                tx: tx
             )
 
             let row = try QueuedBackupAttachmentUpload.fetchOne(InMemoryDB.shimOnlyBridge(tx).db)
@@ -101,8 +99,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                     reference: AttachmentReference(record: referenceRecord),
                     attachmentStream: Attachment(record: attachmentRecord).asStream()!
                 ),
-                tx: tx,
-                db: InMemoryDB.shimOnlyBridge(tx).db
+                tx: tx
             )
 
             let row = try QueuedBackupAttachmentUpload.fetchOne(InMemoryDB.shimOnlyBridge(tx).db)
@@ -130,8 +127,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                     reference: reference,
                     attachmentStream: Attachment(record: attachmentRecord).asStream()!
                 ),
-                tx: tx,
-                db: InMemoryDB.shimOnlyBridge(tx).db
+                tx: tx
             )
 
             let row = try QueuedBackupAttachmentUpload.fetchOne(InMemoryDB.shimOnlyBridge(tx).db)
@@ -182,8 +178,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                         reference: reference,
                         attachmentStream: Attachment(record: attachmentRecord).asStream()!
                     ),
-                    tx: tx,
-                    db: InMemoryDB.shimOnlyBridge(tx).db
+                    tx: tx
                 )
             }
         }
@@ -197,8 +192,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
 
             dequeuedRecords = try store.fetchNextUploads(
                 count: UInt(timestamps.count - 1),
-                tx: tx,
-                db: InMemoryDB.shimOnlyBridge(tx).db
+                tx: tx
             )
         }
 
@@ -219,8 +213,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
             try dequeuedRecords.forEach { record in
                 try store.removeQueuedUpload(
                     for: record.attachmentRowId,
-                    tx: tx,
-                    db: InMemoryDB.shimOnlyBridge(tx).db
+                    tx: tx
                 )
             }
         }

@@ -39,7 +39,7 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
                 timestamp: 1234,
                 tx: tx
             )
-            try store.enqueue(reference, tx: tx, db: InMemoryDB.shimOnlyBridge(tx).db)
+            try store.enqueue(reference, tx: tx)
 
             // Ensure the row exists.
             let row = try QueuedBackupAttachmentDownload.fetchOne(InMemoryDB.shimOnlyBridge(tx).db)
@@ -57,7 +57,7 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
                 timestamp: 5678,
                 tx: tx
             )
-            try store.enqueue(reference, tx: tx, db: InMemoryDB.shimOnlyBridge(tx).db)
+            try store.enqueue(reference, tx: tx)
 
             let row = try QueuedBackupAttachmentDownload.fetchOne(InMemoryDB.shimOnlyBridge(tx).db)
             XCTAssertNotNil(row)
@@ -76,8 +76,7 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
             try referenceRecord.insert(InMemoryDB.shimOnlyBridge(tx).db)
             try store.enqueue(
                 try AttachmentReference(record: referenceRecord),
-                tx: tx,
-                db: InMemoryDB.shimOnlyBridge(tx).db
+                tx: tx
             )
 
             let row = try QueuedBackupAttachmentDownload.fetchOne(InMemoryDB.shimOnlyBridge(tx).db)
@@ -95,7 +94,7 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
                 timestamp: 9999,
                 tx: tx
             )
-            try store.enqueue(reference, tx: tx, db: InMemoryDB.shimOnlyBridge(tx).db)
+            try store.enqueue(reference, tx: tx)
 
             let row = try QueuedBackupAttachmentDownload.fetchOne(InMemoryDB.shimOnlyBridge(tx).db)
             XCTAssertNotNil(row)
@@ -122,7 +121,7 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
                     timestamp: timestamp,
                     tx: tx
                 )
-                try store.enqueue(reference, tx: tx, db: InMemoryDB.shimOnlyBridge(tx).db)
+                try store.enqueue(reference, tx: tx)
             }
         }
 
@@ -138,7 +137,6 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
             var lastRecordId = Int64.max
             let records = try store.peek(
                 count: UInt(timestamps.count - 1),
-                db: InMemoryDB.shimOnlyBridge(tx).db,
                 tx: tx
             )
             for record in records {

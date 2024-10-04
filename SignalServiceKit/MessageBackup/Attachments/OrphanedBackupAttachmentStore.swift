@@ -30,7 +30,7 @@ public class OrphanedBackupAttachmentStoreImpl: OrphanedBackupAttachmentStore {
     public init() {}
 
     public func insert(_ record: inout OrphanedBackupAttachment, tx: any DBWriteTransaction) throws {
-        let db = SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database
+        let db = databaseConnection(tx)
         try record.insert(db)
     }
 
@@ -38,7 +38,7 @@ public class OrphanedBackupAttachmentStoreImpl: OrphanedBackupAttachmentStore {
         count: UInt,
         tx: DBReadTransaction
     ) throws -> [OrphanedBackupAttachment] {
-        let db = SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database
+        let db = databaseConnection(tx)
         return try OrphanedBackupAttachment
             // We want to dequeue in insertion order.
             .order([Column(OrphanedBackupAttachment.CodingKeys.id).asc])
@@ -50,12 +50,12 @@ public class OrphanedBackupAttachmentStoreImpl: OrphanedBackupAttachmentStore {
         _ record: OrphanedBackupAttachment,
         tx: DBWriteTransaction
     ) throws {
-        let db = SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database
+        let db = databaseConnection(tx)
         try record.delete(db)
     }
 
     public func removeAll(tx: DBWriteTransaction) throws {
-        let db = SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database
+        let db = databaseConnection(tx)
         try OrphanedBackupAttachment.deleteAll(db)
     }
 }

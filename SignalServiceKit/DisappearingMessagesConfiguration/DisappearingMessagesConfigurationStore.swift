@@ -173,7 +173,7 @@ class DisappearingMessagesConfigurationStoreImpl: DisappearingMessagesConfigurat
         tx: DBReadTransaction
     ) -> Bool {
         return (try? Bool.fetchOne(
-            SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database,
+            databaseConnection(tx),
             sql: "SELECT isEnabled FROM VersionedDMTimerCapabilities WHERE serviceId = ?;",
             arguments: [Data(serviceId.serviceIdBinary)]
         )) ?? false
@@ -184,7 +184,7 @@ class DisappearingMessagesConfigurationStoreImpl: DisappearingMessagesConfigurat
         tx: any DBWriteTransaction
     ) {
         do {
-            try SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database.execute(
+            try databaseConnection(tx).execute(
                 sql: "INSERT OR REPLACE INTO VersionedDMTimerCapabilities (serviceId, isEnabled) VALUES(?, ?);",
                 arguments: [Data(serviceId.serviceIdBinary), true]
             )

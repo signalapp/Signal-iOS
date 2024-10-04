@@ -14,7 +14,7 @@ protocol BlockedRecipientStore {
 
 class BlockedRecipientStoreImpl: BlockedRecipientStore {
     func blockedRecipientIds(tx: any DBReadTransaction) throws -> [SignalRecipient.RowId] {
-        let db = SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database
+        let db = databaseConnection(tx)
         do {
             return try BlockedRecipient.fetchAll(db).map(\.recipientId)
         } catch {
@@ -23,7 +23,7 @@ class BlockedRecipientStoreImpl: BlockedRecipientStore {
     }
 
     func isBlocked(recipientId: SignalRecipient.RowId, tx: any DBReadTransaction) throws -> Bool {
-        let db = SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database
+        let db = databaseConnection(tx)
         do {
             return try BlockedRecipient.filter(key: recipientId).fetchOne(db) != nil
         } catch {
@@ -32,7 +32,7 @@ class BlockedRecipientStoreImpl: BlockedRecipientStore {
     }
 
     func setBlocked(_ isBlocked: Bool, recipientId: SignalRecipient.RowId, tx: any DBWriteTransaction) throws {
-        let db = SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database
+        let db = databaseConnection(tx)
         do {
             if isBlocked {
                 try BlockedRecipient(recipientId: recipientId).insert(db)

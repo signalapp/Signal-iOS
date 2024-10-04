@@ -31,42 +31,42 @@ class GroupMemberStoreImpl: GroupMemberStore {
     }
 
     func groupThreadIds(withFullMember serviceId: ServiceId, tx: DBReadTransaction) -> [String] {
-        Self.groupThreadIds(withFullMember: serviceId, db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database)
+        Self.groupThreadIds(withFullMember: serviceId, tx: tx)
     }
 
-    fileprivate static func groupThreadIds(withFullMember serviceId: ServiceId, db: Database) -> [String] {
+    fileprivate static func groupThreadIds(withFullMember serviceId: ServiceId, tx: DBReadTransaction) -> [String] {
         let sql = """
             SELECT \(TSGroupMember.columnName(.groupThreadId))
             FROM \(TSGroupMember.databaseTableName)
             WHERE \(TSGroupMember.columnName(.serviceId)) = ?
         """
-        return db.strictRead { try String.fetchAll($0, sql: sql, arguments: [serviceId.serviceIdUppercaseString]) }
+        return databaseConnection(tx).strictRead { try String.fetchAll($0, sql: sql, arguments: [serviceId.serviceIdUppercaseString]) }
     }
 
     func groupThreadIds(withFullMember phoneNumber: E164, tx: DBReadTransaction) -> [String] {
-        Self.groupThreadIds(withFullMember: phoneNumber, db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database)
+        Self.groupThreadIds(withFullMember: phoneNumber, tx: tx)
     }
 
-    fileprivate static func groupThreadIds(withFullMember phoneNumber: E164, db: Database) -> [String] {
+    fileprivate static func groupThreadIds(withFullMember phoneNumber: E164, tx: DBReadTransaction) -> [String] {
         let sql = """
             SELECT \(TSGroupMember.columnName(.groupThreadId))
             FROM \(TSGroupMember.databaseTableName)
             WHERE \(TSGroupMember.columnName(.phoneNumber)) = ?
         """
-        return db.strictRead { try String.fetchAll($0, sql: sql, arguments: [phoneNumber.stringValue]) }
+        return databaseConnection(tx).strictRead { try String.fetchAll($0, sql: sql, arguments: [phoneNumber.stringValue]) }
     }
 
     func sortedFullGroupMembers(in groupThreadId: String, tx: DBReadTransaction) -> [TSGroupMember] {
-        Self.sortedFullGroupMembers(in: groupThreadId, db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database)
+        Self.sortedFullGroupMembers(in: groupThreadId, tx: tx)
     }
 
-    fileprivate static func sortedFullGroupMembers(in groupThreadId: String, db: Database) -> [TSGroupMember] {
+    fileprivate static func sortedFullGroupMembers(in groupThreadId: String, tx: DBReadTransaction) -> [TSGroupMember] {
         let sql = """
             SELECT * FROM \(TSGroupMember.databaseTableName)
             WHERE \(TSGroupMember.columnName(.groupThreadId)) = ?
             ORDER BY \(TSGroupMember.columnName(.lastInteractionTimestamp)) DESC
         """
-        return db.strictRead { try TSGroupMember.fetchAll($0, sql: sql, arguments: [groupThreadId]) }
+        return databaseConnection(tx).strictRead { try TSGroupMember.fetchAll($0, sql: sql, arguments: [groupThreadId]) }
     }
 }
 
@@ -89,19 +89,19 @@ class MockGroupMemberStore: GroupMemberStore {
 
     func groupThreadIds(withFullMember serviceId: ServiceId, tx: DBReadTransaction) -> [String] {
         db.read { tx in
-            GroupMemberStoreImpl.groupThreadIds(withFullMember: serviceId, db: InMemoryDB.shimOnlyBridge(tx).db)
+            GroupMemberStoreImpl.groupThreadIds(withFullMember: serviceId, tx: tx)
         }
     }
 
     func groupThreadIds(withFullMember phoneNumber: E164, tx: DBReadTransaction) -> [String] {
         db.read { tx in
-            GroupMemberStoreImpl.groupThreadIds(withFullMember: phoneNumber, db: InMemoryDB.shimOnlyBridge(tx).db)
+            GroupMemberStoreImpl.groupThreadIds(withFullMember: phoneNumber, tx: tx)
         }
     }
 
     func sortedFullGroupMembers(in groupThreadId: String, tx: DBReadTransaction) -> [TSGroupMember] {
         db.read { tx in
-            GroupMemberStoreImpl.sortedFullGroupMembers(in: groupThreadId, db: InMemoryDB.shimOnlyBridge(tx).db)
+            GroupMemberStoreImpl.sortedFullGroupMembers(in: groupThreadId, tx: tx)
         }
     }
 }

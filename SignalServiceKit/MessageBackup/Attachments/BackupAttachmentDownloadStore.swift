@@ -59,15 +59,7 @@ public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
     }
 
     public func enqueue(_ reference: AttachmentReference, tx: any DBWriteTransaction) throws {
-        let db = SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database
-        try enqueue(reference, tx: tx, db: db)
-    }
-
-    internal func enqueue(
-        _ reference: AttachmentReference,
-        tx: any DBWriteTransaction,
-        db: GRDB.Database
-    ) throws {
+        let db = databaseConnection(tx)
         let timestamp: UInt64? = {
             switch reference.owner {
             case .message(.bodyAttachment(let metadata)):
@@ -116,19 +108,8 @@ public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
         count: UInt,
         tx: DBReadTransaction
     ) throws -> [QueuedBackupAttachmentDownload] {
-        return try self.peek(
-            count: count,
-            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database,
-            tx: tx
-        )
-    }
-
-    internal func peek(
-        count: UInt,
-        db: GRDB.Database,
-        tx: DBReadTransaction
-    ) throws -> [QueuedBackupAttachmentDownload] {
-        try QueuedBackupAttachmentDownload
+        let db = databaseConnection(tx)
+        return try QueuedBackupAttachmentDownload
             // We want to dequeue in _reverse_ insertion order.
             .order([Column(QueuedBackupAttachmentDownload.CodingKeys.id).desc])
             .limit(Int(count))
@@ -139,29 +120,14 @@ public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
         _ record: QueuedBackupAttachmentDownload,
         tx: DBWriteTransaction
     ) throws {
-        try self.removeQueuedDownload(
-            record,
-            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database,
-            tx: tx
-        )
-    }
-
-    internal func removeQueuedDownload(
-        _ record: QueuedBackupAttachmentDownload,
-        db: Database,
-        tx: DBWriteTransaction
-    ) throws {
+        let db = databaseConnection(tx)
         try QueuedBackupAttachmentDownload
             .filter(Column(QueuedBackupAttachmentDownload.CodingKeys.id) == record.id)
             .deleteAll(db)
     }
 
     public func removeAll(tx: DBWriteTransaction) throws {
-        try self.removeAll(db: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database, tx: tx)
-    }
-
-    internal func removeAll(db: GRDB.Database, tx: DBWriteTransaction) throws {
-        try QueuedBackupAttachmentDownload.deleteAll(db)
+        try QueuedBackupAttachmentDownload.deleteAll(databaseConnection(tx))
     }
 }
 

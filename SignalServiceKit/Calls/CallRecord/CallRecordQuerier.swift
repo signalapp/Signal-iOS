@@ -161,16 +161,7 @@ class CallRecordQuerierImpl: CallRecordQuerier {
         ordering: FetchOrdering,
         tx: DBReadTransaction
     ) -> CallRecordCursor? {
-        return fetchCursor(
-            ordering: ordering,
-            db: SDSDB.shimOnlyBridge(tx).database
-        )
-    }
-
-    func fetchCursor(
-        ordering: FetchOrdering,
-        db: Database
-    ) -> CallRecordCursor? {
+        let db = databaseConnection(tx)
         return fetchCursor(
             columnArgs: [],
             ordering: ordering,
@@ -185,18 +176,7 @@ class CallRecordQuerierImpl: CallRecordQuerier {
         ordering: FetchOrdering,
         tx: DBReadTransaction
     ) -> CallRecordCursor? {
-        return fetchCursor(
-            callStatus: callStatus,
-            ordering: ordering,
-            db: SDSDB.shimOnlyBridge(tx).database
-        )
-    }
-
-    func fetchCursor(
-        callStatus: CallRecord.CallStatus,
-        ordering: FetchOrdering,
-        db: Database
-    ) -> CallRecordCursor? {
+        let db = databaseConnection(tx)
         return fetchCursor(
             columnArgs: [ColumnArg(.callStatus, callStatus.intValue)],
             ordering: ordering,
@@ -211,18 +191,7 @@ class CallRecordQuerierImpl: CallRecordQuerier {
         ordering: FetchOrdering,
         tx: DBReadTransaction
     ) -> CallRecordCursor? {
-        return fetchCursor(
-            threadRowId: threadRowId,
-            ordering: ordering,
-            db: SDSDB.shimOnlyBridge(tx).database
-        )
-    }
-
-    func fetchCursor(
-        threadRowId: Int64,
-        ordering: FetchOrdering,
-        db: Database
-    ) -> CallRecordCursor? {
+        let db = databaseConnection(tx)
         return fetchCursor(
             columnArgs: [ColumnArg(.threadRowId, threadRowId)],
             ordering: ordering,
@@ -238,20 +207,7 @@ class CallRecordQuerierImpl: CallRecordQuerier {
         ordering: FetchOrdering,
         tx: DBReadTransaction
     ) -> CallRecordCursor? {
-        return fetchCursor(
-            threadRowId: threadRowId,
-            callStatus: callStatus,
-            ordering: ordering,
-            db: SDSDB.shimOnlyBridge(tx).database
-        )
-    }
-
-    func fetchCursor(
-        threadRowId: Int64,
-        callStatus: CallRecord.CallStatus,
-        ordering: FetchOrdering,
-        db: Database
-    ) -> CallRecordCursor? {
+        let db = databaseConnection(tx)
         return fetchCursor(
             columnArgs: [
                 ColumnArg(.threadRowId, threadRowId),
@@ -269,18 +225,7 @@ class CallRecordQuerierImpl: CallRecordQuerier {
         ordering: FetchOrdering,
         tx: DBReadTransaction
     ) -> CallRecordCursor? {
-        return fetchCursorForUnread(
-            callStatus: callStatus,
-            ordering: ordering,
-            db: SDSDB.shimOnlyBridge(tx).database
-        )
-    }
-
-    func fetchCursorForUnread(
-        callStatus: CallRecord.CallStatus,
-        ordering: FetchOrdering,
-        db: Database
-    ) -> CallRecordCursor? {
+        let db = databaseConnection(tx)
         return fetchCursor(
             columnArgs: [
                 ColumnArg(.callStatus, callStatus.intValue),
@@ -299,20 +244,7 @@ class CallRecordQuerierImpl: CallRecordQuerier {
         ordering: FetchOrdering,
         tx: DBReadTransaction
     ) -> CallRecordCursor? {
-        return fetchCursorForUnread(
-            threadRowId: threadRowId,
-            callStatus: callStatus,
-            ordering: ordering,
-            db: SDSDB.shimOnlyBridge(tx).database
-        )
-    }
-
-    func fetchCursorForUnread(
-        threadRowId: Int64,
-        callStatus: CallRecord.CallStatus,
-        ordering: FetchOrdering,
-        db: Database
-    ) -> CallRecordCursor? {
+        let db = databaseConnection(tx)
         return fetchCursor(
             columnArgs: [
                 ColumnArg(.threadRowId, threadRowId),
@@ -394,12 +326,6 @@ class CallRecordQuerierImpl: CallRecordQuerier {
             """,
             sqlArgs: columnArgs.map { $0.arg }
         )
-    }
-}
-
-private extension SDSAnyReadTransaction {
-    var database: Database {
-        return unwrapGrdbRead.database
     }
 }
 

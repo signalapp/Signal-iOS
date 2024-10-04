@@ -395,7 +395,7 @@ public class MessageSendLog {
             .limit(Constants.cleanupLimit)
         let count = try TimeGatedBatch.processAll(db: db) { tx in
             do {
-                let db = SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database
+                let db = databaseConnection(tx)
                 let payloadIds = try fetchRequest.fetchAll(db)
                 try Payload.filter(keys: payloadIds).deleteAll(db)
                 return payloadIds.count
