@@ -47,7 +47,7 @@ final class DeletedCallRecordStoreTest: XCTestCase {
             deletedCallRecordStore.fetch(
                 callId: 1234,
                 conversationId: .thread(threadRowId: 6789),
-                db: tx.db
+                tx: tx
             )
         }
 
@@ -66,7 +66,7 @@ final class DeletedCallRecordStoreTest: XCTestCase {
         inMemoryDB.write { tx in
             deletedCallRecordStore.insert(
                 deletedCallRecord: inserted,
-                db: tx.db
+                tx: tx
             )
         }
 
@@ -74,7 +74,7 @@ final class DeletedCallRecordStoreTest: XCTestCase {
             XCTAssertTrue(deletedCallRecordStore.contains(
                 callId: 1234,
                 conversationId: .thread(threadRowId: threadRowId),
-                db: tx.db
+                tx: tx
             ))
         })
     }
@@ -90,14 +90,14 @@ final class DeletedCallRecordStoreTest: XCTestCase {
         inMemoryDB.write { tx in
             deletedCallRecordStore.insert(
                 deletedCallRecord: record,
-                db: tx.db
+                tx: tx
             )
         }
 
         inMemoryDB.write { tx in
             deletedCallRecordStore.delete(
                 expiredDeletedCallRecord: record,
-                db: tx.db
+                tx: tx
             )
         }
 
@@ -105,7 +105,7 @@ final class DeletedCallRecordStoreTest: XCTestCase {
             XCTAssertFalse(deletedCallRecordStore.contains(
                 callId: 1234,
                 conversationId: .thread(threadRowId: threadRowId),
-                db: tx.db
+                tx: tx
             ))
         })
     }
@@ -123,13 +123,13 @@ final class DeletedCallRecordStoreTest: XCTestCase {
             for record in records {
                 deletedCallRecordStore.insert(
                     deletedCallRecord: record,
-                    db: tx.db
+                    tx: tx
                 )
             }
         }
 
         let nextDeletedRecord = inMemoryDB.read { tx in
-            deletedCallRecordStore.nextDeletedRecord(db: tx.db)
+            deletedCallRecordStore.nextDeletedRecord(tx: tx)
         }
 
         assertExplanation(contains: "index_deleted_call_record_on_deletedAtTimestamp")
@@ -154,7 +154,7 @@ final class DeletedCallRecordStoreTest: XCTestCase {
         inMemoryDB.write { tx in
             deletedCallRecordStore.insert(
                 deletedCallRecord: deletedCallRecord,
-                db: tx.db
+                tx: tx
             )
         }
 
@@ -162,7 +162,7 @@ final class DeletedCallRecordStoreTest: XCTestCase {
             XCTAssertTrue(deletedCallRecordStore.contains(
                 callId: deletedCallRecord.callId,
                 conversationId: .thread(threadRowId: fromThreadRowId),
-                db: tx.db
+                tx: tx
             ))
         }
 
@@ -170,7 +170,7 @@ final class DeletedCallRecordStoreTest: XCTestCase {
             deletedCallRecordStore.updateWithMergedThread(
                 fromThreadRowId: fromThreadRowId,
                 intoThreadRowId: toThreadRowId,
-                db: tx.db
+                tx: tx
             )
         }
 
@@ -178,13 +178,13 @@ final class DeletedCallRecordStoreTest: XCTestCase {
             XCTAssertFalse(deletedCallRecordStore.contains(
                 callId: deletedCallRecord.callId,
                 conversationId: .thread(threadRowId: fromThreadRowId),
-                db: tx.db
+                tx: tx
             ))
 
             XCTAssertTrue(deletedCallRecordStore.contains(
                 callId: deletedCallRecord.callId,
                 conversationId: .thread(threadRowId: toThreadRowId),
-                db: tx.db
+                tx: tx
             ))
         }
     }

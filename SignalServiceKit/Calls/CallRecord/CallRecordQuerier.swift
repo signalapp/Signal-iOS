@@ -161,11 +161,10 @@ class CallRecordQuerierImpl: CallRecordQuerier {
         ordering: FetchOrdering,
         tx: DBReadTransaction
     ) -> CallRecordCursor? {
-        let db = databaseConnection(tx)
         return fetchCursor(
             columnArgs: [],
             ordering: ordering,
-            db: db
+            tx: tx
         )
     }
 
@@ -176,11 +175,10 @@ class CallRecordQuerierImpl: CallRecordQuerier {
         ordering: FetchOrdering,
         tx: DBReadTransaction
     ) -> CallRecordCursor? {
-        let db = databaseConnection(tx)
         return fetchCursor(
             columnArgs: [ColumnArg(.callStatus, callStatus.intValue)],
             ordering: ordering,
-            db: db
+            tx: tx
         )
     }
 
@@ -191,11 +189,10 @@ class CallRecordQuerierImpl: CallRecordQuerier {
         ordering: FetchOrdering,
         tx: DBReadTransaction
     ) -> CallRecordCursor? {
-        let db = databaseConnection(tx)
         return fetchCursor(
             columnArgs: [ColumnArg(.threadRowId, threadRowId)],
             ordering: ordering,
-            db: db
+            tx: tx
         )
     }
 
@@ -207,14 +204,13 @@ class CallRecordQuerierImpl: CallRecordQuerier {
         ordering: FetchOrdering,
         tx: DBReadTransaction
     ) -> CallRecordCursor? {
-        let db = databaseConnection(tx)
         return fetchCursor(
             columnArgs: [
                 ColumnArg(.threadRowId, threadRowId),
                 ColumnArg(.callStatus, callStatus.intValue)
             ],
             ordering: ordering,
-            db: db
+            tx: tx
         )
     }
 
@@ -225,14 +221,13 @@ class CallRecordQuerierImpl: CallRecordQuerier {
         ordering: FetchOrdering,
         tx: DBReadTransaction
     ) -> CallRecordCursor? {
-        let db = databaseConnection(tx)
         return fetchCursor(
             columnArgs: [
                 ColumnArg(.callStatus, callStatus.intValue),
                 ColumnArg(.unreadStatus, CallRecord.CallUnreadStatus.unread.rawValue)
             ],
             ordering: ordering,
-            db: db
+            tx: tx
         )
     }
 
@@ -244,7 +239,6 @@ class CallRecordQuerierImpl: CallRecordQuerier {
         ordering: FetchOrdering,
         tx: DBReadTransaction
     ) -> CallRecordCursor? {
-        let db = databaseConnection(tx)
         return fetchCursor(
             columnArgs: [
                 ColumnArg(.threadRowId, threadRowId),
@@ -252,7 +246,7 @@ class CallRecordQuerierImpl: CallRecordQuerier {
                 ColumnArg(.unreadStatus, CallRecord.CallUnreadStatus.unread.rawValue)
             ],
             ordering: ordering,
-            db: db
+            tx: tx
         )
     }
 
@@ -261,15 +255,18 @@ class CallRecordQuerierImpl: CallRecordQuerier {
     fileprivate func fetchCursor(
         columnArgs: [ColumnArg],
         ordering: FetchOrdering,
-        db: Database
+        tx: DBReadTransaction
     ) -> GRDBCallRecordCursor? {
         let (sqlString, sqlArgs) = compileQuery(columnArgs: columnArgs, ordering: ordering)
 
         do {
-            let grdbRecordCursor = try CallRecord.fetchCursor(db, SQLRequest(
-                sql: sqlString,
-                arguments: StatementArguments(sqlArgs)
-            ))
+            let grdbRecordCursor = try CallRecord.fetchCursor(
+                databaseConnection(tx),
+                SQLRequest(
+                    sql: sqlString,
+                    arguments: StatementArguments(sqlArgs)
+                )
+            )
 
             return GRDBCallRecordCursor(grdbRecordCursor: grdbRecordCursor)
         } catch let error {
@@ -337,12 +334,12 @@ final class ExplainingCallRecordQuerierImpl: CallRecordQuerierImpl {
     override fileprivate func fetchCursor(
         columnArgs: [ColumnArg],
         ordering: FetchOrdering,
-        db: Database
+        tx: DBReadTransaction
     ) -> GRDBCallRecordCursor? {
         let (sqlString, sqlArgs) = compileQuery(columnArgs: columnArgs, ordering: ordering)
 
         guard
-            let explanationRow = try? Row.fetchOne(db, SQLRequest(
+            let explanationRow = try? Row.fetchOne(databaseConnection(tx), SQLRequest(
                 sql: "EXPLAIN QUERY PLAN \(sqlString)",
                 arguments: StatementArguments(sqlArgs)
             )),
@@ -358,7 +355,7 @@ final class ExplainingCallRecordQuerierImpl: CallRecordQuerierImpl {
         return super.fetchCursor(
             columnArgs: columnArgs,
             ordering: ordering,
-            db: db
+            tx: tx
         )
     }
 }

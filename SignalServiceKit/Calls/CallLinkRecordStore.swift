@@ -46,8 +46,7 @@ public class CallLinkRecordStoreImpl: CallLinkRecordStore {
         if let existingRecord = try fetch(roomId: rootKey.deriveRoomId(), tx: tx) {
             return existingRecord
         }
-        let db = databaseConnection(tx)
-        return try CallLinkRecord.insertRecord(rootKey: rootKey, db: db)
+        return try CallLinkRecord.insertRecord(rootKey: rootKey, tx: tx)
     }
 
     public func update(_ callLinkRecord: CallLinkRecord, tx: any DBWriteTransaction) throws {

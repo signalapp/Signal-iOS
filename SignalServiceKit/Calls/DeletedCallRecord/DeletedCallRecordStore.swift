@@ -11,7 +11,7 @@ protocol DeletedCallRecordStore {
     func fetch(
         callId: UInt64,
         conversationId: CallRecord.ConversationID,
-        db: Database
+        tx: DBReadTransaction
     ) -> DeletedCallRecord?
 
     /// Insert the given deleted call record.
@@ -43,8 +43,8 @@ protocol DeletedCallRecordStore {
 extension DeletedCallRecordStore {
     /// Whether the store contains a deleted call record with the given
     /// identifying properties.
-    func contains(callId: UInt64, conversationId: CallRecord.ConversationID, db: Database) -> Bool {
-        return fetch(callId: callId, conversationId: conversationId, db: db) != nil
+    func contains(callId: UInt64, conversationId: CallRecord.ConversationID, tx: DBReadTransaction) -> Bool {
+        return fetch(callId: callId, conversationId: conversationId, tx: tx) != nil
     }
 }
 
@@ -76,7 +76,7 @@ class DeletedCallRecordStoreImpl: DeletedCallRecordStore {
     func fetch(
         callId: UInt64,
         conversationId: CallRecord.ConversationID,
-        db: Database
+        tx: DBReadTransaction
     ) -> DeletedCallRecord? {
         switch conversationId {
         case .thread(let threadRowId):
@@ -85,7 +85,7 @@ class DeletedCallRecordStoreImpl: DeletedCallRecordStore {
                     .equal(column: .callIdString, value: String(callId)),
                     .equal(column: .threadRowId, value: threadRowId)
                 ],
-                db: db
+                tx: tx
             )
         case .callLink(let callLinkRowId):
             return fetch(
@@ -93,7 +93,7 @@ class DeletedCallRecordStoreImpl: DeletedCallRecordStore {
                     .equal(column: .callIdString, value: String(callId)),
                     .equal(column: .callLinkRowId, value: callLinkRowId)
                 ],
-                db: db
+                tx: tx
             )
         }
     }
@@ -104,18 +104,8 @@ class DeletedCallRecordStoreImpl: DeletedCallRecordStore {
         deletedCallRecord: DeletedCallRecord,
         tx: DBWriteTransaction
     ) {
-        return insert(
-            deletedCallRecord: deletedCallRecord,
-            db: SDSDB.shimOnlyBridge(tx).database
-        )
-    }
-
-    func insert(
-        deletedCallRecord: DeletedCallRecord,
-        db: Database
-    ) {
         do {
-            try deletedCallRecord.insert(db)
+            try deletedCallRecord.insert(databaseConnection(tx))
         } catch let error {
             owsFailBeta("Failed to insert deleted call record: \(error)")
         }
@@ -124,15 +114,8 @@ class DeletedCallRecordStoreImpl: DeletedCallRecordStore {
     // MARK: -
 
     func delete(expiredDeletedCallRecord: DeletedCallRecord, tx: DBWriteTransaction) {
-        return delete(
-            expiredDeletedCallRecord: expiredDeletedCallRecord,
-            db: SDSDB.shimOnlyBridge(tx).database
-        )
-    }
-
-    func delete(expiredDeletedCallRecord: DeletedCallRecord, db: Database) {
         do {
-            try expiredDeletedCallRecord.delete(db)
+            try expiredDeletedCallRecord.delete(databaseConnection(tx))
         } catch let error {
             owsFailBeta("Failed to delete expired deleted call record: \(error)")
         }
@@ -141,13 +124,9 @@ class DeletedCallRecordStoreImpl: DeletedCallRecordStore {
     // MARK: -
 
     func nextDeletedRecord(tx: DBReadTransaction) -> DeletedCallRecord? {
-        return nextDeletedRecord(db: SDSDB.shimOnlyBridge(tx).database)
-    }
-
-    func nextDeletedRecord(db: Database) -> DeletedCallRecord? {
         return fetch(
             columnArgs: [.ascending(column: .deletedAtTimestamp)],
-            db: db
+            tx: tx
         )
     }
 
@@ -158,19 +137,7 @@ class DeletedCallRecordStoreImpl: DeletedCallRecordStore {
         intoThreadRowId intoRowId: Int64,
         tx: DBWriteTransaction
     ) {
-        updateWithMergedThread(
-            fromThreadRowId: fromRowId,
-            intoThreadRowId: intoRowId,
-            db: SDSDB.shimOnlyBridge(tx).database
-        )
-    }
-
-    func updateWithMergedThread(
-        fromThreadRowId fromRowId: Int64,
-        intoThreadRowId intoRowId: Int64,
-        db: Database
-    ) {
-        db.executeHandlingErrors(
+        databaseConnection(tx).executeHandlingErrors(
             sql: """
                 UPDATE "\(DeletedCallRecord.databaseTableName)"
                 SET "\(DeletedCallRecord.CodingKeys.threadRowId.rawValue)" = ?
@@ -184,12 +151,12 @@ class DeletedCallRecordStoreImpl: DeletedCallRecordStore {
 
     fileprivate func fetch(
         columnArgs: [ColumnArg],
-        db: Database
+        tx: DBReadTransaction
     ) -> DeletedCallRecord? {
         let (sqlString, sqlArgs) = compileQuery(columnArgs: columnArgs)
 
         do {
-            return try DeletedCallRecord.fetchOne(db, SQLRequest(
+            return try DeletedCallRecord.fetchOne(databaseConnection(tx), SQLRequest(
                 sql: sqlString,
                 arguments: StatementArguments(sqlArgs)
             ))
@@ -256,12 +223,12 @@ final class ExplainingDeletedCallRecordStoreImpl: DeletedCallRecordStoreImpl {
 
     override fileprivate func fetch(
         columnArgs: [ColumnArg],
-        db: Database
+        tx: DBReadTransaction
     ) -> DeletedCallRecord? {
         let (sqlString, sqlArgs) = compileQuery(columnArgs: columnArgs)
 
         guard
-            let explanationRow = try? Row.fetchOne(db, SQLRequest(
+            let explanationRow = try? Row.fetchOne(databaseConnection(tx), SQLRequest(
                 sql: "EXPLAIN QUERY PLAN \(sqlString)",
                 arguments: StatementArguments(sqlArgs)
             )),
@@ -274,7 +241,7 @@ final class ExplainingDeletedCallRecordStoreImpl: DeletedCallRecordStoreImpl {
 
         lastExplanation = explanation
 
-        return super.fetch(columnArgs: columnArgs, db: db)
+        return super.fetch(columnArgs: columnArgs, tx: tx)
     }
 }
 

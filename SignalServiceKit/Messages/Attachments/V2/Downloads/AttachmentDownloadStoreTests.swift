@@ -36,10 +36,10 @@ class AttachmentDownloadStoreTests: XCTestCase {
                 withId: attachmentId,
                 source: .transitTier,
                 priority: .default,
-                db: tx.db
+                tx: tx
             )
             let downloadId = tx.db.lastInsertedRowID
-            var download = try downloadStore.fetchRecord(id: downloadId, db: tx.db)
+            var download = try downloadStore.fetchRecord(id: downloadId, tx: tx)
             XCTAssertNotNil(download)
             XCTAssertEqual(download?.attachmentId, attachmentId)
 
@@ -48,11 +48,11 @@ class AttachmentDownloadStoreTests: XCTestCase {
                 withId: attachmentId,
                 source: .transitTier,
                 priority: .default,
-                db: tx.db
+                tx: tx
             )
             // It should've done nothing.
             XCTAssertEqual(tx.db.lastInsertedRowID, downloadId)
-            download = try downloadStore.fetchRecord(id: downloadId, db: tx.db)
+            download = try downloadStore.fetchRecord(id: downloadId, tx: tx)
             XCTAssertEqual(download?.priority, .default)
 
             // Re-enqueue at higher priority.
@@ -60,11 +60,11 @@ class AttachmentDownloadStoreTests: XCTestCase {
                 withId: attachmentId,
                 source: .transitTier,
                 priority: .userInitiated,
-                db: tx.db
+                tx: tx
             )
             // It should've updated (no new row id) but at higher priority.
             XCTAssertEqual(tx.db.lastInsertedRowID, downloadId)
-            download = try downloadStore.fetchRecord(id: downloadId, db: tx.db)
+            download = try downloadStore.fetchRecord(id: downloadId, tx: tx)
             XCTAssertEqual(download?.priority, .userInitiated)
         }
     }
@@ -81,7 +81,7 @@ class AttachmentDownloadStoreTests: XCTestCase {
                     withId: attachmentId,
                     source: .transitTier,
                     priority: .default,
-                    db: tx.db
+                    tx: tx
                 )
             }
             let downloadCount = try QueuedAttachmentDownloadRecord.fetchCount(tx.db)
@@ -92,7 +92,7 @@ class AttachmentDownloadStoreTests: XCTestCase {
                 withId: extraAttachmentId,
                 source: .transitTier,
                 priority: .default,
-                db: tx.db
+                tx: tx
             )
             // It should've done nothing.
             let downloads = try QueuedAttachmentDownloadRecord.fetchAll(tx.db)
@@ -112,10 +112,10 @@ class AttachmentDownloadStoreTests: XCTestCase {
                 withId: attachmentId,
                 source: .transitTier,
                 priority: .default,
-                db: tx.db
+                tx: tx
             )
             let downloadId = tx.db.lastInsertedRowID
-            var download = try downloadStore.fetchRecord(id: downloadId, db: tx.db)
+            var download = try downloadStore.fetchRecord(id: downloadId, tx: tx)
             XCTAssertNotNil(download)
             XCTAssertEqual(download?.attachmentId, attachmentId)
 
@@ -124,10 +124,10 @@ class AttachmentDownloadStoreTests: XCTestCase {
             try downloadStore.markQueuedDownloadFailed(
                 withId: downloadId,
                 minRetryTimestamp: retryTimestamp,
-                db: tx.db
+                tx: tx
             )
             // Retry state updated
-            download = try downloadStore.fetchRecord(id: downloadId, db: tx.db)
+            download = try downloadStore.fetchRecord(id: downloadId, tx: tx)
             XCTAssertEqual(download?.minRetryTimestamp, retryTimestamp)
             XCTAssertEqual(download?.retryAttempts, 1)
 
@@ -136,12 +136,12 @@ class AttachmentDownloadStoreTests: XCTestCase {
                 withId: attachmentId,
                 source: .transitTier,
                 priority: .userInitiated,
-                db: tx.db
+                tx: tx
             )
             // It should've updated (no new row id) but at higher priority
             // and ready to retry.
             XCTAssertEqual(tx.db.lastInsertedRowID, downloadId)
-            download = try downloadStore.fetchRecord(id: downloadId, db: tx.db)
+            download = try downloadStore.fetchRecord(id: downloadId, tx: tx)
             XCTAssertEqual(download?.priority, .userInitiated)
             XCTAssertNil(download!.minRetryTimestamp)
             XCTAssertEqual(download?.retryAttempts, 1)
@@ -165,11 +165,11 @@ class AttachmentDownloadStoreTests: XCTestCase {
                     withId: attachmentIds[i],
                     source: .transitTier,
                     priority: priority,
-                    db: tx.db
+                    tx: tx
                 )
                 return tx.db.lastInsertedRowID
             }
-            var peekResult = try downloadStore.peek(count: 5, db: tx.db)
+            var peekResult = try downloadStore.peek(count: 5, tx: tx)
             // Should get the first five high priority items.
             XCTAssertEqual(peekResult.map(\.id), Array(downloadIds[5..<10]))
 
@@ -178,11 +178,11 @@ class AttachmentDownloadStoreTests: XCTestCase {
                 try downloadStore.markQueuedDownloadFailed(
                     withId: downloadIds[i],
                     minRetryTimestamp: now.ows_millisecondsSince1970 + 100,
-                    db: tx.db
+                    tx: tx
                 )
             }
 
-            peekResult = try downloadStore.peek(count: 5, db: tx.db)
+            peekResult = try downloadStore.peek(count: 5, tx: tx)
             // Should get the next five high priority items.
             XCTAssertEqual(peekResult.map(\.id), Array(downloadIds[10..<15]))
 
@@ -191,11 +191,11 @@ class AttachmentDownloadStoreTests: XCTestCase {
                 try downloadStore.removeAttachmentFromQueue(
                     withId: attachmentIds[i],
                     source: .transitTier,
-                    db: tx.db
+                    tx: tx
                 )
             }
 
-            peekResult = try downloadStore.peek(count: 5, db: tx.db)
+            peekResult = try downloadStore.peek(count: 5, tx: tx)
             // Should get the five lower priority items.
             XCTAssertEqual(peekResult.map(\.id), Array(downloadIds[0..<5]))
         }
@@ -208,16 +208,16 @@ class AttachmentDownloadStoreTests: XCTestCase {
                     withId: try insertAttachment(tx: tx),
                     source: .transitTier,
                     priority: .default,
-                    db: tx.db
+                    tx: tx
                 )
                 let downloadId = tx.db.lastInsertedRowID
                 try downloadStore.markQueuedDownloadFailed(
                     withId: downloadId,
                     minRetryTimestamp: now.ows_millisecondsSince1970 + 100 - UInt64(index),
-                    db: tx.db
+                    tx: tx
                 )
             }
-            let timestampResult = try downloadStore.nextRetryTimestamp(db: tx.db)
+            let timestampResult = try downloadStore.nextRetryTimestamp(tx: tx)
             // Should get the first five high priority items.
             XCTAssertEqual(timestampResult, now.ows_millisecondsSince1970 + 100 - 9)
         }
@@ -231,33 +231,33 @@ class AttachmentDownloadStoreTests: XCTestCase {
                     withId: try insertAttachment(tx: tx),
                     source: .transitTier,
                     priority: .default,
-                    db: tx.db
+                    tx: tx
                 )
                 try downloadStore.markQueuedDownloadFailed(
                     withId: tx.db.lastInsertedRowID,
                     minRetryTimestamp: UInt64(i + 1) * 100,
-                    db: tx.db
+                    tx: tx
                 )
             }
 
             func peekCount() -> Int {
-                return try! downloadStore.peek(count: 15, db: tx.db).count
+                return try! downloadStore.peek(count: 15, tx: tx).count
             }
             // Everything retrying
             XCTAssertEqual(peekCount(), 0)
 
             // Update without moving time, nothing updates.
-            try downloadStore.updateRetryableDownloads(db: tx.db)
+            try downloadStore.updateRetryableDownloads(tx: tx)
             XCTAssertEqual(peekCount(), 0)
 
             // Move time forward so one instance is ready.
             self.now = Date(millisecondsSince1970: 100)
-            try downloadStore.updateRetryableDownloads(db: tx.db)
+            try downloadStore.updateRetryableDownloads(tx: tx)
             XCTAssertEqual(peekCount(), 1)
 
             // Move time forward again so more are ready.
             self.now = Date(millisecondsSince1970: 450)
-            try downloadStore.updateRetryableDownloads(db: tx.db)
+            try downloadStore.updateRetryableDownloads(tx: tx)
             XCTAssertEqual(peekCount(), 4)
         }
     }

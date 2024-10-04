@@ -160,7 +160,7 @@ class CallRecordStoreImpl: CallRecordStore {
     // MARK: - Protocol methods
 
     func insert(callRecord: CallRecord, tx: DBWriteTransaction) {
-        insert(callRecord: callRecord, db: SDSDB.shimOnlyBridge(tx).database)
+        _insert(callRecord: callRecord, tx: tx)
 
         postNotification(
             updateType: .inserted,
@@ -171,7 +171,7 @@ class CallRecordStoreImpl: CallRecordStore {
     private var deletedCallRecordIds = [CallRecord.ID]()
 
     func delete(callRecords: [CallRecord], tx: DBWriteTransaction) {
-        delete(callRecords: callRecords, db: SDSDB.shimOnlyBridge(tx).database)
+        _delete(callRecords: callRecords, tx: tx)
         deletedCallRecordIds.append(contentsOf: callRecords.map(\.id))
 
         tx.addFinalization(forKey: "\(#fileID):\(#line)") {
@@ -190,10 +190,10 @@ class CallRecordStoreImpl: CallRecordStore {
         newCallStatus: CallRecord.CallStatus,
         tx: DBWriteTransaction
     ) {
-        updateCallAndUnreadStatus(
+        _updateCallAndUnreadStatus(
             callRecord: callRecord,
             newCallStatus: newCallStatus,
-            db: SDSDB.shimOnlyBridge(tx).database
+            tx: tx
         )
 
         postNotification(
@@ -203,10 +203,12 @@ class CallRecordStoreImpl: CallRecordStore {
     }
 
     func markAsRead(callRecord: CallRecord, tx: DBWriteTransaction) {
-        markAsRead(
-            callRecord: callRecord,
-            db: SDSDB.shimOnlyBridge(tx).database
-        )
+        callRecord.unreadStatus = .read
+        do {
+            try callRecord.update(databaseConnection(tx))
+        } catch let error {
+            owsFailBeta("Failed to update call record: \(error)")
+        }
     }
 
     func updateDirection(
@@ -214,11 +216,12 @@ class CallRecordStoreImpl: CallRecordStore {
         newCallDirection: CallRecord.CallDirection,
         tx: DBWriteTransaction
     ) {
-        updateDirection(
-            callRecord: callRecord,
-            newCallDirection: newCallDirection,
-            db: SDSDB.shimOnlyBridge(tx).database
-        )
+        callRecord.callDirection = newCallDirection
+        do {
+            try callRecord.update(databaseConnection(tx))
+        } catch let error {
+            owsFailBeta("Failed to update call record: \(error)")
+        }
     }
 
     func updateGroupCallRingerAci(
@@ -226,11 +229,12 @@ class CallRecordStoreImpl: CallRecordStore {
         newGroupCallRingerAci: Aci,
         tx: DBWriteTransaction
     ) {
-        updateGroupCallRingerAci(
-            callRecord: callRecord,
-            newGroupCallRingerAci: newGroupCallRingerAci,
-            db: SDSDB.shimOnlyBridge(tx).database
-        )
+        callRecord.setGroupCallRingerAci(newGroupCallRingerAci)
+        do {
+            try callRecord.update(databaseConnection(tx))
+        } catch let error {
+            owsFailBeta("Failed to update call record: \(error)")
+        }
     }
 
     func updateCallBeganTimestamp(
@@ -238,11 +242,12 @@ class CallRecordStoreImpl: CallRecordStore {
         callBeganTimestamp: UInt64,
         tx: DBWriteTransaction
     ) {
-        updateCallBeganTimestamp(
-            callRecord: callRecord,
-            callBeganTimestamp: callBeganTimestamp,
-            db: SDSDB.shimOnlyBridge(tx).database
-        )
+        callRecord.callBeganTimestamp = callBeganTimestamp
+        do {
+            try callRecord.update(databaseConnection(tx))
+        } catch let error {
+            owsFailBeta("Failed to update call record: \(error)")
+        }
     }
 
     func updateCallEndedTimestamp(
@@ -250,11 +255,12 @@ class CallRecordStoreImpl: CallRecordStore {
         callEndedTimestamp: UInt64,
         tx: DBWriteTransaction
     ) {
-        updateCallEndedTimestamp(
-            callRecord: callRecord,
-            callEndedTimestamp: callEndedTimestamp,
-            db: SDSDB.shimOnlyBridge(tx).database
-        )
+        callRecord.callEndedTimestamp = callEndedTimestamp
+        do {
+            try callRecord.update(databaseConnection(tx))
+        } catch let error {
+            owsFailBeta("Failed to update call record: \(error)")
+        }
     }
 
     func updateWithMergedThread(
@@ -262,10 +268,13 @@ class CallRecordStoreImpl: CallRecordStore {
         intoThreadRowId intoRowId: Int64,
         tx: DBWriteTransaction
     ) {
-        updateWithMergedThread(
-            fromThreadRowId: fromRowId,
-            intoThreadRowId: intoRowId,
-            db: SDSDB.shimOnlyBridge(tx).database
+        databaseConnection(tx).executeHandlingErrors(
+            sql: """
+                UPDATE "\(CallRecord.databaseTableName)"
+                SET "\(CallRecord.CodingKeys.threadRowId.rawValue)" = ?
+                WHERE "\(CallRecord.CodingKeys.threadRowId.rawValue)" = ?
+            """,
+            arguments: [ intoRowId, fromRowId ]
         )
     }
 
@@ -274,17 +283,17 @@ class CallRecordStoreImpl: CallRecordStore {
         conversationId: CallRecord.ConversationID,
         tx: DBReadTransaction
     ) -> MaybeDeletedFetchResult {
-        return fetch(
+        return _fetch(
             callId: callId,
             conversationId: conversationId,
-            db: SDSDB.shimOnlyBridge(tx).database
+            tx: tx
         )
     }
 
     func fetch(interactionRowId: Int64, tx: DBReadTransaction) -> CallRecord? {
         return fetch(
-            interactionRowId: interactionRowId,
-            db: SDSDB.shimOnlyBridge(tx).database
+            columnArgs: [(.interactionRowId, interactionRowId)],
+            tx: tx
         )
     }
 
@@ -303,28 +312,28 @@ class CallRecordStoreImpl: CallRecordStore {
 
     // MARK: - Mutations (impl)
 
-    func insert(callRecord: CallRecord, db: Database) {
+    func _insert(callRecord: CallRecord, tx: DBWriteTransaction) {
         do {
-            try callRecord.insert(db)
+            try callRecord.insert(databaseConnection(tx))
         } catch let error {
             owsFailBeta("Failed to insert call record: \(error)")
         }
     }
 
-    func delete(callRecords: [CallRecord], db: Database) {
+    func _delete(callRecords: [CallRecord], tx: DBWriteTransaction) {
         for callRecord in callRecords {
             do {
-                try callRecord.delete(db)
+                try callRecord.delete(databaseConnection(tx))
             } catch let error {
                 owsFailBeta("Failed to delete call record: \(error)")
             }
         }
     }
 
-    func updateCallAndUnreadStatus(
+    func _updateCallAndUnreadStatus(
         callRecord: CallRecord,
         newCallStatus: CallRecord.CallStatus,
-        db: Database
+        tx: DBWriteTransaction
     ) {
         let logger = CallRecordLogger.shared.suffixed(with: " \(callRecord.callStatus) -> \(newCallStatus)")
         logger.info("Updating existing call record.")
@@ -332,108 +341,32 @@ class CallRecordStoreImpl: CallRecordStore {
         callRecord.callStatus = newCallStatus
         callRecord.unreadStatus = CallRecord.CallUnreadStatus(callStatus: newCallStatus)
         do {
-            try callRecord.update(db)
+            try callRecord.update(databaseConnection(tx))
         } catch let error {
             owsFailBeta("Failed to update call record: \(error)")
         }
-    }
-
-    func markAsRead(callRecord: CallRecord, db: Database) {
-        callRecord.unreadStatus = .read
-        do {
-            try callRecord.update(db)
-        } catch let error {
-            owsFailBeta("Failed to update call record: \(error)")
-        }
-    }
-
-    func updateDirection(
-        callRecord: CallRecord,
-        newCallDirection: CallRecord.CallDirection,
-        db: Database
-    ) {
-        callRecord.callDirection = newCallDirection
-        do {
-            try callRecord.update(db)
-        } catch let error {
-            owsFailBeta("Failed to update call record: \(error)")
-        }
-    }
-
-    func updateGroupCallRingerAci(
-        callRecord: CallRecord,
-        newGroupCallRingerAci: Aci,
-        db: Database
-    ) {
-        callRecord.setGroupCallRingerAci(newGroupCallRingerAci)
-        do {
-            try callRecord.update(db)
-        } catch let error {
-            owsFailBeta("Failed to update call record: \(error)")
-        }
-    }
-
-    func updateCallBeganTimestamp(
-        callRecord: CallRecord,
-        callBeganTimestamp: UInt64,
-        db: Database
-    ) {
-        callRecord.callBeganTimestamp = callBeganTimestamp
-        do {
-            try callRecord.update(db)
-        } catch let error {
-            owsFailBeta("Failed to update call record: \(error)")
-        }
-    }
-
-    func updateCallEndedTimestamp(
-        callRecord: CallRecord,
-        callEndedTimestamp: UInt64,
-        db: Database
-    ) {
-        callRecord.callEndedTimestamp = callEndedTimestamp
-        do {
-            try callRecord.update(db)
-        } catch let error {
-            owsFailBeta("Failed to update call record: \(error)")
-        }
-    }
-
-    func updateWithMergedThread(
-        fromThreadRowId fromRowId: Int64,
-        intoThreadRowId intoRowId: Int64,
-        db: Database
-    ) {
-        db.executeHandlingErrors(
-            sql: """
-                UPDATE "\(CallRecord.databaseTableName)"
-                SET "\(CallRecord.CodingKeys.threadRowId.rawValue)" = ?
-                WHERE "\(CallRecord.CodingKeys.threadRowId.rawValue)" = ?
-            """,
-            arguments: [ intoRowId, fromRowId ]
-        )
     }
 
     // MARK: - Queries (impl)
 
-    func fetch(
+    func _fetch(
         callId: UInt64,
         conversationId: CallRecord.ConversationID,
-        db: Database
+        tx: DBReadTransaction
     ) -> MaybeDeletedFetchResult {
         if deletedCallRecordStore.contains(
             callId: callId,
             conversationId: conversationId,
-            db: db
+            tx: tx
         ) {
             return .matchDeleted
         }
         let callRecord: CallRecord?
         switch conversationId {
         case .thread(let threadRowId):
-            callRecord = fetch(columnArgs: [(.callIdString, String(callId)), (.threadRowId, threadRowId)], db: db)
+            callRecord = fetch(columnArgs: [(.callIdString, String(callId)), (.threadRowId, threadRowId)], tx: tx)
         case .callLink(let callLinkRowId):
-            callRecord = fetch(columnArgs: [(.callIdString, String(callId)), (.callLinkRowId, callLinkRowId)], db: db)
+            callRecord = fetch(columnArgs: [(.callIdString, String(callId)), (.callLinkRowId, callLinkRowId)], tx: tx)
         }
         if let callRecord {
             return .matchFound(callRecord)
@@ -441,21 +374,14 @@ class CallRecordStoreImpl: CallRecordStore {
         return .matchNotFound
     }
 
-    func fetch(interactionRowId: Int64, db: Database) -> CallRecord? {
-        return fetch(
-            columnArgs: [(.interactionRowId, interactionRowId)],
-            db: db
-        )
-    }
-
     fileprivate func fetch(
         columnArgs: [(CallRecord.CodingKeys, DatabaseValueConvertible)],
-        db: Database
+        tx: DBReadTransaction
     ) -> CallRecord? {
         let (sqlString, sqlArgs) = compileQuery(columnArgs: columnArgs)
 
         do {
-            return try CallRecord.fetchOne(db, SQLRequest(
+            return try CallRecord.fetchOne(databaseConnection(tx), SQLRequest(
                 sql: sqlString,
                 arguments: StatementArguments(sqlArgs)
             ))
@@ -498,12 +424,12 @@ final class ExplainingCallRecordStoreImpl: CallRecordStoreImpl {
 
     override fileprivate func fetch(
         columnArgs: [(CallRecord.CodingKeys, DatabaseValueConvertible)],
-        db: Database
+        tx: DBReadTransaction
     ) -> CallRecord? {
         let (sqlString, sqlArgs) = compileQuery(columnArgs: columnArgs)
 
         guard
-            let explanationRow = try? Row.fetchOne(db, SQLRequest(
+            let explanationRow = try? Row.fetchOne(databaseConnection(tx), SQLRequest(
                 sql: "EXPLAIN QUERY PLAN \(sqlString)",
                 arguments: StatementArguments(sqlArgs)
             )),
@@ -516,7 +442,7 @@ final class ExplainingCallRecordStoreImpl: CallRecordStoreImpl {
 
         lastExplanation = explanation
 
-        return super.fetch(columnArgs: columnArgs, db: db)
+        return super.fetch(columnArgs: columnArgs, tx: tx)
     }
 }
 

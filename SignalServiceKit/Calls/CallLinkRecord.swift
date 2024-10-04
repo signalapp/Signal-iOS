@@ -107,10 +107,10 @@ public struct CallLinkRecord: Codable, PersistableRecord, FetchableRecord {
         self.expiration = try container.decodeIfPresent(Int64.self, forKey: .expiration)
     }
 
-    static func insertRecord(rootKey: CallLinkRootKey, db: Database) throws -> CallLinkRecord {
+    static func insertRecord(rootKey: CallLinkRootKey, tx: DBWriteTransaction) throws -> CallLinkRecord {
         do {
             return try CallLinkRecord.fetchOne(
-                db,
+                databaseConnection(tx),
                 sql: """
                 INSERT INTO "CallLink" ("roomId", "rootKey") VALUES (?, ?) RETURNING *
                 """,

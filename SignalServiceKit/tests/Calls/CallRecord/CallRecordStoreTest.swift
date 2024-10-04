@@ -60,7 +60,7 @@ final class CallRecordStoreTest: XCTestCase {
             callRecordStore.fetch(
                 callId: 1234,
                 conversationId: .thread(threadRowId: 6789),
-                db: tx.db
+                tx: tx
             )
         }
 
@@ -69,7 +69,7 @@ final class CallRecordStoreTest: XCTestCase {
 
     func testFetchByInteractionRowIdUsesIndex() {
         _ = inMemoryDB.read { tx in
-            callRecordStore.fetch(interactionRowId: 1234, db: tx.db)
+            callRecordStore.fetch(interactionRowId: 1234, tx: tx)
         }
 
         assertExplanation(contains: "sqlite_autoindex_CallRecord_1")
@@ -95,20 +95,20 @@ final class CallRecordStoreTest: XCTestCase {
         let callRecord = makeCallRecord()
 
         inMemoryDB.write { tx in
-            callRecordStore.insert(callRecord: callRecord, db: tx.db)
+            callRecordStore._insert(callRecord: callRecord, tx: tx)
         }
 
         let fetchedByCallId = inMemoryDB.read { tx in
             callRecordStore.fetch(
                 callId: callRecord.callId,
                 conversationId: .thread(threadRowId: callRecord.threadRowId),
-                db: tx.db
+                tx: tx
             ).unwrapped
         }
         XCTAssertTrue(callRecord.matches(fetchedByCallId))
 
         let fetchedByInteractionRowId = inMemoryDB.read { tx in
-            callRecordStore.fetch(interactionRowId: callRecord.interactionRowId, db: tx.db)!
+            callRecordStore.fetch(interactionRowId: callRecord.interactionRowId, tx: tx)!
         }
         XCTAssertTrue(callRecord.matches(fetchedByInteractionRowId))
     }
@@ -127,7 +127,7 @@ final class CallRecordStoreTest: XCTestCase {
             switch callRecordStore.fetch(
                 callId: callId,
                 conversationId: .thread(threadRowId: threadRowId),
-                db: tx.db
+                tx: tx
             ) {
             case .matchFound, .matchNotFound:
                 XCTFail("Unexpected fetch result!")
@@ -145,25 +145,25 @@ final class CallRecordStoreTest: XCTestCase {
         let callRecord2 = makeCallRecord()
 
         inMemoryDB.write { tx in
-            callRecordStore.insert(callRecord: callRecord1, db: tx.db)
-            callRecordStore.insert(callRecord: callRecord2, db: tx.db)
+            callRecordStore._insert(callRecord: callRecord1, tx: tx)
+            callRecordStore._insert(callRecord: callRecord2, tx: tx)
         }
 
         inMemoryDB.write { tx in
-            callRecordStore.delete(callRecords: [callRecord1, callRecord2], db: tx.db)
+            callRecordStore._delete(callRecords: [callRecord1, callRecord2], tx: tx)
         }
 
         inMemoryDB.read { tx in
             for callRecord in [callRecord1, callRecord2] {
                 XCTAssertNil(callRecordStore.fetch(
                     interactionRowId: callRecord.interactionRowId,
-                    db: tx.db
+                    tx: tx
                 ))
 
                 switch callRecordStore.fetch(
                     callId: callRecord.callId,
                     conversationId: .thread(threadRowId: callRecord.threadRowId),
-                    db: tx.db
+                    tx: tx
                 ) {
                 case .matchNotFound:
                     // Test pass
@@ -181,14 +181,14 @@ final class CallRecordStoreTest: XCTestCase {
         let callRecord = makeCallRecord(callStatus: .group(.generic))
 
         inMemoryDB.write { tx in
-            callRecordStore.insert(callRecord: callRecord, db: tx.db)
+            callRecordStore._insert(callRecord: callRecord, tx: tx)
         }
 
         inMemoryDB.write { tx in
-            callRecordStore.updateCallAndUnreadStatus(
+            callRecordStore._updateCallAndUnreadStatus(
                 callRecord: callRecord,
                 newCallStatus: .group(.joined),
-                db: tx.db
+                tx: tx
             )
         }
 
@@ -196,7 +196,7 @@ final class CallRecordStoreTest: XCTestCase {
             callRecordStore.fetch(
                 callId: callRecord.callId,
                 conversationId: .thread(threadRowId: callRecord.threadRowId),
-                db: tx.db
+                tx: tx
             ).unwrapped
         }
 
@@ -240,12 +240,12 @@ final class CallRecordStoreTest: XCTestCase {
             XCTAssertEqual(callRecord.unreadStatus, beforeUnreadStatus)
 
             inMemoryDB.write { tx in
-                callRecordStore.insert(callRecord: callRecord, db: tx.db)
+                callRecordStore._insert(callRecord: callRecord, tx: tx)
 
-                callRecordStore.updateCallAndUnreadStatus(
+                callRecordStore._updateCallAndUnreadStatus(
                     callRecord: callRecord,
                     newCallStatus: afterCallStatus,
-                    db: tx.db
+                    tx: tx
                 )
                 XCTAssertEqual(callRecord.callStatus, afterCallStatus)
                 XCTAssertEqual(callRecord.unreadStatus, afterUnreadStatus)
@@ -253,7 +253,7 @@ final class CallRecordStoreTest: XCTestCase {
                 let fetched = callRecordStore.fetch(
                     callId: callRecord.callId,
                     conversationId: .thread(threadRowId: callRecord.threadRowId),
-                    db: tx.db
+                    tx: tx
                 ).unwrapped
                 XCTAssertTrue(callRecord.matches(fetched))
             }
@@ -267,9 +267,8 @@ final class CallRecordStoreTest: XCTestCase {
         XCTAssertEqual(unreadCallRecord.unreadStatus, .unread)
 
         inMemoryDB.write { tx in
-            let db = tx.db
-            callRecordStore.insert(callRecord: unreadCallRecord, db: db)
-            callRecordStore.markAsRead(callRecord: unreadCallRecord, db: db)
+            callRecordStore._insert(callRecord: unreadCallRecord, tx: tx)
+            callRecordStore.markAsRead(callRecord: unreadCallRecord, tx: tx)
             XCTAssertEqual(unreadCallRecord.unreadStatus, .read)
         }
 
@@ -277,7 +276,7 @@ final class CallRecordStoreTest: XCTestCase {
             callRecordStore.fetch(
                 callId: unreadCallRecord.callId,
                 conversationId: .thread(threadRowId: unreadCallRecord.threadRowId),
-                db: tx.db
+                tx: tx
             ).unwrapped
         }
 
@@ -291,14 +290,14 @@ final class CallRecordStoreTest: XCTestCase {
         let (newThreadRowId, _) = insertThreadAndInteraction()
 
         inMemoryDB.write { tx in
-            callRecordStore.insert(callRecord: callRecord, db: tx.db)
+            callRecordStore._insert(callRecord: callRecord, tx: tx)
         }
 
         inMemoryDB.write { tx in
             callRecordStore.updateWithMergedThread(
                 fromThreadRowId: callRecord.threadRowId,
                 intoThreadRowId: newThreadRowId,
-                db: tx.db
+                tx: tx
             )
         }
 
@@ -306,7 +305,7 @@ final class CallRecordStoreTest: XCTestCase {
             callRecordStore.fetch(
                 callId: callRecord.callId,
                 conversationId: .thread(threadRowId: newThreadRowId),
-                db: tx.db
+                tx: tx
             ).unwrapped
         }
 
@@ -322,7 +321,7 @@ final class CallRecordStoreTest: XCTestCase {
         let callRecord = makeCallRecord()
 
         inMemoryDB.write { tx in
-            callRecordStore.insert(callRecord: callRecord, db: tx.db)
+            callRecordStore._insert(callRecord: callRecord, tx: tx)
         }
 
         inMemoryDB.write { tx in
@@ -337,7 +336,7 @@ final class CallRecordStoreTest: XCTestCase {
             switch callRecordStore.fetch(
                 callId: callRecord.callId,
                 conversationId: .thread(threadRowId: callRecord.threadRowId),
-                db: tx.db
+                tx: tx
             ) {
             case .matchNotFound:
                 // Test pass
@@ -356,7 +355,7 @@ final class CallRecordStoreTest: XCTestCase {
         let callRecord = makeCallRecord()
 
         inMemoryDB.write { tx in
-            callRecordStore.insert(callRecord: callRecord, db: tx.db)
+            callRecordStore._insert(callRecord: callRecord, tx: tx)
         }
 
         try inMemoryDB.write { tx in

@@ -10,7 +10,7 @@ import GRDB
 class MockDeletedCallRecordStore: DeletedCallRecordStore {
     var deletedCallRecords = [DeletedCallRecord]()
 
-    func fetch(callId: UInt64, conversationId: CallRecord.ConversationID, db: Database) -> DeletedCallRecord? {
+    func fetch(callId: UInt64, conversationId: CallRecord.ConversationID, tx: DBReadTransaction) -> DeletedCallRecord? {
         return deletedCallRecords.first { deletedCallRecord in
             return (
                 deletedCallRecord.callId == callId
