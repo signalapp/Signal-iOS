@@ -337,6 +337,7 @@ public class AppSetup {
 
         let attachmentStore = AttachmentStoreImpl()
         let orphanedAttachmentStore = OrphanedAttachmentStoreImpl()
+        let attachmentUploadStore = AttachmentUploadStoreImpl(attachmentStore: attachmentStore)
         let attachmentDownloadStore = AttachmentDownloadStoreImpl(dateProvider: dateProvider)
 
         let orphanedBackupAttachmentStore = OrphanedBackupAttachmentStoreImpl()
@@ -391,7 +392,10 @@ public class AppSetup {
 
         let attachmentThumbnailService = AttachmentThumbnailServiceImpl()
 
-        let tsResourceStore = TSResourceStoreImpl(attachmentStore: attachmentStore)
+        let tsResourceStore = TSResourceStoreImpl(
+            attachmentStore: attachmentStore,
+            attachmentUploadStore: attachmentUploadStore
+        )
         let tsResourceManager = TSResourceManagerImpl(
             attachmentManager: attachmentManager,
             attachmentStore: attachmentStore,
@@ -921,6 +925,7 @@ public class AppSetup {
         let attachmentUploadManager = AttachmentUploadManagerImpl(
             attachmentEncrypter: Upload.Wrappers.AttachmentEncrypter(),
             attachmentStore: attachmentStore,
+            attachmentUploadStore: attachmentUploadStore,
             attachmentThumbnailService: attachmentThumbnailService,
             chatConnectionManager: chatConnectionManager,
             dateProvider: dateProvider,

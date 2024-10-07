@@ -5,8 +5,8 @@
 
 import Foundation
 
-/// AttachmentStore + mutations needed for upload handling.
-public protocol AttachmentUploadStore: AttachmentStore {
+/// Attachment mutations needed for upload handling.
+public protocol AttachmentUploadStore {
 
     /// Mark the attachment as having been uploaded to the transit tier.
     func markUploadedToTransitTier(

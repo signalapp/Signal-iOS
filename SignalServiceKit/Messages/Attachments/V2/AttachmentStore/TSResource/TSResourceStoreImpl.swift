@@ -8,10 +8,15 @@ import Foundation
 public class TSResourceStoreImpl: TSResourceStore {
 
     private let attachmentStore: AttachmentStoreImpl
+    private let attachmentUploadStore: AttachmentUploadStore
     private let tsAttachmentStore: TSAttachmentStore
 
-    public init(attachmentStore: AttachmentStoreImpl) {
+    public init(
+        attachmentStore: AttachmentStoreImpl,
+        attachmentUploadStore: AttachmentUploadStore
+    ) {
         self.attachmentStore = attachmentStore
+        self.attachmentUploadStore = attachmentUploadStore
         self.tsAttachmentStore = TSAttachmentStore()
     }
 
@@ -297,7 +302,7 @@ extension TSResourceStoreImpl: TSResourceUploadStore {
                 transaction: SDSDB.shimOnlyBridge(tx)
             )
         case .v2(let attachment):
-            try attachmentStore.markUploadedToTransitTier(
+            try attachmentUploadStore.markUploadedToTransitTier(
                 attachmentStream: attachment,
                 info: info,
                 tx: tx
