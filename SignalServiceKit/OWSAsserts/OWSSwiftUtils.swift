@@ -14,34 +14,37 @@ public func assertOnQueue(_ queue: DispatchQueue) {
 
 @inlinable
 public func AssertIsOnMainThread(
+    logger: PrefixedLogger = .empty(),
     file: String = #fileID,
     function: String = #function,
     line: Int = #line
 ) {
     if !Thread.isMainThread {
-        owsFailDebug("Must be on main thread.", file: file, function: function, line: line)
+        owsFailDebug("Must be on main thread.", logger: logger, file: file, function: function, line: line)
     }
 }
 
 @inlinable
 public func AssertNotOnMainThread(
+    logger: PrefixedLogger = .empty(),
     file: String = #fileID,
     function: String = #function,
     line: Int = #line
 ) {
     if Thread.isMainThread {
-        owsFailDebug("Must be off main thread.", file: file, function: function, line: line)
+        owsFailDebug("Must be off main thread.", logger: logger, file: file, function: function, line: line)
     }
 }
 
 @inlinable
 public func owsFailDebug(
     _ logMessage: String,
+    logger: PrefixedLogger = .empty(),
     file: String = #fileID,
     function: String = #function,
     line: Int = #line
 ) {
-    Logger.error(logMessage, file: file, function: function, line: line)
+    logger.error(logMessage, file: file, function: function, line: line)
     if IsDebuggerAttached() {
         TrapDebugger()
     } else {
@@ -52,13 +55,14 @@ public func owsFailDebug(
 @inlinable
 public func owsFail(
     _ logMessage: String,
+    logger: PrefixedLogger = .empty(),
     file: String = #fileID,
     function: String = #function,
     line: Int = #line
 ) -> Never {
-    logStackTrace()
-    owsFailDebug(logMessage, file: file, function: function, line: line)
-    Logger.flush()
+    logger.error(Thread.callStackSymbols.joined(separator: "\n"))
+    owsFailDebug(logMessage, logger: logger, file: file, function: function, line: line)
+    logger.flush()
     fatalError(logMessage)
 }
 
@@ -66,13 +70,14 @@ public func owsFail(
 public func owsAssertDebug(
     _ condition: Bool,
     _ message: @autoclosure () -> String = String(),
+    logger: PrefixedLogger = .empty(),
     file: String = #fileID,
     function: String = #function,
     line: Int = #line
 ) {
     if !condition {
         let message: String = message()
-        owsFailDebug(message.isEmpty ? "Assertion failed." : message, file: file, function: function, line: line)
+        owsFailDebug(message.isEmpty ? "Assertion failed." : message, logger: logger, file: file, function: function, line: line)
     }
 }
 
@@ -83,15 +88,18 @@ public func owsAssertDebug(
 public func owsPrecondition(
     _ condition: @autoclosure () -> Bool,
     _ message: @autoclosure () -> String = String(),
+    logger: PrefixedLogger = .empty(),
     file: String = #fileID,
     function: String = #function,
     line: Int = #line
 ) {
     if !condition() {
         let message: String = message()
-        owsFail(message.isEmpty ? "Assertion failed." : message, file: file, function: function, line: line)
+        owsFail(message.isEmpty ? "Assertion failed." : message, logger: logger, file: file, function: function, line: line)
     }
 }
+
+// MARK: -
 
 @objc
 public class OWSSwiftUtils: NSObject {
@@ -105,8 +113,4 @@ public class OWSSwiftUtils: NSObject {
     ) -> Never {
         owsFail(logMessage, file: file, function: function, line: line)
     }
-}
-
-public func logStackTrace() {
-    Logger.error(Thread.callStackSymbols.joined(separator: "\n"))
 }

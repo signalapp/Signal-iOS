@@ -9,15 +9,24 @@ open class PrefixedLogger {
     private let prefix: String
     private var suffix: String
 
+    public static func empty() -> PrefixedLogger {
+        return PrefixedLogger(rawPrefix: "")
+    }
+
     public init(prefix: String, suffix: String? = nil) {
-        self.prefix = prefix
-        self.suffix = suffix ?? ""
+        self.prefix = "\(prefix) "
+        self.suffix = suffix.map { " \($0)" } ?? ""
+    }
+
+    private init(rawPrefix: String, rawSuffix: String? = nil) {
+        self.prefix = rawPrefix
+        self.suffix = rawSuffix ?? ""
     }
 
     public func suffixed(with extraSuffix: String) -> PrefixedLogger {
         return PrefixedLogger(
             prefix: prefix,
-            suffix: suffix + extraSuffix
+            suffix: suffix + " \(extraSuffix)"
         )
     }
 
@@ -111,6 +120,6 @@ open class PrefixedLogger {
     }
 
     private func buildLogString(_ logString: String) -> String {
-        "\(prefix) \(logString) \(suffix)"
+        "\(prefix)\(logString)\(suffix)"
     }
 }

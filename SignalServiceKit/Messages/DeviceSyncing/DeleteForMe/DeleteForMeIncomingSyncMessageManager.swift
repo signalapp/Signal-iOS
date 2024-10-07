@@ -173,7 +173,7 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
         attachmentIdentifier: AttachmentIdentifier,
         tx: any DBWriteTransaction
     ) {
-        let logger = logger.suffixed(with: " [\(targetMessage.author):\(targetMessage.sentTimestamp) in \(conversation.threadUniqueId)]")
+        let logger = logger.suffixed(with: "[\(targetMessage.author):\(targetMessage.sentTimestamp) in \(conversation.threadUniqueId)]")
 
         guard let targetMessage = addressableMessageFinder.findLocalMessage(
             threadUniqueId: conversation.threadUniqueId,

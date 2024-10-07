@@ -335,7 +335,7 @@ class CallRecordStoreImpl: CallRecordStore {
         newCallStatus: CallRecord.CallStatus,
         tx: DBWriteTransaction
     ) {
-        let logger = CallRecordLogger.shared.suffixed(with: " \(callRecord.callStatus) -> \(newCallStatus)")
+        let logger = CallRecordLogger.shared.suffixed(with: "\(callRecord.callStatus) -> \(newCallStatus)")
         logger.info("Updating existing call record.")
 
         callRecord.callStatus = newCallStatus
