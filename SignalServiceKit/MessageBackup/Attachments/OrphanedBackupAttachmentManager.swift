@@ -6,12 +6,32 @@
 import GRDB
 
 /// In charge of deleting attachments off the backup cdn after they've been deleted locally (or otherwise orphaned).
-public protocol OrphanedBackupAttachmentManager {}
+public protocol OrphanedBackupAttachmentManager {
+
+    /// Called when creating an attachment with the provided media name, or
+    /// when updating an attachment (e.g. after downloading) with the media name.
+    /// Required to clean up any pending orphan delete jobs that should now be
+    /// invalidated.
+    ///
+    /// Say we had an attachment with mediaId abcd and deleted it, without having
+    /// deleted it on the backup cdn. Later, we list all backup media on the server,
+    /// and see mediaId abcd there with no associated local attachment.
+    /// We add it to the orphan table to schedule for deletion.
+    /// Later, we either send or receive (and download) an attachment with the same
+    /// mediaId (same file contents). Now the orphan delete job races with the upload
+    /// of that new attachment instance. So we need to cancel (delete) the orphan row.
+    func didCreateOrUpdateAttachment(
+        withMediaName mediaName: String,
+        tx: DBWriteTransaction
+    ) throws
+}
 
 public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManager {
 
     private let appReadiness: AppReadiness
     private let db: any DB
+    private let messageBackupKeyMaterial: MessageBackupKeyMaterial
+    private let orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore
     private let tableObserver: TableObserver
     private let taskQueue: TaskQueueLoader<TaskRunner>
     private let tsAccountManager: TSAccountManager
@@ -27,6 +47,8 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
     ) {
         self.appReadiness = appReadiness
         self.db = db
+        self.messageBackupKeyMaterial = messageBackupKeyMaterial
+        self.orphanedBackupAttachmentStore = orphanedBackupAttachmentStore
         self.tsAccountManager = tsAccountManager
         let taskRunner = TaskRunner(
             attachmentStore: attachmentStore,
@@ -56,6 +78,29 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
             self?.startObserving()
         }
     }
+
+    public func didCreateOrUpdateAttachment(
+        withMediaName mediaName: String,
+        tx: DBWriteTransaction
+    ) throws {
+        try orphanedBackupAttachmentStore.removeAll(
+            withMediaName: mediaName,
+            tx: tx
+        )
+        for type in MediaTierEncryptionType.allCases {
+            let mediaId = try messageBackupKeyMaterial.mediaEncryptionMetadata(
+                mediaName: mediaName,
+                type: type,
+                tx: tx
+            ).mediaId
+            try orphanedBackupAttachmentStore.removeAll(
+                withMediaID: mediaId,
+                tx: tx
+            )
+        }
+    }
+
+    // MARK: - Private
 
     private func runIfNeeded() {
         guard appReadiness.isAppReady else {
@@ -344,6 +389,13 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
 open class OrphanedBackupAttachmentManagerMock: OrphanedBackupAttachmentManager {
 
     public init() {}
+
+    open func didCreateOrUpdateAttachment(
+        withMediaName mediaName: String,
+        tx: DBWriteTransaction
+    ) throws {
+        // Do nothing
+    }
 }
 
 #endif

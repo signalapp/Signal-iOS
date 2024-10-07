@@ -408,6 +408,17 @@ class MessageBackupIntegrationTests: XCTestCase {
             keychainStorage: MockKeychainStorage()
         )
 
+        let svr = SecureValueRecoveryMock()
+        let backupKey = Data(repeating: 8, count: 32)
+        svr.dataGenerator = { derivedKey in
+            switch derivedKey {
+            case .backupKey:
+                return backupKey
+            default:
+                owsFail("Unexpected key request")
+            }
+        }
+
         /// We use crashy versions of dependencies that should never be called
         /// during backups, and no-op implementations of payments because those
         /// are bound to the SignalUI target.
@@ -425,6 +436,7 @@ class MessageBackupIntegrationTests: XCTestCase {
                 backupAttachmentDownloadManager: BackupAttachmentDownloadManagerMock(),
                 dateProvider: dateProvider,
                 networkManager: CrashyMocks.MockNetworkManager(libsignalNet: nil),
+                svr: svr,
                 webSocketFactory: CrashyMocks.MockWebSocketFactory()
             )
         ).prepareDatabase().awaitable()

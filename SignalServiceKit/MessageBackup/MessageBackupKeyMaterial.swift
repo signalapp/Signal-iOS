@@ -13,7 +13,7 @@ enum MessageBackupKeyMaterialError: Error {
     case invalidEncryptionKey
 }
 
-public enum MediaTierEncryptionType {
+public enum MediaTierEncryptionType: CaseIterable {
     case attachment
     case thumbnail
 }

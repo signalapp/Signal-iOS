@@ -9,6 +9,7 @@ public class AttachmentManagerImpl: AttachmentManager {
     private let attachmentStore: AttachmentStore
     private let orphanedAttachmentCleaner: OrphanedAttachmentCleaner
     private let orphanedAttachmentStore: OrphanedAttachmentStore
+    private let orphanedBackupAttachmentManager: OrphanedBackupAttachmentManager
     private let stickerManager: Shims.StickerManager
 
     public init(
@@ -16,12 +17,14 @@ public class AttachmentManagerImpl: AttachmentManager {
         attachmentStore: AttachmentStore,
         orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
         orphanedAttachmentStore: OrphanedAttachmentStore,
+        orphanedBackupAttachmentManager: OrphanedBackupAttachmentManager,
         stickerManager: Shims.StickerManager
     ) {
         self.attachmentDownloadManager = attachmentDownloadManager
         self.attachmentStore = attachmentStore
         self.orphanedAttachmentCleaner = orphanedAttachmentCleaner
         self.orphanedAttachmentStore = orphanedAttachmentStore
+        self.orphanedBackupAttachmentManager = orphanedBackupAttachmentManager
         self.stickerManager = stickerManager
     }
 
@@ -276,6 +279,13 @@ public class AttachmentManagerImpl: AttachmentManager {
             tx: tx
         )
 
+        if let mediaName = attachmentParams.mediaName {
+            try orphanedBackupAttachmentManager.didCreateOrUpdateAttachment(
+                withMediaName: mediaName,
+                tx: tx
+            )
+        }
+
         switch referenceParams.owner {
         case .message(.sticker(let stickerInfo)):
             // Only for stickers, schedule a high priority "download"
@@ -478,6 +488,13 @@ public class AttachmentManagerImpl: AttachmentManager {
                 tx: tx
             )
 
+            if let mediaName = attachmentParams.mediaName {
+                try orphanedBackupAttachmentManager.didCreateOrUpdateAttachment(
+                    withMediaName: mediaName,
+                    tx: tx
+                )
+            }
+
             return .success(())
         } catch {
             return .failure(.dbInsertionError(error))
@@ -649,6 +666,12 @@ public class AttachmentManagerImpl: AttachmentManager {
                     // Make sure to clear out the pending attachment from the orphan table so it isn't deleted!
                     try orphanedAttachmentCleaner.releasePendingAttachment(withId: pendingAttachment.orphanRecordId, tx: tx)
                 }
+                if let mediaName = attachmentParams.mediaName {
+                    try orphanedBackupAttachmentManager.didCreateOrUpdateAttachment(
+                        withMediaName: mediaName,
+                        tx: tx
+                    )
+                }
             } catch let AttachmentInsertError.duplicatePlaintextHash(existingAttachmentId) {
                 // Already have an attachment with the same plaintext hash! Create a new reference to it instead.
                 // DO NOT remove the pending attachment's orphan table row, so the pending copy gets cleaned up.
@@ -786,6 +809,13 @@ public class AttachmentManagerImpl: AttachmentManager {
                 reference: referenceParams,
                 tx: tx
             )
+
+            if let mediaName = attachmentParams.mediaName {
+                try orphanedBackupAttachmentManager.didCreateOrUpdateAttachment(
+                    withMediaName: mediaName,
+                    tx: tx
+                )
+            }
 
             // If we know we have a stream, enqueue the download at high priority
             // so that copy happens ASAP.

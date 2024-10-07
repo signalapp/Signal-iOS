@@ -38,6 +38,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         messageBackupRequestManager: MessageBackupRequestManager,
         orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
         orphanedAttachmentStore: OrphanedAttachmentStore,
+        orphanedBackupAttachmentManager: OrphanedBackupAttachmentManager,
         profileManager: Shims.ProfileManager,
         signalService: OWSSignalServiceProtocol,
         stickerManager: Shims.StickerManager,
@@ -65,6 +66,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             interactionStore: interactionStore,
             orphanedAttachmentCleaner: orphanedAttachmentCleaner,
             orphanedAttachmentStore: orphanedAttachmentStore,
+            orphanedBackupAttachmentManager: orphanedBackupAttachmentManager,
             storyStore: storyStore,
             threadStore: threadStore
         )
@@ -1604,6 +1606,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         private let interactionStore: InteractionStore
         private let orphanedAttachmentCleaner: OrphanedAttachmentCleaner
         private let orphanedAttachmentStore: OrphanedAttachmentStore
+        private let orphanedBackupAttachmentManager: OrphanedBackupAttachmentManager
         private let storyStore: StoryStore
         private let threadStore: ThreadStore
 
@@ -1614,6 +1617,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             interactionStore: InteractionStore,
             orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
             orphanedAttachmentStore: OrphanedAttachmentStore,
+            orphanedBackupAttachmentManager: OrphanedBackupAttachmentManager,
             storyStore: StoryStore,
             threadStore: ThreadStore
         ) {
@@ -1623,6 +1627,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             self.interactionStore = interactionStore
             self.orphanedAttachmentCleaner = orphanedAttachmentCleaner
             self.orphanedAttachmentStore = orphanedAttachmentStore
+            self.orphanedBackupAttachmentManager = orphanedBackupAttachmentManager
             self.storyStore = storyStore
             self.threadStore = threadStore
         }
@@ -1664,6 +1669,11 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     )
                     // Make sure to clear out the pending attachment from the orphan table so it isn't deleted!
                     try self.orphanedAttachmentCleaner.releasePendingAttachment(withId: pendingAttachment.orphanRecordId, tx: tx)
+
+                    try self.orphanedBackupAttachmentManager.didCreateOrUpdateAttachment(
+                        withMediaName: Attachment.mediaName(digestSHA256Ciphertext: pendingAttachment.digestSHA256Ciphertext),
+                        tx: tx
+                    )
 
                     let attachment = self.attachmentStore.fetch(id: attachmentId, tx: tx)
                     let result: DownloadResult
@@ -1816,6 +1826,13 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         tx: tx
                     )
 
+                    if let mediaName = attachmentParams.mediaName {
+                        try self.orphanedBackupAttachmentManager.didCreateOrUpdateAttachment(
+                            withMediaName: mediaName,
+                            tx: tx
+                        )
+                    }
+
                     // Make sure to clear out the pending attachment from the orphan table so it isn't deleted!
                     try self.orphanedAttachmentCleaner.releasePendingAttachment(withId: pendingAttachment.orphanRecordId, tx: tx)
 
@@ -1955,6 +1972,13 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         reference: referenceParams,
                         tx: tx
                     )
+
+                    if let mediaName = attachmentParams.mediaName {
+                        try self.orphanedBackupAttachmentManager.didCreateOrUpdateAttachment(
+                            withMediaName: mediaName,
+                            tx: tx
+                        )
+                    }
 
                     // Make sure to clear out the pending attachment from the orphan table so it isn't deleted!
                     try self.orphanedAttachmentCleaner.releasePendingAttachment(withId: pendingThumbnailAttachment.orphanRecordId, tx: tx)

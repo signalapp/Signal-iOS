@@ -40,6 +40,7 @@ public class AppSetup {
         let signalService: (any OWSSignalServiceProtocol)?
         let storageServiceManager: (any StorageServiceManager)?
         let subscriptionManager: (any SubscriptionManager)?
+        let svr: SecureValueRecovery?
         let syncManager: (any SyncManagerProtocol)?
         let systemStoryManager: (any SystemStoryManagerProtocol)?
         let versionedProfiles: (any VersionedProfilesSwift)?
@@ -65,6 +66,7 @@ public class AppSetup {
             signalService: (any OWSSignalServiceProtocol)? = nil,
             storageServiceManager: (any StorageServiceManager)? = nil,
             subscriptionManager: (any SubscriptionManager)? = nil,
+            svr: SecureValueRecovery? = nil,
             syncManager: (any SyncManagerProtocol)? = nil,
             systemStoryManager: (any SystemStoryManagerProtocol)? = nil,
             versionedProfiles: (any VersionedProfilesSwift)? = nil,
@@ -89,6 +91,7 @@ public class AppSetup {
             self.signalService = signalService
             self.storageServiceManager = storageServiceManager
             self.subscriptionManager = subscriptionManager
+            self.svr = svr
             self.syncManager = syncManager
             self.systemStoryManager = systemStoryManager
             self.versionedProfiles = versionedProfiles
@@ -297,7 +300,7 @@ public class AppSetup {
             tsAccountManager: tsAccountManager
         )
 
-        let svr = SecureValueRecovery2Impl(
+        let svr = testDependencies.svr ?? SecureValueRecovery2Impl(
             accountAttributesUpdater: accountAttributesUpdater,
             appContext: SVR2.Wrappers.AppContext(),
             appReadiness: appReadiness,
@@ -335,6 +338,18 @@ public class AppSetup {
         let attachmentStore = AttachmentStoreImpl()
         let orphanedAttachmentStore = OrphanedAttachmentStoreImpl()
         let attachmentDownloadStore = AttachmentDownloadStoreImpl(dateProvider: dateProvider)
+
+        let orphanedBackupAttachmentStore = OrphanedBackupAttachmentStoreImpl()
+        let orphanedBackupAttachmentManager = OrphanedBackupAttachmentManagerImpl(
+            appReadiness: appReadiness,
+            attachmentStore: attachmentStore,
+            db: db,
+            messageBackupKeyMaterial: messageBackupKeyMaterial,
+            messageBackupRequestManager: messageBackupRequestManager,
+            orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
+            tsAccountManager: tsAccountManager
+        )
+
         let attachmentDownloadManager = AttachmentDownloadManagerImpl(
             appReadiness: appReadiness,
             attachmentDownloadStore: attachmentDownloadStore,
@@ -349,6 +364,7 @@ public class AppSetup {
             messageBackupRequestManager: messageBackupRequestManager,
             orphanedAttachmentCleaner: orphanedAttachmentCleaner,
             orphanedAttachmentStore: orphanedAttachmentStore,
+            orphanedBackupAttachmentManager: orphanedBackupAttachmentManager,
             profileManager: AttachmentDownloadManagerImpl.Wrappers.ProfileManager(profileManager),
             signalService: signalService,
             stickerManager: AttachmentDownloadManagerImpl.Wrappers.StickerManager(),
@@ -361,6 +377,7 @@ public class AppSetup {
             attachmentStore: attachmentStore,
             orphanedAttachmentCleaner: orphanedAttachmentCleaner,
             orphanedAttachmentStore: orphanedAttachmentStore,
+            orphanedBackupAttachmentManager: orphanedBackupAttachmentManager,
             stickerManager: AttachmentManagerImpl.Wrappers.StickerManager()
         )
         let attachmentValidationBackfillMigrator = AttachmentValidationBackfillMigratorImpl(
@@ -923,17 +940,6 @@ public class AppSetup {
             storageServiceManager: storageServiceManager,
             threadRemover: threadRemover,
             threadStore: threadStore
-        )
-
-        let orphanedBackupAttachmentStore = OrphanedBackupAttachmentStoreImpl()
-        let orphanedBackupAttachmentManager = OrphanedBackupAttachmentManagerImpl(
-            appReadiness: appReadiness,
-            attachmentStore: attachmentStore,
-            db: db,
-            messageBackupKeyMaterial: messageBackupKeyMaterial,
-            messageBackupRequestManager: messageBackupRequestManager,
-            orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
-            tsAccountManager: tsAccountManager
         )
 
         let backupAttachmentDownloadStore = BackupAttachmentDownloadStoreImpl(

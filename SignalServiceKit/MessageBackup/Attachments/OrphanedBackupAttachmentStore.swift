@@ -14,9 +14,21 @@ public protocol OrphanedBackupAttachmentStore {
     /// Returns an empty array if the table is empty.
     func peek(count: UInt, tx: DBReadTransaction) throws -> [OrphanedBackupAttachment]
 
-    /// Remove the download from the queue. Should be called once deleted on the cdn (or permanently failed).
+    /// Remove the task from the queue. Should be called once deleted on the cdn (or permanently failed).
     func remove(
         _ record: OrphanedBackupAttachment,
+        tx: DBWriteTransaction
+    ) throws
+
+    /// Remove all pending task rows with the given media name
+    func removeAll(
+        withMediaName mediaName: String,
+        tx: DBWriteTransaction
+    ) throws
+
+    /// Remove all pending task rows with the given media id
+    func removeAll(
+        withMediaID mediaId: Data,
         tx: DBWriteTransaction
     ) throws
 
@@ -54,6 +66,26 @@ public class OrphanedBackupAttachmentStoreImpl: OrphanedBackupAttachmentStore {
         try record.delete(db)
     }
 
+    public func removeAll(
+        withMediaName mediaName: String,
+        tx: DBWriteTransaction
+    ) throws {
+        let db = SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database
+        try OrphanedBackupAttachment
+            .filter(Column(OrphanedBackupAttachment.CodingKeys.mediaName) == mediaName)
+            .deleteAll(db)
+    }
+
+    public func removeAll(
+        withMediaID mediaId: Data,
+        tx: DBWriteTransaction
+    ) throws {
+        let db = SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database
+        try OrphanedBackupAttachment
+            .filter(Column(OrphanedBackupAttachment.CodingKeys.mediaId) == mediaId)
+            .deleteAll(db)
+    }
+
     public func removeAll(tx: DBWriteTransaction) throws {
         let db = databaseConnection(tx)
         try OrphanedBackupAttachment.deleteAll(db)
@@ -89,6 +121,20 @@ open class OrphanedBackupAttachmentStoreMock: OrphanedBackupAttachmentStore {
         tx: DBWriteTransaction
     ) throws {
         records.removeAll(where: { $0.id == record.id })
+    }
+
+    open func removeAll(
+        withMediaName mediaName: String,
+        tx: DBWriteTransaction
+    ) throws {
+        records.removeAll(where: { $0.mediaName == mediaName })
+    }
+
+    open func removeAll(
+        withMediaID mediaId: Data,
+        tx: DBWriteTransaction
+    ) throws {
+        records.removeAll(where: { $0.mediaId == mediaId })
     }
 
     open func removeAll(tx: DBWriteTransaction) throws {
