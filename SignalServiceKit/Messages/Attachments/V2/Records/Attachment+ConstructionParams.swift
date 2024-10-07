@@ -359,5 +359,24 @@ extension Attachment {
                 originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply
             )
         }
+
+        public static func forMerging(
+            streamInfo: Attachment.StreamInfo,
+            into attachment: Attachment,
+            mimeType: String
+        ) -> ConstructionParams {
+            return .init(
+                blurHash: attachment.blurHash,
+                mimeType: mimeType,
+                encryptionKey: attachment.encryptionKey,
+                streamInfo: streamInfo,
+                transitTierInfo: attachment.transitTierInfo,
+                mediaName: attachment.mediaName,
+                mediaTierInfo: attachment.mediaTierInfo,
+                thumbnailMediaTierInfo: attachment.thumbnailMediaTierInfo,
+                localRelativeFilePathThumbnail: attachment.localRelativeFilePathThumbnail,
+                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply
+            )
+        }
     }
 }

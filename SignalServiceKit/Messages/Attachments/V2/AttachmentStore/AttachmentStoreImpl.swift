@@ -280,10 +280,19 @@ public class AttachmentStoreImpl: AttachmentStore {
         let existingRecord = try fetchAttachmentThrows(
             sha256ContentHash: streamInfo.sha256ContentHash,
             tx: tx
-        ).map(Attachment.Record.init(attachment:))
+        )
 
-        if let existingRecord {
-            throw AttachmentInsertError.duplicatePlaintextHash(existingAttachmentId: existingRecord.sqliteId!)
+        if let existingRecord, existingRecord.id != id {
+            throw AttachmentInsertError.duplicatePlaintextHash(existingAttachmentId: existingRecord.id)
+        }
+
+        // Find if there is already an attachment with the same media name.
+        let existingMediaNameRecord = try fetchAttachmentThrows(
+            mediaName: Attachment.mediaName(digestSHA256Ciphertext: streamInfo.digestSHA256Ciphertext),
+            tx: tx
+        )
+        if let existingMediaNameRecord, existingMediaNameRecord.id != id {
+            throw AttachmentInsertError.duplicateMediaName(existingAttachmentId: existingMediaNameRecord.id)
         }
 
         var newRecord: Attachment.Record
@@ -317,6 +326,27 @@ public class AttachmentStoreImpl: AttachmentStore {
             )
         }
         newRecord.sqliteId = id
+        try newRecord.checkAllUInt64FieldsFitInInt64()
+        try newRecord.update(databaseConnection(tx))
+    }
+
+    public func merge(
+        streamInfo: Attachment.StreamInfo,
+        into attachment: Attachment,
+        validatedMimeType: String,
+        tx: DBWriteTransaction
+    ) throws {
+        guard attachment.asStream() == nil else {
+            throw OWSAssertionError("Already a stream!")
+        }
+
+        var newRecord = Attachment.Record(params: .forMerging(
+            streamInfo: streamInfo,
+            into: attachment,
+            mimeType: validatedMimeType
+        ))
+
+        newRecord.sqliteId = attachment.id
         try newRecord.checkAllUInt64FieldsFitInInt64()
         try newRecord.update(databaseConnection(tx))
     }
@@ -469,6 +499,17 @@ public class AttachmentStoreImpl: AttachmentStore {
 
         if let existingRecord {
             throw AttachmentInsertError.duplicatePlaintextHash(existingAttachmentId: existingRecord.sqliteId!)
+        }
+
+        // Find if there is already an attachment with the same media name.
+        let existingMediaNameRecord = try attachmentParams.mediaName.map { mediaName in
+            try fetchAttachmentThrows(
+                mediaName: mediaName,
+                tx: tx
+            )
+        } ?? nil
+        if let existingMediaNameRecord {
+            throw AttachmentInsertError.duplicateMediaName(existingAttachmentId: existingMediaNameRecord.id)
         }
 
         var attachmentRecord = Attachment.Record(params: attachmentParams)

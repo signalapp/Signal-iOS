@@ -10,6 +10,10 @@ public enum AttachmentInsertError: Error {
     /// attachment a duplicate. Callers should instead create a new owner reference to
     /// the same existing attachment.
     case duplicatePlaintextHash(existingAttachmentId: Attachment.IDType)
+    /// An existing attachment was found with the same media name, making the new
+    /// attachment a duplicate. Callers should instead create a new owner reference to
+    /// the same existing attachment and possibly update it with any stream info.
+    case duplicateMediaName(existingAttachmentId: Attachment.IDType)
 }
 
 public protocol AttachmentStore {
@@ -120,6 +124,17 @@ public protocol AttachmentStore {
         revalidatedContentType contentType: Attachment.ContentType,
         mimeType: String,
         blurHash: String?,
+        tx: DBWriteTransaction
+    ) throws
+
+    /// Update an attachment when we have a media name collision.
+    /// Call this IFF the existing attachment has a media name but not stream info
+    /// (if it was restored from a backup), but the new copy has stream
+    /// info that we should keep by merging into the existing attachment.
+    func merge(
+        streamInfo: Attachment.StreamInfo,
+        into attachment: Attachment,
+        validatedMimeType: String,
         tx: DBWriteTransaction
     ) throws
 

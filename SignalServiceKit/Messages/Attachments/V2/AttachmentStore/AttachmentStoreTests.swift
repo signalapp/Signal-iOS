@@ -188,6 +188,8 @@ class AttachmentStoreTests: XCTestCase {
                     switch error as! AttachmentInsertError {
                     case .duplicatePlaintextHash(let existingAttachmentId):
                         XCTAssertEqual(existingAttachmentId, message1Attachment.id)
+                    default:
+                        XCTFail("Unexpected error")
                     }
                 default:
                     XCTFail("Unexpected error")

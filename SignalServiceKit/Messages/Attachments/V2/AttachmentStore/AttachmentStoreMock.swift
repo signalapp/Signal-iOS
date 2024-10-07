@@ -116,6 +116,15 @@ open class AttachmentStoreMock: AttachmentStore {
         // do nothing
     }
 
+    open func merge(
+        streamInfo: Attachment.StreamInfo,
+        into attachment: Attachment,
+        validatedMimeType: String,
+        tx: DBWriteTransaction
+    ) throws {
+        // do nothing
+    }
+
     open func addOwner(
         _ reference: AttachmentReference.ConstructionParams,
         for attachmentId: Attachment.IDType,
