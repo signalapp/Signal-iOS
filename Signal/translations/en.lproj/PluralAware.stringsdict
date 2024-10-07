@@ -75,7 +75,7 @@
 			<key>NSStringFormatSpecTypeKey</key>
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
+			<string>ld</string>
 			<key>one</key>
 			<string>%ld person will be added to the call.</string>
 			<key>other</key>
@@ -91,7 +91,7 @@
 			<key>NSStringFormatSpecTypeKey</key>
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
+			<string>ld</string>
 			<key>one</key>
 			<string>Approve %ld Request?</string>
 			<key>other</key>
@@ -107,7 +107,7 @@
 			<key>NSStringFormatSpecTypeKey</key>
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
+			<string>ld</string>
 			<key>one</key>
 			<string>%ld person will not be added to the call.</string>
 			<key>other</key>
@@ -123,7 +123,7 @@
 			<key>NSStringFormatSpecTypeKey</key>
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
+			<string>ld</string>
 			<key>one</key>
 			<string>Deny %ld Request?</string>
 			<key>other</key>
@@ -139,7 +139,7 @@
 			<key>NSStringFormatSpecTypeKey</key>
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
+			<string>ld</string>
 			<key>one</key>
 			<string>+%ld Request</string>
 			<key>other</key>
@@ -523,6 +523,22 @@
 			<string>%2$@, %3$@, and %d other are in this call</string>
 			<key>other</key>
 			<string>%2$@, %3$@, and %d others are in this call</string>
+		</dict>
+	</dict>
+	<key>GROUP_CALL_MEMBER_LIST_UNKNOWN_MEMBERS_ROW_%ld</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>ld</string>
+			<key>one</key>
+			<string>+%ld more</string>
+			<key>other</key>
+			<string>+%ld more</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_JOINED_%d</key>

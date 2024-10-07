@@ -2968,8 +2968,14 @@
 /* Title for a button on the group members sheet for sharing that call's link. */
 "GROUP_CALL_MEMBER_LIST_SHARE_CALL_LINK_BUTTON" = "Share call link";
 
+/* Label for an unknown member in the group call member list when they are the only member of the call. */
+"GROUP_CALL_MEMBER_LIST_SINGLE_UNKNOWN_MEMBER_ROW" = "1 Person";
+
 /* Title for the sheet showing the group call members list */
 "GROUP_CALL_MEMBER_LIST_TITLE" = "Call Info";
+
+/* Message on an action sheet when tapping an info button next to unknown members in the group call member list. */
+"GROUP_CALL_MEMBER_LIST_UNKNOWN_MEMBERS_INFO_SHEET" = "Before joining a call you can only see the names of phone contacts, people you’re in a group with, or people you’ve chatted with 1:1. You’ll see all names and photos once you’ve joined the call.";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Can't receive audio & video from %@";

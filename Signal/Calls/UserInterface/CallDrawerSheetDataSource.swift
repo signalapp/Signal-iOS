@@ -94,6 +94,7 @@ final class GroupCallSheetDataSource<Call: GroupCall>: CallDrawerSheetDataSource
                     comparableName: comparableName,
                     demuxID: member.demuxId,
                     isLocalUser: false,
+                    isUnknown: false,
                     isAudioMuted: member.audioMuted,
                     isVideoMuted: member.videoMuted,
                     isPresenting: member.presenting
@@ -118,6 +119,7 @@ final class GroupCallSheetDataSource<Call: GroupCall>: CallDrawerSheetDataSource
                 comparableName: comparableName,
                 demuxID: demuxId,
                 isLocalUser: true,
+                isUnknown: false,
                 isAudioMuted: self.ringRtcCall.isOutgoingAudioMuted,
                 isVideoMuted: self.ringRtcCall.isOutgoingVideoMuted,
                 isPresenting: false
@@ -129,6 +131,12 @@ final class GroupCallSheetDataSource<Call: GroupCall>: CallDrawerSheetDataSource
                 let aci = Aci(fromUUID: aciUuid)
                 let address = SignalServiceAddress(aci)
                 let displayName = NSObject.contactsManager.displayName(for: address, tx: SDSDB.shimOnlyBridge(tx))
+                let isUnknown = switch displayName {
+                case .nickname, .systemContactName, .profileName, .phoneNumber, .username:
+                    false
+                case .unknown, .deletedAccount:
+                    true
+                }
                 return JoinedMember(
                     id: .aci(aci),
                     aci: aci,
@@ -136,6 +144,7 @@ final class GroupCallSheetDataSource<Call: GroupCall>: CallDrawerSheetDataSource
                     comparableName: displayName.comparableValue(config: config),
                     demuxID: nil,
                     isLocalUser: false,
+                    isUnknown: isUnknown,
                     isAudioMuted: nil,
                     isVideoMuted: nil,
                     isPresenting: nil
@@ -248,6 +257,7 @@ class IndividualCallSheetDataSource: CallDrawerSheetDataSource {
                 comparableName: remoteComparableName,
                 demuxID: nil,
                 isLocalUser: false,
+                isUnknown: false,
                 isAudioMuted: self.individualCall.isRemoteAudioMuted,
                 isVideoMuted: self.individualCall.isRemoteVideoEnabled.negated,
                 isPresenting: self.individualCall.isRemoteSharingScreen
@@ -265,6 +275,7 @@ class IndividualCallSheetDataSource: CallDrawerSheetDataSource {
                 comparableName: comparableName,
                 demuxID: nil,
                 isLocalUser: true,
+                isUnknown: false,
                 isAudioMuted: self.call.isOutgoingAudioMuted,
                 isVideoMuted: self.call.isOutgoingVideoMuted,
                 isPresenting: false

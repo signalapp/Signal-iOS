@@ -169,6 +169,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
     private enum RowID: Hashable {
         case callLink(CallLinkRow)
         case member(section: MembersSection, id: JoinedMember.ID)
+        case unknownMembers
 
         enum CallLinkRow: Hashable {
             case share
@@ -217,6 +218,13 @@ class CallDrawerSheet: InteractiveSheetViewController {
             config.text = self?.callLinkAdminManager?.editCallNameButtonTitle
             cell.contentConfiguration = config
             cell.accessoryType = .disclosureIndicator
+            return cell
+        case .unknownMembers:
+            let cell = tableView.dequeueReusableCell(UnknownMembersCell.self, for: indexPath)
+            if let self {
+                cell.parentViewController = self
+                cell.unknownMembers = self.unknownMembers
+            }
             return cell
         }
     }
@@ -307,6 +315,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
 
         tableView.register(CallLinkURLCell.self)
         tableView.register(GroupCallMemberCell.self)
+        tableView.register(UnknownMembersCell.self)
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "UITableViewCell")
 
         tableView.dataSource = self.dataSource
@@ -336,11 +345,24 @@ class CallDrawerSheet: InteractiveSheetViewController {
         let comparableName: DisplayName.ComparableValue
         let demuxID: DemuxId?
         let isLocalUser: Bool
+        let isUnknown: Bool
         let isAudioMuted: Bool?
         let isVideoMuted: Bool?
         let isPresenting: Bool?
     }
 
+    fileprivate struct UnknownMembers {
+        var members: [JoinedMember]
+        var count: Int { members.count }
+        var callHasKnownUsers: Bool
+
+        init() {
+            self.members = []
+            self.callHasKnownUsers = false
+        }
+    }
+
+    private var unknownMembers = UnknownMembers()
     private var viewModelsByID: [JoinedMember.ID: GroupCallMemberCell.ViewModel] = [:]
     private var sortedMembers = [JoinedMember]() {
         didSet {
@@ -364,7 +386,20 @@ class CallDrawerSheet: InteractiveSheetViewController {
             callSheetDataSource.unsortedMembers(tx: $0.asV2Read)
         }
 
-        sortedMembers = unsortedMembers.sorted {
+        typealias OrganizedMembers = (joinedMembers: [JoinedMember], unknownMembers: UnknownMembers)
+
+        let organizedMembers: OrganizedMembers = unsortedMembers.reduce(
+            into: ([], UnknownMembers())
+        ) { partialResult, member in
+            if member.isUnknown {
+                partialResult.unknownMembers.members.append(member)
+            } else {
+                partialResult.joinedMembers.append(member)
+                partialResult.unknownMembers.callHasKnownUsers = true
+            }
+        }
+
+        self.sortedMembers = organizedMembers.joinedMembers.sorted {
             let nameComparison = $0.comparableName.isLessThanOrNilIfEqual($1.comparableName)
             if let nameComparison {
                 return nameComparison
@@ -374,6 +409,8 @@ class CallDrawerSheet: InteractiveSheetViewController {
             }
             return $0.demuxID ?? 0 < $1.demuxID ?? 0
         }
+
+        self.unknownMembers = organizedMembers.unknownMembers
 
         self.updateSnapshotAndHeaders()
     }
@@ -408,16 +445,20 @@ class CallDrawerSheet: InteractiveSheetViewController {
         }
 
         // Call members
-        let shouldHideMembersSection = isCallAdmin && sortedMembers.isEmpty
+        let shouldHideMembersSection = isCallAdmin && sortedMembers.isEmpty && unknownMembers.count == 0
         if !shouldHideMembersSection {
             snapshot.appendSections([.members(.inCall)])
             snapshot.appendItems(
                 sortedMembers.map { RowID.member(section: .inCall, id: $0.id) },
                 toSection: .members(.inCall)
             )
+
+            if unknownMembers.count > 0 {
+                snapshot.appendItems([.unknownMembers], toSection: .members(.inCall))
+            }
         }
 
-        inCallHeader.memberCount = sortedMembers.count
+        inCallHeader.memberCount = sortedMembers.count + unknownMembers.count
 
         // Call link admin
         if isCallAdmin {
@@ -609,7 +650,7 @@ extension CallDrawerSheet: UITableViewDelegate {
         case .callLink(.editName):
             tableView.deselectRow(at: indexPath, animated: true)
             self.editCallName()
-        case .member:
+        case .member, .unknownMembers:
             tableView.deselectRow(at: indexPath, animated: false)
         }
     }
@@ -974,6 +1015,200 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
             .store(in: &self.subscriptions)
     }
 }
+
+// MARK: - UnknownMembersCell
+
+private class UnknownMembersCell: UITableViewCell, ReusableTableViewCell {
+    static let reuseIdentifier: String = "UnknownMembersCell"
+
+    typealias UnknownMembers = CallDrawerSheet.UnknownMembers
+
+    private enum Constants {
+        static let borderWidth: CGFloat = 1.75
+        static let singleAvatarSize: UInt = 36
+        static let twoAvatarsSize: UInt = 31
+        static let threeAvatarsSize: UInt = 27
+    }
+
+    weak var parentViewController: UIViewController?
+    var unknownMembers = UnknownMembers() {
+        didSet {
+            updateContents()
+        }
+    }
+
+    private let bodyLabel: UILabel = {
+        let label = UILabel()
+        label.font = .dynamicTypeBody
+        label.textColor = UIColor.Signal.label
+        return label
+    }()
+
+    private let avatarContainer = UIView()
+
+    private let frontAvatar: Avatar
+    private let middleAvatar: Avatar
+    private let backAvatar: Avatar
+
+    private struct Avatar {
+        let avatarView = ConversationAvatarView(localUserDisplayMode: .asUser, badged: false)
+        let borderView = CircleView()
+        let borderConstraints: [NSLayoutConstraint]
+
+        enum Position {
+            case front, middle, back
+        }
+
+        init(in containerView: UIView, position: Position) {
+            containerView.addSubview(borderView)
+            borderView.backgroundColor = .secondarySystemGroupedBackground
+            borderConstraints = borderView.autoSetDimensions(to: .square(Self.borderSize(for: Constants.singleAvatarSize)))
+
+            containerView.addSubview(avatarView)
+            avatarView.autoVCenterInSuperview()
+            switch position {
+            case .front:
+                avatarView.autoPinEdge(toSuperviewEdge: .trailing)
+                avatarView.autoPinEdge(toSuperviewEdge: .leading, relation: .greaterThanOrEqual)
+            case .middle:
+                avatarView.autoHCenterInSuperview()
+            case .back:
+                avatarView.autoPinEdge(toSuperviewEdge: .leading)
+                avatarView.autoPinEdge(toSuperviewEdge: .trailing, relation: .greaterThanOrEqual)
+            }
+
+            avatarView.updateWithSneakyTransactionIfNecessary { configuration in
+                configuration.sizeClass = .customDiameter(Constants.singleAvatarSize)
+                configuration.dataSource = nil
+            }
+
+            borderView.autoAlignAxis(.horizontal, toSameAxisOf: avatarView)
+            borderView.autoAlignAxis(.vertical, toSameAxisOf: avatarView)
+
+            borderView.isHiddenInStackView = true
+            avatarView.isHiddenInStackView = true
+        }
+
+        func configure(with aci: Aci?, totalAvatars: Int) {
+            guard let aci else {
+                borderView.isHiddenInStackView = true
+                avatarView.isHiddenInStackView = true
+                return
+            }
+            borderView.isHiddenInStackView = false
+            avatarView.isHiddenInStackView = false
+            avatarView.updateWithSneakyTransactionIfNecessary { configuration in
+                configuration.dataSource = .address(SignalServiceAddress(aci))
+
+                let avatarSize = Self.avatarSize(for: totalAvatars)
+                configuration.sizeClass = .customDiameter(avatarSize)
+
+                let borderSize = Self.borderSize(for: avatarSize)
+                self.borderConstraints.forEach { $0.constant = borderSize }
+            }
+        }
+
+        func hide() {
+            borderView.isHiddenInStackView = true
+            avatarView.isHiddenInStackView = true
+        }
+
+        private static func avatarSize(for totalAvatars: Int) -> UInt {
+            if totalAvatars == 1 {
+                Constants.singleAvatarSize
+            } else if totalAvatars == 2 {
+                Constants.twoAvatarsSize
+            } else {
+                Constants.threeAvatarsSize
+            }
+        }
+
+        private static func borderSize(for avatarSize: UInt) -> CGFloat {
+            CGFloat(avatarSize) + Constants.borderWidth * 2
+        }
+    }
+
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        backAvatar = Avatar(in: avatarContainer, position: .back)
+        middleAvatar = Avatar(in: avatarContainer, position: .middle)
+        frontAvatar = Avatar(in: avatarContainer, position: .front)
+
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+
+        let hStack = UIStackView()
+        self.contentView.addSubview(hStack)
+        hStack.autoPinEdgesToSuperviewMargins()
+        hStack.axis = .horizontal
+        hStack.spacing = 12
+
+        hStack.addArrangedSubview(avatarContainer)
+        avatarContainer.autoSetDimensions(to: .square(CGFloat(Constants.singleAvatarSize)))
+
+        hStack.addArrangedSubview(bodyLabel)
+
+        let infoButton = OWSButton(
+            imageName: "info",
+            tintColor: .white,
+            dimsWhenHighlighted: true
+        ) { [weak self] in
+            let actionSheet = ActionSheetController(
+                message: OWSLocalizedString(
+                    "GROUP_CALL_MEMBER_LIST_UNKNOWN_MEMBERS_INFO_SHEET",
+                    comment: "Message on an action sheet when tapping an info button next to unknown members in the group call member list."
+                ),
+                theme: .translucentDark
+            )
+            actionSheet.addAction(.acknowledge)
+            self?.parentViewController?.presentActionSheet(actionSheet)
+        }
+        hStack.addArrangedSubview(infoButton)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    private func updateContents() {
+        if unknownMembers.count == 1, !unknownMembers.callHasKnownUsers {
+            bodyLabel.text = OWSLocalizedString(
+                "GROUP_CALL_MEMBER_LIST_SINGLE_UNKNOWN_MEMBER_ROW",
+                comment: "Label for an unknown member in the group call member list when they are the only member of the call."
+            )
+        } else {
+            bodyLabel.text = String(
+                format: OWSLocalizedString(
+                    "GROUP_CALL_MEMBER_LIST_UNKNOWN_MEMBERS_ROW_%ld",
+                    tableName: "PluralAware",
+                    comment: "Label for one or more unknown members in the group call member list when there is at least one known member in the call. Embeds {{ count }}"
+                ),
+                unknownMembers.count
+            )
+        }
+
+        frontAvatar.configure(
+            with: unknownMembers.members.first?.aci,
+            totalAvatars: unknownMembers.members.count
+        )
+        if unknownMembers.members.count == 2 {
+            middleAvatar.hide()
+            backAvatar.configure(
+                with: unknownMembers.members.last?.aci,
+                totalAvatars: unknownMembers.members.count
+            )
+        } else {
+            middleAvatar.configure(
+                with: unknownMembers.members[safe: 1]?.aci,
+                totalAvatars: unknownMembers.members.count
+            )
+            backAvatar.configure(
+                with: unknownMembers.members[safe: 2]?.aci,
+                totalAvatars: unknownMembers.members.count
+            )
+        }
+    }
+}
+
+// MARK: - CallControlsHeightObserver
 
 extension CallDrawerSheet: CallControlsHeightObserver {
     func callControlsHeightDidChange(newHeight: CGFloat) {
