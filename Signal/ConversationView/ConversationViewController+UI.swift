@@ -225,7 +225,8 @@ extension ConversationViewController {
                 subtitleText.append(betweenItemSpacer, attributes: attributes)
             }
 
-            subtitleText.appendTemplatedImage(named: "check-extra-small", font: subtitleFont)
+            subtitleText.append(SignalSymbol.safetyNumber.attributedString(staticFontSize: subtitleFont.pointSize))
+
             subtitleText.append(iconSpacer, attributes: attributes)
             subtitleText.append(
                 SafetyNumberStrings.verified,

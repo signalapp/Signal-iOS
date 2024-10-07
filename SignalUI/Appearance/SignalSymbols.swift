@@ -128,16 +128,49 @@ public enum SignalSymbol: Character {
             }
         }
 
+        fileprivate func staticFont(ofSize size: CGFloat) -> UIFont {
+            UIFont(
+                descriptor: UIFontDescriptor(fontAttributes: [
+                    .name: self.fontName,
+                ]),
+                size: size
+            )
+        }
+
         fileprivate func dynamicTypeFont(
-            ofStandardSize standardSize: CGFloat
+            for textStyle: UIFont.TextStyle,
+            clamped: Bool
         ) -> UIFont {
-            UIFontMetrics.default.scaledFont(
-                for: UIFont(
-                    descriptor: UIFontDescriptor(fontAttributes: [
-                        .name: self.fontName,
-                    ]),
-                    size: standardSize
-                )
+            self.dynamicTypeFont(
+                ofStandardSize: UIFont.preferredFont(
+                    forTextStyle: textStyle,
+                    compatibleWith: UITraitCollection(
+                        preferredContentSizeCategory: .large
+                    )
+                ).pointSize,
+                clamped: clamped
+            )
+        }
+
+        fileprivate func dynamicTypeFont(
+            ofStandardSize standardSize: CGFloat,
+            clamped: Bool
+        ) -> UIFont {
+            let unscaledFont = UIFont(
+                descriptor: UIFontDescriptor(fontAttributes: [
+                    .name: self.fontName,
+                ]),
+                size: standardSize
+            )
+
+            if clamped {
+                let xxxl = UITraitCollection(preferredContentSizeCategory: .extraExtraExtraLarge)
+                let maxSize = UIFontMetrics.default.scaledValue(for: standardSize, compatibleWith: xxxl)
+                return UIFontMetrics.default.scaledFont(for: unscaledFont, maximumPointSize: maxSize)
+            }
+
+            return UIFontMetrics.default.scaledFont(
+                for: unscaledFont
             )
         }
     }
@@ -150,13 +183,59 @@ public enum SignalSymbol: Character {
     }
 
     public func attributedString(
-        dynamicTypeBaseSize: CGFloat,
+        for textStyle: UIFont.TextStyle,
+        clamped: Bool = false,
         weight: Weight = .regular,
         leadingCharacter: LeadingCharacter? = nil,
         attributes: [NSAttributedString.Key: Any] = [:]
     ) -> NSAttributedString {
+            self.attributedString(
+                font: weight.dynamicTypeFont(
+                    for: textStyle,
+                    clamped: clamped
+                ),
+                leadingCharacter: leadingCharacter,
+                attributes: attributes
+            )
+    }
+
+    public func attributedString(
+        dynamicTypeBaseSize: CGFloat,
+        clamped: Bool = false,
+        weight: Weight = .regular,
+        leadingCharacter: LeadingCharacter? = nil,
+        attributes: [NSAttributedString.Key: Any] = [:]
+    ) -> NSAttributedString {
+        self.attributedString(
+            font: weight.dynamicTypeFont(
+                ofStandardSize: dynamicTypeBaseSize,
+                clamped: clamped
+            ),
+            leadingCharacter: leadingCharacter,
+            attributes: attributes
+        )
+    }
+
+    public func attributedString(
+        staticFontSize: CGFloat,
+        weight: Weight = .regular,
+        leadingCharacter: LeadingCharacter? = nil,
+        attributes: [NSAttributedString.Key: Any] = [:]
+    ) -> NSAttributedString {
+        self.attributedString(
+            font: weight.staticFont(ofSize: staticFontSize),
+            leadingCharacter: leadingCharacter,
+            attributes: attributes
+        )
+    }
+
+    private func attributedString(
+        font: UIFont,
+        leadingCharacter: LeadingCharacter?,
+        attributes: [NSAttributedString.Key: Any]
+    ) -> NSAttributedString {
         var attributes = attributes
-        attributes[.font] = weight.dynamicTypeFont(ofStandardSize: dynamicTypeBaseSize)
+        attributes[.font] = font
 
         return NSAttributedString(
             string: "\(leadingCharacter?.rawValue ?? "")\(self.rawValue)",

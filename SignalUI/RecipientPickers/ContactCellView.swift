@@ -71,7 +71,7 @@ public class ContactCellConfiguration: NSObject {
 
     public func useVerifiedSubtitle() {
         let text = NSMutableAttributedString()
-        text.appendTemplatedImage(named: "check-extra-small", font: ContactCellView.subtitleFont)
+        text.append(SignalSymbol.safetyNumber.attributedString(for: .caption1, clamped: true))
         text.append(" ", attributes: [:])
         text.append(SafetyNumberStrings.verified, attributes: [:])
         self.attributedSubtitle = text

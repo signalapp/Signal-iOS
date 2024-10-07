@@ -162,7 +162,7 @@ public extension ProfileDetailLabel {
     static func verified(
         font: UIFont = .dynamicTypeBody
     ) -> ProfileDetailLabel {
-        .init(title: SafetyNumberStrings.verified, icon: .checkmark, font: font)
+        .init(title: SafetyNumberStrings.verified, icon: .contactInfoSafetyNumber, font: font)
     }
 
     static func profileAbout(

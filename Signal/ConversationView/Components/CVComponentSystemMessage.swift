@@ -799,7 +799,7 @@ extension CVComponentSystemMessage {
                     return nil
                 }
                 if message.isVerified() {
-                    return Theme.iconImage(.check16)
+                    return Theme.iconImage(.safetyNumber16)
                 } else {
                     return nil
                 }

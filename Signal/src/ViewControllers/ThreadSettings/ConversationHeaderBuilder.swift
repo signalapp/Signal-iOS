@@ -172,7 +172,7 @@ struct ConversationHeaderBuilder: Dependencies {
         let isVerified = identityManager.verificationState(for: recipientAddress, tx: transaction.asV2Read) == .verified
         if isVerified {
             let subtitle = NSMutableAttributedString()
-            subtitle.appendTemplatedImage(named: "check-extra-small", font: .dynamicTypeSubheadlineClamped)
+            subtitle.append(SignalSymbol.safetyNumber.attributedString(for: .subheadline, clamped: true))
             subtitle.append(" ")
             subtitle.append(SafetyNumberStrings.verified)
             builder.addSubtitleLabel(attributedText: subtitle)
