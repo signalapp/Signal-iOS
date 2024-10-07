@@ -217,7 +217,7 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
         private let errorCounts = ErrorCounts()
 
         func runTask(record: Store.Record, loader: TaskQueueLoader<TaskRunner>) async -> TaskRecordResult {
-            let (localAci, attachment) = db.read { tx in
+            let (localAci, registrationState, attachment) = db.read { tx in
                 let attachment: Attachment?
                 if let mediaName = record.record.mediaName {
                     attachment = attachmentStore.fetchAttachment(mediaName: mediaName, tx: tx)
@@ -227,8 +227,35 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
 
                 return (
                     tsAccountManager.localIdentifiers(tx: tx)?.aci,
+                    tsAccountManager.registrationState(tx: tx),
                     attachment
                 )
+            }
+
+            switch registrationState {
+            case
+                    .unregistered,
+                    .reregistering,
+                    .deregistered,
+                    .transferringIncoming,
+                    .transferringPrimaryOutgoing,
+                    .transferred:
+                // These states are potentially temporary. Return a retryable error
+                // but cancel the task.
+                Logger.info("Stopping when unregistered")
+                let error = OWSRetryableError()
+                try? await loader.stop(reason: error)
+                return .retryableError(error)
+            case
+                    .relinking,
+                    .delinked,
+                    .transferringLinkedOutgoing,
+                    .provisioned:
+                // Linked devices never issue these delete requests.
+                // Cancel the task so we never run it again.
+                return .cancelled
+            case .registered:
+                break
             }
 
             // Check the existing attachment only if this was locally
