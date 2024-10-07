@@ -45,8 +45,8 @@ extension Attachment {
         let audioWaveformRelativeFilePath: String?
         let videoStillFrameRelativeFilePath: String?
         let originalAttachmentIdForQuotedReply: Int64?
-        let mediaTierIncrementalMac: Data?
-        let mediaTierIncrementalMacChunkSize: UInt32?
+        var mediaTierIncrementalMac: Data?
+        var mediaTierIncrementalMacChunkSize: UInt32?
         let transitTierIncrementalMac: Data?
         let transitTierIncrementalMacChunkSize: UInt32?
 

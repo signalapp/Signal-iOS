@@ -24,15 +24,29 @@ public protocol AttachmentUploadStore {
 
     /// Mark the attachment as having been uploaded to the media tier.
     func markUploadedToMediaTier(
-        attachmentStream: AttachmentStream,
+        attachment: Attachment,
         mediaTierInfo: Attachment.MediaTierInfo,
+        tx: DBWriteTransaction
+    ) throws
+
+    /// Mark the attachment as deleted and/or not uploaded to media tier,
+    /// wiping media tier info if set.
+    func markMediaTierUploadExpired(
+        attachment: Attachment,
         tx: DBWriteTransaction
     ) throws
 
     /// Mark the attachment thumbnail as having been uploaded to the media tier.
     func markThumbnailUploadedToMediaTier(
-        attachmentStream: AttachmentStream,
+        attachment: Attachment,
         thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo,
+        tx: DBWriteTransaction
+    ) throws
+
+    /// Mark the attachment's thumbnail as deleted and/or not uploaded to media tier,
+    /// wiping media tier info if set.
+    func markThumbnailMediaTierUploadExpired(
+        attachment: Attachment,
         tx: DBWriteTransaction
     ) throws
 

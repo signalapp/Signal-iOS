@@ -217,14 +217,24 @@ class AttachmentUploadStoreMock: AttachmentStoreMock, AttachmentUploadStore {
     }
 
     func markUploadedToMediaTier(
-        attachmentStream: AttachmentStream,
+        attachment: Attachment,
         mediaTierInfo: Attachment.MediaTierInfo,
         tx: DBWriteTransaction
     ) throws {}
 
+    func markMediaTierUploadExpired(
+        attachment: Attachment,
+        tx: DBWriteTransaction
+    ) throws {}
+
     func markThumbnailUploadedToMediaTier(
-        attachmentStream: AttachmentStream,
+        attachment: Attachment,
         thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo,
+        tx: DBWriteTransaction
+    ) throws {}
+
+    func markThumbnailMediaTierUploadExpired(
+        attachment: Attachment,
         tx: DBWriteTransaction
     ) throws {}
 

@@ -57,27 +57,56 @@ public class AttachmentUploadStoreImpl: AttachmentUploadStore {
     }
 
     public func markUploadedToMediaTier(
-        attachmentStream: AttachmentStream,
+        attachment: Attachment,
         mediaTierInfo: Attachment.MediaTierInfo,
         tx: DBWriteTransaction
     ) throws {
-        var record = Attachment.Record(attachment: attachmentStream.attachment)
+        var record = Attachment.Record(attachment: attachment)
         record.mediaTierCdnNumber = mediaTierInfo.cdnNumber
         record.mediaTierUploadEra = mediaTierInfo.uploadEra
         record.mediaTierUnencryptedByteCount = mediaTierInfo.unencryptedByteCount
+        record.mediaTierDigestSHA256Ciphertext = mediaTierInfo.digestSHA256Ciphertext
+        record.mediaTierIncrementalMac = mediaTierInfo.incrementalMacInfo?.mac
+        record.mediaTierIncrementalMacChunkSize = mediaTierInfo.incrementalMacInfo?.chunkSize
         record.lastMediaTierDownloadAttemptTimestamp = mediaTierInfo.lastDownloadAttemptTimestamp
         try record.update(databaseConnection(tx))
     }
 
+    public func markMediaTierUploadExpired(
+        attachment: Attachment,
+        tx: DBWriteTransaction
+    ) throws {
+        var record = Attachment.Record(attachment: attachment)
+        record.mediaTierCdnNumber = nil
+        record.mediaTierUploadEra = nil
+        record.mediaTierUnencryptedByteCount = nil
+        record.mediaTierDigestSHA256Ciphertext = nil
+        record.mediaTierIncrementalMac = nil
+        record.mediaTierIncrementalMacChunkSize = nil
+        record.lastMediaTierDownloadAttemptTimestamp = nil
+        try record.update(databaseConnection(tx))
+    }
+
     public func markThumbnailUploadedToMediaTier(
-        attachmentStream: AttachmentStream,
+        attachment: Attachment,
         thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo,
         tx: DBWriteTransaction
     ) throws {
-        var record = Attachment.Record(attachment: attachmentStream.attachment)
+        var record = Attachment.Record(attachment: attachment)
         record.thumbnailCdnNumber = thumbnailMediaTierInfo.cdnNumber
         record.thumbnailUploadEra = thumbnailMediaTierInfo.uploadEra
         record.lastThumbnailDownloadAttemptTimestamp = thumbnailMediaTierInfo.lastDownloadAttemptTimestamp
+        try record.update(databaseConnection(tx))
+    }
+
+    public func markThumbnailMediaTierUploadExpired(
+        attachment: Attachment,
+        tx: DBWriteTransaction
+    ) throws {
+        var record = Attachment.Record(attachment: attachment)
+        record.thumbnailCdnNumber = nil
+        record.thumbnailUploadEra = nil
+        record.lastThumbnailDownloadAttemptTimestamp = nil
         try record.update(databaseConnection(tx))
     }
 
