@@ -18,8 +18,17 @@ public struct OrphanedBackupAttachment: Codable, FetchableRecord, MutablePersist
     /// The cdn number in which the attachment lives on the media tier.
     public let cdnNumber: UInt32
     /// The media name of the attachment (used to derive the cdn url).
-    public let mediaName: String
-    public let type: `Type`
+    /// Set when the attachment was orphaned locally, where we know
+    /// the mediaName.
+    public let mediaName: String?
+    /// The mediaID of the attachment (derived from the mediaName).
+    /// Set when the attachment was orphaned by discovering it on the
+    /// server cdn without a corresponding local attachment; we have
+    /// no way to map the mediaID back to the name.
+    public let mediaId: Data?
+    /// May be unknown if orphaned by discovering it on the server cdn;
+    /// the server cannot distinguish thumbnails from fullsize.
+    public let type: `Type`?
 
     /// WARNING: these values are hardcoded into triggers in the sql schema; if they
     /// change those triggers need to be recreated in a migration.
@@ -28,16 +37,45 @@ public struct OrphanedBackupAttachment: Codable, FetchableRecord, MutablePersist
         case thumbnail = 1
     }
 
-    public init(
+    private init(
         id: Int64? = nil,
         cdnNumber: UInt32,
-        mediaName: String,
-        type: `Type`
+        mediaName: String?,
+        mediaId: Data?,
+        type: `Type`?
     ) {
         self.id = id
         self.cdnNumber = cdnNumber
         self.mediaName = mediaName
+        self.mediaId = mediaId
         self.type = type
+    }
+
+    public static func locallyOrphaned(
+        cdnNumber: UInt32,
+        mediaName: String,
+        type: `Type`
+    ) -> OrphanedBackupAttachment {
+        return OrphanedBackupAttachment(
+            id: nil,
+            cdnNumber: cdnNumber,
+            mediaName: mediaName,
+            mediaId: nil,
+            type: type
+        )
+    }
+
+    public static func discoveredOnServer(
+        cdnNumber: UInt32,
+        mediaId: Data
+    ) -> OrphanedBackupAttachment {
+        return OrphanedBackupAttachment(
+            id: nil,
+            cdnNumber: cdnNumber,
+            mediaName: nil,
+            mediaId: mediaId,
+            type: nil
+        )
     }
 
     // MARK: FetchableRecord
@@ -56,6 +94,7 @@ public struct OrphanedBackupAttachment: Codable, FetchableRecord, MutablePersist
         case id
         case cdnNumber
         case mediaName
+        case mediaId
         case type
     }
 }

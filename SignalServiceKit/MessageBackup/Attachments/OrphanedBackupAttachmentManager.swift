@@ -173,42 +173,54 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
 
         func runTask(record: Store.Record, loader: TaskQueueLoader<TaskRunner>) async -> TaskRecordResult {
             let (localAci, attachment) = db.read { tx in
+                let attachment: Attachment?
+                if let mediaName = record.record.mediaName {
+                    attachment = attachmentStore.fetchAttachment(mediaName: mediaName, tx: tx)
+                } else {
+                    attachment = nil
+                }
+
                 return (
                     tsAccountManager.localIdentifiers(tx: tx)?.aci,
-                    attachmentStore.fetchAttachment(mediaName: record.record.mediaName, tx: tx)
+                    attachment
                 )
             }
-            // If an attachment exists with the same media name, that means a new
-            // copy with the same file contents got created between orphan record
-            // insertion and now. Most likely we want to cancel this delete.
-            if
-                let attachment,
-                attachment.mediaTierInfo?.cdnNumber == nil
-            {
-                // The new attachment hasn't been uploaded to backups. It might
-                // be uploading right now, so don't try and delete.
-                return .cancelled
-            } else if
-                let attachment,
-                let cdnNumber = attachment.mediaTierInfo?.cdnNumber,
-                cdnNumber == record.record.cdnNumber
-            {
-                // The new copy has been uploaded to the same cdn.
-                // Don't delete it.
-                return .cancelled
-            } else if
-                let attachment,
-                let cdnNumber = attachment.mediaTierInfo?.cdnNumber,
-                cdnNumber > record.record.cdnNumber
-            {
-                // This is rare, but we could end up with two copies of
-                // the same attachment on two cdns (say 3 and 4). We want
-                // to allow deleting the copy on the older cdn but never the newer one.
-                // If the delete record is for 4 and the attachment is uploaded
-                // to 3, for all we know there's a job enqueued right now to
-                // "upload" it to 4 so we don't wanna delete and race with that.
-                Logger.info("Deleting duplicate upload at older cdn \(record.record.cdnNumber)")
-                return .cancelled
+
+            // Check the existing attachment only if this was locally
+            // orphaned (the record has a mediaName).
+            if record.record.mediaName != nil {
+                // If an attachment exists with the same media name, that means a new
+                // copy with the same file contents got created between orphan record
+                // insertion and now. Most likely we want to cancel this delete.
+                if
+                    let attachment,
+                    attachment.mediaTierInfo?.cdnNumber == nil
+                {
+                    // The new attachment hasn't been uploaded to backups. It might
+                    // be uploading right now, so don't try and delete.
+                    return .cancelled
+                } else if
+                    let attachment,
+                    let cdnNumber = attachment.mediaTierInfo?.cdnNumber,
+                    cdnNumber == record.record.cdnNumber
+                {
+                    // The new copy has been uploaded to the same cdn.
+                    // Don't delete it.
+                    return .cancelled
+                } else if
+                    let attachment,
+                    let cdnNumber = attachment.mediaTierInfo?.cdnNumber,
+                    cdnNumber > record.record.cdnNumber
+                {
+                    // This is rare, but we could end up with two copies of
+                    // the same attachment on two cdns (say 3 and 4). We want
+                    // to allow deleting the copy on the older cdn but never the newer one.
+                    // If the delete record is for 4 and the attachment is uploaded
+                    // to 3, for all we know there's a job enqueued right now to
+                    // "upload" it to 4 so we don't wanna delete and race with that.
+                    Logger.info("Deleting duplicate upload at older cdn \(record.record.cdnNumber)")
+                    return .cancelled
+                }
             }
 
             guard let localAci else {
@@ -217,28 +229,35 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
                 return .retryableError(error)
             }
 
-            let mediaTierEncryptionType: MediaTierEncryptionType
-            switch record.record.type {
-            case .fullsize:
-                mediaTierEncryptionType = .attachment
-            case .thumbnail:
-                mediaTierEncryptionType = .thumbnail
-            }
-
             let mediaId: Data
-            do {
-                (mediaId) = try db.read { tx in
-                    (
-                        try messageBackupKeyMaterial.mediaEncryptionMetadata(
-                            mediaName: record.record.mediaName,
-                            type: mediaTierEncryptionType,
-                            tx: tx
-                        ).mediaId
-                    )
+
+            if let recordMediaId = record.record.mediaId {
+                mediaId = recordMediaId
+            } else if let type = record.record.type, let mediaName = record.record.mediaName {
+                let mediaTierEncryptionType: MediaTierEncryptionType
+                switch type {
+                case .fullsize:
+                    mediaTierEncryptionType = .attachment
+                case .thumbnail:
+                    mediaTierEncryptionType = .thumbnail
                 }
-            } catch let error {
-                Logger.error("Failed to generate media IDs")
-                return .unretryableError(error)
+
+                do {
+                    (mediaId) = try db.read { tx in
+                        (
+                            try messageBackupKeyMaterial.mediaEncryptionMetadata(
+                                mediaName: mediaName,
+                                type: mediaTierEncryptionType,
+                                tx: tx
+                            ).mediaId
+                        )
+                    }
+                } catch let error {
+                    Logger.error("Failed to generate media IDs")
+                    return .unretryableError(error)
+                }
+            } else {
+                return .unretryableError(OWSAssertionError("Invalid record"))
             }
 
             let messageBackupAuth: MessageBackupServiceAuth

@@ -299,7 +299,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addInKnownMessageRequestStateToHiddenRecipient
         case addBackupAttachmentUploadQueue
         case addBackupStickerPackDownloadQueue
-        case addOrphanedBackupAttachmentTable
+        case createOrphanedBackupAttachmentTable
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -361,7 +361,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 93
+    public static let grdbSchemaVersionLatest: UInt = 94
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -3549,17 +3549,31 @@ public class GRDBSchemaMigrator: NSObject {
             return .success(())
         }
 
-        migrator.registerMigration(.addOrphanedBackupAttachmentTable) { tx in
+        migrator.registerMigration(.createOrphanedBackupAttachmentTable) { tx in
+            // A prior version of this migration is being reverted.
+            try tx.database.execute(sql: "DROP TABLE IF EXISTS OrphanedBackupAttachment")
+            try tx.database.execute(sql: "DROP TRIGGER IF EXISTS __Attachment_ad_backup_fullsize")
+            try tx.database.execute(sql: "DROP TRIGGER IF EXISTS __Attachment_ad_backup_thumbnail")
+
             /// Rows are written into here to enqueue attachments for deletion from the media tier cdn.
             try tx.database.create(table: "OrphanedBackupAttachment") { table in
                 table.autoIncrementedPrimaryKey("id").notNull()
                 table.column("cdnNumber", .integer).notNull()
-                table.column("mediaName", .text).notNull()
-                table.column("type", .integer).notNull()
-                /// Unique by mediaName _and_ cdnNumber. It is theoretically possible to end up with the
-                /// same mediaName on two CDN versions, and we may want to delete both.
-                table.uniqueKey(["mediaName", "type", "cdnNumber"], onConflict: .ignore)
+                table.column("mediaName", .text)
+                table.column("mediaId", .blob)
+                table.column("type", .integer)
             }
+
+            try tx.database.create(
+                index: "index_OrphanedBackupAttachment_on_mediaName",
+                on: "OrphanedBackupAttachment",
+                columns: ["mediaName"]
+            )
+            try tx.database.create(
+                index: "index_OrphanedBackupAttachment_on_mediaId",
+                on: "OrphanedBackupAttachment",
+                columns: ["mediaId"]
+            )
 
             /// When we delete an attachment row in the database, insert into the orphan backup table
             /// so we can clean up the cdn upload later.
@@ -3576,10 +3590,12 @@ public class GRDBSchemaMigrator: NSObject {
                     INSERT INTO OrphanedBackupAttachment (
                       cdnNumber
                       ,mediaName
+                      ,mediaId
                       ,type
                     ) VALUES (
                       OLD.mediaTierCdnNumber
                       ,OLD.mediaName
+                      ,NULL
                       ,0
                     );
                   END;
@@ -3594,10 +3610,12 @@ public class GRDBSchemaMigrator: NSObject {
                     INSERT INTO OrphanedBackupAttachment (
                       cdnNumber
                       ,mediaName
+                      ,mediaId
                       ,type
                     ) VALUES (
                       OLD.thumbnailCdnNumber
                       ,OLD.mediaName
+                      ,NULL
                       ,1
                     );
                   END;

@@ -2108,15 +2108,22 @@ CREATE
         IF NOT EXISTS "OrphanedBackupAttachment" (
             "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
             ,"cdnNumber" INTEGER NOT NULL
-            ,"mediaName" TEXT NOT NULL
-            ,"type" INTEGER NOT NULL
-            ,UNIQUE (
-                "mediaName"
-                ,"type"
-                ,"cdnNumber"
-            )
-                ON CONFLICT IGNORE
+            ,"mediaName" TEXT
+            ,"mediaId" BLOB
+            ,"type" INTEGER
         )
+;
+
+CREATE
+    INDEX "index_OrphanedBackupAttachment_on_mediaName"
+        ON "OrphanedBackupAttachment"("mediaName"
+)
+;
+
+CREATE
+    INDEX "index_OrphanedBackupAttachment_on_mediaId"
+        ON "OrphanedBackupAttachment"("mediaId"
+)
 ;
 
 CREATE
@@ -2129,11 +2136,13 @@ CREATE
                     OrphanedBackupAttachment (
                         cdnNumber
                         ,mediaName
+                        ,mediaId
                         ,type
                     )
                 VALUES (
                     OLD.mediaTierCdnNumber
                     ,OLD.mediaName
+                    ,NULL
                     ,0
                 )
 ;
@@ -2151,11 +2160,13 @@ CREATE
                     OrphanedBackupAttachment (
                         cdnNumber
                         ,mediaName
+                        ,mediaId
                         ,type
                     )
                 VALUES (
                     OLD.thumbnailCdnNumber
                     ,OLD.mediaName
+                    ,NULL
                     ,1
                 )
 ;
