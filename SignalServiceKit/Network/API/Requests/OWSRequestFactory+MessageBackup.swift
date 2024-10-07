@@ -169,7 +169,7 @@ extension OWSRequestFactory {
         let request = TSRequest(
             url: URL(string: "v1/archives/media/delete")!,
             method: "POST",
-            parameters: ["mediaToDelete": objects]
+            parameters: ["mediaToDelete": NSArray(array: objects.map(\.asParameters))]
         )
         auth.apply(to: request)
         request.shouldHaveAuthorizationHeaders = false

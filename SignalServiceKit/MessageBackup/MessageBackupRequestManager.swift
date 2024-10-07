@@ -38,7 +38,14 @@ public extension MessageBackup {
 
         public struct DeleteMediaTarget: Codable {
             let cdn: UInt32
-            let mediaId: String
+            let mediaId: Data
+
+            var asParameters: [String: Any] {
+                [
+                    "cdn": self.cdn,
+                    "mediaId": self.mediaId.asBase64Url
+                ]
+            }
         }
     }
 

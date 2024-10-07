@@ -925,6 +925,17 @@ public class AppSetup {
             threadStore: threadStore
         )
 
+        let orphanedBackupAttachmentStore = OrphanedBackupAttachmentStoreImpl()
+        let orphanedBackupAttachmentManager = OrphanedBackupAttachmentManagerImpl(
+            appReadiness: appReadiness,
+            attachmentStore: attachmentStore,
+            db: db,
+            messageBackupKeyMaterial: messageBackupKeyMaterial,
+            messageBackupRequestManager: messageBackupRequestManager,
+            orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
+            tsAccountManager: tsAccountManager
+        )
+
         let backupAttachmentDownloadStore = BackupAttachmentDownloadStoreImpl(
             keyValueStoreFactory: keyValueStoreFactory
         )
@@ -1184,6 +1195,7 @@ public class AppSetup {
             messageBackupManager: messageBackupManager,
             messageStickerManager: messageStickerManager,
             nicknameManager: nicknameManager,
+            orphanedBackupAttachmentManager: orphanedBackupAttachmentManager,
             orphanedAttachmentCleaner: orphanedAttachmentCleaner,
             archivedPaymentStore: archivedPaymentStore,
             phoneNumberDiscoverabilityManager: phoneNumberDiscoverabilityManager,
