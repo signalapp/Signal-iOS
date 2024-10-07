@@ -109,13 +109,11 @@ fileprivate extension RemoteAttestation.Auth {
 
 fileprivate extension RemoteAttestation {
     enum Service {
-        case keyBackup
         case cdsi
         case svr2
 
         func authRequest() -> TSRequest {
             switch self {
-            case .keyBackup: return OWSRequestFactory.remoteAttestationAuthRequestForKeyBackup()
             case .cdsi: return OWSRequestFactory.remoteAttestationAuthRequestForCDSI()
             case .svr2: return OWSRequestFactory.remoteAttestationAuthRequestForSVR2()
             }

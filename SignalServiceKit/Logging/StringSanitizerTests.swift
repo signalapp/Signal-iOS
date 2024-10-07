@@ -9,54 +9,47 @@ import XCTest
 class StringSanitizerTests: XCTestCase {
     func testEmpty() {
         let string = ""
-        let sanitizer = StringSanitizer(string)
-        XCTAssertFalse(sanitizer.needsSanitization)
-        XCTAssertEqual(sanitizer.sanitized, string)
+        let sanitized = StringSanitizer.sanitize(string)
+        XCTAssertEqual(sanitized, string)
     }
 
     func testASCII() {
         let string = "abc"
-        let sanitizer = StringSanitizer(string)
-        XCTAssertFalse(sanitizer.needsSanitization)
-        XCTAssertEqual(sanitizer.sanitized, string)
+        let sanitized = StringSanitizer.sanitize(string)
+        XCTAssertEqual(sanitized, string)
     }
 
     func testCombiningMarks() {
         let string = "abx̧c"
-        let sanitizer = StringSanitizer(string)
-        XCTAssertFalse(sanitizer.needsSanitization)
-        XCTAssertEqual(sanitizer.sanitized, string)
+        let sanitized = StringSanitizer.sanitize(string)
+        XCTAssertEqual(sanitized, string)
     }
 
     func testEmoji() {
         let string = "a👩🏿‍❤️‍💋‍👩🏻b"
-        let sanitizer = StringSanitizer(string)
-        XCTAssertFalse(sanitizer.needsSanitization)
-        XCTAssertEqual(sanitizer.sanitized, string)
+        let sanitized = StringSanitizer.sanitize(string)
+        XCTAssertEqual(sanitized, string)
     }
 
     func testZalgo() {
         let string = "x̸̢̧̛̙̝͈͈̖̳̗̰̆̈́̆̿̈́̅̽͆̈́̿̔͌̚͝abx̸̢̧̛̙̝͈͈̖̳̗̰̆̈́̆̿̈́̅̽͆̈́̿̔͌̚͝x̸̢̧̛̙̝͈͈̖̳̗̰̆̈́̆̿̈́̅̽͆̈́̿̔͌̚͝👩🏿‍❤️‍💋‍👩🏻cx̸̢̧̛̙̝͈͈̖̳̗̰̆̈́̆̿̈́̅̽͆̈́̿̔͌̚͝"
-        let sanitizer = StringSanitizer(string)
-        XCTAssertTrue(sanitizer.needsSanitization)
+        let sanitized = StringSanitizer.sanitize(string)
         let expected = "�ab��👩🏿‍❤️‍💋‍👩🏻c�"
-        XCTAssertEqual(sanitizer.sanitized, expected)
+        XCTAssertEqual(sanitized, expected)
     }
 
     func testSingleZalgo() {
         let string = "x̸̢̧̛̙̝͈͈̖̳̗̰̆̈́̆̿̈́̅̽͆̈́̿̔͌̚͝"
-        let sanitizer = StringSanitizer(string)
-        XCTAssertTrue(sanitizer.needsSanitization)
+        let sanitized = StringSanitizer.sanitize(string)
         let expected = "�"
-        XCTAssertEqual(sanitizer.sanitized, expected)
+        XCTAssertEqual(sanitized, expected)
     }
 
     func testTwoZalgo() {
         let string = "x̸̢̧̛̙̝͈͈̖̳̗̰̆̈́̆̿̈́̅̽͆̈́̿̔͌̚͝x̸̢̧̛̙̝͈͈̖̳̗̰̆̈́̆̿̈́̅̽͆̈́̿̔͌̚͝"
-        let sanitizer = StringSanitizer(string)
-        XCTAssertTrue(sanitizer.needsSanitization)
+        let sanitized = StringSanitizer.sanitize(string)
         let expected = "��"
-        XCTAssertEqual(sanitizer.sanitized, expected)
+        XCTAssertEqual(sanitized, expected)
     }
 }
 

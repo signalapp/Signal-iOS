@@ -5,8 +5,7 @@
 
 import Foundation
 
-@objc
-public class ExperienceUpgradeFinder: NSObject {
+public class ExperienceUpgradeFinder {
 
     // MARK: -
 
@@ -56,7 +55,6 @@ public class ExperienceUpgradeFinder: NSObject {
         experienceUpgrade.markAsComplete(transaction: transaction.asAnyWrite)
     }
 
-    @objc
     public class func markAllCompleteForNewUser(transaction: GRDBWriteTransaction) {
         allKnownExperienceUpgrades(transaction: transaction.asAnyRead)
             .filter { $0.manifest.skipForNewUsers }
