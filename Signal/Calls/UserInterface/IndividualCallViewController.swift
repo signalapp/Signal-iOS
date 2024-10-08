@@ -340,7 +340,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
 
     private var callControlsConfirmationToastContainerViewBottomConstraint: NSLayoutConstraint?
     private var callControlsConfirmationToastContainerViewBottomConstraintConstant: CGFloat {
-        return -self.bottomSheet.sheetHeight - 16
+        return -self.bottomSheet.minimizedHeight - 16
     }
 
     private func presentBottomSheet(_ animated: Bool) {
