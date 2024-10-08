@@ -248,6 +248,31 @@ public class OWSTableItem {
         })
     }
 
+    public static func `switch`(
+        withText text: String,
+        accessibilityIdentifier: String? = nil,
+        isOn: @escaping (() -> Bool),
+        isEnabled: @escaping (() -> Bool) = { true },
+        actionBlock: @escaping ((UISwitch) -> Void) = { _ in }
+    ) -> OWSTableItem {
+        return OWSTableItem(customCellBlock: {
+            let cell = OWSTableItem.buildCell(
+                itemName: text,
+                accessibilityIdentifier: accessibilityIdentifier
+            )
+
+            let cellSwitch = UISwitch()
+            cellSwitch.isOn = isOn()
+            cellSwitch.isEnabled = isEnabled()
+            cellSwitch.accessibilityIdentifier = accessibilityIdentifier
+            cellSwitch.addAction(UIAction(handler: { [unowned cellSwitch] _ in actionBlock(cellSwitch) }), for: .valueChanged)
+
+            cell.accessoryView = cellSwitch
+            cell.selectionStyle = .none
+            return cell
+        })
+    }
+
     // MARK: - Table View Cells
 
     public class func newCell() -> UITableViewCell {

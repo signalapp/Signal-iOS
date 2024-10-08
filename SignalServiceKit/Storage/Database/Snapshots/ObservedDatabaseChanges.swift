@@ -47,6 +47,7 @@ class ObservedDatabaseChanges: NSObject {
 
         return (
             _tableNames.isEmpty
+            && _tableRowIds.isEmpty
             && threads.isEmpty
             && interactions.isEmpty
             && storyMessages.isEmpty
@@ -68,6 +69,22 @@ class ObservedDatabaseChanges: NSObject {
         #endif
 
         _tableNames.formUnion(tableNames)
+    }
+
+    // MARK: - Table Rows
+
+    private var _tableRowIds: [String: Set<Int64>] = [:]
+
+    func insert(tableName: String, rowId: Int64) {
+        formUnion(tableRowIds: [tableName: [rowId]])
+    }
+
+    func formUnion(tableRowIds: [String: Set<Int64>]) {
+        #if TESTABLE_BUILD
+        checkConcurrency()
+        #endif
+
+        _tableRowIds.merge(tableRowIds, uniquingKeysWith: { $0.union($1) })
     }
 
     // MARK: - Threads
@@ -403,6 +420,7 @@ extension ObservedDatabaseChanges {
         let interactionDeletedUniqueIds: Set<UniqueId> = interactions.deletedUniqueIds.keys
         let storyMessageDeletedUniqueIds: Set<UniqueId> = storyMessages.deletedUniqueIds.keys
         let tableNames: Set<String> = _tableNames
+        let tableRowIds: [String: Set<Int64>] = _tableRowIds
         let didUpdateInteractions: Bool = tableNames.contains(TSInteraction.table.tableName)
         let didUpdateThreads: Bool = tableNames.contains(TSThread.table.tableName)
         let lastError = _lastError
@@ -416,6 +434,7 @@ extension ObservedDatabaseChanges {
             interactionDeletedUniqueIds: interactionDeletedUniqueIds,
             storyMessageDeletedUniqueIds: storyMessageDeletedUniqueIds,
             tableNames: tableNames,
+            tableRowIds: tableRowIds,
             didUpdateInteractions: didUpdateInteractions,
             didUpdateThreads: didUpdateThreads,
             lastError: lastError
@@ -445,12 +464,14 @@ extension ObservedDatabaseChanges {
         let threads = self.threads
         let storyMessages = self.storyMessages
         let tableNames = self._tableNames
+        let tableRowIds = self._tableRowIds
 
         lock.withLock {
             committedChanges.interactions.merge(interactions)
             committedChanges.threads.merge(threads)
             committedChanges.storyMessages.merge(storyMessages)
             committedChanges.formUnion(tableNames: tableNames)
+            committedChanges.formUnion(tableRowIds: tableRowIds)
         }
     }
 

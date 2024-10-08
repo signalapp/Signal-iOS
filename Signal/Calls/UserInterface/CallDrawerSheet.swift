@@ -78,7 +78,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
             let adminPasskey = callLinkDataSource.adminPasskey
         else { return nil }
         return CallLinkAdminManager(
-            callLink: callLinkDataSource.callLink,
+            rootKey: callLinkDataSource.callLink.rootKey,
             adminPasskey: adminPasskey,
             callLinkState: callLinkDataSource.callLinkState
         )
@@ -305,11 +305,11 @@ class CallDrawerSheet: InteractiveSheetViewController {
         tableViewContainer.autoPinEdgesToSuperviewEdges()
 
         if let callLinkAdminManager {
-            callLinkStateSubscription = callLinkAdminManager.callLinkStatePublisher
-                .removeDuplicates { $0.name == $1.name }
+            callLinkStateSubscription = callLinkAdminManager.callNamePublisher
+                .removeDuplicates()
                 .receive(on: DispatchQueue.main)
-                .sink { [weak self] callLinkState in
-                    self?.callLinkStateDidChange(callLinkState)
+                .sink { [weak self] callLinkName in
+                    self?.callLinkNameDidChange(callLinkName)
                 }
         }
 
@@ -477,8 +477,8 @@ class CallDrawerSheet: InteractiveSheetViewController {
         }
     }
 
-    private func callLinkStateDidChange(_ callLinkState: SignalServiceKit.CallLinkState) {
-        sheetTitleLabel.text = callLinkState.localizedName
+    private func callLinkNameDidChange(_ callLinkName: String?) {
+        sheetTitleLabel.text = callLinkName ?? SignalServiceKit.CallLinkState.defaultLocalizedName
         var snapshot = dataSource.snapshot()
         snapshot.reloadSections([.admin])
         dataSource.apply(snapshot, animatingDifferences: false)
@@ -676,7 +676,7 @@ extension CallDrawerSheet: UITableViewDelegate {
         }
 
         let editNameViewController = EditCallLinkNameViewController(
-            oldCallName: callLinkAdminManager.callLinkState.name ?? "",
+            oldCallName: callLinkAdminManager.callLinkState?.name ?? "",
             setNewCallName: { name in
                 try await callLinkAdminManager.updateName(name)
             }

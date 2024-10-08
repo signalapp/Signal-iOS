@@ -387,6 +387,10 @@ extension DatabaseChangeObserver: TransactionObserver {
 
             pendingChanges.insert(tableName: event.tableName)
 
+            if event.tableName == CallLinkRecord.databaseTableName {
+                pendingChanges.insert(tableName: event.tableName, rowId: event.rowID)
+            }
+
             if event.tableName == InteractionRecord.databaseTableName {
                 pendingChanges.insert(interactionRowId: event.rowID)
             } else if event.tableName == ThreadRecord.databaseTableName {

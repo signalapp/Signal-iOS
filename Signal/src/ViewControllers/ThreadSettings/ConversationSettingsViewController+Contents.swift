@@ -92,6 +92,10 @@ extension ConversationSettingsViewController {
     // MARK: Calls section
 
     private func createCallSection() -> OWSTableSection? {
+        return Self.createCallHistorySection(callRecords: callRecords)
+    }
+
+    static func createCallHistorySection(callRecords: [CallRecord]) -> OWSTableSection? {
         guard let callRecord = callRecords.first else {
             return nil
         }

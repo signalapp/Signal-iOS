@@ -15,6 +15,7 @@ public struct DatabaseChangesSnapshot: DatabaseChanges {
     public let interactionDeletedUniqueIds: Set<UniqueId>
     public let storyMessageDeletedUniqueIds: Set<UniqueId>
     public let tableNames: Set<String>
+    public let tableRowIds: [String: Set<Int64>]
     public let didUpdateInteractions: Bool
     public let didUpdateThreads: Bool
 
@@ -29,6 +30,7 @@ public struct DatabaseChangesSnapshot: DatabaseChanges {
         interactionDeletedUniqueIds: Set<UniqueId>,
         storyMessageDeletedUniqueIds: Set<UniqueId>,
         tableNames: Set<String>,
+        tableRowIds: [String: Set<Int64>],
         didUpdateInteractions: Bool,
         didUpdateThreads: Bool,
         lastError: Error?
@@ -41,6 +43,7 @@ public struct DatabaseChangesSnapshot: DatabaseChanges {
         self.interactionDeletedUniqueIds = interactionDeletedUniqueIds
         self.storyMessageDeletedUniqueIds = storyMessageDeletedUniqueIds
         self.tableNames = tableNames
+        self.tableRowIds = tableRowIds
         self.didUpdateInteractions = didUpdateInteractions
         self.didUpdateThreads = didUpdateThreads
         self.lastError = lastError
@@ -55,6 +58,7 @@ public struct DatabaseChangesSnapshot: DatabaseChanges {
             interactionDeletedUniqueIds.isEmpty &&
             storyMessageDeletedUniqueIds.isEmpty &&
             tableNames.isEmpty &&
+            tableRowIds.isEmpty &&
             lastError == nil
     }
 

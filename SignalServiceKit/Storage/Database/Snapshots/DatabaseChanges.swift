@@ -22,6 +22,8 @@ public protocol DatabaseChanges {
 
     var tableNames: Set<String> { get }
 
+    var tableRowIds: [String: Set<Int64>] { get }
+
     var didUpdateInteractions: Bool { get }
 
     var didUpdateThreads: Bool { get }

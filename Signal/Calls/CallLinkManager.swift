@@ -87,13 +87,13 @@ class CallLinkManagerImpl: CallLinkManager {
         let createCredentialPresentation = createCredential.present(roomId: roomId, userId: localIdentifiers.aci, serverParams: self.serverParams, callLinkParams: secretParams)
         let publicParams = secretParams.getPublicParams()
         let adminPasskey = CallLinkRootKey.generateAdminPasskey()
-        let callLinkState = CallLinkState(try await self.sfuClient.createCallLink(
+        let callLinkState = SignalServiceKit.CallLinkState(try await self.sfuClient.createCallLink(
             sfuUrl: sfuUrl,
             createCredentialPresentation: createCredentialPresentation.serialize(),
             linkRootKey: rootKey,
             adminPasskey: adminPasskey,
             callLinkPublicParams: publicParams.serialize(),
-            restrictions: CallLinkState.Restrictions.adminApproval
+            restrictions: SignalServiceKit.CallLinkState.Constants.defaultRequiresAdminApproval ? .adminApproval : .none
         ).unwrap())
         return CreateResult(adminPasskey: adminPasskey, callLinkState: callLinkState)
     }

@@ -1655,13 +1655,13 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
 
         switch viewModel.recipientType {
         case .individual(type: _, let thread as TSThread), .group(let thread as TSThread):
-            showCallInfo(for: thread, callRecords: viewModel.callRecords)
-        case .callLink(_):
-            owsFail("[CallLink] TODO: Show CallLink details.")
+            showCallInfo(forThread: thread, callRecords: viewModel.callRecords)
+        case .callLink(let rootKey):
+            showCallInfo(forRootKey: rootKey, callRecords: viewModel.callRecords)
         }
     }
 
-    private func showCallInfo(for thread: TSThread, callRecords: [CallRecord]) {
+    private func showCallInfo(forThread thread: TSThread, callRecords: [CallRecord]) {
         let (threadViewModel, isSystemContact) = deps.databaseStorage.read { tx in
             let threadViewModel = ThreadViewModel(
                 thread: thread,
@@ -1683,8 +1683,25 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
             callRecords: callRecords
         )
 
-        callDetailsView.hidesBottomBarWhenPushed = true
-        navigationController?.pushViewController(callDetailsView, animated: true)
+        showCallInfo(viewController: callDetailsView)
+    }
+
+    private func showCallInfo(forRootKey rootKey: CallLinkRootKey, callRecords: [CallRecord]) {
+        let callLinkRecord = deps.db.read { tx -> CallLinkRecord in
+            do {
+                return try deps.callLinkStore.fetch(roomId: rootKey.deriveRoomId(), tx: tx) ?? {
+                    owsFail("Can't fetch CallLinkRecord that must exist.")
+                }()
+            } catch {
+                owsFail("Can't fetch CallLinkRecord: \(error)")
+            }
+        }
+        showCallInfo(viewController: CallLinkViewController.forExisting(callLinkRecord: callLinkRecord, callRecords: callRecords))
+    }
+
+    private func showCallInfo(viewController: UIViewController) {
+        viewController.hidesBottomBarWhenPushed = true
+        navigationController?.pushViewController(viewController, animated: true)
     }
 
     // MARK: NewCallViewControllerDelegate

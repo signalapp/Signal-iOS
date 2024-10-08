@@ -12,6 +12,10 @@ public struct CallLinkState {
     public let revoked: Bool
     public let expiration: Date
 
+    public enum Constants {
+        public static let defaultRequiresAdminApproval = true
+    }
+
     init(name: String?, requiresAdminApproval: Bool, revoked: Bool, expiration: Date) {
         self.name = name
         self.requiresAdminApproval = requiresAdminApproval

@@ -8,24 +8,27 @@ import SignalRingRTC
 import SignalServiceKit
 import SignalUI
 
+@MainActor
 class CallLinkAdminManager {
     typealias CallLinkState = SignalServiceKit.CallLinkState
 
-    private let callLink: CallLink
+    private let rootKey: CallLinkRootKey
     private let adminPasskey: Data
-    let callLinkStatePublisher: CurrentValueSubject<CallLinkState, Never>
-    var callLinkState: CallLinkState { callLinkStatePublisher.value }
+    let callNamePublisher: CurrentValueSubject<String?, Never>
+    private(set) var callLinkState: CallLinkState?
+    var didUpdateCallLinkState: (@MainActor (CallLinkState) -> Void)?
 
-    init(callLink: CallLink, adminPasskey: Data, callLinkState: CallLinkState) {
-        self.callLink = callLink
+    init(rootKey: CallLinkRootKey, adminPasskey: Data, callLinkState: CallLinkState?) {
+        self.rootKey = rootKey
         self.adminPasskey = adminPasskey
-        self.callLinkStatePublisher = .init(callLinkState)
+        self.callLinkState = callLinkState
+        self.callNamePublisher = .init(callLinkState?.name)
     }
 
     // MARK: Convenience properties
 
     var editCallNameButtonTitle: String {
-        callLinkState.name != nil ? CallStrings.editCallName : CallStrings.addCallName
+        callLinkState?.name != nil ? CallStrings.editCallName : CallStrings.addCallName
     }
 
     // MARK: Actions
@@ -35,7 +38,7 @@ class CallLinkAdminManager {
             { callLinkManager, authCredential in
                 return try await callLinkManager.updateCallLinkName(
                     name,
-                    rootKey: self.callLink.rootKey,
+                    rootKey: self.rootKey,
                     adminPasskey: self.adminPasskey,
                     authCredential: authCredential
                 )
@@ -51,14 +54,12 @@ class CallLinkAdminManager {
         ModalActivityIndicatorViewController.present(
             fromViewController: viewController,
             presentationDelay: 0.25,
-            asyncBlock: { [weak self] modal in
-                guard let self else { return }
-                let updateResult = await Result { [weak self] in
-                    guard let self else { return }
+            asyncBlock: { modal in
+                let updateResult = await Result {
                     try await self.updateCallLink { callLinkManager, authCredential in
                         return try await callLinkManager.updateCallLinkRestrictions(
                             requiresAdminApproval: isOn,
-                            rootKey: self.callLink.rootKey,
+                            rootKey: self.rootKey,
                             adminPasskey: self.adminPasskey,
                             authCredential: authCredential
                         )
@@ -88,28 +89,17 @@ class CallLinkAdminManager {
 
     // MARK: Private
 
-    private var priorTask: Task<Void, any Error>?
     private func updateCallLink(
-        _ performUpdate: @escaping (_ callLinkManager: CallLinkManager, _ authCredential: SignalServiceKit.CallLinkAuthCredential) async throws -> CallLinkState
-    ) async throws {
-        let priorTask = self.priorTask
-        let newTask = Task {
-            try? await priorTask?.value
-            return try await self._updateCallLink(performUpdate)
-        }
-        self.priorTask = newTask
-        return try await newTask.value
-    }
-
-    private func _updateCallLink(
         _ performUpdate: (CallLinkManager, SignalServiceKit.CallLinkAuthCredential) async throws -> CallLinkState
     ) async throws {
-        let authCredentialManager = AppEnvironment.shared.callService.authCredentialManager
         let callLinkManager = AppEnvironment.shared.callService.callLinkManager
-        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        let localIdentifiers = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!
-        let authCredential = try await authCredentialManager.fetchCallLinkAuthCredential(localIdentifiers: localIdentifiers)
-        let callLinkState = try await performUpdate(callLinkManager, authCredential)
-        self.callLinkStatePublisher.send(callLinkState)
+        let callLinkStateUpdater = AppEnvironment.shared.callService.callLinkStateUpdater
+        _ = try await callLinkStateUpdater.updateExclusively(rootKey: rootKey) { authCredential in
+            let callLinkState = try await performUpdate(callLinkManager, authCredential)
+            self.callLinkState = callLinkState
+            self.didUpdateCallLinkState?(callLinkState)
+            self.callNamePublisher.send(callLinkState.name)
+            return callLinkState
+        }
     }
 }
