@@ -26,6 +26,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     private var adHocCallRecordManager: any AdHocCallRecordManager { DependenciesBridge.shared.adHocCallRecordManager }
     private let appReadiness: AppReadiness
     private var audioSession: AudioSession { NSObject.audioSession }
+    private var callLinkStore: any CallLinkRecordStore { DependenciesBridge.shared.callLinkStore }
     let authCredentialManager: any AuthCredentialManager
     private var databaseStorage: SDSDatabaseStorage { NSObject.databaseStorage }
     private let db: any DB
@@ -557,7 +558,6 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     @MainActor
     func buildAndConnectCallLinkCall(
         callLink: CallLink,
-        adminPasskey: Data?,
         callLinkStateRetrievalStrategy: CallLinkStateRetrievalStrategy
     ) async throws -> (SignalCall, CallLinkCall)? {
         let state: SignalServiceKit.CallLinkState
@@ -575,6 +575,17 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             let sfuUrl = DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL
             let secretParams = CallLinkSecretParams.deriveFromRootKey(callLink.rootKey.bytes)
             let authCredentialPresentation = authCredential.present(callLinkParams: secretParams)
+            let adminPasskey = databaseStorage.read { tx -> Data? in
+                guard FeatureFlags.callLinkRecordTable else {
+                    return nil
+                }
+                do {
+                    return try callLinkStore.fetch(roomId: callLink.rootKey.deriveRoomId(), tx: tx.asV2Read)?.adminPasskey
+                } catch {
+                    Logger.warn("Couldn't fetch adminPasskey: \(error)")
+                    return nil
+                }
+            }
             let ringRtcCall = callManager.createCallLinkCall(
                 sfuUrl: sfuUrl,
                 authCredentialPresentation: authCredentialPresentation.serialize(),

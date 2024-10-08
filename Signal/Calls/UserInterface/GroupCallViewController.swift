@@ -320,7 +320,6 @@ class GroupCallViewController: UIViewController {
 
     static func presentLobby(
         for callLink: CallLink,
-        adminPasskey: Data? = nil,
         callLinkStateRetrievalStrategy: CallService.CallLinkStateRetrievalStrategy = .fetch
     ) {
         guard RemoteConfig.current.callLinkJoin else {
@@ -332,7 +331,6 @@ class GroupCallViewController: UIViewController {
                     let callService = AppEnvironment.shared.callService!
                     return try await callService.buildAndConnectCallLinkCall(
                         callLink: callLink,
-                        adminPasskey: adminPasskey,
                         callLinkStateRetrievalStrategy: callLinkStateRetrievalStrategy
                     )
                 }

@@ -247,7 +247,6 @@ final class CallLinkViewController: OWSTableViewController2 {
         persistIfNeeded()
         GroupCallViewController.presentLobby(
             for: callLink,
-            adminPasskey: adminPasskey,
             callLinkStateRetrievalStrategy: {
                 // If the local user is the admin, then we expect to be aware of the latest
                 // state. (This is true even on linked devices because we send
