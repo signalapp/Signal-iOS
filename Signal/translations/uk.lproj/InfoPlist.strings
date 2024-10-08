@@ -1,9 +1,9 @@
-NSAppleMusicUsageDescription = "Signal використовує Apple Music для відтворення медіавкладень.";
-NSCameraUsageDescription = "Signal використовує камеру для знімків та відеовикликів.";
-NSContactsUsageDescription = "Signal використовує ваші контакти, щоб знаходити знайомих вам користувачів. Ми не зберігаємо контакти на сервері.";
-NSFaceIDUsageDescription = "Блокувальник екрану Signal використовує Face ID.";
+NSAppleMusicUsageDescription = "Для відтворення вкладених медіафайлів Signal необхідно використовувати Apple Music.";
+NSCameraUsageDescription = "Signal використовує камеру вашого телефона для фотографій і відеовикликів.";
+NSContactsUsageDescription = "Signal використовує ваші контакти, щоб знаходити знайомих вам користувачів. Ми не зберігаємо ваші контакти на сервері.";
+NSFaceIDUsageDescription = "Для блокування екрана Signal використовує Face ID.";
 NSLocationWhenInUseUsageDescription = "Signal потребує доступу до геопозиції, щоб поділитися місцеположенням.";
 NSMicrophoneUsageDescription = "Signal потребує доступу до мікрофона, щоб здійснювати й приймати виклики та записувати голосові повідомлення.";
-NSPhotoLibraryAddUsageDescription = "Signal зберігатиме фото до бібліотеки фотографій.";
+NSPhotoLibraryAddUsageDescription = "Signal зберігатиме фото у вашій фототеці.";
 NSPhotoLibraryUsageDescription = "Signal дасть вам змогу вибрати фото з бібліотеки, які ви хочете надіслати.";
-NSLocalNetworkUsageDescription = "Signal використовує локальну мережу для можливості перенесення вашого акаунту на новий телефон. Цей дозвіл не буде використовуватись доки ви явно не ініціюєте перенесення даних на новий пристрій.";
+NSLocalNetworkUsageDescription = "Signal використовує локальну мережу для безпосереднього перенесення акаунту на новий телефон. Її не буде використано, якщо ви власноруч не ініціюєте перенесення даних на новий пристрій.";

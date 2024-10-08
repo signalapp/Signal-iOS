@@ -157,11 +157,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>+%1$ld Request</string>
+			<string>+%1$ld solicitare</string>
 			<key>few</key>
-			<string>+%1$ld Requests</string>
+			<string>+%1$ld solicitări</string>
 			<key>other</key>
-			<string>+%1$ld Requests</string>
+			<string>+%1$ld de solicitări</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_REQUEST_HEADER_COUNT_%d</key>

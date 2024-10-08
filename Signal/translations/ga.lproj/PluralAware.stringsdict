@@ -189,15 +189,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>+%1$ld Request</string>
+			<string>+%1$ld iarratas</string>
 			<key>two</key>
-			<string>+%1$ld Requests</string>
+			<string>+%1$ld iarratas</string>
 			<key>few</key>
-			<string>+%1$ld Requests</string>
+			<string>+%1$ld iarratas</string>
 			<key>many</key>
-			<string>+%1$ld Requests</string>
+			<string>+%1$ld n-iarratas</string>
 			<key>other</key>
-			<string>+%1$ld Requests</string>
+			<string>+%1$ld iarratas</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_REQUEST_HEADER_COUNT_%d</key>

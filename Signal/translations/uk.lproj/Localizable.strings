@@ -17,7 +17,7 @@
 "ACCESSIBILITY_LABEL_CONTACT" = "Контакт";
 
 /* Accessibility label for contact. Embeds: {{ the contact name }}. */
-"ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "Контакт для %1$@";
+"ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "Контакт користувача %1$@";
 
 /* Accessibility label for media. */
 "ACCESSIBILITY_LABEL_MEDIA" = "Медіафайли";
@@ -68,13 +68,13 @@
 "ACCOUNT_DATA_REPORT_TITLE" = "Облікові дані";
 
 /* Label for 'invite' button in contact view. */
-"ACTION_INVITE" = "Запросити до Signal";
+"ACTION_INVITE" = "Запросити в Signal";
 
 /* Label for button that lets you send a message to a contact. */
 "ACTION_SEND_MESSAGE" = "Надіслати повідомлення";
 
 /* A label for 'tap to download' buttons. */
-"ACTION_TAP_TO_DOWNLOAD" = "Натисніть, щоб завантажити";
+"ACTION_TAP_TO_DOWNLOAD" = "Торкніться для завантаження";
 
 /* Label for 'video call' button in contact view. */
 "ACTION_VIDEO_CALL" = "Відеовиклик";
@@ -86,10 +86,10 @@
 "ADD_GROUP_MEMBERS_VIEW_TITLE" = "Додати учасників";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
-"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Поділитися своїм профілем із групою?";
+"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Поділитися профілем з групою?";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"ADD_TO_CONTACTS_OFFER" = "Додати цього користувача до своїх контактів?";
+"ADD_TO_CONTACTS_OFFER" = "Додати цього користувача до контактів?";
 
 /* Label for button or row which allows users to add to another group. */
 "ADD_TO_GROUP" = "Додати в іншу групу";
@@ -104,7 +104,7 @@
 "ADD_TO_GROUP_ACTION_SHEET_TITLE" = "Додати нового учасника";
 
 /* Text indicating your contact is already a member of the group on the 'add to group' view. */
-"ADD_TO_GROUP_ALREADY_A_MEMBER" = "Вже учасник";
+"ADD_TO_GROUP_ALREADY_A_MEMBER" = "Уже в цій групі";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "Користувач %1$@ вже є учасником групи «%2$@»";
@@ -113,10 +113,10 @@
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "Користувача %1$@ додано до «%2$@»";
 
 /* Title of the 'add to group' view. */
-"ADD_TO_GROUP_TITLE" = "Додати до групи";
+"ADD_TO_GROUP_TITLE" = "Додати в групу";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Поділитися своїм профілем із цим користувачем?";
+"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Поділитися профілем з цим користувачем?";
 
 /* generic button text to acknowledge that the corresponding text was read. */
 "ALERT_ACTION_ACKNOWLEDGE" = "Зрозуміло";
@@ -125,13 +125,13 @@
 "ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Не вдалося доставити вам повідомлення, стікер, реакцію, відмітку про читання або медіафайл у цьому чаті від користувача %1$@.";
 
 /* Title for delivery issue sheet */
-"ALERT_DELIVERY_ISSUE_TITLE" = "Проблема з доставленням";
+"ALERT_DELIVERY_ISSUE_TITLE" = "Проблеми з доставлянням";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
 "ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Не вдалося доставити вам повідомлення, стікер, реакцію, відмітку про читання або медіафайл від користувача %1$@. Користувач намагався надіслати це безпосередньо вам або в груповий чат.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
-"ALERT_DISCARD_BUTTON" = "Відхилити";
+"ALERT_DISCARD_BUTTON" = "Закрити";
 
 /* The label for the 'don't save' button in action sheets. */
 "ALERT_DONT_SAVE" = "Не зберігати";
@@ -143,10 +143,10 @@
 "ALERT_SAVE" = "Зберегти";
 
 /* Message for UI warning about an unknown contact thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "У вас немає спільних груп з цією особою. Уважно розглядайте запити перед тим, як їх прийняти, щоб уникнути небажаних повідомлень.";
+"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "У вас немає спільних груп з цією людиною. Не приймайте запитів без уважної перевірки відправника, щоб уникнути небажаних повідомлень.";
 
 /* Message for UI warning about an unknown group thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "У вас немає спільних учасників у цій групі. Уважно розглядайте запити перед тим, як їх прийняти, щоб уникнути небажаних повідомлень.";
+"ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "У вас немає спільних учасників з цією групою. Не приймайте запитів без уважної перевірки, щоб уникнути небажаних повідомлень.";
 
 /* Label for button to learn more about message requests. */
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Про запити на повідомлення";
@@ -194,7 +194,7 @@
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal не запускається. Надішліть журнал налагодження на support@signal.org, щоб ми могли виправити помилку.";
 
 /* Button to try launching the app even though the last launch failed */
-"APP_LAUNCH_FAILURE_CONTINUE" = "Відкрити Signal натомість";
+"APP_LAUNCH_FAILURE_CONTINUE" = "Усе одно відкрити Signal";
 
 /* Message for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status. */
 "APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_MESSAGE" = "Будь ласка, надішліть журнал налагодження на адресу support@signal.org, щоб ми могли виправити помилку.";
@@ -206,7 +206,7 @@
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Не вдалося завантажити базу даних";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
-"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Будь ласка, оновіться до останньої версії Signal.";
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Будь ласка, оновіть Signal до останньої версії.";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Невідома версія бази даних.";
@@ -230,7 +230,7 @@
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Не вдається завершити перенесення";
 
 /* Text prompting user to edit their profile name. */
-"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Уведіть своє ім’я";
+"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Введіть своє ім’я";
 
 /* Label for the 'dismiss' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Не зараз";
@@ -314,10 +314,10 @@
 "ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Не вдалось експортувати вкладення.";
 
 /* alert text when Signal was unable to save a copy of the attachment to the system photo library */
-"ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "Помилка збереження";
+"ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "Не вдалося зберегти";
 
 /* Format string for file extension label in call interstitial view */
-"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Тип файлу:  %1$@";
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Тип файлу: %1$@";
 
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Розмiр: %1$@";
@@ -338,16 +338,16 @@
 "ATTACHMENT_DEFAULT_FILENAME" = "Вкладення";
 
 /* The title of the 'attachment error' alert. */
-"ATTACHMENT_ERROR_ALERT_TITLE" = "Помилка надсилання вкладення";
+"ATTACHMENT_ERROR_ALERT_TITLE" = "Помилка під час надсилання вкладення";
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Неможливо конвертувати зображення.";
 
 /* Attachment error message for video attachments which could not be converted to MP4 */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Неможливо обробити відео.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Неможливо опрацювати відео.";
 
 /* Attachment error message for image attachments which cannot be parsed */
-"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Неможливо обробити зображення.";
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Неможливо опрацювати зображення.";
 
 /* Attachment error message for image attachments in which metadata could not be removed */
 "ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Неможливо вилучити метадані зображення.";
@@ -359,16 +359,16 @@
 "ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Вкладення завелике.";
 
 /* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "Вкладення містить хибний вміст.";
+"ATTACHMENT_ERROR_INVALID_DATA" = "Вкладення містить недозволений вміст.";
 
 /* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Вкладення має хибний формат файлу.";
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Вкладення має недозволений формат.";
 
 /* Attachment error message for attachments without any data */
 "ATTACHMENT_ERROR_MISSING_DATA" = "Вкладення порожнє.";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Вибрати медіа для надсилання";
+"ATTACHMENT_HINT" = "Вибрати медіафайл, щоб надіслати";
 
 /* Button in chat attachment panel that allows to select photos/videos Signal has access to. */
 "ATTACHMENT_KEYBOARD_BUTTON_MANAGE" = "Керувати";
@@ -413,7 +413,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Не вдалося вибрати документ.";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Створіть стиснутий архів цього файлу чи каталог і спробуйте надіслати знову.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Створіть стиснений архів цього файлу чи папки й надішліть ще раз.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Непідтримуваний файл";
@@ -446,7 +446,7 @@
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Динамік";
 
 /* Text prompting the user to choose a color when editing their avatar */
-"AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Обрати колір";
+"AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Оберіть колір";
 
 /* Segment indicating the user can edit the color of the avatar */
 "AVATAR_EDIT_VIEW_COLOR_SEGMENT" = "Колір";
@@ -494,7 +494,7 @@
 "BADGE_EXPIRED_DONATE_BUTTON" = "Підтримати";
 
 /* Text for the 'learn more' link in a sheet explaining there's been an issue with your badge. */
-"BADGE_EXPIRED_LEARN_MORE_LINK" = "Дізнатися більше.";
+"BADGE_EXPIRED_LEARN_MORE_LINK" = "Докладніше.";
 
 /* Title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Щомісячний донат скасовано";
@@ -521,7 +521,7 @@
 "BADGE_THANKS_TITLE" = "Дякуємо за вашу підтримку!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
-"BADGE_THANKS_TOGGLE_FOOTER" = "Коли у вас більше однієї відзнаки, ви можете обрати, яку саме показувати у своєму профілі.";
+"BADGE_THANKS_TOGGLE_FOOTER" = "Коли у вас є декілька значків, ви можете обрати, який саме показувати у своєму профілі.";
 
 /* On the bank donation screen, show a link below the input form to show help about finding account info. */
 "BANK_DONATION_FOOTER_FIND_ACCOUNT_INFO" = "Пошук даних рахунку";
@@ -545,7 +545,7 @@
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Закрити банер";
 
 /* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Ви більше не отримуватимете повідомлень чи оновлень з цієї групи.";
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Ви перестанете отримувати повідомлення та оновлення від цієї групи.";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "Заблокувати";
@@ -572,13 +572,13 @@
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Розблокувати";
 
 /* An explanation of what unblocking a contact means. */
-"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Ви зможете надсилати повідомлення та дзвонити один одному.";
+"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Ви зможете обмінюватися повідомленнями й здійснювати виклики.";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Учасники зможуть додати вас до групи знову.";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Поточні учасники зможуть знов додати вас у групу.";
 
 /* An explanation of what unblocking a group means. */
-"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Учасники групи зможуть знову додати вас до неї.";
+"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Учасники зможуть знов додати вас у цю групу.";
 
 /* Action sheet title when confirming you want to unblock a group. */
 "BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Розблокувати цю групу?";
@@ -608,13 +608,13 @@
 "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "«%1$@» було розблоковано.";
 
 /* Alert body after unblocking a group. */
-"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Учасники зможуть додати вас до групи.";
+"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Тепер поточні учасники можуть знов додати вас у групу.";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Заблоковані користувачі не зможуть вам дзвонити й надсилати повідомлення.";
 
 /* Tooltip highlighting the blur image editing tool. */
-"BLUR_TOOLTIP" = "Нове: Розмити обличчя або розмити будь-що.";
+"BLUR_TOOLTIP" = "Нове: Розмиття облич і замалювання будь-якої зони для розмиття.";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Інша сума";
@@ -731,22 +731,22 @@
 "CALL_LINK_JOIN_CALL_FAILURE_SHEET_DESCRIPTION" = "Не вдалося приєднатись до виклику. Перевірте з'єднання з інтернетом і спробуйте ще раз.";
 
 /* Button on an action sheet to approve a request to join a call link. */
-"CALL_LINK_JOIN_REQUEST_APPROVE_BUTTON" = "Approve Entry";
+"CALL_LINK_JOIN_REQUEST_APPROVE_BUTTON" = "Дозволити приєднатися";
 
 /* Button on an action sheet to deny a request to join a call link. */
-"CALL_LINK_JOIN_REQUEST_DENY_BUTTON" = "Deny Entry";
+"CALL_LINK_JOIN_REQUEST_DENY_BUTTON" = "Не дозволити приєднатися";
 
 /* Tappable label that appears below a user's name on a toast when they request to join a call link. */
-"CALL_LINK_JOIN_REQUEST_PROMPT" = "Would like to join…";
+"CALL_LINK_JOIN_REQUEST_PROMPT" = "Хоче приєднатися…";
 
 /* Shown in a message bubble when you send a call link in a Signal chat */
 "CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "Ось посилання, за яким можна приєднатися до виклику в Signal";
 
 /* Text that appears on a toast in a call lobby before joining a call link informing the user what information will be shared with other call members when they have phone number sharing turned off. */
-"CALL_LINK_LOBBY_SHARING_INFO_PHONE_NUMBER_SHARING_OFF" = "Anyone who joins this call via the link will see your name and photo.";
+"CALL_LINK_LOBBY_SHARING_INFO_PHONE_NUMBER_SHARING_OFF" = "Усі, хто приєднається до цього виклику за посиланням, зможуть бачити ваше ім'я і фото.";
 
 /* Text that appears on a toast in a call lobby before joining a call link informing the user what information will be shared with other call members when they have phone number sharing turned on. */
-"CALL_LINK_LOBBY_SHARING_INFO_PHONE_NUMBER_SHARING_ON" = "Anyone who joins this call via the link will see your name, photo, and phone number.";
+"CALL_LINK_LOBBY_SHARING_INFO_PHONE_NUMBER_SHARING_ON" = "Усі, хто приєднається до цього виклику за посиланням, зможуть бачити ваше ім'я, фото і номер телефону.";
 
 /* Title for button to approve all requests to join a call. */
 "CALL_LINK_REQUEST_SHEET_APPROVE_ALL_BUTTON" = "Прийняти всі";
@@ -2102,7 +2102,7 @@
 "DISPLAY_BADGES_ON_PROFILE_SETTING" = "Показувати значки в профілі";
 
 /* Title for the proxy confirmation */
-"DO_YOU_WANT_TO_USE_PROXY" = "Бажаєте використовувати цю проксі адресу?";
+"DO_YOU_WANT_TO_USE_PROXY" = "Використовувати адресу цього проксі-сервера?";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Країна для обходу цензури";
@@ -2192,7 +2192,7 @@
 "DONATE_SCREEN_MONTHLY_SUBSCRIPTION_EXPIRES_ON_DATE" = "Термін дії минає %1$@";
 
 /* On the donation screen, you can see a list of monthly subscription levels. If you already have one of these, this text is shown below it indicating when it will renew. Embeds {{formatted renewal date}}, such as \"June 9, 2010\". */
-"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_RENEWS_ON_DATE" = "Оновиться %1$@";
+"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_RENEWS_ON_DATE" = "Наступний платіж %1$@";
 
 /* On the donation screen, you can see a list of monthly subscription levels. This text will be shown in the subtitle of each level, telling you which badge you'll get. Embeds {{localized badge name}}, such as \"Planet\". */
 "DONATE_SCREEN_MONTHLY_SUBSCRIPTION_SUBTITLE" = "Отримайте значок %1$@";
@@ -2534,7 +2534,7 @@
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the chats on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhones and Android. Get it here: %1$@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Signal here: %2$@";
+"EMAIL_INVITE_BODY" = "Привіт!\n\nОстаннім часом я користуюся Signal, щоб усі мої чати на iPhone були конфіденційні. Пропоную теж спробувати. Тоді ми точно знатимемо, що ніхто інший не читає наших повідомлень і не чує розмов.\n\nSignal можна завантажити на iPhone і на Android. Ось посилання: %1$@\n\nSignal працює, як інші звичайні месенджери. У ньому можна обмінюватися фото й відео, дзвонити та створювати групові чати. А найкраще — крім нас, ніхто не має доступу до всіх цих даних, навіть самі автори Signal!\n\nТут можна почитати про Signal більше: %2$@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Пора переходити в Signal";
@@ -2951,7 +2951,7 @@
 "GROUP_CALL_MEMBER_LIST_SHARE_CALL_LINK_BUTTON" = "Поділитися посиланням на виклик";
 
 /* Title for the sheet showing the group call members list */
-"GROUP_CALL_MEMBER_LIST_TITLE" = "Call Info";
+"GROUP_CALL_MEMBER_LIST_TITLE" = "Про цей виклик";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Неможливо отримати аудіо та відео від %1$@";
@@ -2987,13 +2987,13 @@
 "GROUP_CALL_RECONNECTING" = "Триває відновлення з'єднання";
 
 /* Label for a button to block a member from a group call. */
-"GROUP_CALL_REMOVE_MEMBER_CONFIRMATION_ACTION_SHEET_BLOCK_ACTION" = "Block from Call";
+"GROUP_CALL_REMOVE_MEMBER_CONFIRMATION_ACTION_SHEET_BLOCK_ACTION" = "Заблокувати участь у виклику";
 
 /* Label for the button to confirm removing a member from a group call. */
-"GROUP_CALL_REMOVE_MEMBER_CONFIRMATION_ACTION_SHEET_REMOVE_ACTION" = "Remove";
+"GROUP_CALL_REMOVE_MEMBER_CONFIRMATION_ACTION_SHEET_REMOVE_ACTION" = "Вилучити";
 
 /* Title for action sheet confirming removal of a member from a group call. embeds {{ name }} */
-"GROUP_CALL_REMOVE_MEMBER_CONFIRMATION_ACTION_SHEET_TITLE" = "Remove %1$@ from the call?";
+"GROUP_CALL_REMOVE_MEMBER_CONFIRMATION_ACTION_SHEET_TITLE" = "Вилучити користувача %1$@ з виклику?";
 
 /* The title of an alert when you've been removed from a group call. */
 "GROUP_CALL_REMOVED" = "Вас видалено з учасників виклику";
@@ -3185,10 +3185,10 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Ви бажаєте приєднатися до цієї групи і поширити ваше ім'я і фото серед її учасників?";
 
 /* Label for the 'request to join' button in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_REQUEST_TO_JOIN_BUTTON" = "Request to Join";
+"GROUP_LINK_ACTION_SHEET_VIEW_REQUEST_TO_JOIN_BUTTON" = "Надіслати запит";
 
 /* Message text for the 'group invite link' action sheet, if the user will be requesting to join. */
-"GROUP_LINK_ACTION_SHEET_VIEW_REQUEST_TO_JOIN_MESSAGE" = "An admin of this group must approve your request before you can join this group. When you request to join, your name and photo will be shared with its members.";
+"GROUP_LINK_ACTION_SHEET_VIEW_REQUEST_TO_JOIN_MESSAGE" = "Адміністратор цієї групи повинен прийняти ваш запит на приєднання, щоб ви стали її учасником. Коли ви відправите запит, інші учасники зможуть бачити ваше ім'я й фото.";
 
 /* Error message the attempt to request to join the group failed due to network connectivity. */
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "Переконайтеся, що ви в мережі і спробуйте знову.";
@@ -3857,7 +3857,7 @@
 "INVALID_PROXY_HOST_ERROR" = "Введена адреса проксі-сервера недійсна. Будь ласка, перевірте її і спробуйте ще раз.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Щоб запросити друзів до Signal, надайте програмі доступ до контактів у налаштуваннях iOS.";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Щоб запросити друзів у Signal, надайте застосунку доступ до контактів у параметрах iOS.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Надати доступ до контактів";
@@ -4007,7 +4007,7 @@
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Увімкніть «Локальна мережа»";
 
 /* Second step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Перейти до Signal";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Перейти в Signal";
 
 /* Title for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Увімкніть доступ до Локальної мережі";
@@ -5864,7 +5864,7 @@
 "RECIPIENT_PICKER_INVITE_MESSAGE" = "%1$@ не користується Signal. Ви хочете запросити абонента з цим номером?";
 
 /* Alert title. Shown after selecting a phone number that isn't a Signal user. */
-"RECIPIENT_PICKER_INVITE_TITLE" = "Запросити до Signal";
+"RECIPIENT_PICKER_INVITE_TITLE" = "Запросити в Signal";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Потрібна Допомога?";
@@ -6833,7 +6833,7 @@
 "SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_BUTTON" = "Пропустити кодову фразу";
 
 /* Message of confirmation alert when discarding recovery phrase. */
-"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_MESSAGE" = "Your recovery phrase lets you restore your balance in a worst-case scenario. We strongly recommend you save it.";
+"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_MESSAGE" = "Кодова фраза дає можливість відновити баланс, якщо станеться найгірше. Ми настійно радимо її зберегти.";
 
 /* Title of confirmation alert when discarding recovery phrase. */
 "SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_TITLE" = "Продовжити без збереження?";
@@ -7370,7 +7370,7 @@
 "SOMETHING_WENT_WRONG_TRY_AGAIN_LATER_ERROR" = "Сталася помилка. Будь ласка, спробуйте пізніше.";
 
 /* table cell label in conversation settings */
-"SOUND_AND_NOTIFICATION_SETTINGS" = "Звуки та сповіщення";
+"SOUND_AND_NOTIFICATION_SETTINGS" = "Звуки і сповіщення";
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "Жодного";
@@ -7829,7 +7829,7 @@
 "SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Донат обробляється…";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
-"SUSTAINER_VIEW_RENEWAL" = "Оновиться %1$@";
+"SUSTAINER_VIEW_RENEWAL" = "Наступний платіж %1$@";
 
 /* Action sheet message for Still Processing Badge sheet */
 "SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Ваш донат все ще обробляється. Обробка може зайняти кілька хвилин в залежності від вашого з'єднання.";
@@ -8120,7 +8120,7 @@
 "USERNAME_LINK_QR_CODE_VIEW_COLOR_BUTTON" = "Колір";
 
 /* Text for a label explaining what the username link and QR code give others access to. */
-"USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "Діліться QR-кодом і посиланням лише з людьми, яким ви довіряєте. Якщо ви поділитесь, користувач зможе побачити ваше ім'я користувача і розпочати з вами чат.";
+"USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "Діліться QR-кодом і посиланням лише з тими, кому довіряєте. Перейшовши за посиланням чи зісканувавши код, інші користувачі побачать ваше ім'я користувача й зможуть почати з вами чат.";
 
 /* Text presented in an action sheet notifying the user their qr code and link are not set. */
 "USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET" = "QR-код і посилання не встановлено. Перевірте підключення до мережі і спробуйте знову.";

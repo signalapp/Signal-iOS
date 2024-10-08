@@ -1,2 +1,2 @@
-• Now your iPhone will automatically stop ringing if you answer an incoming call on another linked device (like Signal Desktop). Deciding whether or not you actually want to talk to them is still a question only you can answer.
-• We also fixed a bug that prevented unread indicators and other status badges from appearing in the Stories and Calls tabs on iPadOS 18. 
+• 現在，如果你在另一個已連結裝置（例如 Signal 桌面版）上接聽來電，你的 iPhone 將自動停止響鈴。
+• 我們還修正了一個錯誤，就是導致未讀標記和其他狀態標記無法出現在 iPadOS 18 的限時動態和通話選項標籤中。 

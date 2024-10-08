@@ -68,7 +68,7 @@
 "ACCOUNT_DATA_REPORT_TITLE" = "Données du compte";
 
 /* Label for 'invite' button in contact view. */
-"ACTION_INVITE" = "Inviter à Signal";
+"ACTION_INVITE" = "Inviter sur Signal";
 
 /* Label for button that lets you send a message to a contact. */
 "ACTION_SEND_MESSAGE" = "Envoyer un message";
@@ -731,22 +731,22 @@
 "CALL_LINK_JOIN_CALL_FAILURE_SHEET_DESCRIPTION" = "Impossible de rejoindre l'appel. Vérifiez votre connexion Internet et réessayez.";
 
 /* Button on an action sheet to approve a request to join a call link. */
-"CALL_LINK_JOIN_REQUEST_APPROVE_BUTTON" = "Approve Entry";
+"CALL_LINK_JOIN_REQUEST_APPROVE_BUTTON" = "Accepter la demande";
 
 /* Button on an action sheet to deny a request to join a call link. */
-"CALL_LINK_JOIN_REQUEST_DENY_BUTTON" = "Deny Entry";
+"CALL_LINK_JOIN_REQUEST_DENY_BUTTON" = "Refuser la demande";
 
 /* Tappable label that appears below a user's name on a toast when they request to join a call link. */
-"CALL_LINK_JOIN_REQUEST_PROMPT" = "Would like to join…";
+"CALL_LINK_JOIN_REQUEST_PROMPT" = "demande à rejoindre l'appel…";
 
 /* Shown in a message bubble when you send a call link in a Signal chat */
 "CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "Utiliser ce lien pour rejoindre un appel Signal";
 
 /* Text that appears on a toast in a call lobby before joining a call link informing the user what information will be shared with other call members when they have phone number sharing turned off. */
-"CALL_LINK_LOBBY_SHARING_INFO_PHONE_NUMBER_SHARING_OFF" = "Anyone who joins this call via the link will see your name and photo.";
+"CALL_LINK_LOBBY_SHARING_INFO_PHONE_NUMBER_SHARING_OFF" = "Tous les utilisateurs participant à cet appel via le lien verront votre nom et votre photo.";
 
 /* Text that appears on a toast in a call lobby before joining a call link informing the user what information will be shared with other call members when they have phone number sharing turned on. */
-"CALL_LINK_LOBBY_SHARING_INFO_PHONE_NUMBER_SHARING_ON" = "Anyone who joins this call via the link will see your name, photo, and phone number.";
+"CALL_LINK_LOBBY_SHARING_INFO_PHONE_NUMBER_SHARING_ON" = "Tous les utilisateurs participant à cet appel via le lien verront votre nom, votre photo et votre numéro de téléphone.";
 
 /* Title for button to approve all requests to join a call. */
 "CALL_LINK_REQUEST_SHEET_APPROVE_ALL_BUTTON" = "Tout accepter";
@@ -1673,7 +1673,7 @@
 "COUNTRYCODE_SELECT_TITLE" = "Sélectionner l’indicatif de pays";
 
 /* Label for button that enables you to make a new call link. */
-"CREATE_CALL_LINK_LABEL" = "Générer un lien d’appel";
+"CREATE_CALL_LINK_LABEL" = "Créer un lien d'appel";
 
 /* Body text for an interactive in-app prompt to set up a Signal username. */
 "CREATE_USERNAME_MEGAPHONE_BODY" = "Protégez la confidentialité de votre numéro de téléphone, choisissez un nom d’utilisateur facultatif et découvrez les liens de conversation.";
@@ -2312,7 +2312,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Don de la part de %1$@";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the text on that sheet. Embeds {{recipient name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "Vous avez effectué un don à Signal de la part de %1$@. Votre proche aura la possibilité d’afficher son soutien sur son profil.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "Vous avez fait un don à Signal pour %1$@. Cette personne aura la possibilité d'afficher son soutien sur son profil.";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the title on that sheet. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_TITLE" = "Merci pour votre soutien !";
@@ -2321,7 +2321,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_VIEW" = "Afficher";
 
 /* A friend has donated on your behalf and you received a badge. This text says that you received a badge, and from whom. Embeds {{contact's short name, such as a first name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_YOU_RECEIVED_A_BADGE_FORMAT" = "%1$@ a effectué un don à Signal de votre part ! Affichez votre soutien à Signal sur votre profil.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_YOU_RECEIVED_A_BADGE_FORMAT" = "%1$@ a fait un don à Signal pour vous ! Vous pouvez afficher votre soutien à Signal sur votre profil.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 1st paragraph of that screen. */
 "DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "Signal est une messagerie (vraiment) privée. Sans publicité, sans cookie de suivi, sans surveillance. ";
@@ -2348,7 +2348,7 @@
 "DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "Partager le reçu";
 
 /* Footer text at the bottom of donation receipts */
-"DONATION_RECEIPT_FOOTER" = "Nous vous remercions pour votre soutien à Signal. Votre contribution participe au développement d'une technologie open source basée sur la confidentialité et la protection de la libre expression pour une communication mondiale sécurisée. Si vous êtes résident américain, conservez ce reçu pour vos impôts. La Fondation de la technologie Signal (Signal Technology Foundation) est un organisme à but non lucratif exempt d'impôts aux États-Unis en vertu de la section 501c3 de l'Internal Revenue Code. Notre numéro d'identification fiscale fédéral est 82-4506840.";
+"DONATION_RECEIPT_FOOTER" = "Merci de soutenir Signal. Votre contribution nous aide à mener à bien notre mission : développer une technologie open source axée sur la confidentialité, qui favorise la liberté d'expression et offre des communications sécurisées à des millions de personnes du monde entier. Si vous résidez aux États-Unis, conservez ce reçu pour le communiquer aux services fiscaux. La Signal Technology Foundation est un organisme à but non lucratif, régi par le code fédéral des impôts des États-Unis. Notre numéro d'identification fiscale est le suivant : 82-4506840.";
 
 /* Title for receipts for donations given on a friend's behalf */
 "DONATION_RECEIPT_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "Don pour un ami";
@@ -2534,10 +2534,10 @@
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the chats on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhones and Android. Get it here: %1$@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Signal here: %2$@";
+"EMAIL_INVITE_BODY" = "Bonjour,\n\nJ'ai récemment installé Signal sur mon iPhone pour assurer la confidentialité de mes conversations. Et si vous l'installiez aussi ? Nous serions ainsi sûrs que nos messages et nos appels restent privés.\n\nL'application Signal est disponible sur iPhone et sur Android. Vous pouvez la télécharger ici : %1$@\n\nComme toutes les applications de messagerie, Signal permet d'envoyer des photos et des vidéos, de passer des appels et de lancer des conversations de groupe. Ce qui la différencie des autres ? C'est qu'absolument personne ne peut accéder aux contenus que vous partagez avec vos amis. Pas même les créateurs de Signal.\n\nPour en savoir plus sur Signal, c'est par ici : %2$@.";
 
 /* subject of email sent to contacts when inviting to install Signal */
-"EMAIL_INVITE_SUBJECT" = "Passons à Signal";
+"EMAIL_INVITE_SUBJECT" = "Et si on passait à Signal ?";
 
 /* Description for the fallback support sheet if user cannot send email */
 "EMAIL_SIGNAL_MESSAGE" = "Votre appareil n’est pas configuré pour envoyer des e-mails. Pour envoyer une demande d’assistance, configurez les e-mails sur votre appareil ou envoyez un e-mail à support@signal.org via un autre appareil.";
@@ -2951,7 +2951,7 @@
 "GROUP_CALL_MEMBER_LIST_SHARE_CALL_LINK_BUTTON" = "Partager le lien de l’appel";
 
 /* Title for the sheet showing the group call members list */
-"GROUP_CALL_MEMBER_LIST_TITLE" = "Call Info";
+"GROUP_CALL_MEMBER_LIST_TITLE" = "Informations sur l'appel";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Impossible de recevoir l’audio et la vidéo de %1$@";
@@ -2987,13 +2987,13 @@
 "GROUP_CALL_RECONNECTING" = "Reconnexion";
 
 /* Label for a button to block a member from a group call. */
-"GROUP_CALL_REMOVE_MEMBER_CONFIRMATION_ACTION_SHEET_BLOCK_ACTION" = "Block from Call";
+"GROUP_CALL_REMOVE_MEMBER_CONFIRMATION_ACTION_SHEET_BLOCK_ACTION" = "Bloquer";
 
 /* Label for the button to confirm removing a member from a group call. */
-"GROUP_CALL_REMOVE_MEMBER_CONFIRMATION_ACTION_SHEET_REMOVE_ACTION" = "Remove";
+"GROUP_CALL_REMOVE_MEMBER_CONFIRMATION_ACTION_SHEET_REMOVE_ACTION" = "Retirer";
 
 /* Title for action sheet confirming removal of a member from a group call. embeds {{ name }} */
-"GROUP_CALL_REMOVE_MEMBER_CONFIRMATION_ACTION_SHEET_TITLE" = "Remove %1$@ from the call?";
+"GROUP_CALL_REMOVE_MEMBER_CONFIRMATION_ACTION_SHEET_TITLE" = "Retirer %1$@ de l'appel ?";
 
 /* The title of an alert when you've been removed from a group call. */
 "GROUP_CALL_REMOVED" = "Vous avez été retiré de l'appel";
@@ -3185,10 +3185,10 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Voulez-vous vraiment rejoindre ce groupe et partager vos nom et photo avec ses membres ?";
 
 /* Label for the 'request to join' button in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_REQUEST_TO_JOIN_BUTTON" = "Request to Join";
+"GROUP_LINK_ACTION_SHEET_VIEW_REQUEST_TO_JOIN_BUTTON" = "Demander à rejoindre le groupe";
 
 /* Message text for the 'group invite link' action sheet, if the user will be requesting to join. */
-"GROUP_LINK_ACTION_SHEET_VIEW_REQUEST_TO_JOIN_MESSAGE" = "An admin of this group must approve your request before you can join this group. When you request to join, your name and photo will be shared with its members.";
+"GROUP_LINK_ACTION_SHEET_VIEW_REQUEST_TO_JOIN_MESSAGE" = "Pour rejoindre ce groupe, un administrateur doit d'abord approuver votre demande. Vos nom et photo seront partagés avec les membres du groupe si vous demandez à le rejoindre.";
 
 /* Error message the attempt to request to join the group failed due to network connectivity. */
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "Veuillez vous assurer d’être en ligne et réessayer.";
@@ -6140,7 +6140,7 @@
 "SAFETY_TIPS_INDIVIDUAL_HEADER_MESSAGE" = "Soyez vigilant lorsque des inconnus vous envoient des invitations par message. Méfiez-vous :";
 
 /* Message contents for the unknown links in messages safety tip. */
-"SAFETY_TIPS_MESSAGE_LINKS_BODY" = "Soyez vigilant lorsque des inconnus vous envoient des messages contenant des liens vers des sites Internet. Ne consultez jamais les liens envoyés par des personnes en qui vous n’avez pas confiance.";
+"SAFETY_TIPS_MESSAGE_LINKS_BODY" = "Soyez vigilant lorsque des inconnus vous envoient des messages contenant des liens vers des sites web. Ne consultez jamais les liens envoyés par des personnes en qui vous n’avez pas confiance.";
 
 /* Message title describing the safety tip about unknown links in messages. */
 "SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "Messages contenant des liens";
@@ -6671,7 +6671,7 @@
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Activer";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "Vous pouvez désormais utiliser Signal pour envoyer et recevoir des MobileCoin. Tous les paiements sont soumis aux conditions d’utilisation de MobileCoins et de MobileCoin Wallet. Des problèmes pourraient survenir. Les paiements et les soldes que vous pourriez perdre sont irrécupérables.";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "Vous pouvez utiliser Signal pour envoyer et recevoir des MobileCoins. Tous les paiements sont soumis aux conditions d'utilisation de MobileCoin et de MobileCoin Wallet. Avertissement : des problèmes peuvent se produire et entraîner la perte de paiements et de soldes. De telles pertes sont irrécupérables.";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Activer";
@@ -6683,10 +6683,10 @@
 "SETTINGS_PAYMENTS_ADD_MONEY" = "Ajouter des fonds";
 
 /* Explanation of the process for adding money in the 'add money' settings view. */
-"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "Pour ajouter des fonds, envoyez des MobileCoin à l'adresse de votre portefeuille. Depuis votre compte, démarrez une transaction supportant MobileCoin, puis scannez le code QR ou copiez l'adresse de votre portefeuille.";
+"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "Pour ajouter des fonds, envoyez des MobileCoins à l'adresse de votre portefeuille. Démarrez une transaction depuis un compte hébergé sur une plateforme de change compatible MobileCoin, puis scannez le code QR ou copiez l'adresse de votre portefeuille.";
 
 /* Indicator that the payments wallet address has been copied to the pasteboard. */
-"SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "Adresse de portefeuille copiée";
+"SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "Adresse de portefeuille copiée.";
 
 /* Label for the 'all payment records' section of the app settings. */
 "SETTINGS_PAYMENTS_ALL_RECORDS" = "Tous les paiements";
@@ -6734,10 +6734,10 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "Désactiver les paiements";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "Il est recommandé que vous transfériez vos fonds sur une autre adresse de portefeuille avant de désactiver les paiements. Si vous choisissez de ne pas transférer vos fonds maintenant, ils resteront dans le portefeuille associé à Signal si vous réactivez les paiements.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "Il est recommandé de transférer vos fonds vers une autre adresse de portefeuille avant de désactiver les paiements. Si vous choisissez de ne pas transférer vos fonds maintenant, ils seront conservés dans le portefeuille associé à Signal si vous réactivez les paiements.";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Votre solde restera dans le portefeuille associé à Signal si vous réactivez les paiements.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Votre solde sera conservé dans le portefeuille associé à Signal si vous réactivez les paiements.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "Désactiver sans transférer ?";
@@ -6764,7 +6764,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "À propos de MobileCoin";
 
 /* Description for the 'Adding to your wallet' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "Vous pouvez ajouter des fonds à utiliser dans Signal en envoyant des MobileCoin à l’adresse de votre portefeuille.";
+"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "Pour virer des fonds à utiliser dans Signal, envoyez des MobileCoins à l'adresse de votre portefeuille.";
 
 /* Title for the 'Adding to your wallet' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE" = "Ajouter des fonds";
@@ -6794,7 +6794,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "Mettez à jour votre code PIN";
 
 /* Indicator that the payments wallet address is invalid. */
-"SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Adresse de portefeuille non valide";
+"SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Adresse de portefeuille incorrecte.";
 
 /* Label for UISwitch based payments-lock setting that when enabled requires biometric-authentication (or passcode) to transfer funds or view the recovery phrase. */
 "SETTINGS_PAYMENTS_LOCK_SWITCH_LABEL" = "Verrouillage des paiements";
@@ -6833,7 +6833,7 @@
 "SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_BUTTON" = "Ignorer la phrase de récupération";
 
 /* Message of confirmation alert when discarding recovery phrase. */
-"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_MESSAGE" = "Your recovery phrase lets you restore your balance in a worst-case scenario. We strongly recommend you save it.";
+"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_MESSAGE" = "Votre phrase de récupération vous permet de récupérer votre solde en cas de problème. Nous vous recommandons fortement de la conserver en lieu sûr.";
 
 /* Title of confirmation alert when discarding recovery phrase. */
 "SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_TITLE" = "Continuer sans sauvegarder ?";
@@ -7076,19 +7076,19 @@
 "SETTINGS_PAYMENTS_TITLE" = "Paiements";
 
 /* Error indicating that it is not valid to send yourself a payment. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "Vous ne pouvez pas effectuer de transferts vers l’adresse de votre porte-monnaie Signal. Saisissez l’adresse de porte-monnaie de votre compte sur une plateforme de change prise en charge.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "Vous ne pouvez pas effectuer de virements vers l'adresse de votre propre portefeuille Signal. Saisissez l'adresse de portefeuille associée à votre autre compte. Celui-ci doit être hébergé sur une plateforme de change compatible.";
 
 /* Footer of the 'transfer currency out' view in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "Vous pouvez transférer des MobileCoins en finalisant un transfer vers l'adresse d'un portefeuille fourni par la place de change. L'adresse du portefeuille est une suite de chiffres et de lettres généralement sous le QR code.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "Pour virer des MobileCoins, effectuez un virement vers l'adresse de portefeuille fournie par la plateforme de change. L'adresse de portefeuille est une suite de chiffres et de lettres qui s'affiche généralement sous le code QR.";
 
 /* Error indicating that MobileCoin public address is not valid. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "Vérifiez l'adresse du portefeuille vers lequel vous tentez de faire un transfer puis ré-essayez.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "Veuillez vérifier l'adresse de portefeuille vers laquelle vous tentez d'effectuer un virement et réessayer.";
 
 /* Title for error alert indicating that MobileCoin public address is not valid. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE" = "Adresse incorrecte";
 
 /* Placeholder text for the address text field in the 'transfer currency out' settings view. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "À : Scannez ou saisissez l’adresse du portefeuille";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "Destinataire : scannez ou saisissez l'adresse du portefeuille";
 
 /* Label for 'transfer currency out' view in the payment settings. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "Transfert vers place de change";
@@ -7154,7 +7154,7 @@
 "SETTINGS_PAYMENTS_VIEW_TITLE" = "Paiements";
 
 /* Label for the payments wallet address. */
-"SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "L’adresse de votre portefeuille";
+"SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "Adresse de votre portefeuille";
 
 /* A toast that displays when the user attempts to set discoverability to 'nobody' when their phone number sharing is set to 'everybody', which is not allowed. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "Pour modifier ce paramètre, définissez l'option \"Qui peut voir mon numéro\" sur \"Personne\".";
@@ -8087,7 +8087,7 @@
 "USE_PROXY_BUTTON" = "Utiliser un proxy";
 
 /* Explanation of when you should use a signal proxy */
-"USE_PROXY_EXPLANATION" = "N’utilisez un proxy que s’il vous est impossible de vous connecter à Signal via les données mobiles ou via le Wi-Fi.";
+"USE_PROXY_EXPLANATION" = "N’utilisez un proxy que s'il vous est impossible de vous connecter à Signal via les données mobiles ou le Wi-Fi.";
 
 /* Description of username links and QR codes on the username education sheet */
 "USERNAME_EDUCATION_LINK_DESCRIPTION" = "Les noms d’utilisateur sont associés à des codes QR uniques et des liens que vous pouvez envoyer à vos amis afin de démarrer rapidement une conversation.";

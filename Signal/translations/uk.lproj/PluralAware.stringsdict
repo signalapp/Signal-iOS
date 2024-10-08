@@ -173,13 +173,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>+%1$ld Request</string>
+			<string>+%1$ld запит</string>
 			<key>few</key>
-			<string>+%1$ld Requests</string>
+			<string>+%1$ld запити</string>
 			<key>many</key>
-			<string>+%1$ld Requests</string>
+			<string>+%1$ld запитів</string>
 			<key>other</key>
-			<string>+%1$ld Requests</string>
+			<string>+%1$ld запиту</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_REQUEST_HEADER_COUNT_%d</key>

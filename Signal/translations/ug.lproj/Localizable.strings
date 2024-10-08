@@ -731,22 +731,22 @@
 "CALL_LINK_JOIN_CALL_FAILURE_SHEET_DESCRIPTION" = "چاقىرىشقا قاتنىشالمىدى. تور ئۇلىنىشىڭىزنى تەكشۈرۈپ قايتا سىناپ بېقىڭ.";
 
 /* Button on an action sheet to approve a request to join a call link. */
-"CALL_LINK_JOIN_REQUEST_APPROVE_BUTTON" = "Approve Entry";
+"CALL_LINK_JOIN_REQUEST_APPROVE_BUTTON" = "كىرىشنى تەستىقلاڭ";
 
 /* Button on an action sheet to deny a request to join a call link. */
-"CALL_LINK_JOIN_REQUEST_DENY_BUTTON" = "Deny Entry";
+"CALL_LINK_JOIN_REQUEST_DENY_BUTTON" = "كىرىشنى رەت قىلىڭ";
 
 /* Tappable label that appears below a user's name on a toast when they request to join a call link. */
-"CALL_LINK_JOIN_REQUEST_PROMPT" = "Would like to join…";
+"CALL_LINK_JOIN_REQUEST_PROMPT" = "...گە قېتىلىشنى خالامسىز؟";
 
 /* Shown in a message bubble when you send a call link in a Signal chat */
 "CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "بۇ ئۇلانما بىلەن Signal چاقىرىقىغا قوشۇلۇش";
 
 /* Text that appears on a toast in a call lobby before joining a call link informing the user what information will be shared with other call members when they have phone number sharing turned off. */
-"CALL_LINK_LOBBY_SHARING_INFO_PHONE_NUMBER_SHARING_OFF" = "Anyone who joins this call via the link will see your name and photo.";
+"CALL_LINK_LOBBY_SHARING_INFO_PHONE_NUMBER_SHARING_OFF" = "بۇ چاقىرىققا ئۇلانما ئارقىلىق قوشۇلغان ھەرقانداق كىشى ئىسمىڭىز ۋە رەسىمىڭىزنى كۆرەلەيدۇ.";
 
 /* Text that appears on a toast in a call lobby before joining a call link informing the user what information will be shared with other call members when they have phone number sharing turned on. */
-"CALL_LINK_LOBBY_SHARING_INFO_PHONE_NUMBER_SHARING_ON" = "Anyone who joins this call via the link will see your name, photo, and phone number.";
+"CALL_LINK_LOBBY_SHARING_INFO_PHONE_NUMBER_SHARING_ON" = "بۇ ئۇلىنىش ئارقىلىق توپقا قېتىلغانلار سىزنىڭ ئىسمىڭىز، رەسىمىڭىز ۋە تېلېفون نومۇرىڭىزنى كۆرەلەيدۇ.";
 
 /* Title for button to approve all requests to join a call. */
 "CALL_LINK_REQUEST_SHEET_APPROVE_ALL_BUTTON" = "ھەممىنى تەستىقلاڭ";
@@ -2534,7 +2534,7 @@
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the chats on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhones and Android. Get it here: %1$@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Signal here: %2$@";
+"EMAIL_INVITE_BODY" = "ياخشىمۇسىز ، \n\nيېقىندىن بېرى مەن ئالما تېلېفونۇمدا سىگنالنى ئىشلىتىپ باشقىلار بىلەن بىخەتەر پاراڭلىشىۋاتىمەن. مەنمۇ سىگنالنى قاچىلاشنى خالايمەن ، بۇنداق بولغاندا پەقەت ئككىمىزلا ئوتتۇرىمىزدىكى ئۇچۇرلارنى ئوقۇپ ، پاراڭلارنى ئاڭلاشقا كاپالەتلىك قىلالايمىز.\n\nسىگنال ئايفون ۋە ئاندىرويىد ئككىلىسىدە ئشلەيدۇ. بۇ يەردىن قاچىلاڭ: %1$@\n\nسىگنال سىزدە بار ئۇچۇرلىشىش دېتالىغا ئوخشاشلا خىزمەت قىلىدۇ. رەسىم ۋە سىنلارنى ئەۋەتەلەيمىز ، تېلېفون قىلالايمىز ۋە گۇرۇپپا پاراڭلىرىنى باشلىيالايمىز. ئەڭ ياخشى يېرى شۇكى ، ھېچكىم بۇلارنىڭ ھەرقاندىقىنى كۆرەلمەيدۇ ، ھەتتا سىگنالنى ياسىغان كىشىلەرمۇ كۆرەلمەيدۇ!\n\nسىگنال ھەققىدىكى تەپسىلاتلارنى بۇ يەردىن كۆرەلەيسىز: %2$@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "‫Signal دا پاراڭلىشايلى";
@@ -2951,7 +2951,7 @@
 "GROUP_CALL_MEMBER_LIST_SHARE_CALL_LINK_BUTTON" = "چاقىرىق ئۇلانمىسى ئورتاقلىشىش";
 
 /* Title for the sheet showing the group call members list */
-"GROUP_CALL_MEMBER_LIST_TITLE" = "Call Info";
+"GROUP_CALL_MEMBER_LIST_TITLE" = "چاقىرىق ئۇچۇرلىرى";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "%1$@ دىن ئۈن ۋە سىن تاپشۇرۇۋالالمايدۇ";
@@ -2987,13 +2987,13 @@
 "GROUP_CALL_RECONNECTING" = "قايتا ئۇلىنىۋاتىدۇ";
 
 /* Label for a button to block a member from a group call. */
-"GROUP_CALL_REMOVE_MEMBER_CONFIRMATION_ACTION_SHEET_BLOCK_ACTION" = "Block from Call";
+"GROUP_CALL_REMOVE_MEMBER_CONFIRMATION_ACTION_SHEET_BLOCK_ACTION" = "چاقىرىقتىن چەكلەش";
 
 /* Label for the button to confirm removing a member from a group call. */
-"GROUP_CALL_REMOVE_MEMBER_CONFIRMATION_ACTION_SHEET_REMOVE_ACTION" = "Remove";
+"GROUP_CALL_REMOVE_MEMBER_CONFIRMATION_ACTION_SHEET_REMOVE_ACTION" = "چىقىرىۋەت";
 
 /* Title for action sheet confirming removal of a member from a group call. embeds {{ name }} */
-"GROUP_CALL_REMOVE_MEMBER_CONFIRMATION_ACTION_SHEET_TITLE" = "Remove %1$@ from the call?";
+"GROUP_CALL_REMOVE_MEMBER_CONFIRMATION_ACTION_SHEET_TITLE" = "%1$@ نى بۇ چاقىرىقتىن چىقىرىۋېتەمسىز؟";
 
 /* The title of an alert when you've been removed from a group call. */
 "GROUP_CALL_REMOVED" = "چاقىرىقتىن چىقىرىۋېتىلدى.";
@@ -3185,10 +3185,10 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "گۇرۇپپىغا قوشۇلۇپ ئىسىم ۋە سۈرىتىڭىزنى گۇرۇپپا ئەزالىرى بىلەن ھەمبەھىرلىنەمسىز؟";
 
 /* Label for the 'request to join' button in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_REQUEST_TO_JOIN_BUTTON" = "Request to Join";
+"GROUP_LINK_ACTION_SHEET_VIEW_REQUEST_TO_JOIN_BUTTON" = "گۇرۇپپىغا قوشۇلۇش ئىلتىماسى";
 
 /* Message text for the 'group invite link' action sheet, if the user will be requesting to join. */
-"GROUP_LINK_ACTION_SHEET_VIEW_REQUEST_TO_JOIN_MESSAGE" = "An admin of this group must approve your request before you can join this group. When you request to join, your name and photo will be shared with its members.";
+"GROUP_LINK_ACTION_SHEET_VIEW_REQUEST_TO_JOIN_MESSAGE" = "بۇ گۇرۇپپىنىڭ باشقۇرغۇچىسى دەلىللىگەندىن كېيىن ئاندىن گۇرۇپپىغا قوشۇلالايسىز، سىز گۇرۇپپىغا كىرىشنى ئىلتىماس قىلغاندا، ئىسىم ۋە سۈرىتىڭىز ئۇنىڭ ئەزالىرى بىلەن ھەمبەھىرلىنىدۇ.";
 
 /* Error message the attempt to request to join the group failed due to network connectivity. */
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "تورنى تەكشۈرۈپ ئاندىن قايتا سىناڭ.";
@@ -6833,7 +6833,7 @@
 "SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_BUTTON" = "بىخەتەرلىك ئىبارىسىنى ئاتلاش";
 
 /* Message of confirmation alert when discarding recovery phrase. */
-"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_MESSAGE" = "Your recovery phrase lets you restore your balance in a worst-case scenario. We strongly recommend you save it.";
+"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_MESSAGE" = "ئەڭ ئېغىر ئەھۋاللاردا ئەسلىگە كەلتۈرۈش ئىبارىسى ئارقىلىق قالدۇق سوممىڭىزنى ئەسلىگە كەلتۈرەلەيسىز. ئۇنى ساقلىۋېلىشىڭىزنى كۈچلۈك تەۋسىيە قىلىمىز.";
 
 /* Title of confirmation alert when discarding recovery phrase. */
 "SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_TITLE" = "ساقلىمايلا داۋاملاشتۇرامسىز؟";

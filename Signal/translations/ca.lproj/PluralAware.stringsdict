@@ -141,9 +141,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>+%1$ld Request</string>
+			<string>+%1$ld sol·licitud</string>
 			<key>other</key>
-			<string>+%1$ld Requests</string>
+			<string>+%1$ld sol·licituds</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_REQUEST_HEADER_COUNT_%d</key>
