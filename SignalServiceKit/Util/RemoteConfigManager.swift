@@ -285,11 +285,6 @@ public class RemoteConfig {
         forFlag flag: ValueFlag,
         defaultValue: V
     ) -> V where V: LosslessStringConvertible {
-        guard AppReadinessObjcBridge.isAppReady else {
-            owsFailDebug("Storage is not yet ready.")
-            return defaultValue
-        }
-
         guard let stringValue: String = value(flag) else {
             return defaultValue
         }
