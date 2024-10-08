@@ -853,7 +853,7 @@ class GroupCallViewController: UIViewController {
         if shouldRepositionBottomVStack {
             switch bottomSheetStateManager.bottomSheetState {
             case .callControlsAndOverflow, .callControls, .callInfo, .transitioning:
-                yMax = size.height - bottomSheet.sheetHeight - 16
+                yMax = size.height - bottomSheet.minimizedHeight - 16
             case .hidden:
                 yMax = size.height - 32
             }
@@ -1058,11 +1058,11 @@ class GroupCallViewController: UIViewController {
     }
 
     private var callControlsOverflowBottomConstraintConstant: CGFloat {
-        -self.bottomSheet.sheetHeight - 12
+        -self.bottomSheet.minimizedHeight - 12
     }
 
     private var callControlsConfirmationToastContainerViewBottomConstraintConstant: CGFloat {
-        return -self.bottomSheet.sheetHeight - 16
+        return -self.bottomSheet.minimizedHeight - 16
     }
 
     private func callControlDisplayStateDidChange(

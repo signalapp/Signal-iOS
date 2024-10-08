@@ -505,6 +505,11 @@ class CallDrawerSheet: InteractiveSheetViewController {
     override func heightDidChange(to height: InteractiveSheetViewController.SheetHeight) {
         switch height {
         case .min:
+            guard UIView.inheritedAnimationDuration > 0 else {
+                changesForSnapToMin()
+                break
+            }
+
             let currentHeight = switch lastKnownHeight {
             case .min:
                 self.minimizedHeight
@@ -574,6 +579,11 @@ class CallDrawerSheet: InteractiveSheetViewController {
                 changesForSnapToMax()
             }
         case .max:
+            guard UIView.inheritedAnimationDuration > 0 else {
+                changesForSnapToMax()
+                break
+            }
+
             let currentHeight = switch lastKnownHeight {
             case .min:
                 self.minimizedHeight
@@ -763,7 +773,7 @@ extension CallDrawerSheet {
     }
 
     func isPresentingCallInfo() -> Bool {
-        return self.presentingViewController != nil && tableView.alpha == 1
+        return self.presentingViewController != nil && tableViewContainer.alpha == 1
     }
 
     func isCrossFading() -> Bool {
