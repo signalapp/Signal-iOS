@@ -220,6 +220,8 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction
     ) throws {
+        let startTimeMs = Date().ows_millisecondsSince1970
+
         try writeHeader(stream: stream, tx: tx)
 
         let currentBackupAttachmentUploadEra: String?
@@ -375,6 +377,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 try await backupAttachmentUploadManager.backUpAllAttachments()
             }
         }
+
+        let endTimeMs = Date().ows_millisecondsSince1970
+        Logger.info("Exported \(stream.numberOfWrittenFrames) in \(endTimeMs - startTimeMs)ms")
     }
 
     private func writeHeader(stream: MessageBackupProtoOutputStream, tx: DBWriteTransaction) throws {
@@ -481,6 +486,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction
     ) throws {
+        let startTimeMs = Date().ows_millisecondsSince1970
 
         let backupInfo: BackupProto_BackupInfo
         var hasMoreFrames = false
@@ -683,6 +689,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 try await backupAttachmentDownloadManager.restoreAttachmentsIfNeeded()
             }
         }
+
+        let endTimeMs = Date().ows_millisecondsSince1970
+        Logger.info("Imported \(stream.numberOfReadFrames) in \(endTimeMs - startTimeMs)ms")
     }
 
     private func processRestoreFrameErrors<IdType>(errors: [MessageBackup.RestoreFrameError<IdType>]) throws {

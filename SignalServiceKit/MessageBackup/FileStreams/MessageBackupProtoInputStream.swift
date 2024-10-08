@@ -25,6 +25,8 @@ public protocol MessageBackupProtoInputStream {
     /// If this header is missing or invalid, the backup should be discarded.
     func readHeader() -> MessageBackup.ProtoInputStreamReadResult<BackupProto_BackupInfo>
 
+    var numberOfReadFrames: UInt64 { get }
+
     /// Read a the next frame from the backup file.
     func readFrame() -> MessageBackup.ProtoInputStreamReadResult<BackupProto_Frame>
 
@@ -45,6 +47,8 @@ internal class MessageBackupProtoInputStreamImpl: MessageBackupProtoInputStream 
         self.inputStreamDelegate = inputStreamDelegate
     }
 
+    public private(set) var numberOfReadFrames: UInt64 = 0
+
     internal func readHeader() -> MessageBackup.ProtoInputStreamReadResult<BackupProto_BackupInfo> {
         return readProto { protoData in
             return try BackupProto_BackupInfo(serializedBytes: protoData)
@@ -52,6 +56,7 @@ internal class MessageBackupProtoInputStreamImpl: MessageBackupProtoInputStream 
     }
 
     internal func readFrame() -> MessageBackup.ProtoInputStreamReadResult<BackupProto_Frame> {
+        defer { self.numberOfReadFrames += 1 }
         return readProto { protoData in
             return try BackupProto_Frame(serializedBytes: protoData)
         }

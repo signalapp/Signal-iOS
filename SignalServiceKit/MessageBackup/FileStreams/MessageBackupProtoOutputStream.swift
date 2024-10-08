@@ -29,6 +29,8 @@ public protocol MessageBackupProtoOutputStream {
     /// in order to produce a valid backup file.
     func writeHeader(_ header: BackupProto_BackupInfo) -> MessageBackup.ProtoOutputStreamWriteResult
 
+    var numberOfWrittenFrames: UInt64 { get }
+
     /// Write a frame to the backup file.
     func writeFrame(_ frame: BackupProto_Frame) -> MessageBackup.ProtoOutputStreamWriteResult
 
@@ -43,6 +45,8 @@ internal class MessageBackupProtoOutputStreamImpl: MessageBackupProtoOutputStrea
     internal init(outputStream: OutputStreamable) {
         self.outputStream = outputStream
     }
+
+    public private(set) var numberOfWrittenFrames: UInt64 = 0
 
     internal func writeHeader(_ header: BackupProto_BackupInfo) -> MessageBackup.ProtoOutputStreamWriteResult {
         let bytes: Data
@@ -71,6 +75,7 @@ internal class MessageBackupProtoOutputStreamImpl: MessageBackupProtoOutputStrea
         } catch {
             return .fileIOError(error)
         }
+        numberOfWrittenFrames += 1
         return .success
     }
 
