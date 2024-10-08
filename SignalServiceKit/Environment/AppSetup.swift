@@ -572,6 +572,7 @@ public class AppSetup {
             schedulers: schedulers
         )
         let callRecordSyncMessageConversationIdAdapater = CallRecordSyncMessageConversationIdAdapterImpl(
+            callLinkStore: callLinkStore,
             callRecordStore: callRecordStore,
             recipientDatabaseTable: recipientDatabaseTable,
             threadStore: threadStore
@@ -581,6 +582,11 @@ public class AppSetup {
             databaseStorage: databaseStorage,
             messageSenderJobQueue: messageSenderJobQueue,
             callRecordConversationIdAdapter: callRecordSyncMessageConversationIdAdapater
+        )
+        let adHocCallRecordManager = AdHocCallRecordManagerImpl(
+            callRecordStore: callRecordStore,
+            callLinkStore: callLinkStore,
+            outgoingSyncMessageManager: outgoingCallEventSyncMessageManager
         )
         let groupCallRecordManager = GroupCallRecordManagerImpl(
             callRecordStore: callRecordStore,
@@ -636,6 +642,8 @@ public class AppSetup {
             messageSenderJobQueue: messageSenderJobQueue
         )
         let incomingCallEventSyncMessageManager = IncomingCallEventSyncMessageManagerImpl(
+            adHocCallRecordManager: adHocCallRecordManager,
+            callLinkStore: callLinkStore,
             callRecordStore: callRecordStore,
             callRecordDeleteManager: callRecordDeleteManager,
             groupCallRecordManager: groupCallRecordManager,
@@ -1142,6 +1150,7 @@ public class AppSetup {
 
         let dependenciesBridge = DependenciesBridge(
             accountAttributesUpdater: accountAttributesUpdater,
+            adHocCallRecordManager: adHocCallRecordManager,
             appExpiry: appExpiry,
             attachmentCloner: attachmentCloner,
             attachmentContentValidator: attachmentContentValidator,

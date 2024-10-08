@@ -40,17 +40,17 @@ class IncomingCallLogEventSyncMessageManagerImpl: IncomingCallLogEventSyncMessag
         /// that call isn't available on this device, we'll fall back to the
         /// timestamp embedded in the sync message.
         let referencedCallRecord: CallRecord? = {
-            if
-                let callIdentifiers = incomingSyncMessage.anchorCallIdentifiers,
-                let referencedCallRecord: CallRecord = callRecordConversationIdAdapter.hydrate(
-                    conversationId: callIdentifiers.conversationId,
-                    callId: callIdentifiers.callId,
-                    tx: tx
-                )
-            {
-                return referencedCallRecord
+            if let callIdentifiers = incomingSyncMessage.anchorCallIdentifiers {
+                do {
+                    return try callRecordConversationIdAdapter.hydrate(
+                        conversationId: callIdentifiers.conversationId,
+                        callId: callIdentifiers.callId,
+                        tx: tx
+                    )
+                } catch {
+                    owsFailDebug("\(error)")
+                }
             }
-
             return nil
         }()
 

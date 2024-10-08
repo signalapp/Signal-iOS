@@ -23,10 +23,12 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     // `callManager` continues to work properly.
     private let callManagerHttpClient: AnyObject
 
+    private var adHocCallRecordManager: any AdHocCallRecordManager { DependenciesBridge.shared.adHocCallRecordManager }
     private let appReadiness: AppReadiness
     private var audioSession: AudioSession { NSObject.audioSession }
     let authCredentialManager: any AuthCredentialManager
     private var databaseStorage: SDSDatabaseStorage { NSObject.databaseStorage }
+    private let db: any DB
     private var deviceSleepManager: DeviceSleepManager { DeviceSleepManager.shared }
     private var groupCallManager: GroupCallManager { NSObject.groupCallManager }
     private var reachabilityManager: SSKReachabilityManager { NSObject.reachabilityManager }
@@ -38,6 +40,8 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     let callLinkManager: CallLinkManagerImpl
     let callLinkFetcher: CallLinkFetcherImpl
     let callLinkStateUpdater: CallLinkStateUpdater
+
+    private var adHocCallStateObserver: AdHocCallStateObserver?
 
     /// Needs to be lazily initialized, because it uses singletons that are not
     /// available when this class is initialized.
@@ -115,6 +119,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             db: db,
             tsAccountManager: tsAccountManager
         )
+        self.db = db
         self.callManager.delegate = self
         SwiftSingletons.register(self)
         self.callServiceState.addObserver(self)
@@ -185,7 +190,10 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             break
         case .individual(let call):
             call.removeObserver(self)
-        case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
+        case .groupThread(let call):
+            call.removeObserver(self)
+        case .callLink(let call):
+            self.adHocCallStateObserver = nil
             call.removeObserver(self)
         }
         switch newValue?.mode {
@@ -193,7 +201,14 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             break
         case .individual(let call):
             call.addObserverAndSyncState(self)
-        case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
+        case .groupThread(let call):
+            call.addObserver(self, syncStateImmediately: true)
+        case .callLink(let call):
+            self.adHocCallStateObserver = AdHocCallStateObserver(
+                callLinkCall: call,
+                adHocCallRecordManager: adHocCallRecordManager,
+                db: db
+            )
             call.addObserver(self, syncStateImmediately: true)
         }
 
@@ -917,8 +932,7 @@ extension CallService: GroupCallObserver {
             }
 
         case .callLink:
-            // [CallLink] TODO: Bump the call record in the calls tab.
-            break
+            self.adHocCallStateObserver!.checkIfJoined()
         }
     }
 
@@ -956,8 +970,7 @@ extension CallService: GroupCallObserver {
             }
 
         case .callLink:
-            // [CallLink] TODO: Bump the call record in the calls tab if needed.
-            break
+            self.adHocCallStateObserver!.checkIfJoined()
         }
     }
 

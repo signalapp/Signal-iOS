@@ -19,8 +19,8 @@ class MockCallRecordSyncMessageConversationIdAdapter: CallRecordSyncMessageConve
     func getConversationId(
         callRecord: CallRecord,
         tx: DBReadTransaction
-    ) -> Data? {
-        return mockConversationId
+    ) throws -> Data {
+        return mockConversationId!
     }
 }
 

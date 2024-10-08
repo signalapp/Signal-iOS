@@ -116,3 +116,19 @@ public class CallLinkRecordStoreImpl: CallLinkRecordStore {
         }
     }
 }
+
+#if TESTABLE_BUILD
+
+final class MockCallLinkRecordStore: CallLinkRecordStore {
+    func fetch(rowId: Int64, tx: any DBReadTransaction) throws -> CallLinkRecord? { fatalError() }
+    func fetch(roomId: Data, tx: any DBReadTransaction) throws -> CallLinkRecord? { fatalError() }
+    func fetchOrInsert(rootKey: CallLinkRootKey, tx: any DBWriteTransaction) throws -> CallLinkRecord { fatalError() }
+    func update(_ callLinkRecord: CallLinkRecord, tx: any DBWriteTransaction) throws { fatalError() }
+    func delete(_ callLinkRecord: CallLinkRecord, tx: any DBWriteTransaction) throws { fatalError() }
+    func fetchAll(tx: any DBReadTransaction) throws -> [CallLinkRecord] { fatalError() }
+    func fetchUpcoming(earlierThan expirationTimestamp: Date?, limit: Int, tx: any DBReadTransaction) throws -> [CallLinkRecord] { fatalError() }
+    func fetchWhere(adminDeletedAtTimestampMsIsLessThan thresholdMs: UInt64, tx: any DBReadTransaction) throws -> [CallLinkRecord] { fatalError() }
+    func fetchAnyPendingRecord(tx: any DBReadTransaction) throws -> CallLinkRecord? { fatalError() }
+}
+
+#endif

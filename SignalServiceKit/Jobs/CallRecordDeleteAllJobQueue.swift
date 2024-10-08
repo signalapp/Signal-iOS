@@ -71,8 +71,11 @@ public class CallRecordDeleteAllJobQueue {
 
         switch deleteAllBefore {
         case .callRecord(let callRecord):
-            let conversationId = callRecordConversationIdAdapter.getConversationId(callRecord: callRecord, tx: tx.asV2Read)
-            guard let conversationId else {
+            let conversationId: Data
+            do {
+                conversationId = try callRecordConversationIdAdapter.getConversationId(callRecord: callRecord, tx: tx.asV2Read)
+            } catch {
+                owsFailDebug("\(error)")
                 return
             }
 
@@ -172,11 +175,16 @@ private class CallRecordDeleteAllJobRunner: JobRunner {
                 let callId = jobRecord.deleteAllBeforeCallId,
                 let conversationId = jobRecord.deleteAllBeforeConversationId,
                 let referencedCallRecord: CallRecord = db.read(block: { tx -> CallRecord? in
-                    return callRecordConversationIdAdapter.hydrate(
-                        conversationId: conversationId,
-                        callId: callId,
-                        tx: tx
-                    )
+                    do {
+                        return try callRecordConversationIdAdapter.hydrate(
+                            conversationId: conversationId,
+                            callId: callId,
+                            tx: tx
+                        )
+                    } catch {
+                        owsFailDebug("\(error)")
+                        return nil
+                    }
                 })
             else {
                 return jobRecord.deleteAllBeforeTimestamp

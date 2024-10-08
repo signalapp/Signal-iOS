@@ -134,6 +134,10 @@ extension CallRecord {
 
             /// We've joined the call.
             case joined = 12
+
+            func canTransition(to newValue: Self) -> Bool {
+                return self != newValue && newValue == .joined
+            }
         }
 
         // MARK: Codable

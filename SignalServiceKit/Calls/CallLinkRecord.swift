@@ -163,6 +163,10 @@ public struct CallLinkRecord: Codable, PersistableRecord, FetchableRecord {
         self.isUpcoming = self.isUpcoming ?? (self.adminPasskey != nil)
     }
 
+    mutating func didInsertCallRecord() {
+        self.isUpcoming = false
+    }
+
     public var isDeleted: Bool {
         return self.adminDeletedAtTimestampMs != nil
     }

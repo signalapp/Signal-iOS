@@ -62,7 +62,11 @@ final class OutgoingCallEventSyncMessageManagerImpl: OutgoingCallEventSyncMessag
             return
         }
 
-        guard let conversationId = callRecordConversationIdAdapter.getConversationId(callRecord: callRecord, tx: tx) else {
+        let conversationId: Data
+        do {
+            conversationId = try callRecordConversationIdAdapter.getConversationId(callRecord: callRecord, tx: tx)
+        } catch {
+            owsFailDebug("\(error)")
             return
         }
 

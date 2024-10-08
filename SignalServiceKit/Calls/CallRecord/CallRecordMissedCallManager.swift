@@ -243,9 +243,11 @@ class CallRecordMissedCallManagerImpl: CallRecordMissedCallManager {
         eventType: OutgoingCallLogEventSyncMessage.CallLogEvent.EventType,
         tx: DBWriteTransaction
     ) {
-        guard let conversationId = callRecordConversationIdAdapter.getConversationId(
-            callRecord: callRecord, tx: tx
-        ) else {
+        let conversationId: Data
+        do {
+            conversationId = try callRecordConversationIdAdapter.getConversationId(callRecord: callRecord, tx: tx)
+        } catch {
+            owsFailDebug("\(error)")
             return
         }
         syncMessageSender.sendCallLogEventSyncMessage(
