@@ -235,16 +235,8 @@ final class CallLinkViewController: OWSTableViewController2 {
                 owsFail("Couldn't create CallLinkRecord: \(error)")
             }
 
-            // [CallLink] TODO: Move this into a -Manager object.
-            let localThread = TSContactThread.getOrCreateLocalThread(transaction: tx)!
-            let callLinkUpdate = OutgoingCallLinkUpdateMessage(
-                localThread: localThread,
-                rootKey: callLink.rootKey,
-                adminPasskey: adminPasskey,
-                tx: tx
-            )
-            let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueueRef
-            messageSenderJobQueue.add(message: .preprepared(transientMessageWithoutAttachments: callLinkUpdate), transaction: tx)
+            callLinkAdminManager?.sendCallLinkUpdateMessage(tx: tx)
+
             return callLinkRecord.id
         }
         storageServiceManager.recordPendingUpdates(callLinkRootKeys: [callLink.rootKey])
