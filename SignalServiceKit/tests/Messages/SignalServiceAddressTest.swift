@@ -11,7 +11,7 @@ import XCTest
 class SignalServiceAddressTest: XCTestCase {
 
     private lazy var cache = SignalServiceAddressCache()
-    private lazy var mockDb = MockDB()
+    private lazy var mockDb = InMemoryDB()
 
     private func makeAddress(serviceId: ServiceId? = nil, phoneNumber: String? = nil) -> SignalServiceAddress {
         SignalServiceAddress(

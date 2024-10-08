@@ -164,7 +164,7 @@ public class EditMessageStoreImpl: EditMessageStore {
 
         do {
             return try Int.fetchOne(
-                databaseConnection(tx),
+                tx.databaseConnection,
                 sql: sql,
                 arguments: arguments
             ) ?? 0
@@ -193,7 +193,7 @@ public class EditMessageStoreImpl: EditMessageStore {
         let arguments: StatementArguments = [message.grdbId]
 
         let records = try EditRecord.fetchAll(
-            databaseConnection(tx),
+            tx.databaseConnection,
             sql: recordSQL,
             arguments: arguments
         )
@@ -228,7 +228,7 @@ public class EditMessageStoreImpl: EditMessageStore {
         let arguments: StatementArguments = [message.grdbId, message.grdbId]
 
         let records = try EditRecord.fetchAll(
-            databaseConnection(tx),
+            tx.databaseConnection,
             sql: recordSQL,
             arguments: arguments
         )
@@ -251,7 +251,7 @@ public class EditMessageStoreImpl: EditMessageStore {
         tx: DBWriteTransaction
     ) {
         do {
-            try editRecord.insert(databaseConnection(tx))
+            try editRecord.insert(tx.databaseConnection)
         } catch {
             owsFailDebug("Unexpected edit record insertion error \(error)")
         }
@@ -261,6 +261,6 @@ public class EditMessageStoreImpl: EditMessageStore {
         _ editRecord: EditRecord,
         tx: DBWriteTransaction
     ) throws {
-        try editRecord.update(databaseConnection(tx))
+        try editRecord.update(tx.databaseConnection)
     }
 }

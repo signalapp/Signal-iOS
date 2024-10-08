@@ -21,7 +21,13 @@ public import GRDB
 /// Shims can bridge to `SDSAnyReadTransaction` by using ``SDSDB.shimOnlyBridge``;
 /// this is made intentionally cumbersome as it should **never** be used in
 /// any concrete class and **only** in shim classes that bridge to old-style code.
-public protocol DBReadTransaction: AnyObject {}
+public protocol DBReadTransaction: AnyObject {
+    /// Actual connection to the database; use it to interact with database tables.
+    /// Refrain from reading this and passing it around in lieu of a transaction;
+    /// as much as possible pass transactions and only grab databaseConnection
+    /// directly at its usage site or as close to it as possible.
+    var databaseConnection: GRDB.Database { get }
+}
 
 /// Wrapper around `SDSAnyWriteTransaction` that allows the generation
 /// of a "fake" instance in tests without touching existing code.
@@ -40,23 +46,4 @@ public protocol DBWriteTransaction: DBReadTransaction {
     func addFinalization(forKey key: String, block: @escaping () -> Void)
     func addSyncCompletion(_ block: @escaping () -> Void)
     func addAsyncCompletion(on scheduler: Scheduler, _ block: @escaping () -> Void)
-}
-
-public func databaseConnection(_ tx: DBReadTransaction) -> GRDB.Database {
-    #if TESTABLE_BUILD
-    if let tx = tx as? InMemoryDB.ReadTransaction {
-        return tx.db
-    }
-    #endif
-
-    return SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database
-}
-
-public func databaseConnection(_ tx: DBWriteTransaction) -> GRDB.Database {
-    #if TESTABLE_BUILD
-    if let tx = tx as? InMemoryDB.WriteTransaction {
-        return tx.db
-    }
-    #endif
-    return SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database
 }

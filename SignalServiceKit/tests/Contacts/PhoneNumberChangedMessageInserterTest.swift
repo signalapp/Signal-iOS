@@ -41,7 +41,7 @@ class PhoneNumberChangedMessageInserterTest: XCTestCase {
         let threadStore = MockThreadStore()
         threadStore.insertThreads([groupWithEveryone, groupWithoutAlice, groupArchived, myThread, aliceThread])
 
-        let mockDB = MockDB()
+        let mockDB = InMemoryDB()
 
         let groupMemberStore = MockGroupMemberStore()
         mockDB.write { tx in

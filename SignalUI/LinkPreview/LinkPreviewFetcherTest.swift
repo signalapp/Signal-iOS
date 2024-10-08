@@ -23,7 +23,7 @@ class LinkPreviewFetcherTest: XCTestCase {
 
         self.linkPreviewFetcher = LinkPreviewFetcherImpl(
             authCredentialManager: MockAuthCrededentialManager(),
-            db: MockDB(),
+            db: InMemoryDB(),
             groupsV2: MockGroupsV2(),
             linkPreviewSettingStore: LinkPreviewSettingStore.mock(),
             tsAccountManager: MockTSAccountManager()

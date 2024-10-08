@@ -37,12 +37,12 @@ private extension LinkPreviewFetchState.State {
 class LinkPreviewFetchStateTest: XCTestCase {
 
     private var mockLinkPreviewFetcher: MockLinkPreviewFetcher!
-    private var mockDB: MockDB!
+    private var mockDB: InMemoryDB!
 
     override func setUp() {
         super.setUp()
 
-        mockDB = MockDB()
+        mockDB = InMemoryDB()
         mockLinkPreviewFetcher = MockLinkPreviewFetcher()
     }
 

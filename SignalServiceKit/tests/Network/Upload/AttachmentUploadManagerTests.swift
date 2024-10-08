@@ -15,7 +15,7 @@ class AttachmentUploadManagerTests: XCTestCase {
         uploadManager = AttachmentUploadManagerImpl(
             attachmentEncrypter: helper.mockAttachmentEncrypter,
             attachmentStore: helper.mockAttachmentStore,
-            attachmentUploadStore: helper.mockAttachmentStore,
+            attachmentUploadStore: helper.mockAttachmentUploadStore,
             attachmentThumbnailService: helper.mockAttachmentThumbnailService,
             chatConnectionManager: helper.mockChatConnectionManager,
             dateProvider: helper.mockDateProvider,
@@ -91,7 +91,7 @@ class AttachmentUploadManagerTests: XCTestCase {
             let lastByte = encryptedSize - 1
             XCTAssertEqual(request.allHTTPHeaderFields!["content-range"], "bytes \(nextByte)-\(lastByte)/\(encryptedSize)")
         } else { XCTFail("Unexpected request encountered.") }
-        XCTAssertEqual(helper.mockAttachmentStore.uploadedAttachments.first!.unencryptedByteCount, unencryptedSize)
+        XCTAssertEqual(helper.mockAttachmentUploadStore.uploadedAttachments.first!.unencryptedByteCount, unencryptedSize)
     }
 
     func testBadRangePrefixRestartUpload_v3_CDN2() async throws {
@@ -119,7 +119,7 @@ class AttachmentUploadManagerTests: XCTestCase {
             XCTAssertEqual(request.allHTTPHeaderFields!["Content-Length"], "\(encryptedSize)")
             XCTAssertNil(request.allHTTPHeaderFields!["Content-Range"])
         } else { XCTFail("Unexpected request encountered.") }
-        XCTAssertEqual(helper.mockAttachmentStore.uploadedAttachments.first!.unencryptedByteCount, unencryptedSize)
+        XCTAssertEqual(helper.mockAttachmentUploadStore.uploadedAttachments.first!.unencryptedByteCount, unencryptedSize)
     }
 
     func testFullRestartUpload_v3_CDN2() async throws {
@@ -152,7 +152,7 @@ class AttachmentUploadManagerTests: XCTestCase {
             XCTAssertEqual(request.allHTTPHeaderFields!["Content-Length"], "\(encryptedSize)")
             XCTAssertNil(request.allHTTPHeaderFields!["Content-Range"])
         } else { XCTFail("Unexpected request encountered.") }
-        XCTAssertEqual(helper.mockAttachmentStore.uploadedAttachments.first!.unencryptedByteCount, unencryptedSize)
+        XCTAssertEqual(helper.mockAttachmentUploadStore.uploadedAttachments.first!.unencryptedByteCount, unencryptedSize)
     }
 
     // MARK: Testing reupload strategies

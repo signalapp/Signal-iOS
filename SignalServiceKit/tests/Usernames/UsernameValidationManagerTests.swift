@@ -25,7 +25,7 @@ final class UsernameValidationManagerTest: XCTestCase {
 
     override func setUp() {
         mockAccountServiceClient = MockAccountServiceClient()
-        mockDB = MockDB()
+        mockDB = InMemoryDB()
         mockLocalUsernameManager = MockLocalUsernameManager()
         mockMessageProcessor = MockMessageProcessor()
         mockScheduler = TestScheduler()

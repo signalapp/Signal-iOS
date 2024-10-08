@@ -12,7 +12,7 @@ final class CallRecordMissedCallManagerTest: XCTestCase {
     private var mockConversationIdAdapter: MockConversationIdAdapter!
     private var mockCallRecordQuerier: MockCallRecordQuerier!
     private var mockCallRecordStore: MockCallRecordStore!
-    private var mockDB: MockDB!
+    private var mockDB: InMemoryDB!
     private var mockSyncMessageSender: MockSyncMessageSender!
 
     private var missedCallManager: CallRecordMissedCallManagerImpl!
@@ -21,7 +21,7 @@ final class CallRecordMissedCallManagerTest: XCTestCase {
         mockConversationIdAdapter = MockConversationIdAdapter()
         mockCallRecordQuerier = MockCallRecordQuerier()
         mockCallRecordStore = MockCallRecordStore()
-        mockDB = MockDB()
+        mockDB = InMemoryDB()
         mockSyncMessageSender = MockSyncMessageSender()
 
         missedCallManager = CallRecordMissedCallManagerImpl(

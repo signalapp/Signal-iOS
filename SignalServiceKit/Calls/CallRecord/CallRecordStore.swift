@@ -205,7 +205,7 @@ class CallRecordStoreImpl: CallRecordStore {
     func markAsRead(callRecord: CallRecord, tx: DBWriteTransaction) {
         callRecord.unreadStatus = .read
         do {
-            try callRecord.update(databaseConnection(tx))
+            try callRecord.update(tx.databaseConnection)
         } catch let error {
             owsFailBeta("Failed to update call record: \(error)")
         }
@@ -218,7 +218,7 @@ class CallRecordStoreImpl: CallRecordStore {
     ) {
         callRecord.callDirection = newCallDirection
         do {
-            try callRecord.update(databaseConnection(tx))
+            try callRecord.update(tx.databaseConnection)
         } catch let error {
             owsFailBeta("Failed to update call record: \(error)")
         }
@@ -231,7 +231,7 @@ class CallRecordStoreImpl: CallRecordStore {
     ) {
         callRecord.setGroupCallRingerAci(newGroupCallRingerAci)
         do {
-            try callRecord.update(databaseConnection(tx))
+            try callRecord.update(tx.databaseConnection)
         } catch let error {
             owsFailBeta("Failed to update call record: \(error)")
         }
@@ -244,7 +244,7 @@ class CallRecordStoreImpl: CallRecordStore {
     ) {
         callRecord.callBeganTimestamp = callBeganTimestamp
         do {
-            try callRecord.update(databaseConnection(tx))
+            try callRecord.update(tx.databaseConnection)
         } catch let error {
             owsFailBeta("Failed to update call record: \(error)")
         }
@@ -257,7 +257,7 @@ class CallRecordStoreImpl: CallRecordStore {
     ) {
         callRecord.callEndedTimestamp = callEndedTimestamp
         do {
-            try callRecord.update(databaseConnection(tx))
+            try callRecord.update(tx.databaseConnection)
         } catch let error {
             owsFailBeta("Failed to update call record: \(error)")
         }
@@ -268,7 +268,7 @@ class CallRecordStoreImpl: CallRecordStore {
         intoThreadRowId intoRowId: Int64,
         tx: DBWriteTransaction
     ) {
-        databaseConnection(tx).executeHandlingErrors(
+        tx.databaseConnection.executeHandlingErrors(
             sql: """
                 UPDATE "\(CallRecord.databaseTableName)"
                 SET "\(CallRecord.CodingKeys.threadRowId.rawValue)" = ?
@@ -314,7 +314,7 @@ class CallRecordStoreImpl: CallRecordStore {
 
     func _insert(callRecord: CallRecord, tx: DBWriteTransaction) {
         do {
-            try callRecord.insert(databaseConnection(tx))
+            try callRecord.insert(tx.databaseConnection)
         } catch let error {
             owsFailBeta("Failed to insert call record: \(error)")
         }
@@ -323,7 +323,7 @@ class CallRecordStoreImpl: CallRecordStore {
     func _delete(callRecords: [CallRecord], tx: DBWriteTransaction) {
         for callRecord in callRecords {
             do {
-                try callRecord.delete(databaseConnection(tx))
+                try callRecord.delete(tx.databaseConnection)
             } catch let error {
                 owsFailBeta("Failed to delete call record: \(error)")
             }
@@ -341,7 +341,7 @@ class CallRecordStoreImpl: CallRecordStore {
         callRecord.callStatus = newCallStatus
         callRecord.unreadStatus = CallRecord.CallUnreadStatus(callStatus: newCallStatus)
         do {
-            try callRecord.update(databaseConnection(tx))
+            try callRecord.update(tx.databaseConnection)
         } catch let error {
             owsFailBeta("Failed to update call record: \(error)")
         }
@@ -381,7 +381,7 @@ class CallRecordStoreImpl: CallRecordStore {
         let (sqlString, sqlArgs) = compileQuery(columnArgs: columnArgs)
 
         do {
-            return try CallRecord.fetchOne(databaseConnection(tx), SQLRequest(
+            return try CallRecord.fetchOne(tx.databaseConnection, SQLRequest(
                 sql: sqlString,
                 arguments: StatementArguments(sqlArgs)
             ))
@@ -429,7 +429,7 @@ final class ExplainingCallRecordStoreImpl: CallRecordStoreImpl {
         let (sqlString, sqlArgs) = compileQuery(columnArgs: columnArgs)
 
         guard
-            let explanationRow = try? Row.fetchOne(databaseConnection(tx), SQLRequest(
+            let explanationRow = try? Row.fetchOne(tx.databaseConnection, SQLRequest(
                 sql: "EXPLAIN QUERY PLAN \(sqlString)",
                 arguments: StatementArguments(sqlArgs)
             )),

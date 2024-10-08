@@ -31,7 +31,7 @@ private class TestDependencies {
     }
     let identityManager: MockIdentityManager
     let keyValueStoreFactory = InMemoryKeyValueStoreFactory()
-    let mockDB = MockDB()
+    let mockDB = InMemoryDB()
     let recipientMerger: RecipientMerger
     let recipientDatabaseTable = MockRecipientDatabaseTable()
     let recipientFetcher: RecipientFetcher
@@ -57,7 +57,7 @@ private class TestDependencies {
         )
         recipientMerger = RecipientMergerImpl(
             aciSessionStore: aciSessionStore,
-            blockedRecipientStore: MockBlockedRecipientStore(),
+            blockedRecipientStore: BlockedRecipientStoreImpl(),
             identityManager: identityManager,
             observers: RecipientMergerImpl.Observers(
                 preThreadMerger: [],

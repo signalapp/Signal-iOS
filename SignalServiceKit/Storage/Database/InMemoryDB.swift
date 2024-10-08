@@ -3,29 +3,42 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import GRDB
+public import GRDB
 
 #if TESTABLE_BUILD
 
-final class InMemoryDB: DB {
+public final class InMemoryDB: DB {
+
+    private let schedulers: Schedulers
+
+    public init(schedulers: Schedulers = DispatchQueueSchedulers()) {
+        self.schedulers = schedulers
+    }
+
     // MARK: - Transactions
 
-    class ReadTransaction: DBReadTransaction {
+    public class ReadTransaction: DBReadTransaction {
         let db: Database
         init(db: Database) {
             self.db = db
         }
+
+        public var databaseConnection: GRDB.Database { db }
     }
 
-    final class WriteTransaction: ReadTransaction, DBWriteTransaction {
-        func addFinalization(forKey key: String, block: @escaping () -> Void) {
+    public final class WriteTransaction: ReadTransaction, DBWriteTransaction {
+
+        fileprivate var syncCompletions = [() -> Void]()
+        fileprivate var asyncCompletions = [(Scheduler, () -> Void)]()
+
+        public func addFinalization(forKey key: String, block: @escaping () -> Void) {
             fatalError()
         }
-        func addSyncCompletion(_ block: @escaping () -> Void) {
-            fatalError()
+        public func addSyncCompletion(_ block: @escaping () -> Void) {
+            syncCompletions.append(block)
         }
-        func addAsyncCompletion(on scheduler: Scheduler, _ block: @escaping () -> Void) {
-            fatalError()
+        public func addAsyncCompletion(on scheduler: Scheduler, _ block: @escaping () -> Void) {
+            asyncCompletions.append((scheduler, block))
         }
     }
 
@@ -40,16 +53,16 @@ final class InMemoryDB: DB {
 
     // MARK: - Protocol
 
-    func appendDbChangeDelegate(_ dbChangeDelegate: DBChangeDelegate) { fatalError() }
+    public func appendDbChangeDelegate(_ dbChangeDelegate: DBChangeDelegate) { fatalError() }
 
-    func add(
+    public func add(
         transactionObserver: TransactionObserver,
         extent: Database.TransactionObservationExtent
     ) {
         databaseQueue.add(transactionObserver: transactionObserver, extent: extent)
     }
 
-    func asyncRead<T>(
+    public func asyncRead<T>(
         file: String,
         function: String,
         line: Int,
@@ -57,13 +70,13 @@ final class InMemoryDB: DB {
         completionQueue: DispatchQueue,
         completion: ((T) -> Void)?
     ) {
-        DispatchQueue.global().async {
+        schedulers.global().async {
             let result: T = self.read(file: file, function: function, line: line, block: block)
             if let completion { completionQueue.async({ completion(result) }) }
         }
     }
 
-    func asyncWrite<T>(
+    public func asyncWrite<T>(
         file: String,
         function: String,
         line: Int,
@@ -71,13 +84,13 @@ final class InMemoryDB: DB {
         completionQueue: DispatchQueue,
         completion: ((T) -> Void)?
     ) {
-        DispatchQueue.global().async {
+        schedulers.global().async {
             let result = self.write(file: file, function: function, line: line, block: block)
             if let completion { completionQueue.async({ completion(result) }) }
         }
     }
 
-    func awaitableWrite<T>(
+    public func awaitableWrite<T>(
         file: String,
         function: String,
         line: Int,
@@ -87,7 +100,7 @@ final class InMemoryDB: DB {
         return try write(file: file, function: function, line: line, block: block)
     }
 
-    func readPromise<T>(
+    public func readPromise<T>(
         file: String,
         function: String,
         line: Int,
@@ -96,7 +109,7 @@ final class InMemoryDB: DB {
         return Promise.wrapAsync { try self.read(file: file, function: function, line: line, block: block) }
     }
 
-    func writePromise<T>(
+    public func writePromise<T>(
         file: String,
         function: String,
         line: Int,
@@ -107,7 +120,7 @@ final class InMemoryDB: DB {
 
     // MARK: - Value Methods
 
-    func read<T>(
+    public func read<T>(
         file: String,
         function: String,
         line: Int,
@@ -132,7 +145,7 @@ final class InMemoryDB: DB {
         return result!
     }
 
-    func write<T>(
+    public func write<T>(
         file: String,
         function: String,
         line: Int,
@@ -148,7 +161,14 @@ final class InMemoryDB: DB {
         var thrownError: Error?
         let result: T? = try! databaseQueue.write { db in
             do {
-                return try block(WriteTransaction(db: db))
+                let tx = WriteTransaction(db: db)
+                defer {
+                    tx.syncCompletions.forEach { $0() }
+                    tx.asyncCompletions.forEach {
+                        $0.0.async($0.1)
+                    }
+                }
+                return try block(tx)
             } catch {
                 thrownError = error
                 return nil
@@ -180,15 +200,15 @@ final class InMemoryDB: DB {
         _ = try! write { tx in try record.delete(tx.db) }
     }
 
-    func touch(_ interaction: TSInteraction, shouldReindex: Bool, tx: DBWriteTransaction) {
+    public func touch(_ interaction: TSInteraction, shouldReindex: Bool, tx: DBWriteTransaction) {
         // Do nothing.
     }
 
-    func touch(_ thread: TSThread, shouldReindex: Bool, shouldUpdateChatListUi: Bool, tx: DBWriteTransaction) {
+    public func touch(_ thread: TSThread, shouldReindex: Bool, shouldUpdateChatListUi: Bool, tx: DBWriteTransaction) {
         // Do nothing.
     }
 
-    func touch(_ storyMessage: StoryMessage, tx: DBWriteTransaction) {
+    public func touch(_ storyMessage: StoryMessage, tx: DBWriteTransaction) {
         // Do nothing.
     }
 }

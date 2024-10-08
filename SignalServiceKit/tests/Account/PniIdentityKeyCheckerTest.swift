@@ -9,13 +9,13 @@ import XCTest
 @testable import SignalServiceKit
 
 final class PniIdentityKeyCheckerTest: XCTestCase {
-    private var db: MockDB!
+    private var db: InMemoryDB!
     private var identityManagerMock: IdentityManagerMock!
     private var profileFetcherMock: ProfileFetcherMock!
     private var pniIdentityKeyChecker: PniIdentityKeyCheckerImpl!
 
     override func setUp() {
-        db = MockDB()
+        db = InMemoryDB()
         identityManagerMock = IdentityManagerMock()
         profileFetcherMock = ProfileFetcherMock()
         pniIdentityKeyChecker = PniIdentityKeyCheckerImpl(

@@ -15,7 +15,7 @@ class EditManagerTests: SSKBaseTest {
 
     override func setUp() {
         super.setUp()
-        db = MockDB()
+        db = InMemoryDB()
         authorAci = Aci.constantForTesting("00000000-0000-4000-8000-000000000000")
         thread = TSThread.init(
             grdbId: 1,

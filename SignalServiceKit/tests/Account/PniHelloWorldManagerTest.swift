@@ -35,7 +35,7 @@ class PniHelloWorldManagerTest: XCTestCase {
     private var recipientDatabaseTableMock: MockRecipientDatabaseTable!
     private var tsAccountManagerMock: MockTSAccountManager!
 
-    private let db = MockDB()
+    private let db = InMemoryDB()
     private var kvStore: TestKeyValueStore!
     private var testScheduler: TestScheduler!
 

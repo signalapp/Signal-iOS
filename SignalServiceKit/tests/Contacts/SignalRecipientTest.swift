@@ -738,7 +738,7 @@ final class SignalRecipient2Test: XCTestCase {
 
     func testUnregisteredTimestamps() {
         let aci = Aci.randomForTesting()
-        let mockDb = MockDB()
+        let mockDb = InMemoryDB()
         let recipientTable = MockRecipientDatabaseTable()
         let recipientFetcher = RecipientFetcherImpl(recipientDatabaseTable: recipientTable)
         let recipientManager = SignalRecipientManagerImpl(
@@ -781,7 +781,7 @@ final class SignalRecipient2Test: XCTestCase {
             TestCase(initialDeviceIds: [1, 2, 3], addedDeviceId: 1, expectedDeviceIds: [1, 2, 3]),
             TestCase(initialDeviceIds: [1, 2, 3], addedDeviceId: 2, expectedDeviceIds: [1, 2, 3])
         ]
-        let mockDb = MockDB()
+        let mockDb = InMemoryDB()
         let recipientTable = MockRecipientDatabaseTable()
         let recipientFetcher = RecipientFetcherImpl(recipientDatabaseTable: recipientTable)
         let recipientManager = SignalRecipientManagerImpl(

@@ -14,7 +14,7 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
 
     private var viewModelLoader: ViewModelLoader!
 
-    private var mockDB: MockDB!
+    private var mockDB: InMemoryDB!
     private var mockCallRecordLoader: MockCallRecordLoader!
     private lazy var callViewModelForCallRecords: ViewModelLoader.CallViewModelForCallRecords! = {
         self.createCallViewModel(callRecords: $0, tx: $1)
@@ -141,7 +141,7 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
     }
 
     override func setUp() {
-        mockDB = MockDB()
+        mockDB = InMemoryDB()
         mockCallRecordLoader = MockCallRecordLoader()
     }
 

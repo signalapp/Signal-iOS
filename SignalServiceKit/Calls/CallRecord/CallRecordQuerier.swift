@@ -261,7 +261,7 @@ class CallRecordQuerierImpl: CallRecordQuerier {
 
         do {
             let grdbRecordCursor = try CallRecord.fetchCursor(
-                databaseConnection(tx),
+                tx.databaseConnection,
                 SQLRequest(
                     sql: sqlString,
                     arguments: StatementArguments(sqlArgs)
@@ -339,7 +339,7 @@ final class ExplainingCallRecordQuerierImpl: CallRecordQuerierImpl {
         let (sqlString, sqlArgs) = compileQuery(columnArgs: columnArgs, ordering: ordering)
 
         guard
-            let explanationRow = try? Row.fetchOne(databaseConnection(tx), SQLRequest(
+            let explanationRow = try? Row.fetchOne(tx.databaseConnection, SQLRequest(
                 sql: "EXPLAIN QUERY PLAN \(sqlString)",
                 arguments: StatementArguments(sqlArgs)
             )),

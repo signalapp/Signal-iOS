@@ -12,7 +12,7 @@ import XCTest
 final class ThreadMergerTest: XCTestCase {
     private var callRecordStore: MockCallRecordStore!
     private var chatColorSettingStore: ChatColorSettingStore!
-    private var db: MockDB!
+    private var db: InMemoryDB!
     private var deletedCallRecordStore: MockDeletedCallRecordStore!
     private var disappearingMessagesConfigurationManager: ThreadMerger_MockDisappearingMessagesConfigurationManager!
     private var disappearingMessagesConfigurationStore: MockDisappearingMessagesConfigurationStore!
@@ -40,7 +40,7 @@ final class ThreadMergerTest: XCTestCase {
         _signalServiceAddressCache = SignalServiceAddressCache()
 
         callRecordStore = MockCallRecordStore()
-        db = MockDB()
+        db = InMemoryDB()
         deletedCallRecordStore = MockDeletedCallRecordStore()
         disappearingMessagesConfigurationStore = MockDisappearingMessagesConfigurationStore()
         disappearingMessagesConfigurationManager = ThreadMerger_MockDisappearingMessagesConfigurationManager(disappearingMessagesConfigurationStore)

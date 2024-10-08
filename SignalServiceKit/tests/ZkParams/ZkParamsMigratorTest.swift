@@ -16,7 +16,7 @@ class ZkParamsMigratorTest: XCTestCase {
 
     private var authCredentialStore: AuthCredentialStore!
     private var migrationStore: KeyValueStore!
-    private var mockDb: MockDB!
+    private var mockDb: InMemoryDB!
     private var versionedProfilesRef: MockVersionedProfiles!
     private var zkParamsMigrator: ZkParamsMigrator!
 
@@ -26,7 +26,7 @@ class ZkParamsMigratorTest: XCTestCase {
         let keyValueStoreFactory = InMemoryKeyValueStoreFactory()
         authCredentialStore = AuthCredentialStore(keyValueStoreFactory: keyValueStoreFactory)
         migrationStore = keyValueStoreFactory.keyValueStore(collection: "GroupsV2Impl.serviceStore")
-        mockDb = MockDB()
+        mockDb = InMemoryDB()
         versionedProfilesRef = MockVersionedProfiles()
         zkParamsMigrator = ZkParamsMigrator(
             appReadiness: AppReadinessMock(),

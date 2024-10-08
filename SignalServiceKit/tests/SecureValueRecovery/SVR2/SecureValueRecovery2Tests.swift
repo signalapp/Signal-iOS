@@ -10,7 +10,7 @@ import XCTest
 
 class SecureValueRecovery2Tests: XCTestCase {
 
-    private var db: MockDB!
+    private var db: InMemoryDB!
     private var svr: SecureValueRecovery2Impl!
 
     private var credentialStorage: SVRAuthCredentialStorageMock!
@@ -26,7 +26,7 @@ class SecureValueRecovery2Tests: XCTestCase {
     private var mockTSConstants: TSConstantsMock!
 
     override func setUp() {
-        self.db = MockDB()
+        self.db = InMemoryDB()
         self.credentialStorage = SVRAuthCredentialStorageMock()
         self.scheduler = TestScheduler()
         // Start the scheduler so everything executes synchronously.

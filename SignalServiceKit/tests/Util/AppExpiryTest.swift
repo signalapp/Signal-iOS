@@ -31,12 +31,12 @@ final class AppExpiryTest: XCTestCase {
 
     override func setUp() {
         date = appVersion.buildDate
-        db = MockDB()
+        scheduler = TestScheduler()
+        db = InMemoryDB(schedulers: TestSchedulers(scheduler: scheduler))
         keyValueStoreFactory = InMemoryKeyValueStoreFactory()
         keyValueStore = keyValueStoreFactory.keyValueStore(
             collection: AppExpiryImpl.keyValueCollection
         )
-        scheduler = TestScheduler()
 
         appExpiry = AppExpiryImpl(
             keyValueStoreFactory: keyValueStoreFactory,
@@ -150,6 +150,8 @@ final class AppExpiryTest: XCTestCase {
         XCTAssertEqual(appExpiry.expirationDate, .distantPast)
         XCTAssertTrue(appExpiry.isExpired)
 
+        scheduler.runUntilIdle()
+
         XCTAssertEqual(loadPersistedExpirationDate(), .distantPast)
     }
 
@@ -168,6 +170,8 @@ final class AppExpiryTest: XCTestCase {
         appExpiry.setExpirationDateForCurrentVersion(expirationDate, db: db)
 
         XCTAssertEqual(appExpiry.expirationDate, expirationDate)
+
+        scheduler.runUntilIdle()
 
         XCTAssertEqual(loadPersistedExpirationDate(), expirationDate)
     }

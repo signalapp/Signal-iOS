@@ -14,7 +14,7 @@ class KyberPreKeyStoreTest: XCTestCase {
     var keyValueStoreFactory: KeyValueStoreFactory!
     var dateProvider: DateProvider!
     var currentDate = Date()
-    var db = MockDB()
+    var db = InMemoryDB()
 
     var identityKey: ECKeyPair!
     var kyberPreKeyStore: SSKKyberPreKeyStore!

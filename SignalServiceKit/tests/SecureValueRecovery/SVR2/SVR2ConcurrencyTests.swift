@@ -11,7 +11,7 @@ import LibSignalClient
 
 class SVR2ConcurrencyTests: XCTestCase {
 
-    private var db: MockDB!
+    private var db: InMemoryDB!
     private var svr: SecureValueRecovery2Impl!
 
     private var credentialStorage: SVRAuthCredentialStorageMock!
@@ -20,7 +20,7 @@ class SVR2ConcurrencyTests: XCTestCase {
     private var mockConnection: MockSgxWebsocketConnection<SVR2WebsocketConfigurator>!
 
     override func setUp() {
-        self.db = MockDB()
+        self.db = InMemoryDB()
         self.credentialStorage = SVRAuthCredentialStorageMock()
 
         mockConnection = MockSgxWebsocketConnection<SVR2WebsocketConfigurator>()

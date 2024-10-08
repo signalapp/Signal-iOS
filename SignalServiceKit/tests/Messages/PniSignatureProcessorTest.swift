@@ -41,7 +41,7 @@ private class MockRecipientMerger: RecipientMerger {
 
 final class PniSignatureProcessorTest: XCTestCase {
     private var identityManager: MockIdentityManager!
-    private var mockDB: MockDB!
+    private var mockDB: InMemoryDB!
     private var pniSignatureProcessor: PniSignatureProcessor!
     private var recipientMerger: MockRecipientMerger!
     private var recipientDatabaseTable: MockRecipientDatabaseTable!
@@ -62,7 +62,7 @@ final class PniSignatureProcessorTest: XCTestCase {
         let recipientFetcher = RecipientFetcherImpl(recipientDatabaseTable: recipientDatabaseTable)
         let recipientIdFinder = RecipientIdFinder(recipientDatabaseTable: recipientDatabaseTable, recipientFetcher: recipientFetcher)
         identityManager = MockIdentityManager(recipientIdFinder: recipientIdFinder)
-        mockDB = MockDB()
+        mockDB = InMemoryDB()
         recipientMerger = MockRecipientMerger()
         pniSignatureProcessor = PniSignatureProcessorImpl(
             identityManager: identityManager,

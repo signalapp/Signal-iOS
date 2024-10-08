@@ -36,11 +36,19 @@ public class SDSDB: DB {
     public final class ReadTx: DBReadTransaction {
         fileprivate let tx: SDSAnyReadTransaction
         fileprivate init(_ tx: SDSAnyReadTransaction) { self.tx = tx }
+
+        public var databaseConnection: GRDB.Database {
+            return tx.unwrapGrdbRead.database
+        }
     }
 
     public final class WriteTx: DBWriteTransaction {
         fileprivate let tx: SDSAnyWriteTransaction
         fileprivate init(_ tx: SDSAnyWriteTransaction) { self.tx = tx }
+
+        public var databaseConnection: GRDB.Database {
+            return tx.unwrapGrdbWrite.database
+        }
 
         public func addFinalization(forKey key: String, block: @escaping () -> Void) {
             tx.addTransactionFinalizationBlock(forKey: key, block: { _ in block() })

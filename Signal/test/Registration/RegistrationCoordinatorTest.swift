@@ -61,7 +61,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         Stubs.date = date
         dateProvider = { self.date }
 
-        let db = MockDB()
+        let db = InMemoryDB()
 
         appExpiryMock = MockAppExpiry()
         changeNumberPniManager = ChangePhoneNumberPniManagerMock(

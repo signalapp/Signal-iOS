@@ -44,7 +44,7 @@ final class DeleteForMeOutgoingSyncMessageManagerTest: XCTestCase {
             XCTAssertEqual(contents.messageDeletes.first!.addressableMessages.count, expectedBatchSize)
         }
 
-        MockDB().write { tx in
+        InMemoryDB().write { tx in
             outgoingSyncMessageManager.send(
                 deletedMessages: messagesToDelete,
                 thread: thread,
@@ -73,7 +73,7 @@ final class DeleteForMeOutgoingSyncMessageManagerTest: XCTestCase {
             XCTAssertEqual(contents.attachmentDeletes!.count, expectedBatchSize)
         }
 
-        MockDB().write { tx in
+        InMemoryDB().write { tx in
             outgoingSyncMessageManager.send(
                 deletedAttachmentIdentifiers: Dictionary(
                     [
@@ -109,7 +109,7 @@ final class DeleteForMeOutgoingSyncMessageManagerTest: XCTestCase {
             XCTAssertEqual(contents.localOnlyConversationDelete.count, expectedBatchSize)
         }
 
-        MockDB().write { tx in
+        InMemoryDB().write { tx in
             /// These should all be local-only deletes, since we're not populating
             /// the contexts with any messages deletes (since we're not actually
             /// deleting any messages from the threads in this test).

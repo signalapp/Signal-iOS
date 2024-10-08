@@ -16,15 +16,3 @@ public class SignalAccountStoreImpl: SignalAccountStore {
         return SDSCodableModelDatabaseInterfaceImpl().fetchModel(modelType: SignalAccount.self, rowId: rowId, tx: tx)
     }
 }
-
-#if TESTABLE_BUILD
-
-class MockSignalAccountStore: SignalAccountStore {
-    var signalAccounts = [SignalAccount]()
-
-    func fetchSignalAccount(for rowId: SignalAccount.RowId, tx: DBReadTransaction) -> SignalAccount? {
-        return signalAccounts.first(where: { $0.id == rowId })
-    }
-}
-
-#endif

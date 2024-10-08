@@ -19,7 +19,7 @@ public class UsernameLookupRecordStoreImpl: UsernameLookupRecordStore {
 
     public func fetchOne(forAci aci: Aci, tx: DBReadTransaction) -> UsernameLookupRecord? {
         do {
-            return try UsernameLookupRecord.fetchOne(databaseConnection(tx), key: aci.rawUUID)
+            return try UsernameLookupRecord.fetchOne(tx.databaseConnection, key: aci.rawUUID)
         } catch let error {
             owsFailDebug("Got error while fetching record by ACI: \(error.grdbErrorForLogging)")
             return nil
@@ -29,7 +29,7 @@ public class UsernameLookupRecordStoreImpl: UsernameLookupRecordStore {
     public func enumerateAll(tx: DBReadTransaction, block: (UsernameLookupRecord) -> Void) {
         do {
             let cursor = try UsernameLookupRecord.fetchCursor(
-                databaseConnection(tx),
+                tx.databaseConnection,
                 sql: "SELECT * FROM \(UsernameLookupRecord.databaseTableName)"
             )
             while let value = try cursor.next() {
@@ -42,7 +42,7 @@ public class UsernameLookupRecordStoreImpl: UsernameLookupRecordStore {
 
     public func insertOne(_ usernameLookupRecord: UsernameLookupRecord, tx: DBWriteTransaction) {
         do {
-            try usernameLookupRecord.insert(databaseConnection(tx))
+            try usernameLookupRecord.insert(tx.databaseConnection)
         } catch let error {
             owsFailDebug("Got error while upserting record: \(error.grdbErrorForLogging)")
         }
@@ -50,33 +50,9 @@ public class UsernameLookupRecordStoreImpl: UsernameLookupRecordStore {
 
     public func deleteOne(forAci aci: Aci, tx: DBWriteTransaction) {
         do {
-            try UsernameLookupRecord.deleteOne(databaseConnection(tx), key: aci.rawUUID)
+            try UsernameLookupRecord.deleteOne(tx.databaseConnection, key: aci.rawUUID)
         } catch let error {
             owsFailDebug("Got error while deleting record by ACI: \(error.grdbErrorForLogging)")
         }
     }
 }
-
-#if TESTABLE_BUILD
-
-class MockUsernameLookupRecordStore: UsernameLookupRecordStore {
-    var usernameLookupRecords = [Aci: UsernameLookupRecord]()
-
-    func fetchOne(forAci aci: Aci, tx: DBReadTransaction) -> UsernameLookupRecord? {
-        return usernameLookupRecords[aci]
-    }
-
-    func enumerateAll(tx: DBReadTransaction, block: (UsernameLookupRecord) -> Void) {
-        usernameLookupRecords.values.forEach(block)
-    }
-
-    func deleteOne(forAci aci: Aci, tx: DBWriteTransaction) {
-        usernameLookupRecords.removeValue(forKey: aci)
-    }
-
-    func insertOne(_ usernameLookupRecord: UsernameLookupRecord, tx: DBWriteTransaction) {
-        usernameLookupRecords[Aci(fromUUID: usernameLookupRecord.aci)] = usernameLookupRecord
-    }
-}
-
-#endif

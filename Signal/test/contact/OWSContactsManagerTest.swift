@@ -10,7 +10,7 @@ import XCTest
 @testable import SignalServiceKit
 
 class OWSContactsManagerTest: SignalBaseTest {
-    private let dbV2: MockDB = .init()
+    private let dbV2: InMemoryDB = .init()
 
     private let mockUsernameLookupMananger: MockUsernameLookupManager = .init()
     private let mockNicknameManager = MockNicknameManager()

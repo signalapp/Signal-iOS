@@ -46,7 +46,7 @@ public class BackupAttachmentUploadStoreImpl: BackupAttachmentUploadStore {
         _ referencedAttachment: ReferencedAttachmentStream,
         tx: DBWriteTransaction
     ) throws {
-        let db = databaseConnection(tx)
+        let db = tx.databaseConnection
         var newRecord = QueuedBackupAttachmentUpload(
             attachmentRowId: referencedAttachment.attachment.id,
             sourceType: try referencedAttachment.reference.owner.asUploadSourceType()
@@ -89,7 +89,7 @@ public class BackupAttachmentUploadStoreImpl: BackupAttachmentUploadStore {
         count: UInt,
         tx: DBReadTransaction
     ) throws -> [QueuedBackupAttachmentUpload] {
-        let db = databaseConnection(tx)
+        let db = tx.databaseConnection
         return try QueuedBackupAttachmentUpload
             .order([
                 Column(QueuedBackupAttachmentUpload.CodingKeys.sourceType).asc,
@@ -103,14 +103,14 @@ public class BackupAttachmentUploadStoreImpl: BackupAttachmentUploadStore {
         for attachmentId: Attachment.IDType,
         tx: DBWriteTransaction
     ) throws {
-        let db = databaseConnection(tx)
+        let db = tx.databaseConnection
         try QueuedBackupAttachmentUpload
             .filter(Column(QueuedBackupAttachmentUpload.CodingKeys.attachmentRowId) == attachmentId)
             .deleteAll(db)
     }
 
     public func removeAll(tx: DBWriteTransaction) throws {
-        try QueuedBackupAttachmentUpload.deleteAll(databaseConnection(tx))
+        try QueuedBackupAttachmentUpload.deleteAll(tx.databaseConnection)
     }
 }
 
@@ -145,44 +145,3 @@ extension AttachmentReference.Owner {
         }
     }
 }
-
-#if TESTABLE_BUILD
-
-open class BackupAttachmentUploadStoreMock: BackupAttachmentUploadStore {
-
-    public init() {}
-
-    var nextId: Int64 = 1
-    open var queue = [QueuedBackupAttachmentUpload]()
-
-    public func enqueue(
-        _ referencedAttachment: ReferencedAttachmentStream,
-        tx: DBWriteTransaction
-    ) throws {
-        queue.append(.init(
-            id: nextId,
-            attachmentRowId: referencedAttachment.attachment.id,
-            sourceType: try referencedAttachment.reference.owner.asUploadSourceType())
-        )
-    }
-
-    public func fetchNextUploads(
-        count: UInt,
-        tx: DBReadTransaction
-    ) throws -> [QueuedBackupAttachmentUpload] {
-        return Array(queue.prefix(Int(count)))
-    }
-
-    public func removeQueuedUpload(
-        for attachmentId: Attachment.IDType,
-        tx: DBWriteTransaction
-    ) throws {
-        queue.removeAll(where: { $0.attachmentRowId == attachmentId })
-    }
-
-    public func removeAll(tx: DBWriteTransaction) throws {
-        queue.removeAll()
-    }
-}
-
-#endif

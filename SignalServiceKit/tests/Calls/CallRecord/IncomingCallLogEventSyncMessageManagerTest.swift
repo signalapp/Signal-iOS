@@ -29,7 +29,7 @@ final class IncomingCallLogEventSyncMessageManagerTest: XCTestCase {
     }
 
     private func handle(incomingSyncMessage: IncomingCallLogEventSyncMessageParams) {
-        MockDB().write { tx in
+        InMemoryDB().write { tx in
             syncMessageManager.handleIncomingSyncMessage(
                 incomingSyncMessage: incomingSyncMessage, tx: tx
             )

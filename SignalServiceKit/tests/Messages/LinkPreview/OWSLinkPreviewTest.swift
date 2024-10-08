@@ -8,13 +8,13 @@ import Foundation
 import XCTest
 
 class OWSLinkPreviewTest: XCTestCase {
-    var mockDB: MockDB!
+    var mockDB: InMemoryDB!
     var linkPreviewManager: LinkPreviewManagerImpl!
 
     override func setUp() {
         super.setUp()
 
-        mockDB = MockDB()
+        mockDB = InMemoryDB()
         linkPreviewManager = LinkPreviewManagerImpl(
             attachmentManager: TSResourceManagerMock(),
             attachmentStore: TSResourceStoreMock(),

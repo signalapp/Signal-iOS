@@ -185,7 +185,7 @@ extension FooBarManagerTest {
         // All it does is give you things that _look_
         // like transactions, but crash if you try and
         // actually use them to read from a database.
-        let db = MockDB()
+        let db = InMemoryDB()
 
         // Here goes state we set up for our test, e.g. creating
         // the Foo(s) and Bar(s) we expect to "read" from the "db".
@@ -280,7 +280,7 @@ class FooBarManagerTest2: XCTestCase {
     func testGetFooAndBar_2() throws {
         throw XCTSkip("Don't actually want to run this test")
         #if false
-        let db = MockDB()
+        let db = InMemoryDB()
 
         // Setting and returning this value doesn't go through
         // the db, doesn't rely on the schema being set up, etc.
@@ -421,7 +421,7 @@ class FooBarManagerTest3: XCTestCase {
     func testGetFooAndBar_2() throws {
         throw XCTSkip("Don't actually want to run this test")
         #if false
-        let db = MockDB()
+        let db = InMemoryDB()
 
         fooFinderMock.fooToReturn = Foo(text: "Hello, world!")
         barFinderMock.barToReturn = Bar(num: 42)

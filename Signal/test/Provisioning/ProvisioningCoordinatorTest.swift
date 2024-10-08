@@ -34,7 +34,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
 
     public override func setUp() async throws {
 
-        let mockDb = MockDB()
+        let mockDb = InMemoryDB()
 
         let recipientDbTable = MockRecipientDatabaseTable()
         let recipientFetcher = RecipientFetcherImpl(recipientDatabaseTable: recipientDbTable)

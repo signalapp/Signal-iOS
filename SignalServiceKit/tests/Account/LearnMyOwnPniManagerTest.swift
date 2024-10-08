@@ -13,7 +13,7 @@ class LearnMyOwnPniManagerTest: XCTestCase {
     private var registrationStateChangeManagerMock: MockRegistrationStateChangeManager!
     private var tsAccountManagerMock: MockTSAccountManager!
 
-    private let db = MockDB()
+    private let db = InMemoryDB()
     private var scheduler: TestScheduler!
 
     private var learnMyOwnPniManager: LearnMyOwnPniManager!

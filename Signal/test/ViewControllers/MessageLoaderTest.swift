@@ -12,7 +12,7 @@ class MessageLoaderTest: XCTestCase {
     private var batchFetcher: MockBatchFetcher!
     private var interactionFetcher: MockInteractionFetcher!
     private var messageLoader: MessageLoader!
-    private var mockDB: MockDB!
+    private var mockDB: InMemoryDB!
 
     private class MockBatchFetcher: MessageLoaderBatchFetcher {
         var interactions = [TSInteraction]()
@@ -50,7 +50,7 @@ class MessageLoaderTest: XCTestCase {
             batchFetcher: batchFetcher,
             interactionFetchers: [interactionFetcher]
         )
-        mockDB = MockDB()
+        mockDB = InMemoryDB()
     }
 
     private func createInteractions(_ count: Int64) -> [TSInteraction] {

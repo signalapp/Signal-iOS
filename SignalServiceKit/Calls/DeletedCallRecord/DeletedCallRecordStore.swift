@@ -105,7 +105,7 @@ class DeletedCallRecordStoreImpl: DeletedCallRecordStore {
         tx: DBWriteTransaction
     ) {
         do {
-            try deletedCallRecord.insert(databaseConnection(tx))
+            try deletedCallRecord.insert(tx.databaseConnection)
         } catch let error {
             owsFailBeta("Failed to insert deleted call record: \(error)")
         }
@@ -115,7 +115,7 @@ class DeletedCallRecordStoreImpl: DeletedCallRecordStore {
 
     func delete(expiredDeletedCallRecord: DeletedCallRecord, tx: DBWriteTransaction) {
         do {
-            try expiredDeletedCallRecord.delete(databaseConnection(tx))
+            try expiredDeletedCallRecord.delete(tx.databaseConnection)
         } catch let error {
             owsFailBeta("Failed to delete expired deleted call record: \(error)")
         }
@@ -137,7 +137,7 @@ class DeletedCallRecordStoreImpl: DeletedCallRecordStore {
         intoThreadRowId intoRowId: Int64,
         tx: DBWriteTransaction
     ) {
-        databaseConnection(tx).executeHandlingErrors(
+        tx.databaseConnection.executeHandlingErrors(
             sql: """
                 UPDATE "\(DeletedCallRecord.databaseTableName)"
                 SET "\(DeletedCallRecord.CodingKeys.threadRowId.rawValue)" = ?
@@ -156,7 +156,7 @@ class DeletedCallRecordStoreImpl: DeletedCallRecordStore {
         let (sqlString, sqlArgs) = compileQuery(columnArgs: columnArgs)
 
         do {
-            return try DeletedCallRecord.fetchOne(databaseConnection(tx), SQLRequest(
+            return try DeletedCallRecord.fetchOne(tx.databaseConnection, SQLRequest(
                 sql: sqlString,
                 arguments: StatementArguments(sqlArgs)
             ))
@@ -228,7 +228,7 @@ final class ExplainingDeletedCallRecordStoreImpl: DeletedCallRecordStoreImpl {
         let (sqlString, sqlArgs) = compileQuery(columnArgs: columnArgs)
 
         guard
-            let explanationRow = try? Row.fetchOne(databaseConnection(tx), SQLRequest(
+            let explanationRow = try? Row.fetchOne(tx.databaseConnection, SQLRequest(
                 sql: "EXPLAIN QUERY PLAN \(sqlString)",
                 arguments: StatementArguments(sqlArgs)
             )),

@@ -28,7 +28,7 @@ public class AttachmentUploadStoreImpl: AttachmentUploadStore {
         record.transitUnencryptedByteCount = transitTierInfo.unencryptedByteCount
         record.transitDigestSHA256Ciphertext = transitTierInfo.digestSHA256Ciphertext
         record.lastTransitDownloadAttemptTimestamp = transitTierInfo.lastDownloadAttemptTimestamp
-        try record.update(databaseConnection(tx))
+        try record.update(tx.databaseConnection)
     }
 
     public func markTransitTierUploadExpired(
@@ -53,7 +53,7 @@ public class AttachmentUploadStoreImpl: AttachmentUploadStore {
         record.transitUnencryptedByteCount = nil
         record.transitDigestSHA256Ciphertext = nil
         record.lastTransitDownloadAttemptTimestamp = nil
-        try record.update(databaseConnection(tx))
+        try record.update(tx.databaseConnection)
     }
 
     public func markUploadedToMediaTier(
@@ -69,7 +69,7 @@ public class AttachmentUploadStoreImpl: AttachmentUploadStore {
         record.mediaTierIncrementalMac = mediaTierInfo.incrementalMacInfo?.mac
         record.mediaTierIncrementalMacChunkSize = mediaTierInfo.incrementalMacInfo?.chunkSize
         record.lastMediaTierDownloadAttemptTimestamp = mediaTierInfo.lastDownloadAttemptTimestamp
-        try record.update(databaseConnection(tx))
+        try record.update(tx.databaseConnection)
     }
 
     public func markMediaTierUploadExpired(
@@ -84,7 +84,7 @@ public class AttachmentUploadStoreImpl: AttachmentUploadStore {
         record.mediaTierIncrementalMac = nil
         record.mediaTierIncrementalMacChunkSize = nil
         record.lastMediaTierDownloadAttemptTimestamp = nil
-        try record.update(databaseConnection(tx))
+        try record.update(tx.databaseConnection)
     }
 
     public func markThumbnailUploadedToMediaTier(
@@ -96,7 +96,7 @@ public class AttachmentUploadStoreImpl: AttachmentUploadStore {
         record.thumbnailCdnNumber = thumbnailMediaTierInfo.cdnNumber
         record.thumbnailUploadEra = thumbnailMediaTierInfo.uploadEra
         record.lastThumbnailDownloadAttemptTimestamp = thumbnailMediaTierInfo.lastDownloadAttemptTimestamp
-        try record.update(databaseConnection(tx))
+        try record.update(tx.databaseConnection)
     }
 
     public func markThumbnailMediaTierUploadExpired(
@@ -107,7 +107,7 @@ public class AttachmentUploadStoreImpl: AttachmentUploadStore {
         record.thumbnailCdnNumber = nil
         record.thumbnailUploadEra = nil
         record.lastThumbnailDownloadAttemptTimestamp = nil
-        try record.update(databaseConnection(tx))
+        try record.update(tx.databaseConnection)
     }
 
     public func upsert(record: AttachmentUploadRecord, tx: DBWriteTransaction) throws {
@@ -118,7 +118,7 @@ public class AttachmentUploadStoreImpl: AttachmentUploadStore {
         newRecord.localMetadata = record.localMetadata
         newRecord.uploadSessionUrl = record.uploadSessionUrl
         newRecord.attempt = record.attempt
-        try newRecord.save(databaseConnection(tx))
+        try newRecord.save(tx.databaseConnection)
     }
 
     public func removeRecord(
@@ -129,7 +129,7 @@ public class AttachmentUploadStoreImpl: AttachmentUploadStore {
         try AttachmentUploadRecord
             .filter(Column(AttachmentUploadRecord.CodingKeys.attachmentId) == attachmentId)
             .filter(Column(AttachmentUploadRecord.CodingKeys.sourceType) == sourceType.rawValue)
-            .deleteAll(databaseConnection(tx))
+            .deleteAll(tx.databaseConnection)
     }
 
     public func fetchAttachmentUploadRecord(
@@ -140,6 +140,6 @@ public class AttachmentUploadStoreImpl: AttachmentUploadStore {
         return try AttachmentUploadRecord
             .filter(Column(AttachmentUploadRecord.CodingKeys.attachmentId) == attachmentId)
             .filter(Column(AttachmentUploadRecord.CodingKeys.sourceType) == sourceType.rawValue)
-            .fetchOne(databaseConnection(tx))
+            .fetchOne(tx.databaseConnection)
     }
 }

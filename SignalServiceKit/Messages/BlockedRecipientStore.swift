@@ -14,7 +14,7 @@ protocol BlockedRecipientStore {
 
 class BlockedRecipientStoreImpl: BlockedRecipientStore {
     func blockedRecipientIds(tx: any DBReadTransaction) throws -> [SignalRecipient.RowId] {
-        let db = databaseConnection(tx)
+        let db = tx.databaseConnection
         do {
             return try BlockedRecipient.fetchAll(db).map(\.recipientId)
         } catch {
@@ -23,7 +23,7 @@ class BlockedRecipientStoreImpl: BlockedRecipientStore {
     }
 
     func isBlocked(recipientId: SignalRecipient.RowId, tx: any DBReadTransaction) throws -> Bool {
-        let db = databaseConnection(tx)
+        let db = tx.databaseConnection
         do {
             return try BlockedRecipient.filter(key: recipientId).fetchOne(db) != nil
         } catch {
@@ -32,7 +32,7 @@ class BlockedRecipientStoreImpl: BlockedRecipientStore {
     }
 
     func setBlocked(_ isBlocked: Bool, recipientId: SignalRecipient.RowId, tx: any DBWriteTransaction) throws {
-        let db = databaseConnection(tx)
+        let db = tx.databaseConnection
         do {
             if isBlocked {
                 try BlockedRecipient(recipientId: recipientId).insert(db)
@@ -64,27 +64,3 @@ struct BlockedRecipient: Codable, FetchableRecord, PersistableRecord {
 
     let recipientId: Int64
 }
-
-#if TESTABLE_BUILD
-
-class MockBlockedRecipientStore: BlockedRecipientStore {
-    var recipientIds = Set<SignalRecipient.RowId>()
-
-    func blockedRecipientIds(tx: any DBReadTransaction) throws -> [SignalRecipient.RowId] {
-        return recipientIds.sorted()
-    }
-
-    func isBlocked(recipientId: SignalRecipient.RowId, tx: any DBReadTransaction) throws -> Bool {
-        return recipientIds.contains(recipientId)
-    }
-
-    func setBlocked(_ isBlocked: Bool, recipientId: SignalRecipient.RowId, tx: any DBWriteTransaction) throws {
-        if isBlocked {
-            recipientIds.insert(recipientId)
-        } else {
-            recipientIds.remove(recipientId)
-        }
-    }
-}
-
-#endif

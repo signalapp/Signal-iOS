@@ -37,7 +37,7 @@ final class InactiveLinkedDeviceFinderTest: XCTestCase {
         let nowDate = Date()
         mockDateProvider = { nowDate }
 
-        mockDB = MockDB()
+        mockDB = InMemoryDB()
         mockDeviceNameDecrypter = MockDeviceNameDecrypter()
         mockDeviceStore = MockDeviceStore()
         mockDevicesService = MockDevicesService()

@@ -59,7 +59,7 @@ public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
     }
 
     public func enqueue(_ reference: AttachmentReference, tx: any DBWriteTransaction) throws {
-        let db = databaseConnection(tx)
+        let db = tx.databaseConnection
         let timestamp: UInt64? = {
             switch reference.owner {
             case .message(.bodyAttachment(let metadata)):
@@ -108,7 +108,7 @@ public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
         count: UInt,
         tx: DBReadTransaction
     ) throws -> [QueuedBackupAttachmentDownload] {
-        let db = databaseConnection(tx)
+        let db = tx.databaseConnection
         return try QueuedBackupAttachmentDownload
             // We want to dequeue in _reverse_ insertion order.
             .order([Column(QueuedBackupAttachmentDownload.CodingKeys.id).desc])
@@ -120,51 +120,13 @@ public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
         _ record: QueuedBackupAttachmentDownload,
         tx: DBWriteTransaction
     ) throws {
-        let db = databaseConnection(tx)
+        let db = tx.databaseConnection
         try QueuedBackupAttachmentDownload
             .filter(Column(QueuedBackupAttachmentDownload.CodingKeys.id) == record.id)
             .deleteAll(db)
     }
 
     public func removeAll(tx: DBWriteTransaction) throws {
-        try QueuedBackupAttachmentDownload.deleteAll(databaseConnection(tx))
+        try QueuedBackupAttachmentDownload.deleteAll(tx.databaseConnection)
     }
 }
-
-#if TESTABLE_BUILD
-
-open class BackupAttachmentDownloadStoreMock: BackupAttachmentDownloadStore {
-
-    public init() {}
-
-    public var shouldStoreAllMediaLocally = true
-
-    public func getShouldStoreAllMediaLocally(tx: any DBReadTransaction) -> Bool {
-        return shouldStoreAllMediaLocally
-    }
-
-    public func setShouldStoreAllMediaLocally(_ newValue: Bool, tx: any DBWriteTransaction) {
-        shouldStoreAllMediaLocally = newValue
-    }
-
-    open func enqueue(_ reference: AttachmentReference, tx: any DBWriteTransaction) throws {
-        // Do nothing
-    }
-
-    open func peek(count: UInt, tx: DBReadTransaction) throws -> [QueuedBackupAttachmentDownload] {
-        return []
-    }
-
-    open func removeQueuedDownload(
-        _ record: QueuedBackupAttachmentDownload,
-        tx: DBWriteTransaction
-    ) throws {
-        // Do nothing
-    }
-
-    open func removeAll(tx: DBWriteTransaction) throws {
-        // Do nothing
-    }
-}
-
-#endif

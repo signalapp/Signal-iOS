@@ -45,7 +45,7 @@ class GroupMemberUpdaterTest: XCTestCase {
     )
 
     func testUpdateRecords() {
-        let mockDB = MockDB()
+        let mockDB = InMemoryDB()
 
         var oldGroupMembers = [(serviceId: String?, phoneNumber: String?, interactionTimestamp: UInt64)]()
         var groupThreadMembers = [(serviceId: String?, phoneNumber: String?)]()

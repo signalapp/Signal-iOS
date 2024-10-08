@@ -8,13 +8,13 @@ import XCTest
 @testable import SignalServiceKit
 
 class OWSDisappearingMessagesConfigurationTest: XCTestCase {
-    private var mockDB: MockDB!
+    private var mockDB: InMemoryDB!
     private var store: MockDisappearingMessagesConfigurationStore!
 
     override func setUp() {
         super.setUp()
 
-        mockDB = MockDB()
+        mockDB = InMemoryDB()
         store = MockDisappearingMessagesConfigurationStore()
     }
 

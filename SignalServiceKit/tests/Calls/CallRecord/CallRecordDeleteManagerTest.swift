@@ -10,7 +10,7 @@ import XCTest
 final class CallRecordDeleteManagerTest: XCTestCase {
     private var mockCallRecordStore: MockCallRecordStore!
     private var mockOutgoingCallEventSyncMessageManager: MockOutgoingCallEventSyncMessageManager!
-    private var mockDB: MockDB!
+    private var mockDB: InMemoryDB!
     private var mockDeletedCallRecordCleanupManager: MockDeletedCallRecordCleanupManager!
     private var mockDeletedCallRecordStore: MockDeletedCallRecordStore!
     private var mockThreadStore: MockThreadStore!
@@ -18,7 +18,7 @@ final class CallRecordDeleteManagerTest: XCTestCase {
     private var deleteManager: CallRecordDeleteManagerImpl!
 
     override func setUp() {
-        mockDB = MockDB()
+        mockDB = InMemoryDB()
         mockCallRecordStore = MockCallRecordStore()
         mockOutgoingCallEventSyncMessageManager = {
             let mock = MockOutgoingCallEventSyncMessageManager()

@@ -61,7 +61,7 @@ public struct MediaGalleryAttachmentFinder {
 
         do {
             return try query
-                .fetchAll(databaseConnection(tx))
+                .fetchAll(tx.databaseConnection)
                 .map { (record) -> AttachmentReferenceId in
                     let reference = try AttachmentReference(record: record)
                     return .init(
@@ -91,7 +91,7 @@ public struct MediaGalleryAttachmentFinder {
 
         do {
             return try query
-                .fetchAll(databaseConnection(tx))
+                .fetchAll(tx.databaseConnection)
                 .map { (record) -> DatedAttachmentReferenceId in
                     let reference = try AttachmentReference(record: record)
                     return .init(
@@ -111,7 +111,7 @@ public struct MediaGalleryAttachmentFinder {
     public func recentMediaAttachments(limit: Int, tx: DBReadTransaction) -> [ReferencedAttachment] {
         do {
             let references = try recentMediaAttachmentsQuery(limit: limit)
-                .fetchAll(databaseConnection(tx))
+                .fetchAll(tx.databaseConnection)
                 .map(AttachmentReference.init(record:))
 
             let attachments = DependenciesBridge.shared.attachmentStore.fetch(
@@ -146,7 +146,7 @@ public struct MediaGalleryAttachmentFinder {
 
         do {
             let cursor = try query
-                .fetchCursor(databaseConnection(tx))
+                .fetchCursor(tx.databaseConnection)
 
             var index = range.lowerBound
             while let referenceRecord = try cursor.next() {
@@ -229,7 +229,7 @@ public struct MediaGalleryAttachmentFinder {
 
         do {
             let cursor = try query
-                .fetchCursor(databaseConnection(tx))
+                .fetchCursor(tx.databaseConnection)
 
             var countSoFar = 0
             while let record = try cursor.next() {

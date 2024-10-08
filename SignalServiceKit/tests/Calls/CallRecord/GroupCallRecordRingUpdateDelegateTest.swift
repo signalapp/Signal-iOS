@@ -13,7 +13,7 @@ private typealias GroupCallStatus = CallRecord.CallStatus.GroupCallStatus
 
 final class GroupCallRecordRingUpdateDelegateTest: XCTestCase {
     private var mockCallRecordStore: MockCallRecordStore!
-    private var mockDB: MockDB!
+    private var mockDB: InMemoryDB!
     private var mockGroupCallRecordManager: MockGroupCallRecordManager!
     private var mockInteractionStore: MockInteractionStore!
     private var mockThreadStore: MockThreadStore!
@@ -22,7 +22,7 @@ final class GroupCallRecordRingUpdateDelegateTest: XCTestCase {
 
     override func setUp() {
         mockCallRecordStore = MockCallRecordStore()
-        mockDB = MockDB()
+        mockDB = InMemoryDB()
         mockGroupCallRecordManager = MockGroupCallRecordManager()
         mockInteractionStore = MockInteractionStore()
         mockThreadStore = MockThreadStore()

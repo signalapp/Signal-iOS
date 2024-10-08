@@ -9,7 +9,7 @@ import XCTest
 @testable import SignalServiceKit
 
 final class JobQueueRunnerTest: XCTestCase {
-    private var mockDb: MockDB!
+    private var mockDb: InMemoryDB!
     private var jobFinder: MockJobFinder!
     private var jobRunnerFactory: MockJobRunnerFactory!
     private var serialRunner: JobQueueRunner<MockJobFinder, MockJobRunnerFactory>!
@@ -17,7 +17,7 @@ final class JobQueueRunnerTest: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        mockDb = MockDB()
+        mockDb = InMemoryDB()
         jobFinder = MockJobFinder()
         jobRunnerFactory = MockJobRunnerFactory(jobFinder: jobFinder, mockDb: mockDb)
         serialRunner = JobQueueRunner(canExecuteJobsConcurrently: false, db: mockDb, jobFinder: jobFinder, jobRunnerFactory: jobRunnerFactory)
@@ -138,11 +138,11 @@ private class MockJobFinder: JobRecordFinder {
 
 private class MockJobRunnerFactory: JobRunnerFactory {
     private let jobFinder: MockJobFinder
-    private let mockDb: MockDB
+    private let mockDb: InMemoryDB
 
     let executedJobs = AtomicArray<String>(lock: .init())
 
-    init(jobFinder: MockJobFinder, mockDb: MockDB) {
+    init(jobFinder: MockJobFinder, mockDb: InMemoryDB) {
         self.jobFinder = jobFinder
         self.mockDb = mockDb
     }
@@ -169,14 +169,14 @@ private class MockJobRunner: JobRunner {
     let completionContinuation: CheckedContinuation<JobResult, Never>?
     let executedJobs: AtomicArray<String>
     let jobFinder: MockJobFinder
-    let mockDb: MockDB
+    let mockDb: InMemoryDB
     var retryInterval: TimeInterval?
 
     init(
         completionContinuation: CheckedContinuation<JobResult, Never>?,
         executedJobs: AtomicArray<String>,
         jobFinder: MockJobFinder,
-        mockDb: MockDB,
+        mockDb: InMemoryDB,
         retryInterval: TimeInterval?
     ) {
         self.completionContinuation = completionContinuation

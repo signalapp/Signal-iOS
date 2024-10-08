@@ -31,7 +31,7 @@ final class CallRecordLoaderTest: XCTestCase {
     }
 
     private func loadRecords(loadDirection: CallRecordLoader.LoadDirection) -> [UInt64] {
-        return MockDB().read { tx in
+        return InMemoryDB().read { tx in
             try! callRecordLoader
                 .loadCallRecords(loadDirection: loadDirection, tx: tx)
                 .drain(maxResults: 3)

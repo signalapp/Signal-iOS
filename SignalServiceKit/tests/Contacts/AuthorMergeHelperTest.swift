@@ -11,7 +11,7 @@ final class AuthorMergeHelperTest: XCTestCase {
     func testShouldCleanUp() throws {
         let phoneNumber = "+16505550101"
         let authorMergeHelper = AuthorMergeHelper(keyValueStoreFactory: InMemoryKeyValueStoreFactory())
-        try MockDB().write { tx in
+        try InMemoryDB().write { tx in
             XCTAssertTrue(authorMergeHelper.shouldCleanUp(phoneNumber: phoneNumber, tx: tx))
             try authorMergeHelper.setCurrentVersion(nextVersion: 1, tx: tx)
             XCTAssertFalse(authorMergeHelper.shouldCleanUp(phoneNumber: phoneNumber, tx: tx))
@@ -21,7 +21,7 @@ final class AuthorMergeHelperTest: XCTestCase {
     func testShouldCleanUpThenJustLearnedThenRebuilt() throws {
         let phoneNumber = "+16505550101"
         let authorMergeHelper = AuthorMergeHelper(keyValueStoreFactory: InMemoryKeyValueStoreFactory())
-        try MockDB().write { tx in
+        try InMemoryDB().write { tx in
             authorMergeHelper.foundMissingAci(for: phoneNumber, tx: tx)
             try authorMergeHelper.setCurrentVersion(nextVersion: 1, tx: tx)
             XCTAssertTrue(authorMergeHelper.shouldCleanUp(phoneNumber: phoneNumber, tx: tx))
@@ -35,7 +35,7 @@ final class AuthorMergeHelperTest: XCTestCase {
     func testShouldCleanUpThenJustLearnedThenDisassociate() throws {
         let phoneNumber = "+16505550101"
         let authorMergeHelper = AuthorMergeHelper(keyValueStoreFactory: InMemoryKeyValueStoreFactory())
-        try MockDB().write { tx in
+        try InMemoryDB().write { tx in
             authorMergeHelper.foundMissingAci(for: phoneNumber, tx: tx)
             try authorMergeHelper.setCurrentVersion(nextVersion: 1, tx: tx)
             XCTAssertTrue(authorMergeHelper.shouldCleanUp(phoneNumber: phoneNumber, tx: tx))
@@ -51,7 +51,7 @@ final class AuthorMergeHelperTest: XCTestCase {
     func testJustLearnedWhenNotJustLearned() throws {
         let phoneNumber = "+16505550101"
         let authorMergeHelper = AuthorMergeHelper(keyValueStoreFactory: InMemoryKeyValueStoreFactory())
-        try MockDB().write { tx in
+        try InMemoryDB().write { tx in
             authorMergeHelper.maybeJustLearnedAci(for: phoneNumber, tx: tx)
             XCTAssertEqual(authorMergeHelper.nextVersion(tx: tx), 1)
             try authorMergeHelper.setCurrentVersion(nextVersion: 1, tx: tx)
@@ -65,7 +65,7 @@ final class AuthorMergeHelperTest: XCTestCase {
         let phoneNumber2 = "+16505550102"
         let phoneNumber3 = "+16505550103"
         let authorMergeHelper = AuthorMergeHelper(keyValueStoreFactory: InMemoryKeyValueStoreFactory())
-        try MockDB().write { tx in
+        try InMemoryDB().write { tx in
             authorMergeHelper.foundMissingAci(for: phoneNumber1, tx: tx)
             authorMergeHelper.foundMissingAci(for: phoneNumber2, tx: tx)
             authorMergeHelper.foundMissingAci(for: phoneNumber3, tx: tx)

@@ -190,17 +190,20 @@ class _AttachmentUploadManager_MessageBackupRequestManagerMock: MessageBackupReq
 
 // MARK: - AttachmentStore
 
-class AttachmentUploadStoreMock: AttachmentStoreMock, AttachmentUploadStore {
-
-    var uploadedAttachments = [AttachmentStream]()
+class AttachmentStoreMock: AttachmentStoreImpl {
 
     var mockFetcher: ((Attachment.IDType) -> Attachment)?
 
     override func fetch(ids: [Attachment.IDType], tx: DBReadTransaction) -> [Attachment] {
         return ids.map(mockFetcher!)
     }
+}
 
-    func markUploadedToTransitTier(
+class AttachmentUploadStoreMock: AttachmentUploadStoreImpl {
+
+    var uploadedAttachments = [AttachmentStream]()
+
+    override func markUploadedToTransitTier(
         attachmentStream: AttachmentStream,
         info: Attachment.TransitTierInfo,
         tx: SignalServiceKit.DBWriteTransaction
@@ -208,7 +211,7 @@ class AttachmentUploadStoreMock: AttachmentStoreMock, AttachmentUploadStore {
         uploadedAttachments.append(attachmentStream)
     }
 
-    func markTransitTierUploadExpired(
+    override func markTransitTierUploadExpired(
         attachment: Attachment,
         info: Attachment.TransitTierInfo,
         tx: DBWriteTransaction
@@ -216,29 +219,29 @@ class AttachmentUploadStoreMock: AttachmentStoreMock, AttachmentUploadStore {
         // Do nothing
     }
 
-    func markUploadedToMediaTier(
+    override func markUploadedToMediaTier(
         attachment: Attachment,
         mediaTierInfo: Attachment.MediaTierInfo,
         tx: DBWriteTransaction
     ) throws {}
 
-    func markMediaTierUploadExpired(
+    override func markMediaTierUploadExpired(
         attachment: Attachment,
         tx: DBWriteTransaction
     ) throws {}
 
-    func markThumbnailUploadedToMediaTier(
+    override func markThumbnailUploadedToMediaTier(
         attachment: Attachment,
         thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo,
         tx: DBWriteTransaction
     ) throws {}
 
-    func markThumbnailMediaTierUploadExpired(
+    override func markThumbnailMediaTierUploadExpired(
         attachment: Attachment,
         tx: DBWriteTransaction
     ) throws {}
 
-    func upsert(record: AttachmentUploadRecord, tx: DBWriteTransaction) throws { }
+    override func upsert(record: AttachmentUploadRecord, tx: DBWriteTransaction) throws { }
 
     func removeRecord(for attachmentId: Attachment.IDType, tx: DBWriteTransaction) throws {}
 
@@ -246,13 +249,13 @@ class AttachmentUploadStoreMock: AttachmentStoreMock, AttachmentUploadStore {
         return nil
     }
 
-    func removeRecord(
+    override func removeRecord(
         for attachmentId: Attachment.IDType,
         sourceType: AttachmentUploadRecord.SourceType,
         tx: DBWriteTransaction
     ) throws { }
 
-    func fetchAttachmentUploadRecord(
+    override func fetchAttachmentUploadRecord(
         for attachmentId: Attachment.IDType,
         sourceType: AttachmentUploadRecord.SourceType,
         tx: DBReadTransaction

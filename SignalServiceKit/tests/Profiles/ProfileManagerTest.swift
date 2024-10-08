@@ -18,7 +18,7 @@ class ProfileManagerTest: XCTestCase {
         let phoneNumberStore = InMemoryKeyValueStore(collection: "")
 
         func normalizeRecipient(_ recipient: SignalRecipient) {
-            MockDB().write { tx in
+            InMemoryDB().write { tx in
                 OWSProfileManager.swift_normalizeRecipientInProfileWhitelist(
                     recipient,
                     serviceIdStore: serviceIdStore,
@@ -29,7 +29,7 @@ class ProfileManagerTest: XCTestCase {
         }
 
         // Don't add any values unless one is already present.
-        MockDB().read { tx in
+        InMemoryDB().read { tx in
             normalizeRecipient(SignalRecipient(aci: aci, pni: pni, phoneNumber: phoneNumber))
             XCTAssertFalse(serviceIdStore.hasValue(aci.serviceIdUppercaseString, transaction: tx))
             XCTAssertFalse(phoneNumberStore.hasValue(phoneNumber.stringValue, transaction: tx))
@@ -37,7 +37,7 @@ class ProfileManagerTest: XCTestCase {
         }
 
         // Move the PNI identifier to the phone number.
-        MockDB().write { tx in
+        InMemoryDB().write { tx in
             serviceIdStore.setBool(true, key: pni.serviceIdUppercaseString, transaction: tx)
             normalizeRecipient(SignalRecipient(aci: nil, pni: pni, phoneNumber: phoneNumber))
             XCTAssertFalse(serviceIdStore.hasValue(aci.serviceIdUppercaseString, transaction: tx))
@@ -46,7 +46,7 @@ class ProfileManagerTest: XCTestCase {
         }
 
         // Clear lower priority identifiers when multiple are present.
-        MockDB().write { tx in
+        InMemoryDB().write { tx in
             serviceIdStore.setBool(true, key: aci.serviceIdUppercaseString, transaction: tx)
             normalizeRecipient(SignalRecipient(aci: aci, pni: pni, phoneNumber: phoneNumber))
             XCTAssertTrue(serviceIdStore.hasValue(aci.serviceIdUppercaseString, transaction: tx))
@@ -55,7 +55,7 @@ class ProfileManagerTest: XCTestCase {
         }
 
         // Keep the highest priority identifier if it's already present.
-        MockDB().write { tx in
+        InMemoryDB().write { tx in
             normalizeRecipient(SignalRecipient(aci: aci, pni: pni, phoneNumber: phoneNumber))
             XCTAssertTrue(serviceIdStore.hasValue(aci.serviceIdUppercaseString, transaction: tx))
             XCTAssertFalse(phoneNumberStore.hasValue(phoneNumber.stringValue, transaction: tx))

@@ -18,7 +18,7 @@ public struct ArchivedPaymentStoreImpl: ArchivedPaymentStore {
         block: @escaping (ArchivedPayment, _ stop: inout Bool) -> Void
     ) {
         do {
-            let cursor = try ArchivedPayment.fetchCursor(databaseConnection(tx))
+            let cursor = try ArchivedPayment.fetchCursor(tx.databaseConnection)
             var stop = false
             while let archivedPayment = try cursor.next() {
                 block(archivedPayment, &stop)
@@ -36,7 +36,7 @@ public struct ArchivedPaymentStoreImpl: ArchivedPaymentStore {
     }
 
     public func fetch(for archivedPaymentMessage: OWSArchivedPaymentMessage, tx: DBReadTransaction) -> ArchivedPayment? {
-        let db = databaseConnection(tx)
+        let db = tx.databaseConnection
         guard let interaction = archivedPaymentMessage as? TSInteraction else {
             owsFailDebug("Unexpected message type passed to archive payment fetch.")
             return nil
@@ -56,7 +56,7 @@ public struct ArchivedPaymentStoreImpl: ArchivedPaymentStore {
 
     public func insert(_ archivedPayment: ArchivedPayment, tx: DBWriteTransaction) {
         do {
-            try archivedPayment.insert(databaseConnection(tx))
+            try archivedPayment.insert(tx.databaseConnection)
         } catch {
             owsFailDebug("Unexpected payment history insertion error \(error)")
         }

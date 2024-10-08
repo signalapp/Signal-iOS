@@ -7,7 +7,7 @@ import Foundation
 @testable import SignalServiceKit
 
 class TSAttachmentUploadManagerMockHelper {
-    var mockDB = MockDB()
+    var mockDB = InMemoryDB()
     var mockURLSession = AttachmentUploadManagerImpl.Mocks.URLSession()
     var mockNetworkManager = AttachmentUploadManagerImpl.Mocks.NetworkManager(libsignalNet: nil)
     var mockServiceManager = OWSSignalServiceMock()

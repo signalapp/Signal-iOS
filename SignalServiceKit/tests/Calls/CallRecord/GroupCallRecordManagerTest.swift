@@ -13,7 +13,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
     private var mockInteractionStore: MockInteractionStore!
     private var mockOutgoingSyncMessageManager: MockOutgoingCallEventSyncMessageManager!
 
-    private var mockDB: MockDB!
+    private var mockDB: InMemoryDB!
     private var snoopingGroupCallRecordManager: SnoopingGroupCallRecordManagerImpl!
     private var groupCallRecordManager: GroupCallRecordManagerImpl!
 
@@ -26,7 +26,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
             return mock
         }()
 
-        mockDB = MockDB()
+        mockDB = InMemoryDB()
         snoopingGroupCallRecordManager = SnoopingGroupCallRecordManagerImpl(
             callRecordStore: mockCallRecordStore,
             interactionStore: mockInteractionStore,

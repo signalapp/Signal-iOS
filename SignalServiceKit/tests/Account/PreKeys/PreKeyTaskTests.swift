@@ -15,7 +15,8 @@ final class PreKeyTaskTests: XCTestCase {
     private var mockLinkedDevicePniKeyManager: PreKey.Mocks.LinkedDevicePniKeyManager!
     private var mockServiceClient: PreKey.Mocks.AccountServiceClient!
     private var mockDateProvider: PreKey.Mocks.DateProvider!
-    private var mockDb: MockDB!
+    private var mockDb: InMemoryDB!
+    private var scheduler: TestScheduler!
 
     private var taskManager: PreKeyTaskManager!
 
@@ -30,7 +31,8 @@ final class PreKeyTaskTests: XCTestCase {
         mockLinkedDevicePniKeyManager = .init()
         mockServiceClient = .init()
         mockDateProvider = .init()
-        mockDb = MockDB()
+        scheduler = TestScheduler()
+        mockDb = InMemoryDB(schedulers: TestSchedulers(scheduler: scheduler))
 
         mockAciProtocolStore = .init()
         mockPniProtocolStore = .init()
@@ -356,6 +358,8 @@ final class PreKeyTaskTests: XCTestCase {
         ))
 
         _ = try await taskManager.rotate(identity: .pni, targets: .all, auth: .implicit())
+
+        scheduler.runUntilIdle()
 
         // Validate
         XCTAssertTrue(mockLinkedDevicePniKeyManager.hasSuspectedIssue)

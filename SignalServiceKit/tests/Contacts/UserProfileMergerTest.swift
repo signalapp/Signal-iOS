@@ -41,7 +41,7 @@ class UserProfileMergerTest: XCTestCase {
             otherProfile
         ]
 
-        MockDB().write { tx in
+        InMemoryDB().write { tx in
             userProfileMerger.didLearnAssociation(
                 mergedRecipient: MergedRecipient(
                     isLocalRecipient: true,
@@ -76,7 +76,7 @@ class UserProfileMergerTest: XCTestCase {
             otherPniProfile
         ]
 
-        MockDB().write { tx in
+        InMemoryDB().write { tx in
             userProfileMerger.didLearnAssociation(
                 mergedRecipient: MergedRecipient(
                     isLocalRecipient: false,

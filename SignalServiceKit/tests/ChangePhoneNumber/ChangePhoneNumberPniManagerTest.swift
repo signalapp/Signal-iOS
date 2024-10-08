@@ -19,7 +19,7 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
     private var tsAccountManagerMock: MockTSAccountManager!
 
     private var schedulers: TestSchedulers!
-    private var db: MockDB!
+    private var db: InMemoryDB!
 
     private var changeNumberPniManager: ChangePhoneNumberPniManager!
 

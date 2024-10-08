@@ -25,7 +25,7 @@ final class LinkedDevicePniKeyManagerTest: XCTestCase {
         }
     }
 
-    private var db: MockDB!
+    private var db: InMemoryDB!
     private var kvStore: TestKVStore!
     private var messageProcessorMock: MessageProcessorMock!
     private var pniIdentityKeyCheckerMock: PniIdentityKeyCheckerMock!
@@ -43,7 +43,7 @@ final class LinkedDevicePniKeyManagerTest: XCTestCase {
         testScheduler = TestScheduler()
         let testSchedulers = TestSchedulers(scheduler: testScheduler)
 
-        db = MockDB()
+        db = InMemoryDB()
         kvStore = TestKVStore(db: db, kvStoreFactory: kvStoreFactory)
         messageProcessorMock = MessageProcessorMock(schedulers: testSchedulers)
         pniIdentityKeyCheckerMock = PniIdentityKeyCheckerMock()

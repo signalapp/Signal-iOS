@@ -10,7 +10,7 @@ import XCTest
 @testable import SignalServiceKit
 
 class LocalUsernameManagerTests: XCTestCase {
-    private var mockDB: MockDB!
+    private var mockDB: InMemoryDB!
     private var testScheduler: TestScheduler!
 
     private var mockReachabilityManager: MockReachabilityManager!
@@ -24,7 +24,7 @@ class LocalUsernameManagerTests: XCTestCase {
     private var localUsernameManager: LocalUsernameManager!
 
     override func setUp() {
-        mockDB = MockDB()
+        mockDB = InMemoryDB()
         testScheduler = TestScheduler()
 
         mockReachabilityManager = MockReachabilityManager()

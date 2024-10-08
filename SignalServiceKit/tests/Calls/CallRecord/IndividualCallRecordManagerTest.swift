@@ -12,7 +12,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
     private var mockInteractionStore: MockInteractionStore!
     private var mockOutgoingSyncMessageManager: MockOutgoingCallEventSyncMessageManager!
 
-    private var mockDB: MockDB!
+    private var mockDB: InMemoryDB!
     private var individualCallRecordManager: SnoopingIndividualCallRecordManagerImpl!
 
     override func setUp() {
@@ -24,7 +24,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
             return mock
         }()
 
-        mockDB = MockDB()
+        mockDB = InMemoryDB()
         individualCallRecordManager = SnoopingIndividualCallRecordManagerImpl(
             callRecordStore: mockCallRecordStore,
             interactionStore: mockInteractionStore,

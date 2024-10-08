@@ -13,13 +13,13 @@ public class RegistrationSessionManagerTest: XCTestCase {
 
     private var date = Date()
 
-    private var db: MockDB!
+    private var db: InMemoryDB!
     private var kvStore: InMemoryKeyValueStore!
     private var mockURLSession: TSRequestOWSURLSessionMock!
     private var scheduler: TestScheduler!
 
     public override func setUp() {
-        db = MockDB()
+        db = InMemoryDB()
 
         let mockURLSession = TSRequestOWSURLSessionMock()
         self.mockURLSession = mockURLSession

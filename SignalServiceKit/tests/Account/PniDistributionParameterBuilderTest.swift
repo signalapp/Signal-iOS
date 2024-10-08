@@ -25,7 +25,7 @@ class PniDistributionParameterBuilderTest: XCTestCase {
         pniSignedPreKeyStoreMock = MockSignalSignedPreKeyStore()
         pniKyberPreKeyStoreMock = MockKyberPreKeyStore(dateProvider: dateProvider)
         registrationIdGeneratorMock = .init()
-        db = MockDB()
+        db = InMemoryDB()
 
         pniDistributionParameterBuilder = PniDistributionParameterBuilderImpl(
             db: db,
