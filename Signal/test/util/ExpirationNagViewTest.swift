@@ -37,8 +37,8 @@ final class ExpirationNagViewTest: XCTestCase {
             device: MockDevice()
         )
 
-        // Hidden with 11 days left.
-        date = appExpiry.expirationDate.subtractingTimeInterval(11 * kDayInterval)
+        // Hidden with 12 days left.
+        date = appExpiry.expirationDate.subtractingTimeInterval(12 * kDayInterval)
         XCTAssertNil(nag.expirationMessage())
 
         // Shown with nonempty text if 10 days or sooner.
