@@ -205,10 +205,30 @@ class RecentPhotosCollectionView: UICollectionView {
             "ATTACHMENT_KEYBOARD_BUTTON_MANAGE",
             comment: "Button in chat attachment panel that allows to select photos/videos Signal has access to."
         ))
-        button.block = {
+
+        let selectMoreAction = UIAction(
+            title: OWSLocalizedString(
+                "ATTACHMENT_KEYBOARD_CONTEXT_MENU_BUTTON_SELECT_MORE",
+                comment: "Button in a context menu from the 'manage' button in attachment panel that allows to select more photos/videos to give Signal access to"
+            ),
+            image: UIImage(named: "album-tilt-light")
+        ) { _ in
             guard let frontmostVC = CurrentAppContext().frontmostViewController() else { return }
             PHPhotoLibrary.shared().presentLimitedLibraryPicker(from: frontmostVC)
         }
+        let settingsAction = UIAction(
+            title: OWSLocalizedString(
+                "ATTACHMENT_KEYBOARD_CONTEXT_MENU_BUTTON_SYSTEM_SETTINGS",
+                comment: "Button in a context menu from the 'manage' button in attachment panel that opens the iOS system settings for Signal to update access permissions"
+            ),
+            image: UIImage(named: "settings-light")
+        ) { _ in
+            let openSettingsURL = URL(string: UIApplication.openSettingsURLString)!
+            UIApplication.shared.open(openSettingsURL)
+        }
+        button.menu = UIMenu(children: [selectMoreAction, settingsAction])
+        button.showsMenuAsPrimaryAction = true
+
         let stackView = UIStackView(arrangedSubviews: [ textLabel, button ])
         stackView.axis = .vertical
         stackView.spacing = 16
