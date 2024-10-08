@@ -1742,7 +1742,24 @@ extension CallsListViewController: DatabaseChangeDelegate {
         reloadAllRows()
     }
 
-    func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {}
+    func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
+        guard let rowIds = databaseChanges.tableRowIds[CallLinkRecord.databaseTableName] else {
+            return
+        }
+        reloadUpcomingCallLinks()
+        var updatedItems = [RowIdentifier]()
+        for viewModelReference in viewModelLoader.viewModelReferences() {
+            if case .callLink(let rowId) = viewModelReference, rowIds.contains(rowId) {
+                updatedItems.append(.callViewModelReference(viewModelReference))
+            }
+        }
+        var snapshot = getSnapshot()
+        snapshot.reloadItems(updatedItems)
+        dataSource.apply(snapshot, animatingDifferences: true)
+        updateEmptyStateMessage()
+        cancelMultiselectIfEmpty()
+    }
+
     func databaseChangesDidReset() {}
 }
 
