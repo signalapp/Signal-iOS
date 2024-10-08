@@ -83,6 +83,9 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
         withMediaName mediaName: String,
         tx: DBWriteTransaction
     ) throws {
+        guard FeatureFlags.messageBackupFileAlpha else {
+            return
+        }
         try orphanedBackupAttachmentStore.removeAll(
             withMediaName: mediaName,
             tx: tx
