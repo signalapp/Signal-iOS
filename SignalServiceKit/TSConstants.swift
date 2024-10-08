@@ -187,13 +187,15 @@ private class TSConstantsProduction: TSConstantsProtocol {
 
     public let contactDiscoveryV2MrEnclave = MrEnclave("0f6fd79cdfdaa5b2e6337f534d3baf999318b0c462a7ac1f41297a3e4b424a57")
 
-    public let svr2Enclave = MrEnclave("a6622ad4656e1abcd0bc0ff17c229477747d2ded0495c4ebee7ed35c1789fa97")
+    public let svr2Enclave = MrEnclave("9314436a9a144992bb3680770ea5fd7934a7ffd29257844a33763a238903d570")
 
     // An array of previously used enclaves that we should try and restore
     // key material from during registration. These must be ordered from
     // newest to oldest, so we check the latest enclaves for backups before
     // checking earlier enclaves.
-    public let svr2PreviousEnclaves: [MrEnclave] = []
+    public let svr2PreviousEnclaves: [MrEnclave] = [
+        MrEnclave("a6622ad4656e1abcd0bc0ff17c229477747d2ded0495c4ebee7ed35c1789fa97")
+    ]
 
     public let applicationGroup = "group." + Bundle.main.bundleIdPrefix + ".signal.group"
 
@@ -242,13 +244,15 @@ private class TSConstantsStaging: TSConstantsProtocol {
     // CDS uses the same EnclaveName and MrEnclave
     public let contactDiscoveryV2MrEnclave = MrEnclave("0f6fd79cdfdaa5b2e6337f534d3baf999318b0c462a7ac1f41297a3e4b424a57")
 
-    public let svr2Enclave = MrEnclave("acb1973aa0bbbd14b3b4e06f145497d948fd4a98efc500fcce363b3b743ec482")
+    public let svr2Enclave = MrEnclave("38e01eff4fe357dc0b0e8ef7a44b4abc5489fbccba3a78780f3872c277f62bf3")
 
     // An array of previously used enclaves that we should try and restore
     // key material from during registration. These must be ordered from
     // newest to oldest, so we check the latest enclaves for backups before
     // checking earlier enclaves.
-    public let svr2PreviousEnclaves: [MrEnclave] = []
+    public let svr2PreviousEnclaves: [MrEnclave] = [
+        MrEnclave("acb1973aa0bbbd14b3b4e06f145497d948fd4a98efc500fcce363b3b743ec482")
+    ]
 
     public let applicationGroup = "group." + Bundle.main.bundleIdPrefix + ".signal.group.staging"
 
