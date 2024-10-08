@@ -42,14 +42,6 @@ open class InteractiveSheetViewController: OWSViewController {
         return (sheetContainerView as? UIVisualEffectView)?.contentView ?? sheetContainerView
     }
 
-    // Do yourself a favor and do not expose the sheet view and try to
-    // constrain to it from another ViewController, even if said
-    // ViewController is presenting this one.
-    public var sheetHeight: CGFloat {
-        let sheet = (sheetContainerView as? UIVisualEffectView)?.contentView ?? sheetContainerView
-        return sheet.height
-    }
-
     private let sheetStackView: UIStackView = {
         let view = UIStackView()
         view.axis = .vertical
