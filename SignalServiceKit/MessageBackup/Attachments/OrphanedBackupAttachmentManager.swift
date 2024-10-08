@@ -217,6 +217,10 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
         private let errorCounts = ErrorCounts()
 
         func runTask(record: Store.Record, loader: TaskQueueLoader<TaskRunner>) async -> TaskRecordResult {
+            guard FeatureFlags.messageBackupFileAlpha else {
+                return .cancelled
+            }
+
             let (localAci, registrationState, attachment) = db.read { tx in
                 let attachment: Attachment?
                 if let mediaName = record.record.mediaName {
