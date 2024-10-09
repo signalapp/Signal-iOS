@@ -36,6 +36,8 @@ public class AppEnvironment: NSObject {
 
     let windowManagerRef = WindowManager()
 
+    private(set) var callLinkProfileKeySharingManager: CallLinkProfileKeySharingManager!
+
     private(set) var appIconBadgeUpdater: AppIconBadgeUpdater!
     private(set) var badgeManager: BadgeManager!
     private var usernameValidationObserverRef: UsernameValidationObserver?
@@ -63,6 +65,11 @@ public class AppEnvironment: NSObject {
             appReadiness: appReadiness,
             manager: DependenciesBridge.shared.usernameValidationManager,
             database: DependenciesBridge.shared.db
+        )
+
+        self.callLinkProfileKeySharingManager = CallLinkProfileKeySharingManager(
+            db: DependenciesBridge.shared.db,
+            accountManager: DependenciesBridge.shared.tsAccountManager
         )
 
         appReadiness.runNowOrWhenAppWillBecomeReady {

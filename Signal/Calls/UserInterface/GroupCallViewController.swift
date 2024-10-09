@@ -295,6 +295,7 @@ class GroupCallViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
 
         groupCall.addObserver(self)
+        groupCall.addObserver(AppEnvironment.shared.callLinkProfileKeySharingManager)
 
         NotificationCenter.default.addObserver(
             self,
