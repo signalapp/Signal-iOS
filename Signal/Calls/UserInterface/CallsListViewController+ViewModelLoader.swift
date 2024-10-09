@@ -169,6 +169,10 @@ extension CallsListViewController {
 
         // MARK: - View Models
 
+        func viewModels() -> [CallViewModel?] {
+            return upcomingCallLinkReferences.map(\.viewModel) + callHistoryItemReferences.map(\.viewModel)
+        }
+
         /// Returns the view model at `index`.
         ///
         /// This fetches a new batch from the disk if `index` isn't yet loaded.

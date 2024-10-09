@@ -135,6 +135,7 @@ public protocol CallRecordStore {
 
     func fetchExisting(
         conversationId: CallRecord.ConversationID,
+        limit: Int?,
         tx: DBReadTransaction
     ) throws -> [CallRecord]
 
@@ -297,13 +298,14 @@ class CallRecordStoreImpl: CallRecordStore {
 
     func fetchExisting(
         conversationId: CallRecord.ConversationID,
+        limit: Int?,
         tx: DBReadTransaction
     ) throws -> [CallRecord] {
         switch conversationId {
         case .thread(let threadRowId):
-            return try fetchAll(columnArgs: [(.threadRowId, threadRowId)], tx: tx)
+            return try fetchAll(columnArgs: [(.threadRowId, threadRowId)], limit: limit, tx: tx)
         case .callLink(let callLinkRowId):
-            return try fetchAll(columnArgs: [(.callLinkRowId, callLinkRowId)], tx: tx)
+            return try fetchAll(columnArgs: [(.callLinkRowId, callLinkRowId)], limit: limit, tx: tx)
         }
     }
 
@@ -396,7 +398,7 @@ class CallRecordStoreImpl: CallRecordStore {
         tx: DBReadTransaction
     ) -> CallRecord? {
         do {
-            let results = try fetchAll(columnArgs: columnArgs, tx: tx)
+            let results = try fetchAll(columnArgs: columnArgs, limit: nil, tx: tx)
             owsAssertDebug(results.count <= 1, "columnArgs must identify a unique row")
             return results.first
         } catch {
@@ -408,9 +410,10 @@ class CallRecordStoreImpl: CallRecordStore {
 
     fileprivate func fetchAll(
         columnArgs: [(CallRecord.CodingKeys, DatabaseValueConvertible)],
+        limit: Int?,
         tx: DBReadTransaction
     ) throws -> [CallRecord] {
-        let (sqlString, sqlArgs) = compileQuery(columnArgs: columnArgs)
+        let (sqlString, sqlArgs) = compileQuery(columnArgs: columnArgs, limit: limit)
 
         do {
             return try CallRecord.fetchAll(tx.databaseConnection, SQLRequest(
@@ -423,19 +426,23 @@ class CallRecordStoreImpl: CallRecordStore {
     }
 
     fileprivate func compileQuery(
-        columnArgs: [(CallRecord.CodingKeys, DatabaseValueConvertible)]
+        columnArgs: [(CallRecord.CodingKeys, DatabaseValueConvertible)],
+        limit: Int? = nil
     ) -> (sqlString: String, sqlArgs: [DatabaseValueConvertible]) {
         let conditionClauses = columnArgs.map { (column, _) -> String in
             return "\(column.rawValue) = ?"
         }
 
-        return (
-            sqlString: """
-                SELECT * FROM \(CallRecord.databaseTableName)
-                WHERE \(conditionClauses.joined(separator: " AND "))
-            """,
-            sqlArgs: columnArgs.map { $1 }
-        )
+        var sqlString = """
+        SELECT * FROM \(CallRecord.databaseTableName)
+        WHERE \(conditionClauses.joined(separator: " AND "))
+        """
+
+        if let limit {
+            sqlString += " LIMIT \(limit)"
+        }
+
+        return (sqlString: sqlString, sqlArgs: columnArgs.map { $1 })
     }
 }
 

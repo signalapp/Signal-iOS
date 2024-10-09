@@ -10,6 +10,12 @@ import SignalServiceKit
 import SignalUI
 
 protocol CallLinkManager {
+    /// - Returns: An era ID.
+    func peekCallLink(
+        rootKey: CallLinkRootKey,
+        authCredential: SignalServiceKit.CallLinkAuthCredential
+    ) async throws -> String?
+
     func createCallLink(rootKey: CallLinkRootKey) async throws -> CallLinkManagerImpl.CreateResult
 
     func deleteCallLink(
@@ -53,6 +59,30 @@ class CallLinkManagerImpl: CallLinkManager {
         self.sfuClient = SignalRingRTC.SFUClient(httpClient: httpClient.ringRtcHttpClient)
         self.sfuClientHttpClient = httpClient
         self.tsAccountManager = tsAccountManager
+    }
+
+    // MARK: - Peek Call Link
+
+    struct PeekError: Error {
+        let errorCode: UInt16
+    }
+
+    func peekCallLink(
+        rootKey: CallLinkRootKey,
+        authCredential: SignalServiceKit.CallLinkAuthCredential
+    ) async throws -> String? {
+        let sfuUrl = DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL
+        let secretParams = CallLinkSecretParams.deriveFromRootKey(rootKey.bytes)
+        let authCredentialPresentation = authCredential.present(callLinkParams: secretParams)
+        let peekResult = await self.sfuClient.peek(
+            sfuUrl: sfuUrl,
+            authCredentialPresentation: authCredentialPresentation.serialize(),
+            linkRootKey: rootKey
+        )
+        if let errorCode = peekResult.errorStatusCode {
+            throw PeekError(errorCode: errorCode)
+        }
+        return peekResult.peekInfo.eraId
     }
 
     // MARK: - Create Call Link

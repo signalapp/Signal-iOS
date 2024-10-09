@@ -32,6 +32,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     // MARK: - Dependencies
 
     private struct Dependencies {
+        let adHocCallRecordManager: any AdHocCallRecordManager
         let badgeManager: BadgeManager
         let blockingManager: BlockingManager
         let callLinkStore: any CallLinkRecordStore
@@ -44,6 +45,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         let contactsManager: any ContactManager
         let databaseStorage: SDSDatabaseStorage
         let db: any DB
+        let groupCallManager: GroupCallManager
         let interactionDeleteManager: InteractionDeleteManager
         let interactionStore: InteractionStore
         let searchableNameFinder: SearchableNameFinder
@@ -52,6 +54,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     }
 
     private nonisolated let deps: Dependencies = Dependencies(
+        adHocCallRecordManager: DependenciesBridge.shared.adHocCallRecordManager,
         badgeManager: AppEnvironment.shared.badgeManager,
         blockingManager: SSKEnvironment.shared.blockingManagerRef,
         callLinkStore: DependenciesBridge.shared.callLinkStore,
@@ -64,6 +67,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         contactsManager: NSObject.contactsManager,
         databaseStorage: NSObject.databaseStorage,
         db: DependenciesBridge.shared.db,
+        groupCallManager: NSObject.groupCallManager,
         interactionDeleteManager: DependenciesBridge.shared.interactionDeleteManager,
         interactionStore: DependenciesBridge.shared.interactionStore,
         searchableNameFinder: SearchableNameFinder(
@@ -133,8 +137,18 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     }
 
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         updateDisplayedDateForAllCallCells()
         clearMissedCallsIfNecessary()
+        isPeekingEnabled = true
+        schedulePeekTimerIfNeeded()
+        peekOnAppear()
+        peekIfPossible()
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        isPeekingEnabled = false
     }
 
     override func themeDidChange() {
@@ -659,6 +673,8 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         self.loadCallRecordsAnewCounter += 1
         let loadCallRecordsAnewCounterSnapshot = self.loadCallRecordsAnewCounter
 
+        let isInitialLoad = self.viewModelLoader == nil
+
         deps.databaseStorage.asyncRead(
             block: { tx -> CallRecordLoaderImpl.Configuration in
                 if let searchTerm {
@@ -764,6 +780,10 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                     animated: animated,
                     forceUpdateSnapshot: true
                 )
+
+                if isInitialLoad, self.isPeekingEnabled {
+                    self.peekOnAppear()
+                }
             }
         )
     }
@@ -979,6 +999,182 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         )
     }
 
+    // MARK: - Peeking
+
+    /// Fires when active calls should be checked again. Also replenishes
+    /// `peekAllowance`. May be nonnil even when `isPeekingEnabled` is false to
+    /// handle rapid tab switching.
+    private var peekTimer: Timer?
+
+    /// Remaining peeks that can be performed. Replenishes every 30 seconds.
+    private var peekAllowance = 10
+
+    /// If true, call links & active calls should be peeked periodically.
+    private var isPeekingEnabled = false
+
+    /// An ordered list of groups & call links that would be useful to peek.
+    private var peekQueue = [Peekable]()
+
+    /// Identifiers that have been scheduled in this 30 second interval. We
+    /// remove items when `peekTimer` fires to avoid peeking the same values
+    /// repeatedly when scrolling.
+    private var peekQueueIdentifiers = Set<Data>()
+
+    /// Timestamps when call links were recently peeked.
+    private var callLinkPeekDates = [Data: MonotonicDate]()
+
+    private enum Peekable {
+        case groupThread(groupThread: TSGroupThread)
+        case callLink(rootKey: CallLinkRootKey)
+
+        var identifier: Data {
+            switch self {
+            case .groupThread(let thread): thread.groupId
+            case .callLink(let rootKey): rootKey.deriveRoomId()
+            }
+        }
+    }
+
+    /// Schedules a peeks if there's no peek scheduled.
+    private func addToPeekQueue(_ peekable: Peekable) {
+        guard peekQueueIdentifiers.insert(peekable.identifier).inserted else {
+            return
+        }
+        peekQueue.append(peekable)
+        peekIfPossible()
+    }
+
+    /// Peeks `peekAllowance` items from `peekQueue`.
+    ///
+    /// It will often be the case that items added via `addToPeekQueue` are
+    /// peeked immediately. However, if more than 10 items are added, they'll
+    /// queue up until the next 30 second interval.
+    private func peekIfPossible() {
+        guard self.isPeekingEnabled else {
+            return
+        }
+        let peekBatch = self.peekQueue.prefix(peekAllowance)
+        self.peekQueue.removeFirst(peekBatch.count)
+        for peekable in peekBatch {
+            switch peekable {
+            case .groupThread(let thread):
+                Task { [deps] in
+                    await deps.groupCallManager.peekGroupCallAndUpdateThread(thread, peekTrigger: .localEvent())
+                }
+            case .callLink(let rootKey):
+                self.callLinkPeekDates[rootKey.deriveRoomId()] = MonotonicDate()
+                Task { [deps] in
+                    do {
+                        try await Self.peekCallLink(rootKey: rootKey, deps: deps)
+                    } catch {
+                        Logger.warn("\(error)")
+                    }
+                }
+            }
+        }
+        self.peekAllowance -= peekBatch.count
+    }
+
+    private static nonisolated func peekCallLink(rootKey: CallLinkRootKey, deps: Dependencies) async throws {
+        guard let localIdentifiers = deps.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction else {
+            throw OWSGenericError("Not registered.")
+        }
+        let authCredential = try await deps.callService.authCredentialManager.fetchCallLinkAuthCredential(localIdentifiers: localIdentifiers)
+        let eraId = try await deps.callService.callLinkManager.peekCallLink(rootKey: rootKey, authCredential: authCredential)
+        try await deps.db.awaitableWrite { tx in
+            try deps.adHocCallRecordManager.handlePeekResult(eraId: eraId, rootKey: rootKey, tx: tx)
+        }
+    }
+
+    /// Performs the relevant peek steps when the view appears.
+    private func peekOnAppear() {
+        if viewModelLoader == nil {
+            return
+        }
+        if !viewModelLoader.isEmpty, viewModelLoader.viewModels().compacted().isEmpty {
+            _ = viewModelLoader.viewModel(at: 0, sneakyTransactionDb: self.deps.db)
+        }
+        peekActiveCalls()
+        peekInactiveCallLinks()
+    }
+
+    /// Schedules periodic operations: replinishing & active call re-peeking.
+    private func schedulePeekTimerIfNeeded() {
+        if self.peekTimer != nil {
+            return
+        }
+        self.peekTimer = Timer.scheduledTimer(
+            withTimeInterval: 30,
+            repeats: true,
+            block: { [weak self] timer in
+                guard let self else {
+                    timer.invalidate()
+                    return
+                }
+                self.peekAllowance = 10
+                self.peekQueueIdentifiers = Set(self.peekQueue.map(\.identifier))
+                guard self.isPeekingEnabled else {
+                    timer.invalidate()
+                    self.peekTimer = nil
+                    return
+                }
+                self.peekActiveCalls()
+                self.peekIfPossible()
+            }
+        )
+    }
+
+    private func peekActiveCalls() {
+        for viewModel in viewModelLoader.viewModels() {
+            guard let viewModel else {
+                continue
+            }
+            peekIfActive(viewModel)
+        }
+    }
+
+    private func peekIfActive(_ viewModel: CallViewModel) {
+        guard viewModel.state == .active else {
+            return
+        }
+        switch viewModel.recipientType {
+        case .individual:
+            break
+        case .group(groupThread: let groupThread):
+            addToPeekQueue(.groupThread(groupThread: groupThread))
+        case .callLink(let rootKey):
+            addToPeekQueue(.callLink(rootKey: rootKey))
+        }
+    }
+
+    private func peekInactiveCallLinks() {
+        for viewModel in viewModelLoader.viewModels() {
+            guard let viewModel, viewModel.state == .inactive else {
+                continue
+            }
+            switch viewModel.recipientType {
+            case .individual, .group:
+                break
+            case .callLink(let rootKey):
+                // Skip any where the link is more than 10 days old.
+                if
+                    let timestamp = viewModel.callRecords.first?.callBeganTimestamp,
+                    -Date(millisecondsSince1970: timestamp).timeIntervalSinceNow > 10 * kDayInterval
+                {
+                    continue
+                }
+                // Skip any that have been updated in the past 5 minutes.
+                if
+                    let peekDate = callLinkPeekDates[rootKey.deriveRoomId()],
+                    (MonotonicDate() - peekDate) < 300 * NSEC_PER_SEC
+                {
+                    continue
+                }
+                addToPeekQueue(.callLink(rootKey: rootKey))
+            }
+        }
+    }
+
     // MARK: - Search term
 
     /// - Important
@@ -1154,6 +1350,8 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             if let viewModel = viewModelLoader.viewModel(at: indexPath.row, sneakyTransactionDb: deps.db) {
                 callCell.delegate = self
                 callCell.viewModel = viewModel
+
+                self.peekIfActive(viewModel)
 
                 return callCell
             }
@@ -1732,7 +1930,7 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
     }
 
     private nonisolated func deleteCallRecords(forCallLinkRowId callLinkRowId: Int64, tx: DBWriteTransaction) throws {
-        let callRecords = try deps.callRecordStore.fetchExisting(conversationId: .callLink(callLinkRowId: callLinkRowId), tx: tx)
+        let callRecords = try deps.callRecordStore.fetchExisting(conversationId: .callLink(callLinkRowId: callLinkRowId), limit: nil, tx: tx)
         deps.callRecordDeleteManager.deleteCallRecords(callRecords, sendSyncMessageOnDelete: true, tx: tx)
     }
 

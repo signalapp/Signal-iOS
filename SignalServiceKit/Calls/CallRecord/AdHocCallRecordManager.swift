@@ -15,6 +15,12 @@ public protocol AdHocCallRecordManager {
         shouldSendSyncMessge: Bool,
         tx: DBWriteTransaction
     ) throws
+
+    func handlePeekResult(
+        eraId: String?,
+        rootKey: CallLinkRootKey,
+        tx: DBWriteTransaction
+    ) throws
 }
 
 final class AdHocCallRecordManagerImpl: AdHocCallRecordManager {
@@ -96,12 +102,57 @@ final class AdHocCallRecordManagerImpl: AdHocCallRecordManager {
             )
         }
     }
+
+    func handlePeekResult(
+        eraId: String?,
+        rootKey: CallLinkRootKey,
+        tx: any DBWriteTransaction
+    ) throws {
+        guard var callLinkRecord = try self.callLinkStore.fetch(roomId: rootKey.deriveRoomId(), tx: tx) else {
+            return
+        }
+        let callId = eraId.map(callIdFromEra(_:))
+        if callLinkRecord.activeCallId != callId {
+            callLinkRecord.activeCallId = callId
+            try self.callLinkStore.update(callLinkRecord, tx: tx)
+        }
+        if let callId {
+            // Things that are already in the calls tab get updated timestamps (and
+            // move to the top) whenever we notice that they're active. "Already in the
+            // calls tab" means "isUpcoming or hasCallRecord".
+            let shouldObserveResult = try { () -> Bool in
+                if callLinkRecord.isUpcoming == true {
+                    return true
+                }
+                let callRecords = try self.callRecordStore.fetchExisting(
+                    conversationId: .callLink(callLinkRowId: callLinkRecord.id),
+                    limit: 1,
+                    tx: tx
+                )
+                return !callRecords.isEmpty
+            }()
+            if shouldObserveResult {
+                try self.createOrUpdateRecord(
+                    callId: callId,
+                    rootKey: rootKey,
+                    status: .generic,
+                    timestamp: Date.ows_millisecondTimestamp(),
+                    shouldSendSyncMessge: true,
+                    tx: tx
+                )
+            }
+        }
+    }
 }
 
 #if TESTABLE_BUILD
 
 final class MockAdHocCallRecordManager: AdHocCallRecordManager {
     func createOrUpdateRecord(callId: UInt64, rootKey: CallLinkRootKey, status: CallRecord.CallStatus.CallLinkCallStatus, timestamp: UInt64, shouldSendSyncMessge: Bool, tx: any DBWriteTransaction) throws {
+        fatalError()
+    }
+
+    func handlePeekResult(eraId: String?, rootKey: CallLinkRootKey, tx: any DBWriteTransaction) throws {
         fatalError()
     }
 }

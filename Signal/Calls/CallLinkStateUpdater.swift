@@ -105,7 +105,7 @@ actor CallLinkStateUpdater {
                     } else {
                         newRecord.markDeleted(atTimestampMs: Date.ows_millisecondTimestamp())
                         try self.callRecordDeleteManager.deleteCallRecords(
-                            self.callRecordStore.fetchExisting(conversationId: .callLink(callLinkRowId: newRecord.id), tx: tx),
+                            self.callRecordStore.fetchExisting(conversationId: .callLink(callLinkRowId: newRecord.id), limit: nil, tx: tx),
                             sendSyncMessageOnDelete: true,
                             tx: tx
                         )

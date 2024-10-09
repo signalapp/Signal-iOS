@@ -1918,7 +1918,7 @@ class StorageServiceCallLinkRecordUpdater: StorageServiceRecordUpdater {
             // The earliest deletion timestamp takes precendence when merging.
             if record.deletedAtTimestampMs > 0 || callLink.adminDeletedAtTimestampMs != nil {
                 self.callRecordDeleteManager.deleteCallRecords(
-                    try self.callRecordStore.fetchExisting(conversationId: .callLink(callLinkRowId: callLink.id), tx: tx.asV2Read),
+                    try self.callRecordStore.fetchExisting(conversationId: .callLink(callLinkRowId: callLink.id), limit: nil, tx: tx.asV2Read),
                     sendSyncMessageOnDelete: false,
                     tx: tx.asV2Write
                 )

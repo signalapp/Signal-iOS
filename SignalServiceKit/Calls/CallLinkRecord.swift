@@ -19,7 +19,7 @@ public struct CallLinkRecord: Codable, PersistableRecord, FetchableRecord {
     public let rootKey: CallLinkRootKey
     public var adminPasskey: Data?
     private(set) public var adminDeletedAtTimestampMs: UInt64?
-    private(set) public var activeCallId: UInt64?
+    public var activeCallId: UInt64?
     private(set) public var pendingFetchCounter: Int64
     private(set) public var isUpcoming: Bool?
     private(set) public var name: String?
