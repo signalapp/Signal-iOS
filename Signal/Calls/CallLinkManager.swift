@@ -12,6 +12,12 @@ import SignalUI
 protocol CallLinkManager {
     func createCallLink(rootKey: CallLinkRootKey) async throws -> CallLinkManagerImpl.CreateResult
 
+    func deleteCallLink(
+        rootKey: CallLinkRootKey,
+        adminPasskey: Data,
+        authCredential: SignalServiceKit.CallLinkAuthCredential
+    ) async throws
+
     func updateCallLinkName(
         _ name: String,
         rootKey: CallLinkRootKey,
@@ -96,6 +102,22 @@ class CallLinkManagerImpl: CallLinkManager {
             restrictions: SignalServiceKit.CallLinkState.Constants.defaultRequiresAdminApproval ? .adminApproval : .none
         ).unwrap())
         return CreateResult(adminPasskey: adminPasskey, callLinkState: callLinkState)
+    }
+
+    func deleteCallLink(
+        rootKey: CallLinkRootKey,
+        adminPasskey: Data,
+        authCredential: SignalServiceKit.CallLinkAuthCredential
+    ) async throws {
+        let sfuUrl = DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL
+        let secretParams = CallLinkSecretParams.deriveFromRootKey(rootKey.bytes)
+        let authCredentialPresentation = authCredential.present(callLinkParams: secretParams)
+        return try await self.sfuClient.deleteCallLink(
+            sfuUrl: sfuUrl,
+            authCredentialPresentation: authCredentialPresentation.serialize(),
+            linkRootKey: rootKey,
+            adminPasskey: adminPasskey
+        ).unwrap()
     }
 
     func updateCallLinkName(

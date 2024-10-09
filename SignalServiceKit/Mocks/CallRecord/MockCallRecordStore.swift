@@ -33,6 +33,10 @@ class MockCallRecordStore: CallRecordStore {
         return .matchNotFound
     }
 
+    func fetchExisting(conversationId: CallRecord.ConversationID, tx: any DBReadTransaction) throws -> [CallRecord] {
+        fatalError()
+    }
+
     func fetch(interactionRowId: Int64, tx: DBReadTransaction) -> CallRecord? {
         return callRecords.first(where: {
             switch $0.interactionReference {

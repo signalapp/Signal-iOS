@@ -562,6 +562,7 @@ public class AppSetup {
         let callLinkStore = CallLinkRecordStoreImpl()
         let deletedCallRecordStore = DeletedCallRecordStoreImpl()
         let deletedCallRecordCleanupManager = DeletedCallRecordCleanupManagerImpl(
+            callLinkStore: callLinkStore,
             dateProvider: dateProvider,
             db: db,
             deletedCallRecordStore: deletedCallRecordStore,
@@ -635,7 +636,9 @@ public class AppSetup {
         )
 
         let callRecordDeleteAllJobQueue = CallRecordDeleteAllJobQueue(
+            callLinkStore: callLinkStore,
             callRecordConversationIdAdapter: callRecordSyncMessageConversationIdAdapater,
+            callRecordDeleteManager: callRecordDeleteManager,
             callRecordQuerier: callRecordQuerier,
             db: db,
             interactionDeleteManager: interactionDeleteManager,

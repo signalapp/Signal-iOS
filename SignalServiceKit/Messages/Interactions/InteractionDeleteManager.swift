@@ -278,8 +278,8 @@ final class InteractionDeleteManagerImpl: InteractionDeleteManager {
             case .localDeleteAndSendCallEventSyncMessage: true
             }
 
-            callRecordDeleteManager.deleteCallRecord(
-                associatedCallRecord,
+            callRecordDeleteManager.deleteCallRecords(
+                [associatedCallRecord],
                 sendSyncMessageOnDelete: sendSyncMessage,
                 tx: tx.asV2Write
             )

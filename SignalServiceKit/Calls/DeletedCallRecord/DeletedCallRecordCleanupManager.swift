@@ -3,6 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import GRDB
+import Foundation
+
 /// Responsible for cleaning up expired ``DeletedCallRecord``s.
 ///
 /// ``DeletedCallRecord``s are only intended to exist on-disk for as long as is
@@ -59,6 +62,7 @@ final class DeletedCallRecordCleanupManagerImpl: DeletedCallRecordCleanupManager
     }
 
     private let minimumSecondsBetweenCleanupPasses: TimeIntervalProvider
+    private let callLinkStore: any CallLinkRecordStore
     private let dateProvider: DateProvider
     private let db: any DB
     private let deletedCallRecordStore: DeletedCallRecordStore
@@ -72,12 +76,14 @@ final class DeletedCallRecordCleanupManagerImpl: DeletedCallRecordCleanupManager
     /// Returns the minimum time interval between cleanup passes, in seconds.
     init(
         minimumSecondsBetweenCleanupPasses: @escaping TimeIntervalProvider = { 1 },
+        callLinkStore: any CallLinkRecordStore,
         dateProvider: @escaping DateProvider,
         db: any DB,
         deletedCallRecordStore: DeletedCallRecordStore,
         schedulers: Schedulers
     ) {
         self.minimumSecondsBetweenCleanupPasses = minimumSecondsBetweenCleanupPasses
+        self.callLinkStore = callLinkStore
         self.dateProvider = dateProvider
         self.db = db
         self.deletedCallRecordStore = deletedCallRecordStore
@@ -123,6 +129,12 @@ final class DeletedCallRecordCleanupManagerImpl: DeletedCallRecordCleanupManager
                         tx: tx
                     )
 
+                    do {
+                        try deleteCallLinkIfNeeded(conversationId: nextExpiringRecord.conversationId, tx: tx)
+                    } catch {
+                        owsFailDebug("\(error)")
+                    }
+
                     return 1
                 }
 
@@ -136,6 +148,29 @@ final class DeletedCallRecordCleanupManagerImpl: DeletedCallRecordCleanupManager
         }
 
         return firstRecordNotDeleted
+    }
+
+    /// Removes the ``CallLinkRecord`` if there are no more references.
+    private func deleteCallLinkIfNeeded(conversationId: CallRecord.ConversationID, tx: any DBWriteTransaction) throws {
+        let callLinkRowId: Int64
+        switch conversationId {
+        case .thread:
+            return
+        case .callLink(let callLinkRowId2):
+            callLinkRowId = callLinkRowId2
+        }
+        let callLinkRecord = try callLinkStore.fetch(rowId: callLinkRowId, tx: tx) ?? {
+            throw OWSAssertionError("Must be able to find call link.")
+        }()
+        if callLinkRecord.isDeleted {
+            // We can't delete this until Storage Service is done with it.
+            return
+        }
+        do {
+            try callLinkStore.delete(callLinkRecord, tx: tx)
+        } catch DatabaseError.SQLITE_CONSTRAINT {
+            // We'll delete it later -- something else is still using it.
+        }
     }
 
     /// Schedules a cleanup pass for the expiration time of the given record.

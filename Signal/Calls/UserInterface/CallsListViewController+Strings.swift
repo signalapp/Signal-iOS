@@ -117,6 +117,26 @@ extension CallsListViewController {
             comment: "Title for a long-press context menu action to delete a call, triggered from a call in the Calls Tab."
         ) }
 
+        static var deleteMultipleTitleFormat: String { OWSLocalizedString(
+            "CALLS_TAB_DELETE_MULTIPLE_TITLE", tableName: "PluralAware",
+            comment: "Title for a confirmation popup when deleting multiple calls from the calls tab."
+        ) }
+
+        static var deleteMultipleMessage: String { OWSLocalizedString(
+            "CALL_LINK_MULTI_CONFIRM",
+            comment: "Text shown in a confirmation popup when deleting multiple calls from the calls tab."
+        ) }
+
+        static var deleteMultipleSuccessFormat: String { OWSLocalizedString(
+            "CALL_LINK_MULTI_SUCCESS", tableName: "PluralAware",
+            comment: "Text shown in a confirmation popup when deleting multiple calls from the calls tab."
+        ) }
+
+        static var deleteMultipleError: String { OWSLocalizedString(
+            "CALL_LINK_SOME_NOT_DELETED",
+            comment: "An error alert that's shown when deleting multiple calls and some of them couldn't be deleted."
+        ) }
+
         static var joinCallButtonTitle: String { OWSLocalizedString(
             "CALLS_TAB_JOIN_CALL_BUTTON_TITLE",
             comment: "Title for a button offering to let the user join an ongoing call, associated with a call in the Calls Tab."

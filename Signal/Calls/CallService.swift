@@ -84,6 +84,8 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         authCredentialManager: any AuthCredentialManager,
         callLinkPublicParams: GenericServerPublicParams,
         callLinkStore: any CallLinkRecordStore,
+        callRecordDeleteManager: any CallRecordDeleteManager,
+        callRecordStore: any CallRecordStore,
         db: any DB,
         mutableCurrentCall: AtomicValue<SignalCall?>,
         networkManager: NetworkManager,
@@ -116,7 +118,10 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         self.callLinkStateUpdater = CallLinkStateUpdater(
             authCredentialManager: authCredentialManager,
             callLinkFetcher: self.callLinkFetcher,
+            callLinkManager: self.callLinkManager,
             callLinkStore: callLinkStore,
+            callRecordDeleteManager: callRecordDeleteManager,
+            callRecordStore: callRecordStore,
             db: db,
             tsAccountManager: tsAccountManager
         )

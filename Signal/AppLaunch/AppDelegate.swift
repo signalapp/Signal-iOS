@@ -404,6 +404,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 authCredentialManager: databaseContinuation.authCredentialManager,
                 callLinkPublicParams: databaseContinuation.callLinkPublicParams,
                 callLinkStore: DependenciesBridge.shared.callLinkStore,
+                callRecordDeleteManager: DependenciesBridge.shared.callRecordDeleteManager,
+                callRecordStore: DependenciesBridge.shared.callRecordStore,
                 db: DependenciesBridge.shared.db,
                 mutableCurrentCall: _currentCall,
                 networkManager: NSObject.networkManager,

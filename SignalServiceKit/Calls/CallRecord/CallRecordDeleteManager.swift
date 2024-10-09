@@ -14,7 +14,7 @@ import LibSignalClient
 /// - SeeAlso ``DeletedCallRecord``
 /// - SeeAlso ``DeletedCallRecordCleanupManager``
 /// - SeeAlso ``CallRecordStore/delete(callRecords:tx:)``
-protocol CallRecordDeleteManager {
+public protocol CallRecordDeleteManager {
     /// Delete the given call record.
     ///
     /// - Important
@@ -25,8 +25,8 @@ protocol CallRecordDeleteManager {
     /// - Parameter sendSyncMessageOnDelete
     /// Whether we should send an ``OutgoingCallEventSyncMessage`` if we delete
     /// a call record.
-    func deleteCallRecord(
-        _ callRecord: CallRecord,
+    func deleteCallRecords(
+        _ callRecords: [CallRecord],
         sendSyncMessageOnDelete: Bool,
         tx: DBWriteTransaction
     )
@@ -74,21 +74,7 @@ final class CallRecordDeleteManagerImpl: CallRecordDeleteManager {
         self.threadStore = threadStore
     }
 
-    // MARK: -
-
-    func deleteCallRecord(
-        _ callRecord: CallRecord,
-        sendSyncMessageOnDelete: Bool,
-        tx: DBWriteTransaction
-    ) {
-        deleteCallRecords(
-            callRecords: [callRecord],
-            sendSyncMessageOnDelete: sendSyncMessageOnDelete,
-            tx: tx
-        )
-    }
-
-    func markCallAsDeleted(
+    public func markCallAsDeleted(
         callId: UInt64,
         conversationId: CallRecord.ConversationID,
         tx: DBWriteTransaction
@@ -104,10 +90,8 @@ final class CallRecordDeleteManagerImpl: CallRecordDeleteManager {
         )
     }
 
-    // MARK: -
-
-    private func deleteCallRecords(
-        callRecords: [CallRecord],
+    public func deleteCallRecords(
+        _ callRecords: [CallRecord],
         sendSyncMessageOnDelete: Bool,
         tx: DBWriteTransaction
     ) {

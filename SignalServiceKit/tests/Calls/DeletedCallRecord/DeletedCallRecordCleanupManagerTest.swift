@@ -23,6 +23,7 @@ final class DeletedCallRecordCleanupManagerTest: XCTestCase {
 
         cleanupManager = DeletedCallRecordCleanupManagerImpl(
             minimumSecondsBetweenCleanupPasses: { self.timeIntervalProvider() },
+            callLinkStore: CallLinkRecordStoreImpl(),
             dateProvider: { self.dateProvider() },
             db: db,
             deletedCallRecordStore: deletedCallRecordStore,

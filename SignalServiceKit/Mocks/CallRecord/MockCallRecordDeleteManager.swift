@@ -6,12 +6,12 @@
 #if TESTABLE_BUILD
 
 final class MockCallRecordDeleteManager: CallRecordDeleteManager {
-    var deleteCallRecordMock: ((
-        _ callRecord: CallRecord,
+    var deleteCallRecordsMock: ((
+        _ callRecords: [CallRecord],
         _ sendSyncMessageOnDelete: Bool
     ) -> Void)?
-    func deleteCallRecord(_ callRecord: CallRecord, sendSyncMessageOnDelete: Bool, tx: DBWriteTransaction) {
-        deleteCallRecordMock!(callRecord, sendSyncMessageOnDelete)
+    func deleteCallRecords(_ callRecords: [CallRecord], sendSyncMessageOnDelete: Bool, tx: DBWriteTransaction) {
+        deleteCallRecordsMock!(callRecords, sendSyncMessageOnDelete)
     }
 
     var markCallAsDeletedMock: ((_ callId: UInt64, _ conversationId: CallRecord.ConversationID) -> Void)?

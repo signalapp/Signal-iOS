@@ -680,6 +680,7 @@
 		509085BC2C498D3600409B85 /* LinkPreviewFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 509085BB2C498D3500409B85 /* LinkPreviewFetcher.swift */; };
 		509BBF7A28CA556700F4D8A0 /* Data+SSKTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 509BBF7928CA556700F4D8A0 /* Data+SSKTest.swift */; };
 		509DC8DA2BCED88600375E86 /* RemoteMegaphoneFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98DD85D28EE53B00089333E /* RemoteMegaphoneFetcher.swift */; };
+		50A141C52CB5D18000D027F2 /* CallLinkDeleter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A141C42CB5D18000D027F2 /* CallLinkDeleter.swift */; };
 		50A1CE3A2A00931900730C40 /* DebugLogger+MainApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A1CE392A00931900730C40 /* DebugLogger+MainApp.swift */; };
 		50A40ED32B88005A0060C5A5 /* DisplayName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A40ED22B88005A0060C5A5 /* DisplayName.swift */; };
 		50A4AC622C111FAE00D89C8E /* CallLinkAuthCredential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A4AC612C111FAE00D89C8E /* CallLinkAuthCredential.swift */; };
@@ -4297,6 +4298,7 @@
 		5096BE682AF37A9900668F9F /* ContactOutputStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactOutputStream.swift; sourceTree = "<group>"; };
 		509913BD2913274100F34F8E /* RecipientPickerViewControllerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientPickerViewControllerTest.swift; sourceTree = "<group>"; };
 		509BBF7928CA556700F4D8A0 /* Data+SSKTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+SSKTest.swift"; sourceTree = "<group>"; };
+		50A141C42CB5D18000D027F2 /* CallLinkDeleter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallLinkDeleter.swift; sourceTree = "<group>"; };
 		50A1CE372A00894C00730C40 /* DebugLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLogger.swift; sourceTree = "<group>"; };
 		50A1CE392A00931900730C40 /* DebugLogger+MainApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DebugLogger+MainApp.swift"; sourceTree = "<group>"; };
 		50A40ED22B88005A0060C5A5 /* DisplayName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayName.swift; sourceTree = "<group>"; };
@@ -10599,6 +10601,7 @@
 				B9C0A96C2C6D3F63001FD0AA /* CallLinkApprovalRequestView.swift */,
 				B93E4B2B2C9A3298005989B6 /* CallLinkApprovalViewModel.swift */,
 				B9DFDAD62C99F68A00588AD1 /* CallLinkBulkApprovalSheet.swift */,
+				50A141C42CB5D18000D027F2 /* CallLinkDeleter.swift */,
 				E1B32F852CAB5923002141F4 /* CallLinkProfileKeySharingManager.swift */,
 				505A254B2CAE7BA700CF4C26 /* CallLinkViewController.swift */,
 				E1E78CAE2B573BD100B6FC2D /* CallMemberCameraOffView.swift */,
@@ -15837,6 +15840,7 @@
 				B93E4B2C2C9A3298005989B6 /* CallLinkApprovalViewModel.swift in Sources */,
 				B9DFDAD72C99F68A00588AD1 /* CallLinkBulkApprovalSheet.swift in Sources */,
 				50A7830E2C0128D70008030E /* CallLinkCall.swift in Sources */,
+				50A141C52CB5D18000D027F2 /* CallLinkDeleter.swift in Sources */,
 				500504AE2CA32969003D27ED /* CallLinkFetchJobRunner.swift in Sources */,
 				50733B1E2BAD038D00CEEC1F /* CallLinkManager.swift in Sources */,
 				E1B32F892CAB63E0002141F4 /* CallLinkProfileKeySharingManager.swift in Sources */,

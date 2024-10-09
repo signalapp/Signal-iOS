@@ -1728,7 +1728,9 @@ class StorageServiceOperation: OWSOperation {
     private func buildCallLinkUpdater() -> MultipleElementStateUpdater<StorageServiceCallLinkRecordUpdater> {
         return MultipleElementStateUpdater(
             recordUpdater: StorageServiceCallLinkRecordUpdater(
-                callLinkStore: DependenciesBridge.shared.callLinkStore
+                callLinkStore: DependenciesBridge.shared.callLinkStore,
+                callRecordDeleteManager: DependenciesBridge.shared.callRecordDeleteManager,
+                callRecordStore: DependenciesBridge.shared.callRecordStore
             ),
             changeState: \.callLinkRootKeyChangeMap,
             storageIdentifier: \.callLinkRootKeyToStorageIdentifierMap,

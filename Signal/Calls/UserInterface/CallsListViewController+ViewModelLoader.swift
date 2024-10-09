@@ -83,6 +83,11 @@ extension CallsListViewController {
 
         // MARK: - References
 
+        private enum Reference {
+            case upcomingCallLink(UpcomingCallLinkReference)
+            case callHistoryItem(CallHistoryItemReference)
+        }
+
         private struct UpcomingCallLinkReference {
             let callLinkRowId: Int64
 
@@ -131,13 +136,33 @@ extension CallsListViewController {
         }
 
         func viewModelReference(at index: Int) -> CallViewModel.Reference {
+            switch reference(at: index) {
+            case .upcomingCallLink(let ref): return ref.viewModelReference
+            case .callHistoryItem(let ref): return ref.viewModelReference
+            }
+        }
+
+        /// Stores ROWIDs for the database rows backing a call list item.
+        struct ModelReferences {
+            var callLinkRowId: Int64?
+            var callRecordRowIds: [CallRecord.ID]
+        }
+
+        func modelReferences(at index: Int) -> ModelReferences {
+            switch reference(at: index) {
+            case .upcomingCallLink(let ref): return ModelReferences(callLinkRowId: ref.callLinkRowId, callRecordRowIds: [])
+            case .callHistoryItem(let ref): return ModelReferences(callLinkRowId: ref.callLinkRowId, callRecordRowIds: ref.callRecordIds.rawValue)
+            }
+        }
+
+        private func reference(at index: Int) -> Reference {
             var internalIndex = index
             if internalIndex < upcomingCallLinkReferences.count {
-                return upcomingCallLinkReferences[internalIndex].viewModelReference
+                return .upcomingCallLink(upcomingCallLinkReferences[internalIndex])
             }
             internalIndex -= upcomingCallLinkReferences.count
             if internalIndex < callHistoryItemReferences.count {
-                return callHistoryItemReferences[internalIndex].viewModelReference
+                return .callHistoryItem(callHistoryItemReferences[internalIndex])
             }
             owsFail("Must provide valid index.")
         }

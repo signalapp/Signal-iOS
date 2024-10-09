@@ -21,6 +21,7 @@ final class CallLinkViewController: OWSTableViewController2 {
     /// Set if we're the admin for this call link.
     private let adminPasskey: Data?
     private let callLinkAdminManager: CallLinkAdminManager?
+    private let canShowDeleteButton: Bool
 
     /// The ROWID of the corresponding ``CallLinkRecord``. If `nil`, `rootKey`
     /// refers to a just-created call link that hasn't been persisted (it'll be
@@ -45,6 +46,7 @@ final class CallLinkViewController: OWSTableViewController2 {
                     callLinkState: callLinkRecord.state
                 ))
             },
+            canShowDeleteButton: true,
             callLinkRowId: callLinkRecord.id,
             callLinkState: callLinkRecord.state,
             callRecords: callRecords
@@ -61,6 +63,7 @@ final class CallLinkViewController: OWSTableViewController2 {
             title: CallStrings.createCallLinkTitle,
             callLink: callLink,
             adminInfo: (adminPasskey, adminManager),
+            canShowDeleteButton: false,
             callLinkRowId: nil,
             callLinkState: callLinkState,
             callRecords: []
@@ -77,6 +80,7 @@ final class CallLinkViewController: OWSTableViewController2 {
         title: String,
         callLink: CallLink,
         adminInfo: (adminPasskey: Data, adminManager: CallLinkAdminManager)?,
+        canShowDeleteButton: Bool,
         callLinkRowId: Int64?,
         callLinkState: CallLinkState?,
         callRecords: [CallRecord]
@@ -84,6 +88,7 @@ final class CallLinkViewController: OWSTableViewController2 {
         self.callLink = callLink
         self.adminPasskey = adminInfo?.adminPasskey
         self.callLinkAdminManager = adminInfo?.adminManager
+        self.canShowDeleteButton = canShowDeleteButton
         self.callLinkRowId = callLinkRowId
         self.callLinkState = callLinkState
         self.callRecords = callRecords
@@ -192,12 +197,48 @@ final class CallLinkViewController: OWSTableViewController2 {
         ])
         sharingSection.separatorInsetLeading = OWSTableViewController2.cellHInnerMargin + OWSTableItem.iconSize + OWSTableItem.iconSpacing
 
+        var deleteSection: OWSTableSection?
+        if self.canShowDeleteButton, let adminPasskey {
+            let rootKey = self.callLink.rootKey
+            let deleteItem: OWSTableItem = .item(
+                icon: .buttonDelete,
+                tintColor: .ows_accentRed,
+                name: OWSLocalizedString(
+                    "CALL_LINK_DELETE_ACTION",
+                    comment: "A button to delete a call link that's shown after tapping the (i) info button on an item in the calls tab."
+                ),
+                textColor: .ows_accentRed,
+                actionBlock: { [unowned self] in
+                    CallLinkDeleter.promptToDelete(fromViewController: self) { [weak self] in
+                        do {
+                            try await CallLinkDeleter.deleteCallLink(
+                                stateUpdater: AppEnvironment.shared.callService.callLinkStateUpdater,
+                                storageServiceManager: NSObject.storageServiceManager,
+                                rootKey: rootKey,
+                                adminPasskey: adminPasskey
+                            )
+                            if let self {
+                                let navigationController = self.navigationController!
+                                navigationController.popViewController(animated: true) {
+                                    navigationController.topViewController?.presentToast(text: CallLinkDeleter.successText)
+                                }
+                            }
+                        } catch {
+                            self?.presentToast(text: CallLinkDeleter.failureText)
+                        }
+                    }
+                }
+            )
+            deleteSection = OWSTableSection(items: [deleteItem])
+        }
+
         return OWSTableContents(
             sections: [
                 ConversationSettingsViewController.createCallHistorySection(callRecords: callRecords),
                 OWSTableSection(items: [callLinkCardItem]),
                 settingSection,
                 sharingSection,
+                deleteSection
             ].compacted()
         )
     }

@@ -66,6 +66,22 @@
 			<string>Add New Members</string>
 		</dict>
 	</dict>
+	<key>CALLS_TAB_DELETE_MULTIPLE_TITLE</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Delete %ld Call?</string>
+			<key>other</key>
+			<string>Delete %ld Calls?</string>
+		</dict>
+	</dict>
 	<key>CALL_LINK_APPROVE_ALL_REQUESTS_CONFIRMATION_BODY_%ld</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -144,6 +160,22 @@
 			<string>+%ld Request</string>
 			<key>other</key>
 			<string>+%ld Requests</string>
+		</dict>
+	</dict>
+	<key>CALL_LINK_MULTI_SUCCESS</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%ld call log deleted.</string>
+			<key>other</key>
+			<string>%ld call logs deleted.</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_REQUEST_HEADER_COUNT_%d</key>

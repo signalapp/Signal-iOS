@@ -1843,9 +1843,17 @@ class StorageServiceCallLinkRecordUpdater: StorageServiceRecordUpdater {
     typealias RecordType = StorageServiceProtoCallLinkRecord
 
     let callLinkStore: any CallLinkRecordStore
+    private let callRecordDeleteManager: any CallRecordDeleteManager
+    private let callRecordStore: any CallRecordStore
 
-    init(callLinkStore: any CallLinkRecordStore) {
+    init(
+        callLinkStore: any CallLinkRecordStore,
+        callRecordDeleteManager: any CallRecordDeleteManager,
+        callRecordStore: any CallRecordStore
+    ) {
         self.callLinkStore = callLinkStore
+        self.callRecordDeleteManager = callRecordDeleteManager
+        self.callRecordStore = callRecordStore
     }
 
     func unknownFields(for record: StorageServiceProtoCallLinkRecord) -> UnknownStorage? { record.unknownFields }
@@ -1909,6 +1917,11 @@ class StorageServiceCallLinkRecordUpdater: StorageServiceRecordUpdater {
             var callLink = try self.callLinkStore.fetchOrInsert(rootKey: rootKey, tx: tx.asV2Write)
             // The earliest deletion timestamp takes precendence when merging.
             if record.deletedAtTimestampMs > 0 || callLink.adminDeletedAtTimestampMs != nil {
+                self.callRecordDeleteManager.deleteCallRecords(
+                    try self.callRecordStore.fetchExisting(conversationId: .callLink(callLinkRowId: callLink.id), tx: tx.asV2Read),
+                    sendSyncMessageOnDelete: false,
+                    tx: tx.asV2Write
+                )
                 callLink.markDeleted(atTimestampMs: [record.deletedAtTimestampMs, callLink.adminDeletedAtTimestampMs].compacted().min()!)
             } else if let adminPasskey = record.adminPasskey?.nilIfEmpty {
                 callLink.adminPasskey = adminPasskey

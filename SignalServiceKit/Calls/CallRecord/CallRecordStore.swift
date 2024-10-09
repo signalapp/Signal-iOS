@@ -133,6 +133,11 @@ public protocol CallRecordStore {
         tx: DBReadTransaction
     ) -> MaybeDeletedFetchResult
 
+    func fetchExisting(
+        conversationId: CallRecord.ConversationID,
+        tx: DBReadTransaction
+    ) throws -> [CallRecord]
+
     /// Fetch the record referencing the given ``TSInteraction`` SQLite row ID,
     /// if one exists.
     /// - Note
@@ -290,8 +295,20 @@ class CallRecordStoreImpl: CallRecordStore {
         )
     }
 
+    func fetchExisting(
+        conversationId: CallRecord.ConversationID,
+        tx: DBReadTransaction
+    ) throws -> [CallRecord] {
+        switch conversationId {
+        case .thread(let threadRowId):
+            return try fetchAll(columnArgs: [(.threadRowId, threadRowId)], tx: tx)
+        case .callLink(let callLinkRowId):
+            return try fetchAll(columnArgs: [(.callLinkRowId, callLinkRowId)], tx: tx)
+        }
+    }
+
     func fetch(interactionRowId: Int64, tx: DBReadTransaction) -> CallRecord? {
-        return fetch(
+        return fetchUnique(
             columnArgs: [(.interactionRowId, interactionRowId)],
             tx: tx
         )
@@ -364,9 +381,9 @@ class CallRecordStoreImpl: CallRecordStore {
         let callRecord: CallRecord?
         switch conversationId {
         case .thread(let threadRowId):
-            callRecord = fetch(columnArgs: [(.callIdString, String(callId)), (.threadRowId, threadRowId)], tx: tx)
+            callRecord = fetchUnique(columnArgs: [(.callIdString, String(callId)), (.threadRowId, threadRowId)], tx: tx)
         case .callLink(let callLinkRowId):
-            callRecord = fetch(columnArgs: [(.callIdString, String(callId)), (.callLinkRowId, callLinkRowId)], tx: tx)
+            callRecord = fetchUnique(columnArgs: [(.callIdString, String(callId)), (.callLinkRowId, callLinkRowId)], tx: tx)
         }
         if let callRecord {
             return .matchFound(callRecord)
@@ -374,21 +391,34 @@ class CallRecordStoreImpl: CallRecordStore {
         return .matchNotFound
     }
 
-    fileprivate func fetch(
+    fileprivate func fetchUnique(
         columnArgs: [(CallRecord.CodingKeys, DatabaseValueConvertible)],
         tx: DBReadTransaction
     ) -> CallRecord? {
-        let (sqlString, sqlArgs) = compileQuery(columnArgs: columnArgs)
-
         do {
-            return try CallRecord.fetchOne(tx.databaseConnection, SQLRequest(
-                sql: sqlString,
-                arguments: StatementArguments(sqlArgs)
-            ))
-        } catch let error {
+            let results = try fetchAll(columnArgs: columnArgs, tx: tx)
+            owsAssertDebug(results.count <= 1, "columnArgs must identify a unique row")
+            return results.first
+        } catch {
             let columns = columnArgs.map { (column, _) in column }
             owsFailBeta("Error fetching CallRecord by \(columns): \(error)")
             return nil
+        }
+    }
+
+    fileprivate func fetchAll(
+        columnArgs: [(CallRecord.CodingKeys, DatabaseValueConvertible)],
+        tx: DBReadTransaction
+    ) throws -> [CallRecord] {
+        let (sqlString, sqlArgs) = compileQuery(columnArgs: columnArgs)
+
+        do {
+            return try CallRecord.fetchAll(tx.databaseConnection, SQLRequest(
+                sql: sqlString,
+                arguments: StatementArguments(sqlArgs)
+            ))
+        } catch {
+            throw error.grdbErrorForLogging
         }
     }
 
@@ -422,7 +452,7 @@ private extension SDSAnyReadTransaction {
 final class ExplainingCallRecordStoreImpl: CallRecordStoreImpl {
     var lastExplanation: String?
 
-    override fileprivate func fetch(
+    override fileprivate func fetchUnique(
         columnArgs: [(CallRecord.CodingKeys, DatabaseValueConvertible)],
         tx: DBReadTransaction
     ) -> CallRecord? {
@@ -442,7 +472,7 @@ final class ExplainingCallRecordStoreImpl: CallRecordStoreImpl {
 
         lastExplanation = explanation
 
-        return super.fetch(columnArgs: columnArgs, tx: tx)
+        return super.fetchUnique(columnArgs: columnArgs, tx: tx)
     }
 }
 

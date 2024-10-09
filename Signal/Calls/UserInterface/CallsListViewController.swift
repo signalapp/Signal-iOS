@@ -36,6 +36,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         let blockingManager: BlockingManager
         let callLinkStore: any CallLinkRecordStore
         let callRecordDeleteAllJobQueue: CallRecordDeleteAllJobQueue
+        let callRecordDeleteManager: any CallRecordDeleteManager
         let callRecordMissedCallManager: CallRecordMissedCallManager
         let callRecordQuerier: CallRecordQuerier
         let callRecordStore: CallRecordStore
@@ -50,11 +51,12 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         let tsAccountManager: any TSAccountManager
     }
 
-    private lazy var deps: Dependencies = Dependencies(
+    private nonisolated let deps: Dependencies = Dependencies(
         badgeManager: AppEnvironment.shared.badgeManager,
         blockingManager: SSKEnvironment.shared.blockingManagerRef,
         callLinkStore: DependenciesBridge.shared.callLinkStore,
         callRecordDeleteAllJobQueue: SSKEnvironment.shared.callRecordDeleteAllJobQueueRef,
+        callRecordDeleteManager: DependenciesBridge.shared.callRecordDeleteManager,
         callRecordMissedCallManager: DependenciesBridge.shared.callRecordMissedCallManager,
         callRecordQuerier: DependenciesBridge.shared.callRecordQuerier,
         callRecordStore: DependenciesBridge.shared.callRecordStore,
@@ -254,11 +256,22 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             return
         }
 
-        let selectedViewModelReferences: [CallViewModel.Reference] = selectedRows.map { idxPath in
-            return viewModelLoader.viewModelReference(at: idxPath.row)
+        let selectedModelReferenceses: [ViewModelLoader.ModelReferences] = selectedRows.map { idxPath in
+            return viewModelLoader.modelReferences(at: idxPath.row)
         }
 
-        deleteCalls(viewModelReferences: selectedViewModelReferences)
+        promptToDeleteMultiple(count: selectedModelReferenceses.count) { [weak self] in
+            do {
+                try await self?.deleteCalls(modelReferenceses: selectedModelReferenceses)
+                self?.presentToast(text: String.localizedStringWithFormat(
+                    Strings.deleteMultipleSuccessFormat,
+                    selectedModelReferenceses.count
+                ))
+            } catch {
+                Logger.warn("\(error)")
+                self?.presentSomeCallLinkDeletionError()
+            }
+        }
     }
 
     // MARK: Call Link Button
@@ -342,7 +355,32 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             message: Strings.deleteAllCallsPromptMessage,
             proceedTitle: Strings.deleteAllCallsButtonTitle,
             proceedStyle: .destructive
-        ) { _ in
+        ) { [weak self] _ in
+            Task {
+                do {
+                    try await self?.deleteAllCalls()
+                } catch {
+                    Logger.warn("\(error)")
+                    self?.presentSomeCallLinkDeletionError()
+                }
+            }
+        }
+    }
+
+    private func deleteAllCalls() async throws {
+        let callLinksToDelete: [(rootKey: CallLinkRootKey, adminPasskey: Data)]
+        callLinksToDelete = await self.deps.databaseStorage.awaitableWrite { tx in
+            // We might have call links that have never been used. Plus, any call link
+            // for which we're the admin isn't deleted by a "clear all" operation
+            // because they must first be deleted on the server. (We delete them
+            // individually at the end of this method.)
+            let callLinksToDelete: [(rootKey: CallLinkRootKey, adminPasskey: Data)]
+            callLinksToDelete = (try? self.deps.callLinkStore.fetchAll(tx: tx.asV2Read).compactMap {
+                guard let adminPasskey = $0.adminPasskey else {
+                    return nil
+                }
+                return ($0.rootKey, adminPasskey)
+            }) ?? []
             /// Delete-all should use the timestamp of the most-recent call, at
             /// the time the action was initiated, as the timestamp we delete
             /// before (and include in the outgoing sync message).
@@ -354,13 +392,8 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             /// rather than the most recent call matching our UI state – if the
             /// user does delete-all while filtering to Missed, we still want to
             /// actually delete all.
-            self.deps.databaseStorage.asyncWrite { tx in
-                guard
-                    let mostRecentCallRecord = try? self.deps.callRecordQuerier.fetchCursor(
-                        ordering: .descending, tx: tx.asV2Read
-                    )?.next()
-                else { return }
-
+            let mostRecentCursor = self.deps.callRecordQuerier.fetchCursor(ordering: .descending, tx: tx.asV2Read)
+            if let mostRecentCallRecord = try? mostRecentCursor?.next() {
                 /// This will ultimately post "call records deleted"
                 /// notifications that this view is listening to, so we don't
                 /// need to do any manual UI updates.
@@ -370,7 +403,9 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                     tx: tx
                 )
             }
+            return callLinksToDelete
         }
+        try await deleteCallLinks(callLinksToDelete: callLinksToDelete)
     }
 
     // MARK: Tab picker
@@ -1400,9 +1435,7 @@ extension CallsListViewController: UITableViewDelegate {
             break
         }
 
-        guard let viewModel = viewModelWithSneakyTransaction(at: indexPath) else {
-            return nil
-        }
+        let modelReferences = viewModelLoader.modelReferences(at: indexPath.row)
 
         let deleteAction = makeContextualAction(
             style: .destructive,
@@ -1410,7 +1443,7 @@ extension CallsListViewController: UITableViewDelegate {
             image: "trash-fill",
             title: CommonStrings.deleteButton
         ) { [weak self] in
-            self?.deleteCalls(viewModelReferences: [viewModel.reference])
+            self?.promptToDeleteCallIfNeeded(modelReferences: modelReferences)
         }
 
         return .init(actions: [deleteAction])
@@ -1447,6 +1480,7 @@ extension CallsListViewController: UITableViewDelegate {
         guard let viewModel = viewModelWithSneakyTransaction(at: indexPath) else {
             return nil
         }
+        let modelReferences = viewModelLoader.modelReferences(at: indexPath.row)
 
         var actions = [UIAction]()
 
@@ -1548,7 +1582,7 @@ extension CallsListViewController: UITableViewDelegate {
                 image: Theme.iconImage(.contextMenuDelete),
                 attributes: .destructive
             ) { [weak self] _ in
-                self?.deleteCalls(viewModelReferences: [viewModel.reference])
+                self?.promptToDeleteCallIfNeeded(modelReferences: modelReferences)
             }
             actions.append(deleteAction)
         case .participating:
@@ -1594,32 +1628,140 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
         }
     }
 
-    private func deleteCalls(viewModelReferences: [CallViewModel.Reference]) {
-        deps.databaseStorage.asyncWrite { tx in
-            let callRecordIdsToDelete: [CallRecord.ID] = viewModelReferences.flatMap { reference in
-                switch reference {
-                case .callRecords(let primaryId, let coalescedIds):
-                    return [primaryId] + coalescedIds
-                case .callLink(_):
-                    // [CallLink] TODO: Implement real deletion incl. sync messages.
-                    owsFail("[CallLink] TODO: Add deletion support")
+    private func promptToDeleteMultiple(count: Int, proceedAction: @escaping @MainActor () async -> Void) {
+        OWSActionSheets.showConfirmationAlert(
+            title: String.localizedStringWithFormat(Strings.deleteMultipleTitleFormat, count),
+            message: Strings.deleteMultipleMessage,
+            proceedTitle: Strings.deleteCallActionTitle,
+            proceedStyle: .destructive,
+            proceedAction: { _ in Task { await proceedAction() } },
+            fromViewController: self
+        )
+    }
+
+    private func presentSomeCallLinkDeletionError() {
+        let actionSheet = ActionSheetController(message: Strings.deleteMultipleError)
+        actionSheet.addAction(OWSActionSheets.okayAction)
+        self.presentActionSheet(actionSheet)
+    }
+
+    private func promptToDeleteCallIfNeeded(modelReferences: ViewModelLoader.ModelReferences) {
+        // If we're the admin for this link, we need to show a warning that other
+        // people won't be able to use it.
+        if isAdmin(forCallLinkRowId: modelReferences.callLinkRowId) {
+            CallLinkDeleter.promptToDelete(fromViewController: self) { [weak self] in
+                do {
+                    try await self?.deleteCalls(modelReferenceses: [modelReferences])
+                    self?.presentToast(text: CallLinkDeleter.successText)
+                } catch {
+                    Logger.warn("\(error)")
+                    self?.presentToast(text: CallLinkDeleter.failureText)
                 }
             }
+        } else {
+            // Otherwise, we can just delete it.
+            Task {
+                do {
+                    try await self.deleteCalls(modelReferenceses: [modelReferences])
+                } catch {
+                    owsFailDebug("\(error)")
+                }
+            }
+        }
+    }
 
-            let callRecordsToDelete = callRecordIdsToDelete.compactMap { callRecordId -> CallRecord? in
-                return self.deps.callRecordStore.fetch(
-                    callRecordId: callRecordId, tx: tx
-                ).unwrapped
+    private func isAdmin(forCallLinkRowId callLinkRowId: Int64?) -> Bool {
+        return deps.databaseStorage.read { tx in
+            guard let callLinkRowId else {
+                return false
+            }
+            do {
+                let callLinkRecord = try self.deps.callLinkStore.fetch(rowId: callLinkRowId, tx: tx.asV2Read) ?? {
+                    throw OWSAssertionError("Couldn't fetch CallLink that must exist.")
+                }()
+                return callLinkRecord.adminPasskey != nil
+            } catch {
+                owsFailDebug("\(error)")
+                return false
+            }
+        }
+    }
+
+    private func deleteCalls(modelReferenceses: [ViewModelLoader.ModelReferences]) async throws {
+        let callLinksToDelete: [(rootKey: CallLinkRootKey, adminPasskey: Data)]
+
+        // First, delete everything that's local only. This includes thread-based
+        // calls & any call link calls for which we're not the admin. These
+        // deletions never fail (except for db corruption-level failures).
+        callLinksToDelete = try await deps.databaseStorage.awaitableWrite { tx in
+            var callLinksToDelete = [(rootKey: CallLinkRootKey, adminPasskey: Data)]()
+            var callRecordIdsWithInteractions = [CallRecord.ID]()
+            for modelReferences in modelReferenceses {
+                if let callLinkRowId = modelReferences.callLinkRowId {
+                    let callLinkRecord = try self.deps.callLinkStore.fetch(rowId: callLinkRowId, tx: tx.asV2Read) ?? {
+                        throw OWSAssertionError("Couldn't fetch CallLink that must exist.")
+                    }()
+                    if let adminPasskey = callLinkRecord.adminPasskey {
+                        callLinksToDelete.append((callLinkRecord.rootKey, adminPasskey))
+                    } else {
+                        try self.deleteCallRecords(forCallLinkRowId: callLinkRecord.id, tx: tx.asV2Write)
+                    }
+                } else {
+                    callRecordIdsWithInteractions.append(contentsOf: modelReferences.callRecordRowIds)
+                }
+            }
+            let callRecordsWithInteractions = callRecordIdsWithInteractions.compactMap { callRecordId -> CallRecord? in
+                return self.deps.callRecordStore.fetch(callRecordId: callRecordId, tx: tx).unwrapped
             }
 
             /// Deleting these call records will trigger a ``CallRecordStoreNotification``,
             /// which we're listening for in this view and will in turn lead us
             /// to update the UI as appropriate.
             self.deps.interactionDeleteManager.delete(
-                alongsideAssociatedCallRecords: callRecordsToDelete,
+                alongsideAssociatedCallRecords: callRecordsWithInteractions,
                 sideEffects: .default(),
                 tx: tx.asV2Write
             )
+
+            return callLinksToDelete
+        }
+
+        // Then, delete any call links we found for which we're the admin. Each of
+        // these may independently fail.
+        try await deleteCallLinks(callLinksToDelete: callLinksToDelete)
+    }
+
+    private nonisolated func deleteCallRecords(forCallLinkRowId callLinkRowId: Int64, tx: DBWriteTransaction) throws {
+        let callRecords = try deps.callRecordStore.fetchExisting(conversationId: .callLink(callLinkRowId: callLinkRowId), tx: tx)
+        deps.callRecordDeleteManager.deleteCallRecords(callRecords, sendSyncMessageOnDelete: true, tx: tx)
+    }
+
+    private func deleteCallLinks(callLinksToDelete: [(rootKey: CallLinkRootKey, adminPasskey: Data)]) async throws {
+        let callLinkStateUpdater = deps.callService.callLinkStateUpdater
+        try await withThrowingTaskGroup(of: Void.self) { taskGroup in
+            for callLinkToDelete in callLinksToDelete {
+                taskGroup.addTask {
+                    try await CallLinkDeleter.deleteCallLink(
+                        stateUpdater: callLinkStateUpdater,
+                        storageServiceManager: NSObject.storageServiceManager,
+                        rootKey: callLinkToDelete.rootKey,
+                        adminPasskey: callLinkToDelete.adminPasskey
+                    )
+                }
+            }
+            var anyError: (any Error)?
+            while let result = await taskGroup.nextResult() {
+                switch result {
+                case .success:
+                    break
+                case .failure(let error):
+                    Logger.warn("Couldn't delete call link: \(error)")
+                    anyError = error
+                }
+            }
+            if let anyError {
+                throw anyError
+            }
         }
     }
 
