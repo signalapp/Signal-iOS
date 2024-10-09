@@ -223,7 +223,6 @@ final class CallLinkViewController: OWSTableViewController2 {
     }
 
     private func createCallLinkRecord() -> Int64 {
-        // [CallLink] TODO: Make this asynchronous if needed.
         let rowId = databaseStorage.write { tx in
             var callLinkRecord: CallLinkRecord
             do {

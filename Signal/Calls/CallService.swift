@@ -262,7 +262,6 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
                 )
             }
         case .callLink:
-            // [CallLink] TODO: .
             break
         }
     }
@@ -570,7 +569,6 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!
         let authCredential = try await authCredentialManager.fetchCallLinkAuthCredential(localIdentifiers: localIdentifiers)
         return _buildAndConnectGroupCall(isOutgoingVideoMuted: false) { () -> (SignalCall, CallLinkCall)? in
-            // [CallLink] TODO: Read adminPasskey from disk instead of a parameter.
             let videoCaptureController = VideoCaptureController()
             let sfuUrl = DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL
             let secretParams = CallLinkSecretParams.deriveFromRootKey(callLink.rootKey.bytes)
@@ -857,7 +855,6 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
                 owsFailDebug("Failed to fetch membership info: \(error)")
                 return
             }
-            // [CallLink] TODO: .
             groupThreadCall.ringRtcCall.updateGroupMembers(members: membershipInfo)
         }
     }

@@ -18,7 +18,7 @@ protocol CallUIAdaptee: AnyObject {
     @MainActor
     func startOutgoingCall(call: SignalCall)
 
-    // [CallLink] TODO: Only allow individual & group calls.
+    // TODO: It might be nice to prevent call links from being passed here at compile time.
     @MainActor
     func reportIncomingCall(_ call: SignalCall, completion: @escaping (Error?) -> Void)
 

@@ -356,10 +356,6 @@ class GroupCallViewController: UIViewController {
             owsFail("Can't start a call if there's no view controller")
         }
 
-        // [CallLink] TODO: Check if `canCancel` should be true.
-        // Gotchas:
-        // - Incoming group calls that are ringing.
-        // - Disconnecting calls that the user cancels.
         ModalActivityIndicatorViewController.present(
             fromViewController: frontmostViewController,
             canCancel: false,
