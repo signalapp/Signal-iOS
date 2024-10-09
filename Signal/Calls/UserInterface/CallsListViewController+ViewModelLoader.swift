@@ -214,6 +214,7 @@ extension CallsListViewController {
             self.upcomingCallLinkReferences = upcomingCallLinks.map {
                 return UpcomingCallLinkReference(callLinkRowId: $0.id)
             }
+            self.pruneDuplicateAdHocCalls()
         }
 
         /// Load a page of call history items in the requested direction.
@@ -309,8 +310,23 @@ extension CallsListViewController {
             case .newer:
                 self.callHistoryItemReferences = fetchedCallHistoryItemReferences + self.callHistoryItemReferences
             }
+            self.pruneDuplicateAdHocCalls()
 
             return true
+        }
+
+        mutating func pruneDuplicateAdHocCalls() {
+            // Filter to show each call link only once.
+            var visitedIds = Set<Int64>()
+            self.callHistoryItemReferences.removeAll(where: {
+                if let callLinkRowId = $0.callLinkRowId, !visitedIds.insert(callLinkRowId).inserted {
+                    return true
+                }
+                return false
+            })
+            // Give precedence to historical calls rather than upcoming calls, though
+            // the two should be eventually consistent.
+            self.upcomingCallLinkReferences.removeAll(where: { visitedIds.contains($0.callLinkRowId) })
         }
 
         // MARK: - Rehydration
