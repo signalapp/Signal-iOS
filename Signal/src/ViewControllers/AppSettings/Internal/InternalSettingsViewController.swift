@@ -107,14 +107,23 @@ class InternalSettingsViewController: OWSTableViewController2 {
 
         contents.add(debugSection)
 
-        let (contactThreadCount, groupThreadCount, messageCount, tsAttachmentCount, v2AttachmentCount, subscriberID) = databaseStorage.read { tx in
+        let (
+            contactThreadCount,
+            groupThreadCount,
+            messageCount,
+            tsAttachmentCount,
+            v2AttachmentCount,
+            subscriberID,
+            storageServiceManifestVersion
+        ) = databaseStorage.read { tx in
             return (
                 TSThread.anyFetchAll(transaction: tx).filter { !$0.isGroupThread }.count,
                 TSThread.anyFetchAll(transaction: tx).filter { $0.isGroupThread }.count,
                 TSInteraction.anyCount(transaction: tx),
                 TSAttachment.anyCount(transaction: tx),
                 try? Attachment.Record.fetchCount(tx.unwrapGrdbRead.database),
-                SubscriptionManagerImpl.getSubscriberID(transaction: tx)
+                SubscriptionManagerImpl.getSubscriberID(transaction: tx),
+                StorageServiceManifestVersion.getCurrent(tx: tx)
             )
         }
 
@@ -174,6 +183,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
         contents.add(deviceSection)
 
         let otherSection = OWSTableSection(title: "Other")
+        otherSection.add(.copyableItem(label: "Storage Service Manifest Version", value: "\(storageServiceManifestVersion)"))
         otherSection.add(.copyableItem(label: "CC?", value: self.signalService.isCensorshipCircumventionActive ? "Yes" : "No"))
         otherSection.add(.copyableItem(label: "Audio Category", value: AVAudioSession.sharedInstance().category.rawValue.replacingOccurrences(of: "AVAudioSessionCategory", with: "")))
         otherSection.add(.switch(

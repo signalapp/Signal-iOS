@@ -448,6 +448,12 @@ private struct PendingMutations {
 
 // MARK: -
 
+public enum StorageServiceManifestVersion {
+    public static func getCurrent(tx: SDSAnyReadTransaction) -> UInt64 {
+        return StorageServiceOperation.State.current(transaction: tx).manifestVersion
+    }
+}
+
 class StorageServiceOperation: OWSOperation {
 
     private static let migrationStore: SDSKeyValueStore = SDSKeyValueStore(collection: "StorageServiceMigration")
