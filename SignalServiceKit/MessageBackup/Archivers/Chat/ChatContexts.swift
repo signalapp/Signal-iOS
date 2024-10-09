@@ -92,6 +92,7 @@ extension MessageBackup {
 
         private var currentChatId = ChatId(value: 1)
         private let map = SharedMap<ThreadUniqueId, ChatId>()
+        private let threadCache = SharedMap<ChatId, TSThread>()
 
         internal init(
             currentBackupAttachmentUploadEra: String?,
@@ -109,17 +110,23 @@ extension MessageBackup {
             )
         }
 
-        internal func assignChatId(to threadUniqueId: ThreadUniqueId) -> ChatId {
+        internal func assignChatId(to thread: TSThread) -> ChatId {
             defer {
                 currentChatId = ChatId(value: currentChatId.value + 1)
             }
-            map[threadUniqueId] = currentChatId
+            map[ThreadUniqueId(thread: thread)] = currentChatId
+            threadCache[currentChatId] = thread
             return currentChatId
         }
 
         internal subscript(_ threadUniqueId: ThreadUniqueId) -> ChatId? {
             // swiftlint:disable:next implicit_getter
             get { map[threadUniqueId] }
+        }
+
+        internal subscript(_ chatId: ChatId) -> TSThread? {
+            // swiftlint:disable:next implicit_getter
+            get { threadCache[chatId] }
         }
     }
 
@@ -128,7 +135,8 @@ extension MessageBackup {
         public let customChatColorContext: CustomChatColorRestoringContext
         public let recipientContext: RecipientRestoringContext
 
-        private let map = SharedMap<ChatId, ThreadUniqueId>()
+        private let contactThreadMap = SharedMap<ChatId, (Int64, TSContactThread)>()
+        private let groupIdMap = SharedMap<ChatId, (Int64, GroupId)>()
         private let pinnedThreadIndexMap = SharedMap<ThreadUniqueId, UInt32>()
 
         internal init(
@@ -141,15 +149,29 @@ extension MessageBackup {
             super.init(tx: tx)
         }
 
-        internal subscript(_ chatId: ChatId) -> ThreadUniqueId? {
-            map[chatId]
+        internal subscript(_ chatId: ChatId) -> ChatThread? {
+            if let (rowId, contactThread) = contactThreadMap[chatId] {
+                return ChatThread(threadType: .contact(contactThread), threadRowId: rowId)
+            }
+            if
+                let (rowId, groupId) = groupIdMap[chatId],
+                let groupThread = recipientContext[groupId]
+            {
+                return ChatThread(threadType: .groupV2(groupThread), threadRowId: rowId)
+            }
+            return nil
         }
 
         internal func mapChatId(
             _ chatId: ChatId,
             to thread: ChatThread
         ) {
-            map[chatId] = ThreadUniqueId(chatThread: thread)
+            switch thread.threadType {
+            case .contact(let tSContactThread):
+                contactThreadMap[chatId] = (thread.threadRowId, tSContactThread)
+            case .groupV2(let tSGroupThread):
+                groupIdMap[chatId] = (thread.threadRowId, tSGroupThread.groupId)
+            }
         }
 
         /// Given a newly encountered pinned thread, return all pinned thread ids encountered so far, in order.

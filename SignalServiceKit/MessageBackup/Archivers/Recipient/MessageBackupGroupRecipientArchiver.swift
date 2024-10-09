@@ -363,6 +363,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
         // MARK: Return successfully!
 
         context[recipient.recipientId] = .group(groupModel.groupId)
+        context[groupModel.groupId] = groupThread
         return .success
     }
 }

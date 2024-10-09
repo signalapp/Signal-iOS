@@ -157,7 +157,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
 
         guard
             let chatId = context[interaction.uniqueThreadIdentifier],
-            let thread = threadStore.fetchThreadForInteraction(interaction, tx: context.tx)
+            let thread = context[chatId]
         else {
             partialErrors.append(.archiveFrameError(
                 .referencedThreadIdMissing(interaction.uniqueThreadIdentifier),
@@ -320,35 +320,8 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
             break
         }
 
-        guard let threadUniqueId = context.chatContext[chatItem.typedChatId] else {
+        guard let thread = context.chatContext[chatItem.typedChatId] else {
             return restoreFrameError(.invalidProtoData(.chatIdNotFound(chatItem.typedChatId)))
-        }
-
-        guard
-            let threadRaw = threadStore.fetchThread(uniqueId: threadUniqueId.value, tx: context.tx),
-            let threadRowId = threadRaw.sqliteRowId
-        else {
-            return restoreFrameError(.referencedChatThreadNotFound(threadUniqueId))
-        }
-
-        let thread: MessageBackup.ChatThread
-        if let contactThread = threadRaw as? TSContactThread {
-            thread = MessageBackup.ChatThread(
-                threadType: .contact(contactThread),
-                threadRowId: threadRowId
-            )
-        } else if let groupThread = threadRaw as? TSGroupThread, groupThread.isGroupV2Thread {
-            thread = MessageBackup.ChatThread(
-                threadType: .groupV2(groupThread),
-                threadRowId: threadRowId
-            )
-        } else {
-            // It should be enforced by ChatRestoringContext that any
-            // thread ID in it maps to a valid TSContact- or TSGroup- thread.
-            return .failure([.restoreFrameError(
-                .developerError(OWSAssertionError("Invalid TSThread type for chatId")),
-                chatItem.id
-            )])
         }
 
         let restoreInteractionResult: MessageBackup.RestoreInteractionResult<Void>

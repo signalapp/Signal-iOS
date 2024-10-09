@@ -127,7 +127,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         stream: MessageBackupProtoOutputStream,
         context: MessageBackup.ChatArchivingContext
     ) -> ArchiveMultiFrameResult {
-        let chatId = context.assignChatId(to: MessageBackup.ThreadUniqueId(thread: thread))
+        let chatId = context.assignChatId(to: thread)
 
         guard let threadRowId = thread.sqliteRowId else {
             return .completeFailure(.fatalArchiveError(
@@ -149,7 +149,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         stream: MessageBackupProtoOutputStream,
         context: MessageBackup.ChatArchivingContext
     ) -> ArchiveMultiFrameResult {
-        let chatId = context.assignChatId(to: MessageBackup.ThreadUniqueId(thread: thread))
+        let chatId = context.assignChatId(to: thread)
 
         let contactServiceId: ServiceId? = thread.contactUUID.flatMap { try? ServiceId.parseFrom(serviceIdString: $0) }
         guard
@@ -191,7 +191,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         stream: MessageBackupProtoOutputStream,
         context: MessageBackup.ChatArchivingContext
     ) -> ArchiveMultiFrameResult {
-        let chatId = context.assignChatId(to: MessageBackup.ThreadUniqueId(thread: thread))
+        let chatId = context.assignChatId(to: thread)
 
         let recipientAddress = MessageBackup.RecipientArchivingContext.Address.group(thread.groupId)
         guard let recipientId = context.recipientContext[recipientAddress] else {
@@ -332,7 +332,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
             // We don't create the group thread here; that happened when parsing the Group Recipient.
             // Instead, just set metadata.
             guard
-                let groupThread = threadStore.fetchGroupThread(groupId: groupId, tx: context.tx),
+                let groupThread = context.recipientContext[groupId],
                 groupThread.isGroupV2Thread
             else {
                 return .failure([.restoreFrameError(

@@ -165,6 +165,10 @@ extension MessageBackup {
         let localIdentifiers: LocalIdentifiers
 
         private let map = SharedMap<RecipientId, Address>()
+        /// We create TSGroupThread (and GroupModel) when we restore the Recipient, NOT the Chat.
+        /// By comparison, TSContactThread is created when we restore the Chat frame.
+        /// We cache the TSGroupThread here to avoid fetching later when we do restore the Chat.
+        private let groupThreadCache = SharedMap<GroupId, TSGroupThread>()
 
         init(
             localIdentifiers: LocalIdentifiers,
@@ -177,6 +181,11 @@ extension MessageBackup {
         subscript(_ id: RecipientId) -> Address? {
             get { map[id] }
             set(newValue) { map[id] = newValue }
+        }
+
+        subscript(_ id: GroupId) -> TSGroupThread? {
+            get { groupThreadCache[id] }
+            set(newValue) { groupThreadCache[id] = newValue }
         }
     }
 }
