@@ -45,6 +45,16 @@ class AudioWaveformProgressView: UIView {
         }
     }
 
+    public var cachedAudioDuration: TimeInterval? {
+        didSet {
+            redrawSamples()
+        }
+    }
+
+    public var canScrub: Bool {
+        return audioWaveform != nil || waveformWaitingTask == nil && cachedAudioDuration != nil
+    }
+
     public override var bounds: CGRect {
         didSet {
             guard bounds != oldValue else { return }
@@ -113,7 +123,20 @@ class AudioWaveformProgressView: UIView {
             }
         }
 
-        guard let audioWaveform else {
+        let sampleWidth: CGFloat = 2
+        let minSampleSpacing: CGFloat = 2
+        let minSampleHeight: CGFloat = 2
+
+        // Calculate the number of lines we want to render based on the view width.
+        let targetSamplesCount = Int((width + minSampleSpacing) / (sampleWidth + minSampleSpacing))
+
+        let amplitudes: [Float]
+        if let audioWaveform {
+            amplitudes = audioWaveform.normalizedLevelsToDisplay(sampleCount: targetSamplesCount)
+        } else if cachedAudioDuration != nil && waveformWaitingTask == nil {
+            // Generate a uniform audio waveform for the duration.
+            amplitudes = Array(repeating: 0.5, count: targetSamplesCount)
+        } else {
             resetContents(showLoadingAnimation: true)
             return
         }
@@ -126,17 +149,9 @@ class AudioWaveformProgressView: UIView {
             return
         }
 
-        let sampleWidth: CGFloat = 2
-        let minSampleSpacing: CGFloat = 2
-        let minSampleHeight: CGFloat = 2
-
         let playedBezierPath = UIBezierPath()
         let unplayedBezierPath = UIBezierPath()
 
-        // Calculate the number of lines we want to render based on the view width.
-        let targetSamplesCount = Int((width + minSampleSpacing) / (sampleWidth + minSampleSpacing))
-
-        let amplitudes = audioWaveform.normalizedLevelsToDisplay(sampleCount: targetSamplesCount)
         guard amplitudes.count > 0 else {
             owsFailDebug("Missing sample amplitudes.")
             resetContents(showLoadingAnimation: false)
@@ -204,11 +219,12 @@ class AudioWaveformProgressView: UIView {
         guard let audioWaveformTask else {
             return
         }
-        waveformWaitingTask = Task<Void, Never> {
+        waveformWaitingTask = Task<Void, Never> { [weak self] in
             let waveform = try? await audioWaveformTask.value
+            self?.waveformWaitingTask = nil
             if !Task.isCancelled {
-                self.audioWaveform = waveform
-                self.redrawSamples()
+                self?.audioWaveform = waveform
+                self?.redrawSamples()
             }
         }
     }
