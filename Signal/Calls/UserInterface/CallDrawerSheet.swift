@@ -594,7 +594,7 @@ extension CallDrawerSheet {
     }
 
     func isPresentingCallInfo() -> Bool {
-        return self.presentingViewController != nil && tableViewContainer.alpha == 1
+        return self.presentingViewController != nil && tableView.alpha == 1
     }
 
     func isCrossFading() -> Bool {
