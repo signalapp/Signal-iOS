@@ -48,11 +48,6 @@ final class AdHocCallRecordManagerImpl: AdHocCallRecordManager {
         shouldSendSyncMessge: Bool,
         tx: any DBWriteTransaction
     ) throws {
-        guard FeatureFlags.callLinkRecordTable else {
-            Logger.warn("Skipping CallRecord for adhoc call.")
-            return
-        }
-
         var (callLink, inserted) = try callLinkStore.fetchOrInsert(rootKey: rootKey, tx: tx)
 
         if inserted {

@@ -256,9 +256,6 @@ final class CallLinkViewController: OWSTableViewController2 {
         guard callLinkRowId == nil else {
             return
         }
-        guard FeatureFlags.callLinkRecordTable else {
-            return
-        }
         callLinkRowId = createCallLinkRecord()
         callLinkAdminManager?.didUpdateCallLinkState = nil
     }

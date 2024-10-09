@@ -252,13 +252,6 @@ public class RemoteConfig {
         )
     }
 
-    public var callLinkJoin: Bool {
-        return (
-            FeatureBuild.current == .dev
-            || FeatureBuild.current == .internal && isEnabled(.callLinkJoin)
-        )
-    }
-
     // MARK: UInt values
 
     private func getUIntValue(
@@ -430,7 +423,6 @@ private enum IsEnabledFlag: String, FlagType {
     case applePayMonthlyDonationKillSwitch = "ios.applePayMonthlyDonationKillSwitch"
     case applePayOneTimeDonationKillSwitch = "ios.applePayOneTimeDonationKillSwitch"
     case automaticSessionResetKillSwitch = "ios.automaticSessionResetKillSwitch"
-    case callLinkJoin = "ios.callLink.join.v1"
     case cardGiftDonationKillSwitch = "ios.cardGiftDonationKillSwitch"
     case cardMonthlyDonationKillSwitch = "ios.cardMonthlyDonationKillSwitch"
     case cardOneTimeDonationKillSwitch = "ios.cardOneTimeDonationKillSwitch"
@@ -456,7 +448,6 @@ private enum IsEnabledFlag: String, FlagType {
         case .applePayMonthlyDonationKillSwitch: false
         case .applePayOneTimeDonationKillSwitch: false
         case .automaticSessionResetKillSwitch: false
-        case .callLinkJoin: false
         case .cardGiftDonationKillSwitch: false
         case .cardMonthlyDonationKillSwitch: false
         case .cardOneTimeDonationKillSwitch: false
@@ -483,7 +474,6 @@ private enum IsEnabledFlag: String, FlagType {
         case .applePayMonthlyDonationKillSwitch: false
         case .applePayOneTimeDonationKillSwitch: false
         case .automaticSessionResetKillSwitch: false
-        case .callLinkJoin: true
         case .cardGiftDonationKillSwitch: false
         case .cardMonthlyDonationKillSwitch: false
         case .cardOneTimeDonationKillSwitch: false

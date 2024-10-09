@@ -799,9 +799,6 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     }
 
     private func reloadUpcomingCallLinks() {
-        guard FeatureFlags.callLinkRecordTable else {
-            return
-        }
         deps.db.read { tx in viewModelLoader.reloadUpcomingCallLinkReferences(tx: tx) }
     }
 

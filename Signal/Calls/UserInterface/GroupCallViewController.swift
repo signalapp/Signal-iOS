@@ -323,7 +323,7 @@ class GroupCallViewController: UIViewController {
         for callLink: CallLink,
         callLinkStateRetrievalStrategy: CallService.CallLinkStateRetrievalStrategy = .fetch
     ) {
-        guard RemoteConfig.current.callLinkJoin else {
+        guard FeatureFlags.callLinkJoin else {
             return
         }
         self._presentLobby { viewController in

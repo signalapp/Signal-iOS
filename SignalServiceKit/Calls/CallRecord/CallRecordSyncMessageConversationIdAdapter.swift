@@ -69,9 +69,6 @@ class CallRecordSyncMessageConversationIdAdapterImpl: CallRecordSyncMessageConve
         {
             return .thread(threadRowId: groupThread.sqliteRowId!)
         }
-        guard FeatureFlags.callLinkRecordTable else {
-            return nil
-        }
         if let callLinkRecord = try callLinkStore.fetch(roomId: conversationId, tx: tx) {
             return .callLink(callLinkRowId: callLinkRecord.id)
         }

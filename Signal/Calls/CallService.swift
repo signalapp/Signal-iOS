@@ -574,9 +574,6 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!
         let authCredential = try await authCredentialManager.fetchCallLinkAuthCredential(localIdentifiers: localIdentifiers)
         let (adminPasskey, isDeleted) = try databaseStorage.read { tx -> (Data?, Bool) in
-            guard FeatureFlags.callLinkRecordTable else {
-                return (nil, false)
-            }
             let callLinkRecord = try callLinkStore.fetch(roomId: callLink.rootKey.deriveRoomId(), tx: tx.asV2Read)
             return (callLinkRecord?.adminPasskey, callLinkRecord?.isDeleted == true)
         }

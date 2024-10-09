@@ -355,9 +355,6 @@ final class IncomingCallEventSyncMessageManagerImpl: IncomingCallEventSyncMessag
     }
 
     private func callLinkRecord(forRoomId roomId: Data, tx: DBReadTransaction) -> CallLinkRecord? {
-        guard FeatureFlags.callLinkRecordTable else {
-            return nil
-        }
         do {
             return try callLinkStore.fetch(roomId: roomId, tx: tx)
         } catch {

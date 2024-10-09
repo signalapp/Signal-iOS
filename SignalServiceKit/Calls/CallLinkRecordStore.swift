@@ -68,9 +68,6 @@ public class CallLinkRecordStoreImpl: CallLinkRecordStore {
     }
 
     public func fetchAll(tx: any DBReadTransaction) throws -> [CallLinkRecord] {
-        guard FeatureFlags.callLinkRecordTable else {
-            throw OWSGenericError("Call Links aren't yet supported.")
-        }
         let db = tx.databaseConnection
         do {
             return try CallLinkRecord.fetchAll(db)
@@ -105,9 +102,6 @@ public class CallLinkRecordStoreImpl: CallLinkRecordStore {
     }
 
     public func fetchAnyPendingRecord(tx: any DBReadTransaction) throws -> CallLinkRecord? {
-        guard FeatureFlags.callLinkRecordTable else {
-            return nil
-        }
         let db = tx.databaseConnection
         do {
             return try CallLinkRecord.filter(Column(CallLinkRecord.CodingKeys.pendingFetchCounter) > 0).fetchOne(db)

@@ -1867,9 +1867,6 @@ class StorageServiceCallLinkRecordUpdater: StorageServiceRecordUpdater {
         unknownFields: UnknownStorage?,
         transaction tx: SDSAnyReadTransaction
     ) -> StorageServiceProtoCallLinkRecord? {
-        owsPrecondition(FeatureFlags.callLinkStorageService)
-        owsPrecondition(FeatureFlags.callLinkRecordTable)
-
         guard let rootKey = try? CallLinkRootKey(rootKeyData) else {
             owsFailDebug("Invalid CallLinkRootKey")
             return nil
@@ -1906,9 +1903,6 @@ class StorageServiceCallLinkRecordUpdater: StorageServiceRecordUpdater {
         _ record: StorageServiceProtoCallLinkRecord,
         transaction tx: SDSAnyWriteTransaction
     ) -> StorageServiceMergeResult<Data> {
-        owsPrecondition(FeatureFlags.callLinkStorageService)
-        owsPrecondition(FeatureFlags.callLinkRecordTable)
-
         guard let rootKeyData = record.rootKey, let rootKey = try? CallLinkRootKey(rootKeyData) else {
             owsFailDebug("invalid rootKey")
             return .invalid

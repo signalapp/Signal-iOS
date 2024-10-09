@@ -405,9 +405,6 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
     private func cleanUpDeletedCallLinks() async {
         let callLinkStore = DependenciesBridge.shared.callLinkStore
         let deletionThresholdMs = Date.ows_millisecondTimestamp() - CallLinkRecord.Constants.storageServiceDeletionDelayMs
-        guard FeatureFlags.callLinkRecordTable else {
-            return
-        }
         do {
             let callLinkRecords = try databaseStorage.read { tx in
                 try callLinkStore.fetchWhere(adminDeletedAtTimestampMsIsLessThan: deletionThresholdMs, tx: tx.asV2Read)
@@ -587,9 +584,6 @@ class StorageServiceOperation: OWSOperation {
         }
 
         pendingMutations.updatedCallLinkRootKeys.forEach {
-            guard FeatureFlags.callLinkStorageService else {
-                return
-            }
             state.callLinkRootKeyChangeMap[$0] = .updated
         }
     }
@@ -1352,7 +1346,7 @@ class StorageServiceOperation: OWSOperation {
                 _mergeRecord(groupV2Record, stateUpdater: groupV2Updater)
             } else if let storyDistributionListRecord = item.storyDistributionListRecord {
                 _mergeRecord(storyDistributionListRecord, stateUpdater: storyDistributionListUpdater)
-            } else if let callLinkRecord = item.callLinkRecord, FeatureFlags.callLinkStorageService {
+            } else if let callLinkRecord = item.callLinkRecord {
                 _mergeRecord(callLinkRecord, stateUpdater: callLinkUpdater)
             } else if case .account = item.identifier.type {
                 owsFailDebug("unexpectedly found account record in remaining items")
@@ -1411,7 +1405,7 @@ class StorageServiceOperation: OWSOperation {
         case .storyDistributionList:
             return true
         case .callLink:
-            return FeatureFlags.callLinkStorageService
+            return true
         case .unknown, .UNRECOGNIZED, nil:
             return false
         }
