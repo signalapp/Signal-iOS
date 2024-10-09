@@ -47,6 +47,14 @@ final class AdHocCallRecordManagerImpl: AdHocCallRecordManager {
 
         var callLink = try callLinkStore.fetchOrInsert(rootKey: rootKey, tx: tx)
 
+        // This shouldn't happen (we block joining earlier), but race conditions
+        // theoretically allow it, and this is the final point at which we can
+        // enforce the invariant that deleted links can't have call records.
+        if callLink.isDeleted {
+            Logger.warn("Ignoring event for call link that's been deleted.")
+            return
+        }
+
         let callRecordResult = callRecordStore.fetch(
             callId: callId,
             conversationId: .callLink(callLinkRowId: callLink.id),

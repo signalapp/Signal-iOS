@@ -568,22 +568,21 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         }
         let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!
         let authCredential = try await authCredentialManager.fetchCallLinkAuthCredential(localIdentifiers: localIdentifiers)
+        let (adminPasskey, isDeleted) = try databaseStorage.read { tx -> (Data?, Bool) in
+            guard FeatureFlags.callLinkRecordTable else {
+                return (nil, false)
+            }
+            let callLinkRecord = try callLinkStore.fetch(roomId: callLink.rootKey.deriveRoomId(), tx: tx.asV2Read)
+            return (callLinkRecord?.adminPasskey, callLinkRecord?.isDeleted == true)
+        }
+        if isDeleted {
+            throw OWSGenericError("Can't join a call link that you've deleted.")
+        }
         return _buildAndConnectGroupCall(isOutgoingVideoMuted: false) { () -> (SignalCall, CallLinkCall)? in
             let videoCaptureController = VideoCaptureController()
             let sfuUrl = DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL
             let secretParams = CallLinkSecretParams.deriveFromRootKey(callLink.rootKey.bytes)
             let authCredentialPresentation = authCredential.present(callLinkParams: secretParams)
-            let adminPasskey = databaseStorage.read { tx -> Data? in
-                guard FeatureFlags.callLinkRecordTable else {
-                    return nil
-                }
-                do {
-                    return try callLinkStore.fetch(roomId: callLink.rootKey.deriveRoomId(), tx: tx.asV2Read)?.adminPasskey
-                } catch {
-                    Logger.warn("Couldn't fetch adminPasskey: \(error)")
-                    return nil
-                }
-            }
             let ringRtcCall = callManager.createCallLinkCall(
                 sfuUrl: sfuUrl,
                 authCredentialPresentation: authCredentialPresentation.serialize(),
