@@ -472,38 +472,35 @@ extension CallsListViewController {
             callHistoryItemReferences.remove(atOffsets: callHistoryItemIndicesToRemove)
         }
 
-        /// Refreshes view models containing any of the given IDs. If no cached view
-        /// models contain a given ID, that ID is ignored.
+        /// Invalidates view models containing any of the given IDs.
         ///
         /// - Returns
-        /// References for any view models that were refreshed. Note that this will
-        /// not include any IDs that were ignored.
-        mutating func refreshViewModels(
-            callRecordIds callRecordsIdsToRefresh: [CallRecord.ID],
-            tx: DBReadTransaction
-        ) -> [CallViewModel.Reference] {
-            func refreshIfPossible(_ callRecord: CallRecord) -> CallRecord {
-                return fetchCallRecordBlock(callRecord.id, tx) ?? callRecord
+        /// References for any view models that were invalidated.
+        mutating func invalidate(callLinkRowIds: Set<Int64>, callRecordIds: Set<CallRecord.ID>) -> [CallViewModel.Reference] {
+            var invalidatedViewModelReferences = [CallViewModel.Reference]()
+
+            for internalIndex in upcomingCallLinkReferences.indices {
+                let reference = upcomingCallLinkReferences[internalIndex]
+                if callLinkRowIds.contains(reference.callLinkRowId) {
+                    upcomingCallLinkReferences[internalIndex].viewModel = nil
+                    invalidatedViewModelReferences.append(reference.viewModelReference)
+                }
             }
-
-            let callRecordsIdsToRefresh = Set(callRecordsIdsToRefresh)
-
-            var refreshedViewModelReferences = [CallViewModel.Reference]()
-
             for internalIndex in callHistoryItemReferences.indices {
-                guard let viewModel = callHistoryItemReferences[internalIndex].viewModel else {
-                    continue
+                let reference = callHistoryItemReferences[internalIndex]
+                let hasMatch = { () -> Bool in
+                    if let callLinkRowId = reference.callLinkRowId, callLinkRowIds.contains(callLinkRowId) {
+                        return true
+                    }
+                    return reference.callRecordIds.rawValue.contains(where: { callRecordIds.contains($0) })
+                }()
+                if hasMatch {
+                    callHistoryItemReferences[internalIndex].viewModel = nil
+                    invalidatedViewModelReferences.append(reference.viewModelReference)
                 }
-                guard viewModel.callRecords.contains(where: { callRecordsIdsToRefresh.contains($0.id) }) else {
-                    continue
-                }
-                let newCallRecords = viewModel.callRecords.map(refreshIfPossible(_:))
-                let newViewModel = callViewModelForCallRecords(newCallRecords, tx)
-                callHistoryItemReferences[internalIndex].viewModel = newViewModel
-                refreshedViewModelReferences.append(newViewModel.reference)
             }
 
-            return refreshedViewModelReferences
+            return invalidatedViewModelReferences
         }
     }
 }

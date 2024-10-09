@@ -1150,16 +1150,12 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
     /// Reload any rows containing one of the given call record IDs.
     private func reloadRows(callRecordIds callRecordIdsToReload: [CallRecord.ID]) {
-        /// Recreate the view models, so when the data source reloads the rows
+        /// Invalidate the view models, so when the data source reloads the rows,
         /// it'll reflect the new underlying state for that row.
-        ///
-        /// This step will also drop any IDs for models that are not currently
-        /// loaded, which should not be included in the snapshot.
-        let referencesToReload = deps.db.read { tx -> [CallViewModel.Reference] in
-            return viewModelLoader.refreshViewModels(
-                callRecordIds: callRecordIdsToReload, tx: tx
-            )
-        }
+        let referencesToReload = viewModelLoader.invalidate(
+            callLinkRowIds: [],
+            callRecordIds: Set(callRecordIdsToReload)
+        )
 
         if DebugFlags.internalLogging {
             logger.info("Reloading \(referencesToReload.count) rows.")
@@ -1747,14 +1743,9 @@ extension CallsListViewController: DatabaseChangeDelegate {
             return
         }
         reloadUpcomingCallLinks()
-        var updatedItems = [RowIdentifier]()
-        for viewModelReference in viewModelLoader.viewModelReferences() {
-            if case .callLink(let rowId) = viewModelReference, rowIds.contains(rowId) {
-                updatedItems.append(.callViewModelReference(viewModelReference))
-            }
-        }
+        let updatedReferences = viewModelLoader.invalidate(callLinkRowIds: rowIds, callRecordIds: [])
         var snapshot = getSnapshot()
-        snapshot.reloadItems(updatedItems)
+        snapshot.reloadItems(updatedReferences.map { .callViewModelReference($0) })
         dataSource.apply(snapshot, animatingDifferences: true)
         updateEmptyStateMessage()
         cancelMultiselectIfEmpty()
