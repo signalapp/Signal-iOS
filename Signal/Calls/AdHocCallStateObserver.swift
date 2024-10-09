@@ -62,6 +62,7 @@ final class AdHocCallStateObserver {
                 try adHocCallRecordManager.createOrUpdateRecord(
                     callId: callIdFromEra(eraId),
                     rootKey: callLinkCall.callLink.rootKey,
+                    initialState: callLinkCall.callLinkState,
                     status: { () -> CallRecord.CallStatus.CallLinkCallStatus in
                         switch joinLevel {
                         case .attempted: return .generic

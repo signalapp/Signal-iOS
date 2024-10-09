@@ -715,7 +715,7 @@ public final class MessageReceiver: Dependencies {
                 Logger.warn("Ignoring CallLinkUpdate w/\(rootKey.description) & \(callLinkUpdate.adminPasskey != nil)")
                 return
             }
-            var callLink = try callLinkStore.fetchOrInsert(rootKey: rootKey, tx: tx.asV2Write)
+            var (callLink, _) = try callLinkStore.fetchOrInsert(rootKey: rootKey, tx: tx.asV2Write)
             callLink.adminPasskey = callLink.adminPasskey ?? callLinkUpdate.adminPasskey
             callLink.setNeedsFetch()
             try callLinkStore.update(callLink, tx: tx.asV2Write)

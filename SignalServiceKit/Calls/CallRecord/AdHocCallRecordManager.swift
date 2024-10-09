@@ -10,6 +10,7 @@ public protocol AdHocCallRecordManager {
     func createOrUpdateRecord(
         callId: UInt64,
         rootKey: CallLinkRootKey,
+        initialState: SignalServiceKit.CallLinkState?,
         status: CallRecord.CallStatus.CallLinkCallStatus,
         timestamp: UInt64,
         shouldSendSyncMessge: Bool,
@@ -41,6 +42,7 @@ final class AdHocCallRecordManagerImpl: AdHocCallRecordManager {
     func createOrUpdateRecord(
         callId: UInt64,
         rootKey: CallLinkRootKey,
+        initialState: SignalServiceKit.CallLinkState?,
         status: CallRecord.CallStatus.CallLinkCallStatus,
         timestamp: UInt64,
         shouldSendSyncMessge: Bool,
@@ -51,7 +53,16 @@ final class AdHocCallRecordManagerImpl: AdHocCallRecordManager {
             return
         }
 
-        var callLink = try callLinkStore.fetchOrInsert(rootKey: rootKey, tx: tx)
+        var (callLink, inserted) = try callLinkStore.fetchOrInsert(rootKey: rootKey, tx: tx)
+
+        if inserted {
+            if let initialState {
+                callLink.updateState(initialState)
+            } else {
+                callLink.setNeedsFetch()
+            }
+            try callLinkStore.update(callLink, tx: tx)
+        }
 
         // This shouldn't happen (we block joining earlier), but race conditions
         // theoretically allow it, and this is the final point at which we can
@@ -135,6 +146,7 @@ final class AdHocCallRecordManagerImpl: AdHocCallRecordManager {
                 try self.createOrUpdateRecord(
                     callId: callId,
                     rootKey: rootKey,
+                    initialState: nil,
                     status: .generic,
                     timestamp: Date.ows_millisecondTimestamp(),
                     shouldSendSyncMessge: true,
@@ -148,7 +160,7 @@ final class AdHocCallRecordManagerImpl: AdHocCallRecordManager {
 #if TESTABLE_BUILD
 
 final class MockAdHocCallRecordManager: AdHocCallRecordManager {
-    func createOrUpdateRecord(callId: UInt64, rootKey: CallLinkRootKey, status: CallRecord.CallStatus.CallLinkCallStatus, timestamp: UInt64, shouldSendSyncMessge: Bool, tx: any DBWriteTransaction) throws {
+    func createOrUpdateRecord(callId: UInt64, rootKey: CallLinkRootKey, initialState: SignalServiceKit.CallLinkState?, status: CallRecord.CallStatus.CallLinkCallStatus, timestamp: UInt64, shouldSendSyncMessge: Bool, tx: any DBWriteTransaction) throws {
         fatalError()
     }
 

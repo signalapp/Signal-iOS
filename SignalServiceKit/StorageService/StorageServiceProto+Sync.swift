@@ -1914,7 +1914,7 @@ class StorageServiceCallLinkRecordUpdater: StorageServiceRecordUpdater {
             return .invalid
         }
         do {
-            var callLink = try self.callLinkStore.fetchOrInsert(rootKey: rootKey, tx: tx.asV2Write)
+            var (callLink, _) = try self.callLinkStore.fetchOrInsert(rootKey: rootKey, tx: tx.asV2Write)
             // The earliest deletion timestamp takes precendence when merging.
             if record.deletedAtTimestampMs > 0 || callLink.adminDeletedAtTimestampMs != nil {
                 self.callRecordDeleteManager.deleteCallRecords(

@@ -341,6 +341,7 @@ final class IncomingCallEventSyncMessageManagerImpl: IncomingCallEventSyncMessag
                 try adHocCallRecordManager.createOrUpdateRecord(
                     callId: callId,
                     rootKey: callLinkRecord.rootKey,
+                    initialState: nil,
                     status: newStatus,
                     timestamp: callTimestamp,
                     shouldSendSyncMessge: false,

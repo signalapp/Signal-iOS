@@ -267,7 +267,7 @@ final class CallLinkViewController: OWSTableViewController2 {
         let rowId = databaseStorage.write { tx in
             var callLinkRecord: CallLinkRecord
             do {
-                callLinkRecord = try callLinkStore.fetchOrInsert(rootKey: callLink.rootKey, tx: tx.asV2Write)
+                (callLinkRecord, _) = try callLinkStore.fetchOrInsert(rootKey: callLink.rootKey, tx: tx.asV2Write)
                 callLinkRecord.adminPasskey = adminPasskey!
                 callLinkRecord.updateState(callLinkState!)
                 try callLinkStore.update(callLinkRecord, tx: tx.asV2Write)
