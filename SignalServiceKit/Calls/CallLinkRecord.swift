@@ -62,7 +62,7 @@ public struct CallLinkRecord: Codable, PersistableRecord, FetchableRecord {
         case adminPasskey
         case adminDeletedAtTimestampMs
         case activeCallId
-        case pendingFetchCounter
+        case pendingFetchCounter = "pendingActionCounter"
         case isUpcoming
         case name
         case restrictions

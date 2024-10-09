@@ -64,7 +64,7 @@ final class CallRecordStoreTest: XCTestCase {
             )
         }
 
-        assertExplanation(contains: "index_call_record_on_callId_and_threadId")
+        assertExplanation(contains: "CallRecord_threadRowId_callId")
     }
 
     func testFetchByInteractionRowIdUsesIndex() {
@@ -317,32 +317,27 @@ final class CallRecordStoreTest: XCTestCase {
 
     // MARK: - Deletion cascades
 
-    func testDeletingInteractionDeletesCallRecord() {
+    func testDeletingInteractionDeletesCallRecord() throws {
         let callRecord = makeCallRecord()
 
         inMemoryDB.write { tx in
             callRecordStore._insert(callRecord: callRecord, tx: tx)
         }
 
-        inMemoryDB.write { tx in
-            let db = tx.db
-            db.executeHandlingErrors(sql: """
-                DELETE FROM model_TSInteraction
-                WHERE id = \(callRecord.interactionRowId)
-            """, arguments: .init())
-        }
+        try inMemoryDB.write { tx in
+            XCTAssertThrowsError(
+                try tx.db.execute(
+                    sql: "DELETE FROM model_TSInteraction WHERE id = ?",
+                    arguments: [callRecord.interactionRowId]
+                )
+            ) { error in
+                guard let error = error as? GRDB.DatabaseError else {
+                    XCTFail("Unexpected error!")
+                    return
+                }
 
-        inMemoryDB.read { tx in
-            switch callRecordStore.fetch(
-                callId: callRecord.callId,
-                conversationId: .thread(threadRowId: callRecord.threadRowId),
-                tx: tx
-            ) {
-            case .matchNotFound:
-                // Test pass
-                break
-            case .matchFound, .matchDeleted:
-                XCTFail("Unexpectedly found remnants of record that should've been deleted!")
+                XCTAssertEqual(error.resultCode, .SQLITE_CONSTRAINT)
+                XCTAssertEqual(error.extendedResultCode, .SQLITE_CONSTRAINT_TRIGGER)
             }
         }
     }
@@ -391,27 +386,27 @@ final class CallRecordStoreTest: XCTestCase {
         try inMemoryDB.write { tx in
             try tx.db.execute(sql: """
                 INSERT INTO "CallRecord"
-                ( "id", "callId", "interactionRowId", "threadRowId", "type", "direction", "status", "timestamp" )
+                ( "id", "callId", "interactionRowId", "threadRowId", "type", "direction", "status", "callBeganTimestamp", "unreadStatus", "callEndedTimestamp" )
                 VALUES
-                ( 1, 123, \(interaction1), \(thread1), 0, 0, 0, 1701299999 ),
-                ( 2, 1234, \(interaction2), \(thread2), 2, 1, 6, 1701300000 );
+                ( 1, 123, \(interaction1), \(thread1), 0, 0, 0, 1701299999, 0, 0 ),
+                ( 2, 1234, \(interaction2), \(thread2), 2, 1, 6, 1701300000, 0, 0 );
             """)
         }
 
         try inMemoryDB.write { tx in
             try tx.db.execute(sql: """
                 INSERT INTO "CallRecord"
-                ( "id", "callId", "interactionRowId", "threadRowId", "type", "direction", "status", "timestamp", "groupCallRingerAci", "unreadStatus" )
+                ( "id", "callId", "interactionRowId", "threadRowId", "type", "direction", "status", "callBeganTimestamp", "groupCallRingerAci", "unreadStatus", "callEndedTimestamp" )
                 VALUES
-                ( 3, 12345, \(interaction3), \(thread3), 2, 0, 8, 1701300001, X'c2459e888a6a474b80fd51a79923fd50', 0 ),
-                ( 4, 123456, \(interaction4), \(thread4), 2, 0, 8, 1701300002, X'227a8eefe8dd45f2a18c3276dc2da653', 1 );
+                ( 3, 12345, \(interaction3), \(thread3), 2, 0, 8, 1701300001, X'c2459e888a6a474b80fd51a79923fd50', 0, 0 ),
+                ( 4, 123456, \(interaction4), \(thread4), 2, 0, 8, 1701300002, X'227a8eefe8dd45f2a18c3276dc2da653', 1, 0 );
             """)
         }
 
         try inMemoryDB.write { tx in
             try tx.db.execute(sql: """
                 INSERT INTO "CallRecord"
-                ( "id", "callId", "interactionRowId", "threadRowId", "type", "direction", "status", "timestamp", "groupCallRingerAci", "unreadStatus", "callEndedTimestamp" )
+                ( "id", "callId", "interactionRowId", "threadRowId", "type", "direction", "status", "callBeganTimestamp", "groupCallRingerAci", "unreadStatus", "callEndedTimestamp" )
                 VALUES
                 ( 5, 1234567, \(interaction5), \(thread5), 2, 0, 6, 1701300003, X'c2459e888a6a474b80fd51a79923fd50', 0, 1701300004 ),
                 ( 6, 12345678, \(interaction6), \(thread6), 2, 0, 6, 1701300005, X'227a8eefe8dd45f2a18c3276dc2da653', 0, 1701300006 );

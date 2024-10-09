@@ -455,4 +455,80 @@ extension GRDBSchemaMigratorTest {
             ])
         }
     }
+
+    func testMigrateCallRecords() throws {
+        let databaseQueue = DatabaseQueue()
+        try databaseQueue.write { db in
+            try db.execute(sql: """
+            CREATE TABLE "model_TSInteraction"("id" INTEGER PRIMARY KEY);
+            INSERT INTO "model_TSInteraction" VALUES (2), (3);
+
+            CREATE TABLE "model_TSThread"("id" INTEGER PRIMARY KEY);
+            INSERT INTO "model_TSThread" VALUES (4), (5);
+
+            CREATE TABLE IF NOT EXISTS "CallRecord" (
+                "id" INTEGER PRIMARY KEY NOT NULL
+                ,"callId" TEXT NOT NULL
+                ,"interactionRowId" INTEGER NOT NULL UNIQUE REFERENCES "model_TSInteraction"("id") ON DELETE CASCADE
+                ,"threadRowId" INTEGER NOT NULL REFERENCES "model_TSThread"("id") ON DELETE RESTRICT
+                ,"type" INTEGER NOT NULL
+                ,"direction" INTEGER NOT NULL
+                ,"status" INTEGER NOT NULL
+                ,"timestamp" INTEGER NOT NULL
+                ,"groupCallRingerAci" BLOB
+                ,"unreadStatus" INTEGER NOT NULL DEFAULT 0
+                ,"callEndedTimestamp" INTEGER NOT NULL DEFAULT 0
+            );
+            INSERT INTO "CallRecord" VALUES
+                (1, '18446744073709551615', 2, 4, 1, 1, 1, 1727730000000, NULL, 0, 1727740000000),
+                (2, '18446744073709551614', 3, 5, 0, 0, 3, 1727750000000, NULL, 1, 1727760000000);
+
+            CREATE UNIQUE INDEX "index_call_record_on_callId_and_threadId" ON "CallRecord"("callId", "threadRowId");
+            CREATE INDEX "index_call_record_on_timestamp" ON "CallRecord"("timestamp");
+            CREATE INDEX "index_call_record_on_status_and_timestamp" ON "CallRecord"("status", "timestamp");
+            CREATE INDEX "index_call_record_on_threadRowId_and_timestamp" ON "CallRecord"("threadRowId", "timestamp");
+            CREATE INDEX "index_call_record_on_threadRowId_and_status_and_timestamp" ON "CallRecord"("threadRowId", "status", "timestamp");
+            CREATE INDEX "index_call_record_on_callStatus_and_unreadStatus_and_timestamp" ON "CallRecord"("status", "unreadStatus", "timestamp");
+            CREATE INDEX "index_call_record_on_threadRowId_and_callStatus_and_unreadStatus_and_timestamp" ON "CallRecord"("threadRowId", "status", "unreadStatus", "timestamp");
+
+            CREATE TABLE IF NOT EXISTS "DeletedCallRecord" (
+                "id" INTEGER PRIMARY KEY NOT NULL
+                ,"callId" TEXT NOT NULL
+                ,"threadRowId" INTEGER NOT NULL REFERENCES "model_TSThread"("id") ON DELETE RESTRICT
+                ,"deletedAtTimestamp" INTEGER NOT NULL
+            );
+            INSERT INTO "DeletedCallRecord" VALUES
+                (1, '18446744073709551613', 4, 1727770000),
+                (2, '18446744073709551612', 5, 1727780000);
+
+            CREATE UNIQUE INDEX "index_deleted_call_record_on_threadRowId_and_callId" ON "DeletedCallRecord"("threadRowId", "callId");
+            CREATE INDEX "index_deleted_call_record_on_deletedAtTimestamp" ON "DeletedCallRecord"("deletedAtTimestamp");
+            """)
+
+            do {
+                let tx = GRDBWriteTransaction(database: db)
+                defer { tx.finalizeTransaction() }
+                try GRDBSchemaMigrator.addCallLinkTable(tx: tx)
+            }
+
+            let tableNames = try Row.fetchAll(db, sql: "pragma table_list").map { $0["name"] as String }
+            XCTAssert(tableNames.contains("CallLink"))
+            XCTAssert(tableNames.contains("CallRecord"))
+            XCTAssert(!tableNames.contains("new_CallRecord"))
+            XCTAssert(tableNames.contains("DeletedCallRecord"))
+            XCTAssert(!tableNames.contains("new_DeletedCallRecord"))
+
+            let callRecords = try Row.fetchAll(db, sql: "SELECT * FROM CallRecord")
+            XCTAssertEqual(callRecords[0]["id"], 1)
+            XCTAssertEqual(callRecords[0]["callId"], "18446744073709551615")
+            XCTAssertEqual(callRecords[1]["id"], 2)
+            XCTAssertEqual(callRecords[1]["callId"], "18446744073709551614")
+
+            let deletedCallRecords = try Row.fetchAll(db, sql: "SELECT * FROM DeletedCallRecord")
+            XCTAssertEqual(deletedCallRecords[0]["id"], 1)
+            XCTAssertEqual(deletedCallRecords[0]["callId"], "18446744073709551613")
+            XCTAssertEqual(deletedCallRecords[1]["id"], 2)
+            XCTAssertEqual(deletedCallRecords[1]["callId"], "18446744073709551612")
+        }
+    }
 }

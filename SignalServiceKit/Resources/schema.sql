@@ -1281,98 +1281,6 @@ CREATE
 
 CREATE
     TABLE
-        IF NOT EXISTS "CallRecord" (
-            "id" INTEGER PRIMARY KEY NOT NULL
-            ,"callId" TEXT NOT NULL
-            ,"interactionRowId" INTEGER NOT NULL UNIQUE REFERENCES "model_TSInteraction"("id"
-        )
-            ON DELETE
-                CASCADE
-                ,"threadRowId" INTEGER NOT NULL REFERENCES "model_TSThread"("id"
-)
-    ON DELETE
-        RESTRICT
-        ,"type" INTEGER NOT NULL
-        ,"direction" INTEGER NOT NULL
-        ,"status" INTEGER NOT NULL
-        ,"timestamp" INTEGER NOT NULL
-        ,"groupCallRingerAci" BLOB
-        ,"unreadStatus" INTEGER NOT NULL DEFAULT 0
-        ,"callEndedTimestamp" INTEGER NOT NULL DEFAULT 0
-)
-;
-
-CREATE
-    UNIQUE INDEX "index_call_record_on_callId_and_threadId"
-        ON "CallRecord"("callId"
-    ,"threadRowId"
-)
-;
-
-CREATE
-    INDEX "index_call_record_on_timestamp"
-        ON "CallRecord"("timestamp"
-)
-;
-
-CREATE
-    INDEX "index_call_record_on_status_and_timestamp"
-        ON "CallRecord"("status"
-    ,"timestamp"
-)
-;
-
-CREATE
-    INDEX "index_call_record_on_threadRowId_and_timestamp"
-        ON "CallRecord"("threadRowId"
-    ,"timestamp"
-)
-;
-
-CREATE
-    INDEX "index_call_record_on_threadRowId_and_status_and_timestamp"
-        ON "CallRecord"("threadRowId"
-    ,"status"
-    ,"timestamp"
-)
-;
-
-CREATE
-    TABLE
-        IF NOT EXISTS "DeletedCallRecord" (
-            "id" INTEGER PRIMARY KEY NOT NULL
-            ,"callId" TEXT NOT NULL
-            ,"threadRowId" INTEGER NOT NULL REFERENCES "model_TSThread"("id"
-        )
-            ON DELETE
-                RESTRICT
-                ,"deletedAtTimestamp" INTEGER NOT NULL
-)
-;
-
-CREATE
-    UNIQUE INDEX "index_deleted_call_record_on_threadRowId_and_callId"
-        ON "DeletedCallRecord"("threadRowId"
-    ,"callId"
-)
-;
-
-CREATE
-    INDEX "index_deleted_call_record_on_deletedAtTimestamp"
-        ON "DeletedCallRecord"("deletedAtTimestamp"
-)
-;
-
-CREATE
-    INDEX "index_call_record_on_callStatus_and_unreadStatus_and_timestamp"
-        ON "CallRecord"("status"
-    ,"unreadStatus"
-    ,"timestamp"
-)
-;
-
-CREATE
-    TABLE
         IF NOT EXISTS "SearchableName" (
             "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
             ,"threadId" INTEGER UNIQUE
@@ -1490,15 +1398,6 @@ new. "id"
 ;
 
 END
-;
-
-CREATE
-    INDEX "index_call_record_on_threadRowId_and_callStatus_and_unreadStatus_and_timestamp"
-        ON "CallRecord"("threadRowId"
-    ,"status"
-    ,"unreadStatus"
-    ,"timestamp"
-)
 ;
 
 CREATE
@@ -2172,4 +2071,239 @@ CREATE
 ;
 
 END
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "CallLink" (
+            "id" INTEGER PRIMARY KEY
+            ,"roomId" BLOB NOT NULL UNIQUE
+            ,"rootKey" BLOB NOT NULL
+            ,"adminPasskey" BLOB
+            ,"adminDeletedAtTimestampMs" INTEGER
+            ,"activeCallId" INTEGER
+            ,"isUpcoming" BOOLEAN
+            ,"pendingActionCounter" INTEGER NOT NULL DEFAULT 0
+            ,"name" TEXT
+            ,"restrictions" INTEGER
+            ,"revoked" BOOLEAN
+            ,"expiration" INTEGER
+            ,CHECK (
+                LENGTH( "roomId" ) IS 32
+            )
+            ,CHECK (
+                LENGTH( "rootKey" ) IS 16
+            )
+            ,CHECK (
+                LENGTH( "adminPasskey" ) > 0
+                OR "adminPasskey" IS NULL
+            )
+            ,CHECK (
+                NOT (
+                    "isUpcoming" IS TRUE
+                    AND "expiration" IS NULL
+                )
+            )
+        )
+;
+
+CREATE
+    INDEX "CallLink_Upcoming"
+        ON "CallLink"("expiration"
+)
+WHERE
+"isUpcoming" = 1
+;
+
+CREATE
+    INDEX "CallLink_Pending"
+        ON "CallLink"("pendingActionCounter"
+)
+WHERE
+"pendingActionCounter" > 0
+;
+
+CREATE
+    INDEX "CallLink_AdminDeleted"
+        ON "CallLink"("adminDeletedAtTimestampMs"
+)
+WHERE
+"adminDeletedAtTimestampMs" IS NOT NULL
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "CallRecord" (
+            "id" INTEGER PRIMARY KEY NOT NULL
+            ,"callId" TEXT NOT NULL
+            ,"interactionRowId" INTEGER UNIQUE REFERENCES "model_TSInteraction"("id"
+        )
+            ON DELETE
+                RESTRICT
+                    ON UPDATE
+                        CASCADE
+                        ,"threadRowId" INTEGER REFERENCES "model_TSThread"("id"
+)
+    ON DELETE
+        RESTRICT
+            ON UPDATE
+                CASCADE
+                ,"callLinkRowId" INTEGER REFERENCES "CallLink"("id"
+)
+    ON DELETE
+        RESTRICT
+            ON UPDATE
+                CASCADE
+                ,"type" INTEGER NOT NULL
+                ,"direction" INTEGER NOT NULL
+                ,"status" INTEGER NOT NULL
+                ,"unreadStatus" INTEGER NOT NULL
+                ,"callBeganTimestamp" INTEGER NOT NULL
+                ,"callEndedTimestamp" INTEGER NOT NULL
+                ,"groupCallRingerAci" BLOB
+                ,CHECK (
+                    IIF (
+                        "threadRowId" IS NOT NULL
+                        ,"callLinkRowId" IS NULL
+                        ,"callLinkRowId" IS NOT NULL
+                    )
+                )
+                ,CHECK (
+                    IIF (
+                        "threadRowId" IS NOT NULL
+                        ,"interactionRowId" IS NOT NULL
+                        ,"interactionRowId" IS NULL
+                    )
+                )
+)
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "DeletedCallRecord" (
+            "id" INTEGER PRIMARY KEY NOT NULL
+            ,"callId" TEXT NOT NULL
+            ,"threadRowId" INTEGER REFERENCES "model_TSThread"("id"
+        )
+            ON DELETE
+                RESTRICT
+                    ON UPDATE
+                        CASCADE
+                        ,"callLinkRowId" INTEGER REFERENCES "CallLink"("id"
+)
+    ON DELETE
+        RESTRICT
+            ON UPDATE
+                CASCADE
+                ,"deletedAtTimestamp" INTEGER NOT NULL
+                ,CHECK (
+                    IIF (
+                        "threadRowId" IS NOT NULL
+                        ,"callLinkRowId" IS NULL
+                        ,"callLinkRowId" IS NOT NULL
+                    )
+                )
+)
+;
+
+CREATE
+    UNIQUE INDEX "CallRecord_threadRowId_callId"
+        ON "CallRecord"("threadRowId"
+    ,"callId"
+)
+WHERE
+"threadRowId" IS NOT NULL
+;
+
+CREATE
+    UNIQUE INDEX "CallRecord_callLinkRowId_callId"
+        ON "CallRecord"("callLinkRowId"
+    ,"callId"
+)
+WHERE
+"callLinkRowId" IS NOT NULL
+;
+
+CREATE
+    INDEX "CallRecord_callBeganTimestamp"
+        ON "CallRecord"("callBeganTimestamp"
+)
+;
+
+CREATE
+    INDEX "CallRecord_status_callBeganTimestamp"
+        ON "CallRecord"("status"
+    ,"callBeganTimestamp"
+)
+;
+
+CREATE
+    INDEX "CallRecord_threadRowId_callBeganTimestamp"
+        ON "CallRecord"("threadRowId"
+    ,"callBeganTimestamp"
+)
+WHERE
+"threadRowId" IS NOT NULL
+;
+
+CREATE
+    INDEX "CallRecord_callLinkRowId_callBeganTimestamp"
+        ON "CallRecord"("callLinkRowId"
+    ,"callBeganTimestamp"
+)
+WHERE
+"callLinkRowId" IS NOT NULL
+;
+
+CREATE
+    INDEX "CallRecord_threadRowId_status_callBeganTimestamp"
+        ON "CallRecord"("threadRowId"
+    ,"status"
+    ,"callBeganTimestamp"
+)
+WHERE
+"threadRowId" IS NOT NULL
+;
+
+CREATE
+    INDEX "CallRecord_callStatus_unreadStatus_callBeganTimestamp"
+        ON "CallRecord"("status"
+    ,"unreadStatus"
+    ,"callBeganTimestamp"
+)
+;
+
+CREATE
+    INDEX "CallRecord_threadRowId_callStatus_unreadStatus_callBeganTimestamp"
+        ON "CallRecord"("threadRowId"
+    ,"status"
+    ,"unreadStatus"
+    ,"callBeganTimestamp"
+)
+WHERE
+"threadRowId" IS NOT NULL
+;
+
+CREATE
+    UNIQUE INDEX "DeletedCallRecord_threadRowId_callId"
+        ON "DeletedCallRecord"("threadRowId"
+    ,"callId"
+)
+WHERE
+"threadRowId" IS NOT NULL
+;
+
+CREATE
+    UNIQUE INDEX "DeletedCallRecord_callLinkRowId_callId"
+        ON "DeletedCallRecord"("callLinkRowId"
+    ,"callId"
+)
+WHERE
+"callLinkRowId" IS NOT NULL
+;
+
+CREATE
+    INDEX "DeletedCallRecord_deletedAtTimestamp"
+        ON "DeletedCallRecord"("deletedAtTimestamp"
+)
 ;

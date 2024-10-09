@@ -272,6 +272,7 @@ public extension DatabaseRecovery {
             EditRecord.databaseTableName,
             TSPaymentsActivationRequestModel.databaseTableName,
             // Okay to best-effort recover calls.
+            CallLinkRecord.databaseTableName,
             CallRecord.databaseTableName,
             DeletedCallRecord.databaseTableName,
             NicknameRecord.databaseTableName,

@@ -34,7 +34,7 @@ public protocol CallRecordQuerier {
     ///
     /// - Note
     /// The implementation of this method in ``CallRecordQuerierImpl`` relies on
-    /// the index `index_call_record_on_timestamp`.
+    /// the index `CallRecord_callBeganTimestamp`.
     func fetchCursor(
         ordering: FetchOrdering,
         tx: DBReadTransaction
@@ -48,7 +48,7 @@ public protocol CallRecordQuerier {
     ///
     /// - Note
     /// The implementation of this method in ``CallRecordQuerierImpl`` relies on
-    /// the index `index_call_record_on_status_and_timestamp`.
+    /// the index `CallRecord_status_callBeganTimestamp`.
     func fetchCursor(
         callStatus: CallRecord.CallStatus,
         ordering: FetchOrdering,
@@ -64,7 +64,7 @@ public protocol CallRecordQuerier {
     ///
     /// - Note
     /// The implementation of this method in ``CallRecordQuerierImpl`` relies on
-    /// the index `index_call_record_on_threadRowId_and_timestamp`.
+    /// the index `CallRecord_threadRowId_callBeganTimestamp`.
     func fetchCursor(
         threadRowId: Int64,
         ordering: FetchOrdering,
@@ -80,7 +80,7 @@ public protocol CallRecordQuerier {
     ///
     /// - Note
     /// The implementation of this method in ``CallRecordQuerierImpl`` relies on
-    /// the index `index_call_record_on_threadRowId_and_status_and_timestamp`.
+    /// the index `CallRecord_threadRowId_status_callBeganTimestamp`.
     func fetchCursor(
         threadRowId: Int64,
         callStatus: CallRecord.CallStatus,
@@ -103,7 +103,7 @@ public protocol CallRecordQuerier {
     ///
     /// - Note
     /// The implementation of this method in ``CallRecordQuerierImpl`` relies on
-    /// the index `index_call_record_on_callStatus_and_unreadStatus_and_timestamp`.
+    /// the index `CallRecord_callStatus_unreadStatus_callBeganTimestamp`.
     func fetchCursorForUnread(
         callStatus: CallRecord.CallStatus,
         ordering: FetchOrdering,
@@ -125,7 +125,7 @@ public protocol CallRecordQuerier {
     ///
     /// - Note
     /// The implementation of this method in ``CallRecordQuerierImpl`` relies on
-    /// the index `index_call_record_on_threadRowId_and_callStatus_and_unreadStatus_and_timestamp`.
+    /// the index `CallRecord_threadRowId_callStatus_unreadStatus_callBeganTimestamp`.
     func fetchCursorForUnread(
         threadRowId: Int64,
         callStatus: CallRecord.CallStatus,

@@ -51,7 +51,7 @@ final class DeletedCallRecordStoreTest: XCTestCase {
             )
         }
 
-        assertExplanation(contains: "index_deleted_call_record_on_threadRowId_and_callId")
+        assertExplanation(contains: "DeletedCallRecord_threadRowId_callId")
     }
 
     func testInsertAndFetchContains() {
@@ -132,7 +132,7 @@ final class DeletedCallRecordStoreTest: XCTestCase {
             deletedCallRecordStore.nextDeletedRecord(tx: tx)
         }
 
-        assertExplanation(contains: "index_deleted_call_record_on_deletedAtTimestamp")
+        assertExplanation(contains: "DeletedCallRecord_deletedAtTimestamp")
 
         XCTAssertNotNil(nextDeletedRecord)
         XCTAssertEqual(nextDeletedRecord!.callId, 1)

@@ -99,7 +99,7 @@ final class CallRecordQuerierTest: XCTestCase {
             expectedStatuses: [CallRecord.CallStatus],
             expectedThreadRowIds: [Int64]
         ) {
-            assertExplanation(contains: "index_call_record_on_timestamp")
+            assertExplanation(contains: "CallRecord_callBeganTimestamp")
             XCTAssertEqual(callRecords.map { $0.callStatus }, expectedStatuses)
             XCTAssertEqual(callRecords.map { $0.threadRowId }, expectedThreadRowIds)
         }
@@ -151,7 +151,7 @@ final class CallRecordQuerierTest: XCTestCase {
             _ callRecords: [CallRecord],
             expectedThreadRowIds: [Int64]
         ) {
-            assertExplanation(contains: "index_call_record_on_status_and_timestamp")
+            assertExplanation(contains: "CallRecord_status_callBeganTimestamp")
             XCTAssertTrue(callRecords.allSatisfy { $0.callStatus == .group(.ringingMissed) })
             XCTAssertEqual(callRecords.map { $0.threadRowId }, expectedThreadRowIds)
         }
@@ -198,7 +198,7 @@ final class CallRecordQuerierTest: XCTestCase {
             _ callRecords: [CallRecord],
             expectedStatuses: [CallRecord.CallStatus]
         ) {
-            assertExplanation(contains: "index_call_record_on_threadRowId_and_timestamp")
+            assertExplanation(contains: "CallRecord_threadRowId_callBeganTimestamp")
             XCTAssertEqual(callRecords.map { $0.callStatus }, expectedStatuses)
             XCTAssertTrue(callRecords.allSatisfy { $0.threadRowId == threadRowId })
         }
@@ -245,7 +245,7 @@ final class CallRecordQuerierTest: XCTestCase {
             _ callRecords: [CallRecord],
             count: Int
         ) {
-            assertExplanation(contains: "index_call_record_on_threadRowId_and_status_and_timestamp")
+            assertExplanation(contains: "CallRecord_threadRowId_status_callBeganTimestamp")
             XCTAssertEqual(callRecords.count, count)
             XCTAssertTrue(callRecords.allSatisfy { $0.callStatus == .group(.ringingMissed) })
             XCTAssertTrue(callRecords.allSatisfy { $0.threadRowId == threadRowId })
@@ -296,7 +296,7 @@ final class CallRecordQuerierTest: XCTestCase {
             _ callRecords: [CallRecord],
             count: Int
         ) {
-            assertExplanation(contains: "index_call_record_on_callStatus_and_unreadStatus_and_timestamp")
+            assertExplanation(contains: "CallRecord_callStatus_unreadStatus_callBeganTimestamp")
             XCTAssertEqual(callRecords.count, count)
             XCTAssertTrue(callRecords.allSatisfy { $0.callStatus == .group(.ringingMissed) })
             XCTAssertTrue(callRecords.allSatisfy { $0.unreadStatus == .unread })
@@ -327,7 +327,7 @@ final class CallRecordQuerierTest: XCTestCase {
             threadRowId: Int64,
             count: Int
         ) {
-            assertExplanation(contains: "index_call_record_on_threadRowId_and_callStatus_and_unreadStatus_and_timestamp")
+            assertExplanation(contains: "CallRecord_threadRowId_callStatus_unreadStatus_callBeganTimestamp")
             XCTAssertEqual(callRecords.count, count)
             XCTAssertTrue(callRecords.allSatisfy { $0.threadRowId == threadRowId })
             XCTAssertTrue(callRecords.allSatisfy { $0.callStatus == .group(.ringingMissed) })

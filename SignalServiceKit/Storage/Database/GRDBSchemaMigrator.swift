@@ -300,6 +300,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addBackupAttachmentUploadQueue
         case addBackupStickerPackDownloadQueue
         case createOrphanedBackupAttachmentTable
+        case addCallLinkTable
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -361,7 +362,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 94
+    public static let grdbSchemaVersionLatest: UInt = 95
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -3624,6 +3625,11 @@ public class GRDBSchemaMigrator: NSObject {
             return .success(())
         }
 
+        migrator.registerMigration(.addCallLinkTable) { tx in
+            try addCallLinkTable(tx: tx)
+            return .success(())
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -4835,6 +4841,192 @@ public class GRDBSchemaMigrator: NSObject {
 
     private static func fetchRecipientUniqueId(recipientId: SignalRecipient.RowId, tx: GRDBWriteTransaction) throws -> String? {
         return try String.fetchOne(tx.database, sql: "SELECT uniqueId FROM model_SignalRecipient WHERE id = ?", arguments: [recipientId])
+    }
+
+    static func addCallLinkTable(tx: GRDBWriteTransaction) throws {
+        try tx.database.create(table: "CallLink") { table in
+            table.column("id", .integer).primaryKey()
+            table.column("roomId", .blob).notNull().unique()
+            table.column("rootKey", .blob).notNull()
+            table.column("adminPasskey", .blob)
+            table.column("adminDeletedAtTimestampMs", .integer)
+            table.column("activeCallId", .integer)
+            table.column("isUpcoming", .boolean)
+            table.column("pendingActionCounter", .integer).notNull().defaults(to: 0)
+            table.column("name", .text)
+            table.column("restrictions", .integer)
+            table.column("revoked", .boolean)
+            table.column("expiration", .integer)
+            table.check(sql: #"LENGTH("roomId") IS 32"#)
+            table.check(sql: #"LENGTH("rootKey") IS 16"#)
+            table.check(sql: #"LENGTH("adminPasskey") > 0 OR "adminPasskey" IS NULL"#)
+            table.check(sql: #"NOT("isUpcoming" IS TRUE AND "expiration" IS NULL)"#)
+        }
+
+        try tx.database.create(
+            index: "CallLink_Upcoming",
+            on: "CallLink",
+            columns: ["expiration"],
+            condition: Column("isUpcoming") == true
+        )
+
+        try tx.database.create(
+            index: "CallLink_Pending",
+            on: "CallLink",
+            columns: ["pendingActionCounter"],
+            condition: Column("pendingActionCounter") > 0
+        )
+
+        try tx.database.create(
+            index: "CallLink_AdminDeleted",
+            on: "CallLink",
+            columns: ["adminDeletedAtTimestampMs"],
+            condition: Column("adminDeletedAtTimestampMs") != nil
+        )
+
+        let indexesToDrop = [
+            "index_call_record_on_callId_and_threadId",
+            "index_call_record_on_timestamp",
+            "index_call_record_on_status_and_timestamp",
+            "index_call_record_on_threadRowId_and_timestamp",
+            "index_call_record_on_threadRowId_and_status_and_timestamp",
+            "index_call_record_on_callStatus_and_unreadStatus_and_timestamp",
+            "index_call_record_on_threadRowId_and_callStatus_and_unreadStatus_and_timestamp",
+            "index_deleted_call_record_on_threadRowId_and_callId",
+            "index_deleted_call_record_on_deletedAtTimestamp",
+        ]
+        for indexName in indexesToDrop {
+            try tx.database.drop(index: indexName)
+        }
+
+        try tx.database.create(table: "new_CallRecord") { (table: TableDefinition) in
+            table.column("id", .integer).primaryKey().notNull()
+            table.column("callId", .text).notNull()
+            table.column("interactionRowId", .integer).unique()
+                .references("model_TSInteraction", column: "id", onDelete: .restrict, onUpdate: .cascade)
+            table.column("threadRowId", .integer)
+                .references("model_TSThread", column: "id", onDelete: .restrict, onUpdate: .cascade)
+            table.column("callLinkRowId", .integer)
+                .references("CallLink", column: "id", onDelete: .restrict, onUpdate: .cascade)
+            table.column("type", .integer).notNull()
+            table.column("direction", .integer).notNull()
+            table.column("status", .integer).notNull()
+            table.column("unreadStatus", .integer).notNull()
+            table.column("callBeganTimestamp", .integer).notNull()
+            table.column("callEndedTimestamp", .integer).notNull()
+            table.column("groupCallRingerAci", .blob)
+            table.check(sql: #"IIF("threadRowId" IS NOT NULL, "callLinkRowId" IS NULL, "callLinkRowId" IS NOT NULL)"#)
+            table.check(sql: #"IIF("threadRowId" IS NOT NULL, "interactionRowId" IS NOT NULL, "interactionRowId" IS NULL)"#)
+        }
+        try tx.database.execute(sql: """
+        INSERT INTO "new_CallRecord" (
+            "id", "callId", "interactionRowId", "threadRowId", "type", "direction", "status", "unreadStatus", "callBeganTimestamp", "callEndedTimestamp", "groupCallRingerAci"
+        ) SELECT "id", "callId", "interactionRowId", "threadRowId", "type", "direction", "status", "unreadStatus", "timestamp", "callEndedTimestamp", "groupCallRingerAci" FROM "CallRecord";
+        """)
+        try tx.database.drop(table: "CallRecord")
+        try tx.database.rename(table: "new_CallRecord", to: "CallRecord")
+
+        try tx.database.create(table: "new_DeletedCallRecord") { table in
+            table.column("id", .integer).primaryKey().notNull()
+            table.column("callId", .text).notNull()
+            table.column("threadRowId", .integer)
+                .references("model_TSThread", column: "id", onDelete: .restrict, onUpdate: .cascade)
+            table.column("callLinkRowId", .integer)
+                .references("CallLink", column: "id", onDelete: .restrict, onUpdate: .cascade)
+            table.column("deletedAtTimestamp", .integer).notNull()
+            table.check(sql: #"IIF("threadRowId" IS NOT NULL, "callLinkRowId" IS NULL, "callLinkRowId" IS NOT NULL)"#)
+        }
+        try tx.database.execute(sql: """
+        INSERT INTO "new_DeletedCallRecord" (
+            "id", "callId", "threadRowId", "deletedAtTimestamp"
+        ) SELECT "id", "callId", "threadRowId", "deletedAtTimestamp" FROM "DeletedCallRecord";
+        """)
+        try tx.database.drop(table: "DeletedCallRecord")
+        try tx.database.rename(table: "new_DeletedCallRecord", to: "DeletedCallRecord")
+
+        try tx.database.create(
+            index: "CallRecord_threadRowId_callId",
+            on: "CallRecord",
+            columns: ["threadRowId", "callId"],
+            options: [.unique],
+            condition: Column("threadRowId") != nil
+        )
+
+        try tx.database.create(
+            index: "CallRecord_callLinkRowId_callId",
+            on: "CallRecord",
+            columns: ["callLinkRowId", "callId"],
+            options: [.unique],
+            condition: Column("callLinkRowId") != nil
+        )
+
+        try tx.database.create(
+            index: "CallRecord_callBeganTimestamp",
+            on: "CallRecord",
+            columns: ["callBeganTimestamp"]
+        )
+
+        try tx.database.create(
+            index: "CallRecord_status_callBeganTimestamp",
+            on: "CallRecord",
+            columns: ["status", "callBeganTimestamp"]
+        )
+
+        try tx.database.create(
+            index: "CallRecord_threadRowId_callBeganTimestamp",
+            on: "CallRecord",
+            columns: ["threadRowId", "callBeganTimestamp"],
+            condition: Column("threadRowId") != nil
+        )
+
+        try tx.database.create(
+            index: "CallRecord_callLinkRowId_callBeganTimestamp",
+            on: "CallRecord",
+            columns: ["callLinkRowId", "callBeganTimestamp"],
+            condition: Column("callLinkRowId") != nil
+        )
+
+        try tx.database.create(
+            index: "CallRecord_threadRowId_status_callBeganTimestamp",
+            on: "CallRecord",
+            columns: ["threadRowId", "status", "callBeganTimestamp"],
+            condition: Column("threadRowId") != nil
+        )
+
+        try tx.database.create(
+            index: "CallRecord_callStatus_unreadStatus_callBeganTimestamp",
+            on: "CallRecord",
+            columns: ["status", "unreadStatus", "callBeganTimestamp"]
+        )
+
+        try tx.database.create(
+            index: "CallRecord_threadRowId_callStatus_unreadStatus_callBeganTimestamp",
+            on: "CallRecord",
+            columns: ["threadRowId", "status", "unreadStatus", "callBeganTimestamp"],
+            condition: Column("threadRowId") != nil
+        )
+
+        try tx.database.create(
+            index: "DeletedCallRecord_threadRowId_callId",
+            on: "DeletedCallRecord",
+            columns: ["threadRowId", "callId"],
+            options: [.unique],
+            condition: Column("threadRowId") != nil
+        )
+
+        try tx.database.create(
+            index: "DeletedCallRecord_callLinkRowId_callId",
+            on: "DeletedCallRecord",
+            columns: ["callLinkRowId", "callId"],
+            options: [.unique],
+            condition: Column("callLinkRowId") != nil
+        )
+
+        try tx.database.create(
+            index: "DeletedCallRecord_deletedAtTimestamp",
+            on: "DeletedCallRecord",
+            columns: ["deletedAtTimestamp"]
+        )
     }
 }
 

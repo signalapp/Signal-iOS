@@ -61,7 +61,7 @@ public final class CallRecord: Codable, PersistableRecord, FetchableRecord {
         case callStatus = "status"
         case unreadStatus
         case groupCallRingerAci
-        case callBeganTimestamp = "timestamp"
+        case callBeganTimestamp
         case callEndedTimestamp
     }
 
