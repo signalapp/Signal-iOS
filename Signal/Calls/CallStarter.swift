@@ -11,9 +11,8 @@ import SignalRingRTC
 /// checks are performed. See ``startCall(from:)`` for details of those checks.
 struct CallStarter {
     private enum Recipient {
-        // [CallLink] TODO: Rename these to avoid ambiguity with group calls.
-        case contact(thread: TSContactThread, withVideo: Bool)
-        case group(thread: TSGroupThread)
+        case contactThread(TSContactThread, withVideo: Bool)
+        case groupThread(TSGroupThread)
         case callLink(CallLinkRootKey)
     }
 
@@ -45,12 +44,12 @@ struct CallStarter {
     private var context: Context
 
     init(contactThread: TSContactThread, withVideo: Bool, context: Context) {
-        self.recipient = .contact(thread: contactThread, withVideo: withVideo)
+        self.recipient = .contactThread(contactThread, withVideo: withVideo)
         self.context = context
     }
 
     init(groupThread: TSGroupThread, context: Context) {
-        self.recipient = .group(thread: groupThread)
+        self.recipient = .groupThread(groupThread)
         self.context = context
     }
 
@@ -80,11 +79,11 @@ struct CallStarter {
         let callThread: TSThread?
         let isVideoCall: Bool
         switch recipient {
-        case .contact(let thread, let withVideo):
+        case .contactThread(let thread, let withVideo):
             callTarget = .individual(thread)
             callThread = thread
             isVideoCall = withVideo
-        case .group(let thread):
+        case .groupThread(let thread):
             callTarget = .groupThread(thread)
             callThread = thread
             isVideoCall = true
