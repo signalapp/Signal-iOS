@@ -1,2 +1,1 @@
-• Signal Desktopなどのリンク済み端末で着信に応答すると、iPhoneの着信音が自動的に停止するようになりました。
-• iPadOS 18のユーザー対象に、表示のバグも修正しました。 
+• This update improves support for “Limited Access” photo permissions and adds a convenient shortcut to select new photos in your iOS Settings. Take a picture of your Halloween costume idea, change what you share, exchange what you’ll wear, and arrange how you’ll scare.

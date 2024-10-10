@@ -1,2 +1,1 @@
-• Jetzt hört dein iPhone automatisch auf zu klingeln, wenn du einen eingehenden Anruf auf einem anderen gekoppelten Gerät (wie Signal Desktop) annimmst. Die Entscheidung, ob du mit jemandem reden willst oder nicht, können wir dir allerdings nicht abnehmen.
-• Wir haben auch einen Fehler behoben, der verhinderte, dass ungelesene Indikatoren und weitere Statusabzeichen in den Tabs »Storys« und »Anrufe« in iPadOS 18 angezeigt wurden. 
+• This update improves support for “Limited Access” photo permissions and adds a convenient shortcut to select new photos in your iOS Settings. Take a picture of your Halloween costume idea, change what you share, exchange what you’ll wear, and arrange how you’ll scare.

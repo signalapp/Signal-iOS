@@ -1,2 +1,1 @@
-• Kini iPhone anda akan berhenti berdering secara automatik jika anda menjawab panggilan masuk pada peranti terpaut lain (seperti Signal Desktop).
-• Kami juga membaiki pepijat paparan untuk pengguna pada iPadOS 18. 
+• This update improves support for “Limited Access” photo permissions and adds a convenient shortcut to select new photos in your iOS Settings. Take a picture of your Halloween costume idea, change what you share, exchange what you’ll wear, and arrange how you’ll scare.

@@ -1,2 +1,1 @@
-• Тепер дзвінок на iPhone автоматично перестане лунати, якщо ви відповісте на виклик з іншого зв'язаного пристрою, наприклад з комп'ютера. Зрештою, вони називаються зв'язаними не просто так.
-• Крім того, ми виправили помилку, через яку індикатори непрочитаних сповіщень та інші значки стану не з'являлись у вкладках історій і викликів на iPadOS 18. 
+• This update improves support for “Limited Access” photo permissions and adds a convenient shortcut to select new photos in your iOS Settings. Take a picture of your Halloween costume idea, change what you share, exchange what you’ll wear, and arrange how you’ll scare.

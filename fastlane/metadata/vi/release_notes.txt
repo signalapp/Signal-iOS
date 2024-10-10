@@ -1,2 +1,1 @@
-• Giờ đây iPhone của bạn sẽ tự động ngưng đổ chuông nếu bạn trả lời cuộc gọi đến trên một thiết bị đã liên kết (như Signal Desktop).
-• Chúng tôi cũng đã sửa một lỗi hiển thị cho người dùng sử dụng iPadOS 18. 
+• This update improves support for “Limited Access” photo permissions and adds a convenient shortcut to select new photos in your iOS Settings. Take a picture of your Halloween costume idea, change what you share, exchange what you’ll wear, and arrange how you’ll scare.

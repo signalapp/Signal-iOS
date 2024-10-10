@@ -1,2 +1,1 @@
-• Od teraz Twój iPhone automatycznie przestanie dzwonić, jeśli odbierzesz połączenie przychodzące na innym powiązanym urządzeniu (np. w Signal Desktop). Jednak to niezmiennie do Ciebie należy decyzja, czy w ogóle odebrać.
-• Naprawiliśmy również błąd, który uniemożliwiał wyświetlanie wskaźników nieprzeczytanych wiadomości i innych plakietek statusu na kartach Relacje i Połączenia w systemie iPadOS 18. 
+• This update improves support for “Limited Access” photo permissions and adds a convenient shortcut to select new photos in your iOS Settings. Take a picture of your Halloween costume idea, change what you share, exchange what you’ll wear, and arrange how you’ll scare.
