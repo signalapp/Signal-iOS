@@ -559,6 +559,13 @@ class GroupCallViewController: UIViewController {
                 )
             }
         }
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(otherUsersProfileChanged(notification:)),
+            name: UserProfileNotifications.otherUsersProfileDidChange,
+            object: nil
+        )
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -1404,6 +1411,37 @@ class GroupCallViewController: UIViewController {
         }
 
         callService.callUIAdapter.answerCall(call)
+    }
+
+    // MARK: Profile updates
+
+    @objc
+    private func otherUsersProfileChanged(notification: Notification) {
+        AssertIsOnMainThread()
+
+        guard let changedAddress = notification.userInfo?[UserProfileNotifications.profileAddressKey] as? SignalServiceAddress,
+              changedAddress.isValid else {
+            owsFailDebug("changedAddress was unexpectedly nil")
+            return
+        }
+
+        if let peekInfo = self.ringRtcCall.peekInfo {
+            let joinedAndPendingMembers = peekInfo.joinedMembers + peekInfo.pendingUsers
+
+            if joinedAndPendingMembers.contains(where: { uuid in
+                changedAddress == SignalServiceAddress(Aci(fromUUID: uuid))
+            }) {
+                self.bottomSheet.updateMembers()
+
+                switch self.ringRtcCall.kind {
+                case .signalGroup:
+                    break
+                case .callLink:
+                    // Refresh profiles in call link admin approval UI.
+                    self.callLinkApprovalViewModel.loadRequestsWithSneakyTransaction(for: peekInfo.pendingUsers)
+                }
+            }
+        }
     }
 }
 

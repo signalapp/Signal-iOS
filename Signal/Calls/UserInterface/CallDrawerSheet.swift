@@ -381,7 +381,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
         }
     }
 
-    private func updateMembers() {
+    func updateMembers() {
         let unsortedMembers: [JoinedMember] = databaseStorage.read {
             callSheetDataSource.unsortedMembers(tx: $0.asV2Read)
         }
