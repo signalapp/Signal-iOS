@@ -674,6 +674,7 @@ final class MobileCoinHttpRequester: NSObject, HttpRequester {
         let config = URLSessionConfiguration.default
         config.timeoutIntervalForRequest = 30
         config.timeoutIntervalForResource = 30
+        config.multipathServiceType = .handover
         return config
     }()
 
