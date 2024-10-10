@@ -85,7 +85,6 @@ final class DonateViewControllerTest: SignalBaseTest {
         ) -> SubscriptionLevel {
             .init(
                 level: level,
-                name: name,
                 badge: badge,
                 amounts: amounts
             )
@@ -99,7 +98,6 @@ final class DonateViewControllerTest: SignalBaseTest {
         ) -> SubscriptionLevel {
             .init(
                 level: level,
-                name: name,
                 badge: badge,
                 amounts: amounts
             )

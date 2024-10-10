@@ -152,7 +152,6 @@ extension SubscriptionManagerImpl.DonationConfiguration {
 
                 return SubscriptionLevel(
                     level: level.value,
-                    name: level.name,
                     badge: level.badge,
                     amounts: presetsByCurrencyForLevel
                 )
@@ -188,7 +187,6 @@ extension SubscriptionManagerImpl.DonationConfiguration {
 private extension SubscriptionManagerImpl.DonationConfiguration {
     struct BadgedLevel {
         let value: UInt
-        let name: String
         let badge: ProfileBadge
     }
 
@@ -229,7 +227,6 @@ private extension SubscriptionManagerImpl.DonationConfiguration {
 
             partialResult[level] = BadgedLevel(
                 value: level,
-                name: try levelParser.required(key: "name"),
                 badge: try ProfileBadge(jsonDictionary: try levelParser.required(key: "badge"))
             )
         }

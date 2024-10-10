@@ -7,18 +7,15 @@ import Foundation
 
 public class SubscriptionLevel: Comparable, Equatable, Codable {
     public let level: UInt
-    public let name: String
     public let badge: ProfileBadge
     public let amounts: [Currency.Code: FiatMoney]
 
     public init(
         level: UInt,
-        name: String,
         badge: ProfileBadge,
         amounts: [Currency.Code: FiatMoney]
     ) {
         self.level = level
-        self.name = name
         self.badge = badge
         self.amounts = amounts
     }

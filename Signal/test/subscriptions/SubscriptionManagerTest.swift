@@ -211,7 +211,6 @@ class SubscriptionManagerDonationConfigurationTest: XCTestCase {
         ) -> JSON {
             levels.reduce(into: [:]) { partialResult, level in
                 partialResult["\(level)"] = [
-                    "name": badge.localizedName,
                     "badge": badgeJson
                 ]
             }
@@ -254,13 +253,11 @@ class SubscriptionManagerDonationConfigurationTest: XCTestCase {
         let firstSubscriptionLevel = config.subscription.levels.first!
         XCTAssertEqual(firstSubscriptionLevel.level, LevelFixtures.levelOne)
         XCTAssertEqual(firstSubscriptionLevel.badge, LevelFixtures.badge)
-        XCTAssertEqual(firstSubscriptionLevel.name, LevelFixtures.badge.localizedName)
         XCTAssertEqual(firstSubscriptionLevel.amounts.usd, CurrencyFixtures.levelOneAmount.asUsd)
 
         let secondSubscriptionLevel = config.subscription.levels.last!
         XCTAssertEqual(secondSubscriptionLevel.level, LevelFixtures.levelTwo)
         XCTAssertEqual(secondSubscriptionLevel.badge, LevelFixtures.badge)
-        XCTAssertEqual(secondSubscriptionLevel.name, LevelFixtures.badge.localizedName)
         XCTAssertEqual(secondSubscriptionLevel.amounts.usd, CurrencyFixtures.levelTwoAmount.asUsd)
 
         XCTAssertEqual(config.paymentMethods.supportedPaymentMethods(forCurrencyCode: "USD"), [.paypal, .applePay, .creditOrDebitCard])
