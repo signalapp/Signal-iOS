@@ -38,9 +38,7 @@ class GroupCallViewController: UIViewController {
             confirmationToastManager: callControlsConfirmationToastManager,
             callControlsDelegate: self,
             sheetPanDelegate: self,
-            didPresentViewController: { [weak self] _ in
-                self?.scheduleBottomSheetTimeoutIfNecessary()
-            }
+            callDrawerDelegate: self
         )
     }()
     private lazy var fullscreenLocalMemberAddOnsView = SupplementalCallControlsForFullscreenLocalMember(
@@ -2092,6 +2090,19 @@ extension GroupCallViewController: SheetPanDelegate {
         } else if bottomSheet.isCrossFading() {
             bottomSheetStateManager.submitState(.transitioning)
         }
+    }
+}
+
+// MARK: - CallDrawerDelegate
+
+extension GroupCallViewController: CallDrawerDelegate {
+    func didPresentViewController(_ viewController: UIViewController) {
+        self.scheduleBottomSheetTimeoutIfNecessary()
+    }
+
+    func didTapDone() {
+        bottomSheetStateManager.submitState(.callControls)
+        self.bottomSheet.minimizeHeight()
     }
 }
 

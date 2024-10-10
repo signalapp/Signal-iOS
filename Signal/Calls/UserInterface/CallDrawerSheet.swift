@@ -9,6 +9,11 @@ import SignalServiceKit
 import SignalUI
 import Combine
 
+protocol CallDrawerDelegate: AnyObject {
+    func didPresentViewController(_ viewController: UIViewController)
+    func didTapDone()
+}
+
 // MARK: - GroupCallSheet
 
 class CallDrawerSheet: InteractiveSheetViewController {
@@ -42,7 +47,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
         let doneButton = UIButton(primaryAction: .init(
             title: CommonStrings.doneButton
         ) { [weak self] _ in
-            self?.minimizeHeight()
+            self?.callDrawerDelegate?.didTapDone()
         })
         container.addSubview(doneButton)
         doneButton.setTitleColor(UIColor.Signal.label, for: .normal)
@@ -67,6 +72,8 @@ class CallDrawerSheet: InteractiveSheetViewController {
     private let tableView = UITableView(frame: .zero, style: .insetGrouped)
     private let call: SignalCall
     private let callSheetDataSource: CallDrawerSheetDataSource
+
+    private weak var callDrawerDelegate: CallDrawerDelegate?
 
     private var callLinkDataSource: CallLinkSheetDataSource? {
         self.callSheetDataSource as? CallLinkSheetDataSource
@@ -99,7 +106,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
         confirmationToastManager: CallControlsConfirmationToastManager,
         callControlsDelegate: CallControlsDelegate,
         sheetPanDelegate: (any SheetPanDelegate)?,
-        didPresentViewController: ((UIViewController) -> Void)? = nil
+        callDrawerDelegate: CallDrawerDelegate? = nil
     ) {
         self.call = call
         self.callSheetDataSource = callSheetDataSource
@@ -109,12 +116,12 @@ class CallDrawerSheet: InteractiveSheetViewController {
             confirmationToastManager: confirmationToastManager,
             delegate: callControlsDelegate
         )
-        self.didPresentViewController = didPresentViewController
 
         super.init(blurEffect: nil)
 
         self.animationsShouldBeInterruptible = true
         self.sheetPanDelegate = sheetPanDelegate
+        self.callDrawerDelegate = callDrawerDelegate
 
         self.overrideUserInterfaceStyle = .dark
         callSheetDataSource.addObserver(self, syncStateImmediately: true)
@@ -147,7 +154,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
 
     override func present(_ viewControllerToPresent: UIViewController, animated flag: Bool, completion: (() -> Void)? = nil) {
         super.present(viewControllerToPresent, animated: flag, completion: completion)
-        self.didPresentViewController?(viewControllerToPresent)
+        self.callDrawerDelegate?.didPresentViewController(viewControllerToPresent)
     }
 
     // MARK: - Table setup
