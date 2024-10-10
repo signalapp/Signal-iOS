@@ -81,10 +81,10 @@ public class AttachmentDownloadRetryRunner {
         }
 
         private func run() async {
-            do {
-                self.isRunning = true
-                defer { self.isRunning = false }
-
+            self.isRunning = true
+            defer { self.isRunning = false }
+            // Run while there is a next timestamp.
+            while true {
                 let nextTimestamp = db.read { tx in
                     return try? self.attachmentDownloadStore.nextRetryTimestamp(tx: tx.asV2Read)
                 }
@@ -102,9 +102,6 @@ public class AttachmentDownloadRetryRunner {
                 // Kick the tires to start any downloads.
                 attachmentDownloadManager.beginDownloadingIfNecessary()
             }
-
-            // Run again to wait for the next timestamp.
-            await self.run()
         }
     }
 
