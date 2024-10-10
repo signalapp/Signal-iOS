@@ -228,10 +228,12 @@ final class CallRecordStoreTest: XCTestCase {
             (.group(.ringingMissed), .unread, .group(.ringing), .read),
             (.group(.ringingMissed), .unread, .group(.ringingAccepted), .read),
             (.group(.ringingMissed), .unread, .group(.ringingDeclined), .read),
+
+            (.callLink(.generic), .read, .callLink(.joined), .read),
+            (.callLink(.joined), .read, .callLink(.generic), .read),
         ]
-        // [CallLink] TODO: Add support for these tests if needed.
         XCTAssertEqual(
-            testCases.count + 2,
+            testCases.count,
             CallRecord.CallStatus.allCases.count
         )
 
