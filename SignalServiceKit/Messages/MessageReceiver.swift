@@ -711,6 +711,10 @@ public final class MessageReceiver: Dependencies {
         let callLinkStore = DependenciesBridge.shared.callLinkStore
         do {
             let rootKey = try CallLinkRootKey(callLinkUpdate.rootKey ?? Data())
+            guard FeatureFlags.callLinkSync else {
+                Logger.warn("Ignoring CallLinkUpdate")
+                return
+            }
             var (callLink, _) = try callLinkStore.fetchOrInsert(rootKey: rootKey, tx: tx.asV2Write)
             callLink.adminPasskey = callLink.adminPasskey ?? callLinkUpdate.adminPasskey
             callLink.setNeedsFetch()
