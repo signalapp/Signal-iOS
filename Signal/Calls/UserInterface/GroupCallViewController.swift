@@ -1160,7 +1160,7 @@ class GroupCallViewController: UIViewController {
         case .callInfo, .transitioning:
             switch newState {
             case .callControlsAndOverflow:
-                owsFailDebug("Impossible bottomSheetStateManager.bottomSheetState transition")
+                self.callControlsOverflowView.animateIn()
             case .callControls:
                 updateFrames(controlsAreHidden: false, shouldRepositionBottomVStack: false)
             case .callInfo, .transitioning:
