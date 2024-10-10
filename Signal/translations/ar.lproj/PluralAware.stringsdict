@@ -98,7 +98,7 @@
 			<string>إضافة أعضاء جُدد</string>
 		</dict>
 	</dict>
-	<key>CALL_LINK_APPROVE_ALL_REQUESTS_CONFIRMATION_BODY_%ld</key>
+	<key>CALLS_TAB_DELETE_MULTIPLE_TITLE</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@text@</string>
@@ -108,6 +108,30 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>zero</key>
+			<string>Delete %1$ld Calls?</string>
+			<key>one</key>
+			<string>Delete %1$ld Call?</string>
+			<key>two</key>
+			<string>Delete %1$ld Calls?</string>
+			<key>few</key>
+			<string>Delete %1$ld Calls?</string>
+			<key>many</key>
+			<string>Delete %1$ld Calls?</string>
+			<key>other</key>
+			<string>Delete %1$ld Calls?</string>
+		</dict>
+	</dict>
+	<key>CALL_LINK_APPROVE_ALL_REQUESTS_CONFIRMATION_BODY_%ld</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>ld</string>
 			<key>zero</key>
 			<string>سيُضاف %1$ld شخص إلى المكالمة.</string>
 			<key>one</key>
@@ -131,7 +155,7 @@
 			<key>NSStringFormatSpecTypeKey</key>
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
+			<string>ld</string>
 			<key>zero</key>
 			<string>هل توافق على %1$ld طلب؟</string>
 			<key>one</key>
@@ -155,7 +179,7 @@
 			<key>NSStringFormatSpecTypeKey</key>
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
+			<string>ld</string>
 			<key>zero</key>
 			<string>لن يتم إضافة %1$ld شخص إلى المكالمة.</string>
 			<key>one</key>
@@ -179,7 +203,7 @@
 			<key>NSStringFormatSpecTypeKey</key>
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
+			<string>ld</string>
 			<key>zero</key>
 			<string>هل ترغبُ برفض %1$ld طلب؟</string>
 			<key>one</key>
@@ -203,19 +227,43 @@
 			<key>NSStringFormatSpecTypeKey</key>
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
+			<string>ld</string>
+			<key>zero</key>
+			<string>+ %1$ld طلب</string>
+			<key>one</key>
+			<string>+%1$ld طلب</string>
+			<key>two</key>
+			<string>+%1$ld طلبين</string>
+			<key>few</key>
+			<string>+%1$ld طلباتٍ</string>
+			<key>many</key>
+			<string>+%1$ld طلبًا</string>
+			<key>other</key>
+			<string>+%1$ld طلبٍ</string>
+		</dict>
+	</dict>
+	<key>CALL_LINK_MULTI_SUCCESS</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>+%1$ld Requests</string>
+			<string>%1$ld call logs deleted.</string>
 			<key>one</key>
-			<string>+%1$ld Request</string>
+			<string>%1$ld call log deleted.</string>
 			<key>two</key>
-			<string>+%1$ld Requests</string>
+			<string>%1$ld call logs deleted.</string>
 			<key>few</key>
-			<string>+%1$ld Requests</string>
+			<string>%1$ld call logs deleted.</string>
 			<key>many</key>
-			<string>+%1$ld Requests</string>
+			<string>%1$ld call logs deleted.</string>
 			<key>other</key>
-			<string>+%1$ld Requests</string>
+			<string>%1$ld call logs deleted.</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_REQUEST_HEADER_COUNT_%d</key>
@@ -787,6 +835,30 @@
 			<string>%2$@ و %3$@ و %1$d آخرون في هذه المُكالمة</string>
 			<key>other</key>
 			<string>%2$@ و %3$@ و %1$d آخرون في هذه المُكالمة</string>
+		</dict>
+	</dict>
+	<key>GROUP_CALL_MEMBER_LIST_UNKNOWN_MEMBERS_ROW_%ld</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>ld</string>
+			<key>zero</key>
+			<string>+%1$ld more</string>
+			<key>one</key>
+			<string>+%1$ld more</string>
+			<key>two</key>
+			<string>+%1$ld more</string>
+			<key>few</key>
+			<string>+%1$ld more</string>
+			<key>many</key>
+			<string>+%1$ld more</string>
+			<key>other</key>
+			<string>+%1$ld more</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_JOINED_%d</key>
