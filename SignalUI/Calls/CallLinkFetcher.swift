@@ -8,6 +8,8 @@ import LibSignalClient
 public import SignalRingRTC
 public import SignalServiceKit
 
+public struct CallLinkNotFoundError: Error {}
+
 public class CallLinkFetcherImpl {
     private let sfuClient: SFUClient
     // Even though we never use this, we need to retain it to ensure
@@ -27,20 +29,24 @@ public class CallLinkFetcherImpl {
         let sfuUrl = DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL
         let secretParams = CallLinkSecretParams.deriveFromRootKey(rootKey.bytes)
         let authCredentialPresentation = authCredential.present(callLinkParams: secretParams)
-        return SignalServiceKit.CallLinkState(try await self.sfuClient.readCallLink(
-            sfuUrl: sfuUrl,
-            authCredentialPresentation: authCredentialPresentation.serialize(),
-            linkRootKey: rootKey
-        ).unwrap())
+        do {
+            return try await SignalServiceKit.CallLinkState(self.sfuClient.readCallLink(
+                sfuUrl: sfuUrl,
+                authCredentialPresentation: authCredentialPresentation.serialize(),
+                linkRootKey: rootKey
+            ).unwrap())
+        } catch where error.rawValue == 404 {
+            throw CallLinkNotFoundError()
+        }
     }
 }
 
-private struct SFUError: Error {
+public struct SFUError: Error {
     let rawValue: UInt16
 }
 
 extension SFUResult {
-    public func unwrap() throws -> Value {
+    public func unwrap() throws(SFUError) -> Value {
         switch self {
         case .success(let value):
             return value

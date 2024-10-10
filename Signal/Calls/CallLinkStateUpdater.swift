@@ -57,13 +57,19 @@ actor CallLinkStateUpdater {
         rootKey: CallLinkRootKey,
         updateAndFetch: (CallLinkAuthCredential) async throws -> SignalServiceKit.CallLinkState
     ) async throws -> SignalServiceKit.CallLinkState {
-        return try await _updateExclusively(rootKey: rootKey, updateAndFetch: updateAndFetch)!
+        return try await _updateExclusively(rootKey: rootKey, updateAndFetch: updateAndFetch)!.get()
+    }
+
+    private enum UpdateAction {
+        case update(SignalServiceKit.CallLinkState)
+        case notFound
+        case delete
     }
 
     private func _updateExclusively(
         rootKey: CallLinkRootKey,
         updateAndFetch: (CallLinkAuthCredential) async throws -> SignalServiceKit.CallLinkState?
-    ) async throws -> SignalServiceKit.CallLinkState? {
+    ) async throws -> Result<SignalServiceKit.CallLinkState, CallLinkNotFoundError>? {
         let roomId = rootKey.deriveRoomId()
 
         await withCheckedContinuation { continuation in
@@ -90,13 +96,34 @@ actor CallLinkStateUpdater {
             return try callLinkStore.fetch(roomId: roomId, tx: tx)
         }
         let authCredential = try await authCredentialManager.fetchCallLinkAuthCredential(localIdentifiers: localIdentifiers)
-        let newState = try await updateAndFetch(authCredential)
+        let updateResult = await Result { try await updateAndFetch(authCredential) }
+
+        let updateAction: UpdateAction
+        let returnResult: Result<SignalServiceKit.CallLinkState, CallLinkNotFoundError>?
+
+        switch updateResult {
+        case .success(let callLinkState?):
+            updateAction = .update(callLinkState)
+            returnResult = .success(callLinkState)
+        case .success(nil):
+            updateAction = .delete
+            returnResult = nil
+        case .failure(let error as CallLinkNotFoundError):
+            updateAction = .notFound
+            returnResult = .failure(error)
+        case .failure(let error):
+            throw error
+        }
+
         try await db.awaitableWrite { tx in
             if var newRecord = try self.callLinkStore.fetch(roomId: roomId, tx: tx) {
                 if !newRecord.isDeleted {
-                    if let newState {
+                    switch updateAction {
+                    case .update(let newState):
                         newRecord.updateState(newState)
-                    } else {
+                    case .notFound:
+                        break
+                    case .delete:
                         newRecord.markDeleted(atTimestampMs: Date.ows_millisecondTimestamp())
                         try self.callRecordDeleteManager.deleteCallRecords(
                             self.callRecordStore.fetchExisting(conversationId: .callLink(callLinkRowId: newRecord.id), limit: nil, tx: tx),
@@ -111,13 +138,27 @@ actor CallLinkStateUpdater {
                 try self.callLinkStore.update(newRecord, tx: tx)
             }
         }
-        return newState
+
+        return returnResult
     }
 
-    func readCallLink(rootKey: CallLinkRootKey) async throws -> SignalServiceKit.CallLinkState {
-        return try await updateExclusively(rootKey: rootKey, updateAndFetch: { authCredential in
+    /// Reads a call link from the server.
+    ///
+    /// There are two layers of errors interesting to callers: the method itself
+    /// and the `Result` that's returned.
+    ///
+    /// This is a "state updater" object, so if the "state update" operation is
+    /// successful, no error is thrown. The "state update" is successful when
+    /// we're able to call `clearNeedsFetch` on the underlying CallLinkRecord.
+    /// (For example, no error is thrown when the call link can't be found, but
+    /// an error *is* thrown when there's no network.)
+    ///
+    /// Many callers will want access to the `CallLinkState`, and they can use
+    /// `try readCallLink(...).get()` to gloss over this distinction.
+    func readCallLink(rootKey: CallLinkRootKey) async throws -> Result<SignalServiceKit.CallLinkState, CallLinkNotFoundError> {
+        return try await _updateExclusively(rootKey: rootKey, updateAndFetch: { authCredential in
             return try await callLinkFetcher.readCallLink(rootKey, authCredential: authCredential)
-        })
+        })!
     }
 
     func deleteCallLink(rootKey: CallLinkRootKey, adminPasskey: Data) async throws {

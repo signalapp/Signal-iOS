@@ -569,7 +569,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         case .reuse(let callLinkState):
             state = callLinkState
         case .fetch:
-            state = try await callLinkStateUpdater.readCallLink(rootKey: callLink.rootKey)
+            state = try await callLinkStateUpdater.readCallLink(rootKey: callLink.rootKey).get()
         }
         let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!
         let authCredential = try await authCredentialManager.fetchCallLinkAuthCredential(localIdentifiers: localIdentifiers)
