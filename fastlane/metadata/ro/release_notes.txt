@@ -1,2 +1,1 @@
-• Acum iPhone-ul tău va înceta automat să sune, dacă răspunzi la un apel primit de pe un alt dispozitiv conectat (cum ar fi Signal Desktop). Să decizi dacă vrei sau nu să vorbești cu acea persoană este o întrebare la care doar tu poți răspunde.
-• De asemenea, am remediat o eroare care împiedica indicatorii necitiți și alte insigne de stare să apară în filele Povești și Apeluri de pe iPadOS 18. 
+• This update improves support for “Limited Access” photo permissions and adds a convenient shortcut to select new photos in your iOS Settings. Take a picture of your Halloween costume idea, change what you share, exchange what you’ll wear, and arrange how you’ll scare.

@@ -1,2 +1,1 @@
-• Ara, si respons a una trucada entrant des d'un altre dispositiu vinculat (com Signal Desktop), el teu iPhone deixarà de sonar automàticament.
-• També hem corregit un error que apareixia a la pantalla pels usuaris d'iPadOS 18. 
+• This update improves support for “Limited Access” photo permissions and adds a convenient shortcut to select new photos in your iOS Settings. Take a picture of your Halloween costume idea, change what you share, exchange what you’ll wear, and arrange how you’ll scare.

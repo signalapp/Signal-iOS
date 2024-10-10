@@ -1,2 +1,1 @@
-• Τώρα το iPhone σου θα σταματά αυτόματα να κουδουνίζει όταν απαντάς σε μια εισερχόμενη κλήση σε άλλη συνδεδεμένη συσκευή (όπως το Signal Desktop).
-• Διορθώσαμε επίσης ένα σφάλμα που εμπόδιζε την εμφάνιση μη αναγνωσμένων ενδείξεων και άλλων σημάτων κατάστασης στις καρτέλες Ιστορίες και Κλήσεις στο iPadOS 18. 
+• This update improves support for “Limited Access” photo permissions and adds a convenient shortcut to select new photos in your iOS Settings. Take a picture of your Halloween costume idea, change what you share, exchange what you’ll wear, and arrange how you’ll scare.
