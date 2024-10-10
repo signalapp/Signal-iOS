@@ -1968,14 +1968,7 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
     // MARK: CallCellDelegate
 
     fileprivate func joinCall(from viewModel: CallViewModel) {
-        guard case let .group(groupThread) = viewModel.recipientType else {
-            owsFailBeta("Individual call should not be showing a join button")
-            return
-        }
-        CallStarter(
-            groupThread: groupThread,
-            context: self.callStarterContext
-        ).startCall(from: self)
+        startCall(from: viewModel)
     }
 
     fileprivate func returnToCall(from viewModel: CallViewModel) {
