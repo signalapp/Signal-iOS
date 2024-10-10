@@ -1352,7 +1352,7 @@ class StorageServiceOperation: OWSOperation {
                 _mergeRecord(groupV2Record, stateUpdater: groupV2Updater)
             } else if let storyDistributionListRecord = item.storyDistributionListRecord {
                 _mergeRecord(storyDistributionListRecord, stateUpdater: storyDistributionListUpdater)
-            } else if let callLinkRecord = item.callLinkRecord {
+            } else if let callLinkRecord = item.callLinkRecord, FeatureFlags.callLinkSync {
                 _mergeRecord(callLinkRecord, stateUpdater: callLinkUpdater)
             } else if case .account = item.identifier.type {
                 owsFailDebug("unexpectedly found account record in remaining items")
@@ -1411,7 +1411,7 @@ class StorageServiceOperation: OWSOperation {
         case .storyDistributionList:
             return true
         case .callLink:
-            return true
+            return FeatureFlags.callLinkSync
         case .unknown, .UNRECOGNIZED, nil:
             return false
         }
