@@ -1077,7 +1077,12 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             throw OWSGenericError("Not registered.")
         }
         let authCredential = try await deps.callService.authCredentialManager.fetchCallLinkAuthCredential(localIdentifiers: localIdentifiers)
-        let eraId = try await deps.callService.callLinkManager.peekCallLink(rootKey: rootKey, authCredential: authCredential)
+        let eraId: String?
+        do {
+            eraId = try await deps.callService.callLinkManager.peekCallLink(rootKey: rootKey, authCredential: authCredential)
+        } catch CallLinkManagerImpl.PeekError.expired, CallLinkManagerImpl.PeekError.invalid {
+            eraId = nil
+        }
         try await deps.db.awaitableWrite { tx in
             try deps.adHocCallRecordManager.handlePeekResult(eraId: eraId, rootKey: rootKey, tx: tx)
         }

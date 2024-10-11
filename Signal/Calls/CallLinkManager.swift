@@ -63,8 +63,10 @@ class CallLinkManagerImpl: CallLinkManager {
 
     // MARK: - Peek Call Link
 
-    struct PeekError: Error {
-        let errorCode: UInt16
+    enum PeekError: Error {
+        case expired
+        case invalid
+        case other(UInt16)
     }
 
     func peekCallLink(
@@ -80,7 +82,14 @@ class CallLinkManagerImpl: CallLinkManager {
             linkRootKey: rootKey
         )
         if let errorCode = peekResult.errorStatusCode {
-            throw PeekError(errorCode: errorCode)
+            switch errorCode {
+            case PeekInfo.expiredCallLinkStatus:
+                throw PeekError.expired
+            case PeekInfo.invalidCallLinkStatus:
+                throw PeekError.invalid
+            default:
+                throw PeekError.other(errorCode)
+            }
         }
         return peekResult.peekInfo.eraId
     }
