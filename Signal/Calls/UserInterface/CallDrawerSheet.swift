@@ -195,6 +195,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
 
             guard let viewModel = self?.viewModelsByID[memberID] else {
                 owsFailDebug("missing view model")
+                cell.hideContent()
                 return cell
             }
 
@@ -376,6 +377,9 @@ class CallDrawerSheet: InteractiveSheetViewController {
             let oldMemberIDs = viewModelsByID.keys
             let newMemberIDs = sortedMembers.map(\.id)
             let viewModelsToRemove = Set(oldMemberIDs).subtracting(newMemberIDs)
+            if !viewModelsToRemove.isEmpty {
+                Logger.info("Removing \(viewModelsToRemove.count) view models")
+            }
             viewModelsToRemove.forEach { viewModelsByID.removeValue(forKey: $0) }
 
             viewModelsByID = sortedMembers.reduce(into: viewModelsByID) { partialResult, member in
@@ -389,6 +393,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
     }
 
     func updateMembers() {
+        Logger.info("")
         let unsortedMembers: [JoinedMember] = databaseStorage.read {
             callSheetDataSource.unsortedMembers(tx: $0.asV2Read)
         }
@@ -476,9 +481,11 @@ class CallDrawerSheet: InteractiveSheetViewController {
         }
 
         // Apply snapshot
+        Logger.info("Applying snapshot")
         if self.previousSnapshotItems != snapshot.itemIdentifiers {
             self.previousSnapshotItems = snapshot.itemIdentifiers
             dataSource.apply(snapshot, animatingDifferences: true) { [weak self] in
+                Logger.info("Snapshot applied")
                 self?.refreshMaxHeight()
             }
         }
@@ -1021,6 +1028,14 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
         case .hidden:
             self.removeUserButton.isHiddenInStackView = true
         }
+    }
+
+    func hideContent() {
+        self.raisedHandIndicator.isHidden = true
+        self.lowerHandButton.isHiddenInStackView = true
+        self.audioMutedIndicator.isHidden = true
+        self.leadingWrapper.isHiddenInStackView = true
+        self.removeUserButton.isHiddenInStackView = true
     }
 
     private func subscribe(to publisher: Published<Bool>.Publisher, showing view: UIView) {
