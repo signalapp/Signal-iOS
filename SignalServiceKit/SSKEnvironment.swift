@@ -42,7 +42,9 @@ public class SSKEnvironment: NSObject {
     public let messageDecrypterRef: OWSMessageDecrypter
     public let groupsV2MessageProcessorRef: GroupsV2MessageProcessor
     public let ows2FAManagerRef: OWS2FAManager
+    @objc
     public let disappearingMessagesJobRef: OWSDisappearingMessagesJob
+    @objc
     public let receiptManagerRef: OWSReceiptManager
     @objc
     public let receiptSenderRef: ReceiptSender
@@ -50,6 +52,7 @@ public class SSKEnvironment: NSObject {
     public let syncManagerRef: SyncManagerProtocol
     public let typingIndicatorsRef: TypingIndicators
     public let stickerManagerRef: StickerManager
+    @objc
     public let databaseStorageRef: SDSDatabaseStorage
     public let signalServiceAddressCacheRef: SignalServiceAddressCache
     public let signalServiceRef: OWSSignalServiceProtocol

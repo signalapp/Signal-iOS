@@ -565,7 +565,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                     appContext: appContext,
                     authorMergeHelper: DependenciesBridge.shared.authorMergeHelper,
                     db: DependenciesBridge.shared.db,
-                    modelReadCaches: AuthorMergeHelperBuilder.Wrappers.ModelReadCaches(ModelReadCaches.shared),
+                    modelReadCaches: AuthorMergeHelperBuilder.Wrappers.ModelReadCaches(SSKEnvironment.shared.modelReadCachesRef),
                     recipientDatabaseTable: DependenciesBridge.shared.recipientDatabaseTable
                 ).buildTableIfNeeded()
             }

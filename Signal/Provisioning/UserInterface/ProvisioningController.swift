@@ -46,7 +46,7 @@ public class ProvisioningController: NSObject {
             pushRegistrationManager: ProvisioningCoordinatorImpl.Wrappers.PushRegistrationManager(
                 self.pushRegistrationManager
             ),
-            receiptManager: ProvisioningCoordinatorImpl.Wrappers.ReceiptManager(OWSReceiptManager.shared),
+            receiptManager: ProvisioningCoordinatorImpl.Wrappers.ReceiptManager(SSKEnvironment.shared.receiptManagerRef),
             registrationStateChangeManager: DependenciesBridge.shared.registrationStateChangeManager,
             signalService: self.signalService,
             storageServiceManager: self.storageServiceManager,

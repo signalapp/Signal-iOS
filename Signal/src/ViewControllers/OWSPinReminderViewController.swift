@@ -279,7 +279,7 @@ public class PinReminderViewController: OWSViewController {
         // If the user tried and guessed wrong, we'll dismiss the megaphone and
         // decrease their reminder interval so the next reminder comes sooner.
         // If they didn't try and enter a PIN, we do nothing and leave the megaphone.
-        if hasGuessedWrong { OWS2FAManager.shared.reminderCompleted(incorrectAttempts: true) }
+        if hasGuessedWrong { SSKEnvironment.shared.ows2FAManagerRef.reminderCompleted(incorrectAttempts: true) }
 
         self.completionHandler?(.canceled(didGuessWrong: hasGuessedWrong))
     }
@@ -303,9 +303,9 @@ public class PinReminderViewController: OWSViewController {
             return
         }
 
-        OWS2FAManager.shared.verifyPin(pin) { success in
+        SSKEnvironment.shared.ows2FAManagerRef.verifyPin(pin) { success in
             guard success else {
-                guard OWS2FAManager.shared.needsLegacyPinMigration, pin.count > kLegacyTruncated2FAv1PinLength else {
+                guard SSKEnvironment.shared.ows2FAManagerRef.needsLegacyPinMigration, pin.count > kLegacyTruncated2FAv1PinLength else {
                     if !silent { self.validationState = .mismatch }
                     return
                 }
@@ -315,7 +315,7 @@ public class PinReminderViewController: OWSViewController {
                 return
             }
 
-            OWS2FAManager.shared.reminderCompleted(incorrectAttempts: self.hasGuessedWrong)
+            SSKEnvironment.shared.ows2FAManagerRef.reminderCompleted(incorrectAttempts: self.hasGuessedWrong)
             self.completionHandler?(.succeeded)
         }
     }

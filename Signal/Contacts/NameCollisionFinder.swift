@@ -214,7 +214,7 @@ public class GroupMembershipNameCollisionFinder: NameCollisionFinder {
         // Neat! No collisions. Let's make sure we update our search space since we know there are no collisions
         // in the update interactions we've fetched
         if filteredCollisions.isEmpty {
-            SDSDatabaseStorage.shared.asyncWrite { writeTx in
+            SSKEnvironment.shared.databaseStorageRef.asyncWrite { writeTx in
                 self.markCollisionsAsResolved(transaction: writeTx)
             }
         }
@@ -292,7 +292,7 @@ public class GroupMembershipNameCollisionFinder: NameCollisionFinder {
         // - In our searchStartId cache, we always set the max(currentValue, newValue). So even if maxInteractionId
         // is unset or invalid, we'll never mistakenly grow our search space by setting the startId to a smaller value.
         let maxInteractionId = UInt64(thread.lastInteractionRowId)
-        SDSDatabaseStorage.shared.asyncWrite { writeTx in
+        SSKEnvironment.shared.databaseStorageRef.asyncWrite { writeTx in
             self.setRecentProfileUpdateSearchStartId(newValue: maxInteractionId, transaction: writeTx)
         }
     }

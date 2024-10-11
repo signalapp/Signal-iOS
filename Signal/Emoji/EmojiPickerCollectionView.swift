@@ -89,7 +89,7 @@ class EmojiPickerCollectionView: UICollectionView {
         layout.sectionInset = UIEdgeInsets(top: 0, leading: EmojiPickerCollectionView.margins, bottom: 0, trailing: EmojiPickerCollectionView.margins)
 
         let messageReacts: [OWSReaction]
-        (messageReacts, recentEmoji, allSendableEmojiByCategory) = SDSDatabaseStorage.shared.read { transaction in
+        (messageReacts, recentEmoji, allSendableEmojiByCategory) = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             let messageReacts: [OWSReaction]
             if let message {
                 messageReacts = ReactionFinder(uniqueMessageId: message.uniqueId).allReactions(transaction: transaction.unwrapGrdbRead)
@@ -399,7 +399,7 @@ class EmojiPickerCollectionView: UICollectionView {
                 guard let self = self else { return }
 
                 if let emoji = emoji {
-                    SDSDatabaseStorage.shared.asyncWrite { transaction in
+                    SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
                         self.recordRecentEmoji(emoji, transaction: transaction)
                         emoji.baseEmoji.setPreferredSkinTones(emoji.skinTones, transaction: transaction)
                     }
@@ -442,7 +442,7 @@ extension EmojiPickerCollectionView: UICollectionViewDelegate {
             return owsFailDebug("Missing emoji for indexPath \(indexPath)")
         }
 
-        SDSDatabaseStorage.shared.asyncWrite { transaction in
+        SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
             self.recordRecentEmoji(emoji, transaction: transaction)
             emoji.baseEmoji.setPreferredSkinTones(emoji.skinTones, transaction: transaction)
         }
@@ -600,7 +600,7 @@ private class EmojiSearchIndex: NSObject {
     public class func updateManifestIfNeeded() {
         var searchIndexVersion: Int = 0
         var searchIndexLocalizations: [String] = []
-        (searchIndexVersion, searchIndexLocalizations) = SDSDatabaseStorage.shared.read { transaction in
+        (searchIndexVersion, searchIndexLocalizations) = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             let version = self.emojiSearchIndexKVS.getInt(emojiSearchIndexVersionKey, transaction: transaction) ?? 0
             let locs: [String] = self.emojiSearchIndexKVS.getObject(forKey: emojiSearchIndexAvailableLocalizationsKey, transaction: transaction) as? [String] ?? []
             return (version, locs)
@@ -641,7 +641,7 @@ private class EmojiSearchIndex: NSObject {
     public static func searchIndexLocalizationForLocale(_ locale: String, searchIndexManifest: [String]? = nil) -> String? {
         var manifest = searchIndexManifest
         if manifest == nil {
-            manifest = SDSDatabaseStorage.shared.read { transaction in
+            manifest = SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 return self.emojiSearchIndexKVS.getObject(forKey: emojiSearchIndexAvailableLocalizationsKey, transaction: transaction) as? [String] ?? []
             }
         }
@@ -669,7 +669,7 @@ private class EmojiSearchIndex: NSObject {
     public static func emojiSearchIndex(for localization: String, shouldFetch: Bool) -> [String: [String]]? {
         var index: [String: [String]]?
 
-        SDSDatabaseStorage.shared.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             index = self.emojiSearchIndexKVS.getObject(forKey: localization, transaction: transaction) as? [String: [String]]
         }
 
@@ -682,7 +682,7 @@ private class EmojiSearchIndex: NSObject {
     }
 
     private static func invalidateSearchIndex(newVersion: Int, localizationsToInvalidate: [String], newLocalizations: [String]) {
-        SDSDatabaseStorage.shared.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             for localization in localizationsToInvalidate {
                 self.emojiSearchIndexKVS.removeValue(forKey: localization, transaction: transaction)
             }
@@ -696,7 +696,7 @@ private class EmojiSearchIndex: NSObject {
 
         var searchIndexVersion = version
         if searchIndexVersion == nil {
-            searchIndexVersion = SDSDatabaseStorage.shared.read { transaction in
+            searchIndexVersion = SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 return self.emojiSearchIndexKVS.getInt(emojiSearchIndexVersionKey, transaction: transaction) ?? 0
             }
         }
@@ -720,7 +720,7 @@ private class EmojiSearchIndex: NSObject {
             }
 
             let index = self.buildSearchIndexMap(for: json)
-            SDSDatabaseStorage.shared.write { transaction in
+            SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 self.emojiSearchIndexKVS.setObject(index, key: localization, transaction: transaction)
             }
 

@@ -46,12 +46,12 @@ public class SSKPreferences: NSObject {
 
     @objc
     public static func hasSavedThread(transaction: SDSAnyReadTransaction) -> Bool {
-        return shared.hasSavedThread(transaction: transaction)
+        return SSKEnvironment.shared.sskPreferencesRef.hasSavedThread(transaction: transaction)
     }
 
     @objc
     public static func setHasSavedThread(_ newValue: Bool, transaction: SDSAnyWriteTransaction) {
-        shared.setHasSavedThread(newValue, transaction: transaction)
+        SSKEnvironment.shared.sskPreferencesRef.setHasSavedThread(newValue, transaction: transaction)
     }
 
     private let hasSavedThreadKey = "hasSavedThread"

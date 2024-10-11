@@ -56,7 +56,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
             )
 
             pinSection.add(.disclosureItem(
-                withText: OWS2FAManager.shared.is2FAEnabled
+                withText: SSKEnvironment.shared.ows2FAManagerRef.is2FAEnabled
                     ? OWSLocalizedString(
                         "SETTINGS_PINS_ITEM",
                         comment: "Label for the 'pins' item of the privacy settings when the user does have a pin."
@@ -71,13 +71,13 @@ class AccountSettingsViewController: OWSTableViewController2 {
             ))
 
             // Reminders toggle.
-            if OWS2FAManager.shared.is2FAEnabled {
+            if SSKEnvironment.shared.ows2FAManagerRef.is2FAEnabled {
                 pinSection.add(.switch(
                     withText: OWSLocalizedString(
                         "SETTINGS_PIN_REMINDER_SWITCH_LABEL",
                         comment: "Label for the 'pin reminder' switch of the privacy settings."
                     ),
-                    isOn: { OWS2FAManager.shared.areRemindersEnabled },
+                    isOn: { SSKEnvironment.shared.ows2FAManagerRef.areRemindersEnabled },
                     target: self,
                     selector: #selector(arePINRemindersEnabledDidChange)
                 ))
@@ -96,7 +96,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
                     "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL",
                     comment: "Label for the 'enable registration lock' switch of the privacy settings."
                 ),
-                isOn: { OWS2FAManager.shared.isRegistrationLockV2Enabled },
+                isOn: { SSKEnvironment.shared.ows2FAManagerRef.isRegistrationLockV2Enabled },
                 target: self,
                 selector: #selector(isRegistrationLockV2EnabledDidChange)
             ))
@@ -309,7 +309,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
     private func arePINRemindersEnabledDidChange(_ sender: UISwitch) {
         if sender.isOn {
             databaseStorage.write { transaction in
-                OWS2FAManager.shared.setAreRemindersEnabled(true, transaction: transaction)
+                SSKEnvironment.shared.ows2FAManagerRef.setAreRemindersEnabled(true, transaction: transaction)
             }
         } else {
             let pinConfirmationVC = PinConfirmationViewController(
@@ -329,7 +329,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
                 guard let self = self else { return }
                 if confirmed {
                     self.databaseStorage.write { transaction in
-                        OWS2FAManager.shared.setAreRemindersEnabled(false, transaction: transaction)
+                        SSKEnvironment.shared.ows2FAManagerRef.setAreRemindersEnabled(false, transaction: transaction)
                     }
 
                     ExperienceUpgradeManager.dismissPINReminderIfNecessary()
@@ -345,7 +345,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
     private func isRegistrationLockV2EnabledDidChange(_ sender: UISwitch) {
         let shouldBeEnabled = sender.isOn
 
-        guard shouldBeEnabled != OWS2FAManager.shared.isRegistrationLockV2Enabled else { return }
+        guard shouldBeEnabled != SSKEnvironment.shared.ows2FAManagerRef.isRegistrationLockV2Enabled else { return }
 
         let actionSheet: ActionSheetController
         if shouldBeEnabled {
@@ -364,10 +364,10 @@ class AccountSettingsViewController: OWSTableViewController2 {
                 "SETTINGS_REGISTRATION_LOCK_TURN_ON",
                 comment: "Action to turn on registration lock"
             )) { [weak self] _ in
-                if OWS2FAManager.shared.is2FAEnabled {
+                if SSKEnvironment.shared.ows2FAManagerRef.is2FAEnabled {
                     Task {
                         do {
-                            try await OWS2FAManager.shared.enableRegistrationLockV2()
+                            try await SSKEnvironment.shared.ows2FAManagerRef.enableRegistrationLockV2()
                             self?.updateTableContents()
                         } catch {
                             owsFailDebug("Error enabling reglock \(error)")
@@ -393,7 +393,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
             ) { [weak self] _ in
                 Task {
                     do {
-                        try await OWS2FAManager.shared.disableRegistrationLockV2()
+                        try await SSKEnvironment.shared.ows2FAManagerRef.disableRegistrationLockV2()
                         self?.updateTableContents()
                     } catch {
                         owsFailDebug("Failed to disable reglock \(error)")
@@ -415,7 +415,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
     }
 
     public func showCreateOrChangePin() {
-        if OWS2FAManager.shared.is2FAEnabled {
+        if SSKEnvironment.shared.ows2FAManagerRef.is2FAEnabled {
             showChangePin()
         } else {
             showCreatePin()

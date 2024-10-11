@@ -252,7 +252,7 @@ class TSAttachmentVideoDurationHelper {
 
     /// Runs on self.queue. If `result.duration` is nil it is considered a failure.
     private func save(_ result: Result) {
-        SDSDatabaseStorage.shared.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             if let attachment = TSAttachmentStream.anyFetchAttachmentStream(uniqueId: result.attachmentUniqueId,
                                                                             transaction: transaction) {
                 attachment.update(withVideoDuration: NSNumber(value: result.duration ?? Double.nan),

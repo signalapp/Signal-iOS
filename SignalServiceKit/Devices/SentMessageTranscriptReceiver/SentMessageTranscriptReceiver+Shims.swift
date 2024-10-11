@@ -39,7 +39,7 @@ public class _SentMessageTranscriptReceiver_DisappearingMessagesJobWrapper: _Sen
     public init() {}
 
     public func startExpiration(for message: TSMessage, expirationStartedAt: UInt64, tx: DBWriteTransaction) {
-        OWSDisappearingMessagesJob.shared.startAnyExpiration(
+        SSKEnvironment.shared.disappearingMessagesJobRef.startAnyExpiration(
             for: message,
             expirationStartedAt: expirationStartedAt,
             transaction: SDSDB.shimOnlyBridge(tx)

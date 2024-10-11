@@ -33,7 +33,7 @@ enum OWSOrphanDataCleaner {
     private static var isMainAppAndActive: Bool {
         CurrentAppContext().reportedApplicationState == .active
     }
-    private static let databaseStorage = SDSDatabaseStorage.shared
+    private static let databaseStorage = SSKEnvironment.shared.databaseStorageRef
     private static let keyValueStore = SDSKeyValueStore(collection: "OWSOrphanDataCleaner_Collection")
 
     /// We use the lowest priority possible.

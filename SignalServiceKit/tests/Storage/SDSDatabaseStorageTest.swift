@@ -51,7 +51,7 @@ class SDSDatabaseStorageTest: SSKBaseTest {
     // MARK: -
 
     func test_threads() {
-        let storage = SDSDatabaseStorage.shared
+        let storage = SSKEnvironment.shared.databaseStorageRef
 
         XCTAssertEqual(0, TSThread.anyFetchAll(databaseStorage: storage).count)
 
@@ -100,7 +100,7 @@ class SDSDatabaseStorageTest: SSKBaseTest {
     }
 
     func test_interactions() {
-        let storage = SDSDatabaseStorage.shared
+        let storage = SSKEnvironment.shared.databaseStorageRef
 
         XCTAssertEqual(0, TSInteraction.anyFetchAll(databaseStorage: storage).count)
 

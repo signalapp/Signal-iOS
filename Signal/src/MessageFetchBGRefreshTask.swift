@@ -29,7 +29,7 @@ public class MessageFetchBGRefreshTask {
         let value = MessageFetchBGRefreshTask(
             dateProvider: { Date() },
             messageFetcherJob: NSObject.messageFetcherJob,
-            ows2FAManager: .shared,
+            ows2FAManager: SSKEnvironment.shared.ows2FAManagerRef,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager
         )
         _shared = value

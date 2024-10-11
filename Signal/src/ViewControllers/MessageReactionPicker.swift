@@ -160,7 +160,7 @@ class MessageReactionPicker: UIStackView {
     }
 
     private func currentEmojiSetOnDisk(style: Style) -> [EmojiWithSkinTones] {
-        var emojiSet = SDSDatabaseStorage.shared.read { transaction in
+        var emojiSet = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             let customSetStrings = ReactionManager.customEmojiSet(transaction: transaction) ?? []
             let customSet = customSetStrings.lazy.map { EmojiWithSkinTones(rawValue: $0) }
 

@@ -33,19 +33,19 @@ public extension NSObject {
     }
 
     final var blockingManager: BlockingManager {
-        .shared
+        SSKEnvironment.shared.blockingManagerRef
     }
 
     static var blockingManager: BlockingManager {
-        .shared
+        SSKEnvironment.shared.blockingManagerRef
     }
 
     final var databaseStorage: SDSDatabaseStorage {
-        SDSDatabaseStorage.shared
+        SSKEnvironment.shared.databaseStorageRef
     }
 
     static var databaseStorage: SDSDatabaseStorage {
-        SDSDatabaseStorage.shared
+        SSKEnvironment.shared.databaseStorageRef
     }
 
     final var disappearingMessagesJob: OWSDisappearingMessagesJob {
@@ -102,12 +102,12 @@ public extension NSObject {
 
     @nonobjc
     final var receiptManager: OWSReceiptManager {
-        .shared
+        SSKEnvironment.shared.receiptManagerRef
     }
 
     @nonobjc
     static var receiptManager: OWSReceiptManager {
-        .shared
+        SSKEnvironment.shared.receiptManagerRef
     }
 
     @nonobjc
@@ -403,19 +403,19 @@ public extension NSObject {
 public extension Dependencies {
 
     var blockingManager: BlockingManager {
-        .shared
+        SSKEnvironment.shared.blockingManagerRef
     }
 
     static var blockingManager: BlockingManager {
-        .shared
+        SSKEnvironment.shared.blockingManagerRef
     }
 
     var databaseStorage: SDSDatabaseStorage {
-        SDSDatabaseStorage.shared
+        SSKEnvironment.shared.databaseStorageRef
     }
 
     static var databaseStorage: SDSDatabaseStorage {
-        SDSDatabaseStorage.shared
+        SSKEnvironment.shared.databaseStorageRef
     }
 
     var disappearingMessagesJob: OWSDisappearingMessagesJob {
@@ -477,19 +477,19 @@ public extension Dependencies {
     }
 
     var ows2FAManager: OWS2FAManager {
-        .shared
+        SSKEnvironment.shared.ows2FAManagerRef
     }
 
     static var ows2FAManager: OWS2FAManager {
-        .shared
+        SSKEnvironment.shared.ows2FAManagerRef
     }
 
     var receiptManager: OWSReceiptManager {
-        .shared
+        SSKEnvironment.shared.receiptManagerRef
     }
 
     static var receiptManager: OWSReceiptManager {
-        .shared
+        SSKEnvironment.shared.receiptManagerRef
     }
 
     var profileManager: ProfileManager {
@@ -956,120 +956,5 @@ public extension Dependencies {
 
     static var versionedProfilesSwift: VersionedProfilesSwift {
         SSKEnvironment.shared.versionedProfilesRef
-    }
-}
-
-// MARK: -
-
-@objc
-public extension OWSProfileManager {
-    static var shared: OWSProfileManager {
-        SSKEnvironment.shared.profileManagerRef as! OWSProfileManager
-    }
-}
-
-// MARK: -
-
-@objc
-public extension BlockingManager {
-    static var shared: BlockingManager {
-        SSKEnvironment.shared.blockingManagerRef
-    }
-}
-
-// MARK: -
-
-@objc
-public extension SDSDatabaseStorage {
-    static var shared: SDSDatabaseStorage {
-        SSKEnvironment.shared.databaseStorageRef
-    }
-}
-
-// MARK: -
-
-public extension OWS2FAManager {
-    static var shared: OWS2FAManager {
-        SSKEnvironment.shared.ows2FAManagerRef
-    }
-}
-
-// MARK: -
-
-@objc
-public extension OWSReceiptManager {
-    static var shared: OWSReceiptManager {
-        SSKEnvironment.shared.receiptManagerRef
-    }
-}
-
-// MARK: -
-
-@objc
-public extension StickerManager {
-    static var shared: StickerManager {
-        SSKEnvironment.shared.stickerManagerRef
-    }
-}
-
-// MARK: -
-
-@objc
-public extension ModelReadCaches {
-    static var shared: ModelReadCaches {
-        SSKEnvironment.shared.modelReadCachesRef
-    }
-}
-
-// MARK: -
-
-@objc
-public extension SSKPreferences {
-    static var shared: SSKPreferences {
-        SSKEnvironment.shared.sskPreferencesRef
-    }
-}
-
-// MARK: -
-
-@objc
-public extension MessageProcessor {
-    static var shared: MessageProcessor {
-        SSKEnvironment.shared.messageProcessorRef
-    }
-}
-
-// MARK: -
-
-@objc
-public extension NetworkManager {
-    static var shared: NetworkManager {
-        SSKEnvironment.shared.networkManagerRef
-    }
-}
-
-// MARK: -
-
-@objc
-public extension OWSDisappearingMessagesJob {
-    static var shared: OWSDisappearingMessagesJob {
-        SSKEnvironment.shared.disappearingMessagesJobRef
-    }
-}
-
-// MARK: -
-
-@objc
-public extension PhoneNumberUtil {
-    static var shared: PhoneNumberUtil {
-        SSKEnvironment.shared.phoneNumberUtilRef
-    }
-}
-
-// MARK: -
-
-public extension OWSSyncManager {
-    static var shared: SyncManagerProtocol {
-        SSKEnvironment.shared.syncManagerRef
     }
 }

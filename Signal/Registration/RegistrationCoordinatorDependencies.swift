@@ -53,7 +53,7 @@ public struct RegistrationCoordinatorDependencies {
             messageBackupManager: DependenciesBridge.shared.messageBackupManager,
             messagePipelineSupervisor: RegistrationCoordinatorImpl.Wrappers.MessagePipelineSupervisor(object.messagePipelineSupervisor),
             messageProcessor: RegistrationCoordinatorImpl.Wrappers.MessageProcessor(object.messageProcessor),
-            ows2FAManager: RegistrationCoordinatorImpl.Wrappers.OWS2FAManager(.shared),
+            ows2FAManager: RegistrationCoordinatorImpl.Wrappers.OWS2FAManager(SSKEnvironment.shared.ows2FAManagerRef),
             phoneNumberDiscoverabilityManager: DependenciesBridge.shared.phoneNumberDiscoverabilityManager,
             preKeyManager: RegistrationCoordinatorImpl.Wrappers.PreKeyManager(
                 DependenciesBridge.shared.preKeyManager

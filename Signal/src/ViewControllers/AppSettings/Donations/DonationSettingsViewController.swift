@@ -202,7 +202,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
                     if let pendingIDEALSubscription {
                         // Serialized badges lose their assets, so ensure they've
                         // been populated before returning.
-                        return OWSProfileManager.shared.badgeStore.populateAssetsOnBadge(
+                        return SSKEnvironment.shared.profileManagerRef.badgeStore.populateAssetsOnBadge(
                             pendingIDEALSubscription.newSubscriptionLevel.badge
                         ).then { _ -> Guarantee<State> in
                             Guarantee.value(result)

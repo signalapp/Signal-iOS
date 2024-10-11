@@ -1325,7 +1325,7 @@ private class PermissionErrorView: UIView {
     }()
 
     private lazy var needPermissionLabel: UILabel = {
-        let shortName = SDSDatabaseStorage.shared.read {
+        let shortName = SSKEnvironment.shared.databaseStorageRef.read {
             return contactManager.displayName(
                 for: thread.contactAddress,
                 tx: $0

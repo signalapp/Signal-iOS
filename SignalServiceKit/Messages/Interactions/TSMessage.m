@@ -407,9 +407,9 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         return;
     }
     uint64_t nowMs = [NSDate ows_millisecondTimeStamp];
-    [[OWSDisappearingMessagesJob shared] startAnyExpirationForMessage:self
-                                                  expirationStartedAt:nowMs
-                                                          transaction:transaction];
+    [SSKEnvironment.shared.disappearingMessagesJobRef startAnyExpirationForMessage:self
+                                                               expirationStartedAt:nowMs
+                                                                       transaction:transaction];
 }
 
 - (void)updateStoredShouldStartExpireTimer

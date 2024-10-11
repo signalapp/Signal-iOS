@@ -553,7 +553,7 @@ public final class DonationViewsUtil {
         from viewController: UIViewController,
         donateMode: DonateViewController.DonateMode
     ) {
-        let receiptCredentialRequestError = SDSDatabaseStorage.shared.read { tx -> ReceiptCredentialRequestError? in
+        let receiptCredentialRequestError = SSKEnvironment.shared.databaseStorageRef.read { tx -> ReceiptCredentialRequestError? in
             let resultStore = DependenciesBridge.shared.receiptCredentialResultStore
 
             switch donateMode {

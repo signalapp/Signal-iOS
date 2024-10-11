@@ -70,7 +70,7 @@ class GetStartedBannerViewController: UIViewController, UICollectionViewDelegate
         updateContent()
         applyTheme()
 
-        SDSDatabaseStorage.shared.appendDatabaseChangeDelegate(self)
+        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(applyTheme),
@@ -141,7 +141,7 @@ class GetStartedBannerViewController: UIViewController, UICollectionViewDelegate
     }
 
     func fetchContent() -> [GetStartedBannerEntry] {
-        SDSDatabaseStorage.shared.read { readTx in
+        SSKEnvironment.shared.databaseStorageRef.read { readTx in
             let activeCards = Self.getActiveCards(readTx: readTx)
 
             let visibleThreadCount: UInt
@@ -157,7 +157,7 @@ class GetStartedBannerViewController: UIViewController, UICollectionViewDelegate
             // If we have five or more threads, dismiss all cards
             if activeCards.count > 0, visibleThreadCount >= 5 {
                 Logger.info("User has more than five threads. Dismissing Get Started banner.")
-                SDSDatabaseStorage.shared.asyncWrite { writeTx in
+                SSKEnvironment.shared.databaseStorageRef.asyncWrite { writeTx in
                     Self.dismissAllCards(writeTx: writeTx)
                 }
                 return []
@@ -243,7 +243,7 @@ extension GetStartedBannerViewController: GetStartedBannerCellDelegate {
     func didTapClose(_ cell: GetStartedBannerCell) {
         guard let model = cell.model else { return }
 
-        SDSDatabaseStorage.shared.asyncWrite { writeTx in
+        SSKEnvironment.shared.databaseStorageRef.asyncWrite { writeTx in
             Self.completeCard(model, writeTx: writeTx)
         }
     }

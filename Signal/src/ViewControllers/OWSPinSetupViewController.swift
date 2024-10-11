@@ -223,7 +223,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         hideNavigationBar: Bool,
         showCancelButton: Bool = false,
         showDisablePinButton: Bool = false,
-        enableRegistrationLock: Bool = OWS2FAManager.shared.isRegistrationLockEnabled,
+        enableRegistrationLock: Bool = SSKEnvironment.shared.ows2FAManagerRef.isRegistrationLockEnabled,
         completionHandler: @escaping (PinSetupViewController, Error?) -> Void
     ) {
         self.init(
@@ -708,7 +708,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
     private func _enable2FAAndContinue(withPin pin: String) async throws {
         Logger.info("Setting v2 pin code")
         do {
-            try await OWS2FAManager.shared.requestEnable2FA(withPin: pin)
+            try await SSKEnvironment.shared.ows2FAManagerRef.requestEnable2FA(withPin: pin)
         } catch OWSHTTPError.networkFailure {
             // If we have a network failure before even requesting to enable 2FA, we
             // can just ask the user to retry without altering any state. We can be
@@ -720,14 +720,14 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
             // The client may have fallen out of sync with the service.
             // Try to get back to a known good state by disabling 2FA
             // whenever enabling it fails.
-            OWS2FAManager.shared.disable2FA()
+            SSKEnvironment.shared.ows2FAManagerRef.disable2FA()
 
             throw PinSetupError.enable2FA
         }
 
         do {
             if self.enableRegistrationLock {
-                try await OWS2FAManager.shared.enableRegistrationLockV2()
+                try await SSKEnvironment.shared.ows2FAManagerRef.enableRegistrationLockV2()
             }
         } catch {
             owsFailDebug("Failed to enable registration lock with error: \(error)")
@@ -736,7 +736,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
             // the user of the failure and not attempt to enable it later. Otherwise,
             // they would be left thinking they have registration lock enabled when
             // they do not for some window of time.
-            guard OWS2FAManager.shared.isRegistrationLockV2Enabled else {
+            guard SSKEnvironment.shared.ows2FAManagerRef.isRegistrationLockV2Enabled else {
                 throw PinSetupError.enableRegistrationLock
             }
         }
@@ -779,7 +779,7 @@ extension PinSetupViewController: UITextFieldDelegate {
 
 extension PinSetupViewController {
     public class func disablePinWithConfirmation(fromViewController: UIViewController) async throws -> Bool {
-        if OWS2FAManager.shared.isRegistrationLockV2Enabled {
+        if SSKEnvironment.shared.ows2FAManagerRef.isRegistrationLockV2Enabled {
             return try await showRegistrationLockConfirmation(fromViewController: fromViewController)
         }
 
@@ -855,7 +855,7 @@ extension PinSetupViewController {
                     canCancel: false,
                     asyncBlock: { modal in
                         do {
-                            try await OWS2FAManager.shared.disableRegistrationLockV2()
+                            try await SSKEnvironment.shared.ows2FAManagerRef.disableRegistrationLockV2()
                         } catch {
                             modal.dismiss { continuation.resume(throwing: error) }
                             return

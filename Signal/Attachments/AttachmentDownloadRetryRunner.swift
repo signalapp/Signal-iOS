@@ -30,7 +30,7 @@ public class AttachmentDownloadRetryRunner {
     public static let shared = AttachmentDownloadRetryRunner(
         attachmentDownloadManager: DependenciesBridge.shared.attachmentDownloadManager,
         attachmentDownloadStore: DependenciesBridge.shared.attachmentDownloadStore,
-        db: SDSDatabaseStorage.shared
+        db: SSKEnvironment.shared.databaseStorageRef
     )
 
     public func beginObserving() {

@@ -74,7 +74,7 @@ class ChatsSettingsViewController: OWSTableViewController2 {
                 "SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL",
                 comment: "Title for switch to toggle preference between contact and profile avatars"),
             isOn: {
-                SDSDatabaseStorage.shared.read { SSKPreferences.preferContactAvatars(transaction: $0) }
+                SSKEnvironment.shared.databaseStorageRef.read { SSKPreferences.preferContactAvatars(transaction: $0) }
             },
             target: self,
             selector: #selector(didToggleAvatarPreference)

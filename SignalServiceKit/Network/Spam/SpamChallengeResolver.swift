@@ -291,7 +291,7 @@ extension SpamChallengeResolver {
         }
 
         do {
-            challenges = try SDSDatabaseStorage.shared.read { readTx in
+            challenges = try SSKEnvironment.shared.databaseStorageRef.read { readTx in
                 try keyValueStore.getCodableValue(
                     forKey: outstandingChallengesKey,
                     transaction: readTx)
@@ -308,7 +308,7 @@ extension SpamChallengeResolver {
         assertOnQueue(workQueue)
 
         do {
-            try SDSDatabaseStorage.shared.write { writeTx in
+            try SSKEnvironment.shared.databaseStorageRef.write { writeTx in
                 if let challenges = challenges {
                     try keyValueStore.setCodable(challenges, key: outstandingChallengesKey, transaction: writeTx)
                 } else {

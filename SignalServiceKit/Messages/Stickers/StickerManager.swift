@@ -110,7 +110,7 @@ public class StickerManager: NSObject {
 
     // Attempt to download any sticker packs restored via backup.
     public static func downloadPendingSickerPacks() async throws {
-        try await shared.queueLoader.loadAndRunTasks()
+        try await SSKEnvironment.shared.stickerManagerRef.queueLoader.loadAndRunTasks()
     }
 
     // The sticker manager is responsible for downloading more than one kind
@@ -302,7 +302,7 @@ public class StickerManager: NSObject {
 
     // This method is public so that we can download "transient" (uninstalled) sticker packs.
     public class func tryToDownloadStickerPack(stickerPackInfo: StickerPackInfo) -> Promise<StickerPack> {
-        return shared.tryToDownloadStickerPack(stickerPackInfo: stickerPackInfo)
+        return SSKEnvironment.shared.stickerManagerRef.tryToDownloadStickerPack(stickerPackInfo: stickerPackInfo)
     }
 
     private class func upsertStickerPack(
@@ -810,7 +810,7 @@ public class StickerManager: NSObject {
 
     // This method is public so that we can download "transient" (uninstalled) stickers.
     public class func tryToDownloadSticker(stickerPack: StickerPack, stickerInfo: StickerInfo) -> Promise<URL> {
-        shared.tryToDownloadSticker(stickerPack: stickerPack, stickerInfo: stickerInfo)
+        SSKEnvironment.shared.stickerManagerRef.tryToDownloadSticker(stickerPack: stickerPack, stickerInfo: stickerInfo)
     }
 
     // MARK: - Emoji

@@ -567,7 +567,7 @@ extension ExperienceUpgradeManifest {
     }
 
     private static func checkPreconditionsForPinReminder(transaction: SDSAnyReadTransaction) -> Bool {
-        return OWS2FAManager.shared.isDueForV2Reminder(transaction: transaction)
+        return SSKEnvironment.shared.ows2FAManagerRef.isDueForV2Reminder(transaction: transaction)
     }
 
     private static func checkPreconditionsForContactsPermissionReminder() -> Bool {

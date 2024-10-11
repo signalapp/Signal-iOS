@@ -45,7 +45,7 @@ public protocol ConversationItem {
 }
 
 extension ConversationItem {
-    public var titleWithSneakyTransaction: String { SDSDatabaseStorage.shared.read { title(transaction: $0) } }
+    public var titleWithSneakyTransaction: String { SSKEnvironment.shared.databaseStorageRef.read { title(transaction: $0) } }
 
     public var videoAttachmentDurationLimit: TimeInterval? {
         return limitsVideoAttachmentLengthForStories ? StoryMessage.videoAttachmentDurationLimit : nil

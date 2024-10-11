@@ -179,10 +179,10 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
     [self updateGroupMemberRecordsWithTransaction:transaction];
 
     // We only need to re-index the group if the group name changed.
-    [SDSDatabaseStorage.shared touchThread:self
-                             shouldReindex:didNameChange
-                    shouldUpdateChatListUi:shouldUpdateChatListUi
-                               transaction:transaction];
+    [SSKEnvironment.shared.databaseStorageRef touchThread:self
+                                            shouldReindex:didNameChange
+                                   shouldUpdateChatListUi:shouldUpdateChatListUi
+                                              transaction:transaction];
 
     if (didAvatarChange) {
         [transaction addAsyncCompletionOnMain:^{ [self fireAvatarChangedNotification]; }];

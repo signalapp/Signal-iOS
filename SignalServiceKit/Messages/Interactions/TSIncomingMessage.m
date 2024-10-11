@@ -230,11 +230,14 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
                                             }];
 
     // readTimestamp may be earlier than now, so backdate the expiration if necessary.
-    [[OWSDisappearingMessagesJob shared] startAnyExpirationForMessage:self
-                                                  expirationStartedAt:readTimestamp
-                                                          transaction:transaction];
+    [SSKEnvironment.shared.disappearingMessagesJobRef startAnyExpirationForMessage:self
+                                                               expirationStartedAt:readTimestamp
+                                                                       transaction:transaction];
 
-    [OWSReceiptManager.shared messageWasRead:self thread:thread circumstance:circumstance transaction:transaction];
+    [SSKEnvironment.shared.receiptManagerRef messageWasRead:self
+                                                     thread:thread
+                                               circumstance:circumstance
+                                                transaction:transaction];
 
     if (shouldClearNotifications) {
         [NotificationPresenterObjC cancelNotificationsForMessageId:self.uniqueId];
@@ -255,7 +258,10 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
     [self anyUpdateIncomingMessageWithTransaction:transaction
                                             block:^(TSIncomingMessage *message) { message.viewed = YES; }];
 
-    [OWSReceiptManager.shared messageWasViewed:self thread:thread circumstance:circumstance transaction:transaction];
+    [SSKEnvironment.shared.receiptManagerRef messageWasViewed:self
+                                                       thread:thread
+                                                 circumstance:circumstance
+                                                  transaction:transaction];
 }
 
 - (SignalServiceAddress *)authorAddress

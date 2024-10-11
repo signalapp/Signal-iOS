@@ -788,7 +788,7 @@ class StorageServiceOperation: OWSOperation {
                 }
 
                 // Notify our other devices that the storage manifest has changed.
-                OWSSyncManager.shared.sendFetchLatestStorageManifestSyncMessage()
+                SSKEnvironment.shared.syncManagerRef.sendFetchLatestStorageManifestSyncMessage()
 
                 return self.reportSuccess()
             }
@@ -861,7 +861,7 @@ class StorageServiceOperation: OWSOperation {
                         // Clear out the key, it's no longer valid. This will prevent us
                         // from trying to backup again until the sync response is received.
                         DependenciesBridge.shared.svr.clearSyncedStorageServiceKey(transaction: transaction.asV2Write)
-                        OWSSyncManager.shared.sendKeysSyncRequestMessage(transaction: transaction)
+                        SSKEnvironment.shared.syncManagerRef.sendKeysSyncRequestMessage(transaction: transaction)
                     }
                 } else if
                     case .manifestProtoDeserializationFailed(let previousManifestVersion) = storageError,
@@ -1262,7 +1262,7 @@ class StorageServiceOperation: OWSOperation {
                         // Clear out the key, it's no longer valid. This will prevent us
                         // from trying to backup again until the sync response is received.
                         DependenciesBridge.shared.svr.clearSyncedStorageServiceKey(transaction: transaction.asV2Write)
-                        OWSSyncManager.shared.sendKeysSyncRequestMessage(transaction: transaction)
+                        SSKEnvironment.shared.syncManagerRef.sendKeysSyncRequestMessage(transaction: transaction)
                     }
                 } else if
                     case .itemProtoDeserializationFailed = storageError,

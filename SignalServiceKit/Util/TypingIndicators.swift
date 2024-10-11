@@ -287,7 +287,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
             // or show typing indicators for other users.
             guard delegate.areTypingIndicatorsEnabled() else { return }
 
-            SDSDatabaseStorage.shared.write(.promise) { transaction in
+            SSKEnvironment.shared.databaseStorageRef.write(.promise) { transaction in
                 guard let thread = TSThread.anyFetch(uniqueId: threadUniqueId, transaction: transaction) else {
                     return Promise<Void>.value(())
                 }

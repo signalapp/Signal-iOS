@@ -45,7 +45,7 @@ class PinReminderMegaphone: MegaphoneView {
 
     func presentToastForNewRepetitionInterval(fromViewController: UIViewController) {
         let toastText: String
-        switch OWS2FAManager.shared.repetitionInterval {
+        switch SSKEnvironment.shared.ows2FAManagerRef.repetitionInterval {
         case (1 * kDayInterval):
             toastText = OWSLocalizedString("PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST",
                                           comment: "Toast indicating that we'll ask you for your PIN again tomorrow.")

@@ -55,7 +55,7 @@ final class OWSDisappearingMessagesJobTest: SSKBaseTest {
             messageThatDoesntExpire.anyInsert(transaction: transaction)
         }
 
-        let job = OWSDisappearingMessagesJob.shared
+        let job = SSKEnvironment.shared.disappearingMessagesJobRef
 
         read { transaction in
             let messageCount = TSMessage.anyCount(transaction: transaction)

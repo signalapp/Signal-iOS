@@ -61,7 +61,7 @@ class AuthorMergeObserver: RecipientMergeObserver {
             let arguments: StatementArguments = [aciString, phoneNumber]
             SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.execute(sql: sql, arguments: arguments)
         }
-        ModelReadCaches.shared.evacuateAllCaches()
+        SSKEnvironment.shared.modelReadCachesRef.evacuateAllCaches()
     }
 }
 

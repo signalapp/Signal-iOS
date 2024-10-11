@@ -142,13 +142,13 @@ public class MessageProcessor: NSObject {
         appReadiness.runNowOrWhenAppDidBecomeReadySync {
             Self.messagePipelineSupervisor.register(pipelineStage: self)
 
-            SDSDatabaseStorage.shared.read { transaction in
+            SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 // We may have legacy process jobs queued. We want to schedule them for
                 // processing immediately when we launch, so that we can drain the old queue.
                 let legacyProcessingJobRecords = LegacyMessageJobFinder().allJobs(transaction: transaction)
                 for jobRecord in legacyProcessingJobRecords {
                     let completion: (Error?) -> Void = { _ in
-                        SDSDatabaseStorage.shared.write { jobRecord.anyRemove(transaction: $0) }
+                        SSKEnvironment.shared.databaseStorageRef.write { jobRecord.anyRemove(transaction: $0) }
                     }
                     do {
                         let envelope = try SSKProtoEnvelope(serializedData: jobRecord.envelopeData)
@@ -181,7 +181,7 @@ public class MessageProcessor: NSObject {
                 }
                 for jobRecord in legacyDecryptJobRecords {
                     let completion: (Error?) -> Void = { _ in
-                        SDSDatabaseStorage.shared.write { jobRecord.anyRemove(transaction: $0) }
+                        SSKEnvironment.shared.databaseStorageRef.write { jobRecord.anyRemove(transaction: $0) }
                     }
                     do {
                         guard let envelopeData = jobRecord.envelopeData else {

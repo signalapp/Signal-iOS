@@ -33,13 +33,13 @@ class DebugUIMisc: NSObject, DebugUIPage, Dependencies {
 
         items += [
             OWSTableItem(title: "Corrupt username", actionBlock: {
-                SDSDatabaseStorage.shared.write { tx in
+                SSKEnvironment.shared.databaseStorageRef.write { tx in
                     DependenciesBridge.shared.localUsernameManager.setLocalUsernameCorrupted(tx: tx.asV2Write)
                 }
             }),
 
             OWSTableItem(title: "Reenable disabled inactive linked device reminder megaphones", actionBlock: {
-                SDSDatabaseStorage.shared.write { tx in
+                SSKEnvironment.shared.databaseStorageRef.write { tx in
                     DependenciesBridge.shared.inactiveLinkedDeviceFinder
                         .reenablePermanentlyDisabledFinders(tx: tx.asV2Write)
                 }
@@ -65,8 +65,8 @@ class DebugUIMisc: NSObject, DebugUIPage, Dependencies {
                 DebugUIMisc.showPinReminder()
             }),
             OWSTableItem(title: "Reset 2FA Repetition Interval", actionBlock: {
-                SDSDatabaseStorage.shared.write { transaction in
-                    OWS2FAManager.shared.setDefaultRepetitionInterval(transaction: transaction)
+                SSKEnvironment.shared.databaseStorageRef.write { transaction in
+                    SSKEnvironment.shared.ows2FAManagerRef.setDefaultRepetitionInterval(transaction: transaction)
                 }
             }),
 
@@ -184,7 +184,7 @@ class DebugUIMisc: NSObject, DebugUIPage, Dependencies {
             }),
 
             OWSTableItem(title: "Enable DeleteForMeSyncMessage info sheet", actionBlock: {
-                SDSDatabaseStorage.shared.write { tx in
+                SSKEnvironment.shared.databaseStorageRef.write { tx in
                     DeleteForMeInfoSheetCoordinator.fromGlobals()
                         .forceEnableInfoSheet(tx: tx.asV2Write)
                 }
