@@ -51,6 +51,7 @@ public enum AppNotificationAction: String, CaseIterable {
 }
 
 public struct AppNotificationUserInfoKey {
+    public static let roomId = "Signal.AppNotificationsUserInfoKey.roomId"
     public static let threadId = "Signal.AppNotificationsUserInfoKey.threadId"
     public static let messageId = "Signal.AppNotificationsUserInfoKey.messageId"
     public static let reactionId = "Signal.AppNotificationsUserInfoKey.reactionId"
@@ -855,13 +856,18 @@ public class NotificationPresenterImpl: NotificationPresenter {
         }
     }
 
-    public func notifyForGroupCallSafetyNumberChange(inThread thread: TSThread, presentAtJoin: Bool) {
+    public func notifyForGroupCallSafetyNumberChange(
+        callTitle: String,
+        threadUniqueId: String?,
+        roomId: Data?,
+        presentAtJoin: Bool
+    ) {
         let notificationTitle: String? = databaseStorage.read { tx in
             switch previewType(tx: tx) {
             case .noNameNoPreview:
                 return nil
             case .nameNoPreview, .namePreview:
-                return contactManager.displayName(for: thread, transaction: tx)
+                return callTitle
             }
         }
 
@@ -870,11 +876,16 @@ public class NotificationPresenterImpl: NotificationPresenter {
             ? NotificationStrings.groupCallSafetyNumberChangeAtJoinBody
             : NotificationStrings.groupCallSafetyNumberChangeBody
         )
-        let threadId = thread.uniqueId
-        let userInfo: [String: Any] = [
-            AppNotificationUserInfoKey.threadId: threadId,
+
+        var userInfo: [String: Any] = [
             AppNotificationUserInfoKey.defaultAction: AppNotificationAction.showCallLobby.rawValue
         ]
+        if let threadUniqueId {
+            userInfo[AppNotificationUserInfoKey.threadId] = threadUniqueId
+        }
+        if let roomId {
+            userInfo[AppNotificationUserInfoKey.roomId] = roomId.base64EncodedString()
+        }
 
         enqueueNotificationAction {
             await self.notifyViaPresenter(
@@ -884,7 +895,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 threadIdentifier: nil, // show ungrouped
                 userInfo: userInfo,
                 interaction: nil,
-                soundQuery: .thread(threadId)
+                soundQuery: threadUniqueId.map({ .thread($0) }) ?? .global
             )
         }
     }

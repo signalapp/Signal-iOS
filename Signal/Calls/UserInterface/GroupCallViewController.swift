@@ -1541,15 +1541,6 @@ extension GroupCallViewController: CallViewControllerWindowReference {
         }
     }
 
-    private func groupCallThreadForSafetyNumberMismatch() -> GroupThreadCall {
-        switch groupCall.concreteType {
-        case .groupThread(let groupThreadCall):
-            return groupThreadCall
-        case .callLink:
-            owsFail("[CallLink] TODO: Support Safety Number mismatches.")
-        }
-    }
-
     fileprivate func resolveSafetyNumberMismatch() {
         let resendMediaKeysAndResetMismatch = { [unowned self] in
             self.ringRtcCall.resendMediaKeys()
@@ -1577,10 +1568,22 @@ extension GroupCallViewController: CallViewControllerWindowReference {
             // we'll still treat them as having been there "since join", but that's okay.
             // It's not worth trying to track this more precisely.
             let atLeastOneUnresolvedPresentAtJoin = unresolvedAddresses.contains { membersAtJoin?.contains($0) ?? false }
-            Self.notificationPresenterImpl.notifyForGroupCallSafetyNumberChange(
-                inThread: self.groupCallThreadForSafetyNumberMismatch().groupThread,
-                presentAtJoin: atLeastOneUnresolvedPresentAtJoin
-            )
+            switch groupCall.concreteType {
+            case .groupThread(let call):
+                Self.notificationPresenterImpl.notifyForGroupCallSafetyNumberChange(
+                    callTitle: call.groupThread.groupNameOrDefault,
+                    threadUniqueId: call.groupThread.uniqueId,
+                    roomId: nil,
+                    presentAtJoin: atLeastOneUnresolvedPresentAtJoin
+                )
+            case .callLink(let call):
+                Self.notificationPresenterImpl.notifyForGroupCallSafetyNumberChange(
+                    callTitle: call.callLinkState.localizedName,
+                    threadUniqueId: nil,
+                    roomId: call.callLink.rootKey.deriveRoomId(),
+                    presentAtJoin: atLeastOneUnresolvedPresentAtJoin
+                )
+            }
         }
     }
 

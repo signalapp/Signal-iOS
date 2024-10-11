@@ -77,7 +77,8 @@ public class NotificationActionHandler: Dependencies {
         case .reactWithThumbsUp:
             return try reactWithThumbsUp(userInfo: userInfo)
         case .showCallLobby:
-            return try showCallLobby(userInfo: userInfo)
+            showCallLobby(userInfo: userInfo)
+            return .value(())
         case .submitDebugLogs:
             return submitDebugLogs()
         case .reregister:
@@ -176,7 +177,7 @@ public class NotificationActionHandler: Dependencies {
             if notificationMessage.isGroupStoryReply {
                 self.showGroupStoryReplyThread(notificationMessage: notificationMessage)
             } else {
-                self.showThread(notificationMessage: notificationMessage)
+                self.showThread(uniqueId: notificationMessage.thread.uniqueId)
             }
         }
     }
@@ -190,12 +191,12 @@ public class NotificationActionHandler: Dependencies {
         }
     }
 
-    private class func showThread(notificationMessage: NotificationMessage) {
+    private class func showThread(uniqueId: String) {
         // If this happens when the app is not visible we skip the animation so the thread
         // can be visible to the user immediately upon opening the app, rather than having to watch
         // it animate in from the homescreen.
         SignalApp.shared.presentConversationAndScrollToFirstUnreadMessage(
-            forThreadId: notificationMessage.thread.uniqueId,
+            forThreadId: uniqueId,
             animated: UIApplication.shared.applicationState == .active
         )
     }
@@ -271,33 +272,59 @@ public class NotificationActionHandler: Dependencies {
         }
     }
 
-    private class func showCallLobby(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
-        return firstly { () -> Promise<NotificationMessage> in
-            self.notificationMessage(forUserInfo: userInfo)
-        }.done(on: DispatchQueue.main) { notificationMessage in
-            let thread = notificationMessage.thread
-            let currentCall = Self.callService.callServiceState.currentCall
+    @MainActor
+    private class func showCallLobby(userInfo: [AnyHashable: Any]) {
+        let threadUniqueId = userInfo[AppNotificationUserInfoKey.threadId] as? String
+        let callLinkRoomId = userInfo[AppNotificationUserInfoKey.roomId] as? String
 
-            let isCurrentCallForNotificationThread = { () -> Bool in
-                switch currentCall?.mode {
-                case .individual(let call) where call.thread.uniqueId == thread.uniqueId:
-                    return true
-                case .groupThread(let call) where call.groupThread.uniqueId == thread.uniqueId:
-                    return true
-                case nil, .individual, .groupThread, .callLink:
-                    return false
+        let callTarget = { () -> CallTarget? in
+            if let threadUniqueId {
+                return databaseStorage.read { tx in
+                    if let thread = TSThread.anyFetch(uniqueId: threadUniqueId, transaction: tx) as? TSGroupThread {
+                        return .groupThread(thread)
+                    }
+                    return nil
                 }
-            }()
-
-            if isCurrentCallForNotificationThread {
-                WindowManager.shared.returnToCallView()
-            } else if let thread = thread as? TSGroupThread, currentCall == nil {
-                GroupCallViewController.presentLobby(thread: thread)
-            } else {
-                // If currentCall is non-nil, we can't join a call anyway, fallback to showing the thread.
-                // Individual calls don't have a lobby, just show the thread.
-                return self.showThread(notificationMessage: notificationMessage)
             }
+            if let callLinkRoomId {
+                return databaseStorage.read { tx in
+                    let callLinkStore = DependenciesBridge.shared.callLinkStore
+                    if
+                        let roomId = Data(base64Encoded: callLinkRoomId),
+                        let callLinkRecord = try? callLinkStore.fetch(roomId: roomId, tx: tx.asV2Read)
+                    {
+                        return .callLink(CallLink(rootKey: callLinkRecord.rootKey))
+                    }
+                    return nil
+                }
+            }
+            return nil
+        }()
+        guard let callTarget else {
+            owsFailDebug("Couldn't resolve destination for call lobby.")
+            return
+        }
+
+        let currentCall = Self.callService.callServiceState.currentCall
+        if currentCall?.mode.matches(callTarget) == true {
+            WindowManager.shared.returnToCallView()
+            return
+        }
+
+        if currentCall == nil {
+            callService.initiateCall(to: callTarget, isVideo: true)
+            return
+        }
+
+        switch callTarget {
+        case .individual:
+            owsFail("Not supported.")
+        case .groupThread(let thread as TSThread):
+            // If currentCall is non-nil, we can't join a call anyway, so fall back to showing the thread.
+            self.showThread(uniqueId: thread.uniqueId)
+        case .callLink:
+            // Nothing to show for a call link.
+            break
         }
     }
 
