@@ -109,7 +109,7 @@ extension CallsListViewController {
                 if let callLinkRowId {
                     return .callLink(rowId: callLinkRowId)
                 } else {
-                    return .callRecords(primaryId: callRecordIds.first, coalescedIds: Array(callRecordIds.rawValue.dropFirst()))
+                    return .callRecords(oldestId: callRecordIds.last)
                 }
             }
         }

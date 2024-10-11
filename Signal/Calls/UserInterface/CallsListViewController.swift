@@ -1052,7 +1052,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         }
 
         return CallViewModel(
-            reference: .callRecords(primaryId: callRecord.id, coalescedIds: callRecords.dropFirst().map(\.id)),
+            reference: .callRecords(oldestId: callRecords.last!.id),
             callRecords: callRecords,
             title: title,
             recipientType: recipientType,
@@ -1296,7 +1296,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
     struct CallViewModel {
         enum Reference: Hashable {
-            case callRecords(primaryId: CallRecord.ID, coalescedIds: [CallRecord.ID])
+            case callRecords(oldestId: CallRecord.ID)
             case callLink(rowId: Int64)
         }
 

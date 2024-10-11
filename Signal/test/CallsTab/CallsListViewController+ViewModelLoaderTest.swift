@@ -50,7 +50,7 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
         }()
 
         return CallViewModel(
-            reference: .callRecords(primaryId: callRecords.first!.id, coalescedIds: callRecords.dropFirst().map(\.id)),
+            reference: .callRecords(oldestId: callRecords.last!.id),
             callRecords: callRecords,
             title: "Hey, I just met you, and this is crazy, but here's my number, so call me maybe?",
             recipientType: recipientType,
@@ -77,13 +77,8 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
     }
 
     private var loadedCallIds: [[UInt64]] {
-        return viewModelLoader.viewModelReferences().map { reference -> [UInt64] in
-            switch reference {
-            case .callRecords(let primaryId, let coalescedIds):
-                return [primaryId.callId] + coalescedIds.map(\.callId)
-            case .callLink(rowId: _):
-                owsFail("Not implemented.")
-            }
+        return (0..<viewModelLoader.totalCount).map {
+            return viewModelLoader.modelReferences(at: $0).callRecordRowIds.map(\.callId)
         }
     }
 
@@ -129,15 +124,8 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
     private func assertLoadedCallIds(_ callIdsByReference: [UInt64]...) {
         var callIdsByReference = callIdsByReference
 
-        for reference in viewModelLoader.viewModelReferences() {
+        for actualCallIds in loadedCallIds {
             let expectedCallIds = callIdsByReference.popFirst()
-            let actualCallIds: [UInt64]
-            switch reference {
-            case .callRecords(let primaryId, let coalescedIds):
-                actualCallIds = [primaryId.callId] + coalescedIds.map(\.callId)
-            case .callLink(rowId: _):
-                owsFail("Not implemented.")
-            }
             XCTAssertEqual(expectedCallIds, actualCallIds)
         }
         XCTAssertTrue(callIdsByReference.isEmpty)
@@ -420,12 +408,7 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
             /// view model should re-fetch all the calls in the view model.
             XCTAssertEqual(
                 viewModelLoader.invalidate(callLinkRowIds: [], callRecordIds: [callRecordId]),
-                [
-                    .callRecords(
-                        primaryId: .fixture(callId: 0),
-                        coalescedIds: [.fixture(callId: 1)]
-                    )
-                ]
+                [.callRecords(oldestId: .fixture(callId: 1))]
             )
             assertCachedCallIds([0, 1], atLoadedViewModelReferenceIndex: 0)
             XCTAssertEqual(fetchedCallIds, [0, 1])
@@ -434,7 +417,7 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
 
         XCTAssertEqual(
             viewModelLoader.invalidate(callLinkRowIds: [], callRecordIds: [.fixture(callId: 2)]),
-            [.callRecords(primaryId: .fixture(callId: 2), coalescedIds: [])]
+            [.callRecords(oldestId: .fixture(callId: 2))]
         )
         assertCachedCallIds([2], atLoadedViewModelReferenceIndex: 1)
         XCTAssertEqual(fetchedCallIds, [2])
@@ -449,7 +432,7 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
         fetchCallRecordBlock = { (_, _) in XCTFail("Unexpectedly tried to fetch!"); return nil }
         XCTAssertEqual(
             viewModelLoader.invalidate(callLinkRowIds: [], callRecordIds: [.fixture(callId: 3)]),
-            [.callRecords(primaryId: .fixture(callId: 3), coalescedIds: [])]
+            [.callRecords(oldestId: .fixture(callId: 3))]
         )
         XCTAssertEqual(fetchedCallIds, [])
     }
