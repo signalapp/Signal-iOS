@@ -148,7 +148,7 @@ public class SSKPreferences: NSObject {
 
         if oldValue != value {
             if updateStorageService {
-                Self.storageServiceManager.recordPendingLocalAccountUpdates()
+                SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
             }
             NotificationCenter.default.postNotificationNameAsync(Self.preferContactAvatarsPreferenceDidChange, object: nil)
         }

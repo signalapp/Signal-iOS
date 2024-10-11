@@ -22,19 +22,16 @@ public struct UsernameQuerier {
     private let usernameLookupManager: UsernameLookupManager
 
     public init() {
-        struct Deps: Dependencies {}
-        let deps = Deps()
-
         self.init(
-            contactsManager: deps.contactsManager,
-            databaseStorage: deps.databaseStorage,
+            contactsManager: SSKEnvironment.shared.contactManagerRef,
+            databaseStorage: SSKEnvironment.shared.databaseStorageRef,
             localUsernameManager: DependenciesBridge.shared.localUsernameManager,
-            networkManager: deps.networkManager,
-            profileManager: deps.profileManager,
+            networkManager: SSKEnvironment.shared.networkManagerRef,
+            profileManager: SSKEnvironment.shared.profileManagerRef,
             recipientManager: DependenciesBridge.shared.recipientManager,
             recipientFetcher: DependenciesBridge.shared.recipientFetcher,
             schedulers: DependenciesBridge.shared.schedulers,
-            storageServiceManager: deps.storageServiceManager,
+            storageServiceManager: SSKEnvironment.shared.storageServiceManagerRef,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager,
             usernameApiClient: DependenciesBridge.shared.usernameApiClient,
             usernameLinkManager: DependenciesBridge.shared.usernameLinkManager,

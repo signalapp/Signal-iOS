@@ -14,7 +14,7 @@ class StoryManagerTest: SSKBaseTest {
     override func setUp() {
         super.setUp()
 
-        databaseStorage.write { tx in
+        SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: .forUnitTests,
                 tx: tx.asV2Write
@@ -31,7 +31,7 @@ class StoryManagerTest: SSKBaseTest {
         let storyMessage = try Self.makePrivateStory()
 
         try write {
-            profileManager.addUser(
+            SSKEnvironment.shared.profileManagerRef.addUser(
                 toProfileWhitelist: SignalServiceAddress(author),
                 userProfileWriter: .localUser,
                 transaction: $0
@@ -88,13 +88,13 @@ class StoryManagerTest: SSKBaseTest {
         let groupStoryMessage = try Self.makeGroupStory()
 
         try write {
-            profileManager.addUser(
+            SSKEnvironment.shared.profileManagerRef.addUser(
                 toProfileWhitelist: SignalServiceAddress(author),
                 userProfileWriter: .localUser,
                 transaction: $0
             )
 
-            blockingManager.addBlockedAddress(
+            SSKEnvironment.shared.blockingManagerRef.addBlockedAddress(
                 SignalServiceAddress(author),
                 blockMode: .localShouldNotLeaveGroups,
                 transaction: $0
@@ -135,13 +135,13 @@ class StoryManagerTest: SSKBaseTest {
         let groupId = try GroupV2ContextInfo.deriveFrom(masterKeyData: storyMessage.group!.masterKey!).groupId
 
         try write {
-            profileManager.addUser(
+            SSKEnvironment.shared.profileManagerRef.addUser(
                 toProfileWhitelist: SignalServiceAddress(author),
                 userProfileWriter: .localUser,
                 transaction: $0
             )
 
-            blockingManager.addBlockedGroup(
+            SSKEnvironment.shared.blockingManagerRef.addBlockedGroup(
                 groupId: groupId,
                 blockMode: .localShouldNotLeaveGroups,
                 transaction: $0
@@ -174,7 +174,7 @@ class StoryManagerTest: SSKBaseTest {
         let groupId = try GroupV2ContextInfo.deriveFrom(masterKeyData: storyMessage.group!.masterKey!).groupId
 
         try write {
-            profileManager.addUser(
+            SSKEnvironment.shared.profileManagerRef.addUser(
                 toProfileWhitelist: SignalServiceAddress(author),
                 userProfileWriter: .localUser,
                 transaction: $0
@@ -209,7 +209,7 @@ class StoryManagerTest: SSKBaseTest {
         let groupId = try GroupV2ContextInfo.deriveFrom(masterKeyData: storyMessage.group!.masterKey!).groupId
 
         try write {
-            profileManager.addUser(
+            SSKEnvironment.shared.profileManagerRef.addUser(
                 toProfileWhitelist: SignalServiceAddress(author),
                 userProfileWriter: .localUser,
                 transaction: $0
@@ -244,7 +244,7 @@ class StoryManagerTest: SSKBaseTest {
         let groupId = try GroupV2ContextInfo.deriveFrom(masterKeyData: storyMessage.group!.masterKey!).groupId
 
         try write {
-            profileManager.addUser(
+            SSKEnvironment.shared.profileManagerRef.addUser(
                 toProfileWhitelist: SignalServiceAddress(author),
                 userProfileWriter: .localUser,
                 transaction: $0
@@ -279,7 +279,7 @@ class StoryManagerTest: SSKBaseTest {
         let groupId = try GroupV2ContextInfo.deriveFrom(masterKeyData: storyMessage.group!.masterKey!).groupId
 
         try write {
-            profileManager.addUser(
+            SSKEnvironment.shared.profileManagerRef.addUser(
                 toProfileWhitelist: SignalServiceAddress(author),
                 userProfileWriter: .localUser,
                 transaction: $0
@@ -312,7 +312,7 @@ class StoryManagerTest: SSKBaseTest {
         let storyMessage = try Self.makePrivateStory()
 
         try write {
-            profileManager.addUser(
+            SSKEnvironment.shared.profileManagerRef.addUser(
                 toProfileWhitelist: SignalServiceAddress(author),
                 userProfileWriter: .localUser,
                 transaction: $0
@@ -326,7 +326,7 @@ class StoryManagerTest: SSKBaseTest {
                 transaction: $0
             )
 
-            let profileKey = profileManager.profileKeyData(
+            let profileKey = SSKEnvironment.shared.profileManagerRef.profileKeyData(
                 for: SignalServiceAddress(author),
                 transaction: $0
             )
@@ -349,7 +349,7 @@ class StoryManagerTest: SSKBaseTest {
                 transaction: $0
             )
 
-            profileManager.addUser(
+            SSKEnvironment.shared.profileManagerRef.addUser(
                 toProfileWhitelist: SignalServiceAddress(author),
                 userProfileWriter: .localUser,
                 transaction: $0

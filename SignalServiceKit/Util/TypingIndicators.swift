@@ -67,7 +67,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
     public func warmCaches() {
         owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
 
-        let enabled = databaseStorage.read { transaction in
+        let enabled = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             self.keyValueStore.getBool(
                 self.kDatabaseKey_TypingIndicatorsEnabled,
                 defaultValue: true,
@@ -83,15 +83,15 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
         Logger.info("\(_areTypingIndicatorsEnabled.get()) -> \(value)")
         _areTypingIndicatorsEnabled.set(value)
 
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             self.keyValueStore.setBool(value,
                                        key: self.kDatabaseKey_TypingIndicatorsEnabled,
                                        transaction: transaction)
         }
 
-        syncManager.sendConfigurationSyncMessage()
+        SSKEnvironment.shared.syncManagerRef.sendConfigurationSyncMessage()
 
-        Self.storageServiceManager.recordPendingLocalAccountUpdates()
+        SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
 
         NotificationCenter.default.postNotificationNameAsync(TypingIndicatorsImpl.typingIndicatorStateDidChange, object: nil)
     }

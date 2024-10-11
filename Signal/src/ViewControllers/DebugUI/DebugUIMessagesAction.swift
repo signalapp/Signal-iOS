@@ -46,7 +46,7 @@ class DebugUIMessagesAction: Dependencies {
         }
 
         var runCount = count
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             var batchSize = 0
             while runCount > 0 {
                 let index = runCount

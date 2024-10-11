@@ -537,7 +537,7 @@ extension DonationSettingsViewController {
     private func showDonateAndCancelSubscriptionAction(title: ShowDonateActionTitle) -> ActionSheetAction {
         return ActionSheetAction(title: title.localizedTitle) { _ in
             firstly(on: DispatchQueue.global()) {
-                self.databaseStorage.read { tx in
+                SSKEnvironment.shared.databaseStorageRef.read { tx in
                     SubscriptionManagerImpl.getSubscriberID(transaction: tx)
                 }
             }.then(on: DispatchQueue.global()) { subscriberID in

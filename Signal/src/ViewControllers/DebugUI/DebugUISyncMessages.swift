@@ -37,7 +37,7 @@ class DebugUISyncMessages: DebugUIPage, Dependencies {
     }
 
     private static func sendConfigurationSyncMessage() {
-        SSKEnvironment.shared.syncManager.sendConfigurationSyncMessage()
+        SSKEnvironment.shared.syncManagerRef.sendConfigurationSyncMessage()
     }
 }
 

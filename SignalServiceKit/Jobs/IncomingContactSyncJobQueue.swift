@@ -95,12 +95,12 @@ private class IncomingContactSyncJobRunner: JobRunner, Dependencies {
         switch jobRecord.downloadInfo {
         case .invalid:
             owsFailDebug("Invalid contact sync job!")
-            await databaseStorage.awaitableWrite { tx in
+            await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
                 jobRecord.anyRemove(transaction: tx)
             }
             return
         case .legacy(let attachmentId):
-            guard let attachment = (databaseStorage.read { transaction in
+            guard let attachment = (SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 return TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction)
             }) else {
                 throw OWSAssertionError("missing attachment")
@@ -131,7 +131,7 @@ private class IncomingContactSyncJobRunner: JobRunner, Dependencies {
         let insertedThreads = try await firstly(on: DispatchQueue.global()) {
             try self.processContactSync(decryptedFileUrl: fileUrl, isComplete: jobRecord.isCompleteContactSync)
         }.awaitable()
-        await databaseStorage.awaitableWrite { tx in
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             if let legacyAttachmentId {
                 TSAttachmentStream.anyFetch(uniqueId: legacyAttachmentId, transaction: tx)?.anyRemove(transaction: tx)
             }
@@ -169,7 +169,7 @@ private class IncomingContactSyncJobRunner: JobRunner, Dependencies {
                     try pruneContacts(exceptThoseReceivedFromCompleteSync: allPhoneNumbers)
                 }
 
-                databaseStorage.write { transaction in
+                SSKEnvironment.shared.databaseStorageRef.write { transaction in
                     // Always fire just one identity change notification, rather than potentially
                     // once per contact. It's possible that *no* identities actually changed,
                     // but we have no convenient way to track that.
@@ -196,7 +196,7 @@ private class IncomingContactSyncJobRunner: JobRunner, Dependencies {
                 owsFailDebug("Empty batch.")
                 return false
             }
-            try databaseStorage.write { tx in
+            try SSKEnvironment.shared.databaseStorageRef.write { tx in
                 for contact in contactBatch {
                     if let phoneNumber = try processContactDetails(contact, insertedThreads: &insertedThreads, tx: tx) {
                         processedPhoneNumbers.append(phoneNumber)
@@ -299,7 +299,7 @@ private class IncomingContactSyncJobRunner: JobRunner, Dependencies {
     /// future, if you're removing this method, you should first ensure that
     /// periodic full syncs of contact details happen with StorageService.
     private func pruneContacts(exceptThoseReceivedFromCompleteSync phoneNumbers: [E164]) throws {
-        try self.databaseStorage.write { transaction in
+        try SSKEnvironment.shared.databaseStorageRef.write { transaction in
             // Every contact sync includes your own address. However, we shouldn't
             // create a SignalAccount for your own address. (If you're a primary, this
             // is handled by FetchedSystemContacts.phoneNumbers(…).)
@@ -330,7 +330,7 @@ private class IncomingContactSyncJobRunner: JobRunner, Dependencies {
                 }
             }
             if !uniqueIdsToRemove.isEmpty {
-                contactsManagerImpl.didUpdateSignalAccounts(transaction: transaction)
+                SSKEnvironment.shared.contactManagerImplRef.didUpdateSignalAccounts(transaction: transaction)
             }
         }
     }

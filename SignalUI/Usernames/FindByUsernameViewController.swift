@@ -128,7 +128,7 @@ public class FindByUsernameViewController: OWSTableViewController2 {
     private func didTapNext() {
         guard let username = usernameTextField.text else { return }
         usernameTextField.resignFirstResponder()
-        databaseStorage.read { tx in
+        SSKEnvironment.shared.databaseStorageRef.read { tx in
             UsernameQuerier().queryForUsername(
                 username: username,
                 fromViewController: self,

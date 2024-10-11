@@ -142,7 +142,7 @@ class MessageDetailViewController: OWSTableViewController2 {
             comment: "Title for the 'message metadata' view."
         )
 
-        databaseStorage.appendDatabaseChangeDelegate(self)
+        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
 
         startExpiryLabelTimerIfNecessary()
 
@@ -386,7 +386,7 @@ class MessageDetailViewController: OWSTableViewController2 {
                     message: self.message,
                     spoilerState: self.spoilerState,
                     editManager: self.editManager,
-                    database: self.databaseStorage
+                    database: SSKEnvironment.shared.databaseStorageRef
                 )
                 sheet.delegate = self.detailDelegate
                 self.present(sheet, animated: true)
@@ -483,7 +483,7 @@ class MessageDetailViewController: OWSTableViewController2 {
                     return UITableViewCell()
                 }
 
-                Self.databaseStorage.read { transaction in
+                SSKEnvironment.shared.databaseStorageRef.read { transaction in
                     let configuration = ContactCellConfiguration(address: address, localUserDisplayMode: .asUser)
                     configuration.accessoryView = self.buildAccessoryView(text: accessoryText,
                                                                           displayUDIndicator: displayUDIndicator,
@@ -521,7 +521,7 @@ class MessageDetailViewController: OWSTableViewController2 {
         labelConfig.applyForRendering(label: label)
         let labelSize = CVText.measureLabel(config: labelConfig, maxWidth: .greatestFiniteMagnitude)
 
-        let shouldShowUD = preferences.shouldShowUnidentifiedDeliveryIndicators(transaction: transaction)
+        let shouldShowUD = SSKEnvironment.shared.preferencesRef.shouldShowUnidentifiedDeliveryIndicators(transaction: transaction)
 
         guard displayUDIndicator && shouldShowUD else {
             return ContactCellAccessoryView(accessoryView: label, size: labelSize)
@@ -875,7 +875,7 @@ extension MessageDetailViewController: DatabaseChangeDelegate {
             return
         }
 
-        let messageStillExists = databaseStorage.read { transaction in
+        let messageStillExists = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             let uniqueId = message.uniqueId
             guard let newMessage = TSInteraction.anyFetch(uniqueId: uniqueId, transaction: transaction) as? TSMessage else {
                 return false
@@ -918,10 +918,10 @@ extension MessageDetailViewController: DatabaseChangeDelegate {
             guard let self = self else { return }
 
             let messageRecipientAddressesUnsorted = outgoingMessage.recipientAddresses()
-            let (hasBodyAttachments, messageRecipientAddressesSorted) = self.databaseStorage.read { transaction in
+            let (hasBodyAttachments, messageRecipientAddressesSorted) = SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 return (
                     outgoingMessage.hasBodyAttachments(transaction: transaction),
-                    self.contactsManagerImpl.sortSignalServiceAddresses(
+                    SSKEnvironment.shared.contactManagerImplRef.sortSignalServiceAddresses(
                         messageRecipientAddressesUnsorted,
                         transaction: transaction
                     )

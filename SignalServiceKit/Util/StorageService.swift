@@ -271,7 +271,7 @@ public struct StorageService: Dependencies {
             switch response.status {
             case .success:
                 let encryptedManifestContainer = try StorageServiceProtoStorageManifest(serializedData: response.data)
-                let decryptResult = self.databaseStorage.read(block: { tx in
+                let decryptResult = SSKEnvironment.shared.databaseStorageRef.read(block: { tx in
                     return DependenciesBridge.shared.svr.decrypt(
                         keyType: .storageServiceManifest(version: encryptedManifestContainer.version),
                         encryptedData: encryptedManifestContainer.value,
@@ -321,7 +321,7 @@ public struct StorageService: Dependencies {
             // Encrypt the manifest
             let manifestData = try manifest.serializedData()
             let encryptedManifestData: Data
-            let encryptResult = self.databaseStorage.read(block: { tx in
+            let encryptResult = SSKEnvironment.shared.databaseStorageRef.read(block: { tx in
                 return DependenciesBridge.shared.svr.encrypt(
                     keyType: .storageServiceManifest(version: manifest.version),
                     data: manifestData,
@@ -345,7 +345,7 @@ public struct StorageService: Dependencies {
             builder.setInsertItem(try newItems.map { item in
                 let itemData = try item.record.serializedData()
                 let encryptedItemData: Data
-                let itemEncryptionResult = self.databaseStorage.read(block: { tx in
+                let itemEncryptionResult = SSKEnvironment.shared.databaseStorageRef.read(block: { tx in
                     return DependenciesBridge.shared.svr.encrypt(
                         keyType: .storageServiceRecord(identifier: item.identifier),
                         data: itemData,
@@ -385,7 +385,7 @@ public struct StorageService: Dependencies {
                 // Our version was out of date, we should've received a copy of the latest version
                 let encryptedManifestContainer = try StorageServiceProtoStorageManifest(serializedData: response.data)
 
-                let decryptionResult = self.databaseStorage.read(block: { tx in
+                let decryptionResult = SSKEnvironment.shared.databaseStorageRef.read(block: { tx in
                     return DependenciesBridge.shared.svr.decrypt(
                         keyType: .storageServiceManifest(version: encryptedManifestContainer.version),
                         encryptedData: encryptedManifestContainer.value,
@@ -461,7 +461,7 @@ public struct StorageService: Dependencies {
                     owsFailDebug("missing identifier for fetched item")
                     throw StorageError.assertion
                 }
-                let itemDecryptionResult = self.databaseStorage.read(block: { tx in
+                let itemDecryptionResult = SSKEnvironment.shared.databaseStorageRef.read(block: { tx in
                     return DependenciesBridge.shared.svr.decrypt(
                         keyType: .storageServiceRecord(identifier: itemIdentifier),
                         encryptedData: encryptedItemData,
@@ -488,7 +488,7 @@ public struct StorageService: Dependencies {
     // MARK: - Dependencies
 
     private static var urlSession: OWSURLSessionProtocol {
-        return self.signalService.urlSessionForStorageService()
+        return SSKEnvironment.shared.signalServiceRef.urlSessionForStorageService()
     }
 
     // MARK: - Storage Requests
@@ -510,7 +510,7 @@ public struct StorageService: Dependencies {
         body: Data? = nil,
         chatServiceAuth: ChatServiceAuth
     ) -> Promise<StorageResponse> {
-        return serviceClient
+        return SignalServiceRestClient.shared
             .requestStorageAuth(chatServiceAuth: chatServiceAuth)
             .then { username, password -> Promise<HTTPResponse> in
                 if method == .get { assert(body == nil) }

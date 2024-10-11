@@ -156,7 +156,7 @@ public class StickerManager: NSObject {
 
     public class func allStickerPacks() -> [StickerPack] {
         var result = [StickerPack]()
-        databaseStorage.read { (transaction) in
+        SSKEnvironment.shared.databaseStorageRef.read { (transaction) in
             result += allStickerPacks(transaction: transaction)
         }
         return result
@@ -179,7 +179,7 @@ public class StickerManager: NSObject {
     }
 
     public class func isStickerPackSaved(stickerPackInfo: StickerPackInfo) -> Bool {
-        return databaseStorage.read { (transaction) in
+        return SSKEnvironment.shared.databaseStorageRef.read { (transaction) in
             return isStickerPackSaved(stickerPackInfo: stickerPackInfo, transaction: transaction)
         }
     }
@@ -258,7 +258,7 @@ public class StickerManager: NSObject {
     }
 
     public class func fetchStickerPack(stickerPackInfo: StickerPackInfo) -> StickerPack? {
-        return databaseStorage.read { (transaction) in
+        return SSKEnvironment.shared.databaseStorageRef.read { (transaction) in
             return fetchStickerPack(stickerPackInfo: stickerPackInfo, transaction: transaction)
         }
     }
@@ -310,7 +310,7 @@ public class StickerManager: NSObject {
         installMode: InstallMode,
         wasLocallyInitiated: Bool
     ) {
-        databaseStorage.write { (transaction) in
+        SSKEnvironment.shared.databaseStorageRef.write { (transaction) in
             upsertStickerPack(
                 stickerPack: stickerPack,
                 installMode: installMode,
@@ -480,7 +480,7 @@ public class StickerManager: NSObject {
         forStickerPack stickerPack: StickerPack,
         verifyExists: Bool
     ) -> [StickerInfo] {
-        return databaseStorage.read { (transaction) in
+        return SSKEnvironment.shared.databaseStorageRef.read { (transaction) in
             return self.installedStickers(
                 forStickerPack: stickerPack,
                 verifyExists: verifyExists,
@@ -513,7 +513,7 @@ public class StickerManager: NSObject {
     }
 
     public class func isStickerPackInstalled(stickerPackInfo: StickerPackInfo) -> Bool {
-        return databaseStorage.read { (transaction) in
+        return SSKEnvironment.shared.databaseStorageRef.read { (transaction) in
             return isStickerPackInstalled(stickerPackInfo: stickerPackInfo, transaction: transaction)
         }
     }
@@ -532,7 +532,7 @@ public class StickerManager: NSObject {
     }
 
     public class func installedStickerMetadataWithSneakyTransaction(stickerInfo: StickerInfo) -> (any StickerMetadata)? {
-        return databaseStorage.read { transaction in
+        return SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return self.installedStickerMetadata(stickerInfo: stickerInfo, transaction: transaction)
         }
     }
@@ -605,7 +605,7 @@ public class StickerManager: NSObject {
     }
 
     public class func isStickerInstalled(stickerInfo: StickerInfo) -> Bool {
-        return databaseStorage.read { (transaction) in
+        return SSKEnvironment.shared.databaseStorageRef.read { (transaction) in
             return isStickerInstalled(stickerInfo: stickerInfo, transaction: transaction)
         }
     }
@@ -653,7 +653,7 @@ public class StickerManager: NSObject {
     }
 
     public class func fetchInstalledStickerWithSneakyTransaction(stickerInfo: StickerInfo) -> InstalledSticker? {
-        return databaseStorage.read { transaction in
+        return SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return self.fetchInstalledSticker(stickerInfo: stickerInfo, transaction: transaction)
         }
     }
@@ -708,7 +708,7 @@ public class StickerManager: NSObject {
             return false
         }
 
-        return databaseStorage.write { (transaction) -> Bool in
+        return SSKEnvironment.shared.databaseStorageRef.write { (transaction) -> Bool in
             guard nil == fetchInstalledSticker(stickerInfo: stickerInfo, transaction: transaction) else {
                 // RACE: sticker has already been installed between now and when we last checked.
                 //
@@ -915,7 +915,7 @@ public class StickerManager: NSObject {
 
     private class func tryToDownloadStickerPacks(stickerPacks: [StickerPackInfo], installMode: InstallMode) {
         var stickerPacksToDownload = [StickerPackInfo]()
-        StickerManager.databaseStorage.read { (transaction) in
+        SSKEnvironment.shared.databaseStorageRef.read { (transaction) in
             for stickerPackInfo in stickerPacks {
                 if !StickerManager.isStickerPackSaved(stickerPackInfo: stickerPackInfo, transaction: transaction) {
                     stickerPacksToDownload.append(stickerPackInfo)
@@ -980,7 +980,7 @@ public class StickerManager: NSObject {
     // Only returns installed stickers.
     public class func recentStickers() -> [StickerInfo] {
         var result = [StickerInfo]()
-        databaseStorage.read { (transaction) in
+        SSKEnvironment.shared.databaseStorageRef.read { (transaction) in
             result = self.recentStickers(transaction: transaction)
         }
         return result
@@ -1027,7 +1027,7 @@ public class StickerManager: NSObject {
 
     private class func ensureAllStickerDownloadsAsync() {
         DispatchQueue.global().async {
-            databaseStorage.read { (transaction) in
+            SSKEnvironment.shared.databaseStorageRef.read { (transaction) in
                 for stickerPack in self.allStickerPacks(transaction: transaction) {
                     ensureDownloads(forStickerPack: stickerPack, transaction: transaction)
                 }
@@ -1038,7 +1038,7 @@ public class StickerManager: NSObject {
     public class func ensureDownloadsAsync(forStickerPack stickerPack: StickerPack) -> Promise<Void> {
         let (promise, future) = Promise<Void>.pending()
         DispatchQueue.global().async {
-            databaseStorage.read { (transaction) in
+            SSKEnvironment.shared.databaseStorageRef.read { (transaction) in
                 firstly {
                     ensureDownloads(forStickerPack: stickerPack, transaction: transaction)
                 }.done {

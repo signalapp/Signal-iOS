@@ -92,7 +92,7 @@ class StickerManagerTest2: SSKBaseTest {
         // The "StickerManager.suggestedStickers" instance method does caching;
         // the class method does not.
 
-        databaseStorage.read { tx in
+        SSKEnvironment.shared.databaseStorageRef.read { tx in
             XCTAssertEqual(0, StickerManager.suggestedStickers(for: "🇨🇦", tx: tx).count)
         }
 
@@ -111,18 +111,18 @@ class StickerManagerTest2: SSKBaseTest {
 
         // The sticker should only be suggested if user enters a single emoji
         // (and nothing else) that is associated with the sticker.
-        databaseStorage.read { tx in
+        SSKEnvironment.shared.databaseStorageRef.read { tx in
             XCTAssertEqual(1, StickerManager.suggestedStickers(for: "🇨🇦", tx: tx).count)
             XCTAssertEqual(1, StickerManager.suggestedStickers(for: "🌼", tx: tx).count)
             XCTAssertEqual(0, StickerManager.suggestedStickers(for: "🇹🇹", tx: tx).count)
         }
 
-        databaseStorage.write { (transaction) in
+        SSKEnvironment.shared.databaseStorageRef.write { (transaction) in
             // Don't bother calling completion.
             StickerManager.uninstallSticker(stickerInfo: stickerInfo, transaction: transaction)
         }
 
-        databaseStorage.read { tx in
+        SSKEnvironment.shared.databaseStorageRef.read { tx in
             XCTAssertEqual(0, StickerManager.suggestedStickers(for: "🇨🇦", tx: tx).count)
         }
     }

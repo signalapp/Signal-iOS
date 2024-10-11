@@ -27,7 +27,7 @@ public extension TSGroupThread {
         includingBlocked: Bool,
         limit: Int = .max,
         useShortNameIfAvailable: Bool = false,
-        nameResolver: NameResolver = NameResolverImpl(contactsManager: TSGroupThread.contactsManager),
+        nameResolver: NameResolver = NameResolverImpl(contactsManager: SSKEnvironment.shared.contactManagerRef),
         transaction: SDSAnyReadTransaction
     ) -> [String] {
         let tx = transaction.asV2Read
@@ -40,7 +40,7 @@ public extension TSGroupThread {
             guard !address.isLocalAddress else {
                 return nil
             }
-            guard includingBlocked || !blockingManager.isAddressBlocked(address, transaction: transaction) else {
+            guard includingBlocked || !SSKEnvironment.shared.blockingManagerRef.isAddressBlocked(address, transaction: transaction) else {
                 return nil
             }
 

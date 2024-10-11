@@ -24,7 +24,7 @@ class AppSettingsViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        databaseStorage.read { tx in
+        SSKEnvironment.shared.databaseStorageRef.read { tx in
             localUsernameState = DependenciesBridge.shared.localUsernameManager
                 .usernameState(tx: tx.asV2Read)
         }
@@ -265,7 +265,7 @@ class AppSettingsViewController: OWSTableViewController2 {
 
                     subviews.append(UIView.hStretchingSpacer())
 
-                    let unreadPaymentsCount = Self.databaseStorage.read { transaction in
+                    let unreadPaymentsCount = SSKEnvironment.shared.databaseStorageRef.read { transaction in
                         PaymentFinder.unreadCount(transaction: transaction)
                     }
                     if unreadPaymentsCount > 0 {
@@ -393,7 +393,7 @@ class AppSettingsViewController: OWSTableViewController2 {
 
     /// A view presenting quick info about the user's profile.
     private func profileCellProfileInfoStack() -> UIView {
-        let snapshot = profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: false)
+        let snapshot = SSKEnvironment.shared.profileManagerImplRef.localProfileSnapshot(shouldIncludeAvatar: false)
 
         let profileInfoStack = UIStackView()
         profileInfoStack.axis = .vertical
@@ -539,7 +539,7 @@ extension AppSettingsViewController: UsernameLinkScanDelegate {
         }
 
         presentingViewController.dismiss(animated: true) {
-            self.databaseStorage.read { tx in
+            SSKEnvironment.shared.databaseStorageRef.read { tx in
                 UsernameQuerier().queryForUsernameLink(
                     link: usernameLink,
                     fromViewController: presentingViewController,

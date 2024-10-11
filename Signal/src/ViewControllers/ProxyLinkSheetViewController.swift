@@ -77,7 +77,7 @@ class ProxyLinkSheetViewController: OWSTableSheetViewController {
                     title: OWSLocalizedString("USE_PROXY_BUTTON", comment: "Button to activate the signal proxy"),
                     titleColor: .ows_accentBlue,
                     touchHandler: { [weak self] in
-                        Self.databaseStorage.write {
+                        SSKEnvironment.shared.databaseStorageRef.write {
                             SignalProxy.setProxyHost(host: proxyHost, useProxy: true, transaction: $0)
                         }
 
@@ -87,7 +87,7 @@ class ProxyLinkSheetViewController: OWSTableSheetViewController {
                                 presentingVC?.presentToast(text: OWSLocalizedString("PROXY_CONNECTED_SUCCESSFULLY", comment: "The provided proxy connected successfully"))
                             } else {
                                 presentingVC?.presentToast(text: OWSLocalizedString("PROXY_FAILED_TO_CONNECT", comment: "The provided proxy couldn't connect"))
-                                Self.databaseStorage.write { transaction in
+                                SSKEnvironment.shared.databaseStorageRef.write { transaction in
                                     SignalProxy.setProxyHost(host: proxyHost, useProxy: false, transaction: transaction)
                                 }
                             }

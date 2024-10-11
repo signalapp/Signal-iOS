@@ -64,14 +64,14 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         callRecordQuerier: DependenciesBridge.shared.callRecordQuerier,
         callRecordStore: DependenciesBridge.shared.callRecordStore,
         callService: AppEnvironment.shared.callService,
-        contactsManager: NSObject.contactsManager,
-        databaseStorage: NSObject.databaseStorage,
+        contactsManager: SSKEnvironment.shared.contactManagerRef,
+        databaseStorage: SSKEnvironment.shared.databaseStorageRef,
         db: DependenciesBridge.shared.db,
-        groupCallManager: NSObject.groupCallManager,
+        groupCallManager: SSKEnvironment.shared.groupCallManagerRef,
         interactionDeleteManager: DependenciesBridge.shared.interactionDeleteManager,
         interactionStore: DependenciesBridge.shared.interactionStore,
         searchableNameFinder: SearchableNameFinder(
-            contactManager: NSObject.contactsManager,
+            contactManager: SSKEnvironment.shared.contactManagerRef,
             searchableNameIndexer: DependenciesBridge.shared.searchableNameIndexer,
             phoneNumberVisibilityFetcher: DependenciesBridge.shared.phoneNumberVisibilityFetcher,
             recipientDatabaseTable: DependenciesBridge.shared.recipientDatabaseTable
@@ -176,7 +176,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
     private func profileBarButtonItem() -> UIBarButtonItem {
         createSettingsBarButtonItem(
-            databaseStorage: databaseStorage,
+            databaseStorage: SSKEnvironment.shared.databaseStorageRef,
             buildActions: { settingsAction -> [UIAction] in
                 return [
                     UIAction(
@@ -2014,7 +2014,7 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
                 taskGroup.addTask {
                     try await CallLinkDeleter.deleteCallLink(
                         stateUpdater: callLinkStateUpdater,
-                        storageServiceManager: NSObject.storageServiceManager,
+                        storageServiceManager: SSKEnvironment.shared.storageServiceManagerRef,
                         rootKey: callLinkToDelete.rootKey,
                         adminPasskey: callLinkToDelete.adminPasskey
                     )

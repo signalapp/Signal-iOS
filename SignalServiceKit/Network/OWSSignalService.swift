@@ -114,7 +114,7 @@ public class OWSSignalService: OWSSignalServiceProtocol, Dependencies {
         // circumvention is enabled, `buildCensorshipConfiguration()` will crash.
         // Add a database read here so that we crash in both `if` branches.
         assert({
-            databaseStorage.read { _ in }
+            SSKEnvironment.shared.databaseStorageRef.read { _ in }
             return true
         }(), "Must not have open transaction.")
 
@@ -247,7 +247,7 @@ public class OWSSignalService: OWSSignalServiceProtocol, Dependencies {
     // MARK: - Database operations
 
     private func readIsCensorshipCircumventionManuallyActivated() -> Bool {
-        return self.databaseStorage.read { transaction in
+        return SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return self.keyValueStore.getBool(
                 Constants.isCensorshipCircumventionManuallyActivatedKey,
                 defaultValue: false,
@@ -257,7 +257,7 @@ public class OWSSignalService: OWSSignalServiceProtocol, Dependencies {
     }
 
     private func writeIsCensorshipCircumventionManuallyActivated(_ value: Bool) {
-        self.databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             self.keyValueStore.setBool(
                 value,
                 key: Constants.isCensorshipCircumventionManuallyActivatedKey,
@@ -267,7 +267,7 @@ public class OWSSignalService: OWSSignalServiceProtocol, Dependencies {
     }
 
     private func readIsCensorshipCircumventionManuallyDisabled() -> Bool {
-        return self.databaseStorage.read { transaction in
+        return SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return self.keyValueStore.getBool(
                 Constants.isCensorshipCircumventionManuallyDisabledKey,
                 defaultValue: false,
@@ -277,7 +277,7 @@ public class OWSSignalService: OWSSignalServiceProtocol, Dependencies {
     }
 
     private func writeIsCensorshipCircumventionManuallyDisabled(_ value: Bool) {
-        self.databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             self.keyValueStore.setBool(
                 value,
                 key: Constants.isCensorshipCircumventionManuallyDisabledKey,
@@ -287,7 +287,7 @@ public class OWSSignalService: OWSSignalServiceProtocol, Dependencies {
     }
 
     private func readCensorshipCircumventionCountryCode() -> String? {
-        return self.databaseStorage.read { transaction in
+        return SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return self.keyValueStore.getString(
                 Constants.manualCensorshipCircumventionCountryCodeKey,
                 transaction: transaction
@@ -296,7 +296,7 @@ public class OWSSignalService: OWSSignalServiceProtocol, Dependencies {
     }
 
     private func writeManualCensorshipCircumventionCountryCode(_ value: String?) {
-        self.databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             self.keyValueStore.setString(
                 value,
                 key: Constants.manualCensorshipCircumventionCountryCodeKey,

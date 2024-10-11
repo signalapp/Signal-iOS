@@ -37,8 +37,8 @@ class NewCallViewController: RecipientPickerContainerViewController {
 
     private var callStarterContext: CallStarter.Context {
         .init(
-            blockingManager: blockingManager,
-            databaseStorage: databaseStorage,
+            blockingManager: SSKEnvironment.shared.blockingManagerRef,
+            databaseStorage: SSKEnvironment.shared.databaseStorageRef,
             callService: AppEnvironment.shared.callService
         )
     }

@@ -44,7 +44,7 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
     }
 
     private static func isValidPhoneNumberForPayments_fixedAllowlist(_ e164: String) -> Bool {
-        guard let phoneNumber = phoneNumberUtil.parseE164(e164) else {
+        guard let phoneNumber = SSKEnvironment.shared.phoneNumberUtilRef.parseE164(e164) else {
             owsFailDebug("Could not parse phone number: \(e164).")
             return false
         }
@@ -98,7 +98,7 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
     public func warmCaches() {
         owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
 
-        Self.databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             self.paymentStateCache.set(Self.loadPaymentsState(transaction: transaction))
         }
     }
@@ -196,7 +196,7 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
 
         self.paymentStateCache.set(newPaymentsState)
 
-        paymentsEvents.updateLastKnownLocalPaymentAddressProtoData(transaction: transaction)
+        SSKEnvironment.shared.paymentsEventsRef.updateLastKnownLocalPaymentAddressProtoData(transaction: transaction)
 
         let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aci
         TSPaymentsActivationRequestModel
@@ -232,15 +232,15 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
         transaction.addAsyncCompletionOffMain {
             NotificationCenter.default.postNotificationNameAsync(PaymentsConstants.arePaymentsEnabledDidChange, object: nil)
 
-            Self.paymentsEvents.paymentsStateDidChange()
+            SSKEnvironment.shared.paymentsEventsRef.paymentsStateDidChange()
 
             if originatedLocally {
                 // We only need to re-upload the profile if the change originated
                 // locally.
                 Logger.info("Re-uploading local profile due to payments state change.")
-                Self.profileManager.reuploadLocalProfile(authedAccount: .implicit())
+                SSKEnvironment.shared.profileManagerRef.reuploadLocalProfile(authedAccount: .implicit())
 
-                Self.storageServiceManager.recordPendingLocalAccountUpdates()
+                SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
             }
         }
     }
@@ -272,7 +272,7 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
     }
 
     public func lastKnownLocalPaymentAddressProtoData(transaction: SDSAnyWriteTransaction) -> Data? {
-        paymentsEvents.updateLastKnownLocalPaymentAddressProtoData(transaction: transaction)
+        SSKEnvironment.shared.paymentsEventsRef.updateLastKnownLocalPaymentAddressProtoData(transaction: transaction)
         return Self.keyValueStore.getData(Self.lastKnownLocalPaymentAddressProtoDataKey, transaction: transaction)
     }
 
@@ -437,7 +437,7 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
                   !mcReceiptData.isEmpty else {
                       throw OWSAssertionError("Invalid payment sync message: Missing or invalid receipt.")
                   }
-            _ = try self.mobileCoinHelper.info(forReceiptData: mcReceiptData)
+            _ = try SSKEnvironment.shared.mobileCoinHelperRef.info(forReceiptData: mcReceiptData)
             let ledgerBlockIndex = mobileCoinProto.ledgerBlockIndex
             guard ledgerBlockIndex > 0 else {
                 throw OWSAssertionError("Invalid payment sync message: Invalid ledgerBlockIndex.")
@@ -639,7 +639,7 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
                                                                   transaction: SDSAnyWriteTransaction) {
         do {
             let mcReceiptData = paymentNotification.mcReceiptData
-            let receiptInfo = try self.mobileCoinHelper.info(forReceiptData: mcReceiptData)
+            let receiptInfo = try SSKEnvironment.shared.mobileCoinHelperRef.info(forReceiptData: mcReceiptData)
 
             let mobileCoin = MobileCoinPayment(recipientPublicAddressData: nil,
                                                transactionData: nil,

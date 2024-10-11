@@ -151,7 +151,7 @@ class HomeTabBarController: UITabBarController {
         // We read directly from the database here, as the cache may not have been warmed by the time
         // this view is loaded (since it's the very first thing to load). Otherwise, there can be a
         // small window where the tab bar is in the wrong state at app launch.
-        let areStoriesEnabled = databaseStorage.read { StoryManager.areStoriesEnabled(transaction: $0) }
+        let areStoriesEnabled = SSKEnvironment.shared.databaseStorageRef.read { StoryManager.areStoriesEnabled(transaction: $0) }
 
         updateTabBars(areStoriesEnabled: areStoriesEnabled)
 

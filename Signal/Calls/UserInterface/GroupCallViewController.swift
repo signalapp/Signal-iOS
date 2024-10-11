@@ -309,9 +309,9 @@ class GroupCallViewController: UIViewController {
                 let callService = AppEnvironment.shared.callService!
                 return callService.buildAndConnectGroupCall(for: thread, isVideoMuted: videoMuted)
             }
-            await databaseStorage.awaitableWrite { tx in
+            await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
                 // Dismiss the group call tooltip
-                self.preferences.setWasGroupCallTooltipShown(tx: tx)
+                SSKEnvironment.shared.preferencesRef.setWasGroupCallTooltipShown(tx: tx)
             }
             return result
         }
@@ -539,7 +539,7 @@ class GroupCallViewController: UIViewController {
                 transaction: readTx
             )
 
-            phoneNumberSharingMode = NSObject.udManager
+            phoneNumberSharingMode = SSKEnvironment.shared.udManagerRef
                 .phoneNumberSharingMode(tx: readTx.asV2Read).orDefault
         } completion: {
             self.updateSwipeToastView()
@@ -1517,7 +1517,7 @@ extension GroupCallViewController: CallViewControllerWindowReference {
     }
 
     private func safetyNumberMismatchAddresses(untrustedThreshold: Date?) -> [SignalServiceAddress] {
-        databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             let addressesToCheck: [SignalServiceAddress]
             if
                 case .groupThread(let groupThreadCall) = groupCall.concreteType,
@@ -1805,14 +1805,14 @@ extension GroupCallViewController: GroupCallObserver {
         guard self.isReadyToHandleObserver else {
             return
         }
-        let localAci = databaseStorage.read { tx in
+        let localAci = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci
         }
         guard let localAci else {
             owsFailDebug("Local user is in call but doesn't have ACI!")
             return
         }
-        let mappedReactions = databaseStorage.read { tx in
+        let mappedReactions = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return reactions.map { reaction in
                 let name: String
                 let aci: Aci
@@ -1820,7 +1820,7 @@ extension GroupCallViewController: GroupCallObserver {
                     let remoteDeviceState = ringRtcCall.remoteDeviceStates[reaction.demuxId],
                     remoteDeviceState.aci != localAci
                 {
-                    name = contactsManager.displayName(for: remoteDeviceState.address, tx: tx).resolvedValue()
+                    name = SSKEnvironment.shared.contactManagerRef.displayName(for: remoteDeviceState.address, tx: tx).resolvedValue()
                     aci = remoteDeviceState.aci
                 } else {
                     name = CommonStrings.you

@@ -34,7 +34,7 @@ public class BlockListUIUtils: Dependencies {
         from viewController: UIViewController,
         completion: Completion?
     ) {
-        let displayName = databaseStorage.read { tx in contactsManager.displayName(for: address, tx: tx).resolvedValue() }
+        let displayName = SSKEnvironment.shared.databaseStorageRef.read { tx in SSKEnvironment.shared.contactManagerRef.displayName(for: address, tx: tx).resolvedValue() }
         showBlockAddressesActionSheet(address, displayName: displayName, from: viewController, completion: completion)
     }
 
@@ -149,8 +149,8 @@ public class BlockListUIUtils: Dependencies {
         owsAssertDebug(!displayName.isEmpty)
         owsAssertDebug(address.isValid)
 
-        databaseStorage.write { tx in
-            self.blockingManager.addBlockedAddress(address, blockMode: .localShouldLeaveGroups, transaction: tx)
+        SSKEnvironment.shared.databaseStorageRef.write { tx in
+            SSKEnvironment.shared.blockingManagerRef.addBlockedAddress(address, blockMode: .localShouldLeaveGroups, transaction: tx)
         }
 
         showOkActionSheet(
@@ -196,8 +196,8 @@ public class BlockListUIUtils: Dependencies {
     ) {
         // block the group regardless of the ability to deliver the
         // "leave group" message.
-        databaseStorage.write(block: { tx in
-            self.blockingManager.addBlockedGroup(
+        SSKEnvironment.shared.databaseStorageRef.write(block: { tx in
+            SSKEnvironment.shared.blockingManagerRef.addBlockedGroup(
                 groupModel: groupThread.groupModel,
                 blockMode: .localShouldLeaveGroups,
                 transaction: tx
@@ -240,7 +240,7 @@ public class BlockListUIUtils: Dependencies {
         from viewController: UIViewController,
         completion: Completion?
     ) {
-        let displayName = databaseStorage.read { tx in contactsManager.displayName(for: address, tx: tx).resolvedValue() }
+        let displayName = SSKEnvironment.shared.databaseStorageRef.read { tx in SSKEnvironment.shared.contactManagerRef.displayName(for: address, tx: tx).resolvedValue() }
         owsAssertDebug(!displayName.isEmpty)
 
         let actionSheetTitle = String(
@@ -316,8 +316,8 @@ public class BlockListUIUtils: Dependencies {
         owsAssertDebug(address.isValid)
         owsAssertDebug(!displayName.isEmpty)
 
-        databaseStorage.write { tx in
-            self.blockingManager.removeBlockedAddress(address, wasLocallyInitiated: true, transaction: tx)
+        SSKEnvironment.shared.databaseStorageRef.write { tx in
+            SSKEnvironment.shared.blockingManagerRef.removeBlockedAddress(address, wasLocallyInitiated: true, transaction: tx)
         }
 
         let actionSheetTitleFormat = OWSLocalizedString(
@@ -333,8 +333,8 @@ public class BlockListUIUtils: Dependencies {
         from viewController: UIViewController,
         completion: ((ActionSheetAction) -> Void)?
     ) {
-        databaseStorage.write { tx in
-            self.blockingManager.removeBlockedGroup(groupId: groupModel.groupId, wasLocallyInitiated: true, transaction: tx)
+        SSKEnvironment.shared.databaseStorageRef.write { tx in
+            SSKEnvironment.shared.blockingManagerRef.removeBlockedGroup(groupId: groupModel.groupId, wasLocallyInitiated: true, transaction: tx)
         }
 
         let actionSheetTitleFormat = OWSLocalizedString(

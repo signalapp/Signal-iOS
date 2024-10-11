@@ -58,7 +58,7 @@ public extension ConversationViewController {
             guard let self = self else { return }
             AssertIsOnMainThread()
 
-            self.databaseStorage.write { transaction in
+            SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 viewState.hidePendingMemberRequestsBanner(
                     currentPendingMembers: pendingMemberRequests,
                     transaction: transaction
@@ -86,11 +86,11 @@ public extension ConversationViewController {
     ) -> UIImage? {
         if
             address.isLocalAddress,
-            let profileAvatar = self.profileManager.localProfileAvatarImage
+            let profileAvatar = SSKEnvironment.shared.profileManagerRef.localProfileAvatarImage
         {
             return profileAvatar.resizedImage(to: CGSize(square: 24))
         }
-        return Self.avatarBuilder.avatarImage(
+        return SSKEnvironment.shared.avatarBuilderRef.avatarImage(
             forAddress: address,
             diameterPoints: 24,
             localUserDisplayMode: .asUser,
@@ -104,7 +104,7 @@ public extension ConversationViewController {
         let collisionFinder = ContactThreadNameCollisionFinder
             .makeToCheckMessageRequestNameCollisions(forContactThread: contactThread)
 
-        guard let (avatar1, avatar2) = databaseStorage.read(block: { tx -> (UIImage?, UIImage?)? in
+        guard let (avatar1, avatar2) = SSKEnvironment.shared.databaseStorageRef.read(block: { tx -> (UIImage?, UIImage?)? in
             guard
                 viewState.shouldShowMessageRequestNameCollisionBanner(transaction: tx),
                 let collision = collisionFinder.findCollisions(transaction: tx).first
@@ -128,7 +128,7 @@ public extension ConversationViewController {
 
         banner.closeAction = { [weak self] in
             guard let self = self else { return }
-            self.databaseStorage.write { viewState.hideMessageRequestNameCollisionBanner(transaction: $0) }
+            SSKEnvironment.shared.databaseStorageRef.write { viewState.hideMessageRequestNameCollisionBanner(transaction: $0) }
             self.ensureBannerState()
         }
 
@@ -151,7 +151,7 @@ public extension ConversationViewController {
             viewState.groupNameCollisionFinder = collisionFinder
 
             firstly(on: DispatchQueue.sharedUserInitiated) {
-                self.databaseStorage.read { readTx in
+                SSKEnvironment.shared.databaseStorageRef.read { readTx in
                     // Prewarm our collision finder off the main thread
                     _ = collisionFinder.findCollisions(transaction: readTx)
                 }
@@ -169,7 +169,7 @@ public extension ConversationViewController {
         }
 
         // Fetch the necessary info to build the banner
-        guard let (title, avatar1, avatar2) = databaseStorage.read(block: { readTx -> (String, UIImage?, UIImage?)? in
+        guard let (title, avatar1, avatar2) = SSKEnvironment.shared.databaseStorageRef.read(block: { readTx -> (String, UIImage?, UIImage?)? in
             let collisionSets = collisionFinder.findCollisions(transaction: readTx)
             guard !collisionSets.isEmpty else { return nil }
 
@@ -214,11 +214,13 @@ public extension ConversationViewController {
         }
 
         banner.closeAction = { [weak self] in
-            self?.databaseStorage.asyncWrite(block: { writeTx in
-                collisionFinder.markCollisionsAsResolved(transaction: writeTx)
-            }, completion: {
-                self?.ensureBannerState()
-            })
+            if self != nil {
+                SSKEnvironment.shared.databaseStorageRef.asyncWrite(block: { writeTx in
+                    collisionFinder.markCollisionsAsResolved(transaction: writeTx)
+                }, completion: {
+                    self?.ensureBannerState()
+                })
+            }
         }
 
         banner.reviewAction = { [weak self] in
@@ -541,14 +543,14 @@ extension ConversationViewController {
         // Most of these banners should hide themselves when the user scrolls
         if !userHasScrolled {
             let message: String?
-            let noLongerVerifiedIdentityKeys = databaseStorage.read { tx in self.noLongerVerifiedIdentityKeys(tx: tx) }
+            let noLongerVerifiedIdentityKeys = SSKEnvironment.shared.databaseStorageRef.read { tx in self.noLongerVerifiedIdentityKeys(tx: tx) }
             switch noLongerVerifiedIdentityKeys.count {
             case 0:
                 message = nil
 
             case 1:
                 let address = noLongerVerifiedIdentityKeys.first!.key
-                let displayName = databaseStorage.read { tx in contactsManager.displayName(for: address, tx: tx).resolvedValue() }
+                let displayName = SSKEnvironment.shared.databaseStorageRef.read { tx in SSKEnvironment.shared.contactManagerRef.displayName(for: address, tx: tx).resolvedValue() }
                 let format = (isGroupConversation
                                 ? OWSLocalizedString("MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT",
                                                     comment: "Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}.")
@@ -597,7 +599,7 @@ extension ConversationViewController {
             if
                 !pendingMemberRequests.isEmpty,
                 self.canApprovePendingMemberRequests,
-                databaseStorage.read(block: { transaction in
+                SSKEnvironment.shared.databaseStorageRef.read(block: { transaction in
                     // We will skip this read if the above checks fail, which
                     // will be most of the time.
                     viewState.shouldShowPendingMemberRequestsBanner(
@@ -720,9 +722,9 @@ extension ConversationViewController {
             return 0
         }
 
-        let blockedMembers = databaseStorage.read { readTx in
+        let blockedMembers = SSKEnvironment.shared.databaseStorageRef.read { readTx in
             groupThread.groupModel.groupMembers.filter {
-                blockingManager.isAddressBlocked($0, transaction: readTx)
+                SSKEnvironment.shared.blockingManagerRef.isAddressBlocked($0, transaction: readTx)
             }
         }
         return blockedMembers.count

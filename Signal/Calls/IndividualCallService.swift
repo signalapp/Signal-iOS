@@ -35,12 +35,12 @@ final class IndividualCallService: CallServiceStateObserver {
     private var audioSession: AudioSession { NSObject.audioSession }
     private var callService: CallService { AppEnvironment.shared.callService }
     private var callUIAdapter: CallUIAdapter { AppEnvironment.shared.callService.callUIAdapter }
-    private var contactManager: any ContactManager { NSObject.contactsManager }
-    private var databaseStorage: SDSDatabaseStorage { NSObject.databaseStorage }
-    private var networkManager: NetworkManager { NSObject.networkManager }
+    private var contactManager: any ContactManager { SSKEnvironment.shared.contactManagerRef }
+    private var databaseStorage: SDSDatabaseStorage { SSKEnvironment.shared.databaseStorageRef }
+    private var networkManager: NetworkManager { SSKEnvironment.shared.networkManagerRef }
     private var notificationPresenter: NotificationPresenterImpl { NSObject.notificationPresenterImpl }
-    private var preferences: Preferences { NSObject.preferences }
-    private var profileManager: any ProfileManager { NSObject.profileManager }
+    private var preferences: Preferences { SSKEnvironment.shared.preferencesRef }
+    private var profileManager: any ProfileManager { SSKEnvironment.shared.profileManagerRef }
     private var tsAccountManager: any TSAccountManager { DependenciesBridge.shared.tsAccountManager }
     private var identityManager: any OWSIdentityManager { DependenciesBridge.shared.identityManager }
 

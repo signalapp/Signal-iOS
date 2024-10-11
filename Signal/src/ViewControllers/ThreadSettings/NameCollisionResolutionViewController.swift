@@ -28,7 +28,7 @@ class NameCollisionResolutionViewController: OWSTableViewController2 {
     private var cellModels: [[NameCollisionCellModel]] = [] {
         didSet {
             if cellModels.count == 0 || cellModels.allSatisfy({ $0.count <= 1 }) {
-                databaseStorage.asyncWrite { writeTx in
+                SSKEnvironment.shared.databaseStorageRef.asyncWrite { writeTx in
                     self.collisionFinder.markCollisionsAsResolved(transaction: writeTx)
                 }
                 collisionDelegate?.nameCollisionControllerDidComplete(self, dismissConversationView: false)
@@ -71,7 +71,7 @@ class NameCollisionResolutionViewController: OWSTableViewController2 {
     }
 
     func updateModel() {
-        cellModels = databaseStorage.read { readTx -> [[NameCollisionCellModel]] in
+        cellModels = SSKEnvironment.shared.databaseStorageRef.read { readTx -> [[NameCollisionCellModel]] in
             if self.groupViewHelper == nil, self.thread.isGroupThread {
                 let threadViewModel = ThreadViewModel(thread: self.thread, forChatList: false, transaction: readTx)
                 self.groupViewHelper = GroupViewHelper(threadViewModel: threadViewModel)
@@ -86,9 +86,9 @@ class NameCollisionResolutionViewController: OWSTableViewController2 {
             return collisions.map { $0.collisionCellModels(
                 thread: self.thread,
                 identityManager: DependenciesBridge.shared.identityManager,
-                profileManager: profileManager,
-                blockingManager: blockingManager,
-                contactsManager: contactsManager,
+                profileManager: SSKEnvironment.shared.profileManagerRef,
+                blockingManager: SSKEnvironment.shared.blockingManagerRef,
+                contactsManager: SSKEnvironment.shared.contactManagerRef,
                 viewControllerForPresentation: self,
                 tx: readTx
             ) }
@@ -265,7 +265,7 @@ class NameCollisionResolutionViewController: OWSTableViewController2 {
         // When the user presses done, implicitly mark the remaining collisions as resolved (if the finder supports it)
         // Note: We only do this for dismissal via "Done". If the user uses interactive sheet dismissal, leave the
         // collisions as-is.
-        databaseStorage.write { writeTx in
+        SSKEnvironment.shared.databaseStorageRef.write { writeTx in
             self.collisionFinder.markCollisionsAsResolved(transaction: writeTx)
         }
         collisionDelegate?.nameCollisionControllerDidComplete(self, dismissConversationView: false)
@@ -277,11 +277,11 @@ class NameCollisionResolutionViewController: OWSTableViewController2 {
 extension NameCollisionResolutionViewController: ContactsViewHelperObserver {
 
     func shouldShowContactUpdateAction(for address: SignalServiceAddress) -> Bool {
-        guard contactsManagerImpl.isEditingAllowed else {
+        guard SSKEnvironment.shared.contactManagerImplRef.isEditingAllowed else {
             return false
         }
-        return databaseStorage.read { transaction in
-            return contactsManager.fetchSignalAccount(for: address, transaction: transaction) != nil
+        return SSKEnvironment.shared.databaseStorageRef.read { transaction in
+            return SSKEnvironment.shared.contactManagerRef.fetchSignalAccount(for: address, transaction: transaction) != nil
         }
     }
 

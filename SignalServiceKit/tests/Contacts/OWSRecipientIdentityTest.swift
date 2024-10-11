@@ -32,7 +32,7 @@ class OWSRecipientIdentityTest: SSKBaseTest {
 
     private func createFakeGroup() throws {
         // Create local account.
-        databaseStorage.write { tx in
+        SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: .init(
                     aci: localAci,

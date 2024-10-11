@@ -176,7 +176,7 @@ class SoundAndNotificationsSettingsViewController: OWSTableViewController2 {
     }
 
     private func setMentionNotificationMode(_ value: TSThreadMentionNotificationMode) {
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             self.threadViewModel.threadRecord.updateWithMentionNotificationMode(value, wasLocallyInitiated: true, transaction: transaction)
         }
 

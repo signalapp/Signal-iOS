@@ -106,7 +106,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
         switch call.mode {
         case .individual(let call):
             if showNamesOnCallScreen {
-                return databaseStorage.read { tx in contactsManager.displayName(for: call.thread, transaction: tx) }
+                return SSKEnvironment.shared.databaseStorageRef.read { tx in SSKEnvironment.shared.contactManagerRef.displayName(for: call.thread, transaction: tx) }
             }
             return OWSLocalizedString(
                 "CALLKIT_ANONYMOUS_CONTACT_NAME",
@@ -114,7 +114,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
             )
         case .groupThread(let call):
             if showNamesOnCallScreen {
-                return databaseStorage.read { tx in contactsManager.displayName(for: call.groupThread, transaction: tx) }
+                return SSKEnvironment.shared.databaseStorageRef.read { tx in SSKEnvironment.shared.contactManagerRef.displayName(for: call.groupThread, transaction: tx) }
             }
             return OWSLocalizedString(
                 "CALLKIT_ANONYMOUS_GROUP_NAME",

@@ -34,7 +34,7 @@ class MessageDecryptionTest: SSKBaseTest {
         let identityManager = DependenciesBridge.shared.identityManager
         identityManager.generateAndPersistNewIdentityKey(for: .aci)
         identityManager.generateAndPersistNewIdentityKey(for: .pni)
-        databaseStorage.write { tx in
+        SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: .init(
                     aci: .init(fromUUID: localAci),
@@ -45,8 +45,8 @@ class MessageDecryptionTest: SSKBaseTest {
             )
         }
 
-        (notificationPresenter as! NoopNotificationPresenterImpl).expectErrors = true
-        (udManager as! OWSUDManagerImpl).trustRoot = sealedSenderTrustRoot.publicKey
+        (SSKEnvironment.shared.notificationPresenterRef as! NoopNotificationPresenterImpl).expectErrors = true
+        (SSKEnvironment.shared.udManagerRef as! OWSUDManagerImpl).trustRoot = sealedSenderTrustRoot.publicKey
     }
 
     // MARK: - Tests
@@ -138,14 +138,14 @@ class MessageDecryptionTest: SSKBaseTest {
                 case .serverReceipt:
                     owsFail("Not supported.")
                 case .unidentifiedSender:
-                    return try messageDecrypter.decryptUnidentifiedSenderEnvelope(
+                    return try SSKEnvironment.shared.messageDecrypterRef.decryptUnidentifiedSenderEnvelope(
                         validatedEnvelope,
                         localIdentifiers: localIdentifiers,
                         localDeviceId: DependenciesBridge.shared.tsAccountManager.storedDeviceId(tx: transaction.asV2Read),
                         tx: transaction
                     )
                 case .identifiedSender(let cipherType):
-                    return try messageDecrypter.decryptIdentifiedEnvelope(
+                    return try SSKEnvironment.shared.messageDecrypterRef.decryptIdentifiedEnvelope(
                         validatedEnvelope,
                         cipherType: cipherType,
                         localIdentifiers: localIdentifiers,

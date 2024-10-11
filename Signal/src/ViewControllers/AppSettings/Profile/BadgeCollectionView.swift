@@ -135,7 +135,7 @@ extension BadgeCollectionView: UICollectionViewDelegateFlowLayout, UICollectionV
             guard let dataSource = badgeDataSource else { return }
 
             let badgeInfo = dataSource.availableBadges[indexPath.item]
-            databaseStorage.read { badgeInfo.loadBadge(transaction: $0) }
+            SSKEnvironment.shared.databaseStorageRef.read { badgeInfo.loadBadge(transaction: $0) }
             guard let badge = badgeInfo.badge else {
                 return owsFailDebug("Unexpectedly missing badge")
             }

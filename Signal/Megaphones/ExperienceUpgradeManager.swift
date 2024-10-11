@@ -15,7 +15,7 @@ class ExperienceUpgradeManager: Dependencies {
     static let splashStartDay = 7
 
     static func presentNext(fromViewController: UIViewController) -> Bool {
-        let optionalNext = databaseStorage.read(block: { transaction in
+        let optionalNext = SSKEnvironment.shared.databaseStorageRef.read(block: { transaction in
             return ExperienceUpgradeFinder.next(transaction: transaction.unwrapGrdbRead)
         })
 
@@ -63,7 +63,7 @@ class ExperienceUpgradeManager: Dependencies {
         // Track that we've successfully presented this experience upgrade once, or that it was not
         // needed to be presented.
         // If it was already marked as viewed, this will do nothing.
-        databaseStorage.asyncWrite { transaction in
+        SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
             ExperienceUpgradeFinder.markAsViewed(experienceUpgrade: next, transaction: transaction.unwrapGrdbWrite)
         }
 
@@ -153,7 +153,7 @@ class ExperienceUpgradeManager: Dependencies {
         case .notificationPermissionReminder:
             return NotificationPermissionReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .createUsernameReminder:
-            let usernameIsUnset: Bool = databaseStorage.read { tx in
+            let usernameIsUnset: Bool = SSKEnvironment.shared.databaseStorageRef.read { tx in
                 return DependenciesBridge.shared.localUsernameManager
                     .usernameState(tx: tx.asV2Read).isExplicitlyUnset
             }
@@ -167,10 +167,10 @@ class ExperienceUpgradeManager: Dependencies {
                 usernameSelectionCoordinator: .init(
                     currentUsername: nil,
                     context: .init(
-                        databaseStorage: databaseStorage,
-                        networkManager: networkManager,
+                        databaseStorage: SSKEnvironment.shared.databaseStorageRef,
+                        networkManager: SSKEnvironment.shared.networkManagerRef,
                         schedulers: DependenciesBridge.shared.schedulers,
-                        storageServiceManager: storageServiceManager,
+                        storageServiceManager: SSKEnvironment.shared.storageServiceManagerRef,
                         usernameEducationManager: DependenciesBridge.shared.usernameEducationManager,
                         localUsernameManager: DependenciesBridge.shared.localUsernameManager
                     )
@@ -179,7 +179,7 @@ class ExperienceUpgradeManager: Dependencies {
                 fromViewController: fromViewController
             )
         case .inactiveLinkedDeviceReminder:
-            let inactiveLinkedDevice: InactiveLinkedDevice? = databaseStorage.read { tx in
+            let inactiveLinkedDevice: InactiveLinkedDevice? = SSKEnvironment.shared.databaseStorageRef.read { tx in
                 return DependenciesBridge.shared.inactiveLinkedDeviceFinder
                     .findLeastActiveLinkedDevice(tx: tx.asV2Read)
             }
@@ -219,7 +219,7 @@ protocol ExperienceUpgradeView: AnyObject, Dependencies {
 extension ExperienceUpgradeView {
 
     func markAsSnoozedWithSneakyTransaction() {
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             ExperienceUpgradeFinder.markAsSnoozed(
                 experienceUpgrade: self.experienceUpgrade,
                 transaction: transaction.unwrapGrdbWrite
@@ -228,7 +228,7 @@ extension ExperienceUpgradeView {
     }
 
     func markAsCompleteWithSneakyTransaction() {
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             ExperienceUpgradeFinder.markAsComplete(
                 experienceUpgrade: self.experienceUpgrade,
                 transaction: transaction.unwrapGrdbWrite

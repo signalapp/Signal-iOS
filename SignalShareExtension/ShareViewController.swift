@@ -175,7 +175,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         ensureRootViewController()
 
         // Always check prekeys after app launches, and sometimes check on app activation.
-        self.databaseStorage.read { tx in
+        SSKEnvironment.shared.databaseStorageRef.read { tx in
             if DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx.asV2Read).isRegistered {
                 DependenciesBridge.shared.preKeyManager.checkPreKeysIfNecessary(tx: tx.asV2Read)
             }
@@ -286,8 +286,8 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             return
         }
 
-        let localProfileExists = databaseStorage.read { transaction in
-            return self.profileManager.localProfileExists(with: transaction)
+        let localProfileExists = SSKEnvironment.shared.databaseStorageRef.read { transaction in
+            return SSKEnvironment.shared.profileManagerRef.localProfileExists(with: transaction)
         }
         guard localProfileExists else {
             // This is a rare edge case, but we want to ensure that the user
@@ -475,7 +475,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         let selectedThread: TSThread?
         if let intent = extensionContext?.intent as? INSendMessageIntent,
            let threadUniqueId = intent.conversationIdentifier {
-            selectedThread = databaseStorage.read { TSThread.anyFetch(uniqueId: threadUniqueId, transaction: $0) }
+            selectedThread = SSKEnvironment.shared.databaseStorageRef.read { TSThread.anyFetch(uniqueId: threadUniqueId, transaction: $0) }
         } else {
             selectedThread = nil
         }

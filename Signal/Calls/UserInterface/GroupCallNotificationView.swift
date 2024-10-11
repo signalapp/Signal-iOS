@@ -170,8 +170,8 @@ private class BannerView: UIView {
             backgroundColor = .ows_blackAlpha40
         }
 
-        let displayNames = databaseStorage.read { tx in
-            return contactsManagerImpl.sortedComparableNames(for: addresses, tx: tx)
+        let displayNames = SSKEnvironment.shared.databaseStorageRef.read { tx in
+            return SSKEnvironment.shared.contactManagerImplRef.sortedComparableNames(for: addresses, tx: tx)
         }.sorted(by: <).map { $0.resolvedValue() }
 
         let actionText: String
@@ -233,12 +233,12 @@ private class BannerView: UIView {
             avatarView.autoMatch(.height, to: .width, of: avatarView)
 
             if address.isLocalAddress,
-               let avatarImage = profileManager.localProfileAvatarImage {
+               let avatarImage = SSKEnvironment.shared.profileManagerRef.localProfileAvatarImage {
                 avatarView.image = avatarImage
             } else {
-                let avatar = Self.avatarBuilder.avatarImageWithSneakyTransaction(forAddress: address,
-                                                                                 diameterPoints: 40,
-                                                                                 localUserDisplayMode: .asUser)
+                let avatar = SSKEnvironment.shared.avatarBuilderRef.avatarImageWithSneakyTransaction(forAddress: address,
+                                                                                                     diameterPoints: 40,
+                                                                                                     localUserDisplayMode: .asUser)
                 avatarView.image = avatar
             }
         }

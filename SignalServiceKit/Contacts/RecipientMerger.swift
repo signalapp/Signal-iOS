@@ -944,7 +944,7 @@ extension SignalServiceAddressCache: RecipientMergeObserver {
         // If there are any threads with addresses that have been merged, we should
         // reload them from disk. This allows us to rebuild the addresses with the
         // proper hash values.
-        modelReadCaches.evacuateAllCaches()
+        SSKEnvironment.shared.modelReadCachesRef.evacuateAllCaches()
     }
 }
 

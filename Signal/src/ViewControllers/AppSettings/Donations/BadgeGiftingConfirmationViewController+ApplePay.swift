@@ -39,7 +39,7 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
         }
 
         firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
-            try self.databaseStorage.read { transaction in
+            try SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 try DonationViewsUtil.Gifts.throwIfAlreadySendingGift(
                     to: self.thread,
                     transaction: transaction
@@ -107,8 +107,8 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
                 preparedPayment: preparedPayment,
                 thread: self.thread,
                 messageText: self.messageText,
-                databaseStorage: self.databaseStorage,
-                blockingManager: self.blockingManager,
+                databaseStorage: SSKEnvironment.shared.databaseStorageRef,
+                blockingManager: SSKEnvironment.shared.blockingManagerRef,
                 onChargeSucceeded: {
                     wrappedCompletion(.init(status: .success, errors: nil))
                     controller.dismiss()

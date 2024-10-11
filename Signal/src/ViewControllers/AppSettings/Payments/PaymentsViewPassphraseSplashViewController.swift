@@ -202,8 +202,8 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
             return
         }
 
-        if Self.owsPaymentsLock.isPaymentsLockEnabled() {
-            Self.owsPaymentsLock.tryToUnlock { [weak self] outcome in
+        if SSKEnvironment.shared.owsPaymentsLockRef.isPaymentsLockEnabled() {
+            SSKEnvironment.shared.owsPaymentsLockRef.tryToUnlock { [weak self] outcome in
                 guard let self = self else { return }
                 guard outcome == OWSPaymentsLock.LocalAuthOutcome.success else {
                     PaymentActionSheets.showBiometryAuthFailedActionSheet { _ in

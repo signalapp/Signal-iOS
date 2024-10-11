@@ -40,7 +40,7 @@ final class GroupThreadCall: Signal.GroupCall {
 
         // Track the callInProgress restriction regardless; we use that for
         // purposes other than rings.
-        let hasActiveCallMessage = NSObject.databaseStorage.read { transaction -> Bool in
+        let hasActiveCallMessage = SSKEnvironment.shared.databaseStorageRef.read { transaction -> Bool in
             !GroupCallInteractionFinder().unendedCallsForGroupThread(groupThread, transaction: transaction).isEmpty
         }
         if hasActiveCallMessage {
@@ -103,7 +103,7 @@ final class GroupThreadCall: Signal.GroupCall {
         guard groupThread.uniqueId == notification.object as? String else {
             return
         }
-        NSObject.databaseStorage.read(block: groupThread.anyReload(transaction:))
+        SSKEnvironment.shared.databaseStorageRef.read(block: groupThread.anyReload(transaction:))
         let groupModel = groupThread.groupModel
         let isGroupTooLarge = groupModel.groupMembers.count > RemoteConfig.current.maxGroupCallRingSize
         ringRestrictions.update(.groupTooLarge, present: isGroupTooLarge)

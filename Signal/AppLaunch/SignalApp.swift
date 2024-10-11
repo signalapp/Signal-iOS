@@ -118,7 +118,7 @@ extension SignalApp {
         case .changingNumber:
             Logger.info("Attempting change number registration on app launch")
         }
-        let coordinator = databaseStorage.write { tx in
+        let coordinator = SSKEnvironment.shared.databaseStorageRef.write { tx in
             return loader.coordinator(forDesiredMode: desiredMode, transaction: tx.asV2Write)
         }
         let navController = RegistrationNavigationController.withCoordinator(coordinator, appReadiness: appReadiness)
@@ -148,7 +148,7 @@ extension SignalApp {
         action: ConversationViewAction = .none,
         animated: Bool
     ) {
-        let thread = databaseStorage.write { transaction in
+        let thread = SSKEnvironment.shared.databaseStorageRef.write { transaction in
             return TSContactThread.getOrCreateThread(withContactAddress: address, transaction: transaction)
         }
         presentConversationForThread(thread, action: action, animated: animated)
@@ -195,7 +195,7 @@ extension SignalApp {
 
         Logger.info("")
 
-        guard let thread = databaseStorage.read(block: { transaction in
+        guard let thread = SSKEnvironment.shared.databaseStorageRef.read(block: { transaction in
             return TSThread.anyFetch(uniqueId: threadId, transaction: transaction)
         }) else {
             owsFailDebug("unable to find thread with id: \(threadId)")
@@ -264,10 +264,10 @@ extension SignalApp {
         Logger.flush()
 
         DispatchSyncMainThreadSafe {
-            databaseStorage.resetAllStorage()
+            SSKEnvironment.shared.databaseStorageRef.resetAllStorage()
             OWSUserProfile.resetProfileStorage()
-            preferences.removeAllValues()
-            NSObject.notificationPresenter.clearAllNotifications()
+            SSKEnvironment.shared.preferencesRef.removeAllValues()
+            SSKEnvironment.shared.notificationPresenterRef.clearAllNotifications()
             UIApplication.shared.applicationIconBadgeNumber = 0
             OWSFileSystem.deleteContents(ofDirectory: OWSFileSystem.appSharedDataDirectoryPath())
             OWSFileSystem.deleteContents(ofDirectory: OWSFileSystem.appDocumentDirectoryPath())
@@ -337,12 +337,12 @@ extension SignalApp {
         alert.addAction(.init(title: "Export", style: .destructive) { _ in
             if SSKEnvironment.hasShared {
                 // Try to sync the database first, since we don't export the WAL.
-                _ = try? SSKEnvironment.shared.grdbStorageAdapter.syncTruncatingCheckpoint()
+                _ = try? SSKEnvironment.shared.databaseStorageRef.grdbStorage.syncTruncatingCheckpoint()
             }
             let databaseFileUrl = GRDBDatabaseStorageAdapter.databaseFileUrl()
             let shareSheet = UIActivityViewController(activityItems: [databaseFileUrl], applicationActivities: nil)
             shareSheet.completionWithItemsHandler = { _, completed, _, error in
-                guard completed, error == nil, let password = NSObject.databaseStorage.keyFetcher.debugOnly_keyData()?.hexadecimalString else {
+                guard completed, error == nil, let password = SSKEnvironment.shared.databaseStorageRef.keyFetcher.debugOnly_keyData()?.hexadecimalString else {
                     completion()
                     return
                 }

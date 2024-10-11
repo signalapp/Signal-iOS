@@ -188,7 +188,7 @@ class AvatarEditViewController: OWSTableViewController2 {
         switch model.type {
         case .icon:
             headerTextField.isHidden = true
-            headerImageView.image = avatarBuilder.avatarImage(model: model, diameterPoints: UInt(Self.headerAvatarSize))
+            headerImageView.image = SSKEnvironment.shared.avatarBuilderRef.avatarImage(model: model, diameterPoints: UInt(Self.headerAvatarSize))
         case .text(let text):
             headerTextField.isHidden = false
             headerTextField.textColor = model.theme.foregroundColor

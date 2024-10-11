@@ -40,7 +40,7 @@ open class ContactTableViewCell: UITableViewCell, ReusableTableViewCell {
 
     public func configureWithSneakyTransaction(address: SignalServiceAddress,
                                                localUserDisplayMode: LocalUserDisplayMode) {
-        databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             configure(address: address,
                       localUserDisplayMode: localUserDisplayMode,
                       transaction: transaction)

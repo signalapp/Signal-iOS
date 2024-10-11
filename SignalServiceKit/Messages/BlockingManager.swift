@@ -51,7 +51,7 @@ public class BlockingManager: NSObject {
 
     private func loadStateOnLaunch() {
         // Pre-warm our cached state
-        databaseStorage.read {
+        SSKEnvironment.shared.databaseStorageRef.read {
             withCurrentState(transaction: $0) { _ in }
         }
         // Once we're ready to send a message, check to see if we need to sync.
@@ -164,7 +164,7 @@ extension BlockingManager {
             }
 
             if blockMode.locallyInitiated {
-                storageServiceManager.recordPendingUpdates(updatedAddresses: [address])
+                SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(updatedAddresses: [address])
             }
 
             // We will start dropping new stories from the blocked address;
@@ -211,7 +211,7 @@ extension BlockingManager {
             }
 
             if wasLocallyInitiated {
-                storageServiceManager.recordPendingUpdates(updatedAddresses: [address])
+                SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(updatedAddresses: [address])
             }
 
             // Insert an info message that we unblocked this user.
@@ -241,7 +241,7 @@ extension BlockingManager {
             Logger.info("Added blocked groupId: \(groupId.hexadecimalString)")
 
             if blockMode.locallyInitiated {
-                storageServiceManager.recordPendingUpdates(groupModel: groupModel)
+                SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(groupModel: groupModel)
             }
 
             if let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
@@ -281,12 +281,12 @@ extension BlockingManager {
             Logger.info("Removed blocked groupId: \(groupId.hexadecimalString)")
 
             if wasLocallyInitiated {
-                storageServiceManager.recordPendingUpdates(groupModel: unblockedGroup)
+                SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(groupModel: unblockedGroup)
             }
 
             if let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
                 // Refresh unblocked group.
-                groupV2Updates.tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithoutThrottling(groupThread)
+                SSKEnvironment.shared.groupV2UpdatesRef.tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithoutThrottling(groupThread)
 
                 // Insert an info message that we unblocked.
                 DependenciesBridge.shared.interactionStore.insertInteraction(
@@ -417,7 +417,7 @@ extension BlockingManager {
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else { return }
 
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             withCurrentState(transaction: transaction) { state in
                 // If we're not forcing a sync, then we only sync if our last synced token is stale
                 // and we're not in the NSE. We'll leaving syncing to the main app.
@@ -466,7 +466,7 @@ extension BlockingManager {
                     Logger.info("Successfully sent blocked phone numbers sync message")
 
                     // Record the last block list which we successfully synced..
-                    Self.databaseStorage.write { transaction in
+                    SSKEnvironment.shared.databaseStorageRef.write { transaction in
                         State.setLastSyncedChangeToken(outgoingChangeToken, transaction: transaction)
                     }
                 }.catch { error in

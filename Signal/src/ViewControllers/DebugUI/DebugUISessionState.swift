@@ -21,7 +21,7 @@ class DebugUISessionState: DebugUIPage, Dependencies {
                     OWSRecipientIdentity.printAllIdentities()
                 }),
                 OWSTableItem(title: "Log All Sessions", actionBlock: {
-                    self.databaseStorage.read { transaction in
+                    SSKEnvironment.shared.databaseStorageRef.read { transaction in
                         let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
                         sessionStore.printAll(tx: transaction.asV2Read)
                     }
@@ -30,20 +30,20 @@ class DebugUISessionState: DebugUIPage, Dependencies {
                     DebugUISessionState.toggleKeyChange(for: contactThread)
                 }),
                 OWSTableItem(title: "Delete All Sessions", actionBlock: {
-                    self.databaseStorage.write { transaction in
+                    SSKEnvironment.shared.databaseStorageRef.write { transaction in
                         let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
                         sessionStore.deleteAllSessions(for: contactThread.contactAddress.serviceId!, tx: transaction.asV2Write)
                     }
                 }),
                 OWSTableItem(title: "Archive All Sessions", actionBlock: {
-                    self.databaseStorage.write { transaction in
+                    SSKEnvironment.shared.databaseStorageRef.write { transaction in
                         let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
                         sessionStore.archiveAllSessions(for: contactThread.contactAddress.serviceId!, tx: transaction.asV2Write)
                     }
                 }),
                 OWSTableItem(title: "Send Session Reset", actionBlock: {
-                    self.databaseStorage.write { transaction in
-                        self.smJobQueues.sessionResetJobQueue.add(contactThread: contactThread, transaction: transaction)
+                    SSKEnvironment.shared.databaseStorageRef.write { transaction in
+                        SSKEnvironment.shared.smJobQueuesRef.sessionResetJobQueue.add(contactThread: contactThread, transaction: transaction)
                     }
                 })
             ]
@@ -51,8 +51,8 @@ class DebugUISessionState: DebugUIPage, Dependencies {
 
         if let groupThread = thread as? TSGroupThread {
             items.append(OWSTableItem(title: "Rotate Sender Key", actionBlock: {
-                self.databaseStorage.write { transaction in
-                    self.senderKeyStore.resetSenderKeySession(for: groupThread, transaction: transaction)
+                SSKEnvironment.shared.databaseStorageRef.write { transaction in
+                    SSKEnvironment.shared.senderKeyStoreRef.resetSenderKeySession(for: groupThread, transaction: transaction)
                 }
             }))
         }
@@ -65,14 +65,14 @@ class DebugUISessionState: DebugUIPage, Dependencies {
 
         items += [
             OWSTableItem(title: "Clear Session Store", actionBlock: {
-                self.databaseStorage.write { transaction in
+                SSKEnvironment.shared.databaseStorageRef.write { transaction in
                     let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
                     sessionStore.resetSessionStore(tx: transaction.asV2Write)
                 }
             }),
             OWSTableItem(title: "Clear Sender Key Store", actionBlock: {
-                self.databaseStorage.write { transaction in
-                    self.senderKeyStore.resetSenderKeyStore(transaction: transaction)
+                SSKEnvironment.shared.databaseStorageRef.write { transaction in
+                    SSKEnvironment.shared.senderKeyStoreRef.resetSenderKeyStore(transaction: transaction)
                 }
             })
         ]
@@ -90,7 +90,7 @@ class DebugUISessionState: DebugUIPage, Dependencies {
 
         let identityManager = DependenciesBridge.shared.identityManager
 
-        databaseStorage.write { tx in
+        SSKEnvironment.shared.databaseStorageRef.write { tx in
             guard let currentKey = identityManager.identityKey(for: SignalServiceAddress(serviceId), tx: tx.asV2Read) else { return }
 
             var flippedKey = Data(count: currentKey.count)
@@ -119,7 +119,7 @@ class DebugUISessionState: DebugUIPage, Dependencies {
         recipientSelection.addAction(OWSActionSheets.cancelAction)
 
         recipientAddresses.forEach { address in
-            let name = databaseStorage.read { tx in contactsManager.displayName(for: address, tx: tx).resolvedValue() }
+            let name = SSKEnvironment.shared.databaseStorageRef.read { tx in SSKEnvironment.shared.contactManagerRef.displayName(for: address, tx: tx).resolvedValue() }
             recipientSelection.addAction(ActionSheetAction(
                 title: name,
                 handler: { _ in
@@ -133,11 +133,11 @@ class DebugUISessionState: DebugUIPage, Dependencies {
 
     private static func updateIdentityVerificationForAddress(_ address: SignalServiceAddress) {
         let identityManager = DependenciesBridge.shared.identityManager
-        guard let identity = databaseStorage.read(block: { tx in identityManager.recipientIdentity(for: address, tx: tx.asV2Read) }) else {
+        guard let identity = SSKEnvironment.shared.databaseStorageRef.read(block: { tx in identityManager.recipientIdentity(for: address, tx: tx.asV2Read) }) else {
             owsFailDebug("No identity for address \(address)")
             return
         }
-        let name = databaseStorage.read { tx in contactsManager.displayName(for: address, tx: tx).resolvedValue() }
+        let name = SSKEnvironment.shared.databaseStorageRef.read { tx in SSKEnvironment.shared.contactManagerRef.displayName(for: address, tx: tx).resolvedValue() }
         let message = "\(name) is currently marked as \(OWSVerificationStateToString(identity.verificationState))"
 
         let stateSelection = ActionSheetController(title: "Select a verification state", message: message)
@@ -153,7 +153,7 @@ class DebugUISessionState: DebugUIPage, Dependencies {
             stateSelection.addAction(ActionSheetAction(
                 title: "\(state)",
                 handler: { _ in
-                    databaseStorage.write { tx in
+                    SSKEnvironment.shared.databaseStorageRef.write { tx in
                         _ = identityManager.setVerificationState(
                             state,
                             of: identity.identityKey,

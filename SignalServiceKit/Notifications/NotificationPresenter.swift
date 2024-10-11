@@ -56,6 +56,6 @@ enum NotificationSuppressionRule {
 class NotificationPresenterObjC: NSObject {
     @objc(cancelNotificationsForMessageId:)
     static func cancelNotifications(for messageId: String) {
-        NSObject.notificationPresenter.cancelNotifications(messageIds: [messageId])
+        SSKEnvironment.shared.notificationPresenterRef.cancelNotifications(messageIds: [messageId])
     }
 }

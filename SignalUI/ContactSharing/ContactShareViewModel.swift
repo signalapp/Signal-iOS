@@ -77,7 +77,7 @@ public class ContactShareViewModel: NSObject {
     }
 
     public func getAvatarImageWithSneakyTransaction(diameter: CGFloat) -> UIImage? {
-        databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             self.getAvatarImage(diameter: diameter, transaction: transaction)
         }
     }
@@ -92,7 +92,7 @@ public class ContactShareViewModel: NSObject {
         // This could mislead the user into thinking
         // that an avatar they did not share was in fact included in the
         // contact share.
-        return Self.avatarBuilder.avatarImage(
+        return SSKEnvironment.shared.avatarBuilderRef.avatarImage(
             personNameComponents: name.components,
             diameterPoints: UInt(diameter),
             transaction: transaction

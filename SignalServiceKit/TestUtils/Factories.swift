@@ -50,11 +50,11 @@ public protocol Factory: Dependencies {
 public extension Factory {
 
     static func write(block: @escaping (SDSAnyWriteTransaction) -> Void) {
-        databaseStorage.write(block: block)
+        SSKEnvironment.shared.databaseStorageRef.write(block: block)
     }
 
     func write(block: @escaping (SDSAnyWriteTransaction) -> Void) {
-        databaseStorage.write(block: block)
+        SSKEnvironment.shared.databaseStorageRef.write(block: block)
     }
 
     // MARK: Factory Methods
@@ -453,7 +453,7 @@ public class ConversationFactory: NSObject {
         outgoingFactory.threadCreator = threadCreator
         let message = outgoingFactory.create(transaction: transaction)
 
-        databaseStorage.asyncWrite { asyncTransaction in
+        SSKEnvironment.shared.databaseStorageRef.asyncWrite { asyncTransaction in
             let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(
                 message,
                 unsavedBodyMediaAttachments: bodyAttachmentDataSources

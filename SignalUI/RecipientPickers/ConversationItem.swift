@@ -168,8 +168,8 @@ extension ContactConversationItem: ConversationItem {
     }
 
     var image: UIImage? {
-        databaseStorage.read { transaction in
-            self.contactsManagerImpl.avatarImage(forAddress: self.address,
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
+            SSKEnvironment.shared.contactManagerImplRef.avatarImage(forAddress: self.address,
                                                  shouldValidate: true,
                                                  transaction: transaction)
         }
@@ -209,7 +209,7 @@ public struct GroupConversationItem: Dependencies {
     // We don't want to keep this in memory, because the group model
     // can be very large.
     public var groupThread: TSGroupThread? {
-        databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId, transaction: transaction)
         }
     }
@@ -241,10 +241,10 @@ extension GroupConversationItem: ConversationItem {
 
     public var image: UIImage? {
         guard let groupThread = groupThread else { return nil }
-        return databaseStorage.read { transaction in
-            Self.avatarBuilder.avatarImage(forGroupThread: groupThread,
-                                           diameterPoints: AvatarBuilder.standardAvatarSizePoints,
-                                           transaction: transaction)
+        return SSKEnvironment.shared.databaseStorageRef.read { transaction in
+            SSKEnvironment.shared.avatarBuilderRef.avatarImage(forGroupThread: groupThread,
+                                                               diameterPoints: AvatarBuilder.standardAvatarSizePoints,
+                                                               transaction: transaction)
         }
     }
 
@@ -570,7 +570,7 @@ public struct PrivateStoryConversationItem: Dependencies {
     public let isMyStory: Bool
 
     public var storyThread: TSPrivateStoryThread? {
-        databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return TSPrivateStoryThread.anyFetchPrivateStoryThread(uniqueId: storyThreadId, transaction: transaction)
         }
     }

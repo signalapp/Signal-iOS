@@ -246,7 +246,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
     }
 
     private func changeNumberState() -> ChangeNumberState {
-        return databaseStorage.read { transaction -> ChangeNumberState in
+        return SSKEnvironment.shared.databaseStorageRef.read { transaction -> ChangeNumberState in
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
             let tsRegistrationState = tsAccountManager.registrationState(tx: transaction.asV2Read)
             guard tsRegistrationState.isRegistered else {
@@ -292,7 +292,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
         let dependencies = RegistrationCoordinatorDependencies.from(NSObject())
         let desiredMode = RegistrationMode.changingNumber(params)
         let loader = RegistrationCoordinatorLoaderImpl(dependencies: dependencies)
-        let coordinator = databaseStorage.write {
+        let coordinator = SSKEnvironment.shared.databaseStorageRef.write {
             return loader.coordinator(
                 forDesiredMode: desiredMode,
                 transaction: $0.asV2Write
@@ -308,7 +308,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
     @objc
     private func arePINRemindersEnabledDidChange(_ sender: UISwitch) {
         if sender.isOn {
-            databaseStorage.write { transaction in
+            SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 SSKEnvironment.shared.ows2FAManagerRef.setAreRemindersEnabled(true, transaction: transaction)
             }
         } else {
@@ -328,7 +328,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
             ) { [weak self] confirmed in
                 guard let self = self else { return }
                 if confirmed {
-                    self.databaseStorage.write { transaction in
+                    SSKEnvironment.shared.databaseStorageRef.write { transaction in
                         SSKEnvironment.shared.ows2FAManagerRef.setAreRemindersEnabled(false, transaction: transaction)
                     }
 

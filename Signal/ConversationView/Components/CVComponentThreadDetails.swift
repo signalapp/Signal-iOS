@@ -433,12 +433,12 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             diameterPoints: avatarSizeClass.diameter
         )
 
-        let isAvatarBlurred = contactsManagerImpl.shouldBlurContactAvatar(
+        let isAvatarBlurred = SSKEnvironment.shared.contactManagerImplRef.shouldBlurContactAvatar(
             contactThread: contactThread,
             transaction: transaction
         )
 
-        let displayName = Self.contactsManager.displayName(
+        let displayName = SSKEnvironment.shared.contactManagerRef.displayName(
             for: contactThread.contactAddress,
             tx: transaction
         )
@@ -457,7 +457,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             if contactThread.isNoteToSelf {
                 return nil
             }
-            return Self.profileManagerImpl.profileBioForDisplay(for: contactThread.contactAddress,
+            return SSKEnvironment.shared.profileManagerImplRef.profileBioForDisplay(for: contactThread.contactAddress,
                                                                 transaction: transaction)
         }()
 
@@ -500,7 +500,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             forGroupThread: groupThread,
             diameterPoints: avatarSizeClass.diameter)
 
-        let isAvatarBlurred = contactsManagerImpl.shouldBlurGroupAvatar(
+        let isAvatarBlurred = SSKEnvironment.shared.contactManagerImplRef.shouldBlurGroupAvatar(
             groupThread: groupThread,
             transaction: transaction
         )
@@ -692,12 +692,12 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
             let location = sender.location(in: avatarView)
             if avatarView.bounds.contains(location) {
-                Self.databaseStorage.write { transaction in
+                SSKEnvironment.shared.databaseStorageRef.write { transaction in
                     if let contactThread = self.thread as? TSContactThread {
-                        Self.contactsManagerImpl.doNotBlurContactAvatar(address: contactThread.contactAddress,
+                        SSKEnvironment.shared.contactManagerImplRef.doNotBlurContactAvatar(address: contactThread.contactAddress,
                                                                         transaction: transaction)
                     } else if let groupThread = self.thread as? TSGroupThread {
-                        Self.contactsManagerImpl.doNotBlurGroupAvatar(groupThread: groupThread,
+                        SSKEnvironment.shared.contactManagerImplRef.doNotBlurGroupAvatar(groupThread: groupThread,
                                                                       transaction: transaction)
                     } else {
                         owsFailDebug("Invalid thread.")
@@ -789,7 +789,7 @@ extension CVComponentThreadDetails {
         from groupThread: TSGroupThread,
         tx: SDSAnyReadTransaction
     ) -> NSAttributedString? {
-        guard contactsManagerImpl.shouldShowUnknownThreadWarning(
+        guard SSKEnvironment.shared.contactManagerImplRef.shouldShowUnknownThreadWarning(
             thread: groupThread,
             transaction: tx
         ) else {
@@ -830,7 +830,7 @@ extension CVComponentThreadDetails {
 
         switch mutualGroupNames.count {
         case 0:
-            guard contactsManagerImpl.shouldShowUnknownThreadWarning(
+            guard SSKEnvironment.shared.contactManagerImplRef.shouldShowUnknownThreadWarning(
                 thread: contactThread,
                 transaction: tx
             ) else {

@@ -27,7 +27,7 @@ extension StoryReplySheet {
         guard let thread = thread else {
             return owsFailDebug("Unexpectedly missing thread")
         }
-        let isThreadBlocked = databaseStorage.read { blockingManager.isThreadBlocked(thread, transaction: $0) }
+        let isThreadBlocked = SSKEnvironment.shared.databaseStorageRef.read { SSKEnvironment.shared.blockingManagerRef.isThreadBlocked(thread, transaction: $0) }
 
         guard !isThreadBlocked else {
             BlockListUIUtils.showUnblockThreadActionSheet(thread, from: self) { [weak self] isBlocked in

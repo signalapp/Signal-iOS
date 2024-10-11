@@ -336,8 +336,8 @@ private class GroupThreadPicker: OWSTableViewController {
     }
 
     private func rebuildTableContents() {
-        let contactsManager = Self.contactsManager
-        let databaseStorage = Self.databaseStorage
+        let contactsManager = SSKEnvironment.shared.contactManagerRef
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
 
         let contents = OWSTableContents()
         let section = OWSTableSection()

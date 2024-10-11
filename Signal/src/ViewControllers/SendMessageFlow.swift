@@ -193,7 +193,7 @@ class SendMessageFlow: Dependencies {
             return
         }
 
-        let groupThread = databaseStorage.read { readTx in
+        let groupThread = SSKEnvironment.shared.databaseStorageRef.read { readTx in
             TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId, transaction: readTx)
         }
 
@@ -251,7 +251,7 @@ extension SendMessageFlow {
                 let thread = threads.first else {
                     throw OWSAssertionError("Unexpected thread state.")
             }
-            return self.databaseStorage.write { transaction -> TSThread in
+            return SSKEnvironment.shared.databaseStorageRef.write { transaction -> TSThread in
                 thread.update(withDraft: messageBody,
                               replyInfo: nil,
                               editTargetTimestamp: nil,
@@ -421,7 +421,7 @@ extension SendMessageFlow {
 
             var threads: [TSThread] = []
 
-            self.databaseStorage.write { transaction in
+            SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 for conversation in conversationItems {
                     guard let thread = conversation.getOrCreateThread(transaction: transaction) else {
                         owsFailDebug("Missing thread for conversation")

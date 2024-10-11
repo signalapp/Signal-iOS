@@ -21,7 +21,7 @@ class SignalRecipientTest: SSKBaseTest {
 
     override func setUp() {
         super.setUp()
-        databaseStorage.write { tx in
+        SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: localIdentifiers,
                 tx: tx.asV2Write
@@ -384,11 +384,11 @@ class SignalRecipientTest: SSKBaseTest {
             mergeHighTrust(aci: aci1, phoneNumber: phoneNumber2, transaction: tx)
         }
 
-        databaseStorage.read { tx in
+        SSKEnvironment.shared.databaseStorageRef.read { tx in
             XCTAssertEqual(TSThread.anyCount(transaction: tx), 3)
         }
 
-        let finalGroupMembers = databaseStorage.read { tx in
+        let finalGroupMembers = SSKEnvironment.shared.databaseStorageRef.read { tx in
             GroupMemberStoreImpl().sortedFullGroupMembers(in: groupThread.uniqueId, tx: tx.asV2Read)
         }
 
@@ -431,11 +431,11 @@ class SignalRecipientTest: SSKBaseTest {
             mergeHighTrust(aci: aci1, phoneNumber: phoneNumber2, transaction: tx)
         }
 
-        databaseStorage.read { tx in
+        SSKEnvironment.shared.databaseStorageRef.read { tx in
             XCTAssertEqual(TSThread.anyCount(transaction: tx), 2)
         }
 
-        let finalGroupMembers = databaseStorage.read { tx in
+        let finalGroupMembers = SSKEnvironment.shared.databaseStorageRef.read { tx in
             GroupMemberStoreImpl().sortedFullGroupMembers(in: groupThread.uniqueId, tx: tx.asV2Read)
         }
 
@@ -478,11 +478,11 @@ class SignalRecipientTest: SSKBaseTest {
             mergeHighTrust(aci: aci2, phoneNumber: phoneNumber1, transaction: tx)
         }
 
-        databaseStorage.read { tx in
+        SSKEnvironment.shared.databaseStorageRef.read { tx in
             XCTAssertEqual(TSThread.anyCount(transaction: tx), 3)
         }
 
-        let finalGroupMembers = databaseStorage.read { tx in
+        let finalGroupMembers = SSKEnvironment.shared.databaseStorageRef.read { tx in
             GroupMemberStoreImpl().sortedFullGroupMembers(in: groupThread.uniqueId, tx: tx.asV2Read)
         }
 
@@ -525,11 +525,11 @@ class SignalRecipientTest: SSKBaseTest {
             mergeHighTrust(aci: aci2, phoneNumber: phoneNumber1, transaction: tx)
         }
 
-        databaseStorage.read { tx in
+        SSKEnvironment.shared.databaseStorageRef.read { tx in
             XCTAssertEqual(TSThread.anyCount(transaction: tx), 3)
         }
 
-        let finalGroupMembers = databaseStorage.read { tx in
+        let finalGroupMembers = SSKEnvironment.shared.databaseStorageRef.read { tx in
             GroupMemberStoreImpl().sortedFullGroupMembers(in: groupThread.uniqueId, tx: tx.asV2Read)
         }
 
@@ -565,11 +565,11 @@ class SignalRecipientTest: SSKBaseTest {
             mergeHighTrust(aci: aci1, phoneNumber: phoneNumber1, transaction: tx)
         }
 
-        databaseStorage.read { tx in
+        SSKEnvironment.shared.databaseStorageRef.read { tx in
             XCTAssertEqual(TSThread.anyCount(transaction: tx), 2)
         }
 
-        let finalGroupMembers = databaseStorage.read { tx in
+        let finalGroupMembers = SSKEnvironment.shared.databaseStorageRef.read { tx in
             GroupMemberStoreImpl().sortedFullGroupMembers(in: groupThread.uniqueId, tx: tx.asV2Read)
         }
 
@@ -601,11 +601,11 @@ class SignalRecipientTest: SSKBaseTest {
             mergeHighTrust(aci: aci2, phoneNumber: phoneNumber1, transaction: tx)
         }
 
-        databaseStorage.read { tx in
+        SSKEnvironment.shared.databaseStorageRef.read { tx in
             XCTAssertEqual(TSThread.anyCount(transaction: tx), 2)
         }
 
-        let finalGroupMembers = databaseStorage.read { tx in
+        let finalGroupMembers = SSKEnvironment.shared.databaseStorageRef.read { tx in
             GroupMemberStoreImpl().sortedFullGroupMembers(in: groupThread.uniqueId, tx: tx.asV2Read)
         }
 

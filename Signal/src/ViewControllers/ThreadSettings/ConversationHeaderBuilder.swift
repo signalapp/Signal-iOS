@@ -63,7 +63,7 @@ struct ConversationHeaderBuilder: Dependencies {
         // Make sure the view is loaded before we open a transaction,
         // because it can end up creating a transaction within.
         _ = delegate.view
-        return databaseStorage.read { transaction in
+        return SSKEnvironment.shared.databaseStorageRef.read { transaction in
             self.buildHeaderForGroup(
                 groupThread: groupThread,
                 sizeClass: sizeClass,
@@ -130,7 +130,7 @@ struct ConversationHeaderBuilder: Dependencies {
         // Make sure the view is loaded before we open a transaction,
         // because it can end up creating a transaction within.
         _ = delegate.view
-        return databaseStorage.read { transaction in
+        return SSKEnvironment.shared.databaseStorageRef.read { transaction in
             self.buildHeaderForContact(
                 contactThread: contactThread,
                 sizeClass: sizeClass,
@@ -156,7 +156,7 @@ struct ConversationHeaderBuilder: Dependencies {
         )
 
         if !contactThread.contactAddress.isLocalAddress,
-           let bioText = profileManagerImpl.profileBioForDisplay(
+           let bioText = SSKEnvironment.shared.profileManagerImplRef.profileBioForDisplay(
             for: contactThread.contactAddress,
             transaction: transaction
            ) {
@@ -559,9 +559,9 @@ extension ConversationHeaderDelegate {
     func threadName(renderLocalUserAsNoteToSelf: Bool, transaction: SDSAnyReadTransaction) -> String {
         var threadName: String
         if thread.isNoteToSelf, !renderLocalUserAsNoteToSelf {
-            threadName = profileManager.localFullName ?? ""
+            threadName = SSKEnvironment.shared.profileManagerRef.localFullName ?? ""
         } else {
-            threadName = contactsManager.displayName(for: thread, transaction: transaction)
+            threadName = SSKEnvironment.shared.contactManagerRef.displayName(for: thread, transaction: transaction)
         }
 
         if let contactThread = thread as? TSContactThread {
@@ -579,7 +579,7 @@ extension ConversationHeaderDelegate {
 
         let isSystemContact =
         if let contactThread = self.thread as? TSContactThread {
-            contactsManager.fetchSignalAccount(
+            SSKEnvironment.shared.contactManagerRef.fetchSignalAccount(
                 for: contactThread.contactAddress,
                 transaction: tx
             ) != nil

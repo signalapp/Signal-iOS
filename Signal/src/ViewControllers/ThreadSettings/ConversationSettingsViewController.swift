@@ -70,7 +70,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         self.callRecords = callRecords
         groupViewHelper = GroupViewHelper(threadViewModel: threadViewModel)
 
-        disappearingMessagesConfiguration = Self.databaseStorage.read { tx in
+        disappearingMessagesConfiguration = SSKEnvironment.shared.databaseStorageRef.read { tx in
             let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
             return dmConfigurationStore.fetchOrBuildDefault(for: .thread(threadViewModel.threadRecord), tx: tx.asV2Read)
         }
@@ -78,7 +78,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         super.init()
 
         AppEnvironment.shared.callService.callServiceState.addObserver(self, syncStateImmediately: false)
-        databaseStorage.appendDatabaseChangeDelegate(self)
+        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
         contactsViewHelper.addObserver(self)
         groupViewHelper.delegate = self
     }
@@ -262,7 +262,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         for memberAddress in allMembers {
             verificationStateMap[memberAddress] = identityManager.verificationState(for: memberAddress, tx: tx.asV2Read)
         }
-        allMembersSorted = self.contactsManagerImpl.sortSignalServiceAddresses(allMembers, transaction: tx)
+        allMembersSorted = SSKEnvironment.shared.contactManagerImplRef.sortSignalServiceAddresses(allMembers, transaction: tx)
 
         var membersToRender = [SignalServiceAddress]()
         if groupMembership.isFullMember(localAddress) {
@@ -281,7 +281,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     }
 
     func reloadThreadAndUpdateContent() {
-        let didUpdate = self.databaseStorage.read { tx -> Bool in
+        let didUpdate = SSKEnvironment.shared.databaseStorageRef.read { tx -> Bool in
             guard let newThread = TSThread.anyFetch(uniqueId: self.thread.uniqueId, transaction: tx) else {
                 return false
             }
@@ -292,7 +292,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
                     return false
                 }
                 let address = contactThread.contactAddress
-                return contactsManager.fetchSignalAccount(for: address, transaction: tx) != nil
+                return SSKEnvironment.shared.contactManagerRef.fetchSignalAccount(for: address, transaction: tx) != nil
             }()
             self.groupViewHelper = GroupViewHelper(threadViewModel: newThreadViewModel)
             self.groupViewHelper.delegate = self
@@ -525,7 +525,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
 
     func presentAvatarViewController() {
         guard let avatarView = avatarView, avatarView.primaryImage != nil else { return }
-        guard let vc = databaseStorage.read(block: { readTx in
+        guard let vc = SSKEnvironment.shared.databaseStorageRef.read(block: { readTx in
             AvatarViewController(thread: self.thread, renderLocalUserAsNoteToSelf: true, readTx: readTx)
         }) else {
             return
@@ -537,8 +537,8 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     func presentPrimaryBadgeSheet() {
         guard let contactAddress = (thread as? TSContactThread)?.contactAddress else { return }
         guard let primaryBadge = availableBadges.first?.badge else { return }
-        let contactShortName = databaseStorage.read {
-            return contactsManager.displayName(for: contactAddress, tx: $0).resolvedValue(useShortNameIfAvailable: true)
+        let contactShortName = SSKEnvironment.shared.databaseStorageRef.read {
+            return SSKEnvironment.shared.contactManagerRef.displayName(for: contactAddress, tx: $0).resolvedValue(useShortNameIfAvailable: true)
         }
 
         let badgeSheet = BadgeDetailsSheet(focusedBadge: primaryBadge, owner: .remote(shortName: contactShortName))
@@ -846,7 +846,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     }
 
     private class func setThreadMutedUntilTimestamp(_ value: UInt64, threadViewModel: ThreadViewModel) {
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             threadViewModel.associatedData.updateWith(mutedUntilTimestamp: value, updateStorageService: true, transaction: transaction)
         }
     }
@@ -890,7 +890,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     )
 
     func updateRecentAttachments() {
-        let recentAttachments = databaseStorage.read { transaction in
+        let recentAttachments = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             mediaGalleryFinder.recentMediaAttachments(limit: maximumRecentMedia, tx: transaction.asV2Read)
         }
         recentMedia = recentAttachments.reduce(into: OrderedDictionary(), { result, attachment in
@@ -923,7 +923,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     }
     func updateMutualGroupThreads() {
         guard let contactThread = thread as? TSContactThread else { return }
-        databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             self.hasGroupThreads = ThreadFinder().existsGroupThread(transaction: transaction)
             self.mutualGroupThreads = TSGroupThread.groupThreads(
                 with: contactThread.contactAddress,

@@ -102,7 +102,7 @@ final class SignedPreKeyDeletionTests: SSKBaseTest {
 
 private extension SSKSignedPreKeyStore {
     func loadSignedPreKey(id: Int32) -> SignedPreKeyRecord? {
-        return databaseStorage.read { tx in
+        return SSKEnvironment.shared.databaseStorageRef.read { tx in
             return loadSignedPreKey(id, transaction: tx)
         }
     }

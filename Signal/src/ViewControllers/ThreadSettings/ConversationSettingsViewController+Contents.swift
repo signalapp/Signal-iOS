@@ -301,7 +301,7 @@ extension ConversationSettingsViewController {
         guard !thread.isNoteToSelf, isContactThread else { return }
         guard let contactAddress = (thread as? TSContactThread)?.contactAddress else { return }
 
-        let (visibleBadges, shortName) = databaseStorage.read { tx -> ([OWSUserProfileBadgeInfo], String) in
+        let (visibleBadges, shortName) = SSKEnvironment.shared.databaseStorageRef.read { tx -> ([OWSUserProfileBadgeInfo], String) in
             let visibleBadges: [OWSUserProfileBadgeInfo] = {
                 let tsAccountManager = DependenciesBridge.shared.tsAccountManager
                 guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
@@ -313,7 +313,7 @@ extension ConversationSettingsViewController {
                 }
                 return userProfile.visibleBadges
             }()
-            let shortName = contactsManager.displayName(for: contactAddress, tx: tx).resolvedValue(useShortNameIfAvailable: true)
+            let shortName = SSKEnvironment.shared.contactManagerRef.displayName(for: contactAddress, tx: tx).resolvedValue(useShortNameIfAvailable: true)
             return (visibleBadges, shortName)
         }
         guard !visibleBadges.isEmpty else { return }
@@ -585,7 +585,7 @@ extension ConversationSettingsViewController {
             }
         }))
 
-        let hasReportedSpam = NSObject.databaseStorage.read { tx in
+        let hasReportedSpam = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return InteractionFinder(threadUniqueId: thread.uniqueId).hasUserReportedSpam(transaction: tx)
         }
 
@@ -715,12 +715,12 @@ extension ConversationSettingsViewController {
                     return UITableViewCell()
                 }
 
-                Self.databaseStorage.read { transaction in
+                SSKEnvironment.shared.databaseStorageRef.read { transaction in
                     let configuration = ContactCellConfiguration(address: memberAddress, localUserDisplayMode: .asLocalUser)
                     let isGroupAdmin = groupMembership.isFullMemberAndAdministrator(memberAddress)
                     let isVerified = verificationState == .verified
                     let isNoLongerVerified = verificationState == .noLongerVerified
-                    let isBlocked = self.blockingManager.isAddressBlocked(memberAddress, transaction: transaction)
+                    let isBlocked = SSKEnvironment.shared.blockingManagerRef.isAddressBlocked(memberAddress, transaction: transaction)
                     if isGroupAdmin {
                         configuration.accessoryMessage = OWSLocalizedString("GROUP_MEMBER_ADMIN_INDICATOR",
                                                                            comment: "Label indicating that a group member is an admin.")
@@ -740,14 +740,14 @@ extension ConversationSettingsViewController {
                     if isVerified {
                         configuration.useVerifiedSubtitle()
                     } else if !memberAddress.isLocalAddress,
-                              let bioForDisplay = (Self.profileManagerImpl.profileBioForDisplay(for: memberAddress,
+                              let bioForDisplay = (SSKEnvironment.shared.profileManagerImplRef.profileBioForDisplay(for: memberAddress,
                                                                                                 transaction: transaction)) {
                         configuration.attributedSubtitle = NSAttributedString(string: bioForDisplay)
                     } else {
                         owsAssertDebug(configuration.attributedSubtitle == nil)
                     }
 
-                    let isSystemContact = self.contactsManager.fetchSignalAccount(for: memberAddress, transaction: transaction) != nil
+                    let isSystemContact = SSKEnvironment.shared.contactManagerRef.fetchSignalAccount(for: memberAddress, transaction: transaction) != nil
                     configuration.shouldShowContactIcon = isSystemContact
 
                     cell.configure(configuration: configuration, transaction: transaction)

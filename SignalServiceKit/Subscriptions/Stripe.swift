@@ -66,7 +66,7 @@ public struct Stripe: Dependencies {
                 paymentMethod: paymentMethod
             )
 
-            return networkManager.makePromise(request: request)
+            return SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
         }.map(on: DispatchQueue.sharedUserInitiated) { response in
             guard let json = response.responseBodyJson else {
                 throw OWSAssertionError("Missing or invalid JSON")

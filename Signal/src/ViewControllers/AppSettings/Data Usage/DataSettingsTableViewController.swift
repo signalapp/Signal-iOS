@@ -48,7 +48,7 @@ class DataSettingsTableViewController: OWSTableViewController2 {
         var hasNonDefaultValue = false
         for mediaDownloadType in mediaDownloadTypes {
             let name = MediaDownloadSettingsViewController.name(forMediaDownloadType: mediaDownloadType)
-            let bandwidthPreference = databaseStorage.read { transaction in
+            let bandwidthPreference = SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 DependenciesBridge.shared.mediaBandwidthPreferenceStore.preference(
                     for: mediaDownloadType,
                     tx: transaction.asV2Read
@@ -79,7 +79,7 @@ class DataSettingsTableViewController: OWSTableViewController2 {
                 textColor: Theme.accentBlueColor,
                 accessibilityIdentifier: resetAccessibilityIdentifier
             ) {
-                Self.databaseStorage.asyncWrite { transaction in
+                SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
                     DependenciesBridge.shared.mediaBandwidthPreferenceStore.resetPreferences(tx: transaction.asV2Write)
                 }
             })
@@ -106,7 +106,7 @@ class DataSettingsTableViewController: OWSTableViewController2 {
                 "SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE",
                 comment: "Item title for the sent media quality setting"
             ),
-            accessoryText: databaseStorage.read(block: ImageQualityLevel.resolvedQuality(tx:)).localizedString,
+            accessoryText: SSKEnvironment.shared.databaseStorageRef.read(block: ImageQualityLevel.resolvedQuality(tx:)).localizedString,
             actionBlock: { [weak self] in
                 self?.showSentMediaQualityPreferences()
             }
@@ -123,7 +123,7 @@ class DataSettingsTableViewController: OWSTableViewController2 {
             comment: "Section footer for the call section in data settings"
         )
 
-        let currentCallDataPreference = databaseStorage.read { transaction in
+        let currentCallDataPreference = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             CallService.highDataNetworkInterfaces(readTx: transaction).inverted
         }
         let currentCallDataPreferenceString = NetworkInterfacePreferenceViewController.name(
@@ -146,7 +146,7 @@ class DataSettingsTableViewController: OWSTableViewController2 {
     // MARK: - Events
 
     private func showCallDataPreferences() {
-        let currentLowDataPreference = databaseStorage.read { readTx in
+        let currentLowDataPreference = SSKEnvironment.shared.databaseStorageRef.read { readTx in
             CallService.highDataNetworkInterfaces(readTx: readTx).inverted
         }
 
@@ -154,9 +154,11 @@ class DataSettingsTableViewController: OWSTableViewController2 {
             selectedOption: currentLowDataPreference,
             availableOptions: [.none, .cellular, .wifiAndCellular],
             updateHandler: { [weak self] newLowDataPref in
-                self?.databaseStorage.write { writeTx in
-                    let newHighDataPref = newLowDataPref.inverted
-                    CallService.setHighDataInterfaces(newHighDataPref, writeTx: writeTx)
+                if self != nil {
+                    SSKEnvironment.shared.databaseStorageRef.write { writeTx in
+                        let newHighDataPref = newLowDataPref.inverted
+                        CallService.setHighDataInterfaces(newHighDataPref, writeTx: writeTx)
+                    }
                 }
             })
 
@@ -169,7 +171,7 @@ class DataSettingsTableViewController: OWSTableViewController2 {
     private func showSentMediaQualityPreferences() {
         let vc = SentMediaQualitySettingsViewController { [weak self] isHighQuality in
             guard let self else { return }
-            self.databaseStorage.write { tx in
+            SSKEnvironment.shared.databaseStorageRef.write { tx in
                 ImageQualityLevel.setUserSelectedHighQuality(isHighQuality, tx: tx)
             }
             self.updateTableContents()

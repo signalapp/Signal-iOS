@@ -54,7 +54,7 @@ fileprivate extension CVComponentState {
         return firstly(on: DispatchQueue.global()) { () -> Promise<Data> in
             let contextInfo = try GroupV2ContextInfo.deriveFrom(masterKeyData: groupInviteLinkInfo.masterKey)
             return Promise.wrapAsync {
-                try await self.groupsV2Impl.fetchGroupInviteLinkAvatar(
+                try await SSKEnvironment.shared.groupsV2Ref.fetchGroupInviteLinkAvatar(
                     avatarUrlPath: avatarUrlPath,
                     groupSecretParams: contextInfo.groupSecretParams
                 )
@@ -106,8 +106,8 @@ extension CVComponentState {
     ) -> GroupInviteLinkViewModel {
 
         let touchMessage = {
-            Self.databaseStorage.write { transaction in
-                Self.databaseStorage.touch(interaction: message, shouldReindex: false, transaction: transaction)
+            SSKEnvironment.shared.databaseStorageRef.write { transaction in
+                SSKEnvironment.shared.databaseStorageRef.touch(interaction: message, shouldReindex: false, transaction: transaction)
             }
         }
 
@@ -118,7 +118,7 @@ extension CVComponentState {
             firstly(on: DispatchQueue.global()) { () -> Promise<GroupInviteLinkPreview> in
                 let groupContextInfo = try GroupV2ContextInfo.deriveFrom(masterKeyData: groupInviteLinkInfo.masterKey)
                 return Promise.wrapAsync {
-                    try await Self.groupsV2Impl.fetchGroupInviteLinkPreview(
+                    try await SSKEnvironment.shared.groupsV2Ref.fetchGroupInviteLinkPreview(
                         inviteLinkPassword: groupInviteLinkInfo.inviteLinkPassword,
                         groupSecretParams: groupContextInfo.groupSecretParams,
                         allowCached: false

@@ -41,7 +41,7 @@ extension ConversationViewController {
 
     func clearThreadUnreadFlagIfNecessary() {
         if threadViewModel.isMarkedUnread {
-            self.databaseStorage.write { transaction in
+            SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 self.threadViewModel.associatedData.updateWith(
                     isMarkedUnread: false,
                     updateStorageService: true,
@@ -178,8 +178,8 @@ extension ConversationViewController {
     }
 
     public func showDeliveryIssueWarningAlert(from senderAddress: SignalServiceAddress, isKnownThread: Bool) {
-        let senderName = databaseStorage.read { transaction in
-            Self.contactsManager.displayName(for: senderAddress, tx: transaction).resolvedValue()
+        let senderName = SSKEnvironment.shared.databaseStorageRef.read { transaction in
+            SSKEnvironment.shared.contactManagerRef.displayName(for: senderAddress, tx: transaction).resolvedValue()
         }
         let alertTitle = OWSLocalizedString("ALERT_DELIVERY_ISSUE_TITLE", comment: "Title for delivery issue sheet")
         let alertMessageFormat: String

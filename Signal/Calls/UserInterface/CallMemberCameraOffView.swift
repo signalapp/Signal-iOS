@@ -122,7 +122,7 @@ class CallMemberCameraOffView: UIView, CallMemberComposableView {
         // Update circular avatar
         switch type {
         case .local:
-            databaseStorage.read { tx in
+            SSKEnvironment.shared.databaseStorageRef.read { tx in
                 guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aciAddress else {
                     owsFailDebug("missing local address")
                     return
@@ -134,14 +134,14 @@ class CallMemberCameraOffView: UIView, CallMemberComposableView {
             }
         case .remoteInGroup:
             guard let remoteGroupMemberDeviceState else { return }
-            databaseStorage.read { tx in
+            SSKEnvironment.shared.databaseStorageRef.read { tx in
                 updateCircularAvatarIfNecessary(
                     address: remoteGroupMemberDeviceState.address,
                     tx: tx
                 )
             }
         case .remoteInIndividual(let individualCall):
-            databaseStorage.read { tx in
+            SSKEnvironment.shared.databaseStorageRef.read { tx in
                 updateCircularAvatarIfNecessary(
                     address: individualCall.remoteAddress,
                     tx: tx
@@ -285,14 +285,14 @@ class BlurredAvatarBackgroundView: UIView {
         var backgroundColor: UIColor?
         switch type {
         case .local:
-            databaseStorage.read { tx in
+            SSKEnvironment.shared.databaseStorageRef.read { tx in
                 guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aciAddress else {
                     owsFailDebug("missing local address")
                     return
                 }
                 backgroundColor = AvatarTheme.forAddress(localAddress).backgroundColor
             }
-            backgroundAvatarImage = profileManager.localProfileAvatarImage
+            backgroundAvatarImage = SSKEnvironment.shared.profileManagerRef.localProfileAvatarImage
         case .remoteInGroup:
             guard let remoteGroupMemberDeviceState else { return }
             let (image, color) = avatarImageAndBackgroundColorWithSneakyTransaction(for: remoteGroupMemberDeviceState.address)
@@ -310,8 +310,8 @@ class BlurredAvatarBackgroundView: UIView {
     private func avatarImageAndBackgroundColorWithSneakyTransaction(
         for address: SignalServiceAddress
     ) -> (UIImage?, UIColor?) {
-        let profileImage = databaseStorage.read { tx in
-            return self.contactsManagerImpl.avatarImage(
+        let profileImage = SSKEnvironment.shared.databaseStorageRef.read { tx in
+            return SSKEnvironment.shared.contactManagerImplRef.avatarImage(
                 forAddress: address,
                 shouldValidate: true,
                 transaction: tx

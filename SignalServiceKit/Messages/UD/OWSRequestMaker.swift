@@ -118,7 +118,7 @@ public final class RequestMaker: Dependencies {
             }
         } else {
             return firstly {
-                networkManager.makePromise(request: request)
+                SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
             }.map(on: DispatchQueue.global()) { (response: HTTPResponse) -> RequestMakerResult in
                 self.requestSucceeded(udAccess: udAccess)
                 return RequestMakerResult(response: response, wasSentByUD: isUDRequest, wasSentByWebsocket: false)
@@ -144,8 +144,8 @@ public final class RequestMaker: Dependencies {
                     return .disabled
                 }
             }()
-            databaseStorage.write { tx in
-                self.udManager.setUnidentifiedAccessMode(newUdAccessMode, for: self.serviceId, tx: tx)
+            SSKEnvironment.shared.databaseStorageRef.write { tx in
+                SSKEnvironment.shared.udManagerRef.setUnidentifiedAccessMode(newUdAccessMode, for: self.serviceId, tx: tx)
             }
             fetchProfileIfNeeded()
 
@@ -179,8 +179,8 @@ public final class RequestMaker: Dependencies {
                 return .enabled
             }
         }()
-        databaseStorage.write { tx in
-            self.udManager.setUnidentifiedAccessMode(newUdAccessMode, for: self.serviceId, tx: tx)
+        SSKEnvironment.shared.databaseStorageRef.write { tx in
+            SSKEnvironment.shared.udManagerRef.setUnidentifiedAccessMode(newUdAccessMode, for: self.serviceId, tx: tx)
         }
         fetchProfileIfNeeded()
     }

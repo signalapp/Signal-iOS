@@ -210,10 +210,10 @@ public class OWSProfileManager: NSObject, ProfileManagerProtocol {
         // "update with..." pattern.
         //
         // We first try using a read block to avoid opening a write block.
-        if let localUserProfile = databaseStorage.read(block: {getLocalUserProfile($0)}) {
+        if let localUserProfile = SSKEnvironment.shared.databaseStorageRef.read(block: {getLocalUserProfile($0)}) {
             return localUserProfile.shallowCopy()
         }
-        let localUserProfile = databaseStorage.write { transaction in
+        let localUserProfile = SSKEnvironment.shared.databaseStorageRef.write { transaction in
             let localUserProfile = OWSUserProfile.getOrBuildUserProfileForLocalUser(userProfileWriter: .localUser, tx: transaction)
             owsAssertDebug(localUserProfile.profileKey != nil)
             return localUserProfile
@@ -254,7 +254,7 @@ public class OWSProfileManager: NSObject, ProfileManagerProtocol {
     public func clearProfileWhitelist() {
         Logger.warn("Clearing the profile whitelist.")
 
-        databaseStorage.asyncWrite { transaction in
+        SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
             self.whitelistedPhoneNumbersStore.removeAll(transaction: transaction)
             self.whitelistedServiceIdsStore.removeAll(transaction: transaction)
             self.whitelistedGroupsStore.removeAll(transaction: transaction)
@@ -266,7 +266,7 @@ public class OWSProfileManager: NSObject, ProfileManagerProtocol {
     }
 
     public func logProfileWhitelist() {
-        databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             Logger.error("\(self.whitelistedPhoneNumbersStore.collection): \(self.whitelistedPhoneNumbersStore.numberOfKeys(transaction: transaction))")
             for key in self.whitelistedPhoneNumbersStore.allKeys(transaction: transaction) {
                 Logger.error("\t profile whitelist user phone number: \(key)")
@@ -286,7 +286,7 @@ public class OWSProfileManager: NSObject, ProfileManagerProtocol {
 
     public func debug_regenerateLocalProfileWithSneakyTransaction() {
         let userProfile = localUserProfile
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             userProfile.clearProfile(profileKey: Aes256Key(), userProfileWriter: .debugging, transaction: transaction, completion: nil)
         }
         Task {
@@ -352,12 +352,12 @@ public class OWSProfileManager: NSObject, ProfileManagerProtocol {
     // TODO: We could add a userProfileWriter parameter.
     private func removeUsers(fromProfileWhitelist addresses: [SignalServiceAddress]) {
         // Try to avoid opening a write transaction.
-        databaseStorage.asyncRead { readTransaction in
+        SSKEnvironment.shared.databaseStorageRef.asyncRead { readTransaction in
             let addressesToRemove = self.addressesInWhitelist(addresses, transaction: readTransaction)
             if addressesToRemove.isEmpty {
                 return
             }
-            self.databaseStorage.asyncWrite { writeTransaction in
+            SSKEnvironment.shared.databaseStorageRef.asyncWrite { writeTransaction in
                 self.removeConfirmedWhitelistedAddresses(addressesToRemove, userProfileWriter: .localUser, transaction: writeTransaction)
             }
         }
@@ -367,7 +367,7 @@ public class OWSProfileManager: NSObject, ProfileManagerProtocol {
         var notBlockedOrInWhitelist = Set<SignalServiceAddress>()
         for address in addresses {
             // If the address is blocked, we don't want to include it
-            if blockingManager.isAddressBlocked(address, transaction: transaction) || RecipientHidingManagerObjcBridge.isHiddenAddress(address, tx: transaction) {
+            if SSKEnvironment.shared.blockingManagerRef.isAddressBlocked(address, transaction: transaction) || RecipientHidingManagerObjcBridge.isHiddenAddress(address, tx: transaction) {
                 continue
             }
 
@@ -420,14 +420,14 @@ public class OWSProfileManager: NSObject, ProfileManagerProtocol {
             }
 
             if let thread = TSContactThread.getWithContactAddress(address, transaction: transaction) {
-                databaseStorage.touch(thread: thread, shouldReindex: false, transaction: transaction)
+                SSKEnvironment.shared.databaseStorageRef.touch(thread: thread, shouldReindex: false, transaction: transaction)
             }
         }
 
         transaction.addSyncCompletion {
             // Mark the removed whitelisted addresses for update
             if OWSUserProfile.shouldUpdateStorageServiceForUserProfileWriter(userProfileWriter) {
-                self.storageServiceManagerObjc.recordPendingUpdates(updatedAddresses: Array(addressesToRemove))
+                SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(updatedAddresses: Array(addressesToRemove))
             }
 
             for address in addressesToRemove {
@@ -455,14 +455,14 @@ public class OWSProfileManager: NSObject, ProfileManagerProtocol {
             }
 
             if let thread = TSContactThread.getWithContactAddress(address, transaction: transaction) {
-                databaseStorage.touch(thread: thread, shouldReindex: false, transaction: transaction)
+                SSKEnvironment.shared.databaseStorageRef.touch(thread: thread, shouldReindex: false, transaction: transaction)
             }
         }
 
         transaction.addSyncCompletion {
             // Mark the new whitelisted addresses for update
             if OWSUserProfile.shouldUpdateStorageServiceForUserProfileWriter(userProfileWriter) {
-                self.storageServiceManagerObjc.recordPendingUpdates(updatedAddresses: Array(addressesToAdd))
+                SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(updatedAddresses: Array(addressesToAdd))
             }
 
             for address in addressesToAdd {
@@ -477,7 +477,7 @@ public class OWSProfileManager: NSObject, ProfileManagerProtocol {
     public func isUser(inProfileWhitelist address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool {
         owsAssertDebug(address.isValid)
 
-        if blockingManager.isAddressBlocked(address, transaction: transaction) || RecipientHidingManagerObjcBridge.isHiddenAddress(address, tx: transaction) {
+        if SSKEnvironment.shared.blockingManagerRef.isAddressBlocked(address, transaction: transaction) || RecipientHidingManagerObjcBridge.isHiddenAddress(address, tx: transaction) {
             return false
         }
 
@@ -516,7 +516,7 @@ public class OWSProfileManager: NSObject, ProfileManagerProtocol {
 
     private func groupIdWhitelistWasUpdated(_ groupId: Data, userProfileWriter: UserProfileWriter, transaction: SDSAnyWriteTransaction) {
         if let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
-            databaseStorage.touch(thread: groupThread, shouldReindex: false, transaction: transaction)
+            SSKEnvironment.shared.databaseStorageRef.touch(thread: groupThread, shouldReindex: false, transaction: transaction)
         }
 
         transaction.addSyncCompletion {
@@ -534,12 +534,12 @@ public class OWSProfileManager: NSObject, ProfileManagerProtocol {
 
     private func recordPendingUpdatesForStorageService(groupId: Data) {
         owsAssertDebug(!groupId.isEmpty)
-        databaseStorage.asyncRead { transaction in
+        SSKEnvironment.shared.databaseStorageRef.asyncRead { transaction in
             guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
                 owsFailDebug("Missing groupThread.")
                 return
             }
-            self.storageServiceManagerObjc.recordPendingUpdates(groupModel: groupThread.groupModel)
+            SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(groupModel: groupThread.groupModel)
         }
     }
 
@@ -553,7 +553,7 @@ public class OWSProfileManager: NSObject, ProfileManagerProtocol {
 
     public func isGroupId(inProfileWhitelist groupId: Data, transaction: SDSAnyReadTransaction) -> Bool {
         owsAssertDebug(!groupId.isEmpty)
-        if blockingManager.isGroupIdBlocked(groupId, transaction: transaction) {
+        if SSKEnvironment.shared.blockingManagerRef.isGroupIdBlocked(groupId, transaction: transaction) {
             return false
         }
         let groupIdKey = groupKey(groupId: groupId)
@@ -862,7 +862,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
     }
 
     public func reuploadLocalProfile(authedAccount: AuthedAccount) {
-        let uploadPromise = databaseStorage.write { tx in
+        let uploadPromise = SSKEnvironment.shared.databaseStorageRef.write { tx in
             return reuploadLocalProfile(
                 unsavedRotatedProfileKey: nil,
                 mustReuploadAvatar: false,
@@ -943,7 +943,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
             guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice else {
                 return
             }
-            self.databaseStorage.write { tx in
+            SSKEnvironment.shared.databaseStorageRef.write { tx in
                 self.rotateProfileKeyIfNecessary(tx: tx)
             }
         }
@@ -974,10 +974,10 @@ extension OWSProfileManager: ProfileManager, Dependencies {
             if tsRegistrationState.isPrimaryDevice ?? true {
                 // But if it's been more than a week since we checked that our groups are up to date, schedule that.
                 if -(lastGroupProfileKeyCheckTimestamp?.timeIntervalSinceNow ?? 0) > kWeekInterval {
-                    self.groupsV2.scheduleAllGroupsV2ForProfileKeyUpdate(transaction: tx)
+                    SSKEnvironment.shared.groupsV2Ref.scheduleAllGroupsV2ForProfileKeyUpdate(transaction: tx)
                     self.setLastGroupProfileKeyCheckTimestamp(tx: tx)
                     tx.addAsyncCompletionOffMain {
-                        self.groupsV2.processProfileKeyUpdates()
+                        SSKEnvironment.shared.groupsV2Ref.processProfileKeyUpdates()
                     }
                 }
             }
@@ -1088,7 +1088,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
             // change and continue to use the old profile key.
 
             let newProfileKey = Aes256Key.generateRandom()
-            let uploadPromise = await self.databaseStorage.awaitableWrite { tx in
+            let uploadPromise = await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
                 self.reuploadLocalProfile(
                     unsavedRotatedProfileKey: newProfileKey,
                     mustReuploadAvatar: true,
@@ -1104,7 +1104,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
 
             Logger.info("Persisting rotated profile key and kicking off subsequent operations.")
 
-            let needsAnotherRotation = await self.databaseStorage.awaitableWrite { tx in
+            let needsAnotherRotation = await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
                 self.setLocalProfileKey(
                     newProfileKey,
                     userProfileWriter: .localUser,
@@ -1113,12 +1113,12 @@ extension OWSProfileManager: ProfileManager, Dependencies {
 
                 // Whenever a user's profile key changes, we need to fetch a new profile
                 // key credential for them.
-                self.versionedProfiles.clearProfileKeyCredential(for: AciObjC(localAci), transaction: tx)
+                SSKEnvironment.shared.versionedProfilesRef.clearProfileKeyCredential(for: AciObjC(localAci), transaction: tx)
 
                 // We schedule the updates here but process them below using
                 // processProfileKeyUpdates. It's more efficient to process them after the
                 // intermediary steps are done.
-                self.groupsV2.scheduleAllGroupsV2ForProfileKeyUpdate(transaction: tx)
+                SSKEnvironment.shared.groupsV2Ref.scheduleAllGroupsV2ForProfileKeyUpdate(transaction: tx)
 
                 var needsAnotherRotation = false
 
@@ -1148,7 +1148,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
             try await DependenciesBridge.shared.accountAttributesUpdater.updateAccountAttributes(authedAccount: authedAccount)
 
             Logger.info("Completed profile key rotation.")
-            self.groupsV2.processProfileKeyUpdates()
+            SSKEnvironment.shared.groupsV2Ref.processProfileKeyUpdates()
 
             await MainActor.run {
                 self.isRotatingProfileKey = false
@@ -1227,7 +1227,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
 
         return allWhitelistedNumbers.filter { candidate in
             let address = SignalServiceAddress.legacyAddress(serviceId: nil, phoneNumber: candidate)
-            return blockingManager.isAddressBlocked(address, transaction: tx)
+            return SSKEnvironment.shared.blockingManagerRef.isAddressBlocked(address, transaction: tx)
         }
     }
 
@@ -1237,7 +1237,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
         }
 
         return allWhitelistedServiceIds.filter { candidate in
-            return blockingManager.isAddressBlocked(SignalServiceAddress(candidate), transaction: tx)
+            return SSKEnvironment.shared.blockingManagerRef.isAddressBlocked(SignalServiceAddress(candidate), transaction: tx)
         }
     }
 
@@ -1246,7 +1246,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
 
         return allWhitelistedGroupKeys.lazy
             .compactMap { self.groupIdForGroupKey($0) }
-            .filter { blockingManager.isGroupIdBlocked($0, transaction: tx) }
+            .filter { SSKEnvironment.shared.blockingManagerRef.isGroupIdBlocked($0, transaction: tx) }
     }
 
     private func groupIdForGroupKey(_ groupKey: String) -> Data? {
@@ -1321,7 +1321,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
             return
         }
 
-        let hasUpdated = databaseStorage.read { transaction in
+        let hasUpdated = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             storageServiceStore.getBool(Self.hasUpdatedStorageServiceKey,
                                         defaultValue: false,
                                         transaction: transaction)
@@ -1331,14 +1331,14 @@ extension OWSProfileManager: ProfileManager, Dependencies {
             return
         }
 
-        if profileManager.localProfileAvatarData != nil {
+        if SSKEnvironment.shared.profileManagerRef.localProfileAvatarData != nil {
             Logger.info("Scheduling a backup.")
 
             // Schedule a backup.
-            storageServiceManager.recordPendingLocalAccountUpdates()
+            SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
         }
 
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             storageServiceStore.setBool(true,
                                         key: Self.hasUpdatedStorageServiceKey,
                                         transaction: transaction)
@@ -1385,13 +1385,13 @@ extension OWSProfileManager: ProfileManager, Dependencies {
         if let aci = serviceId as? Aci {
             // Whenever a user's profile key changes, we need to fetch a new
             // profile key credential for them.
-            versionedProfiles.clearProfileKeyCredential(for: AciObjC(aci), transaction: SDSDB.shimOnlyBridge(tx))
+            SSKEnvironment.shared.versionedProfilesRef.clearProfileKeyCredential(for: AciObjC(aci), transaction: SDSDB.shimOnlyBridge(tx))
         }
 
         // If this is the profile for the local user, we always want to defer to local state
         // so skip the update profile for address call.
         if case .otherUser(let serviceId) = address {
-            udManager.setUnidentifiedAccessMode(.unknown, for: serviceId, tx: SDSDB.shimOnlyBridge(tx))
+            SSKEnvironment.shared.udManagerRef.setUnidentifiedAccessMode(.unknown, for: serviceId, tx: SDSDB.shimOnlyBridge(tx))
             if shouldFetchProfile {
                 tx.addSyncCompletion {
                     let profileFetcher = SSKEnvironment.shared.profileFetcherRef
@@ -1472,7 +1472,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
     // MARK: -
 
     private class var avatarUrlSession: OWSURLSessionProtocol {
-        return self.signalService.urlSessionForCdn(cdnNumber: 0, maxResponseSize: nil)
+        return SSKEnvironment.shared.signalServiceRef.urlSessionForCdn(cdnNumber: 0, maxResponseSize: nil)
     }
 
     // MARK: -
@@ -1516,7 +1516,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
             return .notReady
         }
 
-        let profileChanges = databaseStorage.read { tx in
+        let profileChanges = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return currentPendingProfileChanges(tx: tx)
         }
         guard let profileChanges else {
@@ -1630,7 +1630,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
             DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice ?? false,
             self.localProfileAvatarData != nil
         else {
-            databaseStorage.write { tx in clearAvatarRepairNeeded(tx: tx) }
+            SSKEnvironment.shared.databaseStorageRef.write { tx in clearAvatarRepairNeeded(tx: tx) }
             return
         }
 
@@ -1639,7 +1639,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
                 Self.avatarRepairPromise = nil
             }
             do {
-                let uploadPromise = await self.databaseStorage.awaitableWrite { tx in
+                let uploadPromise = await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
                     return self.reuploadLocalProfile(
                         unsavedRotatedProfileKey: nil,
                         mustReuploadAvatar: true,
@@ -1649,10 +1649,10 @@ extension OWSProfileManager: ProfileManager, Dependencies {
                 }
                 try await uploadPromise.awaitable()
                 Logger.info("Avatar repair succeeded.")
-                await self.databaseStorage.awaitableWrite { tx in self.clearAvatarRepairNeeded(tx: tx) }
+                await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in self.clearAvatarRepairNeeded(tx: tx) }
             } catch {
                 Logger.warn("Avatar repair failed: \(error)")
-                await self.databaseStorage.awaitableWrite { tx in self.incrementAvatarRepairAttempts(tx: tx) }
+                await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in self.incrementAvatarRepairAttempts(tx: tx) }
             }
         }
     }
@@ -1667,7 +1667,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
     }
 
     private func avatarRepairNeeded() -> Bool {
-        return self.databaseStorage.read { transaction in
+        return SSKEnvironment.shared.databaseStorageRef.read { transaction in
             let count = avatairRepairAttemptCount(transaction)
             return count < Self.maxAvatarRepairAttempts
         }
@@ -1696,7 +1696,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
 
             // We capture the local user profile early to eliminate the risk of opening
             // a transaction within a transaction.
-            let userProfile = profileManagerImpl.localUserProfile
+            let userProfile = SSKEnvironment.shared.profileManagerImplRef.localUserProfile
             guard let profileKey = newProfileKey ?? userProfile.profileKey else {
                 throw OWSAssertionError("Can't upload profile without profileKey.")
             }
@@ -1723,7 +1723,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
             let newBioEmoji = profileChanges.profileBioEmoji.orExistingValue(userProfile.bioEmoji)
             let newVisibleBadgeIds = profileChanges.visibleBadgeIds.orExistingValue(userProfile.visibleBadges.map { $0.badgeId })
 
-            let versionedUpdate = try await Self.versionedProfilesSwift.updateProfile(
+            let versionedUpdate = try await SSKEnvironment.shared.versionedProfilesRef.updateProfile(
                 profileGivenName: newGivenName,
                 profileFamilyName: newFamilyName,
                 profileBio: newBio,
@@ -1733,7 +1733,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
                 profileKey: profileKey,
                 authedAccount: authedAccount
             )
-            await databaseStorage.awaitableWrite { tx in
+            await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
                 self.tryToDequeueProfileChanges(profileChanges, tx: tx)
                 // Apply the changes to our local profile.
                 let userProfile = OWSUserProfile.getOrBuildUserProfile(
@@ -1755,7 +1755,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
                 // Notify all our devices that the profile has changed.
                 let tsRegistrationState = DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx.asV2Read)
                 if tsRegistrationState.isRegistered {
-                    self.syncManager.sendFetchLatestProfileSyncMessage(tx: tx)
+                    SSKEnvironment.shared.syncManagerRef.sendFetchLatestProfileSyncMessage(tx: tx)
                 }
             }
             // If we're changing the profile key, then the normal "fetch our profile"
@@ -1768,7 +1768,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
             throw error
         } catch {
             // Other errors cause us to give up immediately.
-            await databaseStorage.awaitableWrite { tx in self.tryToDequeueProfileChanges(profileChanges, tx: tx) }
+            await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in self.tryToDequeueProfileChanges(profileChanges, tx: tx) }
             throw error
         }
     }
@@ -2202,7 +2202,7 @@ extension OWSProfileManager {
     }
 
     public func downloadAndDecryptLocalUserAvatarIfNeeded(authedAccount: AuthedAccount) async throws {
-        let oldProfile = databaseStorage.read { tx in OWSUserProfile.getUserProfile(for: .localUser, tx: tx) }
+        let oldProfile = SSKEnvironment.shared.databaseStorageRef.read { tx in OWSUserProfile.getUserProfile(for: .localUser, tx: tx) }
         guard
             let oldProfile,
             let profileKey = oldProfile.profileKey,
@@ -2219,7 +2219,7 @@ extension OWSProfileManager {
             defer {
                 if !didConsumeFilePath { try? FileManager.default.removeItem(at: temporaryFileUrl) }
             }
-            (shouldRetry, didConsumeFilePath) = try await databaseStorage.awaitableWrite { tx in
+            (shouldRetry, didConsumeFilePath) = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
                 let newProfile = OWSUserProfile.getUserProfile(for: .localUser, tx: tx)
                 guard let newProfile, newProfile.avatarFileName == nil else {
                     return (false, false)

@@ -36,7 +36,7 @@ class BadgeThanksSheetPresenter {
     static func loadWithSneakyTransaction(
         successMode: ReceiptCredentialResultStore.Mode
     ) -> BadgeThanksSheetPresenter? {
-        guard let redemptionSuccess = Deps.databaseStorage.read(block: { tx in
+        guard let redemptionSuccess = SSKEnvironment.shared.databaseStorageRef.read(block: { tx in
             Deps.receiptCredentialResultStore.getRedemptionSuccess(
                 successMode: successMode,
                 tx: tx.asV2Read
@@ -47,8 +47,8 @@ class BadgeThanksSheetPresenter {
         }
 
         return BadgeThanksSheetPresenter(
-            badgeStore: Deps.profileManager.badgeStore,
-            databaseStorage: Deps.databaseStorage,
+            badgeStore: SSKEnvironment.shared.profileManagerRef.badgeStore,
+            databaseStorage: SSKEnvironment.shared.databaseStorageRef,
             receiptCredentialResultStore: Deps.receiptCredentialResultStore,
             redemptionSuccess: redemptionSuccess,
             successMode: successMode
@@ -60,8 +60,8 @@ class BadgeThanksSheetPresenter {
         successMode: ReceiptCredentialResultStore.Mode
     ) -> BadgeThanksSheetPresenter {
         return BadgeThanksSheetPresenter(
-            badgeStore: Deps.profileManager.badgeStore,
-            databaseStorage: Deps.databaseStorage,
+            badgeStore: SSKEnvironment.shared.profileManagerRef.badgeStore,
+            databaseStorage: SSKEnvironment.shared.databaseStorageRef,
             receiptCredentialResultStore: Deps.receiptCredentialResultStore,
             redemptionSuccess: redemptionSuccess,
             successMode: successMode

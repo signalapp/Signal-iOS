@@ -59,7 +59,7 @@ class BadgeDetailsSheet: OWSTableSheetViewController {
     }
 
     private func localProfileHasBadges() -> Bool {
-        profileManager.localProfileBadgeInfo?.isEmpty.negated ?? false
+        SSKEnvironment.shared.profileManagerRef.localProfileBadgeInfo?.isEmpty.negated ?? false
     }
 
     private func shouldShowDonateButton() -> Bool {

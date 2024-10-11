@@ -82,7 +82,7 @@ final class GroupCallSheetDataSource<Call: GroupCall>: CallDrawerSheetDataSource
                     )
                     comparableName = .nameValue(resolvedName)
                 } else {
-                    let displayName = NSObject.contactsManager.displayName(for: member.address, tx: SDSDB.shimOnlyBridge(tx))
+                    let displayName = SSKEnvironment.shared.contactManagerRef.displayName(for: member.address, tx: SDSDB.shimOnlyBridge(tx))
                     resolvedName = displayName.resolvedValue(config: config.displayNameConfig)
                     comparableName = displayName.comparableValue(config: config)
                 }
@@ -130,7 +130,7 @@ final class GroupCallSheetDataSource<Call: GroupCall>: CallDrawerSheetDataSource
             members += self.ringRtcCall.peekInfo?.joinedMembers.map { aciUuid in
                 let aci = Aci(fromUUID: aciUuid)
                 let address = SignalServiceAddress(aci)
-                let displayName = NSObject.contactsManager.displayName(for: address, tx: SDSDB.shimOnlyBridge(tx))
+                let displayName = SSKEnvironment.shared.contactManagerRef.displayName(for: address, tx: SDSDB.shimOnlyBridge(tx))
                 let isUnknown = switch displayName {
                 case .nickname, .systemContactName, .profileName, .phoneNumber, .username:
                     false
@@ -245,7 +245,7 @@ class IndividualCallSheetDataSource: CallDrawerSheetDataSource {
         var members = [JoinedMember]()
 
         if let remoteAci = thread.contactAddress.aci {
-            let remoteDisplayName = NSObject.contactsManager.displayName(
+            let remoteDisplayName = SSKEnvironment.shared.contactManagerRef.displayName(
                 for: thread.contactAddress,
                 tx: SDSDB.shimOnlyBridge(tx)
             ).resolvedValue()

@@ -141,7 +141,7 @@ public class ManageStickersViewController: OWSTableViewController2 {
         var installedStickerPacks = [StickerPack]()
         var availableBuiltInStickerPacks = [StickerPack]()
         var availableKnownStickerPacks = [KnownStickerPack]()
-        self.databaseStorage.read { (transaction) in
+        SSKEnvironment.shared.databaseStorageRef.read { (transaction) in
             let allPacks = StickerManager.allStickerPacks(transaction: transaction)
             let allPackInfos = allPacks.map { $0.info }
 
@@ -523,7 +523,7 @@ public class ManageStickersViewController: OWSTableViewController2 {
 
         // This will be dismissed once we receive a sticker pack update notification from StickerManager
         pendingModalVC = modalVC
-        self.databaseStorage.asyncWrite { transaction in
+        SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
             StickerManager.installStickerPack(
                 stickerPack: stickerPack,
                 wasLocallyInitiated: true,
@@ -536,7 +536,7 @@ public class ManageStickersViewController: OWSTableViewController2 {
             // If the current modal isn't the one we created, we can ignore it
             guard modalVC == self?.pendingModalVC else { return }
 
-            if self?.reachabilityManager.isReachable == true {
+            if self != nil && SSKEnvironment.shared.reachabilityManagerRef.isReachable {
                 owsFailDebug("Expected to hear back from StickerManager about a newly installed sticker pack")
             }
             self?.updateState()

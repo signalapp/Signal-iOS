@@ -61,7 +61,7 @@ class ConversationInputTextView: BodyRangesTextView {
         textAlignment = .natural
         textContainer.lineFragmentPadding = 0
         contentInset = .zero
-        setMessageBody(nil, txProvider: databaseStorage.readTxProvider)
+        setMessageBody(nil, txProvider: SSKEnvironment.shared.databaseStorageRef.readTxProvider)
 
         ensurePlaceholderConstraints()
         updatePlaceholderVisibility()

@@ -15,7 +15,7 @@ extension DeviceTransferService {
 
         do {
             let database: DeviceTransferProtoFile = try {
-                let file = databaseStorage.grdbStorage.databaseFilePath
+                let file = SSKEnvironment.shared.databaseStorageRef.grdbStorage.databaseFilePath
                 guard let size = OWSFileSystem.fileSize(ofPath: file), size.uint64Value > 0 else {
                     throw OWSAssertionError("Failed to calculate size of database \(file)")
                 }
@@ -29,7 +29,7 @@ extension DeviceTransferService {
             }()
 
             let wal: DeviceTransferProtoFile = try {
-                let file = databaseStorage.grdbStorage.databaseWALFilePath
+                let file = SSKEnvironment.shared.databaseStorageRef.grdbStorage.databaseWALFilePath
                 guard let size = OWSFileSystem.fileSize(ofPath: file), size.uint64Value > 0 else {
                     throw OWSAssertionError("Failed to calculate size of database wal \(file)")
                 }
@@ -43,7 +43,7 @@ extension DeviceTransferService {
             }()
 
             let databaseBuilder = DeviceTransferProtoDatabase.builder(
-                key: try databaseStorage.keyFetcher.fetchData(),
+                key: try SSKEnvironment.shared.databaseStorageRef.keyFetcher.fetchData(),
                 database: database,
                 wal: wal
             )

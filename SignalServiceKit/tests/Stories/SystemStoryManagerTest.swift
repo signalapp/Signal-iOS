@@ -11,7 +11,7 @@ class SystemStoryManagerTest: SSKBaseTest {
     let timeout: TimeInterval = 5
 
     var mockSignalService: OWSSignalServiceMock {
-        return signalService as! OWSSignalServiceMock
+        return SSKEnvironment.shared.signalServiceRef as! OWSSignalServiceMock
     }
 
     var scheduler: TestScheduler!
@@ -21,7 +21,7 @@ class SystemStoryManagerTest: SSKBaseTest {
     override func setUp() {
         super.setUp()
         scheduler = TestScheduler()
-        databaseStorage.write { tx in
+        SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: .forUnitTests,
                 tx: tx.asV2Write
@@ -290,7 +290,7 @@ class SystemStoryManagerTest: SSKBaseTest {
         XCTAssertNotNil(cleanupPromise.value)
 
         read { transaction in
-            if let mockManager = Self.systemStoryManager as? SystemStoryManagerMock {
+            if let mockManager = SSKEnvironment.shared.systemStoryManagerRef as? SystemStoryManagerMock {
                 mockManager.areSystemStoriesHidden = manager.areSystemStoriesHidden(transaction: transaction)
                 mockManager.isOnboardingStoryRead = manager.isOnboardingStoryViewed(transaction: transaction)
             }

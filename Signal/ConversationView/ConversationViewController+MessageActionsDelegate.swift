@@ -42,7 +42,7 @@ extension ConversationViewController: MessageActionsDelegate {
 
         var editValidationError: EditSendValidationError?
         var quotedReplyModel: DraftQuotedReplyModel?
-        Self.databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
 
             // If edit send validation fails (timeframe expired,
             // too many edits, etc), display a message here.
@@ -185,7 +185,7 @@ extension ConversationViewController: MessageActionsDelegate {
             guard let message = itemViewModel.interaction as? TSMessage else {
                 return nil
             }
-            return Self.databaseStorage.read { transaction in
+            return SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 if message is OWSPaymentMessage {
                     return DraftQuotedReplyModel.fromOriginalPaymentMessage(message, tx: transaction)
                 }
@@ -251,8 +251,8 @@ extension ConversationViewController: MessageActionsDelegate {
             owsFailDebug("Should be contact thread")
             return
         }
-        let contactName = databaseStorage.read { tx in
-            return self.contactsManager.displayName(for: contactAddress, tx: tx).resolvedValue()
+        let contactName = SSKEnvironment.shared.databaseStorageRef.read { tx in
+            return SSKEnvironment.shared.contactManagerRef.displayName(for: contactAddress, tx: tx).resolvedValue()
         }
 
         let paymentHistoryItem: PaymentsHistoryItem

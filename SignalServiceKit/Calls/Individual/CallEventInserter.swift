@@ -12,7 +12,7 @@ public class CallEventInserter {
     private var callRecordStore: any CallRecordStore { DependenciesBridge.shared.callRecordStore }
     private var individualCallRecordManager: any IndividualCallRecordManager { DependenciesBridge.shared.individualCallRecordManager }
     private var interactionStore: any InteractionStore { DependenciesBridge.shared.interactionStore }
-    private var notificationPresenter: any NotificationPresenter { NSObject.notificationPresenter }
+    private var notificationPresenter: any NotificationPresenter { SSKEnvironment.shared.notificationPresenterRef }
 
     private let offerMediaType: TSRecentCallOfferType
     private let thread: TSContactThread

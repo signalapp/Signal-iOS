@@ -9,7 +9,7 @@ import XCTest
 
 private extension SSKSignedPreKeyStore {
     func loadSignedPreKey(_ id: Int32) -> SignedPreKeyRecord? {
-        return self.databaseStorage.read { transaction in
+        return SSKEnvironment.shared.databaseStorageRef.read { transaction in
             loadSignedPreKey(id, transaction: transaction)
         }
     }
@@ -31,7 +31,7 @@ class SSKSignedPreKeyStoreTest: SSKBaseTest {
                                             keyPair: ECKeyPair.generateKeyPair(),
                                             signature: Data(),
                                             generatedAt: generatedAt)
-            self.databaseStorage.write { transaction in
+            SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 aciStore.storeSignedPreKey(i, signedPreKeyRecord: record, transaction: transaction)
             }
         }
@@ -46,14 +46,14 @@ class SSKSignedPreKeyStoreTest: SSKBaseTest {
                                             keyPair: ECKeyPair.generateKeyPair(),
                                             signature: Data(),
                                             generatedAt: generatedAt)
-            self.databaseStorage.write { transaction in
+            SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 pniStore.storeSignedPreKey(i, signedPreKeyRecord: record, transaction: transaction)
             }
         }
 
         XCTAssertNotNil(pniStore.loadSignedPreKey(lastPreKeyId))
 
-        self.databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             aciStore.removeSignedPreKey(lastPreKeyId, transaction: transaction)
         }
 

@@ -293,7 +293,7 @@ class StoryItemMediaView: UIView {
     private lazy var timestampLabel = UILabel()
     private lazy var authorRow = UIStackView()
     private func updateAuthorRow(newContextButton contextButton: ContextMenuButton) {
-        let (avatarView, nameLabel) = databaseStorage.read { (
+        let (avatarView, nameLabel) = SSKEnvironment.shared.databaseStorageRef.read { (
             buildAvatarView(transaction: $0),
             buildNameLabel(transaction: $0)
         ) }
@@ -322,7 +322,7 @@ class StoryItemMediaView: UIView {
 
         if
             case .privateStory(let uniqueId) = delegate?.context,
-            let privateStoryThread = databaseStorage.read(
+            let privateStoryThread = SSKEnvironment.shared.databaseStorageRef.read(
                 block: { TSPrivateStoryThread.anyFetchPrivateStoryThread(uniqueId: uniqueId, transaction: $0) }
             ),
             !privateStoryThread.isMyStory {
@@ -448,7 +448,7 @@ class StoryItemMediaView: UIView {
         label.font = UIFont.dynamicTypeSubheadline.semibold()
         label.text = StoryUtil.authorDisplayName(
             for: item.message,
-            contactsManager: contactsManager,
+            contactsManager: SSKEnvironment.shared.contactManagerRef,
             useFullNameForLocalAddress: false,
             useShortGroupName: false,
             transaction: transaction
@@ -1089,7 +1089,7 @@ extension StoryItem {
 
     @discardableResult
     func startAttachmentDownloadIfNecessary(priority: AttachmentDownloadPriority = .default) -> Bool {
-        return databaseStorage.write { tx in
+        return SSKEnvironment.shared.databaseStorageRef.write { tx in
             guard
                 case .pointer(let pointer) = attachment,
                 pointer.attachment.downloadState(tx: tx.asV2Read) != .enqueuedOrDownloading

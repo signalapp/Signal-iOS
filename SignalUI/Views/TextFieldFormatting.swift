@@ -180,7 +180,7 @@ public class TextFieldFormatting: Dependencies {
         owsAssertDebug(!countryCode.isEmpty)
         owsAssertDebug(!callingCode.isEmpty)
 
-        guard var examplePhoneNumber = phoneNumberUtil.examplePhoneNumber(forCountryCode: countryCode) else {
+        guard var examplePhoneNumber = SSKEnvironment.shared.phoneNumberUtilRef.examplePhoneNumber(forCountryCode: countryCode) else {
             owsFailDebug("examplePhoneNumber == nil")
             return nil
         }

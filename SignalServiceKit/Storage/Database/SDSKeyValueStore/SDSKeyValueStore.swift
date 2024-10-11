@@ -43,7 +43,7 @@ public class SDSKeyValueStore: NSObject {
     @objc
     public class func logCollectionStatistics() {
         Logger.info("SDSKeyValueStore statistics:")
-        databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             do {
                 let sql = """
                     SELECT \(collectionColumn.columnName), COUNT(*)

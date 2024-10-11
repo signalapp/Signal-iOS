@@ -84,7 +84,7 @@ public extension ChatListViewController {
 
         guard let selectedThread = conversationSplitViewController?.selectedThread else { return }
 
-        let threadAssociatedData = databaseStorage.read { transaction in
+        let threadAssociatedData = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             ThreadAssociatedData.fetchOrDefault(for: selectedThread, transaction: transaction)
         }
 
@@ -92,7 +92,7 @@ public extension ChatListViewController {
 
         conversationSplitViewController?.closeSelectedConversation(animated: true)
 
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             threadAssociatedData.updateWith(isArchived: true, updateStorageService: true, transaction: transaction)
         }
 
@@ -106,7 +106,7 @@ public extension ChatListViewController {
 
         guard let selectedThread = conversationSplitViewController?.selectedThread else { return }
 
-        let threadAssociatedData = databaseStorage.read { transaction in
+        let threadAssociatedData = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             ThreadAssociatedData.fetchOrDefault(for: selectedThread, transaction: transaction)
         }
 
@@ -114,7 +114,7 @@ public extension ChatListViewController {
 
         conversationSplitViewController?.closeSelectedConversation(animated: true)
 
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             threadAssociatedData.updateWith(isArchived: false, updateStorageService: true, transaction: transaction)
         }
 
@@ -182,7 +182,7 @@ extension ChatListViewController {
             owsFailDebug("Missing threadViewModel.")
             return nil
         }
-        let vc = databaseStorage.read { tx in
+        let vc = SSKEnvironment.shared.databaseStorageRef.read { tx in
             ConversationViewController.load(
                 appReadiness: appReadiness,
                 threadViewModel: threadViewModel,

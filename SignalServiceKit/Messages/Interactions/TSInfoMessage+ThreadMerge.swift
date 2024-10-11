@@ -58,7 +58,7 @@ public extension TSInfoMessage {
             return CommonStrings.unknownUser
         }
 
-        return contactsManager.displayName(
+        return SSKEnvironment.shared.contactManagerRef.displayName(
             for: contactThread.contactAddress,
             tx: tx
         ).resolvedValue()

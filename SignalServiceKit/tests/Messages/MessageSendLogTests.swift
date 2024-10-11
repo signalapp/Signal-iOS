@@ -13,7 +13,7 @@ class MessageSendLogTests: SSKBaseTest {
     private var messageSendLog: MessageSendLog { SSKEnvironment.shared.messageSendLogRef }
 
     func testStoreAndRetrieveValidPayload() throws {
-        try databaseStorage.write { writeTx in
+        try SSKEnvironment.shared.databaseStorageRef.write { writeTx in
             // Create and save the message payload
             let newMessage = createOutgoingMessage(transaction: writeTx)
             let payloadData = CommonGenerator.sentence.data(using: .utf8)!
@@ -45,7 +45,7 @@ class MessageSendLogTests: SSKBaseTest {
     }
 
     func testStoreAndRetrievePayloadForInvalidRecipient() throws {
-        try databaseStorage.write { writeTx in
+        try SSKEnvironment.shared.databaseStorageRef.write { writeTx in
             // Create and save the message payload
             let newMessage = createOutgoingMessage(transaction: writeTx)
             let payloadData = CommonGenerator.sentence.data(using: .utf8)!
@@ -81,7 +81,7 @@ class MessageSendLogTests: SSKBaseTest {
     }
 
     func testStoreAndRetrievePayloadForDeliveredRecipient() throws {
-        try databaseStorage.write { writeTx in
+        try SSKEnvironment.shared.databaseStorageRef.write { writeTx in
             // Create and save the message payload
             let newMessage = createOutgoingMessage(transaction: writeTx)
             let payloadData = CommonGenerator.sentence.data(using: .utf8)!
@@ -126,7 +126,7 @@ class MessageSendLogTests: SSKBaseTest {
     }
 
     func testStoreAndRetrieveExpiredPayload() throws {
-        try databaseStorage.write { writeTx in
+        try SSKEnvironment.shared.databaseStorageRef.write { writeTx in
             // Create and save the message payload. Outgoing message date is long ago
             let newMessage = createOutgoingMessage(date: Date(timeIntervalSince1970: 10000), transaction: writeTx)
             let payloadData = CommonGenerator.sentence.data(using: .utf8)!
@@ -154,7 +154,7 @@ class MessageSendLogTests: SSKBaseTest {
     }
 
     func testFinalDeliveryRemovesPayload() throws {
-        try databaseStorage.write { writeTx in
+        try SSKEnvironment.shared.databaseStorageRef.write { writeTx in
             // Create and save the message payload
             let newMessage = createOutgoingMessage(transaction: writeTx)
             let payloadData = CommonGenerator.sentence.data(using: .utf8)!
@@ -198,7 +198,7 @@ class MessageSendLogTests: SSKBaseTest {
     }
 
     func testReceiveDeliveryBeforeSendFinished() throws {
-        try databaseStorage.write { writeTx in
+        try SSKEnvironment.shared.databaseStorageRef.write { writeTx in
             // Create and save the message payload
             let newMessage = createOutgoingMessage(transaction: writeTx)
             let payloadData = CommonGenerator.sentence.data(using: .utf8)!
@@ -261,7 +261,7 @@ class MessageSendLogTests: SSKBaseTest {
     }
 
     func testPartialFailureReusesPayloadEntry() throws {
-        try databaseStorage.write { writeTx in
+        try SSKEnvironment.shared.databaseStorageRef.write { writeTx in
             // Create and save the message payload
             let newMessage = createOutgoingMessage(transaction: writeTx)
             let payloadData = CommonGenerator.sentence.data(using: .utf8)!
@@ -320,7 +320,7 @@ class MessageSendLogTests: SSKBaseTest {
     }
 
     func testRetryPartialFailureAfterAllInitialRecipientsAcked() throws {
-        try databaseStorage.write { writeTx in
+        try SSKEnvironment.shared.databaseStorageRef.write { writeTx in
             // Create and save the message payload
             let newMessage = createOutgoingMessage(transaction: writeTx)
             let payloadData = CommonGenerator.sentence.data(using: .utf8)!
@@ -373,7 +373,7 @@ class MessageSendLogTests: SSKBaseTest {
     // Test disabled since it exercises an owsFailDebug()
     // Works correctly if assertions are disabled and the test is enabled.
     func testPlaintextMismatchFails() throws {
-        try databaseStorage.write { writeTx in
+        try SSKEnvironment.shared.databaseStorageRef.write { writeTx in
             // Create and save the message payload
             let newMessage = createOutgoingMessage(transaction: writeTx)
             let payloadData = CommonGenerator.sentence.data(using: .utf8)!
@@ -389,7 +389,7 @@ class MessageSendLogTests: SSKBaseTest {
     }
 
     func testDeleteMessageWithOnePayload() throws {
-        try databaseStorage.write { writeTx in
+        try SSKEnvironment.shared.databaseStorageRef.write { writeTx in
             // Create and save the message payload
             let newMessage = createOutgoingMessage(transaction: writeTx)
             let payloadData = CommonGenerator.sentence.data(using: .utf8)!
@@ -415,7 +415,7 @@ class MessageSendLogTests: SSKBaseTest {
     }
 
     func testDeleteMessageWithManyPayloads() throws {
-        try databaseStorage.write { writeTx in
+        try SSKEnvironment.shared.databaseStorageRef.write { writeTx in
             // Create and save several message payloads
             let message1 = createOutgoingMessage(transaction: writeTx)
             let data1 = CommonGenerator.sentence.data(using: .utf8)!
@@ -453,7 +453,7 @@ class MessageSendLogTests: SSKBaseTest {
     }
 
     func testCleanupExpiredPayloads() throws {
-        let (oldId, newId) = try databaseStorage.write { writeTx in
+        let (oldId, newId) = try SSKEnvironment.shared.databaseStorageRef.write { writeTx in
             let oldMessage = createOutgoingMessage(date: Date(timeIntervalSince1970: 1000), transaction: writeTx)
             let oldData = CommonGenerator.sentence.data(using: .utf8)!
             let oldId = try XCTUnwrap(messageSendLog.recordPayload(oldData, for: oldMessage, tx: writeTx))
@@ -470,7 +470,7 @@ class MessageSendLogTests: SSKBaseTest {
 
         try messageSendLog.cleanUpExpiredEntries()
 
-        databaseStorage.read { tx in
+        SSKEnvironment.shared.databaseStorageRef.read { tx in
             // Verify only the old message was deleted
             XCTAssertFalse(isPayloadAlive(index: oldId, transaction: tx))
             XCTAssertTrue(isPayloadAlive(index: newId, transaction: tx))
@@ -486,7 +486,7 @@ class MessageSendLogTests: SSKBaseTest {
         // incorrectly coercing to the wrong timestamp. In this case, constructing a Date from that millisecond
         // timestamp would result in a time interval of 1629210680.1399999. Reconverting back to a timestamp and
         // we get 1629210680139.
-        try databaseStorage.write { writeTx in
+        try SSKEnvironment.shared.databaseStorageRef.write { writeTx in
             let messageSendLog = MessageSendLog(
                 db: DependenciesBridge.shared.db,
                 dateProvider: { Date(timeIntervalSince1970: 1629270000) }

@@ -181,7 +181,7 @@ public class StorageServiceUnknownFieldMigrator {
                             groupThread.updateWithMentionNotificationMode(remoteValue, wasLocallyInitiated: false, transaction: tx)
                         } else {
                             // Schedule an update so we put up our local state onto storageService.
-                            NSObject.storageServiceManager.recordPendingUpdates(groupModel: groupThread.groupModel)
+                            SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(groupModel: groupThread.groupModel)
                         }
                     } else {
                         // On secondaries, take the value from storage service.

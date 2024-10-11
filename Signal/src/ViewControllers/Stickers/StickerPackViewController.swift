@@ -314,7 +314,7 @@ public class StickerPackViewController: OWSViewController {
             canCancel: false,
             presentationDelay: 0,
             backgroundBlock: { modal in
-                self.databaseStorage.write { (transaction) in
+                SSKEnvironment.shared.databaseStorageRef.write { (transaction) in
                     StickerManager.installStickerPack(
                         stickerPack: stickerPack,
                         wasLocallyInitiated: true,
@@ -342,7 +342,7 @@ public class StickerPackViewController: OWSViewController {
             canCancel: false,
             presentationDelay: 0,
             backgroundBlock: { modal in
-                self.databaseStorage.write { (transaction) in
+                SSKEnvironment.shared.databaseStorageRef.write { (transaction) in
                     StickerManager.uninstallStickerPack(
                         stickerPackInfo: stickerPackInfo,
                         wasLocallyInitiated: true,

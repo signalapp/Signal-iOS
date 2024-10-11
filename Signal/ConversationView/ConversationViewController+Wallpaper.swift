@@ -25,7 +25,7 @@ extension ConversationViewController {
     }
 
     func updateWallpaperViewBuilder() {
-        viewState.wallpaperViewBuilder = databaseStorage.read { tx in Self.loadWallpaperViewBuilder(for: thread, tx: tx) }
+        viewState.wallpaperViewBuilder = SSKEnvironment.shared.databaseStorageRef.read { tx in Self.loadWallpaperViewBuilder(for: thread, tx: tx) }
         updateWallpaperView()
     }
 

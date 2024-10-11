@@ -94,21 +94,24 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super anyDidInsertWithTransaction:transaction];
 
-    [self.modelReadCaches.installedStickerCache didInsertOrUpdateInstalledSticker:self transaction:transaction];
+    [SSKEnvironment.shared.modelReadCachesRef.installedStickerCache didInsertOrUpdateInstalledSticker:self
+                                                                                          transaction:transaction];
 }
 
 - (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyDidUpdateWithTransaction:transaction];
 
-    [self.modelReadCaches.installedStickerCache didInsertOrUpdateInstalledSticker:self transaction:transaction];
+    [SSKEnvironment.shared.modelReadCachesRef.installedStickerCache didInsertOrUpdateInstalledSticker:self
+                                                                                          transaction:transaction];
 }
 
 - (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyDidRemoveWithTransaction:transaction];
 
-    [self.modelReadCaches.installedStickerCache didRemoveInstalledSticker:self transaction:transaction];
+    [SSKEnvironment.shared.modelReadCachesRef.installedStickerCache didRemoveInstalledSticker:self
+                                                                                  transaction:transaction];
 }
 
 @end

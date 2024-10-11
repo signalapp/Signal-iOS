@@ -141,7 +141,7 @@ class AuthCredentialManagerImpl: AuthCredentialManager {
 
         let request = OWSRequestFactory.authCredentialRequest(from: startTimestamp, to: endTimestamp)
 
-        let response = try await NSObject.networkManager.makePromise(
+        let response = try await SSKEnvironment.shared.networkManagerRef.makePromise(
             request: request,
             canUseWebSocket: true
         ).awaitable()

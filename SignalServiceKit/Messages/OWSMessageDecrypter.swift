@@ -34,7 +34,7 @@ public class OWSMessageDecrypter: Dependencies {
         // We don't want to send additional resets until we
         // have received the "empty" response from the WebSocket
         // or finished at least one REST fetch.
-        guard Self.messageFetcherJob.hasCompletedInitialFetch else { return }
+        guard SSKEnvironment.shared.messageFetcherJobRef.hasCompletedInitialFetch else { return }
 
         // We clear all recently reset sender ids any time the
         // decryption queue has drained, so that any new messages
@@ -66,7 +66,7 @@ public class OWSMessageDecrypter: Dependencies {
         store.setDate(Date(), key: senderId, transaction: transaction)
 
         transaction.addAsyncCompletionOffMain {
-            Self.databaseStorage.write { transaction in
+            SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 let nullMessage = OWSOutgoingNullMessage(contactThread: contactThread, transaction: transaction)
                 let preparedMessage = PreparedOutgoingMessage.preprepared(
                     transientMessageWithoutAttachments: nullMessage
@@ -110,7 +110,7 @@ public class OWSMessageDecrypter: Dependencies {
         )
 
         transaction.addAsyncCompletionOffMain {
-            Self.databaseStorage.write { transaction in
+            SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 let profileKeyMessage = OWSProfileKeyMessage(thread: contactThread, transaction: transaction)
                 let preparedMessage = PreparedOutgoingMessage.preprepared(
                     transientMessageWithoutAttachments: profileKeyMessage
@@ -178,7 +178,7 @@ public class OWSMessageDecrypter: Dependencies {
         let sourceAddress = SignalServiceAddress(sourceAci)
 
         if
-            blockingManager.isAddressBlocked(sourceAddress, transaction: transaction) ||
+            SSKEnvironment.shared.blockingManagerRef.isAddressBlocked(sourceAddress, transaction: transaction) ||
             DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(sourceAddress, tx: transaction.asV2Read)
         {
             Logger.info("Ignoring decryption error for blocked or hidden user \(sourceAddress) \(wrappedError).")
@@ -280,8 +280,8 @@ public class OWSMessageDecrypter: Dependencies {
 
         if let errorMessage = errorMessage {
             errorMessage.anyInsert(transaction: transaction)
-            notificationPresenter.notifyUser(forErrorMessage: errorMessage, thread: contactThread, transaction: transaction)
-            notificationPresenter.notifyTestPopulation(ofErrorMessage: "Failed decryption of envelope: \(validatedEnvelope.timestamp)")
+            SSKEnvironment.shared.notificationPresenterRef.notifyUser(forErrorMessage: errorMessage, thread: contactThread, transaction: transaction)
+            SSKEnvironment.shared.notificationPresenterRef.notifyTestPopulation(ofErrorMessage: "Failed decryption of envelope: \(validatedEnvelope.timestamp)")
         }
 
         return wrappedError
@@ -424,7 +424,7 @@ public class OWSMessageDecrypter: Dependencies {
                 plaintext = try groupDecrypt(
                     encryptedData,
                     from: protocolAddress,
-                    store: Self.senderKeyStore,
+                    store: SSKEnvironment.shared.senderKeyStoreRef,
                     context: transaction
                 )
             case .plaintext:
@@ -483,7 +483,7 @@ public class OWSMessageDecrypter: Dependencies {
             return
         }
 
-        if blockingManager.isAddressBlocked(SignalServiceAddress(sourceAci), transaction: transaction) {
+        if SSKEnvironment.shared.blockingManagerRef.isAddressBlocked(SignalServiceAddress(sourceAci), transaction: transaction) {
             Logger.info("Skipping send of reactive profile key to blocked address")
             return
         }
@@ -491,10 +491,10 @@ public class OWSMessageDecrypter: Dependencies {
         // We do this work in an async completion so we don't delay
         // receipt of this message.
         transaction.addAsyncCompletionOffMain {
-            let needsReactiveProfileKeyMessage: Bool = self.databaseStorage.read { transaction in
+            let needsReactiveProfileKeyMessage: Bool = SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 // This user is whitelisted, they should have our profile key / be sending UD messages
                 // Send them our profile key in case they somehow lost it.
-                if self.profileManager.isUser(
+                if SSKEnvironment.shared.profileManagerRef.isUser(
                     inProfileWhitelist: SignalServiceAddress(sourceAci),
                     transaction: transaction
                 ) {
@@ -517,7 +517,7 @@ public class OWSMessageDecrypter: Dependencies {
             }
 
             if needsReactiveProfileKeyMessage {
-                self.databaseStorage.write { transaction in
+                SSKEnvironment.shared.databaseStorageRef.write { transaction in
                     self.trySendReactiveProfileKey(to: sourceAci, tx: transaction)
                 }
             }
@@ -543,13 +543,13 @@ public class OWSMessageDecrypter: Dependencies {
             signedPreKeyStore: signalProtocolStore.signedPreKeyStore,
             kyberPreKeyStore: signalProtocolStore.kyberPreKeyStore,
             identityStore: identityManager.libSignalStore(for: localIdentity, tx: transaction.asV2Write),
-            senderKeyStore: Self.senderKeyStore
+            senderKeyStore: SSKEnvironment.shared.senderKeyStoreRef
         )
 
         let decryptResult: SMKDecryptResult
         do {
             decryptResult = try cipher.decryptMessage(
-                trustRoot: Self.udManager.trustRoot,
+                trustRoot: SSKEnvironment.shared.udManagerRef.trustRoot,
                 cipherTextData: encryptedData,
                 timestamp: validatedEnvelope.serverTimestamp,
                 localIdentifiers: localIdentifiers,
@@ -717,7 +717,7 @@ public class OWSMessageDecrypter: Dependencies {
     }
 
     private func _cleanUpExpiredPlaceholders() async {
-        let (expiredPlaceholderIds, nextExpirationDate) = databaseStorage.read { tx in
+        let (expiredPlaceholderIds, nextExpirationDate) = SSKEnvironment.shared.databaseStorageRef.read { tx in
             var expiredPlaceholderIds = [String]()
             var nextExpirationDate: Date?
             InteractionFinder.enumeratePlaceholders(transaction: tx) { placeholder in
@@ -736,7 +736,7 @@ public class OWSMessageDecrypter: Dependencies {
             let thisBatchPlaceholderIds = remainingPlaceholderIds.prefix(batchSize)
             remainingPlaceholderIds = remainingPlaceholderIds.dropFirst(batchSize)
 
-            await databaseStorage.awaitableWrite { tx in
+            await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
                 for placeholderId in thisBatchPlaceholderIds {
                     guard let placeholder = OWSRecoverableDecryptionPlaceholder.anyFetchRecoverableDecryptionPlaceholder(
                         uniqueId: placeholderId,
@@ -756,7 +756,7 @@ public class OWSMessageDecrypter: Dependencies {
                         sender: placeholder.sender
                     )
                     errorMessage.anyInsert(transaction: tx)
-                    self.notificationPresenter.notifyUser(forErrorMessage: errorMessage, thread: thread, transaction: tx)
+                    SSKEnvironment.shared.notificationPresenterRef.notifyUser(forErrorMessage: errorMessage, thread: thread, transaction: tx)
                 }
             }
         }

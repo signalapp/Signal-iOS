@@ -145,7 +145,7 @@ public class InstalledStickerPackDataSource: BaseStickerPackDataSource {
     }
 
     func ensureState() {
-        databaseStorage.read { readTx in
+        SSKEnvironment.shared.databaseStorageRef.read { readTx in
             let stateTuple = Self.fetchInstalledState(for: self.stickerPackInfo, readTx: readTx)
 
             guard let stickerPack = stateTuple.stickerPack, stickerPack.isInstalled else {
@@ -165,7 +165,7 @@ public class InstalledStickerPackDataSource: BaseStickerPackDataSource {
 
     func ensureStateAsync(completion: (() -> Void)? = nil) {
         DispatchQueue.sharedUserInitiated.async {
-            let stateTuple = self.databaseStorage.read { readTx in
+            let stateTuple = SSKEnvironment.shared.databaseStorageRef.read { readTx in
                 return Self.fetchInstalledState(for: self.stickerPackInfo, readTx: readTx)
             }
 

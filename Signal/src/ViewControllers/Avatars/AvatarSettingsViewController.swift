@@ -38,10 +38,10 @@ class AvatarSettingsViewController: OWSTableViewController2 {
     private lazy var defaultAvatarImage: UIImage? = {
         switch context {
         case .groupId(let groupId):
-            return avatarBuilder.avatarImage(forGroupId: groupId, diameterPoints: UInt(Self.headerAvatarSize))
+            return SSKEnvironment.shared.avatarBuilderRef.avatarImage(forGroupId: groupId, diameterPoints: UInt(Self.headerAvatarSize))
         case .profile:
-            return databaseStorage.read { transaction in
-                avatarBuilder.defaultAvatarImageForLocalUser(diameterPoints: UInt(Self.headerAvatarSize), transaction: transaction)
+            return SSKEnvironment.shared.databaseStorageRef.read { transaction in
+                SSKEnvironment.shared.avatarBuilderRef.defaultAvatarImageForLocalUser(diameterPoints: UInt(Self.headerAvatarSize), transaction: transaction)
             }
         }
     }()
@@ -89,10 +89,10 @@ class AvatarSettingsViewController: OWSTableViewController2 {
         }
 
         if let model = model {
-            databaseStorage.asyncWrite { [context] transaction in
+            SSKEnvironment.shared.databaseStorageRef.asyncWrite { [context] transaction in
                 Self.avatarHistoryManager.touchedModel(model, in: context, transaction: transaction)
             }
-            guard let newAvatar = avatarBuilder.avatarImage(
+            guard let newAvatar = SSKEnvironment.shared.avatarBuilderRef.avatarImage(
                 model: model,
                 diameterPixels: OWSProfileManager.maxAvatarDiameterPixels
             ) else {
@@ -245,10 +245,10 @@ class AvatarSettingsViewController: OWSTableViewController2 {
         cell.contentView.addSubview(vStackView)
         vStackView.autoPinEdgesToSuperviewMargins()
 
-        let avatars: [(model: AvatarModel, image: UIImage)] = databaseStorage.read { transaction in
+        let avatars: [(model: AvatarModel, image: UIImage)] = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             let models = Self.avatarHistoryManager.models(for: context, transaction: transaction)
             return models.compactMap { model in
-                guard let image = avatarBuilder.avatarImage(
+                guard let image = SSKEnvironment.shared.avatarBuilderRef.avatarImage(
                     model: model,
                     diameterPoints: UInt(avatarSize)
                 ) else {
@@ -281,7 +281,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
         case .new(let model):
             if let model = model {
                 clearButton.isHidden = false
-                headerImageView.image = avatarBuilder.avatarImage(model: model, diameterPoints: UInt(Self.headerAvatarSize))
+                headerImageView.image = SSKEnvironment.shared.avatarBuilderRef.avatarImage(model: model, diameterPoints: UInt(Self.headerAvatarSize))
             } else {
                 clearButton.isHidden = true
                 headerImageView.image = defaultAvatarImage
@@ -367,7 +367,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
                 action: { [weak self] in
                     let model = AvatarModel(type: .text(""), theme: .default)
                     let vc = AvatarEditViewController(model: model) { [weak self] editedModel in
-                        self?.databaseStorage.asyncWrite { transaction in
+                        SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
                             guard let self = self else { return }
                             self.avatarHistoryManager.touchedModel(
                                 editedModel,
@@ -451,7 +451,7 @@ extension AvatarSettingsViewController: UIImagePickerControllerDelegate, UINavig
         dismiss(animated: true) { [weak self] in
             let vc = CropScaleImageViewController(srcImage: originalImage) { croppedImage in
                 guard let self = self else { return }
-                let imageModel = self.databaseStorage.write { transaction in
+                let imageModel = SSKEnvironment.shared.databaseStorageRef.write { transaction in
                     self.avatarHistoryManager.recordModelForImage(
                         croppedImage,
                         in: self.context,
@@ -478,7 +478,7 @@ extension AvatarSettingsViewController: OptionViewDelegate {
         owsAssertDebug(model.type.isEditable)
 
         let vc = AvatarEditViewController(model: model) { [weak self, context] editedModel in
-            self?.databaseStorage.asyncWrite { transaction in
+            SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
                 Self.avatarHistoryManager.touchedModel(
                     editedModel,
                     in: context,
@@ -494,7 +494,7 @@ extension AvatarSettingsViewController: OptionViewDelegate {
 
     fileprivate func didDeleteOptionView(_ optionView: OptionView, model: AvatarModel) {
         owsAssertDebug(model.type.isDeletable)
-        databaseStorage.asyncWrite { [context] transaction in
+        SSKEnvironment.shared.databaseStorageRef.asyncWrite { [context] transaction in
             Self.avatarHistoryManager.deletedModel(
                 model,
                 in: context,

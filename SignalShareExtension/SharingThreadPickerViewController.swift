@@ -85,7 +85,7 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
             return
         }
 
-        let groupThread = databaseStorage.read { readTx in
+        let groupThread = SSKEnvironment.shared.databaseStorageRef.read { readTx in
             TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId, transaction: readTx)
         }
 
@@ -151,13 +151,13 @@ extension SharingThreadPickerViewController {
         } else if isContactShare {
             let cnContact = try SystemContact.parseVCardData(firstAttachment.data)
 
-            let contactShareDraft = databaseStorage.read { tx in
+            let contactShareDraft = SSKEnvironment.shared.databaseStorageRef.read { tx in
                 return ContactShareDraft.load(
                     cnContact: cnContact,
                     signalContact: SystemContact(cnContact: cnContact),
-                    contactManager: Self.contactsManager,
-                    phoneNumberUtil: Self.phoneNumberUtil,
-                    profileManager: Self.profileManager,
+                    contactManager: SSKEnvironment.shared.contactManagerRef,
+                    phoneNumberUtil: SSKEnvironment.shared.phoneNumberUtilRef,
+                    profileManager: SSKEnvironment.shared.profileManagerRef,
                     recipientManager: DependenciesBridge.shared.recipientManager,
                     tsAccountManager: DependenciesBridge.shared.tsAccountManager,
                     tx: tx
@@ -329,7 +329,7 @@ extension SharingThreadPickerViewController {
     }
 
     private func presentOrUpdateSendProgressSheet(outgoingMessages: [PreparedOutgoingMessage]) {
-        let attachmentIds = databaseStorage.read { tx in
+        let attachmentIds = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return outgoingMessages.attachmentIdsForUpload(tx: tx)
         }
         presentOrUpdateSendProgressSheet(attachmentIds: attachmentIds)
@@ -376,11 +376,11 @@ extension SharingThreadPickerViewController {
             let destinations = try await AttachmentMultisend.prepareForSending(
                 messageBody,
                 to: conversations,
-                db: self.databaseStorage,
+                db: SSKEnvironment.shared.databaseStorageRef,
                 attachmentValidator: DependenciesBridge.shared.tsResourceContentValidator
             )
 
-            (preparedNonStoryMessages, nonStorySendPromises) = try await self.databaseStorage.awaitableWrite { tx in
+            (preparedNonStoryMessages, nonStorySendPromises) = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
                 let preparedMessages = try destinations.map { destination in
                     return try messageBlock(destination, tx)
                 }
@@ -459,7 +459,7 @@ extension SharingThreadPickerViewController {
             style: .cancel
         ) { [weak self] _ in
             guard let self = self else { return }
-            self.databaseStorage.write { transaction in
+            SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 for message in error.outgoingMessages {
                     // If we sent the message to anyone, mark it as failed
                     message.updateWithAllSendingRecipientsMarkedAsFailed(tx: transaction)
@@ -476,8 +476,8 @@ extension SharingThreadPickerViewController {
                 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT",
                 comment: "alert body when sharing file failed because of untrusted/changed identity keys"
             )
-            let displayName = databaseStorage.read { tx in
-                return contactsManager.displayName(for: SignalServiceAddress(untrustedServiceId), tx: tx).resolvedValue()
+            let displayName = SSKEnvironment.shared.databaseStorageRef.read { tx in
+                return SSKEnvironment.shared.contactManagerRef.displayName(for: SignalServiceAddress(untrustedServiceId), tx: tx).resolvedValue()
             }
             let failureMessage = String(format: failureFormat, displayName)
 
@@ -485,7 +485,7 @@ extension SharingThreadPickerViewController {
             actionSheet.addAction(cancelAction)
 
             // Capture the identity key before showing the prompt about it.
-            let identityKey = databaseStorage.read { tx in
+            let identityKey = SSKEnvironment.shared.databaseStorageRef.read { tx in
                 let identityManager = DependenciesBridge.shared.identityManager
                 return identityManager.identityKey(for: SignalServiceAddress(untrustedServiceId), tx: tx.asV2Read)
             }
@@ -497,7 +497,7 @@ extension SharingThreadPickerViewController {
                 guard let self = self else { return }
 
                 // Confirm Identity
-                self.databaseStorage.write { transaction in
+                SSKEnvironment.shared.databaseStorageRef.write { transaction in
                     let identityManager = DependenciesBridge.shared.identityManager
                     let verificationState = identityManager.verificationState(
                         for: SignalServiceAddress(untrustedServiceId),
@@ -546,7 +546,7 @@ extension SharingThreadPickerViewController {
         owsAssertDebug(outgoingMessages.count > 0)
 
         var promises = [Promise<Void>]()
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             for message in outgoingMessages {
                 promises.append(SSKEnvironment.shared.messageSenderJobQueueRef.add(
                     .promise,

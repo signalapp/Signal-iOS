@@ -408,7 +408,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 callRecordStore: DependenciesBridge.shared.callRecordStore,
                 db: DependenciesBridge.shared.db,
                 mutableCurrentCall: _currentCall,
-                networkManager: NSObject.networkManager,
+                networkManager: SSKEnvironment.shared.networkManagerRef,
                 tsAccountManager: DependenciesBridge.shared.tsAccountManager
             )
         )
@@ -449,7 +449,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             DarwinNotificationCenter.postNotification(name: .mainAppHandledNotification)
 
             appReadiness.runNowOrWhenAppDidBecomeReadySync {
-                _ = self.messageFetcherJob.run()
+                _ = SSKEnvironment.shared.messageFetcherJobRef.run()
             }
         }
     }
@@ -469,12 +469,12 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         let regLoader = RegistrationCoordinatorLoaderImpl(dependencies: .from(self))
 
         // Before we mark ready, block message processing on any pending change numbers.
-        let hasPendingChangeNumber = databaseStorage.read { transaction in
+        let hasPendingChangeNumber = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             regLoader.hasPendingChangeNumber(transaction: transaction.asV2Read)
         }
         if hasPendingChangeNumber {
             // The registration loader will clear the suspension later on.
-            messagePipelineSupervisor.suspendMessageProcessingWithoutHandle(for: .pendingChangeNumber)
+            SSKEnvironment.shared.messagePipelineSupervisorRef.suspendMessageProcessingWithoutHandle(for: .pendingChangeNumber)
         }
 
         let launchInterface = buildLaunchInterface(regLoader: regLoader)
@@ -509,7 +509,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             Task { @MainActor in
                 defer { backgroundTask.end() }
                 if !hasInProgressRegistration {
-                    await LaunchJobs.run(databaseStorage: databaseStorage)
+                    await LaunchJobs.run(databaseStorage: SSKEnvironment.shared.databaseStorageRef)
                 }
                 DispatchQueue.main.async {
                     self.setAppIsReady(
@@ -580,14 +580,14 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         // old linked devices respect the setting before they upgrade.
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             let db = DependenciesBridge.shared.db
-            guard db.read(block: self.udManager.phoneNumberSharingMode(tx:)) == nil else {
+            guard db.read(block: SSKEnvironment.shared.udManagerRef.phoneNumberSharingMode(tx:)) == nil else {
                 return
             }
             db.write { tx in
-                guard self.udManager.phoneNumberSharingMode(tx: tx) == nil else {
+                guard SSKEnvironment.shared.udManagerRef.phoneNumberSharingMode(tx: tx) == nil else {
                     return
                 }
-                self.udManager.setPhoneNumberSharingMode(
+                SSKEnvironment.shared.udManagerRef.setPhoneNumberSharingMode(
                     .nobody,
                     updateStorageServiceAndProfile: true,
                     tx: SDSDB.shimOnlyBridge(tx)
@@ -615,8 +615,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             Task {
                 try? await RemoteMegaphoneFetcher(
-                    databaseStorage: NSObject.databaseStorage,
-                    signalService: NSObject.signalService
+                    databaseStorage: SSKEnvironment.shared.databaseStorageRef,
+                    signalService: SSKEnvironment.shared.signalServiceRef
                 ).syncRemoteMegaphonesIfNecessary()
             }
         }
@@ -635,7 +635,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 callLinkStateUpdater: AppEnvironment.shared.callService.callLinkStateUpdater,
                 db: DependenciesBridge.shared.db
             )
-            fetchJobRunner.observeDatabase(NSObject.databaseStorage)
+            fetchJobRunner.observeDatabase(SSKEnvironment.shared.databaseStorageRef)
             fetchJobRunner.setMightHavePendingFetchAndFetch()
             AppEnvironment.shared.ownedObjects.append(fetchJobRunner)
         }
@@ -647,7 +647,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
-        let tsRegistrationState: TSRegistrationState = databaseStorage.read { tx in
+        let tsRegistrationState: TSRegistrationState = SSKEnvironment.shared.databaseStorageRef.read { tx in
             let registrationState = tsAccountManager.registrationState(tx: tx.asV2Read)
             if registrationState.isRegistered, let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx.asV2Read) {
                 let deviceId = tsAccountManager.storedDeviceId(tx: tx.asV2Read)
@@ -669,17 +669,17 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 SyncPushTokensJob.run(mode: .rotateIfEligible)
             }).map {
                 // If the method returns a closure, run it after message processing.
-                _ = messageProcessor.waitForFetchingAndProcessing().done($0)
+                _ = SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing().done($0)
             }
         }
 
         if tsRegistrationState.isRegistered {
-            Task { [profileManager] in
+            Task {
                 do {
-                    _ = try await profileManager.fetchLocalUsersProfile(
+                    _ = try await SSKEnvironment.shared.profileManagerRef.fetchLocalUsersProfile(
                         authedAccount: .implicit()
                     ).awaitable()
-                    try await profileManager.downloadAndDecryptLocalUserAvatarIfNeeded(
+                    try await SSKEnvironment.shared.profileManagerRef.downloadAndDecryptLocalUserAvatarIfNeeded(
                         authedAccount: .implicit()
                     )
                 } catch {
@@ -702,8 +702,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             object: nil
         )
 
-        if !preferences.hasGeneratedThumbnails {
-            databaseStorage.asyncRead(
+        if !SSKEnvironment.shared.preferencesRef.hasGeneratedThumbnails {
+            SSKEnvironment.shared.databaseStorageRef.asyncRead(
                 block: { transaction in
                     // TODO: remove this one TSAttachment is killed.
                     TSAttachment.anyEnumerate(transaction: transaction, batched: true) { (_, _) in
@@ -711,7 +711,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                     }
                 },
                 completion: {
-                    self.preferences.setHasGeneratedThumbnails(true)
+                    SSKEnvironment.shared.preferencesRef.setHasGeneratedThumbnails(true)
                 }
             )
         }
@@ -769,7 +769,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         let (
             tsRegistrationState,
             lastMode
-        ) = databaseStorage.read { tx in
+        ) = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return (
                 DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx.asV2Read),
                 regLoader.restoreLastMode(transaction: tx.asV2Read)
@@ -1170,11 +1170,11 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
             // Clean up any messages that expired since last launch and continue
             // cleaning in the background.
-            self.disappearingMessagesJob.startIfNecessary()
+            SSKEnvironment.shared.disappearingMessagesJobRef.startIfNecessary()
 
             if !tsRegistrationState.isRegistered {
                 // Unregistered user should have no unread messages. e.g. if you delete your account.
-                NSObject.notificationPresenter.clearAllNotifications()
+                SSKEnvironment.shared.notificationPresenterRef.clearAllNotifications()
             }
         }
 
@@ -1183,11 +1183,11 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             // At this point, potentially lengthy DB locking migrations could be running.
             // Avoid blocking app launch by putting all further possible DB access in async block
             DispatchQueue.main.async {
-                AppEnvironment.shared.contactsManagerImpl.fetchSystemContactsOnceIfAlreadyAuthorized()
+                SSKEnvironment.shared.contactManagerImplRef.fetchSystemContactsOnceIfAlreadyAuthorized()
 
                 // TODO: Should we run this immediately even if we would like to process
                 // already decrypted envelopes handed to us by the NSE?
-                _ = self.messageFetcherJob.run()
+                _ = SSKEnvironment.shared.messageFetcherJobRef.run()
 
                 if !UIApplication.shared.isRegisteredForRemoteNotifications {
                     Logger.info("Retrying to register for remote notifications since user hasn't registered yet.")
@@ -1266,7 +1266,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         // Mark down that the APNS token is working because we got a push.
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            self.databaseStorage.asyncWrite { tx in
+            SSKEnvironment.shared.databaseStorageRef.asyncWrite { tx in
                 APNSRotationStore.didReceiveAPNSPush(transaction: tx)
             }
         }
@@ -1300,7 +1300,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                     Logger.info("Ignoring remote notification; user is not registered.")
                     return
                 }
-                _ = self.messageFetcherJob.run()
+                _ = SSKEnvironment.shared.messageFetcherJobRef.run()
                 // If the main app gets woken to process messages in the background, check
                 // for any pending NSE requests to fulfill.
                 _ = SSKEnvironment.shared.syncManagerRef.syncAllContactsIfFullSyncRequested()
@@ -1310,7 +1310,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
     private func handleSilentPushContent(_ remoteNotification: [AnyHashable: Any]) -> HandleSilentPushContentResult {
         if let spamChallengeToken = remoteNotification["rateLimitChallenge"] as? String {
-            spamChallengeResolver.handleIncomingPushChallengeToken(spamChallengeToken)
+            SSKEnvironment.shared.spamChallengeResolverRef.handleIncomingPushChallengeToken(spamChallengeToken)
             return .handled
         }
 
@@ -1327,7 +1327,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         appReadiness.runNowOrWhenAppDidBecomeReadySync {
             let oldBadgeValue = UIApplication.shared.applicationIconBadgeNumber
-            NSObject.notificationPresenter.clearAllNotifications()
+            SSKEnvironment.shared.notificationPresenterRef.clearAllNotifications()
             UIApplication.shared.applicationIconBadgeNumber = oldBadgeValue
         }
     }
@@ -1473,7 +1473,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         let isRegistered = tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
         if isRegistered {
             appReadiness.runNowOrWhenAppDidBecomeReadySync {
-                self.databaseStorage.write { transaction in
+                SSKEnvironment.shared.databaseStorageRef.write { transaction in
                     let localAddress = tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress
                     Logger.info("localAddress: \(String(describing: localAddress))")
 
@@ -1560,7 +1560,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         appReadiness.runNowOrWhenUIDidBecomeReadySync {
             let urlOpener = UrlOpener(
                 appReadiness: appReadiness,
-                databaseStorage: self.databaseStorage,
+                databaseStorage: SSKEnvironment.shared.databaseStorageRef,
                 tsAccountManager: DependenciesBridge.shared.tsAccountManager
             )
 
@@ -1577,8 +1577,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         guard isRegistered, FeatureFlags.periodicallyCheckDatabaseIntegrity else { return }
 
         let appReadiness: AppReadiness = self.appReadiness
-        DispatchQueue.sharedUtility.async { [databaseStorage] in
-            switch GRDBDatabaseStorageAdapter.checkIntegrity(databaseStorage: databaseStorage) {
+        DispatchQueue.sharedUtility.async {
+            switch GRDBDatabaseStorageAdapter.checkIntegrity(databaseStorage: SSKEnvironment.shared.databaseStorageRef) {
             case .ok: break
             case .notOk:
                 appReadiness.runNowOrWhenUIDidBecomeReadySync {

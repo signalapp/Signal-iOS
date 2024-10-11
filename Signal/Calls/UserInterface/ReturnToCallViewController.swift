@@ -59,11 +59,11 @@ public class ReturnToCallViewController: UIViewController {
         }
         updateLocalVideoFrame()
 
-        let profileImage = databaseStorage.read { transaction -> UIImage? in
+        let profileImage = SSKEnvironment.shared.databaseStorageRef.read { transaction -> UIImage? in
             avatarView.update(transaction) { config in
                 config.dataSource = .address(callViewController.remoteVideoAddress)
             }
-            return self.profileManagerImpl.profileAvatar(
+            return SSKEnvironment.shared.profileManagerImplRef.profileAvatar(
                 for: callViewController.remoteVideoAddress,
                 transaction: transaction
             )

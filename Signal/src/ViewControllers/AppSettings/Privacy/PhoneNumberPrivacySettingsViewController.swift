@@ -33,10 +33,10 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
     }
 
     private func loadValues() {
-        databaseStorage.read { tx in
+        SSKEnvironment.shared.databaseStorageRef.read { tx in
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
             phoneNumberDiscoverability = tsAccountManager.phoneNumberDiscoverability(tx: tx.asV2Read).orDefault
-            phoneNumberSharingMode = udManager.phoneNumberSharingMode(tx: tx.asV2Read).orDefault
+            phoneNumberSharingMode = SSKEnvironment.shared.udManagerRef.phoneNumberSharingMode(tx: tx.asV2Read).orDefault
         }
     }
 
@@ -156,7 +156,7 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
     private func updateDiscoverability(_ phoneNumberDiscoverability: PhoneNumberDiscoverability) {
         guard self.phoneNumberDiscoverability != phoneNumberDiscoverability else { return }
 
-        databaseStorage.asyncWrite(block: { transaction in
+        SSKEnvironment.shared.databaseStorageRef.asyncWrite(block: { transaction in
             DependenciesBridge.shared.phoneNumberDiscoverabilityManager.setPhoneNumberDiscoverability(
                 phoneNumberDiscoverability,
                 updateAccountAttributes: true,
@@ -174,9 +174,8 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
     private func updatePhoneNumberSharing(_ mode: PhoneNumberSharingMode) {
         guard phoneNumberSharingMode != mode else { return }
 
-        databaseStorage.asyncWrite(block: { [weak self] transaction in
-            guard let self else { return }
-            self.udManager.setPhoneNumberSharingMode(mode, updateStorageServiceAndProfile: true, tx: transaction)
+        SSKEnvironment.shared.databaseStorageRef.asyncWrite(block: { transaction in
+            SSKEnvironment.shared.udManagerRef.setPhoneNumberSharingMode(mode, updateStorageServiceAndProfile: true, tx: transaction)
 
             // If sharing is set to `everybody`, discovery needs to be
             // updated to match this.

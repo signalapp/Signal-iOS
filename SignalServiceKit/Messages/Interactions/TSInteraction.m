@@ -212,7 +212,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     TSThread *fetchedThread = [self threadWithTx:transaction];
     [fetchedThread updateWithUpdatedMessage:self transaction:transaction];
 
-    [self.modelReadCaches.interactionReadCache didUpdateInteraction:self transaction:transaction];
+    [SSKEnvironment.shared.modelReadCachesRef.interactionReadCache didUpdateInteraction:self transaction:transaction];
 }
 
 #pragma mark -

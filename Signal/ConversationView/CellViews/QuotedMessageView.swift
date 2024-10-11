@@ -72,7 +72,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
             conversationStyle: conversationStyle,
             isOutgoing: isOutgoing,
             isForPreview: false,
-            quotedAuthorName: contactsManager.displayName(
+            quotedAuthorName: SSKEnvironment.shared.contactManagerRef.displayName(
                 for: quotedReplyModel.originalMessageAuthorAddress,
                 tx: transaction
             ).resolvedValue()
@@ -98,7 +98,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
             conversationStyle: conversationStyle,
             isOutgoing: true,
             isForPreview: true,
-            quotedAuthorName: contactsManager.displayName(
+            quotedAuthorName: SSKEnvironment.shared.contactManagerRef.displayName(
                 for: quotedReplyModel.originalMessageAuthorAddress,
                 tx: transaction
             ).resolvedValue()

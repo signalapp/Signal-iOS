@@ -327,7 +327,7 @@ public class InstalledStickerCursor: NSObject, SDSCursor {
             return nil
         }
         let value = try InstalledSticker.fromRecord(record)
-        Self.modelReadCaches.installedStickerCache.didReadInstalledSticker(value, transaction: transaction.asAnyRead)
+        SSKEnvironment.shared.modelReadCachesRef.installedStickerCache.didReadInstalledSticker(value, transaction: transaction.asAnyRead)
         return value
     }
 
@@ -377,7 +377,7 @@ public extension InstalledSticker {
         assert(!uniqueId.isEmpty)
 
         if !ignoreCache,
-            let cachedCopy = Self.modelReadCaches.installedStickerCache.getInstalledSticker(uniqueId: uniqueId, transaction: transaction) {
+            let cachedCopy = SSKEnvironment.shared.modelReadCachesRef.installedStickerCache.getInstalledSticker(uniqueId: uniqueId, transaction: transaction) {
             return cachedCopy
         }
 
@@ -572,7 +572,7 @@ public extension InstalledSticker {
             }
 
             let value = try InstalledSticker.fromRecord(record)
-            Self.modelReadCaches.installedStickerCache.didReadInstalledSticker(value, transaction: transaction.asAnyRead)
+            SSKEnvironment.shared.modelReadCachesRef.installedStickerCache.didReadInstalledSticker(value, transaction: transaction.asAnyRead)
             return value
         } catch {
             owsFailDebug("error: \(error)")

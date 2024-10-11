@@ -46,7 +46,7 @@ public class GroupV2UpdatesImpl: Dependencies {
             return
         }
 
-        await self.messageProcessor.waitForFetchingAndProcessing().awaitable()
+        await SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing().awaitable()
 
         guard let groupInfoToRefresh = Self.findGroupToAutoRefresh() else {
             // We didn't find a group to refresh; abort.
@@ -75,7 +75,7 @@ public class GroupV2UpdatesImpl: Dependencies {
 
     private func didUpdateGroupToCurrentRevision(groupId: Data) async {
         let storeKey = groupId.hexadecimalString
-        return await databaseStorage.awaitableWrite { transaction in
+        return await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
             Self.groupRefreshStore.setDate(Date(), key: storeKey, transaction: transaction)
         }
     }
@@ -90,7 +90,7 @@ public class GroupV2UpdatesImpl: Dependencies {
         // Enumerate the all v2 groups, trying to find the "best" one to refresh.
         // The "best" is the group that hasn't been refreshed in the longest
         // time.
-        Self.databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             var groupInfoToRefresh: GroupInfo?
             TSGroupThread.anyEnumerate(
                 transaction: transaction,
@@ -309,9 +309,9 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
             return abs(lastSuccessfulRefreshDate.timeIntervalSinceNow) < refreshFrequency
         }()
 
-        let earlyResult = try databaseStorage.read { tx -> TSGroupThread? in
+        let earlyResult = try SSKEnvironment.shared.databaseStorageRef.read { tx -> TSGroupThread? in
             // - If we're blocked, it's an immediate error
-            if blockingManager.isGroupIdBlocked(groupId, transaction: tx) {
+            if SSKEnvironment.shared.blockingManagerRef.isGroupIdBlocked(groupId, transaction: tx) {
                 throw GroupsV2Error.groupBlocked
             }
             // - If we're throttled, return the current thread state if we have it
@@ -409,11 +409,11 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
 
         private func _run() async throws -> TSGroupThread {
             if groupUpdateMode.shouldBlockOnMessageProcessing {
-                await self.messageProcessor.waitForFetchingAndProcessing().awaitable()
+                await SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing().awaitable()
             }
 
             do {
-                return try await self.groupV2UpdatesImpl.refreshGroupFromService(
+                return try await SSKEnvironment.shared.groupV2UpdatesImplRef.refreshGroupFromService(
                     groupSecretParams: self.groupSecretParams,
                     groupUpdateMode: self.groupUpdateMode,
                     groupModelOptions: self.groupModelOptions,
@@ -437,7 +437,7 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
         }
 
         private var shouldRetryAuthFailures: Bool {
-            return self.databaseStorage.read { transaction in
+            return SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 guard let groupThread = TSGroupThread.fetch(groupId: self.groupId, transaction: transaction) else {
                     // The thread may have been deleted while the refresh was in flight.
                     Logger.warn("Missing group thread.")
@@ -596,7 +596,7 @@ private extension GroupV2UpdatesImpl {
     private func fetchChangeActionsFromService(
         groupSecretParams: GroupSecretParams,
         groupUpdateMode: GroupUpdateMode
-    ) async throws -> GroupsV2Impl.GroupChangePage {
+    ) async throws -> GroupV2ChangePage {
 
         let upToRevision: UInt32? = {
             switch groupUpdateMode {
@@ -626,7 +626,7 @@ private extension GroupV2UpdatesImpl {
             return .init(changes: cachedChanges, earlyEnd: nil)
         }
 
-        let fetchedPage = try await self.groupsV2Impl.fetchGroupChangeActions(
+        let fetchedPage = try await SSKEnvironment.shared.groupsV2Ref.fetchGroupChangeActions(
             groupSecretParams: groupSecretParams,
             includeCurrentRevision: includeCurrentRevision
         )
@@ -643,7 +643,7 @@ private extension GroupV2UpdatesImpl {
         groupModelOptions: TSGroupModelOptions
     ) async throws -> TSGroupThread {
         if groupUpdateMode.shouldBlockOnMessageProcessing {
-            await self.messageProcessor.waitForFetchingAndProcessing().awaitable()
+            await SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing().awaitable()
         }
         return try await self.tryToApplyGroupChangesFromServiceNow(
             groupId: groupId,
@@ -663,7 +663,7 @@ private extension GroupV2UpdatesImpl {
         upToRevision: UInt32?,
         groupModelOptions: TSGroupModelOptions
     ) async throws -> TSGroupThread {
-        return try await databaseStorage.awaitableWrite { (transaction: SDSAnyWriteTransaction) throws -> TSGroupThread in
+        return try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { (transaction: SDSAnyWriteTransaction) throws -> TSGroupThread in
             guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
                 throw OWSAssertionError("Missing localIdentifiers.")
             }
@@ -741,12 +741,12 @@ private extension GroupV2UpdatesImpl {
             case nil, .unknown, .localUser:
                 localUserWasAddedByBlockedUser = false
             case .legacyE164(let e164):
-                localUserWasAddedByBlockedUser = self.blockingManager.isAddressBlocked(
+                localUserWasAddedByBlockedUser = SSKEnvironment.shared.blockingManagerRef.isAddressBlocked(
                     .legacyAddress(serviceId: nil, phoneNumber: e164.stringValue),
                     transaction: transaction
                 )
             case .aci(let aci):
-                localUserWasAddedByBlockedUser = self.blockingManager.isAddressBlocked(
+                localUserWasAddedByBlockedUser = SSKEnvironment.shared.blockingManagerRef.isAddressBlocked(
                     .init(aci),
                     transaction: transaction
                 )
@@ -766,13 +766,13 @@ private extension GroupV2UpdatesImpl {
                 )
             } else if
                 let profileKey = profileKeysByAci[localIdentifiers.aci],
-                profileKey != self.profileManager.localProfileKey.keyData
+                profileKey != SSKEnvironment.shared.profileManagerRef.localProfileKey.keyData
             {
                 // If the final group state includes a stale profile key for the
                 // local user, schedule an update to fix that. Note that we skip
                 // this step if we are planning to leave the group via the block
                 // above, as it's redundant.
-                self.groupsV2.updateLocalProfileKeyInGroup(
+                SSKEnvironment.shared.groupsV2Ref.updateLocalProfileKeyInGroup(
                     groupId: groupId,
                     transaction: transaction
                 )
@@ -1010,7 +1010,7 @@ private extension GroupV2UpdatesImpl {
         groupModelOptions: TSGroupModelOptions,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata
     ) async throws -> TSGroupThread {
-        let groupV2Snapshot = try await self.groupsV2Impl.fetchCurrentGroupV2Snapshot(groupSecretParams: groupSecretParams)
+        let groupV2Snapshot = try await SSKEnvironment.shared.groupsV2Ref.fetchCurrentGroupV2Snapshot(groupSecretParams: groupSecretParams)
         return try await self.tryToApplyCurrentGroupV2SnapshotFromService(
             groupV2Snapshot: groupV2Snapshot,
             groupUpdateMode: groupUpdateMode,
@@ -1026,7 +1026,7 @@ private extension GroupV2UpdatesImpl {
         spamReportingMetadata: GroupUpdateSpamReportingMetadata
     ) async throws -> TSGroupThread {
         if groupUpdateMode.shouldBlockOnMessageProcessing {
-            await self.messageProcessor.waitForFetchingAndProcessing().awaitable()
+            await SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing().awaitable()
         }
         return try await self.tryToApplyCurrentGroupV2SnapshotFromServiceNow(
             groupV2Snapshot: groupV2Snapshot,
@@ -1041,9 +1041,9 @@ private extension GroupV2UpdatesImpl {
         spamReportingMetadata: GroupUpdateSpamReportingMetadata
     ) async throws -> TSGroupThread {
 
-        let localProfileKey = profileManager.localProfileKey
+        let localProfileKey = SSKEnvironment.shared.profileManagerRef.localProfileKey
 
-        return try await databaseStorage.awaitableWrite { (transaction: SDSAnyWriteTransaction) throws -> TSGroupThread in
+        return try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { (transaction: SDSAnyWriteTransaction) throws -> TSGroupThread in
             guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
                 throw OWSAssertionError("Missing localIdentifiers.")
             }
@@ -1090,7 +1090,7 @@ private extension GroupV2UpdatesImpl {
             // If the group state includes a stale profile key for the
             // local user, schedule an update to fix that.
             if let profileKey = groupV2Snapshot.profileKeys[localAci], profileKey != localProfileKey.keyData {
-                self.groupsV2.updateLocalProfileKeyInGroup(groupId: newGroupModel.groupId, transaction: transaction)
+                SSKEnvironment.shared.groupsV2Ref.updateLocalProfileKeyInGroup(groupId: newGroupModel.groupId, transaction: transaction)
             }
 
             return groupThread
@@ -1218,7 +1218,7 @@ private extension GroupV2UpdatesImpl {
             owsFailDebug("Error: \(error)")
             return nil
         }
-        guard let dbRevision = (databaseStorage.read { (transaction) -> UInt32? in
+        guard let dbRevision = (SSKEnvironment.shared.databaseStorageRef.read { (transaction) -> UInt32? in
             guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
                 return nil
             }

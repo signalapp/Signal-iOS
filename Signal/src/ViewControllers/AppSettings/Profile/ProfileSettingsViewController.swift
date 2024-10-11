@@ -111,9 +111,9 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
         defaultSeparatorInsetLeading = Self.cellHInnerMargin + 24 + OWSTableItem.iconSpacing
 
-        let snapshot = profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: true)
+        let snapshot = SSKEnvironment.shared.profileManagerImplRef.localProfileSnapshot(shouldIncludeAvatar: true)
         allBadges = snapshot.profileBadgeInfo ?? []
-        displayBadgesOnProfile = subscriptionManager.displayBadgesOnProfile
+        displayBadgesOnProfile = SSKEnvironment.shared.subscriptionManagerRef.displayBadgesOnProfile
         // TODO: Use `visibleBadges` when `localProfileSnapshot` is removed.
         let visibleBadgeIds = allBadges.filter { $0.isVisible ?? true }.map { $0.badgeId }
         profileValues = ProfileValues(
@@ -125,7 +125,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
             visibleBadgeIds: .init(oldValue: visibleBadgeIds, changedValue: .noChange)
         )
 
-        databaseStorage.read { tx -> Void in
+        SSKEnvironment.shared.databaseStorageRef.read { tx -> Void in
             localUsernameState = context.localUsernameManager
                 .usernameState(tx: tx.asV2Read)
             shouldShowUsernameLinkTooltip = context.usernameEducationManager
@@ -222,7 +222,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                 actionBlock: { [weak self] in
                     guard let self = self else { return }
 
-                    let avatarImage = self.databaseStorage.read { self.avatarImage(transaction: $0) }
+                    let avatarImage = SSKEnvironment.shared.databaseStorageRef.read { self.avatarImage(transaction: $0) }
 
                     let vc = BadgeConfigurationViewController(
                         availableBadges: self.allBadges,
@@ -532,10 +532,10 @@ class ProfileSettingsViewController: OWSTableViewController2 {
             isAttemptingRecovery: isAttemptingRecovery,
             usernameChangeDelegate: self,
             context: .init(
-                databaseStorage: databaseStorage,
-                networkManager: networkManager,
+                databaseStorage: SSKEnvironment.shared.databaseStorageRef,
+                networkManager: SSKEnvironment.shared.networkManagerRef,
                 schedulers: context.schedulers,
-                storageServiceManager: storageServiceManager,
+                storageServiceManager: SSKEnvironment.shared.storageServiceManagerRef,
                 usernameEducationManager: context.usernameEducationManager,
                 localUsernameManager: context.localUsernameManager
             )
@@ -639,7 +639,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         if permanently {
             shouldShowUsernameLinkTooltip = false
 
-            databaseStorage.write { tx in
+            SSKEnvironment.shared.databaseStorageRef.write { tx in
                 context.usernameEducationManager
                     .setShouldShowUsernameLinkTooltip(false, tx: tx.asV2Write)
             }
@@ -687,7 +687,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         let profileValues: ProfileValues = self.profileValues
         let displayBadgesOnProfile = self.displayBadgesOnProfile
 
-        guard reachabilityManager.isReachable else {
+        guard SSKEnvironment.shared.reachabilityManagerRef.isReachable else {
             OWSActionSheets.showErrorAlert(
                 message: OWSLocalizedString(
                     "PROFILE_VIEW_NO_CONNECTION",
@@ -699,8 +699,8 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
         // Show an activity indicator to block the UI during the profile upload.
         ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modalActivityIndicator in
-            Self.databaseStorage.write(.promise) { tx in
-                Self.profileManager.updateLocalProfile(
+            SSKEnvironment.shared.databaseStorageRef.write(.promise) { tx in
+                SSKEnvironment.shared.profileManagerRef.updateLocalProfile(
                     profileGivenName: profileValues.givenName.changedValue,
                     profileFamilyName: profileValues.familyName.changedValue,
                     profileBio: profileValues.bio.changedValue,
@@ -723,8 +723,8 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                 // Run the Promise returned from databaseStorage.write(...).
                 updatePromise
             }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
-                Self.databaseStorage.write(.promise) { transaction in
-                    Self.subscriptionManager.setDisplayBadgesOnProfile(
+                SSKEnvironment.shared.databaseStorageRef.write(.promise) { transaction in
+                    SSKEnvironment.shared.subscriptionManagerRef.setDisplayBadgesOnProfile(
                         displayBadgesOnProfile,
                         updateStorageService: true,
                         transaction: transaction
@@ -759,7 +759,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         if let avatarData = profileValues.avatarData.currentValue {
             return UIImage(data: avatarData)
         } else {
-            return avatarBuilder.defaultAvatarImageForLocalUser(diameterPoints: avatarSizeClass.diameter, transaction: tx)
+            return SSKEnvironment.shared.avatarBuilderRef.defaultAvatarImageForLocalUser(diameterPoints: avatarSizeClass.diameter, transaction: tx)
         }
     }
 
@@ -770,7 +770,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
         let sizeClass = ConversationAvatarView.Configuration.SizeClass.eightyEight
         let badgedAvatarView = ConversationAvatarView(sizeClass: sizeClass, localUserDisplayMode: .asUser)
-        databaseStorage.read { readTx in
+        SSKEnvironment.shared.databaseStorageRef.read { readTx in
             let primaryBadge = allBadges.first
             let badgeAssets = primaryBadge?.badge?.assets
             let badgeImage = badgeAssets.flatMap { sizeClass.fetchImageFromBadgeAssets($0) }

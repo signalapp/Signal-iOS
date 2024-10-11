@@ -311,7 +311,7 @@ class AudioCell: MediaTileListModeCell {
             self.audioMessageView = nil
         }
 
-        databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             createAudioMessageView(transaction: transaction)
         }
     }

@@ -415,7 +415,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
     private func settingsBarButtonItem() -> UIBarButtonItem {
         let barButtonItem = createSettingsBarButtonItem(
-            databaseStorage: databaseStorage,
+            databaseStorage: SSKEnvironment.shared.databaseStorageRef,
             shouldShowUnreadPaymentBadge: viewState.settingsButtonCreator.hasUnreadPaymentNotification,
             buildActions: { settingsAction -> [UIAction] in
                 var contextMenuActions: [UIAction] = []
@@ -616,7 +616,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         conversationSplitViewController?.selectedConversationViewController?.dismissMessageContextMenu(animated: true)
 
         let viewController = ComposeViewController()
-        contactsManagerImpl.requestSystemContactsOnce { error in
+        SSKEnvironment.shared.contactManagerImplRef.requestSystemContactsOnce { error in
             if let error {
                 Logger.error("Error when requesting contacts: \(error)")
             }
@@ -640,7 +640,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         conversationSplitViewController?.selectedConversationViewController?.dismissMessageContextMenu(animated: true)
 
         let newGroupViewController = NewGroupMembersViewController()
-        contactsManagerImpl.requestSystemContactsOnce { error in
+        SSKEnvironment.shared.contactManagerImplRef.requestSystemContactsOnce { error in
             if let error {
                 Logger.error("Error when requesting contacts: \(error)")
             }
@@ -714,7 +714,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
     let viewState: CLVViewState
 
     private func shouldShowFirstConversationCue() -> Bool {
-        return shouldShowEmptyInboxView && !databaseStorage.read(block: SSKPreferences.hasSavedThread(transaction:))
+        return shouldShowEmptyInboxView && !SSKEnvironment.shared.databaseStorageRef.read(block: SSKPreferences.hasSavedThread(transaction:))
     }
 
     private var shouldShowEmptyInboxView: Bool {
@@ -770,7 +770,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             shouldShowExpirySheet,
             mostRecentSubscriptionPaymentMethod,
             hasCurrentSubscription
-        ) = databaseStorage.read { transaction in (
+        ) = SSKEnvironment.shared.databaseStorageRef.read { transaction in (
             receiptCredentialResultStore.getRedemptionSuccess(successMode: .oneTimeBoost, tx: transaction.asV2Read),
             receiptCredentialResultStore.getRedemptionSuccess(successMode: .recurringSubscriptionInitiation, tx: transaction.asV2Read),
 
@@ -789,7 +789,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             SubscriptionManagerImpl.mostRecentlyExpiredBadgeID(transaction: transaction),
             SubscriptionManagerImpl.showExpirySheetOnHomeScreenKey(transaction: transaction),
             SubscriptionManagerImpl.getMostRecentSubscriptionPaymentMethod(transaction: transaction),
-            subscriptionManager.hasCurrentSubscription(transaction: transaction)
+            SSKEnvironment.shared.subscriptionManagerRef.hasCurrentSubscription(transaction: transaction)
         )}
 
         if
@@ -862,7 +862,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         /// declining to present it. That'd be bad if it prevented us from
         /// presenting a different error.
         func hasPresentedError() {
-            self.databaseStorage.write { tx in
+            SSKEnvironment.shared.databaseStorageRef.write { tx in
                 self.receiptCredentialResultStore.setHasPresentedError(
                     errorMode: errorMode,
                     tx: tx.asV2Write
@@ -914,7 +914,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         let logger = PrefixedLogger(prefix: "[Donations]", suffix: "\(errorMode)")
 
         firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
-            self.profileManager.badgeStore.populateAssetsOnBadge(badge)
+            SSKEnvironment.shared.profileManagerRef.badgeStore.populateAssetsOnBadge(badge)
         }.done(on: DispatchQueue.main) {
             guard self.isChatListTopmostViewController() else {
                 logger.info("Not presenting error – no longer the top view controller.")
@@ -971,7 +971,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                 SubscriptionManagerImpl.getBoostBadge()
             }.done(on: DispatchQueue.global()) { boostBadge in
                 firstly {
-                    self.profileManager.badgeStore.populateAssetsOnBadge(boostBadge)
+                    SSKEnvironment.shared.profileManagerRef.badgeStore.populateAssetsOnBadge(boostBadge)
                 }.done(on: DispatchQueue.main) {
                     // Make sure we're still the active VC
                     guard UIApplication.shared.frontmostViewController == self.conversationSplitViewController,
@@ -983,7 +983,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                     )
                     badgeSheet.delegate = self
                     self.present(badgeSheet, animated: true)
-                    self.databaseStorage.write { transaction in
+                    SSKEnvironment.shared.databaseStorageRef.write { transaction in
                         SubscriptionManagerImpl.setShowExpirySheetOnHomeScreenKey(show: false, transaction: transaction)
                     }
                 }.catch { error in
@@ -1019,7 +1019,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                 )
             }.done(on: DispatchQueue.global()) { currentSubscription in
                 defer {
-                    self.databaseStorage.write { transaction in
+                    SSKEnvironment.shared.databaseStorageRef.write { transaction in
                         SubscriptionManagerImpl.setShowExpirySheetOnHomeScreenKey(show: false, transaction: transaction)
                     }
                 }
@@ -1077,7 +1077,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             return
         }
 
-        let shortName = contactsManager.displayName(for: address, tx: transaction).resolvedValue(useShortNameIfAvailable: true)
+        let shortName = SSKEnvironment.shared.contactManagerRef.displayName(for: address, tx: transaction).resolvedValue(useShortNameIfAvailable: true)
         let formattedAmount = PaymentsFormat.format(paymentAmount: paymentAmount,
                                                     isShortForm: true,
                                                     withCurrencyCode: true,
@@ -1238,7 +1238,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             return
         }
 
-        await messageProcessor.waitForFetchingAndProcessing().awaitable()
+        await SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing().awaitable()
 
         let notificationSettings = await UNUserNotificationCenter.current().notificationSettings()
         guard notificationSettings.authorizationStatus == .authorized else {
@@ -1284,7 +1284,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         let mostRecentDateKey = "mostRecentPromptDate"
         let promptCountKey = "promptCount"
 
-        let shouldShowPrompt = databaseStorage.read { tx in
+        let shouldShowPrompt = SSKEnvironment.shared.databaseStorageRef.read { tx in
             // If we've shown the prompt recently, don't show it again.
             let promptCount = keyValueStore.getInt(promptCountKey, defaultValue: 0, transaction: tx)
             let promptBackoff: TimeInterval = {
@@ -1349,7 +1349,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         let promptDate = Date()
         self.present(actionSheet, animated: true)
 
-        await databaseStorage.awaitableWrite { tx in
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             keyValueStore.setDate(promptDate, key: mostRecentDateKey, transaction: tx)
             keyValueStore.setInt(
                 keyValueStore.getInt(promptCountKey, defaultValue: 0, transaction: tx) + 1,
@@ -1619,9 +1619,9 @@ extension ChatListViewController: GetStartedBannerViewControllerDelegate {
 
 extension ChatListViewController {
     func updateFirstConversationLabel() {
-        let contactNames = databaseStorage.read { tx -> [ComparableDisplayName] in
-            let comparableNames = contactsManager.sortedComparableNames(
-                for: profileManager.allWhitelistedRegisteredAddresses(tx: tx),
+        let contactNames = SSKEnvironment.shared.databaseStorageRef.read { tx -> [ComparableDisplayName] in
+            let comparableNames = SSKEnvironment.shared.contactManagerRef.sortedComparableNames(
+                for: SSKEnvironment.shared.profileManagerRef.allWhitelistedRegisteredAddresses(tx: tx),
                 tx: tx
             )
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager

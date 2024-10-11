@@ -64,7 +64,7 @@ extension SubscriptionManagerImpl {
         let request = OWSRequestFactory.donationConfiguration()
 
         return firstly {
-            networkManager.makePromise(request: request)
+            SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
         }.map(on: DispatchQueue.sharedUserInitiated) { response -> DonationConfiguration in
             try DonationConfiguration.from(configurationServiceResponse: response.responseBodyJson)
         }

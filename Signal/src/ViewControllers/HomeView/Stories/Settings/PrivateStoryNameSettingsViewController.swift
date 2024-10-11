@@ -117,7 +117,7 @@ public class PrivateStoryNameSettingsViewController: OWSTableViewController2 {
         guard let name = nameTextField.text?.nilIfEmpty?.filterForDisplay else {
             return showMissingNameAlert()
         }
-        databaseStorage.asyncWrite { transaction in
+        SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
             self.thread.updateWithName(name, updateStorageService: true, transaction: transaction)
         } completion: { [weak self] in
             guard let self = self else { return }

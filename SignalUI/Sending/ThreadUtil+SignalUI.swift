@@ -39,7 +39,7 @@ extension ThreadUtil {
                     try DependenciesBridge.shared.quotedReplyManager.prepareDraftForSending($0)
                 }
 
-                unpreparedMessage = Self.databaseStorage.read { readTransaction in
+                unpreparedMessage = SSKEnvironment.shared.databaseStorageRef.read { readTransaction in
                     UnpreparedOutgoingMessage.build(
                         thread: thread,
                         timestamp: messageTimestamp,
@@ -136,7 +136,7 @@ extension ThreadUtil {
         persistenceCompletionHandler persistenceCompletion: PersistenceCompletion? = nil
     ) {
         assertOnQueue(Self.enqueueSendQueue)
-        Self.databaseStorage.write { writeTransaction in
+        SSKEnvironment.shared.databaseStorageRef.write { writeTransaction in
             guard let preparedMessage = try? unpreparedMessage.prepare(tx: writeTransaction) else {
                 owsFailDebug("Failed to prepare message")
                 return

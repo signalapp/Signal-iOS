@@ -105,7 +105,7 @@ public class CVLoadCoordinator: NSObject {
         )
         self.messageLoader = MessageLoader(
             batchFetcher: ConversationViewBatchFetcher(interactionFinder: InteractionFinder(threadUniqueId: thread.uniqueId)),
-            interactionFetchers: [Self.modelReadCaches.interactionReadCache, SDSInteractionFetcherImpl()]
+            interactionFetchers: [SSKEnvironment.shared.modelReadCachesRef.interactionReadCache, SDSInteractionFetcherImpl()]
         )
         super.init()
     }
@@ -116,7 +116,7 @@ public class CVLoadCoordinator: NSObject {
         self.delegate = delegate
         self.componentDelegate = componentDelegate
 
-        Self.databaseStorage.appendDatabaseChangeDelegate(self)
+        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
 
         // Kick off async load.
         loadInitialMapping(focusMessageIdOnOpen: focusMessageIdOnOpen)
@@ -472,7 +472,7 @@ public class CVLoadCoordinator: NSObject {
             lastLoadNewerDate = Date()
         }
 
-        let typingIndicatorsSender = typingIndicatorsImpl.typingAddress(forThread: thread)
+        let typingIndicatorsSender = SSKEnvironment.shared.typingIndicatorsRef.typingAddress(forThread: thread)
         let viewStateSnapshot = CVViewStateSnapshot.snapshot(
             viewState: viewState,
             typingIndicatorsSender: typingIndicatorsSender,

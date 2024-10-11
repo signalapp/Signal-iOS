@@ -13,7 +13,7 @@ final class APNSRotationStoreTest: SignalBaseTest {
     override func setUp() {
         super.setUp()
 
-        let remoteConfigManager = self.remoteConfigManager as! StubbableRemoteConfigManager
+        let remoteConfigManager = SSKEnvironment.shared.remoteConfigManagerRef as! StubbableRemoteConfigManager
         remoteConfigManager.cachedConfig = RemoteConfig(
             clockSkew: 0,
             isEnabledFlags: ["ios.enableAutoAPNSRotation": true],
@@ -30,7 +30,7 @@ final class APNSRotationStoreTest: SignalBaseTest {
 
     func testHasNoPushToken() {
         // Make sure we don't have an APNS token
-        preferences.removeAllValues()
+        SSKEnvironment.shared.preferencesRef.removeAllValues()
         let now = Date().ows_millisecondsSince1970
 
         // Make sure we are otherwise eligible to rotate, so
@@ -59,7 +59,7 @@ final class APNSRotationStoreTest: SignalBaseTest {
 
         // Set an APNS token.
         write { tx in
-            preferences.setPushToken("123", tx: tx)
+            SSKEnvironment.shared.preferencesRef.setPushToken("123", tx: tx)
         }
 
         read {
@@ -76,7 +76,7 @@ final class APNSRotationStoreTest: SignalBaseTest {
 
         // Set an APNS token.
         write { tx in
-            preferences.setPushToken("123", tx: tx)
+            SSKEnvironment.shared.preferencesRef.setPushToken("123", tx: tx)
         }
 
         write { transaction in
@@ -107,7 +107,7 @@ final class APNSRotationStoreTest: SignalBaseTest {
 
         // Change the token!
         write { tx in
-            preferences.setPushToken("abc", tx: tx)
+            SSKEnvironment.shared.preferencesRef.setPushToken("abc", tx: tx)
         }
 
         read {
@@ -125,7 +125,7 @@ final class APNSRotationStoreTest: SignalBaseTest {
 
         // Set an APNS token.
         write { tx in
-            preferences.setPushToken("123", tx: tx)
+            SSKEnvironment.shared.preferencesRef.setPushToken("123", tx: tx)
         }
 
         write { transaction in
@@ -175,7 +175,7 @@ final class APNSRotationStoreTest: SignalBaseTest {
     func testHasUpdatedRecently() {
         // Make sure we have an APNS Token
         write { tx in
-            preferences.setPushToken("123", tx: tx)
+            SSKEnvironment.shared.preferencesRef.setPushToken("123", tx: tx)
         }
         let now = Date().ows_millisecondsSince1970
 
@@ -203,7 +203,7 @@ final class APNSRotationStoreTest: SignalBaseTest {
     func testHasRotatedRecently() {
         // Make sure we have an APNS Token
         write { tx in
-            preferences.setPushToken("123", tx: tx)
+            SSKEnvironment.shared.preferencesRef.setPushToken("123", tx: tx)
         }
         let now = Date().ows_millisecondsSince1970
 
@@ -238,7 +238,7 @@ final class APNSRotationStoreTest: SignalBaseTest {
     func testRecentMissedMessages() {
         // Make sure we have an APNS Token
         write { tx in
-            preferences.setPushToken("123", tx: tx)
+            SSKEnvironment.shared.preferencesRef.setPushToken("123", tx: tx)
         }
         let now = Date().ows_millisecondsSince1970
 
@@ -256,7 +256,7 @@ final class APNSRotationStoreTest: SignalBaseTest {
 
         // Change the token so its not marked good anymore.
         write { tx in
-            preferences.setPushToken("abc", tx: tx)
+            SSKEnvironment.shared.preferencesRef.setPushToken("abc", tx: tx)
         }
 
         read {

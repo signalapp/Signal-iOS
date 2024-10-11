@@ -20,7 +20,7 @@ class DomainFrontingCountryViewController: OWSTableViewController2 {
     }
 
     private func updateTableContents() {
-        let currentCountryCode = signalService.manualCensorshipCircumventionCountryCode
+        let currentCountryCode = SSKEnvironment.shared.signalServiceRef.manualCensorshipCircumventionCountryCode
 
         let section = OWSTableSection()
         section.headerTitle = OWSLocalizedString(
@@ -47,7 +47,7 @@ class DomainFrontingCountryViewController: OWSTableViewController2 {
     }
 
     private func selectCountry(_ countryMetadata: OWSCountryMetadata) {
-        signalService.manualCensorshipCircumventionCountryCode = countryMetadata.countryCode
+        SSKEnvironment.shared.signalServiceRef.manualCensorshipCircumventionCountryCode = countryMetadata.countryCode
         navigationController?.popViewController(animated: true)
     }
 

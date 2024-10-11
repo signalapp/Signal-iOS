@@ -17,7 +17,7 @@ public final class ThreadUtil: Dependencies {
 
     public static func enqueueSendAsyncWrite(_ block: @escaping (SDSAnyWriteTransaction) -> Void) {
         enqueueSendQueue.async {
-            Self.databaseStorage.write { transaction in
+            SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 block(transaction)
             }
         }
@@ -64,7 +64,7 @@ public extension ThreadUtil {
 
         let builder: TSOutgoingMessageBuilder = .withDefaultValues(thread: thread)
 
-        let message: TSOutgoingMessage = databaseStorage.read { tx in
+        let message: TSOutgoingMessage = SSKEnvironment.shared.databaseStorageRef.read { tx in
             applyDisappearingMessagesConfiguration(to: builder, tx: tx.asV2Read)
             return builder.build(transaction: tx)
         }
@@ -83,7 +83,7 @@ public extension ThreadUtil {
                 contactShareDraft: sendableContactShareDraft
             )
 
-            Self.databaseStorage.write { transaction in
+            SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 guard let preparedMessage = try? unpreparedMessage.prepare(tx: transaction) else {
                     owsFailDebug("Unable to build message for sending!")
                     return
@@ -111,13 +111,13 @@ public extension ThreadUtil {
         AssertIsOnMainThread()
 
         let builder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread)
-        let message = databaseStorage.read { tx in
+        let message = SSKEnvironment.shared.databaseStorageRef.read { tx in
             applyDisappearingMessagesConfiguration(to: builder, tx: tx.asV2Read)
             return builder.build(transaction: tx)
         }
 
         Self.enqueueSendQueue.async {
-            let stickerDraft: MessageStickerDraft? = Self.databaseStorage.read { tx in
+            let stickerDraft: MessageStickerDraft? = SSKEnvironment.shared.databaseStorageRef.read { tx in
                 guard let stickerMetadata = StickerManager.installedStickerMetadata(stickerInfo: stickerInfo, transaction: tx) else {
                     owsFailDebug("Could not find sticker file.")
                     return nil
@@ -149,7 +149,7 @@ public extension ThreadUtil {
                 owsFailDebug("Failed to build sticker!")
                 return
             }
-            Self.databaseStorage.write { tx in
+            SSKEnvironment.shared.databaseStorageRef.write { tx in
                 self.enqueueMessage(message, stickerDataSource: stickerDataSource, thread: thread, tx: tx)
             }
         }
@@ -166,7 +166,7 @@ public extension ThreadUtil {
         AssertIsOnMainThread()
 
         let builder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread)
-        let message = databaseStorage.read { tx in
+        let message = SSKEnvironment.shared.databaseStorageRef.read { tx in
             applyDisappearingMessagesConfiguration(to: builder, tx: tx.asV2Read)
             return builder.build(transaction: tx)
         }
@@ -188,7 +188,7 @@ public extension ThreadUtil {
                 owsFailDebug("Failed to build sticker!")
                 return
             }
-            Self.databaseStorage.write { tx in
+            SSKEnvironment.shared.databaseStorageRef.write { tx in
                 self.enqueueMessage(message, stickerDataSource: stickerDataSource, thread: thread, tx: tx)
             }
         }
@@ -276,7 +276,7 @@ extension ThreadUtil {
     ) -> Bool {
         let threadAsContactThread = thread as? TSContactThread
 
-        let (shouldSetUniversalTimer, shouldAddToProfileWhitelist) = databaseStorage.read { tx -> (Bool, Bool) in
+        let (shouldSetUniversalTimer, shouldAddToProfileWhitelist) = SSKEnvironment.shared.databaseStorageRef.read { tx -> (Bool, Bool) in
             let universalTimer: Bool = {
                 guard let threadAsContactThread else { return false }
                 return Self.shouldSetUniversalTimer(contactThread: threadAsContactThread, tx: tx)
@@ -286,11 +286,11 @@ extension ThreadUtil {
             return (universalTimer, profileWhitelist)
         }
         if shouldSetUniversalTimer, let threadAsContactThread {
-            databaseStorage.write { tx in setUniversalTimer(contactThread: threadAsContactThread, tx: tx) }
+            SSKEnvironment.shared.databaseStorageRef.write { tx in setUniversalTimer(contactThread: threadAsContactThread, tx: tx) }
         }
         if shouldAddToProfileWhitelist {
-            databaseStorage.write { tx in
-                profileManager.addThread(
+            SSKEnvironment.shared.databaseStorageRef.write { tx in
+                SSKEnvironment.shared.profileManagerRef.addThread(
                     toProfileWhitelist: thread,
                     userProfileWriter: .localUser,
                     transaction: tx
@@ -315,7 +315,7 @@ extension ThreadUtil {
         }
         let shouldAddToProfileWhitelist = shouldAddThreadToProfileWhitelist(thread, tx: tx)
         if shouldAddToProfileWhitelist {
-            profileManager.addThread(
+            SSKEnvironment.shared.profileManagerRef.addThread(
                 toProfileWhitelist: thread,
                 userProfileWriter: .localUser,
                 transaction: tx
@@ -396,7 +396,7 @@ extension TSThread {
         }
 
         var conversationIdentifier = uniqueId
-        var threadName = contactsManager.displayName(for: self, transaction: transaction)
+        var threadName = SSKEnvironment.shared.contactManagerRef.displayName(for: self, transaction: transaction)
         if isGroupThread && message?.isGroupStoryReply == true {
             threadName = String(
                 format: OWSLocalizedString(
@@ -467,7 +467,7 @@ extension TSThread {
     ) -> INPerson {
 
         // Generate recipient name
-        let displayName = contactsManager.displayName(for: recipient, tx: transaction)
+        let displayName = SSKEnvironment.shared.contactManagerRef.displayName(for: recipient, tx: transaction)
 
         let nameComponents: PersonNameComponents?
         switch displayName {
@@ -505,7 +505,7 @@ extension TSThread {
     // Use the same point size as chat list avatars, so it's likely cached and ready for the NSE.
     // The NSE cannot read the device scale, so we rely on a cached scale to correctly calculate
     // the appropriate pixel size for our avatars.
-    private static let intentAvatarDiameterPixels: CGFloat = 56 * preferences.cachedDeviceScale
+    private static let intentAvatarDiameterPixels: CGFloat = 56 * SSKEnvironment.shared.preferencesRef.cachedDeviceScale
 
     public func intentStoryAvatarImage(tx: SDSAnyReadTransaction) -> INImage? {
         if let storyThread = self as? TSPrivateStoryThread {
@@ -527,7 +527,7 @@ extension TSThread {
     private func intentRecipientAvatarImage(recipient: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> INImage? {
         // Generate avatar
         let image: INImage
-        if let contactAvatar = avatarBuilder.avatarImage(
+        if let contactAvatar = SSKEnvironment.shared.avatarBuilderRef.avatarImage(
             forAddress: recipient,
             diameterPixels: Self.intentAvatarDiameterPixels,
             localUserDisplayMode: .asUser,
@@ -543,7 +543,7 @@ extension TSThread {
 
     private func intentThreadAvatarImage(transaction: SDSAnyReadTransaction) -> INImage? {
         let image: INImage
-        if let threadAvatar = avatarBuilder.avatarImage(
+        if let threadAvatar = SSKEnvironment.shared.avatarBuilderRef.avatarImage(
             forThread: self,
             diameterPixels: Self.intentAvatarDiameterPixels,
             localUserDisplayMode: .noteToSelf,

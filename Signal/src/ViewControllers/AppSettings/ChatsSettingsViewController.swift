@@ -39,7 +39,7 @@ class ChatsSettingsViewController: OWSTableViewController2 {
                 comment: "Setting for enabling & disabling link previews."
             ),
             isOn: {
-                Self.databaseStorage.read { DependenciesBridge.shared.linkPreviewSettingStore.areLinkPreviewsEnabled(tx: $0.asV2Read) }
+                SSKEnvironment.shared.databaseStorageRef.read { DependenciesBridge.shared.linkPreviewSettingStore.areLinkPreviewsEnabled(tx: $0.asV2Read) }
             },
             target: self,
             selector: #selector(didToggleLinkPreviewsEnabled)
@@ -58,7 +58,7 @@ class ChatsSettingsViewController: OWSTableViewController2 {
                 comment: "Setting for enabling & disabling iOS contact sharing."
             ),
             isOn: {
-                Self.databaseStorage.read { SSKPreferences.areIntentDonationsEnabled(transaction: $0) }
+                SSKEnvironment.shared.databaseStorageRef.read { SSKPreferences.areIntentDonationsEnabled(transaction: $0) }
             },
             target: self,
             selector: #selector(didToggleSharingSuggestionsEnabled)
@@ -85,7 +85,7 @@ class ChatsSettingsViewController: OWSTableViewController2 {
         keepMutedChatsArchived.add(.switch(
             withText: OWSLocalizedString("SETTINGS_KEEP_MUTED_ARCHIVED_LABEL", comment: "When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings."),
             isOn: {
-                Self.databaseStorage.read { SSKPreferences.shouldKeepMutedChatsArchived(transaction: $0) }
+                SSKEnvironment.shared.databaseStorageRef.read { SSKPreferences.shouldKeepMutedChatsArchived(transaction: $0) }
             },
             target: self,
             selector: #selector(didToggleShouldKeepMutedChatsArchivedSwitch)
@@ -125,7 +125,7 @@ class ChatsSettingsViewController: OWSTableViewController2 {
         Logger.info("toggled to: \(sender.isOn)")
 
         if sender.isOn {
-            databaseStorage.write { transaction in
+            SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 SSKPreferences.setAreIntentDonationsEnabled(true, transaction: transaction)
             }
         } else {
@@ -138,7 +138,7 @@ class ChatsSettingsViewController: OWSTableViewController2 {
                         comment: "Title of alert indicating sharing suggestions failed to deactivate"
                     ))
                 } else {
-                    Self.databaseStorage.write { transaction in
+                    SSKEnvironment.shared.databaseStorageRef.write { transaction in
                         SSKPreferences.setAreIntentDonationsEnabled(false, transaction: transaction)
                     }
                 }
@@ -149,21 +149,21 @@ class ChatsSettingsViewController: OWSTableViewController2 {
     @objc
     private func didToggleAvatarPreference(_ sender: UISwitch) {
         Logger.info("toggled to: \(sender.isOn)")
-        let currentValue = databaseStorage.read { SSKPreferences.preferContactAvatars(transaction: $0) }
+        let currentValue = SSKEnvironment.shared.databaseStorageRef.read { SSKPreferences.preferContactAvatars(transaction: $0) }
         guard currentValue != sender.isOn else { return }
 
-        databaseStorage.write { SSKPreferences.setPreferContactAvatars(sender.isOn, transaction: $0) }
+        SSKEnvironment.shared.databaseStorageRef.write { SSKPreferences.setPreferContactAvatars(sender.isOn, transaction: $0) }
     }
 
     @objc
     private func didToggleShouldKeepMutedChatsArchivedSwitch(_ sender: UISwitch) {
         Logger.info("toggled to \(sender.isOn)")
-        let currentValue = databaseStorage.read { SSKPreferences.shouldKeepMutedChatsArchived(transaction: $0) }
+        let currentValue = SSKEnvironment.shared.databaseStorageRef.read { SSKPreferences.shouldKeepMutedChatsArchived(transaction: $0) }
         guard currentValue != sender.isOn else { return }
 
-        databaseStorage.write { SSKPreferences.setShouldKeepMutedChatsArchived(sender.isOn, transaction: $0) }
+        SSKEnvironment.shared.databaseStorageRef.write { SSKPreferences.setShouldKeepMutedChatsArchived(sender.isOn, transaction: $0) }
 
-        Self.storageServiceManager.recordPendingLocalAccountUpdates()
+        SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
     }
 
     // MARK: -
@@ -214,7 +214,7 @@ class ChatsSettingsViewController: OWSTableViewController2 {
     ) {
         Logger.info("")
 
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             threadSoftDeleteManager.softDelete(
                 threads: TSThread.anyFetchAll(transaction: transaction),
                 sendDeleteForMeSyncMessage: true,

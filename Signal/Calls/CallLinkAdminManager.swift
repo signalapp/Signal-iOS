@@ -94,7 +94,7 @@ class CallLinkAdminManager {
     ) async throws {
         let callLinkManager = AppEnvironment.shared.callService.callLinkManager
         let callLinkStateUpdater = AppEnvironment.shared.callService.callLinkStateUpdater
-        let databaseStorage = NSObject.databaseStorage
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
         _ = try await callLinkStateUpdater.updateExclusively(rootKey: rootKey) { authCredential in
             let callLinkState = try await performUpdate(callLinkManager, authCredential)
             await databaseStorage.awaitableWrite { [rootKey, adminPasskey] tx in

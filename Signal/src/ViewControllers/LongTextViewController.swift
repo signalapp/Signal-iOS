@@ -53,7 +53,7 @@ public class LongTextViewController: OWSViewController {
 
         self.messageTextView.contentOffset = CGPoint(x: 0, y: self.messageTextView.contentInset.top)
 
-        databaseStorage.appendDatabaseChangeDelegate(self)
+        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
     }
 
     public override func themeDidChange() {
@@ -101,7 +101,7 @@ public class LongTextViewController: OWSViewController {
                 mutableText = (attrString as? NSMutableAttributedString) ?? NSMutableAttributedString(attributedString: attrString)
             }
 
-            let hasPendingMessageRequest = databaseStorage.read { transaction in
+            let hasPendingMessageRequest = SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 itemViewModel.thread.hasPendingMessageRequest(transaction: transaction)
             }
             CVComponentBodyText.configureTextView(
@@ -154,7 +154,7 @@ public class LongTextViewController: OWSViewController {
         AssertIsOnMainThread()
 
         let uniqueId = itemViewModel.interaction.uniqueId
-        let messageWasDeleted = databaseStorage.read {
+        let messageWasDeleted = SSKEnvironment.shared.databaseStorageRef.read {
             TSInteraction.anyFetch(uniqueId: uniqueId, transaction: $0) == nil
         }
         guard messageWasDeleted else {

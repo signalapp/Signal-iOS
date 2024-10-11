@@ -416,7 +416,7 @@ class MediaPageViewController: UIPageViewController {
     private func forwardCurrentMedia() {
         let messageForCurrentItem = currentItem.message
 
-        let mediaAttachments: [ReferencedTSResource] = databaseStorage.read { transaction in
+        let mediaAttachments: [ReferencedTSResource] = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return DependenciesBridge.shared.tsResourceStore
                 .referencedBodyAttachments(for: messageForCurrentItem, tx: transaction.asV2Read)
         }
@@ -512,8 +512,8 @@ class MediaPageViewController: UIPageViewController {
     private func senderName(from message: TSMessage) -> String {
         switch message {
         case let incomingMessage as TSIncomingMessage:
-            return databaseStorage.read { tx in
-                return self.contactsManager.displayName(for: incomingMessage.authorAddress, tx: tx).resolvedValue()
+            return SSKEnvironment.shared.databaseStorageRef.read { tx in
+                return SSKEnvironment.shared.contactManagerRef.displayName(for: incomingMessage.authorAddress, tx: tx).resolvedValue()
             }
         case is TSOutgoingMessage:
             return CommonStrings.you

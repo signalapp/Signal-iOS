@@ -260,7 +260,7 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
 
         return firstly(on: DispatchQueue.global()) { () -> Promise<GroupsV2.ProfileKeyCredentialMap> in
             return Promise.wrapAsync {
-                try await self.groupsV2.loadProfileKeyCredentials(
+                try await SSKEnvironment.shared.groupsV2Ref.loadProfileKeyCredentials(
                     for: Array(newUserAcis),
                     forceRefresh: forceRefreshProfileKeyCredentials
                 )

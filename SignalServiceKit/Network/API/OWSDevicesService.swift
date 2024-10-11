@@ -23,7 +23,7 @@ open class OWSDevicesService: NSObject {
         return firstly {
             Self.getDevices()
         }.done(on: DispatchQueue.global()) { (devices: [OWSDevice]) in
-            let didAddOrRemove = databaseStorage.write { transaction in
+            let didAddOrRemove = SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 // If we have more than one device we may have a linked device.
                 // Setting this flag here shouldn't be necessary, but we do so
                 // because the "cost" is low and it will improve robustness.
@@ -52,7 +52,7 @@ open class OWSDevicesService: NSObject {
     private static func getDevices() -> Promise<[OWSDevice]> {
         let request = OWSRequestFactory.getDevicesRequest()
         return firstly(on: DispatchQueue.global()) {
-            Self.networkManager.makePromise(request: request, canUseWebSocket: true)
+            SSKEnvironment.shared.networkManagerRef.makePromise(request: request, canUseWebSocket: true)
         }.map(on: DispatchQueue.global()) { response in
             guard let devices = Self.parseDeviceList(response: response) else {
                 throw OWSAssertionError("Unable to parse devices response.")
@@ -111,7 +111,7 @@ open class OWSDevicesService: NSObject {
         let request = OWSRequestFactory.deleteDeviceRequest(device)
 
         firstly {
-            Self.networkManager.makePromise(request: request)
+            SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
         }.map(on: DispatchQueue.main) { _ in
             success()
         }.catch(on: DispatchQueue.main) { error in

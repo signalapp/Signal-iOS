@@ -195,7 +195,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
             return
         }
 
-        guard reachabilityManager.isReachable else {
+        guard SSKEnvironment.shared.reachabilityManagerRef.isReachable else {
             OWSActionSheets.showActionSheet(
                 title: OWSLocalizedString(
                     "DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET",
@@ -211,7 +211,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
     }
 
     private func showDeletionConfirmUI_checkPayments() {
-        if self.paymentsHelper.arePaymentsEnabled,
+        if SSKEnvironment.shared.paymentsHelperRef.arePaymentsEnabled,
            let paymentBalance = self.paymentsSwift.currentPaymentBalance,
            !paymentBalance.amount.isZero {
             showDeleteAccountPaymentsConfirmationUI(paymentBalance: paymentBalance.amount)
@@ -337,7 +337,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
     }
 
     private func deleteSubscriptionIfNecessary() async throws {
-        let activeSubscriptionId = databaseStorage.read {
+        let activeSubscriptionId = SSKEnvironment.shared.databaseStorageRef.read {
             SubscriptionManagerImpl.getSubscriberID(transaction: $0)
         }
         guard let activeSubscriptionId else {
@@ -361,7 +361,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
         guard let phoneNumberText = phoneNumberTextField.text else { return false }
 
         let possiblePhoneNumber = callingCode + phoneNumberText
-        let possibleNumbers = phoneNumberUtil.parsePhoneNumbers(
+        let possibleNumbers = SSKEnvironment.shared.phoneNumberUtilRef.parsePhoneNumbers(
             userSpecifiedText: possiblePhoneNumber,
             localPhoneNumber: localNumber
         ).map(\.e164)
@@ -385,10 +385,10 @@ extension DeleteAccountConfirmationViewController: CountryCodeViewControllerDele
         var callingCodeInt: Int?
         var countryCode: String?
 
-        if let localE164 = phoneNumberUtil.parseE164(localNumber), let localCallingCode = localE164.getCallingCode()?.intValue {
+        if let localE164 = SSKEnvironment.shared.phoneNumberUtilRef.parseE164(localNumber), let localCallingCode = localE164.getCallingCode()?.intValue {
             callingCodeInt = localCallingCode
         } else {
-            callingCodeInt = phoneNumberUtil.getCallingCode(
+            callingCodeInt = SSKEnvironment.shared.phoneNumberUtilRef.getCallingCode(
                 forRegion: PhoneNumberUtil.defaultCountryCode()
             ).intValue
         }
@@ -396,7 +396,7 @@ extension DeleteAccountConfirmationViewController: CountryCodeViewControllerDele
         var callingCode: String?
         if let callingCodeInt = callingCodeInt {
             callingCode = PhoneNumber.countryCodePrefix + "\(callingCodeInt)"
-            countryCode = phoneNumberUtil.probableCountryCode(forCallingCode: callingCode!)
+            countryCode = SSKEnvironment.shared.phoneNumberUtilRef.probableCountryCode(forCallingCode: callingCode!)
         }
 
         updateCountry(callingCode: callingCode, countryCode: countryCode)

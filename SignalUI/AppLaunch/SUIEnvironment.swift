@@ -48,7 +48,7 @@ public class SUIEnvironment: NSObject {
         self.linkPreviewFetcher = LinkPreviewFetcherImpl(
             authCredentialManager: authCredentialManager,
             db: DependenciesBridge.shared.db,
-            groupsV2: NSObject.groupsV2,
+            groupsV2: SSKEnvironment.shared.groupsV2Ref,
             linkPreviewSettingStore: DependenciesBridge.shared.linkPreviewSettingStore,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager
         )

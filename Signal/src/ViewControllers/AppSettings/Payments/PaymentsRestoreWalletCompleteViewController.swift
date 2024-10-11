@@ -164,9 +164,9 @@ public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController
             showInvalidPassphraseAlert()
             return
         }
-        let didSucceed = databaseStorage.write { transaction in
-            paymentsHelperSwift.enablePayments(withPaymentsEntropy: paymentsEntropy,
-                                               transaction: transaction)
+        let didSucceed = SSKEnvironment.shared.databaseStorageRef.write { transaction in
+            SSKEnvironment.shared.paymentsHelperRef.enablePayments(withPaymentsEntropy: paymentsEntropy,
+                                                                   transaction: transaction)
         }
         guard didSucceed else {
             owsFailDebug("Could not restore payments entropy.")

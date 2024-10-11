@@ -265,7 +265,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [super anyWillInsertWithTransaction:transaction];
 
-    [self.paymentsEvents willInsertPayment:self transaction:transaction];
+    [SSKEnvironment.shared.paymentsEventsRef willInsertPayment:self transaction:transaction];
 }
 
 - (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -281,7 +281,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [super anyWillUpdateWithTransaction:transaction];
 
-    [self.paymentsEvents willUpdatePayment:self transaction:transaction];
+    [SSKEnvironment.shared.paymentsEventsRef willUpdatePayment:self transaction:transaction];
 }
 
 - (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction

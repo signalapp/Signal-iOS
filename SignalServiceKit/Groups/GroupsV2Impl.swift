@@ -8,7 +8,7 @@ public import LibSignalClient
 
 public class GroupsV2Impl: GroupsV2, Dependencies {
     private var urlSession: OWSURLSessionProtocol {
-        return self.signalService.urlSessionForStorageService()
+        return SSKEnvironment.shared.signalServiceRef.urlSessionForStorageService()
     }
 
     private let authCredentialStore: AuthCredentialStore
@@ -237,7 +237,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
                 // committed to the service, we should refresh our local state
                 // for the group and try again to apply our changes.
 
-                _ = try await groupV2Updates.tryToRefreshV2GroupUpToCurrentRevisionImmediately(
+                _ = try await SSKEnvironment.shared.groupV2UpdatesRef.tryToRefreshV2GroupUpToCurrentRevisionImmediately(
                     groupId: groupId,
                     groupSecretParams: groupV2Params.groupSecretParams
                 )
@@ -291,7 +291,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
         shouldForceRefreshProfileKeyCredentials: Bool = false,
         forceFailOn400: Bool = false
     ) async throws -> (GroupsV2BuiltGroupChange, HTTPResponse) {
-        let (groupThread, dmToken) = try NSObject.databaseStorage.read { tx in
+        let (groupThread, dmToken) = try SSKEnvironment.shared.databaseStorageRef.read { tx in
             guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: tx) else {
                 throw OWSAssertionError("Thread does not exist.")
             }
@@ -473,7 +473,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
             return
         }
 
-        await databaseStorage.awaitableWrite { tx in
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             for serviceId in serviceIds {
                 let address = SignalServiceAddress(serviceId)
                 let contactThread = TSContactThread.getOrCreateThread(withContactAddress: address, transaction: tx)
@@ -538,8 +538,8 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
             ignoreSignature: ignoreSignature,
             groupV2Params: groupV2Params
         )
-        return try await NSObject.databaseStorage.awaitableWrite { tx in
-            try self.groupV2Updates.updateGroupWithChangeActions(
+        return try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+            try SSKEnvironment.shared.groupV2UpdatesRef.updateGroupWithChangeActions(
                 groupId: groupId,
                 spamReportingMetadata: spamReportingMetadata,
                 changeActionsProto: changeActionsProto,
@@ -656,10 +656,10 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
 
     // MARK: - Fetch Group Change Actions
 
-    func fetchGroupChangeActions(
+    public func fetchGroupChangeActions(
         groupSecretParams: GroupSecretParams,
         includeCurrentRevision: Bool
-    ) async throws -> GroupChangePage {
+    ) async throws -> GroupV2ChangePage {
         let groupV2Params = try GroupV2Params(groupSecretParams: groupSecretParams)
         let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier().serialize().asData
         return try await fetchGroupChangeActions(
@@ -669,42 +669,12 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
         )
     }
 
-    struct GroupChangePage {
-        let changes: [GroupV2Change]
-        let earlyEnd: UInt32?
-
-        fileprivate static func parseEarlyEnd(fromGroupRangeHeader header: String?) -> UInt32? {
-            guard let header = header else {
-                Logger.warn("Missing Content-Range for group update request with 206 response")
-                return nil
-            }
-
-            let pattern = try! NSRegularExpression(pattern: #"^versions (\d+)-(\d+)/(\d+)$"#)
-            guard let match = pattern.firstMatch(in: header, range: header.entireRange) else {
-                Logger.warn("Unparsable Content-Range for group update request: \(header)")
-                return nil
-            }
-
-            guard let earlyEndRange = Range(match.range(at: 1), in: header) else {
-                owsFailDebug("Could not translate NSRange to Range<String.Index>")
-                return nil
-            }
-
-            guard let earlyEndValue = UInt32(header[earlyEndRange]) else {
-                Logger.warn("Invalid early-end in Content-Range for group update request: \(header)")
-                return nil
-            }
-
-            return earlyEndValue
-        }
-    }
-
     private func fetchGroupChangeActions(
         groupId: Data,
         groupV2Params: GroupV2Params,
         includeCurrentRevision: Bool
-    ) async throws -> GroupChangePage {
-        let groupThread = NSObject.databaseStorage.read { transaction in
+    ) async throws -> GroupV2ChangePage {
+        let groupThread = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             TSGroupThread.fetch(groupId: groupId, transaction: transaction)
         }
 
@@ -764,7 +734,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
         let earlyEnd: UInt32?
         if response.responseStatusCode == 206 {
             let groupRangeHeader = response.responseHeaders["content-range"]
-            earlyEnd = GroupChangePage.parseEarlyEnd(fromGroupRangeHeader: groupRangeHeader)
+            earlyEnd = GroupV2ChangePage.parseEarlyEnd(fromGroupRangeHeader: groupRangeHeader)
         } else {
             earlyEnd = nil
         }
@@ -781,7 +751,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
             downloadedAvatars: downloadedAvatars,
             groupV2Params: groupV2Params
         )
-        return GroupChangePage(changes: changes, earlyEnd: earlyEnd)
+        return GroupV2ChangePage(changes: changes, earlyEnd: earlyEnd)
     }
 
     private func getRevisionLocalUserWasAddedToGroup(
@@ -848,7 +818,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
 
         // First step - try to skip downloading the current group avatar.
         if
-            let groupThread = (NSObject.databaseStorage.read { transaction in
+            let groupThread = (SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 return TSGroupThread.fetch(groupId: groupId, transaction: transaction)
             }),
             let groupModel = groupThread.groupModel as? TSGroupModelV2
@@ -1072,7 +1042,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
                 throw error
             case 401:
                 // Retry auth errors after retrieving new temporal credentials.
-                await self.databaseStorage.awaitableWrite { tx in
+                await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
                     self.authCredentialStore.removeAllGroupAuthCredentials(tx: tx.asV2Write)
                 }
                 return try await retryBlock(error)
@@ -1097,7 +1067,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
                     // we have left the group, been removed from the group
                     // or had our invite revoked and we should make sure
                     // group state in the database reflects that.
-                    await self.databaseStorage.awaitableWrite { transaction in
+                    await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
                         GroupManager.handleNotInGroup(groupId: groupId, transaction: transaction)
                     }
 
@@ -1204,7 +1174,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
     }
 
     private func tryToUpdateGroupToLatest(groupId: Data) {
-        guard let groupThread = (databaseStorage.read { transaction in
+        guard let groupThread = (SSKEnvironment.shared.databaseStorageRef.read { transaction in
             TSGroupThread.fetch(groupId: groupId, transaction: transaction)
         }) else {
             owsFailDebug("Missing group thread.")
@@ -1218,7 +1188,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
         let groupSecretParamsData = groupModelV2.secretParamsData
         Task {
             do {
-                _ = try await self.groupV2Updates.tryToRefreshV2GroupThread(
+                _ = try await SSKEnvironment.shared.groupV2UpdatesRef.tryToRefreshV2GroupThread(
                     groupId: groupId,
                     spamReportingMetadata: .learnedByLocallyInitatedRefresh,
                     groupSecretParams: try GroupSecretParams(contents: [UInt8](groupSecretParamsData)),
@@ -1294,12 +1264,12 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
     }
 
     private func loadPresentProfileKeyCredentials(for acis: Set<Aci>) -> ProfileKeyCredentialMap {
-        databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             var credentialMap = ProfileKeyCredentialMap()
 
             for aci in acis {
                 do {
-                    if let credential = try self.versionedProfilesSwift.validProfileKeyCredential(
+                    if let credential = try SSKEnvironment.shared.versionedProfilesRef.validProfileKeyCredential(
                         for: aci,
                         transaction: transaction
                     ) {
@@ -1325,7 +1295,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
             guard let aci = serviceId as? Aci else {
                 return false
             }
-            return try self.versionedProfilesSwift.validProfileKeyCredential(
+            return try SSKEnvironment.shared.versionedProfilesRef.validProfileKeyCredential(
                 for: aci,
                 transaction: transaction
             ) != nil
@@ -1540,7 +1510,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
         // First try to fetch latest group state from service.
         // This will fail for users trying to join via group link
         // who are not yet in the group.
-        let groupThread = try await groupV2Updates.tryToRefreshV2GroupUpToCurrentRevisionImmediately(
+        let groupThread = try await SSKEnvironment.shared.groupV2UpdatesRef.tryToRefreshV2GroupUpToCurrentRevisionImmediately(
             groupId: groupId,
             groupSecretParams: groupV2Params.groupSecretParams
         )
@@ -1617,7 +1587,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
             //
             // Download and update database with the group state.
             do {
-                _ = try await groupV2UpdatesImpl.tryToRefreshV2GroupUpToCurrentRevisionImmediately(
+                _ = try await SSKEnvironment.shared.groupV2UpdatesImplRef.tryToRefreshV2GroupUpToCurrentRevisionImmediately(
                     groupId: groupId,
                     groupSecretParams: groupV2Params.groupSecretParams,
                     groupModelOptions: .didJustAddSelfViaGroupLink
@@ -1626,7 +1596,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
                 throw GroupsV2Error.requestingMemberCantLoadGroupState
             }
 
-            guard let groupThread = NSObject.databaseStorage.read(block: { tx in
+            guard let groupThread = SSKEnvironment.shared.databaseStorageRef.read(block: { tx in
                 TSGroupThread.fetch(groupId: groupId, transaction: tx)
             }) else {
                 throw OWSAssertionError("Missing group thread.")
@@ -1694,7 +1664,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
         guard let revision = revisionForPlaceholderModel.get() else {
             throw OWSAssertionError("Missing revisionForPlaceholderModel.")
         }
-        return try await databaseStorage.awaitableWrite { (transaction) throws -> TSGroupThread in
+        return try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { (transaction) throws -> TSGroupThread in
             guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
                 throw OWSAssertionError("Missing localIdentifiers.")
             }
@@ -1885,7 +1855,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
         groupId: Data,
         newRevision proposedRevision: UInt32?
     ) async throws -> TSGroupThread {
-        return try await NSObject.databaseStorage.awaitableWrite { transaction -> TSGroupThread in
+        return try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction -> TSGroupThread in
             guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
                 throw OWSAssertionError("Missing localIdentifiers.")
             }
@@ -2030,7 +2000,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
                 // Expected if our request has been cancelled or we're banned. In this
                 // scenario, we should remove ourselves from the local group (in which
                 // we will be stored as a requesting member).
-                await NSObject.databaseStorage.awaitableWrite { transaction in
+                await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
                     removeLocalUserBlock(transaction)
                 }
             default:
@@ -2045,7 +2015,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
     ) async {
         do {
             let groupId = try groupSecretParams.getPublicParams().getGroupIdentifier().serialize().asData
-            try await NSObject.databaseStorage.awaitableWrite { transaction in
+            try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
                 guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
                     throw OWSAssertionError("Missing localIdentifiers.")
                 }
@@ -2145,5 +2115,32 @@ private extension GroupsProtoGroupChangeActions {
         let isPromotingAci = !promotePendingMembers.isEmpty
 
         return isAddingMembers || isPromotingPni || isPromotingAci
+    }
+}
+
+extension GroupV2ChangePage {
+    fileprivate static func parseEarlyEnd(fromGroupRangeHeader header: String?) -> UInt32? {
+        guard let header = header else {
+            Logger.warn("Missing Content-Range for group update request with 206 response")
+            return nil
+        }
+
+        let pattern = try! NSRegularExpression(pattern: #"^versions (\d+)-(\d+)/(\d+)$"#)
+        guard let match = pattern.firstMatch(in: header, range: header.entireRange) else {
+            Logger.warn("Unparsable Content-Range for group update request: \(header)")
+            return nil
+        }
+
+        guard let earlyEndRange = Range(match.range(at: 1), in: header) else {
+            owsFailDebug("Could not translate NSRange to Range<String.Index>")
+            return nil
+        }
+
+        guard let earlyEndValue = UInt32(header[earlyEndRange]) else {
+            Logger.warn("Invalid early-end in Content-Range for group update request: \(header)")
+            return nil
+        }
+
+        return earlyEndValue
     }
 }

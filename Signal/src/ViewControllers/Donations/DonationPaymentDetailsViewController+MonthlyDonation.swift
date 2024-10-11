@@ -60,7 +60,7 @@ extension DonationPaymentDetailsViewController {
                                     oldSubscriptionLevel: priorSubscriptionLevel,
                                     amount: self.donationAmount
                                 )
-                                self.databaseStorage.write { tx in
+                                SSKEnvironment.shared.databaseStorageRef.write { tx in
                                     do {
                                         try donationStore.setPendingSubscription(donation: confirmedDonation, tx: tx.asV2Write)
                                     } catch {
@@ -97,7 +97,7 @@ extension DonationPaymentDetailsViewController {
                     newSubscriptionLevel: newSubscriptionLevel,
                     priorSubscriptionLevel: priorSubscriptionLevel,
                     currencyCode: currencyCode,
-                    databaseStorage: self.databaseStorage
+                    databaseStorage: SSKEnvironment.shared.databaseStorageRef
                 )
             }
         ).done(on: DispatchQueue.main) { [weak self] in

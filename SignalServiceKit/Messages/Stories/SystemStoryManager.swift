@@ -285,7 +285,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
             return
         }
 
-        let viewStatus = Self.databaseStorage.read {
+        let viewStatus = SSKEnvironment.shared.databaseStorageRef.read {
             self.onboardingStoryViewStatus(transaction: $0)
         }
         switch viewStatus.status {
@@ -317,7 +317,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
         var hasEmitted = false
         storyMessagesObservation?.cancel()
         storyMessagesObservation = observation.start(
-            in: databaseStorage.grdbStorage.pool,
+            in: SSKEnvironment.shared.databaseStorageRef.grdbStorage.pool,
             onError: { error in
                 owsFailDebug("Failed to observe story view state: \(error))")
             }, onChange: { [weak self] changedModels in
@@ -334,7 +334,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
                     return
                 }
                 do {
-                    try Self.databaseStorage.write {
+                    try SSKEnvironment.shared.databaseStorageRef.write {
                         try self?.setOnboardingStoryViewedOnThisDevice(
                             atTimestamp: viewedTimstamp,
                             shouldUpdateStorageService: true,
@@ -365,7 +365,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
     // MARK: - Implementation
 
     private func downloadOnboardingStoryIfNeeded() -> Promise<Void> {
-        let knownViewStatus = Self.databaseStorage.read {
+        let knownViewStatus = SSKEnvironment.shared.databaseStorageRef.read {
             self.onboardingStoryViewStatus(transaction: $0)
         }
         switch knownViewStatus.status {
@@ -397,7 +397,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
     }
 
     private func syncOnboardingStoryViewStatus() -> Promise<OnboardingStoryViewStatus> {
-        Self.storageServiceManager.restoreOrCreateManifestIfNecessary(authedDevice: .implicit)
+        SSKEnvironment.shared.storageServiceManagerRef.restoreOrCreateManifestIfNecessary(authedDevice: .implicit)
             .then(on: queue) { [weak self] _ -> Promise<OnboardingStoryViewStatus> in
                 guard let strongSelf = self else {
                     return .init(error: OWSAssertionError("SystemStoryManager unretained"))
@@ -405,7 +405,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
                 // At this point, we will have synced the AccountRecord, which would call
                 // `SystemStoryManager.setHasViewedOnboardingStoryOnAnotherDevice()` and write
                 // to the database. Read from the database to get whatever the latest value is.
-                return .value(Self.databaseStorage.read { transaction in
+                return .value(SSKEnvironment.shared.databaseStorageRef.read { transaction in
                     return strongSelf.onboardingStoryViewStatus(transaction: transaction)
                 })
             }
@@ -422,7 +422,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
                 guard let strongSelf = self else {
                     return .init(error: OWSAssertionError("SystemStoryManager unretained"))
                 }
-                let urlSession = Self.signalService.urlSessionForUpdates2()
+                let urlSession = SSKEnvironment.shared.signalServiceRef.urlSessionForUpdates2()
                 return strongSelf.fetchFilenames(urlSession: urlSession)
                     .then(on: queue) { [weak self] (fileNames: [String]) -> Promise<[TSResourceDataSource]> in
                         let promises = fileNames.compactMap {
@@ -435,7 +435,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
                             return .init(error: OWSAssertionError("SystemStoryManager unretained"))
                         }
                         do {
-                            return .value(try strongSelf.databaseStorage.write { transaction in
+                            return .value(try SSKEnvironment.shared.databaseStorageRef.write { transaction in
                                 let uniqueIds = try strongSelf.createStoryMessages(
                                     attachmentSources: attachmentSources,
                                     transaction: transaction
@@ -453,7 +453,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
     }
 
     private func checkOnboardingStoryDownloadStatus(forceDeletingIfDownloaded: Bool = false) -> Promise<OnboardingStoryDownloadStatus> {
-        let status = databaseStorage.write { transaction -> OnboardingStoryDownloadStatus in
+        let status = SSKEnvironment.shared.databaseStorageRef.write { transaction -> OnboardingStoryDownloadStatus in
             let status = self.onboardingStoryDownloadStatus(transaction: transaction)
             if status.isDownloaded {
                 // clean up opportunistically.
@@ -628,7 +628,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
         }
         kvStore.setBool(true, key: Constants.kvStoreOnboardingStoryIsReadKey, transaction: transaction)
         if updateStorageService {
-            Self.storageServiceManager.recordPendingLocalAccountUpdates()
+            SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
         }
         NotificationCenter.default.postNotificationNameAsync(.onboardingStoryStateDidChange, object: nil)
     }
@@ -681,7 +681,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
             transaction: transaction
         )
         if shouldUpdateStorageService {
-            Self.storageServiceManager.recordPendingLocalAccountUpdates()
+            SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
         }
         NotificationCenter.default.postNotificationNameAsync(.onboardingStoryStateDidChange, object: nil)
     }

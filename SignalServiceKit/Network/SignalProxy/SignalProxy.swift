@@ -49,7 +49,7 @@ public class SignalProxy: NSObject {
 
     public class func warmCaches(appReadiness: AppReadiness) {
         appReadiness.runNowOrWhenAppWillBecomeReady {
-            databaseStorage.read { transaction in
+            SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 host = keyValueStore.getString(proxyHostKey, transaction: transaction)
                 useProxy = keyValueStore.getBool(proxyUseKey, defaultValue: false, transaction: transaction)
             }
@@ -127,7 +127,7 @@ public class SignalProxy: NSObject {
         // The NSE manages the proxy relay itself
         guard !CurrentAppContext().isNSE else { return }
 
-        let libsignalNet = NSObject.networkManager.libsignalNet
+        let libsignalNet = SSKEnvironment.shared.networkManagerRef.libsignalNet
         if isEnabled {
             if let (proxyHost, proxyPort) = host.flatMap({ ProxyClient.parseHost($0) }) {
                 do {

@@ -56,7 +56,7 @@ public class AppEnvironment: NSObject {
         self.callService = callService
 
         self.badgeManager = BadgeManager(
-            databaseStorage: databaseStorage,
+            databaseStorage: SSKEnvironment.shared.databaseStorageRef,
             mainScheduler: DispatchQueue.main,
             serialScheduler: DispatchQueue.sharedUtility
         )
@@ -73,12 +73,12 @@ public class AppEnvironment: NSObject {
         )
 
         appReadiness.runNowOrWhenAppWillBecomeReady {
-            self.badgeManager.startObservingChanges(in: self.databaseStorage)
+            self.badgeManager.startObservingChanges(in: SSKEnvironment.shared.databaseStorageRef)
             self.appIconBadgeUpdater.startObserving()
         }
 
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            let isPrimaryDevice = self.databaseStorage.read { tx -> Bool in
+            let isPrimaryDevice = SSKEnvironment.shared.databaseStorageRef.read { tx -> Bool in
                 return DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx.asV2Read).isPrimaryDevice ?? true
             }
 

@@ -81,7 +81,7 @@ class SendPaymentHelper: Dependencies {
         updateCurrentCurrencyConversion()
 
         Self.paymentsSwift.updateCurrentPaymentBalance()
-        paymentsCurrencies.updateConversationRatesIfStale()
+        SSKEnvironment.shared.paymentsCurrenciesRef.updateConversationRatesIfStale()
     }
 
     public static let minTopVSpacing: CGFloat = 16
@@ -182,8 +182,8 @@ class SendPaymentHelper: Dependencies {
     }
 
     private func updateCurrentCurrencyConversion() {
-        let localCurrencyCode = paymentsCurrencies.currentCurrencyCode
-        let currentCurrencyConversion = paymentsCurrenciesSwift.conversionInfo(forCurrencyCode: localCurrencyCode)
+        let localCurrencyCode = SSKEnvironment.shared.paymentsCurrenciesRef.currentCurrencyCode
+        let currentCurrencyConversion = SSKEnvironment.shared.paymentsCurrenciesRef.conversionInfo(forCurrencyCode: localCurrencyCode)
         guard !CurrencyConversionInfo.areEqual(currentCurrencyConversion,
                                                self.currentCurrencyConversion) else {
             // Did not change.

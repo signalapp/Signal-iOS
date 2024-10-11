@@ -93,7 +93,7 @@ class MessageRequestView: UIStackView {
     init(threadViewModel: ThreadViewModel) {
         let thread = threadViewModel.threadRecord
         self.thread = thread
-        self.messageRequestType = Self.databaseStorage.read { transaction in
+        self.messageRequestType = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             Self.messageRequestType(forThread: thread, transaction: transaction)
         }
 
@@ -140,7 +140,7 @@ class MessageRequestView: UIStackView {
                                           transaction: SDSAnyReadTransaction) -> MessageRequestType {
         let isGroupV1Thread = thread.isGroupV1Thread
         let isGroupV2Thread = thread.isGroupV2Thread
-        let isThreadBlocked = blockingManager.isThreadBlocked(thread, transaction: transaction)
+        let isThreadBlocked = SSKEnvironment.shared.blockingManagerRef.isThreadBlocked(thread, transaction: transaction)
         var isThreadFromHiddenRecipient = false
         if let thread = thread as? TSContactThread {
             isThreadFromHiddenRecipient = DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(
@@ -246,8 +246,8 @@ class MessageRequestView: UIStackView {
                 )
             }
 
-            let shortName = databaseStorage.read { transaction in
-                return self.contactsManager.displayName(for: thread.contactAddress, tx: transaction).resolvedValue(useShortNameIfAvailable: true)
+            let shortName = SSKEnvironment.shared.databaseStorageRef.read { transaction in
+                return SSKEnvironment.shared.contactManagerRef.displayName(for: thread.contactAddress, tx: transaction).resolvedValue(useShortNameIfAvailable: true)
             }
 
             return preparePromptTextView(

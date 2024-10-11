@@ -124,7 +124,7 @@ public class NotificationActionHandler: Dependencies {
             }
 
             return firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
-                self.databaseStorage.write { transaction in
+                SSKEnvironment.shared.databaseStorageRef.write { transaction in
                     let builder: TSOutgoingMessageBuilder = .withDefaultValues(thread: thread)
                     builder.messageBody = replyText
 
@@ -253,7 +253,7 @@ public class NotificationActionHandler: Dependencies {
             }
 
             return firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
-                self.databaseStorage.write { transaction in
+                SSKEnvironment.shared.databaseStorageRef.write { transaction in
                     ReactionManager.localUserReacted(
                         to: incomingMessage.uniqueId,
                         emoji: "👍",
@@ -279,7 +279,7 @@ public class NotificationActionHandler: Dependencies {
 
         let callTarget = { () -> CallTarget? in
             if let threadUniqueId {
-                return databaseStorage.read { tx in
+                return SSKEnvironment.shared.databaseStorageRef.read { tx in
                     if let thread = TSThread.anyFetch(uniqueId: threadUniqueId, transaction: tx) as? TSGroupThread {
                         return .groupThread(thread)
                     }
@@ -287,7 +287,7 @@ public class NotificationActionHandler: Dependencies {
                 }
             }
             if let callLinkRoomId {
-                return databaseStorage.read { tx in
+                return SSKEnvironment.shared.databaseStorageRef.read { tx in
                     let callLinkStore = DependenciesBridge.shared.callLinkStore
                     if
                         let roomId = Data(base64Encoded: callLinkRoomId),
@@ -366,7 +366,7 @@ public class NotificationActionHandler: Dependencies {
             }
             let messageId = userInfo[AppNotificationUserInfoKey.messageId] as? String
 
-            return try self.databaseStorage.read { (transaction) throws -> NotificationMessage in
+            return try SSKEnvironment.shared.databaseStorageRef.read { (transaction) throws -> NotificationMessage in
                 guard let thread = TSThread.anyFetch(uniqueId: threadId, transaction: transaction) else {
                     throw OWSAssertionError("unable to find thread with id: \(threadId)")
                 }
@@ -407,7 +407,7 @@ public class NotificationActionHandler: Dependencies {
             return Promise(error: OWSAssertionError("missing interaction"))
         }
         let (promise, future) = Promise<Void>.pending()
-        self.receiptManager.markAsReadLocally(
+        SSKEnvironment.shared.receiptManagerRef.markAsReadLocally(
             beforeSortId: interaction.sortId,
             thread: notificationMessage.thread,
             hasPendingMessageRequest: notificationMessage.hasPendingMessageRequest

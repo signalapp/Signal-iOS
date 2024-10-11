@@ -48,7 +48,7 @@ public class CVLoader: NSObject {
 
         return firstly(on: CVUtils.workQueue(isInitialLoad: loadRequest.isInitialLoad)) { () -> CVUpdate in
             // To ensure coherency, the entire load should be done with a single transaction.
-            let loadState: LoadState = try Self.databaseStorage.read { transaction in
+            let loadState: LoadState = try SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 let thread = TSThread.anyFetch(uniqueId: threadUniqueId, transaction: transaction)
                 let threadViewModel = { () -> ThreadViewModel in
                     guard let thread else {

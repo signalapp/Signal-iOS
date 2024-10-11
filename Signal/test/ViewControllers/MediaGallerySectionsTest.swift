@@ -213,7 +213,7 @@ class MediaGallerySectionsFakeStoreTest: SignalBaseTest {
     func testNumberOfItemsInSection() {
         let store = standardFakeStore
 
-        databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             XCTAssertEqual(3,
                            store.rowIdsAndDatesOfItemsInSection(
                             for: GalleryDate(2021_01_01),
@@ -244,7 +244,7 @@ class MediaGallerySectionsFakeStoreTest: SignalBaseTest {
     func testEnumerateAfter() {
         let store = standardFakeStore
 
-        databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             var results: [Date] = []
             XCTAssertEqual(
                 .finished,
@@ -341,7 +341,7 @@ class MediaGallerySectionsFakeStoreTest: SignalBaseTest {
     func testEnumerateBefore() {
         let store = standardFakeStore
 
-        databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             var results: [Date] = []
             XCTAssertEqual(
                 .finished,
@@ -426,7 +426,7 @@ class MediaGallerySectionsFakeStoreTest: SignalBaseTest {
     func testEnumerateItems() {
         let store = standardFakeStore
 
-        databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             var results: [MediaGalleryResourceId] = []
             let saveToResults = { (offset: Int, attachmentId: MediaGalleryResourceId, buildItem: () -> FakeItem) in
                 results.append(attachmentId)

@@ -43,6 +43,6 @@ public class PaymentsEventsAppExtension: NSObject, PaymentsEvents {
     public func paymentsStateDidChange() {}
 
     public func clearState(transaction: SDSAnyWriteTransaction) {
-        paymentsHelperSwift.clearState(transaction: transaction)
+        SSKEnvironment.shared.paymentsHelperRef.clearState(transaction: transaction)
     }
 }

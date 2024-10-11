@@ -26,7 +26,7 @@ class StoryViewsViewController: OWSViewController {
         self.storyMessage = storyMessage
         self.context = context
         super.init()
-        databaseStorage.appendDatabaseChangeDelegate(self)
+        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
     }
 
     override public func viewDidLoad() {
@@ -60,7 +60,7 @@ class StoryViewsViewController: OWSViewController {
             return
         }
 
-        databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             if reloadStoryMessage {
                 guard let latestStoryMessage = StoryMessage.anyFetch(uniqueId: storyMessage.uniqueId, transaction: transaction) else {
                     owsFailDebug("Missing story message")
@@ -88,7 +88,7 @@ class StoryViewsViewController: OWSViewController {
                         address: address,
                         comparableName: ComparableDisplayName(
                             address: address,
-                            displayName: Self.contactsManager.displayName(for: address, tx: transaction),
+                            displayName: SSKEnvironment.shared.contactManagerRef.displayName(for: address, tx: transaction),
                             config: config
                         ),
                         viewedTimestamp: viewedTimestamp

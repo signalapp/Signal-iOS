@@ -17,7 +17,7 @@ class ConversationViewModel {
             .filter { !$0.joinedMemberAcis.isEmpty }
             .count > 0
 
-        let isSystemContact = thread.isSystemContact(contactsManager: NSObject.contactsManagerImpl, tx: tx)
+        let isSystemContact = thread.isSystemContact(contactsManager: SSKEnvironment.shared.contactManagerImplRef, tx: tx)
 
         let unreadMentionMessageIds = MentionFinder.messagesMentioning(
             aci: DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)!.aci,

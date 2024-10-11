@@ -58,8 +58,8 @@ public class PaymentOnboarding {
     }
 
     public class func presentBiometricLockPromptIfNeeded(completion: @escaping () -> Void) {
-        guard NSObject.owsPaymentsLock.isTimeToShowSuggestion()
-              && NSObject.owsPaymentsLock.isPaymentsLockEnabled() == false
+        guard SSKEnvironment.shared.owsPaymentsLockRef.isTimeToShowSuggestion()
+              && SSKEnvironment.shared.owsPaymentsLockRef.isPaymentsLockEnabled() == false
         else {
             completion()
             return
@@ -72,7 +72,7 @@ public class PaymentOnboarding {
         actionSheet.addAction(ActionSheetAction(title: ftPaymentsLockAffirmativeActionTitle(),
                                                 accessibilityIdentifier: "payments.lock.first_time.affirmative_action",
                                                 style: .default) { _ in
-            NSObject.owsPaymentsLock.setIsPaymentsLockEnabledAndSnooze(true)
+            SSKEnvironment.shared.owsPaymentsLockRef.setIsPaymentsLockEnabledAndSnooze(true)
             completion()
         })
 
@@ -82,7 +82,7 @@ public class PaymentOnboarding {
             style: .cancel
         ) { _ in
             Logger.debug("Not Now")
-            NSObject.owsPaymentsLock.setIsPaymentsLockEnabledAndSnooze(false)
+            SSKEnvironment.shared.owsPaymentsLockRef.setIsPaymentsLockEnabledAndSnooze(false)
             completion()
         })
 

@@ -91,7 +91,7 @@ extension ChatListViewController {
 
         contactsViewHelper.addObserver(self)
 
-        databaseStorage.appendDatabaseChangeDelegate(self)
+        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
     }
 
     // MARK: -
@@ -176,7 +176,7 @@ extension ChatListViewController {
         let address: SignalServiceAddress? = notification.userInfo?[UserProfileNotifications.profileAddressKey] as? SignalServiceAddress
         let groupId: Data? = notification.userInfo?[UserProfileNotifications.profileGroupIdKey] as? Data
 
-        let changedThreadId: String? = databaseStorage.read { transaction in
+        let changedThreadId: String? = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             if let address = address,
                address.isValid {
                 return TSContactThread.getWithContactAddress(address, transaction: transaction)?.uniqueId
@@ -198,7 +198,7 @@ extension ChatListViewController {
 
         let address = notification.userInfo?[UserProfileNotifications.profileAddressKey] as? SignalServiceAddress
 
-        let changedThreadId: String? = databaseStorage.read { readTx in
+        let changedThreadId: String? = SSKEnvironment.shared.databaseStorageRef.read { readTx in
             if let address = address, address.isValid {
                 return TSContactThread.getWithContactAddress(address, transaction: readTx)?.uniqueId
             } else {

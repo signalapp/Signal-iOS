@@ -215,11 +215,11 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             groupId = nil
         }
 
-        if let groupId = groupId, blockingManager.isGroupIdBlocked(groupId, transaction: transaction) {
+        if let groupId = groupId, SSKEnvironment.shared.blockingManagerRef.isGroupIdBlocked(groupId, transaction: transaction) {
             Logger.warn("Ignoring StoryMessage in blocked group.")
             return nil
         } else {
-            if blockingManager.isAddressBlocked(SignalServiceAddress(author), transaction: transaction) {
+            if SSKEnvironment.shared.blockingManagerRef.isAddressBlocked(SignalServiceAddress(author), transaction: transaction) {
                 Logger.warn("Ignoring StoryMessage from blocked author.")
                 return nil
             }
@@ -555,7 +555,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             owsFailDebug("Reading invalid story context")
         }
 
-        receiptManager.storyWasRead(self, circumstance: circumstance, transaction: transaction)
+        SSKEnvironment.shared.receiptManagerRef.storyWasRead(self, circumstance: circumstance, transaction: transaction)
     }
 
     // MARK: - Marking Viewed
@@ -594,7 +594,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         // If we viewed this story (perhaps from a linked device), we should always make sure it's downloaded if it's not already.
         downloadIfNecessary(transaction: transaction)
 
-        receiptManager.storyWasViewed(self, circumstance: circumstance, transaction: transaction)
+        SSKEnvironment.shared.receiptManagerRef.storyWasViewed(self, circumstance: circumstance, transaction: transaction)
     }
 
     public func markAsViewed(at timestamp: UInt64, by recipient: Aci, transaction: SDSAnyWriteTransaction) {
@@ -784,13 +784,13 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
 
         if !wasFailedSendBeforeUpdate, sendingState == .failed, let firstFailedThread {
             // If we are newly failing, fire a notification.
-            notificationPresenter.notifyUser(
+            SSKEnvironment.shared.notificationPresenterRef.notifyUser(
                 forFailedStorySend: self,
                 to: firstFailedThread,
                 transaction: transaction
             )
         } else if wasFailedSendBeforeUpdate, sendingState != .failed {
-            notificationPresenter.cancelNotifications(for: self)
+            SSKEnvironment.shared.notificationPresenterRef.cancelNotifications(for: self)
         }
     }
 
@@ -998,7 +998,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         // Reload latest unexpired timestamp for the context.
         self.context.associatedData(transaction: transaction)?.recomputeLatestUnexpiredTimestamp(transaction: transaction)
 
-        notificationPresenter.cancelNotifications(for: self)
+        SSKEnvironment.shared.notificationPresenterRef.cancelNotifications(for: self)
     }
 
     @objc

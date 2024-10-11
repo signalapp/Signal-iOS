@@ -129,7 +129,7 @@ class HTTPUtils: Dependencies {
     public static func applyHTTPError(_ httpError: OWSHTTPError) {
 
         if httpError.isNetworkConnectivityError {
-            Self.outageDetection.reportConnectionFailure()
+            OutageDetection.shared.reportConnectionFailure()
         }
 
         if httpError.responseStatusCode == AppExpiryImpl.appExpiredStatusCode {

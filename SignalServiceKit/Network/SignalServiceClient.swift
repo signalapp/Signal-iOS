@@ -74,7 +74,7 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
     public func getAvailablePreKeys(for identity: OWSIdentity) -> Promise<(ecCount: Int, pqCount: Int)> {
         let request = OWSRequestFactory.availablePreKeysCountRequest(for: identity)
         return firstly {
-            networkManager.makePromise(request: request)
+            SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
         }.map(on: DispatchQueue.global()) { response in
             guard let json = response.responseBodyJson else {
                 throw OWSAssertionError("Missing or invalid JSON.")
@@ -106,18 +106,18 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
             pqPreKeyRecords: pqPreKeyRecords,
             auth: auth
         )
-        return networkManager.makePromise(request: request).asVoid()
+        return SSKEnvironment.shared.networkManagerRef.makePromise(request: request).asVoid()
     }
 
     public func setCurrentSignedPreKey(_ signedPreKey: SignalServiceKit.SignedPreKeyRecord, for identity: OWSIdentity) -> Promise<Void> {
         let request = OWSRequestFactory.registerSignedPrekeyRequest(for: identity, signedPreKey: signedPreKey)
-        return networkManager.makePromise(request: request).asVoid()
+        return SSKEnvironment.shared.networkManagerRef.makePromise(request: request).asVoid()
     }
 
     public func requestUDSenderCertificate(uuidOnly: Bool) -> Promise<Data> {
         let request = OWSRequestFactory.udSenderCertificateRequest(uuidOnly: uuidOnly)
         return firstly {
-            self.networkManager.makePromise(request: request)
+            SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
         }.map(on: DispatchQueue.global()) { response in
             guard let json = response.responseBodyJson else {
                 throw OWSUDError.invalidData(description: "Missing or invalid JSON")
@@ -135,7 +135,7 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
             throw OWSAssertionError("only primary device should update account attributes")
         }
 
-        let attributes = await self.databaseStorage.awaitableWrite { transaction in
+        let attributes = await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
             return AccountAttributes.generateForPrimaryDevice(
                 fromDependencies: self,
                 svr: DependenciesBridge.shared.svr,
@@ -145,7 +145,7 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
 
         let request = AccountAttributesRequestFactory.updatePrimaryDeviceAttributesRequest(attributes)
         request.setAuth(authedAccount.chatServiceAuth)
-        _ = try await networkManager.makePromise(request: request).awaitable()
+        _ = try await SSKEnvironment.shared.networkManagerRef.makePromise(request: request).awaitable()
 
         return attributes
     }
@@ -154,7 +154,7 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
         let request = WhoAmIRequestFactory.whoAmIRequest(auth: .implicit())
 
         return firstly {
-            networkManager.makePromise(request: request)
+            SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
         }.map(on: DispatchQueue.global()) { response in
             guard let json = response.responseBodyData else {
                 throw OWSAssertionError("Missing or invalid JSON.")
@@ -167,7 +167,7 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
         let request = OWSRequestFactory.storageAuthRequest()
         request.setAuth(chatServiceAuth)
         return firstly {
-            networkManager.makePromise(request: request)
+            SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
         }.map(on: DispatchQueue.global()) { response in
             guard let json = response.responseBodyJson else {
                 throw OWSAssertionError("Missing or invalid JSON.")
@@ -189,7 +189,7 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
         request.setAuth(auth)
 
         return firstly {
-            networkManager.makePromise(request: request)
+            SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
         }.map(on: DispatchQueue.global()) { response in
             guard let json = response.responseBodyJson else {
                 throw OWSAssertionError("Missing or invalid JSON.")
@@ -231,6 +231,6 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
             tsAccountManager: DependenciesBridge.shared.tsAccountManager
         )
         request.setAuth(authedAccount.chatServiceAuth)
-        _ = try await networkManager.makePromise(request: request).awaitable()
+        _ = try await SSKEnvironment.shared.networkManagerRef.makePromise(request: request).awaitable()
     }
 }

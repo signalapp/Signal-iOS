@@ -256,7 +256,7 @@ class BankTransferMandateViewController: OWSTableViewController2 {
     private func loadMandate() async {
         let request = OWSRequestFactory.bankMandateRequest(bankTransferType: self.bankTransferType)
         do {
-            let response = try await networkManager.makePromise(request: request).awaitable()
+            let response = try await SSKEnvironment.shared.networkManagerRef.makePromise(request: request).awaitable()
             guard let json = response.responseBodyJson else {
                 throw OWSAssertionError("Missing or invalid JSON")
             }

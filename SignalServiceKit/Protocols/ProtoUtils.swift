@@ -29,12 +29,12 @@ internal class ProtoUtils: NSObject {
     }
 
     private static var localProfileKey: Aes256Key {
-        profileManager.localProfileKey
+        SSKEnvironment.shared.profileManagerRef.localProfileKey
     }
 
     private static func shouldMessageHaveLocalProfileKey(_ thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
         // Group threads will return YES if the group is in the whitelist
         // Contact threads will return YES if the contact is in the whitelist.
-        profileManager.isThread(inProfileWhitelist: thread, transaction: transaction)
+        SSKEnvironment.shared.profileManagerRef.isThread(inProfileWhitelist: thread, transaction: transaction)
     }
 }

@@ -234,7 +234,7 @@ public class OWSReceiptManager: NSObject {
             return result
         }
 
-        return databaseStorage.read { [areReadReceiptsEnabledCached] transaction in
+        return SSKEnvironment.shared.databaseStorageRef.read { [areReadReceiptsEnabledCached] transaction in
             let result = Self.areReadReceiptsEnabled(transaction: transaction)
             try? areReadReceiptsEnabledCached.setIfNil(result)
             return result
@@ -247,9 +247,9 @@ public class OWSReceiptManager: NSObject {
 
     public func setAreReadReceiptsEnabledWithSneakyTransactionAndSyncConfiguration(_ value: Bool) {
         Logger.info("setAreReadReceiptsEnabledWithSneakyTransactionAndSyncConfiguration: \(value)")
-        databaseStorage.write { self.setAreReadReceiptsEnabled(value, transaction: $0) }
-        syncManager.sendConfigurationSyncMessage()
-        storageServiceManager.recordPendingLocalAccountUpdates()
+        SSKEnvironment.shared.databaseStorageRef.write { self.setAreReadReceiptsEnabled(value, transaction: $0) }
+        SSKEnvironment.shared.syncManagerRef.sendConfigurationSyncMessage()
+        SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
     }
 
     public func setAreReadReceiptsEnabled(_ value: Bool, transaction: SDSAnyWriteTransaction) {
@@ -320,7 +320,7 @@ extension OWSReceiptManager {
     }
 
     func processReceiptsForLinkedDevices() async {
-        let didWork = await databaseStorage.awaitableWrite { self.processReceiptsForLinkedDevices(transaction: $0) }
+        let didWork = await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { self.processReceiptsForLinkedDevices(transaction: $0) }
 
         if didWork {
             // Wait N seconds before processing read receipts again.
@@ -597,7 +597,7 @@ extension OWSReceiptManager {
         DispatchQueue.global().async {
             let interactionFinder = InteractionFinder(threadUniqueId: thread.uniqueId)
 
-            let hasMessagesToMarkRead = self.databaseStorage.read { transaction in
+            let hasMessagesToMarkRead = SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 return interactionFinder.hasMessagesToMarkRead(
                     beforeSortId: sortId,
                     transaction: transaction
@@ -627,7 +627,7 @@ extension OWSReceiptManager {
             var batchQuotaRemaining: Int
             repeat {
                 batchQuotaRemaining = maxBatchSize
-                self.databaseStorage.write { transaction in
+                SSKEnvironment.shared.databaseStorageRef.write { transaction in
                     var cursor = interactionFinder.fetchUnreadMessages(beforeSortId: sortId,
                                                                        transaction: transaction)
                     do {
@@ -651,7 +651,7 @@ extension OWSReceiptManager {
             // Mark outgoing messages with unread reactions as well.
             repeat {
                 batchQuotaRemaining = maxBatchSize
-                self.databaseStorage.write { transaction in
+                SSKEnvironment.shared.databaseStorageRef.write { transaction in
                     var receiptsForMessage: [OWSLinkedDeviceReadReceipt] = []
                     var cursor = interactionFinder.fetchMessagesWithUnreadReactions(
                         beforeSortId: sortId,
@@ -762,7 +762,7 @@ extension OWSReceiptManager {
             )
 
             // Clear notifications for all the now-marked-read messages in one batch.
-            notificationPresenter.cancelNotifications(messageIds: [incomingMessage.uniqueId] + markedAsReadIds)
+            SSKEnvironment.shared.notificationPresenterRef.cancelNotifications(messageIds: [incomingMessage.uniqueId] + markedAsReadIds)
         case let outgoingMessage as TSOutgoingMessage:
             // Outgoing messages are always "read", but if we get a receipt
             // from our linked device about one that indicates that any reactions

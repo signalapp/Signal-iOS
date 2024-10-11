@@ -58,13 +58,13 @@ extension AddToBlockListViewController: RecipientPickerDelegate, UsernameLinkSca
     ) -> RecipientPickerRecipientState {
         switch recipient.identifier {
         case .address(let address):
-            let isAddressBlocked = databaseStorage.read { blockingManager.isAddressBlocked(address, transaction: $0) }
+            let isAddressBlocked = SSKEnvironment.shared.databaseStorageRef.read { SSKEnvironment.shared.blockingManagerRef.isAddressBlocked(address, transaction: $0) }
             guard !isAddressBlocked else {
                 return .userAlreadyInBlocklist
             }
             return .canBeSelected
         case .group(let thread):
-            let isThreadBlocked = databaseStorage.read { blockingManager.isThreadBlocked(thread, transaction: $0) }
+            let isThreadBlocked = SSKEnvironment.shared.databaseStorageRef.read { SSKEnvironment.shared.blockingManagerRef.isThreadBlocked(thread, transaction: $0) }
             guard !isThreadBlocked else {
                 return .conversationAlreadyInBlocklist
             }
@@ -92,12 +92,12 @@ extension AddToBlockListViewController: RecipientPickerDelegate, UsernameLinkSca
         switch recipient.identifier {
         case .address(let address):
             #if DEBUG
-            let isBlocked = blockingManager.isAddressBlocked(address, transaction: transaction)
+            let isBlocked = SSKEnvironment.shared.blockingManagerRef.isAddressBlocked(address, transaction: transaction)
             owsPrecondition(!isBlocked, "It should be impossible to see a blocked connection in this view")
             #endif
             return nil
         case .group(let thread):
-            guard blockingManager.isThreadBlocked(thread, transaction: transaction) else { return nil }
+            guard SSKEnvironment.shared.blockingManagerRef.isThreadBlocked(thread, transaction: transaction) else { return nil }
             return MessageStrings.conversationIsBlocked
         }
     }

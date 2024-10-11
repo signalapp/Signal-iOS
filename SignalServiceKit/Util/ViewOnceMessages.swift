@@ -40,7 +40,7 @@ public class ViewOnceMessages: NSObject {
     private class func checkForAutoCompletion() {
         // Find all view-once messages which are not yet complete.
         // Complete messages if necessary.
-        databaseStorage.write { (transaction) in
+        SSKEnvironment.shared.databaseStorageRef.write { (transaction) in
             let messages = ViewOnceMessageFinder()
                 .allMessagesWithViewOnceMessage(transaction: transaction)
             for message in messages {

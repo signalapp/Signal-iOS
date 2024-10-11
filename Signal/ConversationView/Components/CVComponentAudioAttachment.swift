@@ -23,7 +23,7 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
 
         super.init(itemModel: itemModel)
 
-        databaseStorage.appendDatabaseChangeDelegate(self)
+        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
     }
 
     public func buildComponentView(componentDelegate: CVComponentDelegate) -> CVComponentView {
@@ -140,7 +140,7 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
 
     /// Checks if the message still exists and stops playback if it does not.
     private func checkIfMessageStillExists() {
-        let messageWasDeleted = databaseStorage.read { tx in
+        let messageWasDeleted = SSKEnvironment.shared.databaseStorageRef.read { tx in
             TSInteraction.anyFetch(uniqueId: interaction.uniqueId, transaction: tx) == nil
         }
 
@@ -175,7 +175,7 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
 
         } else if audioAttachment.isDownloading, let pointerId = audioAttachment.attachmentPointer?.attachment.resourceId {
             Logger.debug("Cancelling in-progress download because of user action: \(interaction.uniqueId):\(pointerId)")
-            self.databaseStorage.write { tx in
+            SSKEnvironment.shared.databaseStorageRef.write { tx in
                 DependenciesBridge.shared.tsResourceDownloadManager.cancelDownload(
                     for: pointerId,
                     tx: tx.asV2Write

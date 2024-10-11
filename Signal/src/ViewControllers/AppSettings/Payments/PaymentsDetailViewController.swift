@@ -24,7 +24,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
 
         updateTableContents()
 
-        Self.databaseStorage.appendDatabaseChangeDelegate(self)
+        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -36,10 +36,10 @@ class PaymentsDetailViewController: OWSTableViewController2 {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        paymentsCurrencies.updateConversationRatesIfStale()
+        SSKEnvironment.shared.paymentsCurrenciesRef.updateConversationRatesIfStale()
 
         if paymentItem.isUnread {
-            databaseStorage.asyncWrite { [weak self] tx in
+            SSKEnvironment.shared.databaseStorageRef.asyncWrite { [weak self] tx in
                 self?.paymentItem.markAsRead(tx: tx)
             }
         }
@@ -203,8 +203,8 @@ class PaymentsDetailViewController: OWSTableViewController2 {
         {
             let title: String
             if let senderOrRecipientAddress = paymentItem.address {
-                let username = databaseStorage.read { tx in
-                    return contactsManager.displayName(for: senderOrRecipientAddress, tx: tx).resolvedValue()
+                let username = SSKEnvironment.shared.databaseStorageRef.read { tx in
+                    return SSKEnvironment.shared.contactManagerRef.displayName(for: senderOrRecipientAddress, tx: tx).resolvedValue()
                 }
                 let titleFormat: String = {
                     switch paymentItem {
@@ -268,8 +268,8 @@ class PaymentsDetailViewController: OWSTableViewController2 {
                 }
                 let displayName: DisplayName
                 if let senderAci = paymentItem.address {
-                    displayName = databaseStorage.read { tx in
-                        return contactsManager.displayName(for: senderAci, tx: tx)
+                    displayName = SSKEnvironment.shared.databaseStorageRef.read { tx in
+                        return SSKEnvironment.shared.contactManagerRef.displayName(for: senderAci, tx: tx)
                     }
                 } else {
                     displayName = .unknown
@@ -392,12 +392,12 @@ class PaymentsDetailViewController: OWSTableViewController2 {
             stackViews.append(memoLabel)
         }
 
-        databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             avatarView.update(transaction) { config in
                 config.dataSource = .address(address)
             }
 
-            let displayName = Self.contactsManager.displayName(for: address, tx: transaction).resolvedValue()
+            let displayName = SSKEnvironment.shared.contactManagerRef.displayName(for: address, tx: transaction).resolvedValue()
             let displayNameFormat = (
                 self.paymentItem.isIncoming
                 ? OWSLocalizedString(
@@ -493,7 +493,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
     // MARK: -
 
     private func updateItem() {
-        guard let _ = databaseStorage.read(block: { [weak self] tx in
+        guard let _ = SSKEnvironment.shared.databaseStorageRef.read(block: { [weak self] tx in
             self?.paymentItem.reload(tx: tx)
         }) else {
             navigationController?.popViewController(animated: true)

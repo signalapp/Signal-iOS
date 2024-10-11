@@ -563,7 +563,7 @@ extension StoryPageViewController: UIViewControllerTransitioningDelegate {
         let attachment: TSResource?
         switch presentingMessage.attachment {
         case .file, .foreignReferenceAttachment:
-            attachment = databaseStorage.read { tx in
+            attachment = SSKEnvironment.shared.databaseStorageRef.read { tx in
                 return presentingMessage.fileAttachment(tx: tx)
             }?.attachment
         case .text:
@@ -584,7 +584,7 @@ extension StoryPageViewController: UIViewControllerTransitioningDelegate {
         let storyView: UIView
         switch presentingMessage.attachment {
         case .file, .foreignReferenceAttachment:
-            guard let attachment = databaseStorage.read(block: { presentingMessage.fileAttachment(tx: $0) })?.attachment else {
+            guard let attachment = SSKEnvironment.shared.databaseStorageRef.read(block: { presentingMessage.fileAttachment(tx: $0) })?.attachment else {
                 // Can happen if the story was deleted by the sender while in the viewer.
                 return nil
             }
@@ -617,7 +617,7 @@ extension StoryPageViewController: UIViewControllerTransitioningDelegate {
                 blurHashImageView.autoPinEdgesToSuperviewEdges()
             }
         case .text(let attachment):
-            let preloadedAttachment = databaseStorage.read { tx in
+            let preloadedAttachment = SSKEnvironment.shared.databaseStorageRef.read { tx in
                 return PreloadedTextAttachment.from(
                     attachment,
                     storyMessage: presentingMessage,

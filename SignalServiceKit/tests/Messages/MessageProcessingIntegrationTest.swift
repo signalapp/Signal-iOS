@@ -33,7 +33,7 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
         let identityManager = DependenciesBridge.shared.identityManager
         identityManager.generateAndPersistNewIdentityKey(for: .aci)
         identityManager.generateAndPersistNewIdentityKey(for: .pni)
-        databaseStorage.write { tx in
+        SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: .init(
                     aci: localAci,
@@ -50,7 +50,7 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
     }
 
     override func tearDown() {
-        databaseStorage.grdbStorage.testing_tearDownDatabaseChangeObserver()
+        SSKEnvironment.shared.databaseStorageRef.grdbStorage.testing_tearDownDatabaseChangeObserver()
 
         super.tearDown()
     }
@@ -105,7 +105,7 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
                 }
             }
         }
-        guard let observer = databaseStorage.grdbStorage.databaseChangeObserver else {
+        guard let observer = SSKEnvironment.shared.databaseStorageRef.grdbStorage.databaseChangeObserver else {
             owsFailDebug("observer was unexpectedly nil")
             return
         }
@@ -116,7 +116,7 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
         envelopeBuilder.setServerTimestamp(NSDate.ows_millisecondTimeStamp())
         envelopeBuilder.setServerGuid(UUID().uuidString)
         let envelopeData = try! envelopeBuilder.buildSerializedData()
-        messageProcessor.processReceivedEnvelopeData(
+        SSKEnvironment.shared.messageProcessorRef.processReceivedEnvelopeData(
             envelopeData,
             serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
             envelopeSource: .tests
@@ -153,7 +153,7 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
         envelopeBuilder.setServerGuid(UUID().uuidString)
         envelopeBuilder.setDestinationServiceID(Aci.randomForTesting().serviceIdString)
         let envelopeData = try! envelopeBuilder.buildSerializedData()
-        messageProcessor.processReceivedEnvelopeData(
+        SSKEnvironment.shared.messageProcessorRef.processReceivedEnvelopeData(
             envelopeData,
             serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
             envelopeSource: .tests
@@ -191,7 +191,7 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
         }
 
         let content = try! fakeService.buildContentData(bodyText: "Those who stands for nothing will fall for anything")
-        let ciphertext = databaseStorage.write { transaction in
+        let ciphertext = SSKEnvironment.shared.databaseStorageRef.write { transaction in
             try! runner.encrypt(content,
                                 senderClient: bobClient,
                                 recipient: localPniClient.protocolAddress,
@@ -207,7 +207,7 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
         envelopeBuilder.setServerGuid(UUID().uuidString)
         envelopeBuilder.setDestinationServiceID(DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!.pni!.serviceIdString)
         let envelopeData = try! envelopeBuilder.buildSerializedData()
-        messageProcessor.processReceivedEnvelopeData(
+        SSKEnvironment.shared.messageProcessorRef.processReceivedEnvelopeData(
             envelopeData,
             serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
             envelopeSource: .tests
@@ -243,7 +243,7 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
         envelopeBuilder.setSourceDevice(2)
         envelopeBuilder.setSourceServiceID(self.bobClient.serviceId.serviceIdString)
         let envelopeData = try envelopeBuilder.buildSerializedData()
-        messageProcessor.processReceivedEnvelopeData(
+        SSKEnvironment.shared.messageProcessorRef.processReceivedEnvelopeData(
             envelopeData,
             serverDeliveryTimestamp: 102,
             envelopeSource: .websocketUnidentified
@@ -257,7 +257,7 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
                                                                      timestamp: timestamp)
 
             // Encrypt message content
-            let ciphertext = self.databaseStorage.write { transaction in
+            let ciphertext = SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 try! self.runner.encrypt(content,
                                          senderClient: self.linkedClient,
                                          recipient: self.localClient.protocolAddress,
@@ -276,7 +276,7 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
             let envelopeData = try! envelopeBuilder.buildSerializedData()
 
             // Process the message
-            self.messageProcessor.processReceivedEnvelopeData(
+            SSKEnvironment.shared.messageProcessorRef.processReceivedEnvelopeData(
                 envelopeData,
                 serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
                 envelopeSource: .tests
@@ -337,7 +337,7 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
         envelopeBuilder.setDestinationServiceID(self.localClient.serviceId.serviceIdString)
         let envelopeData = try envelopeBuilder.buildSerializedData()
 
-        messageProcessor.processReceivedEnvelopeData(
+        SSKEnvironment.shared.messageProcessorRef.processReceivedEnvelopeData(
             envelopeData,
             serverDeliveryTimestamp: 102,
             envelopeSource: .websocketUnidentified
@@ -351,7 +351,7 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
                                                                      timestamp: timestamp)
 
             // Encrypt message content
-            let ciphertext = self.databaseStorage.write { transaction in
+            let ciphertext = SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 try! self.runner.encrypt(content,
                                          senderClient: self.linkedClient,
                                          recipient: self.localClient.protocolAddress,
@@ -370,7 +370,7 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
             let envelopeData = try! envelopeBuilder.buildSerializedData()
 
             // Process the message
-            self.messageProcessor.processReceivedEnvelopeData(
+            SSKEnvironment.shared.messageProcessorRef.processReceivedEnvelopeData(
                 envelopeData,
                 serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
                 envelopeSource: .tests

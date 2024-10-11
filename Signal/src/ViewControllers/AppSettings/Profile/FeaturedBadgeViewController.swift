@@ -22,7 +22,7 @@ class FeaturedBadgeViewController: OWSTableViewController2, BadgeCollectionDataS
     override func viewDidLoad() {
         super.viewDidLoad()
         if avatarImage == nil {
-            avatarImage = Self.avatarBuilder.avatarImageForLocalUserWithSneakyTransaction(
+            avatarImage = SSKEnvironment.shared.avatarBuilderRef.avatarImageForLocalUserWithSneakyTransaction(
                 diameterPoints: sizeClass.diameter,
                 localUserDisplayMode: .asUser)
         }

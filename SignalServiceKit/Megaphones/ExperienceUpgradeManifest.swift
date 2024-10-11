@@ -502,7 +502,7 @@ extension ExperienceUpgradeManifest {
     private static func checkPreconditionsForIntroducingPins(transaction: SDSAnyReadTransaction) -> Bool {
         // The PIN setup flow requires an internet connection and you to not already have a PIN
         if
-            reachabilityManager.isReachable,
+            SSKEnvironment.shared.reachabilityManagerRef.isReachable,
             DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction.asV2Read).isRegisteredPrimaryDevice,
             !DependenciesBridge.shared.svr.hasMasterKey(transaction: transaction.asV2Read)
         {
@@ -637,7 +637,7 @@ extension ExperienceUpgradeManifest {
         switch conditionalCheck {
         case .standardDonate:
             if
-                let localProfileBadgeInfo = profileManager.localProfileBadgeInfo,
+                let localProfileBadgeInfo = SSKEnvironment.shared.profileManagerRef.localProfileBadgeInfo,
                 !localProfileBadgeInfo.isEmpty
             {
                 // Fail the check if we currently have a badge.

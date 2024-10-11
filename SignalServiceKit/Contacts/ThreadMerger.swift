@@ -326,7 +326,7 @@ class _ThreadMerger_SDSThreadMergerWrapper: _ThreadMerger_SDSThreadMergerShim {
         mergeReceiptsPendingMessageRequest(threadPair, tx: SDSDB.shimOnlyBridge(tx))
         mergeMessageSendLogPayloads(threadPair, tx: SDSDB.shimOnlyBridge(tx))
         // We might have changed something in the cache -- evacuate it.
-        NSObject.modelReadCaches.evacuateAllCaches()
+        SSKEnvironment.shared.modelReadCachesRef.evacuateAllCaches()
     }
 
     private func mergeInteractions(_ threadPair: MergePair<TSContactThread>, tx: SDSAnyWriteTransaction) {

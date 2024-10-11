@@ -238,7 +238,7 @@ public extension TSMessage {
         // out. Everything else can be automatically read.
         if !(self is TSOutgoingMessage) { reaction.markAsRead(transaction: tx) }
 
-        databaseStorage.touch(interaction: self, shouldReindex: false, transaction: tx)
+        SSKEnvironment.shared.databaseStorageRef.touch(interaction: self, shouldReindex: false, transaction: tx)
 
         return reaction
     }
@@ -247,9 +247,9 @@ public extension TSMessage {
         guard let reaction = reaction(for: reactor, tx: tx) else { return }
 
         reaction.anyRemove(transaction: tx)
-        databaseStorage.touch(interaction: self, shouldReindex: false, transaction: tx)
+        SSKEnvironment.shared.databaseStorageRef.touch(interaction: self, shouldReindex: false, transaction: tx)
 
-        Self.notificationPresenter.cancelNotifications(reactionId: reaction.uniqueId)
+        SSKEnvironment.shared.notificationPresenterRef.cancelNotifications(reactionId: reaction.uniqueId)
     }
 
     // MARK: - Edits
@@ -403,7 +403,7 @@ public extension TSMessage {
         try! processEdits(transaction: transaction) { record, message in
             message?.updateWithRemotelyDeletedAndRemoveRenderableContent(with: transaction)
         }
-        Self.notificationPresenter.cancelNotifications(messageIds: [self.uniqueId])
+        SSKEnvironment.shared.notificationPresenterRef.cancelNotifications(messageIds: [self.uniqueId])
     }
 
     // MARK: - Preview text
@@ -411,7 +411,7 @@ public extension TSMessage {
     @objc(previewTextForGiftBadgeWithTransaction:)
     func previewTextForGiftBadge(transaction: SDSAnyReadTransaction) -> String {
         if let incomingMessage = self as? TSIncomingMessage {
-            let senderShortName = contactsManager.displayName(
+            let senderShortName = SSKEnvironment.shared.contactManagerRef.displayName(
                 for: incomingMessage.authorAddress, tx: transaction
             ).resolvedValue(useShortNameIfAvailable: true)
             let format = OWSLocalizedString(
@@ -423,7 +423,7 @@ public extension TSMessage {
             let recipientShortName: String
             let recipients = outgoingMessage.recipientAddresses()
             if let recipient = recipients.first, recipients.count == 1 {
-                recipientShortName = contactsManager.displayName(
+                recipientShortName = SSKEnvironment.shared.contactManagerRef.displayName(
                     for: recipient, tx: transaction
                 ).resolvedValue(useShortNameIfAvailable: true)
             } else {
@@ -544,7 +544,7 @@ public extension TSMessage {
             storyReactionEmoji.isEmpty.negated
         {
             if let storyAuthorAddress, storyAuthorAddress.isLocalAddress.negated {
-                let storyAuthorName = self.contactsManager.displayName(for: storyAuthorAddress, tx: tx)
+                let storyAuthorName = SSKEnvironment.shared.contactManagerRef.displayName(for: storyAuthorAddress, tx: tx)
                 return .storyReactionEmoji(String(
                     format: OWSLocalizedString(
                         "STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT",
@@ -655,7 +655,7 @@ public extension TSMessage {
         if let storyMessage {
             // Note that changes are aggregated; the touch below won't double
             // up observer notifications.
-            self.databaseStorage.touch(storyMessage: storyMessage, transaction: transaction)
+            SSKEnvironment.shared.databaseStorageRef.touch(storyMessage: storyMessage, transaction: transaction)
             switch replyCountIncrement {
             case .noIncrement:
                 break

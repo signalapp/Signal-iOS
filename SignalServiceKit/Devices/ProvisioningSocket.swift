@@ -31,8 +31,7 @@ public class ProvisioningSocket {
     }
 
     public convenience init() {
-        struct GlobalDependencies: Dependencies {}
-        self.init(webSocketFactory: GlobalDependencies.webSocketFactory)
+        self.init(webSocketFactory: SSKEnvironment.shared.webSocketFactoryRef)
     }
 
     public var state: SSKWebSocketState {

@@ -12,7 +12,7 @@ public class StoryDirectReplySheet: OWSViewController, StoryReplySheet {
 
     var bottomBar: UIView { inputToolbar }
     lazy var inputToolbar: StoryReplyInputToolbar = {
-        let quotedReplyModel = databaseStorage.read {
+        let quotedReplyModel = SSKEnvironment.shared.databaseStorageRef.read {
             QuotedReplyModel.build(replyingTo: storyMessage, transaction: $0)
         }
         let toolbar = StoryReplyInputToolbar(isGroupStory: false, quotedReplyModel: quotedReplyModel, spoilerState: spoilerState)
@@ -20,7 +20,7 @@ public class StoryDirectReplySheet: OWSViewController, StoryReplySheet {
         return toolbar
     }()
     let storyMessage: StoryMessage
-    lazy var thread: TSThread? = databaseStorage.read { storyMessage.context.thread(transaction: $0) }
+    lazy var thread: TSThread? = SSKEnvironment.shared.databaseStorageRef.read { storyMessage.context.thread(transaction: $0) }
 
     var reactionPickerBackdrop: UIView?
     var reactionPicker: MessageReactionPicker?

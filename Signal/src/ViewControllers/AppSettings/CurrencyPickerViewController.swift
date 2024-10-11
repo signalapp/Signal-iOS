@@ -246,9 +246,9 @@ struct StripeCurrencyPickerDataSource: CurrencyPickerDataSource {
 }
 
 class PaymentsCurrencyPickerDataSource: NSObject, CurrencyPickerDataSource {
-    let currentCurrencyCode = paymentsCurrenciesSwift.currentCurrencyCode
-    let preferredCurrencyInfos = paymentsCurrenciesSwift.preferredCurrencyInfos
-    private(set) var supportedCurrencyInfos = paymentsCurrenciesSwift.supportedCurrencyInfosWithCurrencyConversions {
+    let currentCurrencyCode = SSKEnvironment.shared.paymentsCurrenciesRef.currentCurrencyCode
+    let preferredCurrencyInfos = SSKEnvironment.shared.paymentsCurrenciesRef.preferredCurrencyInfos
+    private(set) var supportedCurrencyInfos = SSKEnvironment.shared.paymentsCurrenciesRef.supportedCurrencyInfosWithCurrencyConversions {
         didSet { updateTableContents?() }
     }
 
@@ -264,11 +264,11 @@ class PaymentsCurrencyPickerDataSource: NSObject, CurrencyPickerDataSource {
             object: nil
         )
 
-        paymentsCurrencies.updateConversationRatesIfStale()
+        SSKEnvironment.shared.paymentsCurrenciesRef.updateConversationRatesIfStale()
     }
 
     @objc
     private func paymentConversionRatesDidChange() {
-        supportedCurrencyInfos = paymentsCurrenciesSwift.supportedCurrencyInfosWithCurrencyConversions
+        supportedCurrencyInfos = SSKEnvironment.shared.paymentsCurrenciesRef.supportedCurrencyInfosWithCurrencyConversions
     }
 }

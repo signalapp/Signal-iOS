@@ -155,7 +155,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
 
     [self _anyDidInsertWithTx:transaction];
 
-    [self.modelReadCaches.threadReadCache didInsertOrUpdateThread:self transaction:transaction];
+    [SSKEnvironment.shared.modelReadCachesRef.threadReadCache didInsertOrUpdateThread:self transaction:transaction];
 }
 
 - (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -166,7 +166,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
         [SSKPreferences setHasSavedThread:YES transaction:transaction];
     }
 
-    [self.modelReadCaches.threadReadCache didInsertOrUpdateThread:self transaction:transaction];
+    [SSKEnvironment.shared.modelReadCachesRef.threadReadCache didInsertOrUpdateThread:self transaction:transaction];
 
     [PinnedThreadManagerObjcBridge handleUpdatedThread:self transaction:transaction];
 }
@@ -186,7 +186,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
 - (NSArray<SignalServiceAddress *> *)recipientAddressesWithSneakyTransaction
 {
     __block NSArray<SignalServiceAddress *> *recipientAddresses;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+    [SSKEnvironment.shared.databaseStorageRef readWithBlock:^(SDSAnyReadTransaction *transaction) {
         recipientAddresses = [self recipientAddressesWithTransaction:transaction];
     }];
     return recipientAddresses;
@@ -481,9 +481,10 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
     // than once.
     [transactionForMethod addTransactionFinalizationBlockForKey:self.transactionFinalizationKey
                                                           block:^(SDSAnyWriteTransaction *transactionForBlock) {
-                                                              [self.databaseStorage touchThread:self
-                                                                                  shouldReindex:NO
-                                                                                    transaction:transactionForBlock];
+                                                              [SSKEnvironment.shared.databaseStorageRef
+                                                                    touchThread:self
+                                                                  shouldReindex:NO
+                                                                    transaction:transactionForBlock];
                                                           }];
 }
 
@@ -529,7 +530,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
                              block:^(TSThread *thread) { thread.mentionNotificationMode = mentionNotificationMode; }];
     if (wasLocallyInitiated && self.isGroupV2Thread) {
         TSGroupThread *groupThread = (TSGroupThread *)self;
-        [self.storageServiceManagerObjc recordPendingUpdatesWithGroupModel:groupThread.groupModel];
+        [SSKEnvironment.shared.storageServiceManagerObjcRef recordPendingUpdatesWithGroupModel:groupThread.groupModel];
     }
 }
 

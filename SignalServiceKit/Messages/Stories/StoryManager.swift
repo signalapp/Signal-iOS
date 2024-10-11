@@ -15,7 +15,7 @@ public class StoryManager: NSObject {
         cacheAreViewReceiptsEnabled()
 
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            Self.databaseStorage.asyncWrite { transaction in
+            SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
                 // Create My Story thread if necessary
                 TSPrivateStoryThread.getOrCreateMyStory(transaction: transaction)
 
@@ -43,7 +43,7 @@ public class StoryManager: NSObject {
             return
         }
 
-        guard !blockingManager.isAddressBlocked(SignalServiceAddress(author), transaction: transaction) else {
+        guard !SSKEnvironment.shared.blockingManagerRef.isAddressBlocked(SignalServiceAddress(author), transaction: transaction) else {
             Logger.warn("Dropping story message with timestamp \(timestamp) from blocked or hidden author \(author)")
             return
         }
@@ -56,7 +56,7 @@ public class StoryManager: NSObject {
         if let masterKey = storyMessage.group?.masterKey {
             let contextInfo = try GroupV2ContextInfo.deriveFrom(masterKeyData: masterKey)
 
-            guard !blockingManager.isGroupIdBlocked(contextInfo.groupId, transaction: transaction) else {
+            guard !SSKEnvironment.shared.blockingManagerRef.isGroupIdBlocked(contextInfo.groupId, transaction: transaction) else {
                 Logger.warn("Dropping story message with timestamp \(timestamp) in blocked group")
                 return
             }
@@ -79,14 +79,14 @@ public class StoryManager: NSObject {
             }
 
         } else {
-            guard profileManager.isUser(inProfileWhitelist: SignalServiceAddress(author), transaction: transaction) else {
+            guard SSKEnvironment.shared.profileManagerRef.isUser(inProfileWhitelist: SignalServiceAddress(author), transaction: transaction) else {
                 Logger.warn("Dropping story message with timestamp \(timestamp) from unapproved author \(author).")
                 return
             }
         }
 
         if let profileKey = storyMessage.profileKey {
-            profileManager.setProfileKeyData(
+            SSKEnvironment.shared.profileManagerRef.setProfileKeyData(
                 profileKey,
                 for: author,
                 onlyFillInIfMissing: false,
@@ -118,7 +118,7 @@ public class StoryManager: NSObject {
 
         SSKEnvironment.shared.disappearingMessagesJobRef.scheduleRun(by: message.timestamp + storyLifetimeMillis)
 
-        earlyMessageManager.applyPendingMessages(for: message, transaction: transaction)
+        SSKEnvironment.shared.earlyMessageManagerRef.applyPendingMessages(for: message, transaction: transaction)
     }
 
     public class func processStoryMessageTranscript(
@@ -152,7 +152,7 @@ public class StoryManager: NSObject {
 
             SSKEnvironment.shared.disappearingMessagesJobRef.scheduleRun(by: message.timestamp + storyLifetimeMillis)
 
-            earlyMessageManager.applyPendingMessages(for: message, transaction: transaction)
+            SSKEnvironment.shared.earlyMessageManagerRef.applyPendingMessages(for: message, transaction: transaction)
         } else {
             owsFailDebug("Ignoring sync transcript for story with timestamp \(proto.timestamp)")
         }
@@ -228,7 +228,7 @@ public class StoryManager: NSObject {
         }
         keyValueStore.setBool(hasSet, key: hasSetMyStoriesPrivacyKey, transaction: transaction)
         if shouldUpdateStorageService {
-            Self.storageServiceManager.recordPendingLocalAccountUpdates()
+            SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
         }
     }
 
@@ -359,7 +359,7 @@ extension StoryManager {
         areStoriesEnabledCache.set(areStoriesEnabled)
 
         if shouldUpdateStorageService {
-            storageServiceManager.recordPendingLocalAccountUpdates()
+            SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
         }
 
         transaction.addAsyncCompletionOnMain {
@@ -375,7 +375,7 @@ extension StoryManager {
     private static func cacheAreStoriesEnabled() {
         AssertIsOnMainThread()
 
-        let areStoriesEnabled = databaseStorage.read { Self.areStoriesEnabled(transaction: $0) }
+        let areStoriesEnabled = SSKEnvironment.shared.databaseStorageRef.read { Self.areStoriesEnabled(transaction: $0) }
         areStoriesEnabledCache.set(areStoriesEnabled)
 
         if !areStoriesEnabled {
@@ -425,12 +425,12 @@ extension StoryManager {
         areViewReceiptsEnabled = enabled
 
         if shouldUpdateStorageService {
-            storageServiceManager.recordPendingLocalAccountUpdates()
+            SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
         }
     }
 
     private static func cacheAreViewReceiptsEnabled() {
-        areViewReceiptsEnabled = databaseStorage.read { areViewReceiptsEnabled(transaction: $0) }
+        areViewReceiptsEnabled = SSKEnvironment.shared.databaseStorageRef.read { areViewReceiptsEnabled(transaction: $0) }
     }
 }
 
@@ -520,7 +520,7 @@ public extension StoryContext {
         transaction: SDSAnyReadTransaction
     ) -> Bool {
         if self == .authorAci(StoryMessage.systemStoryAuthor) {
-            return Self.systemStoryManager.areSystemStoriesHidden(transaction: transaction)
+            return SSKEnvironment.shared.systemStoryManagerRef.areSystemStoriesHidden(transaction: transaction)
         }
         return self.associatedData(transaction: transaction)?.isHidden ?? false
     }

@@ -13,7 +13,7 @@ class TSOutgoingMessageTest: SSKBaseTest {
 
     override func setUp() {
         super.setUp()
-        databaseStorage.write { tx in
+        SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: .forUnitTests,
                 tx: tx.asV2Write
@@ -336,7 +336,7 @@ class TSOutgoingMessageTest: SSKBaseTest {
         // Change our PNI, using registerForTests(...) instead of updateLocalPhoneNumber(...) because the latter kicks
         // off a request to check with the server.
         let aci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!.aci
-        databaseStorage.write { tx in
+        SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: .init(
                     aci: aci,

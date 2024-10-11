@@ -149,7 +149,7 @@ extension SpamCaptchaViewController {
                     text: OWSLocalizedString(
                         "SPAM_CAPTCHA_COMPLETED_TOAST",
                         comment: "Text for toast presented after spam verification has been completed"))
-                spamChallengeResolver.handleIncomingCaptchaChallengeToken(token)
+                SSKEnvironment.shared.spamChallengeResolverRef.handleIncomingCaptchaChallengeToken(token)
             }
             vc.dismiss(animated: true)
         }

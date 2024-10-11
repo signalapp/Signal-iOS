@@ -218,8 +218,8 @@ public class PaymentsDeactivateViewController: OWSViewController {
 
     private func deactivateImmediately() {
         dismiss(animated: true) {
-            Self.databaseStorage.write { transaction in
-                Self.paymentsHelperSwift.disablePayments(transaction: transaction)
+            SSKEnvironment.shared.databaseStorageRef.write { transaction in
+                SSKEnvironment.shared.paymentsHelperRef.disablePayments(transaction: transaction)
             }
         }
     }

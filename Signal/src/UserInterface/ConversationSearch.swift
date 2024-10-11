@@ -96,7 +96,7 @@ extension ConversationSearchController: UISearchResultsUpdating {
         lastSearchText = searchText
 
         var resultSet: ConversationScreenSearchResultSet?
-        databaseStorage.asyncRead(block: { [weak self] transaction in
+        SSKEnvironment.shared.databaseStorageRef.asyncRead(block: { [weak self] transaction in
             guard let self = self else {
                 return
             }

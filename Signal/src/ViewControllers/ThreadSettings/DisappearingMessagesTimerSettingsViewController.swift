@@ -262,7 +262,7 @@ class DisappearingMessagesTimerSettingsViewController: OWSTableViewController2 {
         newToken: VersionedDisappearingMessageToken
     ) async throws {
         if let contactThread = thread as? TSContactThread {
-            await databaseStorage.awaitableWrite { tx in
+            await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
                 GroupManager.localUpdateDisappearingMessageToken(
                     newToken,
                     inContactThread: contactThread,

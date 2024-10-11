@@ -82,7 +82,7 @@ public class CLVReminderViews: Dependencies {
         archiveReminderView = ReminderView(
             style: .info,
             text: {
-                let shouldKeepMutedChatsArchived = databaseStorage.read { transaction in
+                let shouldKeepMutedChatsArchived = SSKEnvironment.shared.databaseStorageRef.read { transaction in
                     return SSKPreferences.shouldKeepMutedChatsArchived(transaction: transaction)
                 }
                 if shouldKeepMutedChatsArchived {
@@ -159,10 +159,10 @@ public class CLVReminderViews: Dependencies {
             isAttemptingRecovery: true,
             usernameSelectionDelegate: chatListViewController,
             context: .init(
-                databaseStorage: databaseStorage,
-                networkManager: networkManager,
+                databaseStorage: SSKEnvironment.shared.databaseStorageRef,
+                networkManager: SSKEnvironment.shared.networkManagerRef,
                 schedulers: DependenciesBridge.shared.schedulers,
-                storageServiceManager: storageServiceManager,
+                storageServiceManager: SSKEnvironment.shared.storageServiceManagerRef,
                 usernameEducationManager: DependenciesBridge.shared.usernameEducationManager,
                 localUsernameManager: DependenciesBridge.shared.localUsernameManager
             )
@@ -233,7 +233,7 @@ extension ChatListViewController {
            let firstUnreadPaymentModel = self.firstUnreadPaymentModel {
             self.paymentsReminderView.isHidden = false
 
-            databaseStorage.read { transaction in
+            SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 self.configureUnreadPaymentsBannerSingle(paymentsReminderView,
                                                          paymentModel: firstUnreadPaymentModel,
                                                          transaction: transaction)
@@ -246,7 +246,7 @@ extension ChatListViewController {
                                                        unreadCount: unreadPaymentNotificationsCount)
         }
 
-        databaseStorage.read { tx in
+        SSKEnvironment.shared.databaseStorageRef.read { tx in
             updateUsernameStateViews(tx: tx)
         }
 
@@ -256,7 +256,7 @@ extension ChatListViewController {
     public func updateUnreadPaymentNotificationsCountWithSneakyTransaction() {
         AssertIsOnMainThread()
 
-        guard paymentsHelper.arePaymentsEnabled else {
+        guard SSKEnvironment.shared.paymentsHelperRef.arePaymentsEnabled else {
             var needsUpdate = false
 
             if unreadPaymentNotificationsCount > 0 {
@@ -276,7 +276,7 @@ extension ChatListViewController {
             return
         }
 
-        let (unreadPaymentNotificationsCount, firstUnreadPaymentModel) = databaseStorage.read { transaction in
+        let (unreadPaymentNotificationsCount, firstUnreadPaymentModel) = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return (
                 PaymentFinder.unreadCount(transaction: transaction),
                 PaymentFinder.firstUnreadPaymentModel(transaction: transaction)

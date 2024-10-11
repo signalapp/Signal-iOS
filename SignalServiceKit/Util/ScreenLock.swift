@@ -50,7 +50,7 @@ public class ScreenLock: NSObject {
     public func isScreenLockEnabled() -> Bool {
         AssertIsOnMainThread()
 
-        return databaseStorage.read { transaction in
+        return SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return self.keyValueStore.getBool(ScreenLock.OWSScreenLock_Key_IsScreenLockEnabled,
                                               defaultValue: false,
                                               transaction: transaction)
@@ -60,7 +60,7 @@ public class ScreenLock: NSObject {
     public func setIsScreenLockEnabled(_ value: Bool) {
         AssertIsOnMainThread()
 
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             self.keyValueStore.setBool(value,
                                        key: ScreenLock.OWSScreenLock_Key_IsScreenLockEnabled,
                                        transaction: transaction)
@@ -72,7 +72,7 @@ public class ScreenLock: NSObject {
     public func screenLockTimeout() -> TimeInterval {
         AssertIsOnMainThread()
 
-        return databaseStorage.read { transaction in
+        return SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return self.keyValueStore.getDouble(ScreenLock.OWSScreenLock_Key_ScreenLockTimeoutSeconds,
                                                 defaultValue: ScreenLock.screenLockTimeoutDefault,
                                                 transaction: transaction)
@@ -82,7 +82,7 @@ public class ScreenLock: NSObject {
     public func setScreenLockTimeout(_ value: TimeInterval) {
         AssertIsOnMainThread()
 
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             self.keyValueStore.setDouble(value,
                                          key: ScreenLock.OWSScreenLock_Key_ScreenLockTimeoutSeconds,
                                          transaction: transaction)

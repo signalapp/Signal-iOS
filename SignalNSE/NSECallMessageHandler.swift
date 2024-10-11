@@ -17,12 +17,12 @@ class NSECallMessageHandler: CallMessageHandler {
         SwiftSingletons.register(self)
     }
 
-    private var databaseStorage: SDSDatabaseStorage { NSObject.databaseStorage }
-    private var groupCallManager: GroupCallManager { NSObject.groupCallManager }
+    private var databaseStorage: SDSDatabaseStorage { SSKEnvironment.shared.databaseStorageRef }
+    private var groupCallManager: GroupCallManager { SSKEnvironment.shared.groupCallManagerRef }
     private var identityManager: any OWSIdentityManager { DependenciesBridge.shared.identityManager }
-    private var messagePipelineSupervisor: MessagePipelineSupervisor { NSObject.messagePipelineSupervisor }
-    private var notificationPresenter: NotificationPresenterImpl { NSObject.notificationPresenter as! NotificationPresenterImpl }
-    private var profileManager: any ProfileManager { NSObject.profileManager }
+    private var messagePipelineSupervisor: MessagePipelineSupervisor { SSKEnvironment.shared.messagePipelineSupervisorRef }
+    private var notificationPresenter: NotificationPresenterImpl { SSKEnvironment.shared.notificationPresenterRef as! NotificationPresenterImpl }
+    private var profileManager: any ProfileManager { SSKEnvironment.shared.profileManagerRef }
     private var tsAccountManager: any TSAccountManager { DependenciesBridge.shared.tsAccountManager }
 
     // MARK: - Call Handlers

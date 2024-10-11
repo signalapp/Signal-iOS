@@ -127,7 +127,7 @@ class LinkDeviceViewController: OWSViewController {
     }
 
     private func provisionWithUrl(_ deviceProvisioningUrl: DeviceProvisioningURL) {
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             // Optimistically set this flag.
             DependenciesBridge.shared.deviceManager.setMightHaveUnknownLinkedDevice(
                 true,
@@ -140,7 +140,7 @@ class LinkDeviceViewController: OWSViewController {
         var pniIdentityKeyPair: ECKeyPair?
         var areReadReceiptsEnabled: Bool = true
         var masterKey: Data?
-        databaseStorage.read { tx in
+        SSKEnvironment.shared.databaseStorageRef.read { tx in
             localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)
             let identityManager = DependenciesBridge.shared.identityManager
             aciIdentityKeyPair = identityManager.identityKeyPair(for: .aci, tx: tx.asV2Read)
@@ -148,7 +148,7 @@ class LinkDeviceViewController: OWSViewController {
             areReadReceiptsEnabled = OWSReceiptManager.areReadReceiptsEnabled(transaction: tx)
             masterKey = DependenciesBridge.shared.svr.masterKeyDataForKeysSyncMessage(tx: tx.asV2Read)
         }
-        let myProfileKeyData = profileManager.localProfileKey.keyData
+        let myProfileKeyData = SSKEnvironment.shared.profileManagerRef.localProfileKey.keyData
 
         guard let myAci = localIdentifiers?.aci, let myPhoneNumber = localIdentifiers?.phoneNumber else {
             owsFail("Can't provision without an aci & phone number.")
@@ -180,7 +180,7 @@ class LinkDeviceViewController: OWSViewController {
             masterKey: masterKey,
             readReceiptsEnabled: areReadReceiptsEnabled,
             provisioningService: DeviceProvisioningServiceImpl(
-                networkManager: self.networkManager,
+                networkManager: SSKEnvironment.shared.networkManagerRef,
                 schedulers: DependenciesBridge.shared.schedulers
             ),
             schedulers: DependenciesBridge.shared.schedulers

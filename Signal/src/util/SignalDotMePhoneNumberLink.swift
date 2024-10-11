@@ -27,7 +27,7 @@ class SignalDotMePhoneNumberLink: Dependencies {
 
         ModalActivityIndicatorViewController.present(fromViewController: fromViewController, canCancel: true) { modal in
             firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<Set<SignalRecipient>> in
-                contactDiscoveryManager.lookUp(phoneNumbers: [phoneNumber], mode: .oneOffUserRequest)
+                SSKEnvironment.shared.contactDiscoveryManagerRef.lookUp(phoneNumbers: [phoneNumber], mode: .oneOffUserRequest)
             }.done(on: DispatchQueue.main) { signalRecipients in
                 modal.dismissIfNotCanceled {
                     guard let recipient = signalRecipients.first else {

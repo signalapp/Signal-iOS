@@ -36,7 +36,7 @@ public struct ReportSpamUIUtils {
                 comment: "Action sheet action to confirm reporting a conversation as spam via a message request."
             ),
             handler: { _ in
-                NSObject.databaseStorage.write { tx in
+                SSKEnvironment.shared.databaseStorageRef.write { tx in
                     Self.reportSpam(in: thread, tx: tx)
                 }
             })
@@ -48,7 +48,7 @@ public struct ReportSpamUIUtils {
                     comment: "Action sheet action to confirm blocking and reporting spam for a thread via a message request."
                 ),
                 handler: { _ in
-                    NSObject.databaseStorage.write { tx in
+                    SSKEnvironment.shared.databaseStorageRef.write { tx in
                         Self.blockAndReport(in: thread, tx: tx)
                     }
                 })
@@ -59,7 +59,7 @@ public struct ReportSpamUIUtils {
     }
 
     public static func blockAndReport(in thread: TSThread, tx: SDSAnyWriteTransaction) {
-        NSObject.blockingManager.addBlockedThread(
+        SSKEnvironment.shared.blockingManagerRef.addBlockedThread(
             thread,
             blockMode: .localShouldNotLeaveGroups,
             transaction: tx
@@ -191,7 +191,7 @@ public struct ReportSpamUIUtils {
                 withServerGuid: guid,
                 reportingToken: reportingToken
             )
-            promises.append(NSObject.networkManager.makePromise(request: request).asVoid())
+            promises.append(SSKEnvironment.shared.networkManagerRef.makePromise(request: request).asVoid())
         }
 
         Promise.when(fulfilled: promises).done {

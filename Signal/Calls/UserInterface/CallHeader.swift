@@ -203,7 +203,7 @@ class CallHeader: UIView {
 
     private func fetchGroupSizeAndMemberNamesWithSneakyTransaction(groupThreadCall: GroupThreadCall) -> (Int, [String]) {
         let groupThread = groupThreadCall.groupThread
-        return databaseStorage.read { transaction in
+        return SSKEnvironment.shared.databaseStorageRef.read { transaction in
             // FIXME: Register for notifications so we can update if someone leaves the group while the screen is up?
             let firstTwoNames = groupThread.sortedMemberNames(
                 includingBlocked: false,
@@ -216,7 +216,7 @@ class CallHeader: UIView {
             }
 
             let count = groupThread.groupMembership.fullMembers.lazy.filter {
-                !$0.isLocalAddress && !self.blockingManager.isAddressBlocked($0, transaction: transaction)
+                !$0.isLocalAddress && !SSKEnvironment.shared.blockingManagerRef.isAddressBlocked($0, transaction: transaction)
             }.count
             return (count, firstTwoNames)
         }
@@ -283,8 +283,8 @@ class CallHeader: UIView {
     }
 
     private func incomingRingText(caller: SignalServiceAddress) -> String {
-        let callerName = databaseStorage.read { transaction in
-            contactsManager.displayName(for: caller, tx: transaction).resolvedValue(useShortNameIfAvailable: true)
+        let callerName = SSKEnvironment.shared.databaseStorageRef.read { transaction in
+            SSKEnvironment.shared.contactManagerRef.displayName(for: caller, tx: transaction).resolvedValue(useShortNameIfAvailable: true)
         }
         let formatString = OWSLocalizedString(
             "GROUP_CALL_INCOMING_RING_FORMAT",
@@ -297,10 +297,10 @@ class CallHeader: UIView {
         if joinedMembers.isEmpty {
             return noOneElseIsHereText()
         }
-        let upToTwoKnownMemberNames: [String] = databaseStorage.read { tx -> [String] in
+        let upToTwoKnownMemberNames: [String] = SSKEnvironment.shared.databaseStorageRef.read { tx -> [String] in
             joinedMembers
                 .lazy
-                .map { [contactsManager] in contactsManager.displayName(for: SignalServiceAddress(Aci(fromUUID: $0)), tx: tx) }
+                .map { SSKEnvironment.shared.contactManagerRef.displayName(for: SignalServiceAddress(Aci(fromUUID: $0)), tx: tx) }
                 .filter { $0.hasKnownValue }
                 .prefix(2)
                 .map { $0.resolvedValue(useShortNameIfAvailable: true) }
@@ -452,8 +452,8 @@ class CallHeader: UIView {
             let firstMember = ringRtcCall.remoteDeviceStates.sortedBySpeakerTime.first,
             firstMember.presenting == true
         {
-            let presentingName = databaseStorage.read { tx in
-                contactsManager.displayName(for: SignalServiceAddress(Aci(fromUUID: firstMember.userId)), tx: tx).resolvedValue(useShortNameIfAvailable: true)
+            let presentingName = SSKEnvironment.shared.databaseStorageRef.read { tx in
+                SSKEnvironment.shared.contactManagerRef.displayName(for: SignalServiceAddress(Aci(fromUUID: firstMember.userId)), tx: tx).resolvedValue(useShortNameIfAvailable: true)
             }
             let formatString = OWSLocalizedString(
                 "GROUP_CALL_PRESENTING_FORMAT",
@@ -464,8 +464,8 @@ class CallHeader: UIView {
         switch groupCall.concreteType {
         case .groupThread(let groupThreadCall):
             // FIXME: This should auto-update if the group name changes.
-            return databaseStorage.read { transaction in
-                contactsManager.displayName(for: groupThreadCall.groupThread, transaction: transaction)
+            return SSKEnvironment.shared.databaseStorageRef.read { transaction in
+                SSKEnvironment.shared.contactManagerRef.displayName(for: groupThreadCall.groupThread, transaction: transaction)
             }
         case .callLink(let call):
             return call.callLinkState.localizedName

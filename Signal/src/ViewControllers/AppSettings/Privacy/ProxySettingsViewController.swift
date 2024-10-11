@@ -193,7 +193,7 @@ class ProxySettingsViewController: OWSTableViewController2 {
 
         guard !notifyForInvalidHostIfNecessary() else { return }
 
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             SignalProxy.setProxyHost(host: self.host, useProxy: self.useProxy, transaction: transaction)
         }
 
@@ -221,7 +221,7 @@ class ProxySettingsViewController: OWSTableViewController2 {
                         }
                     } else {
                         self.presentToast(text: OWSLocalizedString("PROXY_FAILED_TO_CONNECT", comment: "The provided proxy couldn't connect"))
-                        Self.databaseStorage.write { transaction in
+                        SSKEnvironment.shared.databaseStorageRef.write { transaction in
                             SignalProxy.setProxyHost(host: self.host, useProxy: false, transaction: transaction)
                         }
                         self.updateTableContents()
@@ -251,7 +251,7 @@ class ProxySettingsViewController: OWSTableViewController2 {
                 }
             }
 
-            return networkManager.makePromise(request: request)
+            return SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
                 .map { (response: HTTPResponse) -> Bool in
                     return isConnected(response.responseStatusCode)
                 }

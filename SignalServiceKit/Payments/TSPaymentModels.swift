@@ -85,7 +85,7 @@ extension TSPaymentAddress: Dependencies, TSPaymentBaseModel {
             owsFailDebug("Unexpected currency.")
             return false
         }
-        return mobileCoinHelper.isValidMobileCoinPublicAddress(mobileCoinPublicAddressData)
+        return SSKEnvironment.shared.mobileCoinHelperRef.isValidMobileCoinPublicAddress(mobileCoinPublicAddressData)
     }
 
     public func buildProto(tx: SDSAnyReadTransaction) throws -> SSKProtoPaymentAddress {
@@ -216,7 +216,7 @@ public class TSPaymentModels: NSObject {
         guard !CurrentAppContext().isRunningTests else {
             return nil
         }
-        guard paymentsHelper.arePaymentsEnabled else {
+        guard SSKEnvironment.shared.paymentsHelperRef.arePaymentsEnabled else {
             return nil
         }
         guard let paymentProto = dataMessage.payment else {

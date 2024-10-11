@@ -71,10 +71,10 @@ public class CallUIAdapter: NSObject {
 #else
         callUIAdapteeType = CallKitCallUIAdaptee.self
 #endif
-        let (showNames, useSystemCallLog) = databaseStorage.read { tx in
+        let (showNames, useSystemCallLog) = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return (
-                preferences.notificationPreviewType(tx: tx) != .noNameNoPreview,
-                preferences.isSystemCallLogEnabled(tx: tx)
+                SSKEnvironment.shared.preferencesRef.notificationPreviewType(tx: tx) != .noNameNoPreview,
+                SSKEnvironment.shared.preferencesRef.isSystemCallLogEnabled(tx: tx)
             )
         }
         return callUIAdapteeType.init(
@@ -131,7 +131,7 @@ public class CallUIAdapter: NSObject {
         }
 
         let sentAtTimestamp = Date(millisecondsSince1970: individualCall.sentAtTimestamp)
-        databaseStorage.read { tx in
+        SSKEnvironment.shared.databaseStorageRef.read { tx in
             notificationPresenterImpl.presentMissedCall(
                 notificationInfo: NotificationPresenterImpl.CallNotificationInfo(
                     groupingId: individualCall.commonState.localId,

@@ -145,7 +145,7 @@ public class StickerPickerPageView: UIView {
     private func reloadStickers() {
         let oldStickerPacks = stickerPacks
 
-        databaseStorage.read { (transaction) in
+        SSKEnvironment.shared.databaseStorageRef.read { (transaction) in
             self.stickerPacks = StickerManager.installedStickerPacks(transaction: transaction).sorted {
                 $0.dateCreated > $1.dateCreated
             }

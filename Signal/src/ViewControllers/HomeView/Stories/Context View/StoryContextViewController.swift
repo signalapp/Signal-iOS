@@ -92,7 +92,7 @@ class StoryContextViewController: OWSViewController {
         self.loadPositionIfRead = loadPositionIfRead
         super.init()
         self.delegate = delegate
-        databaseStorage.appendDatabaseChangeDelegate(self)
+        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
     }
 
     required init?(coder: NSCoder) {
@@ -312,7 +312,7 @@ class StoryContextViewController: OWSViewController {
     private static let maxItemsToRender = 100
     private func loadStoryItems(completion: @escaping ([StoryItem]) -> Void) {
         var storyItems = [StoryItem]()
-        databaseStorage.asyncRead { [weak self] transaction in
+        SSKEnvironment.shared.databaseStorageRef.asyncRead { [weak self] transaction in
             guard let self = self else { return }
             StoryFinder.enumerateStoriesForContext(self.context, transaction: transaction) { message, stop in
                 if self.delegate?.storyContextViewControllerShouldOnlyRenderMyStories(self) == true && !message.authorAddress.isLocalAddress { return }
@@ -395,7 +395,7 @@ class StoryContextViewController: OWSViewController {
                 }
 
                 let contextButton = ContextMenuButton(empty: ())
-                let actions = self.databaseStorage.read { tx -> [UIAction] in
+                let actions = SSKEnvironment.shared.databaseStorageRef.read { tx -> [UIAction] in
                     self.contextMenuGenerator.nativeContextMenuActions(
                         for: currentItem.message,
                         in: self.context.thread(transaction: tx),
@@ -520,7 +520,7 @@ class StoryContextViewController: OWSViewController {
     private func askToResendFailedMessage() {
         guard
             let message = currentItem?.message,
-            let thread = databaseStorage.read(block: { context.thread(transaction: $0) })
+            let thread = SSKEnvironment.shared.databaseStorageRef.read(block: { context.thread(transaction: $0) })
         else { return }
         pause()
         StoryUtil.askToResend(message, in: thread, from: self) { [weak self] in
@@ -647,7 +647,7 @@ class StoryContextViewController: OWSViewController {
                 !currentItemView.item.isPendingDownload,
                 currentItemView.item.message.localUserViewedTimestamp == nil
             {
-                databaseStorage.write { transaction in
+                SSKEnvironment.shared.databaseStorageRef.write { transaction in
                     currentItemView.item.message.markAsViewed(at: Date.ows_millisecondTimestamp(), circumstance: .onThisDevice, transaction: transaction)
                 }
             }
@@ -697,7 +697,7 @@ class StoryContextViewController: OWSViewController {
             while subsequentItems.count < Self.subsequentItemsToLoad {
                 guard let nextContext = self.delegate?.storyContextViewController(self, contextAfter: context) else { break }
 
-                Self.databaseStorage.read { transaction in
+                SSKEnvironment.shared.databaseStorageRef.read { transaction in
                     StoryFinder.enumerateUnviewedIncomingStoriesForContext(self.context, transaction: transaction) { message, stop in
                         if self.delegate?.storyContextViewControllerShouldOnlyRenderMyStories(self) == true && !message.authorAddress.isLocalAddress { return }
                         guard let storyItem = self.buildStoryItem(for: message, transaction: transaction) else { return }
@@ -1044,7 +1044,7 @@ extension StoryContextViewController: DatabaseChangeDelegate {
         guard var currentItem = currentItem else { return }
         guard !databaseChanges.storyMessageRowIds.isEmpty else { return }
 
-        databaseStorage.asyncRead { transaction in
+        SSKEnvironment.shared.databaseStorageRef.asyncRead { transaction in
             var newItems = self.items
             var shouldGoToNextContext = false
             for (idx, item) in self.items.enumerated().reversed() {

@@ -33,7 +33,7 @@ class EmojiReactorsTableView: UITableView {
 
     func configure(for reactions: [OWSReaction], transaction: SDSAnyReadTransaction) {
         reactorItems = reactions.compactMap { reaction in
-            let displayName = contactsManager.displayName(for: reaction.reactor, tx: transaction).resolvedValue()
+            let displayName = SSKEnvironment.shared.contactManagerRef.displayName(for: reaction.reactor, tx: transaction).resolvedValue()
 
             return ReactorItem(
                 address: reaction.reactor,

@@ -51,9 +51,9 @@ class BlockListViewController: OWSTableViewController2 {
         )
         contents.add(sectionAddContact)
 
-        let (addresses, groups) = databaseStorage.read { transaction in
-            let addresses = blockingManager.blockedAddresses(transaction: transaction)
-            let groups = blockingManager.blockedGroupModels(transaction: transaction)
+        let (addresses, groups) = SSKEnvironment.shared.databaseStorageRef.read { transaction in
+            let addresses = SSKEnvironment.shared.blockingManagerRef.blockedAddresses(transaction: transaction)
+            let groups = SSKEnvironment.shared.blockingManagerRef.blockedGroupModels(transaction: transaction)
             return (addresses.sorted(by: { $0.compare($1) == .orderedAscending }), groups)
         }
 
@@ -66,8 +66,10 @@ class BlockListViewController: OWSTableViewController2 {
                         address: address,
                         localUserDisplayMode: .asUser
                     )
-                    self?.databaseStorage.read { transaction in
-                        cell.configure(configuration: config, transaction: transaction)
+                    if self != nil {
+                        SSKEnvironment.shared.databaseStorageRef.read { transaction in
+                            cell.configure(configuration: config, transaction: transaction)
+                        }
                     }
                     cell.accessibilityIdentifier = "BlockListViewController.user"
                     return cell
@@ -95,8 +97,8 @@ class BlockListViewController: OWSTableViewController2 {
 
         // Groups
         let groupsSectionItems = groups.map { group in
-            let image = group.avatarImage ?? Self.avatarBuilder.avatarImage(forGroupId: group.groupId,
-                                                                            diameterPoints: AvatarBuilder.standardAvatarSizePoints)
+            let image = group.avatarImage ?? SSKEnvironment.shared.avatarBuilderRef.avatarImage(forGroupId: group.groupId,
+                                                                                                diameterPoints: AvatarBuilder.standardAvatarSizePoints)
             return OWSTableItem(
                 customCellBlock: {
                     let cell = AvatarTableViewCell()

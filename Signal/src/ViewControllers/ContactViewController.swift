@@ -65,7 +65,7 @@ class ContactViewController: OWSTableViewController2 {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        contactsManagerImpl.requestSystemContactsOnce { [weak self] _ in
+        SSKEnvironment.shared.contactManagerImplRef.requestSystemContactsOnce { [weak self] _ in
             self?.updateMode()
         }
     }
@@ -73,7 +73,7 @@ class ContactViewController: OWSTableViewController2 {
     // MARK: Contact Data
 
     private static func phoneNumberPartition(for contactShare: ContactShareViewModel) -> OWSContact.PhoneNumberPartition {
-        return databaseStorage.read(block: contactShare.dbRecord.phoneNumberPartition(tx:))
+        return SSKEnvironment.shared.databaseStorageRef.read(block: contactShare.dbRecord.phoneNumberPartition(tx:))
     }
 
     private static func viewMode(for phoneNumberPartition: OWSContact.PhoneNumberPartition) -> ContactViewMode {

@@ -70,7 +70,7 @@ public class MockSSKEnvironment: NSObject {
         waitForMainQueue()
 
         // Wait for all pending readers/writers to finish.
-        SSKEnvironment.shared.grdbStorageAdapter.pool.barrierWriteWithoutTransaction { _ in }
+        SSKEnvironment.shared.databaseStorageRef.grdbStorage.pool.barrierWriteWithoutTransaction { _ in }
 
         // Wait for the main queue *again* in case more work was scheduled.
         waitForMainQueue()

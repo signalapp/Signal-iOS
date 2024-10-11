@@ -50,7 +50,7 @@ class CaptchaChallenge: SpamChallenge, Dependencies {
         )
 
         firstly(on: workQueue) {
-            self.networkManager.makePromise(request: request)
+            SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
 
         }.done(on: workQueue) { _ in
             self.state = .complete

@@ -42,8 +42,8 @@ extension GroupViewHelper {
                 }
             )
         }
-        let title = String(format: titleFormat, databaseStorage.read { tx in
-            return contactsManager.displayName(for: address, tx: tx).resolvedValue()
+        let title = String(format: titleFormat, SSKEnvironment.shared.databaseStorageRef.read { tx in
+            return SSKEnvironment.shared.contactManagerRef.displayName(for: address, tx: tx).resolvedValue()
         })
         let actionSheet = ActionSheetController(title: title)
         actionSheet.addAction(ActionSheetAction(title: actionTitle, style: .default, handler: { _ in actionBlock() }))

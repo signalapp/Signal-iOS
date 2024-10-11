@@ -90,7 +90,7 @@ fileprivate extension RemoteAttestation.Auth {
         }
 
         return firstly {
-            networkManager.makePromise(request: request)
+            SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
         }.map(on: DispatchQueue.global()) { response in
 #if TESTABLE_BUILD
             HTTPUtils.logCurl(for: request as URLRequest)

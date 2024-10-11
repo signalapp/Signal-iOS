@@ -43,7 +43,7 @@ class PushChallenge: SpamChallenge, Dependencies {
         let request = OWSRequestFactory.pushChallengeRequest()
 
         firstly(on: workQueue) {
-            self.networkManager.makePromise(request: request)
+            SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
 
         }.done(on: workQueue) { _ in
             self.state = .deferred(self.expirationDate)
@@ -76,7 +76,7 @@ class PushChallenge: SpamChallenge, Dependencies {
         let request = OWSRequestFactory.pushChallengeResponse(token: token)
 
         firstly(on: workQueue) {
-            self.networkManager.makePromise(request: request)
+            SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
 
         }.done(on: workQueue) { _ in
             self.state = .complete

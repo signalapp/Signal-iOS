@@ -17,7 +17,7 @@ public extension ConversationViewController {
         }
         // Try to update the v2 group to latest from the service.
         // This will help keep us in sync if we've missed any group updates, etc.
-        groupV2Updates.tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithThrottling(groupThread)
+        SSKEnvironment.shared.groupV2UpdatesRef.tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithThrottling(groupThread)
     }
 
     func showUnblockConversationUI(completion: BlockListUIUtils.Completion?) {
@@ -76,7 +76,7 @@ public extension ConversationViewController {
     func resetVerificationStateToDefault(noLongerVerifiedIdentityKeys: [SignalServiceAddress: Data]) {
         AssertIsOnMainThread()
 
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             let identityManager = DependenciesBridge.shared.identityManager
             for (address, identityKey) in noLongerVerifiedIdentityKeys {
                 owsAssertDebug(address.isValid)
@@ -464,7 +464,7 @@ extension ConversationViewController {
         if !self.isMarkingAsRead && isShowingUnreadMessage {
             self.isMarkingAsRead = true
 
-            Self.receiptManager.markAsReadLocally(
+            SSKEnvironment.shared.receiptManagerRef.markAsReadLocally(
                 beforeSortId: lastVisibleSortId,
                 thread: self.thread,
                 hasPendingMessageRequest: self.threadViewModel.hasPendingMessageRequest

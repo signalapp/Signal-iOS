@@ -79,7 +79,7 @@ extension BadgeGiftingChooseRecipientViewController: RecipientPickerDelegate, Us
         guard let address = Self.getRecipientAddress(recipient) else {
             owsFail("Recipient is missing address, but we expected one")
         }
-        let thread = databaseStorage.write { TSContactThread.getOrCreateThread(withContactAddress: address, transaction: $0) }
+        let thread = SSKEnvironment.shared.databaseStorageRef.write { TSContactThread.getOrCreateThread(withContactAddress: address, transaction: $0) }
         let vc = BadgeGiftingConfirmationViewController(
             badge: badge,
             price: price,

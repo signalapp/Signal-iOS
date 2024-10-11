@@ -197,8 +197,9 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
             if (self.sender) {
                 NSString *formatString = OWSLocalizedString(@"ERROR_MESSAGE_DECRYPTION_FAILURE",
                     @"Error message for a decryption failure. Embeds {{sender short name}}.");
-                NSString *senderName = [self.contactManagerObjC shortDisplayNameStringForAddress:self.sender
-                                                                                     transaction:transaction];
+                NSString *senderName =
+                    [SSKEnvironment.shared.contactManagerObjcRef shortDisplayNameStringForAddress:self.sender
+                                                                                      transaction:transaction];
                 return [[NSString alloc] initWithFormat:formatString, senderName];
             } else {
                 return OWSLocalizedString(

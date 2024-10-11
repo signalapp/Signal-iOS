@@ -29,7 +29,7 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift, Payments
     public func warmCaches() {
         owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
 
-        Self.databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             self.currentCurrencyCode = Self.loadCurrentCurrencyCode(transaction: transaction)
         }
     }
@@ -147,7 +147,7 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift, Payments
                   !CurrentAppContext().isRunningTests else {
                 return false
             }
-            guard Self.paymentsHelper.arePaymentsEnabled else {
+            guard SSKEnvironment.shared.paymentsHelperRef.arePaymentsEnabled else {
                 return false
             }
             guard let conversionRates = self.conversionRates else {
@@ -172,7 +172,7 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift, Payments
         else {
             return
         }
-        guard Self.paymentsHelper.arePaymentsEnabled else {
+        guard SSKEnvironment.shared.paymentsHelperRef.arePaymentsEnabled else {
             return
         }
         if let conversionRates = self.conversionRates,
@@ -188,7 +188,7 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift, Payments
 
         firstly(on: DispatchQueue.global()) { () -> Promise<HTTPResponse> in
             let request = OWSRequestFactory.currencyConversionRequest()
-            return Self.networkManager.makePromise(request: request)
+            return SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
         }.map(on: DispatchQueue.global()) { response in
             guard let json = response.responseBodyJson else {
                 throw OWSAssertionError("Missing or invalid JSON")

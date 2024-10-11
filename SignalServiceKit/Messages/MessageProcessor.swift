@@ -57,11 +57,11 @@ public class MessageProcessor: NSObject {
         }
 
         var shouldWaitForMessageProcessing = self.hasPendingEnvelopes
-        var shouldWaitForGV2MessageProcessing = self.databaseStorage.read {
-            Self.groupsV2MessageProcessor.hasPendingJobs(tx: $0)
+        var shouldWaitForGV2MessageProcessing = SSKEnvironment.shared.databaseStorageRef.read {
+            SSKEnvironment.shared.groupsV2MessageProcessorRef.hasPendingJobs(tx: $0)
         }
         // Check if processing is suspended; if so we need to fork behavior.
-        if self.messagePipelineSupervisor.isMessageProcessingPermitted.negated {
+        if SSKEnvironment.shared.messagePipelineSupervisorRef.isMessageProcessingPermitted.negated {
             switch suspensionBehavior {
             case .alwaysWait:
                 break
@@ -70,7 +70,7 @@ public class MessageProcessor: NSObject {
                 // If not don't wait even if we have pending messages; those won't process
                 // until we unsuspend.
                 shouldWaitForMessageProcessing = self.isDrainingPendingEnvelopes.get()
-                shouldWaitForGV2MessageProcessing = self.groupsV2MessageProcessor.isActivelyProcessing()
+                shouldWaitForGV2MessageProcessing = SSKEnvironment.shared.groupsV2MessageProcessorRef.isActivelyProcessing()
             }
         }
 
@@ -109,7 +109,7 @@ public class MessageProcessor: NSObject {
         // need to wait the once.
         // In most cases nothing sneaks in between 1 and 2, so 3 resolves instantly.
         return waitForProcessingComplete(suspensionBehavior: .onlyWaitIfAlreadyInProgress).then(on: DispatchQueue.main) {
-            self.messagePipelineSupervisor.suspendMessageProcessingWithoutHandle(for: suspension)
+            SSKEnvironment.shared.messagePipelineSupervisorRef.suspendMessageProcessingWithoutHandle(for: suspension)
             return self.waitForProcessingComplete(suspensionBehavior: .onlyWaitIfAlreadyInProgress)
         }.recover(on: SyncScheduler()) { _ in return () }
     }
@@ -118,7 +118,7 @@ public class MessageProcessor: NSObject {
         suspensionBehavior: SuspensionBehavior = .alwaysWait
     ) -> Guarantee<Void> {
         return firstly { () -> Guarantee<Void> in
-            return Self.messageFetcherJob.waitForFetchingComplete()
+            return SSKEnvironment.shared.messageFetcherJobRef.waitForFetchingComplete()
         }.then { () -> Guarantee<Void> in
             return self.waitForProcessingComplete(suspensionBehavior: suspensionBehavior)
         }
@@ -140,7 +140,7 @@ public class MessageProcessor: NSObject {
         )
 
         appReadiness.runNowOrWhenAppDidBecomeReadySync {
-            Self.messagePipelineSupervisor.register(pipelineStage: self)
+            SSKEnvironment.shared.messagePipelineSupervisorRef.register(pipelineStage: self)
 
             SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 // We may have legacy process jobs queued. We want to schedule them for
@@ -289,7 +289,7 @@ public class MessageProcessor: NSObject {
         guard CurrentAppContext().shouldProcessIncomingMessages else { return }
         guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else { return }
 
-        guard Self.messagePipelineSupervisor.isMessageProcessingPermitted else { return }
+        guard SSKEnvironment.shared.messagePipelineSupervisorRef.isMessageProcessingPermitted else { return }
 
         serialQueue.async {
             self.isDrainingPendingEnvelopes.set(true)
@@ -305,7 +305,7 @@ public class MessageProcessor: NSObject {
     private func drainNextBatch() -> Bool {
         assertOnQueue(serialQueue)
 
-        guard messagePipelineSupervisor.isMessageProcessingPermitted else {
+        guard SSKEnvironment.shared.messagePipelineSupervisorRef.isMessageProcessingPermitted else {
             return false
         }
 
@@ -327,7 +327,7 @@ public class MessageProcessor: NSObject {
         let startTime = CACurrentMediaTime()
 
         var processedEnvelopesCount = 0
-        databaseStorage.write { tx in
+        SSKEnvironment.shared.databaseStorageRef.write { tx in
             // This is only called via `drainPendingEnvelopes`, and that confirms that
             // we're registered. If we're registered, we must have `LocalIdentifiers`,
             // so this (generally) shouldn't fail.
@@ -338,7 +338,7 @@ public class MessageProcessor: NSObject {
 
             var remainingEnvelopes = batchEnvelopes
             while !remainingEnvelopes.isEmpty {
-                guard messagePipelineSupervisor.isMessageProcessingPermitted else {
+                guard SSKEnvironment.shared.messagePipelineSupervisorRef.isMessageProcessingPermitted else {
                     break
                 }
                 autoreleasepool {
@@ -414,24 +414,24 @@ public class MessageProcessor: NSObject {
             Logger.info("Envelope completed early with error \(String(describing: error))")
             return error
         case .enqueueForGroup(let decryptedEnvelope, let envelopeData):
-            Self.groupsV2MessageProcessor.enqueue(
+            SSKEnvironment.shared.groupsV2MessageProcessorRef.enqueue(
                 envelopeData: envelopeData,
                 plaintextData: decryptedEnvelope.plaintextData,
                 wasReceivedByUD: decryptedEnvelope.wasReceivedByUD,
                 serverDeliveryTimestamp: request.receivedEnvelope.serverDeliveryTimestamp,
                 tx: transaction
             )
-            messageReceiver.finishProcessingEnvelope(decryptedEnvelope, tx: transaction)
+            SSKEnvironment.shared.messageReceiverRef.finishProcessingEnvelope(decryptedEnvelope, tx: transaction)
             return nil
         case .messageReceiverRequest(let messageReceiverRequest):
-            messageReceiver.handleRequest(messageReceiverRequest, context: context, localIdentifiers: localIdentifiers, tx: transaction)
-            messageReceiver.finishProcessingEnvelope(messageReceiverRequest.decryptedEnvelope, tx: transaction)
+            SSKEnvironment.shared.messageReceiverRef.handleRequest(messageReceiverRequest, context: context, localIdentifiers: localIdentifiers, tx: transaction)
+            SSKEnvironment.shared.messageReceiverRef.finishProcessingEnvelope(messageReceiverRequest.decryptedEnvelope, tx: transaction)
             return nil
         case .clearPlaceholdersOnly(let decryptedEnvelope):
-            messageReceiver.finishProcessingEnvelope(decryptedEnvelope, tx: transaction)
+            SSKEnvironment.shared.messageReceiverRef.finishProcessingEnvelope(decryptedEnvelope, tx: transaction)
             return nil
         case .serverReceipt(let serverReceiptEnvelope):
-            messageReceiver.handleDeliveryReceipt(envelope: serverReceiptEnvelope, context: context, tx: transaction)
+            SSKEnvironment.shared.messageReceiverRef.handleDeliveryReceipt(envelope: serverReceiptEnvelope, context: context, tx: transaction)
             return nil
         }
     }
@@ -699,11 +699,11 @@ private extension MessageProcessor {
         assertOnQueue(serialQueue)
         let builder = ProcessingRequestBuilder(
             envelope,
-            blockingManager: Self.blockingManager,
+            blockingManager: SSKEnvironment.shared.blockingManagerRef,
             localDeviceId: localDeviceId,
             localIdentifiers: localIdentifiers,
-            messageDecrypter: Self.messageDecrypter,
-            messageReceiver: Self.messageReceiver
+            messageDecrypter: SSKEnvironment.shared.messageDecrypterRef,
+            messageReceiver: SSKEnvironment.shared.messageReceiverRef
         )
         return ProcessingRequest(envelope, state: builder.build(tx: tx))
     }

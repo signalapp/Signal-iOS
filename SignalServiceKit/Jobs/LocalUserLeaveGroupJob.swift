@@ -51,7 +51,7 @@ private class LocalUserLeaveGroupJobRunner: JobRunner, Dependencies {
             try await GroupManager.waitForMessageFetchingAndProcessingWithTimeout(description: #fileID)
         }
 
-        let groupModel = try databaseStorage.read { tx in
+        let groupModel = try SSKEnvironment.shared.databaseStorageRef.read { tx in
             try fetchGroupModel(threadUniqueId: jobRecord.threadId, tx: tx)
         }
 
@@ -74,7 +74,7 @@ private class LocalUserLeaveGroupJobRunner: JobRunner, Dependencies {
             }
         }
 
-        await databaseStorage.awaitableWrite { tx in
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             jobRecord.anyRemove(transaction: tx)
         }
 

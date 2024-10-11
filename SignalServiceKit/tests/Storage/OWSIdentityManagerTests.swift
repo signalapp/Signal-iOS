@@ -13,7 +13,7 @@ class OWSIdentityManagerTests: SSKBaseTest {
 
     override func setUp() {
         super.setUp()
-        databaseStorage.write { tx in
+        SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: .forUnitTests,
                 tx: tx.asV2Write
@@ -115,10 +115,10 @@ class OWSIdentityManagerTests: SSKBaseTest {
         XCTAssertEqual(pniKey.publicKey.count, 32)
         XCTAssertNotEqual(pniKey.privateKey, newKey.privateKey)
 
-        let fetchedKey = databaseStorage.read { tx in identityManager.identityKeyPair(for: .aci, tx: tx.asV2Read)! }
+        let fetchedKey = SSKEnvironment.shared.databaseStorageRef.read { tx in identityManager.identityKeyPair(for: .aci, tx: tx.asV2Read)! }
         XCTAssertEqual(newKey.privateKey, fetchedKey.privateKey)
 
-        let fetchedPniKey = databaseStorage.read { tx in identityManager.identityKeyPair(for: .pni, tx: tx.asV2Read)! }
+        let fetchedPniKey = SSKEnvironment.shared.databaseStorageRef.read { tx in identityManager.identityKeyPair(for: .pni, tx: tx.asV2Read)! }
         XCTAssertEqual(pniKey.privateKey, fetchedPniKey.privateKey)
     }
 

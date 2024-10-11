@@ -165,12 +165,12 @@ class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
             return
         }
 
-        raisedHandView.name = databaseStorage.read { tx in
+        raisedHandView.name = SSKEnvironment.shared.databaseStorageRef.read { tx in
             let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)
             if deviceState.aci == localIdentifiers?.aci {
                 return CommonStrings.you
             } else {
-                return contactsManager.displayName(for: deviceState.address, tx: tx).resolvedValue(useShortNameIfAvailable: true)
+                return SSKEnvironment.shared.contactManagerRef.displayName(for: deviceState.address, tx: tx).resolvedValue(useShortNameIfAvailable: true)
             }
         }
 

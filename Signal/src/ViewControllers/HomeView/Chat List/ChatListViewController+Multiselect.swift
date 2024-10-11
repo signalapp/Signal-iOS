@@ -324,7 +324,7 @@ extension ChatListViewController {
                 // We want to protect this whole operation with a single write
                 // transaction, to ensure the contents of the threads don't
                 // change as we're deleting them.
-                self.databaseStorage.write { transaction in
+                SSKEnvironment.shared.databaseStorageRef.write { transaction in
                     self.performOn(indexPaths: selectedIndexPaths) { threadViewModels in
                         threadSoftDeleteManager.softDelete(
                             threads: threadViewModels.map { $0.threadRecord },

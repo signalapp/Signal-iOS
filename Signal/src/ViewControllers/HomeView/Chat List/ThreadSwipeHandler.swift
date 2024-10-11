@@ -147,7 +147,7 @@ extension ThreadSwipeHandler where Self: UIViewController {
         AssertIsOnMainThread()
 
         closeConversationBlock?()
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             threadViewModel.associatedData.updateWith(isArchived: !threadViewModel.isArchived,
                                                       updateStorageService: true,
                                                       transaction: transaction)
@@ -179,7 +179,7 @@ extension ThreadSwipeHandler where Self: UIViewController {
             ) { [weak self] modal in
                 guard let self else { return }
 
-                await self.databaseStorage.awaitableWrite { tx in
+                await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
                     threadSoftDeleteManager.softDelete(
                         threads: [threadViewModel.threadRecord],
                         sendDeleteForMeSyncMessage: true,
@@ -200,7 +200,7 @@ extension ThreadSwipeHandler where Self: UIViewController {
     func markThreadAsRead(threadViewModel: ThreadViewModel) {
         AssertIsOnMainThread()
 
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             threadViewModel.threadRecord.markAllAsRead(updateStorageService: true, transaction: transaction)
         }
     }
@@ -208,7 +208,7 @@ extension ThreadSwipeHandler where Self: UIViewController {
     fileprivate func markThreadAsUnread(threadViewModel: ThreadViewModel) {
         AssertIsOnMainThread()
 
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             threadViewModel.associatedData.updateWith(isMarkedUnread: true, updateStorageService: true, transaction: transaction)
         }
     }
@@ -236,7 +236,7 @@ extension ThreadSwipeHandler where Self: UIViewController {
     fileprivate func muteThread(threadViewModel: ThreadViewModel, duration seconds: TimeInterval) {
         AssertIsOnMainThread()
 
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             let timestamp = seconds < 0
             ? ThreadAssociatedData.alwaysMutedTimestamp
             : (seconds == 0 ? 0 : Date.ows_millisecondTimestamp() + UInt64(seconds * 1000))
@@ -247,7 +247,7 @@ extension ThreadSwipeHandler where Self: UIViewController {
     fileprivate func unmuteThread(threadViewModel: ThreadViewModel) {
         AssertIsOnMainThread()
 
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             threadViewModel.associatedData.updateWith(mutedUntilTimestamp: 0, updateStorageService: true, transaction: transaction)
         }
     }
@@ -256,7 +256,7 @@ extension ThreadSwipeHandler where Self: UIViewController {
         AssertIsOnMainThread()
 
         do {
-            try databaseStorage.write { transaction in
+            try SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 try DependenciesBridge.shared.pinnedThreadManager.pinThread(
                     threadViewModel.threadRecord,
                     updateStorageService: true,
@@ -277,7 +277,7 @@ extension ThreadSwipeHandler where Self: UIViewController {
         AssertIsOnMainThread()
 
         do {
-            try databaseStorage.write { transaction in
+            try SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 try DependenciesBridge.shared.pinnedThreadManager.unpinThread(
                     threadViewModel.threadRecord,
                     updateStorageService: true,

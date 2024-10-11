@@ -47,7 +47,7 @@ public class ThreadViewModel: NSObject {
 
         self.isGroupThread = thread.isGroupThread
 
-        let threadDisplayName = Self.contactsManager.displayName(for: thread, tx: transaction)
+        let threadDisplayName = SSKEnvironment.shared.contactManagerRef.displayName(for: thread, tx: transaction)
         self.name = threadDisplayName?.resolvedValue() ?? ""
 
         if case .contactThread(let displayName) = threadDisplayName {
@@ -83,7 +83,7 @@ public class ThreadViewModel: NSObject {
             chatListInfo = nil
         }
 
-        isBlocked = Self.blockingManager.isThreadBlocked(thread, transaction: transaction)
+        isBlocked = SSKEnvironment.shared.blockingManagerRef.isThreadBlocked(thread, transaction: transaction)
         isPinned = DependenciesBridge.shared.pinnedThreadStore.isThreadPinned(thread, tx: transaction.asV2Read)
     }
 
@@ -151,7 +151,7 @@ public class ChatListInfo: Dependencies {
         transaction: SDSAnyReadTransaction
     ) -> CLVSnippet {
 
-        let isBlocked = blockingManager.isThreadBlocked(thread, transaction: transaction)
+        let isBlocked = SSKEnvironment.shared.blockingManagerRef.isThreadBlocked(thread, transaction: transaction)
 
         func loadDraftText() -> HydratedMessageBody? {
             guard let draftMessageBody = thread.currentDraft(shouldFetchLatest: false,
@@ -182,7 +182,7 @@ public class ChatListInfo: Dependencies {
                 return nil
             }
             if let incomingMessage = lastMessageForInbox as? TSIncomingMessage {
-                return Self.contactsManagerImpl.shortestDisplayName(
+                return SSKEnvironment.shared.contactManagerImplRef.shortestDisplayName(
                     forGroupMember: incomingMessage.authorAddress,
                     inGroup: groupThread.groupModel,
                     transaction: transaction
@@ -200,7 +200,7 @@ public class ChatListInfo: Dependencies {
             else {
                 return nil
             }
-            return Self.contactsManager.displayName(for: addedByAddress, tx: transaction).resolvedValue(useShortNameIfAvailable: true)
+            return SSKEnvironment.shared.contactManagerRef.displayName(for: addedByAddress, tx: transaction).resolvedValue(useShortNameIfAvailable: true)
         }
 
         if isBlocked {

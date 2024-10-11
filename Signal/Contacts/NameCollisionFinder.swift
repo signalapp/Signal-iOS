@@ -88,7 +88,7 @@ public class ContactThreadNameCollisionFinder: NameCollisionFinder, Dependencies
 
         let candidateAddresses = { () -> [SignalServiceAddress] in
             var result = Set<SignalServiceAddress>()
-            result.formUnion(profileManager.allWhitelistedRegisteredAddresses(tx: transaction))
+            result.formUnion(SSKEnvironment.shared.profileManagerRef.allWhitelistedRegisteredAddresses(tx: transaction))
             // Include all SignalAccounts as well (even though most are redundant) to
             // ensure we check against blocked system contact names.
             result.formUnion(SignalAccount.anyFetchAll(transaction: transaction).map { $0.recipientAddress })
@@ -101,7 +101,7 @@ public class ContactThreadNameCollisionFinder: NameCollisionFinder, Dependencies
 
         let targetName = ComparableDisplayName(
             address: contactThread.contactAddress,
-            displayName: contactsManager.displayName(for: contactThread.contactAddress, tx: transaction),
+            displayName: SSKEnvironment.shared.contactManagerRef.displayName(for: contactThread.contactAddress, tx: transaction),
             config: config
         )
 
@@ -113,7 +113,7 @@ public class ContactThreadNameCollisionFinder: NameCollisionFinder, Dependencies
         var collisionElements = [NameCollision.Element]()
         collisionElements.append(NameCollision.Element(comparableName: targetName))
 
-        let candidateNames = contactsManager.displayNames(for: candidateAddresses, tx: transaction)
+        let candidateNames = SSKEnvironment.shared.contactManagerRef.displayNames(for: candidateAddresses, tx: transaction)
         for (candidateAddress, candidateName) in zip(candidateAddresses, candidateNames) {
             let candidateName = ComparableDisplayName(address: candidateAddress, displayName: candidateName, config: config)
             // If we don't have a name for this person, don't consider them for collisions.
@@ -162,7 +162,7 @@ public class GroupMembershipNameCollisionFinder: NameCollisionFinder {
 
         // Build a dictionary mapping displayName -> (All addresses with that name)
         let groupMembers = groupThread.groupModel.groupMembers
-        let displayNames = NSObject.contactsManager.displayNames(for: groupMembers, tx: transaction)
+        let displayNames = SSKEnvironment.shared.contactManagerRef.displayNames(for: groupMembers, tx: transaction)
         var collisionMap = [String: [ComparableDisplayName]]()
         for (address, displayName) in zip(groupMembers, displayNames) {
             let comparableName = ComparableDisplayName(address: address, displayName: displayName, config: config)

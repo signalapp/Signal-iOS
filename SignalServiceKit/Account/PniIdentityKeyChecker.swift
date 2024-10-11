@@ -121,7 +121,7 @@ class _PniIdentityKeyCheckerImpl_ProfileFetcher_Wrapper: _PniIdentityKeyCheckerI
                 udAccessKey: nil,
                 auth: .implicit()
             )
-            let response = try await NSObject.networkManager.makePromise(
+            let response = try await SSKEnvironment.shared.networkManagerRef.makePromise(
                 request: request,
                 canUseWebSocket: true
             ).awaitable()

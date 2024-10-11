@@ -118,7 +118,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
     @objc
     private func didLongPressAvatar(sender: UIGestureRecognizer) {
-        let subscriberID = databaseStorage.read { SubscriptionManagerImpl.getSubscriberID(transaction: $0) }
+        let subscriberID = SSKEnvironment.shared.databaseStorageRef.read { SubscriptionManagerImpl.getSubscriberID(transaction: $0) }
         guard let subscriberID = subscriberID else { return }
 
         UIPasteboard.general.string = subscriberID.asBase64Url
@@ -150,7 +150,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
             hasAnyDonationReceipts,
             pendingIDEALOneTimeDonation,
             pendingIDEALSubscription
-        ) = databaseStorage.read { tx in
+        ) = SSKEnvironment.shared.databaseStorageRef.read { tx in
             let resultStore = DependenciesBridge.shared.receiptCredentialResultStore
 
             return (
@@ -166,7 +166,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
         let hasAnyBadges: Bool = Self.hasAnyBadges()
 
-        let subscriptionLevelsPromise = DonationViewsUtil.loadSubscriptionLevels(badgeStore: self.profileManager.badgeStore)
+        let subscriptionLevelsPromise = DonationViewsUtil.loadSubscriptionLevels(badgeStore: SSKEnvironment.shared.profileManagerRef.badgeStore)
         let currentSubscriptionPromise = DonationViewsUtil.loadCurrentSubscription(subscriberID: subscriberID)
         let profileBadgeLookupPromise = loadProfileBadgeLookup()
 
@@ -230,7 +230,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
     }
 
     private static func hasAnyBadges() -> Bool {
-        let snapshot = profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: false)
+        let snapshot = SSKEnvironment.shared.profileManagerImplRef.localProfileSnapshot(shouldIncludeAvatar: false)
         let allBadges = snapshot.profileBadgeInfo ?? []
         return !allBadges.isEmpty
     }
@@ -253,13 +253,13 @@ class DonationSettingsViewController: OWSTableViewController2 {
             ))
         }.then { profileBadgeLookup in
             profileBadgeLookup.attemptToPopulateBadgeAssets(
-                populateAssetsOnBadge: self.profileManager.badgeStore.populateAssetsOnBadge
+                populateAssetsOnBadge: SSKEnvironment.shared.profileManagerRef.badgeStore.populateAssetsOnBadge
             ).map { profileBadgeLookup }
         }
     }
 
     private func setUpAvatarView() {
-        databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             self.avatarView.update(transaction) { config in
                 if let address = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress {
                     config.dataSource = .address(address)
@@ -496,7 +496,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
     // MARK: - Gift Badge Expiration
 
     public static func shouldShowExpiredGiftBadgeSheetWithSneakyTransaction() -> Bool {
-        let expiredGiftBadgeID = self.databaseStorage.read { transaction in
+        let expiredGiftBadgeID = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             SubscriptionManagerImpl.mostRecentlyExpiredGiftBadgeID(transaction: transaction)
         }
         guard let expiredGiftBadgeID = expiredGiftBadgeID, GiftBadgeIds.contains(expiredGiftBadgeID) else {
@@ -523,8 +523,8 @@ class DonationSettingsViewController: OWSTableViewController2 {
                 return
             }
 
-            let hasCurrentSubscription = self.databaseStorage.read { transaction -> Bool in
-                self.subscriptionManager.hasCurrentSubscription(transaction: transaction)
+            let hasCurrentSubscription = SSKEnvironment.shared.databaseStorageRef.read { transaction -> Bool in
+                SSKEnvironment.shared.subscriptionManagerRef.hasCurrentSubscription(transaction: transaction)
             }
             Logger.info("[Gifting] Showing badge gift expiration sheet (hasCurrentSubscription: \(hasCurrentSubscription))")
             let sheet = BadgeIssueSheet(badge: profileBadge, mode: .giftBadgeExpired(hasCurrentSubscription: hasCurrentSubscription))
@@ -571,7 +571,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
             presentActionSheet(actionSheet)
         }
 
-        let (pendingOneTime, pendingSubscription) = databaseStorage.read { tx in
+        let (pendingOneTime, pendingSubscription) = SSKEnvironment.shared.databaseStorageRef.read { tx in
             let oneTimeDonation = idealStore.getPendingOneTimeDonation(tx: tx.asV2Read)
             let subscription = idealStore.getPendingSubscription(tx: tx.asV2Read)
             return (oneTimeDonation, subscription)
@@ -590,7 +590,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
                 showError(title: title, message: message, donationMode: .oneTime)
 
                 // cleanup
-                databaseStorage.write { tx in
+                SSKEnvironment.shared.databaseStorageRef.write { tx in
                     idealStore.clearPendingOneTimeDonation(tx: tx.asV2Write)
                 }
             } else {
@@ -617,7 +617,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
                     comment: "Message shown in a sheet explaining that the user's iDEAL recurring monthly donation coultn't be processed."
                 )
                 showError(title: title, message: message, donationMode: .monthly)
-                databaseStorage.write { tx in
+                SSKEnvironment.shared.databaseStorageRef.write { tx in
                     idealStore.clearPendingSubscription(tx: tx.asV2Write)
                 }
             } else {
@@ -680,7 +680,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
         clearErrorBlock: @escaping (SDSAnyWriteTransaction) -> Void
     ) -> ActionSheetAction {
         return ActionSheetAction(title: title) { _ in
-            self.databaseStorage.write { tx in
+            SSKEnvironment.shared.databaseStorageRef.write { tx in
                 clearErrorBlock(tx)
             }
 
@@ -712,7 +712,7 @@ extension DonationSettingsViewController: BadgeIssueSheetDelegate {
 
 extension DonationSettingsViewController: BadgeConfigurationDelegate {
     func badgeConfiguration(_ vc: BadgeConfigurationViewController, didCompleteWithBadgeSetting setting: BadgeConfiguration) {
-        if !self.reachabilityManager.isReachable {
+        if !SSKEnvironment.shared.reachabilityManagerRef.isReachable {
             OWSActionSheets.showErrorAlert(
                 message: OWSLocalizedString(
                     "PROFILE_VIEW_NO_CONNECTION",
@@ -728,7 +728,7 @@ extension DonationSettingsViewController: BadgeConfigurationDelegate {
 
     private func didCompleteBadgeConfiguration(_ badgeConfiguration: BadgeConfiguration, viewController: BadgeConfigurationViewController) async {
         do {
-            let snapshot = profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: true)
+            let snapshot = SSKEnvironment.shared.profileManagerImplRef.localProfileSnapshot(shouldIncludeAvatar: true)
             let allBadges = snapshot.profileBadgeInfo ?? []
             let oldVisibleBadges = allBadges.filter { $0.isVisible ?? true }
             let oldVisibleBadgeIds = oldVisibleBadges.map { $0.badgeId }
@@ -748,8 +748,8 @@ extension DonationSettingsViewController: BadgeConfigurationDelegate {
             if oldVisibleBadgeIds != newVisibleBadgeIds {
                 Logger.info("[Donations] Updating visible badges from \(oldVisibleBadgeIds) to \(newVisibleBadgeIds)")
                 viewController.showDismissalActivity = true
-                let updatePromise = await databaseStorage.awaitableWrite { tx in
-                    self.profileManager.updateLocalProfile(
+                let updatePromise = await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+                    SSKEnvironment.shared.profileManagerRef.updateLocalProfile(
                         profileGivenName: .noChange,
                         profileFamilyName: .noChange,
                         profileBio: .noChange,
@@ -773,8 +773,8 @@ extension DonationSettingsViewController: BadgeConfigurationDelegate {
                 displayBadgesOnProfile = true
             }
 
-            await databaseStorage.awaitableWrite { tx in
-                Self.subscriptionManager.setDisplayBadgesOnProfile(
+            await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+                SSKEnvironment.shared.subscriptionManagerRef.setDisplayBadgesOnProfile(
                     displayBadgesOnProfile,
                     updateStorageService: true,
                     transaction: tx

@@ -43,7 +43,7 @@ class DebugUIPayments: DebugUIPage, Dependencies {
             self?.deleteAllPaymentModels()
         })
         sectionItems.append(OWSTableItem(title: "Reconcile now") {
-            Self.databaseStorage.write { transaction in
+            SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 Self.payments.scheduleReconciliationNow(transaction: transaction)
             }
         })
@@ -57,7 +57,7 @@ class DebugUIPayments: DebugUIPage, Dependencies {
         let address = contactThread.contactAddress
         let aci = address.aci!
 
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             let paymentAmounts = [
                 TSPaymentAmount(currency: .mobileCoin, picoMob: 1),
                 TSPaymentAmount(currency: .mobileCoin, picoMob: 1000),
@@ -105,7 +105,7 @@ class DebugUIPayments: DebugUIPage, Dependencies {
                                                   interactionUniqueId: nil,
                                                   mobileCoin: mobileCoin)
                 do {
-                    try Self.paymentsHelper.tryToInsertPaymentModel(paymentModel, transaction: transaction)
+                    try SSKEnvironment.shared.paymentsHelperRef.tryToInsertPaymentModel(paymentModel, transaction: transaction)
                 } catch {
                     owsFailDebug("Error: \(error)")
                 }
@@ -217,7 +217,7 @@ class DebugUIPayments: DebugUIPage, Dependencies {
     }
 
     private func deleteAllPaymentModels() {
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             TSPaymentModel.anyRemoveAllWithInstantiation(transaction: transaction)
         }
     }

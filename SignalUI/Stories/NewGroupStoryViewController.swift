@@ -34,7 +34,7 @@ extension NewGroupStoryViewController: ConversationPickerDelegate {
     func conversationPickerDidCompleteSelection(_ conversationPickerViewController: ConversationPickerViewController) {
         let selectedConversations = selection.conversations.lazy.compactMap { $0 as? GroupConversationItem }
 
-        databaseStorage.asyncWrite { transaction in
+        SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
             for conversation in selectedConversations {
                 guard let groupThread = conversation.getExistingThread(transaction: transaction) as? TSGroupThread else { continue }
                 groupThread.updateWithStorySendEnabled(true, transaction: transaction)

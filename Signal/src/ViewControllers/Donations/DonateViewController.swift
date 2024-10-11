@@ -769,7 +769,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             recurringSubscriptionReceiptCredentialRequestError,
             pendingIDEALOneTimeDonation,
             pendingIDEALSubscription
-        ) = databaseStorage.read {
+        ) = SSKEnvironment.shared.databaseStorageRef.read {
             (
                 SubscriptionManagerImpl.getSubscriberID(transaction: $0),
                 SubscriptionManagerImpl.getSubscriberCurrencyCode(transaction: $0),
@@ -791,7 +791,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             let subscriptionBadges = donationConfiguration.subscription.levels.map { $0.badge }
 
             let badgePromises = ([boostBadge] + subscriptionBadges).map {
-                Self.profileManager.badgeStore.populateAssetsOnBadge($0)
+                SSKEnvironment.shared.profileManagerRef.badgeStore.populateAssetsOnBadge($0)
             }
 
             return Promise.when(fulfilled: badgePromises).map(on: DispatchQueue.sharedUserInitiated) { donationConfiguration }
@@ -878,7 +878,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
 
         heroView.rerender()
 
-        databaseStorage.read { [weak self] transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { [weak self] transaction in
             self?.avatarView.update(transaction) { config in
                 guard let address = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress else {
                     return
@@ -1354,7 +1354,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
 
         var buttons = [OWSButton]()
 
-        if nil != self.databaseStorage.read(block: { tx in
+        if nil != SSKEnvironment.shared.databaseStorageRef.read(block: { tx in
             DependenciesBridge.shared.externalPendingIDEALDonationStore.getPendingSubscription(tx: tx.asV2Read)
         }) {
             let title = OWSLocalizedString(

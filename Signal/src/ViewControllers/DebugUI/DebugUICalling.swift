@@ -20,7 +20,7 @@ class DebugUICalling: DebugUIPage, Dependencies {
 
         let sectionItems = [
             OWSTableItem(title: "Send 'hangup' for old call") { [weak self] in
-                guard let self else { return }
+                guard self != nil else { return }
 
                 let kFakeCallId = UInt64(12345)
                 var hangupMessage: SSKProtoCallMessageHangup
@@ -31,7 +31,7 @@ class DebugUICalling: DebugUIPage, Dependencies {
                     owsFailDebug("could not build proto")
                     return
                 }
-                let callMessage = Self.databaseStorage.read {
+                let callMessage = SSKEnvironment.shared.databaseStorageRef.read {
                     OWSOutgoingCallMessage(
                         thread: contactThread,
                         hangupMessage: hangupMessage,
@@ -43,7 +43,7 @@ class DebugUICalling: DebugUIPage, Dependencies {
                 Task {
                     do {
                         let preparedMessage = PreparedOutgoingMessage.preprepared(transientMessageWithoutAttachments: callMessage)
-                        try await self.messageSender.sendMessage(preparedMessage)
+                        try await SSKEnvironment.shared.messageSenderRef.sendMessage(preparedMessage)
                         Logger.debug("Successfully sent hangup call message to \(contactThread.contactAddress)")
                     } catch {
                         Logger.error("failed to send hangup call message to \(contactThread.contactAddress) with error: \(error)")
@@ -51,7 +51,7 @@ class DebugUICalling: DebugUIPage, Dependencies {
                 }
             },
             OWSTableItem(title: "Send 'busy' for old call") { [weak self] in
-                guard let self else { return }
+                guard self != nil else { return }
 
                 let kFakeCallId = UInt64(12345)
                 var busyMessage: SSKProtoCallMessageBusy
@@ -63,7 +63,7 @@ class DebugUICalling: DebugUIPage, Dependencies {
                     return
                 }
 
-                let callMessage = Self.databaseStorage.read {
+                let callMessage = SSKEnvironment.shared.databaseStorageRef.read {
                     OWSOutgoingCallMessage(
                         thread: contactThread,
                         busyMessage: busyMessage,
@@ -74,7 +74,7 @@ class DebugUICalling: DebugUIPage, Dependencies {
                 Task {
                     do {
                         let preparedMessage = PreparedOutgoingMessage.preprepared(transientMessageWithoutAttachments: callMessage)
-                        try await self.messageSender.sendMessage(preparedMessage)
+                        try await SSKEnvironment.shared.messageSenderRef.sendMessage(preparedMessage)
                         Logger.debug("Successfully sent busy call message to \(contactThread.contactAddress)")
                     } catch {
                         Logger.error("failed to send busy call message to \(contactThread.contactAddress) with error: \(error)")

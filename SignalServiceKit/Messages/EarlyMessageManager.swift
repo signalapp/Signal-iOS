@@ -501,7 +501,7 @@ public class EarlyMessageManager: NSObject {
                 continue
             }
 
-            Self.messageReceiver.processEnvelope(
+            SSKEnvironment.shared.messageReceiverRef.processEnvelope(
                 earlyEnvelope.envelope,
                 plaintextData: plaintextData,
                 wasReceivedByUD: earlyEnvelope.wasReceivedByUD,
@@ -514,7 +514,7 @@ public class EarlyMessageManager: NSObject {
     }
 
     private func cleanupStaleMessages() {
-        databaseStorage.asyncWrite { transaction in
+        SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
             let oldestTimestampToKeep = Date.ows_millisecondTimestamp() - kWeekInMs
 
             let allEnvelopeKeys = self.pendingEnvelopeStore.allKeys(transaction: transaction)

@@ -11,7 +11,7 @@ import LibSignalClient
 class OWSUDManagerTest: SSKBaseTest {
 
     private var udManagerImpl: OWSUDManagerImpl {
-        return SSKEnvironment.shared.udManager as! OWSUDManagerImpl
+        return SSKEnvironment.shared.udManagerRef as! OWSUDManagerImpl
     }
 
     // MARK: - Setup/Teardown
@@ -21,7 +21,7 @@ class OWSUDManagerTest: SSKBaseTest {
     override func setUp() {
         super.setUp()
 
-        databaseStorage.write { tx in
+        SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: localIdentifiers,
                 tx: tx.asV2Write
@@ -30,7 +30,7 @@ class OWSUDManagerTest: SSKBaseTest {
 
         // Configure UDManager
         self.write { transaction in
-            self.profileManager.setProfileKeyData(
+            SSKEnvironment.shared.profileManagerRef.setProfileKeyData(
                 Aes256Key.generateRandom().keyData,
                 for: localIdentifiers.aci,
                 onlyFillInIfMissing: false,
@@ -104,7 +104,7 @@ class OWSUDManagerTest: SSKBaseTest {
 
         let bobRecipientAci = Aci.randomForTesting()
         self.write { transaction in
-            self.profileManager.setProfileKeyData(
+            SSKEnvironment.shared.profileManagerRef.setProfileKeyData(
                 Aes256Key.generateRandom().keyData,
                 for: bobRecipientAci,
                 onlyFillInIfMissing: false,

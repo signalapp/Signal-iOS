@@ -409,7 +409,7 @@ public extension TSOutgoingMessage {
         }
 
         do {
-            let groupContextV2 = try groupsV2.buildGroupContextV2Proto(
+            let groupContextV2 = try SSKEnvironment.shared.groupsV2Ref.buildGroupContextV2Proto(
                 groupModel: groupModel,
                 changeActionsProtoData: self.changeActionsProtoData
             )
@@ -646,7 +646,7 @@ extension TSOutgoingMessage {
 
         let recipientStateMerger = RecipientStateMerger(
             recipientDatabaseTable: DependenciesBridge.shared.recipientDatabaseTable,
-            signalServiceAddressCache: signalServiceAddressCache
+            signalServiceAddressCache: SSKEnvironment.shared.signalServiceAddressCacheRef
         )
         anyUpdateOutgoingMessage(transaction: tx) { message in
             guard let recipientState: TSOutgoingMessageRecipientState = {
@@ -788,7 +788,7 @@ extension TSOutgoingMessage {
 
 public extension TSOutgoingMessage {
     func sendSyncTranscript() async throws {
-        let messageSend = try await databaseStorage.awaitableWrite { tx in
+        let messageSend = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             guard let localThread = TSContactThread.getOrCreateLocalThread(transaction: tx) else {
                 throw OWSAssertionError("Missing local thread")
             }
@@ -801,7 +801,7 @@ public extension TSOutgoingMessage {
                 throw OWSAssertionError("Failed to build transcript")
             }
 
-            guard let serializedMessage = self.messageSender.buildAndRecordMessage(transcript, in: localThread, tx: tx) else {
+            guard let serializedMessage = SSKEnvironment.shared.messageSenderRef.buildAndRecordMessage(transcript, in: localThread, tx: tx) else {
                 throw OWSAssertionError("Couldn't serialize message.")
             }
 
@@ -814,6 +814,6 @@ public extension TSOutgoingMessage {
                 localIdentifiers: localIdentifiers
             )
         }
-        try await messageSender.performMessageSend(messageSend, sealedSenderParameters: nil)
+        try await SSKEnvironment.shared.messageSenderRef.performMessageSend(messageSend, sealedSenderParameters: nil)
     }
 }

@@ -220,7 +220,7 @@ class ViewOnceMessageViewController: OWSViewController {
     var videoPlayer: VideoPlayer?
 
     func setupDatabaseObservation() {
-        databaseStorage.appendDatabaseChangeDelegate(self)
+        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(applicationWillEnterForeground),
@@ -245,7 +245,7 @@ class ViewOnceMessageViewController: OWSViewController {
     private func dismissIfRemoved() {
         AssertIsOnMainThread()
 
-        let shouldDismiss: Bool = databaseStorage.read { transaction in
+        let shouldDismiss: Bool = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             let uniqueId = self.content.messageId
             guard TSInteraction.anyFetch(uniqueId: uniqueId, transaction: transaction) != nil else {
                 return true

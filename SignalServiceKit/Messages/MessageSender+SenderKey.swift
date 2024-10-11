@@ -100,7 +100,7 @@ extension MessageSender {
         senderKeyRecipients: [ServiceId],
         sendSenderKeyMessage: (@Sendable () async -> [(ServiceId, any Error)])?
     ) {
-        self.senderKeyStore.expireSendingKeyIfNecessary(for: thread, maxSenderKeyAge: RemoteConfig.current.maxSenderKeyAge, tx: tx)
+        SSKEnvironment.shared.senderKeyStoreRef.expireSendingKeyIfNecessary(for: thread, maxSenderKeyAge: RemoteConfig.current.maxSenderKeyAge, tx: tx)
 
         let threadRecipients = thread.recipientAddresses(with: tx).compactMap { $0.serviceId }
         let senderKeyRecipients = recipients.filter { serviceId in
@@ -221,7 +221,7 @@ extension MessageSender {
             return readyRecipients.lazy.map { ($0, error) }
         }
 
-        return await self.databaseStorage.awaitableWrite { tx in
+        return await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             let failedRecipients = sendResult.unregisteredServiceIds.map { serviceId in
                 self.markAsUnregistered(serviceId: serviceId, message: message, thread: thread, transaction: tx)
                 return (serviceId, MessageSenderNoSuchSignalRecipientError())
@@ -243,7 +243,7 @@ extension MessageSender {
                     recipientManager.markAsRegisteredAndSave(recipient, shouldUpdateStorageService: true, tx: tx.asV2Write)
                 }
 
-                self.profileManager.didSendOrReceiveMessage(
+                SSKEnvironment.shared.profileManagerRef.didSendOrReceiveMessage(
                     serviceId: recipient.serviceId,
                     localIdentifiers: localIdentifiers,
                     tx: tx.asV2Write
@@ -288,7 +288,7 @@ extension MessageSender {
         // Here we fetch all of the recipients that need an SKDM.
         // We then construct an OWSMessageSend for each recipient that needs an SKDM.
 
-        let recipientsInNeedOfSenderKey = self.senderKeyStore.recipientsInNeedOfSenderKey(
+        let recipientsInNeedOfSenderKey = SSKEnvironment.shared.senderKeyStoreRef.recipientsInNeedOfSenderKey(
             for: thread,
             serviceIds: recipients,
             readTx: writeTx
@@ -299,7 +299,7 @@ extension MessageSender {
             return PrepareDistributionResult(readyRecipients: recipients)
         }
 
-        guard let skdmData = self.senderKeyStore.skdmBytesForThread(
+        guard let skdmData = SSKEnvironment.shared.senderKeyStoreRef.skdmBytesForThread(
             thread,
             localAci: localIdentifiers.aci,
             localDeviceId: DependenciesBridge.shared.tsAccountManager.storedDeviceId(tx: writeTx.asV2Read),
@@ -384,7 +384,7 @@ extension MessageSender {
             return await taskGroup.reduce(into: [], { $0.append($1) })
         }
 
-        return await self.databaseStorage.awaitableWrite { tx in
+        return await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             var readyRecipients = prepareResult.readyRecipients
             var failedRecipients = prepareResult.failedRecipients
             var sentSenderKeys = [SentSenderKey]()
@@ -404,7 +404,7 @@ extension MessageSender {
                 }
             }
             do {
-                try self.senderKeyStore.recordSentSenderKeys(
+                try SSKEnvironment.shared.senderKeyStoreRef.recordSentSenderKeys(
                     sentSenderKeys,
                     for: thread,
                     writeTx: tx
@@ -445,7 +445,7 @@ extension MessageSender {
         Logger.info("Sending sender key message with timestamp \(message.timestamp) to \(serviceIds)")
         let recipients: [Recipient]
         let ciphertext: Data
-        (recipients, ciphertext) = try await self.databaseStorage.awaitableWrite { tx in
+        (recipients, ciphertext) = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             // TODO: Pass Recipients into this method.
             let recipients = serviceIds.map { Recipient(serviceId: $0, transaction: tx) }
             let ciphertext = try self.senderKeyMessageBody(
@@ -540,7 +540,7 @@ extension MessageSender {
                 case 409:
                     // Incorrect device set. We should add/remove devices and try again.
                     let responseBody = try Self.decode409Response(data: responseData)
-                    await self.databaseStorage.awaitableWrite { tx in
+                    await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
                         for account in responseBody {
                             self.updateDevices(
                                 serviceId: account.serviceId,
@@ -555,7 +555,7 @@ extension MessageSender {
                 case 410:
                     // Server reports stale devices. We should reset our session and try again.
                     let responseBody = try Self.decode410Response(data: responseData)
-                    await self.databaseStorage.awaitableWrite { tx in
+                    await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
                         for account in responseBody {
                             self.handleStaleDevices(account.devices.staleDevices, for: account.serviceId, tx: tx.asV2Write)
                         }
@@ -566,7 +566,7 @@ extension MessageSender {
                         throw OWSAssertionError("Invalid spam response body")
                     }
                     try await withCheckedThrowingContinuation { continuation in
-                        self.spamChallengeResolver.handleServerChallengeBody(body, retryAfter: expiry) { didSucceed in
+                        SSKEnvironment.shared.spamChallengeResolverRef.handleServerChallengeBody(body, retryAfter: expiry) { didSucceed in
                             if didSucceed {
                                 continuation.resume()
                             } else {
@@ -619,9 +619,9 @@ extension MessageSender {
             signedPreKeyStore: signalProtocolStoreManager.signalProtocolStore(for: .aci).signedPreKeyStore,
             kyberPreKeyStore: signalProtocolStoreManager.signalProtocolStore(for: .aci).kyberPreKeyStore,
             identityStore: identityManager.libSignalStore(for: .aci, tx: writeTx.asV2Write),
-            senderKeyStore: Self.senderKeyStore)
+            senderKeyStore: SSKEnvironment.shared.senderKeyStoreRef)
 
-        let distributionId = senderKeyStore.distributionIdForSendingToThread(thread, writeTx: writeTx)
+        let distributionId = SSKEnvironment.shared.senderKeyStoreRef.distributionIdForSendingToThread(thread, writeTx: writeTx)
         let ciphertext = try secretCipher.groupEncryptMessage(
             recipients: protocolAddresses,
             paddedPlaintext: plaintext.paddedMessageBody,
@@ -671,7 +671,7 @@ extension MessageSender {
             isStory: isStory
         )
 
-        return try await networkManager.makePromise(request: request, canUseWebSocket: true).awaitable()
+        return try await SSKEnvironment.shared.networkManagerRef.makePromise(request: request, canUseWebSocket: true).awaitable()
     }
 }
 

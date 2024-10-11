@@ -32,9 +32,15 @@ public class SSKEnvironment: NSObject {
     public let paymentsHelperRef: PaymentsHelperSwift
     public let groupsV2Ref: GroupsV2
     #endif
+    /// This should be deprecated.
+    public var contactManagerImplRef: OWSContactsManager { contactManagerRef as! OWSContactsManager }
+    @objc
+    public var contactManagerObjcRef: ContactsManagerProtocol { contactManagerRef }
 
     public let pendingReceiptRecorderRef: PendingReceiptRecorder
     public let profileManagerRef: ProfileManager
+    /// This should be deprecated.
+    public var profileManagerImplRef: OWSProfileManager { profileManagerRef as! OWSProfileManager }
     public let messageReceiverRef: MessageReceiver
     public let blockingManagerRef: BlockingManager
     public let remoteConfigManagerRef: RemoteConfigManager
@@ -58,15 +64,21 @@ public class SSKEnvironment: NSObject {
     public let signalServiceRef: OWSSignalServiceProtocol
     public let accountServiceClientRef: AccountServiceClient
     public let storageServiceManagerRef: StorageServiceManager
+    @objc
+    public var storageServiceManagerObjcRef: StorageServiceManagerObjc { storageServiceManagerRef }
     public let sskPreferencesRef: SSKPreferences
     public let groupV2UpdatesRef: GroupV2Updates
+    /// This should be deprecated.
+    public var groupV2UpdatesImplRef: GroupV2UpdatesImpl { groupV2UpdatesRef as! GroupV2UpdatesImpl }
     public let messageFetcherJobRef: MessageFetcherJob
     public let versionedProfilesRef: VersionedProfilesSwift
+    @objc
     public let modelReadCachesRef: ModelReadCaches
     public let earlyMessageManagerRef: EarlyMessageManager
     public let messagePipelineSupervisorRef: MessagePipelineSupervisor
     public let messageProcessorRef: MessageProcessor
     public let paymentsCurrenciesRef: PaymentsCurrenciesSwift
+    @objc
     public let paymentsEventsRef: PaymentsEvents
     public let owsPaymentsLockRef: OWSPaymentsLock
     public let mobileCoinHelperRef: MobileCoinHelper
@@ -236,16 +248,16 @@ public class SSKEnvironment: NSObject {
         SignalProxy.warmCaches(appReadiness: appReadiness)
         DependenciesBridge.shared.tsAccountManager.warmCaches()
         fixLocalRecipientIfNeeded()
-        signalServiceAddressCache.warmCaches()
-        signalService.warmCaches()
-        remoteConfigManager.warmCaches()
-        blockingManager.warmCaches()
-        profileManager.warmCaches()
-        receiptManager.prepareCachedValues()
+        SSKEnvironment.shared.signalServiceAddressCacheRef.warmCaches()
+        SSKEnvironment.shared.signalServiceRef.warmCaches()
+        SSKEnvironment.shared.remoteConfigManagerRef.warmCaches()
+        SSKEnvironment.shared.blockingManagerRef.warmCaches()
+        SSKEnvironment.shared.profileManagerRef.warmCaches()
+        SSKEnvironment.shared.receiptManagerRef.prepareCachedValues()
         DependenciesBridge.shared.svr.warmCaches()
-        typingIndicatorsImpl.warmCaches()
-        paymentsHelper.warmCaches()
-        paymentsCurrencies.warmCaches()
+        SSKEnvironment.shared.typingIndicatorsRef.warmCaches()
+        SSKEnvironment.shared.paymentsHelperRef.warmCaches()
+        SSKEnvironment.shared.paymentsCurrenciesRef.warmCaches()
         StoryManager.setup(appReadiness: appReadiness)
         DependenciesBridge.shared.db.read { tx in appExpiryRef.warmCaches(with: tx) }
 
@@ -269,7 +281,7 @@ public class SSKEnvironment: NSObject {
     /// Pni (a one-time migration), but it also helps ensure that the value is
     /// always consistent with TSAccountManager's values.
     private func fixLocalRecipientIfNeeded() {
-        databaseStorage.write { tx in
+        SSKEnvironment.shared.databaseStorageRef.write { tx in
             guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
                 return  // Not registered yet.
             }

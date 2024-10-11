@@ -109,7 +109,7 @@ public class CLVLoader: Dependencies {
             }
 
             // 2. Try to pull as many threads as possible from the cache.
-            var threadIdToModelMap: [String: TSThread] = modelReadCaches.threadReadCache.getThreadsIfInCache(forUniqueIds: threadIds,
+            var threadIdToModelMap: [String: TSThread] = SSKEnvironment.shared.modelReadCachesRef.threadReadCache.getThreadsIfInCache(forUniqueIds: threadIds,
                                                                                                              transaction: transaction)
             var threadsToLoad = Set(threadIds)
             threadsToLoad.subtract(threadIdToModelMap.keys)

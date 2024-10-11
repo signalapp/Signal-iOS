@@ -227,7 +227,7 @@ public struct LocalSignalClient: TestSignalClient {
     }
 
     public var identityKeyPair: ECKeyPair {
-        return SSKEnvironment.shared.databaseStorage.read { tx in
+        return SSKEnvironment.shared.databaseStorageRef.read { tx in
             return DependenciesBridge.shared.identityManager.identityKeyPair(for: identity, tx: tx.asV2Read)!
         }
     }
@@ -263,7 +263,7 @@ public struct LocalSignalClient: TestSignalClient {
     }
 
     public var identityKeyStore: IdentityKeyStore {
-        return SSKEnvironment.shared.databaseStorage.read { transaction in
+        return SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return try! DependenciesBridge.shared.identityManager.libSignalStore(for: identity, tx: transaction.asV2Read)
         }
     }
@@ -353,7 +353,7 @@ public struct FakeService: Dependencies {
 
     public func buildEncryptedContentData(fromSenderClient senderClient: TestSignalClient, bodyText: String?) throws -> Data {
         let plaintext = try buildContentData(bodyText: bodyText)
-        let cipherMessage: CiphertextMessage = databaseStorage.write { transaction in
+        let cipherMessage: CiphertextMessage = SSKEnvironment.shared.databaseStorageRef.write { transaction in
             return try! self.runner.encrypt(plaintext,
                                             senderClient: senderClient,
                                             recipient: self.localClient.protocolAddress,
@@ -366,7 +366,7 @@ public struct FakeService: Dependencies {
 
     public func buildEncryptedContentData(fromSenderClient senderClient: TestSignalClient, groupV2Context: SSKProtoGroupContextV2) throws -> Data {
         let plaintext = try buildContentData(groupV2Context: groupV2Context)
-        let cipherMessage: CiphertextMessage = databaseStorage.write { transaction in
+        let cipherMessage: CiphertextMessage = SSKEnvironment.shared.databaseStorageRef.write { transaction in
             return try! self.runner.encrypt(plaintext,
                                             senderClient: senderClient,
                                             recipient: self.localClient.protocolAddress,
@@ -380,7 +380,7 @@ public struct FakeService: Dependencies {
     public func buildEncryptedContentData(fromSenderClient senderClient: TestSignalClient,
                                           deliveryReceiptForMessage timestamp: UInt64) throws -> Data {
         let plaintext = try buildContentData(deliveryReceiptForMessage: timestamp)
-        let cipherMessage: CiphertextMessage = databaseStorage.write { transaction in
+        let cipherMessage: CiphertextMessage = SSKEnvironment.shared.databaseStorageRef.write { transaction in
             return try! self.runner.encrypt(plaintext,
                                             senderClient: senderClient,
                                             recipient: self.localClient.protocolAddress,

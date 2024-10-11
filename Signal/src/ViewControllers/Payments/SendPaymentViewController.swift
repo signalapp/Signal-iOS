@@ -162,7 +162,7 @@ public class SendPaymentViewController: OWSViewController {
         isOutgoingTransfer: Bool,
         mode: SendPaymentMode
     ) {
-        guard paymentsHelper.arePaymentsEnabled else {
+        guard SSKEnvironment.shared.paymentsHelperRef.arePaymentsEnabled else {
             Logger.info("Payments not enabled.")
             showEnablePaymentsActionSheet()
             return
@@ -175,8 +175,8 @@ public class SendPaymentViewController: OWSViewController {
 
         var hasProfileKeyForRecipient = false
         var hasSentMessagesToRecipient = false
-        databaseStorage.read { transaction in
-            guard nil == Self.profileManager.profileKeyData(for: recipientAddress,
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
+            guard nil == SSKEnvironment.shared.profileManagerRef.profileKeyData(for: recipientAddress,
                                                             transaction: transaction) else {
                 hasProfileKeyForRecipient = true
                 return
@@ -233,8 +233,8 @@ public class SendPaymentViewController: OWSViewController {
             return
         }
 
-        let recipientHasPaymentsEnabled = databaseStorage.read { transaction in
-            Self.paymentsHelper.arePaymentsEnabled(for: recipientAddress, transaction: transaction)
+        let recipientHasPaymentsEnabled = SSKEnvironment.shared.databaseStorageRef.read { transaction in
+            SSKEnvironment.shared.paymentsHelperRef.arePaymentsEnabled(for: recipientAddress, transaction: transaction)
         }
         if recipientHasPaymentsEnabled {
             presentAfterRecipientCheck(
@@ -285,8 +285,8 @@ public class SendPaymentViewController: OWSViewController {
         isOutgoingTransfer: Bool,
         mode: SendPaymentMode
     ) {
-        let recipientHasPaymentsEnabled = databaseStorage.read { transaction in
-            Self.paymentsHelper.arePaymentsEnabled(for: recipientAddress, transaction: transaction)
+        let recipientHasPaymentsEnabled = SSKEnvironment.shared.databaseStorageRef.read { transaction in
+            SSKEnvironment.shared.paymentsHelperRef.arePaymentsEnabled(for: recipientAddress, transaction: transaction)
         }
         guard recipientHasPaymentsEnabled else {
             showRecipientNotEnabledAlert(recipientAddress: recipientAddress)
@@ -315,8 +315,8 @@ public class SendPaymentViewController: OWSViewController {
             "PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE",
             comment: "Title for error alert indicating that a given user cannot receive payments because they have not enabled payments. Embeds {{ the contact's name }}"
         )
-        let recipientName: String = self.databaseStorage.read { tx in
-            self.contactsManager.displayName(for: recipientAddress, tx: tx).resolvedValue()
+        let recipientName: String = SSKEnvironment.shared.databaseStorageRef.read { tx in
+            SSKEnvironment.shared.contactManagerRef.displayName(for: recipientAddress, tx: tx).resolvedValue()
         }
         let title = String(format: titleFormat, recipientName)
         let actionSheet = ActionSheetController(
@@ -344,7 +344,7 @@ public class SendPaymentViewController: OWSViewController {
     }
 
     private static func sendActivationRequest(recipientAddress: SignalServiceAddress) {
-        self.databaseStorage.asyncWrite { transaction in
+        SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
             guard let thread = TSContactThread.getWithContactAddress(
                 recipientAddress,
                 transaction: transaction
@@ -454,7 +454,7 @@ public class SendPaymentViewController: OWSViewController {
     @objc
     private func isPaymentsVersionOutdatedDidChange() {
         guard UIApplication.shared.frontmostViewController == self else { return }
-        if paymentsHelper.isPaymentsVersionOutdated {
+        if SSKEnvironment.shared.paymentsHelperRef.isPaymentsVersionOutdated {
             OWSActionSheets.showPaymentsOutdatedClientSheet(title: .updateRequired)
         }
     }
@@ -935,7 +935,7 @@ public class SendPaymentViewController: OWSViewController {
     private static let wasLastPaymentInFiatKey = "wasLastPaymentInFiat"
 
     private static var wasLastPaymentInFiat: Bool {
-        Self.databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             Self.keyValueStore.getBool(Self.wasLastPaymentInFiatKey,
                                        defaultValue: false,
                                        transaction: transaction)
@@ -943,7 +943,7 @@ public class SendPaymentViewController: OWSViewController {
     }
 
     private func setWasLastPaymentInFiat(_ value: Bool) {
-        Self.databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             Self.keyValueStore.setBool(value,
                                        key: Self.wasLastPaymentInFiatKey,
                                        transaction: transaction)
@@ -1366,8 +1366,8 @@ private class Amounts: Dependencies {
     }
 
     public static var defaultFiatAmount: Amount? {
-        let currentCurrencyCode = Self.paymentsCurrencies.currentCurrencyCode
-        guard let currencyConversion = Self.paymentsCurrenciesSwift.conversionInfo(forCurrencyCode: currentCurrencyCode) else {
+        let currentCurrencyCode = SSKEnvironment.shared.paymentsCurrenciesRef.currentCurrencyCode
+        guard let currencyConversion = SSKEnvironment.shared.paymentsCurrenciesRef.conversionInfo(forCurrencyCode: currentCurrencyCode) else {
             return nil
         }
         return .fiatCurrency(inputString: InputString.defaultString(isFiat: true),

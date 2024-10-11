@@ -47,8 +47,8 @@ class StoryContextOnboardingOverlayView: UIView, Dependencies {
     private static var shouldDisplay: Bool?
 
     func checkIfShouldDisplay() {
-        Self.shouldDisplay = Self.databaseStorage.read { transaction in
-            let isOverlayViewed = Self.systemStoryManager.isOnboardingOverlayViewed(transaction: transaction)
+        Self.shouldDisplay = SSKEnvironment.shared.databaseStorageRef.read { transaction in
+            let isOverlayViewed = SSKEnvironment.shared.systemStoryManagerRef.isOnboardingOverlayViewed(transaction: transaction)
             return !isOverlayViewed
         }
     }
@@ -92,8 +92,8 @@ class StoryContextOnboardingOverlayView: UIView, Dependencies {
 
     func dismiss() {
         // Mark as viewed from now on.
-        Self.databaseStorage.write { transaction in
-            systemStoryManager.setOnboardingOverlayViewed(value: true, transaction: transaction)
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
+            SSKEnvironment.shared.systemStoryManagerRef.setOnboardingOverlayViewed(value: true, transaction: transaction)
         }
         Self.shouldDisplay = false
 

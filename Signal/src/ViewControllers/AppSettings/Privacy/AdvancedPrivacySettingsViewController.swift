@@ -56,9 +56,9 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
         let censorshipCircumventionSection = OWSTableSection()
         let isCensorshipCircumventionSwitchEnabled: Bool
 
-        if signalService.hasCensoredPhoneNumber {
+        if SSKEnvironment.shared.signalServiceRef.hasCensoredPhoneNumber {
             isCensorshipCircumventionSwitchEnabled = true
-            if signalService.isCensorshipCircumventionManuallyDisabled {
+            if SSKEnvironment.shared.signalServiceRef.isCensorshipCircumventionManuallyDisabled {
                 censorshipCircumventionSection.footerTitle = OWSLocalizedString(
                     "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED",
                     comment: "Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled."
@@ -70,7 +70,7 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
                 )
             }
         } else if
-            !signalService.isCensorshipCircumventionActive,
+            !SSKEnvironment.shared.signalServiceRef.isCensorshipCircumventionActive,
             DependenciesBridge.shared.chatConnectionManager.identifiedConnectionState == .open
         {
             isCensorshipCircumventionSwitchEnabled = false
@@ -78,7 +78,7 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
                 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED",
                 comment: "Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service."
             )
-        } else if !signalService.isCensorshipCircumventionActive, !reachabilityManager.isReachable {
+        } else if !SSKEnvironment.shared.signalServiceRef.isCensorshipCircumventionActive, !SSKEnvironment.shared.reachabilityManagerRef.isReachable {
             isCensorshipCircumventionSwitchEnabled = false
             censorshipCircumventionSection.footerTitle = OWSLocalizedString(
                 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION",
@@ -97,13 +97,13 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
                 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION",
                 comment: "Label for the 'manual censorship circumvention' switch."
             ),
-            isOn: { self.signalService.isCensorshipCircumventionActive },
+            isOn: { SSKEnvironment.shared.signalServiceRef.isCensorshipCircumventionActive },
             isEnabled: { isCensorshipCircumventionSwitchEnabled || DebugFlags.exposeCensorshipCircumvention },
             target: self,
             selector: #selector(didToggleEnableCensorshipCircumventionSwitch)
         ))
 
-        if self.signalService.isCensorshipCircumventionManuallyActivated {
+        if SSKEnvironment.shared.signalServiceRef.isCensorshipCircumventionManuallyActivated {
             censorshipCircumventionSection.add(.disclosureItem(
                 withText: OWSLocalizedString(
                     "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY",
@@ -151,7 +151,7 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
                 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE",
                 comment: "Table cell label"
             ),
-            isOn: { Self.preferences.doCallsHideIPAddress },
+            isOn: { SSKEnvironment.shared.preferencesRef.doCallsHideIPAddress },
             target: self,
             selector: #selector(didToggleCallsHideIPAddressSwitch)
         ))
@@ -210,7 +210,7 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
                 stackView.addArrangedSubview(.spacer(withWidth: 60))
 
                 let cellSwitch = UISwitch()
-                cellSwitch.isOn = Self.preferences.shouldShowUnidentifiedDeliveryIndicators
+                cellSwitch.isOn = SSKEnvironment.shared.preferencesRef.shouldShowUnidentifiedDeliveryIndicators
                 cellSwitch.addTarget(self, action: #selector(self.didToggleUDShowIndicatorsSwitch), for: .valueChanged)
                 cell.accessoryView = cellSwitch
 
@@ -227,7 +227,7 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
                     "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS",
                     comment: "switch label"
                 ),
-                isOn: { Self.udManager.shouldAllowUnrestrictedAccessLocal() },
+                isOn: { SSKEnvironment.shared.udManagerRef.shouldAllowUnrestrictedAccessLocal() },
                 target: self,
                 selector: #selector(didToggleUDUnrestrictedAccessSwitch)
             ))
@@ -245,29 +245,29 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
 
     @objc
     private func didToggleEnableCensorshipCircumventionSwitch(_ sender: UISwitch) {
-        self.signalService.isCensorshipCircumventionManuallyDisabled = !sender.isOn
-        self.signalService.isCensorshipCircumventionManuallyActivated = sender.isOn
+        SSKEnvironment.shared.signalServiceRef.isCensorshipCircumventionManuallyDisabled = !sender.isOn
+        SSKEnvironment.shared.signalServiceRef.isCensorshipCircumventionManuallyActivated = sender.isOn
         updateTableContents()
     }
 
     private func ensureManualCensorshipCircumventionCountry() -> OWSCountryMetadata {
-        let countryCode = self.signalService.manualCensorshipCircumventionCountryCode ?? PhoneNumberUtil.defaultCountryCode()
-        self.signalService.manualCensorshipCircumventionCountryCode = countryCode
+        let countryCode = SSKEnvironment.shared.signalServiceRef.manualCensorshipCircumventionCountryCode ?? PhoneNumberUtil.defaultCountryCode()
+        SSKEnvironment.shared.signalServiceRef.manualCensorshipCircumventionCountryCode = countryCode
         return OWSCountryMetadata.countryMetadata(countryCode: countryCode)!
     }
 
     @objc
     private func didToggleCallsHideIPAddressSwitch(_ sender: UISwitch) {
-        preferences.setDoCallsHideIPAddress(sender.isOn)
+        SSKEnvironment.shared.preferencesRef.setDoCallsHideIPAddress(sender.isOn)
     }
 
     @objc
     private func didToggleUDShowIndicatorsSwitch(_ sender: UISwitch) {
-        preferences.setShouldShowUnidentifiedDeliveryIndicatorsAndSendSyncMessage(sender.isOn)
+        SSKEnvironment.shared.preferencesRef.setShouldShowUnidentifiedDeliveryIndicatorsAndSendSyncMessage(sender.isOn)
     }
 
     @objc
     private func didToggleUDUnrestrictedAccessSwitch(_ sender: UISwitch) {
-        udManager.setShouldAllowUnrestrictedAccessLocal(sender.isOn)
+        SSKEnvironment.shared.udManagerRef.setShouldAllowUnrestrictedAccessLocal(sender.isOn)
     }
 }

@@ -231,7 +231,7 @@ private class SendGiftBadgeJobRunner: JobRunner, Dependencies {
         // We also do this check right before sending the message, but we might be able to prevent
         // charging the payment method (and some extra work) if we check now.
         Logger.info("[Gifting] Ensuring we can still message recipient...")
-        try databaseStorage.read { tx in
+        try SSKEnvironment.shared.databaseStorageRef.read { tx in
             try ensureThatWeCanStillMessageRecipient(threadUniqueId: jobRecord.threadId, tx: tx)
         }
 
@@ -249,7 +249,7 @@ private class SendGiftBadgeJobRunner: JobRunner, Dependencies {
         )
 
         Logger.info("[Gifting] Enqueueing messages & finishing up...")
-        try await databaseStorage.awaitableWrite { tx in
+        try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             try self.enqueueMessages(
                 threadUniqueId: jobRecord.threadId,
                 messageText: jobRecord.messageText,
@@ -265,7 +265,7 @@ private class SendGiftBadgeJobRunner: JobRunner, Dependencies {
         guard let thread = TSContactThread.anyFetchContactThread(uniqueId: threadUniqueId, transaction: tx) else {
             throw OWSGenericError("Thread for gift badge sending no longer exists")
         }
-        guard !blockingManager.isThreadBlocked(thread, transaction: tx) else {
+        guard !SSKEnvironment.shared.blockingManagerRef.isThreadBlocked(thread, transaction: tx) else {
             throw OWSGenericError("Thread for gift badge sending is blocked")
         }
         return thread

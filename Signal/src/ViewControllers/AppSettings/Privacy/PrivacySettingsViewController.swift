@@ -75,7 +75,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
                 "SETTINGS_READ_RECEIPT",
                 comment: "Label for the 'read receipts' setting."
             ),
-            isOn: { Self.receiptManager.areReadReceiptsEnabled() },
+            isOn: { SSKEnvironment.shared.receiptManagerRef.areReadReceiptsEnabled() },
             target: self,
             selector: #selector(didToggleReadReceiptsSwitch)
         ))
@@ -84,7 +84,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
                 "SETTINGS_TYPING_INDICATORS",
                 comment: "Label for the 'typing indicators' setting."
             ),
-            isOn: { Self.typingIndicatorsImpl.areTypingIndicatorsEnabled() },
+            isOn: { SSKEnvironment.shared.typingIndicatorsRef.areTypingIndicatorsEnabled() },
             target: self,
             selector: #selector(didToggleTypingIndicatorsSwitch)
         ))
@@ -95,7 +95,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
             "SETTINGS_DISAPPEARING_MESSAGES_FOOTER",
             comment: "Explanation for the 'disappearing messages' privacy settings."
         )
-        let disappearingMessagesConfiguration = databaseStorage.read { tx in
+        let disappearingMessagesConfiguration = SSKEnvironment.shared.databaseStorageRef.read { tx in
             let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
             return dmConfigurationStore.fetchOrBuildDefault(for: .universal, tx: tx.asV2Read)
         }
@@ -116,10 +116,12 @@ class PrivacySettingsViewController: OWSTableViewController2 {
                 return cell
             }, actionBlock: { [weak self] in
                 let vc = DisappearingMessagesTimerSettingsViewController(configuration: disappearingMessagesConfiguration, isUniversal: true) { configuration in
-                    self?.databaseStorage.write { transaction in
-                        configuration.anyUpsert(transaction: transaction)
+                    if self != nil {
+                        SSKEnvironment.shared.databaseStorageRef.write { transaction in
+                            configuration.anyUpsert(transaction: transaction)
+                        }
+                        SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
                     }
-                    self?.storageServiceManager.recordPendingLocalAccountUpdates()
                     self?.updateTableContents()
                 }
                 self?.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
@@ -145,7 +147,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
 
         appSecuritySection.add(.switch(
             withText: OWSLocalizedString("SETTINGS_SCREEN_SECURITY", comment: ""),
-            isOn: { Self.preferences.isScreenSecurityEnabled },
+            isOn: { SSKEnvironment.shared.preferencesRef.isScreenSecurityEnabled },
             target: self,
             selector: #selector(didToggleScreenSecuritySwitch)
         ))
@@ -194,7 +196,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
                 "SETTINGS_PAYMENTS_LOCK_SWITCH_LABEL",
                 comment: "Label for UISwitch based payments-lock setting that when enabled requires biometric-authentication (or passcode) to transfer funds or view the recovery phrase."
             ),
-            isOn: { Self.owsPaymentsLock.isPaymentsLockEnabled() },
+            isOn: { SSKEnvironment.shared.owsPaymentsLockRef.isPaymentsLockEnabled() },
             target: self,
             selector: #selector(didTogglePaymentsLockSwitch)
         ))
@@ -214,8 +216,8 @@ class PrivacySettingsViewController: OWSTableViewController2 {
                 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE",
                 comment: "Short table cell label"
             ),
-            isOn: { [unowned self] in
-                return self.databaseStorage.read(block: self.preferences.isSystemCallLogEnabled(tx:))
+            isOn: {
+                return SSKEnvironment.shared.databaseStorageRef.read(block: SSKEnvironment.shared.preferencesRef.isSystemCallLogEnabled(tx:))
             },
             target: self,
             selector: #selector(didToggleEnableSystemCallLogSwitch)
@@ -244,17 +246,17 @@ class PrivacySettingsViewController: OWSTableViewController2 {
 
     @objc
     private func didToggleReadReceiptsSwitch(_ sender: UISwitch) {
-        receiptManager.setAreReadReceiptsEnabledWithSneakyTransactionAndSyncConfiguration(sender.isOn)
+        SSKEnvironment.shared.receiptManagerRef.setAreReadReceiptsEnabledWithSneakyTransactionAndSyncConfiguration(sender.isOn)
     }
 
     @objc
     private func didToggleTypingIndicatorsSwitch(_ sender: UISwitch) {
-        typingIndicatorsImpl.setTypingIndicatorsEnabledAndSendSyncMessage(value: sender.isOn)
+        SSKEnvironment.shared.typingIndicatorsRef.setTypingIndicatorsEnabledAndSendSyncMessage(value: sender.isOn)
     }
 
     @objc
     private func didToggleScreenSecuritySwitch(_ sender: UISwitch) {
-        preferences.setIsScreenSecurityEnabled(sender.isOn)
+        SSKEnvironment.shared.preferencesRef.setIsScreenSecurityEnabled(sender.isOn)
     }
 
     @objc
@@ -266,22 +268,22 @@ class PrivacySettingsViewController: OWSTableViewController2 {
     @objc
     private func didTogglePaymentsLockSwitch(_ sender: UISwitch) {
         // Require unlock to disable payments lock
-        if Self.owsPaymentsLock.isPaymentsLockEnabled() {
-            Self.owsPaymentsLock.tryToUnlock { [weak self] outcome in
+        if SSKEnvironment.shared.owsPaymentsLockRef.isPaymentsLockEnabled() {
+            SSKEnvironment.shared.owsPaymentsLockRef.tryToUnlock { [weak self] outcome in
                 guard let self = self else { return }
                 guard case .success = outcome else {
                     self.updateTableContents()
                     PaymentActionSheets.showBiometryAuthFailedActionSheet()
                     return
                 }
-                self.databaseStorage.write { transaction in
-                    Self.owsPaymentsLock.setIsPaymentsLockEnabled(false, transaction: transaction)
+                SSKEnvironment.shared.databaseStorageRef.write { transaction in
+                    SSKEnvironment.shared.owsPaymentsLockRef.setIsPaymentsLockEnabled(false, transaction: transaction)
                 }
                 self.updateTableContents()
             }
         } else {
-            databaseStorage.write { transaction in
-                Self.owsPaymentsLock.setIsPaymentsLockEnabled(true, transaction: transaction)
+            SSKEnvironment.shared.databaseStorageRef.write { transaction in
+                SSKEnvironment.shared.owsPaymentsLockRef.setIsPaymentsLockEnabled(true, transaction: transaction)
             }
             self.updateTableContents()
         }
@@ -320,7 +322,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
 
     @objc
     private func didToggleEnableSystemCallLogSwitch(_ sender: UISwitch) {
-        preferences.setIsSystemCallLogEnabled(sender.isOn)
+        SSKEnvironment.shared.preferencesRef.setIsSystemCallLogEnabled(sender.isOn)
 
         // rebuild callUIAdapter since CallKit configuration changed.
         AppEnvironment.shared.callService.rebuildCallUIAdapter()

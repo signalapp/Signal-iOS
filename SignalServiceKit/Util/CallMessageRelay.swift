@@ -36,7 +36,7 @@ public class CallMessageRelay: Dependencies {
         defer { Logger.info("Finished handling incoming VoIP payload: \(payload)") }
         // Process all the pending call messages from the NSE in 1 batch.
         // This should almost always be a batch of one.
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             defer { pendingCallMessageStore.removeAll(transaction: transaction) }
             let pendingPayloads: [Payload]
 
@@ -65,7 +65,7 @@ public class CallMessageRelay: Dependencies {
                 let adjustedDeliveryTimestamp =
                     payload.serverDeliveryTimestamp + UInt64(1000 * max(0, delaySecondsSinceDelivery))
 
-                messageReceiver.processEnvelope(
+                SSKEnvironment.shared.messageReceiverRef.processEnvelope(
                     payload.envelope,
                     plaintextData: payload.plaintextData,
                     wasReceivedByUD: payload.wasReceivedByUD,

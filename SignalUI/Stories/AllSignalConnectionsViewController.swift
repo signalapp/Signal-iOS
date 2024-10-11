@@ -25,9 +25,9 @@ public class AllSignalConnectionsViewController: OWSTableViewController2 {
         let contents = OWSTableContents()
         defer { self.contents = contents }
 
-        let allConnections = databaseStorage.read { transaction in
-            return contactsManager.sortedComparableNames(
-                for: profileManager.allWhitelistedRegisteredAddresses(tx: transaction).filter { !$0.isLocalAddress },
+        let allConnections = SSKEnvironment.shared.databaseStorageRef.read { transaction in
+            return SSKEnvironment.shared.contactManagerRef.sortedComparableNames(
+                for: SSKEnvironment.shared.profileManagerRef.allWhitelistedRegisteredAddresses(tx: transaction).filter { !$0.isLocalAddress },
                 tx: transaction
             )
         }

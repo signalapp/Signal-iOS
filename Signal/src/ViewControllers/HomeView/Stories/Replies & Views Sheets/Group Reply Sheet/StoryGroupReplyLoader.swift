@@ -56,14 +56,14 @@ class StoryGroupReplyLoader: Dependencies {
         )
         self.messageLoader = MessageLoader(
             batchFetcher: messageBatchFetcher,
-            interactionFetchers: [NSObject.modelReadCaches.interactionReadCache, SDSInteractionFetcherImpl()]
+            interactionFetchers: [SSKEnvironment.shared.modelReadCachesRef.interactionReadCache, SDSInteractionFetcherImpl()]
         )
 
         // Load the first page synchronously.
-        databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             load(mode: .initial, transaction: transaction)
         }
-        databaseStorage.appendDatabaseChangeDelegate(self)
+        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
     }
 
     func replyItem(for indexPath: IndexPath) -> StoryGroupReplyViewItem? {
@@ -83,14 +83,14 @@ class StoryGroupReplyLoader: Dependencies {
     func loadNewerPageIfNecessary() {
         LoadingMode.newer.async {
             guard self.messageLoader.canLoadNewer else { return }
-            self.databaseStorage.read { self.load(mode: .newer, transaction: $0) }
+            SSKEnvironment.shared.databaseStorageRef.read { self.load(mode: .newer, transaction: $0) }
         }
     }
 
     func loadOlderPageIfNecessary() {
         LoadingMode.older.async {
             guard self.messageLoader.canLoadOlder else { return }
-            self.databaseStorage.read { self.load(mode: .older, transaction: $0) }
+            SSKEnvironment.shared.databaseStorageRef.read { self.load(mode: .older, transaction: $0) }
         }
     }
 
@@ -100,7 +100,7 @@ class StoryGroupReplyLoader: Dependencies {
         canReuseInteractions: Bool = true
     ) {
         LoadingMode.reload.async {
-            self.databaseStorage.read { self.load(
+            SSKEnvironment.shared.databaseStorageRef.read { self.load(
                 mode: .reload,
                 canReuseInteractions: canReuseInteractions,
                 updatedInteractionIds: updatedInteractionIds,
@@ -233,7 +233,7 @@ class StoryGroupReplyLoader: Dependencies {
         }
 
         let groupNameColors = GroupNameColors.groupNameColors(forThread: groupThread)
-        let displayNamesByAddress = contactsManagerImpl.displayNamesByAddress(
+        let displayNamesByAddress = SSKEnvironment.shared.contactManagerImplRef.displayNamesByAddress(
             for: Array(authorAddresses),
             transaction: transaction
         )

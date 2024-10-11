@@ -175,7 +175,7 @@ extension ConversationViewController {
         // IFF the lastVisibleInteraction is the last non-dynamic interaction in the thread,
         // we want to scroll to the bottom to also show any active typing indicators.
         if lastVisibleInteraction.sortId == lastSortIdInLoadedWindow,
-           typingIndicatorsImpl.typingAddress(forThread: thread) != nil {
+           SSKEnvironment.shared.typingIndicatorsRef.typingAddress(forThread: thread) != nil {
             return scrollToBottomOfConversation(animated: animated)
         }
 
@@ -284,7 +284,7 @@ extension ConversationViewController {
         }
         let quotedMessage: TSMessage?
         if let timestamp = quotedReply.originalMessageTimestamp {
-            quotedMessage = databaseStorage.read { transaction in
+            quotedMessage = SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 InteractionFinder.findMessage(
                     withTimestamp: timestamp,
                     threadId: self.thread.uniqueId,
@@ -308,7 +308,7 @@ extension ConversationViewController {
             case .pastRevision:
                 // If this is an older edit revision, find the current
                 // edit and use that uniqueId instead of the old one.
-                let currentEdit = databaseStorage.read { transaction in
+                let currentEdit = SSKEnvironment.shared.databaseStorageRef.read { transaction in
                     DependenciesBridge.shared.editMessageStore.findMessage(
                         fromEdit: quotedMessage,
                         tx: transaction.asV2Read
@@ -362,7 +362,7 @@ extension ConversationViewController {
             // IFF the lastVisibleInteraction is the last non-dynamic interaction in the thread,
             // we want to scroll to the bottom to also show any active typing indicators.
             if lastVisibleInteraction.sortId == lastSortIdInLoadedWindow,
-               typingIndicatorsImpl.typingAddress(forThread: thread) != nil {
+               SSKEnvironment.shared.typingIndicatorsRef.typingAddress(forThread: thread) != nil {
                 return CVScrollAction(action: .bottomOfLoadWindow, isAnimated: false)
             }
             if let lastKnownDistanceFromBottom = self.lastKnownDistanceFromBottom,
@@ -650,7 +650,7 @@ extension ConversationViewController {
     }
 
     private func lastVisibleInteractionWithSneakyTransaction() -> LastVisibleInteraction? {
-        return databaseStorage.read { tx in Self.lastVisibleInteraction(for: thread, tx: tx) }
+        return SSKEnvironment.shared.databaseStorageRef.read { tx in Self.lastVisibleInteraction(for: thread, tx: tx) }
     }
 
     private static func lastVisibleInteraction(for thread: TSThread, tx: SDSAnyReadTransaction) -> LastVisibleInteraction? {

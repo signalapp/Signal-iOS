@@ -172,14 +172,14 @@ open class BaseMemberViewController: RecipientPickerContainerViewController {
     }
 
     private func updateMemberBar() {
-        memberBar.setMembers(databaseStorage.read { tx in
+        memberBar.setMembers(SSKEnvironment.shared.databaseStorageRef.read { tx in
             let members = self.recipientSet.orderedMembers.compactMap { (pickedRecipient) -> (PickedRecipient, SignalServiceAddress)? in
                 guard let address = pickedRecipient.address else {
                     return nil
                 }
                 return (pickedRecipient, address)
             }
-            let displayNames = contactsManager.displayNames(for: members.map { (_, address) in address }, tx: tx)
+            let displayNames = SSKEnvironment.shared.contactManagerRef.displayNames(for: members.map { (_, address) in address }, tx: tx)
             return zip(members, displayNames).map { (member, displayName) in
                 return NewMember(
                     recipient: member.0,
@@ -194,7 +194,7 @@ open class BaseMemberViewController: RecipientPickerContainerViewController {
         recipientSet: OrderedSet<PickedRecipient>,
         tx: SDSAnyReadTransaction
     ) -> [SignalServiceAddress] {
-        return contactsManager.sortSignalServiceAddresses(
+        return SSKEnvironment.shared.contactManagerRef.sortSignalServiceAddresses(
             recipientSet.orderedMembers.compactMap { $0.address },
             transaction: tx
         )
@@ -266,7 +266,7 @@ extension BaseMemberViewController: RecipientPickerDelegate {
             owsFailDebug("Missing memberViewDelegate.")
             return .unknownError
         }
-        return Self.databaseStorage.read { transaction -> RecipientPickerRecipientState in
+        return SSKEnvironment.shared.databaseStorageRef.read { transaction -> RecipientPickerRecipientState in
             if memberViewDelegate.memberViewIsPreExistingMember(
                 recipient,
                 transaction: transaction
@@ -294,11 +294,11 @@ extension BaseMemberViewController: RecipientPickerDelegate {
             return
         }
 
-        let (isPreExistingMember, isBlocked) = databaseStorage.read { tx -> (Bool, Bool) in
+        let (isPreExistingMember, isBlocked) = SSKEnvironment.shared.databaseStorageRef.read { tx -> (Bool, Bool) in
             let isPreexisting = memberViewDelegate.memberViewIsPreExistingMember(
                 recipient,
                 transaction: tx)
-            let isBlocked = blockingManager.isAddressBlocked(address, transaction: tx)
+            let isBlocked = SSKEnvironment.shared.blockingManagerRef.isAddressBlocked(address, transaction: tx)
             return (isPreexisting, isBlocked)
         }
 
@@ -421,7 +421,7 @@ extension BaseMemberViewController: RecipientPickerDelegate {
         guard !address.isLocalAddress else {
             return nil
         }
-        guard let bioForDisplay = Self.profileManagerImpl.profileBioForDisplay(for: address,
+        guard let bioForDisplay = SSKEnvironment.shared.profileManagerImplRef.profileBioForDisplay(for: address,
                                                                                transaction: transaction) else {
             return nil
         }

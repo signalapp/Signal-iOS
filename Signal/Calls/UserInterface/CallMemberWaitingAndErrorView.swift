@@ -64,8 +64,8 @@ class CallMemberWaitingAndErrorView: UIView, CallMemberComposableView {
                 ringRtcCall = call.ringRtcCall
             }
 
-            let isRemoteDeviceBlocked = databaseStorage.read { tx in
-                return blockingManager.isAddressBlocked(remoteGroupMemberDeviceState.address, transaction: tx)
+            let isRemoteDeviceBlocked = SSKEnvironment.shared.databaseStorageRef.read { tx in
+                return SSKEnvironment.shared.blockingManagerRef.isAddressBlocked(remoteGroupMemberDeviceState.address, transaction: tx)
             }
 
             let errorDeferralInterval: TimeInterval = 5.0
@@ -119,7 +119,7 @@ class CallMemberWaitingAndErrorView: UIView, CallMemberComposableView {
                 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE",
                 comment: "Text describing the local user in the group call members sheet when connected from another device.")
         } else {
-            return databaseStorage.read { tx in contactsManager.displayName(for: address, tx: tx).resolvedValue() }
+            return SSKEnvironment.shared.databaseStorageRef.read { tx in SSKEnvironment.shared.contactManagerRef.displayName(for: address, tx: tx).resolvedValue() }
         }
     }
 
@@ -171,7 +171,7 @@ class CallMemberWaitingAndErrorView: UIView, CallMemberComposableView {
             let titleFormat = OWSLocalizedString(
                 "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT",
                 comment: "Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }}")
-            let displayName = databaseStorage.read { tx in contactsManager.displayName(for: address, tx: tx).resolvedValue() }
+            let displayName = SSKEnvironment.shared.databaseStorageRef.read { tx in SSKEnvironment.shared.contactManagerRef.displayName(for: address, tx: tx).resolvedValue() }
             title = String(format: titleFormat, displayName)
 
         case let .noMediaKeys(address):
@@ -182,7 +182,7 @@ class CallMemberWaitingAndErrorView: UIView, CallMemberComposableView {
             let titleFormat = OWSLocalizedString(
                 "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT",
                 comment: "Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }}")
-            let displayName = databaseStorage.read { tx in contactsManager.displayName(for: address, tx: tx).resolvedValue() }
+            let displayName = SSKEnvironment.shared.databaseStorageRef.read { tx in SSKEnvironment.shared.contactManagerRef.displayName(for: address, tx: tx).resolvedValue() }
             title = String(format: titleFormat, displayName)
         }
 

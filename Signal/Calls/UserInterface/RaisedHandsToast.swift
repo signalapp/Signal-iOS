@@ -32,8 +32,8 @@ class RaisedHandsToast: UIView {
     }
 
     private let deps = Dependencies(
-        db: NSObject.databaseStorage,
-        contactsManager: NSObject.contactsManager
+        db: SSKEnvironment.shared.databaseStorageRef,
+        contactsManager: SSKEnvironment.shared.contactManagerRef
     )
 
     private let outerHStack = UIStackView()

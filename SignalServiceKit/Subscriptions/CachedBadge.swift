@@ -55,7 +55,7 @@ public final class CachedBadge: Equatable, Dependencies {
 
                 case .some(let profileBadge):
                     return firstly {
-                        self.profileManager.badgeStore.populateAssetsOnBadge(profileBadge)
+                        SSKEnvironment.shared.profileManagerRef.badgeStore.populateAssetsOnBadge(profileBadge)
                     }.map { _ in
                         return .profileBadge(profileBadge)
                     }

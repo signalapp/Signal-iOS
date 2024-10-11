@@ -164,7 +164,7 @@ extension TSInfoMessage {
             )
         }
 
-        let displayName = contactsManager.displayName(for: SignalServiceAddress(aci), tx: transaction)
+        let displayName = SSKEnvironment.shared.contactManagerRef.displayName(for: SignalServiceAddress(aci), tx: transaction)
         return String(format: formatString, displayName.resolvedValue())
     }
 
@@ -179,7 +179,7 @@ extension TSInfoMessage {
                 comment: "Shown when a user activates payments from a chat"
             )
         case .incoming(let aci):
-            let displayName = contactsManager.displayName(for: SignalServiceAddress(aci), tx: transaction)
+            let displayName = SSKEnvironment.shared.contactManagerRef.displayName(for: SignalServiceAddress(aci), tx: transaction)
             let format = OWSLocalizedString(
                 "INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_FINISHED",
                 comment: "Shown when a user activates payments from a chat. Embeds: {{ the user's name}}"

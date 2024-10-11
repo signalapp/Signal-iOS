@@ -889,7 +889,7 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
 
         func mutate<T>(userData: UpdateUserData?, _ block: (inout State, SDSAnyReadTransaction) -> (T)) -> T {
             return mutate(userData: userData) { mutableState in
-                return Self.databaseStorage.read { transaction in
+                return SSKEnvironment.shared.databaseStorageRef.read { transaction in
                     return block(&mutableState, transaction)
                 }
             }
@@ -937,7 +937,7 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
                             _ block: @escaping (inout State, SDSAnyReadTransaction) -> (T),
                             completion: @escaping (T) -> Void) {
             mutateAsync(userData: userData, highPriority: highPriority, title: title) { mutableState in
-                return Self.databaseStorage.read { transaction in
+                return SSKEnvironment.shared.databaseStorageRef.read { transaction in
                     block(&mutableState, transaction)
                 }
             } completion: { value in
@@ -1257,7 +1257,7 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
             return IndexSet()
         }
         return snapshotManager.mutate(userData: userData) { state in
-            return Self.databaseStorage.read { transaction in
+            return SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 return state.ensureItemsLoaded(request: request,
                                                transaction: transaction)
             }

@@ -111,13 +111,13 @@ public enum StoryUtil: Dependencies {
 
         let actionSheet = ActionSheetController(message: title)
         actionSheet.addAction(.init(title: CommonStrings.deleteButton, style: .destructive, handler: { _ in
-            Self.databaseStorage.write { transaction in
+            SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 message.remotelyDelete(for: thread, transaction: transaction)
             }
             completion()
         }))
         actionSheet.addAction(.init(title: CommonStrings.sendMessage, handler: { _ in
-            Self.databaseStorage.write { transaction in
+            SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 message.resendMessageToFailedRecipients(transaction: transaction)
             }
             completion()
@@ -137,7 +137,7 @@ public enum StoryUtil: Dependencies {
             confirmationText: MessageStrings.sendButton
         ) { confirmedSafetyNumberChange in
             guard confirmedSafetyNumberChange else { return }
-            Self.databaseStorage.write { transaction in
+            SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 message.resendMessageToFailedRecipients(transaction: transaction)
             }
         }

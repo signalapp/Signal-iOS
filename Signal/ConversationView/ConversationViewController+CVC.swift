@@ -68,7 +68,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
     }
 
     func chatColorDidChange() {
-        viewState.chatColor = databaseStorage.read { tx in Self.loadChatColor(for: thread, tx: tx) }
+        viewState.chatColor = SSKEnvironment.shared.databaseStorageRef.read { tx in Self.loadChatColor(for: thread, tx: tx) }
         updateConversationStyle()
     }
 

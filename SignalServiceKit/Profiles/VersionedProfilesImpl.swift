@@ -103,7 +103,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
         appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
             // Once we think all clients in the world have migrated to expiring
             // credentials we can remove this.
-            self.databaseStorage.asyncWrite { transaction in
+            SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
                 CredentialStore.dropDeprecatedCredentialsIfNecessary(transaction: transaction)
             }
         }
@@ -134,15 +134,15 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
         let commitmentData = commitment.serialize().asData
 
         func fetchLocalPaymentAddressProtoData() async -> Data? {
-            await databaseStorage.awaitableWrite { tx in
-                Self.paymentsHelper.lastKnownLocalPaymentAddressProtoData(transaction: tx)
+            await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+                SSKEnvironment.shared.paymentsHelperRef.lastKnownLocalPaymentAddressProtoData(transaction: tx)
             }
         }
 
         let profilePaymentAddressData: Data? = await {
             guard
-                paymentsHelper.arePaymentsEnabled,
-                !paymentsHelper.isKillSwitchActive
+                SSKEnvironment.shared.paymentsHelperRef.arePaymentsEnabled,
+                !SSKEnvironment.shared.paymentsHelperRef.isKillSwitchActive
             else {
                 return nil
             }
@@ -197,8 +197,8 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
         let bioValue = try encryptOptionalString(profileBio, paddedLengths: [128, 254, 512])
         let bioEmojiValue = try encryptOptionalString(profileBioEmoji, paddedLengths: [32])
         let paymentAddressValue = try encryptOptionalData(profilePaymentAddressData, paddedLengths: [554])
-        let phoneNumberSharingValue = try encryptBoolean(databaseStorage.read { tx in
-            udManager.phoneNumberSharingMode(tx: tx.asV2Read).orDefault == .everybody
+        let phoneNumberSharingValue = try encryptBoolean(SSKEnvironment.shared.databaseStorageRef.read { tx in
+            SSKEnvironment.shared.udManagerRef.phoneNumberSharingMode(tx: tx.asV2Read).orDefault == .everybody
         })
 
         let profileKeyVersion = try localProfileKey.getProfileKeyVersion(userId: localAci)
@@ -231,7 +231,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
             commitment: commitmentData,
             auth: authedAccount.chatServiceAuth
         )
-        let response = try await networkManager.makePromise(request: request).awaitable()
+        let response = try await SSKEnvironment.shared.networkManagerRef.makePromise(request: request).awaitable()
 
         let avatarUrlPath: OptionalChange<String?>
         switch profileAvatarMutation {
@@ -271,9 +271,9 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
         var profileKeyVersionArg: String?
         var credentialRequestArg: Data?
         var profileKeyForRequest: Aes256Key?
-        try databaseStorage.read { transaction in
+        try SSKEnvironment.shared.databaseStorageRef.read { transaction in
             // We try to include the profile key if we have one.
-            guard let profileKeyForAddress = self.profileManager.profileKey(
+            guard let profileKeyForAddress = SSKEnvironment.shared.profileManagerRef.profileKey(
                 for: SignalServiceAddress(aci),
                 transaction: transaction)
             else {
@@ -347,8 +347,8 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
                 throw OWSAssertionError("Missing ACI.")
             }
 
-            try await databaseStorage.awaitableWrite { tx throws in
-                guard let currentProfileKey = self.profileManager.profileKey(for: SignalServiceAddress(aci), transaction: tx) else {
+            try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx throws in
+                guard let currentProfileKey = SSKEnvironment.shared.profileManagerRef.profileKey(for: SignalServiceAddress(aci), transaction: tx) else {
                     throw OWSAssertionError("Missing profile key in database.")
                 }
 

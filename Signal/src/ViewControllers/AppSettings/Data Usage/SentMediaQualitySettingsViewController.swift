@@ -24,7 +24,7 @@ class SentMediaQualitySettingsViewController: OWSTableViewController2 {
             comment: "Item title for the sent media quality setting"
         )
 
-        databaseStorage.read { tx in
+        SSKEnvironment.shared.databaseStorageRef.read { tx in
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
             let localPhoneNumber = tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.phoneNumber
             remoteDefaultLevel = ImageQualityLevel.remoteDefault(localPhoneNumber: localPhoneNumber)

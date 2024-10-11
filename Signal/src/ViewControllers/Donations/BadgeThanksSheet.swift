@@ -198,7 +198,7 @@ class BadgeThanksSheet: OWSTableSheetViewController {
     private func saveVisibilityChanges() -> Promise<Void> {
         AssertNotOnMainThread()
 
-        let snapshot = profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: true)
+        let snapshot = SSKEnvironment.shared.profileManagerImplRef.localProfileSnapshot(shouldIncludeAvatar: true)
         let visibleBadgeResolver = VisibleBadgeResolver(
             badgesSnapshot: .forSnapshot(profileSnapshot: snapshot)
         )
@@ -211,8 +211,8 @@ class BadgeThanksSheet: OWSTableSheetViewController {
             return Promise.value(())
         }
 
-        return databaseStorage.write { tx in
-            return profileManager.updateLocalProfile(
+        return SSKEnvironment.shared.databaseStorageRef.write { tx in
+            return SSKEnvironment.shared.profileManagerRef.updateLocalProfile(
                 profileGivenName: .noChange,
                 profileFamilyName: .noChange,
                 profileBio: .noChange,
@@ -241,13 +241,13 @@ class BadgeThanksSheet: OWSTableSheetViewController {
     }
 
     private static func updateGiftBadge(incomingMessage: TSIncomingMessage, state: OWSGiftBadgeRedemptionState) {
-        self.databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             incomingMessage.anyUpdateIncomingMessage(transaction: transaction) {
                 $0.giftBadge?.redemptionState = state
             }
 
             if state == .redeemed {
-                self.receiptManager.incomingGiftWasRedeemed(incomingMessage, transaction: transaction)
+                SSKEnvironment.shared.receiptManagerRef.incomingGiftWasRedeemed(incomingMessage, transaction: transaction)
             }
         }
     }

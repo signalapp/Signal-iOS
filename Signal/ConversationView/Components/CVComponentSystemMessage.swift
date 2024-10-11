@@ -710,7 +710,7 @@ extension CVComponentSystemMessage {
                 )
             }
 
-            let displayName = contactsManager.displayName(for: verificationMessage.recipientAddress, tx: transaction).resolvedValue()
+            let displayName = SSKEnvironment.shared.contactManagerRef.displayName(for: verificationMessage.recipientAddress, tx: transaction).resolvedValue()
             return String(format: format, displayName)
         } else if let infoMessage = interaction as? TSInfoMessage {
             return infoMessage.conversationSystemMessageComponentText(with: transaction)
@@ -1152,7 +1152,7 @@ extension CVComponentSystemMessage {
             return TSInfoMessage.PersistableGroupUpdateItem.cvComponentAction(
                 items: items,
                 groupThread: thread,
-                contactsManager: contactsManager,
+                contactsManager: SSKEnvironment.shared.contactManagerRef,
                 tx: transaction
             )
         case .typeGroupQuit:
@@ -1181,7 +1181,7 @@ extension CVComponentSystemMessage {
                 return nil
             }
             // Don't show the button on linked devices -- they can't use it.
-            guard contactsManagerImpl.isEditingAllowed else {
+            guard SSKEnvironment.shared.contactManagerImplRef.isEditingAllowed else {
                 return nil
             }
             guard let profileChangesNewNameComponents = infoMessage.profileChangesNewNameComponents else {
@@ -1190,12 +1190,12 @@ extension CVComponentSystemMessage {
             guard let profileChangePhoneNumber = profileChangeAddress.phoneNumber else {
                 return nil
             }
-            let systemContactName = contactsManager.systemContactName(for: profileChangePhoneNumber, tx: transaction)
+            let systemContactName = SSKEnvironment.shared.contactManagerRef.systemContactName(for: profileChangePhoneNumber, tx: transaction)
             guard let systemContactName else {
                 return nil
             }
             let newProfileName = OWSFormat.formatNameComponents(profileChangesNewNameComponents)
-            let currentProfileName = profileManager.fullName(for: profileChangeAddress, transaction: transaction)
+            let currentProfileName = SSKEnvironment.shared.profileManagerRef.fullName(for: profileChangeAddress, transaction: transaction)
 
             // Only show the button if the address book contact's name is different
             // than the profile name.
@@ -1227,17 +1227,17 @@ extension CVComponentSystemMessage {
             }
 
             // Don't show the button on linked devices -- they can't use it.
-            guard contactsManagerImpl.isEditingAllowed else {
+            guard SSKEnvironment.shared.contactManagerImplRef.isEditingAllowed else {
                 return nil
             }
 
             // Only show the update contact action if this user was previously a contact.
-            guard let existingCnContactId = contactsManager.cnContactId(for: phoneNumberOld) else {
+            guard let existingCnContactId = SSKEnvironment.shared.contactManagerRef.cnContactId(for: phoneNumberOld) else {
                 return nil
             }
 
             // Make sure the contact hasn't already had the new number added.
-            guard contactsManager.cnContactId(for: phoneNumberNew) != existingCnContactId else {
+            guard SSKEnvironment.shared.contactManagerRef.cnContactId(for: phoneNumberNew) != existingCnContactId else {
                 return nil
             }
 
@@ -1253,7 +1253,7 @@ extension CVComponentSystemMessage {
         case .paymentsActivationRequest:
             if
                 infoMessage.isIncomingPaymentsActivationRequest(transaction),
-                !paymentsHelperSwift.arePaymentsEnabled(tx: transaction)
+                !SSKEnvironment.shared.paymentsHelperRef.arePaymentsEnabled(tx: transaction)
             {
                 return CVMessageAction(
                     title: OWSLocalizedString(

@@ -23,7 +23,7 @@ class StoryInfoSheet: OWSTableSheetViewController {
         self.spoilerState = spoilerState
         super.init()
 
-        databaseStorage.appendDatabaseChangeDelegate(self)
+        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
 
         tableViewController.forceDarkMode = true
         tableViewController.tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
@@ -37,7 +37,7 @@ class StoryInfoSheet: OWSTableSheetViewController {
     }
 
     public override func updateTableContents(shouldReload: Bool = true) {
-        storyMessage = databaseStorage.read { StoryMessage.anyFetch(uniqueId: storyMessage.uniqueId, transaction: $0) ?? storyMessage }
+        storyMessage = SSKEnvironment.shared.databaseStorageRef.read { StoryMessage.anyFetch(uniqueId: storyMessage.uniqueId, transaction: $0) ?? storyMessage }
 
         let contents = OWSTableContents()
         defer { tableViewController.setContents(contents, shouldReload: shouldReload) }
@@ -102,7 +102,7 @@ class StoryInfoSheet: OWSTableSheetViewController {
         switch storyMessage.attachment {
         case .text: break
         case .file, .foreignReferenceAttachment:
-            guard let attachment = databaseStorage.read(block: { storyMessage.fileAttachment(tx: $0) })?.attachment else {
+            guard let attachment = SSKEnvironment.shared.databaseStorageRef.read(block: { storyMessage.fileAttachment(tx: $0) })?.attachment else {
                 owsFailDebug("Missing attachment for story message")
                 break
             }
@@ -155,8 +155,8 @@ class StoryInfoSheet: OWSTableSheetViewController {
         for state in orderedSendingStates {
             guard let recipients = groupedRecipientStates[state], !recipients.isEmpty else { continue }
 
-            let sortedRecipientAddresses = databaseStorage.read { tx in
-                return contactsManagerImpl.sortSignalServiceAddresses(
+            let sortedRecipientAddresses = SSKEnvironment.shared.databaseStorageRef.read { tx in
+                return SSKEnvironment.shared.contactManagerImplRef.sortSignalServiceAddresses(
                     recipients.map { SignalServiceAddress($0.key) },
                     transaction: tx
                 )
@@ -267,7 +267,7 @@ class StoryInfoSheet: OWSTableSheetViewController {
                 return UITableViewCell()
             }
 
-            Self.databaseStorage.read { transaction in
+            SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 let configuration = ContactCellConfiguration(address: address, localUserDisplayMode: .asUser)
                 configuration.forceDarkAppearance = true
                 configuration.accessoryView = self.buildAccessoryView(

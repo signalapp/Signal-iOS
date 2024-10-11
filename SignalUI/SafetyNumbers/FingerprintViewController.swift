@@ -17,7 +17,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
         for theirAci: Aci?,
         from viewController: UIViewController
     ) {
-        let fingerprintResult = databaseStorage.read { (tx) -> OWSFingerprintBuilder.FingerprintResult? in
+        let fingerprintResult = SSKEnvironment.shared.databaseStorageRef.read { (tx) -> OWSFingerprintBuilder.FingerprintResult? in
             guard let theirAci else {
                 return nil
             }
@@ -27,7 +27,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
                 return nil
             }
             return OWSFingerprintBuilder(
-                contactsManager: contactsManager,
+                contactsManager: SSKEnvironment.shared.contactManagerRef,
                 identityManager: identityManager,
                 tsAccountManager: DependenciesBridge.shared.tsAccountManager
             ).fingerprints(
@@ -225,7 +225,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
 
     private func updateVerificationStateLabel() {
         let identityManager = DependenciesBridge.shared.identityManager
-        isVerified = databaseStorage.read { tx in
+        isVerified = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return identityManager.verificationState(for: SignalServiceAddress(recipientAci), tx: tx.asV2Read) == .verified
         }
 
@@ -391,7 +391,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
     private func didTapVerifyUnverify(_ gestureRecognizer: UITapGestureRecognizer) {
         guard gestureRecognizer.state == .recognized else { return }
 
-        databaseStorage.write { tx in
+        SSKEnvironment.shared.databaseStorageRef.write { tx in
             let identityManager = DependenciesBridge.shared.identityManager
             let newVerificationState: VerificationState = isVerified ? .implicit(isAcknowledged: false) : .verified
             identityManager.saveIdentityKey(identityKey, for: recipientAci, tx: tx.asV2Write)

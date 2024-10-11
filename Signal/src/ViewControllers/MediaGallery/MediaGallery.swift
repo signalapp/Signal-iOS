@@ -345,7 +345,7 @@ class MediaGallery: Dependencies {
             name: MediaGalleryResource.didRemoveAttachmentsNotification,
             object: nil
         )
-        databaseStorage.appendDatabaseChangeDelegate(self)
+        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
     }
 
     // MARK: -
@@ -520,14 +520,14 @@ class MediaGallery: Dependencies {
             }()
 
             if let senderAddress {
-                let senderName = contactsManager.nameForAddress(
+                let senderName = SSKEnvironment.shared.contactManagerRef.nameForAddress(
                     senderAddress,
                     localUserDisplayMode: .asLocalUser,
                     short: false,
                     transaction: transaction
                 )
 
-                let senderAbbreviatedName = contactsManager.nameForAddress(
+                let senderAbbreviatedName = SSKEnvironment.shared.contactManagerRef.nameForAddress(
                     senderAddress,
                     localUserDisplayMode: .asLocalUser,
                     short: true,
@@ -677,7 +677,7 @@ class MediaGallery: Dependencies {
 
     internal func ensureLoadedForDetailView(focusedAttachment: ReferencedTSResource) -> MediaGalleryItem? {
         Logger.info("")
-        let newItem: MediaGalleryItem? = databaseStorage.read { transaction -> MediaGalleryItem? in
+        let newItem: MediaGalleryItem? = SSKEnvironment.shared.databaseStorageRef.read { transaction -> MediaGalleryItem? in
             guard let focusedItem = buildGalleryItem(
                 attachment: focusedAttachment,
                 spoilerState: spoilerState,
@@ -852,7 +852,7 @@ class MediaGallery: Dependencies {
             $0.attachmentStream.reference.mediaGalleryResourceId
         })
 
-        self.databaseStorage.asyncWrite { tx in
+        SSKEnvironment.shared.databaseStorageRef.asyncWrite { tx in
             do {
                 // Ensure we have the latest in-memory state for our thread.
                 self.thread.anyReload(transaction: tx)

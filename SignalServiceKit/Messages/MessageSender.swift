@@ -76,7 +76,7 @@ public class MessageSender: Dependencies {
         isStoryMessage: Bool,
         udAccess: OWSUDAccess?
     ) async throws {
-        let hasSession = try databaseStorage.read { tx in
+        let hasSession = try SSKEnvironment.shared.databaseStorageRef.read { tx in
             try containsValidSession(for: serviceId, deviceId: deviceId, tx: tx.asV2Read)
         }
         if hasSession {
@@ -93,7 +93,7 @@ public class MessageSender: Dependencies {
             udAccess: udAccess
         )
 
-        try await databaseStorage.awaitableWrite { tx in
+        try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             try self.createSession(
                 for: preKeyBundle,
                 recipientUniqueId: recipientUniqueId,
@@ -177,7 +177,7 @@ public class MessageSender: Dependencies {
                 throw MessageSenderError.prekeyRateLimit
             case 428:
                 // SPAM TODO: Only retry messages with -hasRenderableContent
-                try await spamChallengeResolver.tryToHandleSilently(
+                try await SSKEnvironment.shared.spamChallengeResolverRef.tryToHandleSilently(
                     bodyData: error.httpResponseData,
                     retryAfter: error.httpRetryAfterDate
                 )
@@ -337,7 +337,7 @@ public class MessageSender: Dependencies {
         }
 
         let identityManager = DependenciesBridge.shared.identityManager
-        return databaseStorage.read { tx in
+        return SSKEnvironment.shared.databaseStorageRef.read { tx in
             guard let recipient = SignalRecipient.anyFetch(uniqueId: recipientUniqueId, transaction: tx) else {
                 return false
             }
@@ -469,7 +469,7 @@ public class MessageSender: Dependencies {
         let uploadResult = try await DependenciesBridge.shared.tsResourceUploadManager.uploadTransientAttachment(
             dataSource: dataSource
         )
-        let message = databaseStorage.read { tx in
+        let message = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return OWSSyncContactsMessage(uploadedAttachment: uploadResult, thread: thread, tx: tx)
         }
         let preparedMessage = PreparedOutgoingMessage.preprepared(contactSyncMessage: message)
@@ -480,7 +480,7 @@ public class MessageSender: Dependencies {
     // MARK: - Constructing Message Sends
 
     public func sendMessage(_ preparedOutgoingMessage: PreparedOutgoingMessage) async throws {
-        let priority: Operation.QueuePriority = await databaseStorage.awaitableWrite { tx in
+        let priority: Operation.QueuePriority = await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             preparedOutgoingMessage.updateAllUnsentRecipientsAsSending(tx: tx)
             return preparedOutgoingMessage.sendingQueuePriority(tx: tx)
         }
@@ -497,7 +497,7 @@ public class MessageSender: Dependencies {
             }
             sendMessageOperation.queuePriority = priority
 
-            let uploadOperations = databaseStorage.read { tx in
+            let uploadOperations = SSKEnvironment.shared.databaseStorageRef.read { tx in
                 preparedOutgoingMessage.attachmentUploadOperations(tx: tx)
             }
             uploadOperations.forEach { uploadOperation in
@@ -539,7 +539,7 @@ public class MessageSender: Dependencies {
             if let existingTask {
                 return existingTask
             }
-            let shouldRunPreKeyRotation = databaseStorage.read { tx in
+            let shouldRunPreKeyRotation = SSKEnvironment.shared.databaseStorageRef.read { tx in
                 preKeyManager.isAppLockedDueToPreKeyUpdateFailures(tx: tx.asV2Read)
             }
             if shouldRunPreKeyRotation {
@@ -619,7 +619,7 @@ public class MessageSender: Dependencies {
             currentValidRecipients.remove(localIdentifiers.aciAddress)
             recipientAddresses.formIntersection(currentValidRecipients)
 
-            let blockedAddresses = blockingManager.blockedAddresses(transaction: tx)
+            let blockedAddresses = SSKEnvironment.shared.blockingManagerRef.blockedAddresses(transaction: tx)
             recipientAddresses.subtract(blockedAddresses)
 
             return Array(recipientAddresses)
@@ -629,7 +629,7 @@ public class MessageSender: Dependencies {
             // should prevent this from occurring, but in some edge cases
             // you might, for example, have a pending outgoing message when
             // you block them.
-            if blockingManager.isAddressBlocked(contactAddress, transaction: tx) {
+            if SSKEnvironment.shared.blockingManagerRef.isAddressBlocked(contactAddress, transaction: tx) {
                 Logger.info("Skipping 1:1 send to blocked contact: \(contactAddress).")
                 throw MessageSenderError.blockedContactRecipient
             } else {
@@ -654,7 +654,7 @@ public class MessageSender: Dependencies {
 
             recipientAddresses.formIntersection(currentValidThreadRecipients)
 
-            let blockedAddresses = blockingManager.blockedAddresses(transaction: tx)
+            let blockedAddresses = SSKEnvironment.shared.blockingManagerRef.blockedAddresses(transaction: tx)
             recipientAddresses.subtract(blockedAddresses)
 
             if recipientAddresses.contains(localIdentifiers.aciAddress) {
@@ -683,7 +683,7 @@ public class MessageSender: Dependencies {
     }
 
     private func lookUpPhoneNumbers(_ phoneNumbers: [E164]) async throws {
-        _ = try await contactDiscoveryManager.lookUp(
+        _ = try await SSKEnvironment.shared.contactDiscoveryManagerRef.lookUp(
             phoneNumbers: Set(phoneNumbers.lazy.map { $0.stringValue }),
             mode: .outgoingMessage
         ).awaitable()
@@ -698,7 +698,7 @@ public class MessageSender: Dependencies {
             // (and will, in fact, fail, because of foreign key constraints).
             return true
         }
-        return databaseStorage.read { tx in
+        return SSKEnvironment.shared.databaseStorageRef.read { tx in
             for attachment in message.allAttachments(transaction: tx) {
                 guard attachment.isUploadedToTransitTier else {
                     return false
@@ -719,7 +719,7 @@ public class MessageSender: Dependencies {
             throw AppDeregisteredError()
         }
         if message.shouldBeSaved {
-            let latestCopy = databaseStorage.read { tx in
+            let latestCopy = SSKEnvironment.shared.databaseStorageRef.read { tx in
                 TSInteraction.anyFetch(uniqueId: message.uniqueId, transaction: tx) as? TSOutgoingMessage
             }
             guard let latestCopy, latestCopy.wasRemotelyDeleted.negated else {
@@ -731,7 +731,7 @@ public class MessageSender: Dependencies {
         }
         do {
             try await waitForPreKeyRotationIfNeeded()
-            let senderCertificates = try await udManager.fetchSenderCertificates(certificateExpirationPolicy: .permissive)
+            let senderCertificates = try await SSKEnvironment.shared.udManagerRef.fetchSenderCertificates(certificateExpirationPolicy: .permissive)
             try await sendPreparedMessage(message, canLookUpPhoneNumbers: true, senderCertificates: senderCertificates)
         } catch {
             if message.wasSentToAnyRecipient {
@@ -765,7 +765,7 @@ public class MessageSender: Dependencies {
         canLookUpPhoneNumbers: Bool,
         senderCertificates: SenderCertificates
     ) async throws {
-        let nextAction: SendMessageNextAction? = try await databaseStorage.awaitableWrite { tx in
+        let nextAction: SendMessageNextAction? = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             guard let thread = message.thread(tx: tx) else {
                 throw MessageSenderError.threadMissing
             }
@@ -834,7 +834,7 @@ public class MessageSender: Dependencies {
             }
 
             let senderCertificate: SenderCertificate = {
-                switch self.udManager.phoneNumberSharingMode(tx: tx.asV2Read).orDefault {
+                switch SSKEnvironment.shared.udManagerRef.phoneNumberSharingMode(tx: tx.asV2Read).orDefault {
                 case .everybody:
                     return senderCertificates.defaultCert
                 case .nobody:
@@ -967,7 +967,7 @@ public class MessageSender: Dependencies {
                 continue
             }
             let udAccess = (
-                message.isStorySend ? udManager.storyUdAccess() : udManager.udAccess(for: serviceId, tx: tx)
+                message.isStorySend ? SSKEnvironment.shared.udManagerRef.storyUdAccess() : SSKEnvironment.shared.udManagerRef.udAccess(for: serviceId, tx: tx)
             )
             guard let udAccess else {
                 continue
@@ -1000,7 +1000,7 @@ public class MessageSender: Dependencies {
         }
 
         // Record the individual error for each "failed" recipient.
-        await databaseStorage.awaitableWrite { tx in
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             message.updateWithFailedRecipients(filteredErrors, tx: tx)
             self.normalizeRecipientStatesIfNeeded(message: message, recipientErrors: filteredErrors, tx: tx)
         }
@@ -1041,7 +1041,7 @@ public class MessageSender: Dependencies {
         }
         let recipientStateMerger = RecipientStateMerger(
             recipientDatabaseTable: DependenciesBridge.shared.recipientDatabaseTable,
-            signalServiceAddressCache: signalServiceAddressCache
+            signalServiceAddressCache: SSKEnvironment.shared.signalServiceAddressCacheRef
         )
         message.anyUpdateOutgoingMessage(transaction: tx) { message in
             recipientStateMerger.normalize(&message.recipientAddressStates, tx: tx.asV2Read)
@@ -1083,7 +1083,7 @@ public class MessageSender: Dependencies {
     }
 
     private func handleMessageSentLocally(_ message: TSOutgoingMessage) async throws {
-        try await databaseStorage.awaitableWrite { tx in
+        try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             if
                 let thread = message.thread(tx: tx) as? TSContactThread,
                 self.shouldMessageSendUnhideRecipient(message, tx: tx),
@@ -1115,12 +1115,12 @@ public class MessageSender: Dependencies {
         if message.isSyncMessage {
             return
         }
-        let thread = databaseStorage.read { tx in message.thread(tx: tx) }
+        let thread = SSKEnvironment.shared.databaseStorageRef.read { tx in message.thread(tx: tx) }
         guard let contactThread = thread as? TSContactThread, contactThread.contactAddress.isLocalAddress else {
             return
         }
         owsAssertDebug(message.recipientAddresses().count == 1)
-        await databaseStorage.awaitableWrite { tx in
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             let deviceId = DependenciesBridge.shared.tsAccountManager.storedDeviceId(tx: tx.asV2Read)
             for sendingAddress in message.sendingRecipientAddresses() {
                 message.update(
@@ -1146,7 +1146,7 @@ public class MessageSender: Dependencies {
             return
         }
         try await message.sendSyncTranscript()
-        await databaseStorage.awaitableWrite { tx in
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             message.update(withHasSyncedTranscript: true, transaction: tx)
         }
     }
@@ -1236,7 +1236,7 @@ public class MessageSender: Dependencies {
 
         if shouldSkipMessageSend(messageSend, deviceMessages: deviceMessages) {
             // This emulates the completion logic of an actual successful send (see below).
-            await self.databaseStorage.awaitableWrite { tx in
+            await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
                 message.updateWithSkippedRecipient(messageSend.localIdentifiers.aciAddress, transaction: tx)
             }
             return []
@@ -1293,7 +1293,7 @@ public class MessageSender: Dependencies {
             return false
         }
 
-        let mightHaveUnknownLinkedDevice = databaseStorage.read { tx in
+        let mightHaveUnknownLinkedDevice = SSKEnvironment.shared.databaseStorageRef.read { tx in
             DependenciesBridge.shared.deviceManager.mightHaveUnknownLinkedDevice(transaction: tx.asV2Read)
         }
 
@@ -1312,7 +1312,7 @@ public class MessageSender: Dependencies {
         sealedSenderParameters: SealedSenderParameters?
     ) async throws -> [DeviceMessage] {
         let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
-        let recipient = databaseStorage.read { tx in
+        let recipient = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return recipientDatabaseTable.fetchRecipient(serviceId: messageSend.serviceId, transaction: tx.asV2Read)
         }
 
@@ -1384,7 +1384,7 @@ public class MessageSender: Dependencies {
             case MessageSenderError.missingDevice:
                 // If we have an invalid device exception, remove this device from the
                 // recipient and suppress the error.
-                await databaseStorage.awaitableWrite { tx in
+                await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
                     self.updateDevices(
                         serviceId: serviceId,
                         devicesToAdd: [],
@@ -1424,7 +1424,7 @@ public class MessageSender: Dependencies {
             }
         }
 
-        return try await databaseStorage.awaitableWrite { tx in
+        return try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             do {
                 switch messageEncryptionStyle {
                 case .whisper:
@@ -1525,7 +1525,7 @@ public class MessageSender: Dependencies {
             )
         }
 
-        await databaseStorage.awaitableWrite { transaction in
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
             if deviceMessages.isEmpty, messageSend.localIdentifiers.contains(serviceId: messageSend.serviceId) {
                 // Since we know we have no linked devices, we can record that
                 // fact to later avoid unnecessary sync message sends unless we
@@ -1575,7 +1575,7 @@ public class MessageSender: Dependencies {
                 recipientManager.markAsRegisteredAndSave(recipient, shouldUpdateStorageService: true, tx: transaction.asV2Write)
             }
 
-            Self.profileManager.didSendOrReceiveMessage(
+            SSKEnvironment.shared.profileManagerRef.didSendOrReceiveMessage(
                 serviceId: messageSend.serviceId,
                 localIdentifiers: messageSend.localIdentifiers,
                 tx: transaction.asV2Write
@@ -1649,13 +1649,13 @@ public class MessageSender: Dependencies {
                 owsFailDebug("Couldn't parse JSON response.")
                 throw OWSRetryableMessageSenderError()
             }
-            await databaseStorage.awaitableWrite { tx in
+            await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
                 self.handleStaleDevices(response.staleDevices, for: messageSend.serviceId, tx: tx.asV2Write)
             }
         case 428:
             // SPAM TODO: Only retry messages with -hasRenderableContent
             Logger.warn("Server requested user complete spam challenge.")
-            try await spamChallengeResolver.tryToHandleSilently(
+            try await SSKEnvironment.shared.spamChallengeResolverRef.tryToHandleSilently(
                 bodyData: responseError.httpResponseData,
                 retryAfter: responseError.httpRetryAfterDate
             )
@@ -1680,7 +1680,7 @@ public class MessageSender: Dependencies {
         let message: TSOutgoingMessage = messageSend.message
 
         if !message.isSyncMessage {
-            await databaseStorage.awaitableWrite { writeTx in
+            await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { writeTx in
                 self.markAsUnregistered(
                     serviceId: messageSend.serviceId,
                     message: message,
@@ -1731,7 +1731,7 @@ public class MessageSender: Dependencies {
     }
 
     private func handleMismatchedDevices(for serviceId: ServiceId, response: MessageSendFailureResponse) async {
-        await databaseStorage.awaitableWrite { transaction in
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
             self.updateDevices(
                 serviceId: serviceId,
                 devicesToAdd: response.missingDevices ?? [],
@@ -1817,7 +1817,7 @@ public class MessageSender: Dependencies {
                 signedPreKeyStore: signalProtocolStore.signedPreKeyStore,
                 kyberPreKeyStore: signalProtocolStore.kyberPreKeyStore,
                 identityStore: identityManager.libSignalStore(for: .aci, tx: transaction.asV2Write),
-                senderKeyStore: Self.senderKeyStore
+                senderKeyStore: SSKEnvironment.shared.senderKeyStoreRef
             )
 
             serializedMessage = try secretCipher.encryptMessage(

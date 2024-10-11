@@ -56,7 +56,7 @@ public extension ConversationViewController {
             if !hasViewWillAppearEverBegun {
                 return .none
             } else if threadViewModel.hasPendingMessageRequest {
-                let messageRequestType = Self.databaseStorage.read { tx in
+                let messageRequestType = SSKEnvironment.shared.databaseStorageRef.read { tx in
                     return MessageRequestView.messageRequestType(forThread: self.threadViewModel.threadRecord, transaction: tx)
                 }
                 return .messageRequestView(messageRequestType: messageRequestType)
@@ -168,7 +168,7 @@ public extension ConversationViewController {
             editTarget = oldInputToolbar.editTarget
             voiceMemoDraft = oldInputToolbar.voiceMemoDraft
         } else {
-            Self.databaseStorage.read { transaction in
+            SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 messageDraft = self.thread.currentDraft(transaction: transaction)
                 voiceMemoDraft = VoiceMessageInterruptedDraft.currentDraft(for: self.thread, transaction: transaction)
                 if messageDraft != nil || voiceMemoDraft != nil {
@@ -200,7 +200,7 @@ public extension ConversationViewController {
     func reloadDraft() {
         AssertIsOnMainThread()
 
-        guard let messageDraft = (Self.databaseStorage.read { transaction in
+        guard let messageDraft = (SSKEnvironment.shared.databaseStorageRef.read { transaction in
             self.thread.currentDraft(transaction: transaction)
         }) else {
             return

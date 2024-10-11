@@ -248,7 +248,7 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
     override public func run() {
         Task {
             do {
-                try await self.messageSender.sendMessage(message)
+                try await SSKEnvironment.shared.messageSenderRef.sendMessage(message)
                 DispatchQueue.global().async { self.reportSuccess() }
             } catch {
                 DispatchQueue.global().async { self.reportError(withUndefinedRetry: error) }
@@ -257,14 +257,14 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
     }
 
     override public func didSucceed() {
-        databaseStorage.write { tx in
+        SSKEnvironment.shared.databaseStorageRef.write { tx in
             self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: tx)
         }
         future?.resolve()
     }
 
     override public func didReportError(_ error: Error) {
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             self.durableOperationDelegate?.durableOperation(self, didReportError: error,
                                                             transaction: transaction)
         }
@@ -275,7 +275,7 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
     }
 
     override public func didFail(error: Error) {
-        databaseStorage.write { tx in
+        SSKEnvironment.shared.databaseStorageRef.write { tx in
             self.durableOperationDelegate?.durableOperation(self, didFailWithError: error, transaction: tx)
 
             self.message.updateWithAllSendingRecipientsMarkedAsFailed(error: error, tx: tx)

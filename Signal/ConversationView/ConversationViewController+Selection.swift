@@ -362,7 +362,7 @@ extension ConversationViewController {
         thread: TSThread,
         interactionDeleteManager: InteractionDeleteManager
     ) {
-        databaseStorage.write { tx in
+        SSKEnvironment.shared.databaseStorageRef.write { tx in
             var interactionsToDelete = [TSInteraction]()
 
             for selectionItem in selectionItems {
@@ -516,7 +516,7 @@ extension ConversationViewController {
             guard let self = self else { return }
             ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { [weak self] modalActivityIndicator in
                 guard let self = self else { return }
-                self.databaseStorage.write {
+                SSKEnvironment.shared.databaseStorageRef.write {
                     threadSoftDeleteManager.removeAllInteractions(
                         thread: thread,
                         sendDeleteForMeSyncMessage: true,

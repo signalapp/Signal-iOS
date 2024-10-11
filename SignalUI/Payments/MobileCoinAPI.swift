@@ -69,7 +69,7 @@ public class MobileCoinAPI: Dependencies {
             throw PaymentsError.invalidEntropy
         }
 
-        owsAssertDebug(Self.paymentsHelper.arePaymentsEnabled)
+        owsAssertDebug(SSKEnvironment.shared.paymentsHelperRef.arePaymentsEnabled)
 
         self.paymentsEntropy = paymentsEntropy
         self.localAccount = localAccount
@@ -106,7 +106,7 @@ public class MobileCoinAPI: Dependencies {
         }
         return firstly(on: DispatchQueue.global()) { () -> Promise<SignalServiceKit.HTTPResponse> in
             let request = OWSRequestFactory.paymentsAuthenticationCredentialRequest()
-            return Self.networkManager.makePromise(request: request)
+            return SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
         }.map(on: DispatchQueue.global()) { response -> OWSAuthorization in
             guard let json = response.responseBodyJson else {
                 throw OWSAssertionError("Missing or invalid JSON")

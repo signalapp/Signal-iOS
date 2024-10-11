@@ -175,6 +175,16 @@ public protocol GroupsV2 {
         account: AuthedAccount,
         transaction: SDSAnyWriteTransaction
     )
+
+    func fetchGroupChangeActions(
+        groupSecretParams: GroupSecretParams,
+        includeCurrentRevision: Bool
+    ) async throws -> GroupV2ChangePage
+}
+
+public struct GroupV2ChangePage {
+    let changes: [GroupV2Change]
+    let earlyEnd: UInt32?
 }
 
 // MARK: -
@@ -746,6 +756,10 @@ public class MockGroupsV2: GroupsV2 {
 
     public func fetchGroupExternalCredentials(groupModel: TSGroupModelV2) async throws -> GroupsProtoGroupExternalCredential {
         owsFail("Not implemented")
+    }
+
+    public func fetchGroupChangeActions(groupSecretParams: GroupSecretParams, includeCurrentRevision: Bool) async throws -> GroupV2ChangePage {
+        owsFail("not implemented")
     }
 }
 

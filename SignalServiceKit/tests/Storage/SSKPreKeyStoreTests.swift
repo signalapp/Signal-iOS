@@ -10,13 +10,13 @@ import XCTest
 // MARK: - Helpers
 extension SSKPreKeyStore {
     fileprivate func storePreKeyRecords(_ preKeyRecords: [PreKeyRecord]) {
-        self.databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             storePreKeyRecords(preKeyRecords, transaction: transaction)
         }
     }
 
     fileprivate func loadPreKey(id: Int32) -> PreKeyRecord? {
-        self.databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             loadPreKey(id, transaction: transaction)
         }
     }
@@ -34,7 +34,7 @@ class SSKPreKeyStoreTests: SSKBaseTest {
     }
 
     func testGeneratingAndStoringPreKeys() {
-        let generatedKeys = databaseStorage.write { aciPreKeyStore.generatePreKeyRecords(transaction: $0) }
+        let generatedKeys = SSKEnvironment.shared.databaseStorageRef.write { aciPreKeyStore.generatePreKeyRecords(transaction: $0) }
         XCTAssertEqual(generatedKeys.count, 100)
 
         aciPreKeyStore.storePreKeyRecords(generatedKeys)
@@ -56,7 +56,7 @@ class SSKPreKeyStoreTests: SSKBaseTest {
     }
 
     func testRemovingPreKeys() {
-        let generatedKeys = databaseStorage.write { aciPreKeyStore.generatePreKeyRecords(transaction: $0) }
+        let generatedKeys = SSKEnvironment.shared.databaseStorageRef.write { aciPreKeyStore.generatePreKeyRecords(transaction: $0) }
         XCTAssertEqual(generatedKeys.count, 100)
 
         aciPreKeyStore.storePreKeyRecords(generatedKeys)
@@ -66,7 +66,7 @@ class SSKPreKeyStoreTests: SSKBaseTest {
 
         pniPreKeyStore.storePreKeyRecords(generatedKeys)
 
-        self.databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             self.aciPreKeyStore.removePreKey(lastPreKeyRecord.id, transaction: transaction)
         }
 

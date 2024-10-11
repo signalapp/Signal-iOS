@@ -230,7 +230,7 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
 
         // If the thread model exists, make sure the UI is notified that it has changed.
         if let thread = TSThread.anyFetch(uniqueId: threadUniqueId, transaction: transaction) {
-            Self.databaseStorage.touch(thread: thread, shouldReindex: false, transaction: transaction)
+            SSKEnvironment.shared.databaseStorageRef.touch(thread: thread, shouldReindex: false, transaction: transaction)
         }
 
         if updateStorageService {
@@ -239,9 +239,9 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
             }
 
             if let groupThread = thread as? TSGroupThread {
-                storageServiceManager.recordPendingUpdates(groupModel: groupThread.groupModel)
+                SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(groupModel: groupThread.groupModel)
             } else if let contactThread = thread as? TSContactThread {
-                storageServiceManager.recordPendingUpdates(updatedAddresses: [contactThread.contactAddress])
+                SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(updatedAddresses: [contactThread.contactAddress])
             } else {
                 owsFailDebug("Unexpected thread type")
             }

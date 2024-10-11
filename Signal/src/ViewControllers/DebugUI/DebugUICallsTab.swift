@@ -10,7 +10,7 @@ import SignalUI
 
 class DebugUICallsTab: DebugUIPage {
     private var callRecordStore: CallRecordStore { DependenciesBridge.shared.callRecordStore }
-    private var databaseStorage: SDSDatabaseStorage { SSKEnvironment.shared.databaseStorage }
+    private var databaseStorage: SDSDatabaseStorage { SSKEnvironment.shared.databaseStorageRef }
 
     private var _nowTimestamp: UInt64 = Date().ows_millisecondsSince1970
     private var nowTimestamp: UInt64 {

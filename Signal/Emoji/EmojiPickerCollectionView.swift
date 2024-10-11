@@ -606,7 +606,7 @@ private class EmojiSearchIndex: NSObject {
             return (version, locs)
         }
 
-        let urlSession = signalService.urlSessionForUpdates()
+        let urlSession = SSKEnvironment.shared.signalServiceRef.urlSessionForUpdates()
         firstly {
             urlSession.dataTaskPromise(self.remoteManifestURL.absoluteString, method: .get)
         }.done { response in
@@ -706,7 +706,7 @@ private class EmojiSearchIndex: NSObject {
             return
         }
 
-        let urlSession = signalService.urlSessionForUpdates()
+        let urlSession = SSKEnvironment.shared.signalServiceRef.urlSessionForUpdates()
         let request = String(format: remoteSearchFormat, searchIndexVersion, localization)
         firstly {
             urlSession.dataTaskPromise(request, method: .get)

@@ -182,7 +182,7 @@ public class AttachmentMultisend {
         attachmentManager: DependenciesBridge.shared.attachmentManager,
         attachmentValidator: DependenciesBridge.shared.attachmentContentValidator,
         contactsMentionHydrator: ContactsMentionHydrator.self,
-        databaseStorage: SSKEnvironment.shared.databaseStorage,
+        databaseStorage: SSKEnvironment.shared.databaseStorageRef,
         imageQualityLevel: ImageQualityLevel.self,
         messageSenderJobQueue: SSKEnvironment.shared.messageSenderJobQueueRef,
         tsAccountManager: DependenciesBridge.shared.tsAccountManager,

@@ -38,7 +38,7 @@ class CallLinkApprovalViewModel: ObservableObject {
     }
 
     private let deps = Deps(
-        contactsManager: NSObject.contactsManager,
+        contactsManager: SSKEnvironment.shared.contactManagerRef,
         db: DependenciesBridge.shared.db
     )
 

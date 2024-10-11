@@ -97,7 +97,7 @@ private class RESTSessionManager {
 
     init() {
         assertOnQueue(networkManagerQueue)
-        urlSession = SSKEnvironment.shared.signalService.urlSessionForMainSignalService()
+        urlSession = SSKEnvironment.shared.signalServiceRef.urlSessionForMainSignalService()
     }
 
     public func performRequest(_ request: TSRequest,

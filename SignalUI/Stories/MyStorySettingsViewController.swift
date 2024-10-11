@@ -74,7 +74,7 @@ private class MyStorySettingsDataSource: NSObject, Dependencies {
     func generateTableContents(style: Style) -> OWSTableContents {
         let contents = OWSTableContents()
 
-        let (hasSetMyStoriesPrivacy, myStoryThread) = databaseStorage.read { transaction -> (Bool, TSPrivateStoryThread) in
+        let (hasSetMyStoriesPrivacy, myStoryThread) = SSKEnvironment.shared.databaseStorageRef.read { transaction -> (Bool, TSPrivateStoryThread) in
             (
                 StoryManager.hasSetMyStoriesPrivacy(transaction: transaction),
                 TSPrivateStoryThread.getMyStory(transaction: transaction)
@@ -132,7 +132,7 @@ private class MyStorySettingsDataSource: NSObject, Dependencies {
                     self?.delegate?.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
                 })
             ) { [weak self] in
-                Self.databaseStorage.write { transaction in
+                SSKEnvironment.shared.databaseStorageRef.write { transaction in
                     myStoryThread.updateWithStoryViewMode(
                         .blockList,
                         addresses: [],
@@ -220,9 +220,9 @@ private class MyStorySettingsDataSource: NSObject, Dependencies {
 
     @objc
     private func didToggleReplies(_ toggle: UISwitch) {
-        let myStoryThread: TSPrivateStoryThread! = databaseStorage.read { TSPrivateStoryThread.getMyStory(transaction: $0) }
+        let myStoryThread: TSPrivateStoryThread! = SSKEnvironment.shared.databaseStorageRef.read { TSPrivateStoryThread.getMyStory(transaction: $0) }
         guard myStoryThread.allowsReplies != toggle.isOn else { return }
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             myStoryThread.updateWithAllowsReplies(toggle.isOn, updateStorageService: true, transaction: transaction)
         }
     }

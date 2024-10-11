@@ -99,7 +99,7 @@ public final class ConversationViewController: OWSViewController {
             for: thread, chatColor: chatColor, wallpaperViewBuilder: wallpaperViewBuilder
         )
         let conversationViewModel = ConversationViewModel.load(for: thread, tx: tx)
-        let didAlreadyShowGroupCallTooltipEnoughTimes = preferences.wasGroupCallTooltipShown(withTransaction: tx)
+        let didAlreadyShowGroupCallTooltipEnoughTimes = SSKEnvironment.shared.preferencesRef.wasGroupCallTooltipShown(withTransaction: tx)
 
         let cvc = ConversationViewController(
             appReadiness: appReadiness,
@@ -352,7 +352,7 @@ public final class ConversationViewController: OWSViewController {
 
         // We should have already requested contact access at this point, so this should be a no-op
         // unless it ever becomes possible to load this VC without going via the ChatListViewController.
-        self.contactsManagerImpl.requestSystemContactsOnce()
+        SSKEnvironment.shared.contactManagerImplRef.requestSystemContactsOnce()
 
         self.updateBarButtonItems()
         self.updateNavigationTitle()
@@ -375,7 +375,7 @@ public final class ConversationViewController: OWSViewController {
         // is being presented where a message notification for the not-quite-yet
         // presented conversation can be shown. If that happens, dismiss it as soon
         // as we enter the conversation.
-        self.notificationPresenter.cancelNotifications(threadId: thread.uniqueId)
+        SSKEnvironment.shared.notificationPresenterRef.cancelNotifications(threadId: thread.uniqueId)
 
         // recover status bar when returning from PhotoPicker, which is dark (uses light status bar)
         self.setNeedsStatusBarAppearanceUpdate()

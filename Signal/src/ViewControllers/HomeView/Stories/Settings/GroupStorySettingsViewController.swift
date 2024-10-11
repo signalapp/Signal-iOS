@@ -80,8 +80,8 @@ class GroupStorySettingsViewController: OWSTableViewController2 {
         let totalViewersCount = fullMembers.count
         let maxViewersToShow = 6
 
-        var viewersToRender = databaseStorage.read { tx in
-            return self.contactsManagerImpl.sortSignalServiceAddresses(fullMembers, transaction: tx)
+        var viewersToRender = SSKEnvironment.shared.databaseStorageRef.read { tx in
+            return SSKEnvironment.shared.contactManagerImplRef.sortSignalServiceAddresses(fullMembers, transaction: tx)
         }
         let hasMoreViewers = !isShowingAllViewers && viewersToRender.count > maxViewersToShow
         if hasMoreViewers {
@@ -95,7 +95,7 @@ class GroupStorySettingsViewController: OWSTableViewController2 {
                     return UITableViewCell()
                 }
 
-                Self.databaseStorage.read { transaction in
+                SSKEnvironment.shared.databaseStorageRef.read { transaction in
                     let configuration = ContactCellConfiguration(address: viewerAddress, localUserDisplayMode: .asLocalUser)
                     cell.configure(configuration: configuration, transaction: transaction)
                 }
@@ -176,7 +176,7 @@ class GroupStorySettingsViewController: OWSTableViewController2 {
             style: .destructive,
             handler: { [weak self] _ in
                 guard let self = self else { return }
-                self.databaseStorage.write { transaction in
+                SSKEnvironment.shared.databaseStorageRef.write { transaction in
                     self.thread.updateWithStorySendEnabled(false, transaction: transaction)
                 }
                 self.navigationController?.popViewController(animated: true)

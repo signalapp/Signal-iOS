@@ -74,7 +74,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
             serviceId: identifiers.serviceId,
             // If there's no ServiceId, then we look up the phone number in the cache.
             phoneNumber: (identifiers.serviceId == nil) ? identifiers.phoneNumber : nil,
-            cache: cache ?? Self.signalServiceAddressCache
+            cache: cache ?? SSKEnvironment.shared.signalServiceAddressCacheRef
         )
     }
 
@@ -98,7 +98,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         return SignalServiceAddress(
             serviceId: nil,
             phoneNumber: phoneNumber,
-            cache: cache ?? Self.signalServiceAddressCache
+            cache: cache ?? SSKEnvironment.shared.signalServiceAddressCacheRef
         )
     }
 
@@ -135,7 +135,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         return SignalServiceAddress(
             serviceId: serviceId,
             legacyPhoneNumber: phoneNumber,
-            cache: Self.signalServiceAddressCache
+            cache: SSKEnvironment.shared.signalServiceAddressCacheRef
         )
     }
 
@@ -143,7 +143,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         return SignalServiceAddress(
             serviceId: Aci.parseFrom(aciString: aciString),
             legacyPhoneNumber: phoneNumber,
-            cache: Self.signalServiceAddressCache
+            cache: SSKEnvironment.shared.signalServiceAddressCacheRef
         )
     }
 
@@ -152,7 +152,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         return SignalServiceAddress(
             serviceId: serviceIdString.flatMap { try? ServiceId.parseFrom(serviceIdString: $0) },
             legacyPhoneNumber: phoneNumber,
-            cache: Self.signalServiceAddressCache
+            cache: SSKEnvironment.shared.signalServiceAddressCacheRef
         )
     }
 
@@ -234,7 +234,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
             serviceId: serviceId,
             phoneNumber: phoneNumber,
             isLegacyPhoneNumber: false,
-            cache: Self.signalServiceAddressCache
+            cache: SSKEnvironment.shared.signalServiceAddressCacheRef
         )
     }
 
@@ -303,7 +303,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         self.init(
             serviceId: decodedServiceId,
             legacyPhoneNumber: decodedPhoneNumber,
-            cache: Self.signalServiceAddressCache
+            cache: SSKEnvironment.shared.signalServiceAddressCacheRef
         )
     }
 
@@ -348,7 +348,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         self.init(
             serviceId: decodedServiceId,
             legacyPhoneNumber: decodedPhoneNumber,
-            cache: Self.signalServiceAddressCache
+            cache: SSKEnvironment.shared.signalServiceAddressCacheRef
         )
     }
 
@@ -550,7 +550,7 @@ public class SignalServiceAddressCache: NSObject {
     func warmCaches() {
         owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
 
-        databaseStorage.read { tx in
+        SSKEnvironment.shared.databaseStorageRef.read { tx in
             let bulkFetcher: BulkPhoneNumberVisibilityFetcher?
             do {
                 bulkFetcher = try phoneNumberVisibilityFetcher.fetchAll(tx: tx.asV2Read)

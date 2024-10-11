@@ -54,7 +54,7 @@ class SDSDatabaseStorageObservationTest: SSKBaseTest {
 
         // Create the observer & confirm adding it doesn't send any updates.
         let mockObserver = MockObserver()
-        databaseStorage.appendDatabaseChangeDelegate(mockObserver)
+        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(mockObserver)
         XCTAssertEqual(0, mockObserver.updateCount)
         XCTAssertEqual(0, mockObserver.externalUpdateCount)
         XCTAssertEqual(0, mockObserver.resetCount)
@@ -123,7 +123,7 @@ class SDSDatabaseStorageObservationTest: SSKBaseTest {
         mockObserver.clear()
 
         self.write { transaction in
-            self.databaseStorage.touch(thread: someThread, shouldReindex: true, transaction: transaction)
+            SSKEnvironment.shared.databaseStorageRef.touch(thread: someThread, shouldReindex: true, transaction: transaction)
         }
         waitForRunLoop()
 
@@ -142,7 +142,7 @@ class SDSDatabaseStorageObservationTest: SSKBaseTest {
         mockObserver.clear()
 
         self.write { transaction in
-            self.databaseStorage.touch(interaction: lastMessage, shouldReindex: true, transaction: transaction)
+            SSKEnvironment.shared.databaseStorageRef.touch(interaction: lastMessage, shouldReindex: true, transaction: transaction)
         }
         waitForRunLoop()
 

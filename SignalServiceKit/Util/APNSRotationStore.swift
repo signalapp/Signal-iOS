@@ -26,7 +26,7 @@ public final class APNSRotationStore: NSObject {
             transaction: transaction
         )
         // Mark the current token as one we know works!
-        guard let token = preferences.getPushToken(tx: transaction) else {
+        guard let token = SSKEnvironment.shared.preferencesRef.getPushToken(tx: transaction) else {
             owsFailDebug("Got a push without a push token; not marking any token as working.")
             return
         }
@@ -72,7 +72,7 @@ public final class APNSRotationStore: NSObject {
         // and if we are eligible to rotate fetch the latest message for later comparison.
         // Presence of a latestMessageTimestamp implies we should attempt a rotation after message processing.
         let (needsAppVersionWrite, needsKnownWorkingWrite, latestMessageTimestamp) =
-            databaseStorage.read { transaction -> (Bool, Bool, UInt64?) in
+            SSKEnvironment.shared.databaseStorageRef.read { transaction -> (Bool, Bool, UInt64?) in
                 let needsKnownWorkingWrite = APNSRotationStore.kvStore.hasValue(
                     forKey: Constants.lastKnownWorkingAPNSTokenKey,
                     transaction: transaction
@@ -100,7 +100,7 @@ public final class APNSRotationStore: NSObject {
             // and if the latest message changed that means we had new messages to process
             // and therefore missed messages when the app wasn't active.
             return {
-                let latestMessageTimestamp = Self.databaseStorage.read { transaction -> UInt64? in
+                let latestMessageTimestamp = SSKEnvironment.shared.databaseStorageRef.read { transaction -> UInt64? in
                     return InteractionFinder.lastInsertedIncomingMessage(transaction: transaction)?.timestamp
                 }
                 if let latestMessageTimestamp, latestMessageTimestamp != latestMessageTimestampBeforeProcessing {
@@ -111,7 +111,7 @@ public final class APNSRotationStore: NSObject {
                 }
             }
         } else if needsAppVersionWrite || needsKnownWorkingWrite {
-            databaseStorage.asyncWrite { transaction in
+            SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
                 if needsAppVersionWrite {
                     APNSRotationStore.setAppVersionTimeForAPNSRotationIfNeeded(transaction: transaction)
                 }
@@ -130,7 +130,7 @@ public final class APNSRotationStore: NSObject {
     }
 
     public static func canRotateAPNSToken(transaction: SDSAnyReadTransaction) -> Bool {
-        guard let currentToken = preferences.getPushToken(tx: transaction) else {
+        guard let currentToken = SSKEnvironment.shared.preferencesRef.getPushToken(tx: transaction) else {
             // No need to rotate if we don't even have a token yet.
             Logger.info("No push token available, not rotating.")
             return false

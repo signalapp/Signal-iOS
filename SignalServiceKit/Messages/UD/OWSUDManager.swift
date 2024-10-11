@@ -267,7 +267,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     // Returns the UD access key for a given recipient
     // if we have a valid profile key for them.
     public func udAccessKey(for serviceId: ServiceId, tx: SDSAnyReadTransaction) -> SMKUDAccessKey? {
-        guard let profileKey = profileManager.profileKeyData(for: SignalServiceAddress(serviceId), transaction: tx) else {
+        guard let profileKey = SSKEnvironment.shared.profileManagerRef.profileKeyData(for: SignalServiceAddress(serviceId), transaction: tx) else {
             return nil
         }
         do {
@@ -317,7 +317,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     // MARK: - Sender Certificate
 
     private func senderCertificate(aciOnly: Bool, certificateExpirationPolicy: OWSUDCertificateExpirationPolicy) -> SenderCertificate? {
-        let (dateValue, dataValue) = databaseStorage.read { tx in
+        let (dateValue, dataValue) = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return (
                 self.keyValueStore.getDate(self.senderCertificateDateKey(aciOnly: aciOnly), transaction: tx),
                 self.keyValueStore.getData(self.senderCertificateKey(aciOnly: aciOnly), transaction: tx)
@@ -348,7 +348,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     }
 
     func setSenderCertificate(aciOnly: Bool, certificateData: Data) async {
-        await databaseStorage.awaitableWrite { tx in
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             self.keyValueStore.setDate(Date(), key: self.senderCertificateDateKey(aciOnly: aciOnly), transaction: tx)
             self.keyValueStore.setData(certificateData, key: self.senderCertificateKey(aciOnly: aciOnly), transaction: tx)
         }
@@ -466,7 +466,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     // MARK: - Unrestricted Access
 
     public func shouldAllowUnrestrictedAccessLocal() -> Bool {
-        return databaseStorage.read { transaction in
+        return SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return self.shouldAllowUnrestrictedAccessLocal(transaction: transaction)
         }
     }
@@ -476,7 +476,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     }
 
     public func setShouldAllowUnrestrictedAccessLocal(_ value: Bool) {
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             self.keyValueStore.setBool(value, key: self.kUDUnrestrictedAccessKey, transaction: transaction)
         }
 
@@ -510,9 +510,9 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
         if updateStorageServiceAndProfile {
             tx.addSyncCompletion {
-                Self.storageServiceManager.recordPendingLocalAccountUpdates()
+                SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
             }
-            _ = profileManager.reuploadLocalProfile(
+            _ = SSKEnvironment.shared.profileManagerRef.reuploadLocalProfile(
                 unsavedRotatedProfileKey: nil,
                 mustReuploadAvatar: false,
                 authedAccount: .implicit(),

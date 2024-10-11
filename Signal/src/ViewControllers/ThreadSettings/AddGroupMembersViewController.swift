@@ -69,7 +69,7 @@ public class AddGroupMembersViewController: BaseGroupMemberViewController {
             return
         }
 
-        let groupName = databaseStorage.read { tx in contactsManager.displayName(for: groupThread, transaction: tx) }
+        let groupName = SSKEnvironment.shared.databaseStorageRef.read { tx in SSKEnvironment.shared.contactManagerRef.displayName(for: groupThread, transaction: tx) }
         let alertTitle: String
         let alertMessage: String
         let actionTitle: String
@@ -207,7 +207,7 @@ extension AddGroupMembersViewController: GroupMemberViewDelegate {
                 guard GroupManager.doesUserSupportGroupsV2(address: address) else {
                     return false
                 }
-                return self.groupsV2.hasProfileKeyCredential(for: address, transaction: transaction)
+                return SSKEnvironment.shared.groupsV2Ref.hasProfileKeyCredential(for: address, transaction: transaction)
             }()
 
             return !canAddMember

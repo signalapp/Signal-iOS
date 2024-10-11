@@ -44,8 +44,8 @@ class StoryReplyPreviewView: UIView {
         if quotedReplyModel.isOriginalMessageAuthorLocalUser {
             authorName = CommonStrings.you
         } else {
-            authorName = databaseStorage.read { tx in
-                return contactsManager.displayName(for: quotedReplyModel.originalMessageAuthorAddress, tx: tx).resolvedValue()
+            authorName = SSKEnvironment.shared.databaseStorageRef.read { tx in
+                return SSKEnvironment.shared.contactManagerRef.displayName(for: quotedReplyModel.originalMessageAuthorAddress, tx: tx).resolvedValue()
             }
         }
 

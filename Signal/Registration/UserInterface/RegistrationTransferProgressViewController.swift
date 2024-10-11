@@ -249,7 +249,7 @@ private class TransferRelaunchSheet: InteractiveSheetViewController {
     @objc
     private func didTapExitButton() {
         Logger.info("")
-        notificationPresenter.notifyUserToRelaunchAfterTransfer {
+        SSKEnvironment.shared.notificationPresenterRef.notifyUserToRelaunchAfterTransfer {
             Logger.info("Deliberately terminating app post-transfer.")
             exit(0)
         }

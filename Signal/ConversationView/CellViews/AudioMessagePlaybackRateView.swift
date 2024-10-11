@@ -234,7 +234,7 @@ class AudioMessagePlaybackRateView: ManualLayoutViewWithLayer {
         // First write the update to the db, this persists the change and ensures the
         // reload we do afterwards pulls the updated rate.
         reloadGroup.enter()
-        itemModel.databaseStorage.asyncWrite(
+        SSKEnvironment.shared.databaseStorageRef.asyncWrite(
             block: {
                 itemModel.threadAssociatedData.updateWith(
                     audioPlaybackRate: newPlaybackRate.rawValue,

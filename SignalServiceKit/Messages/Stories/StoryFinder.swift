@@ -31,11 +31,11 @@ public class StoryFinder: NSObject {
             let unviewedStoryCount = try Int.fetchOne(transaction.unwrapGrdbRead.database, sql: sql) ?? 0
 
             // Check the system story separately, since its hidden state is kept separately.
-            guard !Self.systemStoryManager.areSystemStoriesHidden(transaction: transaction) else {
+            guard !SSKEnvironment.shared.systemStoryManagerRef.areSystemStoriesHidden(transaction: transaction) else {
                 return unviewedStoryCount
             }
 
-            let unviewedSystemStoryCount = Self.systemStoryManager.isOnboardingStoryRead(transaction: transaction) ? 0 : 1
+            let unviewedSystemStoryCount = SSKEnvironment.shared.systemStoryManagerRef.isOnboardingStoryRead(transaction: transaction) ? 0 : 1
             return unviewedStoryCount + unviewedSystemStoryCount
 
         } catch {

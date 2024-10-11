@@ -181,7 +181,8 @@ NSUInteger const OWSUnknownProtocolVersionMessageSchemaVersion = 1;
         }
     }
 
-    NSString *senderName = [self.contactManagerObjC displayNameStringForAddress:self.sender transaction:transaction];
+    NSString *senderName = [SSKEnvironment.shared.contactManagerObjcRef displayNameStringForAddress:self.sender
+                                                                                        transaction:transaction];
 
     if (self.isProtocolVersionUnknown) {
         if (senderName.length > 0) {

@@ -91,8 +91,8 @@ class PrivateStorySettingsViewController: OWSTableViewController2 {
         let totalViewersCount = thread.addresses.count
         let maxViewersToShow = 6
 
-        var viewersToRender = databaseStorage.read {
-            self.contactsManagerImpl.sortSignalServiceAddresses(
+        var viewersToRender = SSKEnvironment.shared.databaseStorageRef.read {
+            SSKEnvironment.shared.contactManagerImplRef.sortSignalServiceAddresses(
                 thread.addresses,
                 transaction: $0
             )
@@ -109,7 +109,7 @@ class PrivateStorySettingsViewController: OWSTableViewController2 {
                     return UITableViewCell()
                 }
 
-                Self.databaseStorage.read { transaction in
+                SSKEnvironment.shared.databaseStorageRef.read { transaction in
                     let configuration = ContactCellConfiguration(address: viewerAddress, localUserDisplayMode: .asLocalUser)
                     cell.configure(configuration: configuration, transaction: transaction)
                 }
@@ -214,7 +214,7 @@ class PrivateStorySettingsViewController: OWSTableViewController2 {
         }
 
         ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modal in
-            Self.databaseStorage.asyncWrite { transaction in
+            SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
                 StoryFinder.enumerateStoriesForContext(self.thread.storyContext, transaction: transaction) { storyMessage, _ in
                     storyMessage.remotelyDelete(for: self.thread, transaction: transaction)
                 }
@@ -232,7 +232,7 @@ class PrivateStorySettingsViewController: OWSTableViewController2 {
                 )
 
                 transaction.addAsyncCompletionOnMain {
-                    Self.storageServiceManager.recordPendingUpdates(updatedStoryDistributionListIds: [dlistIdentifier])
+                    SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(updatedStoryDistributionListIds: [dlistIdentifier])
                     modal.dismiss {
                         self.navigationController?.popViewController(animated: true)
                     }
@@ -272,8 +272,8 @@ class PrivateStorySettingsViewController: OWSTableViewController2 {
         )
 
         let actionSheet = ActionSheetController(
-            title: String.localizedStringWithFormat(format, databaseStorage.read { tx in
-                return contactsManager.displayName(for: address, tx: tx).resolvedValue()
+            title: String.localizedStringWithFormat(format, SSKEnvironment.shared.databaseStorageRef.read { tx in
+                return SSKEnvironment.shared.contactManagerRef.displayName(for: address, tx: tx).resolvedValue()
             }),
             message: OWSLocalizedString(
                 "PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION",
@@ -285,7 +285,7 @@ class PrivateStorySettingsViewController: OWSTableViewController2 {
             "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON",
             comment: "Action sheet button to remove a viewer from a story on the 'private story settings' view."
         ), style: .destructive, handler: { _ in
-            self.databaseStorage.write { transaction in
+            SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 self.thread.updateWithStoryViewMode(
                     .explicit,
                     addresses: self.thread.addresses.filter { $0 != address },
@@ -310,7 +310,7 @@ class PrivateStorySettingsViewController: OWSTableViewController2 {
     @objc
     private func didToggleReplies(_ toggle: UISwitch) {
         guard thread.allowsReplies != toggle.isOn else { return }
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             thread.updateWithAllowsReplies(toggle.isOn, updateStorageService: true, transaction: transaction)
         }
     }

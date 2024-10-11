@@ -197,7 +197,7 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate, Hom
 
     private func updateNavigationBar() {
         navigationItem.leftBarButtonItem = createSettingsBarButtonItem(
-            databaseStorage: databaseStorage,
+            databaseStorage: SSKEnvironment.shared.databaseStorageRef,
             buildActions: { settingsAction -> [UIAction] in
                 return [
                     UIAction(
@@ -378,7 +378,7 @@ extension StoriesViewController: UITableViewDelegate {
                     owsFailDebug("Missing message for failed send")
                     return
                 }
-                guard let latestMessageThread = databaseStorage.read(block: { latestMessage.context.thread(transaction: $0) }) else {
+                guard let latestMessageThread = SSKEnvironment.shared.databaseStorageRef.read(block: { latestMessage.context.thread(transaction: $0) }) else {
                     owsFailDebug("Missing thread for failed send")
                     return
                 }

@@ -38,7 +38,7 @@ public class TSAttachmentMultisend: Dependencies {
         on queue: DispatchQueue
     ) -> Promise<PreparedMultisend> {
         if let segmentDuration = conversations.lazy.compactMap(\.videoAttachmentDurationLimit).min() {
-            let qualityLevel = databaseStorage.read { tx in ImageQualityLevel.resolvedQuality(tx: tx) }
+            let qualityLevel = SSKEnvironment.shared.databaseStorageRef.read { tx in ImageQualityLevel.resolvedQuality(tx: tx) }
             let attachmentPromises = approvedAttachments.map {
                 $0.preparedForOutput(qualityLevel: qualityLevel)
                     .segmentedIfNecessary(on: queue, segmentDuration: segmentDuration)
@@ -140,7 +140,7 @@ public class TSAttachmentMultisend: Dependencies {
 
         let state = MultisendState(approvalMessageBody: approvalMessageBody)
 
-        try self.databaseStorage.write { transaction in
+        try SSKEnvironment.shared.databaseStorageRef.write { transaction in
             for (type, values) in attachmentsByMessageType {
                 let destinations = try values.lazy.map { conversation, attachments -> MultisendDestination in
                     guard let thread = conversation.getOrCreateThread(transaction: transaction) else {
@@ -204,7 +204,7 @@ public class TSAttachmentMultisend: Dependencies {
 
         let state = MultisendState(approvalMessageBody: nil)
         let conversationsByMessageType = Dictionary(grouping: conversations, by: { $0.outgoingMessageType })
-        try self.databaseStorage.write { transaction in
+        try SSKEnvironment.shared.databaseStorageRef.write { transaction in
 
             // Create one special TextAttachment from our UnsentTextAttachment; this implicitly creates a TSAttachment
             // for the link preview's image (if there is any link preview image).
@@ -335,12 +335,12 @@ public class TSAttachmentMultisend: Dependencies {
         let (sentPromise, sentFuture) = Promise<[TSThread]>.pending()
 
         preparedSend.done(on: ThreadUtil.enqueueSendQueue) { preparedSend in
-            return databaseStorage.write { transaction in
+            return SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 // This will upload the TSAttachments whose IDs are the keys of attachmentIdMap
                 // and propagate their upload state to each of the TSAttachment unique IDs in the values.
                 // Each outgoing destination gets its own TSAttachment per attached media, but we upload only one,
                 // and propagate its upload state to each of these independent clones.
-                let jobResult = smJobQueues.tsAttachmentMultisendJobQueue.add(
+                let jobResult = SSKEnvironment.shared.smJobQueuesRef.tsAttachmentMultisendJobQueue.add(
                     attachmentIdMap: preparedSend.attachmentIdMap,
                     storyMessagesToSend: preparedSend.storyMessagesToSend,
                     transaction: transaction

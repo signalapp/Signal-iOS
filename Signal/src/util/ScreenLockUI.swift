@@ -223,7 +223,7 @@ class ScreenLockUI: Dependencies {
             return .none
         }
 
-        guard preferences.isScreenSecurityEnabled else {
+        guard SSKEnvironment.shared.preferencesRef.isScreenSecurityEnabled else {
             return .none
         }
 

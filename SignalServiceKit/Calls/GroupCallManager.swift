@@ -48,10 +48,10 @@ public class GroupCallManager {
     }
 
     private var callRecordStore: CallRecordStore { DependenciesBridge.shared.callRecordStore }
-    private var databaseStorage: SDSDatabaseStorage { NSObject.databaseStorage }
+    private var databaseStorage: SDSDatabaseStorage { SSKEnvironment.shared.databaseStorageRef }
     private var groupCallRecordManager: GroupCallRecordManager { DependenciesBridge.shared.groupCallRecordManager }
     private var interactionStore: InteractionStore { DependenciesBridge.shared.interactionStore }
-    private var notificationPresenter: any NotificationPresenter { NSObject.notificationPresenter }
+    private var notificationPresenter: any NotificationPresenter { SSKEnvironment.shared.notificationPresenterRef }
     private var schedulers: Schedulers { DependenciesBridge.shared.schedulers }
     private var tsAccountManager: TSAccountManager { DependenciesBridge.shared.tsAccountManager }
 

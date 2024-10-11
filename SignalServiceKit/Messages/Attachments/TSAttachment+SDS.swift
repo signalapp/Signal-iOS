@@ -724,7 +724,7 @@ public class TSAttachmentCursor: NSObject, SDSCursor {
             return nil
         }
         let value = try TSAttachment.fromRecord(record)
-        Self.modelReadCaches.attachmentReadCache.didReadAttachment(value, transaction: transaction.asAnyRead)
+        SSKEnvironment.shared.modelReadCachesRef.attachmentReadCache.didReadAttachment(value, transaction: transaction.asAnyRead)
         return value
     }
 
@@ -774,7 +774,7 @@ public extension TSAttachment {
         assert(!uniqueId.isEmpty)
 
         if !ignoreCache,
-            let cachedCopy = Self.modelReadCaches.attachmentReadCache.getAttachment(uniqueId: uniqueId, transaction: transaction) {
+            let cachedCopy = SSKEnvironment.shared.modelReadCachesRef.attachmentReadCache.getAttachment(uniqueId: uniqueId, transaction: transaction) {
             return cachedCopy
         }
 
@@ -969,7 +969,7 @@ public extension TSAttachment {
             }
 
             let value = try TSAttachment.fromRecord(record)
-            Self.modelReadCaches.attachmentReadCache.didReadAttachment(value, transaction: transaction.asAnyRead)
+            SSKEnvironment.shared.modelReadCachesRef.attachmentReadCache.didReadAttachment(value, transaction: transaction.asAnyRead)
             return value
         } catch {
             owsFailDebug("error: \(error)")

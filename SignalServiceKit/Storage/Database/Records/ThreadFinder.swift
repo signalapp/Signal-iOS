@@ -256,7 +256,7 @@ public class ThreadFinder: Dependencies {
 
         // If this thread is blocked AND we're still in the thread, show the message
         // request view regardless of if we have sent messages or not.
-        if blockingManager.isThreadBlocked(thread, transaction: transaction) {
+        if SSKEnvironment.shared.blockingManagerRef.isThreadBlocked(thread, transaction: transaction) {
             return true
         }
 
@@ -292,7 +292,7 @@ public class ThreadFinder: Dependencies {
 
         // If the thread is already whitelisted, do nothing. The user has already
         // accepted the request for this thread.
-        if Self.profileManager.isThread(inProfileWhitelist: thread, transaction: transaction) {
+        if SSKEnvironment.shared.profileManagerRef.isThread(inProfileWhitelist: thread, transaction: transaction) {
             return false
         }
 

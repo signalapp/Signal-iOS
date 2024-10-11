@@ -15,7 +15,7 @@ public class PaymentsProcessor: NSObject {
         super.init()
 
         appReadiness.runNowOrWhenAppDidBecomeReadySync {
-            Self.databaseStorage.appendDatabaseChangeDelegate(self)
+            SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
         }
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             self.process()
@@ -103,7 +103,7 @@ public class PaymentsProcessor: NSObject {
             guard !CurrentAppContext().isRunningTests else {
                 return
             }
-            guard Self.paymentsHelper.arePaymentsEnabled else {
+            guard SSKEnvironment.shared.paymentsHelperRef.arePaymentsEnabled else {
                 return
             }
             guard
@@ -126,7 +126,7 @@ public class PaymentsProcessor: NSObject {
     private func buildProcessingOperations() {
 
         // Find all unresolved payment records.
-        var paymentModels: [TSPaymentModel] = Self.databaseStorage.read { transaction in
+        var paymentModels: [TSPaymentModel] = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             PaymentFinder.paymentModels(paymentStates: Array(Self.paymentStatesToProcess),
                                         transaction: transaction)
         }
@@ -214,7 +214,7 @@ public class PaymentsProcessor: NSObject {
         private func reachabilityChanged() {
             AssertIsOnMainThread()
 
-            guard reachabilityManager.isReachable else {
+            guard SSKEnvironment.shared.reachabilityManagerRef.isReachable else {
                 return
             }
 
@@ -590,7 +590,7 @@ private class PaymentProcessingOperation: OWSOperation, @unchecked Sendable {
     }
 
     private func loadPaymentModelWithSneakyTransaction() -> TSPaymentModel? {
-        Self.databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             TSPaymentModel.anyFetch(uniqueId: self.paymentId, transaction: transaction)
         }
     }
@@ -659,7 +659,7 @@ private class PaymentProcessingOperation: OWSOperation, @unchecked Sendable {
 
         guard !payments.isKillSwitchActive else {
             do {
-                try Self.databaseStorage.write { transaction in
+                try SSKEnvironment.shared.databaseStorageRef.write { transaction in
                     try paymentModel.updatePaymentModelState(fromState: .outgoingUnsubmitted,
                                                              toState: .outgoingUnverified,
                                                              transaction: transaction)
@@ -689,7 +689,7 @@ private class PaymentProcessingOperation: OWSOperation, @unchecked Sendable {
             // that the transaction was submitted but the record was never marked
             // as such (due to a race around app being terminated).
             do {
-                try Self.databaseStorage.write { transaction in
+                try SSKEnvironment.shared.databaseStorageRef.write { transaction in
                     try paymentModel.updatePaymentModelState(fromState: .outgoingUnsubmitted,
                                                              toState: .outgoingUnverified,
                                                              transaction: transaction)
@@ -736,7 +736,7 @@ private class PaymentProcessingOperation: OWSOperation, @unchecked Sendable {
 
         if DebugFlags.paymentsSkipSubmissionAndOutgoingVerification.get() {
             return firstly(on: DispatchQueue.global()) { () -> Void in
-                try Self.databaseStorage.write { transaction in
+                try SSKEnvironment.shared.databaseStorageRef.write { transaction in
                     guard let paymentModel = TSPaymentModel.anyFetch(uniqueId: paymentModel.uniqueId,
                                                                      transaction: transaction) else {
                         throw OWSAssertionError("Missing TSPaymentModel.")
@@ -762,7 +762,7 @@ private class PaymentProcessingOperation: OWSOperation, @unchecked Sendable {
 
                 return mobileCoinAPI.getOutgoingTransactionStatus(transaction: transaction)
             }.map { (transactionStatus: MCOutgoingTransactionStatus) in
-                try Self.databaseStorage.write { transaction in
+                try SSKEnvironment.shared.databaseStorageRef.write { transaction in
                     switch transactionStatus.transactionStatus {
                     case .unknown:
                         throw PaymentsError.verificationStatusUnknown
@@ -795,7 +795,7 @@ private class PaymentProcessingOperation: OWSOperation, @unchecked Sendable {
     private class func markAsFailedPromise(paymentModel: TSPaymentModel,
                                            paymentFailure: TSPaymentFailure,
                                            paymentState: TSPaymentState) -> Promise<Void> {
-        Self.databaseStorage.write(.promise) { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write(.promise) { transaction in
             markAsFailed(paymentModel: paymentModel,
                          paymentFailure: paymentFailure,
                          paymentState: paymentState,
@@ -806,7 +806,7 @@ private class PaymentProcessingOperation: OWSOperation, @unchecked Sendable {
     private class func markAsFailed(paymentModel: TSPaymentModel,
                                     paymentFailure: TSPaymentFailure,
                                     paymentState: TSPaymentState) {
-        Self.databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             markAsFailed(paymentModel: paymentModel,
                          paymentFailure: paymentFailure,
                          paymentState: paymentState,
@@ -834,7 +834,7 @@ private class PaymentProcessingOperation: OWSOperation, @unchecked Sendable {
         }
 
         return firstly(on: DispatchQueue.global()) { () -> Void in
-            try Self.databaseStorage.write { transaction in
+            try SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 guard let paymentModel = TSPaymentModel.anyFetch(uniqueId: paymentModel.uniqueId, transaction: transaction) else {
                     throw OWSAssertionError("Missing paymentModel.")
                 }
@@ -893,7 +893,7 @@ private class PaymentProcessingOperation: OWSOperation, @unchecked Sendable {
 
             return mobileCoinAPI.getIncomingReceiptStatus(receipt: receipt)
         }.map { (receiptStatus: MCIncomingReceiptStatus) in
-            try Self.databaseStorage.write { transaction in
+            try SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 switch receiptStatus.receiptStatus {
                 case .unknown:
                     throw PaymentsError.verificationStatusUnknown
@@ -935,7 +935,7 @@ private class PaymentProcessingOperation: OWSOperation, @unchecked Sendable {
         // history.  Presumably this should only be possible if the user
         // scrubs an unverified payment.
 
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             paymentModel.anyRemove(transaction: transaction)
 
             Self.payments.scheduleReconciliationNow(transaction: transaction)
@@ -948,7 +948,7 @@ private class PaymentProcessingOperation: OWSOperation, @unchecked Sendable {
         owsAssertDebug(paymentModel.paymentState == fromState)
 
         return firstly(on: DispatchQueue.global()) { () -> Void in
-            try Self.databaseStorage.write { transaction in
+            try SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 guard let paymentModel = TSPaymentModel.anyFetch(uniqueId: paymentModel.uniqueId,
                                                                  transaction: transaction) else {
                     throw OWSAssertionError("Missing TSPaymentModel.")

@@ -811,7 +811,7 @@ extension PinSetupViewController {
                     fromViewController: fromViewController,
                     canCancel: false,
                     asyncBlock: { modal in
-                        await NSObject.databaseStorage.awaitableWrite { transaction in
+                        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
                             // TODO[ViewContextPiping]
                             ViewControllerContext.shared.svr.useDeviceLocalMasterKey(
                                 authedAccount: .implicit(),

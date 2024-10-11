@@ -13,7 +13,7 @@ class MessageSenderJobQueueTest: SSKBaseTest {
 
     func test_messageIsSent() async throws {
         let jobQueue = MessageSenderJobQueue(appReadiness: AppReadinessMock())
-        let (message, promise) = try await databaseStorage.awaitableWrite { tx in
+        let (message, promise) = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             let message = OutgoingMessageFactory().create(transaction: tx)
             let jobRecord = try MessageSenderJobRecord(
                 persistedMessage: .init(
@@ -39,7 +39,7 @@ class MessageSenderJobQueueTest: SSKBaseTest {
     func test_respectsQueueOrder() async throws {
         let messageCount = 3
         let jobQueue = MessageSenderJobQueue(appReadiness: AppReadinessMock())
-        let (messages, promises) = try await databaseStorage.awaitableWrite { tx in
+        let (messages, promises) = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             let messages = (1...messageCount).map { _ in OutgoingMessageFactory().create(transaction: tx) }
             let promises = try messages.map {
                 let jobRecord = try MessageSenderJobRecord(
@@ -70,7 +70,7 @@ class MessageSenderJobQueueTest: SSKBaseTest {
         let jobQueue = MessageSenderJobQueue(appReadiness: AppReadinessMock())
         fakeMessageSender.stubbedFailingErrors = [nil]
         jobQueue.setup(appReadiness: AppReadinessMock())
-        let (message, promise) = await databaseStorage.awaitableWrite { tx in
+        let (message, promise) = await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             let message = OutgoingMessageFactory().buildDeliveryReceipt(transaction: tx)
             let preparedMessage = PreparedOutgoingMessage.preprepared(
                 transientMessageWithoutAttachments: message
@@ -85,7 +85,7 @@ class MessageSenderJobQueueTest: SSKBaseTest {
     func test_retryableFailure() async throws {
         let jobQueue = MessageSenderJobQueue(appReadiness: AppReadinessMock())
 
-        let (message, promise) = try await databaseStorage.awaitableWrite { tx in
+        let (message, promise) = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             let message = OutgoingMessageFactory().create(transaction: tx)
             let jobRecord = try MessageSenderJobRecord(
                 persistedMessage: .init(
@@ -154,7 +154,7 @@ class MessageSenderJobQueueTest: SSKBaseTest {
     func test_permanentFailure() async throws {
         let jobQueue = MessageSenderJobQueue(appReadiness: AppReadinessMock())
 
-        let (message, promise) = try await databaseStorage.awaitableWrite { tx in
+        let (message, promise) = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             let message = OutgoingMessageFactory().create(transaction: tx)
             let jobRecord = try MessageSenderJobRecord(
                 persistedMessage: .init(

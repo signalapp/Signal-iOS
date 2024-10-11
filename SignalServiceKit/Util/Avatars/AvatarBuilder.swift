@@ -34,9 +34,7 @@ import Foundation
 
 public class AvatarBuilder: NSObject {
 
-    public static var shared: AvatarBuilder {
-        Self.avatarBuilder
-    }
+    public static var shared: AvatarBuilder { SSKEnvironment.shared.avatarBuilderRef }
 
     public static let smallAvatarSizePoints: UInt = 36
     public static let standardAvatarSizePoints: UInt = 48
@@ -143,7 +141,7 @@ public class AvatarBuilder: NSObject {
         diameterPoints: UInt,
         localUserDisplayMode: LocalUserDisplayMode
     ) -> UIImage? {
-        databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             avatarImage(
                 forAddress: address,
                 diameterPoints: diameterPoints,
@@ -159,7 +157,7 @@ public class AvatarBuilder: NSObject {
         localUserDisplayMode: LocalUserDisplayMode,
         transaction: SDSAnyReadTransaction
     ) -> Request {
-        let shouldBlurAvatar = contactsManagerImpl.shouldBlurContactAvatar(address: address, transaction: transaction)
+        let shouldBlurAvatar = SSKEnvironment.shared.contactManagerImplRef.shouldBlurContactAvatar(address: address, transaction: transaction)
         let requestType: RequestType = .contactAddress(address: address, localUserDisplayMode: localUserDisplayMode)
         return Request(requestType: requestType, diameterPixels: diameterPixels, shouldBlurAvatar: shouldBlurAvatar)
     }
@@ -223,7 +221,7 @@ public class AvatarBuilder: NSObject {
         transaction tx: SDSAnyReadTransaction
     ) -> Request {
         let diameterPixels = CGFloat(diameterPoints).pointsAsPixels
-        let shouldBlurAvatar = contactsManagerImpl.shouldBlurGroupAvatar(groupThread: groupThread, transaction: tx)
+        let shouldBlurAvatar = SSKEnvironment.shared.contactManagerImplRef.shouldBlurGroupAvatar(groupThread: groupThread, transaction: tx)
         let requestType = buildRequestType(forGroupThread: groupThread, diameterPixels: diameterPixels, transaction: tx)
         return Request(requestType: requestType, diameterPixels: diameterPixels, shouldBlurAvatar: shouldBlurAvatar)
     }
@@ -258,7 +256,7 @@ public class AvatarBuilder: NSObject {
         diameterPoints: UInt,
         localUserDisplayMode: LocalUserDisplayMode
     ) -> UIImage? {
-        databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return avatarImageForLocalUser(
                 diameterPoints: diameterPoints,
                 localUserDisplayMode: localUserDisplayMode,
@@ -277,7 +275,7 @@ public class AvatarBuilder: NSObject {
             owsFailDebug("Missing localAddress.")
             return nil
         }
-        let shouldBlurAvatar = contactsManagerImpl.shouldBlurContactAvatar(address: address, transaction: transaction)
+        let shouldBlurAvatar = SSKEnvironment.shared.contactManagerImplRef.shouldBlurContactAvatar(address: address, transaction: transaction)
         let requestType: RequestType = .contactAddress(address: address, localUserDisplayMode: localUserDisplayMode)
         let request = Request(requestType: requestType, diameterPixels: diameterPixels, shouldBlurAvatar: shouldBlurAvatar)
         return avatarImage(forRequest: request, transaction: transaction)
@@ -354,7 +352,7 @@ public class AvatarBuilder: NSObject {
 
             let theme = AvatarTheme.forAddress(localAddress)
 
-            let displayName = Self.contactsManager.displayName(for: localAddress, tx: transaction)
+            let displayName = SSKEnvironment.shared.contactManagerRef.displayName(for: localAddress, tx: transaction)
             if let contactInitials = Self.contactInitials(for: displayName) {
                 return .text(text: contactInitials, theme: theme)
             } else {
@@ -476,7 +474,7 @@ public class AvatarBuilder: NSObject {
                     address: contactThread.contactAddress,
                     localUserDisplayMode: localUserDisplayMode
                 )
-                let shouldBlurAvatar = contactsManagerImpl.shouldBlurContactAvatar(
+                let shouldBlurAvatar = SSKEnvironment.shared.contactManagerImplRef.shouldBlurContactAvatar(
                     address: contactThread.contactAddress,
                     transaction: transaction
                 )
@@ -487,7 +485,7 @@ public class AvatarBuilder: NSObject {
                     diameterPixels: diameterPixels,
                     transaction: transaction
                 )
-                let shouldBlurAvatar = contactsManagerImpl.shouldBlurGroupAvatar(
+                let shouldBlurAvatar = SSKEnvironment.shared.contactManagerImplRef.shouldBlurGroupAvatar(
                     groupThread: groupThread,
                     transaction: transaction
                 )
@@ -680,7 +678,7 @@ public class AvatarBuilder: NSObject {
             {
                 let contentCacheKey = avatarContent.contentType.cacheKey
                 if contentCacheKey != Self.contactCacheKeys.getString(serviceIdString, transaction: transaction) {
-                    self.databaseStorage.asyncWrite { writeTransaction in
+                    SSKEnvironment.shared.databaseStorageRef.asyncWrite { writeTransaction in
                         Self.contactCacheKeys.setString(contentCacheKey, key: serviceIdString, transaction: writeTransaction)
                     }
                 }
@@ -773,7 +771,7 @@ public class AvatarBuilder: NSObject {
                         )
                     }
                 } else {
-                    let imageData = Self.contactsManagerImpl.avatarImageData(forAddress: address, shouldValidate: true, transaction: transaction)
+                    let imageData = SSKEnvironment.shared.contactManagerImplRef.avatarImageData(forAddress: address, shouldValidate: true, transaction: transaction)
                     if let imageData {
                         let digestString = imageData.sha1HexadecimalDigestString
                         return AvatarContentTypes(
@@ -782,7 +780,7 @@ public class AvatarBuilder: NSObject {
                         )
                     }
 
-                    let displayName = Self.contactsManager.displayName(for: address, tx: transaction)
+                    let displayName = SSKEnvironment.shared.contactManagerRef.displayName(for: address, tx: transaction)
                     if let contactInitials = Self.contactInitials(for: displayName) {
                         return AvatarContentTypes(
                             contentType: .text(text: contactInitials, theme: theme),
@@ -867,7 +865,7 @@ public class AvatarBuilder: NSObject {
                     owsFailDebug("tried to build a contact avatar without a transaction")
                     return nil
                 }
-                guard let imageData = Self.contactsManagerImpl.avatarImageData(
+                guard let imageData = SSKEnvironment.shared.contactManagerImplRef.avatarImageData(
                     forAddress: contactAddress,
                     shouldValidate: true,
                     transaction: transaction
@@ -912,7 +910,7 @@ public class AvatarBuilder: NSObject {
         owsAssertDebug(CGFloat(image.pixelHeight) <= avatarContent.diameterPixels)
 
         if avatarContent.shouldBlurAvatar {
-            guard let blurredImage = contactsManagerImpl.blurAvatar(image) else {
+            guard let blurredImage = SSKEnvironment.shared.contactManagerImplRef.blurAvatar(image) else {
                 owsFailDebug("Could not blur image.")
                 return nil
             }

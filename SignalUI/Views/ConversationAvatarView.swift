@@ -364,7 +364,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
                 return
             }
 
-            let (updatedAvatar, updatedBadge) = Self.databaseStorage.read { transaction -> (UIImage?, UIImage?) in
+            let (updatedAvatar, updatedBadge) = SSKEnvironment.shared.databaseStorageRef.read { transaction -> (UIImage?, UIImage?) in
                 guard self.nextModelGeneration.get() == generationAtEnqueue else {
                     return (nil, nil)
                 }
@@ -615,7 +615,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
                     .filter(predicate)
                     .fetchOne(db)
             }.start(
-                in: databaseStorage.grdbStorage.pool,
+                in: SSKEnvironment.shared.databaseStorageRef.grdbStorage.pool,
                 onError: { error in
                     owsFailDebug("Failed to observe story hidden state: \(error))")
                 },
@@ -740,7 +740,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
         }
 
         if contentThreadId == changedThreadId {
-            databaseStorage.read {
+            SSKEnvironment.shared.databaseStorageRef.read {
                 dataSource.reload(transaction: $0)
                 updateModel(transaction: $0)
             }
@@ -809,7 +809,7 @@ public enum ConversationAvatarDataSource: Equatable, Dependencies, CustomStringC
         if let transaction = existingTx {
             return block(transaction)
         } else {
-            return databaseStorage.read { readTx in
+            return SSKEnvironment.shared.databaseStorageRef.read { readTx in
                 block(readTx)
             }
         }
@@ -842,7 +842,7 @@ public enum ConversationAvatarDataSource: Equatable, Dependencies, CustomStringC
         }
 
         let primaryBadge: ProfileBadge? = performWithTransaction(transaction) {
-            let userProfile = profileManager.getUserProfile(for: targetAddress, transaction: $0)
+            let userProfile = SSKEnvironment.shared.profileManagerRef.getUserProfile(for: targetAddress, transaction: $0)
             return userProfile?.primaryBadge?.fetchBadgeContent(transaction: $0)
         }
         guard let badgeAssets = primaryBadge?.assets else { return nil }
@@ -853,7 +853,7 @@ public enum ConversationAvatarDataSource: Equatable, Dependencies, CustomStringC
         switch self {
         case .thread(let contactThread as TSContactThread):
             return performWithTransaction(transaction) {
-                Self.avatarBuilder.avatarImage(
+                SSKEnvironment.shared.avatarBuilderRef.avatarImage(
                     forAddress: contactThread.contactAddress,
                     diameterPoints: UInt(configuration.avatarSizeClass.diameter),
                     localUserDisplayMode: configuration.localUserDisplayMode,
@@ -862,7 +862,7 @@ public enum ConversationAvatarDataSource: Equatable, Dependencies, CustomStringC
 
         case .address(let address):
             return performWithTransaction(transaction) {
-                Self.avatarBuilder.avatarImage(
+                SSKEnvironment.shared.avatarBuilderRef.avatarImage(
                     forAddress: address,
                     diameterPoints: UInt(configuration.avatarSizeClass.diameter),
                     localUserDisplayMode: configuration.localUserDisplayMode,
@@ -871,7 +871,7 @@ public enum ConversationAvatarDataSource: Equatable, Dependencies, CustomStringC
 
         case .thread(let groupThread as TSGroupThread):
             return performWithTransaction(transaction) {
-                Self.avatarBuilder.avatarImage(
+                SSKEnvironment.shared.avatarBuilderRef.avatarImage(
                     forGroupThread: groupThread,
                     diameterPoints: UInt(configuration.avatarSizeClass.diameter),
                     transaction: $0)
@@ -890,7 +890,7 @@ public enum ConversationAvatarDataSource: Equatable, Dependencies, CustomStringC
         switch self {
         case .thread(let contactThread as TSContactThread):
             return performWithTransaction(transaction) {
-                Self.avatarBuilder.precachedAvatarImage(
+                SSKEnvironment.shared.avatarBuilderRef.precachedAvatarImage(
                     forAddress: contactThread.contactAddress,
                     diameterPoints: UInt(configuration.avatarSizeClass.diameter),
                     localUserDisplayMode: configuration.localUserDisplayMode,
@@ -899,7 +899,7 @@ public enum ConversationAvatarDataSource: Equatable, Dependencies, CustomStringC
 
         case .address(let address):
             return performWithTransaction(transaction) {
-                Self.avatarBuilder.precachedAvatarImage(
+                SSKEnvironment.shared.avatarBuilderRef.precachedAvatarImage(
                     forAddress: address,
                     diameterPoints: UInt(configuration.avatarSizeClass.diameter),
                     localUserDisplayMode: configuration.localUserDisplayMode,
@@ -908,7 +908,7 @@ public enum ConversationAvatarDataSource: Equatable, Dependencies, CustomStringC
 
         case .thread(let groupThread as TSGroupThread):
             return performWithTransaction(transaction) {
-                Self.avatarBuilder.precachedAvatarImage(
+                SSKEnvironment.shared.avatarBuilderRef.precachedAvatarImage(
                     forGroupThread: groupThread,
                     diameterPoints: UInt(configuration.avatarSizeClass.diameter),
                     transaction: $0)

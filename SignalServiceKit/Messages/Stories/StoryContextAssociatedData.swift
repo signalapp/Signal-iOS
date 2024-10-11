@@ -190,9 +190,9 @@ public final class StoryContextAssociatedData: NSObject, SDSCodableModel, Decoda
                 guard let thread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
                     return owsFailDebug("Unexpectedly missing thread for storage service update.")
                 }
-                storageServiceManager.recordPendingUpdates(groupModel: thread.groupModel)
+                SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(groupModel: thread.groupModel)
             case .contact(let contactAci):
-                storageServiceManager.recordPendingUpdates(updatedAddresses: [SignalServiceAddress(contactAci)])
+                SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(updatedAddresses: [SignalServiceAddress(contactAci)])
             }
         }
 

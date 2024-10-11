@@ -41,7 +41,7 @@ class CameraFirstCaptureSendFlow: Dependencies {
             return
         }
 
-        let groupThread = databaseStorage.read { readTx in
+        let groupThread = SSKEnvironment.shared.databaseStorageRef.read { readTx in
             TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId, transaction: readTx)
         }
 

@@ -293,8 +293,8 @@ class RegistrationProfileViewController: OWSViewController {
     private func render() {
         navigationItem.rightBarButtonItem = givenNameComponent != nil ? nextBarButton : nil
 
-        avatarView.image = avatarData?.asImage ?? Self.databaseStorage.read { transaction in
-            Self.avatarBuilder.defaultAvatarImageForLocalUser(
+        avatarView.image = avatarData?.asImage ?? SSKEnvironment.shared.databaseStorageRef.read { transaction in
+            SSKEnvironment.shared.avatarBuilderRef.defaultAvatarImageForLocalUser(
                 diameterPoints: UInt(avatarSize),
                 transaction: transaction
             )

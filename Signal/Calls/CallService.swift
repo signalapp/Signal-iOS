@@ -28,12 +28,12 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     private var audioSession: AudioSession { NSObject.audioSession }
     private var callLinkStore: any CallLinkRecordStore { DependenciesBridge.shared.callLinkStore }
     let authCredentialManager: any AuthCredentialManager
-    private var databaseStorage: SDSDatabaseStorage { NSObject.databaseStorage }
+    private var databaseStorage: SDSDatabaseStorage { SSKEnvironment.shared.databaseStorageRef }
     private let db: any DB
     private var deviceSleepManager: DeviceSleepManager { DeviceSleepManager.shared }
-    private var groupCallManager: GroupCallManager { NSObject.groupCallManager }
+    private var groupCallManager: GroupCallManager { SSKEnvironment.shared.groupCallManagerRef }
     private var messageSenderJobQueue: MessageSenderJobQueue { SSKEnvironment.shared.messageSenderJobQueueRef }
-    private var reachabilityManager: SSKReachabilityManager { NSObject.reachabilityManager }
+    private var reachabilityManager: SSKReachabilityManager { SSKEnvironment.shared.reachabilityManagerRef }
 
     public var callUIAdapter: CallUIAdapter
 

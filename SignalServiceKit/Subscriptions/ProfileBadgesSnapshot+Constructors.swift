@@ -7,10 +7,7 @@ import Foundation
 
 public extension ProfileBadgesSnapshot {
     static func current() -> ProfileBadgesSnapshot {
-        struct Deps: Dependencies {}
-        let profileManagerImpl = Deps.profileManagerImpl
-
-        let profileSnapshot = profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: false)
+        let profileSnapshot = SSKEnvironment.shared.profileManagerImplRef.localProfileSnapshot(shouldIncludeAvatar: false)
         return forSnapshot(profileSnapshot: profileSnapshot)
     }
 

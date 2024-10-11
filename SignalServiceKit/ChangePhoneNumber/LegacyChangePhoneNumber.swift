@@ -93,9 +93,9 @@ public class LegacyChangePhoneNumber: NSObject {
         changeToken: ChangeToken
     ) -> Promise<Void> {
         firstly { () -> Promise<WhoAmIRequestFactory.Responses.WhoAmI> in
-            self.accountServiceClient.getAccountWhoAmI()
+            SSKEnvironment.shared.accountServiceClientRef.getAccountWhoAmI()
         }.done(on: DispatchQueue.global()) { whoAmIResponse in
-            self.databaseStorage.write { transaction in
+            SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 let successfulChangeParams = SuccessfulChangeParams(
                     newServiceE164: whoAmIResponse.e164,
                     serviceAci: whoAmIResponse.aci,
@@ -114,7 +114,7 @@ public class LegacyChangePhoneNumber: NSObject {
                 throw error
             }
 
-            self.databaseStorage.write { transaction in
+            SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 self.changeDidComplete(
                     changeToken: changeToken,
                     successfulChangeParams: nil,
@@ -142,7 +142,7 @@ public class LegacyChangePhoneNumber: NSObject {
             return
         }
 
-        let incompleteChangeToken: ChangeToken? = self.databaseStorage.read { transaction in
+        let incompleteChangeToken: ChangeToken? = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             incompleteChangeTokenStore.existingToken(
                 transaction: transaction
             )
@@ -227,7 +227,7 @@ public class LegacyChangePhoneNumber: NSObject {
                 tx: transaction.asV2Write
             )
 
-            self.storageServiceManager.recordPendingLocalAccountUpdates()
+            SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
 
             return serviceE164
         } else {

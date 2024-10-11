@@ -274,7 +274,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
         self.attachmentSchemaVersion = TSAttachmentSchemaVersion;
 
         // Async save the schema update in the database
-        DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+        DatabaseStorageAsyncWrite(SSKEnvironment.shared.databaseStorageRef, ^(SDSAnyWriteTransaction *transaction) {
             TSAttachment *_Nullable latestInstance = [TSAttachment anyFetchWithUniqueId:self.uniqueId
                                                                             transaction:transaction];
             if (latestInstance == nil) {
@@ -488,21 +488,23 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
 {
     [super anyDidInsertWithTransaction:transaction];
 
-    [self.modelReadCaches.attachmentReadCache didInsertOrUpdateAttachment:self transaction:transaction];
+    [SSKEnvironment.shared.modelReadCachesRef.attachmentReadCache didInsertOrUpdateAttachment:self
+                                                                                  transaction:transaction];
 }
 
 - (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyDidUpdateWithTransaction:transaction];
 
-    [self.modelReadCaches.attachmentReadCache didInsertOrUpdateAttachment:self transaction:transaction];
+    [SSKEnvironment.shared.modelReadCachesRef.attachmentReadCache didInsertOrUpdateAttachment:self
+                                                                                  transaction:transaction];
 }
 
 - (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyDidRemoveWithTransaction:transaction];
 
-    [self.modelReadCaches.attachmentReadCache didRemoveAttachment:self transaction:transaction];
+    [SSKEnvironment.shared.modelReadCachesRef.attachmentReadCache didRemoveAttachment:self transaction:transaction];
 }
 
 - (void)setDefaultContentType:(NSString *)contentType

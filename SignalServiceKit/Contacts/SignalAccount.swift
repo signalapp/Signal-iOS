@@ -315,7 +315,7 @@ extension SignalAccount {
             owsFailDebug("Missing cnContactId.")
             return nil
         }
-        guard let contactAvatarData = Self.contactsManager.avatarData(for: cnContactId) else {
+        guard let contactAvatarData = SSKEnvironment.shared.contactManagerRef.avatarData(for: cnContactId) else {
             return nil
         }
         guard let contactAvatarJpegData = UIImage.validJpegData(fromAvatarData: contactAvatarData) else {

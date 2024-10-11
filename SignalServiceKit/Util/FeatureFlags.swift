@@ -258,7 +258,7 @@ public enum DebugFlags {
         title: LocalizationNotNeeded("Sender Key: Early placeholder expiration"),
         details: LocalizationNotNeeded("Shortens the valid window for message resend+recovery."),
         toggleHandler: { _ in
-            NSObject.messageDecrypter.cleanUpExpiredPlaceholders()
+            SSKEnvironment.shared.messageDecrypterRef.cleanUpExpiredPlaceholders()
         }
     )
 

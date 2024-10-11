@@ -18,7 +18,7 @@ class CallLinkApprovalRequestDetailsSheet: OWSTableSheetViewController {
     }
 
     private let deps = Deps(
-        contactsManager: NSObject.contactsManager,
+        contactsManager: SSKEnvironment.shared.contactManagerRef,
         db: DependenciesBridge.shared.db
     )
 

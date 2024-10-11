@@ -79,7 +79,7 @@ class MemberActionSheet: OWSTableSheetViewController {
 
     fileprivate static func fetchThreadViewModel(address: SignalServiceAddress) -> ThreadViewModel {
         // Avoid opening a write transaction if we can
-        guard let threadViewModel: ThreadViewModel = Self.databaseStorage.read(block: { transaction in
+        guard let threadViewModel: ThreadViewModel = SSKEnvironment.shared.databaseStorageRef.read(block: { transaction in
             guard let thread = TSContactThread.getWithContactAddress(
                 address,
                 transaction: transaction
@@ -90,7 +90,7 @@ class MemberActionSheet: OWSTableSheetViewController {
                 transaction: transaction
             )
         }) else {
-            return Self.databaseStorage.write { transaction in
+            return SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 let thread = TSContactThread.getOrCreateThread(
                     withContactAddress: address,
                     transaction: transaction
@@ -265,8 +265,8 @@ class MemberActionSheet: OWSTableSheetViewController {
             }
         ))
 
-        let isSystemContact = databaseStorage.read { tx in
-            return contactsManager.fetchSignalAccount(for: address, transaction: tx) != nil
+        let isSystemContact = SSKEnvironment.shared.databaseStorageRef.read { tx in
+            return SSKEnvironment.shared.contactManagerRef.fetchSignalAccount(for: address, transaction: tx) != nil
         }
         if isSystemContact {
             section.add(.item(
@@ -385,7 +385,7 @@ extension MemberActionSheet: ConversationHeaderDelegate {
 
     func presentAvatarViewController() {
         guard let avatarView = avatarView, avatarView.primaryImage != nil else { return }
-        guard let vc = databaseStorage.read(block: { readTx in
+        guard let vc = SSKEnvironment.shared.databaseStorageRef.read(block: { readTx in
             AvatarViewController(address: self.address, renderLocalUserAsNoteToSelf: false, readTx: readTx)
         }) else { return }
         present(vc, animated: true)
@@ -393,10 +393,10 @@ extension MemberActionSheet: ConversationHeaderDelegate {
 
     func didTapBadge() {
         guard avatarView != nil else { return }
-        let (profile, shortName) = databaseStorage.read { transaction in
+        let (profile, shortName) = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return (
-                profileManager.getUserProfile(for: address, transaction: transaction),
-                contactsManager.displayName(for: address, tx: transaction).resolvedValue(useShortNameIfAvailable: true)
+                SSKEnvironment.shared.profileManagerRef.getUserProfile(for: address, transaction: transaction),
+                SSKEnvironment.shared.contactManagerRef.displayName(for: address, tx: transaction).resolvedValue(useShortNameIfAvailable: true)
             )
         }
         guard let primaryBadge = profile?.primaryBadge?.badge else { return }

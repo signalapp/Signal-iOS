@@ -136,7 +136,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSString *_Nullable senderName = nil;
     if (self.sender) {
-        senderName = [self.contactManagerObjC shortDisplayNameStringForAddress:self.sender transaction:transaction];
+        senderName = [SSKEnvironment.shared.contactManagerObjcRef shortDisplayNameStringForAddress:self.sender
+                                                                                       transaction:transaction];
     }
 
     if (senderName) {

@@ -38,7 +38,7 @@ public extension TSPrivateStoryThread {
         case .explicit, .disabled:
             return addresses
         case .blockList:
-            return profileManager.allWhitelistedRegisteredAddresses(tx: transaction).filter { !addresses.contains($0) && !$0.isLocalAddress }
+            return SSKEnvironment.shared.profileManagerRef.allWhitelistedRegisteredAddresses(tx: transaction).filter { !addresses.contains($0) && !$0.isLocalAddress }
         }
     }
 
@@ -81,7 +81,7 @@ public extension TSPrivateStoryThread {
         }
 
         if updateStorageService, let distributionListIdentifier {
-            storageServiceManager.recordPendingUpdates(
+            SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(
                 updatedStoryDistributionListIds: [ distributionListIdentifier ]
             )
         }

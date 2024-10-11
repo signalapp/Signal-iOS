@@ -27,8 +27,8 @@ class FingerprintScanViewController: OWSViewController, OWSNavigationChildContro
         self.identityKey = recipientIdentity.identityKey
 
         self.fingerprint = fingerprint
-        self.contactName = Self.databaseStorage.read { tx in
-            return Self.contactsManager.displayName(for: SignalServiceAddress(recipientAci), tx: tx).resolvedValue()
+        self.contactName = SSKEnvironment.shared.databaseStorageRef.read { tx in
+            return SSKEnvironment.shared.contactManagerRef.displayName(for: SignalServiceAddress(recipientAci), tx: tx).resolvedValue()
         }
 
         super.init()

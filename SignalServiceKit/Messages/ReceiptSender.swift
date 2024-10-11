@@ -195,7 +195,7 @@ public class ReceiptSender: NSObject {
         do {
             defer { pendingTask?.complete() }
 
-            guard appReadiness.isAppReady, reachabilityManager.isReachable else {
+            guard appReadiness.isAppReady, SSKEnvironment.shared.reachabilityManagerRef.isReachable else {
                 return
             }
             guard sendingState.update(block: { $0.startIfPossible() }) else {
@@ -224,7 +224,7 @@ public class ReceiptSender: NSObject {
     }
 
     private func sendReceipts(receiptType: ReceiptType) async throws {
-        let pendingReceipts = databaseStorage.read { tx in fetchAllReceiptSets(receiptType: receiptType, tx: tx.asV2Read) }
+        let pendingReceipts = SSKEnvironment.shared.databaseStorageRef.read { tx in fetchAllReceiptSets(receiptType: receiptType, tx: tx.asV2Read) }
         try await withThrowingTaskGroup(of: Void.self) { taskGroup in
             for (aci, receiptBatches) in pendingReceipts {
                 taskGroup.addTask {
@@ -240,7 +240,7 @@ public class ReceiptSender: NSObject {
         to aci: Aci?,
         receiptBatches: [ReceiptBatch]
     ) async throws {
-        let sendPromise = await databaseStorage.awaitableWrite { tx -> Promise<Void>? in
+        let sendPromise = await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx -> Promise<Void>? in
             guard let aci else {
                 Logger.warn("Dropping receipts without an ACI")
                 return .value(())
@@ -252,7 +252,7 @@ public class ReceiptSender: NSObject {
                 return .value(())
             }
 
-            if self.blockingManager.isAddressBlocked(SignalServiceAddress(aci), transaction: tx) {
+            if SSKEnvironment.shared.blockingManagerRef.isAddressBlocked(SignalServiceAddress(aci), transaction: tx) {
                 Logger.warn("Dropping receipts for blocked \(aci)")
                 return .value(())
             }
@@ -317,7 +317,7 @@ public class ReceiptSender: NSObject {
     }
 
     private func dequeueReceipts(for receiptBatches: [ReceiptBatch], receiptType: ReceiptType) async {
-        await databaseStorage.awaitableWrite { tx in
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             for receiptBatch in receiptBatches {
                 let persistedSet = self._fetchReceiptSet(receiptType: receiptType, identifier: receiptBatch.identifier, tx: tx.asV2Write)
                 persistedSet.subtract(receiptBatch.receiptSet)

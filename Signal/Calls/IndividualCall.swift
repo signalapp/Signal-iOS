@@ -63,7 +63,7 @@ extension IndividualCallObserver {
  * This class' state should only be accessed on the main queue.
  */
 public class IndividualCall: CustomDebugStringConvertible {
-    private var databaseStorage: SDSDatabaseStorage { NSObject.databaseStorage }
+    private var databaseStorage: SDSDatabaseStorage { SSKEnvironment.shared.databaseStorageRef }
 
     // Mark -
 

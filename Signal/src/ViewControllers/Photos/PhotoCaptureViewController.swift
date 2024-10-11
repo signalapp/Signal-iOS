@@ -1305,7 +1305,7 @@ extension PhotoCaptureViewController: QRCodeSampleBufferScannerDelegate {
 
         qrCodeScanned = true
 
-        databaseStorage.read { tx in
+        SSKEnvironment.shared.databaseStorageRef.read { tx in
             UsernameQuerier().queryForUsernameLink(
                 link: usernameLink,
                 fromViewController: self,

@@ -20,7 +20,7 @@ public class StoryBadgeCountManager: NSObject, Dependencies {
     public func beginObserving(observer: StoryBadgeCountObserver) {
         self.observer = observer
 
-        Self.databaseStorage.appendDatabaseChangeDelegate(self)
+        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(computeBadgeCount),
@@ -39,9 +39,9 @@ public class StoryBadgeCountManager: NSObject, Dependencies {
     }
 
     public func markAllStoriesRead() {
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             // No-ops if the story was already read.
-            Self.systemStoryManager.setHasReadOnboardingStory(transaction: transaction, updateStorageService: true)
+            SSKEnvironment.shared.systemStoryManagerRef.setHasReadOnboardingStory(transaction: transaction, updateStorageService: true)
 
             var latestStoryPerContext = [StoryContext: StoryMessage]()
 
@@ -65,7 +65,7 @@ public class StoryBadgeCountManager: NSObject, Dependencies {
     private func computeBadgeCount() {
         guard observer != nil else { return }
 
-        let (count, isFailed) = databaseStorage.read { transaction -> (Int, Bool) in
+        let (count, isFailed) = SSKEnvironment.shared.databaseStorageRef.read { transaction -> (Int, Bool) in
             if StoryFinder.hasFailedStories(transaction: transaction) {
                 return (0, true)
             }

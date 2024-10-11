@@ -17,7 +17,7 @@ public class AccountServiceClient: NSObject {
     // MARK: - Public
 
     public func getPreKeysCount(for identity: OWSIdentity) -> Promise<(ecCount: Int, pqCount: Int)> {
-        return serviceClient.getAvailablePreKeys(for: identity)
+        return SignalServiceRestClient.shared.getAvailablePreKeys(for: identity)
     }
 
     public func setPreKeys(
@@ -28,7 +28,7 @@ public class AccountServiceClient: NSObject {
         pqPreKeyRecords: [KyberPreKeyRecord]?,
         auth: ChatServiceAuth
     ) -> Promise<Void> {
-        return serviceClient.registerPreKeys(
+        return SignalServiceRestClient.shared.registerPreKeys(
             for: identity,
             signedPreKeyRecord: signedPreKeyRecord,
             preKeyRecords: preKeyRecords,
@@ -39,14 +39,14 @@ public class AccountServiceClient: NSObject {
     }
 
     public func setSignedPreKey(_ signedPreKey: SignalServiceKit.SignedPreKeyRecord, for identity: OWSIdentity) -> Promise<Void> {
-        return serviceClient.setCurrentSignedPreKey(signedPreKey, for: identity)
+        return SignalServiceRestClient.shared.setCurrentSignedPreKey(signedPreKey, for: identity)
     }
 
     public func updatePrimaryDeviceAccountAttributes() async throws -> AccountAttributes {
-        return try await serviceClient.updatePrimaryDeviceAccountAttributes()
+        return try await SignalServiceRestClient.shared.updatePrimaryDeviceAccountAttributes()
     }
 
     public func getAccountWhoAmI() -> Promise<WhoAmIRequestFactory.Responses.WhoAmI> {
-        return serviceClient.getAccountWhoAmI()
+        return SignalServiceRestClient.shared.getAccountWhoAmI()
     }
 }

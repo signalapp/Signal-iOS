@@ -40,7 +40,7 @@ public class GroupInviteLinksUI: UIView {
         }
 
         // If the group already exists in the database, open it.
-        if let existingGroupThread = (databaseStorage.read { transaction in
+        if let existingGroupThread = (SSKEnvironment.shared.databaseStorageRef.read { transaction in
             TSGroupThread.fetch(groupId: groupV2ContextInfo.groupId, transaction: transaction)
         }), existingGroupThread.isLocalUserFullMember || existingGroupThread.isLocalUserRequestingMember {
             SignalApp.shared.presentConversationForThread(existingGroupThread, animated: true)
@@ -95,7 +95,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController, Dependencies {
         header.backgroundColor = Theme.actionSheetBackgroundColor
         self.customHeader = header
 
-        avatarView.image = Self.avatarBuilder.avatarImage(
+        avatarView.image = SSKEnvironment.shared.avatarBuilderRef.avatarImage(
             forGroupId: groupV2ContextInfo.groupId,
             diameterPoints: Self.avatarSize
         )
@@ -216,7 +216,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController, Dependencies {
     private func loadLinkPreview() {
         firstly(on: DispatchQueue.global()) {
             Promise.wrapAsync {
-                try await self.groupsV2Impl.fetchGroupInviteLinkPreview(
+                try await SSKEnvironment.shared.groupsV2Ref.fetchGroupInviteLinkPreview(
                     inviteLinkPassword: self.groupInviteLinkInfo.inviteLinkPassword,
                     groupSecretParams: self.groupV2ContextInfo.groupSecretParams,
                     allowCached: false
@@ -331,7 +331,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController, Dependencies {
     private func loadGroupAvatar(avatarUrlPath: String) {
         firstly(on: DispatchQueue.global()) {
             Promise.wrapAsync {
-                try await self.groupsV2Impl.fetchGroupInviteLinkAvatar(
+                try await SSKEnvironment.shared.groupsV2Ref.fetchGroupInviteLinkAvatar(
                     avatarUrlPath: avatarUrlPath,
                     groupSecretParams: self.groupV2ContextInfo.groupSecretParams
                 )
@@ -410,7 +410,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController, Dependencies {
                 // Kick off a fresh attempt to download the link preview.
                 // We cannot join the group without the preview.
                 return Promise.wrapAsync {
-                    try await self.groupsV2Impl.fetchGroupInviteLinkPreview(
+                    try await SSKEnvironment.shared.groupsV2Ref.fetchGroupInviteLinkPreview(
                         inviteLinkPassword: self.groupInviteLinkInfo.inviteLinkPassword,
                         groupSecretParams: self.groupV2ContextInfo.groupSecretParams,
                         allowCached: false
@@ -427,7 +427,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController, Dependencies {
                 }
                 return firstly(on: DispatchQueue.global()) {
                     Promise.wrapAsync {
-                        try await self.groupsV2Impl.fetchGroupInviteLinkAvatar(
+                        try await SSKEnvironment.shared.groupsV2Ref.fetchGroupInviteLinkAvatar(
                             avatarUrlPath: avatarUrlPath,
                             groupSecretParams: self.groupV2ContextInfo.groupSecretParams
                         )

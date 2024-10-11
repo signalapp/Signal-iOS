@@ -61,9 +61,9 @@ class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollection
     }
 
     convenience init(fetchingDataFromLocalProfileWithDelegate delegate: BadgeConfigurationDelegate) {
-        let snapshot = Self.profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: false)
+        let snapshot = SSKEnvironment.shared.profileManagerImplRef.localProfileSnapshot(shouldIncludeAvatar: false)
         let allBadges = snapshot.profileBadgeInfo ?? []
-        let shouldDisplayOnProfile = Self.subscriptionManager.displayBadgesOnProfile
+        let shouldDisplayOnProfile = SSKEnvironment.shared.subscriptionManagerRef.displayBadgesOnProfile
 
         self.init(availableBadges: allBadges, shouldDisplayOnProfile: shouldDisplayOnProfile, delegate: delegate)
     }
@@ -156,8 +156,8 @@ class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollection
                             let collectionView = BadgeCollectionView(dataSource: self)
 
                             if let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress {
-                                let localShortName = self.databaseStorage.read {
-                                    return self.contactsManager.displayName(for: localAddress, tx: $0).resolvedValue(useShortNameIfAvailable: true)
+                                let localShortName = SSKEnvironment.shared.databaseStorageRef.read {
+                                    return SSKEnvironment.shared.contactManagerRef.displayName(for: localAddress, tx: $0).resolvedValue(useShortNameIfAvailable: true)
                                 }
                                 collectionView.badgeSelectionMode = .detailsSheet(owner: .local(shortName: localShortName))
                             } else {

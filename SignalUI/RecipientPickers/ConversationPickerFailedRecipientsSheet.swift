@@ -108,7 +108,7 @@ public class ConversationPickerFailedRecipientsSheet: OWSTableSheetViewControlle
                 guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationPickerCell.reuseIdentifier) as? ConversationPickerCell else {
                     return UITableViewCell()
                 }
-                Self.databaseStorage.read {
+                SSKEnvironment.shared.databaseStorageRef.read {
                     cell.configure(conversationItem: item, transaction: $0)
                 }
                 cell.showsSelectionUI = false
@@ -128,7 +128,7 @@ public class ConversationPickerFailedRecipientsSheet: OWSTableSheetViewControlle
                     guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationPickerCell.reuseIdentifier) as? ConversationPickerCell else {
                         return UITableViewCell()
                     }
-                    Self.databaseStorage.read {
+                    SSKEnvironment.shared.databaseStorageRef.read {
                         cell.configure(conversationItem: item, transaction: $0)
                     }
                     cell.showsSelectionUI = false

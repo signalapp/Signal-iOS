@@ -19,7 +19,7 @@ extension AccountAttributes {
         let registrationId = DependenciesBridge.shared.tsAccountManager.getOrGenerateAciRegistrationId(tx: transaction.asV2Write)
         let pniRegistrationId = DependenciesBridge.shared.tsAccountManager.getOrGeneratePniRegistrationId(tx: transaction.asV2Write)
 
-        let profileKey = dependencies.profileManager.localProfileKey
+        let profileKey = SSKEnvironment.shared.profileManagerRef.localProfileKey
         let udAccessKey: String
         do {
             udAccessKey = try SMKUDAccessKey(profileKey: profileKey.keyData).keyData.base64EncodedString()
@@ -27,16 +27,16 @@ extension AccountAttributes {
             // Crash app if UD cannot be enabled.
             owsFail("Could not determine UD access key: \(error).")
         }
-        let allowUnrestrictedUD = dependencies.udManager.shouldAllowUnrestrictedAccessLocal(transaction: transaction)
+        let allowUnrestrictedUD = SSKEnvironment.shared.udManagerRef.shouldAllowUnrestrictedAccessLocal(transaction: transaction)
 
         let twoFaMode: TwoFactorAuthMode
         if
             let reglockToken = svr.data(for: .registrationLock, transaction: transaction.asV2Read),
-            dependencies.ows2FAManager.isRegistrationLockV2Enabled(transaction: transaction)
+            SSKEnvironment.shared.ows2FAManagerRef.isRegistrationLockV2Enabled(transaction: transaction)
         {
             twoFaMode = .v2(reglockToken: reglockToken.canonicalStringRepresentation)
         } else if
-            let pinCode = dependencies.ows2FAManager.pinCode(transaction: transaction),
+            let pinCode = SSKEnvironment.shared.ows2FAManagerRef.pinCode(transaction: transaction),
             pinCode.isEmpty.negated,
             svr.hasBackedUpMasterKey(transaction: transaction.asV2Read).negated
         {

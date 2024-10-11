@@ -85,7 +85,7 @@ public class SelectMyStoryRecipientsViewController: BaseMemberViewController {
     private func savePressed() {
         AssertIsOnMainThread()
 
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             self.thread.updateWithStoryViewMode(
                 self.mode,
                 addresses: self.recipientSet.orderedMembers.compactMap { $0.address },

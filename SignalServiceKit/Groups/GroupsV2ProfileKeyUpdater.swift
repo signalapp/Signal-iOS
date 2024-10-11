@@ -129,7 +129,7 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
         else {
             return
         }
-        guard reachabilityManager.isReachable else {
+        guard SSKEnvironment.shared.reachabilityManagerRef.isReachable else {
             return
         }
 
@@ -138,7 +138,7 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
                 // Only one update should be in flight at a time.
                 return
             }
-            guard let groupId = (self.databaseStorage.read { transaction in
+            guard let groupId = (SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 return self.keyValueStore.anyDataValue(transaction: transaction)
             }) else {
                 return
@@ -195,7 +195,7 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
 
     private func markAsComplete(groupId: Data) {
         serialQueue.async {
-            self.databaseStorage.write { transaction in
+            SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 let key = self.key(for: groupId)
                 self.keyValueStore.removeValue(forKey: key, transaction: transaction)
             }
@@ -216,16 +216,16 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
     }
 
     private func tryToUpdate(groupId: Data) -> Promise<Void> {
-        let profileKeyData = profileManager.localProfileKey.keyData
+        let profileKeyData = SSKEnvironment.shared.profileManagerRef.localProfileKey.keyData
         guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci else {
             owsFailDebug("missing local address")
             return Promise(error: GroupsV2Error.shouldDiscard)
         }
 
         return firstly {
-            return self.messageProcessor.waitForFetchingAndProcessing()
+            return SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing()
         }.map(on: DispatchQueue.global()) { () throws -> TSGroupThread in
-            return try self.databaseStorage.read { transaction throws in
+            return try SSKEnvironment.shared.databaseStorageRef.read { transaction throws in
                 guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
                     throw GroupsV2Error.shouldDiscard
                 }
@@ -238,7 +238,7 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
                     throw OWSAssertionError("Invalid group model.")
                 }
                 return Promise.wrapAsync {
-                    try await self.groupsV2Impl.fetchCurrentGroupV2Snapshot(groupModel: groupModel)
+                    try await SSKEnvironment.shared.groupsV2Ref.fetchCurrentGroupV2Snapshot(groupModel: groupModel)
                 }
             }.map(on: DispatchQueue.global()) { (groupV2Snapshot: GroupV2Snapshot) throws -> (TSGroupThread, UInt32) in
                 guard groupV2Snapshot.groupMembership.isFullMember(localAci) else {
@@ -281,7 +281,7 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
                 let groupId = groupModel.groupId
                 let groupSecretParams = try groupModel.secretParams()
                 return Promise.wrapAsync {
-                    _ = try await Self.groupV2Updates.tryToRefreshV2GroupUpToCurrentRevisionImmediately(
+                    _ = try await SSKEnvironment.shared.groupV2UpdatesRef.tryToRefreshV2GroupUpToCurrentRevisionImmediately(
                         groupId: groupId,
                         groupSecretParams: groupSecretParams
                     )
@@ -297,7 +297,7 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
                         throw OWSAssertionError("Invalid group model.")
                     }
                     return Promise.wrapAsync {
-                        try await self.groupsV2Impl.fetchCurrentGroupV2Snapshot(groupModel: groupModel)
+                        try await SSKEnvironment.shared.groupsV2Ref.fetchCurrentGroupV2Snapshot(groupModel: groupModel)
                     }
                 }.map(on: DispatchQueue.global()) { (groupV2Snapshot: GroupV2Snapshot) throws -> Void in
                     guard groupV2Snapshot.groupMembership.isFullMember(localAci) else {
@@ -306,8 +306,8 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
                     }
                     guard groupV2Snapshot.profileKeys[localAci] == profileKeyData else {
                         owsFailDebug("Update failed.")
-                        self.databaseStorage.write { tx in
-                            self.versionedProfiles.clearProfileKeyCredential(for: AciObjC(localAci), transaction: tx)
+                        SSKEnvironment.shared.databaseStorageRef.write { tx in
+                            SSKEnvironment.shared.versionedProfilesRef.clearProfileKeyCredential(for: AciObjC(localAci), transaction: tx)
                         }
                         return
                     }

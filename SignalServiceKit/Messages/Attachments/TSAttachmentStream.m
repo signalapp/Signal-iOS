@@ -720,7 +720,7 @@ NSString *NSStringForAttachmentThumbnailQuality(TSAttachmentThumbnailQuality val
     OWSAssertDebug(changeBlock);
 
     NSString *uniqueId = self.uniqueId;
-    DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *tx) {
+    DatabaseStorageAsyncWrite(SSKEnvironment.shared.databaseStorageRef, ^(SDSAnyWriteTransaction *tx) {
         // We load a new instance before using anyUpdateWithTransaction() since it
         // isn't thread-safe to mutate the current instance async.
         TSAttachmentStream *_Nullable latestInstance = [TSAttachmentStream anyFetchAttachmentStreamWithUniqueId:uniqueId

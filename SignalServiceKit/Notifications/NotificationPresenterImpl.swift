@@ -173,10 +173,10 @@ let kAudioNotificationsThrottleInterval: TimeInterval = 5
 public class NotificationPresenterImpl: NotificationPresenter {
     private let presenter = UserNotificationPresenter()
 
-    private var contactManager: any ContactManager { NSObject.contactsManager }
-    private var databaseStorage: SDSDatabaseStorage { NSObject.databaseStorage }
+    private var contactManager: any ContactManager { SSKEnvironment.shared.contactManagerRef }
+    private var databaseStorage: SDSDatabaseStorage { SSKEnvironment.shared.databaseStorageRef }
     private var identityManager: any OWSIdentityManager { DependenciesBridge.shared.identityManager }
-    private var preferences: Preferences { NSObject.preferences }
+    private var preferences: Preferences { SSKEnvironment.shared.preferencesRef }
     private var tsAccountManager: any TSAccountManager { DependenciesBridge.shared.tsAccountManager }
 
     public init() {

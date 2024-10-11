@@ -81,7 +81,7 @@ public class ContactSearchResult: Comparable, Dependencies {
         self.recipientAddress = recipientAddress
         self.comparableName = ComparableDisplayName(
             address: recipientAddress,
-            displayName: Self.contactsManager.displayName(for: recipientAddress, tx: transaction),
+            displayName: SSKEnvironment.shared.contactManagerRef.displayName(for: recipientAddress, tx: transaction),
             config: .current()
         )
         let thread = ContactThreadFinder().contactThread(for: recipientAddress, tx: transaction)
@@ -305,7 +305,7 @@ public class FullTextSearcher: NSObject {
         }
 
         var addresses = SearchableNameFinder(
-            contactManager: contactsManager,
+            contactManager: SSKEnvironment.shared.contactManagerRef,
             searchableNameIndexer: DependenciesBridge.shared.searchableNameIndexer,
             phoneNumberVisibilityFetcher: DependenciesBridge.shared.phoneNumberVisibilityFetcher,
             recipientDatabaseTable: DependenciesBridge.shared.recipientDatabaseTable
@@ -357,7 +357,7 @@ public class FullTextSearcher: NSObject {
         }
 
         for address in addresses {
-            if profileManager.isUser(inProfileWhitelist: address, transaction: tx) {
+            if SSKEnvironment.shared.profileManagerRef.isUser(inProfileWhitelist: address, transaction: tx) {
                 contactResults.append(ContactSearchResult(recipientAddress: address, transaction: tx))
             }
         }
@@ -381,7 +381,7 @@ public class FullTextSearcher: NSObject {
         if searchTerms.contains(where: { localIdentifiers.phoneNumber.contains($0) }) {
             return .nameOrNumber
         }
-        let displayName = contactsManager.displayName(for: localIdentifiers.aciAddress, tx: tx).resolvedValue()
+        let displayName = SSKEnvironment.shared.contactManagerRef.displayName(for: localIdentifiers.aciAddress, tx: tx).resolvedValue()
         if searchTerms.contains(where: { displayName.contains($0) }) {
             return .nameOrNumber
         }
@@ -424,7 +424,7 @@ public class FullTextSearcher: NSObject {
         var groupThreadIds = Set<String>()
         var messages: [UInt64: ConversationSearchResult<MessageSortKey>] = [:]
 
-        let nameResolver = NameResolverImpl(contactsManager: contactsManager)
+        let nameResolver = NameResolverImpl(contactsManager: SSKEnvironment.shared.contactManagerRef)
 
         var threadCache = [String: TSThread?]()
         func fetchThread<T: TSThread>(threadUniqueId: String) -> T? {
@@ -575,7 +575,7 @@ public class FullTextSearcher: NSObject {
         }
 
         var addresses = try SearchableNameFinder(
-            contactManager: contactsManager,
+            contactManager: SSKEnvironment.shared.contactManagerRef,
             searchableNameIndexer: DependenciesBridge.shared.searchableNameIndexer,
             phoneNumberVisibilityFetcher: DependenciesBridge.shared.phoneNumberVisibilityFetcher,
             recipientDatabaseTable: DependenciesBridge.shared.recipientDatabaseTable
@@ -613,7 +613,7 @@ public class FullTextSearcher: NSObject {
         for address in addresses {
             appendAddress(
                 address,
-                isInWhitelist: profileManager.isUser(inProfileWhitelist: address, transaction: transaction),
+                isInWhitelist: SSKEnvironment.shared.profileManagerRef.isUser(inProfileWhitelist: address, transaction: transaction),
                 fetchGroups: true,
                 fetchMentions: true
             )
@@ -718,7 +718,7 @@ public class FullTextSearcher: NSObject {
                 owsFail("Can't search if you've never been registered.")
             }
             let addresses = SearchableNameFinder(
-                contactManager: contactsManager,
+                contactManager: SSKEnvironment.shared.contactManagerRef,
                 searchableNameIndexer: DependenciesBridge.shared.searchableNameIndexer,
                 phoneNumberVisibilityFetcher: DependenciesBridge.shared.phoneNumberVisibilityFetcher,
                 recipientDatabaseTable: DependenciesBridge.shared.recipientDatabaseTable

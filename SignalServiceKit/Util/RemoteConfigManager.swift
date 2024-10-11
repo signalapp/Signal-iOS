@@ -10,7 +10,7 @@ import LibSignalClient
 public class RemoteConfig {
 
     public static var current: RemoteConfig {
-        return NSObject.remoteConfigManager.cachedConfig ?? .emptyConfig
+        return SSKEnvironment.shared.remoteConfigManagerRef.cachedConfig ?? .emptyConfig
     }
 
     /// Difference between the last time the server says it is and the time our
@@ -339,7 +339,7 @@ public class RemoteConfig {
 
         guard
             let localPhoneNumber,
-            let localCallingCode = NSObject.phoneNumberUtil.parseE164(localPhoneNumber)?.getCallingCode()?.stringValue
+            let localCallingCode = SSKEnvironment.shared.phoneNumberUtilRef.parseE164(localPhoneNumber)?.getCallingCode()?.stringValue
         else {
             owsFailDebug("Invalid local number")
             return nil

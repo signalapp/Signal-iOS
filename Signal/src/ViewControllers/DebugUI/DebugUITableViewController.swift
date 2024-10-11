@@ -62,8 +62,8 @@ class DebugUITableViewController: OWSTableViewController {
             subsectionItems.append(itemForSubsection(DebugUICalling(), viewController: viewController, thread: thread))
         }
         subsectionItems += [
-            itemForSubsection(DebugUINotifications(databaseStorage: databaseStorage, notificationPresenterImpl: notificationPresenterImpl), viewController: viewController, thread: thread),
-            itemForSubsection(DebugUIStress(contactsManager: contactsManager, databaseStorage: databaseStorage, messageSender: messageSender), viewController: viewController, thread: thread),
+            itemForSubsection(DebugUINotifications(databaseStorage: SSKEnvironment.shared.databaseStorageRef, notificationPresenterImpl: notificationPresenterImpl), viewController: viewController, thread: thread),
+            itemForSubsection(DebugUIStress(contactsManager: SSKEnvironment.shared.contactManagerRef, databaseStorage: SSKEnvironment.shared.databaseStorageRef, messageSender: SSKEnvironment.shared.messageSenderRef), viewController: viewController, thread: thread),
             itemForSubsection(DebugUISyncMessages(), viewController: viewController, thread: thread),
 
             OWSTableItem(

@@ -198,7 +198,7 @@ public class ProfileChanges: MTLModel {
             return nil
         }
 
-        if let phoneNumber = address.phoneNumber, let systemContactName = contactsManager.systemContactName(for: phoneNumber, tx: tx) {
+        if let phoneNumber = address.phoneNumber, let systemContactName = SSKEnvironment.shared.contactManagerRef.systemContactName(for: phoneNumber, tx: tx) {
             let formatString = OWSLocalizedString(
                 "PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT",
                 comment: "The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name}"

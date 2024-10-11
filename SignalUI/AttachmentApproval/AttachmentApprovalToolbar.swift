@@ -304,7 +304,7 @@ extension AttachmentApprovalToolbar {
         guard !configuration.isViewOnceOn && configuration.canToggleViewOnce else {
             return false
         }
-        guard !preferences.wasViewOnceTooltipShown else {
+        guard !SSKEnvironment.shared.preferencesRef.wasViewOnceTooltipShown else {
             return false
         }
         return true
@@ -325,7 +325,7 @@ extension AttachmentApprovalToolbar {
         viewOnceTooltip = tooltip
 
         DispatchQueue.global().async {
-            self.preferences.setWasViewOnceTooltipShown()
+            SSKEnvironment.shared.preferencesRef.setWasViewOnceTooltipShown()
 
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 5) { [weak self] in
                 self?.removeViewOnceTooltip()

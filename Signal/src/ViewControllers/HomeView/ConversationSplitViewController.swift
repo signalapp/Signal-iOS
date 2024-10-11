@@ -169,7 +169,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         // can maintain its scroll position when navigating back.
         homeVC.chatListViewController.updateLastViewedThread(thread, animated: animated)
 
-        let vc = databaseStorage.read { tx in
+        let vc = SSKEnvironment.shared.databaseStorageRef.read { tx in
             ConversationViewController.load(
                 appReadiness: appReadiness,
                 threadViewModel: ThreadViewModel(thread: thread, forChatList: false, transaction: tx),

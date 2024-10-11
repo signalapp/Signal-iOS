@@ -47,7 +47,7 @@ public class PhoneNumber: NSObject, NSCoding, Comparable {
     }
 
     public func isValid() -> Bool {
-        phoneNumberUtil.isValidNumber(nbPhoneNumber)
+        SSKEnvironment.shared.phoneNumberUtilRef.isValidNumber(nbPhoneNumber)
     }
 
     public func compare(_ other: PhoneNumber) -> ComparisonResult {
@@ -93,7 +93,7 @@ public class PhoneNumber: NSObject, NSCoding, Comparable {
             return e164
         }
 
-        guard let parsedPhoneNumber = phoneNumberUtil.parseE164(e164) else {
+        guard let parsedPhoneNumber = SSKEnvironment.shared.phoneNumberUtilRef.parseE164(e164) else {
             Logger.warn("could not parse phone number")
             return e164
         }
@@ -108,6 +108,6 @@ public class PhoneNumber: NSObject, NSCoding, Comparable {
         // Int(String) could be used here except it doesn't skip whitespace and so would be a change
         // from the objc NSString.integerValue behavior...
         let countryCallingCode = (countryCodeString.dropFirst() as NSString).integerValue
-        return phoneNumberUtil.getRegionCodeForCountryCode(NSNumber(value: countryCallingCode))
+        return SSKEnvironment.shared.phoneNumberUtilRef.getRegionCodeForCountryCode(NSNumber(value: countryCallingCode))
     }
 }

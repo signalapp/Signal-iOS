@@ -40,7 +40,7 @@ public enum StorySharing: Dependencies {
 
     internal static func text(for messageBody: MessageBody, with linkPreview: OWSLinkPreviewDraft?) -> StyleOnlyMessageBody? {
         // Hydrate any mentions in the message body but preserve styles.
-        let hydratedBody = databaseStorage.read {
+        let hydratedBody = SSKEnvironment.shared.databaseStorageRef.read {
             return messageBody
                 .hydrating(
                     mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: $0.asV2Read)

@@ -99,7 +99,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
     }
 
-    lazy var outputQualityLevel: ImageQualityLevel = databaseStorage.read { .resolvedQuality(tx: $0) }
+    lazy var outputQualityLevel: ImageQualityLevel = SSKEnvironment.shared.databaseStorageRef.read { .resolvedQuality(tx: $0) }
 
     public weak var approvalDelegate: AttachmentApprovalViewControllerDelegate?
     public weak var approvalDataSource: AttachmentApprovalViewControllerDataSource?
@@ -852,7 +852,7 @@ extension AttachmentApprovalViewController {
         owsAssertDebug(options.contains(.canToggleViewOnce), "Cannot toggle `View Once`")
 
         isViewOnceEnabled = !isViewOnceEnabled
-        preferences.setWasViewOnceTooltipShown()
+        SSKEnvironment.shared.preferencesRef.setWasViewOnceTooltipShown()
 
         updateBottomToolView(animated: true)
     }

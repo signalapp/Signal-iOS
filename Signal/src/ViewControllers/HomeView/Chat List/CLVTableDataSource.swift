@@ -109,7 +109,7 @@ class CLVTableDataSource: NSObject {
         if let value = threadViewModelCache.get(key: thread.uniqueId) {
             return value
         }
-        let threadViewModel = databaseStorage.read { transaction in
+        let threadViewModel = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             ThreadViewModel(thread: thread, forChatList: true, transaction: transaction)
         }
         threadViewModelCache.set(key: thread.uniqueId, value: threadViewModel)
@@ -814,7 +814,7 @@ extension CLVTableDataSource {
                 throw CLVPreloadError.alreadyLoaded
             }
             // This is the expensive work we do off the main thread.
-            let threadViewModel = Self.databaseStorage.read { transaction in
+            let threadViewModel = SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 ThreadViewModel(thread: thread, forChatList: true, transaction: transaction)
             }
             let configuration = Self.buildCellConfiguration(threadViewModel: threadViewModel,

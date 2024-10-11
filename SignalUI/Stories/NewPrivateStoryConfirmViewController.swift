@@ -118,7 +118,7 @@ public class NewPrivateStoryConfirmViewController: OWSTableViewController2 {
             selector: #selector(didToggleReplies)
         ))
 
-        let viewerAddresses = databaseStorage.read { transaction in
+        let viewerAddresses = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return BaseMemberViewController.sortedMemberAddresses(
                 recipientSet: self.recipientSet,
                 tx: transaction
@@ -141,7 +141,7 @@ public class NewPrivateStoryConfirmViewController: OWSTableViewController2 {
 
                     cell.selectionStyle = .none
 
-                    Self.databaseStorage.read { transaction in
+                    SSKEnvironment.shared.databaseStorageRef.read { transaction in
                         let configuration = ContactCellConfiguration(address: address, localUserDisplayMode: .asUser)
                         cell.configure(configuration: configuration, transaction: transaction)
                     }
@@ -169,11 +169,11 @@ public class NewPrivateStoryConfirmViewController: OWSTableViewController2 {
             addresses: recipientSet.orderedMembers.compactMap { $0.address },
             viewMode: .explicit
         )
-        databaseStorage.asyncWrite { transaction in
+        SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
             newStory.anyInsert(transaction: transaction)
 
             if let dlistId = newStory.distributionListIdentifier {
-                Self.storageServiceManager.recordPendingUpdates(updatedStoryDistributionListIds: [dlistId])
+                SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(updatedStoryDistributionListIds: [dlistId])
             }
         } completion: { [weak self] in
             guard let self = self else { return }

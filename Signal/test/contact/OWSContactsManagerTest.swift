@@ -20,7 +20,7 @@ class OWSContactsManagerTest: SignalBaseTest {
         super.setUp()
 
         // Create local account.
-        databaseStorage.write { tx in
+        SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: .forUnitTests,
                 tx: tx.asV2Write
@@ -150,7 +150,7 @@ class OWSContactsManagerTest: SignalBaseTest {
         }
 
         self.read { tx in
-            let contactsManager = self.contactsManager as! OWSContactsManager
+            let contactsManager = SSKEnvironment.shared.contactManagerRef as! OWSContactsManager
             let actual = contactsManager.displayNames(
                 for: [aliceAddress, bobAddress],
                 tx: tx
@@ -171,7 +171,7 @@ class OWSContactsManagerTest: SignalBaseTest {
         })
 
         read { transaction in
-            let contactsManager = self.contactsManager as! OWSContactsManager
+            let contactsManager = SSKEnvironment.shared.contactManagerRef as! OWSContactsManager
             let actual = contactsManager.displayNames(for: addresses, tx: transaction).map { $0.resolvedValue() }
             let expected = ["Alice Aliceson (home)", "Bob Bobson (home)"]
             XCTAssertEqual(actual, expected)
@@ -180,12 +180,12 @@ class OWSContactsManagerTest: SignalBaseTest {
 
     func testGetDisplayNamesWithProfileFullNames() {
         let addresses = [SignalServiceAddress.randomForTesting(), SignalServiceAddress.randomForTesting()]
-        (self.profileManager as! OWSFakeProfileManager).fakeUserProfiles = [
+        (SSKEnvironment.shared.profileManagerRef as! OWSFakeProfileManager).fakeUserProfiles = [
             addresses[0]: makeUserProfile(givenName: "Alice", familyName: "Aliceson"),
             addresses[1]: makeUserProfile(givenName: "Bob", familyName: "Bobson"),
         ]
         read { transaction in
-            let contactsManager = self.contactsManager as! OWSContactsManager
+            let contactsManager = SSKEnvironment.shared.contactManagerRef as! OWSContactsManager
             let actual = contactsManager.displayNames(for: addresses, tx: transaction).map { $0.resolvedValue() }
             let expected = ["Alice Aliceson", "Bob Bobson"]
             XCTAssertEqual(actual, expected)
@@ -198,9 +198,9 @@ class OWSContactsManagerTest: SignalBaseTest {
             SignalServiceAddress(phoneNumber: "+17035559901")
         ]
         // Prevent default fake name from being used.
-        (self.profileManager as! OWSFakeProfileManager).fakeUserProfiles = [:]
+        (SSKEnvironment.shared.profileManagerRef as! OWSFakeProfileManager).fakeUserProfiles = [:]
         read { transaction in
-            let contactsManager = self.contactsManager as! OWSContactsManager
+            let contactsManager = SSKEnvironment.shared.contactManagerRef as! OWSContactsManager
             let actual = contactsManager.displayNames(for: addresses, tx: transaction).map { $0.resolvedValue() }
             let expected = ["+17035559900", "+17035559901"]
             XCTAssertEqual(actual, expected)
@@ -221,10 +221,10 @@ class OWSContactsManagerTest: SignalBaseTest {
         }
 
         // Prevent default fake names from being used.
-        (profileManager as! OWSFakeProfileManager).fakeUserProfiles = [:]
+        (SSKEnvironment.shared.profileManagerRef as! OWSFakeProfileManager).fakeUserProfiles = [:]
 
         read { transaction in
-            let contactsManager = self.contactsManager as! OWSContactsManager
+            let contactsManager = SSKEnvironment.shared.contactManagerRef as! OWSContactsManager
             let actual = contactsManager.displayNames(for: addresses, tx: transaction).map { $0.resolvedValue() }
             let expected = ["alice", "bob"]
             XCTAssertEqual(actual, expected)
@@ -236,10 +236,10 @@ class OWSContactsManagerTest: SignalBaseTest {
 
         // Intentionally do not set any mock usernames. Additionally, prevent
         // default fake names from being used.
-        (profileManager as! OWSFakeProfileManager).fakeUserProfiles = [:]
+        (SSKEnvironment.shared.profileManagerRef as! OWSFakeProfileManager).fakeUserProfiles = [:]
 
         read { transaction in
-            let contactsManager = self.contactsManager as! OWSContactsManager
+            let contactsManager = SSKEnvironment.shared.contactManagerRef as! OWSContactsManager
             let actual = contactsManager.displayNames(for: addresses, tx: transaction).map { $0.resolvedValue() }
             let expected = ["Unknown", "Unknown"]
             XCTAssertEqual(actual, expected)
@@ -254,7 +254,7 @@ class OWSContactsManagerTest: SignalBaseTest {
         createAccounts([aliceAccount])
 
         let bobAddress = SignalServiceAddress.randomForTesting()
-        (profileManager as! OWSFakeProfileManager).fakeUserProfiles = [
+        (SSKEnvironment.shared.profileManagerRef as! OWSFakeProfileManager).fakeUserProfiles = [
             bobAddress: makeUserProfile(givenName: "Bob", familyName: "Bobson"),
         ]
 
@@ -287,9 +287,8 @@ class OWSContactsManagerTest: SignalBaseTest {
         }
 
         read { transaction in
-            let contactsManager = self.contactsManager as! OWSContactsManager
             let addresses = [aliceAddress, bobAddress, carolAddress, daveAddress, eveAddress, feliciaAddress]
-            let actual = contactsManager.displayNames(for: addresses, tx: transaction).map { $0.resolvedValue() }
+            let actual = SSKEnvironment.shared.contactManagerRef.displayNames(for: addresses, tx: transaction).map { $0.resolvedValue() }
             let expected = ["Alice Aliceson (home)", "Bob Bobson", "+17035559900", "dave", "Unknown", "Felicia Felicity"]
             XCTAssertEqual(actual, expected)
         }
@@ -306,7 +305,7 @@ class OWSContactsManagerTest: SignalBaseTest {
         })
 
         read { transaction in
-            let contactsManager = self.contactsManager as! OWSContactsManager
+            let contactsManager = SSKEnvironment.shared.contactManagerRef as! OWSContactsManager
             let actual = contactsManager.displayNames(for: addresses, tx: transaction).map { $0.resolvedValue() }
             let expected = ["Alice (home)", "Bob (home)"]
             XCTAssertEqual(actual, expected)

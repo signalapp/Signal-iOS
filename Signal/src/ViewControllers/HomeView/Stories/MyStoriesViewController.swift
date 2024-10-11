@@ -35,7 +35,7 @@ class MyStoriesViewController: OWSViewController, FailedStorySendDisplayControll
         self.spoilerState = spoilerState
         super.init()
         hidesBottomBarWhenPushed = true
-        databaseStorage.appendDatabaseChangeDelegate(self)
+        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
     }
 
     override func loadView() {
@@ -88,7 +88,7 @@ class MyStoriesViewController: OWSViewController, FailedStorySendDisplayControll
     private func reloadStories() {
         AssertIsOnMainThread()
 
-        let outgoingStories = databaseStorage.read { transaction in
+        let outgoingStories = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             StoryFinder.outgoingStories(transaction: transaction)
                 .flatMap { OutgoingStoryItem.build(message: $0, transaction: transaction) }
         }
@@ -120,7 +120,7 @@ class MyStoriesViewController: OWSViewController, FailedStorySendDisplayControll
     }
 
     func cell(for message: StoryMessage, and context: StoryContext) -> SentStoryCell? {
-        guard let thread = databaseStorage.read(block: { context.thread(transaction: $0) }) else { return nil }
+        guard let thread = SSKEnvironment.shared.databaseStorageRef.read(block: { context.thread(transaction: $0) }) else { return nil }
         guard let section = items.orderedKeys.firstIndex(of: thread.uniqueId) else { return nil }
         guard let row = items[thread.uniqueId]?.firstIndex(where: { $0.message.uniqueId == message.uniqueId }) else { return nil }
 
@@ -183,7 +183,7 @@ extension MyStoriesViewController: UITableViewDelegate {
             return nil
         }
 
-        let actions = Self.databaseStorage.read { transaction in
+        let actions = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return self.contextMenuGenerator.nativeContextMenuActions(
                 for: item.message,
                 in: item.thread,
@@ -223,7 +223,7 @@ extension MyStoriesViewController: UITableViewDataSource {
         let contextMenuActions: [UIAction] = {
             guard let item = self.item(for: indexPath) else { return [] }
 
-            return databaseStorage.read { tx -> [UIAction] in
+            return SSKEnvironment.shared.databaseStorageRef.read { tx -> [UIAction] in
                 contextMenuGenerator.nativeContextMenuActions(
                     for: item.message,
                     in: item.thread,

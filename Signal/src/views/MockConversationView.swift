@@ -121,7 +121,7 @@ class MockConversationView: UIView {
         }
 
         var renderItems = [CVRenderItem]()
-        databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             let chatColor = self.customChatColor ?? DependenciesBridge.shared.chatColorSettingStore.resolvedChatColor(
                 for: thread,
                 tx: transaction.asV2Read

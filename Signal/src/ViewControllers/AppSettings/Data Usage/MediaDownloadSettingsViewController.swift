@@ -30,7 +30,7 @@ class MediaDownloadSettingsViewController: OWSTableViewController2 {
         let section = OWSTableSection()
 
         let mediaDownloadType = self.mediaDownloadType
-        let currentPreference = databaseStorage.read { transaction in
+        let currentPreference = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             DependenciesBridge.shared.mediaBandwidthPreferenceStore.preference(
                 for: mediaDownloadType,
                 tx: transaction.asV2Read
@@ -43,7 +43,7 @@ class MediaDownloadSettingsViewController: OWSTableViewController2 {
             let preferenceName = Self.name(forMediaBandwidthPreference: preference)
             section.add(OWSTableItem(text: preferenceName,
                         actionBlock: { [weak self] in
-                            Self.databaseStorage.write { transaction in
+                            SSKEnvironment.shared.databaseStorageRef.write { transaction in
                                 DependenciesBridge.shared.mediaBandwidthPreferenceStore.set(
                                     preference,
                                     for: mediaDownloadType,

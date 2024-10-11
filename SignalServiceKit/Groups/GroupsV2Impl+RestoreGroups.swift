@@ -92,7 +92,7 @@ public extension GroupsV2Impl {
     private static func canProcessGroupRestore(authedAccount: AuthedAccount) async -> Bool {
         return await (
             self.isMainAppAndActive()
-            && reachabilityManager.isReachable
+            && SSKEnvironment.shared.reachabilityManagerRef.isReachable
             && isRegisteredWithSneakyTransaction(authedAccount: authedAccount)
         )
     }
@@ -170,7 +170,7 @@ public extension GroupsV2Impl {
             return false
         }
 
-        let (masterKeyData, groupRecord) = self.databaseStorage.read { transaction -> (Data?, StorageServiceProtoGroupV2Record?) in
+        let (masterKeyData, groupRecord) = SSKEnvironment.shared.databaseStorageRef.read { transaction -> (Data?, StorageServiceProtoGroupV2Record?) in
             if let groupRecord = self.anyEnqueuedGroupRecord(transaction: transaction) {
                 return (groupRecord.masterKey, groupRecord)
             } else {
@@ -188,7 +188,7 @@ public extension GroupsV2Impl {
         // If we have an unrecoverable failure, remove the key from the store so
         // that we stop retrying until storage service asks us to try again.
         let markAsFailed = {
-            await databaseStorage.awaitableWrite { transaction in
+            await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
                 self.storageServiceGroupsToRestore.removeValue(forKey: key, transaction: transaction)
                 self.legacyStorageServiceGroupsToRestore.removeValue(forKey: key, transaction: transaction)
                 self.failedStorageServiceGroupIds.setBool(true, key: key, transaction: transaction)
@@ -196,7 +196,7 @@ public extension GroupsV2Impl {
         }
 
         let markAsComplete = {
-            await databaseStorage.awaitableWrite { transaction in
+            await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
                 // Now that the thread exists, re-apply the pending group record from
                 // storage service.
                 if var groupRecord {
@@ -210,9 +210,9 @@ public extension GroupsV2Impl {
 
                     let recordUpdater = StorageServiceGroupV2RecordUpdater(
                         authedAccount: authedAccount,
-                        blockingManager: blockingManager,
-                        groupsV2: groupsV2,
-                        profileManager: profileManager
+                        blockingManager: SSKEnvironment.shared.blockingManagerRef,
+                        groupsV2: SSKEnvironment.shared.groupsV2Ref,
+                        profileManager: SSKEnvironment.shared.profileManagerRef
                     )
                     _ = recordUpdater.mergeRecord(groupRecord, transaction: transaction)
                 }
@@ -231,7 +231,7 @@ public extension GroupsV2Impl {
             return true
         }
 
-        let isGroupInDatabase = self.databaseStorage.read { transaction in
+        let isGroupInDatabase = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             TSGroupThread.fetch(groupId: groupContextInfo.groupId, transaction: transaction) != nil
         }
         if isGroupInDatabase {
@@ -244,7 +244,7 @@ public extension GroupsV2Impl {
         // failover to using a "snapshot".
         let groupUpdateMode = GroupUpdateMode.upToCurrentRevisionAfterMessageProcessWithThrottling
         do {
-            _ = try await self.groupV2Updates.tryToRefreshV2GroupThread(
+            _ = try await SSKEnvironment.shared.groupV2UpdatesRef.tryToRefreshV2GroupThread(
                 groupId: groupContextInfo.groupId,
                 spamReportingMetadata: .learnedByLocallyInitatedRefresh,
                 groupSecretParams: groupContextInfo.groupSecretParams,

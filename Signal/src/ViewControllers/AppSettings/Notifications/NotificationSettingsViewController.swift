@@ -45,7 +45,7 @@ class NotificationSettingsViewController: OWSTableViewController2 {
                 "NOTIFICATIONS_SECTION_INAPP",
                 comment: "Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground."
             ),
-            isOn: { Self.preferences.soundInForeground },
+            isOn: { SSKEnvironment.shared.preferencesRef.soundInForeground },
             target: self,
             selector: #selector(didToggleSoundNotificationsSwitch)
         ))
@@ -62,8 +62,8 @@ class NotificationSettingsViewController: OWSTableViewController2 {
         )
         notificationContentSection.add(.disclosureItem(
             withText: OWSLocalizedString("NOTIFICATIONS_SHOW", comment: ""),
-            accessoryText: Self.databaseStorage.read { tx in
-                return preferences.notificationPreviewType(tx: tx).displayName
+            accessoryText: SSKEnvironment.shared.databaseStorageRef.read { tx in
+                return SSKEnvironment.shared.preferencesRef.notificationPreviewType(tx: tx).displayName
             },
             actionBlock: { [weak self] in
                 let vc = NotificationSettingsContentViewController()
@@ -83,7 +83,7 @@ class NotificationSettingsViewController: OWSTableViewController2 {
                 comment: "A setting controlling whether muted conversations are shown in the badge count"
             ),
             isOn: {
-                Self.databaseStorage.read { SSKPreferences.includeMutedThreadsInBadgeCount(transaction: $0) }
+                SSKEnvironment.shared.databaseStorageRef.read { SSKPreferences.includeMutedThreadsInBadgeCount(transaction: $0) }
             },
             target: self,
             selector: #selector(didToggleIncludesMutedConversationsInBadgeCountSwitch)
@@ -101,7 +101,7 @@ class NotificationSettingsViewController: OWSTableViewController2 {
                 comment: "When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature."
             ),
             isOn: {
-                Self.databaseStorage.read { Self.preferences.shouldNotifyOfNewAccounts(transaction: $0) }
+                SSKEnvironment.shared.databaseStorageRef.read { SSKEnvironment.shared.preferencesRef.shouldNotifyOfNewAccounts(transaction: $0) }
             },
             target: self,
             selector: #selector(didToggleshouldNotifyOfNewAccountsSwitch)
@@ -122,20 +122,20 @@ class NotificationSettingsViewController: OWSTableViewController2 {
 
     @objc
     private func didToggleSoundNotificationsSwitch(_ sender: UISwitch) {
-        preferences.setSoundInForeground(sender.isOn)
+        SSKEnvironment.shared.preferencesRef.setSoundInForeground(sender.isOn)
     }
 
     @objc
     private func didToggleIncludesMutedConversationsInBadgeCountSwitch(_ sender: UISwitch) {
-        databaseStorage.write { tx in SSKPreferences.setIncludeMutedThreadsInBadgeCount(sender.isOn, transaction: tx) }
+        SSKEnvironment.shared.databaseStorageRef.write { tx in SSKPreferences.setIncludeMutedThreadsInBadgeCount(sender.isOn, transaction: tx) }
         AppEnvironment.shared.badgeManager.invalidateBadgeValue()
     }
 
     @objc
     private func didToggleshouldNotifyOfNewAccountsSwitch(_ sender: UISwitch) {
-        let currentValue = databaseStorage.read { Self.preferences.shouldNotifyOfNewAccounts(transaction: $0) }
+        let currentValue = SSKEnvironment.shared.databaseStorageRef.read { SSKEnvironment.shared.preferencesRef.shouldNotifyOfNewAccounts(transaction: $0) }
         guard currentValue != sender.isOn else { return }
-        databaseStorage.write { Self.preferences.setShouldNotifyOfNewAccounts(sender.isOn, transaction: $0) }
+        SSKEnvironment.shared.databaseStorageRef.write { SSKEnvironment.shared.preferencesRef.setShouldNotifyOfNewAccounts(sender.isOn, transaction: $0) }
     }
 
     private func syncPushTokens() {

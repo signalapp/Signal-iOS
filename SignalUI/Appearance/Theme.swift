@@ -156,7 +156,7 @@ final public class Theme: NSObject {
         }
 
         var currentMode: Mode = .system
-        databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             let hasDefinedMode = Theme.keyValueStore.hasValue(forKey: KVSKeys.currentMode, transaction: transaction)
             if hasDefinedMode {
                 let rawMode = Theme.keyValueStore.getUInt(
@@ -204,7 +204,7 @@ final public class Theme: NSObject {
         cachedCurrentMode = mode
 
         // It's safe to do an async write because all accesses check self.cachedCurrentThemeNumber first.
-        databaseStorage.asyncWrite { transaction in
+        SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
             Theme.keyValueStore.setUInt(mode.rawValue, key: KVSKeys.currentMode, transaction: transaction)
         }
 

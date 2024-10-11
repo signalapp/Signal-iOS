@@ -786,7 +786,7 @@ class DisplayNameCache: Dependencies {
         if let serviceId = address.serviceId, let displayName = displayNameCache[serviceId] {
             return displayName
         }
-        let displayName = contactsManager.displayName(for: address, tx: tx)
+        let displayName = SSKEnvironment.shared.contactManagerRef.displayName(for: address, tx: tx)
         if let serviceId = address.serviceId {
             displayNameCache[serviceId] = displayName
         }

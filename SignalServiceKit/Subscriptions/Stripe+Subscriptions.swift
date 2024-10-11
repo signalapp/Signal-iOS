@@ -15,7 +15,7 @@ extension Stripe {
         return firstly {
             let request = OWSRequestFactory.subscriptionCreateStripePaymentMethodRequest(subscriberID: subscriberId)
 
-            return networkManager.makePromise(request: request)
+            return SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
         }.map(on: DispatchQueue.global()) { response in
             let statusCode = response.responseStatusCode
 

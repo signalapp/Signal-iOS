@@ -44,8 +44,8 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
     }
 
     // NOTE: This k-v store is shared by PaymentsHelperImpl and PaymentsImpl.
-    fileprivate static var keyValueStore: SDSKeyValueStore { paymentsHelper.keyValueStore}
-    fileprivate var keyValueStore: SDSKeyValueStore { paymentsHelper.keyValueStore}
+    fileprivate static var keyValueStore: SDSKeyValueStore { SSKEnvironment.shared.paymentsHelperRef.keyValueStore}
+    fileprivate var keyValueStore: SDSKeyValueStore { SSKEnvironment.shared.paymentsHelperRef.keyValueStore}
 
     private func updateLastKnownLocalPaymentAddressProtoDataIfNecessary() {
         guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
@@ -58,7 +58,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         let appVersionKey = "appVersion"
         let currentAppVersion = AppVersionImpl.shared.currentAppVersion
 
-        let shouldUpdate = Self.databaseStorage.read { (transaction: SDSAnyReadTransaction) -> Bool in
+        let shouldUpdate = SSKEnvironment.shared.databaseStorageRef.read { (transaction: SDSAnyReadTransaction) -> Bool in
             // Check if the app version has changed.
             let lastAppVersion = self.keyValueStore.getString(appVersionKey, transaction: transaction)
             guard lastAppVersion == currentAppVersion else {
@@ -71,7 +71,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         }
         Logger.info("Updating last known local payment address.")
 
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             self.updateLastKnownLocalPaymentAddressProtoData(transaction: transaction)
 
             self.keyValueStore.setString(currentAppVersion, key: appVersionKey, transaction: transaction)
@@ -147,11 +147,11 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         }
     }
 
-    public var hasValidPhoneNumberForPayments: Bool { paymentsHelper.hasValidPhoneNumberForPayments }
+    public var hasValidPhoneNumberForPayments: Bool { SSKEnvironment.shared.paymentsHelperRef.hasValidPhoneNumberForPayments }
 
-    public var isKillSwitchActive: Bool { paymentsHelper.isKillSwitchActive }
+    public var isKillSwitchActive: Bool { SSKEnvironment.shared.paymentsHelperRef.isKillSwitchActive }
 
-    public var canEnablePayments: Bool { paymentsHelper.canEnablePayments }
+    public var canEnablePayments: Bool { SSKEnvironment.shared.paymentsHelperRef.canEnablePayments }
 
     public var shouldShowPaymentsUI: Bool {
         arePaymentsEnabled || canEnablePayments
@@ -160,15 +160,15 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
     // MARK: - PaymentsState
 
     public var paymentsState: PaymentsState {
-        paymentsHelperSwift.paymentsState
+        SSKEnvironment.shared.paymentsHelperRef.paymentsState
     }
 
     public var arePaymentsEnabled: Bool {
-        paymentsHelper.arePaymentsEnabled
+        SSKEnvironment.shared.paymentsHelperRef.arePaymentsEnabled
     }
 
     public var paymentsEntropy: Data? {
-        paymentsHelper.paymentsEntropy
+        SSKEnvironment.shared.paymentsHelperRef.paymentsEntropy
     }
 
     public var passphrase: PaymentsPassphrase? {
@@ -237,7 +237,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
             // When the balance changes, there might be new transactions
             // that aren't accounted for in the database yet. Perform
             // reconciliation to ensure we're up-to-date.
-            Self.databaseStorage.asyncWrite { transaction in
+            SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
                 self.scheduleReconciliationNow(transaction: transaction)
             }
         }
@@ -273,7 +273,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         }.catch { error in
             let paymentsError = error as? PaymentsError
             let outdated = paymentsError == .outdatedClient || paymentsError == .attestationVerificationFailed
-            Self.paymentsHelper.setPaymentsVersionOutdated(outdated)
+            SSKEnvironment.shared.paymentsHelperRef.setPaymentsVersionOutdated(outdated)
             owsFailDebugUnlessMCNetworkFailure(error)
         }
     }
@@ -408,8 +408,8 @@ public extension PaymentsImpl {
                 throw OWSAssertionError("Invalid paymentModel.")
             }
 
-            try Self.databaseStorage.write { transaction in
-                try self.paymentsHelper.tryToInsertPaymentModel(paymentModel, transaction: transaction)
+            try SSKEnvironment.shared.databaseStorageRef.write { transaction in
+                try SSKEnvironment.shared.paymentsHelperRef.tryToInsertPaymentModel(paymentModel, transaction: transaction)
             }
 
             return paymentModel
@@ -517,7 +517,7 @@ public extension PaymentsImpl {
         } else {
             data = nil
         }
-        paymentsHelper.setLastKnownLocalPaymentAddressProtoData(data, transaction: transaction)
+        SSKEnvironment.shared.paymentsHelperRef.setLastKnownLocalPaymentAddressProtoData(data, transaction: transaction)
     }
 }
 
@@ -690,7 +690,7 @@ public extension PaymentsImpl {
             // is save TSPaymentModels to the database. The PaymentsProcessor
             // will observe this and take responsibility for their submission,
             // verification.
-            return try Self.databaseStorage.write { dbTransaction in
+            return try SSKEnvironment.shared.databaseStorageRef.write { dbTransaction in
                 try mcTransactions.map { mcTransaction in
                     let paymentAmount = TSPaymentAmount(currency: .mobileCoin, picoMob: 0)
                     let feeAmount = TSPaymentAmount(currency: .mobileCoin, picoMob: mcTransaction.fee)
@@ -723,7 +723,7 @@ public extension PaymentsImpl {
                         throw OWSAssertionError("Invalid paymentModel.")
                     }
 
-                    try self.paymentsHelper.tryToInsertPaymentModel(paymentModel, transaction: dbTransaction)
+                    try SSKEnvironment.shared.paymentsHelperRef.tryToInsertPaymentModel(paymentModel, transaction: dbTransaction)
 
                     return paymentModel
                 }
@@ -781,7 +781,7 @@ public extension PaymentsImpl {
 
     func blockOnOutgoingVerification(paymentModel: TSPaymentModel) -> Promise<Bool> {
         firstly(on: DispatchQueue.global()) { () -> Promise<Bool> in
-            let paymentModelLatest = Self.databaseStorage.read { transaction in
+            let paymentModelLatest = SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 TSPaymentModel.anyFetch(uniqueId: paymentModel.uniqueId,
                                         transaction: transaction)
             }
@@ -1165,7 +1165,7 @@ public class PaymentsEventsMainApp: NSObject, PaymentsEvents {
     }
 
     public func clearState(transaction: SDSAnyWriteTransaction) {
-        paymentsHelperSwift.clearState(transaction: transaction)
+        SSKEnvironment.shared.paymentsHelperRef.clearState(transaction: transaction)
         payments.clearState(transaction: transaction)
     }
 }

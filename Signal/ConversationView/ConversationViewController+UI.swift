@@ -283,7 +283,7 @@ extension ConversationViewController {
     }
 
     func buildDraftQuotedReply(_ draftReply: ThreadReplyInfo) -> DraftQuotedReplyModel? {
-        return Self.databaseStorage.read { transaction in
+        return SSKEnvironment.shared.databaseStorageRef.read { transaction in
             guard let interaction = try? InteractionFinder.interactions(
                 withTimestamp: draftReply.timestamp,
                 filter: { candidate in

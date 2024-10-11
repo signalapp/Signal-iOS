@@ -15,7 +15,7 @@ class CallKitIdStore {
     private static let callLinkStore = SDSKeyValueStore(collection: "CallKitIdToCallLink")
 
     static func setGroupThread(_ thread: TSGroupThread, forCallKitId callKitId: String) {
-        NSObject.databaseStorage.write { tx in
+        SSKEnvironment.shared.databaseStorageRef.write { tx in
             // Make sure it doesn't exist, but only in DEBUG builds.
             assert(!phoneNumberStore.hasValue(forKey: callKitId, transaction: tx))
             assert(!serviceIdStore.hasValue(forKey: callKitId, transaction: tx))
@@ -27,7 +27,7 @@ class CallKitIdStore {
     }
 
     static func setContactThread(_ thread: TSContactThread, forCallKitId callKitId: String) {
-        NSObject.databaseStorage.write { tx in
+        SSKEnvironment.shared.databaseStorageRef.write { tx in
             // Make sure it doesn't exist, but only in DEBUG builds.
             assert(!phoneNumberStore.hasValue(forKey: callKitId, transaction: tx))
             assert(!serviceIdStore.hasValue(forKey: callKitId, transaction: tx))
@@ -47,7 +47,7 @@ class CallKitIdStore {
     }
 
     static func setCallLink(_ callLink: CallLink, forCallKitId callKitId: String) {
-        NSObject.databaseStorage.write { tx in
+        SSKEnvironment.shared.databaseStorageRef.write { tx in
             // Make sure it doesn't exist, but only in DEBUG builds.
             assert(!phoneNumberStore.hasValue(forKey: callKitId, transaction: tx))
             assert(!serviceIdStore.hasValue(forKey: callKitId, transaction: tx))
@@ -59,7 +59,7 @@ class CallKitIdStore {
     }
 
     static func callTarget(forCallKitId callKitId: String) -> CallTarget? {
-        return NSObject.databaseStorage.read { tx -> CallTarget? in
+        return SSKEnvironment.shared.databaseStorageRef.read { tx -> CallTarget? in
             // Most likely: modern 1:1 calls
             if let serviceIdString = serviceIdStore.getString(callKitId, transaction: tx) {
                 let address = SignalServiceAddress(serviceIdString: serviceIdString)

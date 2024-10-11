@@ -14,7 +14,7 @@ class BlockingManagerStateTests: SSKBaseTest {
 
     override func setUp() {
         super.setUp()
-        databaseStorage.read { dut.reloadIfNecessary(blockedRecipientStore: BlockedRecipientStoreImpl(), tx: $0) }
+        SSKEnvironment.shared.databaseStorageRef.read { dut.reloadIfNecessary(blockedRecipientStore: BlockedRecipientStoreImpl(), tx: $0) }
         assertInitalState(dut)
     }
 
@@ -185,7 +185,7 @@ class BlockingManagerStateTests: SSKBaseTest {
     // MARK: Persistence and Migrations
 
     func testFreshInstall() {
-        databaseStorage.read {
+        SSKEnvironment.shared.databaseStorageRef.read {
             dut.reloadIfNecessary(blockedRecipientStore: BlockedRecipientStoreImpl(), tx: $0)
             XCTAssertFalse(dut.needsSync(transaction: $0), "Fresh installs shouldn't need to implicitly sync")
         }
@@ -194,11 +194,11 @@ class BlockingManagerStateTests: SSKBaseTest {
     func testMigrationFromOldKeys() {
         typealias Key = BlockingManager.State.PersistenceKey
         let storage = BlockingManager.State.keyValueStore
-        databaseStorage.write {
+        SSKEnvironment.shared.databaseStorageRef.write {
             storage.setObject("", key: Key.Legacy.syncedBlockedPhoneNumbersKey.rawValue, transaction: $0)
         }
 
-        databaseStorage.read {
+        SSKEnvironment.shared.databaseStorageRef.read {
             // Test
             // We first reset our test object to ensure that it doesn't reuse any cached state.
             // A reload would only occur if the change token was updated, which we're not testing here.
@@ -214,13 +214,13 @@ class BlockingManagerStateTests: SSKBaseTest {
         // Setup
         let testRecipientId = generateRecipientId()
         let testGroup = generateRandomGroupModel()
-        let initialChangeToken: UInt64 = databaseStorage.read {
+        let initialChangeToken: UInt64 = SSKEnvironment.shared.databaseStorageRef.read {
             dut.reloadIfNecessary(blockedRecipientStore: BlockedRecipientStoreImpl(), tx: $0)
             return dut.changeToken
         }
 
         // Test — Add blocked items, persist, reset our local state to force a reload
-        let changeTokenAfterUpdate: UInt64 = databaseStorage.write {
+        let changeTokenAfterUpdate: UInt64 = SSKEnvironment.shared.databaseStorageRef.write {
             dut.addBlockedRecipientId(testRecipientId)
             dut.addBlockedGroup(testGroup)
 
@@ -235,7 +235,7 @@ class BlockingManagerStateTests: SSKBaseTest {
         dut = BlockingManager.State._testing_createEmpty()
 
         // Verify
-        databaseStorage.read {
+        SSKEnvironment.shared.databaseStorageRef.read {
             dut.reloadIfNecessary(blockedRecipientStore: BlockedRecipientStoreImpl(), tx: $0)
 
             XCTAssertEqual(dut.blockedRecipientIds, Set([testRecipientId]))
@@ -249,7 +249,7 @@ class BlockingManagerStateTests: SSKBaseTest {
 
     func testSimulatedSyncMessage() {
         let recipientId = generateRecipientId()
-        databaseStorage.write {
+        SSKEnvironment.shared.databaseStorageRef.write {
             // Setup
             dut.reloadIfNecessary(blockedRecipientStore: BlockedRecipientStoreImpl(), tx: $0)
             XCTAssertFalse(dut.needsSync(transaction: $0))
@@ -274,7 +274,7 @@ class BlockingManagerStateTests: SSKBaseTest {
         // the other lives within the scope of this test. Mutations to one should be reflected in the other
         dut = BlockingManager.State._testing_createEmpty()
         var remoteState = BlockingManager.State._testing_createEmpty()
-        databaseStorage.read {
+        SSKEnvironment.shared.databaseStorageRef.read {
             dut.reloadIfNecessary(blockedRecipientStore: BlockedRecipientStoreImpl(), tx: $0)
             remoteState.reloadIfNecessary(blockedRecipientStore: BlockedRecipientStoreImpl(), tx: $0)
         }
@@ -283,13 +283,13 @@ class BlockingManagerStateTests: SSKBaseTest {
         let removedBlock = blockedRecipientIds.randomElement()!
 
         // Test #1 — Add some items to one state. Ensure it gets reflected in the other state
-        databaseStorage.write { writeTx in
+        SSKEnvironment.shared.databaseStorageRef.write { writeTx in
             dut.reloadIfNecessary(blockedRecipientStore: BlockedRecipientStoreImpl(), tx: writeTx)
             blockedRecipientIds.forEach { dut.addBlockedRecipientId($0) }
             blockedGroups.forEach { dut.addBlockedGroup($0.value) }
             XCTAssertTrue(dut.persistIfNecessary(blockedRecipientStore: BlockedRecipientStoreImpl(), tx: writeTx))
         }
-        databaseStorage.read { readTx in
+        SSKEnvironment.shared.databaseStorageRef.read { readTx in
             let oldChangeToken = remoteState.changeToken
             remoteState.reloadIfNecessary(blockedRecipientStore: BlockedRecipientStoreImpl(), tx: readTx)
 
@@ -300,12 +300,12 @@ class BlockingManagerStateTests: SSKBaseTest {
         }
 
         // Test #2 — In the opposite direction, remove an item and ensure it gets reflected on the other side
-        databaseStorage.write { writeTx in
+        SSKEnvironment.shared.databaseStorageRef.write { writeTx in
             remoteState.reloadIfNecessary(blockedRecipientStore: BlockedRecipientStoreImpl(), tx: writeTx)
             remoteState.removeBlockedRecipientId(removedBlock)
             XCTAssertTrue(remoteState.persistIfNecessary(blockedRecipientStore: BlockedRecipientStoreImpl(), tx: writeTx))
         }
-        databaseStorage.read { readTx in
+        SSKEnvironment.shared.databaseStorageRef.read { readTx in
             let oldChangeToken = dut.changeToken
             dut.reloadIfNecessary(blockedRecipientStore: BlockedRecipientStoreImpl(), tx: readTx)
 
@@ -325,7 +325,7 @@ class BlockingManagerStateTests: SSKBaseTest {
     }
 
     func generateRecipientId() -> SignalRecipient.RowId {
-        return databaseStorage.write { tx in
+        return SSKEnvironment.shared.databaseStorageRef.write { tx in
             let recipientFetcher = DependenciesBridge.shared.recipientFetcher
             return recipientFetcher.fetchOrCreate(serviceId: Aci.randomForTesting(), tx: tx.asV2Write).id!
         }

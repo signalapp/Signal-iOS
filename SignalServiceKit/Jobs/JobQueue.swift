@@ -139,7 +139,7 @@ public extension JobQueue {
             return
         }
 
-        databaseStorage.write { self.workStep(transaction: $0) }
+        SSKEnvironment.shared.databaseStorageRef.write { self.workStep(transaction: $0) }
     }
 
     func workStep(transaction: SDSAnyWriteTransaction) {
@@ -189,7 +189,7 @@ public extension JobQueue {
         guard CurrentAppContext().isMainApp else { return }
         guard isEnabled else { return }
 
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             let runningRecords: [JobRecordType]
             do {
                 runningRecords = try JobRecordFinderImpl(db: DependenciesBridge.shared.db).allRecords(
@@ -217,7 +217,7 @@ public extension JobQueue {
         guard CurrentAppContext().isMainApp else { return }
         guard isEnabled else { return }
 
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             let staleRecords: [JobRecordType]
             do {
                 staleRecords = try JobRecordFinderImpl(db: DependenciesBridge.shared.db).staleRecords(transaction: transaction.asV2Write)
@@ -268,7 +268,7 @@ public extension JobQueue {
                     object: nil,
                     queue: nil
                 ) { _ in
-                    if self.reachabilityManager.isReachable {
+                    if SSKEnvironment.shared.reachabilityManagerRef.isReachable {
                         self.becameReachable()
                     }
                 }

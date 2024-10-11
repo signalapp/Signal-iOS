@@ -33,10 +33,10 @@ public class ConversationInternalViewController: OWSTableViewController2 {
         let thread = self.thread
 
         let infoSection = OWSTableSection()
-        self.databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             let section = infoSection
 
-            let isThreadInProfileWhitelist = Self.profileManager.isThread(
+            let isThreadInProfileWhitelist = SSKEnvironment.shared.profileManagerRef.isThread(
                 inProfileWhitelist: thread, transaction: transaction
             )
             section.add(.copyableItem(
@@ -70,7 +70,7 @@ public class ConversationInternalViewController: OWSTableViewController2 {
                     value: signalRecipient?.phoneNumber?.isDiscoverable == true ? "Yes" : "No"
                 ))
 
-                let userProfile = profileManager.getUserProfile(for: address, transaction: transaction)
+                let userProfile = SSKEnvironment.shared.profileManagerRef.getUserProfile(for: address, transaction: transaction)
 
                 section.add(.copyableItem(
                     label: "Sharing Phone Number?",
@@ -98,7 +98,7 @@ public class ConversationInternalViewController: OWSTableViewController2 {
                     value: identityKey?.hexadecimalString
                 ))
 
-                let arePaymentsEnabled = paymentsHelper.arePaymentsEnabled(for: address, transaction: transaction)
+                let arePaymentsEnabled = SSKEnvironment.shared.paymentsHelperRef.arePaymentsEnabled(for: address, transaction: transaction)
                 section.add(.copyableItem(
                     label: "Payments",
                     value: arePaymentsEnabled ? "Yes" : "No"
@@ -131,7 +131,7 @@ public class ConversationInternalViewController: OWSTableViewController2 {
 
             let sessionSection = OWSTableSection()
             sessionSection.add(.actionItem(withText: "Delete Session") {
-                self.databaseStorage.write { transaction in
+                SSKEnvironment.shared.databaseStorageRef.write { transaction in
                     let aciStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci)
                     aciStore.sessionStore.deleteAllSessions(for: address.serviceId!, tx: transaction.asV2Write)
                 }

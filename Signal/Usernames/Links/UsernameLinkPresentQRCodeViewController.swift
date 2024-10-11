@@ -706,7 +706,7 @@ extension UsernameLinkPresentQRCodeViewController: UsernameLinkQRCodeColorPicker
             )
         }
 
-        storageServiceManager.recordPendingLocalAccountUpdates()
+        SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
 
         self.qrCodeColor = color
         reloadTableContents()

@@ -266,7 +266,7 @@ public extension TSInfoMessage {
     ) -> [T]? {
         lazy var groupUpdateItemBuilder = GroupUpdateItemBuilderImpl(
             contactsManager: GroupUpdateItemBuilderImpl.Wrappers.ContactsManager(
-                contactsManager
+                SSKEnvironment.shared.contactManagerRef
             ),
             recipientDatabaseTable: DependenciesBridge.shared.recipientDatabaseTable
         )

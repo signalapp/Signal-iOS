@@ -68,7 +68,7 @@ public class ContactCell: UITableViewCell, ReusableTableViewCell {
     public func configure(systemContact: SystemContact, sortOrder: CNContactSortOrder, subtitleType: SubtitleCellValue, showsWhenSelected: Bool) {
         self.showsWhenSelected = showsWhenSelected
 
-        let cnContact = contactsManager.cnContact(withId: systemContact.cnContactId)
+        let cnContact = SSKEnvironment.shared.contactManagerRef.cnContact(withId: systemContact.cnContactId)
 
         if let cnContact {
             titleLabel.attributedText = cnContact.formattedFullName(sortOrder: sortOrder, font: titleLabel.font)
@@ -80,7 +80,7 @@ public class ContactCell: UITableViewCell, ReusableTableViewCell {
 
         var contactImage: UIImage?
         if let cnContact {
-            if let avatarImage = contactsManager.avatarImage(for: cnContact.identifier) {
+            if let avatarImage = SSKEnvironment.shared.contactManagerRef.avatarImage(for: cnContact.identifier) {
                 contactImage = avatarImage
             } else if cnContact.imageDataAvailable, let contactImageData = cnContact.imageData {
                 contactImage = UIImage(data: contactImageData)
@@ -91,8 +91,8 @@ public class ContactCell: UITableViewCell, ReusableTableViewCell {
             nameComponents.givenName = systemContact.firstName
             nameComponents.familyName = systemContact.lastName
 
-            let avatar = databaseStorage.read { transaction in
-                Self.avatarBuilder.avatarImage(
+            let avatar = SSKEnvironment.shared.databaseStorageRef.read { transaction in
+                SSKEnvironment.shared.avatarBuilderRef.avatarImage(
                     personNameComponents: nameComponents,
                     diameterPoints: UInt(ContactCell.avatarDiameter),
                     transaction: transaction

@@ -79,7 +79,7 @@ public class PaymentsViewUtils: Dependencies {
     }
 
     static func markAllUnreadPaymentsAsReadWithSneakyTransaction() {
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             for paymentModel in PaymentFinder.allUnreadPaymentModels(transaction: transaction) {
                 owsAssertDebug(paymentModel.isUnread)
                 paymentModel.update(withIsUnread: false, transaction: transaction)

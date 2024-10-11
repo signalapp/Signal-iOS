@@ -33,7 +33,7 @@ extension OWSOutgoingSentMessageTranscript {
                         return false
                     }
                     do {
-                        let groupContextV2 = try NSObject.groupsV2.buildGroupContextV2Proto(
+                        let groupContextV2 = try SSKEnvironment.shared.groupsV2Ref.buildGroupContextV2Proto(
                             groupModel: groupModel,
                             changeActionsProtoData: nil
                         )

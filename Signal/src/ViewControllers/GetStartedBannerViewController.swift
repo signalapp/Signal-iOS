@@ -163,8 +163,8 @@ class GetStartedBannerViewController: UIViewController, UICollectionViewDelegate
                 return []
             } else {
                 // Once you have an avatar, don't show the avatar builder card.
-                if Self.profileManager.localProfileAvatarData != nil {
-                    Self.databaseStorage.asyncWrite { writeTx in
+                if SSKEnvironment.shared.profileManagerRef.localProfileAvatarData != nil {
+                    SSKEnvironment.shared.databaseStorageRef.asyncWrite { writeTx in
                         Self.completeCard(.avatarBuilder, writeTx: writeTx)
                     }
                     return activeCards.filter { $0 != .avatarBuilder }

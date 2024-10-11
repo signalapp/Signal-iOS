@@ -54,7 +54,7 @@ class ChatColorViewController: OWSTableViewController2, Dependencies {
     private var wallpaperViewBuilder: WallpaperViewBuilder?
 
     private func updateWallpaperViewBuilder() {
-        wallpaperViewBuilder = databaseStorage.read { tx in Wallpaper.viewBuilder(for: thread, tx: tx) }
+        wallpaperViewBuilder = SSKEnvironment.shared.databaseStorageRef.read { tx in Wallpaper.viewBuilder(for: thread, tx: tx) }
     }
 
     @objc
@@ -67,7 +67,7 @@ class ChatColorViewController: OWSTableViewController2, Dependencies {
     @objc
     private func chatColorsDidChange(_ notification: Notification) {
         guard notification.object == nil || (notification.object as? String) == thread?.uniqueId else { return }
-        currentResolvedValue = databaseStorage.read { tx in
+        currentResolvedValue = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return DependenciesBridge.shared.chatColorSettingStore.resolvedChatColor(
                 for: thread,
                 tx: tx.asV2Read
@@ -201,7 +201,7 @@ class ChatColorViewController: OWSTableViewController2, Dependencies {
                 case .editExisting(let key, value: _):
                     colorKey = key
                 }
-                self.databaseStorage.write { tx in
+                SSKEnvironment.shared.databaseStorageRef.write { tx in
                     DependenciesBridge.shared.chatColorSettingStore.upsertCustomValue(
                         newValue,
                         for: colorKey,
@@ -216,7 +216,7 @@ class ChatColorViewController: OWSTableViewController2, Dependencies {
 
     private func deleteCustomColor(key: CustomChatColor.Key) {
         func deleteValue() {
-            Self.databaseStorage.write { tx in
+            SSKEnvironment.shared.databaseStorageRef.write { tx in
                 DependenciesBridge.shared.chatColorSettingStore.deleteCustomValue(
                     for: key,
                     tx: tx.asV2Write
@@ -224,7 +224,7 @@ class ChatColorViewController: OWSTableViewController2, Dependencies {
             }
         }
 
-        let usageCount = databaseStorage.read { tx in
+        let usageCount = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return DependenciesBridge.shared.chatColorSettingStore.usageCount(
                 of: key,
                 tx: tx.asV2Read
@@ -267,7 +267,7 @@ class ChatColorViewController: OWSTableViewController2, Dependencies {
             colorSetting: oldValue.colorSetting,
             creationTimestamp: NSDate.ows_millisecondTimeStamp()
         )
-        databaseStorage.write { tx in
+        SSKEnvironment.shared.databaseStorageRef.write { tx in
             DependenciesBridge.shared.chatColorSettingStore.upsertCustomValue(
                 newValue,
                 for: .generateRandom(),
@@ -331,7 +331,7 @@ class ChatColorViewController: OWSTableViewController2, Dependencies {
     }
 
     private func setNewValue(_ newValue: ChatColorSetting) {
-        databaseStorage.write { tx in
+        SSKEnvironment.shared.databaseStorageRef.write { tx in
             DependenciesBridge.shared.chatColorSettingStore.setChatColorSetting(
                 newValue,
                 for: thread,
@@ -404,7 +404,7 @@ private class ChatColorPicker: UIView {
         let optionsPerRow = max(1, Int(floor(rowWidth + optionViewMinHSpacing) / (optionViewOuterSize + optionViewMinHSpacing)))
 
         var optionViews = [OptionView]()
-        databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             let options = Option.allOptions(transaction: transaction)
             for option in options {
                 func addOptionView(innerView: UIView, selectionViews: [UIView] = []) {
@@ -583,7 +583,7 @@ private class ChatColorPicker: UIView {
     private var chatColorTooltip: ChatColorTooltip?
 
     fileprivate func dismissTooltip() {
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             Self.keyValueStore.setBool(true, key: Self.tooltipWasDismissedKey, transaction: transaction)
         }
         hideTooltip()
@@ -595,7 +595,7 @@ private class ChatColorPicker: UIView {
     }
 
     private func ensureTooltip() {
-        let shouldShowTooltip = databaseStorage.read { transaction in
+        let shouldShowTooltip = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             !Self.keyValueStore.getBool(Self.tooltipWasDismissedKey, defaultValue: false, transaction: transaction)
         }
         let isShowingTooltip = chatColorTooltip != nil

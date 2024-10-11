@@ -56,7 +56,7 @@ class StoryGroupReplyViewController: OWSViewController, StoryReplySheet {
     }()
 
     let storyMessage: StoryMessage
-    lazy var thread: TSThread? = databaseStorage.read { storyMessage.context.thread(transaction: $0) }
+    lazy var thread: TSThread? = SSKEnvironment.shared.databaseStorageRef.read { storyMessage.context.thread(transaction: $0) }
 
     var reactionPickerBackdrop: UIView?
     var reactionPicker: MessageReactionPicker?
@@ -67,7 +67,7 @@ class StoryGroupReplyViewController: OWSViewController, StoryReplySheet {
 
         super.init()
 
-        databaseStorage.appendDatabaseChangeDelegate(self)
+        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
     }
 
     fileprivate var replyLoader: StoryGroupReplyLoader?
@@ -149,14 +149,14 @@ extension StoryGroupReplyViewController: UITableViewDelegate {
     }
 
     private func askToResendMessage(for item: StoryGroupReplyViewItem) {
-        let message = databaseStorage.read { tx in
+        let message = SSKEnvironment.shared.databaseStorageRef.read { tx in
             TSOutgoingMessage.anyFetchOutgoingMessage(uniqueId: item.interactionUniqueId, transaction: tx)
         }
         guard let message else {
             return
         }
         let promptBuilder = ResendMessagePromptBuilder(
-            databaseStorage: databaseStorage,
+            databaseStorage: SSKEnvironment.shared.databaseStorageRef,
             messageSenderJobQueue: SSKEnvironment.shared.messageSenderJobQueueRef
         )
         self.present(promptBuilder.build(for: message), animated: true)
@@ -256,7 +256,7 @@ extension StoryGroupReplyViewController: InputAccessoryViewPlaceholderDelegate {
 
     func updateBottomBarContents() {
         // Fetch the latest copy of the thread
-        thread = databaseStorage.read { storyMessage.context.thread(transaction: $0) }
+        thread = SSKEnvironment.shared.databaseStorageRef.read { storyMessage.context.thread(transaction: $0) }
 
         guard let groupThread = thread as? TSGroupThread else {
             bottomBar.removeAllSubviews()
@@ -371,7 +371,7 @@ extension StoryGroupReplyViewController: ContextMenuInteractionDelegate {
                 attributes: .destructive,
                 handler: { [weak self] _ in
                     guard let self = self else { return }
-                    guard let message = Self.databaseStorage.read(
+                    guard let message = SSKEnvironment.shared.databaseStorageRef.read(
                         block: { TSMessage.anyFetchMessage(uniqueId: item.interactionUniqueId, transaction: $0) }
                     ) else { return }
                     message.presentDeletionActionSheet(from: self, forceDarkTheme: true)

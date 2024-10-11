@@ -3663,7 +3663,7 @@ public class GRDBSchemaMigrator: NSObject {
         }
 
         migrator.registerMigration(.dataMigration_resetStorageServiceData) { transaction in
-            Self.storageServiceManager.resetLocalData(transaction: transaction.asAnyWrite.asV2Write)
+            SSKEnvironment.shared.storageServiceManagerRef.resetLocalData(transaction: transaction.asAnyWrite.asV2Write)
             return .success(())
         }
 
@@ -3760,9 +3760,9 @@ public class GRDBSchemaMigrator: NSObject {
 
             while let thread = try cursor.next() {
                 if let thread = thread as? TSContactThread {
-                    Self.storageServiceManager.recordPendingUpdates(updatedAddresses: [thread.contactAddress])
+                    SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(updatedAddresses: [thread.contactAddress])
                 } else if let thread = thread as? TSGroupThread {
-                    Self.storageServiceManager.recordPendingUpdates(groupModel: thread.groupModel)
+                    SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(groupModel: thread.groupModel)
                 } else {
                     owsFail("Unexpected thread type \(thread)")
                 }
@@ -3918,7 +3918,7 @@ public class GRDBSchemaMigrator: NSObject {
         migrator.registerMigration(.dataMigration_syncGroupStories) { transaction in
             for thread in ThreadFinder().storyThreads(includeImplicitGroupThreads: false, transaction: transaction.asAnyRead) {
                 guard let thread = thread as? TSGroupThread else { continue }
-                self.storageServiceManager.recordPendingUpdates(groupModel: thread.groupModel)
+                SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(groupModel: thread.groupModel)
             }
             return .success(())
         }
@@ -3934,7 +3934,7 @@ public class GRDBSchemaMigrator: NSObject {
         }
 
         migrator.registerMigration(.dataMigration_updateStoriesDisabledInAccountRecord) { transaction in
-            storageServiceManager.recordPendingLocalAccountUpdates()
+            SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
             return .success(())
         }
 
@@ -3998,7 +3998,7 @@ public class GRDBSchemaMigrator: NSObject {
                 accountsToRemove.insert(account)
             }
 
-            storageServiceManager.recordPendingUpdates(updatedAddresses: accountsToRemove.map { $0.recipientAddress })
+            SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(updatedAddresses: accountsToRemove.map { $0.recipientAddress })
             return .success(())
         }
 

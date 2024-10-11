@@ -96,7 +96,7 @@ final class CallLinkViewController: OWSTableViewController2 {
         super.init()
         self.title = title
 
-        self.databaseStorage.appendDatabaseChangeDelegate(self)
+        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
     }
 
     override func viewDidLoad() {
@@ -213,7 +213,7 @@ final class CallLinkViewController: OWSTableViewController2 {
                         do {
                             try await CallLinkDeleter.deleteCallLink(
                                 stateUpdater: AppEnvironment.shared.callService.callLinkStateUpdater,
-                                storageServiceManager: NSObject.storageServiceManager,
+                                storageServiceManager: SSKEnvironment.shared.storageServiceManagerRef,
                                 rootKey: rootKey,
                                 adminPasskey: adminPasskey
                             )
@@ -261,7 +261,7 @@ final class CallLinkViewController: OWSTableViewController2 {
     }
 
     private func createCallLinkRecord() -> Int64 {
-        let rowId = databaseStorage.write { tx in
+        let rowId = SSKEnvironment.shared.databaseStorageRef.write { tx in
             var callLinkRecord: CallLinkRecord
             do {
                 (callLinkRecord, _) = try callLinkStore.fetchOrInsert(rootKey: callLink.rootKey, tx: tx.asV2Write)
@@ -278,7 +278,7 @@ final class CallLinkViewController: OWSTableViewController2 {
 
             return callLinkRecord.id
         }
-        storageServiceManager.recordPendingUpdates(callLinkRootKeys: [callLink.rootKey])
+        SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(callLinkRootKeys: [callLink.rootKey])
         return rowId
     }
 

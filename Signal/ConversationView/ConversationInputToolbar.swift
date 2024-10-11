@@ -976,7 +976,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
             if let editTarget = editTarget {
 
                 // Fetch the original text (including any oversized text attachments)
-                let componentState = databaseStorage.read { tx in
+                let componentState = SSKEnvironment.shared.databaseStorageRef.read { tx in
                     CVLoader.buildStandaloneComponentState(
                         interaction: editTarget,
                         spoilerState: SpoilerRenderState(),
@@ -1318,7 +1318,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
         let suggestedStickerInfos: [StickerInfo]
         if let suggestedStickerEmoji {
-            suggestedStickerInfos = databaseStorage.read { tx in
+            suggestedStickerInfos = SSKEnvironment.shared.databaseStorageRef.read { tx in
                 return StickerManager.suggestedStickers(for: suggestedStickerEmoji, tx: tx).map { $0.info }
             }
         } else {
@@ -1603,7 +1603,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
             voiceMessageInterruptedDraft: voiceMemoDraft,
             mediaCache: mediaCache,
             deleteAction: { [weak self] in
-                Self.databaseStorage.asyncWrite {
+                SSKEnvironment.shared.databaseStorageRef.asyncWrite {
                     voiceMemoDraft.clearDraft(transaction: $0)
                 } completion: {
                     self?.hideVoiceMemoUI(animated: true)
@@ -2133,7 +2133,7 @@ extension ConversationInputToolbar {
         ImpactHapticFeedback.impactOccurred(style: .light)
 
         var hasInstalledStickerPacks: Bool = false
-        databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             hasInstalledStickerPacks = !StickerManager.installedStickerPacks(transaction: transaction).isEmpty
         }
         guard hasInstalledStickerPacks else {

@@ -129,7 +129,7 @@ final class DisappearingMessageFinderTest: SSKBaseTest {
             expireStartedAt: 0
         )
 
-        let rowIds = try databaseStorage.read { tx in
+        let rowIds = try SSKEnvironment.shared.databaseStorageRef.read { tx in
             try InteractionFinder.fetchSomeExpiredMessageRowIds(now: now, limit: 3, tx: tx)
         }
         XCTAssertEqual(Set(rowIds), [expiredMessage1.sqliteRowId!, expiredMessage2.sqliteRowId!])

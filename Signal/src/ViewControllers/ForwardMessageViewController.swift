@@ -64,7 +64,7 @@ class ForwardMessageViewController: InteractiveSheetViewController {
                               from fromViewController: UIViewController,
                               delegate: ForwardMessageDelegate) {
         do {
-            let content: Content = try Self.databaseStorage.read { transaction in
+            let content: Content = try SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 try Content.build(itemViewModels: itemViewModels, transaction: transaction)
             }
             present(content: content, from: fromViewController, delegate: delegate)
@@ -78,7 +78,7 @@ class ForwardMessageViewController: InteractiveSheetViewController {
                               from fromViewController: UIViewController,
                               delegate: ForwardMessageDelegate) {
         do {
-            let content: Content = try Self.databaseStorage.read { transaction in
+            let content: Content = try SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 try Content.build(selectionItems: selectionItems, transaction: transaction)
             }
             present(content: content, from: fromViewController, delegate: delegate)
@@ -126,7 +126,7 @@ class ForwardMessageViewController: InteractiveSheetViewController {
         let builder = Item.Builder()
         switch storyMessage.attachment {
         case .file, .foreignReferenceAttachment:
-            let attachment: ReferencedTSResourceStream? = databaseStorage.read { tx in
+            let attachment: ReferencedTSResourceStream? = SSKEnvironment.shared.databaseStorageRef.read { tx in
                 guard
                     let reference = DependenciesBridge.shared.tsResourceStore.mediaAttachment(for: storyMessage, tx: tx.asV2Read),
                     let attachmentStream = reference.fetch(tx: tx)?.asResourceStream()
@@ -236,12 +236,12 @@ extension ForwardMessageViewController {
     private static let hasForwardedKey = "hasForwardedKey"
 
     private var hasForwardedWithSneakyTransaction: Bool {
-        databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             Self.keyValueStore.getBool(Self.hasForwardedKey, defaultValue: false, transaction: transaction)
         }
     }
     private static func markHasForwardedWithSneakyTransaction() {
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             Self.keyValueStore.setBool(true, key: Self.hasForwardedKey, transaction: transaction)
         }
     }
@@ -294,7 +294,7 @@ extension ForwardMessageViewController {
         firstly(on: DispatchQueue.global()) {
             self.outgoingMessageRecipientThreads(for: recipientConversations)
         }.then(on: DispatchQueue.main) { (outgoingMessageRecipientThreads: [TSThread]) -> Promise<Void> in
-            try Self.databaseStorage.write { transaction in
+            try SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 for recipientThread in outgoingMessageRecipientThreads {
                     // We're sending a message to this thread, approve any pending message request
                     ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequest(
@@ -432,7 +432,7 @@ extension ForwardMessageViewController {
     }
 
     fileprivate func send(body: MessageBody, linkPreviewDraft: OWSLinkPreviewDraft? = nil, recipientThread: TSThread) -> Promise<Void> {
-        let body = databaseStorage.read { transaction in
+        let body = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return body.forForwarding(to: recipientThread, transaction: transaction.unwrapGrdbRead).asMessageBodyForForwarding()
         }
         ThreadUtil.enqueueMessage(
@@ -449,7 +449,7 @@ extension ForwardMessageViewController {
     }
 
     fileprivate func send(body: MessageBody, attachment: SignalAttachment, thread: TSThread) -> Promise<Void> {
-        let body = databaseStorage.read { transaction in
+        let body = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return body.forForwarding(to: thread, transaction: transaction.unwrapGrdbRead).asMessageBodyForForwarding()
         }
         ThreadUtil.enqueueMessage(body: body,
@@ -481,7 +481,7 @@ extension ForwardMessageViewController {
                 throw OWSAssertionError("No recipients.")
             }
 
-            return try self.databaseStorage.write { transaction in
+            return try SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 try conversationItems.lazy.filter { $0.outgoingMessageType == .message }.map {
                     guard let thread = $0.getOrCreateThread(transaction: transaction) else {
                         throw ForwardError.missingThread

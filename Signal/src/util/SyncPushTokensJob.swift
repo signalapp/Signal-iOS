@@ -33,7 +33,7 @@ class SyncPushTokensJob: NSObject {
             // Always rotate
             return try await run(shouldRotateAPNSToken: true)
         case .rotateIfEligible:
-            let shouldRotate = databaseStorage.read { tx -> Bool in
+            let shouldRotate = SSKEnvironment.shared.databaseStorageRef.read { tx -> Bool in
                 return APNSRotationStore.canRotateAPNSToken(transaction: tx)
             }
             guard shouldRotate else {
@@ -49,7 +49,7 @@ class SyncPushTokensJob: NSObject {
     private func run(shouldRotateAPNSToken: Bool) async throws {
         let regResult = try await pushRegistrationManager.requestPushTokens(forceRotation: shouldRotateAPNSToken).awaitable()
 
-        await databaseStorage.awaitableWrite { tx in
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             if shouldRotateAPNSToken {
                 APNSRotationStore.didRotateAPNSToken(transaction: tx)
             }
@@ -61,7 +61,7 @@ class SyncPushTokensJob: NSObject {
 
         var shouldUploadTokens = false
 
-        if preferences.pushToken != pushToken {
+        if SSKEnvironment.shared.preferencesRef.pushToken != pushToken {
             Logger.info("Push tokens changed.")
             shouldUploadTokens = true
         } else if mode == .forceUpload {
@@ -103,12 +103,12 @@ class SyncPushTokensJob: NSObject {
     private func recordPushTokensLocally(pushToken: String) async {
         assert(!Thread.isMainThread)
 
-        await databaseStorage.awaitableWrite { tx in
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             Logger.warn("Recording push tokens locally. pushToken: \(redact(pushToken))")
 
-            if pushToken != self.preferences.getPushToken(tx: tx) {
+            if pushToken != SSKEnvironment.shared.preferencesRef.getPushToken(tx: tx) {
                 Logger.info("Recording new plain push token")
-                self.preferences.setPushToken(pushToken, tx: tx)
+                SSKEnvironment.shared.preferencesRef.setPushToken(pushToken, tx: tx)
             }
         }
     }
@@ -126,7 +126,7 @@ class SyncPushTokensJob: NSObject {
         remainingRetries: Int
     ) async throws {
         do {
-            _ = try await networkManager
+            _ = try await SSKEnvironment.shared.networkManagerRef
                 .makePromise(request: request)
                 .awaitable()
             return

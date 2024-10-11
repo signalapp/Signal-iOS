@@ -41,7 +41,7 @@ public class OWSPaymentsLock: NSObject, Dependencies {
             return true
         }
 
-        return databaseStorage.read { transaction in
+        return SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return self.keyValueStore.getBool(.isPaymentsLockEnabledKey,
                                               defaultValue: false,
                                               transaction: transaction)
@@ -49,7 +49,7 @@ public class OWSPaymentsLock: NSObject, Dependencies {
     }
 
     public func setIsPaymentsLockEnabledAndSnooze(_ value: Bool) {
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             setIsPaymentsLockEnabled(value, transaction: transaction)
             snoozeSuggestion(transaction: transaction)
         }
@@ -73,7 +73,7 @@ public class OWSPaymentsLock: NSObject, Dependencies {
         }
 
         let defaultDate = Date.distantPast
-        let date = databaseStorage.read { transaction in
+        let date = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return self.keyValueStore.getDate(.timeToShowSuggestionKey,
                                               transaction: transaction) ?? defaultDate
         }

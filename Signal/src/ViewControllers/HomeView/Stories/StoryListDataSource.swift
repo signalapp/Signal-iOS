@@ -112,7 +112,7 @@ class StoryListDataSource: NSObject, Dependencies {
     func reloadStories() {
         loadingQueue.async {
             self.syncingModels.mutate { oldModel -> StoryChanges? in
-                let (listStories, myStoryModel) = Self.databaseStorage.read { transaction -> ([StoryViewModel], MyStoryViewModel) in
+                let (listStories, myStoryModel) = SSKEnvironment.shared.databaseStorageRef.read { transaction -> ([StoryViewModel], MyStoryViewModel) in
                     let storiesForList = StoryFinder.storiesForListView(transaction: transaction)
                     let groupedMessages = Dictionary(grouping: storiesForList) { $0.context }
                     let storyListModels = groupedMessages.compactMap { _, messages -> StoryViewModel? in
@@ -251,8 +251,8 @@ class StoryListDataSource: NSObject, Dependencies {
     // MARK: - Database Observation
 
     public func beginObservingDatabase() {
-        Self.databaseStorage.appendDatabaseChangeDelegate(self)
-        Self.systemStoryManager.addStateChangedObserver(self)
+        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
+        SSKEnvironment.shared.systemStoryManagerRef.addStateChangedObserver(self)
         // NOTE: hidden state lives on StoryContextAssociatedData, so we observe changes on that.
         // But we need to know which thread IDs to observe, so first we load messages and then
         // we begin observing the contexts those messages are a part of.
@@ -299,7 +299,7 @@ class StoryListDataSource: NSObject, Dependencies {
         var hasEmitted = false
         associatedDataObservation?.cancel()
         associatedDataObservation = observation.start(
-            in: databaseStorage.grdbStorage.pool,
+            in: SSKEnvironment.shared.databaseStorageRef.grdbStorage.pool,
             onError: { error in
                 owsFailDebug("Failed to observe story hidden state: \(error))")
             }, onChange: { [weak self] changedModels in
@@ -335,7 +335,7 @@ class StoryListDataSource: NSObject, Dependencies {
         oldViewModel: StoryListViewModel,
         changedMessageRowIds: Set<Int64>
     ) throws -> StoryChanges {
-        let updatedListMessages = Self.databaseStorage.read {
+        let updatedListMessages = SSKEnvironment.shared.databaseStorageRef.read {
             StoryFinder.listStoriesWithRowIds(Array(changedMessageRowIds), transaction: $0)
         }
         // If we see rows we thought updated but which don't exist anymore, that means they're deleted.
@@ -391,7 +391,7 @@ class StoryListDataSource: NSObject, Dependencies {
         var changedVisibleContexts = [StoryContext]()
         var changedHiddenContexts = [StoryContext]()
 
-        let newModels = try Self.databaseStorage.read { transaction -> [StoryViewModel] in
+        let newModels = try SSKEnvironment.shared.databaseStorageRef.read { transaction -> [StoryViewModel] in
             let changedModels = try oldViewModel.unfilteredStories.compactMap { oldModel -> StoryViewModel? in
                 guard let latestMessage = oldModel.messages.first else { return oldModel }
 
@@ -515,7 +515,7 @@ class StoryListDataSource: NSObject, Dependencies {
         changedMessageRowIds: Set<Int64>
     ) -> MyStoryViewModel? {
         let oldStoryModel = oldModel.myStory
-        let outgoingStories = Self.databaseStorage.read {
+        let outgoingStories = SSKEnvironment.shared.databaseStorageRef.read {
             StoryFinder.outgoingStories(transaction: $0)
         }
         let myStoryChanged = changedMessageRowIds.intersection(outgoingStories.map { $0.id! }).count > 0
@@ -524,7 +524,7 @@ class StoryListDataSource: NSObject, Dependencies {
         guard myStoryChanged else {
             return nil
         }
-        return Self.databaseStorage.read { MyStoryViewModel(messages: outgoingStories, transaction: $0) }
+        return SSKEnvironment.shared.databaseStorageRef.read { MyStoryViewModel(messages: outgoingStories, transaction: $0) }
     }
 
     // MARK: - Applying updates to TableView

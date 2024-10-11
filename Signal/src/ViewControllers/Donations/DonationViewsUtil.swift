@@ -471,7 +471,7 @@ public final class DonationViewsUtil {
             switch paymentMethod {
             case .ideal:
                 let idealDonationStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
-                viewController.databaseStorage.write { tx in
+                SSKEnvironment.shared.databaseStorageRef.write { tx in
                     switch donateMode {
                     case .oneTime:
                         idealDonationStore.clearPendingOneTimeDonation(tx: tx.asV2Write)

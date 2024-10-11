@@ -950,7 +950,7 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
         let thread = cellContentToken.configuration.thread
         guard
             !cellContentToken.configuration.hasOverrideSnippet,
-            typingIndicatorsImpl.typingAddress(forThread: thread) != nil
+            SSKEnvironment.shared.typingIndicatorsRef.typingAddress(forThread: thread) != nil
         else {
             return false
         }

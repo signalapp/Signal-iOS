@@ -96,7 +96,7 @@ extension ConversationViewController {
         }()
 
         let updateBlock: () -> Void = { [thread] in
-            let oldValue = self.databaseStorage.read { transaction in
+            let oldValue = SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 thread.lastVisibleInteraction(transaction: transaction)
             }
 
@@ -104,7 +104,7 @@ extension ConversationViewController {
                 return
             }
 
-            self.databaseStorage.asyncWrite { transaction in
+            SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
                 thread.setLastVisibleInteraction(newValue, transaction: transaction)
             }
         }

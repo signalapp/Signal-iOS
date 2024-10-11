@@ -47,7 +47,7 @@ public class OWSUserProfileBadgeInfo: NSObject, Codable {
 
     @objc
     public func loadBadge(transaction: SDSAnyReadTransaction) {
-        badge = profileManager.badgeStore.fetchBadgeWithId(badgeId, readTx: transaction)
+        badge = SSKEnvironment.shared.profileManagerRef.badgeStore.fetchBadgeWithId(badgeId, readTx: transaction)
     }
 
     @objc
@@ -1163,11 +1163,11 @@ extension OWSUserProfile {
         }
 
         if case .localUser = internalAddress {
-            profileManager.localProfileWasUpdated(self)
+            SSKEnvironment.shared.profileManagerRef.localProfileWasUpdated(self)
         }
 
         if case .localUser = internalAddress, case .setTo = changes.badges {
-            subscriptionManager.reconcileBadgeStates(transaction: tx)
+            SSKEnvironment.shared.subscriptionManagerRef.reconcileBadgeStates(transaction: tx)
         }
 
         if let oldInstance {
@@ -1227,9 +1227,9 @@ extension OWSUserProfile {
             tx.addAsyncCompletionOffMain {
                 switch internalAddress {
                 case .localUser:
-                    self.storageServiceManager.recordPendingLocalAccountUpdates()
+                    SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
                 case .otherUser(let address):
-                    self.storageServiceManager.recordPendingUpdates(updatedAddresses: [address])
+                    SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(updatedAddresses: [address])
                 }
             }
         }
@@ -1342,7 +1342,7 @@ extension OWSUserProfile {
         // Tell the cache to refresh its state for this recipient. It will check
         // whether or not the number should be visible based on this state and the
         // state of system contacts.
-        signalServiceAddressCache.updateRecipient(recipient, tx: tx)
+        SSKEnvironment.shared.signalServiceAddressCacheRef.updateRecipient(recipient, tx: tx)
     }
 
     /// Applies changes specified by the properties.

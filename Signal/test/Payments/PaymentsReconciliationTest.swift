@@ -91,7 +91,7 @@ class PaymentsReconciliationTest: SignalBaseTest {
 
     func test_reconcileAccountActivity_empty() {
         do {
-            try databaseStorage.read { (transaction) -> Void in
+            try SSKEnvironment.shared.databaseStorageRef.read { (transaction) -> Void in
                 let transactionHistory = Self.buildTransactionHistory_empty()
                 let databaseState = Self.buildPaymentsDatabaseState_empty()
                 try PaymentsReconciliation.reconcile(transactionHistory: transactionHistory,
@@ -117,7 +117,7 @@ class PaymentsReconciliationTest: SignalBaseTest {
 
     func test_reconcileAccountActivity_unsavedChanges() {
         do {
-            try databaseStorage.read { (transaction) -> Void in
+            try SSKEnvironment.shared.databaseStorageRef.read { (transaction) -> Void in
                 let buildItem2a_incomingUnspent = Self.buildItem2a_incomingUnspent()
                 let transactionHistory = MockTransactionHistory(items: [
                     buildItem2a_incomingUnspent
@@ -141,7 +141,7 @@ class PaymentsReconciliationTest: SignalBaseTest {
 
     func test_reconcileAccountActivity_fillIn1() {
         do {
-            try databaseStorage.write { (transaction) -> Void in
+            try SSKEnvironment.shared.databaseStorageRef.write { (transaction) -> Void in
 
                 let buildItem2a_incomingUnspent = Self.buildItem2a_incomingUnspent()
                 let transactionHistory = MockTransactionHistory(items: [
@@ -232,7 +232,7 @@ class PaymentsReconciliationTest: SignalBaseTest {
 
     func test_reconcileAccountActivity_unspentThenSpent() {
         do {
-            try databaseStorage.write { (transaction) -> Void in
+            try SSKEnvironment.shared.databaseStorageRef.write { (transaction) -> Void in
 
                 // Reconciliation 1
 

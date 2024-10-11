@@ -39,7 +39,7 @@ public class AvatarHistoryManager: NSObject {
 
         guard OWSFileSystem.fileOrFolderExists(url: Self.imageHistoryDirectory) else { return }
 
-        let allRecords: [[AvatarRecord]] = databaseStorage.read { transaction in
+        let allRecords: [[AvatarRecord]] = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             do {
                 return try Self.keyValueStore.allCodableValues(transaction: transaction)
             } catch {

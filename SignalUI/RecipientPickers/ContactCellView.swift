@@ -274,7 +274,7 @@ public class ContactCellView: ManualStackView {
     // MARK: -
 
     private func updateNameLabelsWithSneakyTransaction(configuration: ContactCellConfiguration) {
-        databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             updateNameLabels(configuration: configuration, transaction: transaction)
         }
     }
@@ -292,12 +292,12 @@ public class ContactCellView: ManualStackView {
 
             switch configuration.dataSource {
             case .address(let address):
-                return contactsManager.nameForAddress(address,
+                return SSKEnvironment.shared.contactManagerRef.nameForAddress(address,
                                                       localUserDisplayMode: configuration.localUserDisplayMode,
                                                       short: false,
                                                       transaction: transaction)
             case .groupThread(let thread):
-                let threadName = contactsManager.displayName(for: thread, transaction: transaction)
+                let threadName = SSKEnvironment.shared.contactManagerRef.displayName(for: thread, transaction: transaction)
                 return threadName.asAttributedString(attributes: [
                     .foregroundColor: textColor,
                 ])

@@ -214,7 +214,7 @@ extension ConversationViewController: CVComponentDelegate {
             message: message,
             spoilerState: viewState.spoilerState,
             editManager: self.context.editManager,
-            database: databaseStorage
+            database: SSKEnvironment.shared.databaseStorageRef
         )
         sheet.delegate = self
         self.present(sheet, animated: true)
@@ -223,7 +223,7 @@ extension ConversationViewController: CVComponentDelegate {
     public func didTapFailedOrPendingDownloads(_ message: TSMessage) {
         AssertIsOnMainThread()
 
-        databaseStorage.write { tx in
+        SSKEnvironment.shared.databaseStorageRef.write { tx in
             DependenciesBridge.shared.tsResourceDownloadManager.enqueueDownloadOfAttachmentsForMessage(
                 message,
                 priority: .userInitiated,
@@ -287,7 +287,7 @@ extension ConversationViewController: CVComponentDelegate {
             else {
                 return
             }
-            guard let quotedStory = databaseStorage.read(
+            guard let quotedStory = SSKEnvironment.shared.databaseStorageRef.read(
                 block: { StoryFinder.story(timestamp: timestamp, author: quotedStoryAuthorAci, transaction: $0) }
             ) else { return }
 
@@ -435,7 +435,7 @@ extension ConversationViewController: CVComponentDelegate {
     }
 
     public func didTapUsernameLink(usernameLink: Usernames.UsernameLink) {
-        databaseStorage.read { tx in
+        SSKEnvironment.shared.databaseStorageRef.read { tx in
             UsernameQuerier().queryForUsernameLink(
                 link: usernameLink,
                 fromViewController: self,
@@ -509,7 +509,7 @@ extension ConversationViewController: CVComponentDelegate {
             }
             // Reload the address from disk if we lack an ACI.
             let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
-            return databaseStorage.read { tx in
+            return SSKEnvironment.shared.databaseStorageRef.read { tx in
                 return recipientDatabaseTable.fetchRecipient(phoneNumber: phoneNumber, transaction: tx.asV2Read)?.aci
             }
         }()
@@ -532,7 +532,7 @@ extension ConversationViewController: CVComponentDelegate {
         headerImageView.autoSetDimension(.width, toSize: 200)
         headerImageView.autoSetDimension(.height, toSize: 110)
 
-        let displayName = databaseStorage.read { tx in contactsManager.displayName(for: address, tx: tx).resolvedValue() }
+        let displayName = SSKEnvironment.shared.databaseStorageRef.read { tx in SSKEnvironment.shared.contactManagerRef.displayName(for: address, tx: tx).resolvedValue() }
         let messageFormat = OWSLocalizedString("UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT",
                                               comment: "Description for the unverified safety number change. Embeds {name of contact with identity change}")
 
@@ -555,8 +555,8 @@ extension ConversationViewController: CVComponentDelegate {
     public func didTapInvalidIdentityKeyErrorMessage(_ message: TSInvalidIdentityKeyErrorMessage) {
         AssertIsOnMainThread()
 
-        let keyOwner = databaseStorage.read { tx in
-            return contactsManager.displayName(for: message.theirSignalAddress(), tx: tx).resolvedValue()
+        let keyOwner = SSKEnvironment.shared.databaseStorageRef.read { tx in
+            return SSKEnvironment.shared.contactManagerRef.displayName(for: message.theirSignalAddress(), tx: tx).resolvedValue()
         }
         let titleFormat = OWSLocalizedString("SAFETY_NUMBERS_ACTIONSHEET_TITLE", comment: "Action sheet heading")
         let titleText = String(format: titleFormat, keyOwner)
@@ -599,8 +599,8 @@ extension ConversationViewController: CVComponentDelegate {
     public func didTapCorruptedMessage(_ message: TSErrorMessage) {
         AssertIsOnMainThread()
 
-        let threadName = databaseStorage.read { transaction in
-            Self.contactsManager.displayName(for: self.thread, transaction: transaction)
+        let threadName = SSKEnvironment.shared.databaseStorageRef.read { transaction in
+            SSKEnvironment.shared.contactManagerRef.displayName(for: self.thread, transaction: transaction)
         }
         let alertMessage = String(format: OWSLocalizedString("CORRUPTED_SESSION_DESCRIPTION",
                                                             comment: "ActionSheet title"),
@@ -620,8 +620,8 @@ extension ConversationViewController: CVComponentDelegate {
                 return
             }
 
-            Self.databaseStorage.asyncWrite { transaction in
-                Self.smJobQueues.sessionResetJobQueue.add(contactThread: contactThread, transaction: transaction)
+            SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
+                SSKEnvironment.shared.smJobQueuesRef.sessionResetJobQueue.add(contactThread: contactThread, transaction: transaction)
             }
         })
 
@@ -670,7 +670,7 @@ extension ConversationViewController: CVComponentDelegate {
             await GroupManager.sendGroupUpdateMessage(thread: groupThread)
             Logger.info("Group updated, removing group creation error.")
 
-            await Self.databaseStorage.awaitableWrite { tx in
+            await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
                 DependenciesBridge.shared.interactionDeleteManager
                     .delete(message, sideEffects: .default(), tx: tx.asV2Write)
             }
@@ -694,8 +694,8 @@ extension ConversationViewController: CVComponentDelegate {
             return
         }
 
-        let displayName = databaseStorage.read { tx in
-            return contactsManager.displayName(for: contactThread.contactAddress, tx: tx).resolvedValue()
+        let displayName = SSKEnvironment.shared.databaseStorageRef.read { tx in
+            return SSKEnvironment.shared.contactManagerRef.displayName(for: contactThread.contactAddress, tx: tx).resolvedValue()
         }
 
         let alert = ActionSheetController(title: CallStrings.callBackAlertTitle,
@@ -728,7 +728,7 @@ extension ConversationViewController: CVComponentDelegate {
             return
         }
         let address = contactThread.contactAddress
-        let displayName = databaseStorage.read { tx in contactsManager.displayName(for: address, tx: tx).resolvedValue() }
+        let displayName = SSKEnvironment.shared.databaseStorageRef.read { tx in SSKEnvironment.shared.contactManagerRef.displayName(for: address, tx: tx).resolvedValue() }
 
         let alert = ActionSheetController(
             title: String(
@@ -752,9 +752,9 @@ extension ConversationViewController: CVComponentDelegate {
                 accessibilityIdentifier: "block_contact",
                 style: .destructive
             ) { [weak self] _ in
-                guard let self = self else { return }
-                self.databaseStorage.write { tx in
-                    self.blockingManager.addBlockedAddress(
+                guard self != nil else { return }
+                SSKEnvironment.shared.databaseStorageRef.write { tx in
+                    SSKEnvironment.shared.blockingManagerRef.addBlockedAddress(
                         address,
                         blockMode: .localShouldLeaveGroups,
                         transaction: tx
@@ -777,10 +777,10 @@ extension ConversationViewController: CVComponentDelegate {
 
     public func didTapPendingOutgoingMessage(_ message: TSOutgoingMessage) {
         AssertIsOnMainThread()
-        if spamChallengeResolver.isPausingMessages {
+        if SSKEnvironment.shared.spamChallengeResolverRef.isPausingMessages {
             SpamCaptchaViewController.presentActionSheet(from: self)
         } else {
-            spamChallengeResolver.retryPausedMessagesIfReady()
+            SSKEnvironment.shared.spamChallengeResolverRef.retryPausedMessagesIfReady()
         }
 
     }
@@ -789,7 +789,7 @@ extension ConversationViewController: CVComponentDelegate {
         AssertIsOnMainThread()
 
         let promptBuilder = ResendMessagePromptBuilder(
-            databaseStorage: databaseStorage,
+            databaseStorage: SSKEnvironment.shared.databaseStorageRef,
             messageSenderJobQueue: SSKEnvironment.shared.messageSenderJobQueueRef
         )
         dismissKeyBoard()
@@ -911,10 +911,10 @@ extension ConversationViewController: CVComponentDelegate {
         contactsViewHelper.checkEditAuthorization(
             performWhenAllowed: {
                 let existingContact: CNContact? = {
-                    guard let cnContactId = self.contactsManager.cnContactId(for: phoneNumberOld) else {
+                    guard let cnContactId = SSKEnvironment.shared.contactManagerRef.cnContactId(for: phoneNumberOld) else {
                         return nil
                     }
-                    return self.contactsManager.cnContact(withId: cnContactId)
+                    return SSKEnvironment.shared.contactManagerRef.cnContact(withId: cnContactId)
                 }()
                 guard let existingContact else {
                     owsFailDebug("Missing existing contact for phone number change.")
@@ -1013,8 +1013,8 @@ extension ConversationViewController: CVComponentDelegate {
                 comment: "Shown after tapping a 'Learn More' button when multiple conversations for the same person have been merged into one. The first parameter is a phone number (eg +1 650-555-0100) and the second parameter is a name (eg John)."
             )
             let formattedPhoneNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(e164: phoneNumber)
-            let shortDisplayName = databaseStorage.read { tx in
-                return contactsManager.displayName(for: contactAddress, tx: tx).resolvedValue(useShortNameIfAvailable: true)
+            let shortDisplayName = SSKEnvironment.shared.databaseStorageRef.read { tx in
+                return SSKEnvironment.shared.contactManagerRef.displayName(for: contactAddress, tx: tx).resolvedValue(useShortNameIfAvailable: true)
             }
             return String(format: formatString, formattedPhoneNumber, shortDisplayName)
         }()

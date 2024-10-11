@@ -12,7 +12,7 @@ class ViewOnceMessagesTest: SSKBaseTest {
     override func setUp() {
         super.setUp()
 
-        databaseStorage.write { tx in
+        SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: .forUnitTests,
                 tx: tx.asV2Write
@@ -25,13 +25,13 @@ class ViewOnceMessagesTest: SSKBaseTest {
     func test_expiration() {
 
         let messageCount = { () -> Int in
-            return self.databaseStorage.read { transaction in
+            return SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 return TSInteraction.anyFetchAll(transaction: transaction).count
             }
         }
         let latestCopy = { (message: TSMessage) -> TSMessage in
             let uniqueId = message.uniqueId
-            return self.databaseStorage.read { transaction in
+            return SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 return TSMessage.anyFetch(uniqueId: uniqueId, transaction: transaction) as! TSMessage
             }
         }

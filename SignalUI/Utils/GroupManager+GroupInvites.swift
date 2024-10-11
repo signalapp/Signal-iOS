@@ -25,7 +25,7 @@ public extension GroupManager {
             canCancel: false
         ) { modalView in
             firstly(on: DispatchQueue.global()) {
-                databaseStorage.write { transaction in
+                SSKEnvironment.shared.databaseStorageRef.write { transaction in
                     self.localLeaveGroupOrDeclineInvite(
                         groupThread: groupThread,
                         replacementAdminAci: replacementAdminAci,

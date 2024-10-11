@@ -179,8 +179,8 @@ public class PaymentsBiometryLockPromptViewController: OWSViewController {
 
     @objc
     private func didTapEnableButton() {
-        databaseStorage.write { transaction in
-            Self.owsPaymentsLock.setIsPaymentsLockEnabled(true, transaction: transaction)
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
+            SSKEnvironment.shared.owsPaymentsLockRef.setIsPaymentsLockEnabled(true, transaction: transaction)
         }
         dismiss(animated: true, completion: nil)
     }

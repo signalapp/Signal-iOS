@@ -44,7 +44,7 @@ private class SessionResetJobRunner: JobRunner, Dependencies {
             try await _runJobAttempt(jobRecord)
             return .finished(.success(()))
         } catch {
-            return await databaseStorage.awaitableWrite { tx in
+            return await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
                 let result = JobAttemptResult.performDefaultErrorHandler(
                     error: error, jobRecord: jobRecord, retryLimit: Constants.maxRetries, tx: tx.asV2Write
                 )
@@ -67,7 +67,7 @@ private class SessionResetJobRunner: JobRunner, Dependencies {
     func didFinishJob(_ jobRecordId: JobRecord.RowId, result: JobResult) async {}
 
     private func _runJobAttempt(_ jobRecord: SessionResetJobRecord) async throws {
-        let endSessionMessagePromise = try await databaseStorage.awaitableWrite { tx in
+        let endSessionMessagePromise = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             let contactThread = try self.fetchThread(jobRecord: jobRecord, tx: tx)
             if !self.hasArchivedAllSessions {
                 self.archiveAllSessions(for: contactThread, tx: tx)
@@ -83,7 +83,7 @@ private class SessionResetJobRunner: JobRunner, Dependencies {
         try await endSessionMessagePromise.awaitable()
 
         Logger.info("successfully sent EndSessionMessage.")
-        try await databaseStorage.awaitableWrite { tx in
+        try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             let contactThread = try self.fetchThread(jobRecord: jobRecord, tx: tx)
             // Archive the just-created session since the recipient should delete their
             // corresponding session upon receiving and decrypting our EndSession

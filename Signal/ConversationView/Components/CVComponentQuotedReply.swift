@@ -119,7 +119,7 @@ private class QuotedMessageViewAdapter: QuotedMessageViewDelegate, Dependencies 
     }
 
     func didTapDownloadQuotedReplyAttachment(_ quotedReply: QuotedReplyModel) {
-        databaseStorage.write { tx in
+        SSKEnvironment.shared.databaseStorageRef.write { tx in
             guard let message = TSMessage.anyFetchMessage(uniqueId: interactionUniqueId, transaction: tx) else {
                 return
             }

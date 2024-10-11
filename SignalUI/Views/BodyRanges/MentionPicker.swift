@@ -36,8 +36,8 @@ class MentionPicker: UIView {
         style: Style,
         selectedAddressCallback: @escaping (SignalServiceAddress) -> Void
     ) {
-        mentionableUsers = Self.databaseStorage.read { transaction in
-            let sortedAddresses = Self.contactsManagerImpl.sortSignalServiceAddresses(
+        mentionableUsers = SSKEnvironment.shared.databaseStorageRef.read { transaction in
+            let sortedAddresses = SSKEnvironment.shared.contactManagerImplRef.sortSignalServiceAddresses(
                 mentionableAddresses,
                 transaction: transaction
             )
@@ -50,7 +50,7 @@ class MentionPicker: UIView {
 
                 return MentionableUser(
                     address: address,
-                    displayName: Self.contactsManager.displayName(for: address, tx: transaction).resolvedValue()
+                    displayName: SSKEnvironment.shared.contactManagerRef.displayName(for: address, tx: transaction).resolvedValue()
                 )
             }
         }

@@ -15,7 +15,7 @@ public extension TSGroupThread {
         updateWithStoryViewMode(storySendEnabled ? .explicit : .disabled, transaction: transaction)
 
         if updateStorageService {
-            storageServiceManager.recordPendingUpdates(groupModel: groupModel)
+            SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(groupModel: groupModel)
         }
 
         if !wasStorySendEnabled, storySendEnabled {

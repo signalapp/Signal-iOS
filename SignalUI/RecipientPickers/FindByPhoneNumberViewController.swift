@@ -204,7 +204,7 @@ public class FindByPhoneNumberViewController: OWSTableViewController2 {
         guard let userSpecifiedText = phoneNumberTextField.text else {
             return nil
         }
-        let possiblePhoneNumbers = phoneNumberUtil.parsePhoneNumbers(
+        let possiblePhoneNumbers = SSKEnvironment.shared.phoneNumberUtilRef.parsePhoneNumbers(
             userSpecifiedText: callingCode + userSpecifiedText,
             localPhoneNumber: localNumber
         )
@@ -238,7 +238,7 @@ public class FindByPhoneNumberViewController: OWSTableViewController2 {
         if requiresRegisteredNumber {
             ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: true) { modal in
                 firstly { () -> Promise<Set<SignalRecipient>> in
-                    Self.contactDiscoveryManager.lookUp(phoneNumbers: [phoneNumber], mode: .oneOffUserRequest)
+                    SSKEnvironment.shared.contactDiscoveryManagerRef.lookUp(phoneNumbers: [phoneNumber], mode: .oneOffUserRequest)
                 }.done(on: DispatchQueue.main) { [weak self] recipients in
                     modal.dismissIfNotCanceled {
                         guard let self = self else { return }
@@ -296,16 +296,16 @@ extension FindByPhoneNumberViewController: CountryCodeViewControllerDelegate {
         var callingCodeInt: Int?
         var countryCode: String?
 
-        if let localE164 = phoneNumberUtil.parseE164(localNumber), let localCallingCode = localE164.getCallingCode()?.intValue {
+        if let localE164 = SSKEnvironment.shared.phoneNumberUtilRef.parseE164(localNumber), let localCallingCode = localE164.getCallingCode()?.intValue {
             callingCodeInt = localCallingCode
         } else {
-            callingCodeInt = phoneNumberUtil.getCallingCode(forRegion: PhoneNumberUtil.defaultCountryCode()).intValue
+            callingCodeInt = SSKEnvironment.shared.phoneNumberUtilRef.getCallingCode(forRegion: PhoneNumberUtil.defaultCountryCode()).intValue
         }
 
         var callingCode: String?
         if let callingCodeInt = callingCodeInt {
             callingCode = PhoneNumber.countryCodePrefix + "\(callingCodeInt)"
-            countryCode = phoneNumberUtil.probableCountryCode(forCallingCode: callingCode!)
+            countryCode = SSKEnvironment.shared.phoneNumberUtilRef.probableCountryCode(forCallingCode: callingCode!)
         }
 
         updateCountry(callingCode: callingCode, countryCode: countryCode)

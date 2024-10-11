@@ -19,18 +19,18 @@ public class SSKBaseTest: XCTestCase {
     }
 
     public func read(_ block: (SDSAnyReadTransaction) -> Void) {
-        return databaseStorage.read(block: block)
+        return SSKEnvironment.shared.databaseStorageRef.read(block: block)
     }
 
     public func write<T>(_ block: (SDSAnyWriteTransaction) -> T) -> T {
-        return databaseStorage.write(block: block)
+        return SSKEnvironment.shared.databaseStorageRef.write(block: block)
     }
 
     public func write<T>(_ block: (SDSAnyWriteTransaction) throws -> T) rethrows -> T {
-        try databaseStorage.write(block: block)
+        try SSKEnvironment.shared.databaseStorageRef.write(block: block)
     }
 
     public func asyncWrite(_ block: @escaping (SDSAnyWriteTransaction) -> Void) {
-        return databaseStorage.asyncWrite(block: block)
+        return SSKEnvironment.shared.databaseStorageRef.asyncWrite(block: block)
     }
 }

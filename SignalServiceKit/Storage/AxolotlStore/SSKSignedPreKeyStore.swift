@@ -85,7 +85,7 @@ public class SSKSignedPreKeyStore: NSObject {
     // MARK: -
 
     public func generateRandomSignedRecord() -> SignalServiceKit.SignedPreKeyRecord {
-        let identityKeyPair = databaseStorage.read { DependenciesBridge.shared.identityManager.identityKeyPair(for: identity, tx: $0.asV2Read) }
+        let identityKeyPair = SSKEnvironment.shared.databaseStorageRef.read { DependenciesBridge.shared.identityManager.identityKeyPair(for: identity, tx: $0.asV2Read) }
         guard let identityKeyPair else {
             owsFail("identity key unexpectedly unavailable")
         }

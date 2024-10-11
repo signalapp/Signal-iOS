@@ -269,7 +269,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         }
 
         return firstly(on: DispatchQueue.global()) {
-            Self.databaseStorage.read { tx in
+            SSKEnvironment.shared.databaseStorageRef.read { tx in
                 self.fullTextSearcher.searchForRecipients(
                     searchText: searchText,
                     includeLocalUser: true,
@@ -302,7 +302,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         let thread = TSContactThread.getWithContactAddress(address, transaction: tx)
         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
         let dmConfig = thread.map { dmConfigurationStore.fetchOrBuildDefault(for: .thread($0), tx: tx.asV2Read) }
-        let displayName = contactsManager.displayName(for: address, tx: tx)
+        let displayName = SSKEnvironment.shared.contactManagerRef.displayName(for: address, tx: tx)
         return ContactConversationItem(
             address: address,
             isBlocked: isBlocked,
@@ -312,7 +312,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
     }
 
     fileprivate func buildConversationCollection() -> ConversationCollection {
-        self.databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             var pinnedItemsByThreadId: [String: RecentConversationItem] = [:]
             var recentItems: [RecentConversationItem] = []
             var contactItems: [ContactConversationItem] = []
@@ -333,7 +333,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                     return
                 }
 
-                let isThreadBlocked = self.blockingManager.isThreadBlocked(
+                let isThreadBlocked = SSKEnvironment.shared.blockingManagerRef.isThreadBlocked(
                     thread,
                     transaction: transaction
                 )
@@ -406,7 +406,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                 }
                 seenAddresses.insert(address)
 
-                let isContactBlocked = self.blockingManager.isAddressBlocked(
+                let isContactBlocked = SSKEnvironment.shared.blockingManagerRef.isAddressBlocked(
                     address,
                     transaction: transaction
                 )
@@ -447,7 +447,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                 includeImplicitGroupThreads: true,
                 excludeHiddenContexts: true,
                 prioritizeThreadsCreatedAfter: creationDate,
-                blockingManager: self.blockingManager,
+                blockingManager: SSKEnvironment.shared.blockingManagerRef,
                 transaction: transaction
             )
             if
@@ -472,7 +472,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         }
 
         return firstly(on: DispatchQueue.global()) {
-            Self.databaseStorage.read { transaction in
+            SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 let groupItems = searchResults.groupThreads.compactMap { groupThread -> GroupConversationItem? in
                     guard
                         self.threadFilter(groupThread),
@@ -481,7 +481,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                         return nil
                     }
 
-                    let isThreadBlocked = self.blockingManager.isThreadBlocked(
+                    let isThreadBlocked = SSKEnvironment.shared.blockingManagerRef.isThreadBlocked(
                         groupThread,
                         transaction: transaction
                     )
@@ -508,7 +508,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                 let storyItems = StoryConversationItem.buildItems(
                     from: searchResults.storyThreads,
                     excludeHiddenContexts: false,
-                    blockingManager: self.blockingManager,
+                    blockingManager: SSKEnvironment.shared.blockingManagerRef,
                     transaction: transaction
                 )
 
@@ -666,11 +666,11 @@ open class ConversationPickerViewController: OWSTableViewController2 {
     /// to display recipient context menus in this view controller.
     private lazy var recipientContextMenuHelper = {
         return RecipientContextMenuHelper(
-            databaseStorage: databaseStorage,
-            blockingManager: blockingManager,
+            databaseStorage: SSKEnvironment.shared.databaseStorageRef,
+            blockingManager: SSKEnvironment.shared.blockingManagerRef,
             recipientHidingManager: DependenciesBridge.shared.recipientHidingManager,
             accountManager: DependenciesBridge.shared.tsAccountManager,
-            contactsManager: contactsManager,
+            contactsManager: SSKEnvironment.shared.contactManagerRef,
             fromViewController: self
         )
     }()
@@ -685,7 +685,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                 owsFailDebug("Missing cell.")
                 return UITableViewCell()
             }
-            Self.databaseStorage.read { transaction in
+            SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 cell.configure(conversationItem: item, transaction: transaction)
             }
             return cell
@@ -924,7 +924,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                 self.conversationCollection = self.buildConversationCollection()
             }
         case .group(let groupThreadId):
-            guard let groupThread = databaseStorage.read(block: { transaction in
+            guard let groupThread = SSKEnvironment.shared.databaseStorageRef.read(block: { transaction in
                 return TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId, transaction: transaction)
             }) else {
                 owsFailDebug("Missing group thread for blocked thread")
@@ -959,7 +959,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
     private func didSelect(conversation: ConversationItem) {
         AssertIsOnMainThread()
 
-        let isBlocked: Bool = databaseStorage.read { transaction in
+        let isBlocked: Bool = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             guard let thread = conversation.getExistingThread(transaction: transaction) else {
                 return false
             }
@@ -984,14 +984,14 @@ open class ConversationPickerViewController: OWSTableViewController2 {
             }
 
             if storyConversationItem.isMyStory,
-               Self.databaseStorage.read(block: { !StoryManager.hasSetMyStoriesPrivacy(transaction: $0) }) {
+               SSKEnvironment.shared.databaseStorageRef.read(block: { !StoryManager.hasSetMyStoriesPrivacy(transaction: $0) }) {
                 // Show first time story privacy settings if selecting my story and settings have'nt been
                 // changed before.
 
                 // Reload the row when we show the sheet, and when it goes away, so we reflect changes.
                 let reloadRowBlock = { [weak self] in
                     self?.tableView.reloadData()
-                    if Self.databaseStorage.read(block: { StoryManager.hasSetMyStoriesPrivacy(transaction: $0) }) {
+                    if SSKEnvironment.shared.databaseStorageRef.read(block: { StoryManager.hasSetMyStoriesPrivacy(transaction: $0) }) {
                         self?.selection.add(conversation)
                         self?.updateUIForCurrentSelection(animated: true)
                         self?.tableView.selectRow(at: IndexPath(row: 0, section: 0), animated: false, scrollPosition: .none)
@@ -1236,7 +1236,7 @@ extension ConversationPickerViewController: ApprovalFooterDelegate {
                 return
             }
 
-            let selectedRecipients = databaseStorage.read { transaction in
+            let selectedRecipients = SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 conversations.flatMap { conversation in
                     conversation.getExistingThread(transaction: transaction)?.recipientAddresses(with: transaction) ?? []
                 }
@@ -1465,7 +1465,7 @@ public class ConversationPickerSelection: Dependencies {
 
         guard delegate?.shouldBatchUpdateIdentityKeys == true else { return }
 
-        let recipients: [ServiceId] = databaseStorage.read { transaction in
+        let recipients: [ServiceId] = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             guard let thread = conversation.getExistingThread(transaction: transaction) else { return [] }
             return thread.recipientAddresses(with: transaction).compactMap { $0.serviceId }
         }

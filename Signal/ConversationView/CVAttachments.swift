@@ -182,7 +182,7 @@ extension AudioAttachment: Dependencies {
     public func markOwningMessageAsViewed() -> Bool {
         AssertIsOnMainThread()
         guard let incomingMessage = owningMessage as? TSIncomingMessage, !incomingMessage.wasViewed else { return false }
-        databaseStorage.asyncWrite { tx in
+        SSKEnvironment.shared.databaseStorageRef.asyncWrite { tx in
             let uniqueId = incomingMessage.uniqueId
             guard
                 let latestMessage = TSIncomingMessage.anyFetchIncomingMessage(uniqueId: uniqueId, transaction: tx),

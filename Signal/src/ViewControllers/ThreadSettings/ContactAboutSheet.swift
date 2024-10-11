@@ -17,7 +17,7 @@ class ContactAboutSheet: StackSheetViewController {
         let nicknameManager: any NicknameManager
 
         static let `default` = Context(
-            contactManager: NSObject.contactsManager,
+            contactManager: SSKEnvironment.shared.contactManagerRef,
             identityManager: DependenciesBridge.shared.identityManager,
             recipientDatabaseTable: DependenciesBridge.shared.recipientDatabaseTable,
             nicknameManager: DependenciesBridge.shared.nicknameManager
@@ -39,7 +39,7 @@ class ContactAboutSheet: StackSheetViewController {
         self.spoilerState = spoilerState
         self.context = context
         super.init()
-        databaseStorage.appendDatabaseChangeDelegate(self)
+        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
     }
 
     private weak var fromViewController: UIViewController?
@@ -122,7 +122,7 @@ class ContactAboutSheet: StackSheetViewController {
 
     /// Updates the contents with a database read and reloads the view.
     private func updateContents() {
-        databaseStorage.read { tx in
+        SSKEnvironment.shared.databaseStorageRef.read { tx in
             updateContactNames(tx: tx)
             updateIsVerified(tx: tx.asV2Read)
             updateProfileBio(tx: tx)
@@ -240,7 +240,7 @@ class ContactAboutSheet: StackSheetViewController {
     private var secondaryName: String?
     private func updateContactNames(tx: SDSAnyReadTransaction) {
         if isLocalUser {
-            let snapshot = profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: false)
+            let snapshot = SSKEnvironment.shared.profileManagerImplRef.localProfileSnapshot(shouldIncludeAvatar: false)
             self.displayName = snapshot.fullName ?? ""
             // contactShortName not needed for local user
             return
@@ -257,7 +257,7 @@ class ContactAboutSheet: StackSheetViewController {
         switch displayName {
         case .nickname:
             guard
-                let profile = profileManager.fetchUserProfiles(
+                let profile = SSKEnvironment.shared.profileManagerRef.fetchUserProfiles(
                     for: [thread.contactAddress],
                     tx: tx
                 ).first,
@@ -300,7 +300,7 @@ class ContactAboutSheet: StackSheetViewController {
 
     private var profileBio: String?
     private func updateProfileBio(tx: SDSAnyReadTransaction) {
-        profileBio = profileManagerImpl.profileBioForDisplay(for: thread.contactAddress, transaction: tx)
+        profileBio = SSKEnvironment.shared.profileManagerImplRef.profileBioForDisplay(for: thread.contactAddress, transaction: tx)
     }
 
     // MARK: Connection
@@ -316,9 +316,9 @@ class ContactAboutSheet: StackSheetViewController {
     private func updateConnectionState(tx: SDSAnyReadTransaction) {
         if isLocalUser {
             connectionState = nil
-        } else if profileManager.isThread(inProfileWhitelist: thread, transaction: tx) {
+        } else if SSKEnvironment.shared.profileManagerRef.isThread(inProfileWhitelist: thread, transaction: tx) {
             connectionState = .connection
-        } else if blockingManager.isAddressBlocked(thread.contactAddress, transaction: tx) {
+        } else if SSKEnvironment.shared.blockingManagerRef.isAddressBlocked(thread.contactAddress, transaction: tx) {
             connectionState = .blocked
         } else if thread.hasPendingMessageRequest(transaction: tx) {
             connectionState = .pending
@@ -409,7 +409,7 @@ extension ContactAboutSheet: ConversationAvatarViewDelegate {
     func presentAvatarViewController() {
         guard
             avatarView.primaryImage != nil,
-            let vc = databaseStorage.read(block: { tx in
+            let vc = SSKEnvironment.shared.databaseStorageRef.read(block: { tx in
                 AvatarViewController(
                     thread: self.thread,
                     renderLocalUserAsNoteToSelf: false,

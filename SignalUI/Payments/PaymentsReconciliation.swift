@@ -70,7 +70,7 @@ public class PaymentsReconciliation: Dependencies {
         guard !CurrentAppContext().isRunningTests else {
             return false
         }
-        guard Self.paymentsHelper.arePaymentsEnabled else {
+        guard SSKEnvironment.shared.paymentsHelperRef.arePaymentsEnabled else {
             return false
         }
         guard
@@ -108,7 +108,7 @@ public class PaymentsReconciliation: Dependencies {
     private static let lastKnownSpentTXOCountKey = "lastKnownSpentTXOCountKey"
 
     private static func shouldReconcileByDateWithSneakyTransaction() -> Bool {
-        Self.databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             Self.shouldReconcileByDate(transaction: transaction)
         }
     }
@@ -122,7 +122,7 @@ public class PaymentsReconciliation: Dependencies {
     }
 
     private static func shouldReconcileWithSneakyTransaction(transactionHistory: MCTransactionHistory) -> Bool {
-        Self.databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             Self.shouldReconcile(transaction: transaction,
                                  transactionHistory: transactionHistory)
         }
@@ -213,7 +213,7 @@ public class PaymentsReconciliation: Dependencies {
         // perform any db writes, so in this way we can avoid write transactions unless
         // necessary.
         do {
-            try databaseStorage.read { transaction in
+            try SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 let databaseState = Self.buildPaymentsDatabaseState(transaction: transaction)
 
                 try reconcile(transactionHistory: transactionHistory,
@@ -222,7 +222,7 @@ public class PaymentsReconciliation: Dependencies {
 
                 try cleanUpDatabase(transaction: transaction)
             }
-            databaseStorage.write { transaction in
+            SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 reconciliationDidSucceed(transaction: transaction,
                                          transactionHistory: transactionHistory)
             }
@@ -231,7 +231,7 @@ public class PaymentsReconciliation: Dependencies {
                 Logger.info("Reconciliation has unsaved changes.")
 
                 do {
-                    try databaseStorage.write { transaction in
+                    try SSKEnvironment.shared.databaseStorageRef.write { transaction in
                         let databaseState = Self.buildPaymentsDatabaseState(transaction: transaction)
 
                         try reconcile(transactionHistory: transactionHistory,
@@ -410,7 +410,7 @@ public class PaymentsReconciliation: Dependencies {
 
             func insert(model: TSPaymentModel) throws {
                 if let transaction = transaction as? SDSAnyWriteTransaction {
-                    try Self.paymentsHelper.tryToInsertPaymentModel(model, transaction: transaction)
+                    try SSKEnvironment.shared.paymentsHelperRef.tryToInsertPaymentModel(model, transaction: transaction)
                 } else {
                     throw ReconciliationError.unsavedChanges
                 }
@@ -803,7 +803,7 @@ public class PaymentsReconciliation: Dependencies {
                                              interactionUniqueId: nil,
                                              mobileCoin: mobileCoin)
         do {
-            try Self.paymentsHelper.tryToInsertPaymentModel(newPaymentModel, transaction: transaction)
+            try SSKEnvironment.shared.paymentsHelperRef.tryToInsertPaymentModel(newPaymentModel, transaction: transaction)
         } catch {
             owsFailDebug("Error: \(error)")
         }

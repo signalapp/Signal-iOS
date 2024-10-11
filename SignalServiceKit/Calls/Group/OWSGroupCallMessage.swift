@@ -22,7 +22,7 @@ extension OWSGroupCallMessage {
         if address.isLocalAddress {
             return OWSLocalizedString("YOU", comment: "Second person pronoun to represent the local user.")
         } else {
-            return self.contactsManager.displayName(for: address, tx: tx).resolvedValue()
+            return SSKEnvironment.shared.contactManagerRef.displayName(for: address, tx: tx).resolvedValue()
         }
     }
 
@@ -58,7 +58,7 @@ extension OWSGroupCallMessage {
         )
 
         let joinedMemberAddresses = self.joinedMemberAcis.map { SignalServiceAddress($0.wrappedValue) }
-        let addresses = NSObject.contactsManager.sortSignalServiceAddresses(joinedMemberAddresses, transaction: tx)
+        let addresses = SSKEnvironment.shared.contactManagerRef.sortSignalServiceAddresses(joinedMemberAddresses, transaction: tx)
 
         var localAddresses = [SignalServiceAddress]()
         var creatorAddresses = [SignalServiceAddress]()

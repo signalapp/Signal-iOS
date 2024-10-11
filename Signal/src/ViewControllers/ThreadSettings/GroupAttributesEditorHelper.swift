@@ -203,7 +203,7 @@ class GroupAttributesEditorHelper: NSObject {
             cameraButton.isHidden = true
             cameraCornerButton.isHidden = false
         } else if renderDefaultAvatarWhenCleared {
-            avatarImageView.image = avatarBuilder.avatarImage(forGroupId: groupId, diameterPoints: iconViewSize)
+            avatarImageView.image = SSKEnvironment.shared.avatarBuilderRef.avatarImage(forGroupId: groupId, diameterPoints: iconViewSize)
             avatarImageView.layer.borderWidth = 0
             avatarImageView.layer.borderColor = nil
             cameraButton.isHidden = true

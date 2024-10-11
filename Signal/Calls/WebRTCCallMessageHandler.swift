@@ -16,7 +16,7 @@ class WebRTCCallMessageHandler: CallMessageHandler {
     }
 
     private var callService: CallService { AppEnvironment.shared.callService }
-    private var groupCallManager: GroupCallManager { NSObject.groupCallManager }
+    private var groupCallManager: GroupCallManager { SSKEnvironment.shared.groupCallManagerRef }
     private var tsAccountManager: TSAccountManager { DependenciesBridge.shared.tsAccountManager }
 
     // MARK: - Call Handlers

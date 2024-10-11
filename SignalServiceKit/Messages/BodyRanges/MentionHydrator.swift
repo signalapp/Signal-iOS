@@ -39,7 +39,7 @@ public class ContactsMentionHydrator {
         transaction: DBReadTransaction
     ) -> (SignalServiceAddress, String) {
         let address = SignalServiceAddress(mentionAci)
-        let displayName = GlobalDependencies.contactsManager.displayName(
+        let displayName = SSKEnvironment.shared.contactManagerRef.displayName(
             for: address,
             tx: SDSDB.shimOnlyBridge(transaction)
         ).resolvedValue()

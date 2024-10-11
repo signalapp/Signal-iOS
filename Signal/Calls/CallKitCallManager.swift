@@ -91,8 +91,8 @@ final class CallKitCallManager {
     static func callTargetForHandleWithSneakyTransaction(_ handle: String) -> CallTarget? {
         owsAssertDebug(!handle.isEmpty)
 
-        let databaseStorage = NSObject.databaseStorage
-        let phoneNumberUtil = NSObject.phoneNumberUtil
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        let phoneNumberUtil = SSKEnvironment.shared.phoneNumberUtilRef
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
         if handle.hasPrefix(kAnonymousCallHandlePrefix) || handle.hasPrefix(kCallLinkCallHandlePrefix) {

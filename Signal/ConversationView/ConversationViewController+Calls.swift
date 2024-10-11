@@ -31,8 +31,8 @@ public extension ConversationViewController {
 
     private var callStarterContext: CallStarter.Context {
         .init(
-            blockingManager: blockingManager,
-            databaseStorage: databaseStorage,
+            blockingManager: SSKEnvironment.shared.blockingManagerRef,
+            databaseStorage: SSKEnvironment.shared.databaseStorageRef,
             callService: AppEnvironment.shared.callService
         )
     }
@@ -89,8 +89,8 @@ public extension ConversationViewController {
 
     func refreshCallState() {
         if let groupThread = thread as? TSGroupThread {
-            Task { [groupCallManager] in
-                await groupCallManager.peekGroupCallAndUpdateThread(
+            Task {
+                await SSKEnvironment.shared.groupCallManagerRef.peekGroupCallAndUpdateThread(
                     groupThread,
                     peekTrigger: .localEvent()
                 )
@@ -114,9 +114,9 @@ public extension ConversationViewController {
         // we may tear down and rebuild the tooltip multiple times
         // as the navbar items change.
         if !hasIncrementedGroupCallTooltipShownCount {
-            preferences.incrementGroupCallTooltipShownCount()
-            viewState.didAlreadyShowGroupCallTooltipEnoughTimes = databaseStorage.read { tx in
-                preferences.wasGroupCallTooltipShown(withTransaction: tx)
+            SSKEnvironment.shared.preferencesRef.incrementGroupCallTooltipShownCount()
+            viewState.didAlreadyShowGroupCallTooltipEnoughTimes = SSKEnvironment.shared.databaseStorageRef.read { tx in
+                SSKEnvironment.shared.preferencesRef.wasGroupCallTooltipShown(withTransaction: tx)
             }
             hasIncrementedGroupCallTooltipShownCount = true
         }

@@ -42,7 +42,7 @@ class LinkedDevicesTableViewController: OWSTableViewController2 {
     }
 
     private func addObservers() {
-        Self.databaseStorage.appendDatabaseChangeDelegate(self)
+        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(deviceListUpdateSucceeded),
@@ -63,7 +63,7 @@ class LinkedDevicesTableViewController: OWSTableViewController2 {
     private func updateDeviceList() {
         AssertIsOnMainThread()
 
-        displayableDevices = databaseStorage.read { transaction -> [DisplayableDevice] in
+        displayableDevices = SSKEnvironment.shared.databaseStorageRef.read { transaction -> [DisplayableDevice] in
             let justDevices = OWSDevice.anyFetchAll(transaction: transaction).filter {
                 !$0.isPrimaryDevice
             }
@@ -300,7 +300,7 @@ class LinkedDevicesTableViewController: OWSTableViewController2 {
         OWSDevicesService.unlinkDevice(device,
                                        success: { [weak self] in
                                         Logger.info("Removing unlinked device with deviceId: \(device.deviceId)")
-                                        Self.databaseStorage.write { transaction in
+                                        SSKEnvironment.shared.databaseStorageRef.write { transaction in
                                             device.anyRemove(transaction: transaction)
                                         }
                                         DispatchQueue.main.async {

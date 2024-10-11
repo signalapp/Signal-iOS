@@ -123,13 +123,13 @@ class NotificationService: UNNotificationServiceExtension {
             // Do this as early as possible but after the app is ready and has run
             // GRDB migrations and such. (therefore, willBecomeReady, which actually runs
             // after the app is ready but just before any didBecomeReady blocks)
-            Self.databaseStorage.asyncWrite { transaction in
+            SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
                 APNSRotationStore.didReceiveAPNSPush(transaction: transaction)
             }
         }
 
         globalEnvironment.appReadiness.runNowOrWhenAppDidBecomeReadySync {
-            self.messageFetcherJob.prepareToFetchViaREST()
+            SSKEnvironment.shared.messageFetcherJobRef.prepareToFetchViaREST()
         }
 
         globalEnvironment.appReadiness.runNowOrWhenAppDidBecomeReadySync {
@@ -181,20 +181,19 @@ class NotificationService: UNNotificationServiceExtension {
         globalEnvironment.processingMessageCounter.increment()
 
         firstly {
-            messageFetcherJob.run()
-        }.then(on: DispatchQueue.global()) { [weak self] () -> Promise<Void> in
-            guard let self = self else { return Promise.value(()) }
+            SSKEnvironment.shared.messageFetcherJobRef.run()
+        }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
 
             return firstly { () -> Promise<Void> in
-                return self.messageProcessor.waitForProcessingComplete().asPromise()
+                return SSKEnvironment.shared.messageProcessorRef.waitForProcessingComplete().asPromise()
             }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
                 return Promise.when(on: SyncScheduler(), resolved: [
                     // Wait until all ACKs are complete.
-                    Self.messageFetcherJob.pendingAcksPromise(),
+                    SSKEnvironment.shared.messageFetcherJobRef.pendingAcksPromise(),
                     // Wait until all outgoing receipt sends are complete.
                     SSKEnvironment.shared.receiptSenderRef.pendingSendsPromise(),
                     // Wait until all outgoing messages are sent.
-                    Self.messageSender.pendingSendsPromise(),
+                    SSKEnvironment.shared.messageSenderRef.pendingSendsPromise(),
                     // Wait until all sync requests are fulfilled.
                     MessageReceiver.pendingTasksPromise(),
                 ]).asVoid()
@@ -207,7 +206,7 @@ class NotificationService: UNNotificationServiceExtension {
             SignalProxy.stopRelayServer()
             globalEnvironment.processingMessageCounter.decrementOrZero()
             // If we're completing normally, try to update the badge on the app icon.
-            let badgeCount: BadgeCount = Self.databaseStorage.read { tx in
+            let badgeCount: BadgeCount = SSKEnvironment.shared.databaseStorageRef.read { tx in
                 return DependenciesBridge.shared.badgeCountFetcher
                     .fetchBadgeCount(tx: tx.asV2Read)
             }

@@ -168,7 +168,7 @@ class MessageUserSubsetSheet: OWSTableSheetViewController {
                                 let configuration = ContactCellConfiguration(address: address, localUserDisplayMode: .asLocalUser)
                                 configuration.forceDarkAppearance = self?.forceDarkMode ?? false
 
-                                Self.databaseStorage.read {
+                                SSKEnvironment.shared.databaseStorageRef.read {
                                     cell.configure(configuration: configuration, transaction: $0)
                                 }
 

@@ -156,8 +156,8 @@ private class QuotedMessageSnippetView: UIView {
         if quotedMessage.isOriginalMessageAuthorLocalUser {
             quotedAuthor = CommonStrings.you
         } else {
-            let authorName = databaseStorage.read { tx in
-                return contactsManager.displayName(
+            let authorName = SSKEnvironment.shared.databaseStorageRef.read { tx in
+                return SSKEnvironment.shared.contactManagerRef.displayName(
                     for: quotedMessage.originalMessageAuthorAddress,
                     tx: tx
                 ).resolvedValue()
@@ -575,7 +575,7 @@ private class QuotedMessageSnippetView: UIView {
         else {
             return nil
         }
-        return Self.databaseStorage.read { tx in
+        return SSKEnvironment.shared.databaseStorageRef.read { tx in
             return DisplayableText.displayableText(
                 withMessageBody: body,
                 transaction: tx

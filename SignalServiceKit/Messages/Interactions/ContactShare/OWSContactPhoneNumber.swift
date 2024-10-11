@@ -55,9 +55,9 @@ public class OWSContactPhoneNumber: MTLModel, OWSContactField {
     }
 
     public var e164: String? {
-        var parsedPhoneNumber = phoneNumberUtil.parseE164(phoneNumber)
+        var parsedPhoneNumber = SSKEnvironment.shared.phoneNumberUtilRef.parseE164(phoneNumber)
         if parsedPhoneNumber == nil {
-            parsedPhoneNumber = phoneNumberUtil.parsePhoneNumber(userSpecifiedText: phoneNumber)
+            parsedPhoneNumber = SSKEnvironment.shared.phoneNumberUtilRef.parsePhoneNumber(userSpecifiedText: phoneNumber)
         }
         return parsedPhoneNumber?.e164
     }
@@ -100,10 +100,10 @@ extension OWSContactPhoneNumber {
         // Make a best effort to parse the phone number to e164.
         let unparsedPhoneNumber = cnLabeledValue.value.stringValue
         let parsedPhoneNumber: String = {
-            if let phoneNumber = Self.phoneNumberUtil.parseE164(unparsedPhoneNumber) {
+            if let phoneNumber = SSKEnvironment.shared.phoneNumberUtilRef.parseE164(unparsedPhoneNumber) {
                 return phoneNumber.e164
             }
-            if let phoneNumber = Self.phoneNumberUtil.parsePhoneNumber(userSpecifiedText: unparsedPhoneNumber) {
+            if let phoneNumber = SSKEnvironment.shared.phoneNumberUtilRef.parsePhoneNumber(userSpecifiedText: unparsedPhoneNumber) {
                 return phoneNumber.e164
             }
             return unparsedPhoneNumber

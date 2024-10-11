@@ -163,7 +163,7 @@ public class OWSContact: MTLModel {
             let recipient = recipientDatabaseTable.fetchRecipient(phoneNumber: phoneNumber, transaction: tx.asV2Read)
             return PhoneNumberStatus(
                 phoneNumber: phoneNumber,
-                isSystemContact: Self.contactsManager.cnContactId(for: phoneNumber) != nil,
+                isSystemContact: SSKEnvironment.shared.contactManagerRef.cnContactId(for: phoneNumber) != nil,
                 canLinkToSystemContact: recipient?.isRegistered == true
             )
         }
@@ -188,10 +188,10 @@ public class OWSContact: MTLModel {
         }
 
         let e164PhoneNumbers: [String] = phoneNumbers.compactMap { phoneNumber in
-            if let parsedPhoneNumber = phoneNumberUtil.parseE164(phoneNumber.phoneNumber) {
+            if let parsedPhoneNumber = SSKEnvironment.shared.phoneNumberUtilRef.parseE164(phoneNumber.phoneNumber) {
                 return parsedPhoneNumber.e164
             }
-            if let parsedPhoneNumber = phoneNumberUtil.parsePhoneNumber(userSpecifiedText: phoneNumber.phoneNumber) {
+            if let parsedPhoneNumber = SSKEnvironment.shared.phoneNumberUtilRef.parsePhoneNumber(userSpecifiedText: phoneNumber.phoneNumber) {
                 return parsedPhoneNumber.e164
             }
             return nil

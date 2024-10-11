@@ -57,7 +57,7 @@ class StoryContextMenuGenerator: Dependencies {
         spoilerState: SpoilerRenderState,
         sourceView: @escaping () -> UIView?
     ) -> [UIAction] {
-        return Self.databaseStorage.read {
+        return SSKEnvironment.shared.databaseStorageRef.read {
             let thread = model.context.thread(transaction: $0)
             return self.nativeContextMenuActions(
                 for: model.latestMessage,
@@ -95,7 +95,7 @@ class StoryContextMenuGenerator: Dependencies {
         for model: StoryViewModel
     ) -> UIContextualAction? {
         guard
-            let action = Self.databaseStorage.read(block: { transaction -> GenericContextAction? in
+            let action = SSKEnvironment.shared.databaseStorageRef.read(block: { transaction -> GenericContextAction? in
                 return self.hideAction(for: model.latestMessage, useShortTitle: true, transaction: transaction)
             })
         else {
@@ -118,7 +118,7 @@ class StoryContextMenuGenerator: Dependencies {
     public func goToChatContextualAction(
         for model: StoryViewModel
     ) -> UIContextualAction? {
-        guard let thread = Self.databaseStorage.read(block: { model.context.thread(transaction: $0) }) else {
+        guard let thread = SSKEnvironment.shared.databaseStorageRef.read(block: { model.context.thread(transaction: $0) }) else {
             return nil
         }
         return goToChatContextualAction(thread: thread)
@@ -275,7 +275,7 @@ extension StoryContextMenuGenerator {
     }
 
     private func loadThreadDisplayNameWithSneakyTransaction(context: StoryContext) -> String? {
-        return Self.databaseStorage.read { transaction -> String? in
+        return SSKEnvironment.shared.databaseStorageRef.read { transaction -> String? in
             switch context {
             case .groupId(let groupId):
                 return TSGroupThread.fetch(groupId: groupId, transaction: transaction)?.groupNameOrDefault
@@ -286,7 +286,7 @@ extension StoryContextMenuGenerator {
                         comment: "Name to display for the 'system' sender, e.g. for release notes and the onboarding story"
                     )
                 }
-                return Self.contactsManager.displayName(
+                return SSKEnvironment.shared.contactManagerRef.displayName(
                     for: SignalServiceAddress(authorAci),
                     tx: transaction
                 ).resolvedValue(useShortNameIfAvailable: true)
@@ -307,10 +307,10 @@ extension StoryContextMenuGenerator {
         associatedData: StoryContextAssociatedData,
         shouldHide: Bool
     ) {
-        Self.databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             guard !message.authorAddress.isSystemStoryAddress else {
                 // System stories go through SystemStoryManager
-                Self.systemStoryManager.setSystemStoriesHidden(shouldHide, transaction: transaction)
+                SSKEnvironment.shared.systemStoryManagerRef.setSystemStoriesHidden(shouldHide, transaction: transaction)
                 return
             }
             associatedData.update(isHidden: shouldHide, transaction: transaction)
@@ -489,7 +489,7 @@ extension StoryContextMenuGenerator {
         )
         actionSheet.addAction(.init(title: CommonStrings.deleteButton, style: .destructive, handler: { _ in
             willDelete {
-                Self.databaseStorage.write { transaction in
+                SSKEnvironment.shared.databaseStorageRef.write { transaction in
                     message.remotelyDelete(for: thread, transaction: transaction)
                 }
                 didDelete(true)

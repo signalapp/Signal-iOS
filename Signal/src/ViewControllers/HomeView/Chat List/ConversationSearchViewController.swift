@@ -94,7 +94,7 @@ public class ConversationSearchViewController: UITableViewController {
         tableView.register(ChatListCell.self, forCellReuseIdentifier: ChatListCell.reuseIdentifier)
         tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
 
-        databaseStorage.appendDatabaseChangeDelegate(self)
+        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(themeDidChange),
@@ -601,7 +601,7 @@ public class ConversationSearchViewController: UITableViewController {
         }
 
         let (result, future) = Guarantee<HomeScreenSearchResultSet?>.pending()
-        databaseStorage.asyncRead { [searcher] transaction in
+        SSKEnvironment.shared.databaseStorageRef.asyncRead { [searcher] transaction in
             future.resolve(searcher.searchForHomeScreen(
                 searchText: searchText,
                 isCanceled: isCanceled,

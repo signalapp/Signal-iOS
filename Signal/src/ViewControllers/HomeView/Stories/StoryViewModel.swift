@@ -50,7 +50,7 @@ struct StoryViewModel: Dependencies {
 
         latestMessageName = StoryUtil.authorDisplayName(
             for: latestMessage,
-            contactsManager: Self.contactsManager,
+            contactsManager: SSKEnvironment.shared.contactManagerRef,
             transaction: transaction
         )
         latestMessageAvatarDataSource = try StoryUtil.contextAvatarDataSource(for: latestMessage, transaction: transaction)

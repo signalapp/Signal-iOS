@@ -175,7 +175,7 @@ class RegistrationChangePhoneNumberViewController: OWSTableViewController2 {
             }
             return formattedWithoutCallingCode
         }
-        if let examplePhoneNumber = phoneNumberUtil.examplePhoneNumber(forCountryCode: valueViews.countryCode),
+        if let examplePhoneNumber = SSKEnvironment.shared.phoneNumberUtilRef.examplePhoneNumber(forCountryCode: valueViews.countryCode),
            let formattedPhoneNumber = tryToFormatPhoneNumber(examplePhoneNumber) {
             let exampleFormat = OWSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_EXAMPLE_PHONE_NUMBER_FORMAT",
                                                       comment: "Format for 'example phone numbers' in the 'change phone number' settings. Embeds: {{ the example phone number }}")
@@ -318,7 +318,7 @@ private class ChangePhoneNumberValueViews: NSObject {
     fileprivate let type: `Type`
 
     public init(e164: E164?, type: `Type`) {
-        if let e164, let number = RegistrationPhoneNumberParser(phoneNumberUtil: Self.phoneNumberUtil).parseE164(e164) {
+        if let e164, let number = RegistrationPhoneNumberParser(phoneNumberUtil: SSKEnvironment.shared.phoneNumberUtilRef).parseE164(e164) {
             self.phoneNumber = number
         } else {
             self.phoneNumber = RegistrationPhoneNumber(countryState: .defaultValue, nationalNumber: "")
@@ -436,7 +436,7 @@ private class ChangePhoneNumberValueViews: NSObject {
         }
 
         guard
-            let phoneNumber = phoneNumberUtil.parsePhoneNumber(
+            let phoneNumber = SSKEnvironment.shared.phoneNumberUtilRef.parsePhoneNumber(
                 userSpecifiedText: phoneNumberWithoutCallingCode,
                 callingCode: callingCode
             ),

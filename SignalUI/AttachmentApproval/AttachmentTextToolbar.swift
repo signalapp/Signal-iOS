@@ -217,7 +217,7 @@ class AttachmentTextToolbar: UIView {
 
     private lazy var placeholderTextView: UITextView = {
         let placeholderTextView = buildTextView()
-        placeholderTextView.setMessageBody(.init(text: placeholderText, ranges: .empty), txProvider: databaseStorage.readTxProvider)
+        placeholderTextView.setMessageBody(.init(text: placeholderText, ranges: .empty), txProvider: SSKEnvironment.shared.databaseStorageRef.readTxProvider)
         placeholderTextView.isEditable = false
         placeholderTextView.isUserInteractionEnabled = false
         placeholderTextView.textContainer.maximumNumberOfLines = 1

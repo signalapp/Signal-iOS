@@ -249,7 +249,7 @@ extension ConversationViewController {
     private func didLongPressPhoneNumber(dataItem: TextCheckingDataItem) {
         guard
             let snippet = dataItem.snippet.strippedOrNil,
-            let phoneNumberObj = phoneNumberUtil.parsePhoneNumber(userSpecifiedText: snippet),
+            let phoneNumberObj = SSKEnvironment.shared.phoneNumberUtilRef.parsePhoneNumber(userSpecifiedText: snippet),
             let phoneNumber = phoneNumberObj.e164.strippedOrNil
         else {
             owsFailDebug("Invalid phone number.")
@@ -257,7 +257,7 @@ extension ConversationViewController {
             return
         }
 
-        let recipient = databaseStorage.read { tx in
+        let recipient = SSKEnvironment.shared.databaseStorageRef.read { tx in
             let recipientManager = DependenciesBridge.shared.recipientManager
             return recipientManager.fetchRecipientIfPhoneNumberVisible(phoneNumber, tx: tx.asV2Read)
         }
@@ -269,8 +269,8 @@ extension ConversationViewController {
 
         let actionSheet = ActionSheetController(title: phoneNumber)
         let blockedAddress = SignalServiceAddress(phoneNumber: phoneNumber)
-        let isBlocked = databaseStorage.read {
-            blockingManager.isAddressBlocked(blockedAddress, transaction: $0)
+        let isBlocked = SSKEnvironment.shared.databaseStorageRef.read {
+            SSKEnvironment.shared.blockingManagerRef.isAddressBlocked(blockedAddress, transaction: $0)
         }
 
         if isBlocked {

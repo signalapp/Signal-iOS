@@ -358,7 +358,7 @@ class DeviceTransferService: NSObject {
 
         // Make a copy of the database files within a write transaction so we can be confident
         // they aren't mutated during the copy. We then transfer these copies.
-        databaseStorage.asyncWrite { _ in
+        SSKEnvironment.shared.databaseStorageRef.asyncWrite { _ in
             do {
                 let dbCopy = try Self.makeLocalCopy(databaseFile: database.database)
                 let walCopy = try Self.makeLocalCopy(databaseFile: database.wal)

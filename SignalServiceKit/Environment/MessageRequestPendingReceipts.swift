@@ -47,7 +47,7 @@ public class MessageRequestPendingReceipts: Dependencies, PendingReceiptRecorder
     @objc
     private func profileWhitelistDidChange(notification: Notification) {
         do {
-            try grdbStorageAdapter.read { transaction in
+            try SSKEnvironment.shared.databaseStorageRef.grdbStorage.read { transaction in
                 guard let thread = notification.affectedThread(transaction: transaction) else {
                     return
                 }
@@ -65,7 +65,7 @@ public class MessageRequestPendingReceipts: Dependencies, PendingReceiptRecorder
 
     private func auditPendingReceipts() {
         do {
-            try grdbStorageAdapter.read { transaction in
+            try SSKEnvironment.shared.databaseStorageRef.grdbStorage.read { transaction in
                 let threads = try self.finder.threadsWithPendingReceipts(transaction: transaction)
                 try self.sendAnyReadyReceipts(threads: threads, transaction: transaction)
             }
@@ -95,7 +95,7 @@ public class MessageRequestPendingReceipts: Dependencies, PendingReceiptRecorder
             return
         }
 
-        databaseStorage.asyncWrite { transaction in
+        SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
             do {
                 try self.enqueue(pendingReadReceipts: pendingReadReceipts, pendingViewedReceipts: pendingViewedReceipts, transaction: transaction.unwrapGrdbWrite)
             } catch {
@@ -125,7 +125,7 @@ public class MessageRequestPendingReceipts: Dependencies, PendingReceiptRecorder
             return
         }
 
-        self.databaseStorage.asyncWrite { transaction in
+        SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
             do {
                 try self.finder.delete(pendingReadReceipts: pendingReadReceipts, transaction: transaction.unwrapGrdbWrite)
                 try self.finder.delete(pendingViewedReceipts: pendingViewedReceipts, transaction: transaction.unwrapGrdbWrite)
@@ -136,7 +136,7 @@ public class MessageRequestPendingReceipts: Dependencies, PendingReceiptRecorder
     }
 
     private func enqueue(pendingReadReceipts: [PendingReadReceiptRecord], pendingViewedReceipts: [PendingViewedReceiptRecord], transaction: GRDBWriteTransaction) throws {
-        guard receiptManager.areReadReceiptsEnabled() else {
+        guard SSKEnvironment.shared.receiptManagerRef.areReadReceiptsEnabled() else {
             Logger.info("Deleting all pending receipts - user has subsequently disabled read receipts.")
             try finder.deleteAllPendingReceipts(transaction: transaction)
             return

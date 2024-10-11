@@ -376,7 +376,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                 return true
             case .enqueuedOrDownloading:
                 Logger.warn("Media attachment not yet downloaded.")
-                self.databaseStorage.write { tx in
+                SSKEnvironment.shared.databaseStorageRef.write { tx in
                     DependenciesBridge.shared.tsResourceDownloadManager.cancelDownload(
                         for: pointer.attachment.resourceId,
                         tx: tx.asV2Write

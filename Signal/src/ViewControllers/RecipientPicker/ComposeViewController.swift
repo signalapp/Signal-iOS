@@ -38,7 +38,7 @@ class ComposeViewController: RecipientPickerContainerViewController {
         AssertIsOnMainThread()
         owsAssertDebug(address.isValid)
 
-        let thread = Self.databaseStorage.write { transaction in
+        let thread = SSKEnvironment.shared.databaseStorageRef.write { transaction in
             TSContactThread.getOrCreateThread(withContactAddress: address,
                                               transaction: transaction)
         }
@@ -99,7 +99,7 @@ extension ComposeViewController: RecipientPickerDelegate, UsernameLinkScanDelega
         case .address:
             return nil
         case .group(let thread):
-            guard blockingManager.isThreadBlocked(thread, transaction: transaction) else { return nil }
+            guard SSKEnvironment.shared.blockingManagerRef.isThreadBlocked(thread, transaction: transaction) else { return nil }
             return MessageStrings.conversationIsBlocked
         }
     }
@@ -112,7 +112,7 @@ extension ComposeViewController: RecipientPickerDelegate, UsernameLinkScanDelega
             guard !address.isLocalAddress else {
                 return nil
             }
-            if let bioForDisplay = Self.profileManagerImpl.profileBioForDisplay(for: address,
+            if let bioForDisplay = SSKEnvironment.shared.profileManagerImplRef.profileBioForDisplay(for: address,
                                                                                 transaction: transaction) {
                 return NSAttributedString(string: bioForDisplay)
             }

@@ -27,7 +27,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         if let thread {
             items += [
                 OWSTableItem(title: "Delete All Messages in Thread", actionBlock: {
-                    self.databaseStorage.write { transaction in
+                    SSKEnvironment.shared.databaseStorageRef.write { transaction in
                         DependenciesBridge.shared.threadSoftDeleteManager
                             .removeAllInteractions(thread: thread, sendDeleteForMeSyncMessage: false, tx: transaction.asV2Write)
                     }
@@ -1087,7 +1087,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             return
         }
 
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             for timestamp in timestamps {
                 let randomText = randomText()
 
@@ -1154,7 +1154,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         let runner = TestProtocolRunner()
         let fakeService = FakeService(localClient: localClient, runner: runner)
 
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             try! runner.initialize(senderClient: senderClient,
                                    recipientClient: localClient,
                                    transaction: transaction)
@@ -1163,7 +1163,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         let envelopeBuilder = try! fakeService.envelopeBuilder(fromSenderClient: senderClient)
         envelopeBuilder.setSourceServiceID(senderClient.serviceId.serviceIdString)
         let envelopeData = try! envelopeBuilder.buildSerializedData()
-        messageProcessor.processReceivedEnvelopeData(
+        SSKEnvironment.shared.messageProcessorRef.processReceivedEnvelopeData(
             envelopeData,
             serverDeliveryTimestamp: 0,
             envelopeSource: .debugUI
@@ -1191,7 +1191,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         await DebugContactsUtils.createRandomContacts(threadQuantity) { contact, index, stop in
             guard
                 let phoneNumberText = contact.phoneNumbers.first?.value.stringValue,
-                let e164 = phoneNumberUtil.parsePhoneNumber(userSpecifiedText: phoneNumberText)?.e164
+                let e164 = SSKEnvironment.shared.phoneNumberUtilRef.parsePhoneNumber(userSpecifiedText: phoneNumberText)?.e164
             else {
                 owsFailDebug("Invalid phone number")
                 return
@@ -1202,10 +1202,10 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                 messageContentType: .longText
             )
 
-            await databaseStorage.awaitableWrite { transaction in
+            await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
                 let address = SignalServiceAddress(phoneNumber: e164)
                 let contactThread = TSContactThread.getOrCreateThread(withContactAddress: address, transaction: transaction)
-                profileManager.addThread(
+                SSKEnvironment.shared.profileManagerRef.addThread(
                     toProfileWhitelist: contactThread,
                     userProfileWriter: .localUser,
                     transaction: transaction
@@ -1360,7 +1360,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         if let groupThread = thread as? TSGroupThread, groupThread.isGroupV2Thread {
             let groupModel = groupThread.groupModel as! TSGroupModelV2
 
-            let groupContext = try! groupsV2.buildGroupContextV2Proto(groupModel: groupModel, changeActionsProtoData: nil)
+            let groupContext = try! SSKEnvironment.shared.groupsV2Ref.buildGroupContextV2Proto(groupModel: groupModel, changeActionsProtoData: nil)
             dataMessageBuilder.setGroupV2(groupContext)
         }
 
@@ -1404,7 +1404,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         let message = incomingMessageBuilder.build()
         // private setter to avoid starting expire machinery.
         message.wasRead = true
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             message.anyInsert(transaction: transaction)
         }
     }
@@ -1473,7 +1473,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             "http://foo.кц.рф"
         ]
 
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             for string in strings {
                 // DO NOT log these strings with the debugger attached.
                 //        OWSLogInfo(@"%@", string);
@@ -1499,7 +1499,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             "non-crashing string"
         ]
 
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             for string in strings {
                 // DO NOT log these strings with the debugger attached.
                 //        OWSLogInfo(@"%@", string);
@@ -1524,7 +1524,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             "This is some normal text"
         ]
 
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             for string in strings {
                 Logger.info("sending zalgo")
 
@@ -1617,7 +1617,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             actions.append(action)
         }
 
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             actions.forEach { $0(transaction) }
         }
     }
@@ -1814,8 +1814,8 @@ class DebugUIMessages: DebugUIPage, Dependencies {
     }
 
     private static func processDecryptedEnvelope(_ envelope: SSKProtoEnvelope, plaintextData: Data) {
-        databaseStorage.write { tx in
-            messageReceiver.processEnvelope(
+        SSKEnvironment.shared.databaseStorageRef.write { tx in
+            SSKEnvironment.shared.messageReceiverRef.processEnvelope(
                 envelope,
                 plaintextData: plaintextData,
                 wasReceivedByUD: false,

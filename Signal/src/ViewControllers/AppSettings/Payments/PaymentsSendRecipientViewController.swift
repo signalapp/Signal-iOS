@@ -94,7 +94,7 @@ extension PaymentsSendRecipientViewController: RecipientPickerDelegate, Username
             guard !address.isLocalAddress else {
                 return nil
             }
-            if let bioForDisplay = Self.profileManagerImpl.profileBioForDisplay(for: address,
+            if let bioForDisplay = SSKEnvironment.shared.profileManagerImplRef.profileBioForDisplay(for: address,
                                                                                 transaction: transaction) {
                 return NSAttributedString(string: bioForDisplay)
             }

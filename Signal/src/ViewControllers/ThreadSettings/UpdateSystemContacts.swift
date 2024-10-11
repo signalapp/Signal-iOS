@@ -109,7 +109,7 @@ private class AddToContactsFlowNavigationController: UINavigationController, CNC
             owsFailBeta("Invalid flow.")
             return
         }
-        addToContactFlow.contact = contactsManager.cnContact(withId: systemContact.cnContactId)
+        addToContactFlow.contact = SSKEnvironment.shared.contactManagerRef.cnContact(withId: systemContact.cnContactId)
         let contactViewController = contactsViewHelper.contactViewController(for: addToContactFlow)
         pushViewController(contactViewController, animated: true)
     }
@@ -145,11 +145,11 @@ extension ContactsViewHelper {
     fileprivate func contactViewController(for systemContactsFlow: SystemContactsFlow) -> CNContactViewController {
         AssertIsOnMainThread()
         owsAssertDebug(!CurrentAppContext().isNSE)
-        owsAssertDebug(contactsManagerImpl.editingAuthorization == .authorized)
+        owsAssertDebug(SSKEnvironment.shared.contactManagerImplRef.editingAuthorization == .authorized)
 
         let address = systemContactsFlow.address
-        let signalAccount = databaseStorage.read { tx in
-            return contactsManager.fetchSignalAccount(for: address, transaction: tx)
+        let signalAccount = SSKEnvironment.shared.databaseStorageRef.read { tx in
+            return SSKEnvironment.shared.contactManagerRef.fetchSignalAccount(for: address, transaction: tx)
         }
         var shouldEditImmediately = systemContactsFlow.editImmediately
 
@@ -183,7 +183,7 @@ extension ContactsViewHelper {
         }
 
         if cnContact == nil, let cnContactId = signalAccount?.cnContactId {
-            cnContact = contactsManager.cnContact(withId: cnContactId)
+            cnContact = SSKEnvironment.shared.contactManagerRef.cnContact(withId: cnContactId)
         }
 
         if let updatedContact = cnContact?.mutableCopy() as? CNMutableContact {
@@ -216,14 +216,14 @@ extension ContactsViewHelper {
                 )]
             }
 
-            databaseStorage.read { tx in
-                if let givenName = profileManagerImpl.givenName(for: address, transaction: tx) {
+            SSKEnvironment.shared.databaseStorageRef.read { tx in
+                if let givenName = SSKEnvironment.shared.profileManagerImplRef.givenName(for: address, transaction: tx) {
                     newContact.givenName = givenName
                 }
-                if let familyName = profileManagerImpl.familyName(for: address, transaction: tx) {
+                if let familyName = SSKEnvironment.shared.profileManagerImplRef.familyName(for: address, transaction: tx) {
                     newContact.familyName = familyName
                 }
-                if let profileAvatar = profileManagerImpl.profileAvatar(for: address, transaction: tx) {
+                if let profileAvatar = SSKEnvironment.shared.profileManagerImplRef.profileAvatar(for: address, transaction: tx) {
                     newContact.imageData = profileAvatar.pngData()
                 }
             }

@@ -32,7 +32,7 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
         let localUserDisplayMode: LocalUserDisplayMode = (renderLocalUserAsNoteToSelf
                                                             ? .noteToSelf
                                                             : .asUser)
-        guard let avatarImage = Self.avatarBuilder.avatarImage(
+        guard let avatarImage = SSKEnvironment.shared.avatarBuilderRef.avatarImage(
                 forThread: thread,
                 diameterPoints: UInt(UIScreen.main.bounds.size.smallerAxis),
                 localUserDisplayMode: localUserDisplayMode,
@@ -52,17 +52,17 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
                                                                 ? .noteToSelf
                                                                 : .asUser)
             if address.isLocalAddress, !renderLocalUserAsNoteToSelf {
-                if let avatar = Self.profileManager.localProfileAvatarImage {
+                if let avatar = SSKEnvironment.shared.profileManagerRef.localProfileAvatarImage {
                     return avatar
                 }
-                return Self.avatarBuilder.avatarImageForLocalUser(diameterPoints: diameter,
-                                                                  localUserDisplayMode: localUserDisplayMode,
-                                                                  transaction: readTx)
+                return SSKEnvironment.shared.avatarBuilderRef.avatarImageForLocalUser(diameterPoints: diameter,
+                                                                                      localUserDisplayMode: localUserDisplayMode,
+                                                                                      transaction: readTx)
             } else {
-                return Self.avatarBuilder.avatarImage(forAddress: address,
-                                                      diameterPoints: diameter,
-                                                      localUserDisplayMode: localUserDisplayMode,
-                                                      transaction: readTx)
+                return SSKEnvironment.shared.avatarBuilderRef.avatarImage(forAddress: address,
+                                                                          diameterPoints: diameter,
+                                                                          localUserDisplayMode: localUserDisplayMode,
+                                                                          transaction: readTx)
             }
         }() else { return nil }
 

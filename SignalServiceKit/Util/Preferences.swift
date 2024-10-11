@@ -93,27 +93,27 @@ public class Preferences: NSObject {
     }
 
     private func hasValue(forKey key: Key) -> Bool {
-        let result = databaseStorage.read { transaction in
+        let result = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return keyValueStore.hasValue(forKey: key.rawValue, transaction: transaction)
         }
         return result
     }
 
     private func removeValue(forKey key: Key) {
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             keyValueStore.removeValue(forKey: key.rawValue, transaction: transaction)
         }
     }
 
     private func bool(forKey key: Key, defaultValue: Bool) -> Bool {
-        let result = databaseStorage.read { transaction in
+        let result = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             keyValueStore.getBool(key.rawValue, defaultValue: defaultValue, transaction: transaction)
         }
         return result
     }
 
     private func setBool(_ value: Bool, forKey key: Key) {
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             setBool(value, forKey: key, tx: transaction)
         }
     }
@@ -123,33 +123,33 @@ public class Preferences: NSObject {
     }
 
     private func uint(forKey key: Key, defaultValue: UInt) -> UInt {
-        let result = databaseStorage.read { transaction in
+        let result = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             keyValueStore.getUInt(key.rawValue, defaultValue: defaultValue, transaction: transaction)
         }
         return result
     }
 
     private func setUInt(_ value: UInt, forKey key: Key) {
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             keyValueStore.setUInt(value, key: key.rawValue, transaction: transaction)
         }
     }
 
     private func date(forKey key: Key) -> Date? {
-        let date = databaseStorage.read { transaction in
+        let date = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             keyValueStore.getDate(key.rawValue, transaction: transaction)
         }
         return date
     }
 
     private func setDate(_ value: Date, forKey key: Key) {
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             keyValueStore.setDate(value, key: key.rawValue, transaction: transaction)
         }
     }
 
     private func string(forKey key: Key) -> String? {
-        return databaseStorage.read { tx in getString(for: key, tx: tx) }
+        return SSKEnvironment.shared.databaseStorageRef.read { tx in getString(for: key, tx: tx) }
     }
 
     private func getString(for key: Key, tx: SDSAnyReadTransaction) -> String? {
@@ -157,7 +157,7 @@ public class Preferences: NSObject {
     }
 
     private func setString(_ value: String?, forKey key: Key) {
-        databaseStorage.write { tx in setString(value, for: key, tx: tx) }
+        SSKEnvironment.shared.databaseStorageRef.write { tx in setString(value, for: key, tx: tx) }
     }
 
     private func setString(_ value: String?, for key: Key, tx: SDSAnyWriteTransaction) {
@@ -242,7 +242,7 @@ public class Preferences: NSObject {
     public func setShouldShowUnidentifiedDeliveryIndicatorsAndSendSyncMessage(_ value: Bool) {
         setBool(value, forKey: .shouldShowUnidentifiedDeliveryIndicators)
 
-        SSKEnvironment.shared.syncManager.sendConfigurationSyncMessage()
+        SSKEnvironment.shared.syncManagerRef.sendConfigurationSyncMessage()
         SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
     }
 
@@ -308,7 +308,7 @@ public class Preferences: NSObject {
 
         // If we have shown the tooltip more than 3 times, don't show it again.
         if incrementedCount > 3 {
-            databaseStorage.write(block: setWasGroupCallTooltipShown(tx:))
+            SSKEnvironment.shared.databaseStorageRef.write(block: setWasGroupCallTooltipShown(tx:))
         } else {
             setUInt(incrementedCount, forKey: .wasGroupCallTooltipShownCount)
         }

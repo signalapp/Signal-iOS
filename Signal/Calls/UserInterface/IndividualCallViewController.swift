@@ -257,8 +257,8 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
             view.isHidden = false
         }
 
-        contactNameLabel.text = databaseStorage.read { tx in
-            return contactsManager.displayName(for: thread.contactAddress, tx: tx).resolvedValue()
+        contactNameLabel.text = SSKEnvironment.shared.databaseStorageRef.read { tx in
+            return SSKEnvironment.shared.contactManagerRef.displayName(for: thread.contactAddress, tx: tx).resolvedValue()
         }
         updateAvatarImage()
 
@@ -415,8 +415,8 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
 
     @objc
     private func updateAvatarImage() {
-        databaseStorage.read { transaction in
-            backgroundAvatarView.image = contactsManagerImpl.avatarImage(forAddress: thread.contactAddress,
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
+            backgroundAvatarView.image = SSKEnvironment.shared.contactManagerImplRef.avatarImage(forAddress: thread.contactAddress,
                                                                          shouldValidate: true,
                                                                          transaction: transaction)
         }
@@ -913,7 +913,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
 
         let permissionErrorView = PermissionErrorView(
             thread: self.thread,
-            contactManager: self.contactsManager,
+            contactManager: SSKEnvironment.shared.contactManagerRef,
             okayButtonWasTapped: { [weak self] in self?.dismissImmediately() }
         )
         view.addSubview(permissionErrorView)
@@ -1316,7 +1316,7 @@ private class PermissionErrorView: UIView {
             localUserDisplayMode: .asUser,
             badged: false
         )
-        databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             contactAvatarView.update(transaction) { config in
                 config.dataSource = .thread(thread)
             }

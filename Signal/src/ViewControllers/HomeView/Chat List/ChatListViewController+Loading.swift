@@ -305,7 +305,7 @@ public class CLVLoadCoordinator: Dependencies {
     }
 
     public func saveInboxFilter(_ inboxFilter: InboxFilter) {
-        databaseStorage.asyncWrite { [filterStore] transaction in
+        SSKEnvironment.shared.databaseStorageRef.asyncWrite { [filterStore] transaction in
             filterStore.setInboxFilter(inboxFilter, transaction: transaction.asV2Write)
         }
     }
@@ -380,7 +380,7 @@ public class CLVLoadCoordinator: Dependencies {
         let reminderViews = viewController.viewState.reminderViews
         let hasVisibleReminders = reminderViews.hasVisibleReminders
 
-        let loadResult: CLVLoadResult = databaseStorage.read { transaction in
+        let loadResult: CLVLoadResult = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             // Decide what kind of load we prefer.
             let loadInfo = loadInfoBuilder.build(
                 loadCoordinator: self,

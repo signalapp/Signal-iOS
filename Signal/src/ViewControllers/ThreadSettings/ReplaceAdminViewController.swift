@@ -47,8 +47,8 @@ class ReplaceAdminViewController: OWSTableViewController2 {
 
         let section = OWSTableSection()
 
-        let sortedCandidates = databaseStorage.read { tx in
-            self.contactsManagerImpl.sortSignalServiceAddresses(self.candidates, transaction: tx)
+        let sortedCandidates = SSKEnvironment.shared.databaseStorageRef.read { tx in
+            SSKEnvironment.shared.contactManagerImplRef.sortSignalServiceAddresses(self.candidates, transaction: tx)
         }
         for address in sortedCandidates {
             section.add(OWSTableItem(
@@ -58,7 +58,7 @@ class ReplaceAdminViewController: OWSTableViewController2 {
                         return UITableViewCell()
                     }
 
-                    Self.databaseStorage.read { transaction in
+                    SSKEnvironment.shared.databaseStorageRef.read { transaction in
                         let configuration = ContactCellConfiguration(address: address, localUserDisplayMode: .asUser)
                         let imageView = CVImageView()
                         imageView.setTemplateImageName(Theme.iconName(.circle), tintColor: .ows_gray25)

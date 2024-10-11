@@ -541,7 +541,7 @@ private class ContactDiscoveryV2PersistentStateImpl: ContactDiscoveryV2Persisten
     private static let tokenKey = "token"
 
     func load() -> (token: Data, e164s: ContactDiscoveryE164Collection<Set<E164>>)? {
-        databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             guard let existingToken = Self.tokenStore.getData(Self.tokenKey, transaction: transaction) else {
                 return nil
             }
@@ -566,7 +566,7 @@ private class ContactDiscoveryV2PersistentStateImpl: ContactDiscoveryV2Persisten
     }
 
     func save(newToken: Data, clearE164s: Bool, newE164s: Set<E164>) throws {
-        try databaseStorage.write { transaction in
+        try SSKEnvironment.shared.databaseStorageRef.write { transaction in
             let database = transaction.unwrapGrdbWrite.database
 
             Self.tokenStore.setData(newToken, key: Self.tokenKey, transaction: transaction)
@@ -589,7 +589,7 @@ private class ContactDiscoveryV2PersistentStateImpl: ContactDiscoveryV2Persisten
 
     func reset() {
         Logger.warn("CDSv2: Resetting token")
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             Self.tokenStore.removeValue(forKey: Self.tokenKey, transaction: transaction)
         }
     }

@@ -98,7 +98,7 @@ public class EmojiReactionPickerConfigViewController: UIViewController {
             ReactionManager.setCustomEmojiSet(currentEmojiSet, transaction: transaction)
         }
         self.reactionPickerConfigurationListener?.didCompleteReactionPickerConfiguration()
-        Self.storageServiceManager.recordPendingLocalAccountUpdates()
+        SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
         dismiss(animated: true, completion: nil)
     }
 

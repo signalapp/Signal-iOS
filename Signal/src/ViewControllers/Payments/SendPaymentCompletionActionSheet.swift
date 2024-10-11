@@ -475,8 +475,8 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         let otherUserName: String
         switch recipient {
         case .address(let recipientAddress):
-            otherUserName = databaseStorage.read { transaction in
-                self.contactsManager.displayName(for: recipientAddress, tx: transaction).resolvedValue()
+            otherUserName = SSKEnvironment.shared.databaseStorageRef.read { transaction in
+                SSKEnvironment.shared.contactManagerRef.displayName(for: recipientAddress, tx: transaction).resolvedValue()
             }
         case .publicAddress(let recipientPublicAddress):
             otherUserName = PaymentsImpl.formatAsBase58(publicAddress: recipientPublicAddress)
@@ -603,7 +603,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         ModalActivityIndicatorViewController.presentAsInvisible(fromViewController: self) { [weak self] modalActivityIndicator in
             guard let self = self else { return }
 
-            Self.owsPaymentsLock.tryToUnlockPromise().then(on: DispatchQueue.main) { (authOutcome: OWSPaymentsLock.LocalAuthOutcome) -> Promise<PreparedPayment> in
+            SSKEnvironment.shared.owsPaymentsLockRef.tryToUnlockPromise().then(on: DispatchQueue.main) { (authOutcome: OWSPaymentsLock.LocalAuthOutcome) -> Promise<PreparedPayment> in
                 switch authOutcome {
                 case .failure(let error):
                     throw PaymentsUIError.paymentsLockFailed(reason: "local authentication failed with error: \(error)")

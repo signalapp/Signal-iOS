@@ -62,7 +62,7 @@ class AdvancedPinSettingsTableViewController: OWSTableViewController2 {
         if hasMasterKey && !hasBackedUpMasterKey {
             enablePin()
         } else {
-            if self.paymentsHelper.arePaymentsEnabled,
+            if SSKEnvironment.shared.paymentsHelperRef.arePaymentsEnabled,
                !PaymentsSettingsViewController.hasReviewedPassphraseWithSneakyTransaction() {
                 showReviewPassphraseAlertUI()
             } else {

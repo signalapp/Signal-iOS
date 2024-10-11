@@ -29,7 +29,7 @@ class DonationReceiptsViewController: OWSTableViewController2 {
         title = OWSLocalizedString("DONATION_RECEIPTS", comment: "Title of view where you can see all of your donation receipts, or button to take you there")
         defaultSeparatorInsetLeading = Self.cellHInnerMargin + 24 + OWSTableItem.iconSpacing
 
-        donationReceipts = Self.databaseStorage.read { DonationReceiptFinder.fetchAllInReverseDateOrder(transaction: $0) }
+        donationReceipts = SSKEnvironment.shared.databaseStorageRef.read { DonationReceiptFinder.fetchAllInReverseDateOrder(transaction: $0) }
 
         updateTableContents()
     }

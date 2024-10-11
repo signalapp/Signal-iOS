@@ -187,14 +187,14 @@ public class GroupManager: NSObject {
 
         // Try to get profile key credentials for all group members, since
         // we need them to fully add (rather than merely inviting) members.
-        try await groupsV2.tryToFetchProfileKeyCredentials(
+        try await SSKEnvironment.shared.groupsV2Ref.tryToFetchProfileKeyCredentials(
             for: initialGroupMembership.allMembersOfAnyKind.compactMap { $0.serviceId as? Aci },
             ignoreMissingProfiles: false,
             forceRefresh: false
         )
 
         let groupAccess = GroupAccess.defaultForV2
-        let separatedGroupMembership = databaseStorage.read { tx in
+        let separatedGroupMembership = SSKEnvironment.shared.databaseStorageRef.read { tx in
             // Before we create the group, we need to separate out the
             // pending and full members.
             return separateInvitedMembersForNewGroup(
@@ -220,7 +220,7 @@ public class GroupManager: NSObject {
 
         if let avatarData = avatarData {
             // Upload avatar.
-            let avatarUrlPath = try await groupsV2.uploadGroupAvatar(
+            let avatarUrlPath = try await SSKEnvironment.shared.groupsV2Ref.uploadGroupAvatar(
                 avatarData: avatarData,
                 groupSecretParams: try proposedGroupModel.secretParams()
             )
@@ -231,16 +231,16 @@ public class GroupManager: NSObject {
             proposedGroupModel = try builder.buildAsV2()
         }
 
-        try await groupsV2.createNewGroupOnService(
+        try await SSKEnvironment.shared.groupsV2Ref.createNewGroupOnService(
             groupModel: proposedGroupModel,
             disappearingMessageToken: disappearingMessageToken
         )
 
-        let groupV2Snapshot = try await groupsV2.fetchCurrentGroupV2Snapshot(
+        let groupV2Snapshot = try await SSKEnvironment.shared.groupsV2Ref.fetchCurrentGroupV2Snapshot(
             groupModel: proposedGroupModel
         )
 
-        let thread = try await databaseStorage.awaitableWrite { tx in
+        let thread = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             let builder = try TSGroupModelBuilder.builderForSnapshot(
                 groupV2Snapshot: groupV2Snapshot,
                 transaction: tx
@@ -255,7 +255,7 @@ public class GroupManager: NSObject {
                 spamReportingMetadata: .createdByLocalAction,
                 transaction: tx
             )
-            self.profileManager.addThread(
+            SSKEnvironment.shared.profileManagerRef.addThread(
                 toProfileWhitelist: thread,
                 userProfileWriter: .localUser,
                 transaction: tx
@@ -290,7 +290,7 @@ public class GroupManager: NSObject {
         for address in newMembers {
             // We must call this _after_ we try to fetch profile key credentials for
             // all members.
-            let hasCredential = groupsV2.hasProfileKeyCredential(for: address, transaction: tx)
+            let hasCredential = SSKEnvironment.shared.groupsV2Ref.hasProfileKeyCredential(for: address, transaction: tx)
             guard let role = newGroupMembership.role(for: address) else {
                 owsFailDebug("Missing role: \(address)")
                 continue
@@ -407,7 +407,7 @@ public class GroupManager: NSObject {
             .set(token: newToken, for: groupThread, tx: tx.asV2Write)
 
         if setTokenResult.newConfiguration != setTokenResult.oldConfiguration {
-            databaseStorage.touch(thread: groupThread, shouldReindex: false, transaction: tx)
+            SSKEnvironment.shared.databaseStorageRef.touch(thread: groupThread, shouldReindex: false, transaction: tx)
         }
 
         return setTokenResult
@@ -475,7 +475,7 @@ public class GroupManager: NSObject {
                     let changeAuthor,
                     changeAuthor != localIdentifiers.aci
                 {
-                    return contactsManager.displayName(
+                    return SSKEnvironment.shared.contactManagerRef.displayName(
                         for: SignalServiceAddress(changeAuthor),
                         tx: transaction
                     ).resolvedValue()
@@ -493,7 +493,7 @@ public class GroupManager: NSObject {
             )
             infoMessage.anyInsert(transaction: transaction)
 
-            databaseStorage.touch(thread: contactThread, shouldReindex: false, transaction: transaction)
+            SSKEnvironment.shared.databaseStorageRef.touch(thread: contactThread, shouldReindex: false, transaction: transaction)
         }
 
         return result
@@ -529,8 +529,8 @@ public class GroupManager: NSObject {
         if waitForMessageProcessing {
             try await GroupManager.waitForMessageFetchingAndProcessingWithTimeout(description: "Accept invite")
         }
-        await self.databaseStorage.awaitableWrite { transaction in
-            self.profileManager.addGroupId(
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
+            SSKEnvironment.shared.profileManagerRef.addGroupId(
                 toProfileWhitelist: groupModel.groupId,
                 userProfileWriter: .localUser,
                 transaction: transaction
@@ -572,7 +572,7 @@ public class GroupManager: NSObject {
 
         transaction.addAsyncCompletionOffMain {
             firstly {
-                databaseStorage.write(.promise) { transaction in
+                SSKEnvironment.shared.databaseStorageRef.write(.promise) { transaction in
                     self.localLeaveGroupOrDeclineInvite(groupThread: groupThread, tx: transaction).asVoid()
                 }
             }.done { _ in
@@ -678,7 +678,7 @@ public class GroupManager: NSObject {
         avatarData: Data?
     ) async throws -> TSGroupThread {
         try await ensureLocalProfileHasCommitmentIfNecessary()
-        let groupThread = try await NSObject.groupsV2.joinGroupViaInviteLink(
+        let groupThread = try await SSKEnvironment.shared.groupsV2Ref.joinGroupViaInviteLink(
             groupId: groupId,
             groupSecretParams: groupSecretParams,
             inviteLinkPassword: inviteLinkPassword,
@@ -686,8 +686,8 @@ public class GroupManager: NSObject {
             avatarData: avatarData
         )
 
-        await NSObject.databaseStorage.awaitableWrite { transaction in
-            NSObject.profileManager.addGroupId(
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
+            SSKEnvironment.shared.profileManagerRef.addGroupId(
                 toProfileWhitelist: groupId,
                 userProfileWriter: .localUser,
                 transaction: transaction
@@ -715,7 +715,7 @@ public class GroupManager: NSObject {
     public static func cancelMemberRequestsV2(groupModel: TSGroupModelV2) async throws -> TSGroupThread {
         let description = "Cancel Member Request"
         return try await Promise.wrapAsync {
-            try await self.groupsV2.cancelMemberRequests(groupModel: groupModel)
+            try await SSKEnvironment.shared.groupsV2Ref.cancelMemberRequests(groupModel: groupModel)
         }.timeout(seconds: Self.groupUpdateTimeoutDuration, description: description) {
             return GroupsV2Error.timeout
         }.awaitable()
@@ -724,7 +724,7 @@ public class GroupManager: NSObject {
     public static func cachedGroupInviteLinkPreview(groupInviteLinkInfo: GroupInviteLinkInfo) -> GroupInviteLinkPreview? {
         do {
             let groupContextInfo = try GroupV2ContextInfo.deriveFrom(masterKeyData: groupInviteLinkInfo.masterKey)
-            return groupsV2.cachedGroupInviteLinkPreview(groupSecretParams: groupContextInfo.groupSecretParams)
+            return SSKEnvironment.shared.groupsV2Ref.cachedGroupInviteLinkPreview(groupSecretParams: groupContextInfo.groupSecretParams)
         } catch {
             owsFailDebug("Error: \(error)")
             return nil
@@ -803,7 +803,7 @@ public class GroupManager: NSObject {
         {
             Logger.warn("Ignoring 403 for placeholder group.")
             Task {
-                try? await groupsV2.tryToUpdatePlaceholderGroupModelUsingInviteLinkPreview(
+                try? await SSKEnvironment.shared.groupsV2Ref.tryToUpdatePlaceholderGroupModelUsingInviteLinkPreview(
                     groupModel: groupModelV2,
                     removeLocalUserBlock: removeLocalUserBlock
                 )
@@ -820,7 +820,7 @@ public class GroupManager: NSObject {
             owsFail("[GV1] Should be impossible to send V1 group messages!")
         }
 
-        await databaseStorage.awaitableWrite { transaction in
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
             let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
 
             let message = OutgoingGroupUpdateMessage(
@@ -846,7 +846,7 @@ public class GroupManager: NSObject {
             owsFail("[GV1] Should be impossible to send V1 group messages!")
         }
 
-        await databaseStorage.awaitableWrite { tx in
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
             let message = OutgoingGroupUpdateMessage(
                 in: thread,
@@ -1076,7 +1076,7 @@ public class GroupManager: NSObject {
             let newMembers = newGroupModel.membership.allMembersOfAnyKindServiceIds
 
             if oldMembers.subtracting(newMembers).isEmpty == false {
-                senderKeyStore.resetSenderKeySession(for: groupThread, transaction: transaction)
+                SSKEnvironment.shared.senderKeyStoreRef.resetSenderKeySession(for: groupThread, transaction: transaction)
             }
 
             if
@@ -1094,7 +1094,7 @@ public class GroupManager: NSObject {
 
                     if
                         (
-                            blockingManager.isAddressBlocked(memberAddress, transaction: transaction)
+                            SSKEnvironment.shared.blockingManagerRef.isAddressBlocked(memberAddress, transaction: transaction)
                             || DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(memberAddress, tx: transaction.asV2Read)
                         ),
                         newGroupModel.membership.canViewProfileKeys(serviceId: member)
@@ -1123,7 +1123,7 @@ public class GroupManager: NSObject {
                 }
 
                 if shouldRotateProfileKey {
-                    profileManager.forceRotateLocalProfileKeyForGroupDeparture(with: transaction)
+                    SSKEnvironment.shared.profileManagerRef.forceRotateLocalProfileKeyForGroupDeparture(with: transaction)
                 }
             }
         }
@@ -1232,7 +1232,7 @@ public class GroupManager: NSObject {
             // We only need to notify the storage service about v2 groups.
             return
         }
-        guard !groupsV2.isGroupKnownToStorageService(groupModel: groupModel,
+        guard !SSKEnvironment.shared.groupsV2Ref.isGroupKnownToStorageService(groupModel: groupModel,
                                                           transaction: transaction) else {
             // To avoid redundant storage service writes,
             // don't bother notifying the storage service
@@ -1240,7 +1240,7 @@ public class GroupManager: NSObject {
             return
         }
 
-        storageServiceManager.recordPendingUpdates(groupModel: groupModel)
+        SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(groupModel: groupModel)
     }
 
     // MARK: - Profiles
@@ -1267,7 +1267,7 @@ public class GroupManager: NSObject {
             // Invalid updaters, shouldn't add.
             shouldAddToWhitelist = false
         case .aci(let aci):
-            shouldAddToWhitelist = profileManager.isUser(inProfileWhitelist: SignalServiceAddress(aci), transaction: tx)
+            shouldAddToWhitelist = SSKEnvironment.shared.profileManagerRef.isUser(inProfileWhitelist: SignalServiceAddress(aci), transaction: tx)
         case .localUser:
             // Always whitelist if its the local user updating.
             shouldAddToWhitelist = true
@@ -1280,7 +1280,7 @@ public class GroupManager: NSObject {
         // Ensure the thread is in our profile whitelist if we're a member of the group.
         // We don't want to do this if we're just a pending member or are leaving/have
         // already left the group.
-        self.profileManager.addGroupId(
+        SSKEnvironment.shared.profileManagerRef.addGroupId(
             toProfileWhitelist: newGroupModel.groupId, userProfileWriter: .localUser, transaction: tx
         )
     }
@@ -1329,7 +1329,7 @@ public class GroupManager: NSObject {
         // more authoritative than what is stored in the group state on the server.
         var authoritativeProfileKeysByAci = authoritativeProfileKeysByAci
         authoritativeProfileKeysByAci.removeValue(forKey: localIdentifiers.aci)
-        profileManager.fillInProfileKeys(
+        SSKEnvironment.shared.profileManagerRef.fillInProfileKeys(
             allProfileKeys: allProfileKeysByAci,
             authoritativeProfileKeys: authoritativeProfileKeysByAci,
             userProfileWriter: .groupState,
@@ -1349,14 +1349,14 @@ public class GroupManager: NSObject {
         let accountManager = DependenciesBridge.shared.tsAccountManager
 
         func hasProfileKeyCredential() throws -> Bool {
-            return try NSObject.databaseStorage.read { tx in
+            return try SSKEnvironment.shared.databaseStorageRef.read { tx in
                 guard accountManager.registrationState(tx: tx.asV2Read).isRegistered else {
                     return false
                 }
                 guard let localAddress = accountManager.localIdentifiers(tx: tx.asV2Read)?.aciAddress else {
                     throw OWSAssertionError("Missing localAddress.")
                 }
-                return NSObject.groupsV2.hasProfileKeyCredential(for: localAddress, transaction: tx)
+                return SSKEnvironment.shared.groupsV2Ref.hasProfileKeyCredential(for: localAddress, transaction: tx)
             }
         }
 
@@ -1367,7 +1367,7 @@ public class GroupManager: NSObject {
         // If we don't have a local profile key credential we should first
         // check if it is simply expired, by asking for a new one (which we
         // would get as part of fetching our local profile).
-        _ = try await NSObject.profileManager.fetchLocalUsersProfile(authedAccount: .implicit()).awaitable()
+        _ = try await SSKEnvironment.shared.profileManagerRef.fetchLocalUsersProfile(authedAccount: .implicit()).awaitable()
 
         guard try !hasProfileKeyCredential() else {
             return
@@ -1375,7 +1375,7 @@ public class GroupManager: NSObject {
 
         guard
             CurrentAppContext().isMainApp,
-            NSObject.databaseStorage.read(block: { tx in
+            SSKEnvironment.shared.databaseStorageRef.read(block: { tx in
                 accountManager.registrationState(tx: tx.asV2Read).isRegisteredPrimaryDevice
             })
         else {
@@ -1385,8 +1385,8 @@ public class GroupManager: NSObject {
 
         // We've never uploaded a profile key commitment - do so now.
         Logger.info("No profile key credential available for local account - uploading local profile!")
-        _ = await databaseStorage.awaitableWrite { tx in
-            NSObject.profileManager.reuploadLocalProfile(
+        _ = await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+            SSKEnvironment.shared.profileManagerRef.reuploadLocalProfile(
                 unsavedRotatedProfileKey: nil,
                 mustReuploadAvatar: false,
                 authedAccount: .implicit(),
@@ -1401,7 +1401,7 @@ public class GroupManager: NSObject {
 public extension GroupManager {
     class func waitForMessageFetchingAndProcessingWithTimeout(description: String) async throws {
         return try await Promise.wrapAsync {
-            await self.messageProcessor.waitForFetchingAndProcessing().awaitable()
+            await SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing().awaitable()
         }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration, description: description) {
             return GroupsV2Error.timeout
         }.awaitable()
@@ -1422,7 +1422,7 @@ extension GroupManager {
         // Ensure we have fetched profile key credentials before performing
         // the add below, since we depend on credential state to decide
         // whether to add or invite a user.
-        try await self.groupsV2.tryToFetchProfileKeyCredentials(
+        try await SSKEnvironment.shared.groupsV2Ref.tryToFetchProfileKeyCredentials(
             for: serviceIds.compactMap { $0 as? Aci },
             ignoreMissingProfiles: false,
             forceRefresh: false
@@ -1432,13 +1432,13 @@ extension GroupManager {
             groupModel: existingGroupModel,
             description: "Add/Invite new non-admin members"
         ) { groupChangeSet in
-            self.databaseStorage.read { transaction in
+            SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 for serviceId in serviceIds {
                     owsAssertDebug(!existingGroupModel.groupMembership.isMemberOfAnyKind(serviceId))
 
                     // Important that at this point we already have the
                     // profile keys for these users
-                    let hasCredential = self.groupsV2.hasProfileKeyCredential(
+                    let hasCredential = SSKEnvironment.shared.groupsV2Ref.hasProfileKeyCredential(
                         for: SignalServiceAddress(serviceId),
                         transaction: transaction
                     )
@@ -1484,7 +1484,7 @@ extension GroupManager {
                 return nil
             }
 
-            return try await self.groupsV2.uploadGroupAvatar(
+            return try await SSKEnvironment.shared.groupsV2Ref.uploadGroupAvatar(
                 avatarData: avatarData,
                 groupSecretParams: try existingGroupModel.secretParams()
             )

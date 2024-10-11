@@ -257,7 +257,7 @@ extension CallControlsOverflowView: MessageReactionPickerDelegate {
     private func react(with reaction: String) {
         self.callControlsOverflowPresenter?.willSendReaction()
         self.reactionSender.react(value: reaction)
-        let localAci = databaseStorage.read { tx in
+        let localAci = SSKEnvironment.shared.databaseStorageRef.read { tx in
             DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci
         }
         guard let localAci else {

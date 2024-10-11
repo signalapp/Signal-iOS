@@ -18,7 +18,7 @@ public extension TSInteraction {
             TSThread?,
             Bool,
             Bool
-        ) = databaseStorage.read { tx in
+        ) = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return (
                 thread(tx: tx),
                 DependenciesBridge.shared.deviceStore.hasLinkedDevices(tx: tx.asV2Read),
@@ -134,9 +134,9 @@ public extension TSInteraction {
                 style: .destructive
             ) { [weak self] _ in
                 self?.showDeleteForEveryoneConfirmationIfNecessary {
-                    guard let self = self else { return }
+                    guard self != nil else { return }
 
-                    self.databaseStorage.write { tx in
+                    SSKEnvironment.shared.databaseStorageRef.write { tx in
                         let latestMessage = TSOutgoingMessage.anyFetchOutgoingMessage(
                             uniqueId: outgoingMessage.uniqueId,
                             transaction: tx
@@ -183,7 +183,7 @@ public extension TSInteraction {
     }
 
     private func showDeleteForEveryoneConfirmationIfNecessary(completion: @escaping () -> Void) {
-        guard !Self.preferences.wasDeleteForEveryoneConfirmationShown else { return completion() }
+        guard !SSKEnvironment.shared.preferencesRef.wasDeleteForEveryoneConfirmationShown else { return completion() }
 
         OWSActionSheets.showConfirmationAlert(
             title: OWSLocalizedString(
@@ -195,7 +195,7 @@ public extension TSInteraction {
                 comment: "The title for the action that deletes a message for all users in the conversation."
             ),
             proceedStyle: .destructive) { _ in
-            Self.preferences.setWasDeleteForEveryoneConfirmationShown()
+            SSKEnvironment.shared.preferencesRef.setWasDeleteForEveryoneConfirmationShown()
             completion()
         }
     }
@@ -211,7 +211,7 @@ public extension TSInteraction {
         ) { [weak self] _ in
             guard let self else { return }
 
-            self.databaseStorage.asyncWrite { tx in
+            SSKEnvironment.shared.databaseStorageRef.asyncWrite { tx in
                 guard
                     let freshSelf = TSInteraction.anyFetch(uniqueId: self.uniqueId, transaction: tx),
                     let freshThread = TSThread.anyFetch(uniqueId: thread.uniqueId, transaction: tx)

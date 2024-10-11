@@ -45,7 +45,7 @@ public class PrivateStoryAddRecipientsSettingsViewController: BaseMemberViewCont
         AssertIsOnMainThread()
 
         ModalActivityIndicatorViewController.presentAsInvisible(fromViewController: self) { modal in
-            Self.databaseStorage.asyncWrite { transaction in
+            SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
                 self.thread.updateWithStoryViewMode(
                     .explicit,
                     addresses: self.thread.addresses + self.recipientSet.orderedMembers.compactMap { $0.address },

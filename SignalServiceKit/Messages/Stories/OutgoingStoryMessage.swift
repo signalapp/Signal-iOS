@@ -123,7 +123,7 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
         }
 
         let builder = SSKProtoStoryMessage.builder()
-        if let profileKey = profileManager.profileKeyData(
+        if let profileKey = SSKEnvironment.shared.profileManagerRef.profileKeyData(
             for: DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!.aciAddress,
             transaction: transaction
         ) {
@@ -167,7 +167,7 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
 
         do {
             if let groupThread = thread as? TSGroupThread, let groupModel = groupThread.groupModel as? TSGroupModelV2 {
-                builder.setGroup(try groupsV2.buildGroupContextV2Proto(groupModel: groupModel, changeActionsProtoData: nil))
+                builder.setGroup(try SSKEnvironment.shared.groupsV2Ref.buildGroupContextV2Proto(groupModel: groupModel, changeActionsProtoData: nil))
             }
 
             return try builder.build()

@@ -78,7 +78,7 @@ extension GroupManager {
         private func _run() async throws -> TSGroupThread {
             try await GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
 
-            return try await self.groupsV2.updateGroupV2(
+            return try await SSKEnvironment.shared.groupsV2Ref.updateGroupV2(
                 groupId: self.groupId,
                 groupSecretParams: try GroupSecretParams(contents: [UInt8](self.groupSecretParamsData)),
                 changesBlock: self.changesBlock

@@ -1051,7 +1051,7 @@ class OWSIdentityManagerObjCBridge: NSObject {
 
     @objc
     static func identityKeyPair(forIdentity identity: OWSIdentity) -> ECKeyPair? {
-        return databaseStorage.read { tx in
+        return SSKEnvironment.shared.databaseStorageRef.read { tx in
             let identityManager = DependenciesBridge.shared.identityManager
             return identityManager.identityKeyPair(for: identity, tx: tx.asV2Read)
         }
@@ -1059,7 +1059,7 @@ class OWSIdentityManagerObjCBridge: NSObject {
 
     @objc
     static func identityKey(forAddress address: SignalServiceAddress) -> Data? {
-        return databaseStorage.read { tx in
+        return SSKEnvironment.shared.databaseStorageRef.read { tx in
             let identityManager = DependenciesBridge.shared.identityManager
             return identityManager.identityKey(for: address, tx: tx.asV2Read)
         }

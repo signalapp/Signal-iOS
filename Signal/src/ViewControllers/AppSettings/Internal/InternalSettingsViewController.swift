@@ -79,7 +79,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
                 guard let self = self else {
                     return
                 }
-                SignalApp.showDatabaseIntegrityCheckUI(from: self, databaseStorage: NSObject.databaseStorage)
+                SignalApp.showDatabaseIntegrityCheckUI(from: self, databaseStorage: SSKEnvironment.shared.databaseStorageRef)
             }
         ))
         debugSection.add(.actionItem(
@@ -115,7 +115,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
             v2AttachmentCount,
             subscriberID,
             storageServiceManifestVersion
-        ) = databaseStorage.read { tx in
+        ) = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return (
                 TSThread.anyFetchAll(transaction: tx).filter { !$0.isGroupThread }.count,
                 TSThread.anyFetchAll(transaction: tx).filter { $0.isGroupThread }.count,
@@ -133,8 +133,8 @@ class InternalSettingsViewController: OWSTableViewController2 {
         regSection.add(.copyableItem(label: "ACI", value: localIdentifiers?.aci.serviceIdString))
         regSection.add(.copyableItem(label: "PNI", value: localIdentifiers?.pni?.serviceIdString))
         regSection.add(.copyableItem(label: "Device ID", value: "\(DependenciesBridge.shared.tsAccountManager.storedDeviceIdWithMaybeTransaction)"))
-        regSection.add(.copyableItem(label: "Push Token", value: preferences.pushToken))
-        regSection.add(.copyableItem(label: "Profile Key", value: profileManager.localProfileKey.keyData.hexadecimalString))
+        regSection.add(.copyableItem(label: "Push Token", value: SSKEnvironment.shared.preferencesRef.pushToken))
+        regSection.add(.copyableItem(label: "Profile Key", value: SSKEnvironment.shared.profileManagerRef.localProfileKey.keyData.hexadecimalString))
         if let subscriberID {
             regSection.add(.copyableItem(label: "Subscriber ID", value: subscriberID.asBase64Url))
         }
@@ -160,9 +160,9 @@ class InternalSettingsViewController: OWSTableViewController2 {
         let byteCountFormatter = ByteCountFormatter()
 
         let dbSection = OWSTableSection(title: "Database")
-        dbSection.add(.copyableItem(label: "DB Size", value: byteCountFormatter.string(for: databaseStorage.databaseFileSize)))
-        dbSection.add(.copyableItem(label: "DB WAL Size", value: byteCountFormatter.string(for: databaseStorage.databaseWALFileSize)))
-        dbSection.add(.copyableItem(label: "DB SHM Size", value: byteCountFormatter.string(for: databaseStorage.databaseSHMFileSize)))
+        dbSection.add(.copyableItem(label: "DB Size", value: byteCountFormatter.string(for: SSKEnvironment.shared.databaseStorageRef.databaseFileSize)))
+        dbSection.add(.copyableItem(label: "DB WAL Size", value: byteCountFormatter.string(for: SSKEnvironment.shared.databaseStorageRef.databaseWALFileSize)))
+        dbSection.add(.copyableItem(label: "DB SHM Size", value: byteCountFormatter.string(for: SSKEnvironment.shared.databaseStorageRef.databaseSHMFileSize)))
         dbSection.add(.copyableItem(label: "Contact Threads", value: numberFormatter.string(for: contactThreadCount)))
         dbSection.add(.copyableItem(label: "Group Threads", value: numberFormatter.string(for: groupThreadCount)))
         dbSection.add(.copyableItem(label: "Messages", value: numberFormatter.string(for: messageCount)))
@@ -184,7 +184,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
 
         let otherSection = OWSTableSection(title: "Other")
         otherSection.add(.copyableItem(label: "Storage Service Manifest Version", value: "\(storageServiceManifestVersion)"))
-        otherSection.add(.copyableItem(label: "CC?", value: self.signalService.isCensorshipCircumventionActive ? "Yes" : "No"))
+        otherSection.add(.copyableItem(label: "CC?", value: SSKEnvironment.shared.signalServiceRef.isCensorshipCircumventionActive ? "Yes" : "No"))
         otherSection.add(.copyableItem(label: "Audio Category", value: AVAudioSession.sharedInstance().category.rawValue.replacingOccurrences(of: "AVAudioSessionCategory", with: "")))
         otherSection.add(.switch(
             withText: "Spinning checkmarks",
@@ -195,8 +195,8 @@ class InternalSettingsViewController: OWSTableViewController2 {
 
         let paymentsSection = OWSTableSection(title: "Payments")
         paymentsSection.add(.copyableItem(label: "MobileCoin Environment", value: MobileCoinAPI.Environment.current.description))
-        paymentsSection.add(.copyableItem(label: "Enabled?", value: paymentsHelper.arePaymentsEnabled ? "Yes" : "No"))
-        if paymentsHelper.arePaymentsEnabled, let paymentsEntropy = paymentsSwift.paymentsEntropy {
+        paymentsSection.add(.copyableItem(label: "Enabled?", value: SSKEnvironment.shared.paymentsHelperRef.arePaymentsEnabled ? "Yes" : "No"))
+        if SSKEnvironment.shared.paymentsHelperRef.arePaymentsEnabled, let paymentsEntropy = paymentsSwift.paymentsEntropy {
             paymentsSection.add(.copyableItem(label: "Entropy", value: paymentsEntropy.hexadecimalString))
             if let passphrase = paymentsSwift.passphrase {
                 paymentsSection.add(.copyableItem(label: "Mnemonic", value: passphrase.asPassphrase))
@@ -241,7 +241,7 @@ private extension InternalSettingsViewController {
         let messageBackupManager = DependenciesBridge.shared.messageBackupManager
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
-        guard let localIdentifiers = databaseStorage.read(block: {tx in
+        guard let localIdentifiers = SSKEnvironment.shared.databaseStorageRef.read(block: {tx in
             return tsAccountManager.localIdentifiers(tx: tx.asV2Read)
         }) else {
             return

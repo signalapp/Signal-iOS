@@ -19,7 +19,7 @@ extension BadgeGiftingConfirmationViewController {
         var mightHaveBeenCharged = false
 
         firstly(on: DispatchQueue.sharedUserInitiated) { () -> Void in
-            try self.databaseStorage.read { transaction in
+            try SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 try DonationViewsUtil.Gifts.throwIfAlreadySendingGift(
                     to: self.thread,
                     transaction: transaction
@@ -58,8 +58,8 @@ extension BadgeGiftingConfirmationViewController {
                     preparedPayment: preparedPayment,
                     thread: self.thread,
                     messageText: self.messageText,
-                    databaseStorage: self.databaseStorage,
-                    blockingManager: self.blockingManager
+                    databaseStorage: SSKEnvironment.shared.databaseStorageRef,
+                    blockingManager: SSKEnvironment.shared.blockingManagerRef
                 )
             )
         }.done(on: DispatchQueue.main) { [weak self] in

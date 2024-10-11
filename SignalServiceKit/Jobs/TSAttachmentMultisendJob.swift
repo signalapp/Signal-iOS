@@ -187,7 +187,7 @@ public enum TSAttachmentMultisendUploader: Dependencies {
         }
         defer { NotificationCenter.default.removeObserver(observer) }
 
-        let uploadOperations: [AsyncBlockOperation] = databaseStorage.read { tx in
+        let uploadOperations: [AsyncBlockOperation] = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return attachmentIdMap.map { (attachmentId, correspondingAttachmentIds) in
                 let messageIds: [String] = correspondingAttachmentIds.compactMap { correspondingId in
                     let attachment = TSAttachmentStream.anyFetchAttachmentStream(uniqueId: correspondingId, transaction: tx)
@@ -219,7 +219,7 @@ public enum TSAttachmentMultisendUploader: Dependencies {
         }
         if let error = (uploadOperations.compactMap { $0.failingError }).first { throw error }
 
-        return await databaseStorage.awaitableWrite { transaction in
+        return await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
             var messageIdsToSend: Set<String> = Set()
 
             // The attachments we've uploaded don't appear in any thread. Once they're

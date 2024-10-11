@@ -406,12 +406,12 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
         let callLinkStore = DependenciesBridge.shared.callLinkStore
         let deletionThresholdMs = Date.ows_millisecondTimestamp() - CallLinkRecord.Constants.storageServiceDeletionDelayMs
         do {
-            let callLinkRecords = try databaseStorage.read { tx in
+            let callLinkRecords = try SSKEnvironment.shared.databaseStorageRef.read { tx in
                 try callLinkStore.fetchWhere(adminDeletedAtTimestampMsIsLessThan: deletionThresholdMs, tx: tx.asV2Read)
             }
             if !callLinkRecords.isEmpty {
                 Logger.info("Cleaning up \(callLinkRecords.count) call links that were deleted a while ago.")
-                try await databaseStorage.awaitableWrite { tx in
+                try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
                     for callLinkRecord in callLinkRecords {
                         try callLinkStore.delete(callLinkRecord, tx: tx.asV2Write)
                     }
@@ -511,7 +511,7 @@ class StorageServiceOperation: OWSOperation {
 
         // We don't have backup keys, do nothing. We'll try a
         // fresh restore once the keys are set.
-        let isKeyAvailable = self.databaseStorage.read { tx in
+        let isKeyAvailable = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return DependenciesBridge.shared.svr.isKeyAvailable(.storageService, transaction: tx.asV2Read)
         }
         guard isKeyAvailable else {
@@ -531,7 +531,7 @@ class StorageServiceOperation: OWSOperation {
     // MARK: - Mark Pending Changes
 
     fileprivate static func recordPendingMutations(_ pendingMutations: PendingMutations) -> Operation {
-        return BlockOperation { databaseStorage.write { recordPendingMutations(pendingMutations, transaction: $0) } }
+        return BlockOperation { SSKEnvironment.shared.databaseStorageRef.write { recordPendingMutations(pendingMutations, transaction: $0) } }
     }
 
     private static func recordPendingMutations(
@@ -698,7 +698,7 @@ class StorageServiceOperation: OWSOperation {
             }
         }
 
-        var state: State = databaseStorage.read { transaction in
+        var state: State = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             var state = State.current(transaction: transaction)
 
             normalizePendingMutations(in: &state, transaction: transaction)
@@ -782,7 +782,7 @@ class StorageServiceOperation: OWSOperation {
                 Logger.info("Successfully updated to manifest version: \(state.manifestVersion)")
 
                 // Successfully updated, store our changes.
-                self.databaseStorage.write { transaction in
+                SSKEnvironment.shared.databaseStorageRef.write { transaction in
                     state.save(clearConsecutiveConflicts: true, transaction: transaction)
                     StorageServiceUnknownFieldMigrator.didWriteToStorageService(tx: transaction)
                 }
@@ -814,7 +814,7 @@ class StorageServiceOperation: OWSOperation {
     // MARK: - Restore
 
     private func restoreOrCreateManifestIfNecessary() {
-        let state: State = databaseStorage.read { State.current(transaction: $0) }
+        let state: State = SSKEnvironment.shared.databaseStorageRef.read { State.current(transaction: $0) }
 
         let greaterThanVersion: UInt64? = {
             // If we've been flagged to refetch the latest manifest,
@@ -857,7 +857,7 @@ class StorageServiceOperation: OWSOperation {
 
                     // If this is a linked device, give up and request the latest storage
                     // service key from the primary device.
-                    self.databaseStorage.write { transaction in
+                    SSKEnvironment.shared.databaseStorageRef.write { transaction in
                         // Clear out the key, it's no longer valid. This will prevent us
                         // from trying to backup again until the sync response is received.
                         DependenciesBridge.shared.svr.clearSyncedStorageServiceKey(transaction: transaction.asV2Write)
@@ -887,7 +887,7 @@ class StorageServiceOperation: OWSOperation {
 
         state.manifestVersion = version
 
-        databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             let shouldInterceptForMigration =
                 StorageServiceUnknownFieldMigrator.shouldInterceptLocalManifestBeforeUploading(tx: transaction)
 
@@ -996,7 +996,7 @@ class StorageServiceOperation: OWSOperation {
         ).done(on: DispatchQueue.global()) { conflictingManifest in
             guard let conflictingManifest = conflictingManifest else {
                 // Successfully updated, store our changes.
-                self.databaseStorage.write { transaction in
+                SSKEnvironment.shared.databaseStorageRef.write { transaction in
                     state.save(clearConsecutiveConflicts: true, transaction: transaction)
                     StorageServiceUnknownFieldMigrator.didWriteToStorageService(tx: transaction)
                 }
@@ -1019,7 +1019,7 @@ class StorageServiceOperation: OWSOperation {
         withRemoteManifest manifest: StorageServiceProtoManifestRecord,
         backupAfterSuccess: Bool
     ) {
-        var state: State = databaseStorage.write { transaction in
+        var state: State = SSKEnvironment.shared.databaseStorageRef.write { transaction in
             var state = State.current(transaction: transaction)
 
             normalizePendingMutations(in: &state, transaction: transaction)
@@ -1038,7 +1038,7 @@ class StorageServiceOperation: OWSOperation {
             owsFailDebug("unexpectedly have had numerous repeated conflicts")
 
             // Clear out the consecutive conflicts count so we can try again later.
-            databaseStorage.write { transaction in
+            SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 state.save(clearConsecutiveConflicts: true, transaction: transaction)
             }
 
@@ -1101,7 +1101,7 @@ class StorageServiceOperation: OWSOperation {
                     throw OWSAssertionError("unexpected item type for account identifier")
                 }
 
-                self.databaseStorage.write { transaction in
+                SSKEnvironment.shared.databaseStorageRef.write { transaction in
                     self.mergeRecord(
                         accountRecord,
                         identifier: item.identifier,
@@ -1129,8 +1129,8 @@ class StorageServiceOperation: OWSOperation {
             }
         }.done(on: DispatchQueue.global()) { updatedState in
             var mutableState = updatedState
-            let storageServiceManager = self.storageServiceManager
-            self.databaseStorage.write { transaction in
+            let storageServiceManager = SSKEnvironment.shared.storageServiceManagerRef
+            SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 // Update the manifest version to reflect the remote version we just restored to
                 mutableState.manifestVersion = manifest.version
 
@@ -1258,7 +1258,7 @@ class StorageServiceOperation: OWSOperation {
 
                     // If this is a linked device, give up and request the latest storage
                     // service key from the primary device.
-                    self.databaseStorage.write { transaction in
+                    SSKEnvironment.shared.databaseStorageRef.write { transaction in
                         // Clear out the key, it's no longer valid. This will prevent us
                         // from trying to backup again until the sync response is received.
                         DependenciesBridge.shared.svr.clearSyncedStorageServiceKey(transaction: transaction.asV2Write)
@@ -1310,13 +1310,13 @@ class StorageServiceOperation: OWSOperation {
                 }
             }
 
-            await databaseStorage.awaitableWrite { tx in
+            await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
                 self.mergeItems(batchItems, mutableState: &mutableState, tx: tx)
             }
             Logger.info("\(manifest.logDescription); fetched \(identifierBatch.count) items; processed \(batchItems.count); deferred \(batchDeferredItemCount)")
         }
         for deferredBatch in deferredItems.chunked(by: Self.itemsBatchSize) {
-            await databaseStorage.awaitableWrite { tx in
+            await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
                 self.mergeItems(deferredBatch, mutableState: &mutableState, tx: tx)
             }
             Logger.info("\(manifest.logDescription); processed \(deferredBatch.count) deferred items")
@@ -1376,7 +1376,7 @@ class StorageServiceOperation: OWSOperation {
     // MARK: - Clean Up
 
     private func cleanUpUnknownData() {
-        var (state, migrationVersion) = databaseStorage.read { tx in
+        var (state, migrationVersion) = SSKEnvironment.shared.databaseStorageRef.read { tx in
             var state = State.current(transaction: tx)
             normalizePendingMutations(in: &state, transaction: tx)
             return (state, Self.migrationStore.getInt(Self.versionKey, defaultValue: 0, transaction: tx))
@@ -1389,7 +1389,7 @@ class StorageServiceOperation: OWSOperation {
         switch migrationVersion {
         case 0:
             self.recordPendingMutationsForContactsWithPNIs(in: &state)
-            databaseStorage.write { tx in Self.migrationStore.setInt(1, key: Self.versionKey, transaction: tx) }
+            SSKEnvironment.shared.databaseStorageRef.write { tx in Self.migrationStore.setInt(1, key: Self.versionKey, transaction: tx) }
             fallthrough
         default:
             break
@@ -1436,7 +1436,7 @@ class StorageServiceOperation: OWSOperation {
 
         // We may have learned of new record types. If so, we should refetch the
         // latest manifest so that we can merge these items.
-        databaseStorage.write { tx in
+        SSKEnvironment.shared.databaseStorageRef.write { tx in
             state.refetchLatestManifest = true
             state.save(transaction: tx)
         }
@@ -1449,7 +1449,7 @@ class StorageServiceOperation: OWSOperation {
         // Debug builds don't have proper version numbers but we do want to run
         // these migrations on them.
         if !shouldCleanUpRecordsWithUnknownFields {
-            if databaseStorage.read(block: { StorageServiceUnknownFieldMigrator.needsAnyUnknownFieldsMigrations(tx: $0) }) {
+            if SSKEnvironment.shared.databaseStorageRef.read(block: { StorageServiceUnknownFieldMigrator.needsAnyUnknownFieldsMigrations(tx: $0) }) {
                 shouldCleanUpRecordsWithUnknownFields = true
             }
         }
@@ -1505,7 +1505,7 @@ class StorageServiceOperation: OWSOperation {
             Logger.info("Unknown fields: Resolved \(resolvedCount) records (\(remainingCount) remaining) for \(debugDescription)")
         }
 
-        databaseStorage.write { tx in
+        SSKEnvironment.shared.databaseStorageRef.write { tx in
             let stateUpdaters: [any StorageServiceStateUpdater] = [
                 buildAccountUpdater(),
                 buildContactUpdater(),
@@ -1569,7 +1569,7 @@ class StorageServiceOperation: OWSOperation {
         caller: String = #function,
         shouldUpdate: (StorageServiceContact?) -> Bool
     ) {
-        let recipientUniqueIds = databaseStorage.read { tx in
+        let recipientUniqueIds = SSKEnvironment.shared.databaseStorageRef.read { tx in
             state.accountIdToIdentifierMap.keys.filter { shouldUpdate(StorageServiceContact.fetch(for: $0, tx: tx)) }
         }
 
@@ -1579,7 +1579,7 @@ class StorageServiceOperation: OWSOperation {
 
         Logger.info("Marking \(recipientUniqueIds.count) contact records as mutated via \(caller)")
 
-        databaseStorage.write { tx in
+        SSKEnvironment.shared.databaseStorageRef.write { tx in
             var pendingMutations = PendingMutations()
             pendingMutations.updatedRecipientUniqueIds.formUnion(recipientUniqueIds)
             Self.recordPendingMutations(pendingMutations, in: &state, transaction: tx)
@@ -1640,23 +1640,23 @@ class StorageServiceOperation: OWSOperation {
                 isPrimaryDevice: isPrimaryDevice,
                 authedAccount: authedAccount,
                 dmConfigurationStore: DependenciesBridge.shared.disappearingMessagesConfigurationStore,
-                groupsV2: groupsV2,
-                legacyChangePhoneNumber: legacyChangePhoneNumber,
+                groupsV2: SSKEnvironment.shared.groupsV2Ref,
+                legacyChangePhoneNumber: SSKEnvironment.shared.legacyChangePhoneNumberRef,
                 linkPreviewSettingStore: DependenciesBridge.shared.linkPreviewSettingStore,
                 localUsernameManager: DependenciesBridge.shared.localUsernameManager,
-                paymentsHelper: paymentsHelperSwift,
+                paymentsHelper: SSKEnvironment.shared.paymentsHelperRef,
                 phoneNumberDiscoverabilityManager: DependenciesBridge.shared.phoneNumberDiscoverabilityManager,
                 pinnedThreadManager: DependenciesBridge.shared.pinnedThreadManager,
-                preferences: preferences,
-                profileManager: profileManagerImpl,
-                receiptManager: receiptManager,
+                preferences: SSKEnvironment.shared.preferencesRef,
+                profileManager: SSKEnvironment.shared.profileManagerImplRef,
+                receiptManager: SSKEnvironment.shared.receiptManagerRef,
                 registrationStateChangeManager: DependenciesBridge.shared.registrationStateChangeManager,
-                storageServiceManager: storageServiceManager,
-                subscriptionManager: subscriptionManager,
-                systemStoryManager: systemStoryManager,
+                storageServiceManager: SSKEnvironment.shared.storageServiceManagerRef,
+                subscriptionManager: SSKEnvironment.shared.subscriptionManagerRef,
+                systemStoryManager: SSKEnvironment.shared.systemStoryManagerRef,
                 tsAccountManager: DependenciesBridge.shared.tsAccountManager,
-                typingIndicators: typingIndicatorsImpl,
-                udManager: udManager,
+                typingIndicators: SSKEnvironment.shared.typingIndicatorsRef,
+                udManager: SSKEnvironment.shared.udManagerRef,
                 usernameEducationManager: DependenciesBridge.shared.usernameEducationManager
             ),
             changeState: \.localAccountChangeState,
@@ -1671,18 +1671,18 @@ class StorageServiceOperation: OWSOperation {
                 localIdentifiers: localIdentifiers,
                 isPrimaryDevice: isPrimaryDevice,
                 authedAccount: authedAccount,
-                blockingManager: blockingManager,
-                contactsManager: contactsManagerImpl,
+                blockingManager: SSKEnvironment.shared.blockingManagerRef,
+                contactsManager: SSKEnvironment.shared.contactManagerImplRef,
                 identityManager: DependenciesBridge.shared.identityManager,
                 nicknameManager: DependenciesBridge.shared.nicknameManager,
                 profileFetcher: SSKEnvironment.shared.profileFetcherRef,
-                profileManager: profileManagerImpl,
+                profileManager: SSKEnvironment.shared.profileManagerImplRef,
                 tsAccountManager: DependenciesBridge.shared.tsAccountManager,
                 usernameLookupManager: DependenciesBridge.shared.usernameLookupManager,
                 recipientManager: DependenciesBridge.shared.recipientManager,
                 recipientMerger: DependenciesBridge.shared.recipientMerger,
                 recipientHidingManager: DependenciesBridge.shared.recipientHidingManager,
-                signalServiceAddressCache: signalServiceAddressCache
+                signalServiceAddressCache: SSKEnvironment.shared.signalServiceAddressCacheRef
             ),
             changeState: \.accountIdChangeMap,
             storageIdentifier: \.accountIdToIdentifierMap,
@@ -1703,9 +1703,9 @@ class StorageServiceOperation: OWSOperation {
         return MultipleElementStateUpdater(
             recordUpdater: StorageServiceGroupV2RecordUpdater(
                 authedAccount: authedAccount,
-                blockingManager: blockingManager,
-                groupsV2: groupsV2,
-                profileManager: profileManager
+                blockingManager: SSKEnvironment.shared.blockingManagerRef,
+                groupsV2: SSKEnvironment.shared.groupsV2Ref,
+                profileManager: SSKEnvironment.shared.profileManagerRef
             ),
             changeState: \.groupV2ChangeMap,
             storageIdentifier: \.groupV2MasterKeyToIdentifierMap,

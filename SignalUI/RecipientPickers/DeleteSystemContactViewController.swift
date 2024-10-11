@@ -149,7 +149,7 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
             image,
             systemContactName
         ) = dependencies.databaseStorage.read { tx in
-            let image = avatarBuilder.avatarImage(
+            let image = SSKEnvironment.shared.avatarBuilderRef.avatarImage(
                 forAddress: addressForProfileLookup,
                 diameterPixels: Constants.avatarDiameter * UIScreen.main.scale,
                 localUserDisplayMode: .asUser,
@@ -331,7 +331,7 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
                 }
 
                 // Check that the contact got deleted from our db.
-                let isStillSystemContact = self.contactsManager.cnContactId(for: self.e164.stringValue) != nil
+                let isStillSystemContact = SSKEnvironment.shared.contactManagerRef.cnContactId(for: self.e164.stringValue) != nil
                 if isStillSystemContact {
                     // Can't hide; likely there was another contact with the same number.
                     // Just exit.

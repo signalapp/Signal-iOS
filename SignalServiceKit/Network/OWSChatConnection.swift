@@ -576,7 +576,7 @@ public class OWSChatConnection: NSObject {
         let label = Self.label(forRequest: request, connectionType: connectionType, requestInfo: requestInfo)
         Logger.info("\(label): Request Succeeded (\(response.responseStatusCode))")
 
-        Self.outageDetection.reportConnectionSuccess()
+        OutageDetection.shared.reportConnectionSuccess()
         return response
     }
 
@@ -893,7 +893,7 @@ public class OWSChatConnectionUsingSSKWebSocket: OWSChatConnection {
         }()
 
         Self.messageProcessingQueue.async {
-            Self.messageProcessor.processReceivedEnvelopeData(
+            SSKEnvironment.shared.messageProcessorRef.processReceivedEnvelopeData(
                 encryptedEnvelope,
                 serverDeliveryTimestamp: serverDeliveryTimestamp,
                 envelopeSource: envelopeSource
@@ -1002,7 +1002,7 @@ public class OWSChatConnectionUsingSSKWebSocket: OWSChatConnection {
             extraHeaders: webSocketAuthenticationHeaders.merging(StoryManager.buildStoryHeaders()) { (old, _) in old }
         )
 
-        guard let webSocket = GlobalDependencies.webSocketFactory.buildSocket(
+        guard let webSocket = SSKEnvironment.shared.webSocketFactoryRef.buildSocket(
             request: request,
             callbackScheduler: self.serialQueue
         ) else {
@@ -1182,7 +1182,7 @@ extension OWSChatConnectionUsingSSKWebSocket: SSKWebSocketDelegate {
             }
         }
 
-        outageDetection.reportConnectionSuccess()
+        OutageDetection.shared.reportConnectionSuccess()
 
         notifyStatusChange(newState: .open)
     }
@@ -1218,7 +1218,7 @@ extension OWSChatConnectionUsingSSKWebSocket: SSKWebSocketDelegate {
             applyDesiredSocketState()
         }
 
-        outageDetection.reportConnectionFailure()
+        OutageDetection.shared.reportConnectionFailure()
     }
 
     public func websocket(_ eventSocket: SSKWebSocket, didReceiveData data: Data) {
@@ -1429,7 +1429,7 @@ internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnectionUsingSS
 
         mutating func notifyAndResetIfNeeded() {
             if shouldNotify() {
-                GlobalDependencies.notificationPresenter.notifyTestPopulation(ofErrorMessage: "Experimental WebSocket Transport is seeing too many errors")
+                SSKEnvironment.shared.notificationPresenterRef.notifyTestPopulation(ofErrorMessage: "Experimental WebSocket Transport is seeing too many errors")
                 self = Stats()
                 self.lastNotifyTimestamp = Date()
             }
@@ -1472,7 +1472,7 @@ internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnectionUsingSS
         if CurrentAppContext().isRunningTests {
             return false
         }
-        if GlobalDependencies.signalService.isCensorshipCircumventionManuallyDisabled {
+        if SSKEnvironment.shared.signalServiceRef.isCensorshipCircumventionManuallyDisabled {
             // libsignal-net currently always tries censorship circumvention mode as a fallback,
             // so it should work in scenarios where CC is *on*.
             return false
@@ -1737,7 +1737,7 @@ internal class OWSChatConnectionUsingLibSignal<Service: ChatService>: OWSChatCon
                     self.didConnectIdentified()
                 }
                 connectionAttemptCompleted(.open)
-                outageDetection.reportConnectionSuccess()
+                OutageDetection.shared.reportConnectionSuccess()
                 return true
 
             } catch SignalError.appExpired(_) {
@@ -1752,7 +1752,7 @@ internal class OWSChatConnectionUsingLibSignal<Service: ChatService>: OWSChatCon
                 }
             } catch {
                 Logger.error("\(self.logPrefix): failed to connect: \(error)")
-                outageDetection.reportConnectionFailure()
+                OutageDetection.shared.reportConnectionFailure()
             }
 
             connectionAttemptCompleted(.closed)
@@ -1936,7 +1936,7 @@ internal class OWSChatConnectionUsingLibSignal<Service: ChatService>: OWSChatCon
                 applyDesiredSocketState()
             }
 
-            outageDetection.reportConnectionFailure()
+            OutageDetection.shared.reportConnectionFailure()
         }
     }
 }
@@ -2023,7 +2023,7 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
         let backgroundTask = OWSBackgroundTask(label: "handleIncomingMessage")
 
         Self.messageProcessingQueue.async {
-            Self.messageProcessor.processReceivedEnvelopeData(
+            SSKEnvironment.shared.messageProcessorRef.processReceivedEnvelopeData(
                 envelope,
                 serverDeliveryTimestamp: serverDeliveryTimestamp,
                 envelopeSource: .websocketIdentified

@@ -115,7 +115,7 @@ public class BadgeAssets: NSObject {
         }
 
         // TODO: Badges — Censorship circumvention
-        let urlSession = signalService.urlSessionForUpdates2()
+        let urlSession = SSKEnvironment.shared.signalServiceRef.urlSessionForUpdates2()
         return urlSession.downloadTaskPromise(remoteSourceUrl.absoluteString, method: .get).map { result in
             let resultUrl = result.downloadUrl
 

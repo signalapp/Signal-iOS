@@ -201,7 +201,7 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
                 return
             }
 
-            self.signalService.urlSessionForMainSignalService()
+            SSKEnvironment.shared.signalServiceRef.urlSessionForMainSignalService()
                 .promiseForTSRequest(request)
                 .then(on: DispatchQueue.sharedUserInitiated) { response -> Promise<AccountDataReport> in
                     let status = response.responseStatusCode

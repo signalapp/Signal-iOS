@@ -215,12 +215,12 @@ public class SubscriptionManagerImpl: NSObject {
     }
 
     private static func warmCaches() {
-        let value = databaseStorage.read { displayBadgesOnProfile(transaction: $0) }
+        let value = SSKEnvironment.shared.databaseStorageRef.read { displayBadgesOnProfile(transaction: $0) }
         displayBadgesOnProfileCache.set(value)
     }
 
     private static func performMigrationToStorageServiceIfNecessary() {
-        let hasMigratedToStorageService = databaseStorage.read { transaction in
+        let hasMigratedToStorageService = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             subscriptionKVS.getBool(hasMigratedToStorageServiceKey, defaultValue: false, transaction: transaction)
         }
 
@@ -228,10 +228,10 @@ public class SubscriptionManagerImpl: NSObject {
 
         Logger.info("[Donations] Migrating to storage service")
 
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             subscriptionKVS.setBool(true, key: hasMigratedToStorageServiceKey, transaction: transaction)
 
-            let localProfile = profileManagerImpl.localUserProfile
+            let localProfile = SSKEnvironment.shared.profileManagerImplRef.localUserProfile
             let displayBadgesOnProfile = localProfile.badges.allSatisfy { badge in
                 badge.isVisible ?? {
                     owsFailDebug("Local user badges should always have a non-nil visibility flag")
@@ -242,10 +242,10 @@ public class SubscriptionManagerImpl: NSObject {
             setDisplayBadgesOnProfile(displayBadgesOnProfile, transaction: transaction)
         }
 
-        storageServiceManager.recordPendingLocalAccountUpdates()
+        SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
     }
 
-    public static var jobQueue: ReceiptCredentialRedemptionJobQueue { smJobQueues.receiptCredentialJobQueue }
+    public static var jobQueue: ReceiptCredentialRedemptionJobQueue { SSKEnvironment.shared.smJobQueuesRef.receiptCredentialJobQueue }
 
     /// - Note
     /// This collection name is reused by other subscription-related stores. For
@@ -270,7 +270,7 @@ public class SubscriptionManagerImpl: NSObject {
     // MARK: Current subscription status
 
     public class func currentProfileSubscriptionBadges() -> [OWSUserProfileBadgeInfo] {
-        let snapshot = profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: false)
+        let snapshot = SSKEnvironment.shared.profileManagerImplRef.localProfileSnapshot(shouldIncludeAvatar: false)
         let profileBadges = snapshot.profileBadgeInfo ?? []
         return profileBadges.compactMap { (badge: OWSUserProfileBadgeInfo) -> OWSUserProfileBadgeInfo? in
             guard SubscriptionBadgeIds.contains(badge.badgeId) else { return nil }
@@ -281,7 +281,7 @@ public class SubscriptionManagerImpl: NSObject {
     public class func getCurrentSubscriptionStatus(for subscriberID: Data) -> Promise<Subscription?> {
         let request = OWSRequestFactory.subscriptionGetCurrentSubscriptionLevelRequest(subscriberID: subscriberID)
         return firstly {
-            networkManager.makePromise(request: request)
+            SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
         }.map(on: DispatchQueue.global()) { response in
             let statusCode = response.responseStatusCode
 
@@ -321,7 +321,7 @@ public class SubscriptionManagerImpl: NSObject {
         }.map(on: DispatchQueue.sharedUserInitiated) { subscriberID -> Data in
             Logger.info("[Donations] Caching params after setting up new subscription")
 
-            databaseStorage.write { transaction in
+            SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 self.setUserManuallyCancelledSubscription(false, transaction: transaction)
                 self.setSubscriberID(subscriberID, transaction: transaction)
                 self.setSubscriberCurrencyCode(currencyCode, transaction: transaction)
@@ -329,7 +329,7 @@ public class SubscriptionManagerImpl: NSObject {
                 self.setShowExpirySheetOnHomeScreenKey(show: false, transaction: transaction)
             }
 
-            self.storageServiceManager.recordPendingLocalAccountUpdates()
+            SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
 
             return subscriberID
         }
@@ -366,7 +366,7 @@ public class SubscriptionManagerImpl: NSObject {
         }.then(on: DispatchQueue.sharedUserInitiated) { _ -> Promise<Subscription> in
             Logger.info("[Donations] Selecting subscription level on service")
 
-            databaseStorage.write { transaction in
+            SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 Self.setMostRecentSubscriptionPaymentMethod(
                     paymentMethod: paymentType.paymentMethod,
                     transaction: transaction
@@ -421,7 +421,7 @@ public class SubscriptionManagerImpl: NSObject {
 
             let request = OWSRequestFactory.deleteSubscriberID(subscriberID)
             return firstly(on: DispatchQueue.global()) {
-                networkManager.makePromise(request: request)
+                SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
             }.map(on: DispatchQueue.global()) { response in
                 switch response.responseStatusCode {
                 case 200, 404:
@@ -433,7 +433,7 @@ public class SubscriptionManagerImpl: NSObject {
                 Logger.info("[Donations] Deleted remote subscription.")
             }
         }.done(on: DispatchQueue.global()) {
-            databaseStorage.write { transaction in
+            SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 self.setSubscriberID(nil, transaction: transaction)
                 self.setSubscriberCurrencyCode(nil, transaction: transaction)
                 self.setLastSubscriptionExpirationDate(nil, transaction: transaction)
@@ -446,7 +446,7 @@ public class SubscriptionManagerImpl: NSObject {
                     .clearRequestErrorForAnyRecurringSubscription(tx: transaction.asV2Write)
             }
 
-            self.storageServiceManager.recordPendingLocalAccountUpdates()
+            SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
             Logger.info("[Donations] Deleted local subscription.")
         }
     }
@@ -468,7 +468,7 @@ public class SubscriptionManagerImpl: NSObject {
     private class func postSubscriberID(subscriberID: Data) -> Promise<Void> {
         let request = OWSRequestFactory.setSubscriberID(subscriberID)
         return firstly {
-            networkManager.makePromise(request: request)
+            SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
         }.map(on: DispatchQueue.global()) { response in
             let statusCode = response.responseStatusCode
 
@@ -490,7 +490,7 @@ public class SubscriptionManagerImpl: NSObject {
         )
 
         return firstly {
-            networkManager.makePromise(request: request)
+            SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
         }.map(on: DispatchQueue.global()) { response in
             let statusCode = response.responseStatusCode
             if statusCode != 200 {
@@ -509,7 +509,7 @@ public class SubscriptionManagerImpl: NSObject {
         )
 
         return firstly {
-            networkManager.makePromise(request: request)
+            SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
         }.map(on: DispatchQueue.global()) { response in
             let statusCode = response.responseStatusCode
             if statusCode != 200 {
@@ -535,7 +535,7 @@ public class SubscriptionManagerImpl: NSObject {
             idempotencyKey: key
         )
         return firstly {
-            networkManager.makePromise(request: request)
+            SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
         }.then(on: DispatchQueue.global()) { response -> Promise<Subscription?> in
             let statusCode = response.responseStatusCode
             if statusCode != 200 {
@@ -548,12 +548,12 @@ public class SubscriptionManagerImpl: NSObject {
                 throw OWSAssertionError("Failed to fetch valid subscription object after setSubscription")
             }
 
-            databaseStorage.write { transaction in
+            SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 self.setSubscriberCurrencyCode(currencyCode, transaction: transaction)
                 self.setLastSubscriptionExpirationDate(Date(timeIntervalSince1970: subscription.endOfCurrentPeriod), transaction: transaction)
             }
 
-            self.storageServiceManager.recordPendingLocalAccountUpdates()
+            SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
 
             return subscription
         }
@@ -570,7 +570,7 @@ public class SubscriptionManagerImpl: NSObject {
     ) -> Promise<Void> {
         let (promise, future) = Promise<Void>.pending()
         let request = generateReceiptRequest()
-        databaseStorage.asyncWrite { transaction in
+        SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
             self.jobQueue.addSubscriptionJob(
                 paymentProcessor: paymentProcessor,
                 paymentMethod: paymentMethod,
@@ -596,7 +596,7 @@ public class SubscriptionManagerImpl: NSObject {
     ) -> Promise<Void> {
         let (promise, future) = Promise<Void>.pending()
         let request = generateReceiptRequest()
-        databaseStorage.asyncWrite { transaction in
+        SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
             self.jobQueue.addBoostJob(
                 amount: amount,
                 paymentProcessor: paymentProcessor,
@@ -664,7 +664,7 @@ public class SubscriptionManagerImpl: NSObject {
                 request: request.serialize().asData
             )
 
-            return networkManager.makePromise(request: networkRequest)
+            return SSKEnvironment.shared.networkManagerRef.makePromise(request: networkRequest)
         }.map(on: DispatchQueue.global()) { response throws -> ReceiptCredentialPresentation in
             return try self.parseReceiptCredentialPresentationResponse(
                 httpResponse: response,
@@ -700,7 +700,7 @@ public class SubscriptionManagerImpl: NSObject {
                 request: request.serialize().asData
             )
 
-            return networkManager.makePromise(request: networkRequest)
+            return SSKEnvironment.shared.networkManagerRef.makePromise(request: networkRequest)
         }.map(on: DispatchQueue.global()) { response throws -> ReceiptCredentialPresentation in
             return try self.parseReceiptCredentialPresentationResponse(
                 httpResponse: response,
@@ -817,7 +817,7 @@ public class SubscriptionManagerImpl: NSObject {
             receiptCredentialPresentation: receiptCredentialPresentationData
         )
         return firstly(on: DispatchQueue.global()) {
-            networkManager.makePromise(request: request)
+            SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
         }.map(on: DispatchQueue.global()) { response in
             let statusCode = response.responseStatusCode
             if statusCode != 200 {
@@ -825,7 +825,7 @@ public class SubscriptionManagerImpl: NSObject {
                 throw OWSRetryableSubscriptionError()
             }
         }.then(on: DispatchQueue.global()) {
-            self.profileManagerImpl.fetchLocalUsersProfile(authedAccount: .implicit()).asVoid()
+            SSKEnvironment.shared.profileManagerImplRef.fetchLocalUsersProfile(authedAccount: .implicit()).asVoid()
         }
     }
 
@@ -856,7 +856,7 @@ public class SubscriptionManagerImpl: NSObject {
         var lastSubscriptionExpiration: Date?
         var subscriberID: Data?
         var currencyCode: Currency.Code?
-        databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             lastKeepAliveHeartbeat = self.subscriptionKVS.getDate(self.lastSubscriptionHeartbeatKey, transaction: transaction)
             lastSubscriptionExpiration = self.lastSubscriptionExpirationDate(transaction: transaction)
             subscriberID = self.getSubscriberID(transaction: transaction)
@@ -952,7 +952,7 @@ public class SubscriptionManagerImpl: NSObject {
                 )
 
                 // Save last expiration
-                databaseStorage.write { transaction in
+                SSKEnvironment.shared.databaseStorageRef.write { transaction in
                     self.setLastSubscriptionExpirationDate(Date(timeIntervalSince1970: subscription.endOfCurrentPeriod), transaction: transaction)
                 }
             }
@@ -962,7 +962,7 @@ public class SubscriptionManagerImpl: NSObject {
     }
 
     private static func updateSubscriptionHeartbeatDate() {
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             // Update keepalive
             self.subscriptionKVS.setDate(Date(), key: self.lastSubscriptionHeartbeatKey, transaction: transaction)
         }
@@ -974,7 +974,7 @@ public class SubscriptionManagerImpl: NSObject {
 
         var lastSubscriptionExpiration: Date?
         var subscriberID: Data?
-        databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             lastSubscriptionExpiration = self.subscriptionKVS.getDate(self.lastSubscriptionExpirationKey, transaction: transaction)
             subscriberID = self.getSubscriberID(transaction: transaction)
         }
@@ -998,7 +998,7 @@ public class SubscriptionManagerImpl: NSObject {
             } else {
                 Logger.info("[Donations] Updating last subscription expiration")
                 // Save last expiration
-                databaseStorage.write { transaction in
+                SSKEnvironment.shared.databaseStorageRef.write { transaction in
                     self.setLastSubscriptionExpirationDate(Date(timeIntervalSince1970: subscription.endOfCurrentPeriod), transaction: transaction)
                 }
             }
@@ -1056,7 +1056,7 @@ extension SubscriptionManagerImpl {
         guard value != userManuallyCancelledSubscription(transaction: transaction) else { return }
         subscriptionKVS.setBool(value, key: userManuallyCancelledSubscriptionKey, transaction: transaction)
         if updateStorageService {
-            storageServiceManager.recordPendingLocalAccountUpdates()
+            SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
         }
     }
 
@@ -1070,7 +1070,7 @@ extension SubscriptionManagerImpl {
         displayBadgesOnProfileCache.set(value)
         subscriptionKVS.setBool(value, key: displayBadgesOnProfileKey, transaction: transaction)
         if updateStorageService {
-            storageServiceManager.recordPendingLocalAccountUpdates()
+            SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
         }
     }
 
@@ -1131,7 +1131,7 @@ extension SubscriptionManagerImpl {
     }
 
     public static func clearMostRecentlyExpiredBadgeIDWithSneakyTransaction() {
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             self.setMostRecentlyExpiredBadgeID(badgeID: nil, transaction: transaction)
         }
     }
@@ -1152,7 +1152,7 @@ extension SubscriptionManagerImpl {
     }
 
     public static func clearMostRecentlyExpiredGiftBadgeIDWithSneakyTransaction() {
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             self.setMostRecentlyExpiredGiftBadgeID(badgeID: nil, transaction: transaction)
         }
     }
@@ -1275,7 +1275,7 @@ extension SubscriptionManagerImpl: SubscriptionManager {
     }
 
     public func reconcileBadgeStates(transaction: SDSAnyWriteTransaction) {
-        let currentBadges = profileManagerImpl.localUserProfile.badges
+        let currentBadges = SSKEnvironment.shared.profileManagerImplRef.localUserProfile.badges
 
         let currentSubscriberBadgeIDs = currentBadges.compactMap { (badge: OWSUserProfileBadgeInfo) -> String? in
             guard SubscriptionBadgeIds.contains(badge.badgeId) else { return nil }

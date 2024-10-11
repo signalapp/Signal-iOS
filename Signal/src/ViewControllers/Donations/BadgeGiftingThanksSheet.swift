@@ -43,11 +43,11 @@ class BadgeGiftingThanksSheet: OWSTableViewController2 {
         let avatarView = ConversationAvatarView(sizeClass: .eightyEight,
                                                 localUserDisplayMode: .asUser,
                                                 badged: true)
-        let recipientName = databaseStorage.read { transaction -> String in
+        let recipientName = SSKEnvironment.shared.databaseStorageRef.read { transaction -> String in
             avatarView.update(transaction) { config in
                 config.dataSource = .thread(self.thread)
             }
-            return self.contactsManager.displayName(for: self.thread, transaction: transaction)
+            return SSKEnvironment.shared.contactManagerRef.displayName(for: self.thread, transaction: transaction)
         }
 
         let titleSection = OWSTableSection()

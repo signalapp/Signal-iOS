@@ -32,7 +32,7 @@ extension DonationPaymentDetailsViewController {
                             paymentIntentId: confirmedIntent.paymentIntentId,
                             amount: amount
                         )
-                        self.databaseStorage.write { transaction in
+                        SSKEnvironment.shared.databaseStorageRef.write { transaction in
                             do {
                                 try DependenciesBridge.shared.externalPendingIDEALDonationStore.setPendingOneTimeDonation(
                                     donation: donation,
@@ -57,7 +57,7 @@ extension DonationPaymentDetailsViewController {
                     paymentIntentId: intentId,
                     amount: amount,
                     paymentMethod: validForm.donationPaymentMethod,
-                    databaseStorage: self.databaseStorage
+                    databaseStorage: SSKEnvironment.shared.databaseStorageRef
                 )
             }
         ).done(on: DispatchQueue.main) { [weak self] in

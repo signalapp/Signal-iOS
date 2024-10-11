@@ -236,7 +236,7 @@ public class TSAttachmentManager {
                 tx: writeTx
             )
         } else {
-            NSObject.databaseStorage.asyncWrite { writeTx in
+            SSKEnvironment.shared.databaseStorageRef.asyncWrite { writeTx in
                 _ = Self.refetchMessageAndCreateThumbnailIfNeeded(
                     originalParentMessageInstance: parentMessage,
                     tx: writeTx

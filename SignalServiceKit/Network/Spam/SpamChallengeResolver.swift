@@ -111,7 +111,7 @@ public class SpamChallengeResolver: NSObject, SpamChallengeSchedulingDelegate {
             Logger.warn("Can't retry send. \(challenges?.count ?? 0) challenges remain unresolved.")
             return
         }
-        databaseStorage.asyncWrite { writeTx in
+        SSKEnvironment.shared.databaseStorageRef.asyncWrite { writeTx in
             let pendingInteractionIds = InteractionFinder.pendingInteractionIds(transaction: writeTx)
             Logger.info("retrying paused messages: \(pendingInteractionIds)")
 

@@ -144,7 +144,7 @@ public class WebSocketFactoryMock: NSObject, WebSocketFactory {
 @objc
 public class WebSocketFactoryNative: NSObject, WebSocketFactory {
     public func buildSocket(request: WebSocketRequest, callbackScheduler: Scheduler) -> SSKWebSocket? {
-        return SSKWebSocketNative(request: request, signalService: signalService, callbackScheduler: callbackScheduler)
+        return SSKWebSocketNative(request: request, signalService: SSKEnvironment.shared.signalServiceRef, callbackScheduler: callbackScheduler)
     }
 }
 

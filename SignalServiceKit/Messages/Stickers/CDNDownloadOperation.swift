@@ -10,7 +10,7 @@ open class CDNDownloadOperation: OWSOperation {
     // MARK: - Dependencies
 
     private func buildUrlSession(maxResponseSize: UInt) -> OWSURLSessionProtocol {
-        signalService.urlSessionForCdn(cdnNumber: 0, maxResponseSize: maxResponseSize)
+        SSKEnvironment.shared.signalServiceRef.urlSessionForCdn(cdnNumber: 0, maxResponseSize: maxResponseSize)
     }
 
     // MARK: -

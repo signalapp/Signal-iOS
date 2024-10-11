@@ -78,7 +78,7 @@ extension ConversationViewController {
 
         // Update the detail sheet with the latest reaction
         // state, in case the reactions have changed.
-        databaseStorage.read { tx in
+        SSKEnvironment.shared.databaseStorageRef.read { tx in
             reactionsDetailSheet.setReactionState(reactionState, transaction: tx)
         }
     }
@@ -171,12 +171,12 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
             let reactionBarAccessory = ContextMenuRectionBarAccessory(thread: self.thread, itemViewModel: contextInteraction.itemViewModel)
             reactionBarAccessory.didSelectReactionHandler = { [weak self] (message: TSMessage, reaction: String, isRemoving: Bool) in
 
-                guard let self = self else {
+                guard self != nil else {
                     owsFailDebug("conversationViewController was unexpectedly nil")
                     return
                 }
 
-                self.databaseStorage.asyncWrite { transaction in
+                SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
                     ReactionManager.localUserReacted(
                         to: message.uniqueId,
                         emoji: reaction,

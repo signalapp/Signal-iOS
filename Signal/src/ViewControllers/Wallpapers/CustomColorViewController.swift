@@ -124,7 +124,7 @@ class CustomColorViewController: OWSTableViewController2 {
 
         updateNavigation()
 
-        wallpaperViewBuilder = databaseStorage.read { tx in Wallpaper.viewBuilder(for: thread, tx: tx) }
+        wallpaperViewBuilder = SSKEnvironment.shared.databaseStorageRef.read { tx in Wallpaper.viewBuilder(for: thread, tx: tx) }
 
         updateTableContents()
     }
@@ -431,7 +431,7 @@ class CustomColorViewController: OWSTableViewController2 {
                 return
             }
             // Don't show a confirmation unless the color is used in multiple places.
-            usageCountToConfirm = databaseStorage.read { tx in
+            usageCountToConfirm = SSKEnvironment.shared.databaseStorageRef.read { tx in
                 return DependenciesBridge.shared.chatColorSettingStore.usageCount(
                     of: colorKey,
                     tx: tx.asV2Read
@@ -1367,7 +1367,7 @@ private class CustomColorPreviewView: UIView {
     private var customColorTooltip: CustomColorTooltip?
 
     fileprivate func dismissTooltip() {
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             Self.keyValueStore.setBool(true, key: Self.tooltipWasDismissedKey, transaction: transaction)
         }
         hideTooltip()
@@ -1379,7 +1379,7 @@ private class CustomColorPreviewView: UIView {
     }
 
     private func ensureTooltip() {
-        let shouldShowTooltip = databaseStorage.read { transaction in
+        let shouldShowTooltip = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             !Self.keyValueStore.getBool(Self.tooltipWasDismissedKey, defaultValue: false, transaction: transaction)
         }
         let isShowingTooltip = customColorTooltip != nil

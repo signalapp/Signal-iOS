@@ -268,7 +268,7 @@ private class ReceiptCredentialRedemptionJobRunner: JobRunner, Dependencies {
         )
         guard retryInterval == .sepa else { return nil }
 
-        let priorError = databaseStorage.read(block: { tx -> ReceiptCredentialRequestError? in
+        let priorError = SSKEnvironment.shared.databaseStorageRef.read(block: { tx -> ReceiptCredentialRequestError? in
             return receiptCredentialResultStore.getRequestError(
                 errorMode: configuration.paymentType.receiptCredentialResultMode,
                 tx: tx.asV2Read
@@ -362,7 +362,7 @@ private class ReceiptCredentialRedemptionJobRunner: JobRunner, Dependencies {
                 return .retryAfter(triggerExponentialRetry(jobRecord: jobRecord))
             }
             Logger.warn("[Donations] Job encountered unexpected terminal error")
-            return await databaseStorage.awaitableWrite { tx in
+            return await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
                 jobRecord.anyRemove(transaction: tx)
                 return .finished(.failure(error))
             }
@@ -434,7 +434,7 @@ private class ReceiptCredentialRedemptionJobRunner: JobRunner, Dependencies {
                 let paymentMethod = configuration.paymentMethod
                 let paymentType = configuration.paymentType
 
-                return await databaseStorage.awaitableWrite { tx in
+                return await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
                     if
                         errorCode == .paymentIntentRedeemed,
                         case .recurringSubscription(_, _, _, _, shouldSuppressPaymentAlreadyRedeemed: true) = paymentType
@@ -481,7 +481,7 @@ private class ReceiptCredentialRedemptionJobRunner: JobRunner, Dependencies {
             receiptCredentialPresentation: receiptCredentialPresentation
         ).awaitable()
 
-        return await databaseStorage.awaitableWrite { tx in
+        return await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             self.receiptCredentialResultStore.clearRequestError(
                 errorMode: configuration.paymentType.receiptCredentialResultMode,
                 tx: tx.asV2Write
@@ -564,7 +564,7 @@ private class ReceiptCredentialRedemptionJobRunner: JobRunner, Dependencies {
                 request: configuration.receiptCredentialRequest
             ).awaitable()
         }
-        await databaseStorage.awaitableWrite { tx in
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             jobRecord.setReceiptCredentialPresentation(receiptCredentialPresentation.serialize().asData, tx: tx)
         }
         return receiptCredentialPresentation

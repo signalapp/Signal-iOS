@@ -373,7 +373,7 @@ extension OWSContactsManager: ContactManager {
                     owsFailDebug("Missing group thread")
                     continue
                 }
-                if profileManager.isGroupId(inProfileWhitelist: groupThread.groupId, transaction: tx) {
+                if SSKEnvironment.shared.profileManagerRef.isGroupId(inProfileWhitelist: groupThread.groupId, transaction: tx) {
                     return true
                 }
             }
@@ -393,7 +393,7 @@ extension OWSContactsManager: ContactManager {
         }
         let result: Bool = {
             for groupMember in groupThread.groupMembership.fullMembers {
-                if profileManager.isUser(inProfileWhitelist: groupMember, transaction: tx) {
+                if SSKEnvironment.shared.profileManagerRef.isUser(inProfileWhitelist: groupMember, transaction: tx) {
                     return true
                 }
             }
@@ -462,7 +462,7 @@ extension OWSContactsManager: ContactManager {
         }
         swiftValues.skipContactAvatarBlurByServiceIdStore.setBool(true, key: storeKey, transaction: tx)
         if let contactThread = TSContactThread.getWithContactAddress(address, transaction: tx) {
-            databaseStorage.touch(thread: contactThread, shouldReindex: false, transaction: tx)
+            SSKEnvironment.shared.databaseStorageRef.touch(thread: contactThread, shouldReindex: false, transaction: tx)
         }
         tx.addAsyncCompletionOffMain {
             NotificationCenter.default.postNotificationNameAsync(
@@ -491,7 +491,7 @@ extension OWSContactsManager: ContactManager {
             key: groupId.hexadecimalString,
             transaction: transaction
         )
-        databaseStorage.touch(thread: groupThread, shouldReindex: false, transaction: transaction)
+        SSKEnvironment.shared.databaseStorageRef.touch(thread: groupThread, shouldReindex: false, transaction: transaction)
 
         transaction.addAsyncCompletionOffMain {
             NotificationCenter.default.postNotificationNameAsync(Self.skipGroupAvatarBlurDidChange,
@@ -576,7 +576,7 @@ extension OWSContactsManager: ContactManager {
                   return nil
               }
 
-        if let avatarData = profileManagerImpl.profileAvatarData(for: address, transaction: transaction),
+        if let avatarData = SSKEnvironment.shared.profileManagerImplRef.profileAvatarData(for: address, transaction: transaction),
            let validData = validateIfNecessary(avatarData) {
             return validData
         }
@@ -701,7 +701,7 @@ extension OWSContactsManager: ContactManager {
     private func buildSignalAccountsAndUpdatePersistedState(for fetchedSystemContacts: FetchedSystemContacts) {
         assertOnQueue(swiftValues.intersectionQueue)
 
-        let (oldSignalAccounts, newSignalAccounts) = databaseStorage.read { transaction in
+        let (oldSignalAccounts, newSignalAccounts) = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             let oldSignalAccounts = SignalAccount.anyFetchAll(transaction: transaction)
             let newSignalAccounts = buildSignalAccounts(for: fetchedSystemContacts, transaction: transaction)
             return (oldSignalAccounts, newSignalAccounts)
@@ -759,7 +759,7 @@ extension OWSContactsManager: ContactManager {
         }
 
         // Update cached SignalAccounts on disk
-        databaseStorage.write { tx in
+        SSKEnvironment.shared.databaseStorageRef.write { tx in
             for (signalAccountToRemove, signalAccountToInsert) in signalAccountChanges {
                 let oldSignalAccount = signalAccountToRemove.flatMap {
                     SignalAccount.anyFetch(uniqueId: $0.uniqueId, transaction: tx)
@@ -782,7 +782,7 @@ extension OWSContactsManager: ContactManager {
 
             // Add system contacts to the profile whitelist immediately so that they do
             // not see the "message request" UI.
-            profileManager.addUsers(
+            SSKEnvironment.shared.profileManagerRef.addUsers(
                 toProfileWhitelist: newSignalAccountsMap.values.map { $0.recipientAddress },
                 userProfileWriter: .systemContactsFetch,
                 transaction: tx
@@ -833,14 +833,14 @@ extension OWSContactsManager: ContactManager {
             contentsOf: allSignalAccountsBeforeFetch.keys.lazy.compactMap { $0 }
         )
 
-        let updatedRecipientUniqueIds = databaseStorage.read { tx in
+        let updatedRecipientUniqueIds = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return phoneNumbersToUpdateInStorageService.compactMap {
                 let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
                 return recipientDatabaseTable.fetchRecipient(phoneNumber: $0, transaction: tx.asV2Read)?.uniqueId
             }
         }
 
-        storageServiceManager.recordPendingUpdates(updatedRecipientUniqueIds: updatedRecipientUniqueIds)
+        SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(updatedRecipientUniqueIds: updatedRecipientUniqueIds)
     }
 
     private func updatePhoneNumberVisibilityIfNeeded(
@@ -862,7 +862,7 @@ extension OWSContactsManager: ContactManager {
         // Tell the cache to refresh its state for this recipient. It will check
         // whether or not the number should be visible based on this state and the
         // state of system contacts.
-        signalServiceAddressCache.updateRecipient(recipient, tx: tx)
+        SSKEnvironment.shared.signalServiceAddressCacheRef.updateRecipient(recipient, tx: tx)
     }
 
     public func didUpdateSignalAccounts(transaction: SDSAnyWriteTransaction) {
@@ -924,7 +924,7 @@ extension OWSContactsManager: ContactManager {
         let localNumber = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
         let fetchedSystemContacts = FetchedSystemContacts.parseContacts(
             addressBookContacts ?? [],
-            phoneNumberUtil: NSObject.phoneNumberUtil,
+            phoneNumberUtil: SSKEnvironment.shared.phoneNumberUtilRef,
             localPhoneNumber: localNumber
         )
         setFetchedSystemContacts(fetchedSystemContacts)
@@ -943,7 +943,7 @@ extension OWSContactsManager: ContactManager {
     ) {
         let systemContactPhoneNumbers = fetchedSystemContacts.phoneNumberToContactRef.keys
 
-        let (intersectionMode, signalRecipientPhoneNumbers) = databaseStorage.read { tx in
+        let (intersectionMode, signalRecipientPhoneNumbers) = SSKEnvironment.shared.databaseStorageRef.read { tx in
             let intersectionMode = fetchIntersectionMode(isUserRequested: isUserRequested, tx: tx)
             let signalRecipientPhoneNumbers = SignalRecipient.fetchAllPhoneNumbers(tx: tx)
             return (intersectionMode, signalRecipientPhoneNumbers)
@@ -970,7 +970,7 @@ extension OWSContactsManager: ContactManager {
         intersectionPromise.done(on: swiftValues.intersectionQueue) { intersectedRecipients in
             // Mark it as complete. If the app crashes after this transaction, we'll
             // avoid a redundant (expensive) intersection when we retry.
-            self.databaseStorage.write { tx in
+            SSKEnvironment.shared.databaseStorageRef.write { tx in
                 self.didFinishIntersection(
                     mode: intersectionMode,
                     phoneNumbers: phoneNumbersToIntersect,
@@ -981,7 +981,7 @@ extension OWSContactsManager: ContactManager {
             // Save names to the database before generating notifications.
             self.buildSignalAccountsAndUpdatePersistedState(for: fetchedSystemContacts)
 
-            try self.databaseStorage.write { tx in
+            try SSKEnvironment.shared.databaseStorageRef.write { tx in
                 self.postJoinNotificationsIfNeeded(
                     addressBookPhoneNumbers: systemContactPhoneNumbers,
                     phoneNumberRegistrationStatus: signalRecipientPhoneNumbers,
@@ -1011,7 +1011,7 @@ extension OWSContactsManager: ContactManager {
             keyValueStore.setBool(true, key: Constants.didIntersectAddressBook, transaction: tx)
             return
         }
-        guard Self.preferences.shouldNotifyOfNewAccounts(transaction: tx) else {
+        guard SSKEnvironment.shared.preferencesRef.shouldNotifyOfNewAccounts(transaction: tx) else {
             return
         }
         let phoneNumbers = Set(addressBookPhoneNumbers.lazy.map { $0.rawValue.stringValue })
@@ -1088,7 +1088,7 @@ extension OWSContactsManager: ContactManager {
         if phoneNumbers.isEmpty {
             return .value([])
         }
-        return contactDiscoveryManager.lookUp(
+        return SSKEnvironment.shared.contactDiscoveryManagerRef.lookUp(
             phoneNumbers: phoneNumbers,
             mode: .contactIntersection
         ).recover(on: DispatchQueue.global()) { (error) -> Promise<Set<SignalRecipient>> in
@@ -1188,7 +1188,7 @@ extension OWSContactsManager: ContactManager {
             return systemContactNames(for: addresses, tx: transaction)
                 .map { $0.map { .systemContactName($0) } }
         }.refine { addresses -> [DisplayName?] in
-            return profileManager.fetchUserProfiles(for: Array(addresses), tx: transaction)
+            return SSKEnvironment.shared.profileManagerRef.fetchUserProfiles(for: Array(addresses), tx: transaction)
                 .map { $0?.nameComponents.map { .profileName($0) } }
         }.refine { addresses -> [DisplayName?] in
             return addresses.map { $0.e164.map { .phoneNumber($0) } }

@@ -77,13 +77,13 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
     }
 
     public override func didReportError(_ error: Error) {
-        self.databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             self.durableOperationDelegate?.durableOperation(self, didReportError: error, transaction: transaction)
         }
     }
 
     public override func didFail(error: Error) {
-        self.databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             self.durableOperationDelegate?.durableOperation(self, didFailWithError: error, transaction: transaction)
         }
     }

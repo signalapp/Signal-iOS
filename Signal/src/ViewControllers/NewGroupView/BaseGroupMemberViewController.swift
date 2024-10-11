@@ -173,7 +173,7 @@ extension BaseGroupMemberViewController: MemberViewDelegate {
         guard let phoneNumber = address.phoneNumber, !phoneNumber.isEmpty else {
             return Promise(error: OWSAssertionError("Invalid address: \(address)."))
         }
-        return contactDiscoveryManager.lookUp(phoneNumbers: [phoneNumber], mode: .oneOffUserRequest).asVoid()
+        return SSKEnvironment.shared.contactDiscoveryManagerRef.lookUp(phoneNumbers: [phoneNumber], mode: .oneOffUserRequest).asVoid()
     }
 
     public func memberViewShouldShowMemberCount() -> Bool {

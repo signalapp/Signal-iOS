@@ -48,11 +48,11 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         loadCoordinator.clearUnreadMessagesIndicator()
         inputToolbar?.quotedReplyDraft = nil
 
-        if self.preferences.soundInForeground,
+        if SSKEnvironment.shared.preferencesRef.soundInForeground,
            let soundId = Sounds.systemSoundIDForSound(.standard(.messageSent), quiet: true) {
             AudioServicesPlaySystemSound(soundId)
         }
-        Self.typingIndicatorsImpl.didSendOutgoingMessage(inThread: thread)
+        SSKEnvironment.shared.typingIndicatorsRef.didSendOutgoingMessage(inThread: thread)
     }
 
     private func tryToSendTextMessage(_ messageBody: MessageBody, updateKeyboardState: Bool) {
@@ -104,7 +104,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
 
         let didAddToProfileWhitelist = ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread)
 
-        let editValidationError: EditSendValidationError? = Self.databaseStorage.read { transaction in
+        let editValidationError: EditSendValidationError? = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             if let editTarget = inputToolbar.editTarget {
                 return context.editManager.validateCanSendEdit(
                     targetMessageTimestamp: editTarget.timestamp,
@@ -155,7 +155,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         inputToolbar.clearTextMessage(animated: true)
 
         let thread = self.thread
-        Self.databaseStorage.asyncWrite { transaction in
+        SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
             // Reload a fresh instance of the thread model; our models are not
             // thread-safe, so it wouldn't be safe to update the model in an
             // async write.
@@ -275,7 +275,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
             let currentDraft = inputToolbar.messageBodyForSending
             let quotedReply = inputToolbar.quotedReplyDraft
             let editTarget = inputToolbar.editTarget
-            Self.databaseStorage.asyncWrite { transaction in
+            SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
                 // Reload a fresh instance of the thread model; our models are not
                 // thread-safe, so it wouldn't be safe to update the model in an
                 // async write.
@@ -493,7 +493,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
             return
         }
 
-        if paymentsHelper.isPaymentsVersionOutdated {
+        if SSKEnvironment.shared.paymentsHelperRef.isPaymentsVersionOutdated {
             OWSActionSheets.showPaymentsOutdatedClientSheet(title: .cantSendPayment)
             return
         }
@@ -922,7 +922,7 @@ extension ConversationViewController: SendMediaNavDataSource {
     var sendMediaNavTextInputContextIdentifier: String? { textInputContextIdentifier }
 
     var sendMediaNavRecipientNames: [String] {
-        let displayName = databaseStorage.read { tx in contactsManager.displayName(for: thread, transaction: tx) }
+        let displayName = SSKEnvironment.shared.databaseStorageRef.read { tx in SSKEnvironment.shared.contactManagerRef.displayName(for: thread, transaction: tx) }
         return [displayName]
     }
 

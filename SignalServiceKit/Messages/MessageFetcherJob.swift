@@ -187,7 +187,7 @@ public class MessageFetcherJob: NSObject {
                 let ackBehavior = MessageProcessor.handleMessageProcessingOutcome(error: error)
                 switch ackBehavior {
                 case .shouldAck:
-                    Self.messageFetcherJob.acknowledgeDelivery(envelopeInfo: envelopeInfo)
+                    SSKEnvironment.shared.messageFetcherJobRef.acknowledgeDelivery(envelopeInfo: envelopeInfo)
                 case .shouldNotAck(let error):
                     Logger.info("Skipping ack of message with timestamp \(envelopeInfo.timestamp) because of error: \(error)")
                 }
@@ -195,7 +195,7 @@ public class MessageFetcherJob: NSObject {
         }
 
         for job in envelopeJobs {
-            messageProcessor.processReceivedEnvelope(
+            SSKEnvironment.shared.messageProcessorRef.processReceivedEnvelope(
                 job.encryptedEnvelope,
                 serverDeliveryTimestamp: batch.serverDeliveryTimestamp,
                 envelopeSource: .rest,
@@ -235,7 +235,7 @@ public class MessageFetcherJob: NSObject {
         // will complete before the queue is empty).
         // This is tricky since there are multiple variables (e.g. network
         // perf affects fetch, CPU perf affects processing).
-        let queuedContentCount = messageProcessor.queuedContentCount
+        let queuedContentCount = SSKEnvironment.shared.messageProcessorRef.queuedContentCount
         let pendingAcksCount = MessageAckOperation.pendingAcksCount
         let incompleteEnvelopeCount = queuedContentCount + pendingAcksCount
         let maxIncompleteEnvelopeCount: Int = 20
@@ -330,7 +330,7 @@ public class MessageFetcherJob: NSObject {
 
     private func fetchBatchViaRest() async throws -> RESTBatch {
         let request = OWSRequestFactory.getMessagesRequest()
-        let response = try await networkManager.makePromise(request: request).awaitable()
+        let response = try await SSKEnvironment.shared.networkManagerRef.makePromise(request: request).awaitable()
         guard let json = response.responseBodyJson else {
             throw OWSAssertionError("Missing or invalid JSON")
         }
@@ -455,7 +455,7 @@ private class MessageAckOperation: OWSOperation {
 
         let inFlightAckId = self.inFlightAckId
         firstly(on: DispatchQueue.global()) {
-            self.networkManager.makePromise(request: request)
+            SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
         }.done(on: DispatchQueue.global()) { _ in
             Self.didAck(inFlightAckId: inFlightAckId)
             self.reportSuccess()

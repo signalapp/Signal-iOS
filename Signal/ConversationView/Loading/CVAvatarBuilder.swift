@@ -41,10 +41,10 @@ public class CVAvatarBuilder: Dependencies {
         if let dataSource = cache[cacheKey] {
             return dataSource
         }
-        guard let avatar = Self.avatarBuilder.avatarImage(forAddress: address,
-                                                          diameterPoints: diameterPoints,
-                                                          localUserDisplayMode: localUserDisplayMode,
-                                                          transaction: transaction) else {
+        guard let avatar = SSKEnvironment.shared.avatarBuilderRef.avatarImage(forAddress: address,
+                                                                              diameterPoints: diameterPoints,
+                                                                              localUserDisplayMode: localUserDisplayMode,
+                                                                              transaction: transaction) else {
             owsFailDebug("Could build avatar image.")
             return nil
         }
@@ -52,7 +52,7 @@ public class CVAvatarBuilder: Dependencies {
         let badgeImage: UIImage?
         if includingBadge {
             // TODO: Badges — Unify with ConversationAvatarDataSource
-            let userProfile = profileManager.getUserProfile(for: address, transaction: transaction)
+            let userProfile = SSKEnvironment.shared.profileManagerRef.getUserProfile(for: address, transaction: transaction)
             let sizeClass = ConversationAvatarView.Configuration.SizeClass(avatarDiameter: diameterPoints)
             let badge = userProfile?.primaryBadge?.fetchBadgeContent(transaction: transaction)
             if let badgeAssets = badge?.assets {
@@ -74,9 +74,9 @@ public class CVAvatarBuilder: Dependencies {
         if let dataSource = cache[cacheKey] {
             return dataSource
         }
-        guard let avatar = Self.avatarBuilder.avatarImage(forGroupThread: groupThread,
-                                                          diameterPoints: diameterPoints,
-                                                          transaction: transaction) else {
+        guard let avatar = SSKEnvironment.shared.avatarBuilderRef.avatarImage(forGroupThread: groupThread,
+                                                                              diameterPoints: diameterPoints,
+                                                                              transaction: transaction) else {
             owsFailDebug("Could build avatar image.")
             return nil
         }

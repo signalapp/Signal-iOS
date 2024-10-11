@@ -15,30 +15,30 @@ class DebugUIProfile: DebugUIPage, Dependencies {
     func section(thread aThread: TSThread?) -> OWSTableSection? {
         let sectionItems = [
             OWSTableItem(title: "Clear Profile Whitelist") {
-                Self.profileManagerImpl.clearProfileWhitelist()
+                SSKEnvironment.shared.profileManagerImplRef.clearProfileWhitelist()
             },
             OWSTableItem(title: "Log Profile Whitelist") {
-                Self.profileManagerImpl.logProfileWhitelist()
+                SSKEnvironment.shared.profileManagerImplRef.logProfileWhitelist()
             },
             OWSTableItem(title: "Log Profile Key") {
-                let localProfileKey = Self.profileManagerImpl.localProfileKey
+                let localProfileKey = SSKEnvironment.shared.profileManagerImplRef.localProfileKey
                 Logger.info("localProfileKey: \(localProfileKey.keyData.hexadecimalString)")
             },
             OWSTableItem(title: "Regenerate Profile/ProfileKey") {
-                Self.profileManagerImpl.debug_regenerateLocalProfileWithSneakyTransaction()
+                SSKEnvironment.shared.profileManagerImplRef.debug_regenerateLocalProfileWithSneakyTransaction()
             },
             OWSTableItem(title: "Send Profile Key Message") { [weak self] in
-                guard let self else { return }
+                guard self != nil else { return }
                 guard let aThread = aThread else {
                     owsFailDebug("Missing thread.")
                     return
                 }
 
-                let message = Self.databaseStorage.read { OWSProfileKeyMessage(thread: aThread, transaction: $0) }
+                let message = SSKEnvironment.shared.databaseStorageRef.read { OWSProfileKeyMessage(thread: aThread, transaction: $0) }
                 Task {
                     do {
                         let preparedMessage = PreparedOutgoingMessage.preprepared(transientMessageWithoutAttachments: message)
-                        try await self.messageSender.sendMessage(preparedMessage)
+                        try await SSKEnvironment.shared.messageSenderRef.sendMessage(preparedMessage)
                         Logger.info("Successfully sent profile key message to thread: \(String(describing: aThread))")
                     } catch {
                         owsFailDebug("Failed to send profile key message to thread: \(String(describing: aThread))")
@@ -46,7 +46,7 @@ class DebugUIProfile: DebugUIPage, Dependencies {
                 }
             },
             OWSTableItem(title: "Re-upload Profile") {
-                Self.profileManagerImpl.reuploadLocalProfile(authedAccount: .implicit())
+                SSKEnvironment.shared.profileManagerImplRef.reuploadLocalProfile(authedAccount: .implicit())
             },
             OWSTableItem(title: "Fetch Local Profile") {
                 Task {

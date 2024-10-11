@@ -124,7 +124,7 @@ class DebugUIGroupsV2: DebugUIPage, Dependencies {
                     aci: otherUserAci,
                     role: .administrator
                 )
-                self.databaseStorage.write { transaction in
+                SSKEnvironment.shared.databaseStorageRef.write { transaction in
                     GroupManager.localLeaveGroupOrDeclineInvite(groupThread: changeMemberThread, tx: transaction)
                 }
                 guard let missingLocalUserGroupModelV2 = changeMemberThread.groupModel as? TSGroupModelV2 else {
@@ -163,7 +163,7 @@ class DebugUIGroupsV2: DebugUIPage, Dependencies {
             return try! GroupV2ContextInfo.deriveFrom(masterKeyData: Randomness.generateRandomBytes(32))
         }
 
-        databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             messages.append(OWSDynamicOutgoingMessage(thread: contactThread, transaction: transaction) {
                 // Real and valid group id/master key/secret params.
                 // Other user is not in the group.
@@ -342,7 +342,7 @@ class DebugUIGroupsV2: DebugUIPage, Dependencies {
 
         for message in messages {
             let preparedMessage = PreparedOutgoingMessage.preprepared(transientMessageWithoutAttachments: message)
-            Task { try await self.messageSender.sendMessage(preparedMessage) }
+            Task { try await SSKEnvironment.shared.messageSenderRef.sendMessage(preparedMessage) }
         }
     }
 
@@ -357,7 +357,7 @@ class DebugUIGroupsV2: DebugUIPage, Dependencies {
         let masterKey = try! groupModelV2.masterKey().serialize().asData
         let groupContextInfo = try! GroupV2ContextInfo.deriveFrom(masterKeyData: masterKey)
 
-        databaseStorage.read { transaction in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             messages.append(OWSDynamicOutgoingMessage(thread: groupThread, transaction: transaction) {
                 // Real and valid group id/master key/secret params.
                 let masterKeyData = groupContextInfo.masterKeyData
@@ -399,7 +399,7 @@ class DebugUIGroupsV2: DebugUIPage, Dependencies {
 
         for message in messages {
             let preparedMessage = PreparedOutgoingMessage.preprepared(transientMessageWithoutAttachments: message)
-            Task { try await self.messageSender.sendMessage(preparedMessage) }
+            Task { try await SSKEnvironment.shared.messageSenderRef.sendMessage(preparedMessage) }
         }
     }
 
@@ -427,7 +427,7 @@ class DebugUIGroupsV2: DebugUIPage, Dependencies {
         let groupSecretParamsData = groupModelV2.secretParamsData
         Task {
             do {
-                _ = try await self.groupV2Updates.tryToRefreshV2GroupUpToCurrentRevisionImmediately(
+                _ = try await SSKEnvironment.shared.groupV2UpdatesRef.tryToRefreshV2GroupUpToCurrentRevisionImmediately(
                     groupId: groupId,
                     groupSecretParams: try GroupSecretParams(contents: [UInt8](groupSecretParamsData))
                 )

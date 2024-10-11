@@ -395,7 +395,7 @@ public class Sounds: Dependencies {
     }
 
     public static var globalNotificationSound: Sound {
-        let soundId = databaseStorage.read { transaction in
+        let soundId = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return keyValueStore.getUInt(soundsStorageGlobalNotificationKey, transaction: transaction)
         }
         guard let soundId else { return defaultNotificationSound }
@@ -403,7 +403,7 @@ public class Sounds: Dependencies {
     }
 
     public static func setGlobalNotificationSound(_ sound: Sound) {
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             setGlobalNotificationSound(sound, transaction: transaction)
         }
     }
@@ -446,7 +446,7 @@ public class Sounds: Dependencies {
     }
 
     public static func notificationSoundWithSneakyTransaction(forThreadUniqueId threadUniqueId: String) -> Sound {
-        let soundId = databaseStorage.read { transaction in
+        let soundId = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return keyValueStore.getUInt(threadUniqueId, transaction: transaction)
         }
         guard let soundId else { return globalNotificationSound }
@@ -454,7 +454,7 @@ public class Sounds: Dependencies {
     }
 
     public static func setNotificationSound(_ sound: Sound, forThread thread: TSThread) {
-        databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             keyValueStore.setUInt(sound.id, key: thread.uniqueId, transaction: transaction)
         }
     }
@@ -504,7 +504,7 @@ public class Sounds: Dependencies {
         let allCustomSounds = CustomSound.all
         guard !allCustomSounds.isEmpty else { return }
 
-        let allInUseSoundIds = databaseStorage.read { transaction in
+        let allInUseSoundIds = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return Set(keyValueStore.allValues(transaction: transaction) as! [UInt])
         }
 

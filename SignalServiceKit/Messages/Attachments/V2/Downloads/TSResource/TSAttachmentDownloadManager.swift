@@ -54,15 +54,15 @@ public class TSAttachmentDownloadManager: NSObject {
 
         // If a thread was newly whitelisted, try and start any
         // downloads that were pending on a message request.
-        let requestsToEnqueue = Self.databaseStorage.read { transaction -> [(messageId: String, jobRequest: MessageJobRequest)] in
+        let requestsToEnqueue = SSKEnvironment.shared.databaseStorageRef.read { transaction -> [(messageId: String, jobRequest: MessageJobRequest)] in
             guard let whitelistedThread = ({ () -> TSThread? in
                 if let address = notification.userInfo?[UserProfileNotifications.profileAddressKey] as? SignalServiceAddress,
                    address.isValid,
-                   Self.profileManager.isUser(inProfileWhitelist: address, transaction: transaction) {
+                   SSKEnvironment.shared.profileManagerRef.isUser(inProfileWhitelist: address, transaction: transaction) {
                     return TSContactThread.getWithContactAddress(address, transaction: transaction)
                 }
                 if let groupId = notification.userInfo?[UserProfileNotifications.profileGroupIdKey] as? Data,
-                   Self.profileManager.isGroupId(inProfileWhitelist: groupId, transaction: transaction) {
+                   SSKEnvironment.shared.profileManagerRef.isGroupId(inProfileWhitelist: groupId, transaction: transaction) {
                     return TSGroupThread.fetch(groupId: groupId, transaction: transaction)
                 }
                 return nil
@@ -89,7 +89,7 @@ public class TSAttachmentDownloadManager: NSObject {
     private func startPendingMessageDownloads() {
         owsAssertDebug(CurrentAppContext().isMainApp)
 
-        let (pendingMessageDownloads, pendingStoryMessageDownloads) = databaseStorage.read { transaction in
+        let (pendingMessageDownloads, pendingStoryMessageDownloads) = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             (
                 Self.pendingMessageDownloads.allUIntValuesMap(transaction: transaction),
                 Self.pendingStoryMessageDownloads.allUIntValuesMap(transaction: transaction)
@@ -98,7 +98,7 @@ public class TSAttachmentDownloadManager: NSObject {
 
         guard !pendingMessageDownloads.isEmpty || !pendingStoryMessageDownloads.isEmpty else { return }
 
-        databaseStorage.asyncWrite { transaction in
+        SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
             self.processPendingMessages(
                 pendingMessageDownloads,
                 store: Self.pendingMessageDownloads,
@@ -292,7 +292,7 @@ public class TSAttachmentDownloadManager: NSObject {
     }
 
     private func prepareDownload(job: Job) -> PrepareDownloadResult {
-        return Self.databaseStorage.write { (transaction) -> PrepareDownloadResult in
+        return SSKEnvironment.shared.databaseStorageRef.write { (transaction) -> PrepareDownloadResult in
             // Fetch latest to ensure we don't overwrite an attachment stream, resurrect an attachment, etc.
             guard let attachment = job.loadLatestAttachment(transaction: transaction) else {
                 // This isn't necessarily a bug.  For example:
@@ -462,7 +462,7 @@ public class TSAttachmentDownloadManager: NSObject {
         // check if the thread is whitelisted. We know we just received a message.
         // TODO: Mark the thread visible before this point to share more logic.
         guard thread.shouldThreadBeVisible else {
-            return !Self.profileManager.isThread(inProfileWhitelist: thread, transaction: tx)
+            return !SSKEnvironment.shared.profileManagerRef.isThread(inProfileWhitelist: thread, transaction: tx)
         }
 
         return ThreadFinder().hasPendingMessageRequest(thread: thread, transaction: tx)
@@ -518,7 +518,7 @@ public class TSAttachmentDownloadManager: NSObject {
             }
         }
 
-        Self.databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             guard let attachmentPointer = job.loadLatestAttachment(transaction: transaction) as? TSAttachmentPointer else {
                 Logger.warn("Attachment pointer no longer exists.")
                 return
@@ -538,7 +538,7 @@ public class TSAttachmentDownloadManager: NSObject {
     private func downloadDidFail(error: Error, job: Job) {
         Logger.error("Attachment download failed with error: \(error)")
 
-        Self.databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             // Fetch latest to ensure we don't overwrite an attachment stream, resurrect an attachment, etc.
             guard let attachmentPointer = job.loadLatestAttachment(transaction: transaction) as? TSAttachmentPointer else {
                 Logger.warn("Attachment pointer no longer exists.")
@@ -569,7 +569,7 @@ public class TSAttachmentDownloadManager: NSObject {
         case .messageAttachment(attachmentId: _, messageUniqueId: let messageUniqueId):
             touchLatestVersionOfMessage(uniqueId: messageUniqueId, tx: tx)
         case .storyMessageAttachment(attachmentId: _, storyMessage: let storyMessage):
-            databaseStorage.touch(storyMessage: storyMessage, transaction: tx)
+            SSKEnvironment.shared.databaseStorageRef.touch(storyMessage: storyMessage, transaction: tx)
         case .contactSync:
             break
         }
@@ -583,7 +583,7 @@ public class TSAttachmentDownloadManager: NSObject {
         }
         // We need to re-index as we may have just downloaded an attachment
         // that affects index content (e.g. oversize text attachment).
-        Self.databaseStorage.touch(interaction: latestMessage, shouldReindex: true, transaction: tx)
+        SSKEnvironment.shared.databaseStorageRef.touch(interaction: latestMessage, shouldReindex: true, transaction: tx)
     }
 
     // MARK: - Cancellation
@@ -760,7 +760,7 @@ public extension TSAttachmentDownloadManager {
             return
         }
 
-        let jobRequest = Self.databaseStorage.read { tx in
+        let jobRequest = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return buildMessageJobRequest(
                 for: messageId,
                 attachmentGroup: attachmentGroup,
@@ -775,11 +775,11 @@ public extension TSAttachmentDownloadManager {
 
         enqueueMessageJobRequest(jobRequest, messageId: messageId)
 
-        Self.databaseStorage.asyncWrite { tx in
+        SSKEnvironment.shared.databaseStorageRef.asyncWrite { tx in
             guard let message = TSMessage.anyFetchMessage(uniqueId: messageId, transaction: tx) else {
                 return
             }
-            Self.databaseStorage.touch(
+            SSKEnvironment.shared.databaseStorageRef.touch(
                 interaction: message,
                 shouldReindex: false,
                 transaction: tx
@@ -892,7 +892,7 @@ public extension TSAttachmentDownloadManager {
         guard !CurrentAppContext().isRunningTests else {
             return
         }
-        let bundle: (StoryMessage, StoryMessageJobRequest)? = Self.databaseStorage.read { transaction in
+        let bundle: (StoryMessage, StoryMessageJobRequest)? = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             guard let message = StoryMessage.anyFetch(uniqueId: storyMessageId, transaction: transaction) else {
                 Logger.warn("Failed to fetch StoryMessage to download attachments")
                 return nil
@@ -915,8 +915,8 @@ public extension TSAttachmentDownloadManager {
 
         self.enqueueJobs(jobRequest: jobRequest)
 
-        Self.databaseStorage.asyncWrite { transaction in
-            Self.databaseStorage.touch(storyMessage: storyMessage, transaction: transaction)
+        SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
+            SSKEnvironment.shared.databaseStorageRef.touch(storyMessage: storyMessage, transaction: transaction)
         }
 
         Promise.when(
@@ -996,7 +996,7 @@ public extension TSAttachmentDownloadManager {
         messageId: String,
         attachmentStream: TSAttachmentStream
     ) {
-        Self.databaseStorage.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
             guard let message = TSMessage.anyFetchMessage(uniqueId: messageId, transaction: transaction) else {
                 Logger.warn("Missing message.")
                 return
@@ -1092,7 +1092,7 @@ public extension TSAttachmentDownloadManager {
 
         firstly(on: schedulers.global()) { () -> Promise<OWSUrlDownloadResponse> in
             let attachmentPointer = downloadState.attachmentPointer
-            let urlSession = Self.signalService.urlSessionForCdn(
+            let urlSession = SSKEnvironment.shared.signalServiceRef.urlSessionForCdn(
                 cdnNumber: attachmentPointer.cdnNumber,
                 maxResponseSize: maxDownloadSizeBytes
             )
@@ -1232,7 +1232,7 @@ public extension TSAttachmentDownloadManager {
         Self.serialDecryptionQueue.async {
             autoreleasepool {
                 do {
-                    let attachmentStream = databaseStorage.read { transaction in
+                    let attachmentStream = SSKEnvironment.shared.databaseStorageRef.read { transaction in
                         TSAttachmentStream(pointer: attachmentPointer, transaction: transaction)
                     }
 
