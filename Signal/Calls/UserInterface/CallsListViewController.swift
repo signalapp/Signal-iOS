@@ -574,7 +574,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             viewModelLoader.dropCalls(matching: callRecordIds, tx: tx)
         }
 
-        updateSnapshot(animated: true)
+        updateSnapshot(updatedReferences: [], animated: true)
     }
 
     /// When the status of a call record changes, we'll reload the row it
@@ -877,14 +877,16 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         animated: Bool,
         forceUpdateSnapshot: Bool = false
     ) {
-        let shouldUpdateSnapshot = deps.db.read { tx in
+        let (shouldUpdateSnapshot, updatedReferences) = deps.db.read { tx in
             return viewModelLoader.loadCallHistoryItemReferences(direction: loadDirection, tx: tx)
         }
 
-        guard forceUpdateSnapshot || shouldUpdateSnapshot else { return }
+        guard forceUpdateSnapshot || shouldUpdateSnapshot || !updatedReferences.isEmpty else {
+            return
+        }
 
         DispatchQueue.main.async {
-            self.updateSnapshot(animated: animated)
+            self.updateSnapshot(updatedReferences: updatedReferences, animated: animated)
             // Add the search bar after loading table content the first time so
             // that it is collapsed by default.
             self.setSearchControllerIfNeeded()
@@ -1441,20 +1443,41 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         return snapshot
     }
 
-    private func updateSnapshot(animated: Bool) {
-        dataSource.apply(getSnapshot(), animatingDifferences: animated)
+    private func updateSnapshot(updatedReferences: Set<CallViewModel.Reference>, animated: Bool) {
+        var snapshot = getSnapshot()
+        if #available(iOS 18.0, *) {
+            snapshot.reloadItems(updatedReferences.map { .callViewModelReference($0) })
+            dataSource.apply(snapshot, animatingDifferences: animated)
+        } else {
+            // On iOS 17 and lower, moving & reloading a row at the same time may
+            // result in the wrong row being reloaded. Mitigate this by scheduling
+            // these as two separate operations.
+            dataSource.apply(snapshot, animatingDifferences: animated)
+            if !updatedReferences.isEmpty {
+                snapshot.reloadItems(updatedReferences.map { .callViewModelReference($0) })
+                dataSource.apply(snapshot, animatingDifferences: animated)
+            }
+        }
         updateEmptyStateMessage()
         cancelMultiselectIfEmpty()
     }
 
     /// Reload any rows containing one of the given call record IDs.
     private func reloadRows(callRecordIds callRecordIdsToReload: [CallRecord.ID]) {
+        if callRecordIdsToReload.isEmpty {
+            return
+        }
+
         /// Invalidate the view models, so when the data source reloads the rows,
         /// it'll reflect the new underlying state for that row.
         let referencesToReload = viewModelLoader.invalidate(
             callLinkRowIds: [],
             callRecordIds: Set(callRecordIdsToReload)
         )
+
+        if referencesToReload.isEmpty {
+            return
+        }
 
         if DebugFlags.internalLogging {
             logger.info("Reloading \(referencesToReload.count) rows.")
@@ -2127,11 +2150,7 @@ extension CallsListViewController: DatabaseChangeDelegate {
         }
         reloadUpcomingCallLinks()
         let updatedReferences = viewModelLoader.invalidate(callLinkRowIds: rowIds, callRecordIds: [])
-        var snapshot = getSnapshot()
-        snapshot.reloadItems(updatedReferences.map { .callViewModelReference($0) })
-        dataSource.apply(snapshot, animatingDifferences: true)
-        updateEmptyStateMessage()
-        cancelMultiselectIfEmpty()
+        updateSnapshot(updatedReferences: updatedReferences, animated: true)
     }
 
     func databaseChangesDidReset() {}

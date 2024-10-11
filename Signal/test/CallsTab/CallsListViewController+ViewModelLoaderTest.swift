@@ -88,7 +88,10 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
     }
 
     private func loadMore(direction: ViewModelLoader.LoadDirection) -> Bool {
-        return mockDB.read { viewModelLoader.loadCallHistoryItemReferences(direction: direction, tx: $0) }
+        return mockDB.read { tx in
+            let (hasChanges, _) = viewModelLoader.loadCallHistoryItemReferences(direction: direction, tx: tx)
+            return hasChanges
+        }
     }
 
     private func assertCached(loadedViewModelReferenceIndices: Range<Int>) {
