@@ -32,6 +32,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     private let db: any DB
     private var deviceSleepManager: DeviceSleepManager { DeviceSleepManager.shared }
     private var groupCallManager: GroupCallManager { NSObject.groupCallManager }
+    private var messageSenderJobQueue: MessageSenderJobQueue { SSKEnvironment.shared.messageSenderJobQueueRef }
     private var reachabilityManager: SSKReachabilityManager { NSObject.reachabilityManager }
 
     public var callUIAdapter: CallUIAdapter
@@ -50,7 +51,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         return GroupCallAccessoryMessageHandler(
             databaseStorage: databaseStorage,
             groupCallRecordManager: DependenciesBridge.shared.groupCallRecordManager,
-            messageSenderJobQueue: SSKEnvironment.shared.messageSenderJobQueueRef
+            messageSenderJobQueue: messageSenderJobQueue
         )
     }()
 
@@ -213,6 +214,8 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             self.adHocCallStateObserver = AdHocCallStateObserver(
                 callLinkCall: call,
                 adHocCallRecordManager: adHocCallRecordManager,
+                callLinkStore: callLinkStore,
+                messageSenderJobQueue: messageSenderJobQueue,
                 db: db
             )
             call.addObserver(self, syncStateImmediately: true)

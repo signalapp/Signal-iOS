@@ -714,6 +714,7 @@
 		50BF510E2BB2033800C2C309 /* RecipientPickerViewControllerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 509913BD2913274100F34F8E /* RecipientPickerViewControllerTest.swift */; };
 		50BF51102BB2035400C2C309 /* UIStackView+SignalUITest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C45D9329CB93E200B2CD2D /* UIStackView+SignalUITest.swift */; };
 		50C38CAD2A8EB2610030A731 /* TimeGatedBatchTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C38CAC2A8EB2610030A731 /* TimeGatedBatchTest.swift */; };
+		50C6677A2CB88DA80033637E /* CallLinkUpdateMessageSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C667792CB88DA80033637E /* CallLinkUpdateMessageSender.swift */; };
 		50C831762BAA3A8000BEBF25 /* CallMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C831752BAA3A8000BEBF25 /* CallMessageHandler.swift */; };
 		50C97C252C3C7F7000A9F384 /* CallEventConversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C97C242C3C7F7000A9F384 /* CallEventConversation.swift */; };
 		50C98A412B69D9340065BD2E /* PhoneNumberVisibilityFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C98A402B69D9340065BD2E /* PhoneNumberVisibilityFetcher.swift */; };
@@ -4325,6 +4326,7 @@
 		50BE67522CAAF7DF006D7BC7 /* AdHocCallRecordManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdHocCallRecordManager.swift; sourceTree = "<group>"; };
 		50BE67542CAAFBE0006D7BC7 /* AdHocCallStateObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdHocCallStateObserver.swift; sourceTree = "<group>"; };
 		50C38CAC2A8EB2610030A731 /* TimeGatedBatchTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeGatedBatchTest.swift; sourceTree = "<group>"; };
+		50C667792CB88DA80033637E /* CallLinkUpdateMessageSender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallLinkUpdateMessageSender.swift; sourceTree = "<group>"; };
 		50C831752BAA3A8000BEBF25 /* CallMessageHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallMessageHandler.swift; sourceTree = "<group>"; };
 		50C97C242C3C7F7000A9F384 /* CallEventConversation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallEventConversation.swift; sourceTree = "<group>"; };
 		50C98A402B69D9340065BD2E /* PhoneNumberVisibilityFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberVisibilityFetcher.swift; sourceTree = "<group>"; };
@@ -10564,6 +10566,7 @@
 				500504AD2CA32969003D27ED /* CallLinkFetchJobRunner.swift */,
 				50733B1D2BAD038D00CEEC1F /* CallLinkManager.swift */,
 				5080301C2C82443D0075153A /* CallLinkStateUpdater.swift */,
+				50C667792CB88DA80033637E /* CallLinkUpdateMessageSender.swift */,
 				D93108082B337A23006A034E /* CallRecordLoader.swift */,
 				88588D25252E59CE00405414 /* CallService.swift */,
 				50DC0D9A2BE56EF0003C57D3 /* CallServiceState.swift */,
@@ -15845,6 +15848,7 @@
 				50733B1E2BAD038D00CEEC1F /* CallLinkManager.swift in Sources */,
 				E1B32F892CAB63E0002141F4 /* CallLinkProfileKeySharingManager.swift in Sources */,
 				50462B2E2C9E441F00FC5920 /* CallLinkStateUpdater.swift in Sources */,
+				50C6677A2CB88DA80033637E /* CallLinkUpdateMessageSender.swift in Sources */,
 				505A254C2CAE7BA700CF4C26 /* CallLinkViewController.swift in Sources */,
 				E1E78CAF2B573BD100B6FC2D /* CallMemberCameraOffView.swift in Sources */,
 				E1E78CAD2B573B5800B6FC2D /* CallMemberChromeOverlayView.swift in Sources */,

@@ -272,7 +272,9 @@ final class CallLinkViewController: OWSTableViewController2 {
                 owsFail("Couldn't create CallLinkRecord: \(error)")
             }
 
-            callLinkAdminManager?.sendCallLinkUpdateMessage(tx: tx)
+            CallLinkUpdateMessageSender(
+                messageSenderJobQueue: SSKEnvironment.shared.messageSenderJobQueueRef
+            ).sendCallLinkUpdateMessage(rootKey: callLink.rootKey, adminPasskey: adminPasskey, tx: tx)
 
             return callLinkRecord.id
         }

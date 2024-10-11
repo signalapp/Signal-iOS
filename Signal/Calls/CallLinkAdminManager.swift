@@ -87,18 +87,6 @@ class CallLinkAdminManager {
         )
     }
 
-    func sendCallLinkUpdateMessage(tx: SDSAnyWriteTransaction) {
-        let localThread = TSContactThread.getOrCreateLocalThread(transaction: tx)!
-        let callLinkUpdate = OutgoingCallLinkUpdateMessage(
-            localThread: localThread,
-            rootKey: rootKey,
-            adminPasskey: adminPasskey,
-            tx: tx
-        )
-        let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueueRef
-        messageSenderJobQueue.add(message: .preprepared(transientMessageWithoutAttachments: callLinkUpdate), transaction: tx)
-    }
-
     // MARK: Private
 
     private func updateCallLink(
@@ -109,7 +97,11 @@ class CallLinkAdminManager {
         let databaseStorage = NSObject.databaseStorage
         _ = try await callLinkStateUpdater.updateExclusively(rootKey: rootKey) { authCredential in
             let callLinkState = try await performUpdate(callLinkManager, authCredential)
-            await databaseStorage.awaitableWrite { tx in self.sendCallLinkUpdateMessage(tx: tx) }
+            await databaseStorage.awaitableWrite { [rootKey, adminPasskey] tx in
+                CallLinkUpdateMessageSender(
+                    messageSenderJobQueue: SSKEnvironment.shared.messageSenderJobQueueRef
+                ).sendCallLinkUpdateMessage(rootKey: rootKey, adminPasskey: adminPasskey, tx: tx)
+            }
             self.callLinkState = callLinkState
             self.didUpdateCallLinkState?(callLinkState)
             self.callNamePublisher.send(callLinkState.name)

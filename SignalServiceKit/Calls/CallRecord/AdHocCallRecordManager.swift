@@ -9,8 +9,7 @@ public import SignalRingRTC
 public protocol AdHocCallRecordManager {
     func createOrUpdateRecord(
         callId: UInt64,
-        rootKey: CallLinkRootKey,
-        initialState: SignalServiceKit.CallLinkState?,
+        callLink: CallLinkRecord,
         status: CallRecord.CallStatus.CallLinkCallStatus,
         timestamp: UInt64,
         shouldSendSyncMessge: Bool,
@@ -41,28 +40,12 @@ final class AdHocCallRecordManagerImpl: AdHocCallRecordManager {
 
     func createOrUpdateRecord(
         callId: UInt64,
-        rootKey: CallLinkRootKey,
-        initialState: SignalServiceKit.CallLinkState?,
+        callLink: CallLinkRecord,
         status: CallRecord.CallStatus.CallLinkCallStatus,
         timestamp: UInt64,
         shouldSendSyncMessge: Bool,
         tx: any DBWriteTransaction
     ) throws {
-        guard FeatureFlags.callLinkSync else {
-            return
-        }
-
-        var (callLink, inserted) = try callLinkStore.fetchOrInsert(rootKey: rootKey, tx: tx)
-
-        if inserted {
-            if let initialState {
-                callLink.updateState(initialState)
-            } else {
-                callLink.setNeedsFetch()
-            }
-            try callLinkStore.update(callLink, tx: tx)
-        }
-
         // This shouldn't happen (we block joining earlier), but race conditions
         // theoretically allow it, and this is the final point at which we can
         // enforce the invariant that deleted links can't have call records.
@@ -88,6 +71,7 @@ final class AdHocCallRecordManagerImpl: AdHocCallRecordManager {
                 callBeganTimestamp: timestamp
             )
             callRecordStore.insert(callRecord: callRecord, tx: tx)
+            var callLink = callLink
             callLink.didInsertCallRecord()
             try callLinkStore.update(callLink, tx: tx)
 
@@ -144,8 +128,7 @@ final class AdHocCallRecordManagerImpl: AdHocCallRecordManager {
             if shouldObserveResult {
                 try self.createOrUpdateRecord(
                     callId: callId,
-                    rootKey: rootKey,
-                    initialState: nil,
+                    callLink: callLinkRecord,
                     status: .generic,
                     timestamp: Date.ows_millisecondTimestamp(),
                     shouldSendSyncMessge: true,
@@ -159,7 +142,7 @@ final class AdHocCallRecordManagerImpl: AdHocCallRecordManager {
 #if TESTABLE_BUILD
 
 final class MockAdHocCallRecordManager: AdHocCallRecordManager {
-    func createOrUpdateRecord(callId: UInt64, rootKey: CallLinkRootKey, initialState: SignalServiceKit.CallLinkState?, status: CallRecord.CallStatus.CallLinkCallStatus, timestamp: UInt64, shouldSendSyncMessge: Bool, tx: any DBWriteTransaction) throws {
+    func createOrUpdateRecord(callId: UInt64, callLink: CallLinkRecord, status: CallRecord.CallStatus.CallLinkCallStatus, timestamp: UInt64, shouldSendSyncMessge: Bool, tx: any DBWriteTransaction) throws {
         fatalError()
     }
 

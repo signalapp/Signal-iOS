@@ -9,7 +9,9 @@ import SignalServiceKit
 
 final class AdHocCallStateObserver {
     private let adHocCallRecordManager: any AdHocCallRecordManager
+    private let callLinkStore: any CallLinkRecordStore
     private let db: any DB
+    private let messageSenderJobQueue: MessageSenderJobQueue
 
     private let callLinkCall: CallLinkCall
 
@@ -30,10 +32,14 @@ final class AdHocCallStateObserver {
     init(
         callLinkCall: CallLinkCall,
         adHocCallRecordManager: any AdHocCallRecordManager,
+        callLinkStore: any CallLinkRecordStore,
+        messageSenderJobQueue: MessageSenderJobQueue,
         db: any DB
     ) {
         self.callLinkCall = callLinkCall
         self.adHocCallRecordManager = adHocCallRecordManager
+        self.callLinkStore = callLinkStore
+        self.messageSenderJobQueue = messageSenderJobQueue
         self.db = db
     }
 
@@ -57,10 +63,20 @@ final class AdHocCallStateObserver {
         self.furthestJoinLevel = joinLevel
         db.write { tx in
             do {
+                guard FeatureFlags.callLinkSync else {
+                    return
+                }
+                let rootKey = callLinkCall.callLink.rootKey
+                var (callLink, inserted) = try callLinkStore.fetchOrInsert(rootKey: rootKey, tx: tx)
+                if inserted {
+                    callLink.updateState(callLinkCall.callLinkState)
+                    try callLinkStore.update(callLink, tx: tx)
+                    let updateSender = CallLinkUpdateMessageSender(messageSenderJobQueue: messageSenderJobQueue)
+                    updateSender.sendCallLinkUpdateMessage(rootKey: rootKey, adminPasskey: nil, tx: SDSDB.shimOnlyBridge(tx))
+                }
                 try adHocCallRecordManager.createOrUpdateRecord(
                     callId: callIdFromEra(eraId),
-                    rootKey: callLinkCall.callLink.rootKey,
-                    initialState: callLinkCall.callLinkState,
+                    callLink: callLink,
                     status: { () -> CallRecord.CallStatus.CallLinkCallStatus in
                         switch joinLevel {
                         case .attempted: return .generic
