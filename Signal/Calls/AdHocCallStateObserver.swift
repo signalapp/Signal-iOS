@@ -76,4 +76,29 @@ final class AdHocCallStateObserver {
             }
         }
     }
+
+    private var activeEraId: String??
+
+    /// Updates `CallLinkRecord.activeCallId` during the call/in the lobby.
+    func checkIfActive() {
+        let ringRtcCall = self.callLinkCall.ringRtcCall
+        guard let peekInfo = ringRtcCall.peekInfo else {
+            return
+        }
+        guard self.activeEraId != .some(peekInfo.eraId) else {
+            return
+        }
+        self.activeEraId = .some(peekInfo.eraId)
+        db.write { tx in
+            do {
+                try adHocCallRecordManager.handlePeekResult(
+                    eraId: peekInfo.eraId,
+                    rootKey: self.callLinkCall.callLink.rootKey,
+                    tx: tx
+                )
+            } catch {
+                owsFailDebug("\(error)")
+            }
+        }
+    }
 }

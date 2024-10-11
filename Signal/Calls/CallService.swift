@@ -979,6 +979,7 @@ extension CallService: GroupCallObserver {
             }
 
         case .callLink:
+            self.adHocCallStateObserver!.checkIfActive()
             self.adHocCallStateObserver!.checkIfJoined()
         }
     }
