@@ -385,11 +385,20 @@ private extension IncomingCallEventSyncMessageManagerImpl {
         case .matchFound(let existingCallRecord):
             // Don't send a sync message for the call delete: we're already
             // reacting to one!
-            interactionDeleteManager.delete(
-                alongsideAssociatedCallRecords: [existingCallRecord],
-                sideEffects: .custom(associatedCallDelete: .localDeleteOnly),
-                tx: tx
-            )
+            switch conversationId {
+            case .thread:
+                interactionDeleteManager.delete(
+                    alongsideAssociatedCallRecords: [existingCallRecord],
+                    sideEffects: .custom(associatedCallDelete: .localDeleteOnly),
+                    tx: tx
+                )
+            case .callLink:
+                callRecordDeleteManager.deleteCallRecords(
+                    [existingCallRecord],
+                    sendSyncMessageOnDelete: false,
+                    tx: tx
+                )
+            }
         case .matchNotFound:
             callRecordDeleteManager.markCallAsDeleted(
                 callId: callId,
