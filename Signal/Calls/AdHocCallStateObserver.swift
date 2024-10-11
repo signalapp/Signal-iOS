@@ -46,10 +46,8 @@ final class AdHocCallStateObserver {
         switch ringRtcCall.localDeviceState.joinState {
         case .notJoined:
             return
-        case .joining:
+        case .pending, .joining:
             joinLevel = .attempted
-        case .pending:
-            return
         case .joined:
             joinLevel = .joined
         }
