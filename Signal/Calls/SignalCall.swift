@@ -12,6 +12,13 @@ enum CallMode {
     case groupThread(GroupThreadCall)
     case callLink(CallLinkCall)
 
+    init(groupCall: GroupCall) {
+        switch groupCall.concreteType {
+        case .groupThread(let call): self = .groupThread(call)
+        case .callLink(let call): self = .callLink(call)
+        }
+    }
+
     var commonState: CommonCallState {
         switch self {
         case .individual(let call):

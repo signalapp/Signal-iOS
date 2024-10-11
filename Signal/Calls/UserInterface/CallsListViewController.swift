@@ -17,7 +17,7 @@ private protocol CallCellDelegate: AnyObject {
 
 // MARK: - CallsListViewController
 
-class CallsListViewController: OWSViewController, HomeTabViewController, CallServiceStateObserver {
+class CallsListViewController: OWSViewController, HomeTabViewController, CallServiceStateObserver, GroupCallObserver {
     private typealias Snapshot = NSDiffableDataSourceSnapshot<Section, RowIdentifier>
 
     private enum Constants {
@@ -487,8 +487,9 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             object: nil
         )
 
-        // No need to sync state since we're still setting up the view.
-        deps.callService.callServiceState.addObserver(self, syncStateImmediately: false)
+        // There might be an ongoing call when the calls tab appears, and if that's
+        // the case, we want to grab its eraId before it ends.
+        deps.callService.callServiceState.addObserver(self, syncStateImmediately: true)
     }
 
     /// A significant time change has occurred, according to the system. We
@@ -590,6 +591,8 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
     // MARK: CallServiceStateObserver
 
+    private var currentCallId: UInt64?
+
     /// When we learn that this device has joined or left a call, we'll reload
     /// any rows related to that call so that we show the latest state in this
     /// view.
@@ -597,11 +600,72 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     /// Recall that any 1:1 call we are not actively joined to has ended, and
     /// that that is not the case for group calls.
     func didUpdateCall(from oldValue: SignalCall?, to newValue: SignalCall?) {
-        let callRecordIdsToReload = [oldValue, newValue].compactMap { call -> CallRecord.ID? in
-            return call?.callRecordId
+        // When a SignalCall ends, reload it if we know its callId.
+        if let oldValue, let callId = self.currentCallId {
+            switch oldValue.mode {
+            case .individual(_):
+                break
+            case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
+                call.removeObserver(self)
+            }
+            reloadRow(forCall: oldValue.mode, callId: callId)
+            self.currentCallId = nil
         }
 
-        reloadRows(callRecordIds: callRecordIdsToReload)
+        // When a SignalCall starts, reload it as soon as we learn its callId.
+        if let newValue {
+            switch newValue.mode {
+            case .individual(let call):
+                if let callId = call.callId {
+                    reloadRow(forCall: newValue.mode, callId: callId)
+                    self.currentCallId = callId
+                } else {
+                    owsFailDebug("Can't start individual calls without callIds.")
+                }
+            case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
+                // We need to fetch the eraId asynchronously, so there's nothing to refresh.
+                call.addObserver(self, syncStateImmediately: true)
+            }
+        }
+    }
+
+    // MARK: GroupCallObserver
+
+    func groupCallPeekChanged(_ call: GroupCall) {
+        guard self.currentCallId == nil, let eraId = call.ringRtcCall.peekInfo?.eraId else {
+            // We've already set it or still don't know it.
+            return
+        }
+        let callId = callIdFromEra(eraId)
+        self.currentCallId = callId
+        reloadRow(forCall: CallMode(groupCall: call), callId: callId)
+    }
+
+    // MARK: Reloading the Current Call
+
+    private func reloadRow(forCall callMode: CallMode, callId: UInt64) {
+        let conversationId: CallRecord.ConversationID
+        switch callMode {
+        case .individual(let call):
+            conversationId = .thread(threadRowId: call.thread.sqliteRowId!)
+        case .groupThread(let call):
+            conversationId = .thread(threadRowId: call.groupThread.sqliteRowId!)
+        case .callLink(let call):
+            // Query the database separately when starting & ending calls because the
+            // row will usually be inserted during the call (ie `rowId` may be nil when
+            // starting the call but nonnil when ending the very same call).
+            let rowId = deps.db.read { tx in try? deps.callLinkStore.fetch(roomId: call.callLink.rootKey.deriveRoomId(), tx: tx)?.id }
+            guard let rowId else {
+                // If you open the lobby for an ongoing call that you've never joined,
+                // we'll call this method after the peek succeeds. However, you haven't
+                // joined the call yet, so there's no calls tab item that needs to be
+                // reloaded to show the "Return" button. If you do join the call, a new row
+                // will be added, and it will be (implicitly re)loaded because it's new.
+                return
+            }
+            conversationId = .callLink(callLinkRowId: rowId)
+        }
+        reloadRows(callRecordIds: [CallRecord.ID(conversationId: conversationId, callId: callId)])
     }
 
     // MARK: - Clear missed calls
@@ -1467,22 +1531,6 @@ private extension SignalCall {
             return individualCall.callId
         case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
             return call.ringRtcCall.peekInfo?.eraId.map { callIdFromEra($0) }
-        }
-    }
-
-    var callRecordId: CallRecord.ID? {
-        guard let callId else { return nil }
-        return CallRecord.ID(conversationId: conversationId, callId: callId)
-    }
-
-    private var conversationId: CallRecord.ConversationID {
-        switch mode {
-        case .individual(let call):
-            return .thread(threadRowId: call.thread.sqliteRowId!)
-        case .groupThread(let call):
-            return .thread(threadRowId: call.groupThread.sqliteRowId!)
-        case .callLink:
-            owsFail("[CallLink] TODO: Can't fetch threadRowId for a CallLink call")
         }
     }
 }
