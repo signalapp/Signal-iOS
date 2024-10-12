@@ -9,7 +9,7 @@ import SignalUI
 
 #if USE_DEBUG_UI
 
-class DebugUIGroupsV2: DebugUIPage, Dependencies {
+class DebugUIGroupsV2: DebugUIPage {
 
     let name = "Groups v2"
 

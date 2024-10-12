@@ -4,7 +4,7 @@
 //
 
 import Foundation
-public import SignalServiceKit
+import SignalServiceKit
 import SignalUI
 
 // Caching builder used for a single CVC load.
@@ -15,7 +15,7 @@ import SignalUI
 //       db transactions and updates.
 //       It might help ensure that CVComponentState equality
 //       works correctly.
-public class CVAvatarBuilder: Dependencies {
+public class CVAvatarBuilder {
 
     private let transaction: SDSAnyReadTransaction
 

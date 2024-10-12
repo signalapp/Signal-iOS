@@ -1356,7 +1356,7 @@ private protocol AmountsDelegate: AnyObject {
 
 // MARK: -
 
-private class Amounts: Dependencies {
+private class Amounts {
 
     weak var delegate: AmountsDelegate?
 

@@ -16,7 +16,7 @@ protocol StoryListDataSourceDelegate: AnyObject {
     func tableViewDidUpdate()
 }
 
-class StoryListDataSource: NSObject, Dependencies {
+class StoryListDataSource: NSObject {
 
     private let loadingQueue = DispatchQueue(label: "org.signal.story-list.loading", qos: .userInitiated)
 

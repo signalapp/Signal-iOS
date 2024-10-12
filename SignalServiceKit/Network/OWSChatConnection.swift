@@ -624,8 +624,6 @@ public class OWSChatConnection: NSObject {
 }
 
 public class OWSChatConnectionUsingSSKWebSocket: OWSChatConnection {
-    // Track where Dependencies are used throughout this class.
-    fileprivate struct GlobalDependencies: Dependencies {}
 
     private var _currentWebSocket = AtomicOptional<WebSocketConnection>(nil, lock: .sharedGlobal)
     fileprivate var currentWebSocket: WebSocketConnection? {

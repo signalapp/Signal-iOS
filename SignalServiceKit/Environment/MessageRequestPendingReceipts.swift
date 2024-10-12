@@ -5,7 +5,7 @@
 
 import LibSignalClient
 
-public class MessageRequestPendingReceipts: Dependencies, PendingReceiptRecorder {
+public class MessageRequestPendingReceipts: PendingReceiptRecorder {
 
     public init(appReadiness: AppReadiness) {
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {

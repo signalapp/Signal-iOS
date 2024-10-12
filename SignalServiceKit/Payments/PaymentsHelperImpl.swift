@@ -5,7 +5,7 @@
 
 import LibSignalClient
 
-public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelper {
+public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
 
     public init() {
         self.observeNotifications()
@@ -673,7 +673,7 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
 
 // MARK: -
 
-public struct PaymentsPassphrase: Equatable, Dependencies {
+public struct PaymentsPassphrase: Equatable {
 
     public let words: [String]
 

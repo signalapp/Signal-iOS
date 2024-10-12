@@ -88,7 +88,7 @@ internal protocol MediaGallerySectionLoader {
 /// know their number of items. Items are also loaded on demand, potentially non-contiguously.
 ///
 /// This model is designed around the needs of UICollectionView, but it also supports flat views of media.
-internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUserData>: Dependencies {
+internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUserData> {
     internal typealias Item = Loader.Item
 
     struct MediaGallerySlot {
@@ -832,7 +832,7 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
         }
     }
 
-    class SnapshotManager: Dependencies {
+    class SnapshotManager {
         private var mutableState: State
         private var snapshot: State
         private(set) var pendingUpdate = AtomicValue(Update.noop, lock: .init())

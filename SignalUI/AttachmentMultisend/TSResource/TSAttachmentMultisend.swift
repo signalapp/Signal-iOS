@@ -6,7 +6,7 @@
 import Foundation
 public import SignalServiceKit
 
-public class TSAttachmentMultisend: Dependencies {
+public class TSAttachmentMultisend {
 
     private struct PreparedMultisend {
         let attachmentIdMap: [String: [String]]

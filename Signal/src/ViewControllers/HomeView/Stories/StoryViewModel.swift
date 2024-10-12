@@ -6,7 +6,7 @@
 public import SignalServiceKit
 import SignalUI
 
-struct StoryViewModel: Dependencies {
+struct StoryViewModel {
     let context: StoryContext
 
     let messages: [StoryMessage]

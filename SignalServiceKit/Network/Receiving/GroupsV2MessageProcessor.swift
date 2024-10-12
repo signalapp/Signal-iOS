@@ -222,7 +222,7 @@ class IncomingGroupsV2MessageQueue: MessageProcessingPipelineStage {
 //
 // It's promise is fulfilled when all jobs are processed _or_
 // we give up.
-internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependencies {
+internal class GroupsMessageProcessor: MessageProcessingPipelineStage {
 
     private let appReadiness: AppReadiness
 

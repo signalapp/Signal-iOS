@@ -9,7 +9,7 @@ import SignalUI
 
 #if USE_DEBUG_UI
 
-class DebugContactsUtils: Dependencies {
+class DebugContactsUtils {
 
     // MARK: Random Contacts
 

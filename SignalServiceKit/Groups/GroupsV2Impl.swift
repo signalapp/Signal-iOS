@@ -6,7 +6,7 @@
 import Foundation
 public import LibSignalClient
 
-public class GroupsV2Impl: GroupsV2, Dependencies {
+public class GroupsV2Impl: GroupsV2 {
     private var urlSession: OWSURLSessionProtocol {
         return SSKEnvironment.shared.signalServiceRef.urlSessionForStorageService()
     }

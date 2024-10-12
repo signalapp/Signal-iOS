@@ -4,10 +4,10 @@
 //
 
 import LibSignalClient
-public import SignalServiceKit
+import SignalServiceKit
 import SignalUI
 
-public class RegistrationUtils: Dependencies {
+public class RegistrationUtils {
 
     private init() {}
 

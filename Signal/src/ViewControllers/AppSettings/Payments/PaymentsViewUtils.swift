@@ -6,7 +6,7 @@
 public import SignalServiceKit
 public import SignalUI
 
-public class PaymentsViewUtils: Dependencies {
+public class PaymentsViewUtils {
 
     private init() {}
 

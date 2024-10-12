@@ -107,7 +107,7 @@ enum SendMessageApprovedContent {
 
 // MARK: -
 
-class SendMessageFlow: Dependencies {
+class SendMessageFlow {
 
     private let flowType: SendMessageFlowType
 

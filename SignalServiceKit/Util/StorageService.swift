@@ -56,7 +56,7 @@ public protocol StorageServiceManager: StorageServiceManagerObjc {
 
 // MARK: -
 
-public struct StorageService: Dependencies {
+public struct StorageService {
     public enum StorageError: Error, IsRetryableProvider {
         case assertion
         case retryableAssertion

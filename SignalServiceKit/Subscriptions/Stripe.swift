@@ -22,7 +22,7 @@ import PassKit
 /// 5. Intent confirmation
 ///     - Charges the user's payment method
 ///     - ``Stripe/confirmPaymentIntent(paymentIntentClientSecret:paymentIntentId:paymentMethodId:idempotencyKey:)``
-public struct Stripe: Dependencies {
+public struct Stripe {
     public struct PaymentIntent {
         let id: String
         let clientSecret: String

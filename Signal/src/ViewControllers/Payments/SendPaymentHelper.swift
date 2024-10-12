@@ -35,7 +35,7 @@ protocol SendPaymentHelperDelegate: AnyObject {
 
 // MARK: -
 
-class SendPaymentHelper: Dependencies {
+class SendPaymentHelper {
 
     private weak var delegate: SendPaymentHelperDelegate?
 

@@ -44,7 +44,7 @@ public struct RequestMakerResult {
 /// NSE) & whether or not we're connected.
 ///
 /// - Retrying UD requests that fail due to 401/403 errors.
-public final class RequestMaker: Dependencies {
+public final class RequestMaker {
 
     public typealias RequestFactoryBlock = (SMKUDAccessKey?) -> TSRequest?
 

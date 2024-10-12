@@ -7,7 +7,7 @@ import Foundation
 import MobileCoin
 public import SignalServiceKit
 
-public class MobileCoinAPI: Dependencies {
+public class MobileCoinAPI {
 
     // MARK: - Passphrases & Entropy
 

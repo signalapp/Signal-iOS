@@ -59,7 +59,7 @@ public enum SealedSenderContentHint: Int, Codable, CustomStringConvertible {
 
 // MARK: -
 
-public final class MessageReceiver: Dependencies {
+public final class MessageReceiver {
     private let callMessageHandler: any CallMessageHandler
     private let deleteForMeSyncMessageReceiver: any DeleteForMeSyncMessageReceiver
 

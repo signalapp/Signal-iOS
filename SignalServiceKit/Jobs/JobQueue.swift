@@ -51,7 +51,7 @@ public protocol DurableOperationDelegate: AnyObject {
     func durableOperation(_ operation: DurableOperationType, didFailWithError error: Error, transaction: SDSAnyWriteTransaction)
 }
 
-public protocol JobQueue: DurableOperationDelegate, Dependencies {
+public protocol JobQueue: DurableOperationDelegate {
     typealias JobRecordType = DurableOperationType.JobRecordType
 
     var runningOperations: AtomicArray<DurableOperationType> { get set }

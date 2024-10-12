@@ -6,7 +6,7 @@
 public import SignalServiceKit
 import SignalUI
 
-public class CLVReminderViews: Dependencies {
+public class CLVReminderViews {
 
     fileprivate let reminderViewCell = UITableViewCell()
     fileprivate let reminderStackView = UIStackView()

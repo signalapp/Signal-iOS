@@ -28,7 +28,7 @@ public class CallMessagePushPayload: CustomStringConvertible {
     }
 }
 
-public class CallMessageRelay: Dependencies {
+public class CallMessageRelay {
     private static let pendingCallMessageStore = SDSKeyValueStore(collection: "PendingCallMessageStore")
 
     public static func handleVoipPayload(_ payload: CallMessagePushPayload) {

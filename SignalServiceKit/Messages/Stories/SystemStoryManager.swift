@@ -65,7 +65,7 @@ public class OnboardingStoryManagerStoryMessageFactory: NSObject {
 }
 
 @objc
-public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProtocol {
+public class SystemStoryManager: NSObject, SystemStoryManagerProtocol {
 
     private let fileSystem: OnboardingStoryManagerFilesystem.Type
     private let schedulers: Schedulers

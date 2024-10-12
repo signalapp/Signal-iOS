@@ -8,7 +8,6 @@ import Foundation
 extension AccountAttributes {
 
     public static func generateForPrimaryDevice(
-        fromDependencies dependencies: Dependencies,
         svr: SecureValueRecovery,
         transaction: SDSAnyWriteTransaction
     ) -> AccountAttributes {

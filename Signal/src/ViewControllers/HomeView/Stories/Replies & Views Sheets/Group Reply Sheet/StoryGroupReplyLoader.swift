@@ -7,7 +7,7 @@ import LibSignalClient
 import SignalServiceKit
 import SignalUI
 
-class StoryGroupReplyLoader: Dependencies {
+class StoryGroupReplyLoader {
     private let messageBatchFetcher: StoryGroupReplyBatchFetcher
     private let messageLoader: MessageLoader
     private let threadUniqueId: String

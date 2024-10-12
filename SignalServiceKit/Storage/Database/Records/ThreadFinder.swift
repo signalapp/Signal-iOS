@@ -5,7 +5,7 @@
 
 import GRDB
 
-public class ThreadFinder: Dependencies {
+public class ThreadFinder {
     public init() {}
 
     private func requiredVisibleThreadsClause(forThreadIds threadIds: Set<String>) -> String {

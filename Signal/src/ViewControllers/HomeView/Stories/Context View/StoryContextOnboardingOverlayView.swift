@@ -16,7 +16,7 @@ protocol StoryContextOnboardingOverlayViewDelegate: AnyObject {
     func storyContextOnboardingOverlayWantsToExitStoryViewer(_: StoryContextOnboardingOverlayView)
 }
 
-class StoryContextOnboardingOverlayView: UIView, Dependencies {
+class StoryContextOnboardingOverlayView: UIView {
 
     private weak var delegate: StoryContextOnboardingOverlayViewDelegate?
 

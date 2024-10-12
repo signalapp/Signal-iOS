@@ -86,7 +86,7 @@ public enum CVAttachment: Equatable {
     }
 }
 
-public class CVComponentState: Equatable, Dependencies {
+public class CVComponentState: Equatable {
     let messageCellType: CVMessageCellType
 
     struct SenderName: Equatable {
@@ -168,7 +168,7 @@ public class CVComponentState: Equatable, Dependencies {
     }
     let genericAttachment: GenericAttachment?
 
-    public struct PaymentAttachment: Equatable, Dependencies {
+    public struct PaymentAttachment: Equatable {
         let notification: TSPaymentNotification
         let model: TSPaymentModel?
         let otherUserShortName: String

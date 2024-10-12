@@ -154,7 +154,7 @@ private class ReceiptCredentialRedemptionJobRunnerFactory: JobRunnerFactory {
     }
 }
 
-private class ReceiptCredentialRedemptionJobRunner: JobRunner, Dependencies {
+private class ReceiptCredentialRedemptionJobRunner: JobRunner {
     private let future: Future<Void>?
 
     init(future: Future<Void>?) {

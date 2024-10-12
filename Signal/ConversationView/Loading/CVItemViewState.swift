@@ -77,7 +77,7 @@ public struct CVItemViewState: Equatable {
 
 // MARK: -
 
-struct CVItemModelBuilder: CVItemBuilding, Dependencies {
+struct CVItemModelBuilder: CVItemBuilding {
 
     let itemBuildingContext: CVItemBuildingContext
     let messageLoader: MessageLoader
@@ -779,7 +779,7 @@ private class ItemBuilder {
 
 // MARK: -
 
-class DisplayNameCache: Dependencies {
+class DisplayNameCache {
     private var displayNameCache = [ServiceId: DisplayName]()
 
     private func _displayName(for address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> DisplayName {

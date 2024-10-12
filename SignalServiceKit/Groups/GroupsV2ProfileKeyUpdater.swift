@@ -14,7 +14,7 @@ import Foundation
 //
 // This class has responsibility for tracking which groups
 // need to be updated and for updating them.
-class GroupsV2ProfileKeyUpdater: Dependencies {
+class GroupsV2ProfileKeyUpdater {
 
     private let appReadiness: AppReadiness
 

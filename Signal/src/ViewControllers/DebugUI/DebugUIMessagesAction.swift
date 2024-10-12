@@ -7,7 +7,7 @@ import SignalServiceKit
 
 #if USE_DEBUG_UI
 
-class DebugUIMessagesAction: Dependencies {
+class DebugUIMessagesAction {
 
     typealias Completion = (Result<Void, Error>) -> Void
 

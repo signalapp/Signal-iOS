@@ -3,11 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public import SignalServiceKit
+import SignalServiceKit
 import SignalUI
 
 /// Container for util methods related to story authors.
-public enum StoryUtil: Dependencies {
+public enum StoryUtil {
 
     static func authorDisplayName(
         for storyMessage: StoryMessage,

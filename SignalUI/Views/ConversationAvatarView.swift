@@ -761,7 +761,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
 
 // MARK: -
 
-public enum ConversationAvatarDataSource: Equatable, Dependencies, CustomStringConvertible {
+public enum ConversationAvatarDataSource: Equatable, CustomStringConvertible {
     case thread(TSThread)
     case address(SignalServiceAddress)
     case asset(avatar: UIImage?, badge: UIImage?)

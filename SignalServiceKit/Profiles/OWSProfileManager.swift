@@ -731,7 +731,7 @@ public class OWSProfileManagerSwiftValues {
     public init() {}
 }
 
-extension OWSProfileManager: ProfileManager, Dependencies {
+extension OWSProfileManager: ProfileManager {
     public func fetchLocalUsersProfile(authedAccount: AuthedAccount) -> Promise<FetchedProfile> {
         return Promise.wrapAsync {
             let profileFetcher = SSKEnvironment.shared.profileFetcherRef

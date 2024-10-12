@@ -7,7 +7,7 @@ import Foundation
 public import MobileCoin
 public import SignalServiceKit
 
-public class PaymentsReconciliation: Dependencies {
+public class PaymentsReconciliation {
 
     private let appReadiness: AppReadiness
     private var refreshEvent: RefreshEvent?

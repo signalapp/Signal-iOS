@@ -33,7 +33,7 @@ extension StoryContextMenuDelegate {
     func storyContextMenuDidFinishDisplayingFollowups() {}
 }
 
-class StoryContextMenuGenerator: Dependencies {
+class StoryContextMenuGenerator {
 
     private weak var presentingController: UIViewController?
 

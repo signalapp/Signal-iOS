@@ -6,7 +6,7 @@
 import Foundation
 import SignalServiceKit
 
-struct MyStoryViewModel: Dependencies {
+struct MyStoryViewModel {
     let messages: [StoryMessage]
 
     let latestMessageIdentifier: InteractionSnapshotIdentifier?

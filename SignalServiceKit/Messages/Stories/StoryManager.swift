@@ -436,7 +436,7 @@ extension StoryManager {
 
 // MARK: -
 
-public enum StoryContext: Equatable, Hashable, Dependencies {
+public enum StoryContext: Equatable, Hashable {
     case groupId(Data)
     case authorAci(Aci)
     case privateStory(String)

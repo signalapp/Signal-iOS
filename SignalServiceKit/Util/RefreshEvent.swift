@@ -8,7 +8,7 @@ import Foundation
 // This class can be used to coordinate the refresh of a
 // value obtained from the network.
 
-public class RefreshEvent: Dependencies {
+public class RefreshEvent {
 
     public typealias Block = () -> Void
 

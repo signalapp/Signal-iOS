@@ -32,7 +32,7 @@ private class SessionResetJobRunnerFactory: JobRunnerFactory {
     func buildRunner() -> SessionResetJobRunner { SessionResetJobRunner() }
 }
 
-private class SessionResetJobRunner: JobRunner, Dependencies {
+private class SessionResetJobRunner: JobRunner {
     private enum Constants {
         static let maxRetries: UInt = 10
     }

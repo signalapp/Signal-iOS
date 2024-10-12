@@ -33,7 +33,7 @@ public import LibSignalClient
 ///     messageFactory.threadCreator = { _ in return existingThread }
 ///     messageFactory.create(count: 100)
 ///
-public protocol Factory: Dependencies {
+public protocol Factory {
     associatedtype ObjectType: TSYapDatabaseObject
 
     static func write(block: @escaping (SDSAnyWriteTransaction) -> Void)

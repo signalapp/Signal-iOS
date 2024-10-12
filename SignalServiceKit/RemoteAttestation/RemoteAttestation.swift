@@ -40,7 +40,7 @@ private func attestationError(reason: String) -> RemoteAttestation.Error {
 // MARK: - Auth
 
 public extension RemoteAttestation {
-    struct Auth: Dependencies, Equatable, Codable {
+    struct Auth: Equatable, Codable {
         public let username: String
         public let password: String
 

@@ -118,7 +118,7 @@ extension RecentConversationItem: ConversationItem {
 
 // MARK: -
 
-struct ContactConversationItem: Dependencies {
+struct ContactConversationItem {
     let address: SignalServiceAddress
     let isBlocked: Bool
     let disappearingMessagesConfig: OWSDisappearingMessagesConfiguration?
@@ -186,7 +186,7 @@ extension ContactConversationItem: ConversationItem {
 
 // MARK: -
 
-public struct GroupConversationItem: Dependencies {
+public struct GroupConversationItem {
     public let groupThreadId: String
     public let isBlocked: Bool
     public let disappearingMessagesConfig: OWSDisappearingMessagesConfiguration?
@@ -565,7 +565,7 @@ extension StoryConversationItem: ConversationItem {
 
 // MARK: -
 
-public struct PrivateStoryConversationItem: Dependencies {
+public struct PrivateStoryConversationItem {
     let storyThreadId: String
     public let isMyStory: Bool
 

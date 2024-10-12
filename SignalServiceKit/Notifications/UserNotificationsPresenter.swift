@@ -92,7 +92,7 @@ public class UserNotificationConfig {
 
 // MARK: -
 
-class UserNotificationPresenter: Dependencies {
+class UserNotificationPresenter {
     private static var notificationCenter: UNUserNotificationCenter { UNUserNotificationCenter.current() }
 
     // Delay notification of incoming messages when it's likely to be read by a linked device to

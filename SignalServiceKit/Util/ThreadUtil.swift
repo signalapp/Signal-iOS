@@ -7,7 +7,7 @@ public import LibSignalClient
 
 // MARK: - Enqueue messages
 
-public final class ThreadUtil: Dependencies {
+public final class ThreadUtil {
 
     public typealias PersistenceCompletion = () -> Void
 

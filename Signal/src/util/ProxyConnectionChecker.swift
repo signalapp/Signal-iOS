@@ -5,7 +5,7 @@
 
 import SignalServiceKit
 
-enum ProxyConnectionChecker: Dependencies {
+enum ProxyConnectionChecker {
     static func checkConnectionAndNotify(completion: @escaping (Bool) -> Void) {
         var observer: NSObjectProtocol?
         func unregisterObserver() {

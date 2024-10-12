@@ -10,7 +10,7 @@ public protocol VideoPlayerDelegate: AnyObject {
     func videoPlayerDidPlayToCompletion(_ videoPlayer: VideoPlayer)
 }
 
-public class VideoPlayer: Dependencies {
+public class VideoPlayer {
 
     public let avPlayer: AVPlayer
     private let audioActivity: AudioActivity

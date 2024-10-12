@@ -7,7 +7,7 @@ import MessageUI
 import SignalServiceKit
 import SignalUI
 
-struct SupportEmailModel: Dependencies {
+struct SupportEmailModel {
 
     enum LogPolicy {
         /// Do not upload logs

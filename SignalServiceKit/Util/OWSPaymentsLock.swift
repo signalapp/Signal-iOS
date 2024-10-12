@@ -6,7 +6,7 @@
 import Foundation
 import LocalAuthentication
 
-public class OWSPaymentsLock: NSObject, Dependencies {
+public class OWSPaymentsLock: NSObject {
 
     public enum LocalAuthOutcome: Equatable {
         case success

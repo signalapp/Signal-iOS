@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class ChatColorViewController: OWSTableViewController2, Dependencies {
+class ChatColorViewController: OWSTableViewController2 {
 
     fileprivate let thread: TSThread?
     fileprivate var currentSetting: ChatColorSetting

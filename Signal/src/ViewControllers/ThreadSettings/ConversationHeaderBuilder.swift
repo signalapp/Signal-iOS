@@ -8,7 +8,7 @@ import SignalServiceKit
 import SignalUI
 public import UIKit
 
-struct ConversationHeaderBuilder: Dependencies {
+struct ConversationHeaderBuilder {
     weak var delegate: ConversationHeaderDelegate!
     let transaction: SDSAnyReadTransaction
     let sizeClass: ConversationAvatarView.Configuration.SizeClass
@@ -525,7 +525,7 @@ struct ConversationHeaderBuilder: Dependencies {
 
 // MARK: -
 
-protocol ConversationHeaderDelegate: UIViewController, Dependencies, ConversationAvatarViewDelegate {
+protocol ConversationHeaderDelegate: UIViewController, ConversationAvatarViewDelegate {
     var tableViewController: OWSTableViewController2 { get }
 
     var thread: TSThread { get }

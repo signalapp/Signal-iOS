@@ -11,7 +11,7 @@ protocol CameraFirstCaptureDelegate: AnyObject {
     func cameraFirstCaptureSendFlowDidCancel(_ cameraFirstCaptureSendFlow: CameraFirstCaptureSendFlow)
 }
 
-class CameraFirstCaptureSendFlow: Dependencies {
+class CameraFirstCaptureSendFlow {
 
     private weak var delegate: CameraFirstCaptureDelegate?
 

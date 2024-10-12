@@ -5,7 +5,7 @@
 
 public import SignalServiceKit
 
-public class BlockListUIUtils: Dependencies {
+public class BlockListUIUtils {
 
     public typealias Completion = (Bool) -> Void
 

@@ -29,7 +29,7 @@ private extension Dictionary where Key == String {
     }
 }
 
-class HTTPUtils: Dependencies {
+class HTTPUtils {
     #if TESTABLE_BUILD
     public static func logCurl(for task: URLSessionTask) {
         guard let request = task.originalRequest else {

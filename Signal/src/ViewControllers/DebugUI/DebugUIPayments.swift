@@ -8,7 +8,7 @@ import SignalUI
 
 #if USE_DEBUG_UI
 
-class DebugUIPayments: DebugUIPage, Dependencies {
+class DebugUIPayments: DebugUIPage {
 
     let name = "Payments"
 

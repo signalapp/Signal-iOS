@@ -79,7 +79,7 @@ extension TSPaymentAmount: TSPaymentBaseModel {
 // MARK: -
 
 @objc
-extension TSPaymentAddress: Dependencies, TSPaymentBaseModel {
+extension TSPaymentAddress: TSPaymentBaseModel {
     public var isValid: Bool {
         guard currency == .mobileCoin else {
             owsFailDebug("Unexpected currency.")

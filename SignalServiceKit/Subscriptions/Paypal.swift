@@ -6,4 +6,4 @@
 import AuthenticationServices
 import Foundation
 
-public struct Paypal: Dependencies {}
+public struct Paypal {}

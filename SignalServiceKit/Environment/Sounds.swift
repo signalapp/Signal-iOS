@@ -292,7 +292,7 @@ private class SystemSound: NSObject {
     }
 }
 
-public class Sounds: Dependencies {
+public class Sounds {
 
     // This name is specified in the payload by the Signal Service when requesting fallback push notifications.
     fileprivate static let defaultNotificationSoundFilename = "NewMessage.aifc"

@@ -91,7 +91,7 @@ struct OWSUrlFrontingInfo {
 // TODO: If we use OWSURLSession more, we'll need to add support for more features, e.g.:
 //
 // * Download tasks to memory.
-public protocol OWSURLSessionProtocol: AnyObject, Dependencies {
+public protocol OWSURLSessionProtocol: AnyObject {
 
     typealias ProgressBlock = (URLSessionTask, Progress) -> Void
 

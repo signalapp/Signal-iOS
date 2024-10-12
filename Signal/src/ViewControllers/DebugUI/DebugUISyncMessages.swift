@@ -8,7 +8,7 @@ import SignalUI
 
 #if USE_DEBUG_UI
 
-class DebugUISyncMessages: DebugUIPage, Dependencies {
+class DebugUISyncMessages: DebugUIPage {
 
     let name = "Sync Messages"
 

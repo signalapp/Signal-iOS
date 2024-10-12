@@ -129,7 +129,7 @@ public class AudioAttachment {
     }
 }
 
-extension AudioAttachment: Dependencies {
+extension AudioAttachment {
     var isDownloaded: Bool { attachmentStream != nil }
 
     public var attachment: TSResource {

@@ -20,7 +20,7 @@ public enum OWS2FAMode {
     case V2
 }
 
-public class OWS2FAManager: Dependencies {
+public class OWS2FAManager {
     init(appReadiness: AppReadiness) {
         SwiftSingletons.register(self)
 

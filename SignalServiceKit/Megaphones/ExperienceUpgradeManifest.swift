@@ -6,7 +6,7 @@
 import Foundation
 import Contacts
 
-public enum ExperienceUpgradeManifest: Dependencies {
+public enum ExperienceUpgradeManifest {
     /// Prompts the user to create a PIN, if they did not create one during
     /// registration.
     ///

@@ -8,7 +8,7 @@ import SignalServiceKit
 import SignalUI
 import UIKit
 
-class StoryGroupReplyViewItem: Dependencies {
+class StoryGroupReplyViewItem {
     let interactionIdentifier: InteractionSnapshotIdentifier
     let interactionUniqueId: String
     let displayableText: DisplayableText?

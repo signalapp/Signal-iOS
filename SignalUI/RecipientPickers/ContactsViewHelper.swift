@@ -14,7 +14,7 @@ public protocol ContactsViewHelperObserver: AnyObject {
     func contactsViewHelperDidUpdateContacts()
 }
 
-public class ContactsViewHelper: Dependencies {
+public class ContactsViewHelper {
 
     public init() {}
 

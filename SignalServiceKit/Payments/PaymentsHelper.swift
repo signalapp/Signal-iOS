@@ -75,7 +75,7 @@ public protocol PaymentsHelperSwift: PaymentsHelper {
 
 // MARK: -
 
-public enum PaymentsState: Equatable, Dependencies {
+public enum PaymentsState: Equatable {
 
     case disabled
     case disabledWithPaymentsEntropy(paymentsEntropy: Data)

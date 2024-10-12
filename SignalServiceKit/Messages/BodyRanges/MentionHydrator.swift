@@ -45,6 +45,4 @@ public class ContactsMentionHydrator {
         ).resolvedValue()
         return (address, displayName)
     }
-
-    private class GlobalDependencies: Dependencies {}
 }

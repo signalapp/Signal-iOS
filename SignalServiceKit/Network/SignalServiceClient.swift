@@ -65,7 +65,7 @@ public struct RemoteConfigResponse {
 
 /// Based on libsignal-service-java's PushServiceSocket class
 @objc
-public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencies {
+public class SignalServiceRestClient: NSObject, SignalServiceClient {
 
     public static let shared = SignalServiceRestClient()
 
@@ -137,7 +137,6 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
 
         let attributes = await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
             return AccountAttributes.generateForPrimaryDevice(
-                fromDependencies: self,
                 svr: DependenciesBridge.shared.svr,
                 transaction: transaction
             )

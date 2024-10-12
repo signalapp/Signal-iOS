@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class ExperienceUpgradeManager: Dependencies {
+class ExperienceUpgradeManager {
 
     private static weak var lastPresented: ExperienceUpgradeView?
 
@@ -210,7 +210,7 @@ class ExperienceUpgradeManager: Dependencies {
 
 // MARK: - ExperienceUpgradeView
 
-protocol ExperienceUpgradeView: AnyObject, Dependencies {
+protocol ExperienceUpgradeView: AnyObject {
     var experienceUpgrade: ExperienceUpgrade { get }
     var isPresented: Bool { get }
     func dismiss(animated: Bool, completion: (() -> Void)?)

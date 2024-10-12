@@ -16,7 +16,7 @@ import Foundation
 // called.  On the other hand, we will also get correct behavior to addBlock()
 // being called twice with the same block object.
 
-public class DeviceSleepManager: Dependencies {
+public class DeviceSleepManager {
 
     public static let shared = DeviceSleepManager()
 

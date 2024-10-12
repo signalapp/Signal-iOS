@@ -139,7 +139,7 @@ private class SendGiftBadgeJobRunnerFactory: JobRunnerFactory {
     }
 }
 
-private class SendGiftBadgeJobRunner: JobRunner, Dependencies {
+private class SendGiftBadgeJobRunner: JobRunner {
     private enum Constants {
         static let maxRetries: UInt = 110
     }

@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public import SignalServiceKit
+import SignalServiceKit
 
-public class TextFieldFormatting: Dependencies {
+public class TextFieldFormatting {
 
     private init() {}
 

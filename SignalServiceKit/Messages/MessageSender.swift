@@ -29,7 +29,7 @@ private extension TSOutgoingMessage {
 
 // MARK: - MessageSender
 
-public class MessageSender: Dependencies {
+public class MessageSender {
 
     private var preKeyManager: PreKeyManager { DependenciesBridge.shared.preKeyManager }
 

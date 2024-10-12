@@ -98,7 +98,7 @@ public class ThreadViewModel: NSObject {
 
 // MARK: -
 
-public class ChatListInfo: Dependencies {
+public class ChatListInfo {
 
     public let lastMessageDate: Date?
     public let lastMessageOutgoingStatus: MessageReceiptStatus?

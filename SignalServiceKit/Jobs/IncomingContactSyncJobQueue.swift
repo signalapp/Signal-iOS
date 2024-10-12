@@ -67,7 +67,7 @@ private class IncomingContactSyncJobRunnerFactory: JobRunnerFactory {
     }
 }
 
-private class IncomingContactSyncJobRunner: JobRunner, Dependencies {
+private class IncomingContactSyncJobRunner: JobRunner {
     private enum Constants {
         static let maxRetries: UInt = 4
     }

@@ -10,7 +10,7 @@ import Foundation
 //
 // HTTP headers are case-insensitive.
 // This class handles conflict resolution.
-public final class OWSHttpHeaders: Dependencies, CustomDebugStringConvertible {
+public final class OWSHttpHeaders: CustomDebugStringConvertible {
     public private(set) var headers = [String: String]()
 
     public init() {}

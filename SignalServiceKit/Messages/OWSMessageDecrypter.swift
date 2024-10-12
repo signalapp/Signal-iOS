@@ -5,7 +5,7 @@
 
 import LibSignalClient
 
-public class OWSMessageDecrypter: Dependencies {
+public class OWSMessageDecrypter {
 
     private var senderIdsResetDuringCurrentBatch = NSMutableSet()
     private var placeholderCleanupTimer: Timer? {

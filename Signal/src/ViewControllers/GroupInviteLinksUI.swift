@@ -55,7 +55,7 @@ public class GroupInviteLinksUI: UIView {
 
 // MARK: -
 
-private class GroupInviteLinksActionSheet: ActionSheetController, Dependencies {
+private class GroupInviteLinksActionSheet: ActionSheetController {
     private let groupInviteLinkInfo: GroupInviteLinkInfo
     private let groupV2ContextInfo: GroupV2ContextInfo
 

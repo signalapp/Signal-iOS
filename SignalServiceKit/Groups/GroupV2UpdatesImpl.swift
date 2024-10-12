@@ -6,7 +6,7 @@
 import Foundation
 public import LibSignalClient
 
-public class GroupV2UpdatesImpl: Dependencies {
+public class GroupV2UpdatesImpl {
 
     // This tracks the last time that groups were updated to the current
     // revision.
@@ -363,7 +363,7 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
         }
     }
 
-    private class GroupV2UpdateOperation: OWSOperation, Dependencies {
+    private class GroupV2UpdateOperation: OWSOperation {
 
         let groupId: Data
         let groupSecretParams: GroupSecretParams

@@ -55,7 +55,7 @@ private protocol MyStorySettingsDataSourceDelegate: AnyObject, UIViewController 
     func reloadTableContents()
 }
 
-private class MyStorySettingsDataSource: NSObject, Dependencies {
+private class MyStorySettingsDataSource: NSObject {
 
     private weak var delegate: MyStorySettingsDataSourceDelegate?
 

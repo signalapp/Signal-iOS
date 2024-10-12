@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-class CaptchaChallenge: SpamChallenge, Dependencies {
+class CaptchaChallenge: SpamChallenge {
     let token: String
     var captchaToken: String? {
         didSet {

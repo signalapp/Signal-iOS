@@ -35,7 +35,7 @@ public import LibSignalClient
 // * If we try to add a new member and another user beats us to it, we'll throw
 //   GroupsV2Error.redundantChange when computing a GroupChange proto.
 // * If we add (alice and bob) but another user adds (alice) first, we'll just add (bob).
-public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges {
+public class GroupsV2OutgoingChangesImpl: GroupsV2OutgoingChanges {
 
     public let groupId: Data
     public let groupSecretParams: GroupSecretParams

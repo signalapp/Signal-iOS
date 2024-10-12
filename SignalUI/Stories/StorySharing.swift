@@ -5,7 +5,7 @@
 
 public import SignalServiceKit
 
-public enum StorySharing: Dependencies {
+public enum StorySharing {
     public static func sendTextStory(
         with messageBody: MessageBody,
         linkPreviewDraft: OWSLinkPreviewDraft?,

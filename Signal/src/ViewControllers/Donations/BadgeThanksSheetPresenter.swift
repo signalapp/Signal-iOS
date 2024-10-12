@@ -6,7 +6,7 @@
 import SignalServiceKit
 
 class BadgeThanksSheetPresenter {
-    private struct Deps: Dependencies {
+    private struct Deps {
         static var receiptCredentialResultStore: ReceiptCredentialResultStore {
             DependenciesBridge.shared.receiptCredentialResultStore
         }

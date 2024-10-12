@@ -110,7 +110,7 @@ public class CVComponentQuotedReply: CVComponentBase, CVComponent {
 
 // MARK: -
 
-private class QuotedMessageViewAdapter: QuotedMessageViewDelegate, Dependencies {
+private class QuotedMessageViewAdapter: QuotedMessageViewDelegate {
 
     private let interactionUniqueId: String
 

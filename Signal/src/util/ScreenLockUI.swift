@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class ScreenLockUI: Dependencies {
+class ScreenLockUI {
 
     // Unlike UIApplication.applicationState, this state reflects the
     // notifications, i.e. "did become active", "will resign active",

@@ -402,7 +402,7 @@ private struct SKDMSendInfo: Codable {
 /// Stores information about a recipient of a sender key
 /// Helpful for diffing across deviceId and registrationId changes.
 /// If a new device shows up, we need to make sure that we send a copy of our sender key to the address
-private struct KeyRecipient: Codable, Dependencies {
+private struct KeyRecipient: Codable {
 
     struct Device: Codable, Hashable {
         let deviceId: UInt32

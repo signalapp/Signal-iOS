@@ -18,7 +18,7 @@ public class OWSSignalServiceObjC: NSObject {
     }
 }
 
-public class OWSSignalService: OWSSignalServiceProtocol, Dependencies {
+public class OWSSignalService: OWSSignalServiceProtocol {
     private let keyValueStore = SDSKeyValueStore(collection: "kTSStorageManager_OWSSignalService")
 
     @Atomic public private(set) var isCensorshipCircumventionActive: Bool = false {

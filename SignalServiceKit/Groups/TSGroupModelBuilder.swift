@@ -6,7 +6,7 @@
 import Foundation
 import LibSignalClient
 
-public struct TSGroupModelBuilder: Dependencies {
+public struct TSGroupModelBuilder {
 
     public var groupId: Data?
     public var name: String?

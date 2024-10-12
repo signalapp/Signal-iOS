@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-class PushChallenge: SpamChallenge, Dependencies {
+class PushChallenge: SpamChallenge {
 
     private var failureCount: UInt = 0
     private let kMaxFailures = 15

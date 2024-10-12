@@ -11,7 +11,7 @@ import UniformTypeIdentifiers
 
 #if USE_DEBUG_UI
 
-class DebugUIMessages: DebugUIPage, Dependencies {
+class DebugUIMessages: DebugUIPage {
 
     private enum MessageContentType {
         case normal

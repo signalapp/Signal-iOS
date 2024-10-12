@@ -3,10 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public import SignalServiceKit
+import SignalServiceKit
 import SignalUI
 
-public class NotificationActionHandler: Dependencies {
+public class NotificationActionHandler {
 
     private static var callService: CallService { AppEnvironment.shared.callService }
 

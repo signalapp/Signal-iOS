@@ -9,7 +9,7 @@ import SignalUI
 
 #if USE_DEBUG_UI
 
-class DebugUIMisc: NSObject, DebugUIPage, Dependencies {
+class DebugUIMisc: NSObject, DebugUIPage {
 
     let name = "Misc."
 

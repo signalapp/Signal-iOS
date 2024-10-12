@@ -8,7 +8,7 @@ import SignalUI
 
 // This captures the CV view state that can affect the load.
 // It is used when building, measuring & configuring components and their views.
-struct CVViewStateSnapshot: Dependencies {
+struct CVViewStateSnapshot {
 
     let textExpansion: CVTextExpansion
     let spoilerReveal: SpoilerRevealState.Snapshot

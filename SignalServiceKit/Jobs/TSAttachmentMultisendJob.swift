@@ -87,7 +87,7 @@ private class TSAttachmentMultisendJobRunnerFactory: JobRunnerFactory {
     }
 }
 
-private class TSAttachmentMultisendJobRunner: JobRunner, Dependencies {
+private class TSAttachmentMultisendJobRunner: JobRunner {
 
     private let jobFutures: TSAttachmentMultisendFutures?
 
@@ -144,7 +144,7 @@ private class TSAttachmentMultisendJobRunner: JobRunner, Dependencies {
 
 // MARK: -
 
-public enum TSAttachmentMultisendUploader: Dependencies {
+public enum TSAttachmentMultisendUploader {
     public static func uploadAttachments<T>(
         attachmentIdMap: [String: [String]],
         sendMessages: @escaping (_ messages: [PreparedOutgoingMessage], _ tx: SDSAnyWriteTransaction) -> T

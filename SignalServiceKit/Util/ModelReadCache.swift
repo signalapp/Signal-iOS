@@ -64,7 +64,7 @@ class ModelCacheAdapter<KeyType: Hashable & Equatable, ValueType> {
 
 // MARK: -
 
-class ModelReadCache<KeyType: Hashable & Equatable, ValueType>: Dependencies {
+class ModelReadCache<KeyType: Hashable & Equatable, ValueType> {
 
     enum Mode {
         // * .read caches can be accessed from any thread.

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public import SignalServiceKit
+import SignalServiceKit
 
 enum CLVRowChangeType {
     case delete(oldIndexPath: IndexPath)
@@ -56,7 +56,7 @@ enum CLVLoadResult {
 
 // MARK: -
 
-public class CLVLoader: Dependencies {
+public class CLVLoader {
 
     static func loadRenderStateForReset(viewInfo: CLVViewInfo, transaction: SDSAnyReadTransaction) -> CLVLoadResult {
         AssertIsOnMainThread()

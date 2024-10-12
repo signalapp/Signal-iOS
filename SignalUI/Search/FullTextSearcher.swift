@@ -71,7 +71,7 @@ public class ConversationSearchResult<SortKey>: Comparable where SortKey: Compar
 
 // MARK: -
 
-public class ContactSearchResult: Comparable, Dependencies {
+public class ContactSearchResult: Comparable {
 
     public let recipientAddress: SignalServiceAddress
     private let comparableName: ComparableDisplayName

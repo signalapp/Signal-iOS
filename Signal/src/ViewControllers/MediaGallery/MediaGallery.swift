@@ -295,7 +295,7 @@ struct MediaGalleryUpdateUserData {
 /// know their number of items. Items are also loaded on demand, potentially non-contiguously.
 ///
 /// This model is designed around the needs of UICollectionView, but it also supports flat views of media.
-class MediaGallery: Dependencies {
+class MediaGallery {
     typealias Sections = MediaGallerySections<Loader, MediaGalleryUpdateUserData>
     typealias Update = Sections.Update
     typealias Journal = [JournalingOrderedDictionaryChange<Sections.ItemChange>]

@@ -6,7 +6,7 @@
 import Foundation
 public import PassKit
 
-public class DonationUtilities: Dependencies {
+public class DonationUtilities {
     public static var sendGiftBadgeJobQueue: SendGiftBadgeJobQueue { SSKEnvironment.shared.smJobQueuesRef.sendGiftBadgeJobQueue }
 
     /// Returns a set of donation payment methods available to the local user,

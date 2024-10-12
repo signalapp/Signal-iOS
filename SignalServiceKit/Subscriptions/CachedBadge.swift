@@ -5,7 +5,7 @@
 
 import Foundation
 
-public final class CachedBadge: Equatable, Dependencies {
+public final class CachedBadge: Equatable {
 
     let badgeLevel: OneTimeBadgeLevel
 

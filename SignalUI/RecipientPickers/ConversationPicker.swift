@@ -1452,7 +1452,7 @@ protocol ConversationPickerSelectionDelegate: AnyObject {
 
 // MARK: -
 
-public class ConversationPickerSelection: Dependencies {
+public class ConversationPickerSelection {
     fileprivate weak var delegate: ConversationPickerSelectionDelegate?
 
     public private(set) var conversations: [ConversationItem] = []

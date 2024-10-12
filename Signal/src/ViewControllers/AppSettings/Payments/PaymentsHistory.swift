@@ -18,7 +18,7 @@ protocol PaymentsHistoryDataSourceDelegate: AnyObject {
 
 // MARK: -
 
-class PaymentsHistoryDataSource: Dependencies {
+class PaymentsHistoryDataSource {
 
     public enum RecordType: Int, CustomStringConvertible {
         case all = 0

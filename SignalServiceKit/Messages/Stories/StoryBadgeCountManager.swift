@@ -12,7 +12,7 @@ public protocol StoryBadgeCountObserver: AnyObject {
     func didUpdateStoryBadge(_ badge: String?)
 }
 
-public class StoryBadgeCountManager: NSObject, Dependencies {
+public class StoryBadgeCountManager: NSObject {
 
     private weak var observer: StoryBadgeCountObserver?
 

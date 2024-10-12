@@ -246,7 +246,7 @@ private enum CLVLoadType {
 
 // MARK: -
 
-public class CLVLoadCoordinator: Dependencies {
+public class CLVLoadCoordinator {
     private let filterStore: ChatListFilterStore
     private var loadInfoBuilder: CLVLoadInfoBuilder
 

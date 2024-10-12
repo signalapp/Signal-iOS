@@ -160,7 +160,7 @@ class AttachmentFormatPickerView: UIView {
         animator.startAnimation()
     }
 
-    private enum AttachmentType: String, CaseIterable, Dependencies {
+    private enum AttachmentType: String, CaseIterable {
         case photo
         case gif
         case file

@@ -8,7 +8,7 @@ import SignalUI
 
 #if USE_DEBUG_UI
 
-class DebugUIProfile: DebugUIPage, Dependencies {
+class DebugUIProfile: DebugUIPage {
 
     let name = "Profile"
 

@@ -280,7 +280,7 @@ public struct LocalSignalClient: TestSignalClient {
 
 var envelopeId: UInt64 = 0
 
-public struct FakeService: Dependencies {
+public struct FakeService {
     public let localClient: LocalSignalClient
     public let runner: TestProtocolRunner
 

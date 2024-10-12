@@ -14,7 +14,7 @@ private class LocalUserLeaveGroupJobRunnerFactory: JobRunnerFactory {
     }
 }
 
-private class LocalUserLeaveGroupJobRunner: JobRunner, Dependencies {
+private class LocalUserLeaveGroupJobRunner: JobRunner {
     private enum Constants {
         static let maxRetries: UInt = 110
     }
