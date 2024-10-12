@@ -108,7 +108,7 @@ public class VideoPlayer: Dependencies {
     // MARK: Playback Controls
 
     public func endAudioActivity() {
-        audioSession.endAudioActivity(audioActivity)
+        SUIEnvironment.shared.audioSessionRef.endAudioActivity(audioActivity)
     }
 
     public func pause() {
@@ -117,7 +117,7 @@ public class VideoPlayer: Dependencies {
     }
 
     public func play() {
-        let success = audioSession.startAudioActivity(audioActivity)
+        let success = SUIEnvironment.shared.audioSessionRef.startAudioActivity(audioActivity)
         assert(success)
 
         guard let item = avPlayer.currentItem else {

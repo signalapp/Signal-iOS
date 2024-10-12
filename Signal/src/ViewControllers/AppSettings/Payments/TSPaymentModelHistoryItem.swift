@@ -5,6 +5,7 @@
 
 import Foundation
 public import SignalServiceKit
+import SignalUI
 
 public struct PaymentsHistoryModelItem: PaymentsHistoryItem {
     public let paymentModel: TSPaymentModel
@@ -89,7 +90,7 @@ public struct PaymentsHistoryModelItem: PaymentsHistoryItem {
         let amount: TSPaymentAmount
         if let paymentAmount = paymentModel.paymentAmount {
             amount = paymentAmount
-        } else if let unwrappedAmount = NSObject.paymentsImpl.unmaskReceiptAmount(data: receiptData)?.tsPaymentAmount {
+        } else if let unwrappedAmount = SUIEnvironment.shared.paymentsImplRef.unmaskReceiptAmount(data: receiptData)?.tsPaymentAmount {
             amount = unwrappedAmount
         } else {
             return nil

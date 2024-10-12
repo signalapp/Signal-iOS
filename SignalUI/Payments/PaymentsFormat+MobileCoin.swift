@@ -161,7 +161,7 @@ public extension PaymentsFormat {
         guard let amount: UInt64 = {
             switch type {
             case .incomingMessage:
-                return Self.paymentsImpl.unmaskReceiptAmount(data: receipt)?.value
+                return SUIEnvironment.shared.paymentsImplRef.unmaskReceiptAmount(data: receipt)?.value
             case .outgoingMessage:
                 guard let paymentModel = PaymentFinder.paymentModels(
                     forMcReceiptData: receipt,

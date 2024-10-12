@@ -969,7 +969,7 @@ public class SendPaymentViewController: OWSViewController {
     private func getEstimatedFeeAndSubmit(paymentAmount: TSPaymentAmount) {
         ModalActivityIndicatorViewController.presentAsInvisible(fromViewController: self) { modalActivityIndicator in
             firstly {
-                Self.paymentsSwift.getEstimatedFee(forPaymentAmount: paymentAmount)
+                SUIEnvironment.shared.paymentsSwiftRef.getEstimatedFee(forPaymentAmount: paymentAmount)
             }.done { (estimatedFeeAmount: TSPaymentAmount) in
                 AssertIsOnMainThread()
 
@@ -1005,7 +1005,7 @@ public class SendPaymentViewController: OWSViewController {
             return
         }
         let totalAmount = paymentAmount.plus(estimatedFeeAmount)
-        guard let paymentBalance = paymentsSwift.currentPaymentBalance else {
+        guard let paymentBalance = SUIEnvironment.shared.paymentsSwiftRef.currentPaymentBalance else {
             OWSActionSheets.showErrorAlert(message: OWSLocalizedString("SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE",
                                                                       comment: "Error message indicating that a payment could not be sent because the current balance is unavailable."))
             return

@@ -141,7 +141,7 @@ public class AudioPlayer: NSObject {
     public func play() {
         AssertIsOnMainThread()
 
-        let success = audioSession.startAudioActivity(audioActivity)
+        let success = SUIEnvironment.shared.audioSessionRef.startAudioActivity(audioActivity)
         owsAssertDebug(success)
 
         setupAudioPlayer()
@@ -276,7 +276,7 @@ public class AudioPlayer: NSObject {
     }
 
     private func endAudioActivities() {
-        audioSession.endAudioActivity(audioActivity)
+        SUIEnvironment.shared.audioSessionRef.endAudioActivity(audioActivity)
     }
 
     public func togglePlayState() {
@@ -372,7 +372,7 @@ public class AudioPlayer: NSObject {
 
     private func teardownRemoteCommandCenter() {
         // If there's nothing left that wants background playback, disable lockscreen / control center controls
-        guard !audioSession.wantsBackgroundPlayback else { return }
+        guard !SUIEnvironment.shared.audioSessionRef.wantsBackgroundPlayback else { return }
 
         let commandCenter = MPRemoteCommandCenter.shared()
         commandCenter.playCommand.isEnabled = false

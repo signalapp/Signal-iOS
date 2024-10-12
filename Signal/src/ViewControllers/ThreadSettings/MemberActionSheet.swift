@@ -314,7 +314,7 @@ class MemberActionSheet: OWSTableSheetViewController {
 
     private func viewSystemContactDetails(contactAddress: SignalServiceAddress) {
         guard let viewController = fromViewController else { return }
-        let contactsViewHelper = contactsViewHelper
+        let contactsViewHelper = SUIEnvironment.shared.contactsViewHelperRef
 
         dismiss(animated: true) {
             contactsViewHelper.presentSystemContactsFlow(
@@ -326,7 +326,7 @@ class MemberActionSheet: OWSTableSheetViewController {
 
     private func showAddToSystemContactsActionSheet(contactAddress: SignalServiceAddress) {
         guard let viewController = fromViewController else { return }
-        let contactsViewHelper = contactsViewHelper
+        let contactsViewHelper = SUIEnvironment.shared.contactsViewHelperRef
 
         dismiss(animated: true) {
             let actionSheet = ActionSheetController()

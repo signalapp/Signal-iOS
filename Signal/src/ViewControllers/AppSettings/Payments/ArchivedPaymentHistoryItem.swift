@@ -5,6 +5,7 @@
 
 import Foundation
 public import SignalServiceKit
+import SignalUI
 
 public struct ArchivedPaymentHistoryItem: PaymentsHistoryItem {
 
@@ -59,7 +60,7 @@ public struct ArchivedPaymentHistoryItem: PaymentsHistoryItem {
     }
 
     public var paymentAmount: TSPaymentAmount? {
-        return NSObject.paymentsImpl.unmaskReceiptAmount(
+        return SUIEnvironment.shared.paymentsImplRef.unmaskReceiptAmount(
             data: archivedPayment.receipt
         )?.tsPaymentAmount
     }

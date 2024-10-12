@@ -40,18 +40,18 @@ class PaymentsTest: SignalBaseTest {
 
     func test_passphraseRoundtrip1() {
         let paymentsEntropy = Randomness.generateRandomBytes(PaymentsConstants.paymentsEntropyLength)
-        guard let passphrase = self.paymentsSwift.passphrase(forPaymentsEntropy: paymentsEntropy) else {
+        guard let passphrase = SUIEnvironment.shared.paymentsSwiftRef.passphrase(forPaymentsEntropy: paymentsEntropy) else {
             XCTFail("Missing passphrase.")
             return
         }
-        XCTAssertEqual(paymentsEntropy, self.paymentsSwift.paymentsEntropy(forPassphrase: passphrase))
+        XCTAssertEqual(paymentsEntropy, SUIEnvironment.shared.paymentsSwiftRef.paymentsEntropy(forPassphrase: passphrase))
     }
 
     func test_passphraseRoundtrip2() {
         let passphraseWords: [String] = "glide belt note artist surge aware disease cry mobile assume weird space pigeon scrap vast iron maximum begin rug public spice remember sword cruel".split(separator: " ").map { String($0) }
         let passphrase1 = try! PaymentsPassphrase(words: passphraseWords)
-        let paymentsEntropy = self.paymentsSwift.paymentsEntropy(forPassphrase: passphrase1)!
-        guard let passphrase2 = self.paymentsSwift.passphrase(forPaymentsEntropy: paymentsEntropy) else {
+        let paymentsEntropy = SUIEnvironment.shared.paymentsSwiftRef.paymentsEntropy(forPassphrase: passphrase1)!
+        guard let passphrase2 = SUIEnvironment.shared.paymentsSwiftRef.passphrase(forPaymentsEntropy: paymentsEntropy) else {
             XCTFail("Missing passphrase.")
             return
         }

@@ -25,7 +25,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
 
     private var adHocCallRecordManager: any AdHocCallRecordManager { DependenciesBridge.shared.adHocCallRecordManager }
     private let appReadiness: AppReadiness
-    private var audioSession: AudioSession { NSObject.audioSession }
+    private var audioSession: AudioSession { SUIEnvironment.shared.audioSessionRef }
     private var callLinkStore: any CallLinkRecordStore { DependenciesBridge.shared.callLinkStore }
     let authCredentialManager: any AuthCredentialManager
     private var databaseStorage: SDSDatabaseStorage { SSKEnvironment.shared.databaseStorageRef }

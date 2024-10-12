@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalServiceKit
+import SignalUI
 
 #if targetEnvironment(simulator)
 
@@ -66,14 +67,14 @@ class SimulatorCallUIAdaptee: NSObject, CallUIAdaptee {
         }
 
         // Enable audio for locally accepted calls after the session is configured.
-        self.audioSession.isRTCAudioEnabled = true
+        SUIEnvironment.shared.audioSessionRef.isRTCAudioEnabled = true
     }
 
     func recipientAcceptedCall(_ call: CallMode) {
         AssertIsOnMainThread()
 
         // Enable audio for remotely accepted calls after the session is configured.
-        self.audioSession.isRTCAudioEnabled = true
+        SUIEnvironment.shared.audioSessionRef.isRTCAudioEnabled = true
     }
 
     @MainActor

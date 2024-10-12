@@ -147,8 +147,8 @@ class GroupCall: SignalRingRTC.GroupCallDelegate {
     func groupCall(onLocalDeviceStateChanged groupCall: SignalRingRTC.GroupCall) {
         if groupCall.localDeviceState.joinState == .joined, commonState.setConnectedDateIfNeeded() {
             // make sure we don't terminate audio session during call
-            NSObject.audioSession.isRTCAudioEnabled = true
-            owsAssertDebug(NSObject.audioSession.startAudioActivity(commonState.audioActivity))
+            SUIEnvironment.shared.audioSessionRef.isRTCAudioEnabled = true
+            owsAssertDebug(SUIEnvironment.shared.audioSessionRef.startAudioActivity(commonState.audioActivity))
         }
 
         observers.elements.forEach { $0.groupCallLocalDeviceStateChanged(self) }

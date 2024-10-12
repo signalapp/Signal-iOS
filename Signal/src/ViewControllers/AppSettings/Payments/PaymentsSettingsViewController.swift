@@ -86,11 +86,11 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         guard CurrentAppContext().isMainAppAndActive else {
             return
         }
-        Self.paymentsSwift.updateCurrentPaymentBalance()
+        SUIEnvironment.shared.paymentsSwiftRef.updateCurrentPaymentBalance()
     }
 
     private var hasSignificantBalance: Bool {
-        guard let paymentBalance = Self.paymentsSwift.currentPaymentBalance else {
+        guard let paymentBalance = SUIEnvironment.shared.paymentsSwiftRef.currentPaymentBalance else {
             return false
         }
         let significantPicoMob = 500 * Double(PaymentsConstants.picoMobPerMob)
@@ -146,7 +146,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
 
     private func showSavePaymentsPassphraseUIIfNeeded() {
         guard savePassphraseShown == false else { return }
-        guard let amount = paymentsSwift.currentPaymentBalance?.amount else { return }
+        guard let amount = SUIEnvironment.shared.paymentsSwiftRef.currentPaymentBalance?.amount else { return }
         guard amount.picoMob > 0 else { return }
         savePassphraseShown = true
         showPaymentsPassphraseUI(style: .fromBalance)
@@ -316,7 +316,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        paymentsSwift.updateCurrentPaymentBalance()
+        SUIEnvironment.shared.paymentsSwiftRef.updateCurrentPaymentBalance()
         SSKEnvironment.shared.paymentsCurrenciesRef.updateConversationRatesIfStale()
 
         startUpdateBalanceTimer()
@@ -482,7 +482,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
             conversionInfoView.tintColor = .clear
         }
 
-        if let paymentBalance = Self.paymentsSwift.currentPaymentBalance {
+        if let paymentBalance = SUIEnvironment.shared.paymentsSwiftRef.currentPaymentBalance {
             balanceLabel.attributedText = PaymentsFormat.attributedFormat(paymentAmount: paymentBalance.amount,
                                                                           isShortForm: false)
 
@@ -537,7 +537,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         headerStack.autoPinEdgesToSuperviewEdges()
 
         headerStack.addTapGesture {
-            Self.paymentsSwift.updateCurrentPaymentBalance()
+            SUIEnvironment.shared.paymentsSwiftRef.updateCurrentPaymentBalance()
             SSKEnvironment.shared.paymentsCurrenciesRef.updateConversationRatesIfStale()
         }
     }
@@ -725,7 +725,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         bodyLabel.lineBreakMode = .byWordWrapping
         bodyLabel.textAlignment = .center
 
-        let buttonTitle = (Self.payments.paymentsEntropy != nil
+        let buttonTitle = (SUIEnvironment.shared.paymentsRef.paymentsEntropy != nil
                             ? OWSLocalizedString("SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON",
                                                 comment: "Label for 'activate' button in the 'payments opt-in' view in the app settings.")
                             : OWSLocalizedString("SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON",
@@ -748,7 +748,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
             activateButton
         ])
 
-        if Self.payments.paymentsEntropy == nil {
+        if SUIEnvironment.shared.paymentsRef.paymentsEntropy == nil {
             let buttonTitle = OWSLocalizedString("SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON",
                                                 comment: "Label for 'restore payments' button in the payments settings.")
             let restorePaymentsButton = OWSFlatButton.button(title: buttonTitle,
@@ -981,7 +981,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
 
     @objc
     private func didTapConversionRefresh() {
-        paymentsSwift.updateCurrentPaymentBalance()
+        SUIEnvironment.shared.paymentsSwiftRef.updateCurrentPaymentBalance()
         SSKEnvironment.shared.paymentsCurrenciesRef.updateConversationRatesIfStale()
     }
 
@@ -1056,7 +1056,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
     private func enablePayments() {
         AssertIsOnMainThread()
 
-        guard !payments.isKillSwitchActive else {
+        guard !SUIEnvironment.shared.paymentsRef.isKillSwitchActive else {
             OWSActionSheets.showErrorAlert(message: OWSLocalizedString("SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH",
                                                                       comment: "Error message indicating that payments could not be activated because the feature is not currently available."))
             return
@@ -1098,7 +1098,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
     func didTapRestorePaymentsButton() {
         AssertIsOnMainThread()
 
-        guard Self.payments.paymentsEntropy == nil else {
+        guard SUIEnvironment.shared.paymentsRef.paymentsEntropy == nil else {
             owsFailDebug("paymentsEntropy already set.")
             return
         }
@@ -1133,7 +1133,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
     }
 
     private func showPaymentsPassphraseUI(style: PaymentsViewPassphraseSplashViewController.Style) {
-        guard let passphrase = paymentsSwift.passphrase else {
+        guard let passphrase = SUIEnvironment.shared.paymentsSwiftRef.passphrase else {
             owsFailDebug("Missing passphrase.")
             return
         }
@@ -1149,7 +1149,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
     }
 
     private func didTapConfirmDeactivatePaymentsButton() {
-        guard let paymentBalance = self.paymentsSwift.currentPaymentBalance else {
+        guard let paymentBalance = SUIEnvironment.shared.paymentsSwiftRef.currentPaymentBalance else {
             OWSActionSheets.showErrorAlert(message: OWSLocalizedString("SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE",
                                                                       comment: "Error message indicating that payments could not be deactivated because the current balance is unavailable."))
             return
@@ -1189,7 +1189,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
 
     @objc
     func didTapAddMoneyButton(sender: UIGestureRecognizer) {
-        guard !payments.isKillSwitchActive else {
+        guard !SUIEnvironment.shared.paymentsRef.isKillSwitchActive else {
             OWSActionSheets.showErrorAlert(message: OWSLocalizedString("SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH",
                                                                       comment: "Error message indicating that you cannot transfer into your payments wallet because the feature is not currently available."))
             return
@@ -1201,7 +1201,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
 
     @objc
     func didTapSendPaymentButton(sender: UIGestureRecognizer) {
-        guard !payments.isKillSwitchActive else {
+        guard !SUIEnvironment.shared.paymentsRef.isKillSwitchActive else {
             OWSActionSheets.showErrorAlert(message: OWSLocalizedString("SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH",
                                                                       comment: "Error message indicating that payments cannot be sent because the feature is not currently available."))
             return

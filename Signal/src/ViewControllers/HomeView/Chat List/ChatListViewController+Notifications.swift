@@ -89,7 +89,7 @@ extension ChatListViewController {
             object: nil
         )
 
-        contactsViewHelper.addObserver(self)
+        SUIEnvironment.shared.contactsViewHelperRef.addObserver(self)
 
         SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
     }

@@ -68,7 +68,7 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
         title = OWSLocalizedString("MESSAGE_COMPOSEVIEW_TITLE", comment: "")
 
         updateSignalConnections()
-        contactsViewHelper.addObserver(self)
+        SUIEnvironment.shared.contactsViewHelperRef.addObserver(self)
 
         // Stack View
         signalContactsStackView.isHidden = isNoContactsModeActive
@@ -169,7 +169,7 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
         var searchResults: RecipientSearchResultSet?
         SSKEnvironment.shared.databaseStorageRef.asyncRead(
             block: { tx in
-                searchResults = self.fullTextSearcher.searchForRecipients(
+                searchResults = FullTextSearcher.shared.searchForRecipients(
                     searchText: searchText,
                     includeLocalUser: !self.shouldHideLocalRecipient,
                     includeStories: false,

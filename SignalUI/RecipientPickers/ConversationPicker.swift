@@ -119,7 +119,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         self.topHeader = searchBarWrapper
         self.bottomFooter = footerView
         selection.delegate = self
-        contactsViewHelper.addObserver(self)
+        SUIEnvironment.shared.contactsViewHelperRef.addObserver(self)
     }
 
     private var approvalMode: ApprovalMode {
@@ -270,7 +270,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
         return firstly(on: DispatchQueue.global()) {
             SSKEnvironment.shared.databaseStorageRef.read { tx in
-                self.fullTextSearcher.searchForRecipients(
+                FullTextSearcher.shared.searchForRecipients(
                     searchText: searchText,
                     includeLocalUser: true,
                     includeStories: true,

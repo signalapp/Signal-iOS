@@ -136,7 +136,7 @@ class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
     private func presentCreateNewContactFlow(contactShare: ContactShareViewModel, from viewController: UIViewController) {
         Logger.info("")
 
-        contactsViewHelper.checkEditAuthorization(
+        SUIEnvironment.shared.contactsViewHelperRef.checkEditAuthorization(
             performWhenAllowed: {
                 let modalViewController = AddContactShareToContactsFlowNavigationController(
                     flow: .init(contactShare: contactShare, operation: .createNew),
@@ -153,7 +153,7 @@ class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
     private func presentAddToExistingContactFlow(contactShare: ContactShareViewModel, from viewController: UIViewController) {
         Logger.info("")
 
-        contactsViewHelper.checkEditAuthorization(
+        SUIEnvironment.shared.contactsViewHelperRef.checkEditAuthorization(
             performWhenAllowed: {
                 let modalViewController = AddContactShareToContactsFlowNavigationController(
                     flow: .init(contactShare: contactShare, operation: .addToExisting),

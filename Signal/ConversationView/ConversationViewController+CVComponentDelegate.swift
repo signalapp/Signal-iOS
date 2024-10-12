@@ -901,14 +901,14 @@ extension ConversationViewController: CVComponentDelegate {
     }
 
     public func didTapUpdateSystemContact(_ address: SignalServiceAddress, newNameComponents: PersonNameComponents) {
-        contactsViewHelper.presentSystemContactsFlow(
+        SUIEnvironment.shared.contactsViewHelperRef.presentSystemContactsFlow(
             CreateOrEditContactFlow(address: address, nameComponents: newNameComponents),
             from: self
         )
     }
 
     public func didTapPhoneNumberChange(aci: Aci, phoneNumberOld: String, phoneNumberNew: String) {
-        contactsViewHelper.checkEditAuthorization(
+        SUIEnvironment.shared.contactsViewHelperRef.checkEditAuthorization(
             performWhenAllowed: {
                 let existingContact: CNContact? = {
                     guard let cnContactId = SSKEnvironment.shared.contactManagerRef.cnContactId(for: phoneNumberOld) else {
@@ -922,7 +922,7 @@ extension ConversationViewController: CVComponentDelegate {
                 }
 
                 let address = SignalServiceAddress(serviceId: aci, phoneNumber: phoneNumberNew)
-                self.contactsViewHelper.presentSystemContactsFlow(
+                SUIEnvironment.shared.contactsViewHelperRef.presentSystemContactsFlow(
                     CreateOrEditContactFlow(address: address, contact: existingContact),
                     from: self
                 )

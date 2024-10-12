@@ -79,7 +79,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
 
         AppEnvironment.shared.callService.callServiceState.addObserver(self, syncStateImmediately: false)
         SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
-        contactsViewHelper.addObserver(self)
+        SUIEnvironment.shared.contactsViewHelperRef.addObserver(self)
         groupViewHelper.delegate = self
     }
 
@@ -514,7 +514,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     }
 
     func presentCreateOrEditContactViewController(address: SignalServiceAddress, editImmediately: Bool) {
-        contactsViewHelper.presentSystemContactsFlow(
+        SUIEnvironment.shared.contactsViewHelperRef.presentSystemContactsFlow(
             CreateOrEditContactFlow(address: address, editImmediately: editImmediately),
             from: self,
             completion: {
@@ -546,7 +546,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     }
 
     private func presentAddToExistingContactFlow(address: SignalServiceAddress) {
-        contactsViewHelper.presentSystemContactsFlow(
+        SUIEnvironment.shared.contactsViewHelperRef.presentSystemContactsFlow(
             AddToExistingContactFlow(address: address),
             from: self,
             completion: {

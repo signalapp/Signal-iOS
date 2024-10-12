@@ -259,7 +259,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
             self.ignoreFirstUnmuteAfterRemoteAnswer = call.isOutgoingAudioMuted
 
             // Enable audio for remotely accepted calls after the session is configured.
-            self.audioSession.isRTCAudioEnabled = true
+            SUIEnvironment.shared.audioSessionRef.isRTCAudioEnabled = true
         }
     }
 
@@ -529,7 +529,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
     func provider(_ provider: CXProvider, didActivate audioSession: AVAudioSession) {
         AssertIsOnMainThread()
 
-        _ = self.audioSession.startAudioActivity(self.audioActivity)
+        _ = SUIEnvironment.shared.audioSessionRef.startAudioActivity(self.audioActivity)
 
         guard let call = self.callService.callServiceState.currentCall else {
             owsFailDebug("No current call for AudioSession")
@@ -539,7 +539,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
         switch call.mode {
         case .individual(let individualCall) where individualCall.direction == .incoming:
             // Only enable audio upon activation for locally accepted calls.
-            self.audioSession.isRTCAudioEnabled = true
+            SUIEnvironment.shared.audioSessionRef.isRTCAudioEnabled = true
         case .individual, .groupThread, .callLink:
             break
         }
@@ -548,8 +548,8 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
     func provider(_ provider: CXProvider, didDeactivate audioSession: AVAudioSession) {
         AssertIsOnMainThread()
 
-        self.audioSession.isRTCAudioEnabled = false
-        self.audioSession.endAudioActivity(self.audioActivity)
+        SUIEnvironment.shared.audioSessionRef.isRTCAudioEnabled = false
+        SUIEnvironment.shared.audioSessionRef.endAudioActivity(self.audioActivity)
     }
 
     // MARK: - Util

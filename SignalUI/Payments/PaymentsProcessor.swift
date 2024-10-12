@@ -657,7 +657,7 @@ private class PaymentProcessingOperation: OWSOperation, @unchecked Sendable {
     private func submitOutgoingPayment(paymentModel: TSPaymentModel) -> Promise<Void> {
         owsAssertDebug(paymentModel.paymentState == .outgoingUnsubmitted)
 
-        guard !payments.isKillSwitchActive else {
+        guard !SUIEnvironment.shared.paymentsRef.isKillSwitchActive else {
             do {
                 try SSKEnvironment.shared.databaseStorageRef.write { transaction in
                     try paymentModel.updatePaymentModelState(fromState: .outgoingUnsubmitted,
@@ -711,7 +711,7 @@ private class PaymentProcessingOperation: OWSOperation, @unchecked Sendable {
         }
 
         return firstly { () -> Promise<MobileCoinAPI> in
-            Self.paymentsImpl.getMobileCoinAPI()
+            SUIEnvironment.shared.paymentsImplRef.getMobileCoinAPI()
         }.then(on: DispatchQueue.global()) { (mobileCoinAPI: MobileCoinAPI) -> Promise<Void> in
             return mobileCoinAPI.submitTransaction(transaction: transaction)
         }.then(on: DispatchQueue.global()) { _ in
@@ -748,7 +748,7 @@ private class PaymentProcessingOperation: OWSOperation, @unchecked Sendable {
         }
 
         return firstly { () -> Promise<MobileCoinAPI> in
-            Self.paymentsImpl.getMobileCoinAPI()
+            SUIEnvironment.shared.paymentsImplRef.getMobileCoinAPI()
         }.then(on: DispatchQueue.global()) { (mobileCoinAPI: MobileCoinAPI) -> Promise<Void> in
             firstly { () -> Promise<MCOutgoingTransactionStatus> in
                 guard let mcTransactionData = paymentModel.mcTransactionData,
@@ -780,7 +780,7 @@ private class PaymentProcessingOperation: OWSOperation, @unchecked Sendable {
                                                                  transaction: transaction)
 
                         // If we've verified a payment, our balance may have changed.
-                        Self.paymentsImpl.updateCurrentPaymentBalance()
+                        SUIEnvironment.shared.paymentsImplRef.updateCurrentPaymentBalance()
                     case .failed:
                         Self.markAsFailed(paymentModel: paymentModel,
                                           paymentFailure: .validationFailed,
@@ -880,7 +880,7 @@ private class PaymentProcessingOperation: OWSOperation, @unchecked Sendable {
         owsAssertDebug(paymentModel.paymentState == .incomingUnverified)
 
         return firstly { () -> Promise<MobileCoinAPI> in
-            Self.paymentsImpl.getMobileCoinAPI()
+            SUIEnvironment.shared.paymentsImplRef.getMobileCoinAPI()
         }.then(on: DispatchQueue.global()) { (mobileCoinAPI: MobileCoinAPI) -> Promise<MCIncomingReceiptStatus> in
 
             guard let mcReceiptData = paymentModel.mcReceiptData,
@@ -913,7 +913,7 @@ private class PaymentProcessingOperation: OWSOperation, @unchecked Sendable {
                                                              transaction: transaction)
 
                     // If we've verified a payment, our balance may have changed.
-                    Self.paymentsImpl.updateCurrentPaymentBalance()
+                    SUIEnvironment.shared.paymentsImplRef.updateCurrentPaymentBalance()
                 case .failed:
                     Self.markAsFailed(paymentModel: paymentModel,
                                       paymentFailure: .validationFailed,
@@ -938,7 +938,7 @@ private class PaymentProcessingOperation: OWSOperation, @unchecked Sendable {
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
             paymentModel.anyRemove(transaction: transaction)
 
-            Self.payments.scheduleReconciliationNow(transaction: transaction)
+            SUIEnvironment.shared.paymentsRef.scheduleReconciliationNow(transaction: transaction)
         }
     }
 

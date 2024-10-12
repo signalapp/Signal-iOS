@@ -51,7 +51,7 @@ public class AudioActivity: NSObject {
     }
 
     deinit {
-        audioSession.ensureAudioState()
+        SUIEnvironment.shared.audioSessionRef.ensureAudioState()
     }
 
     override public var description: String {

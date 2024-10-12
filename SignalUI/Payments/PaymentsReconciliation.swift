@@ -93,7 +93,7 @@ public class PaymentsReconciliation: Dependencies {
             return Promise.value(())
         }
         return firstly { () -> Promise<MobileCoinAPI> in
-            Self.paymentsImpl.getMobileCoinAPI()
+            SUIEnvironment.shared.paymentsImplRef.getMobileCoinAPI()
         }.then(on: DispatchQueue.global()) { (mobileCoinAPI: MobileCoinAPI) -> Promise<MobileCoin.AccountActivity> in
             mobileCoinAPI.getAccountActivity()
         }.map(on: DispatchQueue.global()) { (accountActivity: MobileCoin.AccountActivity) -> Void in

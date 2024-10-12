@@ -34,7 +34,7 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
         super.viewWillDisappear(animated)
 
         // We may have just transferred in; update the balance.
-        paymentsSwift.updateCurrentPaymentBalance()
+        SUIEnvironment.shared.paymentsSwiftRef.updateCurrentPaymentBalance()
     }
 
     public override func themeDidChange() {
@@ -116,7 +116,7 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
             configureWithSubviews(subviews: [label])
         }
 
-        guard let walletAddressBase58 = payments.walletAddressBase58(),
+        guard let walletAddressBase58 = SUIEnvironment.shared.paymentsRef.walletAddressBase58(),
               let walletAddressBase58Data = walletAddressBase58.data(using: .utf8) else {
             configureForError()
             return
@@ -181,7 +181,7 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
     private func didTapCopyAddress() {
         AssertIsOnMainThread()
 
-        guard let walletAddressBase58 = payments.walletAddressBase58() else {
+        guard let walletAddressBase58 = SUIEnvironment.shared.paymentsRef.walletAddressBase58() else {
             owsFailDebug("Missing walletAddressBase58.")
             return
         }
@@ -198,7 +198,7 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
 
     @objc
     private func didTapShare() {
-        guard let walletAddressBase58 = payments.walletAddressBase58() else {
+        guard let walletAddressBase58 = SUIEnvironment.shared.paymentsRef.walletAddressBase58() else {
             owsFailDebug("Missing walletAddressBase58.")
             return
         }

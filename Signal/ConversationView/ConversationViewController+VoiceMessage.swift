@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalServiceKit
+import SignalUI
 
 extension ConversationViewController {
     func checkPermissionsAndStartRecordingVoiceMessage() {
@@ -15,7 +16,7 @@ extension ConversationViewController {
 
         let inProgressVoiceMessage = VoiceMessageInProgressDraft(
             thread: thread,
-            audioSession: audioSession,
+            audioSession: SUIEnvironment.shared.audioSessionRef,
             sleepManager: DeviceSleepManager.shared
         )
         viewState.inProgressVoiceMessage = inProgressVoiceMessage

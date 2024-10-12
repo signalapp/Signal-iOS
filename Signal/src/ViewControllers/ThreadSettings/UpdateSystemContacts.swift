@@ -58,7 +58,7 @@ private class AddToContactsFlowNavigationController: UINavigationController, CNC
 
         switch flow {
         case is CreateOrEditContactFlow:
-            let contactViewController = contactsViewHelper.contactViewController(for: flow)
+            let contactViewController = SUIEnvironment.shared.contactsViewHelperRef.contactViewController(for: flow)
             // CNContactViewController doesn't provide a Cancel button unless in editing mode.
             if !flow.editImmediately {
                 contactViewController.navigationItem.leftBarButtonItem = .cancelButton(dismissingFrom: self, completion: completion)
@@ -110,7 +110,7 @@ private class AddToContactsFlowNavigationController: UINavigationController, CNC
             return
         }
         addToContactFlow.contact = SSKEnvironment.shared.contactManagerRef.cnContact(withId: systemContact.cnContactId)
-        let contactViewController = contactsViewHelper.contactViewController(for: addToContactFlow)
+        let contactViewController = SUIEnvironment.shared.contactsViewHelperRef.contactViewController(for: addToContactFlow)
         pushViewController(contactViewController, animated: true)
     }
 

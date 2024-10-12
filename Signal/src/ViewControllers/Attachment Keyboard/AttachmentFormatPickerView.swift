@@ -169,7 +169,7 @@ class AttachmentFormatPickerView: UIView {
         case payment
 
         private static var contactCases: [AttachmentType] {
-            if payments.shouldShowPaymentsUI {
+            if SUIEnvironment.shared.paymentsRef.shouldShowPaymentsUI {
                 return cases(except: [])
             } else {
                 return cases(except: [.payment])

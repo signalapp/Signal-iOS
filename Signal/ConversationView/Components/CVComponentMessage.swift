@@ -235,7 +235,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         if let paymentAttachment = componentState.paymentAttachment {
             let paymentAmount: UInt64? = {
                 let receipt = paymentAttachment.notification.mcReceiptData
-                guard let decryptedAmount = paymentsImpl.unmaskReceiptAmount(data: receipt) else {
+                guard let decryptedAmount = SUIEnvironment.shared.paymentsImplRef.unmaskReceiptAmount(data: receipt) else {
                     // Valid path for sender
                     return paymentAttachment.model?.paymentAmount?.picoMob
                 }

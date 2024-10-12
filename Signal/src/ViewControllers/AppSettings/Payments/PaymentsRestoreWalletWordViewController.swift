@@ -27,7 +27,7 @@ public class PaymentsRestoreWalletWordViewController: OWSViewController {
               !wordText.isEmpty else {
             return false
         }
-        return Self.paymentsSwift.isValidPassphraseWord(wordText)
+        return SUIEnvironment.shared.paymentsSwiftRef.isValidPassphraseWord(wordText)
     }
 
     private let warningLabel = UILabel()

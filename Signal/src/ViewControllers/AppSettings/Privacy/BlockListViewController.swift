@@ -22,7 +22,7 @@ class BlockListViewController: OWSTableViewController2 {
 
         super.viewDidLoad()
 
-        contactsViewHelper.addObserver(self)
+        SUIEnvironment.shared.contactsViewHelperRef.addObserver(self)
 
         tableView.estimatedRowHeight = 60
         tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)

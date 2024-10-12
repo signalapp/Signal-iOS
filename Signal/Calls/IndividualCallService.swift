@@ -32,7 +32,7 @@ final class IndividualCallService: CallServiceStateObserver {
         self.callServiceState.addObserver(self)
     }
 
-    private var audioSession: AudioSession { NSObject.audioSession }
+    private var audioSession: AudioSession { SUIEnvironment.shared.audioSessionRef }
     private var callService: CallService { AppEnvironment.shared.callService }
     private var callUIAdapter: CallUIAdapter { AppEnvironment.shared.callService.callUIAdapter }
     private var contactManager: any ContactManager { SSKEnvironment.shared.contactManagerRef }

@@ -43,7 +43,7 @@ class NameCollisionResolutionViewController: OWSTableViewController2 {
         self.collisionDelegate = collisionDelegate
         super.init()
 
-        contactsViewHelper.addObserver(self)
+        SUIEnvironment.shared.contactsViewHelperRef.addObserver(self)
     }
 
     override func viewDidLoad() {
@@ -254,7 +254,7 @@ class NameCollisionResolutionViewController: OWSTableViewController2 {
     }
 
     private func presentUpdateContactViewController(for address: SignalServiceAddress) {
-        contactsViewHelper.presentSystemContactsFlow(
+        SUIEnvironment.shared.contactsViewHelperRef.presentSystemContactsFlow(
             CreateOrEditContactFlow(address: address),
             from: self
         )

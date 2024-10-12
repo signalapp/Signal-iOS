@@ -487,7 +487,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
 
         dismissKeyBoard()
 
-        if payments.isKillSwitchActive {
+        if SUIEnvironment.shared.paymentsRef.isKillSwitchActive {
             OWSActionSheets.showErrorAlert(message: OWSLocalizedString("SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH",
                                                                       comment: "Error message indicating that payments cannot be sent because the feature is not currently available."))
             return
@@ -589,7 +589,7 @@ fileprivate extension ConversationViewController {
         AssertIsOnMainThread()
 
         dismissKeyBoard()
-        contactsViewHelper.checkReadAuthorization(
+        SUIEnvironment.shared.contactsViewHelperRef.checkReadAuthorization(
             purpose: .share,
             performWhenAllowed: {
                 let contactsPicker = ContactPickerViewController(allowsMultipleSelection: false, subtitleCellType: .none)

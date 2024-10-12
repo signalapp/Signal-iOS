@@ -44,7 +44,7 @@ class DebugUIPayments: DebugUIPage, Dependencies {
         })
         sectionItems.append(OWSTableItem(title: "Reconcile now") {
             SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                Self.payments.scheduleReconciliationNow(transaction: transaction)
+                SUIEnvironment.shared.paymentsRef.scheduleReconciliationNow(transaction: transaction)
             }
         })
 
@@ -194,7 +194,7 @@ class DebugUIPayments: DebugUIPage, Dependencies {
         let paymentAmount = TSPaymentAmount(currency: .mobileCoin, picoMob: picoMob)
         let recipient = SendPaymentRecipientImpl.address(address: contactThread .contactAddress)
         firstly(on: DispatchQueue.global()) { () -> Promise<PreparedPayment> in
-            Self.paymentsImpl.prepareOutgoingPayment(
+            SUIEnvironment.shared.paymentsImplRef.prepareOutgoingPayment(
                 recipient: recipient,
                 paymentAmount: paymentAmount,
                 memoMessage: "Tiny: \(count)",
@@ -202,9 +202,9 @@ class DebugUIPayments: DebugUIPage, Dependencies {
                 canDefragment: false
             )
         }.then(on: DispatchQueue.global()) { (preparedPayment: PreparedPayment) in
-            Self.paymentsImpl.initiateOutgoingPayment(preparedPayment: preparedPayment)
+            SUIEnvironment.shared.paymentsImplRef.initiateOutgoingPayment(preparedPayment: preparedPayment)
         }.then(on: DispatchQueue.global()) { (paymentModel: TSPaymentModel) in
-            Self.paymentsImpl.blockOnOutgoingVerification(paymentModel: paymentModel)
+            SUIEnvironment.shared.paymentsImplRef.blockOnOutgoingVerification(paymentModel: paymentModel)
         }.done(on: DispatchQueue.global()) { _ in
             if count > 1 {
                 Self.sendTinyPayments(contactThread: contactThread, count: count - 1)

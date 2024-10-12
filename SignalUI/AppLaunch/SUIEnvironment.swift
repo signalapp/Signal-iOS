@@ -28,6 +28,9 @@ public class SUIEnvironment: NSObject {
     public var contactsViewHelperRef: ContactsViewHelper = ContactsViewHelper()
 
     public var paymentsRef: Payments!
+    /// This should be deprecated.
+    public var paymentsSwiftRef: PaymentsSwift { paymentsRef as! PaymentsSwift }
+    public var paymentsImplRef: PaymentsImpl { paymentsRef as! PaymentsImpl }
 
     private(set) public var linkPreviewFetcher: (any LinkPreviewFetcher)!
 

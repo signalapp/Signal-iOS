@@ -896,7 +896,7 @@ class CameraCaptureSession: NSObject {
         assertIsOnSessionQueue()
 
         // This check will fail if we do not have recording permissions.
-        guard audioSession.startAudioActivity(recordingAudioActivity) else {
+        guard SUIEnvironment.shared.audioSessionRef.startAudioActivity(recordingAudioActivity) else {
             Logger.warn("Unable to start recording audio activity!")
             return false
         }
@@ -935,7 +935,7 @@ class CameraCaptureSession: NSObject {
         audioCaptureSession.removeInput(audioCaptureInput)
         self.audioCaptureInput = nil
 
-        audioSession.endAudioActivity(recordingAudioActivity)
+        SUIEnvironment.shared.audioSessionRef.endAudioActivity(recordingAudioActivity)
     }
 
     // MARK: Volume Button observation

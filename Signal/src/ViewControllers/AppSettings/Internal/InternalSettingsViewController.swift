@@ -196,12 +196,12 @@ class InternalSettingsViewController: OWSTableViewController2 {
         let paymentsSection = OWSTableSection(title: "Payments")
         paymentsSection.add(.copyableItem(label: "MobileCoin Environment", value: MobileCoinAPI.Environment.current.description))
         paymentsSection.add(.copyableItem(label: "Enabled?", value: SSKEnvironment.shared.paymentsHelperRef.arePaymentsEnabled ? "Yes" : "No"))
-        if SSKEnvironment.shared.paymentsHelperRef.arePaymentsEnabled, let paymentsEntropy = paymentsSwift.paymentsEntropy {
+        if SSKEnvironment.shared.paymentsHelperRef.arePaymentsEnabled, let paymentsEntropy = SUIEnvironment.shared.paymentsSwiftRef.paymentsEntropy {
             paymentsSection.add(.copyableItem(label: "Entropy", value: paymentsEntropy.hexadecimalString))
-            if let passphrase = paymentsSwift.passphrase {
+            if let passphrase = SUIEnvironment.shared.paymentsSwiftRef.passphrase {
                 paymentsSection.add(.copyableItem(label: "Mnemonic", value: passphrase.asPassphrase))
             }
-            if let walletAddressBase58 = paymentsSwift.walletAddressBase58() {
+            if let walletAddressBase58 = SUIEnvironment.shared.paymentsSwiftRef.walletAddressBase58() {
                 paymentsSection.add(.copyableItem(label: "B58", value: walletAddressBase58))
             }
         }

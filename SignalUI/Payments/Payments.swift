@@ -82,7 +82,7 @@ extension PaymentsPassphrase {
         }
         if validateWords {
             for word in words {
-                guard Self.paymentsSwift.isValidPassphraseWord(word) else {
+                guard SUIEnvironment.shared.paymentsSwiftRef.isValidPassphraseWord(word) else {
                     Logger.warn("Invalid passphrase word.")
                     throw PaymentsError.invalidPassphrase
                 }

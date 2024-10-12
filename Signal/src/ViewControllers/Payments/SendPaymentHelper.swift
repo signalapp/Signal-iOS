@@ -80,7 +80,7 @@ class SendPaymentHelper: Dependencies {
     public func refreshObservedValues() {
         updateCurrentCurrencyConversion()
 
-        Self.paymentsSwift.updateCurrentPaymentBalance()
+        SUIEnvironment.shared.paymentsSwiftRef.updateCurrentPaymentBalance()
         SSKEnvironment.shared.paymentsCurrenciesRef.updateConversationRatesIfStale()
     }
 
@@ -151,7 +151,7 @@ class SendPaymentHelper: Dependencies {
 
     private func updateMaximumPaymentAmount() {
         firstly {
-            Self.paymentsSwift.maximumPaymentAmount()
+            SUIEnvironment.shared.paymentsSwiftRef.maximumPaymentAmount()
         }.done(on: DispatchQueue.main) { [weak self] maximumPaymentAmount in
             guard let self = self else { return }
             self.maximumPaymentAmount = maximumPaymentAmount

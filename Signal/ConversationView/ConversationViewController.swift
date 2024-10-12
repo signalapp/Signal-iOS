@@ -172,7 +172,7 @@ public final class ConversationViewController: OWSViewController {
 
         self.inputAccessoryPlaceholder.delegate = self
 
-        contactsViewHelper.addObserver(self)
+        SUIEnvironment.shared.contactsViewHelperRef.addObserver(self)
 
         self.actionOnOpen = action
 

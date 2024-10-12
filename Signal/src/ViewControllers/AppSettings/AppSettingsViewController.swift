@@ -234,7 +234,7 @@ class AppSettingsViewController: OWSTableViewController2 {
         ))
         contents.add(section2)
 
-        if payments.shouldShowPaymentsUI {
+        if SUIEnvironment.shared.paymentsRef.shouldShowPaymentsUI {
             let paymentsSection = OWSTableSection()
             paymentsSection.add(.init(
                 customCellBlock: {

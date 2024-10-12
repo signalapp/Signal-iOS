@@ -437,7 +437,7 @@ public class MobileCoinAPI: Dependencies {
                 switch result {
                 case .success(let transactionStatus):
                     future.resolve(MCOutgoingTransactionStatus(transactionStatus: transactionStatus))
-                    Self.paymentsSwift.clearCurrentPaymentBalance()
+                    SUIEnvironment.shared.paymentsSwiftRef.clearCurrentPaymentBalance()
                 case .failure(let error):
                     let error = Self.convertMCError(error: error)
                     future.reject(error)
@@ -605,7 +605,7 @@ extension MobileCoinAPI {
                 owsFailDebug("Error: \(error), reason: \(reason)")
 
                 // Immediately discard the SDK client instance; the auth token may be stale.
-                SSKEnvironment.shared.payments.didReceiveMCAuthError()
+                SUIEnvironment.shared.paymentsRef.didReceiveMCAuthError()
 
                 return PaymentsError.authorizationFailure
             case .invalidServerResponse(let reason):

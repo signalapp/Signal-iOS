@@ -575,7 +575,7 @@ public extension PaymentsImpl {
         switch recipient {
         case .address(let recipientAddress):
             // Cannot send "user-to-user" payment if kill switch is active.
-            guard !payments.isKillSwitchActive else {
+            guard !SUIEnvironment.shared.paymentsRef.isKillSwitchActive else {
                 return Promise(error: PaymentsError.killSwitch)
             }
 
@@ -1143,7 +1143,7 @@ public extension PaymentsImpl {
 
 public class PaymentsEventsMainApp: NSObject, PaymentsEvents {
     public func willInsertPayment(_ paymentModel: TSPaymentModel, transaction: SDSAnyWriteTransaction) {
-        let payments = self.payments as! PaymentsImpl
+        let payments = SUIEnvironment.shared.paymentsRef as! PaymentsImpl
 
         payments.paymentsReconciliation.willInsertPayment(paymentModel, transaction: transaction)
 
@@ -1152,21 +1152,21 @@ public class PaymentsEventsMainApp: NSObject, PaymentsEvents {
     }
 
     public func willUpdatePayment(_ paymentModel: TSPaymentModel, transaction: SDSAnyWriteTransaction) {
-        let payments = self.payments as! PaymentsImpl
+        let payments = SUIEnvironment.shared.paymentsRef as! PaymentsImpl
         payments.paymentsReconciliation.willUpdatePayment(paymentModel, transaction: transaction)
     }
 
     public func updateLastKnownLocalPaymentAddressProtoData(transaction: SDSAnyWriteTransaction) {
-        paymentsImpl.updateLastKnownLocalPaymentAddressProtoData(transaction: transaction)
+        SUIEnvironment.shared.paymentsImplRef.updateLastKnownLocalPaymentAddressProtoData(transaction: transaction)
     }
 
     public func paymentsStateDidChange() {
-        paymentsImpl.updateCurrentPaymentBalance()
+        SUIEnvironment.shared.paymentsImplRef.updateCurrentPaymentBalance()
     }
 
     public func clearState(transaction: SDSAnyWriteTransaction) {
         SSKEnvironment.shared.paymentsHelperRef.clearState(transaction: transaction)
-        payments.clearState(transaction: transaction)
+        SUIEnvironment.shared.paymentsRef.clearState(transaction: transaction)
     }
 }
 

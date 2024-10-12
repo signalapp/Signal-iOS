@@ -154,13 +154,13 @@ public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController
 
     @objc
     private func didTapDoneButton() {
-        guard payments.paymentsEntropy == nil else {
+        guard SUIEnvironment.shared.paymentsRef.paymentsEntropy == nil else {
             owsFailDebug("paymentsEntropy already set.")
             dismiss(animated: true, completion: nil)
             showRestoreFailureAlert()
             return
         }
-        guard let paymentsEntropy = paymentsSwift.paymentsEntropy(forPassphrase: passphrase) else {
+        guard let paymentsEntropy = SUIEnvironment.shared.paymentsSwiftRef.paymentsEntropy(forPassphrase: passphrase) else {
             showInvalidPassphraseAlert()
             return
         }

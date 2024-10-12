@@ -6,6 +6,7 @@
 public import Foundation
 import CallKit
 public import SignalServiceKit
+import SignalUI
 import WebRTC
 import UIKit
 
@@ -98,7 +99,7 @@ public class CallUIAdapter: NSObject {
         Logger.info("remoteAddress: \(caller)")
 
         // make sure we don't terminate audio session during call
-        _ = audioSession.startAudioActivity(call.commonState.audioActivity)
+        _ = SUIEnvironment.shared.audioSessionRef.startAudioActivity(call.commonState.audioActivity)
 
         adaptee.reportIncomingCall(call) { error in
             AssertIsOnMainThread()
@@ -148,7 +149,7 @@ public class CallUIAdapter: NSObject {
     @MainActor
     internal func startOutgoingCall(call: SignalCall) {
         // make sure we don't terminate audio session during call
-        _ = audioSession.startAudioActivity(call.commonState.audioActivity)
+        _ = SUIEnvironment.shared.audioSessionRef.startAudioActivity(call.commonState.audioActivity)
 
         adaptee.startOutgoingCall(call: call)
     }
