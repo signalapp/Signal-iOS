@@ -2048,8 +2048,8 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
     }
 
     fileprivate func returnToCall(from viewModel: CallViewModel) {
-        guard WindowManager.shared.hasCall else { return }
-        WindowManager.shared.returnToCallView()
+        guard AppEnvironment.shared.windowManagerRef.hasCall else { return }
+        AppEnvironment.shared.windowManagerRef.returnToCallView()
     }
 
     fileprivate func showCallInfo(from viewModel: CallViewModel) {

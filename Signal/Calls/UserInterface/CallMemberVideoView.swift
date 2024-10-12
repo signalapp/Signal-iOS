@@ -61,7 +61,7 @@ class CallMemberVideoView: UIView, CallMemberComposableView {
         clipsToBounds = true
         switch type {
         case .local:
-            self.isHidden = call.isOutgoingVideoMuted || WindowManager.shared.isCallInPip
+            self.isHidden = call.isOutgoingVideoMuted || AppEnvironment.shared.windowManagerRef.isCallInPip
             if case let .local(videoView) = callViewWrapper {
                 videoView.captureSession = call.videoCaptureController.captureSession
             } else {

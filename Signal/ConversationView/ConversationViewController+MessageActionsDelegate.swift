@@ -239,11 +239,11 @@ extension ConversationViewController: MessageActionsDelegate {
             }
         }()
 
-        self.speechManager.speak(utterance)
+        AppEnvironment.shared.speechManagerRef.speak(utterance)
     }
 
     func messageActionsStopSpeakingItem(_ itemViewModel: CVItemViewModelImpl) {
-        self.speechManager.stop()
+        AppEnvironment.shared.speechManagerRef.stop()
     }
 
     func messageActionsShowPaymentDetails(_ itemViewModel: CVItemViewModelImpl) {

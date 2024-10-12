@@ -94,11 +94,11 @@ class DeviceTransferService: NSObject {
     private(set) var session: MCSession? {
         didSet {
             if let oldValue = oldValue {
-                deviceSleepManager.removeBlock(blockObject: oldValue)
+                DeviceSleepManager.shared.removeBlock(blockObject: oldValue)
             }
 
             if let session = session {
-                deviceSleepManager.addBlock(blockObject: session)
+                DeviceSleepManager.shared.addBlock(blockObject: session)
             }
         }
     }

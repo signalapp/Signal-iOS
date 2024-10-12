@@ -124,7 +124,7 @@ class VoiceMessageDraftView: UIStackView {
 
     @objc
     private func didTogglePlayPause() {
-        cvAudioPlayer.stopAll()
+        AppEnvironment.shared.cvAudioPlayerRef.stopAll()
         playPauseButton.setSelected(!playPauseButton.isSelected, animated: true)
         voiceMessageInterruptedDraft.audioPlayer.togglePlayState()
     }

@@ -93,7 +93,7 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
 
         // Listen for when our audio attachment finishes playing, so we can
         // start playing the next attachment.
-        cvAudioPlayer.addListener(self)
+        AppEnvironment.shared.cvAudioPlayerRef.addListener(self)
     }
 
     private var stackViewConfig: CVStackViewConfig {
@@ -145,8 +145,8 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
         }
 
         if messageWasDeleted,
-           cvAudioPlayer.audioPlaybackState(forAttachmentId: attachment.resourceId) == .playing {
-            cvAudioPlayer.stopAll()
+           AppEnvironment.shared.cvAudioPlayerRef.audioPlaybackState(forAttachmentId: attachment.resourceId) == .playing {
+            AppEnvironment.shared.cvAudioPlayerRef.stopAll()
         }
     }
 
@@ -166,11 +166,11 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
         }
 
         if audioAttachment.isDownloaded {
-            cvAudioPlayer.setPlaybackRate(
+            AppEnvironment.shared.cvAudioPlayerRef.setPlaybackRate(
                 renderItem.itemViewState.audioPlaybackRate,
                 forThreadUniqueId: renderItem.itemModel.thread.uniqueId
             )
-            cvAudioPlayer.togglePlayState(forAudioAttachment: audioAttachment)
+            AppEnvironment.shared.cvAudioPlayerRef.togglePlayState(forAudioAttachment: audioAttachment)
             return true
 
         } else if audioAttachment.isDownloading, let pointerId = audioAttachment.attachmentPointer?.attachment.resourceId {
@@ -266,7 +266,7 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
             // we still call `scrubToLocation` above in order to update the slider.
             audioMessageView.clearOverrideProgress(animated: false)
             let scrubbedTime = audioMessageView.scrubToLocation(location)
-            cvAudioPlayer.setPlaybackProgress(progress: scrubbedTime, forAttachmentStream: attachmentStream)
+            AppEnvironment.shared.cvAudioPlayerRef.setPlaybackProgress(progress: scrubbedTime, forAttachmentStream: attachmentStream)
         case .possible, .began, .failed, .cancelled:
             audioMessageView.clearOverrideProgress(animated: false)
         @unknown default:
@@ -314,7 +314,7 @@ extension CVComponentAudioAttachment: CVAudioPlayerListener {
 
     func audioPlayerDidFinish(attachmentId: TSResourceId) {
         guard attachmentId == audioAttachment.attachment.resourceId else { return }
-        cvAudioPlayer.autoplayNextAudioAttachmentIfNeeded(nextAudioAttachment)
+        AppEnvironment.shared.cvAudioPlayerRef.autoplayNextAudioAttachmentIfNeeded(nextAudioAttachment)
     }
 
     func audioPlayerDidMarkViewed(attachmentId: TSResourceId) {}

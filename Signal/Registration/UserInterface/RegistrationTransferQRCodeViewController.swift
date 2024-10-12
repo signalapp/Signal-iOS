@@ -177,10 +177,10 @@ public class RegistrationTransferQRCodeViewController: OWSViewController, OWSNav
     override public func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        deviceTransferService.addObserver(self)
+        AppEnvironment.shared.deviceTransferServiceRef.addObserver(self)
 
         do {
-            let url = try deviceTransferService.startAcceptingTransfersFromOldDevices(
+            let url = try AppEnvironment.shared.deviceTransferServiceRef.startAcceptingTransfersFromOldDevices(
                 mode: .primary
             )
 
@@ -193,8 +193,8 @@ public class RegistrationTransferQRCodeViewController: OWSViewController, OWSNav
     public override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        deviceTransferService.removeObserver(self)
-        deviceTransferService.stopAcceptingTransfersFromOldDevices()
+        AppEnvironment.shared.deviceTransferServiceRef.removeObserver(self)
+        AppEnvironment.shared.deviceTransferServiceRef.stopAcceptingTransfersFromOldDevices()
     }
 
     // MARK: - QR Code expansion

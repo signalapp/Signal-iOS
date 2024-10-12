@@ -64,7 +64,7 @@ class OutgoingDeviceTransferNavigationController: UINavigationController {
     func dismissActionSheet() {
         AssertIsOnMainThread()
 
-        deviceTransferService.cancelTransferToNewDevice()
+        AppEnvironment.shared.deviceTransferServiceRef.cancelTransferToNewDevice()
 
         actionSheetController?.dismiss(animated: true, completion: nil)
     }

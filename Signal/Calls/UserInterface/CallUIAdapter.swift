@@ -132,7 +132,7 @@ public class CallUIAdapter: NSObject {
 
         let sentAtTimestamp = Date(millisecondsSince1970: individualCall.sentAtTimestamp)
         SSKEnvironment.shared.databaseStorageRef.read { tx in
-            notificationPresenterImpl.presentMissedCall(
+            SSKEnvironment.shared.notificationPresenterImplRef.presentMissedCall(
                 notificationInfo: NotificationPresenterImpl.CallNotificationInfo(
                     groupingId: individualCall.commonState.localId,
                     thread: individualCall.thread,
@@ -234,7 +234,7 @@ public class CallUIAdapter: NSObject {
         }
 
         callViewController.modalTransitionStyle = .crossDissolve
-        WindowManager.shared.startCall(viewController: callViewController)
+        AppEnvironment.shared.windowManagerRef.startCall(viewController: callViewController)
     }
 
     @MainActor

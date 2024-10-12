@@ -590,7 +590,7 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
         // Only allow this to be called once at a time so it doesn't save a
         // previously-forced max brightness.
         guard oldBrightness == nil else { return }
-        let screen = WindowManager.shared.rootWindow.screen
+        let screen = AppEnvironment.shared.windowManagerRef.rootWindow.screen
         oldBrightness = screen.brightness
         screen.brightness = 1.0
     }
@@ -602,7 +602,7 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
     /// in its `viewDidDisappear(_:)`.
     private func restoreBrightness() {
         guard let oldBrightness else { return }
-        let screen = WindowManager.shared.rootWindow.screen
+        let screen = AppEnvironment.shared.windowManagerRef.rootWindow.screen
         // If the brightness was adjusted manually below 100%, just keep that.
         if screen.brightness >= 1.0 {
             screen.brightness = oldBrightness

@@ -15,6 +15,7 @@ import SignalUI
  * their corresponding consequences are implemented in the CXProviderDelegate methods, e.g. using the CallService
  */
 final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXProviderDelegate {
+    var notificationPresenterImpl: NotificationPresenterImpl { SSKEnvironment.shared.notificationPresenterImplRef }
 
     private let callManager: CallKitCallManager
     var callService: CallService { AppEnvironment.shared.callService }
@@ -214,7 +215,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
                  Only add incoming call to the app's list of calls if the call was allowed (i.e. there was no error)
                  since calls may be "denied" for various legitimate reasons. See CXErrorCodeIncomingCallError.
                  */
-                self.pushRegistrationManager.didFinishReportingIncomingCall()
+                AppEnvironment.shared.pushRegistrationManagerRef.didFinishReportingIncomingCall()
 
                 guard error == nil else {
                     completion(error)

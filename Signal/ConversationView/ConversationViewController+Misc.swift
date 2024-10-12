@@ -452,7 +452,7 @@ extension ConversationViewController {
             return
         }
 
-        guard !WindowManager.shared.shouldShowCallView else {
+        guard !AppEnvironment.shared.windowManagerRef.shouldShowCallView else {
             return
         }
 

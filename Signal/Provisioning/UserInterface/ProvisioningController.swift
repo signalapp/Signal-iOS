@@ -43,15 +43,13 @@ public class ProvisioningController: NSObject {
             messageFactory: ProvisioningCoordinatorImpl.Wrappers.MessageFactory(),
             preKeyManager: DependenciesBridge.shared.preKeyManager,
             profileManager: ProvisioningCoordinatorImpl.Wrappers.ProfileManager(SSKEnvironment.shared.profileManagerImplRef),
-            pushRegistrationManager: ProvisioningCoordinatorImpl.Wrappers.PushRegistrationManager(
-                self.pushRegistrationManager
-            ),
+            pushRegistrationManager: ProvisioningCoordinatorImpl.Wrappers.PushRegistrationManager(AppEnvironment.shared.pushRegistrationManagerRef),
             receiptManager: ProvisioningCoordinatorImpl.Wrappers.ReceiptManager(SSKEnvironment.shared.receiptManagerRef),
             registrationStateChangeManager: DependenciesBridge.shared.registrationStateChangeManager,
             signalService: SSKEnvironment.shared.signalServiceRef,
             storageServiceManager: SSKEnvironment.shared.storageServiceManagerRef,
             svr: DependenciesBridge.shared.svr,
-            syncManager: ProvisioningCoordinatorImpl.Wrappers.SyncManager(OWSSyncManager.shared),
+            syncManager: ProvisioningCoordinatorImpl.Wrappers.SyncManager(SSKEnvironment.shared.syncManagerImplRef),
             threadStore: ThreadStoreImpl(),
             tsAccountManager: DependenciesBridge.shared.tsAccountManager,
             udManager: ProvisioningCoordinatorImpl.Wrappers.UDManager(SSKEnvironment.shared.udManagerRef)

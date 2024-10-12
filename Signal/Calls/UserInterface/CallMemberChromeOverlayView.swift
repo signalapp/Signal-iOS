@@ -159,7 +159,7 @@ class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
             case .groupThread(let groupThreadCall) = call.mode,
             deviceState.demuxId != groupThreadCall.ringRtcCall.localDeviceState.demuxId,
             groupThreadCall.raisedHands.contains(deviceState.demuxId),
-            !WindowManager.shared.isCallInPip
+            !AppEnvironment.shared.windowManagerRef.isCallInPip
         else {
             raisedHandView.isHidden = true
             return

@@ -180,9 +180,9 @@ extension OutgoingDeviceTransferQRScanningViewController: QRCodeScanDelegate {
 
         DispatchQueue.global().async {
             do {
-                let (peerId, certificateHash) = try self.deviceTransferService.parseTransferURL(scannedURL)
-                self.deviceTransferService.addObserver(self)
-                try self.deviceTransferService.transferAccountToNewDevice(with: peerId, certificateHash: certificateHash)
+                let (peerId, certificateHash) = try AppEnvironment.shared.deviceTransferServiceRef.parseTransferURL(scannedURL)
+                AppEnvironment.shared.deviceTransferServiceRef.addObserver(self)
+                try AppEnvironment.shared.deviceTransferServiceRef.transferAccountToNewDevice(with: peerId, certificateHash: certificateHash)
             } catch {
                 owsFailDebug("Something went wrong \(error)")
 
@@ -254,7 +254,7 @@ extension OutgoingDeviceTransferQRScanningViewController: DeviceTransferServiceO
     func deviceTransferServiceDiscoveredNewDevice(peerId: MCPeerID, discoveryInfo: [String: String]?) {}
 
     func deviceTransferServiceDidStartTransfer(progress: Progress) {
-        deviceTransferService.removeObserver(self)
+        AppEnvironment.shared.deviceTransferServiceRef.removeObserver(self)
         let vc = OutgoingDeviceTransferProgressViewController(progress: progress)
         navigationController?.pushViewController(vc, animated: true)
     }

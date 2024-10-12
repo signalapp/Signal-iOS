@@ -62,8 +62,8 @@ class DeviceTransferOperation: OWSOperation, @unchecked Sendable {
 
     private var progress: Progress?
     private func prepareForSending() {
-        guard case .outgoing(let newDevicePeerId, _, _, let transferredFiles, let progress) = deviceTransferService.transferState else {
-            return reportError(OWSAssertionError("Tried to transfer file while in unexpected state: \(deviceTransferService.transferState)"))
+        guard case .outgoing(let newDevicePeerId, _, _, let transferredFiles, let progress) = AppEnvironment.shared.deviceTransferServiceRef.transferState else {
+            return reportError(OWSAssertionError("Tried to transfer file while in unexpected state: \(AppEnvironment.shared.deviceTransferServiceRef.transferState)"))
         }
 
         guard !transferredFiles.contains(file.identifier) else {
@@ -100,7 +100,7 @@ class DeviceTransferOperation: OWSOperation, @unchecked Sendable {
             return reportError(OWSAssertionError("Failed to calculate sha256 for file"))
         }
 
-        guard let session = deviceTransferService.session else {
+        guard let session = AppEnvironment.shared.deviceTransferServiceRef.session else {
             return reportError(OWSAssertionError("Tried to transfer file with no active session"))
         }
 
@@ -115,8 +115,7 @@ class DeviceTransferOperation: OWSOperation, @unchecked Sendable {
                     self.reportError(OWSAssertionError("Transferring file \(self.file.identifier) failed \(error)"))
                 } else {
                     Logger.info("Transferring file \(self.file.identifier) complete")
-                    self.deviceTransferService.transferState =
-                        self.deviceTransferService.transferState.appendingFileId(self.file.identifier)
+                    AppEnvironment.shared.deviceTransferServiceRef.transferState = AppEnvironment.shared.deviceTransferServiceRef.transferState.appendingFileId(self.file.identifier)
                     self.reportSuccess()
                 }
 

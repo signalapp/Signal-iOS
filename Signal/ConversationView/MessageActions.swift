@@ -189,7 +189,7 @@ class MessageActions: NSObject {
         if itemViewModel.canCopyOrShareOrSpeakText {
             // If the user started speaking a message and then turns of the "speak selection" OS setting,
             // we still want to let them turn it off.
-            if self.speechManager.isSpeaking {
+            if AppEnvironment.shared.speechManagerRef.isSpeaking {
                 let stopSpeakingAction = MessageActionBuilder.stopSpeakingMessage(itemViewModel: itemViewModel, delegate: delegate)
                 actions.append(stopSpeakingAction)
             } else if UIAccessibility.isSpeakSelectionEnabled {

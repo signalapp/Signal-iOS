@@ -346,7 +346,6 @@
 		3497972025DAA86100E99FA4 /* SendPaymentCompletionActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3497971E25DAA86100E99FA4 /* SendPaymentCompletionActionSheet.swift */; };
 		3497972125DAA86100E99FA4 /* SendPaymentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3497971F25DAA86100E99FA4 /* SendPaymentViewController.swift */; };
 		3497972325DAAE3800E99FA4 /* SendPaymentHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3497972225DAAE3800E99FA4 /* SendPaymentHelper.swift */; };
-		3498AC892513896400B1F315 /* Dependencies+MainApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498AC882513896400B1F315 /* Dependencies+MainApp.swift */; };
 		3498AC902518E92B00B1F315 /* PaymentsHistoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498AC8D2518E92B00B1F315 /* PaymentsHistoryViewController.swift */; };
 		3498AC912518E92B00B1F315 /* PaymentsHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498AC8E2518E92B00B1F315 /* PaymentsHistory.swift */; };
 		3498AC922518E92B00B1F315 /* PaymentsSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498AC8F2518E92B00B1F315 /* PaymentsSettingsViewController.swift */; };
@@ -3796,7 +3795,6 @@
 		3497971F25DAA86100E99FA4 /* SendPaymentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendPaymentViewController.swift; sourceTree = "<group>"; };
 		3497972225DAAE3800E99FA4 /* SendPaymentHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendPaymentHelper.swift; sourceTree = "<group>"; };
 		3498A0A524DC81E100CA492C /* OWSContactsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSContactsManager.swift; sourceTree = "<group>"; };
-		3498AC882513896400B1F315 /* Dependencies+MainApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Dependencies+MainApp.swift"; sourceTree = "<group>"; };
 		3498AC8D2518E92B00B1F315 /* PaymentsHistoryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsHistoryViewController.swift; sourceTree = "<group>"; };
 		3498AC8E2518E92B00B1F315 /* PaymentsHistory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsHistory.swift; sourceTree = "<group>"; };
 		3498AC8F2518E92B00B1F315 /* PaymentsSettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsSettingsViewController.swift; sourceTree = "<group>"; };
@@ -8314,7 +8312,6 @@
 			children = (
 				F92074752888648A00B7F087 /* AppDelegate.swift */,
 				34D99CE3217509C1000AFB39 /* AppEnvironment.swift */,
-				3498AC882513896400B1F315 /* Dependencies+MainApp.swift */,
 				349C3636233D198300D52012 /* LaunchJobs.swift */,
 				4542DF53208D40AC007B4E76 /* LoadingViewController.swift */,
 				5033D46829D7951F007FEADA /* MainAppContext.swift */,
@@ -16043,7 +16040,6 @@
 				887B6DC925F6C3E900E677D4 /* DeleteAccountConfirmationViewController.swift in Sources */,
 				D9E8EDF32C0FD8C800923E3C /* DeleteForMeInfoSheetCoordinator.swift in Sources */,
 				D9E8EDF12C0FCB3000923E3C /* DeleteForMeSyncMessageInfoSheet.swift in Sources */,
-				3498AC892513896400B1F315 /* Dependencies+MainApp.swift in Sources */,
 				5011D1CD29400E7300064098 /* DeviceProvisioningURL.swift in Sources */,
 				887CD4772472FEA500FDD265 /* DeviceTransferOperation.swift in Sources */,
 				887CD47D2473051D00FDD265 /* DeviceTransferService+Manifest.swift in Sources */,

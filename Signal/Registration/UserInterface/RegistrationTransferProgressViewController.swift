@@ -77,7 +77,7 @@ public class RegistrationTransferProgressViewController: OWSViewController {
 
         progressView.startUpdatingProgress()
 
-        deviceTransferService.addObserver(self)
+        AppEnvironment.shared.deviceTransferServiceRef.addObserver(self)
     }
 
     public override func viewWillDisappear(_ animated: Bool) {
@@ -85,8 +85,8 @@ public class RegistrationTransferProgressViewController: OWSViewController {
 
         progressView.stopUpdatingProgress()
 
-        deviceTransferService.removeObserver(self)
-        deviceTransferService.cancelTransferFromOldDevice()
+        AppEnvironment.shared.deviceTransferServiceRef.removeObserver(self)
+        AppEnvironment.shared.deviceTransferServiceRef.cancelTransferFromOldDevice()
     }
 
     // MARK: - Events

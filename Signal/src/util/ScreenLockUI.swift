@@ -155,7 +155,7 @@ class ScreenLockUI: Dependencies {
 
         let shouldShowBlockWindow = uiState != .none
 
-        WindowManager.shared.isScreenBlockActive = shouldShowBlockWindow
+        AppEnvironment.shared.windowManagerRef.isScreenBlockActive = shouldShowBlockWindow
 
         screenBlockingViewController.updateUIWithState(
             uiState,

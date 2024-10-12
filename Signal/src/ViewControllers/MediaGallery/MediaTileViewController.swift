@@ -300,7 +300,7 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
-        cvAudioPlayer.shouldAutoplayNextAudioAttachment = nil
+        AppEnvironment.shared.cvAudioPlayerRef.shouldAutoplayNextAudioAttachment = nil
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {

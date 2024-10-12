@@ -162,7 +162,7 @@ public class NotificationActionHandler: Dependencies {
                 }
             }.recover(on: DispatchQueue.global()) { error -> Promise<Void> in
                 Logger.warn("Failed to send reply message from notification with error: \(error)")
-                self.notificationPresenterImpl.notifyForFailedSend(inThread: thread)
+                SSKEnvironment.shared.notificationPresenterImplRef.notifyForFailedSend(inThread: thread)
                 throw error
             }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
                 self.markMessageAsRead(notificationMessage: notificationMessage)
@@ -264,7 +264,7 @@ public class NotificationActionHandler: Dependencies {
                 }
             }.recover(on: DispatchQueue.global()) { error -> Promise<Void> in
                 Logger.warn("Failed to send reply message from notification with error: \(error)")
-                self.notificationPresenterImpl.notifyForFailedSend(inThread: thread)
+                SSKEnvironment.shared.notificationPresenterImplRef.notifyForFailedSend(inThread: thread)
                 throw error
             }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
                 self.markMessageAsRead(notificationMessage: notificationMessage)
@@ -307,7 +307,7 @@ public class NotificationActionHandler: Dependencies {
 
         let currentCall = Self.callService.callServiceState.currentCall
         if currentCall?.mode.matches(callTarget) == true {
-            WindowManager.shared.returnToCallView()
+            AppEnvironment.shared.windowManagerRef.returnToCallView()
             return
         }
 

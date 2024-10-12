@@ -59,7 +59,7 @@ public struct RegistrationCoordinatorDependencies {
                 DependenciesBridge.shared.preKeyManager
             ),
             profileManager: RegistrationCoordinatorImpl.Wrappers.ProfileManager(SSKEnvironment.shared.profileManagerRef),
-            pushRegistrationManager: RegistrationCoordinatorImpl.Wrappers.PushRegistrationManager(object.pushRegistrationManager),
+            pushRegistrationManager: RegistrationCoordinatorImpl.Wrappers.PushRegistrationManager(AppEnvironment.shared.pushRegistrationManagerRef),
             receiptManager: RegistrationCoordinatorImpl.Wrappers.ReceiptManager(SSKEnvironment.shared.receiptManagerRef),
             registrationStateChangeManager: DependenciesBridge.shared.registrationStateChangeManager,
             schedulers: DependenciesBridge.shared.schedulers,

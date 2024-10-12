@@ -785,7 +785,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
             // (ie, minimized in the app). This is not to be confused with the local member view pip
             // (ie, when the call is full screen and the local user is displayed in a pip).
             // The following line disallows having a [local member] pip within a [call] pip.
-            view.isHidden = !individualCall.hasLocalVideo || WindowManager.shared.isCallInPip
+            view.isHidden = !individualCall.hasLocalVideo || AppEnvironment.shared.windowManagerRef.isCallInPip
         }
 
         updateRemoteVideoTrack(
@@ -1054,7 +1054,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
     private func didTapLeaveCall(sender: UIButton) {
         isCallMinimized = true
         cancelBottomSheetTimeout()
-        WindowManager.shared.leaveCallView()
+        AppEnvironment.shared.windowManagerRef.leaveCallView()
     }
 
     // MARK: - CallObserver
@@ -1157,7 +1157,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
     }
 
     private func dismissImmediately() {
-        WindowManager.shared.endCall(viewController: self)
+        AppEnvironment.shared.windowManagerRef.endCall(viewController: self)
     }
 }
 

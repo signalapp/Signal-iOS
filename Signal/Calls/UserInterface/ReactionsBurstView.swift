@@ -36,7 +36,7 @@ class ReactionsBurstView: UIView, ReactionBurstDelegate {
             return
         }
 
-        guard !WindowManager.shared.isCallInPip else {
+        guard !AppEnvironment.shared.windowManagerRef.isCallInPip else {
             // Don't burst when call is minimized.
             return
         }

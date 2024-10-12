@@ -171,7 +171,7 @@ public class ReturnToCallViewController: UIViewController {
         isAnimating = true
 
         let previousOrigin = window.frame.origin
-        window.frame = WindowManager.shared.rootWindow.bounds
+        window.frame = AppEnvironment.shared.windowManagerRef.rootWindow.bounds
 
         view.addSubview(snapshot)
         snapshot.autoPinEdgesToSuperviewEdges()
@@ -204,7 +204,7 @@ public class ReturnToCallViewController: UIViewController {
         //   would be hard, and
         // - this is just a nicety; nothing bad actually happens if the PiP window overlaps those views.
         let bottomBarEstimatedHeight: CGFloat = 56
-        let safeAreaInsets = WindowManager.shared.rootWindow.safeAreaInsets
+        let safeAreaInsets = AppEnvironment.shared.windowManagerRef.rootWindow.safeAreaInsets
 
         var rect = CurrentAppContext().frame
         rect = rect.inset(by: safeAreaInsets)
@@ -267,7 +267,7 @@ public class ReturnToCallViewController: UIViewController {
 
     @objc
     private func handleTap(sender: UITapGestureRecognizer) {
-        WindowManager.shared.returnToCallView()
+        AppEnvironment.shared.windowManagerRef.returnToCallView()
     }
 
     @objc

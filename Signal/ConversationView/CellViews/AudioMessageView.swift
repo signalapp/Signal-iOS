@@ -26,14 +26,14 @@ class AudioMessageView: ManualStackView {
     private let mediaCache: CVMediaCache
 
     private var audioPlaybackState: AudioPlaybackState {
-        cvAudioPlayer.audioPlaybackState(forAttachmentId: attachment.resourceId)
+        AppEnvironment.shared.cvAudioPlayerRef.audioPlaybackState(forAttachmentId: attachment.resourceId)
     }
 
     private var elapsedSeconds: TimeInterval {
         guard let attachmentStream = self.attachmentStream else {
             return 0
         }
-        return cvAudioPlayer.playbackProgress(forAttachmentStream: attachmentStream)
+        return AppEnvironment.shared.cvAudioPlayerRef.playbackProgress(forAttachmentStream: attachmentStream)
     }
 
     private var isViewed = false
@@ -190,7 +190,7 @@ class AudioMessageView: ManualStackView {
 
         updateContents(animated: false)
 
-        cvAudioPlayer.addListener(self)
+        AppEnvironment.shared.cvAudioPlayerRef.addListener(self)
     }
 
     // MARK: - Measurement
@@ -474,7 +474,7 @@ class AudioMessageView: ManualStackView {
             guard let attachmentStream = attachmentStream else {
                 return false
             }
-            return cvAudioPlayer.audioPlaybackState(forAttachmentId: attachmentStream.resourceId) == .playing
+            return AppEnvironment.shared.cvAudioPlayerRef.audioPlaybackState(forAttachmentId: attachmentStream.resourceId) == .playing
         }()
         presentation.playbackRateView.setVisibility(isPlaying, animated: animated)
     }

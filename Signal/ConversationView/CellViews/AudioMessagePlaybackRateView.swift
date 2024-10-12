@@ -207,7 +207,7 @@ class AudioMessagePlaybackRateView: ManualLayoutViewWithLayer {
     ) -> Bool {
         guard
             let attachmentId = audioAttachment.attachmentStream?.attachmentStream.resourceId,
-            cvAudioPlayer.audioPlaybackState(forAttachmentId: attachmentId) == .playing
+            AppEnvironment.shared.cvAudioPlayerRef.audioPlaybackState(forAttachmentId: attachmentId) == .playing
         else {
             return false
         }
@@ -222,7 +222,7 @@ class AudioMessagePlaybackRateView: ManualLayoutViewWithLayer {
             return false
         }
         let newPlaybackRate = playbackRate.next
-        self.cvAudioPlayer.setPlaybackRate(newPlaybackRate.rawValue, forThreadUniqueId: threadUniqueId)
+        AppEnvironment.shared.cvAudioPlayerRef.setPlaybackRate(newPlaybackRate.rawValue, forThreadUniqueId: threadUniqueId)
 
         // Hold off updates until we animate the change.
         let animationCompletion = audioMessageViewDelegate?.beginCellAnimation(

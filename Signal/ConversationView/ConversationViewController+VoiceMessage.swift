@@ -11,12 +11,12 @@ extension ConversationViewController {
         AssertIsOnMainThread()
 
         // Cancel any ongoing audio playback.
-        cvAudioPlayer.stopAll()
+        AppEnvironment.shared.cvAudioPlayerRef.stopAll()
 
         let inProgressVoiceMessage = VoiceMessageInProgressDraft(
             thread: thread,
             audioSession: audioSession,
-            sleepManager: deviceSleepManager
+            sleepManager: DeviceSleepManager.shared
         )
         viewState.inProgressVoiceMessage = inProgressVoiceMessage
 

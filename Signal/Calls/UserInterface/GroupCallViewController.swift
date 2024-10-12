@@ -383,7 +383,7 @@ class GroupCallViewController: UIViewController {
         let vc = GroupCallViewController(call: call, groupCall: groupCall)
         return {
             vc.modalTransitionStyle = .crossDissolve
-            WindowManager.shared.startCall(viewController: vc)
+            AppEnvironment.shared.windowManagerRef.startCall(viewController: vc)
         }
     }
 
@@ -1004,7 +1004,7 @@ class GroupCallViewController: UIViewController {
             // (ie, minimized in the app). This is not to be confused with the local member view pip
             // (ie, when the call is full screen and the local user is displayed in a pip).
             // The following line disallows having a [local member] pip within a [call] pip.
-            view.isHidden = WindowManager.shared.isCallInPip
+            view.isHidden = AppEnvironment.shared.windowManagerRef.isCallInPip
         }
 
         if let speakerState = ringRtcCall.remoteDeviceStates.sortedBySpeakerTime.first {
@@ -1217,7 +1217,7 @@ class GroupCallViewController: UIViewController {
         guard self.isViewLoaded else {
             // This can happen if the call is canceled before it's ever shown (ie a
             // ring that's not answered).
-            WindowManager.shared.endCall(viewController: self)
+            AppEnvironment.shared.windowManagerRef.endCall(viewController: self)
             return
         }
 
@@ -1230,7 +1230,7 @@ class GroupCallViewController: UIViewController {
             view.superview?.insertSubview(splitViewSnapshot, belowSubview: view) != nil
         else {
             // This can happen if we're in the background when the call is dismissed (say, from CallKit).
-            WindowManager.shared.endCall(viewController: self)
+            AppEnvironment.shared.windowManagerRef.endCall(viewController: self)
             return
         }
 
@@ -1246,7 +1246,7 @@ class GroupCallViewController: UIViewController {
             self.view.alpha = 0
         }) { _ in
             splitViewSnapshot.removeFromSuperview()
-            WindowManager.shared.endCall(viewController: self)
+            AppEnvironment.shared.windowManagerRef.endCall(viewController: self)
         }
     }
 
@@ -1570,14 +1570,14 @@ extension GroupCallViewController: CallViewControllerWindowReference {
             let atLeastOneUnresolvedPresentAtJoin = unresolvedAddresses.contains { membersAtJoin?.contains($0) ?? false }
             switch groupCall.concreteType {
             case .groupThread(let call):
-                Self.notificationPresenterImpl.notifyForGroupCallSafetyNumberChange(
+                SSKEnvironment.shared.notificationPresenterImplRef.notifyForGroupCallSafetyNumberChange(
                     callTitle: call.groupThread.groupNameOrDefault,
                     threadUniqueId: call.groupThread.uniqueId,
                     roomId: nil,
                     presentAtJoin: atLeastOneUnresolvedPresentAtJoin
                 )
             case .callLink(let call):
-                Self.notificationPresenterImpl.notifyForGroupCallSafetyNumberChange(
+                SSKEnvironment.shared.notificationPresenterImplRef.notifyForGroupCallSafetyNumberChange(
                     callTitle: call.callLinkState.localizedName,
                     threadUniqueId: nil,
                     roomId: call.callLink.rootKey.deriveRoomId(),
@@ -1866,7 +1866,7 @@ extension GroupCallViewController: CallHeaderDelegate {
     func didTapBackButton() {
         if groupCall.hasJoinedOrIsWaitingForAdminApproval {
             isCallMinimized = true
-            WindowManager.shared.leaveCallView()
+            AppEnvironment.shared.windowManagerRef.leaveCallView()
             // This ensures raised hands are removed
             updateCallUI()
         } else {

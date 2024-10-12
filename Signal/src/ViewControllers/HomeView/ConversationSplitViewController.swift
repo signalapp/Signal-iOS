@@ -666,8 +666,8 @@ extension ConversationSplitViewController: DeviceTransferServiceObserver {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        deviceTransferService.addObserver(self)
-        deviceTransferService.startListeningForNewDevices()
+        AppEnvironment.shared.deviceTransferServiceRef.addObserver(self)
+        AppEnvironment.shared.deviceTransferServiceRef.startListeningForNewDevices()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -681,8 +681,8 @@ extension ConversationSplitViewController: DeviceTransferServiceObserver {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        deviceTransferService.removeObserver(self)
-        deviceTransferService.stopListeningForNewDevices()
+        AppEnvironment.shared.deviceTransferServiceRef.removeObserver(self)
+        AppEnvironment.shared.deviceTransferServiceRef.stopListeningForNewDevices()
     }
 
     func deviceTransferServiceDiscoveredNewDevice(peerId: MCPeerID, discoveryInfo: [String: String]?) {

@@ -9,6 +9,7 @@ import SignalServiceKit
 #if targetEnvironment(simulator)
 
 class SimulatorCallUIAdaptee: NSObject, CallUIAdaptee {
+    var notificationPresenterImpl: NotificationPresenterImpl { SSKEnvironment.shared.notificationPresenterImplRef }
     var callService: CallService { AppEnvironment.shared.callService }
 
     required init(showNamesOnCallScreen: Bool, useSystemCallLog: Bool) {

@@ -90,7 +90,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
 
         if let model = model {
             SSKEnvironment.shared.databaseStorageRef.asyncWrite { [context] transaction in
-                Self.avatarHistoryManager.touchedModel(model, in: context, transaction: transaction)
+                AppEnvironment.shared.avatarHistorManagerRef.touchedModel(model, in: context, transaction: transaction)
             }
             guard let newAvatar = SSKEnvironment.shared.avatarBuilderRef.avatarImage(
                 model: model,
@@ -246,7 +246,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
         vStackView.autoPinEdgesToSuperviewMargins()
 
         let avatars: [(model: AvatarModel, image: UIImage)] = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            let models = Self.avatarHistoryManager.models(for: context, transaction: transaction)
+            let models = AppEnvironment.shared.avatarHistorManagerRef.models(for: context, transaction: transaction)
             return models.compactMap { model in
                 guard let image = SSKEnvironment.shared.avatarBuilderRef.avatarImage(
                     model: model,
@@ -369,7 +369,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
                     let vc = AvatarEditViewController(model: model) { [weak self] editedModel in
                         SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
                             guard let self = self else { return }
-                            self.avatarHistoryManager.touchedModel(
+                            AppEnvironment.shared.avatarHistorManagerRef.touchedModel(
                                 editedModel,
                                 in: self.context,
                                 transaction: transaction
@@ -452,7 +452,7 @@ extension AvatarSettingsViewController: UIImagePickerControllerDelegate, UINavig
             let vc = CropScaleImageViewController(srcImage: originalImage) { croppedImage in
                 guard let self = self else { return }
                 let imageModel = SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                    self.avatarHistoryManager.recordModelForImage(
+                    AppEnvironment.shared.avatarHistorManagerRef.recordModelForImage(
                         croppedImage,
                         in: self.context,
                         transaction: transaction
@@ -479,7 +479,7 @@ extension AvatarSettingsViewController: OptionViewDelegate {
 
         let vc = AvatarEditViewController(model: model) { [weak self, context] editedModel in
             SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
-                Self.avatarHistoryManager.touchedModel(
+                AppEnvironment.shared.avatarHistorManagerRef.touchedModel(
                     editedModel,
                     in: context,
                     transaction: transaction
@@ -495,7 +495,7 @@ extension AvatarSettingsViewController: OptionViewDelegate {
     fileprivate func didDeleteOptionView(_ optionView: OptionView, model: AvatarModel) {
         owsAssertDebug(model.type.isDeletable)
         SSKEnvironment.shared.databaseStorageRef.asyncWrite { [context] transaction in
-            Self.avatarHistoryManager.deletedModel(
+            AppEnvironment.shared.avatarHistorManagerRef.deletedModel(
                 model,
                 in: context,
                 transaction: transaction

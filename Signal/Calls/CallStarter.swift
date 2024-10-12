@@ -104,7 +104,7 @@ struct CallStarter {
         }
 
         if let currentCall = context.callService.callServiceState.currentCall, currentCall.mode.matches(callTarget) {
-            WindowManager.shared.returnToCallView()
+            AppEnvironment.shared.windowManagerRef.returnToCallView()
             return .callStarted
         }
 

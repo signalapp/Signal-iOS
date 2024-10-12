@@ -622,7 +622,7 @@ extension ConversationHeaderDelegate {
         let callService = AppEnvironment.shared.callService!
         if let currentCall = callService.callServiceState.currentCall {
             if currentCall.mode.matches(callTarget) {
-                WindowManager.shared.returnToCallView()
+                AppEnvironment.shared.windowManagerRef.returnToCallView()
             } else {
                 owsFailDebug("Tried to start call while call was ongoing")
             }

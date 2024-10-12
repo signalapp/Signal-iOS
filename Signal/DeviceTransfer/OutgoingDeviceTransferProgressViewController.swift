@@ -60,7 +60,7 @@ class OutgoingDeviceTransferProgressViewController: DeviceTransferBaseViewContro
 
         progressView.startUpdatingProgress()
 
-        deviceTransferService.addObserver(self)
+        AppEnvironment.shared.deviceTransferServiceRef.addObserver(self)
     }
 
     public override func viewWillDisappear(_ animated: Bool) {
@@ -68,8 +68,8 @@ class OutgoingDeviceTransferProgressViewController: DeviceTransferBaseViewContro
 
         progressView.stopUpdatingProgress()
 
-        deviceTransferService.removeObserver(self)
-        deviceTransferService.cancelTransferFromOldDevice()
+        AppEnvironment.shared.deviceTransferServiceRef.removeObserver(self)
+        AppEnvironment.shared.deviceTransferServiceRef.cancelTransferFromOldDevice()
     }
 
     @objc
@@ -85,7 +85,7 @@ extension OutgoingDeviceTransferProgressViewController: DeviceTransferServiceObs
     func deviceTransferServiceDidStartTransfer(progress: Progress) {}
 
     func deviceTransferServiceDidEndTransfer(error: DeviceTransferService.Error?) {
-        deviceTransferService.removeObserver(self)
+        AppEnvironment.shared.deviceTransferServiceRef.removeObserver(self)
 
         guard let error = error else {
             transferNavigationController?.dismissActionSheet()

@@ -469,7 +469,7 @@ public final class ConversationViewController: OWSViewController {
         self.isViewVisible = false
         self.shouldAnimateKeyboardChanges = false
 
-        self.cvAudioPlayer.stopAll()
+        AppEnvironment.shared.cvAudioPlayerRef.stopAll()
 
         self.cancelReadTimer()
         self.saveDraft()

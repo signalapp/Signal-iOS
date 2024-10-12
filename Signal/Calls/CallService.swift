@@ -297,7 +297,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         // in either case we want to show the alert on the callViewWindow.
         guard let frontmostViewController =
                 UIApplication.shared.findFrontmostViewController(ignoringAlerts: true,
-                                                                 window: WindowManager.shared.callViewWindow) else {
+                                                                 window: AppEnvironment.shared.windowManagerRef.callViewWindow) else {
             owsFailDebug("could not identify frontmostViewController")
             return
         }
@@ -353,7 +353,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         // in either case we want to show the alert on the callViewWindow.
         let frontmostViewController = UIApplication.shared.findFrontmostViewController(
             ignoringAlerts: true,
-            window: WindowManager.shared.callViewWindow
+            window: AppEnvironment.shared.windowManagerRef.callViewWindow
         )
         guard let frontmostViewController else {
             owsFailDebug("could not identify frontmostViewController")

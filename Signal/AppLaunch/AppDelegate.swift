@@ -99,7 +99,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         ClearOldTemporaryDirectories()
 
         // Ensure that all windows have the correct frame.
-        WindowManager.shared.updateWindowFrames()
+        AppEnvironment.shared.windowManagerRef.updateWindowFrames()
     }
 
     private let flushQueue = DispatchQueue(label: "org.signal.flush", qos: .utility)
@@ -369,7 +369,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         Theme.setupSignalAppearance()
 
         screenLockUI.setupWithRootWindow(window)
-        WindowManager.shared.setupWithRootWindow(window, screenBlockingWindow: screenLockUI.screenBlockingWindow)
+        AppEnvironment.shared.windowManagerRef.setupWithRootWindow(window, screenBlockingWindow: screenLockUI.screenBlockingWindow)
         screenLockUI.startObserving()
     }
 
@@ -1235,7 +1235,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         Logger.info("")
-        pushRegistrationManager.didReceiveVanillaPushToken(deviceToken)
+        AppEnvironment.shared.pushRegistrationManagerRef.didReceiveVanillaPushToken(deviceToken)
     }
 
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
@@ -1247,9 +1247,9 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         Logger.warn("")
         #if DEBUG
-        pushRegistrationManager.didReceiveVanillaPushToken(Data(count: 32))
+        AppEnvironment.shared.pushRegistrationManagerRef.didReceiveVanillaPushToken(Data(count: 32))
         #else
-        pushRegistrationManager.didFailToReceiveVanillaPushToken(error: error)
+        AppEnvironment.shared.pushRegistrationManagerRef.didFailToReceiveVanillaPushToken(error: error)
         #endif
     }
 
@@ -1315,7 +1315,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         if let preAuthChallengeToken = remoteNotification["challenge"] as? String {
-            pushRegistrationManager.didReceiveVanillaPreAuthChallengeToken(preAuthChallengeToken)
+            AppEnvironment.shared.pushRegistrationManagerRef.didReceiveVanillaPreAuthChallengeToken(preAuthChallengeToken)
             return .handled
         }
 
