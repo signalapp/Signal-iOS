@@ -9,7 +9,7 @@ private let kCoderCreatedAt = "kCoderCreatedAt"
 
 @objc(PreKeyRecord)
 public class PreKeyRecord: NSObject, NSSecureCoding {
-    public static let supportsSecureCoding: Bool = true
+    public class var supportsSecureCoding: Bool { true }
 
     public let id: Int32
     public let keyPair: ECKeyPair
