@@ -382,6 +382,8 @@ extension CallLinkViewController: SendMessageDelegate {
     func sendMessageFlowDidComplete(threads: [TSThread]) {
         AssertIsOnMainThread()
 
+        persistIfNeeded()
+
         sendMessageFlow?.dismissNavigationController(animated: true)
 
         sendMessageFlow = nil
