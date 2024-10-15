@@ -10,6 +10,7 @@ class MessageBackupTSIncomingMessageArchiver {
     private typealias RestoreFrameError = MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>
 
     private let contentsArchiver: MessageBackupTSMessageContentsArchiver
+    private let dateProvider: DateProvider
     private let editHistoryArchiver: MessageBackupTSMessageEditHistoryArchiver<TSIncomingMessage>
     private let interactionStore: InteractionStore
 
@@ -20,6 +21,7 @@ class MessageBackupTSIncomingMessageArchiver {
         interactionStore: InteractionStore
     ) {
         self.contentsArchiver = contentsArchiver
+        self.dateProvider = dateProvider
         self.editHistoryArchiver = MessageBackupTSMessageEditHistoryArchiver(
             dateProvider: dateProvider,
             editMessageStore: editMessageStore
@@ -216,6 +218,21 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
                 chatItem.id
             )])
         }
+        let expireStartDate: UInt64
+        if chatItem.expireStartDate > 0 {
+            expireStartDate = chatItem.expireStartDate
+        } else if
+            expiresInSeconds > 0,
+            incomingDetails.read
+        {
+            // If marked as read but the chat timer hasn't started,
+            // thats a bug on the export side but we can recover
+            // from it now by starting the timer now.
+            expireStartDate = dateProvider().ows_millisecondsSince1970
+        } else {
+            // 0 = hasn't started expiring.
+            expireStartDate = 0
+        }
 
         let editState: TSEditState = {
             if isPastRevision {
@@ -259,7 +276,7 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
                 expiresInSeconds: expiresInSeconds,
                 // Backed up messages don't set the chat timer; version is irrelevant.
                 expireTimerVersion: nil,
-                expireStartedAt: chatItem.expireStartDate,
+                expireStartedAt: expireStartDate,
                 read: incomingDetails.read,
                 serverTimestamp: incomingDetails.dateServerSent,
                 serverDeliveryTimestamp: 0,

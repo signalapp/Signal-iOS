@@ -10,6 +10,7 @@ class MessageBackupTSOutgoingMessageArchiver {
     private typealias RestoreFrameError = MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>
 
     private let contentsArchiver: MessageBackupTSMessageContentsArchiver
+    private let dateProvider: DateProvider
     private let editHistoryArchiver: MessageBackupTSMessageEditHistoryArchiver<TSOutgoingMessage>
     private let interactionStore: InteractionStore
 
@@ -20,6 +21,7 @@ class MessageBackupTSOutgoingMessageArchiver {
         interactionStore: InteractionStore
     ) {
         self.contentsArchiver = contentsArchiver
+        self.dateProvider = dateProvider
         self.editHistoryArchiver = MessageBackupTSMessageEditHistoryArchiver(
             dateProvider: dateProvider,
             editMessageStore: editMessageStore
@@ -436,6 +438,20 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
             return .messageFailure(partialErrors)
         }
 
+        let expireStartDate: UInt64
+        if chatItem.expireStartDate > 0 {
+            expireStartDate = chatItem.expireStartDate
+        } else if
+            expiresInSeconds > 0,
+            TSOutgoingMessage.isEligibleToStartExpireTimer(recipientStates: Array(recipientAddressStates.values))
+        {
+            // If there is an expire timer and the message is eligible to start expiring,
+            // set the expire start time to now even if unset in the proto.
+            expireStartDate = dateProvider().ows_millisecondsSince1970
+        } else {
+            expireStartDate = 0
+        }
+
         let outgoingMessage: TSOutgoingMessage = {
             /// A "base" message builder, onto which we attach the data we
             /// unwrap from `contents`.
@@ -449,7 +465,7 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
                 expiresInSeconds: expiresInSeconds,
                 // Backed up messages don't set the chat timer; version is irrelevant.
                 expireTimerVersion: nil,
-                expireStartedAt: chatItem.expireStartDate,
+                expireStartedAt: expireStartDate,
                 isVoiceMessage: false,
                 groupMetaMessage: .unspecified,
                 isSmsMessageRestoredFromBackup: chatItem.sms,

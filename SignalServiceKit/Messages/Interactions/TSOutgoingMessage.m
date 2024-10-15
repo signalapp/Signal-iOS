@@ -381,13 +381,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         return NO;
     }
 
-    // It's not clear if we should wait until _all_ recipients have reached "sent or later"
-    // (which could never occur if one group member is unregistered) or only wait until
-    // the first recipient has reached "sent or later" (which could cause partially delivered
-    // messages to expire).  For now, we'll do the latter.
-    //
-    // TODO: Revisit this decision.
-    return self.messageState == TSOutgoingMessageStateSent;
+    return [TSOutgoingMessage isEligibleToStartExpireTimerWithMessageState:self.messageState];
 }
 
 - (BOOL)isOnline

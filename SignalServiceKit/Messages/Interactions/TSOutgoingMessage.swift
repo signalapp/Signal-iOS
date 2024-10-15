@@ -344,6 +344,27 @@ public extension TSOutgoingMessage {
     }
 
     @objc
+    static func isEligibleToStartExpireTimer(recipientStates: [TSOutgoingMessageRecipientState]) -> Bool {
+        let messageState = Self.messageStateForRecipientStates(recipientStates)
+        return isEligibleToStartExpireTimer(messageState: messageState)
+    }
+
+    // This method will be called after every insert and update, so it needs
+    // to be cheap.
+    @objc
+    static func isEligibleToStartExpireTimer(messageState: TSOutgoingMessageState) -> Bool {
+        switch messageState {
+        case .sent, .sent_OBSOLETE, .delivered_OBSOLETE:
+            // If _all_ recipients have been sent (not necessarily received or viewed)
+            // we should start the expire timer.
+            return true
+        case .pending, .sending, .failed:
+            // If _any_ recipient is pending or failed, don't start the timer.
+            return false
+        }
+    }
+
+    @objc
     var isStorySend: Bool { isGroupStoryReply }
 
     @objc
