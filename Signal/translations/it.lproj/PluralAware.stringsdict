@@ -77,9 +77,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Delete %1$ld Call?</string>
+			<string>Vuoi eliminare %1$ld chiamata?</string>
 			<key>other</key>
-			<string>Delete %1$ld Calls?</string>
+			<string>Vuoi eliminare %1$ld chiamate?</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_APPROVE_ALL_REQUESTS_CONFIRMATION_BODY_%ld</key>
@@ -173,9 +173,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$ld call log deleted.</string>
+			<string>%1$ld log chiamata eliminato.</string>
 			<key>other</key>
-			<string>%1$ld call logs deleted.</string>
+			<string>%1$ld log chiamate eliminati.</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_REQUEST_HEADER_COUNT_%d</key>
@@ -568,9 +568,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>+%1$ld more</string>
+			<string>+%1$ld altra persona</string>
 			<key>other</key>
-			<string>+%1$ld more</string>
+			<string>+ altre %1$ld persone</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_JOINED_%d</key>

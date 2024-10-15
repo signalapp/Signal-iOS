@@ -93,13 +93,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Delete %1$ld Call?</string>
+			<string>למחוק שיחה %1$ld?</string>
 			<key>two</key>
-			<string>Delete %1$ld Calls?</string>
+			<string>למחוק %1$ld שיחות?</string>
 			<key>many</key>
-			<string>Delete %1$ld Calls?</string>
+			<string>למחוק %1$ld שיחות?</string>
 			<key>other</key>
-			<string>Delete %1$ld Calls?</string>
+			<string>למחוק %1$ld שיחות?</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_APPROVE_ALL_REQUESTS_CONFIRMATION_BODY_%ld</key>
@@ -213,13 +213,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$ld call log deleted.</string>
+			<string>יומן שיחה %1$ld נמחק.</string>
 			<key>two</key>
-			<string>%1$ld call logs deleted.</string>
+			<string>%1$ld יומני שיחות נמחקו.</string>
 			<key>many</key>
-			<string>%1$ld call logs deleted.</string>
+			<string>%1$ld יומני שיחות נמחקו.</string>
 			<key>other</key>
-			<string>%1$ld call logs deleted.</string>
+			<string>%1$ld יומני שיחות נמחקו.</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_REQUEST_HEADER_COUNT_%d</key>
@@ -708,13 +708,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>+%1$ld more</string>
+			<string>+עוד %1$ld</string>
 			<key>two</key>
-			<string>+%1$ld more</string>
+			<string>+עוד %1$ld</string>
 			<key>many</key>
-			<string>+%1$ld more</string>
+			<string>+עוד %1$ld</string>
 			<key>other</key>
-			<string>+%1$ld more</string>
+			<string>+עוד %1$ld</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_JOINED_%d</key>

@@ -152,13 +152,13 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "À propos des invitations par message";
 
 /* Menu option to remove content type restriction in All Media (Audio) view */
-"ALL_MEDIA_AUDIO_FILTER_ALL" = "All Audio";
+"ALL_MEDIA_AUDIO_FILTER_ALL" = "Tous les fichiers audio";
 
 /* Menu option to limit All Media (Audio) view to displaying non-voice message audio files */
-"ALL_MEDIA_AUDIO_FILTER_AUDIO_FILES" = "Audio Files";
+"ALL_MEDIA_AUDIO_FILTER_AUDIO_FILES" = "Fichiers audio";
 
 /* Menu option to limit All Media (Audio) view to displaying only Voice Messages */
-"ALL_MEDIA_AUDIO_FILTER_VOICE_MSG" = "Voice Messages";
+"ALL_MEDIA_AUDIO_FILTER_VOICE_MSG" = "Messages vocaux";
 
 /* Audio file type in All Meda file type picker. */
 "ALL_MEDIA_FILE_TYPE_AUDIO" = "Audio";
@@ -386,10 +386,10 @@
 "ATTACHMENT_KEYBOARD_CONTACT" = "Contact";
 
 /* Button in a context menu from the 'manage' button in attachment panel that allows to select more photos/videos to give Signal access to */
-"ATTACHMENT_KEYBOARD_CONTEXT_MENU_BUTTON_SELECT_MORE" = "Select More Photos";
+"ATTACHMENT_KEYBOARD_CONTEXT_MENU_BUTTON_SELECT_MORE" = "Sélectionner d'autres photos";
 
 /* Button in a context menu from the 'manage' button in attachment panel that opens the iOS system settings for Signal to update access permissions */
-"ATTACHMENT_KEYBOARD_CONTEXT_MENU_BUTTON_SYSTEM_SETTINGS" = "Go to Settings";
+"ATTACHMENT_KEYBOARD_CONTEXT_MENU_BUTTON_SYSTEM_SETTINGS" = "Accéder aux réglages";
 
 /* A button to select a file from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_FILE" = "Fichier";
@@ -725,10 +725,10 @@
 "CALL_CONTROLS_INCOMING_DECLINE" = "refuser";
 
 /* Title used to represent details about a call. */
-"CALL_DETAILS" = "Call Details";
+"CALL_DETAILS" = "Infos sur l'appel";
 
 /* Label or title used to represent a call that used a call link. */
-"CALL_LINK" = "Call Link";
+"CALL_LINK" = "Lien d'appel";
 
 /* Button to open a screen to edit the name of a Call Link. Also used as the title of that screen once it opens. */
 "CALL_LINK_ADD_NAME" = "Nommer l'appel";
@@ -746,19 +746,19 @@
 "CALL_LINK_CREATION_OR_UPDATE_FAILURE_SHEET_TITLE" = "Erreur réseau";
 
 /* A button to delete a call link that's shown after tapping the (i) info button on an item in the calls tab. */
-"CALL_LINK_DELETE_ACTION" = "Delete Link";
+"CALL_LINK_DELETE_ACTION" = "Supprimer le lien";
 
 /* Text shown in an overlay toast trying and failing to delete a call link. */
-"CALL_LINK_DELETE_FAILED" = "Couldn't delete call link.";
+"CALL_LINK_DELETE_FAILED" = "Impossible de supprimer le lien d'appel.";
 
 /* Text shown in a confirmation popup asking the user if they want to delete a call link. */
-"CALL_LINK_DELETE_MESSAGE" = "This link will no longer work for anyone who has it.";
+"CALL_LINK_DELETE_MESSAGE" = "Les personnes disposant de ce lien ne pourront plus l'utiliser.";
 
 /* Title shown in a confirmation popup asking the user if they want to delete a call link. */
-"CALL_LINK_DELETE_TITLE" = "Delete Link?";
+"CALL_LINK_DELETE_TITLE" = "Supprimer le lien ?";
 
 /* Text shown in an overlay toast after a call link is successfully deleted. */
-"CALL_LINK_DELETED" = "Call link deleted.";
+"CALL_LINK_DELETED" = "Lien d'appel supprimé.";
 
 /* Button to open a screen to edit the name of a Call Link. Also used as the title of that screen once it opens. */
 "CALL_LINK_EDIT_NAME" = "Renommer l'appel";
@@ -785,7 +785,7 @@
 "CALL_LINK_LOBBY_SHARING_INFO_PHONE_NUMBER_SHARING_ON" = "Tous les utilisateurs participant à cet appel via le lien verront votre nom, votre photo et votre numéro de téléphone.";
 
 /* Text shown in a confirmation popup when deleting multiple calls from the calls tab. */
-"CALL_LINK_MULTI_CONFIRM" = "Call links you’ve created will no longer work for people who have them.";
+"CALL_LINK_MULTI_CONFIRM" = "Attention : les liens d'appel que vous avez créés ne fonctionneront plus.";
 
 /* Title for button to approve all requests to join a call. */
 "CALL_LINK_REQUEST_SHEET_APPROVE_ALL_BUTTON" = "Tout accepter";
@@ -806,7 +806,7 @@
 "CALL_LINK_SHARE_VIA_SYSTEM" = "Partager le lien";
 
 /* An error alert that's shown when deleting multiple calls and some of them couldn't be deleted. */
-"CALL_LINK_SOME_NOT_DELETED" = "Not all call links could be deleted. Check your connection and try again.";
+"CALL_LINK_SOME_NOT_DELETED" = "Impossible de supprimer tous les liens d'appel. Vérifiez votre connexion et réessayez.";
 
 /* Description of sheet presented when call link update fails. */
 "CALL_LINK_UPDATE_FAILURE_SHEET_DESCRIPTION" = "Impossible de mettre à jour le lien d'appel. Vérifiez votre connexion Internet et réessayez.";
@@ -1142,7 +1142,7 @@
 "CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "Supprimer le filtre";
 
 /* Button at top of chat list indicating the active filter is 'Filtered by Unread' and tapping will clear the filter */
-"CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON" = "Filtered by Unread";
+"CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON" = "Filtrer les messages non lus";
 
 /* Title for the chat list's default mode. */
 "CHAT_LIST_TITLE_INBOX" = "Conversations";
@@ -1331,7 +1331,7 @@
 "CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "Partager un contact";
 
 /* Title for the 'edit contact share name' view. */
-"CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "Modifier le nom";
+"CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "Renommer";
 
 /* Error indicating that an invalid contact cannot be shared. */
 "CONTACT_SHARE_INVALID_CONTACT" = "Le contact est invalide";
@@ -1685,7 +1685,7 @@
 "CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "vidéo";
 
 /* Indicates that user is in the system contacts list. */
-"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Détails du contact";
+"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Infos sur le contact";
 
 /* Button to start a voice call */
 "CONVERSATION_SETTINGS_VOICE_CALL_BUTTON" = "audio";
@@ -1703,7 +1703,7 @@
 "CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Tout supprimer";
 
 /* Message shown in conversation view that offers to join a Call Link call. */
-"CONVERSATION_VIEW_JOIN_CALL" = "Join Call";
+"CONVERSATION_VIEW_JOIN_CALL" = "Rejoindre l'appel";
 
 /* Indicates that the app is loading more messages in this conversation. */
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Chargement de plus de messages…";
@@ -2666,7 +2666,7 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Échec d’envoi du message, car vous avez bloqué cet utilisateur.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
-"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Échec d’envoi du message en raison d’absence de destinataires valides.";
+"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Impossible d'envoyer le message : destinataires incorrects.";
 
 /* Error indicating that a socket request failed. */
 "ERROR_DESCRIPTION_REQUEST_FAILED" = "Échec de la requête réseau";
@@ -2999,13 +2999,13 @@
 "GROUP_CALL_MEMBER_LIST_SHARE_CALL_LINK_BUTTON" = "Partager le lien de l’appel";
 
 /* Label for an unknown member in the group call member list when they are the only member of the call. */
-"GROUP_CALL_MEMBER_LIST_SINGLE_UNKNOWN_MEMBER_ROW" = "1 Person";
+"GROUP_CALL_MEMBER_LIST_SINGLE_UNKNOWN_MEMBER_ROW" = "1 personne";
 
 /* Title for the sheet showing the group call members list */
 "GROUP_CALL_MEMBER_LIST_TITLE" = "Informations sur l'appel";
 
 /* Message on an action sheet when tapping an info button next to unknown members in the group call member list. */
-"GROUP_CALL_MEMBER_LIST_UNKNOWN_MEMBERS_INFO_SHEET" = "Before joining a call you can only see the names of phone contacts, people you’re in a group with, or people you’ve chatted with 1:1. You’ll see all names and photos once you’ve joined the call.";
+"GROUP_CALL_MEMBER_LIST_UNKNOWN_MEMBERS_INFO_SHEET" = "Avant de rejoindre un appel, seuls les noms de certaines personnes s'affichent : contacts de votre téléphone, utilisateurs faisant partie des mêmes groupes que vous ou avec qui vous avez discuté en privé. Les noms et les photos de tous les participants s'affichent une fois que vous avez rejoint l'appel.";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Impossible de recevoir l’audio et la vidéo de %1$@";
@@ -4109,10 +4109,10 @@
 "MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "Média à vue unique";
 
 /* VoiceOver description for a generic audio file in All Media */
-"MEDIA_GALLERY_A11Y_AUDIO_FILE" = "audio file";
+"MEDIA_GALLERY_A11Y_AUDIO_FILE" = "fichier audio";
 
 /* VoiceOver description for a voice messages in All Media */
-"MEDIA_GALLERY_A11Y_VOICE_MESSAGE" = "voice message";
+"MEDIA_GALLERY_A11Y_VOICE_MESSAGE" = "message vocal";
 
 /* Button to reset media filter. Displayed when filter results in no media visible. */
 "MEDIA_GALLERY_CLEAR_FILTER_BUTTON" = "Supprimer le filtre";
@@ -4475,7 +4475,7 @@
 "MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Non distribué";
 
 /* Label indicating that a message failed to send. */
-"MESSAGE_STATUS_SEND_FAILED" = "Échec d’envoi";
+"MESSAGE_STATUS_SEND_FAILED" = "Non envoyé.";
 
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "Envoi…";
@@ -6326,7 +6326,7 @@
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Installer Signal sur votre téléphone";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Sur votre téléphone, touchez votre image de profil pour accéder aux paramètres Signal, puis sélectionnez \"Appareils associés\" et \"Associer un nouvel appareil \". Vous pouvez ensuite scanner ce code avec votre téléphone :";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Sur votre téléphone, touchez votre photo de profil pour accéder aux paramètres Signal, puis sélectionnez \"Appareils associés\" et \"Associer un nouvel appareil \". Vous pouvez ensuite scanner ce code avec votre téléphone :";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Obtenez de l’aide ici pour relier votre iPad";
@@ -7730,7 +7730,7 @@
 "STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Tous mes contacts Signal, sauf…";
 
 /* Text indicating that the story send has failed */
-"STORY_SEND_FAILED" = "Échec d’envoi";
+"STORY_SEND_FAILED" = "Impossible de partager la story.";
 
 /* Body for notification shown when a story fails to send. */
 "STORY_SEND_FAILED_NOTIFICATION_BODY" = "❗️ Impossible d’envoyer la story";
@@ -7739,7 +7739,7 @@
 "STORY_SEND_FAILED_RETRY" = "Réessayer";
 
 /* Text indicating that the story send has failed */
-"STORY_SEND_FAILED_TAP_FOR_DETAILS" = "Échec de l’envoi. Appuyez pour réessayer";
+"STORY_SEND_FAILED_TAP_FOR_DETAILS" = "Impossible de partager la story. Appuyez pour réessayer.";
 
 /* Text indicating that the story send has partially failed */
 "STORY_SEND_PARTIALLY_FAILED" = "Partiellement envoyée";

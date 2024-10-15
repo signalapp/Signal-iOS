@@ -152,13 +152,13 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "O prośbach o kontakt";
 
 /* Menu option to remove content type restriction in All Media (Audio) view */
-"ALL_MEDIA_AUDIO_FILTER_ALL" = "All Audio";
+"ALL_MEDIA_AUDIO_FILTER_ALL" = "Wszystkie pliki audio";
 
 /* Menu option to limit All Media (Audio) view to displaying non-voice message audio files */
-"ALL_MEDIA_AUDIO_FILTER_AUDIO_FILES" = "Audio Files";
+"ALL_MEDIA_AUDIO_FILTER_AUDIO_FILES" = "Pliki audio";
 
 /* Menu option to limit All Media (Audio) view to displaying only Voice Messages */
-"ALL_MEDIA_AUDIO_FILTER_VOICE_MSG" = "Voice Messages";
+"ALL_MEDIA_AUDIO_FILTER_VOICE_MSG" = "Wiadomości głosowe";
 
 /* Audio file type in All Meda file type picker. */
 "ALL_MEDIA_FILE_TYPE_AUDIO" = "Dźwięk";
@@ -386,10 +386,10 @@
 "ATTACHMENT_KEYBOARD_CONTACT" = "Kontakt";
 
 /* Button in a context menu from the 'manage' button in attachment panel that allows to select more photos/videos to give Signal access to */
-"ATTACHMENT_KEYBOARD_CONTEXT_MENU_BUTTON_SELECT_MORE" = "Select More Photos";
+"ATTACHMENT_KEYBOARD_CONTEXT_MENU_BUTTON_SELECT_MORE" = "Wybierz więcej zdjęć";
 
 /* Button in a context menu from the 'manage' button in attachment panel that opens the iOS system settings for Signal to update access permissions */
-"ATTACHMENT_KEYBOARD_CONTEXT_MENU_BUTTON_SYSTEM_SETTINGS" = "Go to Settings";
+"ATTACHMENT_KEYBOARD_CONTEXT_MENU_BUTTON_SYSTEM_SETTINGS" = "Przejdź do ustawień";
 
 /* A button to select a file from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_FILE" = "Plik";
@@ -725,10 +725,10 @@
 "CALL_CONTROLS_INCOMING_DECLINE" = "odrzuć";
 
 /* Title used to represent details about a call. */
-"CALL_DETAILS" = "Call Details";
+"CALL_DETAILS" = "Szczegóły połączenia";
 
 /* Label or title used to represent a call that used a call link. */
-"CALL_LINK" = "Call Link";
+"CALL_LINK" = "Link do połączenia";
 
 /* Button to open a screen to edit the name of a Call Link. Also used as the title of that screen once it opens. */
 "CALL_LINK_ADD_NAME" = "Dodaj nazwę połączenia";
@@ -746,19 +746,19 @@
 "CALL_LINK_CREATION_OR_UPDATE_FAILURE_SHEET_TITLE" = "Błąd sieci";
 
 /* A button to delete a call link that's shown after tapping the (i) info button on an item in the calls tab. */
-"CALL_LINK_DELETE_ACTION" = "Delete Link";
+"CALL_LINK_DELETE_ACTION" = "Usuń link";
 
 /* Text shown in an overlay toast trying and failing to delete a call link. */
-"CALL_LINK_DELETE_FAILED" = "Couldn't delete call link.";
+"CALL_LINK_DELETE_FAILED" = "Nie udało się usunąć linku do połączenia.";
 
 /* Text shown in a confirmation popup asking the user if they want to delete a call link. */
-"CALL_LINK_DELETE_MESSAGE" = "This link will no longer work for anyone who has it.";
+"CALL_LINK_DELETE_MESSAGE" = "Ten link nie będzie już działał u żadnego użytkownika.";
 
 /* Title shown in a confirmation popup asking the user if they want to delete a call link. */
-"CALL_LINK_DELETE_TITLE" = "Delete Link?";
+"CALL_LINK_DELETE_TITLE" = "Usunąć link?";
 
 /* Text shown in an overlay toast after a call link is successfully deleted. */
-"CALL_LINK_DELETED" = "Call link deleted.";
+"CALL_LINK_DELETED" = "Usunięto link do połączenia.";
 
 /* Button to open a screen to edit the name of a Call Link. Also used as the title of that screen once it opens. */
 "CALL_LINK_EDIT_NAME" = "Edytuj nazwę połączenia";
@@ -785,7 +785,7 @@
 "CALL_LINK_LOBBY_SHARING_INFO_PHONE_NUMBER_SHARING_ON" = "Każda osoba, która dołączy do połączenia za pomocą linku, zobaczy Twoje imię, zdjęcie oraz numer telefonu.";
 
 /* Text shown in a confirmation popup when deleting multiple calls from the calls tab. */
-"CALL_LINK_MULTI_CONFIRM" = "Call links you’ve created will no longer work for people who have them.";
+"CALL_LINK_MULTI_CONFIRM" = "Utworzone przez Ciebie linki do połączenia nie będą już działały u osób, które je mają.";
 
 /* Title for button to approve all requests to join a call. */
 "CALL_LINK_REQUEST_SHEET_APPROVE_ALL_BUTTON" = "Zatwierdź wszystkich";
@@ -806,7 +806,7 @@
 "CALL_LINK_SHARE_VIA_SYSTEM" = "Udostępnij link";
 
 /* An error alert that's shown when deleting multiple calls and some of them couldn't be deleted. */
-"CALL_LINK_SOME_NOT_DELETED" = "Not all call links could be deleted. Check your connection and try again.";
+"CALL_LINK_SOME_NOT_DELETED" = "Nie udało się usunąć wszystkich linków do połączenia. Sprawdź połączenie z internetem i spróbuj ponownie.";
 
 /* Description of sheet presented when call link update fails. */
 "CALL_LINK_UPDATE_FAILURE_SHEET_DESCRIPTION" = "Nie udało się zaktualizować linku do połączenia. Sprawdź połączenie z internetem i spróbuj ponownie.";
@@ -1142,7 +1142,7 @@
 "CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "Usuń filtr";
 
 /* Button at top of chat list indicating the active filter is 'Filtered by Unread' and tapping will clear the filter */
-"CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON" = "Filtered by Unread";
+"CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON" = "Filtrowane według nieprzeczytanych";
 
 /* Title for the chat list's default mode. */
 "CHAT_LIST_TITLE_INBOX" = "Czaty";
@@ -1703,7 +1703,7 @@
 "CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Usuń wszystko";
 
 /* Message shown in conversation view that offers to join a Call Link call. */
-"CONVERSATION_VIEW_JOIN_CALL" = "Join Call";
+"CONVERSATION_VIEW_JOIN_CALL" = "Dołącz do rozmowy";
 
 /* Indicates that the app is loading more messages in this conversation. */
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Wczytywanie wiadomości…";
@@ -2999,13 +2999,13 @@
 "GROUP_CALL_MEMBER_LIST_SHARE_CALL_LINK_BUTTON" = "Udostępnij link do połączenia";
 
 /* Label for an unknown member in the group call member list when they are the only member of the call. */
-"GROUP_CALL_MEMBER_LIST_SINGLE_UNKNOWN_MEMBER_ROW" = "1 Person";
+"GROUP_CALL_MEMBER_LIST_SINGLE_UNKNOWN_MEMBER_ROW" = "1 osoba";
 
 /* Title for the sheet showing the group call members list */
 "GROUP_CALL_MEMBER_LIST_TITLE" = "Informacje o połączeniu";
 
 /* Message on an action sheet when tapping an info button next to unknown members in the group call member list. */
-"GROUP_CALL_MEMBER_LIST_UNKNOWN_MEMBERS_INFO_SHEET" = "Before joining a call you can only see the names of phone contacts, people you’re in a group with, or people you’ve chatted with 1:1. You’ll see all names and photos once you’ve joined the call.";
+"GROUP_CALL_MEMBER_LIST_UNKNOWN_MEMBERS_INFO_SHEET" = "Przed dołączeniem do rozmowy zobaczysz tylko nazwy kontaktów z telefonu, osób, z którymi jesteś w grupie, lub osób, z którymi zdarzyło Ci się rozmawiać 1:1. Wszystkie imiona i nazwiska oraz zdjęcia zobaczysz po dołączeniu do rozmowy.";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Nie można odebrać audio i wideo od %1$@";
@@ -4109,10 +4109,10 @@
 "MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "Multimedia jednorazowe";
 
 /* VoiceOver description for a generic audio file in All Media */
-"MEDIA_GALLERY_A11Y_AUDIO_FILE" = "audio file";
+"MEDIA_GALLERY_A11Y_AUDIO_FILE" = "plik audio";
 
 /* VoiceOver description for a voice messages in All Media */
-"MEDIA_GALLERY_A11Y_VOICE_MESSAGE" = "voice message";
+"MEDIA_GALLERY_A11Y_VOICE_MESSAGE" = "Wiadomość głosowa";
 
 /* Button to reset media filter. Displayed when filter results in no media visible. */
 "MEDIA_GALLERY_CLEAR_FILTER_BUTTON" = "Usuń filtr";

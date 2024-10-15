@@ -152,13 +152,13 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "संदेश विनंत्यांबद्दल";
 
 /* Menu option to remove content type restriction in All Media (Audio) view */
-"ALL_MEDIA_AUDIO_FILTER_ALL" = "All Audio";
+"ALL_MEDIA_AUDIO_FILTER_ALL" = "सर्व ऑडिओ";
 
 /* Menu option to limit All Media (Audio) view to displaying non-voice message audio files */
-"ALL_MEDIA_AUDIO_FILTER_AUDIO_FILES" = "Audio Files";
+"ALL_MEDIA_AUDIO_FILTER_AUDIO_FILES" = "ऑडिओ फाईल्स";
 
 /* Menu option to limit All Media (Audio) view to displaying only Voice Messages */
-"ALL_MEDIA_AUDIO_FILTER_VOICE_MSG" = "Voice Messages";
+"ALL_MEDIA_AUDIO_FILTER_VOICE_MSG" = "व्हॉईस संदेश";
 
 /* Audio file type in All Meda file type picker. */
 "ALL_MEDIA_FILE_TYPE_AUDIO" = "ऑडिओ";
@@ -386,10 +386,10 @@
 "ATTACHMENT_KEYBOARD_CONTACT" = "संपर्क";
 
 /* Button in a context menu from the 'manage' button in attachment panel that allows to select more photos/videos to give Signal access to */
-"ATTACHMENT_KEYBOARD_CONTEXT_MENU_BUTTON_SELECT_MORE" = "Select More Photos";
+"ATTACHMENT_KEYBOARD_CONTEXT_MENU_BUTTON_SELECT_MORE" = "अधिक फोटोज निवडा";
 
 /* Button in a context menu from the 'manage' button in attachment panel that opens the iOS system settings for Signal to update access permissions */
-"ATTACHMENT_KEYBOARD_CONTEXT_MENU_BUTTON_SYSTEM_SETTINGS" = "Go to Settings";
+"ATTACHMENT_KEYBOARD_CONTEXT_MENU_BUTTON_SYSTEM_SETTINGS" = "सेटिंग वर जा";
 
 /* A button to select a file from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_FILE" = "फाईल";
@@ -725,10 +725,10 @@
 "CALL_CONTROLS_INCOMING_DECLINE" = "नाकारा";
 
 /* Title used to represent details about a call. */
-"CALL_DETAILS" = "Call Details";
+"CALL_DETAILS" = "कॉल तपशील";
 
 /* Label or title used to represent a call that used a call link. */
-"CALL_LINK" = "Call Link";
+"CALL_LINK" = "कॉल लिंक";
 
 /* Button to open a screen to edit the name of a Call Link. Also used as the title of that screen once it opens. */
 "CALL_LINK_ADD_NAME" = "कॉलचे नाव जोडा";
@@ -746,19 +746,19 @@
 "CALL_LINK_CREATION_OR_UPDATE_FAILURE_SHEET_TITLE" = "नेटवर्क त्रुटी";
 
 /* A button to delete a call link that's shown after tapping the (i) info button on an item in the calls tab. */
-"CALL_LINK_DELETE_ACTION" = "Delete Link";
+"CALL_LINK_DELETE_ACTION" = "लिंक हटवा";
 
 /* Text shown in an overlay toast trying and failing to delete a call link. */
-"CALL_LINK_DELETE_FAILED" = "Couldn't delete call link.";
+"CALL_LINK_DELETE_FAILED" = "कॉल लिंक हटवता आली नाही.";
 
 /* Text shown in a confirmation popup asking the user if they want to delete a call link. */
-"CALL_LINK_DELETE_MESSAGE" = "This link will no longer work for anyone who has it.";
+"CALL_LINK_DELETE_MESSAGE" = "ज्या कोणाकडे ही लिंक आहे त्यांच्यासाठी ही लिंक यापुढे काम करणार नाही.";
 
 /* Title shown in a confirmation popup asking the user if they want to delete a call link. */
-"CALL_LINK_DELETE_TITLE" = "Delete Link?";
+"CALL_LINK_DELETE_TITLE" = "लिंक हटवायची?";
 
 /* Text shown in an overlay toast after a call link is successfully deleted. */
-"CALL_LINK_DELETED" = "Call link deleted.";
+"CALL_LINK_DELETED" = "कॉल लिंक हटवली.";
 
 /* Button to open a screen to edit the name of a Call Link. Also used as the title of that screen once it opens. */
 "CALL_LINK_EDIT_NAME" = "कॉल नाव संपादित करा";
@@ -785,7 +785,7 @@
 "CALL_LINK_LOBBY_SHARING_INFO_PHONE_NUMBER_SHARING_ON" = "लिंकद्वारे या कॉलमध्ये जोडला जाणारा कोणीही आपले नाव, फोटो, आणि फोन नंबर पाहील.";
 
 /* Text shown in a confirmation popup when deleting multiple calls from the calls tab. */
-"CALL_LINK_MULTI_CONFIRM" = "Call links you’ve created will no longer work for people who have them.";
+"CALL_LINK_MULTI_CONFIRM" = "आपण तयार केलेल्या कॉल लिंक्स ज्या लोकांकडे आहेत त्यांच्यासाठी त्या यापुढे चालणार नाहीत.";
 
 /* Title for button to approve all requests to join a call. */
 "CALL_LINK_REQUEST_SHEET_APPROVE_ALL_BUTTON" = "सर्व मंजूर करा";
@@ -806,7 +806,7 @@
 "CALL_LINK_SHARE_VIA_SYSTEM" = "लिंक शेअर करा";
 
 /* An error alert that's shown when deleting multiple calls and some of them couldn't be deleted. */
-"CALL_LINK_SOME_NOT_DELETED" = "Not all call links could be deleted. Check your connection and try again.";
+"CALL_LINK_SOME_NOT_DELETED" = "सर्व कॉल लिंक्स हटवल्या जाणार नाहीत. आपले कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.";
 
 /* Description of sheet presented when call link update fails. */
 "CALL_LINK_UPDATE_FAILURE_SHEET_DESCRIPTION" = "कॉल लिंक अद्यतनित केली जाऊ शकत नाही. आपले इंटरनेट कनेक्शन तपासा आणि पुन्हा तपासा.";
@@ -1142,7 +1142,7 @@
 "CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "फिल्टर साफ करा";
 
 /* Button at top of chat list indicating the active filter is 'Filtered by Unread' and tapping will clear the filter */
-"CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON" = "Filtered by Unread";
+"CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON" = "न वाचलेल्यानुसार फिल्टर केले";
 
 /* Title for the chat list's default mode. */
 "CHAT_LIST_TITLE_INBOX" = "चॅट्स";
@@ -1703,7 +1703,7 @@
 "CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "सर्व हटवा";
 
 /* Message shown in conversation view that offers to join a Call Link call. */
-"CONVERSATION_VIEW_JOIN_CALL" = "Join Call";
+"CONVERSATION_VIEW_JOIN_CALL" = "कॉलमध्ये सामील व्हा";
 
 /* Indicates that the app is loading more messages in this conversation. */
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "अधिक संदेश लोड करत आहे(…)";
@@ -2999,13 +2999,13 @@
 "GROUP_CALL_MEMBER_LIST_SHARE_CALL_LINK_BUTTON" = "कॉल लिंक शेअर करा";
 
 /* Label for an unknown member in the group call member list when they are the only member of the call. */
-"GROUP_CALL_MEMBER_LIST_SINGLE_UNKNOWN_MEMBER_ROW" = "1 Person";
+"GROUP_CALL_MEMBER_LIST_SINGLE_UNKNOWN_MEMBER_ROW" = "1 व्यक्ती";
 
 /* Title for the sheet showing the group call members list */
 "GROUP_CALL_MEMBER_LIST_TITLE" = "कॉल माहिती";
 
 /* Message on an action sheet when tapping an info button next to unknown members in the group call member list. */
-"GROUP_CALL_MEMBER_LIST_UNKNOWN_MEMBERS_INFO_SHEET" = "Before joining a call you can only see the names of phone contacts, people you’re in a group with, or people you’ve chatted with 1:1. You’ll see all names and photos once you’ve joined the call.";
+"GROUP_CALL_MEMBER_LIST_UNKNOWN_MEMBERS_INFO_SHEET" = "कॉलमध्ये सामील होण्यापूर्वी आपण फक्त फोन संपर्कांची नावे, आपण ज्यांच्या गटामध्ये आहात असलेल्या लोकांना, किंवा आपण ज्यांच्यासोबत 1:1 चॅट्समध्ये असता ते लोक पाहू शकाल. एकदा का आपण कॉलमध्ये सामील झालात की आपण सर्व नावे आणि फोटो पहाल.";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "%1$@ कडून ऑडिओ आणि व्हिडिओ प्राप्त करू शकत नाही";
@@ -4109,10 +4109,10 @@
 "MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "एकदा मिडिया पहा";
 
 /* VoiceOver description for a generic audio file in All Media */
-"MEDIA_GALLERY_A11Y_AUDIO_FILE" = "audio file";
+"MEDIA_GALLERY_A11Y_AUDIO_FILE" = "ऑडिओ फाईल";
 
 /* VoiceOver description for a voice messages in All Media */
-"MEDIA_GALLERY_A11Y_VOICE_MESSAGE" = "voice message";
+"MEDIA_GALLERY_A11Y_VOICE_MESSAGE" = "व्हॉईस संदेश";
 
 /* Button to reset media filter. Displayed when filter results in no media visible. */
 "MEDIA_GALLERY_CLEAR_FILTER_BUTTON" = "फिल्टर साफ करा";

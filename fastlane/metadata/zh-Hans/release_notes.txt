@@ -1,1 +1,1 @@
-• This update improves support for “Limited Access” photo permissions and adds a convenient shortcut to select new photos in your iOS Settings. Take a picture of your Halloween costume idea, change what you share, exchange what you’ll wear, and arrange how you’ll scare.
+• 此次更新改进了对“有限访问”照片权限的支持，并在 iOS 设置中添加了快捷方式来方便用户选择新照片。

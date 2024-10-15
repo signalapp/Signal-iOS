@@ -93,13 +93,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Delete %1$ld Call?</string>
+			<string>Izbrisati %1$ld poziv?</string>
 			<key>few</key>
-			<string>Delete %1$ld Calls?</string>
+			<string>Izbrisati %1$ld poziva?</string>
 			<key>many</key>
-			<string>Delete %1$ld Calls?</string>
+			<string>Izbrisati %1$ld poziva?</string>
 			<key>other</key>
-			<string>Delete %1$ld Calls?</string>
+			<string>Izbrisati %1$ld poziva?</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_APPROVE_ALL_REQUESTS_CONFIRMATION_BODY_%ld</key>
@@ -213,13 +213,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$ld call log deleted.</string>
+			<string>%1$ld zapisnik poziva je izbrisan.</string>
 			<key>few</key>
-			<string>%1$ld call logs deleted.</string>
+			<string>%1$ld zapisnik poziva su izbrisana.</string>
 			<key>many</key>
-			<string>%1$ld call logs deleted.</string>
+			<string>%1$ld zapisnika poziva je izbrisano.</string>
 			<key>other</key>
-			<string>%1$ld call logs deleted.</string>
+			<string>%1$ld zapisnika poziva je izbrisano.</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_REQUEST_HEADER_COUNT_%d</key>
@@ -708,13 +708,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>+%1$ld more</string>
+			<string>+ još %1$ld korisnik</string>
 			<key>few</key>
-			<string>+%1$ld more</string>
+			<string>+ još %1$ld korisnika</string>
 			<key>many</key>
-			<string>+%1$ld more</string>
+			<string>+ još %1$ld korisnika</string>
 			<key>other</key>
-			<string>+%1$ld more</string>
+			<string>+ još %1$ld korisnika</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_JOINED_%d</key>

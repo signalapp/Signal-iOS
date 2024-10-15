@@ -77,9 +77,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Delete %1$ld Call?</string>
+			<string>¿Eliminar %1$ld llamada?</string>
 			<key>other</key>
-			<string>Delete %1$ld Calls?</string>
+			<string>¿Eliminar %1$ld llamadas?</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_APPROVE_ALL_REQUESTS_CONFIRMATION_BODY_%ld</key>
@@ -173,9 +173,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$ld call log deleted.</string>
+			<string>%1$ld registro de llamadas eliminado.</string>
 			<key>other</key>
-			<string>%1$ld call logs deleted.</string>
+			<string>%1$ld registros de llamadas eliminados.</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_REQUEST_HEADER_COUNT_%d</key>
@@ -568,9 +568,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>+%1$ld more</string>
+			<string>+%1$ld más</string>
 			<key>other</key>
-			<string>+%1$ld more</string>
+			<string>+%1$ld más</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_JOINED_%d</key>
@@ -936,9 +936,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Para mantener &quot;%2$@&quot; vinculado, abre Signal en ese dispositivo en el plazo de 1 día.</string>
+			<string>Para mantener &quot;%2$@&quot; vinculado, abre Signal en ese dispositivo en un plazo de  %1$d  día.</string>
 			<key>other</key>
-			<string>Para mantener &quot;%2$@&quot; vinculado, abre Signal en ese dispositivo en el plazo de %1$d días.</string>
+			<string>Para mantener &quot;%2$@&quot; vinculado, abre Signal en ese dispositivo en un plazo de %1$d días.</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>
@@ -1448,9 +1448,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d vista</string>
+			<string>%1$d visualización</string>
 			<key>other</key>
-			<string>%1$d vistas</string>
+			<string>%1$d visualizaciones</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_COUNT_%d</key>
@@ -1464,9 +1464,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; vista</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; visualización</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; vistas</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; visualizaciones</string>
 		</dict>
 	</dict>
 	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>

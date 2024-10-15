@@ -101,15 +101,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Delete %1$ld Call?</string>
+			<string>Scrios %1$ld ghlao?</string>
 			<key>two</key>
-			<string>Delete %1$ld Calls?</string>
+			<string>Scrios %1$ld ghlao?</string>
 			<key>few</key>
-			<string>Delete %1$ld Calls?</string>
+			<string>Scrios %1$ld ghlao?</string>
 			<key>many</key>
-			<string>Delete %1$ld Calls?</string>
+			<string>Scrios %1$ld nglao?</string>
 			<key>other</key>
-			<string>Delete %1$ld Calls?</string>
+			<string>Scrios %1$ld glao?</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_APPROVE_ALL_REQUESTS_CONFIRMATION_BODY_%ld</key>
@@ -233,15 +233,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$ld call log deleted.</string>
+			<string>%1$ld loga glaonna scriosta.</string>
 			<key>two</key>
-			<string>%1$ld call logs deleted.</string>
+			<string>%1$ld loga glaonna scriosta.</string>
 			<key>few</key>
-			<string>%1$ld call logs deleted.</string>
+			<string>%1$ld loga glaonna scriosta.</string>
 			<key>many</key>
-			<string>%1$ld call logs deleted.</string>
+			<string>%1$ld loga glaonna scriosta.</string>
 			<key>other</key>
-			<string>%1$ld call logs deleted.</string>
+			<string>%1$ld loga glaonna scriosta.</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_REQUEST_HEADER_COUNT_%d</key>
@@ -778,15 +778,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>+%1$ld more</string>
+			<string>+%1$ld duine eile</string>
 			<key>two</key>
-			<string>+%1$ld more</string>
+			<string>+%1$ld dhuine eile</string>
 			<key>few</key>
-			<string>+%1$ld more</string>
+			<string>+%1$ld dhuine eile</string>
 			<key>many</key>
-			<string>+%1$ld more</string>
+			<string>+%1$ld nduine eile</string>
 			<key>other</key>
-			<string>+%1$ld more</string>
+			<string>+%1$ld duine eile</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_JOINED_%d</key>
