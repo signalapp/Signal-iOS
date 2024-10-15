@@ -163,8 +163,9 @@ final class IndividualCallService: CallServiceStateObserver {
      */
     public func handleReceivedOffer(
         caller: Aci,
-        callId: UInt64,
         sourceDevice: UInt32,
+        localIdentity: OWSIdentity,
+        callId: UInt64,
         opaque: Data?,
         sentAtTimestamp: UInt64,
         serverReceivedTimestamp: UInt64,
@@ -188,6 +189,7 @@ final class IndividualCallService: CallServiceStateObserver {
         let partialResult = callOfferHandler.startHandlingOffer(
             caller: caller,
             sourceDevice: sourceDevice,
+            localIdentity: localIdentity,
             callId: callId,
             callType: callType,
             sentAtTimestamp: sentAtTimestamp,

@@ -51,6 +51,7 @@ public class CallOfferHandlerImpl {
     public func startHandlingOffer(
         caller: Aci,
         sourceDevice: UInt32,
+        localIdentity: OWSIdentity,
         callId: UInt64,
         callType: SSKProtoCallMessageOfferType,
         sentAtTimestamp: UInt64,
@@ -136,14 +137,20 @@ public class CallOfferHandlerImpl {
             Logger.info("Ignoring call offer from \(caller) due to insufficient permissions.")
 
             // Send the need permission message to the caller, so they know why we rejected their call.
-            _ = CallHangupSender.sendHangup(
-                thread: thread,
-                callId: callId,
-                hangupType: .hangupNeedPermission,
-                localDeviceId: tsAccountManager.storedDeviceId(tx: tx.asV2Read),
-                remoteDeviceId: sourceDevice,
-                tx: tx
-            )
+            switch localIdentity {
+            case .aci:
+                _ = CallHangupSender.sendHangup(
+                    thread: thread,
+                    callId: callId,
+                    hangupType: .hangupNeedPermission,
+                    localDeviceId: tsAccountManager.storedDeviceId(tx: tx.asV2Read),
+                    remoteDeviceId: sourceDevice,
+                    tx: tx
+                )
+            case .pni:
+                // Don't respond if they sent the offer to our PNI.
+                break
+            }
 
             // Store the call as a missed call for the local user. They will see it in the conversation
             // along with the message request dialog. When they accept the dialog, they can call back

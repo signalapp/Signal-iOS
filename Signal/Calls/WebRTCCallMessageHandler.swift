@@ -25,6 +25,7 @@ class WebRTCCallMessageHandler: CallMessageHandler {
         _ envelope: SSKProtoEnvelope,
         callEnvelope: CallEnvelopeType,
         from caller: (aci: Aci, deviceId: UInt32),
+        toLocalIdentity localIdentity: OWSIdentity,
         plaintextData: Data,
         wasReceivedByUD: Bool,
         sentAtTimestamp: UInt64,
@@ -36,8 +37,9 @@ class WebRTCCallMessageHandler: CallMessageHandler {
         case .offer(let offer):
             self.callService.individualCallService.handleReceivedOffer(
                 caller: caller.aci,
-                callId: offer.id,
                 sourceDevice: caller.deviceId,
+                localIdentity: localIdentity,
+                callId: offer.id,
                 opaque: offer.opaque,
                 sentAtTimestamp: sentAtTimestamp,
                 serverReceivedTimestamp: serverReceivedTimestamp,

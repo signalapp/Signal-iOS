@@ -1285,6 +1285,7 @@ public final class MessageReceiver {
             envelope.envelope,
             callEnvelope: callEnvelope,
             from: (envelope.sourceAci, envelope.sourceDeviceId),
+            toLocalIdentity: envelope.localIdentity,
             plaintextData: envelope.plaintextData,
             wasReceivedByUD: envelope.wasReceivedByUD,
             sentAtTimestamp: envelope.timestamp,

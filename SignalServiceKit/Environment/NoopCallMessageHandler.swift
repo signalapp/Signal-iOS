@@ -12,6 +12,7 @@ public class NoopCallMessageHandler: CallMessageHandler {
         _ envelope: SSKProtoEnvelope,
         callEnvelope: CallEnvelopeType,
         from caller: (aci: Aci, deviceId: UInt32),
+        toLocalIdentity localIdentity: OWSIdentity,
         plaintextData: Data,
         wasReceivedByUD: Bool,
         sentAtTimestamp: UInt64,

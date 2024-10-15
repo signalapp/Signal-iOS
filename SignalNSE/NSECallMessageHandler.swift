@@ -31,6 +31,7 @@ class NSECallMessageHandler: CallMessageHandler {
         _ envelope: SSKProtoEnvelope,
         callEnvelope: CallEnvelopeType,
         from caller: (aci: Aci, deviceId: UInt32),
+        toLocalIdentity localIdentity: OWSIdentity,
         plaintextData: Data,
         wasReceivedByUD: Bool,
         sentAtTimestamp: UInt64,
@@ -58,6 +59,7 @@ class NSECallMessageHandler: CallMessageHandler {
             let partialResult = callOfferHandler.startHandlingOffer(
                 caller: caller.aci,
                 sourceDevice: caller.deviceId,
+                localIdentity: localIdentity,
                 callId: offer.id,
                 callType: offer.type ?? .offerAudioCall,
                 sentAtTimestamp: sentAtTimestamp,
