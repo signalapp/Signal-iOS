@@ -2372,8 +2372,8 @@ private extension CallsListViewController {
                 switch viewModel.recipientType {
                 case .individual(type: _, let thread as TSThread), .group(let thread as TSThread):
                     configuration.dataSource = .thread(thread)
-                case .callLink(_):
-                    configuration.dataSource = .asset(avatar: CommonCallLinksUI.callLinkIcon(), badge: nil)
+                case .callLink(let rootKey):
+                    configuration.dataSource = .asset(avatar: CommonCallLinksUI.callLinkIcon(rootKey: rootKey), badge: nil)
                 }
             }
 

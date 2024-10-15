@@ -1584,7 +1584,7 @@ fileprivate extension CVComponentState.Builder {
                 action: .didTapJoinCallLinkCall(callLink: callLink)
             )
             bottomButtonsActions.append(bottomButtonAction)
-            let state = LinkPreviewCallLink(previewType: .sent(linkPreview, conversationStyle))
+            let state = LinkPreviewCallLink(previewType: .sent(linkPreview, conversationStyle), callLink: callLink)
             self.linkPreview = LinkPreview(
                 linkPreview: linkPreview,
                 linkPreviewAttachment: nil,

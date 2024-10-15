@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+public import SignalRingRTC
 public import SignalServiceKit
 
 // MARK: -
@@ -16,9 +17,11 @@ public class LinkPreviewCallLink: LinkPreviewState {
     }
 
     private let previewType: PreviewType
+    private let callLink: CallLink
 
-    public init(previewType: PreviewType) {
+    public init(previewType: PreviewType, callLink: CallLink) {
         self.previewType = previewType
+        self.callLink = callLink
         switch previewType {
         case .sent(_, let conversationStyle):
             self.conversationStyle = conversationStyle
@@ -75,7 +78,7 @@ public class LinkPreviewCallLink: LinkPreviewState {
     }
 
     public func imageAsync(thumbnailQuality: AttachmentThumbnailQuality, completion: @escaping (UIImage) -> Void) {
-        if let image = CommonCallLinksUI.callLinkIcon() {
+        if let image = CommonCallLinksUI.callLinkIcon(rootKey: callLink.rootKey) {
             completion(image)
         }
     }
@@ -114,22 +117,24 @@ public class LinkPreviewCallLink: LinkPreviewState {
 }
 
 public class CommonCallLinksUI {
-    public static func callLinkIcon() -> UIImage? {
+    public static func callLinkIcon(rootKey: CallLinkRootKey) -> UIImage? {
         guard let image = UIImage(named: "video-compact") else { return nil }
         let newSize = CGSize(square: Constants.circleViewDimension)
+
+        let theme = AvatarTheme.forData(rootKey.bytes.prefix(1))
 
         let renderer = UIGraphicsImageRenderer(size: newSize)
         let finalImage = renderer.image { context in
             let rect = CGRect(origin: .zero, size: newSize)
             let circlePath = UIBezierPath(ovalIn: rect)
 
-            Constants.iconBackgroundColor.setFill()
+            theme.backgroundColor.setFill()
             circlePath.fill()
 
             context.cgContext.addPath(circlePath.cgPath)
             context.cgContext.clip()
 
-            Constants.iconTintColor.set()
+            theme.foregroundColor.set()
             let centerOffset = Constants.circleViewDimension/2 - Constants.iconDimension/2
             let imageRect = CGRect(
                 x: centerOffset,
@@ -146,7 +151,5 @@ public class CommonCallLinksUI {
     public enum Constants {
         public static let circleViewDimension: CGFloat = 64
         fileprivate static let iconDimension: CGFloat = 36
-        fileprivate static let iconBackgroundColor = UIColor(rgbHex: 0xE4E4FD)
-        fileprivate static let iconTintColor = UIColor(rgbHex: 0x5151F6)
     }
 }

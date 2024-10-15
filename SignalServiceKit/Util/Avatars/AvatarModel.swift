@@ -245,7 +245,7 @@ public extension AvatarTheme {
         }
     }
 
-    private static func forData(_ data: Data) -> AvatarTheme {
+    static func forData(_ data: Data) -> AvatarTheme {
         var hash: UInt = 0
         for value in data {
             // A primitive hashing function.

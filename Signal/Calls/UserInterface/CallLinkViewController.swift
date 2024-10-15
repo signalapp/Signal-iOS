@@ -400,7 +400,7 @@ extension CallLinkViewController: SendMessageDelegate {
 
 private class CallLinkCardView: UIView {
     private lazy var iconView: UIImageView = {
-        let image = CommonCallLinksUI.callLinkIcon()
+        let image = CommonCallLinksUI.callLinkIcon(rootKey: callLink.rootKey)
         let imageView = UIImageView(image: image)
         imageView.autoSetDimensions(to: CGSize(
             width: Constants.circleViewDimension,
