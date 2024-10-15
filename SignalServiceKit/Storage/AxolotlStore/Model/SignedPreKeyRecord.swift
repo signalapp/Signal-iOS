@@ -10,6 +10,8 @@ private let kCoderPreKeySignature = "kCoderPreKeySignature"
 
 @objc(SignedPreKeyRecord)
 public class SignedPreKeyRecord: PreKeyRecord {
+    public class override var supportsSecureCoding: Bool { true }
+
     public let signature: Data
     public let generatedAt: Date
 
