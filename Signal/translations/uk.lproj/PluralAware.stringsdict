@@ -213,13 +213,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Видалено %1$ld журнал викликів.</string>
+			<string>Видалено %1$ld запис про виклики.</string>
 			<key>few</key>
-			<string>Видалено %1$ld журнали викликів.</string>
+			<string>Видалено %1$ld записи про виклики.</string>
 			<key>many</key>
-			<string>Видалено %1$ld журналів викликів.</string>
+			<string>Видалено %1$ld записів про виклики.</string>
 			<key>other</key>
-			<string>Видалено %1$ld журналу викликів.</string>
+			<string>Видалено %1$ld запису про виклики.</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_REQUEST_HEADER_COUNT_%d</key>
