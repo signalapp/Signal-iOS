@@ -416,7 +416,8 @@ final class IndividualCallService: CallServiceStateObserver {
         // Start the call, asynchronously.
         Task { @MainActor in
             do {
-                let iceServers = try await self.getIceServers()
+                let iceServers = try await RTCIceServerFetcher(networkManager: networkManager)
+                    .getIceServers()
                 guard self.callServiceState.currentCall === call else {
                     Logger.debug("call has since ended")
                     return
@@ -1176,36 +1177,6 @@ final class IndividualCallService: CallServiceStateObserver {
         call.individualCall.isOnHold = isOnHold
 
         ensureAudioState(call: call)
-    }
-
-    /**
-     * RTCIceServers are used when attempting to establish an optimal
-     * connection to the other party. SignalService supplies a list of servers.
-     */
-    private func getIceServers() async throws -> [RTCIceServer] {
-        let tsi = try await self.getTurnServerInfo()
-        Logger.debug("got turn server urls: \(tsi.urls) and \(tsi.urlsWithIps)")
-
-        // prioritize ip options by putting them first
-        // only provide hostname for ip based options
-        return tsi.urlsWithIps.map { url in
-            return RTCIceServer(urlStrings: [url], username: tsi.username, credential: tsi.password, tlsCertPolicy: RTCTlsCertPolicy.secure, hostname: tsi.hostname)
-        } + tsi.urls.map { url in
-            return RTCIceServer(urlStrings: [url], username: tsi.username, credential: tsi.password)
-        }
-    }
-
-    private func getTurnServerInfo() async throws -> TurnServerInfo {
-        let request = OWSRequestFactory.turnServerInfoRequest()
-        let response = try await self.networkManager.makePromise(request: request).awaitable()
-        guard
-            let json = response.responseBodyJson,
-            let responseDictionary = json as? [String: AnyObject],
-            let turnServerInfo = TurnServerInfo(attributes: responseDictionary)
-        else {
-            throw OWSAssertionError("Missing or invalid JSON")
-        }
-        return turnServerInfo
     }
 
     @MainActor
