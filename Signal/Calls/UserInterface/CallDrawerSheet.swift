@@ -51,6 +51,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
         })
         container.addSubview(doneButton)
         doneButton.setTitleColor(UIColor.Signal.label, for: .normal)
+        doneButton.titleLabel?.font = .dynamicTypeBody
         doneButton.autoAlignAxis(.horizontal, toSameAxisOf: self.sheetTitleLabel)
         doneButton.autoPinEdge(toSuperviewMargin: .trailing)
         doneButton.autoPinEdge(.leading, to: .trailing, of: sheetTitleLabel, withOffset: 8, relation: .greaterThanOrEqual)
@@ -226,6 +227,8 @@ class CallDrawerSheet: InteractiveSheetViewController {
             config.text = self?.callLinkAdminManager?.editCallNameButtonTitle
             cell.contentConfiguration = config
             cell.accessoryType = .disclosureIndicator
+            cell.contentView.layoutMargins.top = 14
+            cell.contentView.layoutMargins.bottom = 14
             return cell
         case .unknownMembers:
             let cell = tableView.dequeueReusableCell(UnknownMembersCell.self, for: indexPath)
@@ -252,7 +255,6 @@ class CallDrawerSheet: InteractiveSheetViewController {
             super.init(frame: .zero)
 
             self.addSubview(self.label)
-            self.layoutMargins.top = 0
             self.label.autoPinEdgesToSuperviewMargins()
             self.updateText()
         }
@@ -963,7 +965,8 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
         stackView.axis = .horizontal
         stackView.alignment = .center
         contentView.addSubview(stackView)
-        stackView.autoPinEdgesToSuperviewMargins()
+        stackView.autoPinWidthToSuperviewMargins()
+        stackView.autoPinHeightToSuperview(withMargin: 7)
 
         stackView.spacing = 16
         stackView.setCustomSpacing(12, after: avatarView)
@@ -1169,7 +1172,8 @@ private class UnknownMembersCell: UITableViewCell, ReusableTableViewCell {
 
         let hStack = UIStackView()
         self.contentView.addSubview(hStack)
-        hStack.autoPinEdgesToSuperviewMargins()
+        hStack.autoPinWidthToSuperviewMargins()
+        hStack.autoPinHeightToSuperview(withMargin: 7)
         hStack.axis = .horizontal
         hStack.spacing = 12
 
