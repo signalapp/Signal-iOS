@@ -45,9 +45,9 @@ public enum FeatureFlags {
     public static let messageBackupFileAlpha = build.includes(.dev)
     public static let messageBackupFileAlphaRegistrationFlow = build.includes(.dev)
 
-    public static let callLinkCreate = build.includes(.internal)
-    public static let callLinkSync = build.includes(.internal)
-    public static let callLinkJoin = build.includes(.internal)
+    public static let callLinkCreate = true
+    public static let callLinkSync = true
+    public static let callLinkJoin = true
 
     public static let chatListFilter = build.includes(.internal)
 
