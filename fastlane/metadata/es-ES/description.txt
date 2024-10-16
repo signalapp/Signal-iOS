@@ -6,7 +6,7 @@ Signal es una aplicación de mensajería diseñada para proteger tu privacidad. 
 
 • Descubre un nuevo nivel de comunicación con chats grupales de hasta 1000 personas. Elige quién puede publicar contenido y gestionar la lista de participantes del grupo en los ajustes de permisos de admin.
 
-• Comparte historias con imágenes, texto y vídeo que desaparecerán automáticamente después de 24 horas. Los ajustes de privacidad te permiten decidir quién puede ver cada historia.
+• Comparte historias con imágenes, texto y vídeo que desaparecerán automáticamente después de 24 horas. Los ajustes de privacidad te permiten decidir quién puede ver cada historia.
 
 • Signal está diseñada para proteger tu privacidad. No sabemos nada sobre ti ni con quién hablas. El protocolo de código abierto de Signal garantiza que no podemos leer tus mensajes ni escuchar tus llamadas. Ni nosotros ni nadie más. Sin puertas traseras, sin recopilación de datos, sin concesiones. 
 

@@ -1,1 +1,4 @@
-• This update improves support for “Limited Access” photo permissions and adds a convenient shortcut to select new photos in your iOS Settings. Take a picture of your Halloween costume idea, change what you share, exchange what you’ll wear, and arrange how you’ll scare.
+Introducing Call Links: The missing link for calendar invites and impromptu gatherings.
+• Now you can quickly create an easy link that anyone on Signal can use to join a group call without having to join a Signal group chat first.
+• Call links are reusable and ideal for recurring phone dates with your best friends or weekly check-ins with your coworkers.
+• You can manage your call links, control approval settings, and copy links from the calls tab for quick sharing.
