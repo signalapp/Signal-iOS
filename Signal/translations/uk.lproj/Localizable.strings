@@ -152,13 +152,13 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Про запити на повідомлення";
 
 /* Menu option to remove content type restriction in All Media (Audio) view */
-"ALL_MEDIA_AUDIO_FILTER_ALL" = "All Audio";
+"ALL_MEDIA_AUDIO_FILTER_ALL" = "Усе аудіо";
 
 /* Menu option to limit All Media (Audio) view to displaying non-voice message audio files */
-"ALL_MEDIA_AUDIO_FILTER_AUDIO_FILES" = "Audio Files";
+"ALL_MEDIA_AUDIO_FILTER_AUDIO_FILES" = "Аудіофайли";
 
 /* Menu option to limit All Media (Audio) view to displaying only Voice Messages */
-"ALL_MEDIA_AUDIO_FILTER_VOICE_MSG" = "Voice Messages";
+"ALL_MEDIA_AUDIO_FILTER_VOICE_MSG" = "Голосові повідомлення";
 
 /* Audio file type in All Meda file type picker. */
 "ALL_MEDIA_FILE_TYPE_AUDIO" = "Аудіо";
@@ -386,10 +386,10 @@
 "ATTACHMENT_KEYBOARD_CONTACT" = "Контакт";
 
 /* Button in a context menu from the 'manage' button in attachment panel that allows to select more photos/videos to give Signal access to */
-"ATTACHMENT_KEYBOARD_CONTEXT_MENU_BUTTON_SELECT_MORE" = "Select More Photos";
+"ATTACHMENT_KEYBOARD_CONTEXT_MENU_BUTTON_SELECT_MORE" = "Вибрати більше фото";
 
 /* Button in a context menu from the 'manage' button in attachment panel that opens the iOS system settings for Signal to update access permissions */
-"ATTACHMENT_KEYBOARD_CONTEXT_MENU_BUTTON_SYSTEM_SETTINGS" = "Go to Settings";
+"ATTACHMENT_KEYBOARD_CONTEXT_MENU_BUTTON_SYSTEM_SETTINGS" = "Відкрити параметри";
 
 /* A button to select a file from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_FILE" = "Файл";
@@ -725,10 +725,10 @@
 "CALL_CONTROLS_INCOMING_DECLINE" = "відхилити";
 
 /* Title used to represent details about a call. */
-"CALL_DETAILS" = "Call Details";
+"CALL_DETAILS" = "Про виклик";
 
 /* Label or title used to represent a call that used a call link. */
-"CALL_LINK" = "Call Link";
+"CALL_LINK" = "Посилання на виклик";
 
 /* Button to open a screen to edit the name of a Call Link. Also used as the title of that screen once it opens. */
 "CALL_LINK_ADD_NAME" = "Додати назву виклику";
@@ -746,19 +746,19 @@
 "CALL_LINK_CREATION_OR_UPDATE_FAILURE_SHEET_TITLE" = "Мережева помилка";
 
 /* A button to delete a call link that's shown after tapping the (i) info button on an item in the calls tab. */
-"CALL_LINK_DELETE_ACTION" = "Delete Link";
+"CALL_LINK_DELETE_ACTION" = "Видалити посилання";
 
 /* Text shown in an overlay toast trying and failing to delete a call link. */
-"CALL_LINK_DELETE_FAILED" = "Couldn't delete call link.";
+"CALL_LINK_DELETE_FAILED" = "Не вдалося видалити посилання на виклик.";
 
 /* Text shown in a confirmation popup asking the user if they want to delete a call link. */
-"CALL_LINK_DELETE_MESSAGE" = "This link will no longer work for anyone who has it.";
+"CALL_LINK_DELETE_MESSAGE" = "Якщо ви надсилали комусь це посилання, воно більше не працюватиме.";
 
 /* Title shown in a confirmation popup asking the user if they want to delete a call link. */
-"CALL_LINK_DELETE_TITLE" = "Delete Link?";
+"CALL_LINK_DELETE_TITLE" = "Видалити посилання?";
 
 /* Text shown in an overlay toast after a call link is successfully deleted. */
-"CALL_LINK_DELETED" = "Call link deleted.";
+"CALL_LINK_DELETED" = "Посилання на виклик видалено.";
 
 /* Button to open a screen to edit the name of a Call Link. Also used as the title of that screen once it opens. */
 "CALL_LINK_EDIT_NAME" = "Змінити назву виклику";
@@ -785,7 +785,7 @@
 "CALL_LINK_LOBBY_SHARING_INFO_PHONE_NUMBER_SHARING_ON" = "Усі, хто приєднається до цього виклику за посиланням, зможуть бачити ваше ім'я, фото і номер телефону.";
 
 /* Text shown in a confirmation popup when deleting multiple calls from the calls tab. */
-"CALL_LINK_MULTI_CONFIRM" = "Call links you’ve created will no longer work for people who have them.";
+"CALL_LINK_MULTI_CONFIRM" = "Якщо ви надсилали комусь свої посилання на виклики, вони більше не працюватимуть.";
 
 /* Title for button to approve all requests to join a call. */
 "CALL_LINK_REQUEST_SHEET_APPROVE_ALL_BUTTON" = "Прийняти всі";
@@ -806,7 +806,7 @@
 "CALL_LINK_SHARE_VIA_SYSTEM" = "Надіслати посилання";
 
 /* An error alert that's shown when deleting multiple calls and some of them couldn't be deleted. */
-"CALL_LINK_SOME_NOT_DELETED" = "Not all call links could be deleted. Check your connection and try again.";
+"CALL_LINK_SOME_NOT_DELETED" = "Частину посилань на виклики не вдалося видалити. Перевірте з'єднання і повторіть видалення.";
 
 /* Description of sheet presented when call link update fails. */
 "CALL_LINK_UPDATE_FAILURE_SHEET_DESCRIPTION" = "Не вдалось оновити посилання на виклик. Перевірте з'єднання з інтернетом і спробуйте ще раз.";
@@ -1142,7 +1142,7 @@
 "CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "Скасувати фільтр";
 
 /* Button at top of chat list indicating the active filter is 'Filtered by Unread' and tapping will clear the filter */
-"CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON" = "Filtered by Unread";
+"CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON" = "Показано непрочитані";
 
 /* Title for the chat list's default mode. */
 "CHAT_LIST_TITLE_INBOX" = "Чати";
@@ -1703,7 +1703,7 @@
 "CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Видалити все";
 
 /* Message shown in conversation view that offers to join a Call Link call. */
-"CONVERSATION_VIEW_JOIN_CALL" = "Join Call";
+"CONVERSATION_VIEW_JOIN_CALL" = "Приєднатися";
 
 /* Indicates that the app is loading more messages in this conversation. */
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Довантажуємо повідомлення…";
@@ -2510,13 +2510,13 @@
 "DONATION_VIEW_DONATE_ON_BEHALF_OF_A_FRIEND" = "Зробити донат за друга";
 
 /* Text describing to the user that they're going to pay a donation to Signal */
-"DONATION_VIEW_DONATION_TO_SIGNAL" = "Зробити внесок для Signal";
+"DONATION_VIEW_DONATION_TO_SIGNAL" = "Донат на користь Signal";
 
 /* Title for the 'Donor FAQ' button on the donation screen */
 "DONATION_VIEW_DONOR_FAQ" = "Поширені запитання пожертвувачів";
 
 /* Text that's shown when the donation view fails to load data, probably due to network failure */
-"DONATION_VIEW_LOAD_FAILED" = "Помилка мережі. Перевірте з'єднання та спробуйте знову.";
+"DONATION_VIEW_LOAD_FAILED" = "Мережева помилка. Перевірте з'єднання та спробуйте знов.";
 
 /* Title for the 'Badges' button on the donation screen */
 "DONATION_VIEW_MANAGE_BADGES" = "Значки";
@@ -2525,7 +2525,7 @@
 "DONATION_VIEW_MONTHLY_DONATION_TO_SIGNAL" = "Щомісячний донат Signal";
 
 /* Title for the 'more' section on the donation screen */
-"DONATION_VIEW_MORE_SECTION_TITLE" = "Більше";
+"DONATION_VIEW_MORE_SECTION_TITLE" = "Докладніше";
 
 /* Title for the 'my support' section in the donation view */
 "DONATION_VIEW_MY_SUPPORT_TITLE" = "Моя підтримка";
@@ -2546,16 +2546,16 @@
 "DOUBLE_TAP_TO_EDIT_ALERT_TITLE" = "Редагування подвійним дотиком";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Ви можете надати доступ у налаштуваннях iOS.";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Доступ можна надати в параметрах iOS.";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal потребує доступу до контактів, щоб редагувати інформацію про контакти.";
 
 /* The navbar title for the 'update group' view. */
-"EDIT_GROUP_DEFAULT_TITLE" = "Редагувати групу";
+"EDIT_GROUP_DEFAULT_TITLE" = "Про цю групу";
 
 /* Error message indicating the a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Цей користувач не може бути доданий до групи, поки не оновить Signal.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Цього користувача неможливо додати до групи, поки він не оновить Signal.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Фото не підходить.";
@@ -2564,10 +2564,10 @@
 "EDIT_GROUP_UPDATE_BUTTON" = "Оновити";
 
 /* The alert message if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Ви хочете зберегти зміни, внесені до цієї групи?";
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Зберегти зміни інформації про цю групу?";
 
 /* The alert title if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Незбережені зміни";
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Зміни не збережено";
 
 /* Label for Edit History modal */
 "EDIT_HISTORY_LABEL" = "Попередній текст";
@@ -2588,25 +2588,25 @@
 "EMAIL_INVITE_SUBJECT" = "Пора переходити в Signal";
 
 /* Description for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_MESSAGE" = "На вашому пристрої не налаштовано та з нього не можна відправити електронну пошту. Щоб відправити запит на підтримку, налаштуйте електронну пошту на своєму пристрої, або напишіть на support@signal.org";
+"EMAIL_SIGNAL_MESSAGE" = "Ваш пристрій не налаштовано для надсилання електронних листів. Щоб зв'язатися зі службою підтримки, налаштуйте електронну пошту на своєму пристрої, або надішліть листа на адресу support@signal.org з іншого пристрою";
 
 /* Title for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_TITLE" = "Email недоступний";
+"EMAIL_SIGNAL_TITLE" = "Електронна пошта недоступна";
 
 /* The name for the emoji category 'Activities' */
-"EMOJI_CATEGORY_ACTIVITIES_NAME" = "Активність";
+"EMOJI_CATEGORY_ACTIVITIES_NAME" = "Заняття";
 
 /* The name for the emoji category 'Animals & Nature' */
-"EMOJI_CATEGORY_ANIMALS_NAME" = "Тварини & Природа";
+"EMOJI_CATEGORY_ANIMALS_NAME" = "Тварини і природа";
 
 /* The name for the emoji category 'Flags' */
 "EMOJI_CATEGORY_FLAGS_NAME" = "Прапори";
 
 /* The name for the emoji category 'Food & Drink' */
-"EMOJI_CATEGORY_FOOD_NAME" = "Їжа & Напої";
+"EMOJI_CATEGORY_FOOD_NAME" = "Їжа і напої";
 
 /* The name for the emoji category 'Objects' */
-"EMOJI_CATEGORY_OBJECTS_NAME" = "Об'єкти";
+"EMOJI_CATEGORY_OBJECTS_NAME" = "Предмети";
 
 /* The name for the emoji section for emojis already used on the message */
 "EMOJI_CATEGORY_ON_MESSAGE_NAME" = "Це повідомлення";
@@ -2615,13 +2615,13 @@
 "EMOJI_CATEGORY_RECENTS_NAME" = "Недавні";
 
 /* The name for the emoji category 'Smileys & People' */
-"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "Посмішки & Люди";
+"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "Смайлики і люди";
 
 /* The name for the emoji category 'Symbols' */
 "EMOJI_CATEGORY_SYMBOLS_NAME" = "Символи";
 
 /* The name for the emoji category 'Travel & Places' */
-"EMOJI_CATEGORY_TRAVEL_NAME" = "Подорожі & Місця";
+"EMOJI_CATEGORY_TRAVEL_NAME" = "Подорожі і місцевості";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE1" = "Ніхто з ваших контактів не користується Signal.";
@@ -2636,16 +2636,16 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "Виклик не здійснено";
 
 /* Error indicating that a message could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Не вдалось переслати повідомлення.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Не вдалося переслати повідомлення.";
 
 /* Error indicating that a message could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Не вдалось переслати повідомлення тому що воно більше недоступне.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Не вдалося переслати повідомлення, воно вже недоступне.";
 
 /* Error indicating that messages could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "Не вдалось переслати повідомлення тому що вони більше недоступні.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "Не вдалося переслати повідомлення, вони вже недоступні.";
 
 /* Error indicating that messages could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Не вдалось переслати повідомлення";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Не вдалося переслати повідомлення";
 
 /* Error indicating that 'save video' failed. */
 "ERROR_COULD_NOT_SAVE_VIDEO" = "Не вдалося зберегти відео.";
@@ -2654,13 +2654,13 @@
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Не вдалося надіслати повідомлення.";
 
 /* Error indicating that openURL for a mailto: URL failed. */
-"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "Не вдалось відкрити застосунок Пошта";
+"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "Не вдалось відкрити «Пошту»";
 
 /* Error indicating that a support mailto link could not be created. */
-"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Не вдалось створити запит на підтримку";
+"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Не вдалося написати в службу підтримки";
 
 /* Generic error indicating that log upload failed */
-"ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Не вдалось вивантажити логи.";
+"ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Не вдалося вивантажити журнал.";
 
 /* Error message indicating that message send failed due to block list */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Не вдалося написати користувачеві, оскільки ви його заблокували.";
@@ -2672,37 +2672,37 @@
 "ERROR_DESCRIPTION_REQUEST_FAILED" = "Не вдалося надіслати запит до мережі.";
 
 /* Error indicating that a socket request timed out. */
-"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "Час запиту вийшов.";
+"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "Час запиту сплив.";
 
 /* Error indicating that a socket response failed. */
-"ERROR_DESCRIPTION_RESPONSE_FAILED" = "Хибна відповідь сервісу.";
+"ERROR_DESCRIPTION_RESPONSE_FAILED" = "Неприйнятна відповідь від сервісу.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Цей пристрій більше не пов’язаний із вашим номером телефону. Перевстановіть Signal.";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Ваш номер телефону більше не зареєстрований на цьому пристрої. Необхідно перевстановити Signal.";
 
 /* Generic server error */
-"ERROR_DESCRIPTION_SERVER_FAILURE" = "Виникла помилка. Спробуйте пізніше.";
+"ERROR_DESCRIPTION_SERVER_FAILURE" = "Помилка сервера. Спробуйте пізніше.";
 
 /* Description for errors returned from the server due to suspected spam. */
-"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "Сервер вимагає підтвердження особи для відправлення повідомлення.";
+"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "Сервер вимагає, щоб ви пройшли перевірку, перш ніж надсилати повідомлення.";
 
 /* Worst case generic error message */
-"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Виникла невідома помилка.";
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Сталася невідома помилка.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Контакт не користується Signal.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Цей контакт не користується Signal.";
 
 /* Error message indicating that attachment download(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Помилка завантаження додатку.";
+"ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Не вдалося завантажити вкладення.";
 
 /* Error message indicating that attachment upload(s) failed. */
 "ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Не вдалося завантажити вкладення.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE" = "Повідомлення від %1$@ не вдалось доставити";
+"ERROR_MESSAGE_DECRYPTION_FAILURE" = "Не вдалося доставити повідомлення від користувача %1$@";
 
 /* Error message for a decryption failure. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "Не вдалось доставити повідомлення";
+"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "Не вдалося доставити повідомлення";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Одержано дублікат повідомлення.";
@@ -2714,7 +2714,7 @@
 "ERROR_MESSAGE_INVALID_MESSAGE" = "Одержано несинхронізоване повідомлення.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_VERSION" = "Одержано несумісне з цією версією повідомлення.";
+"ERROR_MESSAGE_INVALID_VERSION" = "Одержано повідомлення, несумісне з цією версією.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_NO_SESSION" = "Немає доступного сеансу для контакту.";
@@ -2729,28 +2729,28 @@
 "ERROR_MESSAGE_SESSION_REFRESH" = "Сесію чату оновлено";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_UNKNOWN_ERROR" = "Виникла невідома помилка.";
+"ERROR_MESSAGE_UNKNOWN_ERROR" = "Сталася невідома помилка.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Змінився код безпеки.";
 
 /* Error indicating network connectivity problems. */
-"ERROR_NETWORK_FAILURE" = "Помилка мережі";
+"ERROR_NETWORK_FAILURE" = "Мережева помилка";
 
 /* Format string for an error alert notification message. Embeds {{ error string }} */
 "ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Будь ласка, допоможіть нам покращити Signal. Відправте цю помилку разом з журналами налагодження з вашого пристрою на адресу support@signal.org; %1$@";
 
 /* Format string for an error alert notification title. */
-"ERROR_NOTIFICATION_TITLE" = "Signal Beta: Виникла помилка";
+"ERROR_NOTIFICATION_TITLE" = "Signal Beta: Сталася помилка";
 
 /* Error indicating a send failure due to a delinked application. */
-"ERROR_SENDING_DELINKED" = "Ваш пристрій більше не прив'язаний. Щоб продовжити спілкування, будь ласка, прив'яжіть ваш пристрій знов.";
+"ERROR_SENDING_DELINKED" = "Ваш пристрій більше не зв'язаний з акаунтом. Щоб і надалі надсилати повідомлення, необхідно знов зв'язати цей пристрій.";
 
 /* Error indicating a send failure due to a deregistered application. */
-"ERROR_SENDING_DEREGISTERED" = "Ваш пристрій більше не зареєстровано. Щоб продовжити спілкування, будь-ласка зареєструйте ваш пристрій знову.";
+"ERROR_SENDING_DEREGISTERED" = "Ваш пристрій більше не зареєстровано. Щоб і надалі надсилати повідомлення, необхідно знов зареєструвати цей пристрій.";
 
 /* Error indicating a send failure due to an expired application. */
-"ERROR_SENDING_EXPIRED" = "Ваша версія Signal застаріла. Прошу оновити для того, щоб продовжити спілкування.";
+"ERROR_SENDING_EXPIRED" = "Ваша версія Signal застаріла. Оновіть застосунок, щоб і надалі надсилати повідомлення.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Незареєстрований користувач: %1$@";
@@ -2792,7 +2792,7 @@
 "FAILED_VERIFICATION_TITLE" = "Не вдалося перевірити код безпеки!";
 
 /* Section header directing user to select a badge */
-"FEATURED_BADGE_SECTION_HEADER" = "Обрати відзнаку";
+"FEATURED_BADGE_SECTION_HEADER" = "Оберіть значок";
 
 /* The title for the featured badge settings page */
 "FEATURED_BADGE_SETTINGS_TITLE" = "Обраний значок";
@@ -2834,22 +2834,22 @@
 "FORWARD_MESSAGE" = "Переслати повідомлення";
 
 /* Message for alert with information about forwarding messages. */
-"FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "Переслані повідомлення тепер відправляються миттєво.";
+"FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "Переслані повідомлення тепер надсилаються миттєво.";
 
 /* Title for alert with information about forwarding messages. */
-"FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Швидше пересилання";
+"FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Пересилання прискорюється";
 
 /* Indicates that a single message was forwarded. */
 "FORWARD_MESSAGE_MESSAGES_SENT_1" = "Повідомлення надіслано";
 
 /* Indicates that multiple messages were forwarded. */
-"FORWARD_MESSAGE_MESSAGES_SENT_N" = "Повідомлення надіслані";
+"FORWARD_MESSAGE_MESSAGES_SENT_N" = "Повідомлення надіслано";
 
 /* Indicates that the user can add a text message to forwarded messages. */
 "FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "Додати повідомлення";
 
 /* Title for the 'forward message(s)' view. */
-"FORWARD_MESSAGE_TITLE" = "Переслати до";
+"FORWARD_MESSAGE_TITLE" = "Куди переслати";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Завантажуємо нові медіа…";
@@ -2879,16 +2879,16 @@
 "GET_STARTED_CARD_NEW_GROUP" = "Нова група";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
-"GIF_PICKER_ERROR_FETCH_FAILURE" = "Не вдалося одержати запитану GIF. Переконайтеся, що ви в мережі.";
+"GIF_PICKER_ERROR_FETCH_FAILURE" = "Не вдалось отримати необхідний GIF-файл. Переконайтеся, що ви в мережі.";
 
 /* Generic error displayed when picking a GIF */
-"GIF_PICKER_ERROR_GENERIC" = "Виникла невідома помилка.";
+"GIF_PICKER_ERROR_GENERIC" = "Сталася невідома помилка.";
 
 /* Shown when selected GIF couldn't be fetched */
 "GIF_PICKER_FAILURE_ALERT_TITLE" = "Неможливо вибрати GIF";
 
 /* Alert message shown when user tries to search for GIFs without entering any search terms. */
-"GIF_PICKER_VIEW_MISSING_QUERY" = "Уведіть пошуковий запит.";
+"GIF_PICKER_VIEW_MISSING_QUERY" = "Уведіть слово для пошуку";
 
 /* Title for the 'GIF picker' dialog. */
 "GIF_PICKER_VIEW_TITLE" = "Пошук GIF";
@@ -2897,10 +2897,10 @@
 "GIF_VIEW_SEARCH_ERROR" = "Помилка. Натисніть, щоб повторити.";
 
 /* Indicates that the user's search had no results. */
-"GIF_VIEW_SEARCH_NO_RESULTS" = "Немає результатів.";
+"GIF_VIEW_SEARCH_NO_RESULTS" = "Нічого не знайдено.";
 
 /* Placeholder text for the search field in GIF view */
-"GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Уведіть пошуковий запит";
+"GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Уведіть слово для пошуку";
 
 /* Label for the 'go to settings' button */
 "GO_TO_SETTINGS_BUTTON" = "Відкрити параметри";
@@ -2912,13 +2912,13 @@
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%2$@ тепер можуть редагувати інформацію про групу, оскільки користувач %1$@ змінив налаштування.";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Інформація групи може бути змінена \"%1$@\".";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "%1$@ можуть змінювати інформацію про групу.";
 
 /* Description of the 'admins only' access level. */
 "GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Тільки адміністратори";
 
 /* Description of the 'all users' access level. */
-"GROUP_ACCESS_LEVEL_ANY" = "Будь-який користувач";
+"GROUP_ACCESS_LEVEL_ANY" = "Усі користувачі";
 
 /* Description of the 'all members' access level. */
 "GROUP_ACCESS_LEVEL_MEMBER" = "Усі учасники";
@@ -2936,13 +2936,13 @@
 "GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%2$@ тепер можуть змінювати склад групи, оскільки користувач %1$@ змінив налаштування.";
 
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Членство в групі може бути змінено \"%1$@\".";
+"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "%1$@ можуть змінювати склад групи.";
 
 /* Message indicating that a feature can only be used by group admins. */
-"GROUP_ADMIN_ONLY_WARNING" = "Лише адміни можуть змінювати це налаштування.";
+"GROUP_ADMIN_ONLY_WARNING" = "Це можуть змінювати тільки адміністратори.";
 
 /* Message body for alert explaining that a group call participant is blocked */
-"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "Ви не отримаєте аудіо та відео від цього користувача, а користувач не отримає ваші.";
+"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "Ви не зможете чути й бачити цього користувача, а користувач не зможе чути й бачити вас.";
 
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
 "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "Користувача %1$@ заблоковано";
@@ -2981,7 +2981,7 @@
 "GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "У користувачів %1$@ і %2$@ лунає дзвінок…";
 
 /* Button to join an ongoing group call */
-"GROUP_CALL_JOIN_BUTTON" = "Приєднатись";
+"GROUP_CALL_JOIN_BUTTON" = "Приєднатися";
 
 /* Button to leave a group call */
 "GROUP_CALL_LEAVE_BUTTON" = "Покинути виклик";
@@ -2999,22 +2999,22 @@
 "GROUP_CALL_MEMBER_LIST_SHARE_CALL_LINK_BUTTON" = "Поділитися посиланням на виклик";
 
 /* Label for an unknown member in the group call member list when they are the only member of the call. */
-"GROUP_CALL_MEMBER_LIST_SINGLE_UNKNOWN_MEMBER_ROW" = "1 Person";
+"GROUP_CALL_MEMBER_LIST_SINGLE_UNKNOWN_MEMBER_ROW" = "1 людина";
 
 /* Title for the sheet showing the group call members list */
 "GROUP_CALL_MEMBER_LIST_TITLE" = "Про цей виклик";
 
 /* Message on an action sheet when tapping an info button next to unknown members in the group call member list. */
-"GROUP_CALL_MEMBER_LIST_UNKNOWN_MEMBERS_INFO_SHEET" = "Before joining a call you can only see the names of phone contacts, people you’re in a group with, or people you’ve chatted with 1:1. You’ll see all names and photos once you’ve joined the call.";
+"GROUP_CALL_MEMBER_LIST_UNKNOWN_MEMBERS_INFO_SHEET" = "Поки ви не приєдналися до виклику, ви бачите лише імена людей, яких маєте в контактах телефона, учасників спільних груп і користувачів, з якими спілкувалися в особистому чаті. Приєднавшись до виклику, ви побачите імена й фотографії всіх учасників.";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
-"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Неможливо отримати аудіо та відео від %1$@";
+"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Ви не можете чути й бачити користувача %1$@";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
 "GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "Це могло статися через те, що користувач не позначив ваш змінений код безпеки як перевірений, має проблему з пристроєм або заблокував вас.";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
-"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Неможливо отримати аудіо та відео від %1$@";
+"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Ви не можете чути й бачити користувача %1$@";
 
 /* Text explaining that you are the only person currently in the group call */
 "GROUP_CALL_NO_ONE_HERE" = "Тут більше нікого немає";
@@ -3068,7 +3068,7 @@
 "GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Змінився код безпеки одного з учасників, що приєднався до виклику. Торкніться, щоб переглянути.";
 
 /* Toast view text informing user about swiping to screen share */
-"GROUP_CALL_SCREEN_SHARE_TOAST" = "Потягніть вгору, щоб побачити поширення екрану";
+"GROUP_CALL_SCREEN_SHARE_TOAST" = "Потягніть вгору для демонстрації екрана";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
 "GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Хтось почав груповий виклик";
@@ -3098,7 +3098,7 @@
 "GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT" = "%1$@ отримає сповіщення";
 
 /* Text shown before the user starts a group call if the user has not enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT" = "%1$@ і%2$@ отримають сповіщення";
+"GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT" = "%1$@ і %2$@ отримають сповіщення";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
 "GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "Буде здійснено виклик користувача %1$@ у Signal";
@@ -3113,19 +3113,19 @@
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "Ви (на іншому пристрої)";
 
 /* Message indicating that group was created by the local user. */
-"GROUP_CREATED_BY_LOCAL_USER" = "Ви створили групу.";
+"GROUP_CREATED_BY_LOCAL_USER" = "Ви створили цю групу.";
 
 /* Message indicating that group was created by another user. Embeds {{remote user name}}. */
 "GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "Користувач %1$@ створив цю групу.";
 
 /* Message indicating that group was created by an unknown user. */
-"GROUP_CREATED_BY_UNKNOWN_USER" = "Група була створена.";
+"GROUP_CREATED_BY_UNKNOWN_USER" = "Групу створено.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
-"GROUP_CREATION_FAILED" = "Не всіх учасників можна додати до групи. Натисніть, щоб спробувати знову.";
+"GROUP_CREATION_FAILED" = "У групу вдалося додати не всіх учасників. Натисніть, щоб додати знову.";
 
 /* Text indication the user can tap to view the full group description */
-"GROUP_DESCRIPTION_MORE" = "більше";
+"GROUP_DESCRIPTION_MORE" = "далі";
 
 /* Placeholder text for 'group description' field. */
 "GROUP_DESCRIPTION_PLACEHOLDER" = "Додайте опис групи…";
@@ -4109,10 +4109,10 @@
 "MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "Одноразовий медіафайл";
 
 /* VoiceOver description for a generic audio file in All Media */
-"MEDIA_GALLERY_A11Y_AUDIO_FILE" = "audio file";
+"MEDIA_GALLERY_A11Y_AUDIO_FILE" = "аудіофайл";
 
 /* VoiceOver description for a voice messages in All Media */
-"MEDIA_GALLERY_A11Y_VOICE_MESSAGE" = "voice message";
+"MEDIA_GALLERY_A11Y_VOICE_MESSAGE" = "голосове повідомлення";
 
 /* Button to reset media filter. Displayed when filter results in no media visible. */
 "MEDIA_GALLERY_CLEAR_FILTER_BUTTON" = "Скасувати фільтр";

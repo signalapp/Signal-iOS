@@ -93,13 +93,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Delete %1$ld Call?</string>
+			<string>Видалити %1$ld виклик?</string>
 			<key>few</key>
-			<string>Delete %1$ld Calls?</string>
+			<string>Видалити %1$ld виклики?</string>
 			<key>many</key>
-			<string>Delete %1$ld Calls?</string>
+			<string>Видалити %1$ld викликів?</string>
 			<key>other</key>
-			<string>Delete %1$ld Calls?</string>
+			<string>Видалити %1$ld виклику?</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_APPROVE_ALL_REQUESTS_CONFIRMATION_BODY_%ld</key>
@@ -213,13 +213,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$ld call log deleted.</string>
+			<string>Видалено %1$ld запис про виклики.</string>
 			<key>few</key>
-			<string>%1$ld call logs deleted.</string>
+			<string>Видалено %1$ld записи про виклики.</string>
 			<key>many</key>
-			<string>%1$ld call logs deleted.</string>
+			<string>Видалено %1$ld записів про виклики.</string>
 			<key>other</key>
-			<string>%1$ld call logs deleted.</string>
+			<string>Видалено %1$ld запису про виклики.</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_REQUEST_HEADER_COUNT_%d</key>
@@ -708,13 +708,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>+%1$ld more</string>
+			<string>Ще %1$ld</string>
 			<key>few</key>
-			<string>+%1$ld more</string>
+			<string>Ще %1$ld</string>
 			<key>many</key>
-			<string>+%1$ld more</string>
+			<string>Ще %1$ld</string>
 			<key>other</key>
-			<string>+%1$ld more</string>
+			<string>Ще %1$ld</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_JOINED_%d</key>

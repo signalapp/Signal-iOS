@@ -109,17 +109,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>Delete %1$ld Calls?</string>
+			<string>أترغبُ بحذف %1$ld مكالمات؟</string>
 			<key>one</key>
-			<string>Delete %1$ld Call?</string>
+			<string>أترغبُ بحذف %1$ld مكالمة؟</string>
 			<key>two</key>
-			<string>Delete %1$ld Calls?</string>
+			<string>أترغبُ بحذف %1$ld مكالمتين؟</string>
 			<key>few</key>
-			<string>Delete %1$ld Calls?</string>
+			<string>أترغبُ بحذف %1$ld مكالمات؟</string>
 			<key>many</key>
-			<string>Delete %1$ld Calls?</string>
+			<string>أترغبُ بحذف %1$ld مكالمة؟</string>
 			<key>other</key>
-			<string>Delete %1$ld Calls?</string>
+			<string>أترغبُ بحذف %1$ld مكالمة؟</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_APPROVE_ALL_REQUESTS_CONFIRMATION_BODY_%ld</key>
@@ -253,17 +253,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>%1$ld call logs deleted.</string>
+			<string>تمَّ حذف %1$ld سجلّات مكالمات.</string>
 			<key>one</key>
-			<string>%1$ld call log deleted.</string>
+			<string>تمَّ حذف %1$ld سجلّ مكالمات.</string>
 			<key>two</key>
-			<string>%1$ld call logs deleted.</string>
+			<string>تمَّ حذف %1$ld سجلّي مكالمات.</string>
 			<key>few</key>
-			<string>%1$ld call logs deleted.</string>
+			<string>تمّ حذف %1$ld سجلّات مكالمات.</string>
 			<key>many</key>
-			<string>%1$ld call logs deleted.</string>
+			<string>تمّ حذف %1$ld سجلّات مكالمات.</string>
 			<key>other</key>
-			<string>%1$ld call logs deleted.</string>
+			<string>تمّ حذف %1$ld سجلّ مكالمة.</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_REQUEST_HEADER_COUNT_%d</key>
@@ -848,17 +848,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>zero</key>
-			<string>+%1$ld more</string>
+			<string>+%1$ld آخرين</string>
 			<key>one</key>
-			<string>+%1$ld more</string>
+			<string>+%1$ld آخر</string>
 			<key>two</key>
-			<string>+%1$ld more</string>
+			<string>+%1$ld آخرين</string>
 			<key>few</key>
-			<string>+%1$ld more</string>
+			<string>+%1$ld آخرين</string>
 			<key>many</key>
-			<string>+%1$ld more</string>
+			<string>+%1$ld آخرون</string>
 			<key>other</key>
-			<string>+%1$ld more</string>
+			<string>+%1$ld آخرون</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_JOINED_%d</key>

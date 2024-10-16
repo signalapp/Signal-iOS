@@ -93,13 +93,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Delete %1$ld Call?</string>
+			<string>Odstranit %1$ld hovor?</string>
 			<key>few</key>
-			<string>Delete %1$ld Calls?</string>
+			<string>Odstranit %1$ld hovory?</string>
 			<key>many</key>
-			<string>Delete %1$ld Calls?</string>
+			<string>Odstranit %1$ld hovorů?</string>
 			<key>other</key>
-			<string>Delete %1$ld Calls?</string>
+			<string>Odstranit %1$ld hovorů?</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_APPROVE_ALL_REQUESTS_CONFIRMATION_BODY_%ld</key>
@@ -213,13 +213,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$ld call log deleted.</string>
+			<string>%1$ld záznam o hovoru odstraněn.</string>
 			<key>few</key>
-			<string>%1$ld call logs deleted.</string>
+			<string>%1$ld záznamy o hovoru odstraněny.</string>
 			<key>many</key>
-			<string>%1$ld call logs deleted.</string>
+			<string>%1$ld záznamů o hovoru odstraněno.</string>
 			<key>other</key>
-			<string>%1$ld call logs deleted.</string>
+			<string>%1$ld záznamů o hovoru odstraněno.</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_REQUEST_HEADER_COUNT_%d</key>
@@ -708,13 +708,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>+%1$ld more</string>
+			<string>+ %1$ld další</string>
 			<key>few</key>
-			<string>+%1$ld more</string>
+			<string>+ %1$ld další</string>
 			<key>many</key>
-			<string>+%1$ld more</string>
+			<string>+ %1$ld dalších</string>
 			<key>other</key>
-			<string>+%1$ld more</string>
+			<string>+ %1$ld dalších</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_JOINED_%d</key>

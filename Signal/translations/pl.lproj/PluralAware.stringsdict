@@ -93,13 +93,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Delete %1$ld Call?</string>
+			<string>Skasować %1$ld połączenie?</string>
 			<key>few</key>
-			<string>Delete %1$ld Calls?</string>
+			<string>Skasować %1$ld połączenia?</string>
 			<key>many</key>
-			<string>Delete %1$ld Calls?</string>
+			<string>Skasować %1$ld połączeń?</string>
 			<key>other</key>
-			<string>Delete %1$ld Calls?</string>
+			<string>Skasować %1$ld połączenia ?</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_APPROVE_ALL_REQUESTS_CONFIRMATION_BODY_%ld</key>
@@ -213,13 +213,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$ld call log deleted.</string>
+			<string>Usunięto %1$ld połączenie.</string>
 			<key>few</key>
-			<string>%1$ld call logs deleted.</string>
+			<string>Usunięto %1$ld połączenia.</string>
 			<key>many</key>
-			<string>%1$ld call logs deleted.</string>
+			<string>Usunięto %1$ld połączeń.</string>
 			<key>other</key>
-			<string>%1$ld call logs deleted.</string>
+			<string>Usunięto %1$ld połączenia.</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_REQUEST_HEADER_COUNT_%d</key>
@@ -708,13 +708,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>+%1$ld more</string>
+			<string>+%1$ld inny użytkownik</string>
 			<key>few</key>
-			<string>+%1$ld more</string>
+			<string>+%1$ld innych użytkowników</string>
 			<key>many</key>
-			<string>+%1$ld more</string>
+			<string>+%1$ld innych użytkowników</string>
 			<key>other</key>
-			<string>+%1$ld more</string>
+			<string>+%1$ld innego użytkownika</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_JOINED_%d</key>
