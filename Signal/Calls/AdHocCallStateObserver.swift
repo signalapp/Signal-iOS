@@ -71,6 +71,8 @@ final class AdHocCallStateObserver {
                 if inserted {
                     callLink.updateState(callLinkCall.callLinkState)
                     try callLinkStore.update(callLink, tx: tx)
+                }
+                if callLink.adminPasskey == nil, !callLink.isDeleted {
                     let updateSender = CallLinkUpdateMessageSender(messageSenderJobQueue: messageSenderJobQueue)
                     updateSender.sendCallLinkUpdateMessage(rootKey: rootKey, adminPasskey: nil, tx: SDSDB.shimOnlyBridge(tx))
                 }
