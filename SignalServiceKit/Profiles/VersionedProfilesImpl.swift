@@ -6,17 +6,22 @@
 import Foundation
 public import LibSignalClient
 
-public class VersionedProfileRequestImpl: NSObject, VersionedProfileRequest {
+public struct VersionedProfileRequest {
+    public let aci: Aci
     public let request: TSRequest
+    public let profileKey: ProfileKey
     public let requestContext: ProfileKeyCredentialRequestContext?
-    public let profileKey: Aes256Key?
 
-    public init(request: TSRequest,
-                requestContext: ProfileKeyCredentialRequestContext?,
-                profileKey: Aes256Key?) {
+    public init(
+        aci: Aci,
+        request: TSRequest,
+        profileKey: ProfileKey,
+        requestContext: ProfileKeyCredentialRequestContext?
+    ) {
+        self.aci = aci
         self.request = request
-        self.requestContext = requestContext
         self.profileKey = profileKey
+        self.requestContext = requestContext
     }
 }
 
@@ -35,13 +40,6 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
 
         static func dropDeprecatedCredentialsIfNecessary(transaction: SDSAnyWriteTransaction) {
             deprecatedCredentialStore.removeAll(transaction: transaction)
-        }
-
-        static func hasValidCredential(
-            for aci: Aci,
-            transaction: SDSAnyReadTransaction
-        ) throws -> Bool {
-            try getValidCredential(for: aci, transaction: transaction) != nil
         }
 
         static func getValidCredential(
@@ -264,48 +262,32 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
 
     public func versionedProfileRequest(
         for aci: Aci,
+        profileKey: ProfileKey,
+        shouldRequestCredential: Bool,
         udAccessKey: SMKUDAccessKey?,
         auth: ChatServiceAuth
     ) throws -> VersionedProfileRequest {
+        // We need to request a credential if we don't have a valid one already.
         var requestContext: ProfileKeyCredentialRequestContext?
-        var profileKeyVersionArg: String?
-        var credentialRequestArg: Data?
-        var profileKeyForRequest: Aes256Key?
-        try SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            // We try to include the profile key if we have one.
-            guard let profileKeyForAddress = SSKEnvironment.shared.profileManagerRef.profileKey(
-                for: SignalServiceAddress(aci),
-                transaction: transaction)
-            else {
-                return
-            }
-            profileKeyForRequest = profileKeyForAddress
-            let profileKey: ProfileKey = try self.parseProfileKey(profileKey: profileKeyForAddress)
-            let profileKeyVersion = try profileKey.getProfileKeyVersion(userId: aci)
-            profileKeyVersionArg = try profileKeyVersion.asHexadecimalString()
-
-            // We need to request a credential if we don't have a valid one already.
-            if !(try CredentialStore.hasValidCredential(for: aci, transaction: transaction)) {
-                let clientZkProfileOperations = try self.clientZkProfileOperations()
-                let context = try clientZkProfileOperations.createProfileKeyCredentialRequestContext(
-                    userId: aci,
-                    profileKey: profileKey
-                )
-                requestContext = context
-                let credentialRequest = try context.getRequest()
-                credentialRequestArg = credentialRequest.serialize().asData
-            }
+        if shouldRequestCredential {
+            requestContext = try self.clientZkProfileOperations().createProfileKeyCredentialRequestContext(
+                userId: aci,
+                profileKey: profileKey
+            )
         }
 
-        let request = OWSRequestFactory.getVersionedProfileRequest(
+        return VersionedProfileRequest(
             aci: aci,
-            profileKeyVersion: profileKeyVersionArg,
-            credentialRequest: credentialRequestArg,
-            udAccessKey: udAccessKey,
-            auth: auth
+            request: OWSRequestFactory.getVersionedProfileRequest(
+                aci: aci,
+                profileKeyVersion: try profileKey.getProfileKeyVersion(userId: aci).asHexadecimalString(),
+                credentialRequest: try requestContext?.getRequest().serialize().asData,
+                udAccessKey: udAccessKey,
+                auth: auth
+            ),
+            profileKey: profileKey,
+            requestContext: requestContext
         )
-
-        return VersionedProfileRequestImpl(request: request, requestContext: requestContext, profileKey: profileKeyForRequest)
     }
 
     // MARK: -
@@ -318,9 +300,6 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
 
     public func didFetchProfile(profile: SignalServiceProfile, profileRequest: VersionedProfileRequest) async {
         do {
-            guard let profileRequest = profileRequest as? VersionedProfileRequestImpl else {
-                return
-            }
             guard let credentialResponseData = profile.credential else {
                 return
             }
@@ -338,26 +317,21 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
                 profileKeyCredentialResponse: credentialResponse
             )
 
-            guard let requestProfileKey = profileRequest.profileKey else {
-                throw OWSAssertionError("Missing profile key for credential from versioned profile fetch.")
-            }
-
-            // ACI TODO: This must be an Aci, but the compiler loses type information. Fix that.
-            guard let aci = profile.serviceId as? Aci else {
+            guard profile.serviceId == profileRequest.aci else {
                 throw OWSAssertionError("Missing ACI.")
             }
 
             try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx throws in
-                guard let currentProfileKey = SSKEnvironment.shared.profileManagerRef.profileKey(for: SignalServiceAddress(aci), transaction: tx) else {
+                guard let currentProfileKey = SSKEnvironment.shared.profileManagerRef.profileKey(for: SignalServiceAddress(profileRequest.aci), transaction: tx) else {
                     throw OWSAssertionError("Missing profile key in database.")
                 }
 
-                guard requestProfileKey.keyData == currentProfileKey.keyData else {
+                guard profileRequest.profileKey.serialize().asData == currentProfileKey.keyData else {
                     Logger.warn("Profile key for versioned profile fetch does not match current profile key.")
                     return
                 }
 
-                try CredentialStore.setCredential(profileKeyCredential, for: aci, transaction: tx)
+                try CredentialStore.setCredential(profileKeyCredential, for: profileRequest.aci, transaction: tx)
             }
         } catch {
             owsFailDebug("Invalid credential: \(error).")

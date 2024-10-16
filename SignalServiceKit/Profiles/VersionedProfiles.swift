@@ -18,14 +18,6 @@ public struct VersionedProfileUpdate {
 // MARK: -
 
 @objc
-public protocol VersionedProfileRequest: AnyObject {
-    var request: TSRequest { get }
-    var profileKey: Aes256Key? { get }
-}
-
-// MARK: -
-
-@objc
 public protocol VersionedProfiles: AnyObject {
     @objc(clearProfileKeyCredentialForServiceId:transaction:)
     func clearProfileKeyCredential(
@@ -53,6 +45,8 @@ public protocol VersionedProfilesSwift: VersionedProfiles {
 
     func versionedProfileRequest(
         for aci: Aci,
+        profileKey: ProfileKey,
+        shouldRequestCredential: Bool,
         udAccessKey: SMKUDAccessKey?,
         auth: ChatServiceAuth
     ) throws -> VersionedProfileRequest
@@ -99,6 +93,8 @@ public class MockVersionedProfiles: NSObject, VersionedProfilesSwift, VersionedP
 
     public func versionedProfileRequest(
         for aci: Aci,
+        profileKey: ProfileKey,
+        shouldRequestCredential: Bool,
         udAccessKey: SMKUDAccessKey?,
         auth: ChatServiceAuth
     ) throws -> VersionedProfileRequest {

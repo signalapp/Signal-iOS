@@ -105,7 +105,7 @@ public protocol ProfileManager: ProfileManagerProtocol {
     /// this method will download it twice.
     func downloadAndDecryptAvatar(
         avatarUrlPath: String,
-        profileKey: Aes256Key
+        profileKey: ProfileKey
     ) async throws -> URL
 
     func updateProfile(

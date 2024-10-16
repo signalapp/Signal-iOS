@@ -708,8 +708,8 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         return try Aes256GcmEncryptedData.encrypt(profileData, key: profileKey.keyData).concatenate()
     }
 
-    public class func decrypt(profileData: Data, profileKey: Aes256Key) throws -> Data {
-        return try Aes256GcmEncryptedData(concatenated: profileData).decrypt(key: profileKey.keyData)
+    public class func decrypt(profileData: Data, profileKey: ProfileKey) throws -> Data {
+        return try Aes256GcmEncryptedData(concatenated: profileData).decrypt(key: profileKey.serialize().asData)
     }
 
     enum DecryptionError: Error {
@@ -717,7 +717,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         case malformedValue
     }
 
-    class func decrypt(profileNameData: Data, profileKey: Aes256Key) throws -> (givenName: String, familyName: String?) {
+    class func decrypt(profileNameData: Data, profileKey: ProfileKey) throws -> (givenName: String, familyName: String?) {
         let decryptedData = try decrypt(profileData: profileNameData, profileKey: profileKey)
 
         func parseNameSegment(_ nameSegment: Data) throws -> String? {
@@ -738,7 +738,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         return (givenName, try familyName.flatMap(parseNameSegment(_:)))
     }
 
-    class func decrypt(profileStringData: Data, profileKey: Aes256Key) throws -> String? {
+    class func decrypt(profileStringData: Data, profileKey: ProfileKey) throws -> String? {
         let decryptedData = try decrypt(profileData: profileStringData, profileKey: profileKey)
 
         // Remove padding.
@@ -749,7 +749,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         return value.nilIfEmpty
     }
 
-    class func decrypt(profileBooleanData: Data, profileKey: Aes256Key) throws -> Bool {
+    class func decrypt(profileBooleanData: Data, profileKey: ProfileKey) throws -> Bool {
         switch try decrypt(profileData: profileBooleanData, profileKey: profileKey) {
         case Data([1]):
             return true

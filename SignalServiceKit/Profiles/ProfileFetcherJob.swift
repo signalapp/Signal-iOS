@@ -122,38 +122,44 @@ public class ProfileFetcherJob {
 
     private func requestProfileAttempt(localIdentifiers: LocalIdentifiers) async throws -> FetchedProfile {
         let serviceId = self.serviceId
+        let versionedProfiles = self.versionedProfiles
 
-        let udAccess: OWSUDAccess?
-        if localIdentifiers.contains(serviceId: serviceId) {
-            // Don't use UD for "self" profile fetches.
-            udAccess = nil
-        } else {
-            udAccess = db.read { tx in udManager.udAccess(for: serviceId, tx: SDSDB.shimOnlyBridge(tx)) }
+        let (profileKey, udAccess, shouldRequestCredential) = try db.read { (tx) -> (ProfileKey?, OWSUDAccess?, Bool) in
+            switch serviceId.concreteType {
+            case .aci(let aci):
+                let profileKey = try self.profileManager.profileKey(
+                    for: SignalServiceAddress(aci),
+                    transaction: SDSDB.shimOnlyBridge(tx)
+                ).map { try ProfileKey(contents: [UInt8]($0.keyData)) }
+                let udAccess: OWSUDAccess?
+                if localIdentifiers.aci == aci {
+                    // Don't use UD for "self" profile fetches.
+                    udAccess = nil
+                } else {
+                    udAccess = udManager.udAccess(for: aci, tx: SDSDB.shimOnlyBridge(tx))
+                }
+                let profileKeyCredential = try versionedProfiles.validProfileKeyCredential(for: aci, transaction: SDSDB.shimOnlyBridge(tx))
+                return (profileKey, udAccess, profileKeyCredential == nil)
+            case .pni(_):
+                return (nil, nil, false)
+            }
         }
 
-        var currentVersionedProfileRequest: VersionedProfileRequest?
+        var versionedProfileRequest: VersionedProfileRequest?
         let requestMaker = RequestMaker(
             label: "Profile Fetch",
-            requestFactoryBlock: { (udAccessKeyForRequest) -> TSRequest? in
-                // Clear out any existing request.
-                currentVersionedProfileRequest = nil
-
-                switch serviceId {
-                case let aci as Aci:
-                    do {
-                        let request = try self.versionedProfiles.versionedProfileRequest(
-                            for: aci,
-                            udAccessKey: udAccessKeyForRequest,
-                            auth: self.authedAccount.chatServiceAuth
-                        )
-                        currentVersionedProfileRequest = request
-                        return request.request
-                    } catch {
-                        owsFailDebug("Error: \(error)")
-                        return nil
-                    }
-                default:
-                    Logger.info("Unversioned profile fetch.")
+            requestFactoryBlock: { (udAccessKeyForRequest) -> TSRequest in
+                if let aci = serviceId as? Aci, let profileKey {
+                    let request = try versionedProfiles.versionedProfileRequest(
+                        for: aci,
+                        profileKey: profileKey,
+                        shouldRequestCredential: shouldRequestCredential,
+                        udAccessKey: udAccessKeyForRequest,
+                        auth: self.authedAccount.chatServiceAuth
+                    )
+                    versionedProfileRequest = request
+                    return request.request
+                } else {
                     return OWSRequestFactory.getUnversionedProfileRequest(
                         serviceId: serviceId,
                         udAccessKey: udAccessKeyForRequest,
@@ -175,35 +181,11 @@ public class ProfileFetcherJob {
         )
 
         // If we sent a versioned request, store the credential that was returned.
-        if let versionedProfileRequest = currentVersionedProfileRequest {
+        if let versionedProfileRequest {
             // This calls databaseStorage.write { }
             await versionedProfiles.didFetchProfile(profile: profile, profileRequest: versionedProfileRequest)
         }
 
-        return fetchedProfile(
-            for: profile,
-            profileKeyFromVersionedRequest: currentVersionedProfileRequest?.profileKey
-        )
-    }
-
-    private func fetchedProfile(
-        for profile: SignalServiceProfile,
-        profileKeyFromVersionedRequest: Aes256Key?
-    ) -> FetchedProfile {
-        let profileKey: Aes256Key?
-        if let profileKeyFromVersionedRequest {
-            // We sent a versioned request, so use the corresponding profile key for
-            // decryption. If we don't, we might try to decrypt an old profile with a
-            // new key, and that won't work.
-            profileKey = profileKeyFromVersionedRequest
-        } else {
-            // We sent an unversioned request, so just use any profile key that's
-            // available. If we explicitly sent an unversioned request, we may have a
-            // key available locally. If we wanted a versioned request but ended up
-            // with an unversioned request, we may have received a key while the
-            // profile fetch was in flight.
-            profileKey = db.read { profileManager.profileKey(for: SignalServiceAddress(profile.serviceId), transaction: SDSDB.shimOnlyBridge($0)) }
-        }
         return FetchedProfile(profile: profile, profileKey: profileKey)
     }
 
@@ -482,18 +464,18 @@ public struct DecryptedProfile {
 
 public struct FetchedProfile {
     let profile: SignalServiceProfile
-    let profileKey: Aes256Key?
+    let profileKey: ProfileKey?
     public let decryptedProfile: DecryptedProfile?
     public let identityKey: IdentityKey
 
-    init(profile: SignalServiceProfile, profileKey: Aes256Key?) {
+    init(profile: SignalServiceProfile, profileKey: ProfileKey?) {
         self.profile = profile
         self.profileKey = profileKey
         self.decryptedProfile = Self.decrypt(profile: profile, profileKey: profileKey)
         self.identityKey = profile.identityKey
     }
 
-    private static func decrypt(profile: SignalServiceProfile, profileKey: Aes256Key?) -> DecryptedProfile? {
+    private static func decrypt(profile: SignalServiceProfile, profileKey: ProfileKey?) -> DecryptedProfile? {
         guard let profileKey else {
             return nil
         }

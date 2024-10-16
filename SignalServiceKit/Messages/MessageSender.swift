@@ -144,7 +144,7 @@ public class MessageSender {
 
         let requestMaker = RequestMaker(
             label: "Prekey Fetch",
-            requestFactoryBlock: { (udAccessKeyForRequest: SMKUDAccessKey?) -> TSRequest? in
+            requestFactoryBlock: { (udAccessKeyForRequest: SMKUDAccessKey?) -> TSRequest in
                 return OWSRequestFactory.recipientPreKeyRequest(
                     serviceId: serviceId,
                     deviceId: deviceId,

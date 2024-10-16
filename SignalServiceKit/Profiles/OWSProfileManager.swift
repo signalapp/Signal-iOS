@@ -2214,7 +2214,8 @@ extension OWSProfileManager {
         }
         let shouldRetry: Bool
         do {
-            let temporaryFileUrl = try await downloadAndDecryptAvatar(avatarUrlPath: avatarUrlPath, profileKey: profileKey)
+            let typedProfileKey = try ProfileKey(contents: [UInt8](profileKey.keyData))
+            let temporaryFileUrl = try await downloadAndDecryptAvatar(avatarUrlPath: avatarUrlPath, profileKey: typedProfileKey)
             var didConsumeFilePath = false
             defer {
                 if !didConsumeFilePath { try? FileManager.default.removeItem(at: temporaryFileUrl) }
@@ -2243,7 +2244,7 @@ extension OWSProfileManager {
         }
     }
 
-    public func downloadAndDecryptAvatar(avatarUrlPath: String, profileKey: Aes256Key) async throws -> URL {
+    public func downloadAndDecryptAvatar(avatarUrlPath: String, profileKey: ProfileKey) async throws -> URL {
         let backgroundTask = OWSBackgroundTask(label: "\(#function)")
         defer { backgroundTask.end() }
 
@@ -2256,7 +2257,7 @@ extension OWSProfileManager {
 
     private static func _downloadAndDecryptAvatar(
         avatarUrlPath: String,
-        profileKey: Aes256Key,
+        profileKey: ProfileKey,
         remainingRetries: Int
     ) async throws -> URL {
         assert(!avatarUrlPath.isEmpty)
@@ -2285,7 +2286,7 @@ extension OWSProfileManager {
     private static func decryptAvatar(
         at encryptedFileUrl: URL,
         to decryptedFileUrl: URL,
-        profileKey: Aes256Key
+        profileKey: ProfileKey
     ) throws {
         let readHandle = try FileHandle(forReadingFrom: encryptedFileUrl)
         defer {
@@ -2318,7 +2319,7 @@ extension OWSProfileManager {
 
         let nonceData = try readHandle.read(upToCount: nonceLength) ?? Data()
 
-        let decryptor = try Aes256GcmDecryption(key: profileKey.keyData, nonce: nonceData, associatedData: [])
+        let decryptor = try Aes256GcmDecryption(key: profileKey.serialize().asData, nonce: nonceData, associatedData: [])
         while remainingLength > 0 {
             let kBatchLimit = 32768
             var payloadData: Data = try readHandle.read(upToCount: min(remainingLength, kBatchLimit)) ?? Data()

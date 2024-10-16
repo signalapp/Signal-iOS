@@ -22,12 +22,6 @@ public enum RequestMakerUDAuthError: Int, Error, IsRetryableProvider {
 
 // MARK: -
 
-public enum RequestMakerError: Error {
-    case requestCreationFailed
-}
-
-// MARK: -
-
 public struct RequestMakerResult {
     public let response: HTTPResponse
     public let wasSentByUD: Bool
@@ -46,7 +40,7 @@ public struct RequestMakerResult {
 /// - Retrying UD requests that fail due to 401/403 errors.
 public final class RequestMaker {
 
-    public typealias RequestFactoryBlock = (SMKUDAccessKey?) -> TSRequest?
+    public typealias RequestFactoryBlock = (SMKUDAccessKey?) throws -> TSRequest
 
     public struct Options: OptionSet {
         public let rawValue: Int
@@ -96,8 +90,11 @@ public final class RequestMaker {
     private func makeRequestInternal(skipUD: Bool) -> Promise<RequestMakerResult> {
         let udAccess: OWSUDAccess? = skipUD ? nil : self.udAccess
         let isUDRequest: Bool = udAccess != nil
-        guard let request: TSRequest = requestFactoryBlock(udAccess?.udAccessKey) else {
-            return Promise(error: RequestMakerError.requestCreationFailed)
+        let request: TSRequest
+        do {
+            request = try requestFactoryBlock(udAccess?.udAccessKey)
+        } catch {
+            return Promise(error: error)
         }
         owsAssertDebug(isUDRequest == request.isUDRequest)
 

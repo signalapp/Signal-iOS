@@ -592,18 +592,16 @@ public enum OWSRequestFactory {
 
     static func getVersionedProfileRequest(
         aci: Aci,
-        profileKeyVersion: String?,
+        profileKeyVersion: String,
         credentialRequest: Data?,
         udAccessKey: SMKUDAccessKey?,
         auth: ChatServiceAuth
     ) -> TSRequest {
         var components = [String]()
         components.append(aci.serviceIdString)
-        if let profileKeyVersion, !profileKeyVersion.isEmpty {
-            components.append(profileKeyVersion.lowercased())
-            if let credentialRequest, !credentialRequest.isEmpty {
-                components.append(credentialRequest.hexadecimalString + "?credentialType=expiringProfileKey")
-            }
+        components.append(profileKeyVersion)
+        if let credentialRequest, !credentialRequest.isEmpty {
+            components.append(credentialRequest.hexadecimalString + "?credentialType=expiringProfileKey")
         }
 
         let path = "v1/profile/\(components.joined(separator: "/"))"
