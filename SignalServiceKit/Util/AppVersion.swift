@@ -207,7 +207,7 @@ public class AppVersionImpl: AppVersion {
             self.buildDate = Date(timeIntervalSince1970: buildTimestamp)
         } else {
             #if !TESTABLE_BUILD
-            owsFailBeta("Expected a build date to be defined. Assuming build date is right now")
+            Logger.warn("Expected a build date to be defined. Assuming build date is right now")
             #endif
             self.buildDate = Date()
         }
