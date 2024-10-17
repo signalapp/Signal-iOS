@@ -767,9 +767,10 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
             actionSheet.addAction(action)
         } else {
             #if DEBUG
-            actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION",
-                                                                             comment: "Label for button to mute a thread for a minute."),
-                                                    accessibilityIdentifier: UIView.accessibilityIdentifier(in: fromVC, name: "mute_1_minute")) { _ in
+            actionSheet.addAction(ActionSheetAction(
+                title: LocalizationNotNeeded("1 minute"),
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: fromVC, name: "mute_1_minute")
+            ) { _ in
                 setThreadMuted(threadViewModel: threadViewModel) {
                     var dateComponents = DateComponents()
                     dateComponents.minute = 1
