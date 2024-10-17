@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 70;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -2413,6 +2413,83 @@
 		D9DCFDB22A3BDAB000C73C0B /* ExportableQRCodeGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDB12A3BDAB000C73C0B /* ExportableQRCodeGenerator.swift */; };
 		D9DCFDB42A3BDC7400C73C0B /* BasicDisplayQRCodeGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDB32A3BDC7400C73C0B /* BasicDisplayQRCodeGenerator.swift */; };
 		D9E335A929933B1A00825677 /* Usernames+HashedUsername.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E335A829933B1A00825677 /* Usernames+HashedUsername.swift */; };
+		D9E43BE22CC194140001536E /* CallButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43B932CC194140001536E /* CallButton.swift */; };
+		D9E43BE32CC194140001536E /* CallControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43B942CC194140001536E /* CallControls.swift */; };
+		D9E43BE42CC194140001536E /* CallControlsConfirmationToast.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43B952CC194140001536E /* CallControlsConfirmationToast.swift */; };
+		D9E43BE52CC194140001536E /* CallControlsOverflowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43B962CC194140001536E /* CallControlsOverflowView.swift */; };
+		D9E43BE62CC194140001536E /* CallDrawerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43B972CC194140001536E /* CallDrawerSheet.swift */; };
+		D9E43BE72CC194140001536E /* CallDrawerSheetDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43B982CC194140001536E /* CallDrawerSheetDataSource.swift */; };
+		D9E43BE82CC194140001536E /* CallHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43B992CC194140001536E /* CallHeader.swift */; };
+		D9E43BE92CC194140001536E /* CallKitCallUIAdaptee.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43B9A2CC194140001536E /* CallKitCallUIAdaptee.swift */; };
+		D9E43BEA2CC194140001536E /* CallLinkApprovalRequestDetailsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43B9B2CC194140001536E /* CallLinkApprovalRequestDetailsSheet.swift */; };
+		D9E43BEB2CC194140001536E /* CallLinkApprovalRequestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43B9C2CC194140001536E /* CallLinkApprovalRequestView.swift */; };
+		D9E43BEC2CC194140001536E /* CallLinkApprovalViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43B9D2CC194140001536E /* CallLinkApprovalViewModel.swift */; };
+		D9E43BED2CC194140001536E /* CallLinkBulkApprovalSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43B9E2CC194140001536E /* CallLinkBulkApprovalSheet.swift */; };
+		D9E43BEE2CC194140001536E /* CallLinkDeleter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43B9F2CC194140001536E /* CallLinkDeleter.swift */; };
+		D9E43BEF2CC194140001536E /* CallLinkProfileKeySharingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BA02CC194140001536E /* CallLinkProfileKeySharingManager.swift */; };
+		D9E43BF02CC194140001536E /* CallLinkViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BA12CC194140001536E /* CallLinkViewController.swift */; };
+		D9E43BF12CC194140001536E /* CallMemberCameraOffView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BA22CC194140001536E /* CallMemberCameraOffView.swift */; };
+		D9E43BF22CC194140001536E /* CallMemberChromeOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BA32CC194140001536E /* CallMemberChromeOverlayView.swift */; };
+		D9E43BF32CC194140001536E /* CallMemberVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BA42CC194140001536E /* CallMemberVideoView.swift */; };
+		D9E43BF42CC194140001536E /* CallMemberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BA52CC194140001536E /* CallMemberView.swift */; };
+		D9E43BF52CC194140001536E /* CallMemberWaitingAndErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BA62CC194140001536E /* CallMemberWaitingAndErrorView.swift */; };
+		D9E43BF62CC194140001536E /* CallsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BA72CC194140001536E /* CallsListViewController.swift */; };
+		D9E43BF72CC194140001536E /* CallsListViewController+Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BA82CC194140001536E /* CallsListViewController+Strings.swift */; };
+		D9E43BF82CC194140001536E /* CallsListViewController+ViewModelLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BA92CC194140001536E /* CallsListViewController+ViewModelLoader.swift */; };
+		D9E43BF92CC194140001536E /* CallUIAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BAA2CC194140001536E /* CallUIAdapter.swift */; };
+		D9E43BFA2CC194140001536E /* CreateCallLinkViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BAB2CC194140001536E /* CreateCallLinkViewController.swift */; };
+		D9E43BFB2CC194140001536E /* EditCallLinkNameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BAC2CC194140001536E /* EditCallLinkNameViewController.swift */; };
+		D9E43BFC2CC194140001536E /* FlipCameraTooltip.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BAD2CC194140001536E /* FlipCameraTooltip.swift */; };
+		D9E43BFD2CC194140001536E /* GroupCallErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BAE2CC194140001536E /* GroupCallErrorView.swift */; };
+		D9E43BFE2CC194140001536E /* GroupCallNotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BAF2CC194140001536E /* GroupCallNotificationView.swift */; };
+		D9E43BFF2CC194140001536E /* GroupCallSwipeToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BB02CC194140001536E /* GroupCallSwipeToastView.swift */; };
+		D9E43C002CC194140001536E /* GroupCallTooltip.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BB12CC194140001536E /* GroupCallTooltip.swift */; };
+		D9E43C012CC194140001536E /* GroupCallVideoGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BB22CC194140001536E /* GroupCallVideoGrid.swift */; };
+		D9E43C022CC194140001536E /* GroupCallVideoGridLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BB32CC194140001536E /* GroupCallVideoGridLayout.swift */; };
+		D9E43C032CC194140001536E /* GroupCallVideoOverflow.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BB42CC194140001536E /* GroupCallVideoOverflow.swift */; };
+		D9E43C042CC194140001536E /* GroupCallViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BB52CC194140001536E /* GroupCallViewController.swift */; };
+		D9E43C052CC194140001536E /* IncomingCallControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BB62CC194140001536E /* IncomingCallControls.swift */; };
+		D9E43C062CC194140001536E /* IncomingReactionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BB72CC194140001536E /* IncomingReactionsView.swift */; };
+		D9E43C072CC194140001536E /* IndividualCallViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BB82CC194140001536E /* IndividualCallViewController.swift */; };
+		D9E43C082CC194140001536E /* LocalVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BB92CC194140001536E /* LocalVideoView.swift */; };
+		D9E43C092CC194140001536E /* NewCallViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BBA2CC194140001536E /* NewCallViewController.swift */; };
+		D9E43C0A2CC194140001536E /* RaisedHandsToast.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BBB2CC194140001536E /* RaisedHandsToast.swift */; };
+		D9E43C0B2CC194140001536E /* ReactionsBurstView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BBC2CC194140001536E /* ReactionsBurstView.swift */; };
+		D9E43C0C2CC194140001536E /* ReactionsSink.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BBD2CC194140001536E /* ReactionsSink.swift */; };
+		D9E43C0D2CC194140001536E /* RemoteVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BBE2CC194140001536E /* RemoteVideoView.swift */; };
+		D9E43C0E2CC194140001536E /* ReturnToCallViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BBF2CC194140001536E /* ReturnToCallViewController.swift */; };
+		D9E43C0F2CC194140001536E /* SimulatorCallUIAdaptee.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BC02CC194140001536E /* SimulatorCallUIAdaptee.swift */; };
+		D9E43C102CC194140001536E /* SupplementalCallControlsForFullscreenLocalMember.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BC12CC194140001536E /* SupplementalCallControlsForFullscreenLocalMember.swift */; };
+		D9E43C112CC194140001536E /* AdHocCallStateObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BC32CC194140001536E /* AdHocCallStateObserver.swift */; };
+		D9E43C122CC194140001536E /* AudioSession+WebRTC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BC42CC194140001536E /* AudioSession+WebRTC.swift */; };
+		D9E43C132CC194140001536E /* AudioSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BC52CC194140001536E /* AudioSource.swift */; };
+		D9E43C142CC194140001536E /* CallAudioService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BC62CC194140001536E /* CallAudioService.swift */; };
+		D9E43C152CC194140001536E /* CallKitCallManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BC72CC194140001536E /* CallKitCallManager.swift */; };
+		D9E43C162CC194140001536E /* CallKitIdStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BC82CC194140001536E /* CallKitIdStore.swift */; };
+		D9E43C172CC194140001536E /* CallLinkAdminManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BC92CC194140001536E /* CallLinkAdminManager.swift */; };
+		D9E43C182CC194140001536E /* CallLinkCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BCA2CC194140001536E /* CallLinkCall.swift */; };
+		D9E43C192CC194140001536E /* CallLinkFetchJobRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BCB2CC194140001536E /* CallLinkFetchJobRunner.swift */; };
+		D9E43C1A2CC194140001536E /* CallLinkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BCC2CC194140001536E /* CallLinkManager.swift */; };
+		D9E43C1B2CC194140001536E /* CallLinkStateUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BCD2CC194140001536E /* CallLinkStateUpdater.swift */; };
+		D9E43C1C2CC194140001536E /* CallLinkUpdateMessageSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BCE2CC194140001536E /* CallLinkUpdateMessageSender.swift */; };
+		D9E43C1D2CC194140001536E /* CallRecordLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BCF2CC194140001536E /* CallRecordLoader.swift */; };
+		D9E43C1E2CC194140001536E /* CallService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BD02CC194140001536E /* CallService.swift */; };
+		D9E43C1F2CC194140001536E /* CallServiceState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BD12CC194140001536E /* CallServiceState.swift */; };
+		D9E43C202CC194140001536E /* CallStarter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BD22CC194140001536E /* CallStarter.swift */; };
+		D9E43C212CC194140001536E /* CallStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BD32CC194140001536E /* CallStrings.swift */; };
+		D9E43C222CC194140001536E /* CallTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BD42CC194140001536E /* CallTarget.swift */; };
+		D9E43C232CC194140001536E /* CommonCallState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BD52CC194140001536E /* CommonCallState.swift */; };
+		D9E43C242CC194140001536E /* CurrentCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BD62CC194140001536E /* CurrentCall.swift */; };
+		D9E43C252CC194140001536E /* GroupCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BD72CC194140001536E /* GroupCall.swift */; };
+		D9E43C262CC194140001536E /* GroupCallAccessoryMessageDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BD82CC194140001536E /* GroupCallAccessoryMessageDelegate.swift */; };
+		D9E43C272CC194140001536E /* GroupCallRecordRingingCleanupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BD92CC194140001536E /* GroupCallRecordRingingCleanupManager.swift */; };
+		D9E43C282CC194140001536E /* GroupCallRemoteVideoManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BDA2CC194140001536E /* GroupCallRemoteVideoManager.swift */; };
+		D9E43C292CC194140001536E /* GroupThreadCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BDB2CC194140001536E /* GroupThreadCall.swift */; };
+		D9E43C2A2CC194140001536E /* IndividualCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BDC2CC194140001536E /* IndividualCall.swift */; };
+		D9E43C2B2CC194140001536E /* IndividualCallService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BDD2CC194140001536E /* IndividualCallService.swift */; };
+		D9E43C2C2CC194140001536E /* RTCIceServerFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BDE2CC194140001536E /* RTCIceServerFetcher.swift */; };
+		D9E43C2D2CC194140001536E /* SignalCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BDF2CC194140001536E /* SignalCall.swift */; };
+		D9E43C2E2CC194140001536E /* WebRTCCallMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BE02CC194140001536E /* WebRTCCallMessageHandler.swift */; };
 		D9E7C8752B9A3FD1005BD3B9 /* CallRecordCursor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E7C8742B9A3FD1005BD3B9 /* CallRecordCursor.swift */; };
 		D9E7C8772B9A4A9C005BD3B9 /* CallRecord+Sorting.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E7C8762B9A4A9C005BD3B9 /* CallRecord+Sorting.swift */; };
 		D9E8EDED2C0EAFE700923E3C /* DeleteForMeOutgoingSyncMessageManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E8EDEC2C0EAFE700923E3C /* DeleteForMeOutgoingSyncMessageManagerTest.swift */; };
@@ -5978,6 +6055,83 @@
 		D9DCFDB12A3BDAB000C73C0B /* ExportableQRCodeGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportableQRCodeGenerator.swift; sourceTree = "<group>"; };
 		D9DCFDB32A3BDC7400C73C0B /* BasicDisplayQRCodeGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicDisplayQRCodeGenerator.swift; sourceTree = "<group>"; };
 		D9E335A829933B1A00825677 /* Usernames+HashedUsername.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+HashedUsername.swift"; sourceTree = "<group>"; };
+		D9E43B932CC194140001536E /* CallButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallButton.swift; sourceTree = "<group>"; };
+		D9E43B942CC194140001536E /* CallControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallControls.swift; sourceTree = "<group>"; };
+		D9E43B952CC194140001536E /* CallControlsConfirmationToast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallControlsConfirmationToast.swift; sourceTree = "<group>"; };
+		D9E43B962CC194140001536E /* CallControlsOverflowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallControlsOverflowView.swift; sourceTree = "<group>"; };
+		D9E43B972CC194140001536E /* CallDrawerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallDrawerSheet.swift; sourceTree = "<group>"; };
+		D9E43B982CC194140001536E /* CallDrawerSheetDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallDrawerSheetDataSource.swift; sourceTree = "<group>"; };
+		D9E43B992CC194140001536E /* CallHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallHeader.swift; sourceTree = "<group>"; };
+		D9E43B9A2CC194140001536E /* CallKitCallUIAdaptee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallKitCallUIAdaptee.swift; sourceTree = "<group>"; };
+		D9E43B9B2CC194140001536E /* CallLinkApprovalRequestDetailsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallLinkApprovalRequestDetailsSheet.swift; sourceTree = "<group>"; };
+		D9E43B9C2CC194140001536E /* CallLinkApprovalRequestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallLinkApprovalRequestView.swift; sourceTree = "<group>"; };
+		D9E43B9D2CC194140001536E /* CallLinkApprovalViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallLinkApprovalViewModel.swift; sourceTree = "<group>"; };
+		D9E43B9E2CC194140001536E /* CallLinkBulkApprovalSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallLinkBulkApprovalSheet.swift; sourceTree = "<group>"; };
+		D9E43B9F2CC194140001536E /* CallLinkDeleter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallLinkDeleter.swift; sourceTree = "<group>"; };
+		D9E43BA02CC194140001536E /* CallLinkProfileKeySharingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallLinkProfileKeySharingManager.swift; sourceTree = "<group>"; };
+		D9E43BA12CC194140001536E /* CallLinkViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallLinkViewController.swift; sourceTree = "<group>"; };
+		D9E43BA22CC194140001536E /* CallMemberCameraOffView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallMemberCameraOffView.swift; sourceTree = "<group>"; };
+		D9E43BA32CC194140001536E /* CallMemberChromeOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallMemberChromeOverlayView.swift; sourceTree = "<group>"; };
+		D9E43BA42CC194140001536E /* CallMemberVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallMemberVideoView.swift; sourceTree = "<group>"; };
+		D9E43BA52CC194140001536E /* CallMemberView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallMemberView.swift; sourceTree = "<group>"; };
+		D9E43BA62CC194140001536E /* CallMemberWaitingAndErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallMemberWaitingAndErrorView.swift; sourceTree = "<group>"; };
+		D9E43BA72CC194140001536E /* CallsListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallsListViewController.swift; sourceTree = "<group>"; };
+		D9E43BA82CC194140001536E /* CallsListViewController+Strings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CallsListViewController+Strings.swift"; sourceTree = "<group>"; };
+		D9E43BA92CC194140001536E /* CallsListViewController+ViewModelLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CallsListViewController+ViewModelLoader.swift"; sourceTree = "<group>"; };
+		D9E43BAA2CC194140001536E /* CallUIAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallUIAdapter.swift; sourceTree = "<group>"; };
+		D9E43BAB2CC194140001536E /* CreateCallLinkViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateCallLinkViewController.swift; sourceTree = "<group>"; };
+		D9E43BAC2CC194140001536E /* EditCallLinkNameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCallLinkNameViewController.swift; sourceTree = "<group>"; };
+		D9E43BAD2CC194140001536E /* FlipCameraTooltip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipCameraTooltip.swift; sourceTree = "<group>"; };
+		D9E43BAE2CC194140001536E /* GroupCallErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallErrorView.swift; sourceTree = "<group>"; };
+		D9E43BAF2CC194140001536E /* GroupCallNotificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallNotificationView.swift; sourceTree = "<group>"; };
+		D9E43BB02CC194140001536E /* GroupCallSwipeToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallSwipeToastView.swift; sourceTree = "<group>"; };
+		D9E43BB12CC194140001536E /* GroupCallTooltip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallTooltip.swift; sourceTree = "<group>"; };
+		D9E43BB22CC194140001536E /* GroupCallVideoGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallVideoGrid.swift; sourceTree = "<group>"; };
+		D9E43BB32CC194140001536E /* GroupCallVideoGridLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallVideoGridLayout.swift; sourceTree = "<group>"; };
+		D9E43BB42CC194140001536E /* GroupCallVideoOverflow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallVideoOverflow.swift; sourceTree = "<group>"; };
+		D9E43BB52CC194140001536E /* GroupCallViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallViewController.swift; sourceTree = "<group>"; };
+		D9E43BB62CC194140001536E /* IncomingCallControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomingCallControls.swift; sourceTree = "<group>"; };
+		D9E43BB72CC194140001536E /* IncomingReactionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomingReactionsView.swift; sourceTree = "<group>"; };
+		D9E43BB82CC194140001536E /* IndividualCallViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndividualCallViewController.swift; sourceTree = "<group>"; };
+		D9E43BB92CC194140001536E /* LocalVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalVideoView.swift; sourceTree = "<group>"; };
+		D9E43BBA2CC194140001536E /* NewCallViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCallViewController.swift; sourceTree = "<group>"; };
+		D9E43BBB2CC194140001536E /* RaisedHandsToast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaisedHandsToast.swift; sourceTree = "<group>"; };
+		D9E43BBC2CC194140001536E /* ReactionsBurstView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactionsBurstView.swift; sourceTree = "<group>"; };
+		D9E43BBD2CC194140001536E /* ReactionsSink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactionsSink.swift; sourceTree = "<group>"; };
+		D9E43BBE2CC194140001536E /* RemoteVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteVideoView.swift; sourceTree = "<group>"; };
+		D9E43BBF2CC194140001536E /* ReturnToCallViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReturnToCallViewController.swift; sourceTree = "<group>"; };
+		D9E43BC02CC194140001536E /* SimulatorCallUIAdaptee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulatorCallUIAdaptee.swift; sourceTree = "<group>"; };
+		D9E43BC12CC194140001536E /* SupplementalCallControlsForFullscreenLocalMember.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplementalCallControlsForFullscreenLocalMember.swift; sourceTree = "<group>"; };
+		D9E43BC32CC194140001536E /* AdHocCallStateObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdHocCallStateObserver.swift; sourceTree = "<group>"; };
+		D9E43BC42CC194140001536E /* AudioSession+WebRTC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AudioSession+WebRTC.swift"; sourceTree = "<group>"; };
+		D9E43BC52CC194140001536E /* AudioSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSource.swift; sourceTree = "<group>"; };
+		D9E43BC62CC194140001536E /* CallAudioService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallAudioService.swift; sourceTree = "<group>"; };
+		D9E43BC72CC194140001536E /* CallKitCallManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallKitCallManager.swift; sourceTree = "<group>"; };
+		D9E43BC82CC194140001536E /* CallKitIdStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallKitIdStore.swift; sourceTree = "<group>"; };
+		D9E43BC92CC194140001536E /* CallLinkAdminManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallLinkAdminManager.swift; sourceTree = "<group>"; };
+		D9E43BCA2CC194140001536E /* CallLinkCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallLinkCall.swift; sourceTree = "<group>"; };
+		D9E43BCB2CC194140001536E /* CallLinkFetchJobRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallLinkFetchJobRunner.swift; sourceTree = "<group>"; };
+		D9E43BCC2CC194140001536E /* CallLinkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallLinkManager.swift; sourceTree = "<group>"; };
+		D9E43BCD2CC194140001536E /* CallLinkStateUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallLinkStateUpdater.swift; sourceTree = "<group>"; };
+		D9E43BCE2CC194140001536E /* CallLinkUpdateMessageSender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallLinkUpdateMessageSender.swift; sourceTree = "<group>"; };
+		D9E43BCF2CC194140001536E /* CallRecordLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRecordLoader.swift; sourceTree = "<group>"; };
+		D9E43BD02CC194140001536E /* CallService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallService.swift; sourceTree = "<group>"; };
+		D9E43BD12CC194140001536E /* CallServiceState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallServiceState.swift; sourceTree = "<group>"; };
+		D9E43BD22CC194140001536E /* CallStarter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallStarter.swift; sourceTree = "<group>"; };
+		D9E43BD32CC194140001536E /* CallStrings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallStrings.swift; sourceTree = "<group>"; };
+		D9E43BD42CC194140001536E /* CallTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallTarget.swift; sourceTree = "<group>"; };
+		D9E43BD52CC194140001536E /* CommonCallState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonCallState.swift; sourceTree = "<group>"; };
+		D9E43BD62CC194140001536E /* CurrentCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentCall.swift; sourceTree = "<group>"; };
+		D9E43BD72CC194140001536E /* GroupCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCall.swift; sourceTree = "<group>"; };
+		D9E43BD82CC194140001536E /* GroupCallAccessoryMessageDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallAccessoryMessageDelegate.swift; sourceTree = "<group>"; };
+		D9E43BD92CC194140001536E /* GroupCallRecordRingingCleanupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallRecordRingingCleanupManager.swift; sourceTree = "<group>"; };
+		D9E43BDA2CC194140001536E /* GroupCallRemoteVideoManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallRemoteVideoManager.swift; sourceTree = "<group>"; };
+		D9E43BDB2CC194140001536E /* GroupThreadCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupThreadCall.swift; sourceTree = "<group>"; };
+		D9E43BDC2CC194140001536E /* IndividualCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndividualCall.swift; sourceTree = "<group>"; };
+		D9E43BDD2CC194140001536E /* IndividualCallService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndividualCallService.swift; sourceTree = "<group>"; };
+		D9E43BDE2CC194140001536E /* RTCIceServerFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RTCIceServerFetcher.swift; sourceTree = "<group>"; };
+		D9E43BDF2CC194140001536E /* SignalCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalCall.swift; sourceTree = "<group>"; };
+		D9E43BE02CC194140001536E /* WebRTCCallMessageHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebRTCCallMessageHandler.swift; sourceTree = "<group>"; };
 		D9E7C8742B9A3FD1005BD3B9 /* CallRecordCursor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallRecordCursor.swift; sourceTree = "<group>"; };
 		D9E7C8762B9A4A9C005BD3B9 /* CallRecord+Sorting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CallRecord+Sorting.swift"; sourceTree = "<group>"; };
 		D9E8EDEC2C0EAFE700923E3C /* DeleteForMeOutgoingSyncMessageManagerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeleteForMeOutgoingSyncMessageManagerTest.swift; sourceTree = "<group>"; };
@@ -6887,10 +7041,6 @@
 		FF348A86F3FA1E5B5A62F033 /* Pods-SignalNSE.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalNSE.profiling.xcconfig"; path = "Target Support Files/Pods-SignalNSE/Pods-SignalNSE.profiling.xcconfig"; sourceTree = "<group>"; };
 		FF39DCC8D1F7DFD3708276E2 /* Pods-SignalTests.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.app store release.xcconfig"; path = "Target Support Files/Pods-SignalTests/Pods-SignalTests.app store release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
-
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		D9A2894B2CBF5982001CE0DF /* Calls */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Calls; sourceTree = "<group>"; };
-/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		342FFE8527245850000AC89F /* Frameworks */ = {
@@ -10737,7 +10887,7 @@
 				F94D12FD28BD0DD900B2C478 /* Accessibility */,
 				5045F44129E0DAA400058E5F /* AppLaunch */,
 				661AEE462C2088DF0046B1D8 /* Attachments */,
-				D9A2894B2CBF5982001CE0DF /* Calls */,
+				D9E43BE12CC194140001536E /* Calls */,
 				50B6BCAF2AEC4F3B0010FB3B /* Contacts */,
 				3448BFC01EDF0EA7005B2D69 /* ConversationView */,
 				D9E8EDEF2C0FCB0600923E3C /* DeleteForMe */,
@@ -11851,6 +12001,98 @@
 				D990CACC2B4DCD69000A99A2 /* Util */,
 			);
 			path = Mocks;
+			sourceTree = "<group>";
+		};
+		D9E43BC22CC194140001536E /* UserInterface */ = {
+			isa = PBXGroup;
+			children = (
+				D9E43B932CC194140001536E /* CallButton.swift */,
+				D9E43B942CC194140001536E /* CallControls.swift */,
+				D9E43B952CC194140001536E /* CallControlsConfirmationToast.swift */,
+				D9E43B962CC194140001536E /* CallControlsOverflowView.swift */,
+				D9E43B972CC194140001536E /* CallDrawerSheet.swift */,
+				D9E43B982CC194140001536E /* CallDrawerSheetDataSource.swift */,
+				D9E43B992CC194140001536E /* CallHeader.swift */,
+				D9E43B9A2CC194140001536E /* CallKitCallUIAdaptee.swift */,
+				D9E43B9B2CC194140001536E /* CallLinkApprovalRequestDetailsSheet.swift */,
+				D9E43B9C2CC194140001536E /* CallLinkApprovalRequestView.swift */,
+				D9E43B9D2CC194140001536E /* CallLinkApprovalViewModel.swift */,
+				D9E43B9E2CC194140001536E /* CallLinkBulkApprovalSheet.swift */,
+				D9E43B9F2CC194140001536E /* CallLinkDeleter.swift */,
+				D9E43BA02CC194140001536E /* CallLinkProfileKeySharingManager.swift */,
+				D9E43BA12CC194140001536E /* CallLinkViewController.swift */,
+				D9E43BA22CC194140001536E /* CallMemberCameraOffView.swift */,
+				D9E43BA32CC194140001536E /* CallMemberChromeOverlayView.swift */,
+				D9E43BA42CC194140001536E /* CallMemberVideoView.swift */,
+				D9E43BA52CC194140001536E /* CallMemberView.swift */,
+				D9E43BA62CC194140001536E /* CallMemberWaitingAndErrorView.swift */,
+				D9E43BA82CC194140001536E /* CallsListViewController+Strings.swift */,
+				D9E43BA92CC194140001536E /* CallsListViewController+ViewModelLoader.swift */,
+				D9E43BA72CC194140001536E /* CallsListViewController.swift */,
+				D9E43BAA2CC194140001536E /* CallUIAdapter.swift */,
+				D9E43BAB2CC194140001536E /* CreateCallLinkViewController.swift */,
+				D9E43BAC2CC194140001536E /* EditCallLinkNameViewController.swift */,
+				D9E43BAD2CC194140001536E /* FlipCameraTooltip.swift */,
+				D9E43BAE2CC194140001536E /* GroupCallErrorView.swift */,
+				D9E43BAF2CC194140001536E /* GroupCallNotificationView.swift */,
+				D9E43BB02CC194140001536E /* GroupCallSwipeToastView.swift */,
+				D9E43BB12CC194140001536E /* GroupCallTooltip.swift */,
+				D9E43BB22CC194140001536E /* GroupCallVideoGrid.swift */,
+				D9E43BB32CC194140001536E /* GroupCallVideoGridLayout.swift */,
+				D9E43BB42CC194140001536E /* GroupCallVideoOverflow.swift */,
+				D9E43BB52CC194140001536E /* GroupCallViewController.swift */,
+				D9E43BB62CC194140001536E /* IncomingCallControls.swift */,
+				D9E43BB72CC194140001536E /* IncomingReactionsView.swift */,
+				D9E43BB82CC194140001536E /* IndividualCallViewController.swift */,
+				D9E43BB92CC194140001536E /* LocalVideoView.swift */,
+				D9E43BBA2CC194140001536E /* NewCallViewController.swift */,
+				D9E43BBB2CC194140001536E /* RaisedHandsToast.swift */,
+				D9E43BBC2CC194140001536E /* ReactionsBurstView.swift */,
+				D9E43BBD2CC194140001536E /* ReactionsSink.swift */,
+				D9E43BBE2CC194140001536E /* RemoteVideoView.swift */,
+				D9E43BBF2CC194140001536E /* ReturnToCallViewController.swift */,
+				D9E43BC02CC194140001536E /* SimulatorCallUIAdaptee.swift */,
+				D9E43BC12CC194140001536E /* SupplementalCallControlsForFullscreenLocalMember.swift */,
+			);
+			path = UserInterface;
+			sourceTree = "<group>";
+		};
+		D9E43BE12CC194140001536E /* Calls */ = {
+			isa = PBXGroup;
+			children = (
+				D9E43BC22CC194140001536E /* UserInterface */,
+				D9E43BC32CC194140001536E /* AdHocCallStateObserver.swift */,
+				D9E43BC42CC194140001536E /* AudioSession+WebRTC.swift */,
+				D9E43BC52CC194140001536E /* AudioSource.swift */,
+				D9E43BC62CC194140001536E /* CallAudioService.swift */,
+				D9E43BC72CC194140001536E /* CallKitCallManager.swift */,
+				D9E43BC82CC194140001536E /* CallKitIdStore.swift */,
+				D9E43BC92CC194140001536E /* CallLinkAdminManager.swift */,
+				D9E43BCA2CC194140001536E /* CallLinkCall.swift */,
+				D9E43BCB2CC194140001536E /* CallLinkFetchJobRunner.swift */,
+				D9E43BCC2CC194140001536E /* CallLinkManager.swift */,
+				D9E43BCD2CC194140001536E /* CallLinkStateUpdater.swift */,
+				D9E43BCE2CC194140001536E /* CallLinkUpdateMessageSender.swift */,
+				D9E43BCF2CC194140001536E /* CallRecordLoader.swift */,
+				D9E43BD02CC194140001536E /* CallService.swift */,
+				D9E43BD12CC194140001536E /* CallServiceState.swift */,
+				D9E43BD22CC194140001536E /* CallStarter.swift */,
+				D9E43BD32CC194140001536E /* CallStrings.swift */,
+				D9E43BD42CC194140001536E /* CallTarget.swift */,
+				D9E43BD52CC194140001536E /* CommonCallState.swift */,
+				D9E43BD62CC194140001536E /* CurrentCall.swift */,
+				D9E43BD72CC194140001536E /* GroupCall.swift */,
+				D9E43BD82CC194140001536E /* GroupCallAccessoryMessageDelegate.swift */,
+				D9E43BD92CC194140001536E /* GroupCallRecordRingingCleanupManager.swift */,
+				D9E43BDA2CC194140001536E /* GroupCallRemoteVideoManager.swift */,
+				D9E43BDB2CC194140001536E /* GroupThreadCall.swift */,
+				D9E43BDC2CC194140001536E /* IndividualCall.swift */,
+				D9E43BDD2CC194140001536E /* IndividualCallService.swift */,
+				D9E43BDE2CC194140001536E /* RTCIceServerFetcher.swift */,
+				D9E43BDF2CC194140001536E /* SignalCall.swift */,
+				D9E43BE02CC194140001536E /* WebRTCCallMessageHandler.swift */,
+			);
+			path = Calls;
 			sourceTree = "<group>";
 		};
 		D9E5203E2C3F321C004D3D45 /* DisappearingMessagesConfiguration */ = {
@@ -13894,9 +14136,6 @@
 				342FFE8E27245851000AC89F /* PBXTargetDependency */,
 				F9C5C8A9289451B900548EEE /* PBXTargetDependency */,
 			);
-			fileSystemSynchronizedGroups = (
-				D9A2894B2CBF5982001CE0DF /* Calls */,
-			);
 			name = Signal;
 			productName = RedPhone;
 			productReference = D221A089169C9E5E00537ABF /* Signal.app */;
@@ -15509,6 +15748,7 @@
 				349439D624360C30001045F7 /* AddGroupMembersViewController.swift in Sources */,
 				8835DE03230DEC6A00DC6B66 /* AddToBlockListViewController.swift in Sources */,
 				882BDAAE249050F000C14587 /* AddToGroupViewController.swift in Sources */,
+				D9E43C112CC194140001536E /* AdHocCallStateObserver.swift in Sources */,
 				88C7597324B7EAA600DB03EA /* AdvancedPinSettingsTableViewController.swift in Sources */,
 				887B381325F0681400685845 /* AdvancedPrivacySettingsViewController.swift in Sources */,
 				45D49115296F69AA00B92BB1 /* AllMediaViewController.swift in Sources */,
@@ -15538,6 +15778,8 @@
 				88594E5A2335B08000390B19 /* AudioMessagePresenter.swift in Sources */,
 				450B0FC929FB301700B9A458 /* AudioMessageView.swift in Sources */,
 				45A1684D2A1C308800C2432D /* AudioPresentation.swift in Sources */,
+				D9E43C122CC194140001536E /* AudioSession+WebRTC.swift in Sources */,
+				D9E43C132CC194140001536E /* AudioSource.swift in Sources */,
 				8813F6E12330082900ADEC6A /* AudioWaveformProgressView.swift in Sources */,
 				50B6BCB12AEC4F4D0010FB3B /* AuthorMergeHelperBuilder.swift in Sources */,
 				8847E6F226A0EFBD0063E319 /* AvatarEditViewController.swift in Sources */,
@@ -15574,6 +15816,45 @@
 				347DE5BC2548967900C32CDC /* BlockingLegacyGroupView.swift in Sources */,
 				76847C962A1346A8008E2EAB /* BlockListViewController.swift in Sources */,
 				14E4A340278EE999008408FD /* BlurredToolbarContainer.swift in Sources */,
+				D9E43C142CC194140001536E /* CallAudioService.swift in Sources */,
+				D9E43BE22CC194140001536E /* CallButton.swift in Sources */,
+				D9E43BE32CC194140001536E /* CallControls.swift in Sources */,
+				D9E43BE42CC194140001536E /* CallControlsConfirmationToast.swift in Sources */,
+				D9E43BE52CC194140001536E /* CallControlsOverflowView.swift in Sources */,
+				D9E43BE62CC194140001536E /* CallDrawerSheet.swift in Sources */,
+				D9E43BE72CC194140001536E /* CallDrawerSheetDataSource.swift in Sources */,
+				D9E43BE82CC194140001536E /* CallHeader.swift in Sources */,
+				D9E43C152CC194140001536E /* CallKitCallManager.swift in Sources */,
+				D9E43BE92CC194140001536E /* CallKitCallUIAdaptee.swift in Sources */,
+				D9E43C162CC194140001536E /* CallKitIdStore.swift in Sources */,
+				D9E43C172CC194140001536E /* CallLinkAdminManager.swift in Sources */,
+				D9E43BEA2CC194140001536E /* CallLinkApprovalRequestDetailsSheet.swift in Sources */,
+				D9E43BEB2CC194140001536E /* CallLinkApprovalRequestView.swift in Sources */,
+				D9E43BEC2CC194140001536E /* CallLinkApprovalViewModel.swift in Sources */,
+				D9E43BED2CC194140001536E /* CallLinkBulkApprovalSheet.swift in Sources */,
+				D9E43C182CC194140001536E /* CallLinkCall.swift in Sources */,
+				D9E43BEE2CC194140001536E /* CallLinkDeleter.swift in Sources */,
+				D9E43C192CC194140001536E /* CallLinkFetchJobRunner.swift in Sources */,
+				D9E43C1A2CC194140001536E /* CallLinkManager.swift in Sources */,
+				D9E43BEF2CC194140001536E /* CallLinkProfileKeySharingManager.swift in Sources */,
+				D9E43C1B2CC194140001536E /* CallLinkStateUpdater.swift in Sources */,
+				D9E43C1C2CC194140001536E /* CallLinkUpdateMessageSender.swift in Sources */,
+				D9E43BF02CC194140001536E /* CallLinkViewController.swift in Sources */,
+				D9E43BF12CC194140001536E /* CallMemberCameraOffView.swift in Sources */,
+				D9E43BF22CC194140001536E /* CallMemberChromeOverlayView.swift in Sources */,
+				D9E43BF32CC194140001536E /* CallMemberVideoView.swift in Sources */,
+				D9E43BF42CC194140001536E /* CallMemberView.swift in Sources */,
+				D9E43BF52CC194140001536E /* CallMemberWaitingAndErrorView.swift in Sources */,
+				D9E43C1D2CC194140001536E /* CallRecordLoader.swift in Sources */,
+				D9E43C1E2CC194140001536E /* CallService.swift in Sources */,
+				D9E43C1F2CC194140001536E /* CallServiceState.swift in Sources */,
+				D9E43BF72CC194140001536E /* CallsListViewController+Strings.swift in Sources */,
+				D9E43BF82CC194140001536E /* CallsListViewController+ViewModelLoader.swift in Sources */,
+				D9E43BF62CC194140001536E /* CallsListViewController.swift in Sources */,
+				D9E43C202CC194140001536E /* CallStarter.swift in Sources */,
+				D9E43C212CC194140001536E /* CallStrings.swift in Sources */,
+				D9E43C222CC194140001536E /* CallTarget.swift in Sources */,
+				D9E43BF92CC194140001536E /* CallUIAdapter.swift in Sources */,
 				4C21D5D8223AC60F00EF8A77 /* CameraCaptureSession.swift in Sources */,
 				4C46361122EB98EC00185951 /* CameraFirstCaptureSendFlow.swift in Sources */,
 				D9EB22212A4B636C00C73E1D /* CGContext+LineDrawing.swift in Sources */,
@@ -15604,6 +15885,7 @@
 				0550A5E22C4035170072CC02 /* CLVViewInfo.swift in Sources */,
 				34E95C24269F4F4F004807EC /* CLVViewState.swift in Sources */,
 				886BB3D425BA0CA900079781 /* ColorAndWallpaperSettingsViewController.swift in Sources */,
+				D9E43C232CC194140001536E /* CommonCallState.swift in Sources */,
 				32B3286524C6957B00E4F974 /* ComposeSupportEmailOperation.swift in Sources */,
 				8835DE01230DBF7E00DC6B66 /* ComposeViewController.swift in Sources */,
 				B9291BFC2B6058AE006BC25F /* ContactAboutSheet.swift in Sources */,
@@ -15662,9 +15944,11 @@
 				34A4D88D267A363A00A794E7 /* ConversationViewController.swift in Sources */,
 				3498AC9F25190E8C00B1F315 /* ConversationViewLayout.swift in Sources */,
 				50EF8DCC2A189B3000A00935 /* ConversationViewModel.swift in Sources */,
+				D9E43BFA2CC194140001536E /* CreateCallLinkViewController.swift in Sources */,
 				D9C2D780299EC11400D79715 /* CreateUsernameMegaphone.swift in Sources */,
 				346B66311F4E29B200E5122F /* CropScaleImageViewController.swift in Sources */,
 				3414896925C9B6490098E3ED /* CurrencyPickerViewController.swift in Sources */,
+				D9E43C242CC194140001536E /* CurrentCall.swift in Sources */,
 				34FCCA04264AEDFE00A63EDE /* CustomColorViewController.swift in Sources */,
 				3415217525B0CB31009F177F /* CVAttachmentProgressView.swift in Sources */,
 				348815D025545C0A00D4F4C4 /* CVAttachments.swift in Sources */,
@@ -15796,6 +16080,7 @@
 				F90B731D2926AFCF0027318D /* DonationViewsUtil+WaitForSubscriptionJob.swift in Sources */,
 				F9DD70B92811AF82000C5960 /* DonationViewsUtil.swift in Sources */,
 				05572BC42BFC0094006A72F1 /* DoubleTapToEditOnboardingController.swift in Sources */,
+				D9E43BFB2CC194140001536E /* EditCallLinkNameViewController.swift in Sources */,
 				C11C278129F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift in Sources */,
 				3428577D26BD8777005A2A96 /* Emoji+Available.swift in Sources */,
 				3428577726BD8777005A2A96 /* Emoji+Category.swift in Sources */,
@@ -15817,6 +16102,7 @@
 				D9DCFDB22A3BDAB000C73C0B /* ExportableQRCodeGenerator.swift in Sources */,
 				326DF2612739F4D90017B789 /* FeaturedBadgeViewController.swift in Sources */,
 				344A761124B366F4009D69A5 /* FlagsViewController.swift in Sources */,
+				D9E43BFC2CC194140001536E /* FlipCameraTooltip.swift in Sources */,
 				88EFF4F825AD1F0D000FAFBA /* ForwardMessageViewController.swift in Sources */,
 				50A76F582AF5765000FCF02D /* FullTextSearchOptimizer.swift in Sources */,
 				329D42A225AD65C400DCB449 /* GetStartedBannerCell.swift in Sources */,
@@ -15827,6 +16113,18 @@
 				503614CF282AF657008128B4 /* GiftBadgeView.swift in Sources */,
 				346594822434D5E000E5C510 /* GroupAttributesEditorHelper.swift in Sources */,
 				34EA0A002423C7F80059B75F /* GroupAttributesViewController.swift in Sources */,
+				D9E43C252CC194140001536E /* GroupCall.swift in Sources */,
+				D9E43C262CC194140001536E /* GroupCallAccessoryMessageDelegate.swift in Sources */,
+				D9E43BFD2CC194140001536E /* GroupCallErrorView.swift in Sources */,
+				D9E43BFE2CC194140001536E /* GroupCallNotificationView.swift in Sources */,
+				D9E43C272CC194140001536E /* GroupCallRecordRingingCleanupManager.swift in Sources */,
+				D9E43C282CC194140001536E /* GroupCallRemoteVideoManager.swift in Sources */,
+				D9E43BFF2CC194140001536E /* GroupCallSwipeToastView.swift in Sources */,
+				D9E43C002CC194140001536E /* GroupCallTooltip.swift in Sources */,
+				D9E43C012CC194140001536E /* GroupCallVideoGrid.swift in Sources */,
+				D9E43C022CC194140001536E /* GroupCallVideoGridLayout.swift in Sources */,
+				D9E43C032CC194140001536E /* GroupCallVideoOverflow.swift in Sources */,
+				D9E43C042CC194140001536E /* GroupCallViewController.swift in Sources */,
 				8845B0C9264F12F800FA694C /* GroupDescriptionPreviewView.swift in Sources */,
 				889DFA12264EE77C00D03921 /* GroupDescriptionViewController.swift in Sources */,
 				340D900024FEE6A9007B5504 /* GroupInviteLinksUI.swift in Sources */,
@@ -15837,6 +16135,7 @@
 				889DFA10264EE76F00D03921 /* GroupNameViewController.swift in Sources */,
 				88BE44A82615451A00AE8E33 /* GroupPermissionsSettingsViewController.swift in Sources */,
 				880FB40428CC251A00FA1C10 /* GroupStorySettingsViewController.swift in Sources */,
+				D9E43C292CC194140001536E /* GroupThreadCall.swift in Sources */,
 				347B83F724367EC10019A52C /* GroupViewHelper+MemberActionSheet.swift in Sources */,
 				347B83F92436820C0019A52C /* GroupViewHelper.swift in Sources */,
 				32ECD08824BFBF8000EDDED0 /* HelpViewController.swift in Sources */,
@@ -15845,7 +16144,12 @@
 				B9A0807A2B07D76A000FDB5B /* HomeTabViewController.swift in Sources */,
 				3496955C219B605E00DCFE74 /* ImagePickerController.swift in Sources */,
 				D9C0AE692BD82DBC00FCB05E /* InactiveLinkedDeviceReminderMegaphone.swift in Sources */,
+				D9E43C052CC194140001536E /* IncomingCallControls.swift in Sources */,
+				D9E43C062CC194140001536E /* IncomingReactionsView.swift in Sources */,
 				6660C7992C48277300D9C30A /* IncrementalMessageTSAttachmentMigrationRunner.swift in Sources */,
+				D9E43C2A2CC194140001536E /* IndividualCall.swift in Sources */,
+				D9E43C2B2CC194140001536E /* IndividualCallService.swift in Sources */,
+				D9E43C072CC194140001536E /* IndividualCallViewController.swift in Sources */,
 				88BCCC8123837B7D00CE5FE6 /* InteractionReactionState.swift in Sources */,
 				8862A55925F090C5005D65DB /* InternalSettingsViewController.swift in Sources */,
 				88A505FA23DBA1360005C012 /* IntroducingPINs.swift in Sources */,
@@ -15859,6 +16163,7 @@
 				507B69122C5044F800F1C6D7 /* LinkPreviewGroupLink.swift in Sources */,
 				4542DF54208D40AC007B4E76 /* LoadingViewController.swift in Sources */,
 				4C25768A23AD510800E0398D /* LoadMoreMessagesView.swift in Sources */,
+				D9E43C082CC194140001536E /* LocalVideoView.swift in Sources */,
 				88A9729422FB4D02004B4FBF /* LocationPicker.swift in Sources */,
 				4CBBFE4A2306F5D300B37450 /* LogViewController.swift in Sources */,
 				3496744F2076ACD000080B5F /* LongTextViewController.swift in Sources */,
@@ -15906,6 +16211,7 @@
 				32CBF07D258C939800D56903 /* NameCollisionResolutionViewController.swift in Sources */,
 				3236FCC42592B67B006D33B9 /* NameCollisionReviewCell.swift in Sources */,
 				329D42A725AE673400DCB449 /* NetworkInterfacePreferenceViewController.swift in Sources */,
+				D9E43C092CC194140001536E /* NewCallViewController.swift in Sources */,
 				3465947E2434CCC100E5C510 /* NewGroupConfirmViewController.swift in Sources */,
 				34995F1B2411838D00C70546 /* NewGroupMembersViewController.swift in Sources */,
 				346594802434D49F00E5C510 /* NewGroupState.swift in Sources */,
@@ -15988,8 +16294,11 @@
 				D9DCFDAE2A3BB25200C73C0B /* QRCodeGenerator.swift in Sources */,
 				88A4CC12246CE2F50082211F /* QRCodeView.swift in Sources */,
 				3470C8742554926200F5847C /* QuotedMessageView.swift in Sources */,
+				D9E43C0A2CC194140001536E /* RaisedHandsToast.swift in Sources */,
 				88863A56280CD04B00977F69 /* ReactionFlybyAnimation.swift in Sources */,
+				D9E43C0B2CC194140001536E /* ReactionsBurstView.swift in Sources */,
 				88B688B0238F0D1000286F82 /* ReactionsDetailSheet.swift in Sources */,
+				D9E43C0C2CC194140001536E /* ReactionsSink.swift in Sources */,
 				8809CE8A22F93C2200D38867 /* RecentPhotoCollectionView.swift in Sources */,
 				F9480121299E89F8005442BE /* RegistrationCaptchaViewController.swift in Sources */,
 				66AAC2C429CB6F1100566AD6 /* RegistrationChangeNumberSplashViewController.swift in Sources */,
@@ -16026,11 +16335,14 @@
 				F95D71A3299305C400ED3102 /* RegistrationViewUtil.swift in Sources */,
 				D997FA7628F8E3A2003C7B8B /* RemoteMegaphone.swift in Sources */,
 				509DC8DA2BCED88600375E86 /* RemoteMegaphoneFetcher.swift in Sources */,
+				D9E43C0D2CC194140001536E /* RemoteVideoView.swift in Sources */,
 				348433DF243CA94600C7F64A /* ReplaceAdminViewController.swift in Sources */,
 				F952C0A629C8DA5E00D93766 /* RequestAccountDataReportViewController.swift in Sources */,
 				50BD86AF2A3CFF89005B6AC1 /* ResendMessagePromptBuilder.swift in Sources */,
+				D9E43C0E2CC194140001536E /* ReturnToCallViewController.swift in Sources */,
 				348EE28F25B897BF00814FC2 /* ReusableMediaView.swift in Sources */,
 				66A22C0928A18D49007CD4F5 /* RingerSwitch.swift in Sources */,
+				D9E43C2C2CC194140001536E /* RTCIceServerFetcher.swift in Sources */,
 				C1D9B1552B7FA28200D94595 /* SafetyTipsViewController.swift in Sources */,
 				7677E41329F84C2100AC6A75 /* ScreenLockUI.swift in Sources */,
 				45069FCE29D64CB300D0DD14 /* SelectionButton.swift in Sources */,
@@ -16046,7 +16358,9 @@
 				886BB3D325BA0CA400079781 /* SetWallpaperViewController.swift in Sources */,
 				F915A77029CB6D4C00EB6F68 /* ShareActivityUtil.swift in Sources */,
 				880D90302481E617003D2B14 /* SignalApp.swift in Sources */,
+				D9E43C2D2CC194140001536E /* SignalCall.swift in Sources */,
 				8822558D26B9D1D7001A33C4 /* SignalDotMePhoneNumberLink.swift in Sources */,
+				D9E43C0F2CC194140001536E /* SimulatorCallUIAdaptee.swift in Sources */,
 				6640132A2BFEB9C700F10FC4 /* SingleOrDoubleTapGestureRecognizer.swift in Sources */,
 				D968B4982C9E1AD1006B14E1 /* SmsLockIconView.swift in Sources */,
 				88BE44A626153E7B00AE8E33 /* SoundAndNotificationsSettingsViewController.swift in Sources */,
@@ -16086,6 +16400,7 @@
 				884DB94527DD70F700C6A309 /* StoryViewModel.swift in Sources */,
 				88B00D4D28A3346100BC9CA0 /* StoryViewsViewController.swift in Sources */,
 				88863A50280CAE4400977F69 /* StoryZoomAnimator.swift in Sources */,
+				D9E43C102CC194140001536E /* SupplementalCallControlsForFullscreenLocalMember.swift in Sources */,
 				6675F64F29261C39007A311E /* SyncPushTokensJob.swift in Sources */,
 				344A761324B36C8C009D69A5 /* TestingViewController.swift in Sources */,
 				506A9252290326A600A2EFC2 /* TextHelper.swift in Sources */,
@@ -16131,6 +16446,7 @@
 				88928A7526418904009C9B30 /* VoiceMessageTooltip.swift in Sources */,
 				4C04392A220A9EC800BAEA63 /* VoiceNoteLock.swift in Sources */,
 				8811CF842295D8DA00FF6549 /* VolumeButtons.swift in Sources */,
+				D9E43C2E2CC194140001536E /* WebRTCCallMessageHandler.swift in Sources */,
 				45069FC629D3A7C800D0DD14 /* WideMediaTileViewLayout.swift in Sources */,
 				45906C6B29D238560025906D /* WidePhotoCell.swift in Sources */,
 				76616C9D2A266A05005F7001 /* WindowManager.swift in Sources */,
