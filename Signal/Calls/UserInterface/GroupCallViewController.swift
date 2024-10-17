@@ -1595,7 +1595,7 @@ extension GroupCallViewController: CallViewControllerWindowReference {
         // There are no unverified addresses that we're currently concerned about. No need to show a sheet
         guard !addressesToAlert.isEmpty else { return completion(true) }
 
-        if let existingSheet = presentedViewController as? SafetyNumberConfirmationSheet {
+        if let existingSheet = (presentedViewController as? SafetyNumberConfirmationSheet) ?? (presentedViewController?.presentedViewController as? SafetyNumberConfirmationSheet) {
             // The set of untrusted addresses may have changed.
             // It's a bit clunky, but we'll just dismiss the existing sheet before putting up a new one.
             existingSheet.dismiss(animated: false)
@@ -1628,7 +1628,7 @@ extension GroupCallViewController: CallViewControllerWindowReference {
             }
         }
         sheet.allowsDismissal = localDeviceHasNotJoined
-        present(sheet, animated: true, completion: nil)
+        presenter.present(sheet, animated: true, completion: nil)
     }
 }
 
