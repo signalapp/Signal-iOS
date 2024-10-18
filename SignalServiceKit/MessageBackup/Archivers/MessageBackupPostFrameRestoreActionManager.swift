@@ -4,7 +4,11 @@
 //
 
 public class MessageBackupPostFrameRestoreActionManager {
-    typealias PostFrameRestoreAction = MessageBackup.RestoringContext.PostFrameRestoreAction
+    typealias SharedMap = MessageBackup.SharedMap
+    typealias RecipientId = MessageBackup.RecipientId
+    typealias RecipientActions = MessageBackup.RecipientRestoringContext.PostFrameRestoreActions
+    typealias ChatId = MessageBackup.ChatId
+    typealias ChatActions = MessageBackup.ChatRestoringContext.PostFrameRestoreActions
 
     private let interactionStore: MessageBackupInteractionStore
     private let recipientDatabaseTable: RecipientDatabaseTable
@@ -23,13 +27,29 @@ public class MessageBackupPostFrameRestoreActionManager {
     // MARK: -
 
     func performPostFrameRestoreActions(
-        _ postFrameRestoreActions: [PostFrameRestoreAction],
+        recipientActions: SharedMap<RecipientId, RecipientActions>,
+        chatActions: SharedMap<ChatId, ChatActions>,
         chatItemContext: MessageBackup.ChatItemRestoringContext
     ) throws {
-        for postFrameRestoreAction in postFrameRestoreActions {
-            switch postFrameRestoreAction {
-            case .insertContactHiddenInfoMessage(let recipientId):
+        for (recipientId, actions) in recipientActions {
+            if actions.insertContactHiddenInfoMessage {
                 try insertContactHiddenInfoMessage(recipientId: recipientId, chatItemContext: chatItemContext)
+            }
+        }
+        // Note: This should happen after recipient actions; the recipient actions insert
+        // messages which may themselves influence the set of chat actions.
+        // (At time of writing, ordering is irrelevant, because hiding info messages aren't "visible".
+        // But ordering requirements could change in the future).
+        for (chatId, actions) in chatActions {
+            guard let thread = chatItemContext.chatContext[chatId] else {
+                continue
+            }
+            if actions.shouldBeMarkedVisible {
+                try threadStore.markVisible(
+                    thread: thread,
+                    lastInteractionRowId: actions.lastVisibleInteractionRowId,
+                    context: chatItemContext.chatContext
+                )
             }
         }
     }

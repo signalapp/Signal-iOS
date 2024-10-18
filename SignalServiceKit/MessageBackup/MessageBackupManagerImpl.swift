@@ -679,7 +679,8 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
         /// Take any necessary post-frame-restore actions.
         try postFrameRestoreActionManager.performPostFrameRestoreActions(
-            contexts.all.flatMap { $0.postFrameRestoreActions },
+            recipientActions: contexts.recipient.postFrameRestoreActions,
+            chatActions: contexts.chat.postFrameRestoreActions,
             chatItemContext: contexts.chatItem
         )
 

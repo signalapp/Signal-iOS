@@ -469,8 +469,8 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
                     tx: context.tx
                 )
 
-                context.addPostRestoreFrameAction(
-                    .insertContactHiddenInfoMessage(recipientId: recipientProto.recipientId)
+                context.setNeedsPostRestoreContactHiddenInfoMessage(
+                    recipientId: recipientProto.recipientId
                 )
             }
 

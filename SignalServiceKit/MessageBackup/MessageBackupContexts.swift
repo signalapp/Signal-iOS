@@ -49,31 +49,11 @@ extension MessageBackup {
 
     /// Base context class used for restoring from a backup.
     open class RestoringContext {
-        /// Represents an action that should be taken after all `Frame`s have
-        /// been restored.
-        public enum PostFrameRestoreAction {
-            /// A `TSInfoMessage` indicating a contact is hidden should be
-            /// inserted for the `SignalRecipient` with the given proto ID.
-            ///
-            /// We always want some in-chat indication that a hidden contact is,
-            /// in fact, hidden. However, that "hidden" state is stored on a
-            /// `Contact`, with no related `ChatItem`. Consequently, when we
-            /// encounter a hidden `Contact` frame, we'll track that we should,
-            /// after all other frames are restored, insert an in-chat message
-            /// that the contact is hidden.
-            case insertContactHiddenInfoMessage(recipientId: RecipientId)
-        }
 
         public let tx: DBWriteTransaction
-        public private(set) var postFrameRestoreActions: [PostFrameRestoreAction]
 
         init(tx: DBWriteTransaction) {
             self.tx = tx
-            self.postFrameRestoreActions = []
-        }
-
-        func addPostRestoreFrameAction(_ action: PostFrameRestoreAction) {
-            postFrameRestoreActions.append(action)
         }
     }
 }

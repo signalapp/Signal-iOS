@@ -123,6 +123,24 @@ public final class MessageBackupThreadStore {
         )
     }
 
+    func markVisible(
+        thread: MessageBackup.ChatThread,
+        lastInteractionRowId: Int64?,
+        context: MessageBackup.ChatRestoringContext
+    ) throws {
+        try context.tx.databaseConnection.execute(
+            sql: """
+            UPDATE \(TSThread.table.tableName)
+            SET
+                \(TSThreadSerializer.shouldThreadBeVisibleColumn.columnName) = 1,
+                \(TSThreadSerializer.lastInteractionRowIdColumn.columnName) = ?
+            WHERE
+                \(TSThreadSerializer.idColumn.columnName) = ?;
+            """,
+            arguments: [lastInteractionRowId ?? 0, thread.threadRowId]
+        )
+    }
+
     func createAssociatedData(
         for thread: TSThread,
         isArchived: Bool,

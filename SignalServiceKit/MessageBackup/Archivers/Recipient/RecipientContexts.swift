@@ -187,6 +187,28 @@ extension MessageBackup {
             get { groupThreadCache[id] }
             set(newValue) { groupThreadCache[id] = newValue }
         }
+
+        // MARK: Post-Frame Restore
+
+        public struct PostFrameRestoreActions {
+            /// A `TSInfoMessage` indicating a contact is hidden should be
+            /// inserted for the `SignalRecipient` with the given proto ID.
+            ///
+            /// We always want some in-chat indication that a hidden contact is,
+            /// in fact, hidden. However, that "hidden" state is stored on a
+            /// `Contact`, with no related `ChatItem`. Consequently, when we
+            /// encounter a hidden `Contact` frame, we'll track that we should,
+            /// after all other frames are restored, insert an in-chat message
+            /// that the contact is hidden.
+            var insertContactHiddenInfoMessage: Bool
+        }
+
+        /// Represents actions that should be taken after all `Frame`s have been restored.
+        private(set) var postFrameRestoreActions = SharedMap<RecipientId, PostFrameRestoreActions>()
+
+        func setNeedsPostRestoreContactHiddenInfoMessage(recipientId: RecipientId) {
+            postFrameRestoreActions[recipientId] = PostFrameRestoreActions(insertContactHiddenInfoMessage: true)
+        }
     }
 }
 

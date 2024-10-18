@@ -205,6 +205,46 @@ extension MessageBackup {
                 })
                 .map(\.0)
         }
+
+        // MARK: Post-Frame Restore
+
+        public struct PostFrameRestoreActions {
+            var isPinned: Bool
+            var lastVisibleInteractionRowId: Int64?
+
+            var shouldBeMarkedVisible: Bool {
+                isPinned || lastVisibleInteractionRowId != nil
+            }
+
+            static var `default`: Self {
+                return .init(isPinned: false, lastVisibleInteractionRowId: nil)
+            }
+        }
+
+        /// Represents actions that should be taken after all `Frame`s have been restored.
+        private(set) var postFrameRestoreActions = SharedMap<ChatId, PostFrameRestoreActions>()
+
+        func setChatIsPinned(chatId: ChatId) {
+            var actions = postFrameRestoreActions[chatId] ?? .default
+            actions.isPinned = true
+            postFrameRestoreActions[chatId] = actions
+        }
+
+        func updateLastVisibleInteractionRowId(
+            interactionRowId: Int64,
+            chatId: ChatId
+        ) {
+            var actions = postFrameRestoreActions[chatId] ?? .default
+            if
+                actions.lastVisibleInteractionRowId == nil
+                // We don't _really_ need to compare as row ids are always
+                // increasing, but doesn't hurt to check.
+                || actions.lastVisibleInteractionRowId! < interactionRowId
+            {
+                actions.lastVisibleInteractionRowId = interactionRowId
+            }
+            postFrameRestoreActions[chatId] = actions
+        }
     }
 
     // MARK: Custom Chat Colors
