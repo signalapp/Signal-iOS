@@ -33,6 +33,8 @@ public protocol AppContext {
     var type: AppContextType { get }
     var isMainApp: Bool { get }
     var isMainAppAndActive: Bool { get }
+    @MainActor
+    var isMainAppAndActiveIsolated: Bool { get }
     var isNSE: Bool { get }
     /// Whether the user is using a right-to-left language like Arabic.
     var isRTL: Bool { get }

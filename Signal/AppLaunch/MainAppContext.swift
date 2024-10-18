@@ -112,6 +112,9 @@ class MainAppContext: NSObject, AppContext {
 
     var isMainAppAndActive: Bool { UIApplication.shared.applicationState == .active }
 
+    @MainActor
+    var isMainAppAndActiveIsolated: Bool { UIApplication.shared.applicationState == .active }
+
     let isRTL: Bool = UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft
 
     func isInBackground() -> Bool { reportedApplicationState == .background }

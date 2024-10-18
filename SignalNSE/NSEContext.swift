@@ -9,6 +9,7 @@ import SignalServiceKit
 class NSEContext: NSObject, AppContext {
     let type: SignalServiceKit.AppContextType = .nse
     let isMainAppAndActive = false
+    let isMainAppAndActiveIsolated = false
 
     func isInBackground() -> Bool { true }
     func isAppForegroundAndActive() -> Bool { false }

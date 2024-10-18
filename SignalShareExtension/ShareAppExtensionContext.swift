@@ -105,6 +105,8 @@ extension ShareAppExtensionContext: AppContext {
 
     var isMainAppAndActive: Bool { false }
 
+    var isMainAppAndActiveIsolated: Bool { false }
+
     var isRTL: Bool { Self.isRTL }
 
     var isRunningTests: Bool { false }
