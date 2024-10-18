@@ -187,37 +187,33 @@ public enum TSAttachmentMultisendUploader {
         }
         defer { NotificationCenter.default.removeObserver(observer) }
 
-        let uploadOperations: [AsyncBlockOperation] = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            return attachmentIdMap.map { (attachmentId, correspondingAttachmentIds) in
-                let messageIds: [String] = correspondingAttachmentIds.compactMap { correspondingId in
-                    let attachment = TSAttachmentStream.anyFetchAttachmentStream(uniqueId: correspondingId, transaction: tx)
-                    guard let attachment else {
-                        Logger.warn("correspondingAttachment is missing. User has since deleted?")
-                        return nil
+        Logger.info("Starting \(attachmentIdMap.count) uploads")
+        try await withThrowingTaskGroup(of: Void.self) { taskGroup in
+            SSKEnvironment.shared.databaseStorageRef.read { tx in
+                for (attachmentId, correspondingAttachmentIds) in attachmentIdMap {
+                    let messageIds: [String] = correspondingAttachmentIds.compactMap { correspondingId in
+                        let attachment = TSAttachmentStream.anyFetchAttachmentStream(uniqueId: correspondingId, transaction: tx)
+                        guard let attachment else {
+                            Logger.warn("correspondingAttachment is missing. User has since deleted?")
+                            return nil
+                        }
+                        guard let messageId = attachment.albumMessageId else {
+                            return nil
+                        }
+                        return messageId
                     }
-                    guard let messageId = attachment.albumMessageId else {
-                        return nil
+                    taskGroup.addTask {
+                        try await Upload.uploadQueue.run {
+                            try await DependenciesBridge.shared.tsResourceUploadManager.uploadAttachment(
+                                attachmentId: .legacy(uniqueId: attachmentId),
+                                legacyMessageOwnerIds: messageIds
+                            )
+                        }
                     }
-                    return messageId
-                }
-                return AsyncBlockOperation {
-                    try await DependenciesBridge.shared.tsResourceUploadManager.uploadAttachment(
-                        attachmentId: .legacy(uniqueId: attachmentId),
-                        legacyMessageOwnerIds: messageIds
-                    )
                 }
             }
+            try await taskGroup.waitForAll()
         }
-
-        Logger.info("Starting \(uploadOperations.count) uploads")
-
-        try? await withCheckedThrowingContinuation { continuation in
-            let waitingOperation = AwaitableAsyncBlockOperation(completionContinuation: continuation, asyncBlock: {})
-            uploadOperations.forEach { waitingOperation.addDependency($0) }
-            Upload.uploadQueue.addOperations(uploadOperations, waitUntilFinished: false)
-            Upload.uploadQueue.addOperation(waitingOperation)
-        }
-        if let error = (uploadOperations.compactMap { $0.failingError }).first { throw error }
 
         return await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
             var messageIdsToSend: Set<String> = Set()

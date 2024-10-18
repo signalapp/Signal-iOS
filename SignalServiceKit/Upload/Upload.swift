@@ -8,12 +8,7 @@ import Foundation
 public enum Upload {
     public typealias ProgressBlock = (Progress) -> Void
 
-    public static let uploadQueue: OperationQueue = {
-        let queue = OperationQueue()
-        queue.name = "OWSUpload"
-        queue.maxConcurrentOperationCount = CurrentAppContext().isNSE ? 2 : 8
-        return queue
-    }()
+    public static let uploadQueue = ConcurrentTaskQueue(concurrentLimit: CurrentAppContext().isNSE ? 2 : 8)
 
     public enum Constants {
         public static let attachmentUploadProgressNotification = NSNotification.Name("AttachmentUploadProgressNotification")

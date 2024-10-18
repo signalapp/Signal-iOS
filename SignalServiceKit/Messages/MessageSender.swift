@@ -481,19 +481,23 @@ public class MessageSender {
         let pendingTask = pendingTasks.buildPendingTask(label: "Message Send")
         defer { pendingTask.complete() }
 
-        try await withCheckedThrowingContinuation { continuation in
+        try await withThrowingTaskGroup(of: Void.self) { taskGroup in
+            let uploadOperations = SSKEnvironment.shared.databaseStorageRef.read { tx in
+                preparedOutgoingMessage.attachmentUploadOperations(tx: tx)
+            }
+            for uploadOperation in uploadOperations {
+                taskGroup.addTask {
+                    try await Upload.uploadQueue.run(uploadOperation)
+                }
+            }
+            try await taskGroup.waitForAll()
+        }
+
+        return try await withCheckedThrowingContinuation { continuation in
             let sendMessageOperation = AwaitableAsyncBlockOperation(completionContinuation: continuation) {
                 try await preparedOutgoingMessage.send(self.sendPreparedMessage(_:))
             }
             sendMessageOperation.queuePriority = priority
-
-            let uploadOperations = SSKEnvironment.shared.databaseStorageRef.read { tx in
-                preparedOutgoingMessage.attachmentUploadOperations(tx: tx)
-            }
-            uploadOperations.forEach { uploadOperation in
-                sendMessageOperation.addDependency(uploadOperation)
-                Upload.uploadQueue.addOperation(uploadOperation)
-            }
 
             sendingQueue(forUniqueThreadId: preparedOutgoingMessage.uniqueThreadId).addOperation(sendMessageOperation)
         }

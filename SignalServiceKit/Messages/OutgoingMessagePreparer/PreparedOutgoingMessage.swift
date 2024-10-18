@@ -247,10 +247,10 @@ public class PreparedOutgoingMessage {
         try await sender(messageForSending)
     }
 
-    public func attachmentUploadOperations(tx: SDSAnyReadTransaction) -> [Operation] {
+    public func attachmentUploadOperations(tx: SDSAnyReadTransaction) -> [() async throws -> Void] {
         let legacyMessageOwnerId = messageForSending.uniqueId
         return attachmentIdsForUpload(tx: tx).map { attachmentId in
-            return AsyncBlockOperation {
+            return {
                 try await DependenciesBridge.shared.tsResourceUploadManager.uploadAttachment(
                     attachmentId: attachmentId,
                     legacyMessageOwnerIds: [legacyMessageOwnerId]
