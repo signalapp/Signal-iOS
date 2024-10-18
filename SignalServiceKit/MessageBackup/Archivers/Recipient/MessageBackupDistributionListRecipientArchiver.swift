@@ -14,12 +14,12 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
     private typealias RestoreFrameError = MessageBackup.RestoreFrameError<RecipientId>
 
     private let privateStoryThreadDeletionManager: any PrivateStoryThreadDeletionManager
-    private let storyStore: any StoryStore
+    private let storyStore: MessageBackupStoryStore
     private let threadStore: MessageBackupThreadStore
 
     init(
         privateStoryThreadDeletionManager: any PrivateStoryThreadDeletionManager,
-        storyStore: any StoryStore,
+        storyStore: MessageBackupStoryStore,
         threadStore: MessageBackupThreadStore
     ) {
         self.privateStoryThreadDeletionManager = privateStoryThreadDeletionManager
@@ -245,7 +245,7 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
             .compactMap {
                 switch context[RecipientId(value: $0)] {
                 case .contact(let contactAddress):
-                    return contactAddress.asInteropAddress()
+                    return contactAddress
                 case .distributionList, .group, .localAddress, .releaseNotesChannel, .none:
                     error = .failure([.restoreFrameError(
                         .invalidProtoData(.invalidDistributionListMember(protoClass: BackupProto_DistributionList.self)),
@@ -295,26 +295,30 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
         // But to guard against any future changes, call getOrCreateMyStory() to ensure
         // it is present before updating with the incoming data.
         if TSPrivateStoryThread.myStoryUniqueId == distributionId.uuidString {
-            let myStory = storyStore.getOrCreateMyStory(tx: context.tx)
-            storyStore.update(
-                storyThread: myStory,
-                name: distributionListProto.name,
-                allowReplies: distributionListProto.allowReplies,
-                viewMode: viewMode,
-                addresses: addresses,
-                updateStorageService: false,
-                updateHasSetMyStoryPrivacyIfNeeded: false,
-                tx: context.tx
-            )
+            do {
+                try storyStore.createMyStory(
+                    name: distributionListProto.name,
+                    allowReplies: distributionListProto.allowReplies,
+                    viewMode: viewMode,
+                    addresses: addresses,
+                    context: context
+                )
+            } catch let error {
+                return .failure([.restoreFrameError(.databaseInsertionFailed(error), recipientId)])
+            }
         } else {
             let storyThread = TSPrivateStoryThread(
                 uniqueId: distributionId.uuidString,
                 name: distributionListProto.name,
                 allowsReplies: distributionListProto.allowReplies,
-                addresses: addresses,
+                addresses: addresses.map { $0.asInteropAddress() },
                 viewMode: viewMode
             )
-            storyStore.insert(storyThread: storyThread, tx: context.tx)
+            do {
+                try storyStore.insert(storyThread, context: context)
+            } catch let error {
+                return .failure([.restoreFrameError(.databaseInsertionFailed(error), recipientId)])
+            }
         }
 
         return .success

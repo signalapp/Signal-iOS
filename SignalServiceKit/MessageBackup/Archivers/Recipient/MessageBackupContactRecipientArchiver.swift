@@ -23,7 +23,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
     private let recipientHidingManager: RecipientHidingManager
     private let recipientManager: any SignalRecipientManager
     private let signalServiceAddressCache: SignalServiceAddressCache
-    private let storyStore: StoryStore
+    private let storyStore: MessageBackupStoryStore
     private let threadStore: MessageBackupThreadStore
     private let tsAccountManager: TSAccountManager
     private let usernameLookupManager: UsernameLookupManager
@@ -35,7 +35,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
         recipientHidingManager: RecipientHidingManager,
         recipientManager: any SignalRecipientManager,
         signalServiceAddressCache: SignalServiceAddressCache,
-        storyStore: StoryStore,
+        storyStore: MessageBackupStoryStore,
         threadStore: MessageBackupThreadStore,
         tsAccountManager: TSAccountManager,
         usernameLookupManager: UsernameLookupManager
@@ -129,6 +129,21 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
                 archivedServiceIds.insert(pni)
             }
 
+            var isStoryHidden = false
+            if let aci = recipient.aci {
+                do {
+                    isStoryHidden = try storyStore.getOrCreateStoryContextAssociatedData(
+                        for: aci,
+                        context: context
+                    ).isHidden
+                } catch let error {
+                    errors.append(.archiveFrameError(
+                        .unableToReadStoryContextAssociatedData(error),
+                        .contact(contactAddress)
+                    ))
+                }
+            }
+
             let contact = buildContactRecipient(
                 aci: contactAddress.aci,
                 pni: contactAddress.pni,
@@ -141,16 +156,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
                 },
                 isBlocked: blockedAddresses.contains(recipient.address),
                 isWhitelisted: whitelistedAddresses.contains(recipient.address),
-                isStoryHidden: {
-                    guard let aci = recipient.aci else {
-                        return false
-                    }
-
-                    return self.storyStore.getOrCreateStoryContextAssociatedData(
-                        for: aci,
-                        tx: context.tx
-                    ).isHidden
-                }(),
+                isStoryHidden: isStoryHidden,
                 visibility: { () -> BackupProto_Contact.Visibility in
                     guard let hiddenRecipient = recipientHidingManager.fetchHiddenRecipient(
                         signalRecipient: recipient,
@@ -480,10 +486,20 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
             return restoreFrameError(.databaseInsertionFailed(error))
         }
 
+        var partialErrors = [MessageBackup.RestoreFrameError<RecipientId>]()
+
         // We only need to active hide, since unhidden is the default.
         if contactProto.hideStory, let aci = backupContactAddress.aci {
-            let storyContext = storyStore.getOrCreateStoryContextAssociatedData(for: aci, tx: context.tx)
-            storyStore.updateStoryContext(storyContext, updateStorageService: false, isHidden: true, tx: context.tx)
+            do {
+                try storyStore.createStoryContextAssociatedData(
+                    for: aci,
+                    isHidden: true,
+                    context: context
+                )
+            } catch let error {
+                // Don't fail entirely; the story will just be unhidden.
+                partialErrors.append(.restoreFrameError(.databaseInsertionFailed(error), recipientProto.recipientId))
+            }
         }
 
         profileManager.upsertOtherUserProfile(
@@ -496,6 +512,10 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
 
         // TODO: [Backups] Enqueue a fetch of this contact's profile and download of their avatar (even if we have no profile key).
 
-        return .success
+        if partialErrors.isEmpty {
+            return .success
+        } else {
+            return .partialRestore(partialErrors)
+        }
     }
 }

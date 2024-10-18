@@ -173,6 +173,10 @@ extension MessageBackup {
 
             /// We failed to fetch the edit history for a message.
             case editHistoryFailedToFetch
+
+            /// We failed to read the ``StoryContextAssociatedData``. Note that it can
+            /// be nil (missing); this is a SQL error when we tried to read.
+            case unableToReadStoryContextAssociatedData(Error)
         }
 
         private let type: ErrorType
@@ -262,7 +266,8 @@ extension MessageBackup {
                     .learnedProfileUpdateMissingPreviousName,
                     .learnedProfileUpdateInvalidE164,
                     .learnedProfileUpdateMissingAuthor,
-                    .editHistoryFailedToFetch:
+                    .editHistoryFailedToFetch,
+                    .unableToReadStoryContextAssociatedData:
                 // Log any others as we see them.
                 return nil
             }

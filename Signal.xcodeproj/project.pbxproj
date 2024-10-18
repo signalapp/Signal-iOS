@@ -809,6 +809,7 @@
 		661BFE102C0808CA0065435B /* OWSImageSource+EncryptedFileHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661BFE0F2C0808CA0065435B /* OWSImageSource+EncryptedFileHandle.swift */; };
 		66232AD72CB993F500AE6A76 /* MessageBackupInteractionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66232AD62CB993DF00AE6A76 /* MessageBackupInteractionStore.swift */; };
 		66232AD92CB9D00400AE6A76 /* MessageBackupThreadStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66232AD82CB9D00000AE6A76 /* MessageBackupThreadStore.swift */; };
+		66232ADB2CB9E33600AE6A76 /* MessageBackupStoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66232ADA2CB9E32F00AE6A76 /* MessageBackupStoryStore.swift */; };
 		662590BB2B50922D001FDCDD /* GroupUpdateInfoMessageInserterBackupHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662590BA2B50922D001FDCDD /* GroupUpdateInfoMessageInserterBackupHelper.swift */; };
 		662590BF2B56ECA8001FDCDD /* MessageBackupGroupUpdateMessageArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662590BE2B56ECA8001FDCDD /* MessageBackupGroupUpdateMessageArchiver.swift */; };
 		662590CB2B5994D2001FDCDD /* MessageBackupGroupUpdateProtoToSwiftConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662590CA2B5994D2001FDCDD /* MessageBackupGroupUpdateProtoToSwiftConverter.swift */; };
@@ -4427,6 +4428,7 @@
 		661BFE0F2C0808CA0065435B /* OWSImageSource+EncryptedFileHandle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OWSImageSource+EncryptedFileHandle.swift"; sourceTree = "<group>"; };
 		66232AD62CB993DF00AE6A76 /* MessageBackupInteractionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupInteractionStore.swift; sourceTree = "<group>"; };
 		66232AD82CB9D00000AE6A76 /* MessageBackupThreadStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupThreadStore.swift; sourceTree = "<group>"; };
+		66232ADA2CB9E32F00AE6A76 /* MessageBackupStoryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupStoryStore.swift; sourceTree = "<group>"; };
 		662590BA2B50922D001FDCDD /* GroupUpdateInfoMessageInserterBackupHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupUpdateInfoMessageInserterBackupHelper.swift; sourceTree = "<group>"; };
 		662590BE2B56ECA8001FDCDD /* MessageBackupGroupUpdateMessageArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupGroupUpdateMessageArchiver.swift; sourceTree = "<group>"; };
 		662590CA2B5994D2001FDCDD /* MessageBackupGroupUpdateProtoToSwiftConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupGroupUpdateProtoToSwiftConverter.swift; sourceTree = "<group>"; };
@@ -9647,6 +9649,7 @@
 				66CD257A2B08374600139E17 /* MessageBackupGroupRecipientArchiver.swift */,
 				66CD25782B0832A400139E17 /* MessageBackupLocalRecipientArchiver.swift */,
 				D968F71D2C34884B00AB318B /* MessageBackupReleaseNotesRecipientArchiver.swift */,
+				66232ADA2CB9E32F00AE6A76 /* MessageBackupStoryStore.swift */,
 				66CD257C2B0C1DAA00139E17 /* RecipientContexts.swift */,
 			);
 			path = Recipient;
@@ -17012,6 +17015,7 @@
 				D9BFB8C82C4F02C900D67881 /* MessageBackupSessionSwitchoverChatUpdateArchiver.swift in Sources */,
 				D9EA2A892C2B929400B367DF /* MessageBackupSimpleChatUpdateArchiver.swift in Sources */,
 				66CD256A2B06963200139E17 /* MessageBackupStickerPackArchiver.swift in Sources */,
+				66232ADB2CB9E33600AE6A76 /* MessageBackupStoryStore.swift in Sources */,
 				D9BFB8BF2C4EE33C00D67881 /* MessageBackupThreadMergeChatUpdateArchiver.swift in Sources */,
 				66232AD92CB9D00400AE6A76 /* MessageBackupThreadStore.swift in Sources */,
 				66CD258F2B0EB4AC00139E17 /* MessageBackupTSIncomingMessageArchiver.swift in Sources */,

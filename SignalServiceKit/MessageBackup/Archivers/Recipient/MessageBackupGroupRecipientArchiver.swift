@@ -25,7 +25,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
     private let disappearingMessageConfigStore: DisappearingMessagesConfigurationStore
     private let groupsV2: GroupsV2
     private let profileManager: MessageBackup.Shims.ProfileManager
-    private let storyStore: StoryStore
+    private let storyStore: MessageBackupStoryStore
     private let threadStore: MessageBackupThreadStore
 
     private var logger: MessageBackupLogger { .shared }
@@ -34,7 +34,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
         disappearingMessageConfigStore: DisappearingMessagesConfigurationStore,
         groupsV2: GroupsV2,
         profileManager: MessageBackup.Shims.ProfileManager,
-        storyStore: StoryStore,
+        storyStore: MessageBackupStoryStore,
         threadStore: MessageBackupThreadStore
     ) {
         self.disappearingMessageConfigStore = disappearingMessageConfigStore
@@ -104,9 +104,14 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
         group.whitelisted = profileManager.isThread(
             inProfileWhitelist: groupThread, tx: context.tx
         )
-        group.hideStory = storyStore.getOrCreateStoryContextAssociatedData(
-            forGroupThread: groupThread, tx: context.tx
-        ).isHidden
+        do {
+            group.hideStory = try storyStore.getOrCreateStoryContextAssociatedData(
+                for: groupThread,
+                context: context
+            ).isHidden
+        } catch let error {
+            errors.append(.archiveFrameError(.unableToReadStoryContextAssociatedData(error), groupAppId))
+        }
         group.storySendMode = { () -> BackupProto_Group.StorySendMode in
             switch groupThread.storyViewMode {
             case .disabled: return .disabled
@@ -343,17 +348,20 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
             profileManager.addToWhitelist(groupThread, tx: context.tx)
         }
 
+        var partialErrors = [MessageBackup.RestoreFrameError<RecipientId>]()
+
         if groupProto.hideStory {
             // We only need to actively hide, since unhidden is the default.
-            let storyContext = storyStore.getOrCreateStoryContextAssociatedData(
-                forGroupThread: groupThread, tx: context.tx
-            )
-            storyStore.updateStoryContext(
-                storyContext,
-                updateStorageService: false,
-                isHidden: true,
-                tx: context.tx
-            )
+            do {
+                try storyStore.createStoryContextAssociatedData(
+                    for: groupThread,
+                    isHidden: true,
+                    context: context
+                )
+            } catch let error {
+                // Don't fail entirely; the story will just be unhidden.
+                partialErrors.append(.restoreFrameError(.databaseInsertionFailed(error), recipient.recipientId))
+            }
         }
 
         if groupModel.avatarUrlPath != nil {
@@ -364,7 +372,12 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
 
         context[recipient.recipientId] = .group(groupModel.groupId)
         context[groupModel.groupId] = groupThread
-        return .success
+
+        if partialErrors.isEmpty {
+            return .success
+        } else {
+            return .partialRestore(partialErrors)
+        }
     }
 }
 
