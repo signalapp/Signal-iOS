@@ -6,30 +6,27 @@
 public class MessageBackupPostFrameRestoreActionManager {
     typealias PostFrameRestoreAction = MessageBackup.RestoringContext.PostFrameRestoreAction
 
-    private let interactionStore: InteractionStore
+    private let interactionStore: MessageBackupInteractionStore
     private let recipientDatabaseTable: RecipientDatabaseTable
-    private let threadStore: ThreadStore
 
     init(
-        interactionStore: InteractionStore,
-        recipientDatabaseTable: RecipientDatabaseTable,
-        threadStore: ThreadStore
+        interactionStore: MessageBackupInteractionStore,
+        recipientDatabaseTable: RecipientDatabaseTable
     ) {
         self.interactionStore = interactionStore
         self.recipientDatabaseTable = recipientDatabaseTable
-        self.threadStore = threadStore
     }
 
     // MARK: -
 
     func performPostFrameRestoreActions(
         _ postFrameRestoreActions: [PostFrameRestoreAction],
-        tx: DBWriteTransaction
+        chatItemContext: MessageBackup.ChatItemRestoringContext
     ) throws {
         for postFrameRestoreAction in postFrameRestoreActions {
             switch postFrameRestoreAction {
-            case .insertContactHiddenInfoMessage(let recipientRowId):
-                try insertContactHiddenInfoMessage(recipientRowId: recipientRowId, tx: tx)
+            case .insertContactHiddenInfoMessage(let recipientId):
+                try insertContactHiddenInfoMessage(recipientId: recipientId, chatItemContext: chatItemContext)
             }
         }
     }
@@ -37,14 +34,14 @@ public class MessageBackupPostFrameRestoreActionManager {
     /// Inserts a `TSInfoMessage` that a contact was hidden, for the given
     /// `SignalRecipient` SQLite row ID.
     private func insertContactHiddenInfoMessage(
-        recipientRowId: Int64,
-        tx: DBWriteTransaction
+        recipientId: MessageBackup.RecipientId,
+        chatItemContext: MessageBackup.ChatItemRestoringContext
     ) throws {
-        guard let recipient = recipientDatabaseTable.fetchRecipient(rowId: recipientRowId, tx: tx) else {
-            throw OWSAssertionError("Missing recipient, but we have a row ID! How did we lose the recipient?")
-        }
-
-        guard let contactThread = threadStore.fetchContactThread(recipient: recipient, tx: tx) else {
+        guard
+            let chatId = chatItemContext.chatContext[recipientId],
+            let chatThread = chatItemContext.chatContext[chatId],
+            case let .contact(contactThread) = chatThread.threadType
+        else {
             /// This is weird, because we shouldn't be able to hide a recipient
             /// without a chat existing. However, who's to say what we'll import
             /// and it's not illegal to create a Backup with a `Contact` frame
@@ -54,6 +51,6 @@ public class MessageBackupPostFrameRestoreActionManager {
         }
 
         let infoMessage: TSInfoMessage = .makeForContactHidden(contactThread: contactThread)
-        interactionStore.insertInteraction(infoMessage, tx: tx)
+        try interactionStore.insert(infoMessage, in: chatThread, context: chatItemContext)
     }
 }

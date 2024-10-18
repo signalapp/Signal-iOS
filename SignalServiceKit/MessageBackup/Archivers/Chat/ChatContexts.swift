@@ -135,6 +135,8 @@ extension MessageBackup {
         public let customChatColorContext: CustomChatColorRestoringContext
         public let recipientContext: RecipientRestoringContext
 
+        private let recipientToChatMap = SharedMap<RecipientId, ChatId>()
+
         private let contactThreadMap = SharedMap<ChatId, (Int64, TSContactThread)>()
         private let groupIdMap = SharedMap<ChatId, (Int64, GroupId)>()
         private let pinnedThreadIndexMap = SharedMap<ThreadUniqueId, UInt32>()
@@ -147,6 +149,11 @@ extension MessageBackup {
             self.customChatColorContext = customChatColorContext
             self.recipientContext = recipientContext
             super.init(tx: tx)
+        }
+
+        internal subscript(_ recipientId: RecipientId) -> ChatId? {
+            // swiftlint:disable:next implicit_getter
+            get { recipientToChatMap[recipientId] }
         }
 
         internal subscript(_ chatId: ChatId) -> ChatThread? {
@@ -164,7 +171,8 @@ extension MessageBackup {
 
         internal func mapChatId(
             _ chatId: ChatId,
-            to thread: ChatThread
+            to thread: ChatThread,
+            recipientId: RecipientId
         ) {
             switch thread.threadType {
             case .contact(let tSContactThread):
@@ -172,6 +180,7 @@ extension MessageBackup {
             case .groupV2(let tSGroupThread):
                 groupIdMap[chatId] = (thread.threadRowId, tSGroupThread.groupId)
             }
+            recipientToChatMap[recipientId] = chatId
         }
 
         /// Given a newly encountered pinned thread, return all pinned thread ids encountered so far, in order.

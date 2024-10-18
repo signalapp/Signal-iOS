@@ -680,7 +680,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         /// Take any necessary post-frame-restore actions.
         try postFrameRestoreActionManager.performPostFrameRestoreActions(
             contexts.all.flatMap { $0.postFrameRestoreActions },
-            tx: tx
+            chatItemContext: contexts.chatItem
         )
 
         // Enqueue downloads for all the attachments.

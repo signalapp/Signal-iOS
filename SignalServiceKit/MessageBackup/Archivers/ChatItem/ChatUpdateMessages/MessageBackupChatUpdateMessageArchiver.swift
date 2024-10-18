@@ -25,7 +25,7 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupProtoArchiver {
         groupUpdateHelper: any GroupUpdateInfoMessageInserterBackupHelper,
         groupUpdateItemBuilder: any GroupUpdateItemBuilder,
         individualCallRecordManager: any IndividualCallRecordManager,
-        interactionStore: any InteractionStore
+        interactionStore: MessageBackupInteractionStore
     ) {
         expirationTimerChatUpdateArchiver = MessageBackupExpirationTimerChatUpdateArchiver(
             contactManager: contactManager,

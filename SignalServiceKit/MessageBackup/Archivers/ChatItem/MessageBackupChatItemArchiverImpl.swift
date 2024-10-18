@@ -20,7 +20,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
     private let groupUpdateHelper: GroupUpdateInfoMessageInserterBackupHelper
     private let groupUpdateItemBuilder: GroupUpdateItemBuilder
     private let individualCallRecordManager: IndividualCallRecordManager
-    private let interactionStore: InteractionStore
+    private let interactionStore: MessageBackupInteractionStore
     private let archivedPaymentStore: ArchivedPaymentStore
     private let reactionStore: ReactionStore
     private let threadStore: ThreadStore
@@ -37,7 +37,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         groupUpdateHelper: GroupUpdateInfoMessageInserterBackupHelper,
         groupUpdateItemBuilder: GroupUpdateItemBuilder,
         individualCallRecordManager: IndividualCallRecordManager,
-        interactionStore: InteractionStore,
+        interactionStore: MessageBackupInteractionStore,
         archivedPaymentStore: ArchivedPaymentStore,
         reactionStore: ReactionStore,
         threadStore: ThreadStore

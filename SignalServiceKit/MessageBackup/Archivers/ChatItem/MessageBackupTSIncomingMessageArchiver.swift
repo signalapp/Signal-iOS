@@ -12,13 +12,13 @@ class MessageBackupTSIncomingMessageArchiver {
     private let contentsArchiver: MessageBackupTSMessageContentsArchiver
     private let dateProvider: DateProvider
     private let editHistoryArchiver: MessageBackupTSMessageEditHistoryArchiver<TSIncomingMessage>
-    private let interactionStore: InteractionStore
+    private let interactionStore: MessageBackupInteractionStore
 
     init(
         contentsArchiver: MessageBackupTSMessageContentsArchiver,
         dateProvider: @escaping DateProvider,
         editMessageStore: EditMessageStore,
-        interactionStore: InteractionStore
+        interactionStore: MessageBackupInteractionStore
     ) {
         self.contentsArchiver = contentsArchiver
         self.dateProvider = dateProvider
@@ -325,7 +325,11 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
             return messageBuilder.build()
         }()
 
-        interactionStore.insertInteraction(message, tx: context.tx)
+        do {
+            try interactionStore.insert(message, in: chatThread, context: context)
+        } catch let error {
+            return .messageFailure(partialErrors + [.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
+        }
 
         guard
             contentsArchiver.restoreDownstreamObjects(

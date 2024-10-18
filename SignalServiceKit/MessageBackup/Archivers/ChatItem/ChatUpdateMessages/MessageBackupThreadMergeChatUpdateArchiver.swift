@@ -11,9 +11,9 @@ final class MessageBackupThreadMergeChatUpdateArchiver {
     private typealias ArchiveFrameError = MessageBackup.ArchiveFrameError<MessageBackup.InteractionUniqueId>
     private typealias RestoreFrameError = MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>
 
-    private let interactionStore: any InteractionStore
+    private let interactionStore: MessageBackupInteractionStore
 
-    init(interactionStore: any InteractionStore) {
+    init(interactionStore: MessageBackupInteractionStore) {
         self.interactionStore = interactionStore
     }
 
@@ -102,7 +102,12 @@ final class MessageBackupThreadMergeChatUpdateArchiver {
             timestamp: chatItem.dateSent,
             previousE164: previousE164.stringValue
         )
-        interactionStore.insertInteraction(threadMergeInfoMessage, tx: context.tx)
+
+        do {
+            try interactionStore.insert(threadMergeInfoMessage, in: chatThread, context: context)
+        } catch let error {
+            return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
+        }
 
         return .success(())
     }

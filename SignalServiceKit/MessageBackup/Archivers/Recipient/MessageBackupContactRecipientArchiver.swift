@@ -425,6 +425,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
             break
         }
 
+        let recipientProto = recipient
         let recipient: SignalRecipient = .fromBackup(
             backupContactAddress,
             isRegistered: isRegistered,
@@ -464,7 +465,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
                 )
 
                 context.addPostRestoreFrameAction(
-                    .insertContactHiddenInfoMessage(recipientRowId: recipientRowId)
+                    .insertContactHiddenInfoMessage(recipientId: recipientProto.recipientId)
                 )
             }
 

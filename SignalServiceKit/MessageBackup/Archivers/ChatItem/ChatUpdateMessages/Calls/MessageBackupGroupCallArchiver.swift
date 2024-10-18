@@ -12,12 +12,12 @@ final class MessageBackupGroupCallArchiver {
 
     private let callRecordStore: CallRecordStore
     private let groupCallRecordManager: GroupCallRecordManager
-    private let interactionStore: InteractionStore
+    private let interactionStore: MessageBackupInteractionStore
 
     init(
         callRecordStore: CallRecordStore,
         groupCallRecordManager: GroupCallRecordManager,
-        interactionStore: InteractionStore
+        interactionStore: MessageBackupInteractionStore
     ) {
         self.callRecordStore = callRecordStore
         self.groupCallRecordManager = groupCallRecordManager
@@ -147,7 +147,11 @@ final class MessageBackupGroupCallArchiver {
             thread: groupThread,
             sentAtTimestamp: chatItem.dateSent
         )
-        interactionStore.insertInteraction(groupCallInteraction, tx: context.tx)
+        do {
+            try interactionStore.insert(groupCallInteraction, in: chatThread, context: context)
+        } catch let error {
+            return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
+        }
 
         if groupCall.hasCallID {
             let callDirection: CallRecord.CallDirection

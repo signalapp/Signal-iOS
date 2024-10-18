@@ -10,12 +10,12 @@ final class MessageBackupIndividualCallArchiver {
 
     private let callRecordStore: CallRecordStore
     private let individualCallRecordManager: IndividualCallRecordManager
-    private let interactionStore: InteractionStore
+    private let interactionStore: MessageBackupInteractionStore
 
     init(
         callRecordStore: CallRecordStore,
         individualCallRecordManager: IndividualCallRecordManager,
-        interactionStore: InteractionStore
+        interactionStore: MessageBackupInteractionStore
     ) {
         self.callRecordStore = callRecordStore
         self.individualCallRecordManager = individualCallRecordManager
@@ -188,7 +188,11 @@ final class MessageBackupIndividualCallArchiver {
             thread: contactThread,
             sentAtTimestamp: chatItem.dateSent
         )
-        interactionStore.insertInteraction(individualCallInteraction, tx: context.tx)
+        do {
+            try interactionStore.insert(individualCallInteraction, in: chatThread, context: context)
+        } catch let error {
+            return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
+        }
 
         if individualCall.hasCallID {
             let callRecord = individualCallRecordManager.createRecordForInteraction(

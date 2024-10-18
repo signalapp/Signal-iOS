@@ -16,12 +16,12 @@ final class MessageBackupGroupUpdateMessageArchiver {
 
     private let groupUpdateBuilder: GroupUpdateItemBuilder
     private let groupUpdateHelper: GroupUpdateInfoMessageInserterBackupHelper
-    private let interactionStore: InteractionStore
+    private let interactionStore: MessageBackupInteractionStore
 
     public init(
         groupUpdateBuilder: GroupUpdateItemBuilder,
         groupUpdateHelper: GroupUpdateInfoMessageInserterBackupHelper,
-        interactionStore: InteractionStore
+        interactionStore: MessageBackupInteractionStore
     ) {
         self.groupUpdateBuilder = groupUpdateBuilder
         self.groupUpdateHelper = groupUpdateHelper
@@ -223,7 +223,11 @@ final class MessageBackupGroupUpdateMessageArchiver {
             groupThread: groupThread,
             updateItems: persistableUpdates
         )
-        interactionStore.insertInteraction(infoMessage, tx: context.tx)
+        do {
+            try interactionStore.insert(infoMessage, in: chatThread, context: context)
+        } catch let error {
+            return .messageFailure(partialErrors + [.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
+        }
 
         if partialErrors.isEmpty {
             return .success(())

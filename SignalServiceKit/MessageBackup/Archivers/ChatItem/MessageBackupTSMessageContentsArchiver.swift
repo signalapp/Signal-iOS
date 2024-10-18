@@ -85,7 +85,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
     private typealias ArchiveFrameError = MessageBackup.ArchiveFrameError<MessageBackup.InteractionUniqueId>
     private typealias RestoreFrameError = MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>
 
-    private let interactionStore: InteractionStore
+    private let interactionStore: MessageBackupInteractionStore
     private let archivedPaymentStore: ArchivedPaymentStore
     private let attachmentsArchiver: MessageBackupMessageAttachmentArchiver
     private lazy var contactAttachmentArchiver = MessageBackupContactAttachmentArchiver(
@@ -94,7 +94,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
     private let reactionArchiver: MessageBackupReactionArchiver
 
     init(
-        interactionStore: InteractionStore,
+        interactionStore: MessageBackupInteractionStore,
         archivedPaymentStore: ArchivedPaymentStore,
         attachmentsArchiver: MessageBackupMessageAttachmentArchiver,
         reactionArchiver: MessageBackupReactionArchiver

@@ -11,9 +11,9 @@ final class MessageBackupProfileChangeChatUpdateArchiver {
     private typealias ArchiveFrameError = MessageBackup.ArchiveFrameError<MessageBackup.InteractionUniqueId>
     private typealias RestoreFrameError = MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>
 
-    private let interactionStore: any InteractionStore
+    private let interactionStore: MessageBackupInteractionStore
 
-    init(interactionStore: any InteractionStore) {
+    init(interactionStore: MessageBackupInteractionStore) {
         self.interactionStore = interactionStore
     }
 
@@ -113,7 +113,12 @@ final class MessageBackupProfileChangeChatUpdateArchiver {
                 newNameLiteral: newName
             )
         )
-        interactionStore.insertInteraction(profileChangeInfoMessage, tx: context.tx)
+
+        do {
+            try interactionStore.insert(profileChangeInfoMessage, in: chatThread, context: context)
+        } catch let error {
+            return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
+        }
 
         return .success(())
     }

@@ -369,7 +369,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
             )])
         }
 
-        context.mapChatId(chat.chatId, to: chatThread)
+        context.mapChatId(chat.chatId, to: chatThread, recipientId: chat.typedRecipientId)
 
         var associatedDataNeedsUpdate = false
         var isArchived: Bool?

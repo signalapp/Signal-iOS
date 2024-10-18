@@ -997,6 +997,7 @@ public class AppSetup {
         )
 
         let backupStickerPackDownloadStore = BackupStickerPackDownloadStoreImpl()
+        let backupInteractionStore = MessageBackupInteractionStore(interactionStore: interactionStore)
 
         let messageBackupManager = MessageBackupManagerImpl(
             accountDataArchiver: MessageBackupAccountDataArchiverImpl(
@@ -1041,7 +1042,7 @@ public class AppSetup {
                 groupUpdateHelper: GroupUpdateInfoMessageInserterBackupHelperImpl(),
                 groupUpdateItemBuilder: groupUpdateItemBuilder,
                 individualCallRecordManager: individualCallRecordManager,
-                interactionStore: interactionStore,
+                interactionStore: backupInteractionStore,
                 archivedPaymentStore: archivedPaymentStore,
                 reactionStore: reactionStore,
                 threadStore: threadStore
@@ -1081,9 +1082,8 @@ public class AppSetup {
             messageBackupKeyMaterial: messageBackupKeyMaterial,
             plaintextStreamProvider: MessageBackupPlaintextProtoStreamProviderImpl(),
             postFrameRestoreActionManager: MessageBackupPostFrameRestoreActionManager(
-                interactionStore: interactionStore,
-                recipientDatabaseTable: recipientDatabaseTable,
-                threadStore: threadStore
+                interactionStore: backupInteractionStore,
+                recipientDatabaseTable: recipientDatabaseTable
             ),
             releaseNotesRecipientArchiver: MessageBackupReleaseNotesRecipientArchiver(),
             stickerPackArchiver: MessageBackupStickerPackArchiverImpl(

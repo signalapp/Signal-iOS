@@ -15,9 +15,9 @@ final class MessageBackupSimpleChatUpdateArchiver {
 
     private let logger: MessageBackupLogger = .shared
 
-    private let interactionStore: any InteractionStore
+    private let interactionStore: MessageBackupInteractionStore
 
-    init(interactionStore: any InteractionStore) {
+    init(interactionStore: MessageBackupInteractionStore) {
         self.interactionStore = interactionStore
     }
 
@@ -577,10 +577,11 @@ final class MessageBackupSimpleChatUpdateArchiver {
             errorMessage
         }
 
-        interactionStore.insertInteraction(
-            interactionToInsert,
-            tx: context.tx
-        )
+        do {
+            try interactionStore.insert(interactionToInsert, in: chatThread, context: context)
+        } catch let error {
+            return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
+        }
 
         return .success(())
     }

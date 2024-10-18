@@ -53,7 +53,7 @@ extension MessageBackup {
         /// been restored.
         public enum PostFrameRestoreAction {
             /// A `TSInfoMessage` indicating a contact is hidden should be
-            /// inserted for the `SignalRecipient` with the given SQLite row ID.
+            /// inserted for the `SignalRecipient` with the given proto ID.
             ///
             /// We always want some in-chat indication that a hidden contact is,
             /// in fact, hidden. However, that "hidden" state is stored on a
@@ -61,7 +61,7 @@ extension MessageBackup {
             /// encounter a hidden `Contact` frame, we'll track that we should,
             /// after all other frames are restored, insert an in-chat message
             /// that the contact is hidden.
-            case insertContactHiddenInfoMessage(recipientRowId: Int64)
+            case insertContactHiddenInfoMessage(recipientId: RecipientId)
         }
 
         public let tx: DBWriteTransaction

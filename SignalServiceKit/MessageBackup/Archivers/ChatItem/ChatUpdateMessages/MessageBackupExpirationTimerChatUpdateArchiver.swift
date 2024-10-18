@@ -19,11 +19,11 @@ final class MessageBackupExpirationTimerChatUpdateArchiver {
     private typealias RestoreFrameError = MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>
 
     private let contactManager: MessageBackup.Shims.ContactManager
-    private let interactionStore: any InteractionStore
+    private let interactionStore: MessageBackupInteractionStore
 
     init(
         contactManager: MessageBackup.Shims.ContactManager,
-        interactionStore: any InteractionStore
+        interactionStore: MessageBackupInteractionStore
     ) {
         self.contactManager = contactManager
         self.interactionStore = interactionStore
@@ -144,7 +144,11 @@ final class MessageBackupExpirationTimerChatUpdateArchiver {
             configurationDurationSeconds: UInt32(clamping: expiresInSeconds), // Safe to clamp, we checked for overflow above
             createdByRemoteName: createdByRemoteName
         )
-        interactionStore.insertInteraction(dmUpdateInfoMessage, tx: context.tx)
+        do {
+            try interactionStore.insert(dmUpdateInfoMessage, in: chatThread, context: context)
+        } catch let error {
+            return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
+        }
 
         return .success(())
     }

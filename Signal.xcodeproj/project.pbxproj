@@ -807,6 +807,7 @@
 		661BFE0C2C07FC880065435B /* OWSImageSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661BFE0B2C07FC880065435B /* OWSImageSource.swift */; };
 		661BFE0E2C0806150065435B /* OWSImageSource+FileHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661BFE0D2C0806150065435B /* OWSImageSource+FileHandle.swift */; };
 		661BFE102C0808CA0065435B /* OWSImageSource+EncryptedFileHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661BFE0F2C0808CA0065435B /* OWSImageSource+EncryptedFileHandle.swift */; };
+		66232AD72CB993F500AE6A76 /* MessageBackupInteractionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66232AD62CB993DF00AE6A76 /* MessageBackupInteractionStore.swift */; };
 		662590BB2B50922D001FDCDD /* GroupUpdateInfoMessageInserterBackupHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662590BA2B50922D001FDCDD /* GroupUpdateInfoMessageInserterBackupHelper.swift */; };
 		662590BF2B56ECA8001FDCDD /* MessageBackupGroupUpdateMessageArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662590BE2B56ECA8001FDCDD /* MessageBackupGroupUpdateMessageArchiver.swift */; };
 		662590CB2B5994D2001FDCDD /* MessageBackupGroupUpdateProtoToSwiftConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662590CA2B5994D2001FDCDD /* MessageBackupGroupUpdateProtoToSwiftConverter.swift */; };
@@ -4423,6 +4424,7 @@
 		661BFE0B2C07FC880065435B /* OWSImageSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSImageSource.swift; sourceTree = "<group>"; };
 		661BFE0D2C0806150065435B /* OWSImageSource+FileHandle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OWSImageSource+FileHandle.swift"; sourceTree = "<group>"; };
 		661BFE0F2C0808CA0065435B /* OWSImageSource+EncryptedFileHandle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OWSImageSource+EncryptedFileHandle.swift"; sourceTree = "<group>"; };
+		66232AD62CB993DF00AE6A76 /* MessageBackupInteractionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupInteractionStore.swift; sourceTree = "<group>"; };
 		662590BA2B50922D001FDCDD /* GroupUpdateInfoMessageInserterBackupHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupUpdateInfoMessageInserterBackupHelper.swift; sourceTree = "<group>"; };
 		662590BE2B56ECA8001FDCDD /* MessageBackupGroupUpdateMessageArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupGroupUpdateMessageArchiver.swift; sourceTree = "<group>"; };
 		662590CA2B5994D2001FDCDD /* MessageBackupGroupUpdateProtoToSwiftConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupGroupUpdateProtoToSwiftConverter.swift; sourceTree = "<group>"; };
@@ -9675,6 +9677,7 @@
 				66CD25672B06960F00139E17 /* MessageBackupChatItemArchiver.swift */,
 				66CD25882B0EA39200139E17 /* MessageBackupChatItemArchiverImpl.swift */,
 				66F6D69D2C77E4C500EFAF75 /* MessageBackupContactAttachmentArchiver.swift */,
+				66232AD62CB993DF00AE6A76 /* MessageBackupInteractionStore.swift */,
 				665F6F9C2C5C2FAD0002915C /* MessageBackupMessageAttachmentArchiver.swift */,
 				6605B9812B19547C00E8A68A /* MessageBackupReactionArchiver.swift */,
 				66CD258E2B0EB4AC00139E17 /* MessageBackupTSIncomingMessageArchiver.swift */,
@@ -16981,6 +16984,7 @@
 				662590CB2B5994D2001FDCDD /* MessageBackupGroupUpdateProtoToSwiftConverter.swift in Sources */,
 				662590CD2B5994DC001FDCDD /* MessageBackupGroupUpdateSwiftToProtoConverter.swift in Sources */,
 				D9C0AE6F2BDC6B3800FCB05E /* MessageBackupIndividualCallArchiver.swift in Sources */,
+				66232AD72CB993F500AE6A76 /* MessageBackupInteractionStore.swift in Sources */,
 				C1A0F79D2B9F57340009DC0D /* MessageBackupKeyMaterial.swift in Sources */,
 				C1A0F79F2B9F59920009DC0D /* MessageBackupKeyMaterialImpl.swift in Sources */,
 				D99655E32C50433800AD29FB /* MessageBackupLearnedProfileChatUpdateArchiver.swift in Sources */,
