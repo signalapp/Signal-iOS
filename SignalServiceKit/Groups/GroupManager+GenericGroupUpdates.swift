@@ -8,85 +8,58 @@ import LibSignalClient
 
 extension GroupManager {
     // Serialize group updates by group ID
-    private static var groupUpdateOperationQueues: [Data: OperationQueue] = [:]
+    private static let groupUpdateOperationQueues = AtomicValue<[Data: SerialTaskQueue]>([:], lock: .init())
 
     private static func operationQueue(
         forUpdatingGroup groupModel: TSGroupModel
-    ) -> OperationQueue {
-        if let queue = groupUpdateOperationQueues[groupModel.groupId] {
-            return queue
+    ) -> SerialTaskQueue {
+        return groupUpdateOperationQueues.update {
+            if let operationQueue = $0[groupModel.groupId] {
+                return operationQueue
+            }
+            let operationQueue = SerialTaskQueue()
+            $0[groupModel.groupId] = operationQueue
+            return operationQueue
         }
-
-        let newQueue = OperationQueue()
-        newQueue.name = "GroupManager-Update"
-        newQueue.maxConcurrentOperationCount = 1
-
-        groupUpdateOperationQueues[groupModel.groupId] = newQueue
-        return newQueue
     }
 
-    private class GenericGroupUpdateOperation: OWSOperation {
-        private let groupId: Data
-        private let groupSecretParamsData: Data
-        private let updateDescription: String
-        private let changesBlock: (GroupsV2OutgoingChanges) -> Void
-        private let continuation: CheckedContinuation<TSGroupThread, any Error>
-
-        init(
+    private enum GenericGroupUpdateOperation {
+        static func run(
             groupId: Data,
             groupSecretParamsData: Data,
             updateDescription: String,
-            changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void,
-            continuation: CheckedContinuation<TSGroupThread, any Error>
-        ) {
-            self.groupId = groupId
-            self.groupSecretParamsData = groupSecretParamsData
-            self.updateDescription = updateDescription
-            self.changesBlock = changesBlock
-            self.continuation = continuation
-
-            super.init()
-
-            self.remainingRetries = 1
-        }
-
-        public override func run() {
-            Task {
-                do {
-                    let groupThread = try await Promise.wrapAsync {
-                        try await self._run()
-                    }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration, description: description) {
-                        return GroupsV2Error.timeout
-                    }.awaitable()
-
-                    self.reportSuccess()
-                    self.continuation.resume(returning: groupThread)
-                } catch {
-                    switch error {
-                    case GroupsV2Error.redundantChange:
-                        // From an operation perspective, this is a success!
-                        self.reportSuccess()
-                        self.continuation.resume(throwing: error)
-                    default:
-                        owsFailDebug("Group update failed: \(error)")
-                        self.reportError(error)
-                    }
+            changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void
+        ) async throws -> TSGroupThread {
+            do {
+                return try await Promise.wrapAsync {
+                    try await self._run(groupId: groupId, groupSecretParamsData: groupSecretParamsData, changesBlock: changesBlock)
+                }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration, description: updateDescription) {
+                    return GroupsV2Error.timeout
+                }.awaitable()
+            } catch {
+                switch error {
+                case GroupsV2Error.redundantChange:
+                    // From an operation perspective, this is a success!
+                    break
+                default:
+                    owsFailDebug("Group update failed: \(error)")
                 }
+                throw error
             }
         }
 
-        private func _run() async throws -> TSGroupThread {
+        private static func _run(
+            groupId: Data,
+            groupSecretParamsData: Data,
+            changesBlock: (GroupsV2OutgoingChanges) -> Void
+        ) async throws -> TSGroupThread {
             try await GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
 
             return try await SSKEnvironment.shared.groupsV2Ref.updateGroupV2(
-                groupId: self.groupId,
-                groupSecretParams: try GroupSecretParams(contents: [UInt8](self.groupSecretParamsData)),
-                changesBlock: self.changesBlock
+                groupId: groupId,
+                groupSecretParams: try GroupSecretParams(contents: [UInt8](groupSecretParamsData)),
+                changesBlock: changesBlock
             )
-        }
-
-        public override func didFail(error: Error) {
-            self.continuation.resume(throwing: error)
         }
     }
 
@@ -95,15 +68,13 @@ extension GroupManager {
         description: String,
         changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void
     ) async throws -> TSGroupThread {
-        return try await withCheckedThrowingContinuation { continuation in
-            let operation = GenericGroupUpdateOperation(
+        return try await operationQueue(forUpdatingGroup: groupModel).enqueue {
+            return try await GenericGroupUpdateOperation.run(
                 groupId: groupModel.groupId,
                 groupSecretParamsData: groupModel.secretParamsData,
                 updateDescription: description,
-                changesBlock: changesBlock,
-                continuation: continuation
+                changesBlock: changesBlock
             )
-            operationQueue(forUpdatingGroup: groupModel).addOperation(operation)
-        }
+        }.value
     }
 }
