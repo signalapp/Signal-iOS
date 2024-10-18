@@ -282,22 +282,14 @@ public class StickerManager: NSObject {
         }.cauterize()
     }
 
-    private let packOperationQueue: OperationQueue = {
-        let operationQueue = OperationQueue()
-        operationQueue.name = "StickerManager-Pack"
-        operationQueue.maxConcurrentOperationCount = 3
-        return operationQueue
-    }()
+    private let packOperationQueue = ConcurrentTaskQueue(concurrentLimit: 3)
 
     private func tryToDownloadStickerPack(stickerPackInfo: StickerPackInfo) -> Promise<StickerPack> {
-        let (promise, future) = Promise<StickerPack>.pending()
-        let operation = DownloadStickerPackOperation(
-            stickerPackInfo: stickerPackInfo,
-            success: future.resolve,
-            failure: future.reject
-        )
-        packOperationQueue.addOperation(operation)
-        return promise
+        return Promise.wrapAsync { [packOperationQueue] in
+            return try await packOperationQueue.run {
+                return try await DownloadStickerPackOperation.run(stickerPackInfo: stickerPackInfo)
+            }
+        }
     }
 
     // This method is public so that we can download "transient" (uninstalled) sticker packs.
@@ -760,52 +752,36 @@ public class StickerManager: NSObject {
             self.future = future
         }
     }
-    private let stickerDownloadQueue = DispatchQueue(label: "org.signal.sticker-manager.download")
-    // This property should only be accessed on stickerDownloadQueue.
-    private var stickerDownloadMap = [String: StickerDownload]()
-    private let stickerOperationQueue: OperationQueue = {
-        let operationQueue = OperationQueue()
-        operationQueue.name = "StickerManager"
-        operationQueue.maxConcurrentOperationCount = 4
-        return operationQueue
-    }()
+    private let stickerDownloads = AtomicValue<[String: StickerDownload]>([:], lock: .init())
+    private let stickerOperationQueue = ConcurrentTaskQueue(concurrentLimit: 4)
 
     private func tryToDownloadSticker(stickerPack: StickerPack, stickerInfo: StickerInfo) -> Promise<URL> {
         if let stickerUrl = DownloadStickerOperation.cachedUrl(for: stickerInfo) {
             return Promise.value(stickerUrl)
         }
-        return stickerDownloadQueue.sync { () -> Promise<URL> in
-            if let stickerDownload = stickerDownloadMap[stickerInfo.asKey()] {
-                return stickerDownload.promise
+        let (stickerDownload, shouldStartTask) = stickerDownloads.update {
+            if let stickerDownload = $0[stickerInfo.asKey()] {
+                return (stickerDownload, false)
             }
-
             let stickerDownload = StickerDownload()
-            stickerDownloadMap[stickerInfo.asKey()] = stickerDownload
-
-            let operation = DownloadStickerOperation(
-                stickerInfo: stickerInfo,
-                success: { [weak self] data in
-                    guard let self = self else {
-                        return
-                    }
-                    _ = self.stickerDownloadQueue.sync {
-                        self.stickerDownloadMap.removeValue(forKey: stickerInfo.asKey())
-                    }
-                    stickerDownload.future.resolve(data)
-                },
-                failure: { [weak self] error in
-                    guard let self = self else {
-                        return
-                    }
-                    _ = self.stickerDownloadQueue.sync {
-                        self.stickerDownloadMap.removeValue(forKey: stickerInfo.asKey())
-                    }
+            $0[stickerInfo.asKey()] = stickerDownload
+            return (stickerDownload, true)
+        }
+        if shouldStartTask {
+            Task { [stickerDownloads] in
+                let result = await Result {
+                    try await DownloadStickerOperation.run(stickerInfo: stickerInfo)
+                }
+                stickerDownloads.update { $0.removeValue(forKey: stickerInfo.asKey()) }
+                switch result {
+                case .success(let url):
+                    stickerDownload.future.resolve(url)
+                case .failure(let error):
                     stickerDownload.future.reject(error)
                 }
-            )
-            self.stickerOperationQueue.addOperation(operation)
-            return stickerDownload.promise
+            }
         }
+        return stickerDownload.promise
     }
 
     // This method is public so that we can download "transient" (uninstalled) stickers.

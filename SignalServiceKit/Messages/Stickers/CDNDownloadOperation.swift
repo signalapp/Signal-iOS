@@ -5,60 +5,30 @@
 
 import Foundation
 
-open class CDNDownloadOperation: OWSOperation {
+enum CDNDownloadOperation {
 
     // MARK: - Dependencies
 
-    private func buildUrlSession(maxResponseSize: UInt) -> OWSURLSessionProtocol {
+    private static func buildUrlSession(maxResponseSize: UInt) -> OWSURLSessionProtocol {
         SSKEnvironment.shared.signalServiceRef.urlSessionForCdn(cdnNumber: 0, maxResponseSize: maxResponseSize)
     }
 
     // MARK: -
 
-    private let _task = AtomicOptional<URLSessionTask>(nil, lock: .sharedGlobal)
-    private var task: URLSessionTask? {
-        get {
-            _task.get()
-        }
-        set {
-            _task.set(newValue)
-        }
-    }
+    static let kMaxStickerDataDownloadSize: UInt = 1000 * 1000
+    static let kMaxStickerPackDownloadSize: UInt = 1000 * 1000
 
-    public override init() {
-        super.init()
-
-        self.remainingRetries = 4
-    }
-
-    deinit {
-        task?.cancel()
-    }
-
-    let kMaxStickerDataDownloadSize: UInt = 1000 * 1000
-    let kMaxStickerPackDownloadSize: UInt = 1000 * 1000
-
-    public func tryToDownload(urlPath: String, maxDownloadSize: UInt) throws -> Promise<URL> {
+    public static func tryToDownload(urlPath: String, maxDownloadSize: UInt) async throws -> URL {
         guard !isCorrupt(urlPath: urlPath) else {
             Logger.warn("Skipping download of corrupt data.")
             throw StickerError.corruptData
         }
 
-        return firstly(on: DispatchQueue.global()) { () -> Promise<OWSUrlDownloadResponse> in
-            let headers = ["Content-Type": MimeType.applicationOctetStream.rawValue]
+        do {
             let urlSession = self.buildUrlSession(maxResponseSize: maxDownloadSize)
-            return urlSession.downloadTaskPromise(urlPath,
-                                                  method: .get,
-                                                  headers: headers) { [weak self] (task: URLSessionTask, progress: Progress) in
-                guard let self = self else {
-                    return
-                }
-                self.task = task
-            }
-        }.map(on: DispatchQueue.global()) { [weak self] (response: OWSUrlDownloadResponse) -> URL in
-            guard self != nil else {
-                throw OWSAssertionError("Operation has been deallocated.")
-            }
+            let headers = ["Content-Type": MimeType.applicationOctetStream.rawValue]
+            let response = try await urlSession.downloadTaskPromise(urlPath, method: .get, headers: headers).awaitable()
+
             let downloadUrl = response.downloadUrl
             do {
                 let temporaryFileUrl = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
@@ -69,49 +39,35 @@ open class CDNDownloadOperation: OWSOperation {
                 // Fail immediately; do not retry.
                 throw SSKUnretryableError.downloadCouldNotMoveFile
             }
-        }.recover(on: DispatchQueue.global()) { error -> Promise<URL> in
+        } catch {
             Logger.warn("Download failed: \(error)")
             throw error
         }
     }
 
-    public func tryToDownload(urlPath: String, maxDownloadSize: UInt) throws -> Promise<Data> {
-        return try tryToDownload(urlPath: urlPath, maxDownloadSize: maxDownloadSize).map { (downloadUrl: URL) in
-            do {
-                let data = try Data(contentsOf: downloadUrl)
-                try OWSFileSystem.deleteFile(url: downloadUrl)
-                return data
-            } catch {
-                owsFailDebug("Could not load data failed: \(error)")
-                // Fail immediately; do not retry.
-                throw SSKUnretryableError.downloadCouldNotDeleteFile
-            }
+    public static func tryToDownload(urlPath: String, maxDownloadSize: UInt) async throws -> Data {
+        let downloadUrl: URL = try await tryToDownload(urlPath: urlPath, maxDownloadSize: maxDownloadSize)
+        do {
+            let data = try Data(contentsOf: downloadUrl)
+            try OWSFileSystem.deleteFile(url: downloadUrl)
+            return data
+        } catch {
+            owsFailDebug("Could not load data failed: \(error)")
+            // Fail immediately; do not retry.
+            throw SSKUnretryableError.downloadCouldNotDeleteFile
         }
-    }
-
-    override public var retryInterval: TimeInterval {
-        OWSOperation.retryIntervalForExponentialBackoff(failureCount: errorCount)
     }
 
     // MARK: - Corrupt Data
 
     // We track corrupt downloads, to avoid retrying them more than once per launch.
-    //
-    // TODO: We could persist this state.
-    private static let serialQueue = DispatchQueue(label: "org.signal.cdn-download")
-    private static var corruptDataKeys = Set<String>()
+    private static let corruptDataKeys = AtomicValue<Set<String>>(Set(), lock: .init())
 
-    func markUrlPathAsCorrupt(_ urlPath: String) {
-        _ = CDNDownloadOperation.serialQueue.sync {
-            CDNDownloadOperation.corruptDataKeys.insert(urlPath)
-        }
+    static func markUrlPathAsCorrupt(_ urlPath: String) {
+        corruptDataKeys.update { _ = $0.insert(urlPath) }
     }
 
-    func isCorrupt(urlPath: String) -> Bool {
-        var result = false
-        CDNDownloadOperation.serialQueue.sync {
-            result = CDNDownloadOperation.corruptDataKeys.contains(urlPath)
-        }
-        return result
+    static func isCorrupt(urlPath: String) -> Bool {
+        return corruptDataKeys.update { $0.contains(urlPath) }
     }
 }

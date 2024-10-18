@@ -688,6 +688,8 @@
 		50BF510C2BB2032500C2C309 /* MobileCoinHelperSDKTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB78B8272C51E800DA0D04 /* MobileCoinHelperSDKTest.swift */; };
 		50BF510E2BB2033800C2C309 /* RecipientPickerViewControllerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 509913BD2913274100F34F8E /* RecipientPickerViewControllerTest.swift */; };
 		50BF51102BB2035400C2C309 /* UIStackView+SignalUITest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C45D9329CB93E200B2CD2D /* UIStackView+SignalUITest.swift */; };
+		50C0203C2CA4A61E00BDC4EF /* ConcurrentTaskQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C0203B2CA4A61E00BDC4EF /* ConcurrentTaskQueue.swift */; };
+		50C0203E2CA4A7A500BDC4EF /* Retry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C0203D2CA4A7A500BDC4EF /* Retry.swift */; };
 		50C38CAD2A8EB2610030A731 /* TimeGatedBatchTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C38CAC2A8EB2610030A731 /* TimeGatedBatchTest.swift */; };
 		50C831762BAA3A8000BEBF25 /* CallMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C831752BAA3A8000BEBF25 /* CallMessageHandler.swift */; };
 		50C97C252C3C7F7000A9F384 /* CallEventConversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C97C242C3C7F7000A9F384 /* CallEventConversation.swift */; };
@@ -4299,6 +4301,8 @@
 		50BDC3672C88B7FA002294D0 /* AudioWaveformSampler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioWaveformSampler.swift; sourceTree = "<group>"; };
 		50BDC3692C88C2C8002294D0 /* AudioWaveformSamplerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioWaveformSamplerTest.swift; sourceTree = "<group>"; };
 		50BE67522CAAF7DF006D7BC7 /* AdHocCallRecordManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdHocCallRecordManager.swift; sourceTree = "<group>"; };
+		50C0203B2CA4A61E00BDC4EF /* ConcurrentTaskQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcurrentTaskQueue.swift; sourceTree = "<group>"; };
+		50C0203D2CA4A7A500BDC4EF /* Retry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Retry.swift; sourceTree = "<group>"; };
 		50C38CAC2A8EB2610030A731 /* TimeGatedBatchTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeGatedBatchTest.swift; sourceTree = "<group>"; };
 		50C831752BAA3A8000BEBF25 /* CallMessageHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallMessageHandler.swift; sourceTree = "<group>"; };
 		50C97C242C3C7F7000A9F384 /* CallEventConversation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallEventConversation.swift; sourceTree = "<group>"; };
@@ -8216,8 +8220,10 @@
 			children = (
 				500AF3AA2C58347C00CB9F4F /* CancellableContinuation.swift */,
 				500AF3AC2C5834A400CB9F4F /* CancellableContinuationTest.swift */,
+				50C0203B2CA4A61E00BDC4EF /* ConcurrentTaskQueue.swift */,
 				500AF3AE2C58366700CB9F4F /* CooperativeTimeout.swift */,
 				500AF3B02C58385600CB9F4F /* CooperativeTimeoutTest.swift */,
+				50C0203D2CA4A7A500BDC4EF /* Retry.swift */,
 				6605B9852B2112A100E8A68A /* SerialTaskQueue.swift */,
 			);
 			path = Concurrency;
@@ -16701,6 +16707,7 @@
 				72345D1D2B9A1984000237B3 /* CommonStrings.swift in Sources */,
 				66E1AD552B8D033E00C56B7B /* ConcreteTSResource.swift in Sources */,
 				66D7B92F2B98ECB00005C98B /* ConcreteTSResourceReference.swift in Sources */,
+				50C0203C2CA4A61E00BDC4EF /* ConcurrentTaskQueue.swift in Sources */,
 				D958E2AF2B58696700EE9831 /* ConsumableMockGuarantee.swift in Sources */,
 				D990CACD2B4DCD83000A99A2 /* ConsumableMockPromise.swift in Sources */,
 				F9C5CCE4289453B300548EEE /* Contact.swift in Sources */,
@@ -17378,6 +17385,7 @@
 				D98DD86028EE53B00089333E /* RemoteMegaphoneModel.swift in Sources */,
 				F9C5CDBE289453B400548EEE /* RESTNetworkManager.swift in Sources */,
 				502C69742B06F0A400012867 /* Result.swift in Sources */,
+				50C0203E2CA4A7A500BDC4EF /* Retry.swift in Sources */,
 				F9C5CDF8289453B400548EEE /* ReverseDispatchQueue.swift in Sources */,
 				F945FE4A2984796D00C835C7 /* RingrtcFieldTrials.swift in Sources */,
 				668A01332C2B6088007B8808 /* Scheduler.swift in Sources */,

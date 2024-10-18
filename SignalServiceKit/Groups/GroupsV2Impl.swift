@@ -892,25 +892,19 @@ public class GroupsV2Impl: GroupsV2 {
         return downloadedAvatars
     }
 
-    let avatarDownloadQueue: OperationQueue = {
-        let operationQueue = OperationQueue()
-        operationQueue.name = "AvatarDownload"
-        operationQueue.maxConcurrentOperationCount = 3
-        return operationQueue
-    }()
+    let avatarDownloadQueue = ConcurrentTaskQueue(concurrentLimit: 3)
 
     private func fetchAvatarData(
         avatarUrlPath: String,
         groupV2Params: GroupV2Params
     ) async throws -> Data {
-        // We throw away decrypted avatars larger than `kMaxEncryptedAvatarSize`.
-        let operation = GroupsV2AvatarDownloadOperation(
-            urlPath: avatarUrlPath,
-            maxDownloadSize: kMaxEncryptedAvatarSize
-        )
-        let promise = operation.promise
-        avatarDownloadQueue.addOperation(operation)
-        return try await promise.awaitable()
+        return try await avatarDownloadQueue.run {
+            // We throw away decrypted avatars larger than `kMaxEncryptedAvatarSize`.
+            return try await GroupsV2AvatarDownloadOperation.run(
+                urlPath: avatarUrlPath,
+                maxDownloadSize: kMaxEncryptedAvatarSize
+            )
+        }
     }
 
     // MARK: - Generic Group Change

@@ -5,76 +5,52 @@
 
 import Foundation
 
-class DownloadStickerPackOperation: CDNDownloadOperation {
+enum DownloadStickerPackOperation {
+    static func run(stickerPackInfo: StickerPackInfo) async throws -> StickerPack {
+        return try await Retry.performWithBackoff(maxAttempts: 4) {
+            return try await self._run(stickerPackInfo: stickerPackInfo)
+        }
+    }
 
-    private let stickerPackInfo: StickerPackInfo
-    private let success: (StickerPack) -> Void
-    private let failure: (Error) -> Void
-
-    @objc
-    public init(
-        stickerPackInfo: StickerPackInfo,
-        success: @escaping (StickerPack) -> Void,
-        failure: @escaping (Error) -> Void
-    ) {
+    private static func _run(stickerPackInfo: StickerPackInfo) async throws -> StickerPack {
         owsAssertDebug(stickerPackInfo.packId.count > 0)
         owsAssertDebug(stickerPackInfo.packKey.count > 0)
 
-        self.stickerPackInfo = stickerPackInfo
-        self.success = success
-        self.failure = failure
-
-        super.init()
-    }
-
-    override public func run() {
-
         if let stickerPack = StickerManager.fetchStickerPack(stickerPackInfo: stickerPackInfo) {
-            success(stickerPack)
-            self.reportSuccess()
-            return
+            return stickerPack
         }
 
         // https://cdn.signal.org/stickers/<pack_id>/manifest.proto
         let urlPath = "stickers/\(stickerPackInfo.packId.hexadecimalString)/manifest.proto"
 
-        firstly {
-            try tryToDownload(urlPath: urlPath, maxDownloadSize: kMaxStickerPackDownloadSize)
-        }.done(on: DispatchQueue.global()) { [weak self] (url: URL) in
-            guard let self = self else {
-                return
-            }
-
+        do {
+            let encryptedFileUrl: URL = try await CDNDownloadOperation.tryToDownload(
+                urlPath: urlPath,
+                maxDownloadSize: CDNDownloadOperation.kMaxStickerPackDownloadSize
+            )
             do {
-                let url = try StickerManager.decrypt(at: url, packKey: self.stickerPackInfo.packKey)
-                let plaintext = try Data(contentsOf: url)
+                let decryptedFileUrl = try StickerManager.decrypt(at: encryptedFileUrl, packKey: stickerPackInfo.packKey)
+                let manifestData = try Data(contentsOf: decryptedFileUrl)
 
-                let stickerPack = try self.parseStickerPackManifest(stickerPackInfo: self.stickerPackInfo,
-                                                                    manifestData: plaintext)
-
-                self.success(stickerPack)
-                self.reportSuccess()
+                return try self.parseStickerPackManifest(
+                    stickerPackInfo: stickerPackInfo,
+                    manifestData: manifestData
+                )
             } catch {
                 owsFailDebug("Decryption failed: \(error)")
-
-                self.markUrlPathAsCorrupt(urlPath)
-
+                CDNDownloadOperation.markUrlPathAsCorrupt(urlPath)
                 // Fail immediately; do not retry.
-                return self.reportError(SSKUnretryableError.stickerDecryptionFailure)
+                throw SSKUnretryableError.stickerDecryptionFailure
             }
-        }.catch(on: DispatchQueue.global()) { [weak self] error in
-            guard let self = self else {
-                return
-            }
+        } catch {
             if error.hasFatalHttpStatusCode() {
-                StickerManager.markStickerPackAsMissing(stickerPackInfo: self.stickerPackInfo)
+                StickerManager.markStickerPackAsMissing(stickerPackInfo: stickerPackInfo)
             }
-            return self.reportError(withUndefinedRetry: error)
+            throw error
         }
     }
 
-    private func parseStickerPackManifest(stickerPackInfo: StickerPackInfo,
-                                          manifestData: Data) throws -> StickerPack {
+    private static func parseStickerPackManifest(stickerPackInfo: StickerPackInfo, manifestData: Data) throws -> StickerPack {
         owsAssertDebug(manifestData.count > 0)
 
         let manifestProto: SSKProtoPack
@@ -103,23 +79,17 @@ class DownloadStickerPackOperation: CDNDownloadOperation {
         return stickerPack
     }
 
-    private func parseOptionalString(_ value: String?) -> String? {
-        value?.ows_stripped().nilIfEmpty
+    private static func parseOptionalString(_ value: String?) -> String? {
+        return value?.ows_stripped().nilIfEmpty
     }
 
-    private func parsePackItem(_ proto: SSKProtoPackSticker?) -> StickerPackItem? {
-        guard let proto = proto else {
+    private static func parsePackItem(_ proto: SSKProtoPackSticker?) -> StickerPackItem? {
+        guard let proto else {
             return nil
         }
         let stickerId = proto.id
         let emojiString = parseOptionalString(proto.emoji) ?? ""
         let contentType = parseOptionalString(proto.contentType) ?? ""
         return StickerPackItem(stickerId: stickerId, emojiString: emojiString, contentType: contentType)
-    }
-
-    override public func didFail(error: Error) {
-        Logger.error("Download exhausted retries: \(error)")
-
-        failure(error)
     }
 }
