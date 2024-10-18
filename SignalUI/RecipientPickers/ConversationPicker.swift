@@ -62,6 +62,13 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
     private var conversationCollection: ConversationCollection = .empty {
         didSet {
+            if
+                let firstSelectedStoryIndex = conversationCollection.storyConversations.firstIndex(where: { self.selection.isSelected(conversation: $0)}),
+                firstSelectedStoryIndex >= self.maxStoryConversationsToRender - 1 {
+                // If we've come in already having selected a story in the expanded section,
+                // expand right away.
+                self.isStorySectionExpanded = true
+            }
             updateTableContents()
         }
     }
@@ -163,7 +170,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         }
     }
 
-    public var threadFilter: (_ isIncluded: TSThread) -> Bool = { _ in true }
+    open nonisolated func threadFilter(_ isIncluded: TSThread) -> Bool { true }
 
     public var maxStoryConversationsToRender = 3
     public var isStorySectionExpanded = false
@@ -216,7 +223,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
         footerView.delegate = self
 
-        conversationCollection = buildConversationCollection()
+        conversationCollection = buildConversationCollection(sectionOptions: sectionOptions)
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(blockListDidChange),
@@ -263,24 +270,22 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         updateUIForCurrentSelection(animated: false)
     }
 
-    private func buildSearchResults(searchText: String) -> Guarantee<RecipientSearchResultSet?> {
+    private nonisolated func buildSearchResults(searchText: String) async -> RecipientSearchResultSet? {
         guard searchText.count > 1 else {
-            return .value(nil)
+            return nil
         }
 
-        return firstly(on: DispatchQueue.global()) {
-            SSKEnvironment.shared.databaseStorageRef.read { tx in
-                FullTextSearcher.shared.searchForRecipients(
-                    searchText: searchText,
-                    includeLocalUser: true,
-                    includeStories: true,
-                    tx: tx
-                )
-            }
+        return SSKEnvironment.shared.databaseStorageRef.read { tx in
+            FullTextSearcher.shared.searchForRecipients(
+                searchText: searchText,
+                includeLocalUser: true,
+                includeStories: true,
+                tx: tx
+            )
         }
     }
 
-    private func buildGroupItem(
+    private nonisolated func buildGroupItem(
         _ groupThread: TSGroupThread,
         isBlocked: Bool,
         transaction tx: SDSAnyReadTransaction
@@ -294,7 +299,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         )
     }
 
-    private func buildContactItem(
+    private nonisolated func buildContactItem(
         _ address: SignalServiceAddress,
         isBlocked: Bool,
         transaction tx: SDSAnyReadTransaction
@@ -311,7 +316,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         )
     }
 
-    fileprivate func buildConversationCollection() -> ConversationCollection {
+    private nonisolated func buildConversationCollection(sectionOptions: SectionOptions) -> ConversationCollection {
         SSKEnvironment.shared.databaseStorageRef.read { transaction in
             var pinnedItemsByThreadId: [String: RecentConversationItem] = [:]
             var recentItems: [RecentConversationItem] = []
@@ -357,10 +362,10 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                     )
 
                     seenAddresses.insert(contactThread.contactAddress)
-                    if self.sectionOptions.contains(.recents) && pinnedThreadIds.contains(thread.uniqueId) {
+                    if sectionOptions.contains(.recents) && pinnedThreadIds.contains(thread.uniqueId) {
                         let recentItem = RecentConversationItem(backingItem: .contact(item))
                         pinnedItemsByThreadId[thread.uniqueId] = recentItem
-                    } else if self.sectionOptions.contains(.recents) && recentItems.count < maxRecentCount {
+                    } else if sectionOptions.contains(.recents) && recentItems.count < maxRecentCount {
                         let recentItem = RecentConversationItem(backingItem: .contact(item))
                         recentItems.append(recentItem)
                     } else {
@@ -377,10 +382,10 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                         transaction: transaction
                     )
 
-                    if self.sectionOptions.contains(.recents) && pinnedThreadIds.contains(thread.uniqueId) {
+                    if sectionOptions.contains(.recents) && pinnedThreadIds.contains(thread.uniqueId) {
                         let recentItem = RecentConversationItem(backingItem: .group(item))
                         pinnedItemsByThreadId[thread.uniqueId] = recentItem
-                    } else if self.sectionOptions.contains(.recents) && recentItems.count < maxRecentCount {
+                    } else if sectionOptions.contains(.recents) && recentItems.count < maxRecentCount {
                         let recentItem = RecentConversationItem(backingItem: .group(item))
                         recentItems.append(recentItem)
                     } else {
@@ -450,13 +455,6 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                 blockingManager: SSKEnvironment.shared.blockingManagerRef,
                 transaction: transaction
             )
-            if
-                let firstSelectedStoryIndex = storyItems.firstIndex(where: { self.selection.isSelected(conversation: $0)}),
-                firstSelectedStoryIndex >= self.maxStoryConversationsToRender - 1 {
-                // If we've come in already having selected a story in the expanded section,
-                // expand right away.
-                self.isStorySectionExpanded = true
-            }
 
             return ConversationCollection(contactConversations: contactItems,
                                           recentConversations: pinnedItems + recentItems,
@@ -466,60 +464,58 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         }
     }
 
-    fileprivate func buildConversationCollection(searchResults: RecipientSearchResultSet?) -> Promise<ConversationCollection> {
+    private nonisolated func buildConversationCollection(sectionOptions: SectionOptions, searchResults: RecipientSearchResultSet?) async -> ConversationCollection {
         guard let searchResults = searchResults else {
-            return Promise.value(buildConversationCollection())
+            return buildConversationCollection(sectionOptions: sectionOptions)
         }
 
-        return firstly(on: DispatchQueue.global()) {
-            SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                let groupItems = searchResults.groupThreads.compactMap { groupThread -> GroupConversationItem? in
-                    guard
-                        self.threadFilter(groupThread),
-                        groupThread.canSendChatMessagesToThread(ignoreAnnouncementOnly: true)
-                    else {
-                        return nil
-                    }
-
-                    let isThreadBlocked = SSKEnvironment.shared.blockingManagerRef.isThreadBlocked(
-                        groupThread,
-                        transaction: transaction
-                    )
-
-                    if isThreadBlocked {
-                        return nil
-                    }
-
-                    return self.buildGroupItem(
-                        groupThread,
-                        isBlocked: isThreadBlocked,
-                        transaction: transaction
-                    )
+        return SSKEnvironment.shared.databaseStorageRef.read { transaction in
+            let groupItems = searchResults.groupThreads.compactMap { groupThread -> GroupConversationItem? in
+                guard
+                    self.threadFilter(groupThread),
+                    groupThread.canSendChatMessagesToThread(ignoreAnnouncementOnly: true)
+                else {
+                    return nil
                 }
 
-                let contactItems = searchResults.contactResults.map { contactResult -> ContactConversationItem in
-                    return self.buildContactItem(
-                        contactResult.recipientAddress,
-                        isBlocked: false,
-                        transaction: transaction
-                    )
-                }
-
-                let storyItems = StoryConversationItem.buildItems(
-                    from: searchResults.storyThreads,
-                    excludeHiddenContexts: false,
-                    blockingManager: SSKEnvironment.shared.blockingManagerRef,
+                let isThreadBlocked = SSKEnvironment.shared.blockingManagerRef.isThreadBlocked(
+                    groupThread,
                     transaction: transaction
                 )
 
-                return ConversationCollection(
-                    contactConversations: contactItems,
-                    recentConversations: [],
-                    groupConversations: groupItems,
-                    storyConversations: storyItems,
-                    isSearchResults: true
+                if isThreadBlocked {
+                    return nil
+                }
+
+                return self.buildGroupItem(
+                    groupThread,
+                    isBlocked: isThreadBlocked,
+                    transaction: transaction
                 )
             }
+
+            let contactItems = searchResults.contactResults.map { contactResult -> ContactConversationItem in
+                return self.buildContactItem(
+                    contactResult.recipientAddress,
+                    isBlocked: false,
+                    transaction: transaction
+                )
+            }
+
+            let storyItems = StoryConversationItem.buildItems(
+                from: searchResults.storyThreads,
+                excludeHiddenContexts: false,
+                blockingManager: SSKEnvironment.shared.blockingManagerRef,
+                transaction: transaction
+            )
+
+            return ConversationCollection(
+                contactConversations: contactItems,
+                recentConversations: [],
+                groupConversations: groupItems,
+                storyConversations: storyItems,
+                isSearchResults: true
+            )
         }
     }
 
@@ -541,7 +537,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
     private func blockListDidChange(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
-        self.conversationCollection = buildConversationCollection()
+        self.conversationCollection = buildConversationCollection(sectionOptions: sectionOptions)
     }
 
     private func updateTableContents(shouldReload: Bool = true) {
@@ -921,7 +917,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                     return
                 }
 
-                self.conversationCollection = self.buildConversationCollection()
+                self.conversationCollection = self.buildConversationCollection(sectionOptions: self.sectionOptions)
             }
         case .group(let groupThreadId):
             guard let groupThread = SSKEnvironment.shared.databaseStorageRef.read(block: { transaction in
@@ -938,7 +934,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                     return
                 }
 
-                self.conversationCollection = self.buildConversationCollection()
+                self.conversationCollection = self.buildConversationCollection(sectionOptions: self.sectionOptions)
             }
         case .privateStory:
             owsFailDebug("Unexpectedly attempted to show unblock UI for story thread")
@@ -1146,7 +1142,7 @@ private class VideoSegmentingTooltipView: TooltipView {
 extension ConversationPickerViewController: NewStoryHeaderDelegate {
     public func newStoryHeaderView(_ newStoryHeaderView: NewStoryHeaderView, didCreateNewStoryItems items: [StoryConversationItem]) {
         isStorySectionExpanded = true
-        conversationCollection = buildConversationCollection()
+        conversationCollection = buildConversationCollection(sectionOptions: sectionOptions)
         items.forEach { selection.add($0) }
         restoreSelection()
     }
@@ -1156,24 +1152,12 @@ extension ConversationPickerViewController: NewStoryHeaderDelegate {
 
 extension ConversationPickerViewController: UISearchBarDelegate {
     public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        firstly {
-            buildSearchResults(searchText: searchText)
-        }.then { [weak self] searchResults -> Promise<ConversationCollection> in
-            guard let self = self else {
-                throw PromiseError.cancelled
-            }
-
-            // Make sure the search text hasn't changed since we started searching, otherwise bail.
-            guard searchBar.text == searchText else { throw PromiseError.cancelled }
-
-            return self.buildConversationCollection(searchResults: searchResults)
-        }.done(on: DispatchQueue.main) { [weak self] conversationCollection in
-            guard let self = self else { return }
-
+        Task { [self] in
+            let searchResults = await buildSearchResults(searchText: searchText)
+            guard searchBar.text == searchText else { return }
+            let conversationCollection = await buildConversationCollection(sectionOptions: sectionOptions, searchResults: searchResults)
+            guard searchBar.text == searchText else { return }
             self.conversationCollection = conversationCollection
-        }.catch { error in
-            if let error = error as? PromiseError, error == .cancelled { return }
-            owsFailDebug("Error: \(error)")
         }
     }
 
@@ -1195,7 +1179,7 @@ extension ConversationPickerViewController: UISearchBarDelegate {
         if shouldHideSearchBarIfCancelled {
             self.shouldShowSearchBar = false
         }
-        conversationCollection = buildConversationCollection()
+        conversationCollection = buildConversationCollection(sectionOptions: sectionOptions)
         pickerDelegate?.conversationPickerSearchBarActiveDidChange(self)
     }
 
@@ -1204,7 +1188,7 @@ extension ConversationPickerViewController: UISearchBarDelegate {
             return
         }
         searchBar.text = nil
-        conversationCollection = buildConversationCollection()
+        conversationCollection = buildConversationCollection(sectionOptions: sectionOptions)
     }
 
     public var isSearchBarActive: Bool {
@@ -1593,6 +1577,6 @@ private struct ConversationCollection {
 extension ConversationPickerViewController: ContactsViewHelperObserver {
     public func contactsViewHelperDidUpdateContacts() {
         /// Triggers subsequent call to `updateTableContents`.
-        self.conversationCollection = self.buildConversationCollection()
+        self.conversationCollection = self.buildConversationCollection(sectionOptions: sectionOptions)
     }
 }

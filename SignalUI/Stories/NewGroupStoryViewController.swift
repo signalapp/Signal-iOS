@@ -13,10 +13,11 @@ class NewGroupStoryViewController: ConversationPickerViewController {
         super.init(selection: ConversationPickerSelection())
         pickerDelegate = self
         sectionOptions = .groups
-        threadFilter = { thread in
-            guard let groupThread = thread as? TSGroupThread else { return false }
-            return !groupThread.isStorySendExplicitlyEnabled && groupThread.canSendChatMessagesToThread()
-        }
+    }
+
+    override nonisolated func threadFilter(_ isIncluded: TSThread) -> Bool {
+        guard let groupThread = isIncluded as? TSGroupThread else { return false }
+        return !groupThread.isStorySendExplicitlyEnabled && groupThread.canSendChatMessagesToThread()
     }
 
     override func viewDidLoad() {
