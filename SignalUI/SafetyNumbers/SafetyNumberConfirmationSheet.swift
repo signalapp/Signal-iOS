@@ -335,6 +335,27 @@ public class SafetyNumberConfirmationSheet: UIViewController {
         setupInteractiveSizing()
     }
 
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        let profileFetcher = SSKEnvironment.shared.profileFetcherRef
+
+        // When the view appears, fetch profiles if it's been a while to ensure we
+        // have the latest identity key.
+        for confirmationItem in confirmationItems {
+            guard let serviceId = confirmationItem.address.serviceId else {
+                continue
+            }
+            Task {
+                do {
+                    _ = try await profileFetcher.fetchProfile(for: serviceId, options: .opportunistic)
+                } catch {
+                    Logger.warn("Didn't fetch profile for Safety Number change: \(error)")
+                }
+            }
+        }
+    }
+
     @objc
     private func didTapBackdrop(_ sender: UITapGestureRecognizer) {
         guard allowsDismissal else { return }

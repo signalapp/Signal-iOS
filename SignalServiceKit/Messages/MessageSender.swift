@@ -123,8 +123,8 @@ public class MessageSender {
             throw MessageSenderError.missingDevice
         }
 
-        // As an optimization, skip the request if an error is likely.
-        if let recipientUniqueId, willLikelyHaveUntrustedIdentityKeyError(for: recipientUniqueId) {
+        // As an optimization, skip the request if an error is guaranteed.
+        if willDefinitelyHaveUntrustedIdentityError(for: serviceId) {
             Logger.info("Skipping prekey request due to untrusted identity.")
             throw UntrustedIdentityError(serviceId: serviceId)
         }
@@ -301,8 +301,6 @@ public class MessageSender {
 
     // MARK: - Untrusted Identities
 
-    private let staleIdentityCache = AtomicDictionary<RecipientUniqueId, Date>(lock: .init())
-
     private func handleUntrustedIdentityKeyError(
         serviceId: ServiceId,
         recipientUniqueId: RecipientUniqueId,
@@ -311,43 +309,35 @@ public class MessageSender {
     ) {
         let identityManager = DependenciesBridge.shared.identityManager
         identityManager.saveIdentityKey(preKeyBundle.identityKey, for: serviceId, tx: tx.asV2Write)
-        staleIdentityCache[recipientUniqueId] = Date()
     }
 
-    private func willLikelyHaveUntrustedIdentityKeyError(for recipientUniqueId: RecipientUniqueId) -> Bool {
+    /// If true, we expect fetching a bundle will fail no matter what it contains.
+    ///
+    /// If we're noLongerVerified, nothing we fetch can alter the state. The
+    /// user must manually accept the new identity key and then retry the
+    /// message.
+    ///
+    /// If we're implicit & it's not trusted, it means it changed recently. It
+    /// would work if we waited a few seconds, but we want to surface the error
+    /// to the user.
+    ///
+    /// Even though it's only a few seconds, we must not talk to the server in
+    /// the implicit case because there could be many messages queued up that
+    /// would all try to fetch their own bundle.
+    private func willDefinitelyHaveUntrustedIdentityError(for serviceId: ServiceId) -> Bool {
         assert(!Thread.isMainThread)
 
         // Prekey rate limits are strict. Therefore, we want to avoid requesting
         // prekey bundles that can't be processed. After a prekey request, we might
-        // not be able to process it if the new identity key isn't trusted. We
-        // therefore expect all subsequent fetches to fail until that key is
-        // trusted, so we don't bother sending them unless the key is trusted.
-
-        guard let mostRecentErrorDate = staleIdentityCache[recipientUniqueId] else {
-            // We don't have a recent error, so a fetch will probably work.
-            return false
-        }
-
-        let staleIdentityLifetime = kMinuteInterval * 5
-        guard abs(mostRecentErrorDate.timeIntervalSinceNow) < staleIdentityLifetime else {
-            // It's been more than five minutes since our last fetch. It's reasonable
-            // to try again, even if we don't think it will work. (This helps us
-            // discover if there's yet another new identity key.)
-            return false
-        }
+        // not be able to process it if the new identity key isn't trusted.
 
         let identityManager = DependenciesBridge.shared.identityManager
         return SSKEnvironment.shared.databaseStorageRef.read { tx in
-            guard let recipient = SignalRecipient.anyFetch(uniqueId: recipientUniqueId, transaction: tx) else {
-                return false
-            }
-            // Otherwise, skip the request if we don't trust the identity.
-            let untrustedIdentity = identityManager.untrustedIdentityForSending(
-                to: recipient.address,
+            return identityManager.untrustedIdentityForSending(
+                to: SignalServiceAddress(serviceId),
                 untrustedThreshold: nil,
                 tx: tx.asV2Read
-            )
-            return untrustedIdentity != nil
+            ) != nil
         }
     }
 
