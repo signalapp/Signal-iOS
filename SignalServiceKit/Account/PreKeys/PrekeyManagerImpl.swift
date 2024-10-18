@@ -145,7 +145,7 @@ public class PreKeyManagerImpl: PreKeyManager {
         let shouldPerformPniOp = hasPniIdentityKey(tx: tx)
 
         Task { [weak self, chatConnectionManager, taskManager, targets] in
-            let task = await Self.taskQueue.enqueue {
+            let task = Self.taskQueue.enqueue {
                 try await chatConnectionManager.waitForIdentifiedConnectionToOpen()
                 try Task.checkCancellation()
                 try await taskManager.refresh(identity: .aci, targets: targets, auth: .implicit())
@@ -161,12 +161,12 @@ public class PreKeyManagerImpl: PreKeyManager {
         }
     }
 
-    public func createPreKeysForRegistration() async -> Task<RegistrationPreKeyUploadBundles, Error> {
+    public func createPreKeysForRegistration() -> Task<RegistrationPreKeyUploadBundles, Error> {
         PreKey.logger.info("Create registration prekeys")
         /// Note that we do not report a `refreshOneTimePreKeysCheckDidSucceed`
         /// because this operation does not generate one time prekeys, so we
         /// shouldn't mark the routine refresh as having been "checked".
-        return await Self.taskQueue.enqueueCancellingPrevious { [taskManager] in
+        return Self.taskQueue.enqueueCancellingPrevious { [taskManager] in
             return try await taskManager.createForRegistration()
         }
     }
@@ -174,12 +174,12 @@ public class PreKeyManagerImpl: PreKeyManager {
     public func createPreKeysForProvisioning(
         aciIdentityKeyPair: ECKeyPair,
         pniIdentityKeyPair: ECKeyPair
-    ) async -> Task<RegistrationPreKeyUploadBundles, Error> {
+    ) -> Task<RegistrationPreKeyUploadBundles, Error> {
         PreKey.logger.info("Create provisioning prekeys")
         /// Note that we do not report a `refreshOneTimePreKeysCheckDidSucceed`
         /// because this operation does not generate one time prekeys, so we
         /// shouldn't mark the routine refresh as having been "checked".
-        return await Self.taskQueue.enqueueCancellingPrevious { [taskManager] in
+        return Self.taskQueue.enqueueCancellingPrevious { [taskManager] in
             return try await taskManager.createForProvisioning(
                 aciIdentityKeyPair: aciIdentityKeyPair,
                 pniIdentityKeyPair: pniIdentityKeyPair
@@ -190,9 +190,9 @@ public class PreKeyManagerImpl: PreKeyManager {
     public func finalizeRegistrationPreKeys(
         _ bundles: RegistrationPreKeyUploadBundles,
         uploadDidSucceed: Bool
-    ) async -> Task<Void, Error> {
+    ) -> Task<Void, Error> {
         PreKey.logger.info("Finalize registration prekeys")
-        return await Self.taskQueue.enqueue { [taskManager] in
+        return Self.taskQueue.enqueue { [taskManager] in
             try await taskManager.persistAfterRegistration(
                 bundles: bundles,
                 uploadDidSucceed: uploadDidSucceed
@@ -200,10 +200,10 @@ public class PreKeyManagerImpl: PreKeyManager {
         }
     }
 
-    public func rotateOneTimePreKeysForRegistration(auth: ChatServiceAuth) async -> Task<Void, Error> {
+    public func rotateOneTimePreKeysForRegistration(auth: ChatServiceAuth) -> Task<Void, Error> {
         PreKey.logger.info("Rotate one-time prekeys for registration")
 
-        return await Self.taskQueue.enqueue { [weak self, taskManager] in
+        return Self.taskQueue.enqueue { [weak self, taskManager] in
             try Task.checkCancellation()
             try await taskManager.createOneTimePreKeys(identity: .aci, auth: auth)
             try Task.checkCancellation()
@@ -212,13 +212,13 @@ public class PreKeyManagerImpl: PreKeyManager {
         }
     }
 
-    public func rotateSignedPreKeys() async -> Task<Void, Error> {
+    public func rotateSignedPreKeys() -> Task<Void, Error> {
         PreKey.logger.info("Rotate signed prekeys")
 
         let targets: PreKey.Target = [.signedPreKey, .lastResortPqPreKey]
         let shouldPerformPniOp = db.read(block: hasPniIdentityKey(tx:))
 
-        return await Self.taskQueue.enqueue { [chatConnectionManager, taskManager, targets] in
+        return Self.taskQueue.enqueue { [chatConnectionManager, taskManager, targets] in
             if OWSChatConnection.canAppUseSocketsToMakeRequests {
                 try await chatConnectionManager.waitForIdentifiedConnectionToOpen()
             } else {
@@ -265,7 +265,7 @@ public class PreKeyManagerImpl: PreKeyManager {
             targets.insert(target: .lastResortPqPreKey)
         }
 
-        let task = await Self.taskQueue.enqueue { [taskManager, targets] in
+        let task = Self.taskQueue.enqueue { [taskManager, targets] in
             try Task.checkCancellation()
             try await taskManager.refresh(
                 identity: identity,

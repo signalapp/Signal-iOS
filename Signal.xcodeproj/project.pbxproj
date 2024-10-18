@@ -8218,6 +8218,7 @@
 				500AF3AC2C5834A400CB9F4F /* CancellableContinuationTest.swift */,
 				500AF3AE2C58366700CB9F4F /* CooperativeTimeout.swift */,
 				500AF3B02C58385600CB9F4F /* CooperativeTimeoutTest.swift */,
+				6605B9852B2112A100E8A68A /* SerialTaskQueue.swift */,
 			);
 			path = Concurrency;
 			sourceTree = "<group>";
@@ -8440,6 +8441,14 @@
 				762EBBCF2A2FB759002FD28F /* AttachmentSharing.swift */,
 			);
 			path = Sharing;
+			sourceTree = "<group>";
+		};
+		50E0198E2CC2491A0063EA48 /* Concurrency */ = {
+			isa = PBXGroup;
+			children = (
+				6605B9892B211BD500E8A68A /* SerialTaskQueueTest.swift */,
+			);
+			path = Concurrency;
 			sourceTree = "<group>";
 		};
 		50E7E1CC2BACBDE000A94861 /* Expiration */ = {
@@ -12536,7 +12545,6 @@
 				F908AA7728CB894400472E68 /* PngChunkerTest.swift */,
 				F94261F0289B1B5400460798 /* RefineryTest.swift */,
 				F94261EC289B1B5400460798 /* RemoteConfigManagerTests.swift */,
-				6605B9892B211BD500E8A68A /* SerialTaskQueueTest.swift */,
 				F9613CDD2981F15700894B55 /* SqliteUtilTest.swift */,
 				C14EC1A82BAA4B5F00A4D064 /* StreamTransformTests.swift */,
 				7205701F2C8E860300826421 /* StringExtensionTests.swift */,
@@ -12867,6 +12875,7 @@
 				F94261FF289B1B5400460798 /* Account */,
 				F945FE4B298481D800C835C7 /* Calls */,
 				D985D86229B91C2B0087C90C /* ChangePhoneNumber */,
+				50E0198E2CC2491A0063EA48 /* Concurrency */,
 				F9426205289B1B5500460798 /* Contacts */,
 				501AD1C22AF17A0B001B796A /* Curve25519 */,
 				F94261C7289B1B5300460798 /* Devices */,
@@ -13809,7 +13818,6 @@
 				34641E172088D7E900E2EDE5 /* ScreenLock.swift */,
 				F9C5CB1C289453B200548EEE /* SDS+SSK.swift */,
 				F9C5CB7B289453B200548EEE /* Sequence+OWS.swift */,
-				6605B9852B2112A100E8A68A /* SerialTaskQueue.swift */,
 				1700E34028BD41140073D949 /* SetAlgebra+SSK.swift */,
 				F9613CDB2981F11400894B55 /* SqliteUtil.swift */,
 				F9C5CB47289453B200548EEE /* SSKPreferences.swift */,

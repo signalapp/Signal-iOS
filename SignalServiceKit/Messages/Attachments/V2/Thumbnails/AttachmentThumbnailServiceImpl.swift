@@ -9,7 +9,7 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
 
     public init() {}
 
-    private var taskQueue = SerialTaskQueue()
+    private let taskQueue = SerialTaskQueue()
 
     public func thumbnailImage(
         for attachmentStream: AttachmentStream,

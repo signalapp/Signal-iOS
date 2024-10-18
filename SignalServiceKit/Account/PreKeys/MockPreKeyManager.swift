@@ -14,7 +14,7 @@ internal class MockPreKeyManager: PreKeyManager {
     func checkPreKeysIfNecessary(tx: SignalServiceKit.DBReadTransaction) { }
     func rotatePreKeysOnUpgradeIfNecessary(for identity: OWSIdentity) async { }
 
-    func createPreKeysForRegistration() async -> Task<RegistrationPreKeyUploadBundles, Error> {
+    func createPreKeysForRegistration() -> Task<RegistrationPreKeyUploadBundles, Error> {
         let identityKeyPair = ECKeyPair.generateKeyPair()
         return Task {
             .init(
@@ -37,7 +37,7 @@ internal class MockPreKeyManager: PreKeyManager {
     func createPreKeysForProvisioning(
         aciIdentityKeyPair: ECKeyPair,
         pniIdentityKeyPair: ECKeyPair
-    ) async -> Task<RegistrationPreKeyUploadBundles, Error> {
+    ) -> Task<RegistrationPreKeyUploadBundles, Error> {
         let identityKeyPair = ECKeyPair.generateKeyPair()
         return Task {
             .init(
@@ -62,16 +62,16 @@ internal class MockPreKeyManager: PreKeyManager {
     func finalizeRegistrationPreKeys(
         _ bundles: RegistrationPreKeyUploadBundles,
         uploadDidSucceed: Bool
-    ) async -> Task<Void, Error> {
+    ) -> Task<Void, Error> {
         didFinalizeRegistrationPrekeys = true
         return Task {}
     }
 
-    func rotateOneTimePreKeysForRegistration(auth: ChatServiceAuth) async -> Task<Void, Error> {
+    func rotateOneTimePreKeysForRegistration(auth: ChatServiceAuth) -> Task<Void, Error> {
         return Task {}
     }
 
-    func rotateSignedPreKeys() async -> Task<Void, Error> { Task {} }
+    func rotateSignedPreKeys() -> Task<Void, Error> { Task {} }
     func refreshOneTimePreKeys(forIdentity identity: OWSIdentity, alsoRefreshSignedPreKey shouldRefreshSignedPreKey: Bool) { }
 
     func generateLastResortKyberPreKey(signedBy signingKeyPair: ECKeyPair) -> SignalServiceKit.KyberPreKeyRecord {

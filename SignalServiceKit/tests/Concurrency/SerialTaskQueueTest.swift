@@ -27,7 +27,7 @@ public class SerialTaskQueueTest: XCTestCase {
         let queue = SerialTaskQueue()
         let testActor = TestActor()
 
-        await queue.enqueue(operation: {
+        queue.enqueue(operation: {
             while !(await testActor.canExecuteFirstTask) {
                 await Task.yield()
             }
@@ -36,7 +36,7 @@ public class SerialTaskQueueTest: XCTestCase {
             await testActor.markExecuted()
         })
 
-        let secondTask = await queue.enqueue(operation: {
+        let secondTask = queue.enqueue(operation: {
             let numExecuted = await testActor.numExecuted
             XCTAssertEqual(numExecuted, 1)
             await testActor.markExecuted()
@@ -54,7 +54,7 @@ public class SerialTaskQueueTest: XCTestCase {
 
         // A new thing should execute immediately.
 
-        let thirdTask = await queue.enqueue(operation: {
+        let thirdTask = queue.enqueue(operation: {
             await testActor.markExecuted()
         })
 
@@ -81,7 +81,7 @@ public class SerialTaskQueueTest: XCTestCase {
         let queue = SerialTaskQueue()
         let testActor = TestActor()
 
-        let firstTask = await queue.enqueue(operation: {
+        let firstTask = queue.enqueue(operation: {
             while !(await testActor.canExecuteFirstTask) {
                 try Task.checkCancellation()
                 await Task.yield()
@@ -89,7 +89,7 @@ public class SerialTaskQueueTest: XCTestCase {
             XCTFail("Should have been cancelled!")
         })
 
-        let secondTask = await queue.enqueue(operation: {
+        let secondTask = queue.enqueue(operation: {
             try Task.checkCancellation()
             XCTFail("Should have been cancelled!")
         })
@@ -98,7 +98,7 @@ public class SerialTaskQueueTest: XCTestCase {
         XCTAssertEqual(numExecuted, 0)
 
         // Cancel and then enqueue a new thing.
-        let thirdTask = await queue.enqueueCancellingPrevious(operation: {
+        let thirdTask = queue.enqueueCancellingPrevious(operation: {
             await testActor.markExecuted()
         })
 
