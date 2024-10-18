@@ -389,6 +389,14 @@ extension CallLinkViewController: SendMessageDelegate {
         sendMessageFlow = nil
     }
 
+    func sendMessageFlowWillShowConversation() {
+        AssertIsOnMainThread()
+
+        persistIfNeeded()
+
+        sendMessageFlow = nil
+    }
+
     func sendMessageFlowDidCancel() {
         AssertIsOnMainThread()
 

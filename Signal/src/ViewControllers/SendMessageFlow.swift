@@ -8,6 +8,7 @@ import SignalUI
 
 public protocol SendMessageDelegate: AnyObject {
     func sendMessageFlowDidComplete(threads: [TSThread])
+    func sendMessageFlowWillShowConversation()
     func sendMessageFlowDidCancel()
 }
 
@@ -180,6 +181,10 @@ class SendMessageFlow {
         delegate?.sendMessageFlowDidComplete(threads: threads)
     }
 
+    fileprivate func fireWillShowConversation() {
+        delegate?.sendMessageFlowWillShowConversation()
+    }
+
     fileprivate func fireCancelled() {
         delegate?.sendMessageFlowDidCancel()
     }
@@ -219,9 +224,11 @@ extension SendMessageFlow {
     }
 
     func approve() {
-        if useConversationComposeForSingleRecipient,
+        if
+            useConversationComposeForSingleRecipient,
             selectedConversations.count == 1,
-            case .text(let messageBody) = unapprovedContent {
+            case .text(let messageBody) = unapprovedContent
+        {
             showConversationComposeForSingleRecipient(messageBody: messageBody)
             return
         }
@@ -242,6 +249,8 @@ extension SendMessageFlow {
     }
 
     private func showConversationComposeForSingleRecipient(messageBody: MessageBody) {
+        self.fireWillShowConversation()
+
         let conversations = self.selectedConversations
 
         firstly { () -> Promise<[TSThread]> in
@@ -629,6 +638,14 @@ public class SendMessageController: SendMessageDelegate {
         } else {
             fromViewController.navigationController?.popToViewController(fromViewController, animated: true)
         }
+    }
+
+    public func sendMessageFlowWillShowConversation() {
+        AssertIsOnMainThread()
+
+        sendMessageFlow.set(nil)
+
+        // Don't pop anything -- the callee will do that.
     }
 
     public func sendMessageFlowDidCancel() {
