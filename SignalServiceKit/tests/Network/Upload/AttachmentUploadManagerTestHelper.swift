@@ -41,6 +41,7 @@ class AttachmentUploadManagerMockHelper {
     var mockAttachmentEncrypter = AttachmentUploadManagerImpl.Mocks.AttachmentEncrypter()
     var messageBackupKeyMaterial = AttachmentUploadManagerImpl.Mocks.MessageBackupKeyMaterial()
     var messageBackupRequestManager = AttachmentUploadManagerImpl.Mocks.MessageBackupRequestManager()
+    var mockRemoteConfigProvider = MockRemoteConfigProvider()
 
     var capturedRequests = [MockResultType]()
 

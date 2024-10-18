@@ -147,18 +147,47 @@ public class AppSetup {
         let recipientFetcher = RecipientFetcherImpl(recipientDatabaseTable: recipientDatabaseTable)
         let recipientIdFinder = RecipientIdFinder(recipientDatabaseTable: recipientDatabaseTable, recipientFetcher: recipientFetcher)
 
+        let dateProvider = testDependencies.dateProvider ?? Date.provider
+        let schedulers = DispatchQueueSchedulers()
+
+        let appExpiry = AppExpiryImpl(
+            keyValueStoreFactory: keyValueStoreFactory,
+            dateProvider: dateProvider,
+            appVersion: appVersion,
+            schedulers: schedulers
+        )
+
+        let db = SDSDB(databaseStorage: databaseStorage)
+
+        let tsAccountManager = TSAccountManagerImpl(
+            appReadiness: appReadiness,
+            dateProvider: dateProvider,
+            db: db,
+            keyValueStoreFactory: keyValueStoreFactory,
+            schedulers: schedulers
+        )
+
+        let remoteConfigManager = testDependencies.remoteConfigManager ?? RemoteConfigManagerImpl(
+            appExpiry: appExpiry,
+            appReadiness: appReadiness,
+            db: db,
+            keyValueStoreFactory: keyValueStoreFactory,
+            tsAccountManager: tsAccountManager,
+            serviceClient: SignalServiceRestClient.shared
+        )
+
         let accountServiceClient = testDependencies.accountServiceClient ?? AccountServiceClient()
         let aciSignalProtocolStore = SignalProtocolStoreImpl(
             for: .aci,
             keyValueStoreFactory: keyValueStoreFactory,
-            recipientIdFinder: recipientIdFinder
+            recipientIdFinder: recipientIdFinder,
+            remoteConfigProvider: remoteConfigManager
         )
         let blockedRecipientStore = BlockedRecipientStoreImpl()
         let blockingManager = BlockingManager(
             appReadiness: appReadiness,
             blockedRecipientStore: blockedRecipientStore
         )
-        let dateProvider = testDependencies.dateProvider ?? Date.provider
         let earlyMessageManager = EarlyMessageManager(appReadiness: appReadiness)
         let messageProcessor = MessageProcessor(appReadiness: appReadiness)
         let messageSender = testDependencies.messageSender ?? MessageSender()
@@ -173,7 +202,8 @@ public class AppSetup {
         let pniSignalProtocolStore = SignalProtocolStoreImpl(
             for: .pni,
             keyValueStoreFactory: keyValueStoreFactory,
-            recipientIdFinder: recipientIdFinder
+            recipientIdFinder: recipientIdFinder,
+            remoteConfigProvider: remoteConfigManager
         )
         let profileManager = testDependencies.profileManager ?? OWSProfileManager(
             appReadiness: appReadiness,
@@ -219,7 +249,6 @@ public class AppSetup {
             usernameLookupRecordStore: usernameLookupRecordStore
         )
 
-        let schedulers = DispatchQueueSchedulers()
         let nicknameManager = NicknameManagerImpl(
             nicknameRecordStore: nicknameRecordStore,
             searchableNameIndexer: searchableNameIndexer,
@@ -234,8 +263,6 @@ public class AppSetup {
                 nicknameManager: nicknameManager
             )
         )
-
-        let db = SDSDB(databaseStorage: databaseStorage)
 
         let authCredentialStore = AuthCredentialStore(keyValueStoreFactory: keyValueStoreFactory)
 
@@ -273,14 +300,6 @@ public class AppSetup {
         )
         let tsResourceContentValidator = TSResourceContentValidatorImpl(
             attachmentValidator: attachmentContentValidator
-        )
-
-        let tsAccountManager = TSAccountManagerImpl(
-            appReadiness: appReadiness,
-            dateProvider: dateProvider,
-            db: db,
-            keyValueStoreFactory: keyValueStoreFactory,
-            schedulers: schedulers
         )
 
         let svrCredentialStorage = SVRAuthCredentialStorageImpl(keyValueStoreFactory: keyValueStoreFactory)
@@ -435,13 +454,6 @@ public class AppSetup {
             pniSignedPreKeyStore: pniProtocolStore.signedPreKeyStore,
             pniKyberPreKeyStore: pniProtocolStore.kyberPreKeyStore,
             registrationIdGenerator: RegistrationIdGenerator(),
-            schedulers: schedulers
-        )
-
-        let appExpiry = AppExpiryImpl(
-            keyValueStoreFactory: keyValueStoreFactory,
-            dateProvider: dateProvider,
-            appVersion: appVersion,
             schedulers: schedulers
         )
 
@@ -946,6 +958,7 @@ public class AppSetup {
             messageBackupKeyMaterial: messageBackupKeyMaterial,
             messageBackupRequestManager: messageBackupRequestManager,
             networkManager: networkManager,
+            remoteConfigProvider: remoteConfigManager,
             signalService: signalService,
             storyStore: storyStore
         )
@@ -953,6 +966,7 @@ public class AppSetup {
         let privateStoryThreadDeletionManager = PrivateStoryThreadDeletionManagerImpl(
             dateProvider: dateProvider,
             keyValueStoreFactory: keyValueStoreFactory,
+            remoteConfigProvider: remoteConfigManager,
             storageServiceManager: storageServiceManager,
             threadRemover: threadRemover,
             threadStore: threadStore
@@ -1149,7 +1163,7 @@ public class AppSetup {
             deviceStore: deviceStore,
             devicesService: InactiveLinkedDeviceFinderImpl.Wrappers.OWSDevicesService(),
             kvStoreFactory: keyValueStoreFactory,
-            remoteConfig: InactiveLinkedDeviceFinderImpl.Wrappers.RemoteConfig(),
+            remoteConfigProvider: remoteConfigManager,
             tsAccountManager: tsAccountManager
         )
 
@@ -1288,14 +1302,6 @@ public class AppSetup {
                 threadStore: threadStore,
                 tsAccountManager: tsAccountManager
             )
-        )
-        let remoteConfigManager = testDependencies.remoteConfigManager ?? RemoteConfigManagerImpl(
-            appExpiry: appExpiry,
-            appReadiness: appReadiness,
-            db: db,
-            keyValueStoreFactory: keyValueStoreFactory,
-            tsAccountManager: tsAccountManager,
-            serviceClient: SignalServiceRestClient.shared
         )
         let messageDecrypter = OWSMessageDecrypter(appReadiness: appReadiness)
         let groupsV2MessageProcessor = GroupsV2MessageProcessor(appReadiness: appReadiness)

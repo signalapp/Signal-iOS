@@ -42,14 +42,11 @@ public protocol PrivateStoryThreadDeletionManager {
 // MARK: -
 
 final class PrivateStoryThreadDeletionManagerImpl: PrivateStoryThreadDeletionManager {
-    private enum Constants {
-        static let deletedPrivateStoryThreadLifetime: TimeInterval = kMonthInterval
-    }
-
     private let logger = PrefixedLogger(prefix: "PvtStoryThreadDelMgr")
 
     private let dateProvider: DateProvider
     private let deletedAtTimestampStore: any KeyValueStore
+    private let remoteConfigProvider: any RemoteConfigProvider
     private let storageServiceManager: any StorageServiceManager
     private let threadRemover: any ThreadRemover
     private let threadStore: any ThreadStore
@@ -57,12 +54,14 @@ final class PrivateStoryThreadDeletionManagerImpl: PrivateStoryThreadDeletionMan
     init(
         dateProvider: @escaping DateProvider,
         keyValueStoreFactory: KeyValueStoreFactory,
+        remoteConfigProvider: any RemoteConfigProvider,
         storageServiceManager: any StorageServiceManager,
         threadRemover: any ThreadRemover,
         threadStore: any ThreadStore
     ) {
         self.dateProvider = dateProvider
         self.deletedAtTimestampStore = keyValueStoreFactory.keyValueStore(collection: "TSPrivateStoryThread+DeletedAtTimestamp")
+        self.remoteConfigProvider = remoteConfigProvider
         self.storageServiceManager = storageServiceManager
         self.threadRemover = threadRemover
         self.threadStore = threadStore
@@ -81,7 +80,7 @@ final class PrivateStoryThreadDeletionManagerImpl: PrivateStoryThreadDeletionMan
         forDistributionListIdentifier identifier: Data,
         tx: any DBWriteTransaction
     ) {
-        guard timeInterval(sinceTimestamp: timestamp) < Constants.deletedPrivateStoryThreadLifetime else {
+        guard timeInterval(sinceTimestamp: timestamp) < remoteConfigProvider.currentConfig().messageQueueTime else {
             logger.warn("Ignorning stale deleted at timestamp.")
             return
         }
@@ -102,7 +101,7 @@ final class PrivateStoryThreadDeletionManagerImpl: PrivateStoryThreadDeletionMan
                     identifier,
                     transaction: tx
                 ),
-                timeInterval(sinceTimestamp: timestamp) > Constants.deletedPrivateStoryThreadLifetime
+                timeInterval(sinceTimestamp: timestamp) > remoteConfigProvider.currentConfig().messageQueueTime
             else { continue }
 
             deletedAtTimestampStore.removeValue(forKey: identifier, transaction: tx)

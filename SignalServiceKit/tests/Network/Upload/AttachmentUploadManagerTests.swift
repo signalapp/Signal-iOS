@@ -25,6 +25,7 @@ class AttachmentUploadManagerTests: XCTestCase {
             messageBackupKeyMaterial: helper.messageBackupKeyMaterial,
             messageBackupRequestManager: helper.messageBackupRequestManager,
             networkManager: helper.mockNetworkManager,
+            remoteConfigProvider: helper.mockRemoteConfigProvider,
             signalService: helper.mockServiceManager,
             storyStore: helper.mockStoryStore
         )

@@ -78,10 +78,6 @@ enum StorageServiceMergeResult<IdType> {
 // MARK: - Contact Record
 
 struct StorageServiceContact {
-    private enum Constant {
-        static let storageServiceUnregisteredThreshold = kMonthInterval
-    }
-
     /// Contact records must have at least an ACI or a PNI.
     let serviceIds: AtLeastOneServiceId
 
@@ -106,19 +102,19 @@ struct StorageServiceContact {
     enum RegistrationStatus {
         case registered
         case unregisteredRecently
-        case unregisteredMoreThanOneMonthAgo
+        case unregisteredAWhileAgo
     }
 
-    func registrationStatus(currentDate: Date) -> RegistrationStatus {
+    func registrationStatus(currentDate: Date, remoteConfig: RemoteConfig) -> RegistrationStatus {
         switch unregisteredAtTimestamp {
         case .none:
             return .registered
 
-        case .some(let timestamp) where currentDate.timeIntervalSince(Date(millisecondsSince1970: timestamp)) <= Constant.storageServiceUnregisteredThreshold:
+        case .some(let timestamp) where currentDate.timeIntervalSince(Date(millisecondsSince1970: timestamp)) <= remoteConfig.messageQueueTime:
             return .unregisteredRecently
 
         case .some:
-            return .unregisteredMoreThanOneMonthAgo
+            return .unregisteredAWhileAgo
         }
     }
 
@@ -158,11 +154,11 @@ struct StorageServiceContact {
         )
     }
 
-    func shouldBeInStorageService(currentDate: Date) -> Bool {
-        switch registrationStatus(currentDate: currentDate) {
+    func shouldBeInStorageService(currentDate: Date, remoteConfig: RemoteConfig) -> Bool {
+        switch registrationStatus(currentDate: currentDate, remoteConfig: remoteConfig) {
         case .registered, .unregisteredRecently:
             return true
-        case .unregisteredMoreThanOneMonthAgo:
+        case .unregisteredAWhileAgo:
             return false
         }
     }
@@ -185,12 +181,13 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
     private let nicknameManager: NicknameManager
     private let profileFetcher: any ProfileFetcher
     private let profileManager: OWSProfileManager
-    private let tsAccountManager: TSAccountManager
-    private let usernameLookupManager: UsernameLookupManager
     private let recipientManager: any SignalRecipientManager
     private let recipientMerger: RecipientMerger
     private let recipientHidingManager: RecipientHidingManager
+    private let remoteConfigProvider: any RemoteConfigProvider
     private let signalServiceAddressCache: SignalServiceAddressCache
+    private let tsAccountManager: TSAccountManager
+    private let usernameLookupManager: UsernameLookupManager
 
     init(
         localIdentifiers: LocalIdentifiers,
@@ -202,12 +199,13 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         nicknameManager: NicknameManager,
         profileFetcher: ProfileFetcher,
         profileManager: OWSProfileManager,
-        tsAccountManager: TSAccountManager,
-        usernameLookupManager: UsernameLookupManager,
         recipientManager: any SignalRecipientManager,
         recipientMerger: RecipientMerger,
         recipientHidingManager: RecipientHidingManager,
-        signalServiceAddressCache: SignalServiceAddressCache
+        remoteConfigProvider: any RemoteConfigProvider,
+        signalServiceAddressCache: SignalServiceAddressCache,
+        tsAccountManager: TSAccountManager,
+        usernameLookupManager: UsernameLookupManager
     ) {
         self.localIdentifiers = localIdentifiers
         self.isPrimaryDevice = isPrimaryDevice
@@ -218,12 +216,13 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         self.nicknameManager = nicknameManager
         self.profileFetcher = profileFetcher
         self.profileManager = profileManager
-        self.tsAccountManager = tsAccountManager
-        self.usernameLookupManager = usernameLookupManager
         self.recipientManager = recipientManager
         self.recipientMerger = recipientMerger
         self.recipientHidingManager = recipientHidingManager
+        self.remoteConfigProvider = remoteConfigProvider
         self.signalServiceAddressCache = signalServiceAddressCache
+        self.tsAccountManager = tsAccountManager
+        self.usernameLookupManager = usernameLookupManager
     }
 
     func unknownFields(for record: StorageServiceProtoContactRecord) -> UnknownStorage? { record.unknownFields }
@@ -246,7 +245,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             return nil
         }
 
-        guard contact.shouldBeInStorageService(currentDate: Date()) else {
+        guard contact.shouldBeInStorageService(currentDate: Date(), remoteConfig: remoteConfigProvider.currentConfig()) else {
             return nil
         }
 

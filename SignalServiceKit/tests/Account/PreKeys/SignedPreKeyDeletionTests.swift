@@ -13,7 +13,7 @@ final class SignedPreKeyDeletionTests: SSKBaseTest {
     }()
 
     func testSignedPreKeyDeletion() {
-        let maxDaysAgo: Int = 40
+        let maxDaysAgo: Int = 55
 
         var justUploadedRecord: SignedPreKeyRecord!
         for daysAgo in stride(from: 0, through: maxDaysAgo, by: 5) {
@@ -54,14 +54,17 @@ final class SignedPreKeyDeletionTests: SSKBaseTest {
         XCTAssertNotNil(signedPreKeyStore.loadSignedPreKey(id: 30))
         XCTAssertNotNil(signedPreKeyStore.loadSignedPreKey(id: 35))
         XCTAssertNotNil(signedPreKeyStore.loadSignedPreKey(id: 40))
+        XCTAssertNotNil(signedPreKeyStore.loadSignedPreKey(id: 45))
+        XCTAssertNotNil(signedPreKeyStore.loadSignedPreKey(id: 50))
+        XCTAssertNotNil(signedPreKeyStore.loadSignedPreKey(id: 55))
     }
 
     func testSignedPreKeyDeletionKeepsSomeOldKeys() {
         var justUploadedRecord: SignedPreKeyRecord!
         for idx in (1...5) {
             // All these keys will be considered "old", since they were created
-            // more than 30 days ago.
-            let secondsAgo: TimeInterval = Double(idx - 40) * kDayInterval
+            // more than N days ago.
+            let secondsAgo: TimeInterval = Double(idx - 60) * kDayInterval
             owsPrecondition(secondsAgo <= 0, "Time in past must be negative!")
 
             let record = SignedPreKeyRecord(

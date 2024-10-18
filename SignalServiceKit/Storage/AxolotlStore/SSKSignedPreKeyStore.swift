@@ -43,7 +43,6 @@ public class SSKSignedPreKeyStore: NSObject {
     }
 
     public func cullSignedPreKeyRecords(justUploadedSignedPreKey: SignalServiceKit.SignedPreKeyRecord, transaction: SDSAnyWriteTransaction) {
-        let signedPreKeysDeletionTime = 30 * kDayInterval
         guard var oldSignedPrekeys = keyStore.allValues(transaction: transaction) as? [SignalServiceKit.SignedPreKeyRecord] else {
             owsFail("signed prekeys are not of type SignedPreKeyRecord")
         }
@@ -71,7 +70,7 @@ public class SSKSignedPreKeyStore: NSObject {
             }
 
             // Never delete signed prekeys until they are N days old.
-            if fabs(signedPrekey.generatedAt.timeIntervalSinceNow) < signedPreKeysDeletionTime {
+            if fabs(signedPrekey.generatedAt.timeIntervalSinceNow) < RemoteConfig.current.messageQueueTime {
                 break
             }
 

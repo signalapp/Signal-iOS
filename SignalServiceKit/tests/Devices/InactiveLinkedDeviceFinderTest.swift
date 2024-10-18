@@ -27,7 +27,7 @@ final class InactiveLinkedDeviceFinderTest: XCTestCase {
         // be inactive, so we'll go back exactly that far and then go one more
         // hour back to avoid any boundary-time issues.
         return mockDateProvider()
-            .addingTimeInterval(-kMonthInterval)
+            .addingTimeInterval(-45 * kDayInterval)
             .addingTimeInterval(kWeekInterval)
             .addingTimeInterval(-kHourInterval)
     }
@@ -50,7 +50,7 @@ final class InactiveLinkedDeviceFinderTest: XCTestCase {
             deviceStore: mockDeviceStore,
             devicesService: mockDevicesService,
             kvStoreFactory: InMemoryKeyValueStoreFactory(),
-            remoteConfig: MockRemoteConfig(),
+            remoteConfigProvider: MockRemoteConfigProvider(),
             tsAccountManager: mockTSAccountManager
         )
     }
@@ -107,7 +107,7 @@ final class InactiveLinkedDeviceFinderTest: XCTestCase {
             findLeastActive(),
             InactiveLinkedDevice(
                 displayName: "eye pad",
-                expirationDate: inactiveLastSeenAt.addingTimeInterval(kMonthInterval)
+                expirationDate: inactiveLastSeenAt.addingTimeInterval(45 * kDayInterval)
             )
         )
 
@@ -122,7 +122,7 @@ final class InactiveLinkedDeviceFinderTest: XCTestCase {
             findLeastActive(),
             InactiveLinkedDevice(
                 displayName: "🏖️",
-                expirationDate: inactiveLastSeenAt.addingTimeInterval(-kSecondInterval).addingTimeInterval(kMonthInterval)
+                expirationDate: inactiveLastSeenAt.addingTimeInterval(-kSecondInterval).addingTimeInterval(45 * kDayInterval)
             )
         )
 
@@ -207,11 +207,5 @@ private class MockDevicesService: InactiveLinkedDeviceFinderImpl.Shims.OWSDevice
     func refreshDevices() async throws {
         refreshCount += 1
         if shouldFail { throw OWSGenericError("") }
-    }
-}
-
-private class MockRemoteConfig: InactiveLinkedDeviceFinderImpl.Shims.RemoteConfig {
-    func linkedDeviceLifespan() -> TimeInterval {
-        return kMonthInterval
     }
 }

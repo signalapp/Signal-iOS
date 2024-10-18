@@ -10,10 +10,6 @@ public import SignalRingRTC
 public struct CallLinkRecord: Codable, PersistableRecord, FetchableRecord {
     public static let databaseTableName: String = "CallLink"
 
-    enum Constants {
-        static let storageServiceDeletionDelayMs = 30 * kDayInMs
-    }
-
     public let id: Int64
     public let roomId: Data
     public let rootKey: CallLinkRootKey

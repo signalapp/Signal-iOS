@@ -25,8 +25,9 @@ class KyberPreKeyStoreTest: XCTestCase {
         identityKey = ECKeyPair.generateKeyPair()
         kyberPreKeyStore = SSKKyberPreKeyStore(
             for: .aci,
+            dateProvider: dateProvider,
             keyValueStoreFactory: keyValueStoreFactory,
-            dateProvider: dateProvider
+            remoteConfigProvider: MockRemoteConfigProvider()
         )
     }
 
@@ -352,8 +353,9 @@ class KyberPreKeyStoreTest: XCTestCase {
         let pniIdentityKey = ECKeyPair.generateKeyPair()
         let pniKyberPreKeyStore = SSKKyberPreKeyStore(
             for: .pni,
+            dateProvider: dateProvider,
             keyValueStoreFactory: keyValueStoreFactory,
-            dateProvider: dateProvider
+            remoteConfigProvider: MockRemoteConfigProvider()
         )
 
         func generateKeys(keyStore: SSKKyberPreKeyStore, identityKey: ECKeyPair) -> ([KyberPreKeyRecord], KyberPreKeyRecord) {
@@ -475,8 +477,10 @@ class KyberPreKeyStoreTest: XCTestCase {
     }
 
     func testCullLastResortKeys() {
+        let lastResortKeyExpirationInterval = MockRemoteConfigProvider().currentConfig().messageQueueTime
+
         currentDate = Date(
-            timeIntervalSinceNow: -(SSKKyberPreKeyStore.Constants.lastResortKeyExpirationInterval + 1)
+            timeIntervalSinceNow: -(lastResortKeyExpirationInterval + 1)
         )
 
         _ = try! self.db.write { tx in
@@ -486,7 +490,7 @@ class KyberPreKeyStoreTest: XCTestCase {
         }
 
         currentDate = Date(
-            timeIntervalSinceNow: -(SSKKyberPreKeyStore.Constants.lastResortKeyExpirationInterval - 1)
+            timeIntervalSinceNow: -(lastResortKeyExpirationInterval - 1)
         )
 
         let oldUnexpiredLastResort = try! self.db.write { tx in
@@ -496,7 +500,7 @@ class KyberPreKeyStoreTest: XCTestCase {
         }
 
         currentDate = Date(
-            timeIntervalSinceNow: -(SSKKyberPreKeyStore.Constants.lastResortKeyExpirationInterval + 1)
+            timeIntervalSinceNow: -(lastResortKeyExpirationInterval + 1)
         )
 
         let currentLastResort = try! self.db.write { tx in

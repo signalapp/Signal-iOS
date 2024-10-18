@@ -97,9 +97,9 @@ public class ViewOnceMessages: NSObject {
         return true
     }
 
-    // We auto-complete messages after 30 days, even if the user hasn't seen them.
+    // We auto-complete messages after N days, even if the user hasn't seen them.
     private class func shouldMessageAutoComplete(_ message: TSMessage) -> Bool {
-        let autoCompleteDeadlineMs = min(message.timestamp, message.receivedAtTimestamp) + 30 * kDayInMs
+        let autoCompleteDeadlineMs = min(message.timestamp, message.receivedAtTimestamp) + RemoteConfig.current.messageQueueTimeMs
         return nowMs() >= autoCompleteDeadlineMs
     }
 

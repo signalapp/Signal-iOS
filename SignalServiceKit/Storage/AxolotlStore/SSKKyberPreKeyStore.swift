@@ -151,7 +151,6 @@ public class SSKKyberPreKeyStore: SignalKyberPreKeyStore {
         static let lastKeyRotationDate = "lastKeyRotationDate"
 
         static let oneTimeKeyExpirationInterval = kDayInterval * 90
-        static let lastResortKeyExpirationInterval = kDayInterval * 30
     }
 
     let identity: OWSIdentity
@@ -163,14 +162,17 @@ public class SSKKyberPreKeyStore: SignalKyberPreKeyStore {
     private let metadataStore: KeyValueStore
 
     private let dateProvider: DateProvider
+    private let remoteConfigProvider: any RemoteConfigProvider
 
     public init(
         for identity: OWSIdentity,
+        dateProvider: @escaping DateProvider,
         keyValueStoreFactory: KeyValueStoreFactory,
-        dateProvider: @escaping DateProvider
+        remoteConfigProvider: any RemoteConfigProvider
     ) {
         self.identity = identity
         self.dateProvider = dateProvider
+        self.remoteConfigProvider = remoteConfigProvider
 
         switch identity {
         case .aci:
@@ -379,7 +381,7 @@ extension SSKKyberPreKeyStore: LibSignalClient.KyberPreKeyStore {
     ) throws {
         // get a list of keys
         // don't touch what we just uploaded
-        // remove all others older than 30 days
+        // remove all others older than N days
 
         let recordsToRemove: [KyberPreKeyRecord] = try self.keyStore
             .allCodableValues(transaction: tx)
@@ -387,7 +389,7 @@ extension SSKKyberPreKeyStore: LibSignalClient.KyberPreKeyStore {
                 guard record.isLastResort else { return false }
                 guard record.id != justUploadedLastResortPreKey.id else { return false }
                 let keyAge = dateProvider().timeIntervalSince(record.generatedAt)
-                return keyAge >= Constants.lastResortKeyExpirationInterval
+                return keyAge >= remoteConfigProvider.currentConfig().messageQueueTime
             }
 
         let keysToRemove = recordsToRemove.map { key(for: $0.id) }

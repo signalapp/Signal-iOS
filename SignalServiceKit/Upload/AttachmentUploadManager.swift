@@ -50,6 +50,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
     private let messageBackupKeyMaterial: MessageBackupKeyMaterial
     private let messageBackupRequestManager: MessageBackupRequestManager
     private let networkManager: NetworkManager
+    private let remoteConfigProvider: any RemoteConfigProvider
     private let signalService: OWSSignalServiceProtocol
     private let storyStore: StoryStore
 
@@ -84,6 +85,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         messageBackupKeyMaterial: MessageBackupKeyMaterial,
         messageBackupRequestManager: MessageBackupRequestManager,
         networkManager: NetworkManager,
+        remoteConfigProvider: any RemoteConfigProvider,
         signalService: OWSSignalServiceProtocol,
         storyStore: StoryStore
     ) {
@@ -99,6 +101,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         self.messageBackupKeyMaterial = messageBackupKeyMaterial
         self.messageBackupRequestManager = messageBackupRequestManager
         self.networkManager = networkManager
+        self.remoteConfigProvider = remoteConfigProvider
         self.signalService = signalService
         self.storyStore = storyStore
     }
@@ -631,7 +634,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                 // It uses the same primary key (it isn't a reupload with a rotated key)
                 transitTierInfo.encryptionKey == attachment.encryptionKey,
                 // We expect it isn't expired
-                dateProvider().ows_millisecondsSince1970 - transitTierInfo.uploadTimestamp < 30 * kDayInMs
+                dateProvider().ows_millisecondsSince1970 - transitTierInfo.uploadTimestamp < remoteConfigProvider.currentConfig().messageQueueTimeMs
             {
                 // Reuse the existing transit tier upload without reuploading.
                 return .alreadyUploaded(.init(

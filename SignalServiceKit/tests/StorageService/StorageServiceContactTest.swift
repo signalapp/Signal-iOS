@@ -16,8 +16,8 @@ class StorageServiceContactTest: XCTestCase {
             (nil, .registered),
             (nowMs, .unregisteredRecently),
             (nowMs, .unregisteredRecently),
-            (nowMs - 29 * kDayInMs, .unregisteredRecently),
-            (nowMs - 32 * kDayInMs, .unregisteredMoreThanOneMonthAgo),
+            (nowMs - 44 * kDayInMs, .unregisteredRecently),
+            (nowMs - 47 * kDayInMs, .unregisteredAWhileAgo),
             (nowMs + 100 * kDayInMs, .unregisteredRecently)
         ]
 
@@ -28,7 +28,7 @@ class StorageServiceContactTest: XCTestCase {
                 pni: nil,
                 unregisteredAtTimestamp: unregisteredAtTimestamp
             ))
-            let actualValue = storageServiceContact.registrationStatus(currentDate: now)
+            let actualValue = storageServiceContact.registrationStatus(currentDate: now, remoteConfig: MockRemoteConfigProvider().currentConfig())
             XCTAssertEqual(actualValue, expectedValue, String(describing: unregisteredAtTimestamp))
         }
     }
@@ -41,9 +41,9 @@ class StorageServiceContactTest: XCTestCase {
             (nil, true),
             (nowMs, true),
             (nowMs, true),
-            (nowMs - 29 * kDayInMs, true),
+            (nowMs - 44 * kDayInMs, true),
             (nowMs + 100 * kDayInMs, true),
-            (nowMs - 32 * kDayInMs, false)
+            (nowMs - 47 * kDayInMs, false)
         ]
 
         for (unregisteredAtTimestamp, expectedValue) in testCases {
@@ -53,7 +53,7 @@ class StorageServiceContactTest: XCTestCase {
                 pni: nil,
                 unregisteredAtTimestamp: unregisteredAtTimestamp
             ))
-            let actualValue = storageServiceContact.shouldBeInStorageService(currentDate: now)
+            let actualValue = storageServiceContact.shouldBeInStorageService(currentDate: now, remoteConfig: MockRemoteConfigProvider().currentConfig())
             XCTAssertEqual(actualValue, expectedValue, String(describing: unregisteredAtTimestamp))
         }
     }

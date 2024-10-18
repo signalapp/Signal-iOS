@@ -64,7 +64,6 @@ class SSKPreKeyStore: NSObject {
     }
 
     func cullPreKeyRecords(transaction: SDSAnyWriteTransaction) {
-        let expirationInterval: TimeInterval = kDayInterval * 30
         var keys = keyStore.allKeys(transaction: transaction)
         var keysToRemove = Set<String>()
 
@@ -85,7 +84,7 @@ class SSKPreKeyStore: NSObject {
                 keysToRemove.insert(key)
                 return
             }
-            let shouldRemove = fabs(recordCreatedAt.timeIntervalSinceNow) > expirationInterval
+            let shouldRemove = fabs(recordCreatedAt.timeIntervalSinceNow) > RemoteConfig.current.messageQueueTime
             if shouldRemove {
                 Logger.info("Removing prekey id: \(record.id)., createdAt: \(recordCreatedAt)")
                 keysToRemove.insert(key)

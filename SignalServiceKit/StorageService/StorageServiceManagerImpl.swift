@@ -404,7 +404,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
 
     private func cleanUpDeletedCallLinks() async {
         let callLinkStore = DependenciesBridge.shared.callLinkStore
-        let deletionThresholdMs = Date.ows_millisecondTimestamp() - CallLinkRecord.Constants.storageServiceDeletionDelayMs
+        let deletionThresholdMs = Date.ows_millisecondTimestamp() - RemoteConfig.current.messageQueueTimeMs
         do {
             let callLinkRecords = try SSKEnvironment.shared.databaseStorageRef.read { tx in
                 try callLinkStore.fetchWhere(adminDeletedAtTimestampMsIsLessThan: deletionThresholdMs, tx: tx.asV2Read)
@@ -1206,8 +1206,8 @@ class StorageServiceOperation: OWSOperation {
                     // removes an unregistered recipient, allow it.
                     guard
                         let storageServiceContact = StorageServiceContact.fetch(for: recipientUniqueId, tx: transaction),
-                        storageServiceContact.shouldBeInStorageService(currentDate: currentDate),
-                        storageServiceContact.registrationStatus(currentDate: currentDate) == .registered
+                        storageServiceContact.shouldBeInStorageService(currentDate: currentDate, remoteConfig: .current),
+                        storageServiceContact.registrationStatus(currentDate: currentDate, remoteConfig: .current) == .registered
                     else {
                         continue
                     }
@@ -1554,8 +1554,9 @@ class StorageServiceOperation: OWSOperation {
         // was a period of time we didn't, and we need to cleanup after ourselves.
 
         let currentDate = Date()
+        let currentConfig: RemoteConfig = .current
         recordPendingAccountMutations(in: &state, shouldUpdate: {
-            return $0?.shouldBeInStorageService(currentDate: currentDate) != true
+            return $0?.shouldBeInStorageService(currentDate: currentDate, remoteConfig: currentConfig) != true
         })
     }
 
@@ -1677,12 +1678,13 @@ class StorageServiceOperation: OWSOperation {
                 nicknameManager: DependenciesBridge.shared.nicknameManager,
                 profileFetcher: SSKEnvironment.shared.profileFetcherRef,
                 profileManager: SSKEnvironment.shared.profileManagerImplRef,
-                tsAccountManager: DependenciesBridge.shared.tsAccountManager,
-                usernameLookupManager: DependenciesBridge.shared.usernameLookupManager,
                 recipientManager: DependenciesBridge.shared.recipientManager,
                 recipientMerger: DependenciesBridge.shared.recipientMerger,
                 recipientHidingManager: DependenciesBridge.shared.recipientHidingManager,
-                signalServiceAddressCache: SSKEnvironment.shared.signalServiceAddressCacheRef
+                remoteConfigProvider: SSKEnvironment.shared.remoteConfigManagerRef,
+                signalServiceAddressCache: SSKEnvironment.shared.signalServiceAddressCacheRef,
+                tsAccountManager: DependenciesBridge.shared.tsAccountManager,
+                usernameLookupManager: DependenciesBridge.shared.usernameLookupManager
             ),
             changeState: \.accountIdChangeMap,
             storageIdentifier: \.accountIdToIdentifierMap,

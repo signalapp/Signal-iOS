@@ -75,15 +75,15 @@ class InactiveLinkedDeviceFinderImpl: InactiveLinkedDeviceFinder {
     private let deviceStore: OWSDeviceStore
     private let devicesService: Shims.OWSDevicesService
     private let kvStore: KeyValueStore
-    private let remoteConfig: Shims.RemoteConfig
+    private let remoteConfigProvider: any RemoteConfigProvider
     private let tsAccountManager: TSAccountManager
 
     private var intervalForDeviceExpiration: TimeInterval {
-        return remoteConfig.linkedDeviceLifespan()
+        return remoteConfigProvider.currentConfig().messageQueueTime
     }
 
     private var intervalForDeviceInactivity: TimeInterval {
-        return max(0, remoteConfig.linkedDeviceLifespan() - Constants.intervalBeforeExpirationConsideredInactive)
+        return max(0, remoteConfigProvider.currentConfig().messageQueueTime - Constants.intervalBeforeExpirationConsideredInactive)
     }
 
     private let logger = PrefixedLogger(prefix: "InactiveLinkedDeviceFinder")
@@ -95,7 +95,7 @@ class InactiveLinkedDeviceFinderImpl: InactiveLinkedDeviceFinder {
         deviceStore: OWSDeviceStore,
         devicesService: Shims.OWSDevicesService,
         kvStoreFactory: KeyValueStoreFactory,
-        remoteConfig: Shims.RemoteConfig,
+        remoteConfigProvider: any RemoteConfigProvider,
         tsAccountManager: TSAccountManager
     ) {
         self.dateProvider = dateProvider
@@ -104,7 +104,7 @@ class InactiveLinkedDeviceFinderImpl: InactiveLinkedDeviceFinder {
         self.deviceStore = deviceStore
         self.devicesService = devicesService
         self.kvStore = kvStoreFactory.keyValueStore(collection: "InactiveLinkedDeviceFinderImpl")
-        self.remoteConfig = remoteConfig
+        self.remoteConfigProvider = remoteConfigProvider
         self.tsAccountManager = tsAccountManager
     }
 
@@ -210,13 +210,11 @@ extension InactiveLinkedDeviceFinderImpl {
     enum Shims {
         typealias OWSDeviceNameDecrypter = InactiveLinkedDeviceFinderImpl_OWSDeviceNameDecrypter_Shim
         typealias OWSDevicesService = InactiveLinkedDeviceFinderImpl_OWSDevicesService_Shim
-        typealias RemoteConfig = InactiveLinkedDeviceFinderImpl_RemoteConfig_Shim
     }
 
     enum Wrappers {
         typealias OWSDeviceNameDecrypter = InactiveLinkedDeviceFinderImpl_OWSDeviceNameDecrypter_Wrapper
         typealias OWSDevicesService = InactiveLinkedDeviceFinderImpl_OWSDevicesService_Wrapper
-        typealias RemoteConfig = InactiveLinkedDeviceFinderImpl_RemoteConfig_Wrapper
     }
 }
 
@@ -251,20 +249,5 @@ class InactiveLinkedDeviceFinderImpl_OWSDevicesService_Wrapper: InactiveLinkedDe
 
     func refreshDevices() async throws {
         try await OWSDevicesService.refreshDevices().awaitable()
-    }
-}
-
-// MARK: RemoteConfig
-
-/// We need to shim around ``RemoteConfig`` because accessing it transitively
-/// accesses the global ``RemoteConfigManager`` in ``Dependencies``, which is
-/// not set up when ``InactiveLinkedDeviceFinderImpl`` is initialized.
-protocol InactiveLinkedDeviceFinderImpl_RemoteConfig_Shim {
-    func linkedDeviceLifespan() -> TimeInterval
-}
-
-class InactiveLinkedDeviceFinderImpl_RemoteConfig_Wrapper: InactiveLinkedDeviceFinderImpl_RemoteConfig_Shim {
-    func linkedDeviceLifespan() -> TimeInterval {
-        return RemoteConfig.current.linkedDeviceLifespan
     }
 }

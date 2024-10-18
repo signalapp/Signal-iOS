@@ -10,7 +10,7 @@ import LibSignalClient
 public class RemoteConfig {
 
     public static var current: RemoteConfig {
-        return SSKEnvironment.shared.remoteConfigManagerRef.cachedConfig ?? .emptyConfig
+        return SSKEnvironment.shared.remoteConfigManagerRef.currentConfig()
     }
 
     /// Difference between the last time the server says it is and the time our
@@ -243,13 +243,12 @@ public class RemoteConfig {
         return isEnabled(.cdsiLookupWithLibsignal, defaultValue: true)
     }
 
-    /// The time a linked device may be offline before it expires and is
-    /// unlinked.
-    public var linkedDeviceLifespan: TimeInterval {
-        return interval(
-            .linkedDeviceLifespanInterval,
-            defaultInterval: kMonthInterval
-        )
+    public var messageQueueTime: TimeInterval {
+        return interval(.messageQueueTimeInSeconds, defaultInterval: 45 * kDayInterval)
+    }
+
+    public var messageQueueTimeMs: UInt64 {
+        return UInt64(messageQueueTime * Double(MSEC_PER_SEC))
     }
 
     // MARK: UInt values
@@ -506,11 +505,11 @@ private enum ValueFlag: String, FlagType {
     case groupsV2MaxGroupSizeHardLimit = "global.groupsv2.groupSizeHardLimit"
     case groupsV2MaxGroupSizeRecommended = "global.groupsv2.maxGroupSize"
     case idealEnabledRegions = "global.donations.idealEnabledRegions"
-    case linkedDeviceLifespanInterval = "ios.linkedDeviceLifespanInterval"
     case maxAttachmentDownloadSizeBytes = "global.attachments.maxBytes"
     case maxGroupCallRingSize = "global.calling.maxGroupCallRingSize"
     case maxNicknameLength = "global.nicknames.max"
     case maxSenderKeyAge = "ios.maxSenderKeyAge"
+    case messageQueueTimeInSeconds = "global.messageQueueTimeInSeconds"
     case messageSendLogEntryLifetime = "ios.messageSendLogEntryLifetime"
     case minNicknameLength = "global.nicknames.min"
     case paymentsDisabledRegions = "global.payments.disabledRegions"
@@ -531,11 +530,11 @@ private enum ValueFlag: String, FlagType {
         case .groupsV2MaxGroupSizeHardLimit: true
         case .groupsV2MaxGroupSizeRecommended: true
         case .idealEnabledRegions: false
-        case .linkedDeviceLifespanInterval: false
         case .maxAttachmentDownloadSizeBytes: false
         case .maxGroupCallRingSize: false
         case .maxNicknameLength: false
         case .maxSenderKeyAge: false
+        case .messageQueueTimeInSeconds: false
         case .messageSendLogEntryLifetime: false
         case .minNicknameLength: false
         case .paymentsDisabledRegions: false
@@ -558,11 +557,11 @@ private enum ValueFlag: String, FlagType {
         case .groupsV2MaxGroupSizeHardLimit: true
         case .groupsV2MaxGroupSizeRecommended: true
         case .idealEnabledRegions: true
-        case .linkedDeviceLifespanInterval: true
         case .maxAttachmentDownloadSizeBytes: false
         case .maxGroupCallRingSize: true
         case .maxNicknameLength: false
         case .maxSenderKeyAge: true
+        case .messageQueueTimeInSeconds: false
         case .messageSendLogEntryLifetime: false
         case .minNicknameLength: false
         case .paymentsDisabledRegions: true
@@ -608,7 +607,24 @@ private protocol FlagType: CaseIterable {
 
 // MARK: -
 
-public protocol RemoteConfigManager {
+public protocol RemoteConfigProvider {
+    func currentConfig() -> RemoteConfig
+}
+
+// MARK: -
+
+#if TESTABLE_BUILD
+
+public class MockRemoteConfigProvider: RemoteConfigProvider {
+    var _currentConfig: RemoteConfig = .emptyConfig
+    public func currentConfig() -> RemoteConfig { _currentConfig }
+}
+
+#endif
+
+// MARK: -
+
+public protocol RemoteConfigManager: RemoteConfigProvider {
     func warmCaches()
     var cachedConfig: RemoteConfig? { get }
     func refresh(account: AuthedAccount) -> Promise<RemoteConfig>
@@ -625,6 +641,10 @@ public class StubbableRemoteConfigManager: RemoteConfigManager {
 
     public func refresh(account: AuthedAccount) -> Promise<RemoteConfig> {
         return .value(cachedConfig!)
+    }
+
+    public func currentConfig() -> RemoteConfig {
+        return cachedConfig ?? .emptyConfig
     }
 }
 
@@ -648,6 +668,11 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
         owsAssertDebug(result != nil, "cachedConfig not yet set.")
         return result
     }
+
+    public func currentConfig() -> RemoteConfig {
+        return cachedConfig ?? .emptyConfig
+    }
+
     @discardableResult
     private func updateCachedConfig(_ updateBlock: (RemoteConfig?) -> RemoteConfig) -> RemoteConfig {
         return _cachedConfig.update { mutableValue in
