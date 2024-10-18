@@ -274,7 +274,7 @@ public class MessageSender {
                 identityStore: identityManager.libSignalStore(for: .aci, tx: transaction.asV2Write),
                 context: transaction
             )
-        } catch SignalError.untrustedIdentity(_) {
+        } catch SignalError.untrustedIdentity(_), IdentityManagerError.identityKeyMismatchForOutgoingMessage {
             Logger.error("Found untrusted identity for \(serviceId)")
             handleUntrustedIdentityKeyError(
                 serviceId: serviceId,
