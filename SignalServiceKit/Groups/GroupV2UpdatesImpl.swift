@@ -15,19 +15,8 @@ public class GroupV2UpdatesImpl {
     private let changeCache = LRUCache<Data, ChangeCacheItem>(maxSize: 5)
     private var lastSuccessfulRefreshMap = LRUCache<Data, Date>(maxSize: 256)
 
-    let immediateOperationQueue: OperationQueue = {
-        let operationQueue = OperationQueue()
-        operationQueue.name = "GroupV2Updates-Immediate"
-        operationQueue.maxConcurrentOperationCount = 1
-        return operationQueue
-    }()
-
-    let afterMessageProcessingOperationQueue: OperationQueue = {
-        let operationQueue = OperationQueue()
-        operationQueue.name = "GroupV2Updates-AfterMessageProcessing"
-        operationQueue.maxConcurrentOperationCount = 1
-        return operationQueue
-    }()
+    let immediateOperationQueue = SerialTaskQueue()
+    let afterMessageProcessingOperationQueue = SerialTaskQueue()
 
     public init(appReadiness: AppReadiness) {
         SwiftSingletons.register(self)
@@ -326,16 +315,17 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
             return earlyResult
         }
 
-        let result = try await withCheckedThrowingContinuation { continuation in
-            self.operationQueue(forGroupUpdateMode: groupUpdateMode).addOperation(GroupV2UpdateOperation(
-                groupId: groupId,
-                spamReportingMetadata: spamReportingMetadata,
-                groupSecretParams: groupSecretParams,
-                groupUpdateMode: groupUpdateMode,
-                groupModelOptions: groupModelOptions,
-                continuation: continuation
-            ))
-        }
+        let result = try await self.operationQueue(forGroupUpdateMode: groupUpdateMode).enqueue {
+            return try await Retry.performWithBackoff(maxAttempts: 3) {
+                return try await self.runUpdateOperation(
+                    groupId: groupId,
+                    spamReportingMetadata: spamReportingMetadata,
+                    groupSecretParams: groupSecretParams,
+                    groupUpdateMode: groupUpdateMode,
+                    groupModelOptions: groupModelOptions
+                )
+            }
+        }.value
         await self.groupRefreshDidSucceed(forGroupId: groupId, groupUpdateMode: groupUpdateMode)
         return result
     }
@@ -355,7 +345,7 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
         }
     }
 
-    private func operationQueue(forGroupUpdateMode groupUpdateMode: GroupUpdateMode) -> OperationQueue {
+    private func operationQueue(forGroupUpdateMode groupUpdateMode: GroupUpdateMode) -> SerialTaskQueue {
         if groupUpdateMode.shouldBlockOnMessageProcessing {
             return afterMessageProcessingOperationQueue
         } else {
@@ -363,105 +353,38 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
         }
     }
 
-    private class GroupV2UpdateOperation: OWSOperation {
-
-        let groupId: Data
-        let groupSecretParams: GroupSecretParams
-        let groupUpdateMode: GroupUpdateMode
-        let groupModelOptions: TSGroupModelOptions
-        let spamReportingMetadata: GroupUpdateSpamReportingMetadata
-
-        private let continuation: CheckedContinuation<TSGroupThread, any Error>
-
-        init(
-            groupId: Data,
-            spamReportingMetadata: GroupUpdateSpamReportingMetadata,
-            groupSecretParams: GroupSecretParams,
-            groupUpdateMode: GroupUpdateMode,
-            groupModelOptions: TSGroupModelOptions,
-            continuation: CheckedContinuation<TSGroupThread, any Error>
-        ) {
-            self.groupId = groupId
-            self.spamReportingMetadata = spamReportingMetadata
-            self.groupSecretParams = groupSecretParams
-            self.groupUpdateMode = groupUpdateMode
-            self.groupModelOptions = groupModelOptions
-            self.continuation = continuation
-
-            super.init()
-
-            self.remainingRetries = 3
+    private func runUpdateOperation(
+        groupId: Data,
+        spamReportingMetadata: GroupUpdateSpamReportingMetadata,
+        groupSecretParams: GroupSecretParams,
+        groupUpdateMode: GroupUpdateMode,
+        groupModelOptions: TSGroupModelOptions
+    ) async throws -> TSGroupThread {
+        if groupUpdateMode.shouldBlockOnMessageProcessing {
+            await SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing().awaitable()
         }
 
-        // MARK: Run
-
-        public override func run() {
-            Task {
-                do {
-                    let result = try await self._run()
-                    self.reportSuccess()
-                    self.continuation.resume(returning: result)
-                } catch {
-                    self.reportError(error)
-                }
-            }
-        }
-
-        private func _run() async throws -> TSGroupThread {
-            if groupUpdateMode.shouldBlockOnMessageProcessing {
-                await SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing().awaitable()
-            }
-
-            do {
-                return try await SSKEnvironment.shared.groupV2UpdatesImplRef.refreshGroupFromService(
-                    groupSecretParams: self.groupSecretParams,
-                    groupUpdateMode: self.groupUpdateMode,
-                    groupModelOptions: self.groupModelOptions,
-                    spamReportingMetadata: self.spamReportingMetadata
-                )
-            } catch {
-                if error.isNetworkFailureOrTimeout {
+        do {
+            return try await refreshGroupFromService(
+                groupSecretParams: groupSecretParams,
+                groupUpdateMode: groupUpdateMode,
+                groupModelOptions: groupModelOptions,
+                spamReportingMetadata: spamReportingMetadata
+            )
+        } catch {
+            if error.isNetworkFailureOrTimeout {
+                Logger.warn("Group update failed: \(error)")
+            } else {
+                switch error {
+                case GroupsV2Error.localUserNotInGroup,
+                    GroupsV2Error.timeout,
+                    GroupsV2Error.missingGroupChangeProtos:
                     Logger.warn("Group update failed: \(error)")
-                } else {
-                    switch error {
-                    case GroupsV2Error.localUserNotInGroup,
-                        GroupsV2Error.timeout,
-                        GroupsV2Error.missingGroupChangeProtos:
-                        Logger.warn("Group update failed: \(error)")
-                    default:
-                        owsFailDebug("Group update failed: \(error)")
-                    }
+                default:
+                    owsFailDebug("Group update failed: \(error)")
                 }
-                throw error
             }
-        }
-
-        private var shouldRetryAuthFailures: Bool {
-            return SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                guard let groupThread = TSGroupThread.fetch(groupId: self.groupId, transaction: transaction) else {
-                    // The thread may have been deleted while the refresh was in flight.
-                    Logger.warn("Missing group thread.")
-                    return false
-                }
-                let isLocalUserInGroup = groupThread.isLocalUserFullOrInvitedMember
-                // Auth errors are expected if we've left the group,
-                // but we should still try to refresh so we can learn
-                // if we've been re-added.
-                return isLocalUserInGroup
-            }
-        }
-
-        public override func didSucceed() {
-            // Do nothing.
-        }
-
-        public override func didReportError(_ error: Error) {
-        }
-
-        public override func didFail(error: Error) {
-            Logger.error("failed with error: \(error)")
-
-            self.continuation.resume(throwing: error)
+            throw error
         }
     }
 }
