@@ -26,9 +26,6 @@ extension JobRecord: NeedsFactoryInitializationFromRecordType {
 
         case tsAttachmentMultisend = 58
         case incomingContactSync = 61
-        /// This job record type is deprecated, but left around in case any are
-        /// currently-persisted and need to be cleaned up.
-        case deprecated_incomingGroupSync = 60
         case legacyMessageDecrypt = 53
         case localUserLeaveGroup = 74
         case messageSender = 35
@@ -54,7 +51,6 @@ extension JobRecord: NeedsFactoryInitializationFromRecordType {
         switch jobRecordType {
         case .tsAttachmentMultisend: return TSAttachmentMultisendJobRecord.self
         case .incomingContactSync: return IncomingContactSyncJobRecord.self
-        case .deprecated_incomingGroupSync: return IncomingGroupSyncJobRecord.self
         case .legacyMessageDecrypt: return LegacyMessageDecryptJobRecord.self
         case .localUserLeaveGroup: return LocalUserLeaveGroupJobRecord.self
         case .messageSender: return MessageSenderJobRecord.self
@@ -76,8 +72,6 @@ extension JobRecord.JobRecordType {
             return "BroadcastMediaMessage"
         case .incomingContactSync:
             return "IncomingContactSync"
-        case .deprecated_incomingGroupSync:
-            return "IncomingGroupSync"
         case .legacyMessageDecrypt:
             return "SSKMessageDecrypt"
         case .localUserLeaveGroup:

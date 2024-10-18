@@ -209,15 +209,6 @@ enum OWSOrphanDataCleaner {
 
         findAttachmentIds(
             transaction: transaction,
-            jobRecordAttachmentIds: { (jobRecord: IncomingGroupSyncJobRecord) in [jobRecord.legacyAttachmentId].compacted() }
-        )
-
-        if shouldAbort {
-            return nil
-        }
-
-        findAttachmentIds(
-            transaction: transaction,
             jobRecordAttachmentIds: { (jobRecord: IncomingContactSyncJobRecord) -> [String] in
                 switch jobRecord.downloadInfo {
                 case .invalid, .transient:

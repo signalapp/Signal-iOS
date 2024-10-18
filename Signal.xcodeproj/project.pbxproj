@@ -1257,7 +1257,6 @@
 		724D47BD2B97C5B9001BE973 /* GroupsV2Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB3C5823C6644B001651FC /* GroupsV2Utils.swift */; };
 		724E68642C91FA73002199F3 /* DataHexadecimalTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 724E68632C91FA73002199F3 /* DataHexadecimalTest.swift */; };
 		725464EC2B9F6EB900EABFD2 /* TSAttachmentMultisendJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9C50FF22F495F60054A33F /* TSAttachmentMultisendJob.swift */; };
-		725464EF2B9FAA9400EABFD2 /* OWSGroupSyncProcessingJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C046AA6236148880035B234 /* OWSGroupSyncProcessingJobQueue.swift */; };
 		725464F62B9FAC7600EABFD2 /* CGPointExtensionsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C612B3284E466B00B2199A /* CGPointExtensionsTest.swift */; };
 		725465162BA00BE400EABFD2 /* NameResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50086B9B29DF5CB100F9C072 /* NameResolver.swift */; };
 		725465172BA00CDB00EABFD2 /* NewAccountDiscovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6E446822AEDDEE007982E6 /* NewAccountDiscovery.swift */; };
@@ -2317,7 +2316,6 @@
 		D9AD1D9528B9955C00B42E6F /* TSInfoMessage+GroupUpdateType+NSAttributedStringTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AD1D9428B9955C00B42E6F /* TSInfoMessage+GroupUpdateType+NSAttributedStringTest.swift */; };
 		D9AE0ACB29162C160063488B /* TSAttachmentMultisendJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AE0ACA29162C160063488B /* TSAttachmentMultisendJobRecord.swift */; };
 		D9AE0ACF29186D7F0063488B /* IncomingContactSyncJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AE0ACE29186D7F0063488B /* IncomingContactSyncJobRecord.swift */; };
-		D9AE0AD1291870220063488B /* IncomingGroupSyncJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AE0AD0291870220063488B /* IncomingGroupSyncJobRecord.swift */; };
 		D9AE0AD32918715E0063488B /* ReceiptCredentialRedemptionJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AE0AD22918715E0063488B /* ReceiptCredentialRedemptionJobRecord.swift */; };
 		D9AE0AD5291877600063488B /* SendGiftBadgeJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AE0AD4291877600063488B /* SendGiftBadgeJobRecord.swift */; };
 		D9AE0AD729187A700063488B /* SessionResetJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AE0AD629187A700063488B /* SessionResetJobRecord.swift */; };
@@ -4065,7 +4063,6 @@
 		45F32C1D205718B000A300D5 /* MediaPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MediaPageViewController.swift; path = Signal/src/ViewControllers/MediaGallery/MediaPageViewController.swift; sourceTree = SOURCE_ROOT; };
 		46A35218397D9FD1709A675C /* Pods-SignalUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUITests.debug.xcconfig"; path = "Target Support Files/Pods-SignalUITests/Pods-SignalUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		4C043929220A9EC800BAEA63 /* VoiceNoteLock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceNoteLock.swift; sourceTree = "<group>"; };
-		4C046AA6236148880035B234 /* OWSGroupSyncProcessingJobQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSGroupSyncProcessingJobQueue.swift; sourceTree = "<group>"; };
 		4C090A1A210FD9C7001FD7F9 /* HapticFeedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticFeedback.swift; sourceTree = "<group>"; };
 		4C0CF6F92386295400C9F818 /* tap_to_focus.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = tap_to_focus.json; sourceTree = "<group>"; };
 		4C1885D1218F8E1C00B67051 /* PhotoGridViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoGridViewCell.swift; sourceTree = "<group>"; };
@@ -5947,7 +5944,6 @@
 		D9AD1D9428B9955C00B42E6F /* TSInfoMessage+GroupUpdateType+NSAttributedStringTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+GroupUpdateType+NSAttributedStringTest.swift"; sourceTree = "<group>"; };
 		D9AE0ACA29162C160063488B /* TSAttachmentMultisendJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAttachmentMultisendJobRecord.swift; sourceTree = "<group>"; };
 		D9AE0ACE29186D7F0063488B /* IncomingContactSyncJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomingContactSyncJobRecord.swift; sourceTree = "<group>"; };
-		D9AE0AD0291870220063488B /* IncomingGroupSyncJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomingGroupSyncJobRecord.swift; sourceTree = "<group>"; };
 		D9AE0AD22918715E0063488B /* ReceiptCredentialRedemptionJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptCredentialRedemptionJobRecord.swift; sourceTree = "<group>"; };
 		D9AE0AD4291877600063488B /* SendGiftBadgeJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendGiftBadgeJobRecord.swift; sourceTree = "<group>"; };
 		D9AE0AD629187A700063488B /* SessionResetJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionResetJobRecord.swift; sourceTree = "<group>"; };
@@ -11382,7 +11378,6 @@
 				5008FEBB2B1811A0004E73FD /* JobQueueRunner.swift */,
 				D925937928B0497900D5D437 /* LocalUserLeaveGroupJob.swift */,
 				F9C5CAF5289453B200548EEE /* MessageSenderJobQueue.swift */,
-				4C046AA6236148880035B234 /* OWSGroupSyncProcessingJobQueue.swift */,
 				886A58C9276A760600A1099B /* ReceiptCredentialRedemptionJobQueue.swift */,
 				F98EA264286A469100791EB4 /* SendGiftBadgeJobQueue.swift */,
 				45D231761DC7E8F10034FA89 /* SessionResetJob.swift */,
@@ -13567,7 +13562,6 @@
 				D9F9A6382BFFC84300EF13EC /* BulkDeleteInteractionJobRecord.swift */,
 				D9DB37FA2B72A85C007B16C8 /* CallRecordDeleteAllJobRecord.swift */,
 				D9AE0ACE29186D7F0063488B /* IncomingContactSyncJobRecord.swift */,
-				D9AE0AD0291870220063488B /* IncomingGroupSyncJobRecord.swift */,
 				D9AE0ADC2918B2960063488B /* JobRecord+Columns.swift */,
 				D9B8541129137C150058F97B /* JobRecord.swift */,
 				D9AE0ADA29188A170063488B /* LegacyMessageDecryptJobRecord.swift */,
@@ -16893,7 +16887,6 @@
 				D9AE0ACF29186D7F0063488B /* IncomingContactSyncJobRecord.swift in Sources */,
 				F9C5CDA5289453B400548EEE /* IncomingGroupsV2MessageJob+SDS.swift in Sources */,
 				F9C5CDA0289453B400548EEE /* IncomingGroupsV2MessageJob.m in Sources */,
-				D9AE0AD1291870220063488B /* IncomingGroupSyncJobRecord.swift in Sources */,
 				6640DD602ACDBEC500CE9A8C /* IncomingPniChangeNumberProcessor.swift in Sources */,
 				F9C5CC69289453B300548EEE /* IncompleteCallsJob.swift in Sources */,
 				6660C79B2C4874AB00D9C30A /* IncrementalTSAttachmentMigrationStore.swift in Sources */,
@@ -17168,7 +17161,6 @@
 				F9C5CC46289453B300548EEE /* OWSGroupCallMessage+SDS.swift in Sources */,
 				F9C5CC6B289453B300548EEE /* OWSGroupCallMessage.m in Sources */,
 				D91AC9402B63393300814975 /* OWSGroupCallMessage.swift in Sources */,
-				725464EF2B9FAA9400EABFD2 /* OWSGroupSyncProcessingJobQueue.swift in Sources */,
 				F9C5CDC5289453B400548EEE /* OWSHttpHeaders.swift in Sources */,
 				72552EF42C9EF9EC008614AF /* OWSIdentity.swift in Sources */,
 				F9C5CC2C289453B300548EEE /* OWSIdentityManager.swift in Sources */,

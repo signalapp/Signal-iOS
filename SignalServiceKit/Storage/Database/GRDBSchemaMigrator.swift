@@ -301,6 +301,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addBackupStickerPackDownloadQueue
         case createOrphanedBackupAttachmentTable
         case addCallLinkTable
+        case deleteIncomingGroupSyncJobRecords
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -3627,6 +3628,11 @@ public class GRDBSchemaMigrator: NSObject {
 
         migrator.registerMigration(.addCallLinkTable) { tx in
             try addCallLinkTable(tx: tx)
+            return .success(())
+        }
+
+        migrator.registerMigration(.deleteIncomingGroupSyncJobRecords) { tx in
+            try tx.database.execute(sql: "DELETE FROM model_SSKJobRecord WHERE label = ?", arguments: ["IncomingGroupSync"])
             return .success(())
         }
 

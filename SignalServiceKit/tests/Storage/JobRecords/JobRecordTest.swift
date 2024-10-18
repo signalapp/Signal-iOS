@@ -18,7 +18,6 @@ class JobRecordTest: XCTestCase {
         switch recordType {
         case .tsAttachmentMultisend: return TSAttachmentMultisendJobRecord.self
         case .incomingContactSync: return IncomingContactSyncJobRecord.self
-        case .deprecated_incomingGroupSync: return IncomingGroupSyncJobRecord.self
         case .legacyMessageDecrypt: return LegacyMessageDecryptJobRecord.self
         case .localUserLeaveGroup: return LocalUserLeaveGroupJobRecord.self
         case .messageSender: return MessageSenderJobRecord.self
@@ -222,28 +221,6 @@ extension IncomingContactSyncJobRecord: ValidatableModel {
             throw ValidatableModelError.failedToValidate
         }
 
-    }
-}
-
-extension IncomingGroupSyncJobRecord: ValidatableModel {
-    static let constants: [(IncomingGroupSyncJobRecord, base64JsonData: Data)] = [
-        (
-            IncomingGroupSyncJobRecord(
-                legacyAttachmentId: "happy birthday",
-                exclusiveProcessIdentifier: "happy birthday TO YOOOU",
-                failureCount: 0,
-                status: .permanentlyFailed
-            ),
-            Data(base64Encoded: "eyJzdXBlciI6eyJmYWlsdXJlQ291bnQiOjAsImxhYmVsIjoiSW5jb21pbmdHcm91cFN5bmMiLCJzdGF0dXMiOjMsInVuaXF1ZUlkIjoiRUU0RTgwMDQtODVEMC00OTg0LUE1REItMDhCQURBNkQyNkI1IiwiZXhjbHVzaXZlUHJvY2Vzc0lkZW50aWZpZXIiOiJoYXBweSBiaXJ0aGRheSBUTyBZT09PVSIsInJlY29yZFR5cGUiOjYwfSwiYXR0YWNobWVudElkIjoiaGFwcHkgYmlydGhkYXkifQ==")!
-        )
-    ]
-
-    func validate(against: IncomingGroupSyncJobRecord) throws {
-        guard
-            legacyAttachmentId == against.legacyAttachmentId
-        else {
-            throw ValidatableModelError.failedToValidate
-        }
     }
 }
 
