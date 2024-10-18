@@ -23,15 +23,6 @@ public final class MessageBackupInteractionStore {
         try interactionStore.enumerateAllInteractions(tx: tx, block: block)
     }
 
-    /// Fetch all interactions with the given timestamp.
-    /// Used to fetch matches for quoted reply target interactions.
-    func interactions(
-        withTimestamp timestamp: UInt64,
-        tx: DBReadTransaction
-    ) throws -> [TSInteraction] {
-        return try interactionStore.interactions(withTimestamp: timestamp, tx: tx)
-    }
-
     func insert(
         _ interaction: TSInteraction,
         in thread: MessageBackup.ChatThread,

@@ -425,8 +425,13 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         var quote = BackupProto_Quote()
         quote.authorID = authorId.value
         quote.type = quotedMessage.isGiftBadge ? .giftbadge : .normal
-        if let targetSentTimestamp = quotedMessage.timestampValue?.uint64Value {
-            quote.targetSentTimestamp = targetSentTimestamp
+        switch quotedMessage.bodySource {
+        case .local, .unknown:
+            quote.targetSentTimestamp = quotedMessage.timestampValue?.uint64Value ?? 0
+        case .remote, .story:
+            quote.targetSentTimestamp = 0
+        @unknown default:
+            quote.targetSentTimestamp = 0
         }
 
         if let body = quotedMessage.body {
@@ -1198,36 +1203,25 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         var partialErrors = [RestoreFrameError]()
 
         let targetMessageTimestamp: NSNumber?
+        let bodySource: TSQuotedMessageContentSource
         if
             quote.hasTargetSentTimestamp,
+            quote.targetSentTimestamp > 0,
             SDS.fitsInInt64(quote.targetSentTimestamp)
         {
             targetMessageTimestamp = NSNumber(value: quote.targetSentTimestamp)
+            // non-nil timestamp means the client that created the backup had
+            // the target message at receive time (local state was .local)
+            bodySource = .local
         } else {
             targetMessageTimestamp = nil
+            // nil timestamp means the client that created the backup did not have
+            // the target message at receive time (local state was .remote)
+            bodySource = .remote
         }
 
-        // Try and find the targeted message, and use that as the source.
-        // If this turns out to be a big perf hit, maybe we skip this and just
-        // always use the contents of the proto?
-        let targetMessage = findTargetMessageForQuote(
-            quote: quote,
-            thread: thread,
-            context: context
-        )
-
-        let bodySource: TSQuotedMessageContentSource
         let quoteBody: MessageBody?
-        if
-            let targetMessage,
-            let text = targetMessage.body
-        {
-            bodySource = .local
-            quoteBody = MessageBody(
-                text: text,
-                ranges: targetMessage.bodyRanges ?? .empty
-            )
-        } else if quote.hasText {
+        if quote.hasText {
             guard
                 let bodyResult = restoreMessageBody(
                     text: quote.text.body,
@@ -1238,10 +1232,8 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                 return .messageFailure(partialErrors)
             }
 
-            bodySource = .remote
             quoteBody = bodyResult
         } else {
-            bodySource = targetMessage == nil ? .remote : .local
             quoteBody = nil
         }
 
@@ -1295,37 +1287,6 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             return .success((quotedMessage, quotedAttachmentThumbnail))
         } else {
             return .partialRestore((quotedMessage, quotedAttachmentThumbnail), partialErrors)
-        }
-    }
-
-    private func findTargetMessageForQuote(
-        quote: BackupProto_Quote,
-        thread: MessageBackup.ChatThread,
-        context: MessageBackup.RestoringContext
-    ) -> TSMessage? {
-        guard
-            quote.hasTargetSentTimestamp,
-            SDS.fitsInInt64(quote.targetSentTimestamp)
-        else { return nil }
-
-        let messageCandidates: [TSInteraction] = (try? interactionStore
-            .interactions(
-                withTimestamp: quote.targetSentTimestamp,
-                tx: context.tx
-            )
-        ) ?? []
-
-        let filteredMessages = messageCandidates
-            .lazy
-            .compactMap { $0 as? TSMessage }
-            .filter { $0.uniqueThreadId == thread.tsThread.uniqueId }
-
-        if filteredMessages.count > 1 {
-            // We found more than one matching message. We don't know which
-            // to use, so lets just use whats in the quote proto.
-            return nil
-        } else {
-            return filteredMessages.first
         }
     }
 
