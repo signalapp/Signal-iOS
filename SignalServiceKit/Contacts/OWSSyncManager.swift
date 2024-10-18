@@ -45,7 +45,6 @@ public class OWSSyncManager: NSObject {
 
     private func addObservers() {
         NotificationCenter.default.addObserver(self, selector: #selector(signalAccountsDidChange(_:)), name: .OWSContactsManagerSignalAccountsDidChange, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(profileKeyDidChange(_:)), name: UserProfileNotifications.localProfileKeyDidChange, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(registrationStateDidChange(_:)), name: RegistrationStateChangeNotifications.registrationStateDidChange, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(willEnterForeground(_:)), name: .OWSApplicationWillEnterForeground, object: nil)
     }
@@ -54,12 +53,6 @@ public class OWSSyncManager: NSObject {
 
     @objc
     private func signalAccountsDidChange(_ notification: AnyObject) {
-        AssertIsOnMainThread()
-        syncAllContactsIfNecessary()
-    }
-
-    @objc
-    private func profileKeyDidChange(_ notification: AnyObject) {
         AssertIsOnMainThread()
         syncAllContactsIfNecessary()
     }
@@ -432,12 +425,25 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             return
         }
 
-        let thread = await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-            return TSContactThread.getOrCreateLocalThread(transaction: tx)
+        let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+
+        let (localIdentifiers, hasAnyLinkedDevice) = try SSKEnvironment.shared.databaseStorageRef.read { tx in
+            guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
+                throw OWSError(error: .contactSyncFailed, description: "Not registered.", isRetryable: false)
+            }
+            let localRecipient = recipientDatabaseTable.fetchRecipient(serviceId: localIdentifiers.aci, transaction: tx.asV2Read)
+            return (localIdentifiers, (localRecipient?.deviceIds ?? []).count >= 2)
         }
-        guard let thread else {
-            owsFailDebug("Missing thread.")
-            throw OWSError(error: .contactSyncFailed, description: "Could not sync contacts.", isRetryable: false)
+
+        // Don't bother building the message if nobody will receive it. If a new
+        // device is linked, they will request a re-send.
+        guard hasAnyLinkedDevice else {
+            return
+        }
+
+        let thread = await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+            return TSContactThread.getOrCreateThread(withContactAddress: localIdentifiers.aciAddress, transaction: tx)
         }
 
         let result = try SSKEnvironment.shared.databaseStorageRef.read { tx in try buildContactSyncMessage(in: thread, mode: mode, tx: tx) }
