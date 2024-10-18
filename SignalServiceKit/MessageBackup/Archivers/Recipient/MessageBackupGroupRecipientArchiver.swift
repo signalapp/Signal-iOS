@@ -26,7 +26,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
     private let groupsV2: GroupsV2
     private let profileManager: MessageBackup.Shims.ProfileManager
     private let storyStore: StoryStore
-    private let threadStore: ThreadStore
+    private let threadStore: MessageBackupThreadStore
 
     private var logger: MessageBackupLogger { .shared }
 
@@ -35,7 +35,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
         groupsV2: GroupsV2,
         profileManager: MessageBackup.Shims.ProfileManager,
         storyStore: StoryStore,
-        threadStore: ThreadStore
+        threadStore: MessageBackupThreadStore
     ) {
         self.disappearingMessageConfigStore = disappearingMessageConfigStore
         self.groupsV2 = groupsV2
@@ -51,7 +51,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
         var errors = [ArchiveFrameError]()
 
         do {
-            try threadStore.enumerateGroupThreads(tx: context.tx) { groupThread in
+            try threadStore.enumerateGroupThreads(context: context) { groupThread in
                 self.archiveGroupThread(
                     groupThread,
                     stream: stream,
@@ -304,9 +304,28 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
 
         // MARK: Use the group model to create a group thread
 
-        let groupThread = threadStore.createGroupThread(
-            groupModel: groupModel, tx: context.tx
-        )
+        let isStorySendEnabled: Bool? = {
+            switch groupProto.storySendMode {
+            case .default, .UNRECOGNIZED:
+                // No explicit setting.
+                return nil
+            case .disabled:
+                return false
+            case .enabled:
+                return true
+            }
+        }()
+
+        let groupThread: TSGroupThread
+        do {
+            groupThread = try threadStore.createGroupThread(
+                groupModel: groupModel,
+                isStorySendEnabled: isStorySendEnabled,
+                context: context
+            )
+        } catch let error {
+            return restoreFrameError(.databaseInsertionFailed(error))
+        }
 
         // MARK: Store group properties that live outside the group model
 
@@ -324,25 +343,6 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
             profileManager.addToWhitelist(groupThread, tx: context.tx)
         }
 
-        let isStorySendEnabled: Bool? = {
-            switch groupProto.storySendMode {
-            case .default, .UNRECOGNIZED:
-                // No explicit setting.
-                return nil
-            case .disabled:
-                return false
-            case .enabled:
-                return true
-            }
-        }()
-        if let isStorySendEnabled {
-            threadStore.update(
-                groupThread: groupThread,
-                withStorySendEnabled: isStorySendEnabled,
-                updateStorageService: false,
-                tx: context.tx
-            )
-        }
         if groupProto.hideStory {
             // We only need to actively hide, since unhidden is the default.
             let storyContext = storyStore.getOrCreateStoryContextAssociatedData(

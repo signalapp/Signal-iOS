@@ -15,12 +15,12 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
 
     private let privateStoryThreadDeletionManager: any PrivateStoryThreadDeletionManager
     private let storyStore: any StoryStore
-    private let threadStore: any ThreadStore
+    private let threadStore: MessageBackupThreadStore
 
     init(
         privateStoryThreadDeletionManager: any PrivateStoryThreadDeletionManager,
         storyStore: any StoryStore,
-        threadStore: any ThreadStore
+        threadStore: MessageBackupThreadStore
     ) {
         self.privateStoryThreadDeletionManager = privateStoryThreadDeletionManager
         self.storyStore = storyStore
@@ -43,7 +43,7 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
                     errors: &errors
                 )
             }
-            try threadStore.enumerateStoryThreads(tx: context.tx) { storyThread in
+            try threadStore.enumerateStoryThreads(context: context) { storyThread in
                 self.archiveStoryThread(
                     storyThread,
                     stream: stream,

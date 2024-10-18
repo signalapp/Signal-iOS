@@ -8,13 +8,16 @@ public class MessageBackupPostFrameRestoreActionManager {
 
     private let interactionStore: MessageBackupInteractionStore
     private let recipientDatabaseTable: RecipientDatabaseTable
+    private let threadStore: MessageBackupThreadStore
 
     init(
         interactionStore: MessageBackupInteractionStore,
-        recipientDatabaseTable: RecipientDatabaseTable
+        recipientDatabaseTable: RecipientDatabaseTable,
+        threadStore: MessageBackupThreadStore
     ) {
         self.interactionStore = interactionStore
         self.recipientDatabaseTable = recipientDatabaseTable
+        self.threadStore = threadStore
     }
 
     // MARK: -

@@ -24,7 +24,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
     private let recipientManager: any SignalRecipientManager
     private let signalServiceAddressCache: SignalServiceAddressCache
     private let storyStore: StoryStore
-    private let threadStore: ThreadStore
+    private let threadStore: MessageBackupThreadStore
     private let tsAccountManager: TSAccountManager
     private let usernameLookupManager: UsernameLookupManager
 
@@ -36,7 +36,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
         recipientManager: any SignalRecipientManager,
         signalServiceAddressCache: SignalServiceAddressCache,
         storyStore: StoryStore,
-        threadStore: ThreadStore,
+        threadStore: MessageBackupThreadStore,
         tsAccountManager: TSAccountManager,
         usernameLookupManager: UsernameLookupManager
     ) {
@@ -164,7 +164,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
                             hiddenRecipient: hiddenRecipient,
                             contactThread: threadStore.fetchContactThread(
                                 recipient: recipient,
-                                tx: context.tx
+                                context: context
                             ),
                             tx: context.tx
                         )
@@ -432,7 +432,6 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
             unregisteredAtTimestamp: unregisteredTimestamp
         )
         recipientDatabaseTable.insertRecipient(recipient, transaction: context.tx)
-        let recipientRowId = recipient.id!
 
         /// No Backup code should be relying on the SSA cache, but once we've
         /// finished restoring and launched we want the cache to have accurate

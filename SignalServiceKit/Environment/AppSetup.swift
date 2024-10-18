@@ -997,6 +997,7 @@ public class AppSetup {
         )
 
         let backupStickerPackDownloadStore = BackupStickerPackDownloadStoreImpl()
+        let backupThreadStore = MessageBackupThreadStore(threadStore: threadStore)
         let backupInteractionStore = MessageBackupInteractionStore(interactionStore: interactionStore)
 
         let messageBackupManager = MessageBackupManagerImpl(
@@ -1028,7 +1029,7 @@ public class AppSetup {
                 chatStyleArchiver: messageBackupChatStyleArchiver,
                 dmConfigurationStore: disappearingMessagesConfigurationStore,
                 pinnedThreadManager: pinnedThreadManager,
-                threadStore: threadStore
+                threadStore: backupThreadStore
             ),
             chatItemArchiver: MessageBackupChatItemArchiverImpl(
                 attachmentManager: attachmentManager,
@@ -1045,7 +1046,7 @@ public class AppSetup {
                 interactionStore: backupInteractionStore,
                 archivedPaymentStore: archivedPaymentStore,
                 reactionStore: reactionStore,
-                threadStore: threadStore
+                threadStore: backupThreadStore
             ),
             contactRecipientArchiver: MessageBackupContactRecipientArchiver(
                 blockingManager: MessageBackup.Wrappers.BlockingManager(blockingManager),
@@ -1055,7 +1056,7 @@ public class AppSetup {
                 recipientManager: recipientManager,
                 signalServiceAddressCache: signalServiceAddressCache,
                 storyStore: storyStore,
-                threadStore: threadStore,
+                threadStore: backupThreadStore,
                 tsAccountManager: tsAccountManager,
                 usernameLookupManager: usernameLookupManager
             ),
@@ -1064,7 +1065,7 @@ public class AppSetup {
             distributionListRecipientArchiver: MessageBackupDistributionListRecipientArchiver(
                 privateStoryThreadDeletionManager: privateStoryThreadDeletionManager,
                 storyStore: storyStore,
-                threadStore: threadStore
+                threadStore: backupThreadStore
             ),
             encryptedStreamProvider: MessageBackupEncryptedProtoStreamProviderImpl(
                 backupKeyMaterial: messageBackupKeyMaterial
@@ -1074,7 +1075,7 @@ public class AppSetup {
                 groupsV2: groupsV2,
                 profileManager: MessageBackup.Wrappers.ProfileManager(profileManager),
                 storyStore: storyStore,
-                threadStore: threadStore
+                threadStore: backupThreadStore
             ),
             incrementalTSAttachmentMigrator: incrementalTSAttachmentMigrator,
             kvStoreFactory: keyValueStoreFactory,
@@ -1083,7 +1084,8 @@ public class AppSetup {
             plaintextStreamProvider: MessageBackupPlaintextProtoStreamProviderImpl(),
             postFrameRestoreActionManager: MessageBackupPostFrameRestoreActionManager(
                 interactionStore: backupInteractionStore,
-                recipientDatabaseTable: recipientDatabaseTable
+                recipientDatabaseTable: recipientDatabaseTable,
+                threadStore: backupThreadStore
             ),
             releaseNotesRecipientArchiver: MessageBackupReleaseNotesRecipientArchiver(),
             stickerPackArchiver: MessageBackupStickerPackArchiverImpl(

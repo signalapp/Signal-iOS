@@ -58,7 +58,7 @@ public protocol ThreadStore {
         tx: DBWriteTransaction
     )
 
-    /// Note: does not intert any created default associated data into the db.
+    /// Note: does not insert any created default associated data into the db.
     /// (This method only takes a read transaction, so it could not insert even if it wanted to)
     func fetchOrDefaultAssociatedData(for thread: TSThread, tx: DBReadTransaction) -> ThreadAssociatedData
 

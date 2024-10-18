@@ -44,13 +44,13 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
     private let chatStyleArchiver: MessageBackupChatStyleArchiver
     private let dmConfigurationStore: DisappearingMessagesConfigurationStore
     private let pinnedThreadManager: PinnedThreadManager
-    private let threadStore: ThreadStore
+    private let threadStore: MessageBackupThreadStore
 
     public init(
         chatStyleArchiver: MessageBackupChatStyleArchiver,
         dmConfigurationStore: DisappearingMessagesConfigurationStore,
         pinnedThreadManager: PinnedThreadManager,
-        threadStore: ThreadStore
+        threadStore: MessageBackupThreadStore
     ) {
         self.chatStyleArchiver = chatStyleArchiver
         self.dmConfigurationStore = dmConfigurationStore
@@ -108,7 +108,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         }
 
         do {
-            try threadStore.enumerateNonStoryThreads(tx: context.tx, block: archiveThread(_:))
+            try threadStore.enumerateNonStoryThreads(context: context, block: archiveThread(_:))
         } catch let error {
             return .completeFailure(.fatalArchiveError(.threadIteratorError(error)))
         }
@@ -225,7 +225,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
     ) -> ArchiveMultiFrameResult {
         var partialErrors = [ArchiveFrameError]()
 
-        let threadAssociatedData = threadStore.fetchOrDefaultAssociatedData(for: thread.tsThread, tx: context.tx)
+        let threadAssociatedData = threadStore.fetchOrDefaultAssociatedData(for: thread.tsThread, context: context)
 
         let thisThreadPinnedOrder: UInt32
         let pinnedThreadIds = pinnedThreadManager.pinnedThreadIds(tx: context.tx)
@@ -311,10 +311,14 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
                 chat.chatId
             )])
         case .localAddress:
-            let noteToSelfThread = threadStore.getOrCreateContactThread(
-                with: context.recipientContext.localIdentifiers.aciAddress,
-                tx: context.tx
-            )
+            let noteToSelfThread: TSContactThread
+            do {
+                noteToSelfThread = try threadStore.createNoteToSelfThread(
+                    context: context
+                )
+            } catch let error {
+                return .failure([.restoreFrameError(.databaseInsertionFailed(error), chat.chatId)])
+            }
             guard let noteToSelfRowId = noteToSelfThread.sqliteRowId else {
                 return .failure([.restoreFrameError(
                     .databaseModelMissingRowId(modelClass: TSContactThread.self),
@@ -351,7 +355,12 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
                 threadRowId: groupThreadRowId
             )
         case .contact(let address):
-            let contactThread = threadStore.getOrCreateContactThread(with: address.asInteropAddress(), tx: context.tx)
+            let contactThread: TSContactThread
+            do {
+                contactThread = try threadStore.createContactThread(with: address, context: context)
+            } catch let error {
+                return .failure([.restoreFrameError(.databaseInsertionFailed(error), chat.chatId)])
+            }
             guard let contactThreadRowId = contactThread.sqliteRowId else {
                 return .failure([.restoreFrameError(
                     .databaseModelMissingRowId(modelClass: TSContactThread.self),
@@ -372,8 +381,8 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         context.mapChatId(chat.chatId, to: chatThread, recipientId: chat.typedRecipientId)
 
         var associatedDataNeedsUpdate = false
-        var isArchived: Bool?
-        var isMarkedUnread: Bool?
+        var isArchived = false
+        var isMarkedUnread = false
         var mutedUntilTimestamp: UInt64?
 
         if chat.archived {
@@ -391,15 +400,17 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         }
 
         if associatedDataNeedsUpdate {
-            let threadAssociatedData = threadStore.fetchOrDefaultAssociatedData(for: chatThread.tsThread, tx: context.tx)
-            threadStore.updateAssociatedData(
-                threadAssociatedData,
-                isArchived: isArchived,
-                isMarkedUnread: isMarkedUnread,
-                mutedUntilTimestamp: mutedUntilTimestamp,
-                updateStorageService: false,
-                tx: context.tx
-            )
+            do {
+                try threadStore.createAssociatedData(
+                    for: chatThread.tsThread,
+                    isArchived: isArchived,
+                    isMarkedUnread: isMarkedUnread,
+                    mutedUntilTimestamp: mutedUntilTimestamp,
+                    context: context
+                )
+            } catch let error {
+                return .failure(partialErrors + [.restoreFrameError(.databaseInsertionFailed(error), chat.chatId)])
+            }
         }
 
         if chat.pinnedOrder != 0 {
@@ -427,15 +438,14 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
             tx: context.tx
         )
 
-        if chat.dontNotifyForMentionsIfMuted {
-            // We only need to set if its not the default.
-            threadStore.update(
-                thread: chatThread.tsThread,
-                withMentionNotificationMode: .never,
-                // Don't trigger a storage service update.
-                wasLocallyInitiated: false,
-                tx: context.tx
+        do {
+            try threadStore.update(
+                thread: chatThread,
+                dontNotifyForMentionsIfMuted: chat.dontNotifyForMentionsIfMuted,
+                context: context
             )
+        } catch let error {
+            return .failure([.restoreFrameError(.databaseInsertionFailed(error), chat.chatId)])
         }
 
         let chatStyleToRestore: BackupProto_ChatStyle?

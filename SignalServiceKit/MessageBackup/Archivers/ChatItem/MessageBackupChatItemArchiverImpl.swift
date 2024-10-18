@@ -23,7 +23,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
     private let interactionStore: MessageBackupInteractionStore
     private let archivedPaymentStore: ArchivedPaymentStore
     private let reactionStore: ReactionStore
-    private let threadStore: ThreadStore
+    private let threadStore: MessageBackupThreadStore
 
     public init(
         attachmentManager: AttachmentManager,
@@ -40,7 +40,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         interactionStore: MessageBackupInteractionStore,
         archivedPaymentStore: ArchivedPaymentStore,
         reactionStore: ReactionStore,
-        threadStore: ThreadStore
+        threadStore: MessageBackupThreadStore
     ) {
         self.attachmentManager = attachmentManager
         self.attachmentStore = attachmentStore
