@@ -572,6 +572,14 @@ extension ManageStickersViewController: SendMessageDelegate {
         navigationController?.popToViewController(self, animated: true)
     }
 
+    public func sendMessageFlowWillShowConversation() {
+        AssertIsOnMainThread()
+
+        sendMessageFlow = nil
+
+        // Don't pop anything -- the flow does that itself.
+    }
+
     public func sendMessageFlowDidCancel() {
         AssertIsOnMainThread()
 
