@@ -470,9 +470,8 @@ public class MessageSender {
     // MARK: - Constructing Message Sends
 
     public func sendMessage(_ preparedOutgoingMessage: PreparedOutgoingMessage) async throws {
-        let priority: Operation.QueuePriority = await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             preparedOutgoingMessage.updateAllUnsentRecipientsAsSending(tx: tx)
-            return preparedOutgoingMessage.sendingQueuePriority(tx: tx)
         }
 
         Logger.info("Sending \(preparedOutgoingMessage)")
@@ -493,31 +492,7 @@ public class MessageSender {
             try await taskGroup.waitForAll()
         }
 
-        return try await withCheckedThrowingContinuation { continuation in
-            let sendMessageOperation = AwaitableAsyncBlockOperation(completionContinuation: continuation) {
-                try await preparedOutgoingMessage.send(self.sendPreparedMessage(_:))
-            }
-            sendMessageOperation.queuePriority = priority
-
-            sendingQueue(forUniqueThreadId: preparedOutgoingMessage.uniqueThreadId).addOperation(sendMessageOperation)
-        }
-    }
-
-    private let sendingQueueMap = AtomicValue<[String: OperationQueue]>([:], lock: .init())
-
-    private func sendingQueue(forUniqueThreadId: String) -> OperationQueue {
-        let sendingQueueKey = forUniqueThreadId
-        return sendingQueueMap.update { sendingQueueMap in
-            if let existingQueue = sendingQueueMap[sendingQueueKey] {
-                return existingQueue
-            }
-            let sendingQueue = OperationQueue()
-            sendingQueue.qualityOfService = .userInitiated
-            sendingQueue.maxConcurrentOperationCount = 1
-            sendingQueue.name = "MessageSender-Chat"
-            sendingQueueMap[sendingQueueKey] = sendingQueue
-            return sendingQueue
-        }
+        try await preparedOutgoingMessage.send(self.sendPreparedMessage(_:))
     }
 
     private func waitForPreKeyRotationIfNeeded() async throws {

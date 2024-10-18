@@ -17,7 +17,8 @@ public class OWSSyncManager: NSObject {
     private static var keyValueStore: SDSKeyValueStore {
         SDSKeyValueStore(collection: "kTSStorageManagerOWSSyncManagerCollection")
     }
-    private var isRequestInFlight: Bool = false
+
+    private let contactSyncQueue = SerialTaskQueue()
 
     fileprivate let appReadiness: AppReadiness
 
@@ -396,8 +397,6 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         return true
     }
 
-    private static let contactSyncQueue = DispatchQueue(label: "org.signal.contact-sync", autoreleaseFrequency: .workItem)
-
     private func syncContacts(mode: ContactSyncMode) -> Promise<Void> {
         if DebugFlags.dontSendContactOrGroupSyncMessages.get() {
             Logger.info("Skipping contact sync message.")
@@ -408,51 +407,42 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             return Promise(error: OWSGenericError("Not ready to sync contacts."))
         }
 
-        return Promise { future in
-            Self.contactSyncQueue.async {
-                do {
-                    future.resolve(on: SyncScheduler(), with: try self._syncContacts(mode: mode))
-                } catch {
-                    future.reject(error)
-                }
-            }
+        let syncTask = contactSyncQueue.enqueue {
+            return try await self._syncContacts(mode: mode)
         }
+
+        return Promise.wrapAsync { try await syncTask.value }
     }
 
-    private func _syncContacts(mode: ContactSyncMode) throws -> Promise<Void> {
+    private func _syncContacts(mode: ContactSyncMode) async throws {
         // Don't bother sending sync messages with the same data as the last
         // successfully sent contact sync message.
         let opportunistic = mode == .allSignalAccountsIfChanged
-        // Only have one sync message in flight at a time.
-        let debounce = mode == .allSignalAccountsIfChanged
-
-        if debounce, self.isRequestInFlight {
-            // De-bounce. It's okay if we ignore some new changes;
-            // `syncAllContactsIfNecessary` is called fairly often so we'll sync soon.
-            return .value(())
-        }
 
         if CurrentAppContext().isNSE {
             // If a full sync is specifically requested in the NSE, mark it so that the
             // main app can send that request the next time in runs.
             if mode == .allSignalAccounts {
-                SSKEnvironment.shared.databaseStorageRef.write { tx in
+                await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
                     Self.keyValueStore.setString(UUID().uuidString, key: Constants.fullSyncRequestIdKey, transaction: tx)
                 }
             }
             // If a full sync sync is requested in NSE, ignore it. Opportunistic syncs
             // shouldn't be requested, but this guards against cases where they are.
-            return .value(())
+            return
         }
 
-        guard let thread = TSContactThread.getOrCreateLocalThreadWithSneakyTransaction() else {
+        let thread = await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+            return TSContactThread.getOrCreateLocalThread(transaction: tx)
+        }
+        guard let thread else {
             owsFailDebug("Missing thread.")
             throw OWSError(error: .contactSyncFailed, description: "Could not sync contacts.", isRetryable: false)
         }
 
         let result = try SSKEnvironment.shared.databaseStorageRef.read { tx in try buildContactSyncMessage(in: thread, mode: mode, tx: tx) }
         guard let result else {
-            return .value(())
+            return
         }
 
         let messageHash: Data
@@ -468,27 +458,15 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         // someone is waiting to receive this message.
         if opportunistic, result.fullSyncRequestId == nil, messageHash == result.previousMessageHash {
             // Ignore redundant contacts sync message.
-            return .value(())
+            return
         }
 
         let dataSource = try DataSourcePath(fileUrl: result.syncFileUrl, shouldDeleteOnDeallocation: true)
 
-        if debounce {
-            self.isRequestInFlight = true
-        }
-        return Promise.wrapAsync {
-            defer {
-                if debounce {
-                    Self.contactSyncQueue.async {
-                        self.isRequestInFlight = false
-                    }
-                }
-            }
-            try await SSKEnvironment.shared.messageSenderRef.sendTransientContactSyncAttachment(dataSource: dataSource, thread: thread)
-            await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-                Self.keyValueStore.setData(messageHash, key: Constants.lastContactSyncKey, transaction: tx)
-                self.clearFullSyncRequestId(ifMatches: result.fullSyncRequestId, tx: tx)
-            }
+        try await SSKEnvironment.shared.messageSenderRef.sendTransientContactSyncAttachment(dataSource: dataSource, thread: thread)
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+            Self.keyValueStore.setData(messageHash, key: Constants.lastContactSyncKey, transaction: tx)
+            self.clearFullSyncRequestId(ifMatches: result.fullSyncRequestId, tx: tx)
         }
     }
 
