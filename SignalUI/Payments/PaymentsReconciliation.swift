@@ -30,38 +30,19 @@ public class PaymentsReconciliation {
                                                object: nil)
     }
 
+    private let operationQueue = SerialTaskQueue()
+
     @objc
     private func reconcileIfNecessary() {
         if CurrentAppContext().isNSE {
             return
         }
-        operationQueue.addOperation(PaymentsReconciliationOperation(appReadiness: appReadiness))
-    }
-
-    let operationQueue: OperationQueue = {
-        let operationQueue = OperationQueue()
-        operationQueue.name = "PaymentsReconciliation"
-        operationQueue.maxConcurrentOperationCount = 1
-        return operationQueue
-    }()
-
-    public class PaymentsReconciliationOperation: OWSOperation, @unchecked Sendable {
-
-        private let appReadiness: AppReadiness
-
-        init(appReadiness: AppReadiness) {
-            self.appReadiness = appReadiness
-        }
-
-        override public func run() {
-            firstly(on: DispatchQueue.global()) { [appReadiness] in
-                PaymentsReconciliation.reconciliationPromise(appReadiness: appReadiness)
-            }.done(on: DispatchQueue.global()) { _ in
-                self.reportSuccess()
-            }.catch(on: DispatchQueue.global()) { error in
+        operationQueue.enqueue { [appReadiness] in
+            do {
+                try await Self._reconcileIfNecessary(appReadiness: appReadiness)
+            } catch {
                 owsFailDebugUnlessMCNetworkFailure(error)
-                let error = SSKUnretryableError.paymentsReconciliationFailure
-                self.reportError(error)
+                Logger.warn("\(error)")
             }
         }
     }
@@ -86,19 +67,13 @@ public class PaymentsReconciliation {
         return true
     }
 
-    private static func reconciliationPromise(appReadiness: AppReadiness) -> Promise<Void> {
-        owsAssertDebug(!Thread.isMainThread)
-
+    private static func _reconcileIfNecessary(appReadiness: AppReadiness) async throws {
         guard shouldReconcile(appReadiness: appReadiness) else {
-            return Promise.value(())
+            return
         }
-        return firstly { () -> Promise<MobileCoinAPI> in
-            SUIEnvironment.shared.paymentsImplRef.getMobileCoinAPI()
-        }.then(on: DispatchQueue.global()) { (mobileCoinAPI: MobileCoinAPI) -> Promise<MobileCoin.AccountActivity> in
-            mobileCoinAPI.getAccountActivity()
-        }.map(on: DispatchQueue.global()) { (accountActivity: MobileCoin.AccountActivity) -> Void in
-            Self.reconcileIfNecessary(transactionHistory: accountActivity)
-        }
+        let mobileCoinAPI = try await SUIEnvironment.shared.paymentsImplRef.getMobileCoinAPI().awaitable()
+        let accountActivity = try await mobileCoinAPI.getAccountActivity().awaitable()
+        await Self.reconcileIfNecessary(transactionHistory: accountActivity)
     }
 
     private static let schedulingStore = SDSKeyValueStore(collection: "PaymentsReconciliation.schedulingStore")
@@ -190,7 +165,7 @@ public class PaymentsReconciliation {
         case unsavedChanges
     }
 
-    private static func reconcileIfNecessary(transactionHistory: MCTransactionHistory) {
+    private static func reconcileIfNecessary(transactionHistory: MCTransactionHistory) async {
 
         // We should skip reconciliation if accountActivity hasn't changed
         // since the last reconciliation.
@@ -222,7 +197,7 @@ public class PaymentsReconciliation {
 
                 try cleanUpDatabase(transaction: transaction)
             }
-            SSKEnvironment.shared.databaseStorageRef.write { transaction in
+            await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
                 reconciliationDidSucceed(transaction: transaction,
                                          transactionHistory: transactionHistory)
             }
@@ -231,7 +206,7 @@ public class PaymentsReconciliation {
                 Logger.info("Reconciliation has unsaved changes.")
 
                 do {
-                    try SSKEnvironment.shared.databaseStorageRef.write { transaction in
+                    try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
                         let databaseState = Self.buildPaymentsDatabaseState(transaction: transaction)
 
                         try reconcile(transactionHistory: transactionHistory,
