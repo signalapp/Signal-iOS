@@ -1487,7 +1487,7 @@ public class GroupsV2Impl: GroupsV2 {
                 groupV2Params: groupV2Params
             )
         } catch {
-            guard !error.isNetworkFailureOrTimeout else {
+            if error.isNetworkFailureOrTimeout {
                 throw error
             }
             Logger.warn("Error: \(error)")

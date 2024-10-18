@@ -214,37 +214,47 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
     }
 
     private func loadLinkPreview() {
-        firstly(on: DispatchQueue.global()) {
-            Promise.wrapAsync {
-                try await SSKEnvironment.shared.groupsV2Ref.fetchGroupInviteLinkPreview(
-                    inviteLinkPassword: self.groupInviteLinkInfo.inviteLinkPassword,
-                    groupSecretParams: self.groupV2ContextInfo.groupSecretParams,
+        Task { [weak self, groupInviteLinkInfo, groupV2ContextInfo] in
+            do {
+                let groupInviteLinkPreview = try await SSKEnvironment.shared.groupsV2Ref.fetchGroupInviteLinkPreview(
+                    inviteLinkPassword: groupInviteLinkInfo.inviteLinkPassword,
+                    groupSecretParams: groupV2ContextInfo.groupSecretParams,
                     allowCached: false
                 )
-            }
-        }.done { [weak self] (groupInviteLinkPreview: GroupInviteLinkPreview) in
-            self?.applyLinkPreviewLoadResult(.success(groupInviteLinkPreview))
+                self?.applyLinkPreviewLoadResult(.success(groupInviteLinkPreview))
 
-            if let avatarUrlPath = groupInviteLinkPreview.avatarUrlPath {
-                self?.loadGroupAvatar(avatarUrlPath: avatarUrlPath)
-            }
-        }.catch { [weak self] error in
-            switch error {
-            case GroupsV2Error.expiredGroupInviteLink:
+                guard self != nil else {
+                    return
+                }
+
+                if let avatarUrlPath = groupInviteLinkPreview.avatarUrlPath {
+                    do {
+                        let avatarData = try await SSKEnvironment.shared.groupsV2Ref.fetchGroupInviteLinkAvatar(
+                            avatarUrlPath: avatarUrlPath,
+                            groupSecretParams: groupV2ContextInfo.groupSecretParams
+                        )
+                        self?.applyGroupAvatar(avatarData)
+                    } catch {
+                        owsFailDebugUnlessNetworkFailure(error)
+                    }
+                }
+            } catch GroupsV2Error.expiredGroupInviteLink {
                 self?.applyLinkPreviewLoadResult(.expiredLink)
-            case GroupsV2Error.localUserBlockedFromJoining:
-                Logger.warn("User blocked: \(error)")
+            } catch GroupsV2Error.localUserBlockedFromJoining {
+                Logger.warn("User blocked")
                 self?.dismiss(animated: true, completion: {
                     OWSActionSheets.showActionSheet(
                         title: OWSLocalizedString(
                             "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE",
-                            comment: "Title indicating that you cannot join a group in the 'group invite link' action sheet."),
+                            comment: "Title indicating that you cannot join a group in the 'group invite link' action sheet."
+                        ),
                         message: OWSLocalizedString(
                             "GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE",
-                            comment: "Subtitle indicating that the local user has been blocked from joining the group"))
+                            comment: "Subtitle indicating that the local user has been blocked from joining the group"
+                        )
+                    )
                 })
-
-            default:
+            } catch {
                 self?.applyLinkPreviewLoadResult(.failure(error))
             }
         }
@@ -328,22 +338,6 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
 
     // MARK: - Group avatar
 
-    private func loadGroupAvatar(avatarUrlPath: String) {
-        firstly(on: DispatchQueue.global()) {
-            Promise.wrapAsync {
-                try await SSKEnvironment.shared.groupsV2Ref.fetchGroupInviteLinkAvatar(
-                    avatarUrlPath: avatarUrlPath,
-                    groupSecretParams: self.groupV2ContextInfo.groupSecretParams
-                )
-            }
-        }.done { [weak self] (groupAvatar: Data) in
-            self?.applyGroupAvatar(groupAvatar)
-        }.catch { error in
-            // TODO: Add retry?
-            owsFailDebugUnlessNetworkFailure(error)
-        }
-    }
-
     private func applyGroupAvatar(_ groupAvatar: Data) {
         AssertIsOnMainThread()
 
@@ -388,120 +382,106 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
 
         Logger.info("")
 
-        guard doesLocalUserSupportGroupsV2 else {
-            Logger.warn("Local user does not support groups v2.")
-            showActionSheet(title: CommonStrings.errorAlertTitle,
-                            message: OWSLocalizedString("GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE",
-                                                       comment: "Error message indicating that the local user does not support groups v2."))
-            return
-        }
-
         // These values may not be filled in yet.
         // They may be being downloaded now or their downloads may have failed.
         let existingGroupInviteLinkPreview = self.groupInviteLinkPreview
         let existingAvatarData = self.avatarData
 
-        ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modalActivityIndicator in
-            firstly(on: DispatchQueue.global()) { () -> Promise<GroupInviteLinkPreview> in
-                if let existingGroupInviteLinkPreview = existingGroupInviteLinkPreview {
-                    // View has already downloaded the preview.
-                    return Promise.value(existingGroupInviteLinkPreview)
-                }
-                // Kick off a fresh attempt to download the link preview.
-                // We cannot join the group without the preview.
-                return Promise.wrapAsync {
-                    try await SSKEnvironment.shared.groupsV2Ref.fetchGroupInviteLinkPreview(
-                        inviteLinkPassword: self.groupInviteLinkInfo.inviteLinkPassword,
-                        groupSecretParams: self.groupV2ContextInfo.groupSecretParams,
-                        allowCached: false
-                    )
-                }
-            }.then(on: DispatchQueue.global()) { (groupInviteLinkPreview: GroupInviteLinkPreview) -> Promise<(GroupInviteLinkPreview, Data?)> in
-                guard let avatarUrlPath = groupInviteLinkPreview.avatarUrlPath else {
-                    // Group has no avatar.
-                    return Promise.value((groupInviteLinkPreview, nil))
-                }
-                if let existingAvatarData = existingAvatarData {
-                    // View has already downloaded the avatar.
-                    return Promise.value((groupInviteLinkPreview, existingAvatarData))
-                }
-                return firstly(on: DispatchQueue.global()) {
-                    Promise.wrapAsync {
-                        try await SSKEnvironment.shared.groupsV2Ref.fetchGroupInviteLinkAvatar(
-                            avatarUrlPath: avatarUrlPath,
-                            groupSecretParams: self.groupV2ContextInfo.groupSecretParams
+        ModalActivityIndicatorViewController.present(
+            fromViewController: self,
+            canCancel: false,
+            asyncBlock: { [weak self, groupInviteLinkInfo, groupV2ContextInfo] modal in
+                do {
+                    let groupInviteLinkPreview: GroupInviteLinkPreview
+                    if let existingGroupInviteLinkPreview {
+                        groupInviteLinkPreview = existingGroupInviteLinkPreview
+                    } else {
+                        // Kick off a fresh attempt to download the link preview.
+                        // We cannot join the group without the preview.
+                        groupInviteLinkPreview = try await SSKEnvironment.shared.groupsV2Ref.fetchGroupInviteLinkPreview(
+                            inviteLinkPassword: groupInviteLinkInfo.inviteLinkPassword,
+                            groupSecretParams: groupV2ContextInfo.groupSecretParams,
+                            allowCached: false
                         )
                     }
-                }.map(on: DispatchQueue.global()) { (groupAvatar: Data) in
-                    (groupInviteLinkPreview, groupAvatar)
-                }.recover(on: DispatchQueue.global()) { error -> Promise<(GroupInviteLinkPreview, Data?)> in
-                    Logger.warn("Error: \(error)")
-                    // We made a best effort to fill in the avatar.
-                    // Don't block joining the group on downloading
-                    // the avatar. It will only be used in a
-                    // placeholder model if at all.
-                    return Promise.value((groupInviteLinkPreview, nil))
-                }
-            }.then(on: DispatchQueue.global()) { (groupInviteLinkPreview: GroupInviteLinkPreview, avatarData: Data?) in
-                Promise.wrapAsync {
-                    try await GroupManager.joinGroupViaInviteLink(
-                        groupId: self.groupV2ContextInfo.groupId,
-                        groupSecretParams: self.groupV2ContextInfo.groupSecretParams,
-                        inviteLinkPassword: self.groupInviteLinkInfo.inviteLinkPassword,
+
+                    let avatarData: Data?
+                    if let avatarUrlPath = groupInviteLinkPreview.avatarUrlPath {
+                        if let existingAvatarData {
+                            avatarData = existingAvatarData
+                        } else {
+                            do {
+                                avatarData = try await SSKEnvironment.shared.groupsV2Ref.fetchGroupInviteLinkAvatar(
+                                    avatarUrlPath: avatarUrlPath,
+                                    groupSecretParams: groupV2ContextInfo.groupSecretParams
+                                )
+                            } catch {
+                                Logger.warn("Error: \(error)")
+                                // We made a best effort to fill in the avatar. Don't block joining the
+                                // group on downloading the avatar. It will only be used in a placeholder
+                                // model if at all.
+                                avatarData = nil
+                            }
+                        }
+                    } else {
+                        // Group has no avatar.
+                        avatarData = nil
+                    }
+
+                    let groupThread = try await GroupManager.joinGroupViaInviteLink(
+                        groupId: groupV2ContextInfo.groupId,
+                        groupSecretParams: groupV2ContextInfo.groupSecretParams,
+                        inviteLinkPassword: groupInviteLinkInfo.inviteLinkPassword,
                         groupInviteLinkPreview: groupInviteLinkPreview,
                         avatarData: avatarData
                     )
-                }
-            }.done { [weak self] (groupThread: TSGroupThread) in
-                modalActivityIndicator.dismiss {
-                    AssertIsOnMainThread()
-                    self?.dismiss(animated: true) {
+
+                    modal.dismiss {
                         AssertIsOnMainThread()
-                        SignalApp.shared.presentConversationForThread(groupThread, animated: true)
+                        self?.dismiss(animated: true) {
+                            AssertIsOnMainThread()
+                            SignalApp.shared.presentConversationForThread(groupThread, animated: true)
+                        }
+                    }
+                } catch {
+                    Logger.warn("Error: \(error)")
+
+                    modal.dismiss {
+                        AssertIsOnMainThread()
+
+                        self?.showActionSheet(
+                            title: OWSLocalizedString(
+                                "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE",
+                                comment: "Title indicating that you cannot join a group in the 'group invite link' action sheet."
+                            ),
+                            message: {
+                                switch error {
+                                case GroupsV2Error.expiredGroupInviteLink:
+                                    return OWSLocalizedString(
+                                        "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE",
+                                        comment: "Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet."
+                                    )
+                                case GroupsV2Error.localUserBlockedFromJoining:
+                                    return OWSLocalizedString(
+                                        "GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE",
+                                        comment: "Subtitle indicating that the local user has been blocked from joining the group"
+                                    )
+                                case _ where error.isNetworkFailureOrTimeout:
+                                    return OWSLocalizedString(
+                                        "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE",
+                                        comment: "Error message the attempt to request to join the group failed due to network connectivity."
+                                    )
+                                default:
+                                    return OWSLocalizedString(
+                                        "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE",
+                                        comment: "Error message the attempt to request to join the group failed."
+                                    )
+                                }
+                            }()
+                        )
                     }
                 }
-            }.catch { error in
-                Logger.warn("Error: \(error)")
-
-                modalActivityIndicator.dismiss {
-                    AssertIsOnMainThread()
-
-                    self.showActionSheet(
-                        title: OWSLocalizedString(
-                            "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE",
-                            comment: "Title indicating that you cannot join a group in the 'group invite link' action sheet."),
-
-                        message: {
-                            switch error {
-                            case GroupsV2Error.expiredGroupInviteLink:
-                                return OWSLocalizedString(
-                                    "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE",
-                                    comment: "Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet.")
-                            case GroupsV2Error.localUserBlockedFromJoining:
-                                return OWSLocalizedString(
-                                    "GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE",
-                                    comment: "Subtitle indicating that the local user has been blocked from joining the group")
-                            case _ where error.isNetworkFailureOrTimeout:
-                                return OWSLocalizedString(
-                                    "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE",
-                                    comment: "Error message the attempt to request to join the group failed due to network connectivity.")
-                            default:
-                                return OWSLocalizedString(
-                                    "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE",
-                                    comment: "Error message the attempt to request to join the group failed.")
-                            }
-                        }()
-                    )
-                }
             }
-        }
-    }
-
-    private var doesLocalUserSupportGroupsV2: Bool {
-        guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress else {
-            owsFailDebug("missing local address")
-            return false
-        }
-        return GroupManager.doesUserSupportGroupsV2(address: localAddress)
+        )
     }
 }
