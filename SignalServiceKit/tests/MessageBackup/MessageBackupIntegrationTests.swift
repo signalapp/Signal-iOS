@@ -480,6 +480,7 @@ private func failTest<T>(
 /// should never be invoked during Backup import or export.
 private enum CrashyMocks {
     final class MockNetworkManager: NetworkManager {
+        override func asyncRequest(_ request: TSRequest, canUseWebSocket: Bool = false) async throws -> any HTTPResponse { failTest(Self.self) }
         override func makePromise(request: TSRequest, canUseWebSocket: Bool = false) -> Promise<any HTTPResponse> { failTest(Self.self) }
     }
 

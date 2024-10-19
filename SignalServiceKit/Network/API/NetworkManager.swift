@@ -45,7 +45,7 @@ public class NetworkManager {
         }
     }
 
-    // This method can be called from any thread.
+    /// Deprecated. Please use ``asyncRequest(_:canUseWebSocket:)``.
     public func makePromise(request: TSRequest, canUseWebSocket: Bool = false) -> Promise<HTTPResponse> {
         // Try the web socket first if it's allowed for this request.
         let useWebSocket = canUseWebSocket && OWSChatConnection.canAppUseSocketsToMakeRequests

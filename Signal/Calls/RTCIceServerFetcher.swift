@@ -20,7 +20,7 @@ struct RTCIceServerFetcher {
     /// connection to the other party. SignalService supplies a list of servers.
     func getIceServers() async throws -> [RTCIceServer] {
         let request = OWSRequestFactory.turnServerInfoRequest()
-        let response = try await networkManager.makePromise(request: request).awaitable()
+        let response = try await networkManager.asyncRequest(request)
 
         guard let jsonData = response.responseBodyData else {
             throw OWSAssertionError("Missing or invalid JSON!")

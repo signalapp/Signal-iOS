@@ -173,10 +173,8 @@ public struct MessageBackupRequestManagerImpl: MessageBackupRequestManager {
         }
         let base64RequestContext = Data(backupRequestContext.getRequest().serialize()).base64EncodedString()
         let request = try OWSRequestFactory.reserveBackupId(backupId: base64RequestContext, auth: auth)
-        _ = try await networkManager.makePromise(
-            request: request,
-            canUseWebSocket: false // TODO[websocket]: Switch this back to true when reg supports websockets
-        ).awaitable()
+        // TODO: Switch this back to true when reg supports websockets
+        _ = try await networkManager.asyncRequest(request, canUseWebSocket: false)
     }
 
     // MARK: - Backup Auth
@@ -447,10 +445,8 @@ public struct MessageBackupRequestManagerImpl: MessageBackupRequestManager {
         auth: MessageBackupServiceAuth,
         requestFactory: (MessageBackupServiceAuth) -> TSRequest
     ) async throws -> HTTPResponse {
-        return try await networkManager.makePromise(
-            request: requestFactory(auth),
-            canUseWebSocket: false // TODO[websocket]: Switch this back to true when reg supports websockets
-        ).awaitable()
+        // TODO: Switch this back to true when reg supports websockets
+        return try await networkManager.asyncRequest(requestFactory(auth), canUseWebSocket: false)
     }
 
     private func executeBackupService<T: Decodable>(

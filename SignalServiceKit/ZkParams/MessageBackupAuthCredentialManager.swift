@@ -107,11 +107,8 @@ public struct MessageBackupAuthCredentialManagerImpl: MessageBackupAuthCredentia
             auth: auth
         )
 
-        let response = try await networkManager.makePromise(
-            request: request,
-            canUseWebSocket: false // TODO[websocket]: Switch this back to true when reg supports websockets
-        ).awaitable()
-
+        // TODO: Switch this back to true when reg supports websockets
+        let response = try await networkManager.asyncRequest(request, canUseWebSocket: false)
         guard let data = response.responseBodyData else {
             throw OWSAssertionError("Missing response body data")
         }

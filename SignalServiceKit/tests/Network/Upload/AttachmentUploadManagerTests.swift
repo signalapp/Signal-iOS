@@ -11,6 +11,7 @@ class AttachmentUploadManagerTests: XCTestCase {
     var helper: AttachmentUploadManagerMockHelper!
 
     override func setUp() {
+        super.setUp()
         helper = AttachmentUploadManagerMockHelper()
         uploadManager = AttachmentUploadManagerImpl(
             attachmentEncrypter: helper.mockAttachmentEncrypter,

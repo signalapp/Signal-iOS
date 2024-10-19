@@ -109,7 +109,7 @@ class CallLinkManagerImpl: CallLinkManager {
                 "createCallLinkCredentialRequest": credentialRequestContext.getRequest().serialize().asData.base64EncodedString()
             ]
         )
-        let httpResult = try await self.networkManager.makePromise(request: httpRequest, canUseWebSocket: true).awaitable()
+        let httpResult = try await self.networkManager.asyncRequest(httpRequest, canUseWebSocket: true)
         guard httpResult.responseStatusCode == 200, let responseBodyData = httpResult.responseBodyData else {
             throw OWSGenericError("Couldn't handle successful result from the server.")
         }

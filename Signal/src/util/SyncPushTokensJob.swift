@@ -126,9 +126,7 @@ class SyncPushTokensJob: NSObject {
         remainingRetries: Int
     ) async throws {
         do {
-            _ = try await SSKEnvironment.shared.networkManagerRef
-                .makePromise(request: request)
-                .awaitable()
+            _ = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
             return
         } catch let error {
             if remainingRetries > 0 {

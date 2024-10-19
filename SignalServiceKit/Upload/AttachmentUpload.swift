@@ -315,10 +315,7 @@ extension Upload {
         }
 
         private func performRequest(_ request: TSRequest) async throws -> HTTPResponse {
-            try await networkManager.makePromise(
-                request: request,
-                canUseWebSocket: chatConnectionManager.canMakeRequests(connectionType: .identified)
-            ).awaitable()
+            try await networkManager.asyncRequest(request, canUseWebSocket: chatConnectionManager.canMakeRequests(connectionType: .identified))
         }
     }
 }

@@ -671,7 +671,7 @@ extension MessageSender {
             isStory: isStory
         )
 
-        return try await SSKEnvironment.shared.networkManagerRef.makePromise(request: request, canUseWebSocket: true).awaitable()
+        return try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request, canUseWebSocket: true)
     }
 }
 

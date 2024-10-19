@@ -121,11 +121,7 @@ class _PniIdentityKeyCheckerImpl_ProfileFetcher_Wrapper: _PniIdentityKeyCheckerI
                 udAccessKey: nil,
                 auth: .implicit()
             )
-            let response = try await SSKEnvironment.shared.networkManagerRef.makePromise(
-                request: request,
-                canUseWebSocket: true
-            ).awaitable()
-
+            let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request, canUseWebSocket: true)
             guard let bodyData = response.responseBodyData else {
                 throw OWSGenericError("Couldn't handle success response without data.")
             }

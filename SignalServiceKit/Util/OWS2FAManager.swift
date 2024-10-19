@@ -328,7 +328,7 @@ extension OWS2FAManager {
         }
 
         let request = OWSRequestFactory.enableRegistrationLockV2Request(token: token)
-        _ = try await SSKEnvironment.shared.networkManagerRef.makePromise(request: request).awaitable()
+        _ = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
 
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
             Self.keyValueStore.setBool(
@@ -355,7 +355,7 @@ extension OWS2FAManager {
 
     public func disableRegistrationLockV2() async throws {
         let request = OWSRequestFactory.disableRegistrationLockV2Request()
-        _ = try await SSKEnvironment.shared.networkManagerRef.makePromise(request: request).awaitable()
+        _ = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
 
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
             Self.keyValueStore.removeValue(
@@ -380,7 +380,7 @@ extension OWS2FAManager {
         Task {
             do {
                 let request = OWSRequestFactory.disable2FARequest()
-                _ = try await SSKEnvironment.shared.networkManagerRef.makePromise(request: request).awaitable()
+                _ = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
                 await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
                     self.markDisabled(transaction: transaction)
                 }

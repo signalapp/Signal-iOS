@@ -330,7 +330,7 @@ public class MessageFetcherJob: NSObject {
 
     private func fetchBatchViaRest() async throws -> RESTBatch {
         let request = OWSRequestFactory.getMessagesRequest()
-        let response = try await SSKEnvironment.shared.networkManagerRef.makePromise(request: request).awaitable()
+        let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
         guard let json = response.responseBodyJson else {
             throw OWSAssertionError("Missing or invalid JSON")
         }

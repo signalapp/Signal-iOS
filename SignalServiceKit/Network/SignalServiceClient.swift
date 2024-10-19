@@ -144,7 +144,7 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
 
         let request = AccountAttributesRequestFactory.updatePrimaryDeviceAttributesRequest(attributes)
         request.setAuth(authedAccount.chatServiceAuth)
-        _ = try await SSKEnvironment.shared.networkManagerRef.makePromise(request: request).awaitable()
+        _ = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
 
         return attributes
     }
@@ -230,6 +230,6 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
             tsAccountManager: DependenciesBridge.shared.tsAccountManager
         )
         request.setAuth(authedAccount.chatServiceAuth)
-        _ = try await SSKEnvironment.shared.networkManagerRef.makePromise(request: request).awaitable()
+        _ = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
     }
 }
