@@ -7,21 +7,42 @@ import Foundation
 public import LibSignalClient
 
 // A class used for making HTTP requests against the main service.
-@objc
-public class NetworkManager: NSObject {
+public class NetworkManager {
     private let restNetworkManager = RESTNetworkManager()
+    private let reachabilityDidChangeObserver: Task<Void, Never>?
     public let libsignalNet: Net?
 
     public init(libsignalNet: Net?) {
         self.libsignalNet = libsignalNet
-        super.init()
+        if let libsignalNet {
+            self.reachabilityDidChangeObserver = Task {
+                for await _ in NotificationCenter.default.notifications(named: SSKReachability.owsReachabilityDidChange) {
+                    do {
+                        try libsignalNet.networkDidChange()
+                    } catch {
+                        owsFailDebug("error notify libsignal of network change: \(error)")
+                    }
+                }
+            }
+        } else {
+            self.reachabilityDidChangeObserver = nil
+        }
 
         SwiftSingletons.register(self)
+    }
 
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(reachabilityChanged),
-                                               name: SSKReachability.owsReachabilityDidChange,
-                                               object: nil)
+    deinit {
+        if let reachabilityDidChangeObserver {
+            reachabilityDidChangeObserver.cancel()
+        }
+    }
+
+    public func asyncRequest(_ request: TSRequest, canUseWebSocket: Bool = false) async throws -> HTTPResponse {
+        if canUseWebSocket && OWSChatConnection.canAppUseSocketsToMakeRequests {
+            return try await DependenciesBridge.shared.chatConnectionManager.makeRequest(request)
+        } else {
+            return try await restNetworkManager.asyncRequest(request)
+        }
     }
 
     // This method can be called from any thread.
@@ -40,23 +61,19 @@ public class NetworkManager: NSObject {
             try await DependenciesBridge.shared.chatConnectionManager.makeRequest(request)
         }
     }
-
-    @objc
-    private func reachabilityChanged() {
-        do {
-            try self.libsignalNet?.networkDidChange()
-        } catch {
-            owsFailDebug("libsignal error: \(error)")
-        }
-    }
 }
 
 // MARK: -
 
 #if TESTABLE_BUILD
 
-@objc
 public class OWSFakeNetworkManager: NetworkManager {
+
+    public override func asyncRequest(_ request: TSRequest, canUseWebSocket: Bool = false) async throws -> any HTTPResponse {
+        Logger.info("Ignoring request: \(request)")
+        // Never resolve.
+        return try await withUnsafeThrowingContinuation { (_ continuation: UnsafeContinuation<any HTTPResponse, any Error>) -> Void in }
+    }
 
     public override func makePromise(request: TSRequest, canUseWebSocket: Bool = false) -> Promise<HTTPResponse> {
         Logger.info("Ignoring request: \(request)")

@@ -86,6 +86,12 @@ class RESTNetworkManager {
                     })
         return promise
     }
+
+    func asyncRequest(_ request: TSRequest) async throws -> HTTPResponse {
+        try await withCheckedThrowingContinuation { continuation in
+            makeRequest(request, completionQueue: .global(), success: { continuation.resume(returning: $0) }, failure: { continuation.resume(throwing: $0) })
+        }
+    }
 }
 
 // MARK: -
