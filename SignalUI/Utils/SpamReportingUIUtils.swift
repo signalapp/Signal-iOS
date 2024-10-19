@@ -184,20 +184,21 @@ public struct ReportSpamUIUtils {
             "Reporting \(guidsToReport.count) message(s) from \(aci) as spam. We \(reportingToken == nil ? "do not have" : "have") a reporting token"
         )
 
-        var promises = [Promise<Void>]()
-        for guid in guidsToReport {
-            let request = OWSRequestFactory.reportSpam(
-                from: aci,
-                withServerGuid: guid,
-                reportingToken: reportingToken
-            )
-            promises.append(SSKEnvironment.shared.networkManagerRef.makePromise(request: request).asVoid())
-        }
-
-        Promise.when(fulfilled: promises).done {
-            Logger.info("Successfully reported \(guidsToReport.count) message(s) from \(aci) as spam.")
-        }.catch { error in
-            owsFailDebug("Failed to report message(s) from \(aci) as spam with error: \(error)")
+        Task {
+            do {
+                try await withThrowingTaskGroup(of: Void.self) { group in
+                    for guid in guidsToReport {
+                        let request = OWSRequestFactory.reportSpam(from: aci, withServerGuid: guid, reportingToken: reportingToken)
+                        group.addTask {
+                            _ = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
+                        }
+                    }
+                    for try await _ in group {}
+                }
+                Logger.info("Successfully reported \(guidsToReport.count) message(s) from \(aci) as spam.")
+            } catch {
+                owsFailDebug("Failed to report message(s) from \(aci) as spam with error: \(error)")
+            }
         }
     }
 }
