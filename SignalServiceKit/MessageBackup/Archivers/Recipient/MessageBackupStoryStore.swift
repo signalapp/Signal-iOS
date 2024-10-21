@@ -38,27 +38,36 @@ public final class MessageBackupStoryStore {
         addresses: [MessageBackup.ContactAddress],
         context: MessageBackup.RecipientRestoringContext
     ) throws {
-        // TODO: [BackupsPerf] create and insert this one go, instead of get or create then update.
-        let myStory = storyStore.getOrCreateMyStory(tx: context.tx)
-        storyStore.update(
-            storyThread: myStory,
+        let myStory = TSPrivateStoryThread(
+            uniqueId: TSPrivateStoryThread.myStoryUniqueId,
             name: name,
-            allowReplies: allowReplies,
-            viewMode: viewMode,
-            addresses: addresses.map { $0.asInteropAddress() },
-            updateStorageService: false,
-            updateHasSetMyStoryPrivacyIfNeeded: false,
-            tx: context.tx
+            allowsReplies: allowReplies,
+            addresses: addresses.map({ $0.asInteropAddress() }),
+            viewMode: viewMode
         )
+        var record = try myStory.asRecord()
+
+        let existingMyStoryRowId = try Int64.fetchOne(
+            context.tx.databaseConnection,
+            sql: """
+                SELECT id from model_TSThread WHERE uniqueId = ?
+                """,
+            arguments: [TSPrivateStoryThread.myStoryUniqueId]
+        )
+        if let existingMyStoryRowId {
+            record.id = existingMyStoryRowId
+        }
+
+        // Use save to insert or update as my story might already exist.
+        try record.save(context.tx.databaseConnection)
     }
 
     func insert(
         _ storyThread: TSPrivateStoryThread,
         context: MessageBackup.RecipientRestoringContext
     ) throws {
-        // TODO: [BackupsPerf] insert this directly; ensure all side effects of
-        // sdsSave (which storystore calls) are accounted for.
-        storyStore.insert(storyThread: storyThread, tx: context.tx)
+        let record = try storyThread.asRecord()
+        try record.insert(context.tx.databaseConnection)
     }
 
     func createStoryContextAssociatedData(
@@ -66,14 +75,11 @@ public final class MessageBackupStoryStore {
         isHidden: Bool,
         context: MessageBackup.RecipientRestoringContext
     ) throws {
-        // TODO: [BackupsPerf] create and insert this one go, instead of get or create then update.
-        let storyContext = storyStore.getOrCreateStoryContextAssociatedData(for: aci, tx: context.tx)
-        storyStore.updateStoryContext(
-            storyContext,
-            updateStorageService: false,
-            isHidden: isHidden,
-            tx: context.tx
+        let storyContext = StoryContextAssociatedData(
+            sourceContext: .contact(contactAci: aci),
+            isHidden: isHidden
         )
+        try storyContext.insert(context.tx.databaseConnection)
     }
 
     func createStoryContextAssociatedData(
@@ -81,13 +87,10 @@ public final class MessageBackupStoryStore {
         isHidden: Bool,
         context: MessageBackup.RecipientRestoringContext
     ) throws {
-        // TODO: [BackupsPerf] create and insert this one go, instead of get or create then update.
-        let storyContext = storyStore.getOrCreateStoryContextAssociatedData(forGroupThread: groupThread, tx: context.tx)
-        storyStore.updateStoryContext(
-            storyContext,
-            updateStorageService: false,
-            isHidden: isHidden,
-            tx: context.tx
+        let storyContext = StoryContextAssociatedData(
+            sourceContext: .group(groupId: groupThread.groupId),
+            isHidden: isHidden
         )
+        try storyContext.insert(context.tx.databaseConnection)
     }
 }
