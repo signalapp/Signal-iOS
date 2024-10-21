@@ -142,7 +142,11 @@ public extension TSMessage {
 
     @objc
     func insertMentionsInDatabase(tx: SDSAnyWriteTransaction) {
-        guard let bodyRanges else {
+        Self.insertMentionsInDatabase(message: self, tx: tx)
+    }
+
+    static func insertMentionsInDatabase(message: TSMessage, tx: SDSAnyWriteTransaction) {
+        guard let bodyRanges = message.bodyRanges else {
             return
         }
         // If we have any mentions, we need to save them to aid in querying for
@@ -151,7 +155,7 @@ public extension TSMessage {
         // message.
         let uniqueMentionedAcis = Set(bodyRanges.mentions.values)
         for mentionedAci in uniqueMentionedAcis {
-            let mention = TSMention(uniqueMessageId: uniqueId, uniqueThreadId: uniqueThreadId, aci: mentionedAci)
+            let mention = TSMention(uniqueMessageId: message.uniqueId, uniqueThreadId: message.uniqueThreadId, aci: mentionedAci)
             mention.anyInsert(transaction: tx)
         }
     }

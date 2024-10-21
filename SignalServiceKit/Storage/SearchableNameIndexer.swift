@@ -31,6 +31,11 @@ public protocol SearchableNameIndexer {
     ///
     /// The index must be empty when this method is called.
     func indexEverything(tx: DBWriteTransaction)
+
+    /// Inserts every TSThread into the index.
+    ///
+    /// The index must be empty of threads when this method is called.
+    func indexThreads(tx: DBWriteTransaction)
 }
 
 public class SearchableNameIndexerImpl: SearchableNameIndexer {
@@ -197,9 +202,7 @@ public class SearchableNameIndexerImpl: SearchableNameIndexer {
     }
 
     public func indexEverything(tx: DBWriteTransaction) {
-        TSThread.anyEnumerate(transaction: SDSDB.shimOnlyBridge(tx)) { thread, _ in
-            insert(thread, tx: tx)
-        }
+        indexThreads(tx: tx)
         SignalAccount.anyEnumerate(transaction: SDSDB.shimOnlyBridge(tx)) { signalAccount, _ in
             insert(signalAccount, tx: tx)
         }
@@ -214,6 +217,12 @@ public class SearchableNameIndexerImpl: SearchableNameIndexer {
         }
         nicknameRecordStore.enumerateAll(tx: tx) { nicknameRecord in
             insert(nicknameRecord, tx: tx)
+        }
+    }
+
+    public func indexThreads(tx: DBWriteTransaction) {
+        TSThread.anyEnumerate(transaction: SDSDB.shimOnlyBridge(tx)) { thread, _ in
+            insert(thread, tx: tx)
         }
     }
 }

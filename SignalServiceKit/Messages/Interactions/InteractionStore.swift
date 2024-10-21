@@ -4,6 +4,7 @@
 //
 
 import Foundation
+public import GRDB
 import LibSignalClient
 
 public protocol InteractionStore {
@@ -48,6 +49,12 @@ public protocol InteractionStore {
         tx: DBReadTransaction,
         block: (TSInteraction) throws -> Bool
     ) throws
+
+    func fetchCursor(
+        minRowIdExclusive: Int64?,
+        maxRowIdInclusive: Int64?,
+        tx: DBReadTransaction
+    ) throws -> AnyCursor<TSInteraction>
 
     func insertedMessageHasRenderableContent(
         message: TSMessage,
@@ -168,6 +175,25 @@ public class InteractionStoreImpl: InteractionStore {
             let interaction = try cursor.next(),
             try block(interaction)
         {}
+    }
+
+    public func fetchCursor(
+        minRowIdExclusive: Int64?,
+        maxRowIdInclusive: Int64?,
+        tx: DBReadTransaction
+    ) throws -> AnyCursor<TSInteraction> {
+        let idColumn = Column(InteractionRecord.CodingKeys.id)
+        var query = InteractionRecord
+            .order(idColumn.asc)
+        if let minRowIdExclusive {
+            query = query.filter(idColumn > minRowIdExclusive)
+        }
+        if let maxRowIdInclusive {
+            query = query.filter(idColumn <= maxRowIdInclusive)
+        }
+        let cursor = try query.fetchCursor(tx.databaseConnection)
+            .map(TSInteraction.fromRecord(_:))
+        return AnyCursor(cursor)
     }
 
     public func insertedMessageHasRenderableContent(
@@ -328,6 +354,49 @@ open class MockInteractionStore: InteractionStore {
                 return
             }
         }
+    }
+
+    open func fetchCursor(
+        minRowIdExclusive: Int64?,
+        maxRowIdInclusive: Int64?,
+        tx: DBReadTransaction
+    ) throws -> AnyCursor<TSInteraction> {
+        let filtered = insertedInteractions.lazy
+            .filter { interaction in
+                guard let rowId = interaction.sqliteRowId else { return false }
+                if let minRowIdExclusive, rowId <= minRowIdExclusive {
+                    return false
+                }
+                if let maxRowIdInclusive, rowId > maxRowIdInclusive {
+                    return false
+                }
+                return true
+            }
+            .sorted(by: { lhs, rhs in
+                return lhs.sqliteRowId! < rhs.sqliteRowId!
+            })
+
+        class Iterator: IteratorProtocol {
+            var index = 0
+            var array: [TSInteraction]
+
+            init(index: Int = 0, array: [TSInteraction]) {
+                self.index = index
+                self.array = array
+            }
+
+            func next() -> TSInteraction? {
+                guard index < array.count else {
+                    return nil
+                }
+                defer { index += 1 }
+                return array[index]
+            }
+
+            typealias Element = TSInteraction
+        }
+
+        return AnyCursor(iterator: Iterator(array: filtered))
     }
 
     open func insertedMessageHasRenderableContent(
