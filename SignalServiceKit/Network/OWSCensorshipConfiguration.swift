@@ -181,8 +181,6 @@ struct OWSCensorshipConfiguration {
         "+58": "VE",
         // Uzbekistan,
         "+998": "UZ",
-        // Russia
-        "+7": "RU",
         // Pakistan
         "+92": "PK",
     ]
