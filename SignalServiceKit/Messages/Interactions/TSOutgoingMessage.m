@@ -342,11 +342,16 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     return NO;
 }
 
+- (void)updateStoredMessageState
+{
+    _storedMessageState = self.messageState;
+}
+
 - (void)anyWillInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyWillInsertWithTransaction:transaction];
 
-    _storedMessageState = self.messageState;
+    [self updateStoredMessageState];
 }
 
 - (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -359,7 +364,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 {
     [super anyWillUpdateWithTransaction:transaction];
 
-    _storedMessageState = self.messageState;
+    [self updateStoredMessageState];
 }
 
 - (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction

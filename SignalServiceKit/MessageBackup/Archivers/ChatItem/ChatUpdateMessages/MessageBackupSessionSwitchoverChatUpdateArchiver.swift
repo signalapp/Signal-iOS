@@ -104,7 +104,12 @@ final class MessageBackupSessionSwitchoverChatUpdateArchiver {
         )
 
         do {
-            try interactionStore.insert(sessionSwitchoverInfoMessage, in: chatThread, context: context)
+            try interactionStore.insert(
+                sessionSwitchoverInfoMessage,
+                in: chatThread,
+                chatId: chatItem.typedChatId,
+                context: context
+            )
         } catch let error {
             return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
         }

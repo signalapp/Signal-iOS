@@ -326,7 +326,12 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
         }()
 
         do {
-            try interactionStore.insert(message, in: chatThread, context: context)
+            try interactionStore.insert(
+                message,
+                in: chatThread,
+                chatId: chatItem.typedChatId,
+                context: context
+            )
         } catch let error {
             return .messageFailure(partialErrors + [.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
         }

@@ -236,6 +236,11 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 
 - (void)updateWithHasSyncedTranscript:(BOOL)hasSyncedTranscript transaction:(SDSAnyWriteTransaction *)transaction;
 
+/**
+ * Sync the stored message state with the computed message state. Must be run before any insert/update.
+ */
+- (void)updateStoredMessageState;
+
 @end
 
 NS_ASSUME_NONNULL_END

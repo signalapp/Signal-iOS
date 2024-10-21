@@ -36,8 +36,10 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     private let contactRecipientArchiver: MessageBackupContactRecipientArchiver
     private let dateProvider: DateProvider
     private let db: any DB
+    private let disappearingMessagesJob: OWSDisappearingMessagesJob
     private let distributionListRecipientArchiver: MessageBackupDistributionListRecipientArchiver
     private let encryptedStreamProvider: MessageBackupEncryptedProtoStreamProvider
+    private let fullTextSearchIndexer: MessageBackupFullTextSearchIndexer
     private let groupRecipientArchiver: MessageBackupGroupRecipientArchiver
     private let incrementalTSAttachmentMigrator: IncrementalMessageTSAttachmentMigrator
     private let kvStore: KeyValueStore
@@ -61,8 +63,10 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         contactRecipientArchiver: MessageBackupContactRecipientArchiver,
         dateProvider: @escaping DateProvider,
         db: any DB,
+        disappearingMessagesJob: OWSDisappearingMessagesJob,
         distributionListRecipientArchiver: MessageBackupDistributionListRecipientArchiver,
         encryptedStreamProvider: MessageBackupEncryptedProtoStreamProvider,
+        fullTextSearchIndexer: MessageBackupFullTextSearchIndexer,
         groupRecipientArchiver: MessageBackupGroupRecipientArchiver,
         incrementalTSAttachmentMigrator: IncrementalMessageTSAttachmentMigrator,
         kvStoreFactory: KeyValueStoreFactory,
@@ -85,8 +89,10 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         self.contactRecipientArchiver = contactRecipientArchiver
         self.dateProvider = dateProvider
         self.db = db
+        self.disappearingMessagesJob = disappearingMessagesJob
         self.distributionListRecipientArchiver = distributionListRecipientArchiver
         self.encryptedStreamProvider = encryptedStreamProvider
+        self.fullTextSearchIndexer = fullTextSearchIndexer
         self.groupRecipientArchiver = groupRecipientArchiver
         self.incrementalTSAttachmentMigrator = incrementalTSAttachmentMigrator
         self.kvStore = kvStoreFactory.keyValueStore(collection: Constants.keyValueStoreCollectionName)
@@ -684,11 +690,18 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             chatItemContext: contexts.chatItem
         )
 
-        // Enqueue downloads for all the attachments.
-        tx.addAsyncCompletion(on: DispatchQueue.global()) { [backupAttachmentDownloadManager] in
+        // Index threads synchronously
+        fullTextSearchIndexer.indexThreads(tx: tx)
+        // Schedule message indexing asynchronously
+        try fullTextSearchIndexer.scheduleMessagesJob(tx: tx)
+
+        tx.addAsyncCompletion(on: DispatchQueue.global()) { [backupAttachmentDownloadManager, disappearingMessagesJob] in
             Task {
+                // Enqueue downloads for all the attachments.
                 try await backupAttachmentDownloadManager.restoreAttachmentsIfNeeded()
             }
+            // Start ticking down for disappearing messages.
+            disappearingMessagesJob.startIfNecessary()
         }
 
         let endTimeMs = Date().ows_millisecondsSince1970

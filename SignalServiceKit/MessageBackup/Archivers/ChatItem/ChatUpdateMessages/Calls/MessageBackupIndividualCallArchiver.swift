@@ -189,7 +189,12 @@ final class MessageBackupIndividualCallArchiver {
             sentAtTimestamp: chatItem.dateSent
         )
         do {
-            try interactionStore.insert(individualCallInteraction, in: chatThread, context: context)
+            try interactionStore.insert(
+                individualCallInteraction,
+                in: chatThread,
+                chatId: chatItem.typedChatId,
+                context: context
+            )
         } catch let error {
             return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
         }

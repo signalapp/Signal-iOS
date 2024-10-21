@@ -224,7 +224,12 @@ final class MessageBackupGroupUpdateMessageArchiver {
             updateItems: persistableUpdates
         )
         do {
-            try interactionStore.insert(infoMessage, in: chatThread, context: context)
+            try interactionStore.insert(
+                infoMessage,
+                in: chatThread,
+                chatId: chatItem.typedChatId,
+                context: context
+            )
         } catch let error {
             return .messageFailure(partialErrors + [.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
         }

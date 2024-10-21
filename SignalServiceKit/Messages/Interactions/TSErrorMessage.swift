@@ -71,6 +71,7 @@ extension TSErrorMessage {
 // MARK: -
 
 extension TSErrorMessage {
+
     public func plaintextBody(_ tx: SDSAnyReadTransaction) -> String {
         return self.rawBody(transaction: tx) ?? ""
     }

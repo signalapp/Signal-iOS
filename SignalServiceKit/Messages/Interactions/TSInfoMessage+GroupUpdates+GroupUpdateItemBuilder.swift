@@ -1234,7 +1234,7 @@ private struct DiffingGroupUpdateItemBuilder {
                 oldToken: oldDisappearingMessageToken,
                 newToken: newDisappearingMessageToken
             )
-        } else if wasJustMigrated(newGroupModel: newGroupModel) {
+        } else if newGroupModel.wasJustMigratedToV2 {
             addMigrationUpdates(
                 oldGroupMembership: oldGroupModel.groupMembership,
                 newGroupMembership: newGroupModel.groupMembership,
@@ -2442,20 +2442,12 @@ private struct DiffingGroupUpdateItemBuilder {
 
     // MARK: Migration
 
-    private func wasJustMigrated(newGroupModel: TSGroupModel) -> Bool {
-        guard let newGroupModelV2 = newGroupModel as? TSGroupModelV2,
-              newGroupModelV2.wasJustMigrated else {
-            return false
-        }
-        return true
-    }
-
     mutating func addMigrationUpdates(
         oldGroupMembership: GroupMembership,
         newGroupMembership: GroupMembership,
         newGroupModel: TSGroupModel
     ) {
-        owsAssertDebug(wasJustMigrated(newGroupModel: newGroupModel))
+        owsAssertDebug(newGroupModel.wasJustMigratedToV2)
         addItem(.wasMigrated)
     }
 }

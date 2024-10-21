@@ -104,7 +104,12 @@ final class MessageBackupThreadMergeChatUpdateArchiver {
         )
 
         do {
-            try interactionStore.insert(threadMergeInfoMessage, in: chatThread, context: context)
+            try interactionStore.insert(
+                threadMergeInfoMessage,
+                in: chatThread,
+                chatId: chatItem.typedChatId,
+                context: context
+            )
         } catch let error {
             return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
         }

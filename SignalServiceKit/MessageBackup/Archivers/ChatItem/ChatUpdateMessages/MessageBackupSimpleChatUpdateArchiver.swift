@@ -578,7 +578,12 @@ final class MessageBackupSimpleChatUpdateArchiver {
         }
 
         do {
-            try interactionStore.insert(interactionToInsert, in: chatThread, context: context)
+            try interactionStore.insert(
+                interactionToInsert,
+                in: chatThread,
+                chatId: chatItem.typedChatId,
+                context: context
+            )
         } catch let error {
             return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
         }

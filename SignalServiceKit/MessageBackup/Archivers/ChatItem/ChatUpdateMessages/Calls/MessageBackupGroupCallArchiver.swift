@@ -148,7 +148,12 @@ final class MessageBackupGroupCallArchiver {
             sentAtTimestamp: chatItem.dateSent
         )
         do {
-            try interactionStore.insert(groupCallInteraction, in: chatThread, context: context)
+            try interactionStore.insert(
+                groupCallInteraction,
+                in: chatThread,
+                chatId: chatItem.typedChatId,
+                context: context
+            )
         } catch let error {
             return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
         }

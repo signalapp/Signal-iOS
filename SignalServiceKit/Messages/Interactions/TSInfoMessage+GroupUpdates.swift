@@ -158,13 +158,6 @@ public extension TSInfoMessage {
             return nil
 
         case .newGroup, .modelDiff, .precomputed:
-            guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(
-                tx: tx.asV2Read
-            ) else {
-                owsFailDebug("Missing local identifiers!")
-                return nil
-            }
-
             return buildGroupUpdateItems(
                 localIdentifiers: localIdentifiers,
                 tx: tx.asV2Read,

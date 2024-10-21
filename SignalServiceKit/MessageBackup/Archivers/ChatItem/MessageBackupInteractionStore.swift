@@ -26,10 +26,51 @@ public final class MessageBackupInteractionStore {
     func insert(
         _ interaction: TSInteraction,
         in thread: MessageBackup.ChatThread,
+        chatId: MessageBackup.ChatId,
         context: MessageBackup.ChatItemRestoringContext
     ) throws {
-        // TODO: [BackupsPerf] replicate all side effects of sds anyInsert and
-        // insert directly instead of going through the store (it uses SDS save)
-        interactionStore.insertInteraction(interaction, tx: context.tx)
+        guard interaction.shouldBeSaved else {
+            owsFailDebug("Unsaveable interaction in a backup?")
+            return
+        }
+        if let message = interaction as? TSOutgoingMessage {
+            message.updateStoredMessageState()
+        }
+        if let message = interaction as? TSMessage {
+            message.updateStoredShouldStartExpireTimer()
+        }
+
+        let shouldAppearInInbox = interaction.shouldAppearInInbox(
+            groupUpdateItemsBuilder: { infoMessage in
+                // In a backups context, _all_ info message group updates are precomputed.
+                // We can assume this in this builder override.
+                switch infoMessage.groupUpdateMetadata(
+                    localIdentifiers: context.recipientContext.localIdentifiers
+                ) {
+                case .precomputed(let wrapper):
+                    return wrapper.updateItems
+                default:
+                    return nil
+                }
+            }
+        )
+
+        // Note: We do not insert restored messages into the MessageSendLog.
+        // This means if we get a retry request for a message we sent pre-backup
+        // and restore, we'll only send back a Null message. (Until such a day
+        // when resends use the interactions table and not MSL at all).
+
+        try interaction.asRecord().insert(context.tx.databaseConnection)
+
+        guard let interactionRowId = interaction.sqliteRowId else {
+            throw OWSAssertionError("Missing row id after insertion!")
+        }
+
+        if shouldAppearInInbox {
+            context.chatContext.updateLastVisibleInteractionRowId(
+                interactionRowId: interactionRowId,
+                chatId: chatId
+            )
+        }
     }
 }

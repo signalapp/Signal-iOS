@@ -113,7 +113,12 @@ final class MessageBackupLearnedProfileChatUpdateArchiver {
             displayNameBefore: displayNameBefore
         )
         do {
-            try interactionStore.insert(learnedProfileKeyInfoMessage, in: chatThread, context: context)
+            try interactionStore.insert(
+                learnedProfileKeyInfoMessage,
+                in: chatThread,
+                chatId: chatItem.typedChatId,
+                context: context
+            )
         } catch let error {
             return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
         }

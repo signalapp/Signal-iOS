@@ -74,6 +74,11 @@ public class MessageBackupPostFrameRestoreActionManager {
         }
 
         let infoMessage: TSInfoMessage = .makeForContactHidden(contactThread: contactThread)
-        try interactionStore.insert(infoMessage, in: chatThread, context: chatItemContext)
+        try interactionStore.insert(
+            infoMessage,
+            in: chatThread,
+            chatId: chatId,
+            context: chatItemContext
+        )
     }
 }

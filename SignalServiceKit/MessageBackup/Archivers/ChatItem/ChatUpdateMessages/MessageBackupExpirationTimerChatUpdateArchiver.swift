@@ -145,7 +145,12 @@ final class MessageBackupExpirationTimerChatUpdateArchiver {
             createdByRemoteName: createdByRemoteName
         )
         do {
-            try interactionStore.insert(dmUpdateInfoMessage, in: chatThread, context: context)
+            try interactionStore.insert(
+                dmUpdateInfoMessage,
+                in: chatThread,
+                chatId: chatItem.typedChatId,
+                context: context
+            )
         } catch let error {
             return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
         }

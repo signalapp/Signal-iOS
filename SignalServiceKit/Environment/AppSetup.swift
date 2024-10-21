@@ -1000,6 +1000,7 @@ public class AppSetup {
         )
 
         let reactionStore: any ReactionStore = ReactionStoreImpl()
+        let disappearingMessagesJob = OWSDisappearingMessagesJob(appReadiness: appReadiness, databaseStorage: databaseStorage)
 
         let messageBackupChatStyleArchiver = MessageBackupChatStyleArchiver(
             attachmentManager: attachmentManager,
@@ -1077,6 +1078,7 @@ public class AppSetup {
             ),
             dateProvider: dateProvider,
             db: db,
+            disappearingMessagesJob: disappearingMessagesJob,
             distributionListRecipientArchiver: MessageBackupDistributionListRecipientArchiver(
                 privateStoryThreadDeletionManager: privateStoryThreadDeletionManager,
                 storyStore: backupStoryStore,
@@ -1084,6 +1086,16 @@ public class AppSetup {
             ),
             encryptedStreamProvider: MessageBackupEncryptedProtoStreamProviderImpl(
                 backupKeyMaterial: messageBackupKeyMaterial
+            ),
+            fullTextSearchIndexer: MessageBackupFullTextSearchIndexerImpl(
+                appReadiness: appReadiness,
+                dateProvider: dateProvider,
+                db: db,
+                fullTextSearchIndexer: MessageBackupFullTextSearchIndexerImpl.Wrappers.FullTextSearchIndexer(),
+                interactionStore: interactionStore,
+                keyValueStoreFactory: keyValueStoreFactory,
+                mentionStore: MessageBackupFullTextSearchIndexerImpl.Wrappers.MentionStore(),
+                searchableNameIndexer: searchableNameIndexer
             ),
             groupRecipientArchiver: MessageBackupGroupRecipientArchiver(
                 disappearingMessageConfigStore: disappearingMessagesConfigurationStore,
@@ -1306,7 +1318,6 @@ public class AppSetup {
         )
         let messageDecrypter = OWSMessageDecrypter(appReadiness: appReadiness)
         let groupsV2MessageProcessor = GroupsV2MessageProcessor(appReadiness: appReadiness)
-        let disappearingMessagesJob = OWSDisappearingMessagesJob(appReadiness: appReadiness, databaseStorage: databaseStorage)
         let receiptSender = ReceiptSender(
             appReadiness: appReadiness,
             kvStoreFactory: keyValueStoreFactory,

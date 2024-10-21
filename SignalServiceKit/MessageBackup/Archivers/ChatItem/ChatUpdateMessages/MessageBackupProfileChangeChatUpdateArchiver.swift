@@ -115,7 +115,12 @@ final class MessageBackupProfileChangeChatUpdateArchiver {
         )
 
         do {
-            try interactionStore.insert(profileChangeInfoMessage, in: chatThread, context: context)
+            try interactionStore.insert(
+                profileChangeInfoMessage,
+                in: chatThread,
+                chatId: chatItem.typedChatId,
+                context: context
+            )
         } catch let error {
             return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
         }
