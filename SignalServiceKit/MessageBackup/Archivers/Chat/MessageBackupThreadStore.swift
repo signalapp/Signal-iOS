@@ -65,16 +65,20 @@ public final class MessageBackupThreadStore {
     func createNoteToSelfThread(
         context: MessageBackup.ChatRestoringContext
     ) throws -> TSContactThread {
-        // TODO: [BackupsPerf] just create insert a thread instead of get or create
-        return threadStore.getOrCreateContactThread(with: context.recipientContext.localIdentifiers.aciAddress, tx: context.tx)
+        let thread = TSContactThread(contactAddress: context.recipientContext.localIdentifiers.aciAddress)
+        let record = try thread.asRecord()
+        try record.insert(context.tx.databaseConnection)
+        return thread
     }
 
     func createContactThread(
         with address: MessageBackup.ContactAddress,
         context: MessageBackup.ChatRestoringContext
     ) throws -> TSContactThread {
-        // TODO: [BackupsPerf] just create insert a thread instead of get or create
-        return threadStore.getOrCreateContactThread(with: address.asInteropAddress(), tx: context.tx)
+        let thread = TSContactThread(contactAddress: address.asInteropAddress())
+        let record = try thread.asRecord()
+        try record.insert(context.tx.databaseConnection)
+        return thread
     }
 
     func createGroupThread(
@@ -82,17 +86,17 @@ public final class MessageBackupThreadStore {
         isStorySendEnabled: Bool?,
         context: MessageBackup.RestoringContext
     ) throws -> TSGroupThread {
-        // TODO: [BackupsPerf] create and insert a thread directly
-        let groupThread = threadStore.createGroupThread(groupModel: groupModel, tx: context.tx)
-        // TODO: [BackupsPerf] do this in the initial create instead of as an update.
-        if let isStorySendEnabled {
-            threadStore.update(
-                groupThread: groupThread,
-                withStorySendEnabled: isStorySendEnabled,
-                updateStorageService: false,
-                tx: context.tx
-            )
+        let groupThread = TSGroupThread(groupModel: groupModel)
+        switch isStorySendEnabled {
+        case true:
+            groupThread.storyViewMode = .explicit
+        case false:
+            groupThread.storyViewMode = .disabled
+        default:
+            groupThread.storyViewMode = .default
         }
+        let record = try groupThread.asRecord()
+        try record.insert(context.tx.databaseConnection)
         return groupThread
     }
 
@@ -113,13 +117,15 @@ public final class MessageBackupThreadStore {
         // in them anyway), but the boolean does exist for them and the backup integration
         // tests have contact threads with muted mentions. So we set for all thread types.
 
-        // TODO: [BackupsPerf] update the row in the database directly
-        threadStore.update(
-            thread: thread.tsThread,
-            withMentionNotificationMode: .never,
-            // don't issue a storage service update
-            wasLocallyInitiated: false,
-            tx: context.tx
+        try context.tx.databaseConnection.execute(
+            sql: """
+            UPDATE \(TSThread.table.tableName)
+            SET
+                \(TSThreadSerializer.mentionNotificationModeColumn.columnName) = ?
+            WHERE
+                \(TSThreadSerializer.idColumn.columnName) = ?;
+            """,
+            arguments: [TSThreadMentionNotificationMode.never.rawValue, thread.threadRowId]
         )
     }
 
@@ -148,16 +154,13 @@ public final class MessageBackupThreadStore {
         mutedUntilTimestamp: UInt64?,
         context: MessageBackup.ChatRestoringContext
     ) throws {
-        // TODO: [BackupsPerf] don't attempt to fetch, create, insert, and then update. Just create and insert.
-        let threadAssociatedData = threadStore.fetchOrDefaultAssociatedData(for: thread, tx: context.tx)
-        threadStore.updateAssociatedData(
-            threadAssociatedData: threadAssociatedData,
+        let threadAssociatedData = ThreadAssociatedData(
+            threadUniqueId: thread.uniqueId,
             isArchived: isArchived,
             isMarkedUnread: isMarkedUnread,
-            mutedUntilTimestamp: mutedUntilTimestamp,
-            audioPlaybackRate: nil,
-            updateStorageService: false,
-            tx: context.tx
+            mutedUntilTimestamp: mutedUntilTimestamp ?? 0,
+            audioPlaybackRate: 1
         )
+        try threadAssociatedData.insert(context.tx.databaseConnection)
     }
 }

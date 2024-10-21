@@ -43,18 +43,18 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
 
     private let chatStyleArchiver: MessageBackupChatStyleArchiver
     private let dmConfigurationStore: DisappearingMessagesConfigurationStore
-    private let pinnedThreadManager: PinnedThreadManager
+    private let pinnedThreadStore: PinnedThreadStoreWrite
     private let threadStore: MessageBackupThreadStore
 
     public init(
         chatStyleArchiver: MessageBackupChatStyleArchiver,
         dmConfigurationStore: DisappearingMessagesConfigurationStore,
-        pinnedThreadManager: PinnedThreadManager,
+        pinnedThreadStore: PinnedThreadStoreWrite,
         threadStore: MessageBackupThreadStore
     ) {
         self.chatStyleArchiver = chatStyleArchiver
         self.dmConfigurationStore = dmConfigurationStore
-        self.pinnedThreadManager = pinnedThreadManager
+        self.pinnedThreadStore = pinnedThreadStore
         self.threadStore = threadStore
     }
 
@@ -228,7 +228,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         let threadAssociatedData = threadStore.fetchOrDefaultAssociatedData(for: thread.tsThread, context: context)
 
         let thisThreadPinnedOrder: UInt32
-        let pinnedThreadIds = pinnedThreadManager.pinnedThreadIds(tx: context.tx)
+        let pinnedThreadIds = pinnedThreadStore.pinnedThreadIds(tx: context.tx)
         if let pinnedThreadIndex: Int = pinnedThreadIds.firstIndex(of: thread.tsThread.uniqueId) {
             // Add one so we don't start at 0.
             thisThreadPinnedOrder = UInt32(clamping: pinnedThreadIndex + 1)
@@ -380,45 +380,30 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
 
         context.mapChatId(chat.chatId, to: chatThread, recipientId: chat.typedRecipientId)
 
-        var associatedDataNeedsUpdate = false
-        var isArchived = false
-        var isMarkedUnread = false
         var mutedUntilTimestamp: UInt64?
-
-        if chat.archived {
-            // Unarchived is the default, no need to set it if archived = false.
-            isArchived = true
-            associatedDataNeedsUpdate = true
-        }
-        if chat.markedUnread {
-            associatedDataNeedsUpdate = true
-            isMarkedUnread = true
-        }
         if chat.muteUntilMs != 0 {
-            associatedDataNeedsUpdate = true
             mutedUntilTimestamp = chat.muteUntilMs
         }
 
-        if associatedDataNeedsUpdate {
-            do {
-                try threadStore.createAssociatedData(
-                    for: chatThread.tsThread,
-                    isArchived: isArchived,
-                    isMarkedUnread: isMarkedUnread,
-                    mutedUntilTimestamp: mutedUntilTimestamp,
-                    context: context
-                )
-            } catch let error {
-                return .failure(partialErrors + [.restoreFrameError(.databaseInsertionFailed(error), chat.chatId)])
-            }
+        do {
+            try threadStore.createAssociatedData(
+                for: chatThread.tsThread,
+                isArchived: chat.archived,
+                isMarkedUnread: chat.markedUnread,
+                mutedUntilTimestamp: mutedUntilTimestamp,
+                context: context
+            )
+        } catch let error {
+            return .failure(partialErrors + [.restoreFrameError(.databaseInsertionFailed(error), chat.chatId)])
         }
 
         if chat.pinnedOrder != 0 {
             let newPinnedThreadIds = context.pinnedThreadOrder(
                 newPinnedThreadId: MessageBackup.ThreadUniqueId(chatThread: chatThread),
+                newPinnedThreadChatId: chat.chatId,
                 newPinnedThreadIndex: chat.pinnedOrder
             )
-            pinnedThreadManager.updatePinnedThreadIds(newPinnedThreadIds.map(\.value), updateStorageService: false, tx: context.tx)
+            pinnedThreadStore.updatePinnedThreadIds(newPinnedThreadIds.map(\.value), tx: context.tx)
         }
 
         guard let expiresInSeconds: UInt32 = .msToSecs(chat.expirationTimerMs) else {

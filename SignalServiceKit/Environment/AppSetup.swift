@@ -1044,7 +1044,7 @@ public class AppSetup {
             chatArchiver: MessageBackupChatArchiverImpl(
                 chatStyleArchiver: messageBackupChatStyleArchiver,
                 dmConfigurationStore: disappearingMessagesConfigurationStore,
-                pinnedThreadManager: pinnedThreadManager,
+                pinnedThreadStore: pinnedThreadStore,
                 threadStore: backupThreadStore
             ),
             chatItemArchiver: MessageBackupChatItemArchiverImpl(
@@ -1112,6 +1112,7 @@ public class AppSetup {
             postFrameRestoreActionManager: MessageBackupPostFrameRestoreActionManager(
                 interactionStore: backupInteractionStore,
                 recipientDatabaseTable: recipientDatabaseTable,
+                sskPreferences: MessageBackupPostFrameRestoreActionManager.Wrappers.SSKPreferences(),
                 threadStore: backupThreadStore
             ),
             releaseNotesRecipientArchiver: MessageBackupReleaseNotesRecipientArchiver(),

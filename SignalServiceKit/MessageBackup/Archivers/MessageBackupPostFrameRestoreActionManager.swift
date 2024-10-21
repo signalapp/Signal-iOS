@@ -12,15 +12,18 @@ public class MessageBackupPostFrameRestoreActionManager {
 
     private let interactionStore: MessageBackupInteractionStore
     private let recipientDatabaseTable: RecipientDatabaseTable
+    private let sskPreferences: Shims.SSKPreferences
     private let threadStore: MessageBackupThreadStore
 
     init(
         interactionStore: MessageBackupInteractionStore,
         recipientDatabaseTable: RecipientDatabaseTable,
+        sskPreferences: Shims.SSKPreferences,
         threadStore: MessageBackupThreadStore
     ) {
         self.interactionStore = interactionStore
         self.recipientDatabaseTable = recipientDatabaseTable
+        self.sskPreferences = sskPreferences
         self.threadStore = threadStore
     }
 
@@ -40,17 +43,22 @@ public class MessageBackupPostFrameRestoreActionManager {
         // messages which may themselves influence the set of chat actions.
         // (At time of writing, ordering is irrelevant, because hiding info messages aren't "visible".
         // But ordering requirements could change in the future).
+        var wasAnyThreadVisible = false
         for (chatId, actions) in chatActions {
             guard let thread = chatItemContext.chatContext[chatId] else {
                 continue
             }
             if actions.shouldBeMarkedVisible {
+                wasAnyThreadVisible = true
                 try threadStore.markVisible(
                     thread: thread,
                     lastInteractionRowId: actions.lastVisibleInteractionRowId,
                     context: chatItemContext.chatContext
                 )
             }
+        }
+        if wasAnyThreadVisible {
+            sskPreferences.setHasSavedThread(true, tx: chatItemContext.tx)
         }
     }
 
@@ -80,5 +88,27 @@ public class MessageBackupPostFrameRestoreActionManager {
             chatId: chatId,
             context: chatItemContext
         )
+    }
+}
+
+extension MessageBackupPostFrameRestoreActionManager {
+    public enum Shims {
+        public typealias SSKPreferences = _MessageBackupPostFrameRestoreActionManager_SSKPreferencesShim
+    }
+    public enum Wrappers {
+        public typealias SSKPreferences = _MessageBackupPostFrameRestoreActionManager_SSKPreferencesWrapper
+    }
+}
+
+public protocol _MessageBackupPostFrameRestoreActionManager_SSKPreferencesShim {
+    func setHasSavedThread(_ newValue: Bool, tx: DBWriteTransaction)
+}
+
+public class _MessageBackupPostFrameRestoreActionManager_SSKPreferencesWrapper: MessageBackupPostFrameRestoreActionManager.Shims.SSKPreferences {
+
+    public init() {}
+
+    public func setHasSavedThread(_ newValue: Bool, tx: DBWriteTransaction) {
+        SSKPreferences.setHasSavedThread(newValue, transaction: SDSDB.shimOnlyBridge(tx))
     }
 }

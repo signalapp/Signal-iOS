@@ -186,9 +186,11 @@ extension MessageBackup {
         /// Given a newly encountered pinned thread, return all pinned thread ids encountered so far, in order.
         internal func pinnedThreadOrder(
             newPinnedThreadId: ThreadUniqueId,
+            newPinnedThreadChatId: ChatId,
             newPinnedThreadIndex: UInt32
         ) -> [ThreadUniqueId] {
             pinnedThreadIndexMap[newPinnedThreadId] = newPinnedThreadIndex
+            setChatIsPinned(chatId: newPinnedThreadChatId)
             return pinnedThreadIndexMap
                 .keys
                 .lazy
