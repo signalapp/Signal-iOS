@@ -1004,6 +1004,13 @@ public class AppSetup {
             tsAccountManager: tsAccountManager
         )
 
+        let backupSubscriptionManager = BackupSubscriptionManagerImpl(
+            dateProvider: dateProvider,
+            db: db,
+            keyValueStoreFactory: keyValueStoreFactory,
+            networkManager: networkManager
+        )
+
         let reactionStore: any ReactionStore = ReactionStoreImpl()
         let disappearingMessagesJob = OWSDisappearingMessagesJob(appReadiness: appReadiness, databaseStorage: databaseStorage)
 
@@ -1205,6 +1212,7 @@ public class AppSetup {
             authorMergeHelper: authorMergeHelper,
             backupAttachmentDownloadManager: backupAttachmentDownloadManager,
             backupAttachmentUploadManager: backupAttachmentUploadManager,
+            backupSubscriptionManager: backupSubscriptionManager,
             badgeCountFetcher: badgeCountFetcher,
             callLinkStore: callLinkStore,
             callRecordDeleteManager: callRecordDeleteManager,

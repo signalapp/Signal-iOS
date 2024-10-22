@@ -306,7 +306,7 @@ private class SendGiftBadgeJobRunner: JobRunner {
         receiptCredentialRequest: ReceiptCredentialRequest,
         receiptCredentialRequestContext: ReceiptCredentialRequestContext
     ) async throws -> ReceiptCredentialPresentation {
-        try await SubscriptionManagerImpl.requestReceiptCredentialPresentation(
+        let receiptCredential = try await SubscriptionManagerImpl.requestReceiptCredential(
             boostPaymentIntentId: paymentIntentId,
             expectedBadgeLevel: .giftBadge(.signalGift),
             paymentProcessor: payment.processor,
@@ -314,6 +314,10 @@ private class SendGiftBadgeJobRunner: JobRunner {
             request: receiptCredentialRequest,
             logger: PrefixedLogger(prefix: "[Donations]")
         ).awaitable()
+
+        return try SubscriptionManagerImpl.generateReceiptCredentialPresentation(
+            receiptCredential: receiptCredential
+        )
     }
 
     private func enqueueMessages(

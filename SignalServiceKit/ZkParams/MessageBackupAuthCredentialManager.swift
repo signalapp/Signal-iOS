@@ -68,10 +68,7 @@ public struct MessageBackupAuthCredentialManagerImpl: MessageBackupAuthCredentia
             return authCredential
         }
 
-        let backupKey = try db.read { tx in
-            return try messageBackupKeyMaterial.backupID(localAci: localAci, tx: tx)
-        }
-        let authCredentials = try await fetchNewAuthCredentials(backupKey: backupKey, localAci: localAci, auth: auth)
+        let authCredentials = try await fetchNewAuthCredentials(localAci: localAci, auth: auth)
 
         await db.awaitableWrite { tx in
             self.authCredentialStore.removeAllBackupAuthCredentials(tx: tx)
@@ -93,7 +90,6 @@ public struct MessageBackupAuthCredentialManagerImpl: MessageBackupAuthCredentia
     }
 
     private func fetchNewAuthCredentials(
-        backupKey: Data,
         localAci: Aci,
         auth: ChatServiceAuth
     ) async throws -> [ReceivedBackupAuthCredentials] {

@@ -552,11 +552,11 @@ private class ReceiptCredentialRedemptionJobRunner: JobRunner {
         badge: ProfileBadge,
         amount: FiatMoney
     ) async throws -> ReceiptCredentialPresentation {
-        let receiptCredentialPresentation: ReceiptCredentialPresentation
+        let receiptCredential: ReceiptCredential
         switch configuration.paymentType {
         case let .oneTimeBoost(paymentIntentId: paymentIntentId, amount: _):
             logger.info("Durable job requesting receipt for boost")
-            receiptCredentialPresentation = try await SubscriptionManagerImpl.requestReceiptCredentialPresentation(
+            receiptCredential = try await SubscriptionManagerImpl.requestReceiptCredential(
                 boostPaymentIntentId: paymentIntentId,
                 expectedBadgeLevel: .boostBadge,
                 paymentProcessor: configuration.paymentProcessor,
@@ -567,7 +567,7 @@ private class ReceiptCredentialRedemptionJobRunner: JobRunner {
 
         case let .recurringSubscription(subscriberId, targetSubscriptionLevel, priorSubscriptionLevel, _, _):
             logger.info("Durable job requesting receipt for subscription")
-            receiptCredentialPresentation = try await SubscriptionManagerImpl.requestReceiptCredentialPresentation(
+            receiptCredential = try await SubscriptionManagerImpl.requestReceiptCredential(
                 subscriberId: subscriberId,
                 isValidReceiptLevelPredicate: { receiptLevel -> Bool in
                     // Validate that receipt credential level matches requested
@@ -585,9 +585,16 @@ private class ReceiptCredentialRedemptionJobRunner: JobRunner {
                 logger: logger
             ).awaitable()
         }
+
+        let receiptCredentialPresentation = try SubscriptionManagerImpl.generateReceiptCredentialPresentation(
+            receiptCredential: receiptCredential
+        )
+
+        // TODO: [Donations] We should persist the receipt credential, rather than the presentation.
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             jobRecord.setReceiptCredentialPresentation(receiptCredentialPresentation.serialize().asData, tx: tx)
         }
+
         return receiptCredentialPresentation
     }
 

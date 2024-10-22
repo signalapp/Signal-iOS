@@ -194,6 +194,18 @@ public extension Notification.Name {
     static let hasExpiredGiftBadgeDidChangeNotification = NSNotification.Name("hasExpiredGiftBadgeDidChangeNotification")
 }
 
+/// Responsible for one-time and recurring-subscription actions related to
+/// donation payments and their resulting profile badges.
+///
+/// - Note
+/// Donation payments are done via external payment processors (Stripe and
+/// Braintree) that consequently require custom, in-app payments management; for
+/// example, subscriptions are cancelled via in-app UI.
+///
+/// - Important
+/// Not to be confused with ``BackupSubscriptionManager``, which does many
+/// similar things but designed around In-App Payments (StoreKit) and paid-tier
+/// Backups.
 @objc
 public class SubscriptionManagerImpl: NSObject {
 
@@ -651,13 +663,13 @@ public class SubscriptionManagerImpl: NSObject {
         }
     }
 
-    public class func requestReceiptCredentialPresentation(
+    public class func requestReceiptCredential(
         subscriberId: Data,
         isValidReceiptLevelPredicate: @escaping (UInt64) -> Bool,
         context: ReceiptCredentialRequestContext,
         request: ReceiptCredentialRequest,
         logger: PrefixedLogger
-    ) throws -> Promise<ReceiptCredentialPresentation> {
+    ) throws -> Promise<ReceiptCredential> {
         return firstly {
             let networkRequest = OWSRequestFactory.subscriptionReceiptCredentialsRequest(
                 subscriberID: subscriberId,
@@ -665,26 +677,26 @@ public class SubscriptionManagerImpl: NSObject {
             )
 
             return SSKEnvironment.shared.networkManagerRef.makePromise(request: networkRequest)
-        }.map(on: DispatchQueue.global()) { response throws -> ReceiptCredentialPresentation in
-            return try self.parseReceiptCredentialPresentationResponse(
+        }.map(on: DispatchQueue.global()) { response throws -> ReceiptCredential in
+            return try self.parseReceiptCredentialResponse(
                 httpResponse: response,
                 receiptCredentialRequestContext: context,
                 isValidReceiptLevelPredicate: isValidReceiptLevelPredicate,
                 logger: logger
             )
-        }.recover(on: DispatchQueue.global()) { error throws -> Promise<ReceiptCredentialPresentation> in
+        }.recover(on: DispatchQueue.global()) { error throws -> Promise<ReceiptCredential> in
             throw parseReceiptCredentialPresentationError(error: error)
         }
     }
 
-    public static func requestReceiptCredentialPresentation(
+    public static func requestReceiptCredential(
         boostPaymentIntentId: String,
         expectedBadgeLevel: OneTimeBadgeLevel,
         paymentProcessor: DonationPaymentProcessor,
         context: ReceiptCredentialRequestContext,
         request: ReceiptCredentialRequest,
         logger: PrefixedLogger
-    ) throws -> Promise<ReceiptCredentialPresentation> {
+    ) throws -> Promise<ReceiptCredential> {
         return firstly {
             let networkRequest = OWSRequestFactory.boostReceiptCredentials(
                 with: boostPaymentIntentId,
@@ -693,8 +705,8 @@ public class SubscriptionManagerImpl: NSObject {
             )
 
             return SSKEnvironment.shared.networkManagerRef.makePromise(request: networkRequest)
-        }.map(on: DispatchQueue.global()) { response throws -> ReceiptCredentialPresentation in
-            return try self.parseReceiptCredentialPresentationResponse(
+        }.map(on: DispatchQueue.global()) { response throws -> ReceiptCredential in
+            return try self.parseReceiptCredentialResponse(
                 httpResponse: response,
                 receiptCredentialRequestContext: context,
                 isValidReceiptLevelPredicate: { receiptLevel in
@@ -702,17 +714,25 @@ public class SubscriptionManagerImpl: NSObject {
                 },
                 logger: logger
             )
-        }.recover(on: DispatchQueue.global()) { error throws -> Promise<ReceiptCredentialPresentation> in
+        }.recover(on: DispatchQueue.global()) { error throws -> Promise<ReceiptCredential> in
             throw parseReceiptCredentialPresentationError(error: error)
         }
     }
 
-    private class func parseReceiptCredentialPresentationResponse(
+    public static func generateReceiptCredentialPresentation(
+        receiptCredential: ReceiptCredential
+    ) throws -> ReceiptCredentialPresentation {
+        return try clientZKReceiptOperations().createReceiptCredentialPresentation(
+            receiptCredential: receiptCredential
+        )
+    }
+
+    private class func parseReceiptCredentialResponse(
         httpResponse: HTTPResponse,
         receiptCredentialRequestContext: ReceiptCredentialRequestContext,
         isValidReceiptLevelPredicate: (UInt64) -> Bool,
         logger: PrefixedLogger
-    ) throws -> ReceiptCredentialPresentation {
+    ) throws -> ReceiptCredential {
         let clientOperations = try clientZKReceiptOperations()
 
         let httpStatusCode = httpResponse.responseStatusCode
@@ -771,9 +791,7 @@ public class SubscriptionManagerImpl: NSObject {
             throw failValidation("Invalid receipt credential expiration!")
         }
 
-        return try clientOperations.createReceiptCredentialPresentation(
-            receiptCredential: receiptCredential
-        )
+        return receiptCredential
     }
 
     private class func parseReceiptCredentialPresentationError(
