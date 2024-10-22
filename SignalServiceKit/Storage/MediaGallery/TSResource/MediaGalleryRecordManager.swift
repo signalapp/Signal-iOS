@@ -90,7 +90,7 @@ public final class MediaGalleryRecordManager: NSObject {
                 throw OWSAssertionError("attachmentRowId was unexpectedly nil")
             }
             legacyAttachmentRowId = attachmentRowId
-            guard let index = message.attachmentIds.firstIndex(of: tsAttachmentRef.uniqueId) else {
+            guard let index = message.attachmentIds?.firstIndex(of: tsAttachmentRef.uniqueId) else {
                 owsFailDebug("originalAlbumIndex was unexpectedly nil")
                 return nil
             }

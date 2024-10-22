@@ -21,7 +21,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 @interface TSMessage ()
 
 /// These are body attachments.
-@property (nonatomic) NSArray<NSString *> *attachmentIds;
+@property (nonatomic, nullable) NSArray<NSString *> *attachmentIds;
 @property (nonatomic, nullable) NSString *body;
 @property (nonatomic, nullable) MessageBodyRanges *bodyRanges;
 
@@ -85,7 +85,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     } else if (messageBuilder.messageBody != nil) {
         OWSFailDebug(@"Empty message body.");
     }
-    _attachmentIds = @[];
+    _attachmentIds = nil;
     _editState = messageBuilder.editState;
     _expiresInSeconds = messageBuilder.expiresInSeconds;
     _expireStartedAt = messageBuilder.expireStartedAt;
@@ -123,7 +123,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                           sortId:(uint64_t)sortId
                        timestamp:(uint64_t)timestamp
                   uniqueThreadId:(NSString *)uniqueThreadId
-                   attachmentIds:(NSArray<NSString *> *)attachmentIds
+                   attachmentIds:(nullable NSArray<NSString *> *)attachmentIds
                             body:(nullable NSString *)body
                       bodyRanges:(nullable MessageBodyRanges *)bodyRanges
                     contactShare:(nullable OWSContact *)contactShare
@@ -236,10 +236,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         }
     }
 
-    if (!_attachmentIds) {
-        _attachmentIds = @[];
-    }
-
     _schemaVersion = OWSMessageSchemaVersion;
 
     // Upgrades legacy messages.
@@ -320,12 +316,12 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 #pragma mark - Attachments
 
-- (NSArray<NSString *> *)attachmentIds
+- (nullable NSArray<NSString *> *)attachmentIds
 {
     return _attachmentIds;
 }
 
-- (void)setLegacyBodyAttachmentIds:(NSArray<NSString *> *)attachmentIds
+- (void)setLegacyBodyAttachmentIds:(nullable NSArray<NSString *> *)attachmentIds
 {
     _attachmentIds = attachmentIds;
 }

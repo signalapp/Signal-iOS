@@ -315,7 +315,7 @@ extension TSInteraction {
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
-            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
+            let attachmentIds: [String]? = try SDSDeserialization.optionalUnarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = record.body
             let bodyRangesSerialized: Data? = record.bodyRanges
             let bodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(bodyRangesSerialized, name: "bodyRanges")
@@ -399,7 +399,7 @@ extension TSInteraction {
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
-            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
+            let attachmentIds: [String]? = try SDSDeserialization.optionalUnarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = record.body
             let bodyRangesSerialized: Data? = record.bodyRanges
             let bodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(bodyRangesSerialized, name: "bodyRanges")
@@ -483,7 +483,7 @@ extension TSInteraction {
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
-            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
+            let attachmentIds: [String]? = try SDSDeserialization.optionalUnarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = record.body
             let bodyRangesSerialized: Data? = record.bodyRanges
             let bodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(bodyRangesSerialized, name: "bodyRanges")
@@ -601,7 +601,7 @@ extension TSInteraction {
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
-            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
+            let attachmentIds: [String]? = try SDSDeserialization.optionalUnarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = record.body
             let bodyRangesSerialized: Data? = record.bodyRanges
             let bodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(bodyRangesSerialized, name: "bodyRanges")
@@ -690,7 +690,7 @@ extension TSInteraction {
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
-            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
+            let attachmentIds: [String]? = try SDSDeserialization.optionalUnarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = record.body
             let bodyRangesSerialized: Data? = record.bodyRanges
             let bodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(bodyRangesSerialized, name: "bodyRanges")
@@ -783,7 +783,7 @@ extension TSInteraction {
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
-            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
+            let attachmentIds: [String]? = try SDSDeserialization.optionalUnarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = record.body
             let bodyRangesSerialized: Data? = record.bodyRanges
             let bodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(bodyRangesSerialized, name: "bodyRanges")
@@ -883,7 +883,7 @@ extension TSInteraction {
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
-            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
+            let attachmentIds: [String]? = try SDSDeserialization.optionalUnarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = record.body
             let bodyRangesSerialized: Data? = record.bodyRanges
             let bodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(bodyRangesSerialized, name: "bodyRanges")
@@ -987,7 +987,7 @@ extension TSInteraction {
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
-            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
+            let attachmentIds: [String]? = try SDSDeserialization.optionalUnarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = record.body
             let bodyRangesSerialized: Data? = record.bodyRanges
             let bodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(bodyRangesSerialized, name: "bodyRanges")
@@ -1084,7 +1084,7 @@ extension TSInteraction {
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
-            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
+            let attachmentIds: [String]? = try SDSDeserialization.optionalUnarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = record.body
             let bodyRangesSerialized: Data? = record.bodyRanges
             let bodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(bodyRangesSerialized, name: "bodyRanges")
@@ -1181,7 +1181,7 @@ extension TSInteraction {
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
-            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
+            let attachmentIds: [String]? = try SDSDeserialization.optionalUnarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = record.body
             let bodyRangesSerialized: Data? = record.bodyRanges
             let bodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(bodyRangesSerialized, name: "bodyRanges")
@@ -1263,7 +1263,7 @@ extension TSInteraction {
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
-            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
+            let attachmentIds: [String]? = try SDSDeserialization.optionalUnarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = record.body
             let bodyRangesSerialized: Data? = record.bodyRanges
             let bodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(bodyRangesSerialized, name: "bodyRanges")
@@ -1345,7 +1345,7 @@ extension TSInteraction {
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
-            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
+            let attachmentIds: [String]? = try SDSDeserialization.optionalUnarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = record.body
             let bodyRangesSerialized: Data? = record.bodyRanges
             let bodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(bodyRangesSerialized, name: "bodyRanges")
@@ -1434,7 +1434,7 @@ extension TSInteraction {
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
-            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
+            let attachmentIds: [String]? = try SDSDeserialization.optionalUnarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = record.body
             let bodyRangesSerialized: Data? = record.bodyRanges
             let bodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(bodyRangesSerialized, name: "bodyRanges")
@@ -1552,7 +1552,7 @@ extension TSInteraction {
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
-            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
+            let attachmentIds: [String]? = try SDSDeserialization.optionalUnarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = record.body
             let bodyRangesSerialized: Data? = record.bodyRanges
             let bodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(bodyRangesSerialized, name: "bodyRanges")
@@ -1634,7 +1634,7 @@ extension TSInteraction {
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
-            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
+            let attachmentIds: [String]? = try SDSDeserialization.optionalUnarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = record.body
             let bodyRangesSerialized: Data? = record.bodyRanges
             let bodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(bodyRangesSerialized, name: "bodyRanges")
@@ -1720,7 +1720,7 @@ extension TSInteraction {
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
-            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
+            let attachmentIds: [String]? = try SDSDeserialization.optionalUnarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = record.body
             let bodyRangesSerialized: Data? = record.bodyRanges
             let bodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(bodyRangesSerialized, name: "bodyRanges")
@@ -1819,7 +1819,7 @@ extension TSInteraction {
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
-            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
+            let attachmentIds: [String]? = try SDSDeserialization.optionalUnarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = record.body
             let bodyRangesSerialized: Data? = record.bodyRanges
             let bodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(bodyRangesSerialized, name: "bodyRanges")
@@ -1901,7 +1901,7 @@ extension TSInteraction {
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
-            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
+            let attachmentIds: [String]? = try SDSDeserialization.optionalUnarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = record.body
             let bodyRangesSerialized: Data? = record.bodyRanges
             let bodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(bodyRangesSerialized, name: "bodyRanges")
@@ -1987,7 +1987,7 @@ extension TSInteraction {
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
-            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
+            let attachmentIds: [String]? = try SDSDeserialization.optionalUnarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = record.body
             let bodyRangesSerialized: Data? = record.bodyRanges
             let bodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(bodyRangesSerialized, name: "bodyRanges")
@@ -2073,7 +2073,7 @@ extension TSInteraction {
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
-            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
+            let attachmentIds: [String]? = try SDSDeserialization.optionalUnarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = record.body
             let bodyRangesSerialized: Data? = record.bodyRanges
             let bodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(bodyRangesSerialized, name: "bodyRanges")
@@ -2141,7 +2141,7 @@ extension TSInteraction {
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
-            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
+            let attachmentIds: [String]? = try SDSDeserialization.optionalUnarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = record.body
             let bodyRangesSerialized: Data? = record.bodyRanges
             let bodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(bodyRangesSerialized, name: "bodyRanges")
@@ -2386,8 +2386,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             // NOTE: If this generates build errors, you made need to
-            // implement DeepCopyable for this type in DeepCopy.swift.
-            let attachmentIds: [String] = try DeepCopies.deepCopy(modelToCopy.attachmentIds)
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let attachmentIds: [String]?
+            if let attachmentIdsForCopy = modelToCopy.attachmentIds {
+               attachmentIds = try DeepCopies.deepCopy(attachmentIdsForCopy)
+            } else {
+               attachmentIds = nil
+            }
             let body: String? = modelToCopy.body
             // NOTE: If this generates build errors, you made need to
             // modify DeepCopy.swift to support this type.
@@ -2554,8 +2564,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             // NOTE: If this generates build errors, you made need to
-            // implement DeepCopyable for this type in DeepCopy.swift.
-            let attachmentIds: [String] = try DeepCopies.deepCopy(modelToCopy.attachmentIds)
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let attachmentIds: [String]?
+            if let attachmentIdsForCopy = modelToCopy.attachmentIds {
+               attachmentIds = try DeepCopies.deepCopy(attachmentIdsForCopy)
+            } else {
+               attachmentIds = nil
+            }
             let body: String? = modelToCopy.body
             // NOTE: If this generates build errors, you made need to
             // modify DeepCopy.swift to support this type.
@@ -2722,8 +2742,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             // NOTE: If this generates build errors, you made need to
-            // implement DeepCopyable for this type in DeepCopy.swift.
-            let attachmentIds: [String] = try DeepCopies.deepCopy(modelToCopy.attachmentIds)
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let attachmentIds: [String]?
+            if let attachmentIdsForCopy = modelToCopy.attachmentIds {
+               attachmentIds = try DeepCopies.deepCopy(attachmentIdsForCopy)
+            } else {
+               attachmentIds = nil
+            }
             let body: String? = modelToCopy.body
             // NOTE: If this generates build errors, you made need to
             // modify DeepCopy.swift to support this type.
@@ -2908,8 +2938,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             // NOTE: If this generates build errors, you made need to
-            // implement DeepCopyable for this type in DeepCopy.swift.
-            let attachmentIds: [String] = try DeepCopies.deepCopy(modelToCopy.attachmentIds)
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let attachmentIds: [String]?
+            if let attachmentIdsForCopy = modelToCopy.attachmentIds {
+               attachmentIds = try DeepCopies.deepCopy(attachmentIdsForCopy)
+            } else {
+               attachmentIds = nil
+            }
             let body: String? = modelToCopy.body
             // NOTE: If this generates build errors, you made need to
             // modify DeepCopy.swift to support this type.
@@ -3080,8 +3120,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             // NOTE: If this generates build errors, you made need to
-            // implement DeepCopyable for this type in DeepCopy.swift.
-            let attachmentIds: [String] = try DeepCopies.deepCopy(modelToCopy.attachmentIds)
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let attachmentIds: [String]?
+            if let attachmentIdsForCopy = modelToCopy.attachmentIds {
+               attachmentIds = try DeepCopies.deepCopy(attachmentIdsForCopy)
+            } else {
+               attachmentIds = nil
+            }
             let body: String? = modelToCopy.body
             // NOTE: If this generates build errors, you made need to
             // modify DeepCopy.swift to support this type.
@@ -3248,8 +3298,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             // NOTE: If this generates build errors, you made need to
-            // implement DeepCopyable for this type in DeepCopy.swift.
-            let attachmentIds: [String] = try DeepCopies.deepCopy(modelToCopy.attachmentIds)
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let attachmentIds: [String]?
+            if let attachmentIdsForCopy = modelToCopy.attachmentIds {
+               attachmentIds = try DeepCopies.deepCopy(attachmentIdsForCopy)
+            } else {
+               attachmentIds = nil
+            }
             let body: String? = modelToCopy.body
             // NOTE: If this generates build errors, you made need to
             // modify DeepCopy.swift to support this type.
@@ -3426,8 +3486,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             // NOTE: If this generates build errors, you made need to
-            // implement DeepCopyable for this type in DeepCopy.swift.
-            let attachmentIds: [String] = try DeepCopies.deepCopy(modelToCopy.attachmentIds)
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let attachmentIds: [String]?
+            if let attachmentIdsForCopy = modelToCopy.attachmentIds {
+               attachmentIds = try DeepCopies.deepCopy(attachmentIdsForCopy)
+            } else {
+               attachmentIds = nil
+            }
             let body: String? = modelToCopy.body
             // NOTE: If this generates build errors, you made need to
             // modify DeepCopy.swift to support this type.
@@ -3612,8 +3682,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             // NOTE: If this generates build errors, you made need to
-            // implement DeepCopyable for this type in DeepCopy.swift.
-            let attachmentIds: [String] = try DeepCopies.deepCopy(modelToCopy.attachmentIds)
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let attachmentIds: [String]?
+            if let attachmentIdsForCopy = modelToCopy.attachmentIds {
+               attachmentIds = try DeepCopies.deepCopy(attachmentIdsForCopy)
+            } else {
+               attachmentIds = nil
+            }
             let body: String? = modelToCopy.body
             // NOTE: If this generates build errors, you made need to
             // modify DeepCopy.swift to support this type.
@@ -3790,8 +3870,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             // NOTE: If this generates build errors, you made need to
-            // implement DeepCopyable for this type in DeepCopy.swift.
-            let attachmentIds: [String] = try DeepCopies.deepCopy(modelToCopy.attachmentIds)
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let attachmentIds: [String]?
+            if let attachmentIdsForCopy = modelToCopy.attachmentIds {
+               attachmentIds = try DeepCopies.deepCopy(attachmentIdsForCopy)
+            } else {
+               attachmentIds = nil
+            }
             let body: String? = modelToCopy.body
             // NOTE: If this generates build errors, you made need to
             // modify DeepCopy.swift to support this type.
@@ -3960,8 +4050,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             // NOTE: If this generates build errors, you made need to
-            // implement DeepCopyable for this type in DeepCopy.swift.
-            let attachmentIds: [String] = try DeepCopies.deepCopy(modelToCopy.attachmentIds)
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let attachmentIds: [String]?
+            if let attachmentIdsForCopy = modelToCopy.attachmentIds {
+               attachmentIds = try DeepCopies.deepCopy(attachmentIdsForCopy)
+            } else {
+               attachmentIds = nil
+            }
             let body: String? = modelToCopy.body
             // NOTE: If this generates build errors, you made need to
             // modify DeepCopy.swift to support this type.
@@ -4130,8 +4230,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             // NOTE: If this generates build errors, you made need to
-            // implement DeepCopyable for this type in DeepCopy.swift.
-            let attachmentIds: [String] = try DeepCopies.deepCopy(modelToCopy.attachmentIds)
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let attachmentIds: [String]?
+            if let attachmentIdsForCopy = modelToCopy.attachmentIds {
+               attachmentIds = try DeepCopies.deepCopy(attachmentIdsForCopy)
+            } else {
+               attachmentIds = nil
+            }
             let body: String? = modelToCopy.body
             // NOTE: If this generates build errors, you made need to
             // modify DeepCopy.swift to support this type.
@@ -4300,8 +4410,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             // NOTE: If this generates build errors, you made need to
-            // implement DeepCopyable for this type in DeepCopy.swift.
-            let attachmentIds: [String] = try DeepCopies.deepCopy(modelToCopy.attachmentIds)
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let attachmentIds: [String]?
+            if let attachmentIdsForCopy = modelToCopy.attachmentIds {
+               attachmentIds = try DeepCopies.deepCopy(attachmentIdsForCopy)
+            } else {
+               attachmentIds = nil
+            }
             let body: String? = modelToCopy.body
             // NOTE: If this generates build errors, you made need to
             // modify DeepCopy.swift to support this type.
@@ -4470,8 +4590,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             // NOTE: If this generates build errors, you made need to
-            // implement DeepCopyable for this type in DeepCopy.swift.
-            let attachmentIds: [String] = try DeepCopies.deepCopy(modelToCopy.attachmentIds)
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let attachmentIds: [String]?
+            if let attachmentIdsForCopy = modelToCopy.attachmentIds {
+               attachmentIds = try DeepCopies.deepCopy(attachmentIdsForCopy)
+            } else {
+               attachmentIds = nil
+            }
             let body: String? = modelToCopy.body
             // NOTE: If this generates build errors, you made need to
             // modify DeepCopy.swift to support this type.
@@ -4626,8 +4756,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             // NOTE: If this generates build errors, you made need to
-            // implement DeepCopyable for this type in DeepCopy.swift.
-            let attachmentIds: [String] = try DeepCopies.deepCopy(modelToCopy.attachmentIds)
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let attachmentIds: [String]?
+            if let attachmentIdsForCopy = modelToCopy.attachmentIds {
+               attachmentIds = try DeepCopies.deepCopy(attachmentIdsForCopy)
+            } else {
+               attachmentIds = nil
+            }
             let body: String? = modelToCopy.body
             // NOTE: If this generates build errors, you made need to
             // modify DeepCopy.swift to support this type.
@@ -4778,8 +4918,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             // NOTE: If this generates build errors, you made need to
-            // implement DeepCopyable for this type in DeepCopy.swift.
-            let attachmentIds: [String] = try DeepCopies.deepCopy(modelToCopy.attachmentIds)
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let attachmentIds: [String]?
+            if let attachmentIdsForCopy = modelToCopy.attachmentIds {
+               attachmentIds = try DeepCopies.deepCopy(attachmentIdsForCopy)
+            } else {
+               attachmentIds = nil
+            }
             let body: String? = modelToCopy.body
             // NOTE: If this generates build errors, you made need to
             // modify DeepCopy.swift to support this type.
@@ -4950,8 +5100,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             // NOTE: If this generates build errors, you made need to
-            // implement DeepCopyable for this type in DeepCopy.swift.
-            let attachmentIds: [String] = try DeepCopies.deepCopy(modelToCopy.attachmentIds)
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let attachmentIds: [String]?
+            if let attachmentIdsForCopy = modelToCopy.attachmentIds {
+               attachmentIds = try DeepCopies.deepCopy(attachmentIdsForCopy)
+            } else {
+               attachmentIds = nil
+            }
             let body: String? = modelToCopy.body
             // NOTE: If this generates build errors, you made need to
             // modify DeepCopy.swift to support this type.
@@ -5122,8 +5282,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             // NOTE: If this generates build errors, you made need to
-            // implement DeepCopyable for this type in DeepCopy.swift.
-            let attachmentIds: [String] = try DeepCopies.deepCopy(modelToCopy.attachmentIds)
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let attachmentIds: [String]?
+            if let attachmentIdsForCopy = modelToCopy.attachmentIds {
+               attachmentIds = try DeepCopies.deepCopy(attachmentIdsForCopy)
+            } else {
+               attachmentIds = nil
+            }
             let body: String? = modelToCopy.body
             // NOTE: If this generates build errors, you made need to
             // modify DeepCopy.swift to support this type.
@@ -5290,8 +5460,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             // NOTE: If this generates build errors, you made need to
-            // implement DeepCopyable for this type in DeepCopy.swift.
-            let attachmentIds: [String] = try DeepCopies.deepCopy(modelToCopy.attachmentIds)
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let attachmentIds: [String]?
+            if let attachmentIdsForCopy = modelToCopy.attachmentIds {
+               attachmentIds = try DeepCopies.deepCopy(attachmentIdsForCopy)
+            } else {
+               attachmentIds = nil
+            }
             let body: String? = modelToCopy.body
             // NOTE: If this generates build errors, you made need to
             // modify DeepCopy.swift to support this type.
@@ -5458,8 +5638,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             // NOTE: If this generates build errors, you made need to
-            // implement DeepCopyable for this type in DeepCopy.swift.
-            let attachmentIds: [String] = try DeepCopies.deepCopy(modelToCopy.attachmentIds)
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let attachmentIds: [String]?
+            if let attachmentIdsForCopy = modelToCopy.attachmentIds {
+               attachmentIds = try DeepCopies.deepCopy(attachmentIdsForCopy)
+            } else {
+               attachmentIds = nil
+            }
             let body: String? = modelToCopy.body
             // NOTE: If this generates build errors, you made need to
             // modify DeepCopy.swift to support this type.
@@ -5626,8 +5816,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             // NOTE: If this generates build errors, you made need to
-            // implement DeepCopyable for this type in DeepCopy.swift.
-            let attachmentIds: [String] = try DeepCopies.deepCopy(modelToCopy.attachmentIds)
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let attachmentIds: [String]?
+            if let attachmentIdsForCopy = modelToCopy.attachmentIds {
+               attachmentIds = try DeepCopies.deepCopy(attachmentIdsForCopy)
+            } else {
+               attachmentIds = nil
+            }
             let body: String? = modelToCopy.body
             // NOTE: If this generates build errors, you made need to
             // modify DeepCopy.swift to support this type.
@@ -5794,8 +5994,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             // NOTE: If this generates build errors, you made need to
-            // implement DeepCopyable for this type in DeepCopy.swift.
-            let attachmentIds: [String] = try DeepCopies.deepCopy(modelToCopy.attachmentIds)
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let attachmentIds: [String]?
+            if let attachmentIdsForCopy = modelToCopy.attachmentIds {
+               attachmentIds = try DeepCopies.deepCopy(attachmentIdsForCopy)
+            } else {
+               attachmentIds = nil
+            }
             let body: String? = modelToCopy.body
             // NOTE: If this generates build errors, you made need to
             // modify DeepCopy.swift to support this type.

@@ -86,7 +86,7 @@ typedef NS_CLOSED_ENUM(NSInteger, TSEditState) {
 @interface TSMessage : TSInteraction <NSObject>
 
 // WARNING: do not use this getter directly. Use TSResourceStore instead.
-@property (nonatomic, readonly) NSArray<NSString *> *attachmentIds;
+@property (nonatomic, readonly, nullable) NSArray<NSString *> *attachmentIds;
 @property (nonatomic, readonly, nullable) NSString *body;
 @property (nonatomic, readonly, nullable) MessageBodyRanges *bodyRanges;
 
@@ -166,7 +166,7 @@ typedef NS_CLOSED_ENUM(NSInteger, TSEditState) {
                           sortId:(uint64_t)sortId
                        timestamp:(uint64_t)timestamp
                   uniqueThreadId:(NSString *)uniqueThreadId
-                   attachmentIds:(NSArray<NSString *> *)attachmentIds
+                   attachmentIds:(nullable NSArray<NSString *> *)attachmentIds
                             body:(nullable NSString *)body
                       bodyRanges:(nullable MessageBodyRanges *)bodyRanges
                     contactShare:(nullable OWSContact *)contactShare
@@ -195,7 +195,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 // --- CODE GENERATION MARKER
 
 // TODO: can be deleted when legacy attachment support is dropped
-- (void)setLegacyBodyAttachmentIds:(NSArray<NSString *> *)attachmentIds;
+- (void)setLegacyBodyAttachmentIds:(nullable NSArray<NSString *> *)attachmentIds;
 
 - (BOOL)shouldStartExpireTimer;
 

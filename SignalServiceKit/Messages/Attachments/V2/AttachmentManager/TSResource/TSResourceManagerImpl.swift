@@ -279,7 +279,7 @@ public class TSResourceManagerImpl: TSResourceManager {
         var v2Owners = [AttachmentReference.MessageOwnerTypeRaw]()
 
         if types.contains(.bodyAttachment) || types.contains(.oversizeText) {
-            if message.attachmentIds.count > 0 {
+            if (message.attachmentIds ?? []).count > 0 {
                 tsAttachmentManager.removeBodyAttachments(
                     from: message,
                     removeMedia: types.contains(.bodyAttachment),

@@ -41,16 +41,16 @@
 		"TSOutgoingMessage.changeActionsProtoData"
 	],
 	"class_cache_get_code": {
-		"InstalledSticker": "Self.modelReadCaches.installedStickerCache.getInstalledSticker(uniqueId: uniqueId, transaction: transaction)",
-		"TSThread": "Self.modelReadCaches.threadReadCache.getThread(uniqueId: uniqueId, transaction: transaction)",
-		"TSInteraction": "Self.modelReadCaches.interactionReadCache.getInteraction(uniqueId: uniqueId, transaction: transaction)",
-		"TSAttachment": "Self.modelReadCaches.attachmentReadCache.getAttachment(uniqueId: uniqueId, transaction: transaction)"
+		"InstalledSticker": "SSKEnvironment.shared.modelReadCachesRef.installedStickerCache.getInstalledSticker(uniqueId: uniqueId, transaction: transaction)",
+		"TSThread": "SSKEnvironment.shared.modelReadCachesRef.threadReadCache.getThread(uniqueId: uniqueId, transaction: transaction)",
+		"TSInteraction": "SSKEnvironment.shared.modelReadCachesRef.interactionReadCache.getInteraction(uniqueId: uniqueId, transaction: transaction)",
+		"TSAttachment": "SSKEnvironment.shared.modelReadCachesRef.attachmentReadCache.getAttachment(uniqueId: uniqueId, transaction: transaction)"
 	},
 	"class_cache_set_code": {
-		"InstalledSticker": "Self.modelReadCaches.installedStickerCache.didReadInstalledSticker",
-		"TSThread": "Self.modelReadCaches.threadReadCache.didReadThread",
-		"TSInteraction": "Self.modelReadCaches.interactionReadCache.didReadInteraction",
-		"TSAttachment": "Self.modelReadCaches.attachmentReadCache.didReadAttachment"
+		"InstalledSticker": "SSKEnvironment.shared.modelReadCachesRef.installedStickerCache.didReadInstalledSticker",
+		"TSThread": "SSKEnvironment.shared.modelReadCachesRef.threadReadCache.didReadThread",
+		"TSInteraction": "SSKEnvironment.shared.modelReadCachesRef.interactionReadCache.didReadInteraction",
+		"TSAttachment": "SSKEnvironment.shared.modelReadCachesRef.attachmentReadCache.didReadAttachment"
 	},
 	"class_to_skip_serialization": [
 		"OWSContactOffersInteraction",

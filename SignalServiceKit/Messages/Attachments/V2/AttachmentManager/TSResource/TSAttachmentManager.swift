@@ -78,12 +78,12 @@ public class TSAttachmentManager {
         from message: TSMessage,
         tx: SDSAnyWriteTransaction
     ) {
-        owsAssertDebug(message.attachmentIds.contains(attachment.uniqueId))
+        owsAssertDebug(message.attachmentIds?.contains(attachment.uniqueId) == true)
         attachment.anyRemove(transaction: tx)
 
         message.anyUpdateMessage(transaction: tx) { message in
             var attachmentIds = message.attachmentIds
-            attachmentIds.removeAll(where: { $0 == attachment.uniqueId })
+            attachmentIds?.removeAll(where: { $0 == attachment.uniqueId })
             message.setLegacyBodyAttachmentIds(attachmentIds)
         }
     }
@@ -103,7 +103,7 @@ public class TSAttachmentManager {
         // attachments once.
 
         var removedIds = Set<String>()
-        for attachmentId in message.attachmentIds {
+        for attachmentId in message.attachmentIds ?? [] {
             self.removeAttachment(
                 attachmentId: attachmentId,
                 filterBlock: { attachment in
@@ -130,7 +130,7 @@ public class TSAttachmentManager {
         }
 
         message.anyUpdateMessage(transaction: tx) { message in
-            message.setLegacyBodyAttachmentIds(message.attachmentIds.filter { !removedIds.contains($0) })
+            message.setLegacyBodyAttachmentIds(message.attachmentIds?.filter { !removedIds.contains($0) })
         }
     }
 
@@ -171,7 +171,7 @@ public class TSAttachmentManager {
         tx: SDSAnyWriteTransaction
     ) {
         message.anyUpdateMessage(transaction: tx) { message in
-            var attachmentIds = message.attachmentIds
+            var attachmentIds = message.attachmentIds ?? []
             var attachmentIdSet = Set(attachmentIds)
             for attachment in attachments {
                 if attachmentIdSet.contains(attachment.uniqueId) {

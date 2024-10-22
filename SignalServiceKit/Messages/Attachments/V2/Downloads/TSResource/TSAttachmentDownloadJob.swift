@@ -196,7 +196,7 @@ extension TSAttachmentDownloadManager {
             var bodyAttachmentJobs = [Job]()
             var bodyAttachmentPromises = [Promise<TSAttachmentStream>]()
             let bodyAttachments = TSAttachmentStore().attachments(
-                withAttachmentIds: message.attachmentIds,
+                withAttachmentIds: message.attachmentIds ?? [],
                 tx: tx
             )
             for attachment in bodyAttachments {

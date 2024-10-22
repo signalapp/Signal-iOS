@@ -124,7 +124,7 @@ public class TSAttachmentStore {
     public func allAttachmentIds(for message: TSMessage) -> Set<String> {
         var uniqueIds = Set<String>()
 
-        uniqueIds.formUnion(message.attachmentIds)
+        uniqueIds.formUnion(message.attachmentIds ?? [])
 
         if let attachmentId = message.linkPreview?.legacyImageAttachmentId?.nilIfEmpty {
             uniqueIds.insert(attachmentId)
@@ -165,7 +165,7 @@ public class TSAttachmentStore {
         originalMessage: TSMessage,
         tx: SDSAnyReadTransaction
     ) -> TSAttachment? {
-        for attachmentId in originalMessage.attachmentIds {
+        for attachmentId in originalMessage.attachmentIds ?? [] {
             guard let attachment = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: tx) else {
                 continue
             }

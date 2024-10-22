@@ -432,7 +432,7 @@ extension PreparedOutgoingMessage {
     public func legacyBodyAttachmentIdsForMultisend() -> [String] {
         switch messageType {
         case .persisted(let persisted):
-            return persisted.message.attachmentIds
+            return persisted.message.attachmentIds ?? []
         case .editMessage:
             owsFailDebug("We shouldn't be multisending an edit?")
             return []

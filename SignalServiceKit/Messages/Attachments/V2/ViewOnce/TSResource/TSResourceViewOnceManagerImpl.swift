@@ -19,7 +19,7 @@ public class TSResourceViewOnceManagerImpl: TSResourceViewOnceManager {
     }
 
     public func prepareViewOnceContentForDisplay(_ message: TSMessage) -> TSViewOnceContent? {
-        if message.attachmentIds.isEmpty {
+        if message.attachmentIds?.isEmpty != false {
             return attachmentViewOnceManager.prepareViewOnceContentForDisplay(message)?.asTSContent
         }
 
@@ -56,7 +56,7 @@ public class TSResourceViewOnceManagerImpl: TSResourceViewOnceManager {
             }
 
             guard
-                let firstAttachmentId = message.attachmentIds.first,
+                let firstAttachmentId = message.attachmentIds?.first,
                 let attachmentStream = TSAttachmentStream.anyFetchAttachmentStream(
                     uniqueId: firstAttachmentId,
                     transaction: transaction

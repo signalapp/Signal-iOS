@@ -37,7 +37,7 @@ public class EditManagerTSResourcesImpl: EditManagerTSResources {
     ) throws {
         let canUseExclusiveV2: Bool = {
             // Only use v2 if the edit target has no v1 body attachments
-            guard editTarget.message.attachmentIds.isEmpty else {
+            guard (editTarget.message.attachmentIds ?? []).isEmpty else {
                 return false
             }
             // If we are keeping the quoted reply, and its v1, we also can't use v2.
@@ -208,7 +208,7 @@ public class EditManagerTSResourcesImpl: EditManagerTSResources {
         newOversizeText: MessageEdits.OversizeTextSource?,
         tx: DBWriteTransaction
     ) throws {
-        let bodyAttachmentIdsPriorToEdit = editTarget.message.attachmentIds
+        let bodyAttachmentIdsPriorToEdit = editTarget.message.attachmentIds ?? []
 
         // The prior revision always gets the same attachment ids.
         tsMessageStore.update(
@@ -244,7 +244,7 @@ public class EditManagerTSResourcesImpl: EditManagerTSResources {
             tx: SDSDB.shimOnlyBridge(tx)
         )
 
-        var latestRevisionLegacyAttachmentIds = latestRevision.attachmentIds
+        var latestRevisionLegacyAttachmentIds = latestRevision.attachmentIds ?? []
         latestRevisionLegacyAttachmentIds.append(contentsOf: bodyMediaAttachmentsPriorToEdit.map(\.uniqueId))
         tsMessageStore.update(
             latestRevision,

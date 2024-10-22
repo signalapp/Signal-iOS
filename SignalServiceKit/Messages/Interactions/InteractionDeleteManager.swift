@@ -326,7 +326,7 @@ final class InteractionDeleteManagerImpl: InteractionDeleteManager {
         if let message = interaction as? TSMessage {
             FullTextSearchIndexer.delete(message, tx: tx)
 
-            if !message.attachmentIds.isEmpty {
+            if !(message.attachmentIds ?? []).isEmpty {
                 mediaGalleryResourceManager.didRemove(message: message, tx: tx.asV2Write)
             }
 

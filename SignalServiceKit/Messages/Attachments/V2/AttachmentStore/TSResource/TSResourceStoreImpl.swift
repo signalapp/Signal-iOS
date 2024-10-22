@@ -72,7 +72,7 @@ public class TSResourceStoreImpl: TSResourceStore {
     }
 
     public func bodyAttachments(for message: TSMessage, tx: DBReadTransaction) -> [TSResourceReference] {
-        if message.attachmentIds.isEmpty {
+        if message.attachmentIds?.isEmpty != false {
             guard let messageRowId = message.sqliteRowId else {
                 owsFailDebug("Fetching attachments for an un-inserted message!")
                 return []
@@ -86,16 +86,16 @@ public class TSResourceStoreImpl: TSResourceStore {
                 tx: tx
             )
         } else {
-            let attachments = tsAttachmentStore.attachments(withAttachmentIds: message.attachmentIds, tx: SDSDB.shimOnlyBridge(tx))
+            let attachments = tsAttachmentStore.attachments(withAttachmentIds: message.attachmentIds ?? [], tx: SDSDB.shimOnlyBridge(tx))
             let attachmentMap = Dictionary(uniqueKeysWithValues: attachments.map { ($0.uniqueId, $0) })
-            return message.attachmentIds.map { uniqueId in
+            return message.attachmentIds?.map { uniqueId in
                 TSAttachmentReference(uniqueId: uniqueId, attachment: attachmentMap[uniqueId])
-            }
+            } ?? []
         }
     }
 
     public func bodyMediaAttachments(for message: TSMessage, tx: DBReadTransaction) -> [TSResourceReference] {
-        if message.attachmentIds.isEmpty {
+        if message.attachmentIds?.isEmpty != false {
             guard let messageRowId = message.sqliteRowId else {
                 owsFailDebug("Fetching attachments for an un-inserted message!")
                 return []
@@ -103,7 +103,7 @@ public class TSResourceStoreImpl: TSResourceStore {
             return attachmentStore.fetchReferences(owner: .messageBodyAttachment(messageRowId: messageRowId), tx: tx)
         } else {
             let attachments = tsAttachmentStore.attachments(
-                withAttachmentIds: message.attachmentIds,
+                withAttachmentIds: message.attachmentIds ?? [],
                 ignoringContentType: MimeType.textXSignalPlain.rawValue,
                 tx: SDSDB.shimOnlyBridge(tx)
             )
@@ -116,7 +116,7 @@ public class TSResourceStoreImpl: TSResourceStore {
     }
 
     public func oversizeTextAttachment(for message: TSMessage, tx: DBReadTransaction) -> TSResourceReference? {
-        if message.attachmentIds.isEmpty {
+        if message.attachmentIds?.isEmpty != false {
             guard let messageRowId = message.sqliteRowId else {
                 owsFailDebug("Fetching attachments for an un-inserted message!")
                 return nil
@@ -125,7 +125,7 @@ public class TSResourceStoreImpl: TSResourceStore {
         } else {
             guard
                 let attachment = tsAttachmentStore.attachments(
-                    withAttachmentIds: message.attachmentIds,
+                    withAttachmentIds: message.attachmentIds ?? [],
                     matchingContentType: MimeType.textXSignalPlain.rawValue,
                     tx: SDSDB.shimOnlyBridge(tx)
                 ).first
