@@ -240,6 +240,24 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         searchResultsController.viewDidDisappear(animated)
     }
 
+    public override func viewIsAppearing(_ animated: Bool) {
+        super.viewIsAppearing(animated)
+
+        if FeatureFlags.chatListFilter {
+            updateFilterControl(animated: false)
+            updateFilterControlSize()
+        }
+    }
+
+    public override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+
+        if let filterControl {
+            tableView.bringSubviewToFront(filterControl)
+            updateFilterControlSize()
+        }
+    }
+
     public override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
@@ -249,20 +267,8 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             CGFloat(0.0)
         }
 
-        if let filterControl {
-            if filterControlNeedsSizeChange {
-                let searchBarHeight = searchBar.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).height
-                filterControl.frame.size = CGSize(width: tableView.bounds.width, height: searchBarHeight)
-                filterControlNeedsSizeChange = false
-            }
-
-            if !hasEverAppeared {
-                updateFilterControl(animated: false)
-            }
-        }
-
         if tableView.contentInset.bottom != bottomInset {
-            UIView.animate(withDuration: 0.25) {
+            UIView.animate(withDuration: CATransaction.animationDuration()) {
                 self.tableView.contentInset.bottom = bottomInset
             }
         }
@@ -1372,9 +1378,11 @@ extension ChatListViewController {
             // filtering state.
             loadCoordinator.loadIfNecessary()
         } else {
-            tableView.performBatchUpdates { [self] in
-                filterControl?.startFiltering(animated: true)
-                loadCoordinator.loadIfNecessary()
+            UIView.animate(withDuration: CATransaction.animationDuration()) { [filterControl, loadCoordinator, tableView] in
+                tableView.performBatchUpdates { [loadCoordinator] in
+                    filterControl?.startFiltering(animated: true)
+                    loadCoordinator.loadIfNecessary()
+                }
             }
         }
     }
@@ -1400,6 +1408,24 @@ extension ChatListViewController {
     private func updateChatListFilter(_ inboxFilter: InboxFilter) {
         viewState.inboxFilter = inboxFilter
         loadCoordinator.saveInboxFilter(inboxFilter)
+    }
+
+    private func updateFilterControlSize() {
+        guard let filterControl, filterControlNeedsSizeChange else { return }
+        filterControlNeedsSizeChange = false
+
+        let searchBarHeight = searchBar.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).height
+
+        // Performed without animation so it can't interact with a view controller
+        // transition or some other animation.
+        UIView.performWithoutAnimation {
+            filterControl.preferredContentHeight = searchBarHeight
+
+            // This tells UITableView to perform a layout pass, which allows it
+            // to adjust to the new filterControl height even when there are no
+            // datasource-driven layout changes.
+            tableView.performBatchUpdates {}
+        }
     }
 }
 
@@ -1678,10 +1704,15 @@ extension ChatListViewController {
 
 extension ChatListViewController: UIScrollViewDelegate {
     public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        filterControl?.draggingWillBegin(in: scrollView)
         cancelSearch()
     }
 
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        filterControl?.updateScrollPosition(in: scrollView)
+    }
+
+    public func scrollViewDidChangeAdjustedContentInset(_ scrollView: UIScrollView) {
         filterControl?.updateScrollPosition(in: scrollView)
     }
 
@@ -1690,7 +1721,6 @@ extension ChatListViewController: UIScrollViewDelegate {
     }
 
     public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        guard FeatureFlags.chatListFilter else { return }
         filterControl?.scrollingDidStop(in: scrollView)
     }
 }

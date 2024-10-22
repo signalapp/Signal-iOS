@@ -22,6 +22,7 @@ extension ChatListViewController: OWSNavigationChildController {
     }
 
     func cancelSearch() {
+        guard viewState.searchController.isActive else { return }
         // Deactivating the search controller has a different animation if it's
         // scrolled to the top or not. It gets confused whether it's at the top
         // or not and has a buggy animation when this is activated while
