@@ -43,9 +43,14 @@ func AssertHasDatabaseChangeObserverLock() {
 /// GRDB APIs. This type is maintained for legacy observers only.
 public protocol DatabaseChangeObserver {
 
-    func appendDatabaseChangeDelegate(_ databaseChangeDelegate: DatabaseChangeDelegate)
+    func beginObserving(pool: DatabasePool) throws
 
-    var transactionObserver: GRDB.TransactionObserver { get }
+    func stopObserving(pool: DatabasePool) throws
+
+    /// Disable generic change observer events during a block that occurs within a write transaction.
+    func disable<T>(tx: DBWriteTransaction, during: (DBWriteTransaction) throws -> T) rethrows -> T
+
+    func appendDatabaseChangeDelegate(_ databaseChangeDelegate: DatabaseChangeDelegate)
 
 #if TESTABLE_BUILD
     func appendDatabaseWriteDelegate(_ delegate: DatabaseWriteDelegate)
@@ -177,6 +182,41 @@ public class DatabaseChangeObserverImpl: SDSDatabaseChangeObserver {
         }
     }
 
+    // MARK: - Disabling
+
+    /// Should only be written to while holding the database write lock.
+    private var isObserving = false
+
+    public func beginObserving(pool: DatabasePool) throws {
+        try pool.write { db in
+            db.add(transactionObserver: self, extent: .observerLifetime)
+            isObserving = true
+        }
+    }
+
+    public func stopObserving(pool: DatabasePool) throws {
+        try pool.write { db in
+            db.remove(transactionObserver: self)
+            isObserving = false
+        }
+    }
+
+    public func disable<T>(tx: DBWriteTransaction, during block: (DBWriteTransaction) throws -> T) rethrows -> T {
+        guard isObserving else {
+            return try block(tx)
+        }
+        tx.databaseConnection.remove(transactionObserver: self.transactionObserver)
+        defer {
+            tx.databaseConnection.add(transactionObserver: self, extent: .observerLifetime)
+            DispatchQueue.main.async { [weak self] in
+                self?.ensureDisplayLink()
+            }
+        }
+        return try block(tx)
+    }
+
+    // MARK: -
+
     private let isDisplayLinkActive = AtomicBool(false, lock: .sharedGlobal)
     private let willRequestDisplayLinkActive = AtomicBool(false, lock: .sharedGlobal)
 
@@ -201,6 +241,9 @@ public class DatabaseChangeObserverImpl: SDSDatabaseChangeObserver {
         }
 
         let shouldBeActive: Bool = {
+            guard isObserving else {
+                return false
+            }
             let tsRegistrationState = DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction
             switch tsRegistrationState {
             case .transferringIncoming, .transferringLinkedOutgoing, .transferringPrimaryOutgoing:
@@ -351,7 +394,9 @@ extension DatabaseChangeObserverImpl: TransactionObserver {
             }
         }
 
-        didModifyPendingChanges()
+        if isObserving {
+            didModifyPendingChanges()
+        }
     }
 
     /// See note on `shouldUpdateChatListUi` parameter in docs for ``TSGroupThread.updateWithGroupModel:shouldUpdateChatListUi:transaction``.
@@ -364,7 +409,9 @@ extension DatabaseChangeObserverImpl: TransactionObserver {
         pendingChanges.insert(thread: thread, shouldUpdateChatListUi: shouldUpdateChatListUi)
         pendingChanges.insert(tableName: TSThread.table.tableName)
 
-        didModifyPendingChanges()
+        if isObserving {
+            didModifyPendingChanges()
+        }
     }
 
     public func didTouch(storyMessage: StoryMessage, transaction: GRDBWriteTransaction) {
@@ -376,7 +423,9 @@ extension DatabaseChangeObserverImpl: TransactionObserver {
         pendingChanges.insert(storyMessage: storyMessage)
         pendingChanges.insert(tableName: StoryMessage.databaseTableName)
 
-        didModifyPendingChanges()
+        if isObserving {
+            didModifyPendingChanges()
+        }
     }
 
     // Database observation operates like so:

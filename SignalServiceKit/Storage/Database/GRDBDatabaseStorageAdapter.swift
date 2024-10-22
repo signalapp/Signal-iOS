@@ -188,18 +188,14 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         // DatabaseChangeObserver is a general purpose observer, whose delegates
         // are notified when things change, but are not given any specific details
         // about the changes.
-        try pool.write { db in
-            db.add(transactionObserver: databaseChangeObserver.transactionObserver, extent: Database.TransactionObservationExtent.observerLifetime)
-        }
+        try databaseChangeObserver.beginObserving(pool: pool)
     }
 
     func testing_tearDownDatabaseChangeObserver() throws {
         // DatabaseChangeObserver is a general purpose observer, whose delegates
         // are notified when things change, but are not given any specific details
         // about the changes.
-        try pool.write { db in
-            db.remove(transactionObserver: databaseChangeObserver.transactionObserver)
-        }
+        try databaseChangeObserver.stopObserving(pool: pool)
     }
 
     // MARK: -

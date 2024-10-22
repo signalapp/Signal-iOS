@@ -1081,6 +1081,7 @@ public class AppSetup {
                 tsAccountManager: tsAccountManager,
                 usernameLookupManager: usernameLookupManager
             ),
+            databaseChangeObserver: databaseStorage.databaseChangeObserver,
             dateProvider: dateProvider,
             db: db,
             disappearingMessagesJob: disappearingMessagesJob,

@@ -34,6 +34,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     private let chatArchiver: MessageBackupChatArchiver
     private let chatItemArchiver: MessageBackupChatItemArchiver
     private let contactRecipientArchiver: MessageBackupContactRecipientArchiver
+    private let databaseChangeObserver: DatabaseChangeObserver
     private let dateProvider: DateProvider
     private let db: any DB
     private let disappearingMessagesJob: OWSDisappearingMessagesJob
@@ -61,6 +62,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         chatArchiver: MessageBackupChatArchiver,
         chatItemArchiver: MessageBackupChatItemArchiver,
         contactRecipientArchiver: MessageBackupContactRecipientArchiver,
+        databaseChangeObserver: DatabaseChangeObserver,
         dateProvider: @escaping DateProvider,
         db: any DB,
         disappearingMessagesJob: OWSDisappearingMessagesJob,
@@ -87,6 +89,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         self.chatArchiver = chatArchiver
         self.chatItemArchiver = chatItemArchiver
         self.contactRecipientArchiver = contactRecipientArchiver
+        self.databaseChangeObserver = databaseChangeObserver
         self.dateProvider = dateProvider
         self.db = db
         self.disappearingMessagesJob = disappearingMessagesJob
@@ -201,23 +204,25 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         await migrateAttachmentsBeforeBackup()
 
         return try await db.awaitableWrite { tx in
-            let outputStream: MessageBackupProtoOutputStream
-            let fileUrl: URL
-            switch self.plaintextStreamProvider.openPlaintextOutputFileStream() {
-            case .success(let _outputStream, let _fileUrl):
-                outputStream = _outputStream
-                fileUrl = _fileUrl
-            case .unableToOpenFileStream:
-                throw OWSAssertionError("Unable to open output file stream!")
+            return try self.databaseChangeObserver.disable(tx: tx) { tx in
+                let outputStream: MessageBackupProtoOutputStream
+                let fileUrl: URL
+                switch self.plaintextStreamProvider.openPlaintextOutputFileStream() {
+                case .success(let _outputStream, let _fileUrl):
+                    outputStream = _outputStream
+                    fileUrl = _fileUrl
+                case .unableToOpenFileStream:
+                    throw OWSAssertionError("Unable to open output file stream!")
+                }
+
+                try self._exportBackup(
+                    outputStream: outputStream,
+                    localIdentifiers: localIdentifiers,
+                    tx: tx
+                )
+
+                return fileUrl
             }
-
-            try self._exportBackup(
-                outputStream: outputStream,
-                localIdentifiers: localIdentifiers,
-                tx: tx
-            )
-
-            return fileUrl
         }
     }
 
@@ -429,27 +434,29 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         await migrateAttachmentsBeforeBackup()
 
         try await db.awaitableWrite { tx in
-            let inputStream: MessageBackupProtoInputStream
-            switch self.encryptedStreamProvider.openEncryptedInputFileStream(
-                fileUrl: fileUrl,
-                localAci: localIdentifiers.aci,
-                tx: tx
-            ) {
-            case .success(let protoStream, _):
-                inputStream = protoStream
-            case .fileNotFound:
-                throw OWSAssertionError("File not found!")
-            case .unableToOpenFileStream:
-                throw OWSAssertionError("Unable to open input stream!")
-            case .hmacValidationFailedOnEncryptedFile:
-                throw OWSAssertionError("HMAC validation failed on encrypted file!")
-            }
+            try self.databaseChangeObserver.disable(tx: tx) { tx in
+                let inputStream: MessageBackupProtoInputStream
+                switch self.encryptedStreamProvider.openEncryptedInputFileStream(
+                    fileUrl: fileUrl,
+                    localAci: localIdentifiers.aci,
+                    tx: tx
+                ) {
+                case .success(let protoStream, _):
+                    inputStream = protoStream
+                case .fileNotFound:
+                    throw OWSAssertionError("File not found!")
+                case .unableToOpenFileStream:
+                    throw OWSAssertionError("Unable to open input stream!")
+                case .hmacValidationFailedOnEncryptedFile:
+                    throw OWSAssertionError("HMAC validation failed on encrypted file!")
+                }
 
-            try self._importBackup(
-                inputStream: inputStream,
-                localIdentifiers: localIdentifiers,
-                tx: tx
-            )
+                try self._importBackup(
+                    inputStream: inputStream,
+                    localIdentifiers: localIdentifiers,
+                    tx: tx
+                )
+            }
         }
     }
 
@@ -465,25 +472,27 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         await migrateAttachmentsBeforeBackup()
 
         try await db.awaitableWrite { tx in
-            let inputStream: MessageBackupProtoInputStream
-            switch self.plaintextStreamProvider.openPlaintextInputFileStream(
-                fileUrl: fileUrl
-            ) {
-            case .success(let protoStream, _):
-                inputStream = protoStream
-            case .fileNotFound:
-                throw OWSAssertionError("File not found!")
-            case .unableToOpenFileStream:
-                throw OWSAssertionError("Unable to open input stream!")
-            case .hmacValidationFailedOnEncryptedFile:
-                throw OWSAssertionError("HMAC validation failed: how did this happen for a plaintext backup?")
-            }
+            try self.databaseChangeObserver.disable(tx: tx) { tx in
+                let inputStream: MessageBackupProtoInputStream
+                switch self.plaintextStreamProvider.openPlaintextInputFileStream(
+                    fileUrl: fileUrl
+                ) {
+                case .success(let protoStream, _):
+                    inputStream = protoStream
+                case .fileNotFound:
+                    throw OWSAssertionError("File not found!")
+                case .unableToOpenFileStream:
+                    throw OWSAssertionError("Unable to open input stream!")
+                case .hmacValidationFailedOnEncryptedFile:
+                    throw OWSAssertionError("HMAC validation failed: how did this happen for a plaintext backup?")
+                }
 
-            try self._importBackup(
-                inputStream: inputStream,
-                localIdentifiers: localIdentifiers,
-                tx: tx
-            )
+                try self._importBackup(
+                    inputStream: inputStream,
+                    localIdentifiers: localIdentifiers,
+                    tx: tx
+                )
+            }
         }
     }
 
