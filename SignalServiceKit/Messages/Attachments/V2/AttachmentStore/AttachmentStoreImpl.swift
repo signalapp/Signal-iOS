@@ -29,6 +29,25 @@ public class AttachmentStoreImpl: AttachmentStore {
         }
     }
 
+    public func fetchAllReferences(
+        owningMessageRowId: Int64,
+        tx: DBReadTransaction
+    ) -> [AttachmentReference] {
+        do {
+            let statement = try tx.databaseConnection.cachedStatement(sql: """
+                SELECT *
+                FROM \(MessageAttachmentReferenceRecord.databaseTableName)
+                WHERE \(Column(MessageAttachmentReferenceRecord.CodingKeys.ownerRowId).name) = ?
+                """)
+            return try MessageAttachmentReferenceRecord
+                .fetchAll(statement, arguments: [owningMessageRowId])
+                .map { try AttachmentReference(record: $0) }
+        } catch {
+            owsFailDebug("Failed to fetch attachment references \(error)")
+            return []
+        }
+    }
+
     private func fetchReferences<RecordType: FetchableAttachmentReferenceRecord>(
         owners: [AttachmentReference.OwnerId],
         recordType: RecordType.Type,
@@ -85,6 +104,9 @@ public class AttachmentStoreImpl: AttachmentStore {
         ids: [Attachment.IDType],
         tx: DBReadTransaction
     ) -> [Attachment] {
+        if ids.isEmpty {
+            return []
+        }
         do {
             return try Attachment.Record
                 .fetchAll(

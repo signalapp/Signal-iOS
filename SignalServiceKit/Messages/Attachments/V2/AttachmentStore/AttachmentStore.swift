@@ -25,6 +25,13 @@ public protocol AttachmentStore {
         tx: DBReadTransaction
     ) -> [AttachmentReference]
 
+    /// Fetch all references for the provider message owner row id.
+    /// Results are unordered.
+    func fetchAllReferences(
+        owningMessageRowId: Int64,
+        tx: DBReadTransaction
+    ) -> [AttachmentReference]
+
     /// Fetch attachments by id.
     func fetch(
         ids: [Attachment.IDType],
@@ -292,6 +299,24 @@ extension AttachmentStore {
         tx: DBReadTransaction
     ) -> [ReferencedAttachment] {
         return fetchReferencedAttachments(owners: [owner], tx: tx)
+    }
+
+    public func fetchAllReferencedAttachments(
+        owningMessageRowId: Int64,
+        tx: DBReadTransaction
+    ) -> [ReferencedAttachment] {
+        let references = self.fetchAllReferences(owningMessageRowId: owningMessageRowId, tx: tx)
+        let attachments = Dictionary(
+            grouping: self.fetch(ids: references.map(\.attachmentRowId), tx: tx),
+            by: \.id
+        )
+        return references.compactMap { reference -> ReferencedAttachment? in
+            guard let attachment = attachments[reference.attachmentRowId]?.first else {
+                owsFailDebug("Missing attachment!")
+                return nil
+            }
+            return ReferencedAttachment(reference: reference, attachment: attachment)
+        }
     }
 
     public func fetchFirstReferencedAttachment(
