@@ -334,6 +334,14 @@ fileprivate extension HTMLMetadata {
     var dateForLinkPreview: Date? {
         [ogPublishDateString, articlePublishDateString, ogModifiedDateString, articleModifiedDateString]
             .first(where: {$0 != nil})?
-            .flatMap { Date.ows_parseFromISO8601String($0) }
+            .flatMap {
+                guard
+                    let date = Date.ows_parseFromISO8601String($0),
+                    date.timeIntervalSince1970 > 0
+                else {
+                    return nil
+                }
+                return date
+            }
     }
 }

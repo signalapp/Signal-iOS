@@ -1309,7 +1309,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             )])
         }
         let date: Date?
-        if linkPreviewProto.hasDate {
+        if linkPreviewProto.hasDate, linkPreviewProto.date > 0 {
             date = .init(millisecondsSince1970: linkPreviewProto.date)
         } else {
             date = nil

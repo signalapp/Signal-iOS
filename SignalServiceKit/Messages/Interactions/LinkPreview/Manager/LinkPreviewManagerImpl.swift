@@ -248,7 +248,7 @@ public class LinkPreviewManagerImpl: LinkPreviewManager {
             builder.setImage(attachmentProto)
         }
 
-        if let date = linkPreview.date {
+        if let date = linkPreview.date, date.timeIntervalSince1970 > 0 {
             builder.setDate(date.ows_millisecondsSince1970)
         }
 
