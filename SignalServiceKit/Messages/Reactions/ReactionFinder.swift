@@ -71,7 +71,8 @@ public class ReactionFinder {
         var reactions = [OWSReaction]()
 
         do {
-            let cursor = try OWSReaction.fetchCursor(transaction.database, sql: sql, arguments: [uniqueMessageId])
+            let statement = try transaction.database.cachedStatement(sql: sql)
+            let cursor = try OWSReaction.fetchCursor(statement, arguments: [uniqueMessageId])
             while let reaction = try cursor.next() {
                 reactions.append(reaction)
             }

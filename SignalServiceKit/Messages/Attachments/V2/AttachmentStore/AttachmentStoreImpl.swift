@@ -76,8 +76,8 @@ public class AttachmentStoreImpl: AttachmentStore {
         }
         let sql = "SELECT * FROM \(recordType.databaseTableName) WHERE \(filterClauses.joined(separator: " OR "));"
         do {
-            var results = try RecordType
-                .fetchAll(tx.databaseConnection, sql: sql, arguments: arguments)
+            let statement = try tx.databaseConnection.cachedStatement(sql: sql)
+            var results = try RecordType.fetchAll(statement, arguments: arguments)
 
             // If we have one owner and are capable of sorting, sort in ascending order.
             if owners.count == 1, let orderInOwnerKey = RecordType.orderInOwnerKey {
