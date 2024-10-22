@@ -202,11 +202,15 @@ class GroupsV2ProfileKeyUpdater {
             case GroupsV2Error.localUserNotInGroup:
                 // If the update is no longer necessary, skip it.
                 break
-            case let httpError as OWSHTTPError where (400...599).contains(httpError.responseStatusCode):
+            case let httpError as OWSHTTPError where (400...499).contains(httpError.responseStatusCode):
                 // If a non-recoverable error occurs (e.g. we've been kicked out of the
                 // group), give up.
                 break
-            case _ where error.isNetworkFailureOrTimeout, is OWSHTTPError:
+            case is OWSHTTPError:
+                throw error
+            case _ where error.isNetworkFailureOrTimeout:
+                throw error
+            case GroupsV2Error.timeout:
                 throw error
             default:
                 // This should never occur. If it does, we don't want to get stuck in a
