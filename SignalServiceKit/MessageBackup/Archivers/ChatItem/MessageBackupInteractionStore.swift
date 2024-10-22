@@ -20,7 +20,14 @@ public final class MessageBackupInteractionStore {
         tx: DBReadTransaction,
         block: (TSInteraction) throws -> Bool
     ) throws {
-        try interactionStore.enumerateAllInteractions(tx: tx, block: block)
+        let cursor = try InteractionRecord
+            .fetchCursor(tx.databaseConnection)
+            .map { try TSInteraction.fromRecord($0) }
+
+        while
+            let interaction = try cursor.next(),
+            try block(interaction)
+        {}
     }
 
     func insert(
