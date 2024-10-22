@@ -585,12 +585,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     )
                 )
             case .mediaTierFullsize:
-                // TODO: [Backups] don't enqueue downloads until we hit the
-                // media list endpoint and can check cdn numbers.
-                // For now as a hack hardcode to 3 if missing (since they'll all be 3 anyway).
-                let cdnNumber = attachment.mediaTierInfo?.cdnNumber ?? 3
                 guard
                     let mediaTierInfo = attachment.mediaTierInfo,
+                    let cdnNumber = attachment.mediaTierInfo?.cdnNumber,
                     let mediaName = attachment.mediaName,
                     let encryptionMetadata = buildCdnEncryptionMetadata(mediaName: mediaName, type: .attachment),
                     let cdnCredential = await fetchBackupCdnReadCredential(for: cdnNumber)
@@ -610,12 +607,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     )
                 )
             case .mediaTierThumbnail:
-                // TODO: [Backups] don't enqueue downloads until we hit the
-                // media list endpoint and can check cdn numbers.
-                // For now as a hack hardcode to 3 if missing (since they'll all be 3 anyway).
-                let cdnNumber = attachment.thumbnailMediaTierInfo?.cdnNumber ?? 3
                 guard
                     attachment.thumbnailMediaTierInfo != nil,
+                    let cdnNumber = attachment.thumbnailMediaTierInfo?.cdnNumber,
                     let mediaName = attachment.mediaName,
                     // This is the outer encryption
                     let outerEncryptionMetadata = buildCdnEncryptionMetadata(

@@ -144,18 +144,21 @@ extension OWSRequestFactory {
         cursor: String?,
         limit: UInt32?
     ) -> TSRequest {
-        var parameters: [String: Any] = [:]
-        // TODO: [Backups] these need to be query params, not part of the body.
+        var urlComponents = URLComponents(string: "v1/archives/media")!
+        var queryItems = [URLQueryItem]()
         if let limit {
-            parameters["limit"] = limit
+            queryItems.append(URLQueryItem(name: "limit", value: "\(limit)"))
         }
         if let cursor {
-            parameters["cursor"] = cursor
+            queryItems.append(URLQueryItem(name: "cursor", value: cursor))
+        }
+        if !queryItems.isEmpty {
+            urlComponents.queryItems = queryItems
         }
         let request = TSRequest(
-            url: URL(string: "v1/archives/media")!,
+            url: urlComponents.url!,
             method: "GET",
-            parameters: parameters
+            parameters: [:]
         )
         auth.apply(to: request)
         request.shouldHaveAuthorizationHeaders = false

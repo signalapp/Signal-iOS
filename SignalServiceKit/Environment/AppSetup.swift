@@ -980,11 +980,15 @@ public class AppSetup {
                 appReadiness: appReadiness,
                 attachmentStore: attachmentStore,
                 attachmentDownloadManager: attachmentDownloadManager,
+                attachmentUploadStore: attachmentUploadStore,
                 backupAttachmentDownloadStore: backupAttachmentDownloadStore,
                 dateProvider: dateProvider,
                 db: db,
+                keyValueStoreFactory: keyValueStoreFactory,
                 mediaBandwidthPreferenceStore: mediaBandwidthPreferenceStore,
+                messageBackupKeyMaterial: messageBackupKeyMaterial,
                 messageBackupRequestManager: messageBackupRequestManager,
+                orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
                 reachabilityManager: reachabilityManager,
                 tsAccountManager: tsAccountManager
             )
