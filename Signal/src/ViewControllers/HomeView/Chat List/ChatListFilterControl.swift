@@ -219,7 +219,6 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
     // animator is recreated.
     @objc private func cancelFilterIconAnimator() {
         guard let filterIconAnimator, filterIconAnimator.state == .active else { return }
-        self.filterIconAnimator = nil
         filterIconAnimator.stopAnimation(false)
         filterIconAnimator.finishAnimation(at: .start)
     }
@@ -245,6 +244,10 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
                     }
                 }
             }
+        }
+
+        filterIconAnimator.addCompletion { [weak self] _ in
+            self?.filterIconAnimator = nil
         }
 
         // Activate the animation but leave it paused to advance it manually.
