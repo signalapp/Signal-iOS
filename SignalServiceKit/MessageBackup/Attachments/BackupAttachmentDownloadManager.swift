@@ -156,6 +156,9 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
     }
 
     public func restoreAttachmentsIfNeeded() async throws {
+        guard FeatureFlags.messageBackupFileAlpha else {
+            return
+        }
         guard appReadiness.isAppReady else {
             return
         }
@@ -259,6 +262,9 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         }
 
         private func _queryListMediaIfNeeded() async throws {
+            guard FeatureFlags.messageBackupFileAlpha else {
+                return
+            }
             let (localAci, currentUploadEra, needsToQuery) = try db.read { tx in
                 let currentUploadEra = try MessageBackupMessageAttachmentArchiver.currentUploadEra()
                 return (
