@@ -167,25 +167,33 @@ class GroupsV2ProfileKeyUpdater {
                 return
             }
 
-            let shouldTryAgain: Bool
             do {
-                shouldTryAgain = try await self._tryToUpdateNext()
-                failureCount = 0
+                let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+                let groupIdKeys = databaseStorage.read(block: self.keyValueStore.allKeys(transaction:))
+                let taskQueue = ConcurrentTaskQueue(concurrentLimit: 16)
+                try await withThrowingTaskGroup(of: Void.self) { taskGroup in
+                    for groupIdKey in groupIdKeys {
+                        _ = taskGroup.addTaskUnlessCancelled {
+                            try await taskQueue.run {
+                                try Task.checkCancellation()
+                                try await self._tryToUpdateNext(groupIdKey: groupIdKey)
+                            }
+                        }
+                    }
+                    try await taskGroup.waitForAll()
+                }
+                return
             } catch {
-                shouldTryAgain = true
                 failureCount += 1
                 try? await Task.sleep(nanoseconds: OWSOperation.retryIntervalForExponentialBackoffNs(failureCount: failureCount, maxBackoff: 6*kHourInterval))
-            }
-
-            guard shouldTryAgain else {
-                return
             }
         }
     }
 
-    private func _tryToUpdateNext() async throws -> Bool {
-        guard let groupId = SSKEnvironment.shared.databaseStorageRef.read(block: self.keyValueStore.anyDataValue(transaction:)) else {
-            return false
+    private func _tryToUpdateNext(groupIdKey: String) async throws {
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        guard let groupId = databaseStorage.read(block: { tx in keyValueStore.getData(groupIdKey, transaction: tx) }) else {
+            return
         }
         do {
             try await self.tryToUpdate(groupId: groupId)
@@ -218,14 +226,12 @@ class GroupsV2ProfileKeyUpdater {
                 owsFailDebug("Unexpected error: \(error)")
             }
         }
-        await markAsComplete(groupId: groupId)
-        return true
+        await markAsComplete(groupIdKey: groupIdKey)
     }
 
-    private func markAsComplete(groupId: Data) async {
+    private func markAsComplete(groupIdKey: String) async {
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
-            let key = self.key(for: groupId)
-            self.keyValueStore.removeValue(forKey: key, transaction: transaction)
+            self.keyValueStore.removeValue(forKey: groupIdKey, transaction: transaction)
         }
     }
 
@@ -246,6 +252,7 @@ class GroupsV2ProfileKeyUpdater {
         }
 
         // Get latest group state from service and verify that this update is still necessary.
+        try Task.checkCancellation()
         let groupV2Snapshot = try await SSKEnvironment.shared.groupsV2Ref.fetchCurrentGroupV2Snapshot(groupModel: groupModel)
         guard groupV2Snapshot.groupMembership.isFullMember(localAci) else {
             // We're not a full member, no need to update profile key.
@@ -259,6 +266,7 @@ class GroupsV2ProfileKeyUpdater {
         }
 
         Logger.info("Updating profile key for group.")
+        try Task.checkCancellation()
         _ = try await GroupManager.updateLocalProfileKey(groupModel: groupModel)
     }
 }
