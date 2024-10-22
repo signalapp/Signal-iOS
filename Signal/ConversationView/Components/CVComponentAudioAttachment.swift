@@ -23,7 +23,7 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
 
         super.init(itemModel: itemModel)
 
-        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
+        DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
     }
 
     public func buildComponentView(componentDelegate: CVComponentDelegate) -> CVComponentView {

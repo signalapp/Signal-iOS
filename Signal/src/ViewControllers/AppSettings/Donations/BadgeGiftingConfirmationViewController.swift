@@ -40,7 +40,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
 
         super.viewDidLoad()
 
-        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
+        DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
 
         title = OWSLocalizedString(
             "DONATION_ON_BEHALF_OF_A_FRIEND_CONFIRMATION_SCREEN_TITLE",

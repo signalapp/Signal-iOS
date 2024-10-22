@@ -116,7 +116,7 @@ public class CVLoadCoordinator: NSObject {
         self.delegate = delegate
         self.componentDelegate = componentDelegate
 
-        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
+        DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
 
         // Kick off async load.
         loadInitialMapping(focusMessageIdOnOpen: focusMessageIdOnOpen)

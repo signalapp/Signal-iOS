@@ -23,7 +23,7 @@ class StoryInfoSheet: OWSTableSheetViewController {
         self.spoilerState = spoilerState
         super.init()
 
-        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
+        DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
 
         tableViewController.forceDarkMode = true
         tableViewController.tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)

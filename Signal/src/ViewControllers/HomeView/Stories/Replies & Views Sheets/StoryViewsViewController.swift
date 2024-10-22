@@ -26,7 +26,7 @@ class StoryViewsViewController: OWSViewController {
         self.storyMessage = storyMessage
         self.context = context
         super.init()
-        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
+        DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
     }
 
     override public func viewDidLoad() {

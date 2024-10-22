@@ -39,7 +39,7 @@ class ContactAboutSheet: StackSheetViewController {
         self.spoilerState = spoilerState
         self.context = context
         super.init()
-        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
+        DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
     }
 
     private weak var fromViewController: UIViewController?

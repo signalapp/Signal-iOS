@@ -251,7 +251,7 @@ class StoryListDataSource: NSObject {
     // MARK: - Database Observation
 
     public func beginObservingDatabase() {
-        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
+        DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
         SSKEnvironment.shared.systemStoryManagerRef.addStateChangedObserver(self)
         // NOTE: hidden state lives on StoryContextAssociatedData, so we observe changes on that.
         // But we need to know which thread IDs to observe, so first we load messages and then

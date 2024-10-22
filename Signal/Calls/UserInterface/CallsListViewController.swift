@@ -43,6 +43,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         let callRecordStore: CallRecordStore
         let callService: CallService
         let contactsManager: any ContactManager
+        let databaseChangeObserver: DatabaseChangeObserver
         let databaseStorage: SDSDatabaseStorage
         let db: any DB
         let groupCallManager: GroupCallManager
@@ -65,6 +66,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         callRecordStore: DependenciesBridge.shared.callRecordStore,
         callService: AppEnvironment.shared.callService,
         contactsManager: SSKEnvironment.shared.contactManagerRef,
+        databaseChangeObserver: DependenciesBridge.shared.databaseChangeObserver,
         databaseStorage: SSKEnvironment.shared.databaseStorageRef,
         db: DependenciesBridge.shared.db,
         groupCallManager: SSKEnvironment.shared.groupCallManagerRef,
@@ -464,7 +466,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     // MARK: - Observers and Notifications
 
     private func attachSelfAsObservers() {
-        deps.databaseStorage.appendDatabaseChangeDelegate(self)
+        deps.databaseChangeObserver.appendDatabaseChangeDelegate(self)
 
         NotificationCenter.default.addObserver(
             self,

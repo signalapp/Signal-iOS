@@ -165,7 +165,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         }
 
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
+            DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
 
             self.callServiceState.addObserver(self.groupCallAccessoryMessageDelegate, syncStateImmediately: true)
             self.callServiceState.addObserver(self.groupCallRemoteVideoManager, syncStateImmediately: true)

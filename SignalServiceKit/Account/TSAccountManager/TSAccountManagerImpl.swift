@@ -21,6 +21,7 @@ public class TSAccountManagerImpl: TSAccountManager {
     public init(
         appReadiness: AppReadiness,
         dateProvider: @escaping DateProvider,
+        databaseChangeObserver: DatabaseChangeObserver,
         db: any DB,
         keyValueStoreFactory: KeyValueStoreFactory,
         schedulers: Schedulers
@@ -36,7 +37,7 @@ public class TSAccountManagerImpl: TSAccountManager {
         self.kvStore = kvStore
 
         appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
-            self.db.appendDbChangeDelegate(self)
+            databaseChangeObserver.appendDatabaseChangeDelegate(self)
         }
     }
 
@@ -325,13 +326,16 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
     }
 }
 
-extension TSAccountManagerImpl: DBChangeDelegate {
+extension TSAccountManagerImpl: DatabaseChangeDelegate {
+    public func databaseChangesDidUpdate(databaseChanges: any DatabaseChanges) {}
 
-    public func dbChangesDidUpdateExternally() {
+    public func databaseChangesDidUpdateExternally() {
         self.db.read { tx in
             _ = reloadAccountState(logger: nil, tx: tx)
         }
     }
+
+    public func databaseChangesDidReset() {}
 }
 
 extension TSAccountManagerImpl {

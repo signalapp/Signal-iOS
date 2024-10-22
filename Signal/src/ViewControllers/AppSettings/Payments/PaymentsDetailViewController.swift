@@ -24,7 +24,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
 
         updateTableContents()
 
-        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
+        DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
     }
 
     override func viewWillAppear(_ animated: Bool) {

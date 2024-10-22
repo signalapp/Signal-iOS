@@ -6,10 +6,6 @@
 import Foundation
 public import GRDB
 
-public protocol DBChangeDelegate: AnyObject {
-    func dbChangesDidUpdateExternally()
-}
-
 /// Wrapper around `SDSDatabaseStorage` that allows for an access pattern identical
 /// to the original (you get a transaction object you pass around to perform database operations)
 /// but which is easily stubbed out in tests.
@@ -92,8 +88,6 @@ public protocol DB {
     ) rethrows -> T
 
     // MARK: - Observation
-
-    func appendDbChangeDelegate(_ dbChangeDelegate: DBChangeDelegate)
 
     func add(
         transactionObserver: TransactionObserver,

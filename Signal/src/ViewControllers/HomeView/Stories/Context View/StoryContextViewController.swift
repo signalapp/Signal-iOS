@@ -92,7 +92,7 @@ class StoryContextViewController: OWSViewController {
         self.loadPositionIfRead = loadPositionIfRead
         super.init()
         self.delegate = delegate
-        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
+        DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
     }
 
     required init?(coder: NSCoder) {

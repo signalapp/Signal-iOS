@@ -30,7 +30,8 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
         message: TSMessage,
         spoilerState: SpoilerRenderState,
         editManager: EditManager,
-        database: SDSDatabaseStorage
+        database: SDSDatabaseStorage,
+        databaseChangeObserver: DatabaseChangeObserver
     ) {
         self.spoilerState = spoilerState
         self.message = message
@@ -38,7 +39,7 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
         self.editManager = editManager
         super.init()
 
-        database.appendDatabaseChangeDelegate(self)
+        databaseChangeObserver.appendDatabaseChangeDelegate(self)
     }
 
     override func viewDidAppear(_ animated: Bool) {

@@ -162,6 +162,7 @@ public class AppSetup {
         let tsAccountManager = TSAccountManagerImpl(
             appReadiness: appReadiness,
             dateProvider: dateProvider,
+            databaseChangeObserver: databaseStorage.databaseChangeObserver,
             db: db,
             keyValueStoreFactory: keyValueStoreFactory,
             schedulers: schedulers
@@ -1214,6 +1215,7 @@ public class AppSetup {
             chatConnectionManager: chatConnectionManager,
             contactShareManager: contactShareManager,
             currentCallProvider: currentCallProvider,
+            databaseChangeObserver: databaseStorage.databaseChangeObserver,
             db: db,
             deletedCallRecordCleanupManager: deletedCallRecordCleanupManager,
             deletedCallRecordStore: deletedCallRecordStore,
@@ -1526,7 +1528,7 @@ extension AppSetup.DatabaseContinuation {
             }
             databaseStorage.runGrdbSchemaMigrationsOnMainDatabase(completionScheduler: mainScheduler) {
                 do {
-                    try databaseStorage.grdbStorage.setupDatabaseChangeObserver(appReadiness: self.appReadiness)
+                    try databaseStorage.grdbStorage.setupDatabaseChangeObserver()
                 } catch {
                     owsFail("Couldn't set up change observer: \(error.grdbErrorForLogging)")
                 }

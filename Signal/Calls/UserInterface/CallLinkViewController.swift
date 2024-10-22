@@ -96,7 +96,7 @@ final class CallLinkViewController: OWSTableViewController2 {
         super.init()
         self.title = title
 
-        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
+        DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
     }
 
     override func viewDidLoad() {

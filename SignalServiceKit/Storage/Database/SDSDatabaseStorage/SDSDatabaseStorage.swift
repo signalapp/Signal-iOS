@@ -22,17 +22,21 @@ public class SDSDatabaseStorage: NSObject {
     // MARK: - Initialization / Setup
 
     private let appReadiness: AppReadiness
+    private let _databaseChangeObserver: SDSDatabaseChangeObserver
 
     public let databaseFileUrl: URL
     public let keyFetcher: GRDBKeyFetcher
 
     private(set) public var grdbStorage: GRDBDatabaseStorageAdapter
+    public var databaseChangeObserver: DatabaseChangeObserver { _databaseChangeObserver }
 
     public init(appReadiness: AppReadiness, databaseFileUrl: URL, keychainStorage: any KeychainStorage) throws {
         self.appReadiness = appReadiness
+        self._databaseChangeObserver = DatabaseChangeObserverImpl(appReadiness: appReadiness)
         self.databaseFileUrl = databaseFileUrl
         self.keyFetcher = GRDBKeyFetcher(keychainStorage: keychainStorage)
         self.grdbStorage = try GRDBDatabaseStorageAdapter(
+            databaseChangeObserver: _databaseChangeObserver,
             databaseFileUrl: databaseFileUrl,
             keyFetcher: self.keyFetcher
         )
@@ -106,7 +110,11 @@ public class SDSDatabaseStorage: NSObject {
         weak var weakGrdbStorage = grdbStorage
         owsAssertDebug(weakPool != nil)
         owsAssertDebug(weakGrdbStorage != nil)
-        grdbStorage = try GRDBDatabaseStorageAdapter(databaseFileUrl: databaseFileUrl, keyFetcher: keyFetcher)
+        grdbStorage = try GRDBDatabaseStorageAdapter(
+            databaseChangeObserver: _databaseChangeObserver,
+            databaseFileUrl: databaseFileUrl,
+            keyFetcher: keyFetcher
+        )
 
         completionScheduler.async {
             // We want to make sure all db connections from the old adapter/pool are closed.
@@ -135,28 +143,14 @@ public class SDSDatabaseStorage: NSObject {
         grdbStorage.resetAllStorage()
     }
 
-    // MARK: - Observation
-
-    public func appendDatabaseChangeDelegate(_ databaseChangeDelegate: DatabaseChangeDelegate) {
-        guard let databaseChangeObserver = grdbStorage.databaseChangeObserver else {
-            owsFailDebug("Missing databaseChangeObserver.")
-            return
-        }
-        databaseChangeObserver.appendDatabaseChangeDelegate(databaseChangeDelegate)
-    }
-
     // MARK: - Id Mapping
 
     @objc
     public func updateIdMapping(thread: TSThread, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .grdbWrite(let grdb):
-            DatabaseChangeObserver.serializedSync {
-                if let databaseChangeObserver = grdbStorage.databaseChangeObserver {
-                    databaseChangeObserver.updateIdMapping(thread: thread, transaction: grdb)
-                } else if appReadiness.isAppReady {
-                    owsFailDebug("databaseChangeObserver was unexpectedly nil")
-                }
+            DatabaseChangeObserverImpl.serializedSync {
+                _databaseChangeObserver.updateIdMapping(thread: thread, transaction: grdb)
             }
         }
     }
@@ -165,12 +159,8 @@ public class SDSDatabaseStorage: NSObject {
     public func updateIdMapping(interaction: TSInteraction, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .grdbWrite(let grdb):
-            DatabaseChangeObserver.serializedSync {
-                if let databaseChangeObserver = grdbStorage.databaseChangeObserver {
-                    databaseChangeObserver.updateIdMapping(interaction: interaction, transaction: grdb)
-                } else if appReadiness.isAppReady {
-                    owsFailDebug("databaseChangeObserver was unexpectedly nil")
-                }
+            DatabaseChangeObserverImpl.serializedSync {
+                _databaseChangeObserver.updateIdMapping(interaction: interaction, transaction: grdb)
             }
         }
     }
@@ -181,12 +171,8 @@ public class SDSDatabaseStorage: NSObject {
     public func touch(interaction: TSInteraction, shouldReindex: Bool, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .grdbWrite(let grdb):
-            DatabaseChangeObserver.serializedSync {
-                if let databaseChangeObserver = grdbStorage.databaseChangeObserver {
-                    databaseChangeObserver.didTouch(interaction: interaction, transaction: grdb)
-                } else if appReadiness.isAppReady {
-                    owsFailDebug("databaseChangeObserver was unexpectedly nil")
-                }
+            DatabaseChangeObserverImpl.serializedSync {
+                _databaseChangeObserver.didTouch(interaction: interaction, transaction: grdb)
             }
         }
         if shouldReindex, let message = interaction as? TSMessage {
@@ -199,13 +185,8 @@ public class SDSDatabaseStorage: NSObject {
     public func touch(thread: TSThread, shouldReindex: Bool, shouldUpdateChatListUi: Bool, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .grdbWrite(let grdb):
-            DatabaseChangeObserver.serializedSync {
-                if let databaseChangeObserver = grdbStorage.databaseChangeObserver {
-                    databaseChangeObserver.didTouch(thread: thread, shouldUpdateChatListUi: shouldUpdateChatListUi, transaction: grdb)
-                } else if appReadiness.isAppReady {
-                    // This can race with observation setup when app becomes ready.
-                    Logger.warn("databaseChangeObserver was unexpectedly nil")
-                }
+            DatabaseChangeObserverImpl.serializedSync {
+                _databaseChangeObserver.didTouch(thread: thread, shouldUpdateChatListUi: shouldUpdateChatListUi, transaction: grdb)
             }
         }
         if shouldReindex {
@@ -223,12 +204,8 @@ public class SDSDatabaseStorage: NSObject {
     public func touch(storyMessage: StoryMessage, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .grdbWrite(let grdb):
-            DatabaseChangeObserver.serializedSync {
-                if let databaseChangeObserver = grdbStorage.databaseChangeObserver {
-                    databaseChangeObserver.didTouch(storyMessage: storyMessage, transaction: grdb)
-                } else if appReadiness.isAppReady {
-                    owsFailDebug("databaseChangeObserver was unexpectedly nil")
-                }
+            DatabaseChangeObserverImpl.serializedSync {
+                _databaseChangeObserver.didTouch(storyMessage: storyMessage, transaction: grdb)
             }
         }
     }

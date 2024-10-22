@@ -142,7 +142,7 @@ class MessageDetailViewController: OWSTableViewController2 {
             comment: "Title for the 'message metadata' view."
         )
 
-        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
+        DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
 
         startExpiryLabelTimerIfNecessary()
 
@@ -386,7 +386,8 @@ class MessageDetailViewController: OWSTableViewController2 {
                     message: self.message,
                     spoilerState: self.spoilerState,
                     editManager: self.editManager,
-                    database: SSKEnvironment.shared.databaseStorageRef
+                    database: SSKEnvironment.shared.databaseStorageRef,
+                    databaseChangeObserver: DependenciesBridge.shared.databaseChangeObserver
                 )
                 sheet.delegate = self.detailDelegate
                 self.present(sheet, animated: true)

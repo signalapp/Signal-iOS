@@ -171,10 +171,6 @@ public class SDSDB: DB {
 
     // MARK: - Observation
 
-    public func appendDbChangeDelegate(_ dbChangeDelegate: DBChangeDelegate) {
-        self.databaseStorage.appendDatabaseChangeDelegate(DBChangeDelegateWrapper(dbChangeDelegate))
-    }
-
     public func add(
         transactionObserver: TransactionObserver,
         extent: Database.TransactionObservationExtent
@@ -204,42 +200,4 @@ public class SDSDB: DB {
 
 extension SDSAnyWriteTransaction {
     var asRead: SDSAnyReadTransaction { self }
-}
-
-private class DBChangeDelegateWrapper: NSObject, DatabaseChangeDelegate {
-
-    /// Retains a strong reference to self intentionally, to avoid observation being lost when this object
-    /// is deallocated.
-    /// This reference is released if we ever find the dbChangeDelegate has been deallocated.
-    /// This isn't perfect, as this object can persist indefinitely if no callbacks happen, but presumably
-    /// the DatabaseChangeDelegate itself checks for deallocation on callbacks so...is it any worse?
-    private var strongSelf: Any?
-    private weak var dbChangeDelegate: DBChangeDelegate?
-
-    init(_ dbChangeDelegate: DBChangeDelegate) {
-        self.dbChangeDelegate = dbChangeDelegate
-        super.init()
-        strongSelf = self
-    }
-
-    func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
-        checkRetain()
-    }
-
-    func databaseChangesDidUpdateExternally() {
-        checkRetain()?.dbChangesDidUpdateExternally()
-    }
-
-    func databaseChangesDidReset() {
-        checkRetain()
-    }
-
-    @discardableResult
-    private func checkRetain() -> DBChangeDelegate? {
-        guard let dbChangeDelegate else {
-            strongSelf = nil
-            return nil
-        }
-        return dbChangeDelegate
-    }
 }

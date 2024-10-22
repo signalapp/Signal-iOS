@@ -31,13 +31,38 @@ enum DatabaseObserverError: Error {
 // MARK: -
 
 func AssertHasDatabaseChangeObserverLock() {
-    assert(DatabaseChangeObserver.hasDatabaseChangeObserverLock)
+    assert(DatabaseChangeObserverImpl.hasDatabaseChangeObserverLock)
 }
 
 // MARK: -
 
-@objc
-public class DatabaseChangeObserver: NSObject {
+/// A singular ``TransactionObserver`` that collates and forwards observed
+/// db changes to ``DatabaseChangeDelegate``s.
+///
+/// Do not use this protocol/class. Prefer to observe the database directly through
+/// GRDB APIs. This type is maintained for legacy observers only.
+public protocol DatabaseChangeObserver {
+
+    func appendDatabaseChangeDelegate(_ databaseChangeDelegate: DatabaseChangeDelegate)
+
+    var transactionObserver: GRDB.TransactionObserver { get }
+
+#if TESTABLE_BUILD
+    func appendDatabaseWriteDelegate(_ delegate: DatabaseWriteDelegate)
+#endif
+}
+
+public protocol SDSDatabaseChangeObserver: DatabaseChangeObserver {
+
+    func updateIdMapping(thread: TSThread, transaction: GRDBWriteTransaction)
+    func updateIdMapping(interaction: TSInteraction, transaction: GRDBWriteTransaction)
+
+    func didTouch(interaction: TSInteraction, transaction: GRDBWriteTransaction)
+    func didTouch(thread: TSThread, shouldUpdateChatListUi: Bool, transaction: GRDBWriteTransaction)
+    func didTouch(storyMessage: StoryMessage, transaction: GRDBWriteTransaction)
+}
+
+public class DatabaseChangeObserverImpl: SDSDatabaseChangeObserver {
     public static let kMaxIncrementalRowChanges = 200
 
     private lazy var nonModelTables: Set<String> = Set([
@@ -80,7 +105,7 @@ public class DatabaseChangeObserver: NSObject {
         return _databaseChangeDelegates.compactMap { $0.value }
     }
 
-    func appendDatabaseChangeDelegate(_ databaseChangeDelegate: DatabaseChangeDelegate) {
+    public func appendDatabaseChangeDelegate(_ databaseChangeDelegate: DatabaseChangeDelegate) {
         let append = { [weak self] in
             guard let self = self else {
                 return
@@ -104,7 +129,7 @@ public class DatabaseChangeObserver: NSObject {
         return _databaseWriteDelegates.compactMap { $0.value }
     }
 
-    func appendDatabaseWriteDelegate(_ delegate: DatabaseWriteDelegate) {
+    public func appendDatabaseWriteDelegate(_ delegate: DatabaseWriteDelegate) {
         _databaseWriteDelegates = _databaseWriteDelegates.filter { $0.value != nil} + [Weak(value: delegate)]
     }
     #endif
@@ -127,9 +152,10 @@ public class DatabaseChangeObserver: NSObject {
 
     private let appReadiness: AppReadiness
 
+    public var transactionObserver: GRDB.TransactionObserver { self }
+
     init(appReadiness: AppReadiness) {
         self.appReadiness = appReadiness
-        super.init()
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(didReceiveCrossProcessNotification),
@@ -192,7 +218,7 @@ public class DatabaseChangeObserver: NSObject {
                 return true
             }
             var hasPendingChanges = false
-            DatabaseChangeObserver.serializedSync {
+            DatabaseChangeObserverImpl.serializedSync {
                 hasPendingChanges = !self.pendingChanges.isEmpty
             }
             if hasPendingChanges {
@@ -263,7 +289,7 @@ public class DatabaseChangeObserver: NSObject {
 
 // MARK: -
 
-extension DatabaseChangeObserver: TransactionObserver {
+extension DatabaseChangeObserverImpl: TransactionObserver {
 
     private func observes(eventWithTableName tableName: String) -> Bool {
         if tableName.hasPrefix(FullTextSearchIndexer.contentTableName) {
@@ -290,8 +316,9 @@ extension DatabaseChangeObserver: TransactionObserver {
         observes(eventWithTableName: event.tableName)
     }
 
-    // This should only be called by DatabaseStorage.
-    func updateIdMapping(thread: TSThread, transaction: GRDBWriteTransaction) {
+    // MARK: - SDSDatabaseChangeObserver
+
+    public func updateIdMapping(thread: TSThread, transaction: GRDBWriteTransaction) {
         AssertHasDatabaseChangeObserverLock()
 
         pendingChanges.insert(thread: thread)
@@ -300,8 +327,7 @@ extension DatabaseChangeObserver: TransactionObserver {
         didModifyPendingChanges()
     }
 
-    // This should only be called by DatabaseStorage.
-    func updateIdMapping(interaction: TSInteraction, transaction: GRDBWriteTransaction) {
+    public func updateIdMapping(interaction: TSInteraction, transaction: GRDBWriteTransaction) {
         AssertHasDatabaseChangeObserverLock()
 
         pendingChanges.insert(interaction: interaction)
@@ -310,8 +336,7 @@ extension DatabaseChangeObserver: TransactionObserver {
         didModifyPendingChanges()
     }
 
-    // internal - should only be called by DatabaseStorage
-    func didTouch(interaction: TSInteraction, transaction: GRDBWriteTransaction) {
+    public func didTouch(interaction: TSInteraction, transaction: GRDBWriteTransaction) {
         AssertHasDatabaseChangeObserverLock()
 
         pendingChanges.insert(interaction: interaction)
@@ -329,10 +354,8 @@ extension DatabaseChangeObserver: TransactionObserver {
         didModifyPendingChanges()
     }
 
-    /// internal - should only be called by DatabaseStorage
-    ///
     /// See note on `shouldUpdateChatListUi` parameter in docs for ``TSGroupThread.updateWithGroupModel:shouldUpdateChatListUi:transaction``.
-    func didTouch(thread: TSThread, shouldUpdateChatListUi: Bool = true, transaction: GRDBWriteTransaction) {
+    public func didTouch(thread: TSThread, shouldUpdateChatListUi: Bool = true, transaction: GRDBWriteTransaction) {
         // Note: We don't actually use the `transaction` param, but touching must happen within
         // a write transaction in order for the touch machinery to notify its observers
         // in the expected way.
@@ -344,8 +367,7 @@ extension DatabaseChangeObserver: TransactionObserver {
         didModifyPendingChanges()
     }
 
-    // internal - should only be called by DatabaseStorage
-    func didTouch(storyMessage: StoryMessage, transaction: GRDBWriteTransaction) {
+    public func didTouch(storyMessage: StoryMessage, transaction: GRDBWriteTransaction) {
         // Note: We don't actually use the `transaction` param, but touching must happen within
         // a write transaction in order for the touch machinery to notify its observers
         // in the expected way.
@@ -383,7 +405,7 @@ extension DatabaseChangeObserver: TransactionObserver {
             return
         }
 
-        DatabaseChangeObserver.serializedSync {
+        DatabaseChangeObserverImpl.serializedSync {
 
             pendingChanges.insert(tableName: event.tableName)
 
@@ -416,7 +438,7 @@ extension DatabaseChangeObserver: TransactionObserver {
 
     // See comment on databaseDidChange.
     public func databaseDidCommit(_ db: Database) {
-        DatabaseChangeObserver.serializedSync {
+        DatabaseChangeObserverImpl.serializedSync {
             let pendingChangesToCommit = self.pendingChanges
             self.pendingChanges = ObservedDatabaseChanges(concurrencyMode: .databaseChangeObserverSerialQueue)
 
@@ -576,7 +598,7 @@ extension DatabaseChangeObserver: TransactionObserver {
     public func databaseDidRollback(_ db: Database) {
         owsFailDebug("TODO: test this if we ever use it.")
 
-        DatabaseChangeObserver.serializedSync {
+        DatabaseChangeObserverImpl.serializedSync {
             pendingChanges = ObservedDatabaseChanges(concurrencyMode: .databaseChangeObserverSerialQueue)
 
             #if TESTABLE_BUILD

@@ -635,7 +635,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 callLinkStateUpdater: AppEnvironment.shared.callService.callLinkStateUpdater,
                 db: DependenciesBridge.shared.db
             )
-            fetchJobRunner.observeDatabase(SSKEnvironment.shared.databaseStorageRef)
+            fetchJobRunner.observeDatabase(DependenciesBridge.shared.databaseChangeObserver)
             fetchJobRunner.setMightHavePendingFetchAndFetch()
             AppEnvironment.shared.ownedObjects.append(fetchJobRunner)
         }

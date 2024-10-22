@@ -67,7 +67,7 @@ class StoryGroupReplyViewController: OWSViewController, StoryReplySheet {
 
         super.init()
 
-        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
+        DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
     }
 
     fileprivate var replyLoader: StoryGroupReplyLoader?

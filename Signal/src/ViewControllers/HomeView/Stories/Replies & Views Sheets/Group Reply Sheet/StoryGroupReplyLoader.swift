@@ -63,7 +63,7 @@ class StoryGroupReplyLoader {
         SSKEnvironment.shared.databaseStorageRef.read { transaction in
             load(mode: .initial, transaction: transaction)
         }
-        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
+        DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
     }
 
     func replyItem(for indexPath: IndexPath) -> StoryGroupReplyViewItem? {

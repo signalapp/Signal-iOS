@@ -20,7 +20,7 @@ public class StoryBadgeCountManager: NSObject {
     public func beginObserving(observer: StoryBadgeCountObserver) {
         self.observer = observer
 
-        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
+        DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(computeBadgeCount),

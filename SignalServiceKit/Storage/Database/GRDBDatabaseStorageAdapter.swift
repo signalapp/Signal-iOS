@@ -119,6 +119,8 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         static func currentTimestamp() -> UInt64 { clock_gettime_nsec_np(CLOCK_UPTIME_RAW) }
     }
 
+    private let databaseChangeObserver: DatabaseChangeObserver
+
     private let databaseFileUrl: URL
 
     private let storage: GRDBStorage
@@ -127,7 +129,12 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         return storage.pool
     }
 
-    init(databaseFileUrl: URL, keyFetcher: GRDBKeyFetcher) throws {
+    init(
+        databaseChangeObserver: DatabaseChangeObserver,
+        databaseFileUrl: URL,
+        keyFetcher: GRDBKeyFetcher
+    ) throws {
+        self.databaseChangeObserver = databaseChangeObserver
         self.databaseFileUrl = databaseFileUrl
 
         try GRDBDatabaseStorageAdapter.ensureDatabaseKeySpecExists(keyFetcher: keyFetcher)
@@ -177,27 +184,22 @@ public class GRDBDatabaseStorageAdapter: NSObject {
 
     // MARK: - DatabaseChangeObserver
 
-    private(set) public var databaseChangeObserver: DatabaseChangeObserver?
-
-    func setupDatabaseChangeObserver(appReadiness: AppReadiness) throws {
-        owsAssertDebug(self.databaseChangeObserver == nil)
-
+    func setupDatabaseChangeObserver() throws {
         // DatabaseChangeObserver is a general purpose observer, whose delegates
         // are notified when things change, but are not given any specific details
         // about the changes.
-        let databaseChangeObserver = DatabaseChangeObserver(appReadiness: appReadiness)
-        self.databaseChangeObserver = databaseChangeObserver
-
         try pool.write { db in
-            db.add(transactionObserver: databaseChangeObserver, extent: Database.TransactionObservationExtent.observerLifetime)
+            db.add(transactionObserver: databaseChangeObserver.transactionObserver, extent: Database.TransactionObservationExtent.observerLifetime)
         }
     }
 
-    func testing_tearDownDatabaseChangeObserver() {
+    func testing_tearDownDatabaseChangeObserver() throws {
         // DatabaseChangeObserver is a general purpose observer, whose delegates
         // are notified when things change, but are not given any specific details
         // about the changes.
-        self.databaseChangeObserver = nil
+        try pool.write { db in
+            db.remove(transactionObserver: databaseChangeObserver.transactionObserver)
+        }
     }
 
     // MARK: -

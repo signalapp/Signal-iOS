@@ -70,7 +70,7 @@ class GetStartedBannerViewController: UIViewController, UICollectionViewDelegate
         updateContent()
         applyTheme()
 
-        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
+        DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(applyTheme),

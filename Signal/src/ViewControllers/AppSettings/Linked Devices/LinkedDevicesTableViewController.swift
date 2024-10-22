@@ -42,7 +42,7 @@ class LinkedDevicesTableViewController: OWSTableViewController2 {
     }
 
     private func addObservers() {
-        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
+        DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(deviceListUpdateSucceeded),

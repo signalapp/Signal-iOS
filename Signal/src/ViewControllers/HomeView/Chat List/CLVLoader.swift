@@ -119,7 +119,7 @@ public class CLVLoader {
             //
             // NOTE: There's an upper bound on how long SQL queries should be.
             //       We use kMaxIncrementalRowChanges to limit query size.
-            guard threadsToLoad.count <= DatabaseChangeObserver.kMaxIncrementalRowChanges else {
+            guard threadsToLoad.count <= DatabaseChangeObserverImpl.kMaxIncrementalRowChanges else {
                 try loadWithoutCache()
                 break loading
             }

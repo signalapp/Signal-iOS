@@ -54,7 +54,7 @@ class SDSDatabaseStorageObservationTest: SSKBaseTest {
 
         // Create the observer & confirm adding it doesn't send any updates.
         let mockObserver = MockObserver()
-        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(mockObserver)
+        DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(mockObserver)
         XCTAssertEqual(0, mockObserver.updateCount)
         XCTAssertEqual(0, mockObserver.externalUpdateCount)
         XCTAssertEqual(0, mockObserver.resetCount)

@@ -50,7 +50,7 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
     }
 
     override func tearDown() {
-        SSKEnvironment.shared.databaseStorageRef.grdbStorage.testing_tearDownDatabaseChangeObserver()
+        try! SSKEnvironment.shared.databaseStorageRef.grdbStorage.testing_tearDownDatabaseChangeObserver()
 
         super.tearDown()
     }
@@ -105,11 +105,7 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
                 }
             }
         }
-        guard let observer = SSKEnvironment.shared.databaseStorageRef.grdbStorage.databaseChangeObserver else {
-            owsFailDebug("observer was unexpectedly nil")
-            return
-        }
-        observer.appendDatabaseWriteDelegate(snapshotDelegate)
+        SSKEnvironment.shared.databaseStorageRef.databaseChangeObserver.appendDatabaseWriteDelegate(snapshotDelegate)
 
         let envelopeBuilder = try! fakeService.envelopeBuilder(fromSenderClient: bobClient, bodyText: "Those who stands for nothing will fall for anything")
         envelopeBuilder.setSourceServiceID(bobClient.serviceId.serviceIdString)

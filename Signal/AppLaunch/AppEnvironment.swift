@@ -73,7 +73,7 @@ public class AppEnvironment: NSObject {
         )
 
         appReadiness.runNowOrWhenAppWillBecomeReady {
-            self.badgeManager.startObservingChanges(in: SSKEnvironment.shared.databaseStorageRef)
+            self.badgeManager.startObservingChanges(in: DependenciesBridge.shared.databaseChangeObserver)
             self.appIconBadgeUpdater.startObserving()
         }
 

@@ -541,10 +541,10 @@ extension ObservedDatabaseChanges {
             }
         }
 
-        guard allUniqueIds.count < DatabaseChangeObserver.kMaxIncrementalRowChanges else {
+        guard allUniqueIds.count < DatabaseChangeObserverImpl.kMaxIncrementalRowChanges else {
             throw DatabaseObserverError.changeTooLarge
         }
-        guard unresolvedRowIds.count < DatabaseChangeObserver.kMaxIncrementalRowChanges else {
+        guard unresolvedRowIds.count < DatabaseChangeObserverImpl.kMaxIncrementalRowChanges else {
             throw DatabaseObserverError.changeTooLarge
         }
 
@@ -562,7 +562,7 @@ extension ObservedDatabaseChanges {
         let fetchedUniqueIds = try String.fetchSet(db, sql: mappingSql)
         allUniqueIds.formUnion(fetchedUniqueIds.asMergingDictWithUniformValue(.default))
 
-        guard allUniqueIds.count < DatabaseChangeObserver.kMaxIncrementalRowChanges else {
+        guard allUniqueIds.count < DatabaseChangeObserverImpl.kMaxIncrementalRowChanges else {
             throw DatabaseObserverError.changeTooLarge
         }
 

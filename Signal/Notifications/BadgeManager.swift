@@ -101,8 +101,8 @@ public class BadgeManager {
         fetchBadgeValueIfNeeded()
     }
 
-    public func startObservingChanges(in databaseStorage: SDSDatabaseStorage) {
-        databaseStorage.appendDatabaseChangeDelegate(self)
+    public func startObservingChanges(in databaseChangeObserver: DatabaseChangeObserver) {
+        databaseChangeObserver.appendDatabaseChangeDelegate(self)
     }
 }
 

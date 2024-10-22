@@ -35,7 +35,7 @@ class MyStoriesViewController: OWSViewController, FailedStorySendDisplayControll
         self.spoilerState = spoilerState
         super.init()
         hidesBottomBarWhenPushed = true
-        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
+        DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
     }
 
     override func loadView() {

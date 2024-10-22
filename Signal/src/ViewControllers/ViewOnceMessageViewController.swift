@@ -220,7 +220,7 @@ class ViewOnceMessageViewController: OWSViewController {
     var videoPlayer: VideoPlayer?
 
     func setupDatabaseObservation() {
-        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
+        DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(applicationWillEnterForeground),

@@ -80,8 +80,8 @@ actor CallLinkFetchJobRunner: DatabaseChangeDelegate {
 
     // MARK: - DatabaseChangeDelegate
 
-    nonisolated func observeDatabase(_ databaseStorage: SDSDatabaseStorage) {
-        databaseStorage.appendDatabaseChangeDelegate(self)
+    nonisolated func observeDatabase(_ databaseChangeObserver: DatabaseChangeObserver) {
+        databaseChangeObserver.appendDatabaseChangeDelegate(self)
     }
 
     nonisolated func databaseChangesDidReset() {}

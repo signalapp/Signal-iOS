@@ -15,7 +15,7 @@ public class PaymentsProcessor: NSObject {
         super.init()
 
         appReadiness.runNowOrWhenAppDidBecomeReadySync {
-            SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
+            DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
         }
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             self.process()

@@ -345,7 +345,7 @@ class MediaGallery {
             name: MediaGalleryResource.didRemoveAttachmentsNotification,
             object: nil
         )
-        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
+        DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
     }
 
     // MARK: -

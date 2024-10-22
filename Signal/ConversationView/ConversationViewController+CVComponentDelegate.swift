@@ -214,7 +214,8 @@ extension ConversationViewController: CVComponentDelegate {
             message: message,
             spoilerState: viewState.spoilerState,
             editManager: self.context.editManager,
-            database: SSKEnvironment.shared.databaseStorageRef
+            database: SSKEnvironment.shared.databaseStorageRef,
+            databaseChangeObserver: DependenciesBridge.shared.databaseChangeObserver
         )
         sheet.delegate = self
         self.present(sheet, animated: true)

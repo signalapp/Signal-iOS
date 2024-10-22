@@ -91,7 +91,7 @@ extension ChatListViewController {
 
         SUIEnvironment.shared.contactsViewHelperRef.addObserver(self)
 
-        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
+        DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
     }
 
     // MARK: -

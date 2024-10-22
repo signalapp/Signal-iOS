@@ -56,7 +56,7 @@ class PaymentsHistoryDataSource {
     }
 
     public init() {
-        SSKEnvironment.shared.databaseStorageRef.appendDatabaseChangeDelegate(self)
+        DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
 
         updateContent()
     }

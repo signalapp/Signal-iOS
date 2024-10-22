@@ -53,8 +53,6 @@ public final class InMemoryDB: DB {
 
     // MARK: - Protocol
 
-    public func appendDbChangeDelegate(_ dbChangeDelegate: DBChangeDelegate) { fatalError() }
-
     public func add(
         transactionObserver: TransactionObserver,
         extent: Database.TransactionObservationExtent
