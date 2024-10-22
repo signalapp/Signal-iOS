@@ -311,7 +311,8 @@ private class SendGiftBadgeJobRunner: JobRunner {
             expectedBadgeLevel: .giftBadge(.signalGift),
             paymentProcessor: payment.processor,
             context: receiptCredentialRequestContext,
-            request: receiptCredentialRequest
+            request: receiptCredentialRequest,
+            logger: PrefixedLogger(prefix: "[Donations]")
         ).awaitable()
     }
 

@@ -45,6 +45,8 @@ public class ReceiptCredentialRedemptionJobQueue {
     >
     private let jobRunnerFactory: ReceiptCredentialRedemptionJobRunnerFactory
 
+    private let logger: PrefixedLogger = .donations
+
     public init(db: any DB, reachabilityManager: SSKReachabilityManager) {
         self.jobRunnerFactory = ReceiptCredentialRedemptionJobRunnerFactory()
         self.jobQueueRunner = JobQueueRunner(
@@ -71,7 +73,7 @@ public class ReceiptCredentialRedemptionJobQueue {
         future: Future<Void>,
         transaction: SDSAnyWriteTransaction
     ) {
-        Logger.info("[Donations] Adding a boost job")
+        logger.info("Adding a boost job")
 
         let jobRecord = ReceiptCredentialRedemptionJobRecord(
             paymentProcessor: paymentProcessor.rawValue,
@@ -118,7 +120,7 @@ public class ReceiptCredentialRedemptionJobQueue {
         future: Future<Void>,
         transaction: SDSAnyWriteTransaction
     ) {
-        Logger.info("[Donations] Adding a subscription job")
+        logger.info("Adding a subscription job")
 
         let jobRecord = ReceiptCredentialRedemptionJobRecord(
             paymentProcessor: paymentProcessor.rawValue,
@@ -155,6 +157,8 @@ private class ReceiptCredentialRedemptionJobRunnerFactory: JobRunnerFactory {
 }
 
 private class ReceiptCredentialRedemptionJobRunner: JobRunner {
+    private let logger: PrefixedLogger = .donations
+
     private let future: Future<Void>?
 
     init(future: Future<Void>?) {
@@ -281,7 +285,10 @@ private class ReceiptCredentialRedemptionJobRunner: JobRunner {
         guard delay > 0 else {
             return nil
         }
-        owsAssertDebug(priorError.paymentMethod == .sepa || priorError.paymentMethod == .ideal)
+        owsAssertDebug(
+            priorError.paymentMethod == .sepa || priorError.paymentMethod == .ideal,
+            logger: logger
+        )
         return delay
     }
 
@@ -303,7 +310,7 @@ private class ReceiptCredentialRedemptionJobRunner: JobRunner {
 
         let paymentMethod: DonationPaymentMethod? = try jobRecord.paymentMethod.map { paymentMethodString in
             guard let paymentMethod = DonationPaymentMethod(rawValue: paymentMethodString) else {
-                throw OWSGenericError("[Donations] Unexpected payment method in job record! \(paymentMethodString)")
+                throw OWSGenericError("Unexpected payment method in job record! \(paymentMethodString)")
             }
             return paymentMethod
         }
@@ -324,7 +331,7 @@ private class ReceiptCredentialRedemptionJobRunner: JobRunner {
                 let value = jobRecord.amount.map({ $0 as Decimal }),
                 let currencyCode = jobRecord.currencyCode
             else {
-                throw OWSGenericError("[Donations] Boost job record missing amount!")
+                throw OWSGenericError("Boost job record missing amount!")
             }
             paymentType = .oneTimeBoost(
                 paymentIntentId: jobRecord.boostPaymentIntentID,
@@ -358,10 +365,13 @@ private class ReceiptCredentialRedemptionJobRunner: JobRunner {
         } catch {
             if error.isRetryable {
                 // In practice, the only retryable errors are network failures.
-                owsAssertDebug(error.isNetworkFailureOrTimeout)
+                owsAssertDebug(
+                    error.isNetworkFailureOrTimeout,
+                    logger: logger
+                )
                 return .retryAfter(triggerExponentialRetry(jobRecord: jobRecord))
             }
-            Logger.warn("[Donations] Job encountered unexpected terminal error")
+            logger.warn("Job encountered unexpected terminal error")
             return await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
                 jobRecord.anyRemove(transaction: tx)
                 return .finished(.failure(error))
@@ -372,7 +382,7 @@ private class ReceiptCredentialRedemptionJobRunner: JobRunner {
     func didFinishJob(_ jobRecordId: JobRecord.RowId, result: JobResult) async {
         switch result.ranSuccessfullyOrError {
         case .success:
-            Logger.info("[Donations] Redemption job succeeded")
+            logger.info("Redemption job succeeded")
             ReceiptCredentialRedemptionJob.postNotification(name: ReceiptCredentialRedemptionJob.didSucceedNotification)
             future?.resolve(())
         case .failure(let error):
@@ -386,7 +396,7 @@ private class ReceiptCredentialRedemptionJobRunner: JobRunner {
         // operation can't ever succeed, so we throw it away.
         let configuration = try parseJobRecord(jobRecord)
 
-        Logger.info("[Donations] Running job for \(configuration.paymentType).")
+        logger.info("Running job for \(configuration.paymentType).")
 
         // When the app relaunches, we'll try to restart all pending redemption
         // jobs. If one is for SEPA, and if that job hit a "still processing" error
@@ -417,10 +427,10 @@ private class ReceiptCredentialRedemptionJobRunner: JobRunner {
 
         let receiptCredentialPresentation: ReceiptCredentialPresentation
         if let persistedReceiptCredentialPresentation = configuration.receiptCredentialPresentation {
-            Logger.info("[Donations] Using persisted receipt credential presentation")
+            logger.info("Using persisted receipt credential presentation")
             receiptCredentialPresentation = persistedReceiptCredentialPresentation
         } else {
-            Logger.info("[Donations] Creating new receipt credential presentation")
+            logger.info("Creating new receipt credential presentation")
             do {
                 receiptCredentialPresentation = try await fetchReceiptCredentialPresentation(
                     jobRecord: jobRecord,
@@ -439,7 +449,7 @@ private class ReceiptCredentialRedemptionJobRunner: JobRunner {
                         errorCode == .paymentIntentRedeemed,
                         case .recurringSubscription(_, _, _, _, shouldSuppressPaymentAlreadyRedeemed: true) = paymentType
                     {
-                        Logger.warn("[Donations] Suppressing payment-already-redeemed error.")
+                        self.logger.warn("Suppressing payment-already-redeemed error.")
                         jobRecord.anyRemove(transaction: tx)
                         return .finished(.success(()))
                     }
@@ -459,7 +469,7 @@ private class ReceiptCredentialRedemptionJobRunner: JobRunner {
                             paymentMethod: paymentMethod
                         )
                         if jobRecord.failureCount < maxRetries {
-                            Logger.warn("[Donations] Payment still processing; scheduling retry…")
+                            self.logger.warn("Payment still processing; scheduling retry…")
                             jobRecord.addFailure(tx: tx)
                             switch retryInterval {
                             case .exponential:
@@ -470,7 +480,7 @@ private class ReceiptCredentialRedemptionJobRunner: JobRunner {
                         }
                     }
 
-                    Logger.warn("[Donations] Couldn't fetch credential; aborting: \(errorCode)")
+                    self.logger.warn("Couldn't fetch credential; aborting: \(errorCode)")
                     jobRecord.anyRemove(transaction: tx)
                     return .finished(.failure(error))
                 }
@@ -529,9 +539,9 @@ private class ReceiptCredentialRedemptionJobRunner: JobRunner {
         case let .recurringSubscription(subscriberId, _, _, _, _):
             let subscription = try await SubscriptionManagerImpl.getCurrentSubscriptionStatus(for: subscriberId).awaitable()
             guard let subscription else {
-                throw OWSAssertionError("Missing subscription")
+                throw OWSAssertionError("Missing subscription", logger: logger)
             }
-            Logger.info("[Donations] Fetched current subscription. \(subscription.debugDescription)")
+            logger.info("Fetched current subscription. \(subscription.debugDescription)")
             return subscription.amount
         }
     }
@@ -545,23 +555,34 @@ private class ReceiptCredentialRedemptionJobRunner: JobRunner {
         let receiptCredentialPresentation: ReceiptCredentialPresentation
         switch configuration.paymentType {
         case let .oneTimeBoost(paymentIntentId: paymentIntentId, amount: _):
-            Logger.info("[Donations] Durable job requesting receipt for boost")
+            logger.info("Durable job requesting receipt for boost")
             receiptCredentialPresentation = try await SubscriptionManagerImpl.requestReceiptCredentialPresentation(
                 boostPaymentIntentId: paymentIntentId,
                 expectedBadgeLevel: .boostBadge,
                 paymentProcessor: configuration.paymentProcessor,
                 context: configuration.receiptCredentialRequestContext,
-                request: configuration.receiptCredentialRequest
+                request: configuration.receiptCredentialRequest,
+                logger: logger
             ).awaitable()
 
         case let .recurringSubscription(subscriberId, targetSubscriptionLevel, priorSubscriptionLevel, _, _):
-            Logger.info("[Donations] Durable job requesting receipt for subscription")
+            logger.info("Durable job requesting receipt for subscription")
             receiptCredentialPresentation = try await SubscriptionManagerImpl.requestReceiptCredentialPresentation(
                 subscriberId: subscriberId,
-                targetSubscriptionLevel: targetSubscriptionLevel,
-                priorSubscriptionLevel: priorSubscriptionLevel,
+                isValidReceiptLevelPredicate: { receiptLevel -> Bool in
+                    // Validate that receipt credential level matches requested
+                    // level, or prior subscription level.
+                    if receiptLevel == targetSubscriptionLevel {
+                        return true
+                    } else if priorSubscriptionLevel != 0 {
+                        return receiptLevel == priorSubscriptionLevel
+                    }
+
+                    return false
+                },
                 context: configuration.receiptCredentialRequestContext,
-                request: configuration.receiptCredentialRequest
+                request: configuration.receiptCredentialRequest,
+                logger: logger
             ).awaitable()
         }
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
@@ -588,7 +609,7 @@ private class ReceiptCredentialRedemptionJobRunner: JobRunner {
                     paymentMethod: paymentMethod
                 )
             } else {
-                Logger.warn("[Donations] Building legacy error, job record missing fields!")
+                logger.warn("Building legacy error, job record missing fields!")
                 return ReceiptCredentialRequestError(legacyErrorCode: errorCode)
             }
         }()
@@ -610,4 +631,10 @@ public enum ReceiptCredentialRedemptionJob {
     fileprivate static func postNotification(name: NSNotification.Name) {
         NotificationCenter.default.postNotificationNameAsync(name, object: nil, userInfo: nil)
     }
+}
+
+// MARK: -
+
+private extension PrefixedLogger {
+    static let donations = PrefixedLogger(prefix: "[Donations]")
 }

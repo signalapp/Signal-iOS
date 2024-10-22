@@ -653,10 +653,10 @@ public class SubscriptionManagerImpl: NSObject {
 
     public class func requestReceiptCredentialPresentation(
         subscriberId: Data,
-        targetSubscriptionLevel: UInt,
-        priorSubscriptionLevel: UInt,
+        isValidReceiptLevelPredicate: @escaping (UInt64) -> Bool,
         context: ReceiptCredentialRequestContext,
-        request: ReceiptCredentialRequest
+        request: ReceiptCredentialRequest,
+        logger: PrefixedLogger
     ) throws -> Promise<ReceiptCredentialPresentation> {
         return firstly {
             let networkRequest = OWSRequestFactory.subscriptionReceiptCredentialsRequest(
@@ -669,17 +669,8 @@ public class SubscriptionManagerImpl: NSObject {
             return try self.parseReceiptCredentialPresentationResponse(
                 httpResponse: response,
                 receiptCredentialRequestContext: context,
-                isValidReceiptLevelPredicate: { receiptLevel in
-                    // Validate that receipt credential level matches requested
-                    // level, or prior subscription level.
-                    if receiptLevel == targetSubscriptionLevel {
-                        return true
-                    } else if priorSubscriptionLevel != 0 {
-                        return receiptLevel == priorSubscriptionLevel
-                    }
-
-                    return false
-                }
+                isValidReceiptLevelPredicate: isValidReceiptLevelPredicate,
+                logger: logger
             )
         }.recover(on: DispatchQueue.global()) { error throws -> Promise<ReceiptCredentialPresentation> in
             throw parseReceiptCredentialPresentationError(error: error)
@@ -691,7 +682,8 @@ public class SubscriptionManagerImpl: NSObject {
         expectedBadgeLevel: OneTimeBadgeLevel,
         paymentProcessor: DonationPaymentProcessor,
         context: ReceiptCredentialRequestContext,
-        request: ReceiptCredentialRequest
+        request: ReceiptCredentialRequest,
+        logger: PrefixedLogger
     ) throws -> Promise<ReceiptCredentialPresentation> {
         return firstly {
             let networkRequest = OWSRequestFactory.boostReceiptCredentials(
@@ -707,7 +699,8 @@ public class SubscriptionManagerImpl: NSObject {
                 receiptCredentialRequestContext: context,
                 isValidReceiptLevelPredicate: { receiptLevel in
                     return receiptLevel == expectedBadgeLevel.rawValue
-                }
+                },
+                logger: logger
             )
         }.recover(on: DispatchQueue.global()) { error throws -> Promise<ReceiptCredentialPresentation> in
             throw parseReceiptCredentialPresentationError(error: error)
@@ -717,25 +710,29 @@ public class SubscriptionManagerImpl: NSObject {
     private class func parseReceiptCredentialPresentationResponse(
         httpResponse: HTTPResponse,
         receiptCredentialRequestContext: ReceiptCredentialRequestContext,
-        isValidReceiptLevelPredicate: (UInt64) -> Bool
+        isValidReceiptLevelPredicate: (UInt64) -> Bool,
+        logger: PrefixedLogger
     ) throws -> ReceiptCredentialPresentation {
         let clientOperations = try clientZKReceiptOperations()
 
         let httpStatusCode = httpResponse.responseStatusCode
         switch httpStatusCode {
         case 200:
-            Logger.info("[Donations] Got valid receipt response.")
+            logger.info("Got valid receipt response.")
         case 204:
-            Logger.info("[Donations] No receipt yet, payment processing.")
+            logger.info("No receipt yet, payment processing.")
             throw KnownReceiptCredentialRequestError(
                 errorCode: .paymentStillProcessing
             )
         default:
-            throw OWSAssertionError("[Donations] Unexpected success status code: \(httpStatusCode)")
+            throw OWSAssertionError(
+                "Unexpected success status code: \(httpStatusCode)",
+                logger: logger
+            )
         }
 
         func failValidation(_ message: String) -> Error {
-            owsFailDebug(message)
+            owsFailDebug(message, logger: logger)
             return KnownReceiptCredentialRequestError(errorCode: .localValidationFailed)
         }
 
