@@ -13,7 +13,7 @@ protocol ChatListFilterControlDelegate: AnyObject {
 final class ChatListFilterControl: UIView, UIScrollViewDelegate {
     private struct AnimationFrame: CaseIterable {
         static let allCases = [
-            AnimationFrame(step: 0, relativeStartTime: 0, relativeDuration: 0, isFiltering: false),
+            AnimationFrame(step: 0, relativeStartTime: 0.01, relativeDuration: 0, isFiltering: false),
             AnimationFrame(step: 1, relativeStartTime: 0.36, relativeDuration: 0.2, isFiltering: false),
             AnimationFrame(step: 2, relativeStartTime: 0.56, relativeDuration: 0.2, isFiltering: false),
             AnimationFrame(step: 3, relativeStartTime: 0.76, relativeDuration: 0.2, isFiltering: false),
@@ -451,11 +451,16 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
     }
 
     func draggingWillEnd(in scrollView: UIScrollView) {
-        if state == .willStartFiltering {
+        switch state {
+        case .tracking:
+            state = .inactive
+        case .willStartFiltering:
             scrollView.contentInset.top = 0
             showClearButton(animated: true)
             state = .filterPending
             delegate?.filterControlDidStartFiltering()
+        default:
+            break
         }
     }
 
