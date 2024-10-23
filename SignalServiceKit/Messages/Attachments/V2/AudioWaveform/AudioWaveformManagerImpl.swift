@@ -332,8 +332,8 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
             throw AudioWaveformError.fileIOError
         }
 
-        // We just draw the waveform based on the first track.
-        guard let audioTrack = assetReader.asset.tracks.first else {
+        // We just draw the waveform based on the first audio track.
+        guard let audioTrack = assetReader.asset.tracks.first(where: { $0.mediaType == .audio }) else {
             owsFailDebug("audio file has no tracks")
             throw AudioWaveformError.invalidAudioFile
         }
