@@ -211,6 +211,32 @@ public class AttachmentStoreImpl: AttachmentStore {
         }
     }
 
+    public func oldestStickerPackReferences(
+        tx: DBReadTransaction
+    ) throws -> [AttachmentReference.Owner.MessageSource.StickerMetadata] {
+        let ownerRowIdColumn = Column(MessageAttachmentReferenceRecord.CodingKeys.ownerRowId)
+        let packIdColumn = Column(MessageAttachmentReferenceRecord.CodingKeys.stickerPackId)
+        return try MessageAttachmentReferenceRecord
+            .fetchAll(tx.databaseConnection, sql: """
+                SELECT *
+                FROM \(MessageAttachmentReferenceRecord.databaseTableName)
+                WHERE (\(packIdColumn.name), \(ownerRowIdColumn.name)) IN (
+                    SELECT \(packIdColumn.name), MIN(\(ownerRowIdColumn.name))
+                    FROM \(MessageAttachmentReferenceRecord.databaseTableName)
+                    GROUP BY \(packIdColumn.name)
+                );
+                """
+            )
+            .compactMap { record in
+                switch try AttachmentReference(record: record).owner {
+                case .message(.sticker(let stickerMetadata)):
+                    return stickerMetadata
+                default:
+                    return nil
+                }
+            }
+    }
+
     // MARK: Writes
 
     public func duplicateExistingMessageOwner(

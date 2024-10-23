@@ -349,16 +349,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 {
     [super anyWillInsertWithTransaction:transaction];
 
-    // StickerManager does reference counting of "known" sticker packs.
-    if (self.messageSticker != nil) {
-        BOOL willInsert = (self.uniqueId.length < 1
-            || nil == [TSMessage anyFetchWithUniqueId:self.uniqueId transaction:transaction]);
-
-        if (willInsert) {
-            [StickerManager addKnownStickerInfo:self.messageSticker.info transaction:transaction];
-        }
-    }
-
     [self insertMentionsInDatabaseWithTx:transaction];
 
     [self updateStoredShouldStartExpireTimer];

@@ -72,6 +72,14 @@ public protocol AttachmentStore {
         tx: DBReadTransaction
     ) throws -> [Attachment]
 
+    /// For each unique sticker pack id present in message sticker attachments, return
+    /// the oldest message reference (by message insertion order) to that sticker attachment.
+    ///
+    /// Not very efficient; don't put this query on the hot path for anything.
+    func oldestStickerPackReferences(
+        tx: DBReadTransaction
+    ) throws -> [AttachmentReference.Owner.MessageSource.StickerMetadata]
+
     // MARK: - Writes
 
     /// Create a new ownership reference, copying properties of an existing reference.

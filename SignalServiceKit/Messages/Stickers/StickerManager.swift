@@ -845,48 +845,40 @@ public class StickerManager: NSObject {
 
     // MARK: - Known Sticker Packs
 
-    @objc
-    public class func addKnownStickerInfo(_ stickerInfo: StickerInfo, transaction: SDSAnyWriteTransaction) {
-        let packInfo = stickerInfo.packInfo
-        let uniqueId = KnownStickerPack.uniqueId(for: packInfo)
-        if let existing = KnownStickerPack.anyFetch(uniqueId: uniqueId, transaction: transaction) {
-            let pack = existing
-            pack.anyUpdate(transaction: transaction) { pack in
-                pack.referenceCount += 1
-            }
-        } else {
-            let pack = KnownStickerPack(info: packInfo)
-            pack.referenceCount += 1
-            pack.anyInsert(transaction: transaction)
-        }
+    public struct DatedStickerPackInfo {
+        public let timestamp: UInt64
+        public let info: StickerPackInfo
     }
 
-    public class func removeKnownStickerInfo(_ stickerInfo: StickerInfo, transaction: SDSAnyWriteTransaction) {
-        let packInfo = stickerInfo.packInfo
-        let uniqueId = KnownStickerPack.uniqueId(for: packInfo)
-        guard let pack = KnownStickerPack.anyFetch(uniqueId: uniqueId, transaction: transaction) else {
-            owsFailDebug("Missing known sticker pack.")
-            return
+    public class func knownStickerPacksFromMessages(transaction: SDSAnyReadTransaction) -> [DatedStickerPackInfo] {
+        do {
+            return try DependenciesBridge.shared.attachmentStore
+                .oldestStickerPackReferences(tx: transaction.asV2Read)
+                .compactMap { stickerReferenceMetadata in
+                    // Join to the message so we can get the sticker pack key.
+                    guard
+                        let interaction = DependenciesBridge.shared.interactionStore
+                            .fetchInteraction(
+                                rowId: stickerReferenceMetadata.messageRowId,
+                                tx: transaction.asV2Read
+                            ),
+                        let messageSticker = (interaction as? TSMessage)?.messageSticker
+                    else {
+                        owsFailDebug("Missing message for sticker")
+                        return nil
+                    }
+                    return DatedStickerPackInfo(
+                        timestamp: stickerReferenceMetadata.receivedAtTimestamp,
+                        info: StickerPackInfo(
+                            packId: messageSticker.packId,
+                            packKey: messageSticker.packKey
+                        )
+                    )
+                }
+        } catch {
+            owsFailDebug("Failed fetching sticker attachments \(error)")
+            return []
         }
-        if pack.referenceCount <= 1 {
-            pack.anyRemove(transaction: transaction)
-        } else {
-            pack.anyUpdate(transaction: transaction) { (pack) in
-                pack.referenceCount -= 1
-            }
-        }
-    }
-
-    public class func allKnownStickerPackInfos(transaction: SDSAnyReadTransaction) -> [StickerPackInfo] {
-        return allKnownStickerPacks(transaction: transaction).map { $0.info }
-    }
-
-    public class func allKnownStickerPacks(transaction: SDSAnyReadTransaction) -> [KnownStickerPack] {
-        var result = [KnownStickerPack]()
-        KnownStickerPack.anyEnumerate(transaction: transaction) { (knownStickerPack, _) in
-            result.append(knownStickerPack)
-        }
-        return result
     }
 
     private class func tryToDownloadStickerPacks(stickerPacks: [StickerPackInfo], installMode: InstallMode) {

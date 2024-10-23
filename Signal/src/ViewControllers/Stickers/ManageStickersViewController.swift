@@ -52,6 +52,8 @@ private class StickerPackActionButton: UIView {
 
 public class ManageStickersViewController: OWSTableViewController2 {
 
+    typealias DatedStickerPackInfo = StickerManager.DatedStickerPackInfo
+
     // MARK: - View Lifecycle
 
     override public func loadView() {
@@ -140,7 +142,7 @@ public class ManageStickersViewController: OWSTableViewController2 {
 
         var installedStickerPacks = [StickerPack]()
         var availableBuiltInStickerPacks = [StickerPack]()
-        var availableKnownStickerPacks = [KnownStickerPack]()
+        var availableKnownStickerPacksFromMessages = [DatedStickerPackInfo]()
         SSKEnvironment.shared.databaseStorageRef.read { (transaction) in
             let allPacks = StickerManager.allStickerPacks(transaction: transaction)
             let allPackInfos = allPacks.map { $0.info }
@@ -155,8 +157,8 @@ public class ManageStickersViewController: OWSTableViewController2 {
             availableBuiltInStickerPacks = packsWithCovers.filter {
                 !$0.isInstalled && StickerManager.isDefaultStickerPack(packId: $0.info.packId)
             }
-            let allKnownStickerPacks = StickerManager.allKnownStickerPacks(transaction: transaction)
-            availableKnownStickerPacks = allKnownStickerPacks.filter { !allPackInfos.contains($0.info) }
+            let knownStickerPackFromMessages = StickerManager.knownStickerPacksFromMessages(transaction: transaction)
+            availableKnownStickerPacksFromMessages = knownStickerPackFromMessages.filter { !allPackInfos.contains($0.info) }
         }
 
         let installedSource = { (info: StickerPackInfo) -> StickerPackDataSource in
@@ -190,8 +192,8 @@ public class ManageStickersViewController: OWSTableViewController2 {
         }.map {
             transientSource($0.info)
         }
-        self.knownStickerPackSources = availableKnownStickerPacks.sorted {
-            $0.dateCreated > $1.dateCreated
+        self.knownStickerPackSources = availableKnownStickerPacksFromMessages.sorted {
+            $0.timestamp > $1.timestamp
         }.map {
             transientSource($0.info)
         }

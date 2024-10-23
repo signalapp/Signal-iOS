@@ -2987,17 +2987,14 @@
 		F9C5CC0D289453B300548EEE /* StickerMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C91B289453B100548EEE /* StickerMetadata.swift */; };
 		F9C5CC0E289453B300548EEE /* StickerPack+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C91C289453B100548EEE /* StickerPack+SDS.swift */; };
 		F9C5CC0F289453B300548EEE /* StickerPack.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C91D289453B100548EEE /* StickerPack.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CC10289453B300548EEE /* KnownStickerPack.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C91E289453B100548EEE /* KnownStickerPack.m */; };
 		F9C5CC11289453B300548EEE /* DefaultStickers.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C91F289453B100548EEE /* DefaultStickers.swift */; };
 		F9C5CC12289453B300548EEE /* InstalledSticker+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C920289453B100548EEE /* InstalledSticker+SDS.swift */; };
 		F9C5CC13289453B300548EEE /* StickerInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C921289453B100548EEE /* StickerInfo.m */; };
 		F9C5CC14289453B300548EEE /* DownloadStickerOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C922289453B100548EEE /* DownloadStickerOperation.swift */; };
 		F9C5CC15289453B300548EEE /* InstalledSticker.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C923289453B100548EEE /* InstalledSticker.m */; };
-		F9C5CC16289453B300548EEE /* KnownStickerPack.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C924289453B100548EEE /* KnownStickerPack.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CC17289453B300548EEE /* StickerPack.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C925289453B100548EEE /* StickerPack.m */; };
 		F9C5CC18289453B300548EEE /* DownloadStickerPackOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C926289453B100548EEE /* DownloadStickerPackOperation.swift */; };
 		F9C5CC19289453B300548EEE /* MessageSticker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C927289453B100548EEE /* MessageSticker.swift */; };
-		F9C5CC1A289453B300548EEE /* KnownStickerPack+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C928289453B100548EEE /* KnownStickerPack+SDS.swift */; };
 		F9C5CC1B289453B300548EEE /* StickerError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C929289453B100548EEE /* StickerError.swift */; };
 		F9C5CC1C289453B300548EEE /* StickerInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C92A289453B100548EEE /* StickerInfo.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CC1D289453B300548EEE /* FailedMessagesJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C92B289453B100548EEE /* FailedMessagesJob.swift */; };
@@ -6648,17 +6645,14 @@
 		F9C5C91B289453B100548EEE /* StickerMetadata.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StickerMetadata.swift; sourceTree = "<group>"; };
 		F9C5C91C289453B100548EEE /* StickerPack+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "StickerPack+SDS.swift"; sourceTree = "<group>"; };
 		F9C5C91D289453B100548EEE /* StickerPack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StickerPack.h; sourceTree = "<group>"; };
-		F9C5C91E289453B100548EEE /* KnownStickerPack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KnownStickerPack.m; sourceTree = "<group>"; };
 		F9C5C91F289453B100548EEE /* DefaultStickers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DefaultStickers.swift; sourceTree = "<group>"; };
 		F9C5C920289453B100548EEE /* InstalledSticker+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "InstalledSticker+SDS.swift"; sourceTree = "<group>"; };
 		F9C5C921289453B100548EEE /* StickerInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StickerInfo.m; sourceTree = "<group>"; };
 		F9C5C922289453B100548EEE /* DownloadStickerOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DownloadStickerOperation.swift; sourceTree = "<group>"; };
 		F9C5C923289453B100548EEE /* InstalledSticker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InstalledSticker.m; sourceTree = "<group>"; };
-		F9C5C924289453B100548EEE /* KnownStickerPack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KnownStickerPack.h; sourceTree = "<group>"; };
 		F9C5C925289453B100548EEE /* StickerPack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StickerPack.m; sourceTree = "<group>"; };
 		F9C5C926289453B100548EEE /* DownloadStickerPackOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DownloadStickerPackOperation.swift; sourceTree = "<group>"; };
 		F9C5C927289453B100548EEE /* MessageSticker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageSticker.swift; sourceTree = "<group>"; };
-		F9C5C928289453B100548EEE /* KnownStickerPack+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "KnownStickerPack+SDS.swift"; sourceTree = "<group>"; };
 		F9C5C929289453B100548EEE /* StickerError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StickerError.swift; sourceTree = "<group>"; };
 		F9C5C92A289453B100548EEE /* StickerInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StickerInfo.h; sourceTree = "<group>"; };
 		F9C5C92B289453B100548EEE /* FailedMessagesJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FailedMessagesJob.swift; sourceTree = "<group>"; };
@@ -13161,9 +13155,6 @@
 				F9C5C920289453B100548EEE /* InstalledSticker+SDS.swift */,
 				F9C5C918289453B100548EEE /* InstalledSticker.h */,
 				F9C5C923289453B100548EEE /* InstalledSticker.m */,
-				F9C5C928289453B100548EEE /* KnownStickerPack+SDS.swift */,
-				F9C5C924289453B100548EEE /* KnownStickerPack.h */,
-				F9C5C91E289453B100548EEE /* KnownStickerPack.m */,
 				F9C5C927289453B100548EEE /* MessageSticker.swift */,
 				66E793E42BC0D8A600929E5E /* MessageStickerManager.swift */,
 				F9C5C929289453B100548EEE /* StickerError.swift */,
@@ -13975,7 +13966,6 @@
 				668A00E02C2B5ECF007B8808 /* DebuggerUtils.h in Headers */,
 				F9C5CDA7289453B400548EEE /* IncomingGroupsV2MessageJob.h in Headers */,
 				F9C5CC0A289453B300548EEE /* InstalledSticker.h in Headers */,
-				F9C5CC16289453B300548EEE /* KnownStickerPack.h in Headers */,
 				668A00F82C2B5F81007B8808 /* NSDate+OWS.h in Headers */,
 				668A00F52C2B5F81007B8808 /* NSObject+OWS.h in Headers */,
 				F9C5CBC6289453B300548EEE /* OutgoingPaymentSyncMessage.h in Headers */,
@@ -16933,8 +16923,6 @@
 				D9B8541229137C150058F97B /* JobRecord.swift in Sources */,
 				6698FC0D297EFE21004EFC30 /* KeyValueStore.swift in Sources */,
 				6698FC0F297F03FE004EFC30 /* KeyValueStoreFactory.swift in Sources */,
-				F9C5CC1A289453B300548EEE /* KnownStickerPack+SDS.swift in Sources */,
-				F9C5CC10289453B300548EEE /* KnownStickerPack.m in Sources */,
 				D93EA11F2A057FD600579C6F /* LearnMyOwnPniManager.swift in Sources */,
 				66076B692BC0A06C0043D547 /* LegacyAttachmentMigrator.swift in Sources */,
 				D9CA5BF729B3F61E00D9AAD1 /* LegacyChangePhoneNumber+ChangeTokens.swift in Sources */,

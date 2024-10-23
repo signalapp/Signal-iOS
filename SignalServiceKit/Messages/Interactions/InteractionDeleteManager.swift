@@ -288,21 +288,6 @@ final class InteractionDeleteManagerImpl: InteractionDeleteManager {
         if let message = interaction as? TSMessage {
             // Ensure any associated edits are removed before removing.
             message.removeEdits(transaction: tx)
-
-            if
-                let sticker = message.messageSticker,
-                interactionStore.exists(uniqueId: message.uniqueId, tx: tx.asV2Write)
-            {
-                // StickerManager does ref-counting of known sticker packs. If this
-                // message is persisted – i.e., if there will in fact be a deletion
-                // downstream of this call – we should make sure that refcount gets
-                // updated.
-                //
-                // In a better world we wouldn't be unsure if the message was
-                // actually going to be deleted when we call this, but that's a
-                // problem for another day.
-                StickerManager.removeKnownStickerInfo(sticker.info, transaction: tx)
-            }
         }
     }
 

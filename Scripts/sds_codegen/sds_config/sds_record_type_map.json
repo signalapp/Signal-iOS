@@ -4,7 +4,6 @@
     "ExperienceUpgrade": 55,
     "IncomingGroupsV2MessageJob": 63,
     "InstalledSticker": 24,
-    "KnownStickerPack": 29,
     "OWS100RemoveTSRecipientsMigration": 40,
     "OWS101ExistingUsersBlockOnIdentityChange": 43,
     "OWS102MoveLoggingPreferenceToUserDefaults": 47,

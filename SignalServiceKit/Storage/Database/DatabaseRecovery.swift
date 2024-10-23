@@ -454,7 +454,6 @@ public extension DatabaseRecovery {
             MediaGalleryRecord.databaseTableName,
             // Can be recovered in other ways, after recovery is done.
             IncomingGroupsV2MessageJob.table.tableName,
-            KnownStickerPack.table.tableName,
             ProfileBadge.databaseTableName,
             StickerPack.table.tableName,
             HiddenRecipient.databaseTableName,

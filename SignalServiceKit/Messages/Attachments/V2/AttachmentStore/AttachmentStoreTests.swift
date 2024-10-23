@@ -470,6 +470,77 @@ class AttachmentStoreTests: XCTestCase {
         XCTAssertEqual(enumeratedCount, attachmentCount)
     }
 
+    func testOldestStickerPackReferences() throws {
+        // Sticker pack id to oldest row id.
+        var stickerPackIds = [Data: Int64]()
+
+        try db.write { tx in
+            let thread = insertThread(tx: tx)
+            let threadRowId = thread.sqliteRowId!
+
+            // Add some non sticker attachments.
+            for _ in 0..<10 {
+                let messageRowId = insertInteraction(thread: thread, tx: tx)
+
+                try attachmentStore.insert(
+                    .mockStream(),
+                    reference: .mock(
+                        owner: .message(.bodyAttachment(.init(
+                            messageRowId: messageRowId,
+                            receivedAtTimestamp: .random(in: 0..<9999999),
+                            threadRowId: threadRowId,
+                            contentType: .image,
+                            caption: nil,
+                            renderingFlag: .default,
+                            orderInOwner: 0,
+                            idInOwner: nil,
+                            isViewOnce: false
+                        )))),
+                    tx: tx
+                )
+            }
+
+            // Add some sticker attachments
+            for _ in 0..<10 {
+                let packId = UUID().data
+                // Each sticker pack gets multiple stickers, but we should
+                // dedupe down to the pack IDs.
+                let numStickersInPack = Int.random(in: 1...10)
+                for _ in 0..<numStickersInPack {
+                    let stickerId = UInt32.random(in: 0..<UInt32.max)
+
+                    let messageRowId = insertInteraction(thread: thread, tx: tx)
+
+                    try attachmentStore.insert(
+                        .mockStream(),
+                        reference: .mock(
+                            owner: .message(.sticker(.init(
+                                messageRowId: messageRowId,
+                                receivedAtTimestamp: .random(in: 0..<9999999),
+                                threadRowId: threadRowId,
+                                contentType: .image,
+                                stickerPackId: packId,
+                                stickerId: stickerId
+                            )))),
+                        tx: tx
+                    )
+
+                    stickerPackIds[packId] = min(messageRowId, stickerPackIds[packId] ?? .max)
+                }
+            }
+        }
+
+        let readPackReferences =  try db.read { tx in
+            try attachmentStore.oldestStickerPackReferences(tx: tx)
+        }
+
+        XCTAssertEqual(readPackReferences.count, stickerPackIds.count)
+        readPackReferences.forEach { packRef in
+            XCTAssertEqual(packRef.messageRowId, stickerPackIds[packRef.stickerPackId])
+        }
+
+    }
+
     // MARK: - Update
 
     func testUpdateReceivedAtTimestamp() throws {

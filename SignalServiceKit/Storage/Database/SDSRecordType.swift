@@ -38,7 +38,6 @@ public enum SDSRecordType: UInt, CaseIterable {
     case groupThread = 26
     case contactThread = 27
     case disappearingConfigurationUpdateInfoMessage = 28
-    case knownStickerPack = 29
     case signalAccount = 30
     case signalRecipient = 31
     case backupFragment = 32

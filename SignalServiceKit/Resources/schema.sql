@@ -159,19 +159,6 @@ CREATE
 
 CREATE
     TABLE
-        IF NOT EXISTS "model_KnownStickerPack" (
-            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
-            ,"recordType" INTEGER NOT NULL
-            ,"uniqueId" TEXT NOT NULL UNIQUE
-                ON CONFLICT FAIL
-            ,"dateCreated" DOUBLE NOT NULL
-            ,"info" BLOB NOT NULL
-            ,"referenceCount" INTEGER NOT NULL
-        )
-;
-
-CREATE
-    TABLE
         IF NOT EXISTS "model_TSAttachment" (
             "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
             ,"recordType" INTEGER NOT NULL
