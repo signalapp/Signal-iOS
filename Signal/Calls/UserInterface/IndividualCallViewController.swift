@@ -1171,6 +1171,7 @@ extension IndividualCallViewController: CallViewControllerWindowReference {
     var remoteVideoViewReference: CallMemberView { remoteMemberView }
     var localVideoViewReference: CallMemberView { localVideoView }
     var remoteVideoAddress: SignalServiceAddress { thread.contactAddress }
+    var isJustMe: Bool { isRenderingLocalVanityVideo }
 
     func returnFromPip(pipWindow: UIWindow) {
         // The call "pip" uses our remote and local video views since only
@@ -1209,8 +1210,14 @@ extension IndividualCallViewController: CallViewControllerWindowReference {
 
     func willMoveToPip(pipWindow: UIWindow) {
         flipCameraTooltipManager.dismissTooltip()
-        localVideoView.applyChangesToCallMemberViewAndVideoView { view in
-            view.isHidden = true
+        if !isJustMe {
+            localVideoView.applyChangesToCallMemberViewAndVideoView { view in
+                view.isHidden = true
+            }
+        } else {
+            localVideoView.applyChangesToCallMemberViewAndVideoView { view in
+                view.frame = CGRect(origin: .zero, size: pipWindow.bounds.size)
+            }
         }
     }
 

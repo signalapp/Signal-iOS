@@ -1017,7 +1017,7 @@ class GroupCallViewController: UIViewController {
             // (ie, minimized in the app). This is not to be confused with the local member view pip
             // (ie, when the call is full screen and the local user is displayed in a pip).
             // The following line disallows having a [local member] pip within a [call] pip.
-            view.isHidden = AppEnvironment.shared.windowManagerRef.isCallInPip
+            view.isHidden = !isJustMe && AppEnvironment.shared.windowManagerRef.isCallInPip
         }
 
         if let speakerState = ringRtcCall.remoteDeviceStates.sortedBySpeakerTime.first {
@@ -1469,6 +1469,10 @@ extension GroupCallViewController: CallViewControllerWindowReference {
         return firstMember.address
     }
 
+    var isJustMe: Bool {
+        groupCall.isJustMe
+    }
+
     public func returnFromPip(pipWindow: UIWindow) {
         // The call "pip" uses our remote and local video views since only
         // one `AVCaptureVideoPreviewLayer` per capture session is supported.
@@ -1495,7 +1499,11 @@ extension GroupCallViewController: CallViewControllerWindowReference {
     func willMoveToPip(pipWindow: UIWindow) {
         flipCameraTooltipManager.dismissTooltip()
         localMemberView.applyChangesToCallMemberViewAndVideoView { view in
-            view.isHidden = true
+            if !isJustMe {
+                view.isHidden = true
+            } else {
+                view.frame = CGRect(origin: .zero, size: pipWindow.bounds.size)
+            }
         }
     }
 
