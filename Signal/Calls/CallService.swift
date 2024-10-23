@@ -295,9 +295,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
 
         // This method can be initiated either from the CallViewController.videoButton or via CallKit
         // in either case we want to show the alert on the callViewWindow.
-        guard let frontmostViewController =
-                UIApplication.shared.findFrontmostViewController(ignoringAlerts: true,
-                                                                 window: AppEnvironment.shared.windowManagerRef.callViewWindow) else {
+        guard let frontmostViewController = AppEnvironment.shared.windowManagerRef.callViewWindow.findFrontmostViewController(ignoringAlerts: true) else {
             owsFailDebug("could not identify frontmostViewController")
             return
         }
@@ -351,10 +349,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
 
         // This method can be initiated either from the CallViewController.videoButton or via CallKit
         // in either case we want to show the alert on the callViewWindow.
-        let frontmostViewController = UIApplication.shared.findFrontmostViewController(
-            ignoringAlerts: true,
-            window: AppEnvironment.shared.windowManagerRef.callViewWindow
-        )
+        let frontmostViewController = AppEnvironment.shared.windowManagerRef.callViewWindow.findFrontmostViewController(ignoringAlerts: true)
         guard let frontmostViewController else {
             owsFailDebug("could not identify frontmostViewController")
             return

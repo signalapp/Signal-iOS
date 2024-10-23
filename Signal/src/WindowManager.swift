@@ -45,6 +45,10 @@ class WindowManager {
         return window == rootWindow || window == returnToCallWindow || window == callViewWindow || window == screenBlockingWindow
     }
 
+    var captchaWindow: UIWindow {
+        return shouldShowCallView ? callViewWindow : rootWindow
+    }
+
     var isScreenBlockActive: Bool = false {
         didSet {
             AssertIsOnMainThread()

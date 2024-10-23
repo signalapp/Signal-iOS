@@ -75,21 +75,30 @@ public class CallLinkProfileKeySharingManager {
             let preparedMessage = PreparedOutgoingMessage.preprepared(
                 transientMessageWithoutAttachments: profileKeyMessage
             )
-            SSKEnvironment.shared.messageSenderJobQueueRef.add(
+            let sendPromise = SSKEnvironment.shared.messageSenderJobQueueRef.add(
+                .promise,
                 message: preparedMessage,
                 transaction: SDSDB.shimOnlyBridge(tx)
             )
+            Task { @MainActor in
+                do {
+                    try await sendPromise.awaitable()
+                } catch is SpamChallengeRequiredError {
+                    Logger.warn("Marking \(aci) as eligible for another attempt because of a captcha.")
+                    self.consideredAcis.remove(aci)
+                }
+            }
         }
     }
 }
 
 extension CallLinkProfileKeySharingManager: GroupCallObserver {
     func groupCallPeekChanged(_ call: GroupCall) {
-        sendProfileKeyIfApplicable(call: call)
+        sendProfileKeyToParticipants(ofCall: call)
     }
 
     @MainActor
-    private func sendProfileKeyIfApplicable(call: GroupCall) {
+    func sendProfileKeyToParticipants(ofCall call: GroupCall) {
         switch call.concreteType {
         case .groupThread:
             return

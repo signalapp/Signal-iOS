@@ -7,12 +7,11 @@ import SignalServiceKit
 public import UIKit
 
 public extension UIApplication {
-
     var frontmostViewControllerIgnoringAlerts: UIViewController? {
         guard let window = CurrentAppContext().mainWindow else {
             return nil
         }
-        return findFrontmostViewController(ignoringAlerts: true, window: window)
+        return window.findFrontmostViewController(ignoringAlerts: true)
     }
 
     @objc
@@ -20,18 +19,20 @@ public extension UIApplication {
         guard let window = CurrentAppContext().mainWindow else {
             return nil
         }
-        return findFrontmostViewController(ignoringAlerts: false, window: window)
-    }
-
-    func findFrontmostViewController(ignoringAlerts: Bool, window: UIWindow) -> UIViewController? {
-        guard let viewController = window.rootViewController else {
-            owsFailDebug("Missing root view controller.")
-            return nil
-        }
-        return viewController.findFrontmostViewController(ignoringAlerts: ignoringAlerts)
+        return window.findFrontmostViewController(ignoringAlerts: false)
     }
 
     func openSystemSettings() {
         open(URL(string: UIApplication.openSettingsURLString)!, options: [:])
+    }
+}
+
+extension UIWindow {
+    func findFrontmostViewController(ignoringAlerts: Bool) -> UIViewController? {
+        guard let viewController = self.rootViewController else {
+            owsFailDebug("Missing root view controller.")
+            return nil
+        }
+        return viewController.findFrontmostViewController(ignoringAlerts: ignoringAlerts)
     }
 }

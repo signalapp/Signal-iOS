@@ -301,6 +301,13 @@ class GroupCallViewController: UIViewController {
             name: UIApplication.didBecomeActiveNotification,
             object: nil
         )
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(didCompleteAnySpamChallenge),
+            name: SpamChallengeResolver.didCompleteAnyChallenge,
+            object: nil
+        )
     }
 
     static func presentLobby(thread: TSGroupThread, videoMuted: Bool = false) {
@@ -647,6 +654,12 @@ class GroupCallViewController: UIViewController {
         if hasUnresolvedSafetyNumberMismatch {
             resolveSafetyNumberMismatch()
         }
+    }
+
+    @objc
+    private func didCompleteAnySpamChallenge() {
+        AppEnvironment.shared.callLinkProfileKeySharingManager.sendProfileKeyToParticipants(ofCall: self.groupCall)
+        self.ringRtcCall.resendMediaKeys()
     }
 
     // MARK: Call members

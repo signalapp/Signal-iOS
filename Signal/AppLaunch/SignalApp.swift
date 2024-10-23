@@ -130,7 +130,7 @@ extension SignalApp {
 
     @objc
     private func spamChallenge() {
-        SpamCaptchaViewController.presentActionSheet(from: UIApplication.shared.frontmostViewController!)
+        SpamCaptchaViewController.presentActionSheet(from: AppEnvironment.shared.windowManagerRef.captchaWindow.findFrontmostViewController(ignoringAlerts: true)!)
     }
 
     @objc
