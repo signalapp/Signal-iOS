@@ -1,3 +1,6 @@
+# Exclude user build config files
+Config/User*.xcconfig
+
 # Exclude the build directory
 build/*
 # Exclude temp nibs and swap files
