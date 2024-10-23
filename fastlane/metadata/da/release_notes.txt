@@ -1,4 +1,4 @@
-Introducing Call Links: The missing link for calendar invites and impromptu gatherings.
-• Now you can quickly create an easy link that anyone on Signal can use to join a group call without having to join a Signal group chat first.
-• Call links are reusable and ideal for recurring phone dates with your best friends or weekly check-ins with your coworkers.
-• You can manage your call links, control approval settings, and copy links from the calls tab for quick sharing.
+Vi introducerer opkaldslinks: Den manglende forbindelse mellem kalenderinvitationer og improviserede sammenkomster.
+• Nu kan du nemt og hurtigt oprette et link, som alle på Signal kan bruge til at deltage i et gruppeopkald uden krav om at være med i en Signal-gruppechat.
+• Opkaldslink kan genbruges og er ideelle til faste telefonaftaler med dine bedste venner eller ugentlige samtaler med dine kolleger.
+• Du kan administrere dine opkaldslinks, styre godkendelser og kopiere links fra opkaldsfanen for hurtig deling.

@@ -122,13 +122,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Entendido";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "No se ha podido recibir un mensaje, sticker, reacción, confirmación de lectura o archivo multimedia de %1$@ en este chat.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "No se ha podido entregar un mensaje, sticker, reacción, confirmación de lectura o archivo multimedia de %1$@ en este chat.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Fallo en la entrega";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "No se ha podido recibir un mensaje, sticker, reacción, confirmación de lectura o archivo multimedia que %1$@ te ha enviado directamente o en un chat grupal en común.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "No se ha podido entregar un mensaje, sticker, reacción, confirmación de lectura o archivo multimedia que %1$@ te ha enviado directamente o en un chat grupal en común.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Descartar";
@@ -524,7 +524,7 @@
 "BADGE_THANKS_BANK_DONATION_COMPLETE_TITLE" = "Donación completada";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "Puedes añadir esta insignia en tu perfil para mostrar que apoyas a Signal.";
+"BADGE_THANKS_BODY" = "Puedes añadir esta insignia a tu perfil para mostrar que apoyas a Signal.";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Mostrar en mi perfil";
@@ -665,10 +665,10 @@
 "BUTTON_NOT_NOW" = "Ahora no";
 
 /* Label for the 'okay' button. */
-"BUTTON_OKAY" = "De acuerdo";
+"BUTTON_OKAY" = "Aceptar";
 
 /* Label for the 'previous' button. */
-"BUTTON_PREVIOUS" = "Atrás";
+"BUTTON_PREVIOUS" = "Anterior";
 
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Seleccionar";
@@ -878,7 +878,7 @@
 "CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%1$@ recibirá tu solicitud de mensaje. Podrás llamarle en cuanto la acepte.";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
-"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Rotar cámara";
+"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Cambiar dirección de la cámara";
 
 /* Accessibility label for turning off the camera */
 "CALL_VIEW_TURN_VIDEO_OFF_LABEL" = "Desactivar cámara";
@@ -1046,7 +1046,7 @@
 "CAMERA_VO_ZOOM" = "Zoom";
 
 /* VoiceOver description of current camera zoom level. */
-"CAMERA_VO_ZOOM_LEVEL" = "%1$@ veces";
+"CAMERA_VO_ZOOM_LEVEL" = "x%1$@";
 
 /* Alert shown when the user needs to exchange messages to see the safety number. */
 "CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "Se creará un número de seguridad con esta persona una vez que se intercambien mensajes.";
@@ -1097,7 +1097,7 @@
 "CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Tu número nuevo no puede ser el mismo que tu número anterior. Introduce un nuevo número de teléfono para cambiarlo.";
 
 /* Error indicating that the user's old phone number was not entered correctly. */
-"CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "El número de teléfono introducido no coincide con el de tu cuenta.";
+"CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "El número de teléfono que has introducido no coincide con el de tu cuenta de Signal.";
 
 /* Error indicating that the user's new phone number is not valid. */
 "CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "El nuevo número de teléfono no es válido. Introduce un número válido para cambiarlo.";
@@ -1139,7 +1139,7 @@
 "CHAT_COLORS_AUTO_TOOLTIP" = "Hace que el color de las burbujas combine con el del fondo de pantalla del chat";
 
 /* Title for context menu action to disable chat list filter (e.g., Filter by Unread) */
-"CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "Restablecer filtros";
+"CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "Restablecer filtro";
 
 /* Button at top of chat list indicating the active filter is 'Filtered by Unread' and tapping will clear the filter */
 "CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON" = "Filtrar por no leído";
@@ -1148,7 +1148,7 @@
 "CHAT_LIST_TITLE_INBOX" = "Chats";
 
 /* Title for context menu action to enable Filter by Unread */
-"CHAT_LIST_UNREAD_FILTER_MENU_ACTION" = "Filtrar por No leídos";
+"CHAT_LIST_UNREAD_FILTER_MENU_ACTION" = "Filtrar por No leído";
 
 /* Message displayed on chat list when Filter by Unread is enabled but no unread chats are available */
 "CHAT_LIST_UNREAD_FILTER_NO_CHATS" = "No hay chats sin leer";
@@ -1220,7 +1220,7 @@
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Vincular dispositivo nuevo";
 
 /* Indicates that the user has blocked the other account. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "Se ha bloqueado a %1$@";
+"CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "Has bloqueado a %1$@";
 
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ está en tus contactos del teléfono";
@@ -1247,7 +1247,7 @@
 "CONTACT_CELL_IS_BLOCKED" = "Bloqueado";
 
 /* An indicator that a contact is no longer verified. */
-"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Persona sin verificar";
+"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Sin verificar";
 
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Número no registrado";
@@ -1292,7 +1292,7 @@
 "CONTACT_PERMISSION_ACTION_SHEET_2_TITLE" = "Permitir acceso a los contactos";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Para mostrar los nombres y las fotos de tus contactos en tus chats:";
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Para mostrar los nombres y las fotos de tus contactos en los chats:";
 
 /* First step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Toca el botón \"Ir a Ajustes\" que aparece más abajo";
@@ -1337,7 +1337,7 @@
 "CONTACT_SHARE_INVALID_CONTACT" = "Contacto no válido.";
 
 /* Alert body when contacts disabled while trying to share a contact. */
-"CONTACT_SHARING_NO_ACCESS_BODY" = "Signal necesita acceso a tus contactos. Ve a la aplicación Ajustes de iOS y activa el acceso a los contactos. Tus contactos están cifrados y no son visibles para el servicio de Signal.";
+"CONTACT_SHARING_NO_ACCESS_BODY" = "Signal necesita acceso a tus contactos. Ve a la aplicación Ajustes de iOS y activa el acceso a los contactos. Tus contactos están protegidos mediante cifrado y no son visibles para Signal.";
 
 /* Alert title when contacts disabled while trying to share a contact. */
 "CONTACT_SHARING_NO_ACCESS_TITLE" = "Permitir acceso a contactos";
@@ -1355,16 +1355,16 @@
 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "Me gustaría solicitar una función nueva";
 
 /* A brief localized representation of the 'feature request' support filter. */
-"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST_SHORT" = "Solicitar función nueva";
+"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST_SHORT" = "Solicitar función";
 
 /* The localized representation of the 'feedback' support filter. */
-"CONTACT_SUPPORT_FILTER_FEEDBACK" = "Tengo una sugerencia para la aplicación";
+"CONTACT_SUPPORT_FILTER_FEEDBACK" = "Tengo una sugerencia para la app";
 
 /* A brief localized representation of the 'feedback' support filter. */
-"CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT" = "Sugerencia";
+"CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT" = "Sugerencia para la app";
 
 /* The localized representation of the 'other' support filter. */
-"CONTACT_SUPPORT_FILTER_OTHER" = "Algo distinto";
+"CONTACT_SUPPORT_FILTER_OTHER" = "Otro motivo";
 
 /* A brief localized representation of the 'other' support filter. */
 "CONTACT_SUPPORT_FILTER_OTHER_SHORT" = "Otro";
@@ -1919,7 +1919,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_TITLE" = "Eliminar cuenta";
 
 /* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "El número introducido no coincide con el de tu cuenta.";
+"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "El número de teléfono que has introducido no coincide con el de tu cuenta de Signal.";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "¿Eliminar todos los mensajes del chat?";
@@ -3938,7 +3938,7 @@
 "JOINED_WITH_DOT" = "%1$@ · %2$@";
 
 /* A keyboard command to open the current conversation's all media view. */
-"KEY_COMMAND_ALL_MEDIA" = "Ir a todos los archivos multimedia";
+"KEY_COMMAND_ALL_MEDIA" = "Ir a archivos multimedia";
 
 /* A keyboard command to archive the current conversation. */
 "KEY_COMMAND_ARCHIVE" = "Archivar chat";
@@ -4862,7 +4862,7 @@
 "ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Vincular tu iPhone no es la opción recomendada, ya que limitará funcionalidades importantes.";
 
 /* Description of the 'Contacts' permission in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_CONTACTS_DESCRIPTION" = "Encuentra a las personas que conoces. Tus contactos están cifrados y no son visibles para el servicio Signal.";
+"ONBOARDING_PERMISSIONS_CONTACTS_DESCRIPTION" = "Encuentra a personas que ya conoces. Tus contactos están protegidos mediante cifrado y no son visibles para Signal.";
 
 /* Title introducing the 'Contacts' permission in the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_CONTACTS_TITLE" = "Contactos";
@@ -4874,7 +4874,7 @@
 "ONBOARDING_PERMISSIONS_NOTIFICATIONS_TITLE" = "Notificaciones";
 
 /* Preamble of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_PREAMBLE" = "Signal desea solicitar los siguientes permisos.";
+"ONBOARDING_PERMISSIONS_PREAMBLE" = "Signal desea obtener los siguientes permisos.";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "Activar permisos";
@@ -8180,7 +8180,7 @@
 "USERNAME_LINK_QR_CODE_VIEW_COLOR_BUTTON" = "Color";
 
 /* Text for a label explaining what the username link and QR code give others access to. */
-"USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "Comparte tu código QR y enlace solo con personas de confianza. Las personas con la que los compartas podrán ver tu alias e iniciar un chat contigo.";
+"USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "Comparte tu código QR y enlace solo con personas de confianza. Las personas con las que los compartas podrán ver tu alias e iniciar un chat contigo.";
 
 /* Text presented in an action sheet notifying the user their qr code and link are not set. */
 "USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET" = "Código QR y enlace no establecidos. Comprueba tu conexión de red y vuelve a intentarlo.";

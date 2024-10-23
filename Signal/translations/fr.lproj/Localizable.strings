@@ -3407,7 +3407,7 @@
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Examiner les membres";
 
 /* Placeholder text for 'group name' field. */
-"GROUP_NAME_PLACEHOLDER" = "Nom du groupe (requis)";
+"GROUP_NAME_PLACEHOLDER" = "Nom du groupe (champ obligatoire)";
 
 /* Title for the group name view. */
 "GROUP_NAME_VIEW_TITLE" = "Nom du groupe";
@@ -4682,7 +4682,7 @@
 "NEW_PRIVATE_STORY_NAME_FOOTER" = "Vous seul pouvez voir le titre de cette story.";
 
 /* Placeholder text for a new private story name */
-"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Titre de la story (requis)";
+"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Titre de la story (champ obligatoire)";
 
 /* The title for the 'new private story' view. */
 "NEW_PRIVATE_STORY_VIEW_TITLE" = "Sélectionner les spectateurs";
@@ -5756,7 +5756,7 @@
 "PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "Votre nom de famille est trop long.";
 
 /* Error message shown when user tries to update profile without a given name */
-"PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED" = "Votre prénom est requis.";
+"PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED" = "Veuillez saisir votre prénom.";
 
 /* Error message shown when user tries to update profile with a given name that is too long. */
 "PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "Votre prénom est trop long.";
@@ -5765,7 +5765,7 @@
 "PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "Nom de famille (facultatif)";
 
 /* Default text for the given name field of the profile view. */
-"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "Prénom (requis)";
+"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "Prénom (champ obligatoire)";
 
 /* Error shown when the user tries to update their profile when the app is not connected to the internet. */
 "PROFILE_VIEW_NO_CONNECTION" = "Le profil ne peut être mis à jour qu’une fois connecté à Internet.";
@@ -6707,7 +6707,7 @@
 "SETTINGS_NAV_BAR_TITLE" = "Paramètres";
 
 /* A setting controlling whether muted conversations are shown in the badge count */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Inclure les messages en sourdine";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Inclure les conversations mises en sourdine";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Pastille de notification";

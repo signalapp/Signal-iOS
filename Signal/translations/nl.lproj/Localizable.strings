@@ -752,7 +752,7 @@
 "CALL_LINK_DELETE_FAILED" = "Oproeplink kon niet worden verwijderd.";
 
 /* Text shown in a confirmation popup asking the user if they want to delete a call link. */
-"CALL_LINK_DELETE_MESSAGE" = "Deze link zal niet meer werken.";
+"CALL_LINK_DELETE_MESSAGE" = "Deze link zal voor niemand meer werken.";
 
 /* Title shown in a confirmation popup asking the user if they want to delete a call link. */
 "CALL_LINK_DELETE_TITLE" = "Link verwijderen?";
@@ -797,7 +797,7 @@
 "CALL_LINK_REQUEST_SHEET_HEADER" = "Verzoeken om deel te nemen aan deze oproep";
 
 /* Name of a toggle switch to enable/disable admin approval for joining a Call Link. */
-"CALL_LINK_REQUIRE_APPROVAL" = "Goedkeuring van de beheerder vereisen";
+"CALL_LINK_REQUIRE_APPROVAL" = "Nieuwe deelnemers goedkeuren";
 
 /* Button to open UI to share a Call Link with someone on Signal. */
 "CALL_LINK_SHARE_VIA_SIGNAL" = "Link delen via Signal";
@@ -3005,7 +3005,7 @@
 "GROUP_CALL_MEMBER_LIST_TITLE" = "Oproep-info";
 
 /* Message on an action sheet when tapping an info button next to unknown members in the group call member list. */
-"GROUP_CALL_MEMBER_LIST_UNKNOWN_MEMBERS_INFO_SHEET" = "Voordat je deelneemt aan een oproep, kun je alleen de namen zien van telefooncontacten, mensen met wie je in een groep zit of mensen met wie je 1:1 hebt gechat. Je ziet alle namen en profielfoto's zodra je deelneemt aan de oproep.";
+"GROUP_CALL_MEMBER_LIST_UNKNOWN_MEMBERS_INFO_SHEET" = "Voordat je deelneemt aan een oproep, kun je alleen de namen zien van telefooncontacten, mensen met wie je in een groep zit of mensen met wie je een-op-een hebt gechat. Je ziet alle namen en profielfoto's zodra je deelneemt aan de oproep.";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Kan geen audio & video van %1$@ ontvangen";

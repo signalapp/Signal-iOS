@@ -731,13 +731,13 @@
 "CALL_LINK" = "Посилання на виклик";
 
 /* Button to open a screen to edit the name of a Call Link. Also used as the title of that screen once it opens. */
-"CALL_LINK_ADD_NAME" = "Додати назву виклику";
+"CALL_LINK_ADD_NAME" = "Назва виклику";
 
 /* Button to copy a Call Link to the clipboard. */
 "CALL_LINK_COPY" = "Копіювати посилання";
 
 /* Navigation bar title for the sheet used to create & configure a Call Link. */
-"CALL_LINK_CREATE" = "Створення посилання на виклик";
+"CALL_LINK_CREATE" = "Посилання на виклик";
 
 /* Description of sheet presented when call link creation fails. */
 "CALL_LINK_CREATION_FAILURE_SHEET_DESCRIPTION" = "Не вдалося створити посилання на виклик. Перевірте з'єднання з інтернетом і спробуйте ще раз.";
@@ -803,7 +803,7 @@
 "CALL_LINK_SHARE_VIA_SIGNAL" = "Надіслати посилання в Signal";
 
 /* Button to open the system share sheet to share a Call Link. */
-"CALL_LINK_SHARE_VIA_SYSTEM" = "Надіслати посилання";
+"CALL_LINK_SHARE_VIA_SYSTEM" = "Поділитися посиланням";
 
 /* An error alert that's shown when deleting multiple calls and some of them couldn't be deleted. */
 "CALL_LINK_SOME_NOT_DELETED" = "Частину посилань на виклики не вдалося видалити. Перевірте з'єднання і повторіть видалення.";
@@ -2891,7 +2891,7 @@
 "GIF_PICKER_VIEW_MISSING_QUERY" = "Уведіть слово для пошуку";
 
 /* Title for the 'GIF picker' dialog. */
-"GIF_PICKER_VIEW_TITLE" = "Пошук GIF";
+"GIF_PICKER_VIEW_TITLE" = "Пошук GIF-зображень";
 
 /* Indicates that an error occurred while searching. */
 "GIF_VIEW_SEARCH_ERROR" = "Помилка. Натисніть, щоб повторити.";
@@ -3266,10 +3266,10 @@
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "Затверджувати нових учасників";
 
 /* Label for the 'enable and share link' button in the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK" = "Надіслати посилання";
+"GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK" = "Поділитися посиланням";
 
 /* Label for the 'share link' button in the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "Надіслати посилання";
+"GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "Поділитися посиланням";
 
 /* Subtitle for the 'group link promotion' alert view. */
 "GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "Надішліть друзям посилання, щоб вони швидко приєдналися до групи.";
@@ -3860,7 +3860,7 @@
 "INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_RECEIVED" = "%1$@ хоче, щоб ви активували платежі. Надсилайте платежі лише тим людям, яким ви довіряєте.";
 
 /* Shown when requesting a user activates payments. Embeds: {{ the user's name}} */
-"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_SENT" = "Ви надіслали користувачу %1$@ запит на активацію Платежів.";
+"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_SENT" = "Ви надіслали користувачеві %1$@ запит на активацію платежів.";
 
 /* Shown when a user reports a conversation as spam. */
 "INFO_MESSAGE_REPORTED_SPAM" = "Повідомлено про спам";
@@ -5276,7 +5276,7 @@
 "PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_BUTTON" = "Надіслати запит";
 
 /* Message for error alert indicating that a given user cannot receive payments because they have not enabled payments. */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "Ви хочете надіслати користувачеві запит на активацію платежів?";
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "Надіслати цьому користувачеві запит на активацію платежів?";
 
 /* Title for error alert indicating that a given user cannot receive payments because they have not enabled payments. Embeds {{ the contact's name }} */
 "PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "%1$@ не активував/-ла платежі";
@@ -5747,7 +5747,7 @@
 "PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "Редагувати ім'я користувача";
 
 /* Title for a table cell that lets the user manage their username link and QR code. */
-"PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "QR-код чи посилання";
+"PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "QR-код або посилання";
 
 /* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Ім'я користувача";
@@ -6332,7 +6332,7 @@
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Отримайте допомогу у прив'язці вашого iPad тут";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Проскануйте цей QR-код за допомогою вашого телефону";
+"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Зіскануйте цей QR-код телефоном";
 
 /* header text before the user can transfer to this device */
 "SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "Запустіть Signal на старому iPad, щоб перенести свій акаунт";
@@ -8210,7 +8210,7 @@
 "USERNAME_LINK_QR_CODE_VIEW_USERNAME_LINK_COPIED" = "Посилання скопійовано";
 
 /* Text providing instructions on how to use the username link QR code scanning. */
-"USERNAME_LINK_SCAN_QR_CODE_INSTRUCTIONS_LABEL" = "Проскануйте QR-код на пристрої вашого контакту.";
+"USERNAME_LINK_SCAN_QR_CODE_INSTRUCTIONS_LABEL" = "Зіскануйте QR-код на пристрої іншого користувача.";
 
 /* Text for a tappable cell that copies the user's username link when selected. */
 "USERNAME_LINK_SHARE_SHEET_COPY_LINK_ACTION" = "Копіювати посилання";
@@ -8222,10 +8222,10 @@
 "USERNAME_LINK_SHEET_BUTTON" = "посилання";
 
 /* Subtitle for a tooltip describing ways to share your username. */
-"USERNAME_LINK_TOOLTIP_SUBTITLE" = "Поділіться своїм унікальним QR-кодом чи посиланням з людиною, із якою хочете створити чат.";
+"USERNAME_LINK_TOOLTIP_SUBTITLE" = "Інші користувачі зможуть з вами зв'язатися, якщо ви надішлете їм свій унікальний QR-код або посилання.";
 
 /* Title for a tooltip describing ways to share your username. */
-"USERNAME_LINK_TOOLTIP_TITLE" = "Поділіться своїм іменем користувача";
+"USERNAME_LINK_TOOLTIP_TITLE" = "Повідомте своє ім'я користувача";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "Виникла помилка під час пошуку імені користувача. Будь ласка, спробуйте пізніше ще раз.";
@@ -8246,7 +8246,7 @@
 "USERNAME_LOOKUP_NOT_FOUND_TITLE" = "Користувача не знайдено";
 
 /* Instructions that appear below the username QR code on a sharable exported image. */
-"USERNAME_QR_CODE_EXPORT_INSTRUCTIONS" = "Проскануйте цей QR-код телефоном, щоб написати мені в Signal.";
+"USERNAME_QR_CODE_EXPORT_INSTRUCTIONS" = "Зіскануйте цей QR-код телефоном, щоб написати мені в Signal.";
 
 /* A message in a toast informing the user their username, link, and QR code have successfully been reset. Embeds {{ the user's new username }}. */
 "USERNAME_RESET_SUCCESSFUL_TOAST" = "Ваш QR-код і посилання було скинуто. Ваше ім’я користувача: %1$@";

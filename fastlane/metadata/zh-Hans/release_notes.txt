@@ -1,4 +1,4 @@
-Introducing Call Links: The missing link for calendar invites and impromptu gatherings.
-• Now you can quickly create an easy link that anyone on Signal can use to join a group call without having to join a Signal group chat first.
-• Call links are reusable and ideal for recurring phone dates with your best friends or weekly check-ins with your coworkers.
-• You can manage your call links, control approval settings, and copy links from the calls tab for quick sharing.
+通话链接新功能上线：无论是提前邀请，还是临时通话，通话链接都能搞定。
+• 现在您可以快速创建一个简易链接，让 Signal 用户无需提前加入群组聊天即可加入群组通话。
+• 通话链接可重复使用，非常适合用于与好友定期通话或与同事每周签到。
+• 您可以管理通话链接，控制批准设置，并可以直接从通话选项卡中复制链接，实现快速分享。

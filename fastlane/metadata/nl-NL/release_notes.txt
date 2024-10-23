@@ -1,4 +1,4 @@
-Introducing Call Links: The missing link for calendar invites and impromptu gatherings.
-• Now you can quickly create an easy link that anyone on Signal can use to join a group call without having to join a Signal group chat first.
-• Call links are reusable and ideal for recurring phone dates with your best friends or weekly check-ins with your coworkers.
-• You can manage your call links, control approval settings, and copy links from the calls tab for quick sharing.
+Maak kennis met oproeplinks: de ontbrekende schakel voor agenda-uitnodigingen en spontane bijeenkomsten.
+• Je kunt nu snel en gemakkelijk een link maken die iedereen op Signal kan gebruiken om deel te nemen aan een groepsoproep zonder eerst lid te worden van een Signal-groepschat.
+• Oproeplinks kun je steeds opnieuw gebruiken. Ze zijn ideaal voor al die gesprekken met je beste vrienden of wekelijkse check-ins met je collega's.
+• Via het tabblad Oproepen kun je oproeplinks en goedkeuringsinstellingen beheren en links kopiëren om gemakkelijk te delen.

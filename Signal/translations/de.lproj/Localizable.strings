@@ -797,7 +797,7 @@
 "CALL_LINK_REQUEST_SHEET_HEADER" = "Anfragen zur Teilnahme an diesem Aufruf";
 
 /* Name of a toggle switch to enable/disable admin approval for joining a Call Link. */
-"CALL_LINK_REQUIRE_APPROVAL" = "Administrator-Genehmigung anfragen";
+"CALL_LINK_REQUIRE_APPROVAL" = "Administrator-Genehmigung benötigt";
 
 /* Button to open UI to share a Call Link with someone on Signal. */
 "CALL_LINK_SHARE_VIA_SIGNAL" = "Link über Signal teilen";
