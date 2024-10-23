@@ -279,7 +279,7 @@ class SignalServiceRateLimitedError: NSObject, CustomNSError, IsRetryableProvide
 // MARK: -
 
 @objc
-class SpamChallengeRequiredError: NSObject, CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
+public class SpamChallengeRequiredError: NSObject, CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
     // NSError bridging: the domain of the error.
     @objc
     public static let errorDomain = OWSError.errorDomain

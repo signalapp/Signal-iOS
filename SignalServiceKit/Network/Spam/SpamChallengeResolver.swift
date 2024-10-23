@@ -134,6 +134,8 @@ extension SpamChallengeResolver {
     @objc
     static public var NeedsCaptchaNotification: Notification.Name { .init("NeedsCaptchaNotification") }
 
+    public static let didCompleteAnyChallenge = Notification.Name("SpamChallengeResolver.DidCompleteAnyChallenge")
+
     @objc
     public func handleIncomingPushChallengeToken(_ token: String) {
         guard appReadiness.isAppReady else {
@@ -328,6 +330,9 @@ extension SpamChallengeResolver {
                        stateDidChangeFrom priorState: SpamChallenge.State) {
         if challenge.state != .inProgress, challenge.state != priorState {
             workQueue.async { self.recheckChallenges() }
+        }
+        if challenge.state == .complete {
+            NotificationCenter.default.postNotificationNameAsync(Self.didCompleteAnyChallenge, object: self)
         }
     }
 }
