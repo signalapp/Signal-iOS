@@ -174,14 +174,6 @@ class HTTPUtils {
                 localizedDescription: description,
                 localizedRecoverySuggestion: recoverySuggestion
             )
-        case 417:
-            // TODO: Is this response code obsolete?
-            let description = OWSLocalizedString("REGISTRATION_ERROR", comment: "")
-            let recoverySuggestion = OWSLocalizedString("RELAY_REGISTERED_ERROR_RECOVERY", comment: "")
-            return buildServiceResponseError(
-                localizedDescription: description,
-                localizedRecoverySuggestion: recoverySuggestion
-            )
         default:
             return buildServiceResponseError()
         }
