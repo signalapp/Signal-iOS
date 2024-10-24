@@ -51,7 +51,7 @@ public class GzipStreamTransform: StreamTransform, FinalizableStreamTransform {
         case .compress:
             status = deflateInit2_(
                 &stream,
-                Z_BEST_COMPRESSION,
+                Z_DEFAULT_COMPRESSION,
                 Z_DEFLATED,
                 Constants.MaxWindowBits + Constants.GzipDeflateHeaderWindowBits,
                 MAX_MEM_LEVEL,
