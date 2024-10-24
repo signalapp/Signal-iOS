@@ -380,6 +380,8 @@ class MessageBackupIntegrationTests: XCTestCase {
             backupInfo = _backupInfo
         case .invalidByteLengthDelimiter:
             throw TestError.failure("Invalid byte length delimiter!")
+        case .emptyFinalFrame:
+            throw TestError.failure("Invalid empty header frame!")
         case .protoDeserializationError(let error):
             throw TestError.failure("Proto deserialization error: \(error)!")
         }

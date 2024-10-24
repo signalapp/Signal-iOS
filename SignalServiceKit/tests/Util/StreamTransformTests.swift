@@ -32,7 +32,7 @@ final class ChunkedStreamTransformTests: XCTestCase {
         let part2 = transformedData.subdata(in: 5..<transformedData.count)
 
         let result1 = try inputStream.transform(data: part1)
-        XCTAssertTrue(inputStream.hasPendingBytes)
+        XCTAssertFalse(inputStream.hasPendingBytes)
 
         let result2 = try inputStream.transform(data: part2)
         XCTAssertFalse(inputStream.hasPendingBytes)
@@ -66,6 +66,59 @@ final class ChunkedStreamTransformTests: XCTestCase {
         zip(data1, results).forEach { XCTAssertEqual($0, $1) }
     }
 
+    func testInputDataLargerThanInitialBuffer() throws {
+        let outputStream = ChunkedOutputStreamTransform()
+        // Use a input buffer size smaller than than the input data
+        let inputStream = ChunkedInputStreamTransform(initialBufferSize: 6)
+
+        let data1 = [
+            "aa".data(using: .utf8)!,
+            "bbb".data(using: .utf8)!,
+            "cccc".data(using: .utf8)!,
+            "d".data(using: .utf8)!
+        ]
+
+        let transformedData = try data1.reduce(into: Data()) { $0.append(try outputStream.transform(data: $1)) }
+
+        var results = [Data]()
+
+        results.append(try inputStream.transform(data: transformedData))
+        while true {
+            let result = try inputStream.transform(data: Data())
+            guard result.count > 0 else { break }
+            results.append(result)
+        }
+        zip(data1, results).forEach { XCTAssertEqual($0, $1) }
+    }
+
+    func testIterateOverSmallChunks() throws {
+        let outputStream = ChunkedOutputStreamTransform()
+        let inputStream = ChunkedInputStreamTransform(initialBufferSize: 10)
+
+        let data1 = [
+            "aa".data(using: .utf8)!,
+            "bbb".data(using: .utf8)!,
+            "cccc".data(using: .utf8)!,
+            "d".data(using: .utf8)!
+        ]
+
+        let transformedData = try data1.reduce(into: Data()) { $0.append(try outputStream.transform(data: $1)) }
+
+        var results = [Data]()
+
+        // read data in chunks smaller than the encoded Ints or data objects themselves.
+        // This allows testing reads of chunks that span multiple buffered reads.
+        let chunkSize: Int = 1
+        var count: Int = 0
+        while count < transformedData.count  {
+            let chunk = transformedData.subdata(in: count..<chunkSize)
+            let result = try inputStream.transform(data: chunk)
+            count += chunkSize
+            guard result.count > 0 else { break }
+            results.append(result)
+        }
+        zip(data1, results).forEach { XCTAssertEqual($0, $1) }
+    }
 }
 
 final class GzipStreamTransformTests: XCTestCase {

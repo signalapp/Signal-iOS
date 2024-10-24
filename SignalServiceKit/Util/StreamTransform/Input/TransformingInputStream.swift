@@ -14,8 +14,6 @@ public final class TransformingInputStream: InputStreamable {
     private let inputStream: InputStreamable
     private let runLoop: RunLoop?
 
-    private var buffer = Data()
-
     private var hasInitialized: Bool = false
 
     public init(
@@ -51,25 +49,47 @@ public final class TransformingInputStream: InputStreamable {
     /// input stream returning less than `maxLength` bytes signalling the end
     /// of the input stream.  Instead, `hasBytesAvailable` should be
     /// consulted to see if there is possibly more data to be read from the input stream
-    public func read(maxLength len: Int) throws -> Data {
+    public func read(maxLength requestedLength: Int) throws -> Data {
         // Copy over the current data, if that's enough, return
         // otherwise, read data until the buffer is filled.
         // read some bytes, transform them, read some more, until the buffer is full
-        if inputStream.hasBytesAvailable {
-            let requestedLength = len - buffer.count
-            let streamData = try inputStream.read(maxLength: requestedLength)
+        var returnData: Data = Data()
+        while returnData.count == 0 && inputStream.hasBytesAvailable {
+            func getData() throws -> Data {
+                // Only read if there isn't pending data in the transforms
+                if transforms.contains(where: { $0.hasPendingBytes }) == false {
+                    var resultData = Data()
+
+                    let newData = try inputStream.read(maxLength: requestedLength)
+                    resultData.append(newData)
+
+                    if newData.count < requestedLength {
+                        let extraData = try inputStream.read(maxLength: requestedLength - newData.count)
+                        resultData.append(extraData)
+                    }
+
+                    return resultData
+                } else {
+                    return Data()
+                }
+            }
 
             // Transform the data.
-            let data = try transforms.reduce(streamData) { try $1.transform(data: $0) }
-            if data.count > 0 {
-                return data
-            }
+            returnData = try transforms.reduce(getData()) { try $1.transform(data: $0) }
+        }
+
+        if returnData.count > 0 {
+            return returnData
         }
 
         // If there is no data remaining in the inputStream, read out any
         // remaining data in the transfom buffers, finalize the transforms
         // and read any data resulting from that.
-        return try transforms.readNextRemainingBytes()
+        var remainingData = try transforms.readNextRemainingBytes()
+        while remainingData.count == 0 && hasBytesAvailable {
+            remainingData = try transforms.readNextRemainingBytes()
+        }
+        return remainingData
     }
 
     public func remove(from runloop: RunLoop, forMode mode: RunLoop.Mode) {

@@ -6,6 +6,7 @@
 extension MessageBackup {
     public enum ProtoInputStreamReadResult<T> {
         case success(T, moreBytesAvailable: Bool)
+        case emptyFinalFrame
         case invalidByteLengthDelimiter
         case protoDeserializationError(Swift.Error)
     }
@@ -70,9 +71,13 @@ internal class MessageBackupProtoInputStreamImpl: MessageBackupProtoInputStream 
         _ initializer: (Data) throws -> T
     ) -> MessageBackup.ProtoInputStreamReadResult<T> {
         do {
-            let data = try inputStream.read(maxLength: 8192)
-            let protoObject = try initializer(data)
-            return .success(protoObject, moreBytesAvailable: inputStream.hasBytesAvailable)
+            let data = try inputStream.read(maxLength: 65_536)
+            if data.count == 0 && !inputStream.hasBytesAvailable {
+                return .emptyFinalFrame
+            } else {
+                let protoObject = try initializer(data)
+                return .success(protoObject, moreBytesAvailable: inputStream.hasBytesAvailable)
+            }
         } catch {
             return .protoDeserializationError(error)
         }

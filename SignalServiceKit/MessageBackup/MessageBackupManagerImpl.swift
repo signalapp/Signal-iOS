@@ -511,6 +511,8 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             hasMoreFrames = moreBytesAvailable
         case .invalidByteLengthDelimiter:
             throw OWSAssertionError("invalid byte length delimiter on header")
+        case .emptyFinalFrame:
+            throw OWSAssertionError("invalid empty header frame")
         case .protoDeserializationError(let error):
             // Fail if we fail to deserialize the header.
             throw error
@@ -554,20 +556,23 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         let contexts = Contexts(localIdentifiers: localIdentifiers, tx: tx)
 
         while hasMoreFrames {
-            let frame: BackupProto_Frame
+            let frame: BackupProto_Frame?
             switch stream.readFrame() {
             case let .success(_frame, moreBytesAvailable):
                 frame = _frame
                 hasMoreFrames = moreBytesAvailable
             case .invalidByteLengthDelimiter:
                 throw OWSAssertionError("invalid byte length delimiter on header")
+            case .emptyFinalFrame:
+                frame = nil
+                hasMoreFrames = false
             case .protoDeserializationError(let error):
                 // fail the whole thing if we fail to deserialize one frame
                 owsFailDebug("Failed to deserialize proto frame!")
                 throw error
             }
 
-            switch frame.item {
+            switch frame?.item {
             case .recipient(let recipient):
                 let recipientResult: MessageBackup.RestoreFrameResult<MessageBackup.RecipientId>
                 switch recipient.destination {
@@ -682,11 +687,13 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                     )
                 )])
             case nil:
-                owsFailDebug("Frame missing item!")
-                try processRestoreFrameErrors(errors: [.restoreFrameError(
-                    .invalidProtoData(.frameMissingItem),
-                    MessageBackup.EmptyFrameId.shared
-                )])
+                if hasMoreFrames {
+                    owsFailDebug("Frame missing item!")
+                    try processRestoreFrameErrors(errors: [.restoreFrameError(
+                        .invalidProtoData(.frameMissingItem),
+                        MessageBackup.EmptyFrameId.shared
+                    )])
+                }
             }
         }
 
