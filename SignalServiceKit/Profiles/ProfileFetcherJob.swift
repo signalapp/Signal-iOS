@@ -113,7 +113,7 @@ public class ProfileFetcherJob {
             throw ProfileRequestError.notAuthorized
         } catch where error.httpStatusCode == 404 {
             throw ProfileRequestError.notFound
-        } catch where error.httpStatusCode == 413 || error.httpStatusCode == 429 {
+        } catch where error.httpStatusCode == 429 {
             throw ProfileRequestError.rateLimit
         } catch where error.isRetryable && retryCount < 3 {
             return try await requestProfileWithRetries(localIdentifiers: localIdentifiers, retryCount: retryCount + 1)

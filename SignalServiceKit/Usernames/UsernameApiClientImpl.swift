@@ -83,7 +83,7 @@ public class UsernameApiClientImpl: UsernameApiClient {
                 //
                 // Either way, the reservation has been rejected.
                 return .rejected
-            case 413, 429:
+            case 429:
                 return .rateLimited
             default:
                 throw OWSAssertionError("Unexpected status code: \(statusCode)!")
@@ -141,7 +141,7 @@ public class UsernameApiClientImpl: UsernameApiClient {
                 //
                 // Either way, we've been rejected.
                 return .rejected
-            case 413, 429:
+            case 429:
                 return .rateLimited
             default:
                 throw OWSAssertionError("Unexpected status code: \(statusCode)")

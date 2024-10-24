@@ -144,7 +144,7 @@ public enum OWSHTTPError: Error, CustomDebugStringConvertible, IsRetryableProvid
         case .networkFailure:
             return true
         case .serviceResponse:
-            // TODO: We might eventually special-case 413 Rate Limited errors.
+            // TODO: We might eventually special-case 429 Rate Limited errors.
             let responseStatus = self.responseStatusCode
             // We retry 5xx.
             if responseStatus >= 400, responseStatus <= 499 {

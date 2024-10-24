@@ -173,7 +173,7 @@ public class MessageSender {
             case 404:
                 self.reportMissingDeviceError(serviceId: serviceId, deviceId: deviceId)
                 throw MessageSenderError.missingDevice
-            case 413, 429:
+            case 429:
                 throw MessageSenderError.prekeyRateLimit
             case 428:
                 // SPAM TODO: Only retry messages with -hasRenderableContent
