@@ -30,6 +30,9 @@ public final class MessageBackupInteractionStore {
         {}
     }
 
+    // Even generating the sql string itself is expensive when multiplied by 200k messages.
+    // So we generate the string once and cache it (on top of caching the Statement)
+    private var cachedSQL: String?
     func insert(
         _ interaction: TSInteraction,
         in thread: MessageBackup.ChatThread,
@@ -67,7 +70,23 @@ public final class MessageBackupInteractionStore {
         // and restore, we'll only send back a Null message. (Until such a day
         // when resends use the interactions table and not MSL at all).
 
-        try interaction.asRecord().insert(context.tx.databaseConnection)
+        let sql: String
+        if let cachedSQL {
+            sql = cachedSQL
+        } else {
+            let columnsSQL = InteractionRecord.CodingKeys.allCases.filter({ $0 != .id }).map(\.name).joined(separator: ", ")
+            let valuesSQL = InteractionRecord.CodingKeys.allCases.filter({ $0 != .id }).map({ _ in "?" }).joined(separator: ", ")
+            sql = """
+                INSERT INTO \(InteractionRecord.databaseTableName) (\(columnsSQL)) \
+                VALUES (\(valuesSQL))
+                """
+            cachedSQL = sql
+        }
+
+        let statement = try context.tx.databaseConnection.cachedStatement(sql: sql)
+        try statement.setUncheckedArguments((interaction.asRecord() as! InteractionRecord).asArguments())
+        try statement.execute()
+        interaction.updateRowId(context.tx.databaseConnection.lastInsertedRowID)
 
         guard let interactionRowId = interaction.sqliteRowId else {
             throw OWSAssertionError("Missing row id after insertion!")

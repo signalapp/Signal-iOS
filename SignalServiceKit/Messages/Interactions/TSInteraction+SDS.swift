@@ -6212,6 +6212,95 @@ extension TSInteraction: DeepCopyable {
 
 // MARK: - Table Metadata
 
+extension InteractionRecord {
+
+    // This defines all of the columns used in the table
+    // where this model (and any subclasses) are persisted.
+    internal func asArguments() -> StatementArguments {
+        let databaseValues: [DatabaseValueConvertible?] = [
+                recordType,
+                            uniqueId,
+                            receivedAtTimestamp,
+                            timestamp,
+                            threadUniqueId,
+                            attachmentIds,
+                            authorId,
+                            authorPhoneNumber,
+                            authorUUID,
+                            body,
+                            callType,
+                            configurationDurationSeconds,
+                            configurationIsEnabled,
+                            contactShare,
+                            createdByRemoteName,
+                            createdInExistingGroup,
+                            customMessage,
+                            envelopeData,
+                            errorType,
+                            expireStartedAt,
+                            expiresAt,
+                            expiresInSeconds,
+                            groupMetaMessage,
+                            hasLegacyMessageState,
+                            hasSyncedTranscript,
+                            wasNotCreatedLocally,
+                            isLocalChange,
+                            isViewOnceComplete,
+                            isViewOnceMessage,
+                            isVoiceMessage,
+                            legacyMessageState,
+                            legacyWasDelivered,
+                            linkPreview,
+                            messageId,
+                            messageSticker,
+                            messageType,
+                            mostRecentFailureText,
+                            preKeyBundle,
+                            protocolVersion,
+                            quotedMessage,
+                            read,
+                            recipientAddress,
+                            recipientAddressStates,
+                            sender,
+                            serverTimestamp,
+                            deprecated_sourceDeviceId,
+                            storedMessageState,
+                            storedShouldStartExpireTimer,
+                            unregisteredAddress,
+                            verificationState,
+                            wasReceivedByUD,
+                            infoMessageUserInfo,
+                            wasRemotelyDeleted,
+                            bodyRanges,
+                            offerType,
+                            serverDeliveryTimestamp,
+                            eraId,
+                            hasEnded,
+                            creatorUuid,
+                            joinedMemberUuids,
+                            wasIdentityVerified,
+                            paymentCancellation,
+                            paymentNotification,
+                            paymentRequest,
+                            viewed,
+                            serverGuid,
+                            storyAuthorUuidString,
+                            storyTimestamp,
+                            isGroupStoryReply,
+                            storyReactionEmoji,
+                            giftBadge,
+                            editState,
+                            archivedPaymentInfo,
+                            expireTimerVersion,
+                            isSmsMessageRestoredFromBackup,
+
+        ]
+        return StatementArguments(databaseValues)
+    }
+}
+
+// MARK: - Table Metadata
+
 extension TSInteractionSerializer {
 
     // This defines all of the columns used in the table

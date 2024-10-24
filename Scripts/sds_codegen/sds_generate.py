@@ -1128,7 +1128,8 @@ def generate_swift_extensions_for_model(clazz):
         return
 
     has_sds_superclass = clazz.has_sds_superclass()
-    has_remove_methods = clazz.name not in ("TSThread","TSInteraction")
+    has_remove_methods = clazz.name not in ("TSThread", "TSInteraction")
+    has_grdb_serializer = clazz.name in ("TSInteraction")
 
     swift_filename = os.path.basename(clazz.filepath)
     swift_filename = swift_filename[: swift_filename.find(".")] + "+SDS.swift"
@@ -1760,6 +1761,43 @@ extension %(class_name)s: DeepCopyable {
 }
 """
 
+    if has_grdb_serializer:
+        swift_body += """
+// MARK: - Table Metadata
+
+extension %sRecord {
+
+    // This defines all of the columns used in the table
+    // where this model (and any subclasses) are persisted.
+    internal func asArguments() -> StatementArguments {
+        let databaseValues: [DatabaseValueConvertible?] = [
+""" % str(
+            remove_prefix_from_class_name(clazz.name)
+        )
+
+        def write_grdb_column_metadata(property):
+            # column_name = property.swift_identifier()
+            column_name = property.column_name()
+            return """                %s,
+            """ % (
+                str(column_name)
+            )
+
+        for property in sds_properties:
+            if property.name != "id":
+                swift_body += write_grdb_column_metadata(property)
+
+        if len(record_properties) > 0:
+            for property in record_properties:
+                swift_body += write_grdb_column_metadata(property)
+
+        swift_body += """
+        ]
+        return StatementArguments(databaseValues)
+    }
+}
+"""
+
     if not has_sds_superclass:
         swift_body += """
 // MARK: - Table Metadata
@@ -1817,7 +1855,9 @@ extension %sSerializer {
         SDSTableMetadata(
             tableName: "%s",
             columns: [
-""" % (database_table_name,)
+""" % (
+            database_table_name,
+        )
         swift_body += "\n".join(
             [
                 "                %sColumn," % str(column_property_name)
