@@ -175,16 +175,6 @@ public class MessageSender {
                 throw MessageSenderError.missingDevice
             case 429:
                 throw MessageSenderError.prekeyRateLimit
-            case 428:
-                // SPAM TODO: Only retry messages with -hasRenderableContent
-                try await SSKEnvironment.shared.spamChallengeResolverRef.tryToHandleSilently(
-                    bodyData: error.httpResponseData,
-                    retryAfter: error.httpRetryAfterDate
-                )
-                // The resolver has 10s to asynchronously resolve a challenge. If it
-                // resolves, great! We'll let MessageSender auto-retry. Otherwise, it'll be
-                // marked as "pending".
-                throw SpamChallengeResolvedError()
             default:
                 throw error
             }
