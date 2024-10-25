@@ -155,6 +155,11 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
         let ascendings: [Bool] = [true, false]
 
         for filter in AllMediaFilter.allCases {
+            if filter == .gifs {
+                // Skip gif filter; it uses a b-tree for sorting and doesn't
+                // use a simple index.
+                continue
+            }
             let finder = MediaGalleryAttachmentFinder(thread: thread, filter: filter)
             var queries = [QueryInterfaceRequest<RecordType>]()
 

@@ -306,8 +306,17 @@ public struct MediaGalleryAttachmentFinder {
             query = query
                 .filter(contentTypeColumn == AttachmentReference.ContentType.audio.rawValue)
         case .gifs:
+            // NOTE: this query will not make complete use of an index; it has to combine the results
+            // of two indexes and use a temp b-tree for sorting. This is suboptimal but fine in practice
+            // as it will use two indexes to filter to only gifs/looping videos within the thread.
             query = query
-                .filter(contentTypeColumn == AttachmentReference.ContentType.animatedImage.rawValue)
+                .filter(
+                    contentTypeColumn == AttachmentReference.ContentType.animatedImage.rawValue
+                    || (
+                        contentTypeColumn == AttachmentReference.ContentType.video.rawValue
+                        && renderingFlagColumn == AttachmentReference.RenderingFlag.shouldLoop.rawValue
+                    )
+                )
         case .videos:
             query = query
                 .filter(contentTypeColumn == AttachmentReference.ContentType.video.rawValue)
