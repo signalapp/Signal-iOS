@@ -56,32 +56,14 @@ public class PaymentsProcessor: NSObject {
     // This should only be accessed via unfairLock.
     private var processingPaymentIds = Set<String>()
 
-    // We use a dedicated queue for processing
-    // "outgoing, not yet verified" payments.
-    //
-    // This ensures that they are processed serially.
-    let processingQueue_outgoing: OperationQueue = {
-        let operationQueue = OperationQueue()
-        operationQueue.name = "PaymentsProcessor-Outgoing"
-        operationQueue.maxConcurrentOperationCount = 1
-        return operationQueue
-    }()
-    // We use another queue for all other processing.
-    let processingQueue_default: OperationQueue = {
-        let operationQueue = OperationQueue()
-        operationQueue.name = "PaymentsProcessor-Default"
-        // We want a concurrency level high enough to ensure that
-        // high-priority operations are processed in a timely manner.
-        operationQueue.maxConcurrentOperationCount = 3
-        return operationQueue
-    }()
+    private let highPriorityProcessingQueue = SerialTaskQueue()
+    private let defaultProcessingQueue = SerialTaskQueue()
 
-    private func processingQueue(forPaymentModel paymentModel: TSPaymentModel) -> OperationQueue {
-        if paymentModel.isOutgoing,
-           !paymentModel.isVerified {
-            return processingQueue_outgoing
+    private func processingQueue(forPaymentModel paymentModel: TSPaymentModel) -> SerialTaskQueue {
+        if paymentModel.isOutgoing, !paymentModel.isVerified {
+            return highPriorityProcessingQueue
         } else {
-            return processingQueue_default
+            return defaultProcessingQueue
         }
     }
 
@@ -146,9 +128,8 @@ public class PaymentsProcessor: NSObject {
                     continue
                 }
                 self.processingPaymentIds.insert(paymentId)
-                let operation = PaymentProcessingOperation(delegate: delegate,
-                                                           paymentModel: paymentModel)
-                processingQueue(forPaymentModel: paymentModel).addOperation(operation)
+                let operation = PaymentProcessingOperation(delegate: delegate, paymentModel: paymentModel)
+                processingQueue(forPaymentModel: paymentModel).enqueue { await operation.run() }
             }
         }
     }
@@ -318,10 +299,8 @@ extension PaymentsProcessor: PaymentProcessingOperationDelegate {
             return
         }
 
-        let operation = PaymentProcessingOperation(delegate: self,
-                                                   paymentModel: paymentModel,
-                                                   retryDelayInteral: retryDelayInteral)
-        processingQueue(forPaymentModel: paymentModel).addOperation(operation)
+        let operation = PaymentProcessingOperation(delegate: self, paymentModel: paymentModel, retryDelayInteral: retryDelayInteral)
+        processingQueue(forPaymentModel: paymentModel).enqueue { await operation.run() }
     }
 
     func scheduleRetryProcessing(
@@ -365,7 +344,7 @@ private protocol PaymentProcessingOperationDelegate: AnyObject {
 // MARK: -
 
 // See comments on PaymentsProcessor.process().
-private class PaymentProcessingOperation: OWSOperation, @unchecked Sendable {
+private class PaymentProcessingOperation {
     private weak var delegate: PaymentProcessingOperationDelegate?
     private let paymentId: String
     private let retryDelayInteral: TimeInterval
@@ -378,41 +357,10 @@ private class PaymentProcessingOperation: OWSOperation, @unchecked Sendable {
         self.delegate = delegate
         self.paymentId = paymentModel.uniqueId
         self.retryDelayInteral = retryDelayInteral ?? Self.defaultRetryDelayInteral
-
-        super.init()
-
-        self.queuePriority = queuePriority(forPaymentModel: paymentModel)
     }
 
-    private func queuePriority(forPaymentModel paymentModel: TSPaymentModel) -> Operation.QueuePriority {
-        switch paymentModel.paymentState {
-        case .outgoingUnsubmitted,
-             .outgoingUnverified:
-            return .veryHigh
-        case .outgoingVerified,
-            .outgoingSending,
-            .outgoingSent:
-            return .normal
-        case .incomingUnverified,
-             .incomingVerified:
-            return .high
-        case .outgoingComplete,
-             .incomingComplete,
-             .outgoingFailed,
-             .incomingFailed:
-            owsFailDebug("Unexpected paymentState: \(paymentModel.paymentState.formatted)")
-            return .normal
-        @unknown default:
-            owsFailDebug("Invalid paymentState: \(paymentModel.paymentState.formatted)")
-            return .normal
-        }
-    }
-
-    override public func run() {
-        Task {
-            await processStep()
-            self.reportSuccess()
-        }
+    func run() async {
+        await processStep()
     }
 
     // Try to usher a payment "one step forward" in the processing
