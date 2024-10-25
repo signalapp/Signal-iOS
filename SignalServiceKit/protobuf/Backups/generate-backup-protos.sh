@@ -11,6 +11,7 @@ protoc \
   --proto_path="$BACKUP_PROTO_DIR" \
   --swift_out="$BACKUP_PROTO_DIR" \
   --swift_opt=Visibility=public \
+  --swift_opt=UseAccessLevelOnImports=true \
   "$BACKUP_PROTO_FILE"
 
 "$REPO_ROOT"/Scripts/lint/lint-license-headers --fix "$BACKUP_PROTO_FILE"

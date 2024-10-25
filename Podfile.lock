@@ -39,7 +39,7 @@ PODS:
   - SQLCipher/standard (4.6.0):
     - SQLCipher/common
   - SSZipArchive (2.5.2)
-  - SwiftProtobuf (1.28.1)
+  - SwiftProtobuf (1.28.2)
   - YYImage (1.0.4):
     - YYImage/Core (= 1.0.4)
   - YYImage/Core (1.0.4)
@@ -65,7 +65,7 @@ DEPENDENCIES:
   - SignalRingRTC (from `https://github.com/signalapp/ringrtc`, tag `v2.48.2`)
   - SQLCipher (from `https://github.com/signalapp/sqlcipher.git`, tag `v4.6.0-f_barrierfsync`)
   - SSZipArchive (from `ThirdParty/SSZipArchive.podspec`)
-  - SwiftProtobuf (>= 1.14.0)
+  - SwiftProtobuf (= 1.28.2)
   - YYImage (from `https://github.com/signalapp/YYImage`)
   - YYImage/libwebp (from `https://github.com/signalapp/YYImage`)
 
@@ -160,9 +160,9 @@ SPEC CHECKSUMS:
   SignalRingRTC: fb52c87981d5979c92c98700bf4ccdf0ae33fd54
   SQLCipher: 30a8e81afa6128e600b17ffa77d0f92fa05ed208
   SSZipArchive: 8c3485528a87fa6f90afdbfc33682eb61d985ae5
-  SwiftProtobuf: cc47329e2a10c235e35ba4faed831742ae5135ce
+  SwiftProtobuf: 4dbaffec76a39a8dc5da23b40af1a5dc01a4c02d
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
 
-PODFILE CHECKSUM: 32a013ff4b5ddb3afb62587acd3d3edbb8eb369d
+PODFILE CHECKSUM: 64d5a32738168aaddb344f5b28714d8d9ac8bf55
 
 COCOAPODS: 1.15.2
