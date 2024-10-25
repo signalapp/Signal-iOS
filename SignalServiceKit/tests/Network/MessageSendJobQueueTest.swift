@@ -31,7 +31,7 @@ class MessageSenderJobQueueTest: SSKBaseTest {
             return (message, promise)
         }
         fakeMessageSender.stubbedFailingErrors = [nil]
-        jobQueue.setup(appReadiness: AppReadinessMock())
+        jobQueue.setUp()
         try await promise.awaitable()
         XCTAssertEqual(fakeMessageSender.sentMessages.map { $0.uniqueId }, [message.uniqueId])
     }
@@ -59,7 +59,7 @@ class MessageSenderJobQueueTest: SSKBaseTest {
             return (messages, promises)
         }
         fakeMessageSender.stubbedFailingErrors = Array(repeating: nil, count: messageCount)
-        jobQueue.setup(appReadiness: AppReadinessMock())
+        jobQueue.setUp()
         for promise in promises {
             try await promise.awaitable()
         }
@@ -69,7 +69,7 @@ class MessageSenderJobQueueTest: SSKBaseTest {
     func test_sendingInvisibleMessage() async throws {
         let jobQueue = MessageSenderJobQueue(appReadiness: AppReadinessMock())
         fakeMessageSender.stubbedFailingErrors = [nil]
-        jobQueue.setup(appReadiness: AppReadinessMock())
+        jobQueue.setUp()
         let (message, promise) = await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             let message = OutgoingMessageFactory().buildDeliveryReceipt(transaction: tx)
             let preparedMessage = PreparedOutgoingMessage.preprepared(
@@ -119,7 +119,7 @@ class MessageSenderJobQueueTest: SSKBaseTest {
         // simulate permanent failure (via `maxRetries` retryable failures)
         let retryCount: Int = 110 // Matches MessageSenderOperation
         fakeMessageSender.stubbedFailingErrors = Array(repeating: OWSRetryableError(), count: retryCount + 1)
-        jobQueue.setup(appReadiness: AppReadinessMock())
+        jobQueue.setUp()
 
         do {
             let retryTriggerTask = Task.detached {
@@ -188,7 +188,7 @@ class MessageSenderJobQueueTest: SSKBaseTest {
         // simulate permanent failure
         let error = OWSUnretryableError()
         fakeMessageSender.stubbedFailingErrors = [error]
-        jobQueue.setup(appReadiness: AppReadinessMock())
+        jobQueue.setUp()
 
         do {
             try await promise.awaitable()

@@ -5,7 +5,7 @@
 
 import Foundation
 
-public enum JobError: Error {
+private enum JobError: Error {
     case permanentFailure(description: String)
     case obsolete(description: String)
 }
@@ -29,14 +29,11 @@ public enum JobError: Error {
 /// (e.g. rate limiting)
 public class MessageSenderJobQueue: NSObject {
 
-    private let appReadiness: AppReadiness
-
     public init(appReadiness: AppReadiness) {
-        self.appReadiness = appReadiness
         super.init()
 
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            self.setup(appReadiness: appReadiness)
+            self.setUp()
         }
     }
 
@@ -73,7 +70,6 @@ public class MessageSenderJobQueue: NSObject {
         }
     }
 
-    private let jobFutures = AtomicDictionary<String, Future<Void>>(lock: .init())
     private func add(
         message: PreparedOutgoingMessage,
         exclusiveToCurrentProcessIdentifier: Bool,
@@ -81,7 +77,6 @@ public class MessageSenderJobQueue: NSObject {
         future: Future<Void>?,
         transaction: SDSAnyWriteTransaction
     ) {
-        assert(appReadiness.isAppReady || CurrentAppContext().isRunningTests)
         // Mark as sending now so the UI updates immediately.
         message.updateAllUnsentRecipientsAsSending(tx: transaction)
         let jobRecord: MessageSenderJobRecord
@@ -95,26 +90,22 @@ public class MessageSenderJobQueue: NSObject {
         if exclusiveToCurrentProcessIdentifier {
             jobRecord.flagAsExclusiveForCurrentProcessIdentifier()
         }
-        self.add(jobRecord: jobRecord, appReadiness: appReadiness, transaction: transaction)
+        self.add(jobRecord: jobRecord, transaction: transaction)
         if let future {
-            jobFutures[jobRecord.uniqueId] = future
+            self.state.update { $0.jobFutures[jobRecord.uniqueId] = future }
         }
     }
 
     // MARK: JobQueue
 
-    public typealias DurableOperationType = MessageSenderOperation
-    public let requiresInternet: Bool = true
-    public var isEnabled: Bool { true }
-    public var runningOperations = AtomicArray<MessageSenderOperation>(lock: .sharedGlobal)
-
-    public func setup(appReadiness: AppReadiness) {
-        defaultSetup(appReadiness: appReadiness)
+    private struct State {
+        var isSetup = false
+        var runningOperations = [MessageSenderOperation]()
+        var jobFutures = [String: Future<Void>]()
     }
+    private let state = AtomicValue<State>(State(), lock: .init())
 
-    public let isSetup = AtomicBool(false, lock: .sharedGlobal)
-
-    public func didMarkAsReady(
+    private func didMarkAsReady(
         oldJobRecord: MessageSenderJobRecord,
         transaction: SDSAnyWriteTransaction
     ) {
@@ -137,8 +128,10 @@ public class MessageSenderJobQueue: NSObject {
             .updateAllUnsentRecipientsAsSending(transaction: transaction)
     }
 
-    public func buildOperation(jobRecord: MessageSenderJobRecord,
-                               transaction: SDSAnyReadTransaction) throws -> MessageSenderOperation {
+    private func buildOperation(
+        jobRecord: MessageSenderJobRecord,
+        transaction: SDSAnyReadTransaction
+    ) throws -> MessageSenderOperation {
         guard let message = PreparedOutgoingMessage.restore(from: jobRecord, tx: transaction) else {
             throw JobError.obsolete(description: "message no longer exists")
         }
@@ -146,7 +139,7 @@ public class MessageSenderJobQueue: NSObject {
         let operation = MessageSenderOperation(
             message: message,
             jobRecord: jobRecord,
-            future: jobFutures.pop(jobRecord.uniqueId)
+            future: self.state.update { $0.jobFutures.removeValue(forKey: jobRecord.uniqueId) }
         )
         operation.queuePriority = jobRecord.isHighPriority ? .high : message.sendingQueuePriority(tx: transaction)
 
@@ -174,9 +167,9 @@ public class MessageSenderJobQueue: NSObject {
         return operation
     }
 
-    var senderQueues: [String: OperationQueue] = [:]
-    var mediaSenderQueues: [String: OperationQueue] = [:]
-    let defaultQueue: OperationQueue = {
+    private var senderQueues: [String: OperationQueue] = [:]
+    private var mediaSenderQueues: [String: OperationQueue] = [:]
+    private let defaultQueue: OperationQueue = {
         let operationQueue = OperationQueue()
         operationQueue.name = "MessageSenderJobQueue-Default"
         operationQueue.maxConcurrentOperationCount = 1
@@ -186,7 +179,7 @@ public class MessageSenderJobQueue: NSObject {
 
     // We use a per-thread serial OperationQueue to ensure messages are delivered to the
     // service in the order the user sent them.
-    public func operationQueue(jobRecord: MessageSenderJobRecord) -> OperationQueue {
+    private func operationQueue(jobRecord: MessageSenderJobRecord) -> OperationQueue {
         guard let threadId = jobRecord.threadId else {
             return defaultQueue
         }
@@ -223,9 +216,8 @@ public class MessageSenderJobQueue: NSObject {
 
     // MARK: - Job Queue
 
-    func add(
+    private func add(
         jobRecord: MessageSenderJobRecord,
-        appReadiness: AppReadiness,
         transaction: SDSAnyWriteTransaction
     ) {
         owsAssertDebug(jobRecord.status == .ready)
@@ -235,60 +227,21 @@ public class MessageSenderJobQueue: NSObject {
         transaction.addTransactionFinalizationBlock(
             forKey: "jobQueue.\(MessageSenderJobRecord.jobRecordType.jobRecordLabel).startWorkImmediatelyIfAppIsReady"
         ) { transaction in
-            self.startWorkImmediatelyIfAppIsReady(appReadiness: appReadiness, transaction: transaction)
-        }
-
-        transaction.addAsyncCompletion(queue: .global()) {
-            self.startWorkWhenAppIsReady(appReadiness: appReadiness)
+            self.startWorkImmediatelyIfPossible(transaction: transaction)
         }
     }
 
-    func startWorkImmediatelyIfAppIsReady(
-        appReadiness: AppReadiness,
-        transaction: SDSAnyWriteTransaction
-    ) {
-        guard isEnabled else { return }
-        guard !CurrentAppContext().isRunningTests else { return }
-        guard appReadiness.isAppReady else { return }
-        guard isSetup.get() else { return }
+    private func startWorkImmediatelyIfPossible(transaction: SDSAnyWriteTransaction) {
+        guard self.state.update(block: { $0.isSetup }) else { return }
         workStep(transaction: transaction)
     }
 
-    func startWorkWhenAppIsReady(appReadiness: AppReadiness) {
-        guard isEnabled else { return }
-
-        guard !CurrentAppContext().isRunningTests else {
-            DispatchQueue.global().async {
-                self.workStep()
-            }
-            return
-        }
-
-        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            guard self.isSetup.get() else {
-                return
-            }
-            DispatchQueue.global().async {
-                self.workStep()
-            }
-        }
-    }
-
-    func workStep() {
-        guard isEnabled else { return }
-
-        guard isSetup.get() else {
-            if !CurrentAppContext().isRunningTests {
-                owsFailDebug("not setup")
-            }
-
-            return
-        }
-
+    private func workStep() {
+        guard self.state.update(block: { $0.isSetup }) else { return }
         SSKEnvironment.shared.databaseStorageRef.write { self.workStep(transaction: $0) }
     }
 
-    func workStep(transaction: SDSAnyWriteTransaction) {
+    private func workStep(transaction: SDSAnyWriteTransaction) {
         let nextJob: MessageSenderJobRecord?
 
         do {
@@ -315,8 +268,8 @@ public class MessageSenderJobQueue: NSObject {
             durableOperation.remainingRetries = remainingRetries
 
             transaction.addSyncCompletion {
-                self.runningOperations.append(durableOperation)
-                operationQueue.addOperation(durableOperation.operation)
+                self.state.update { $0.runningOperations.append(durableOperation) }
+                operationQueue.addOperation(durableOperation)
             }
         } catch JobError.permanentFailure(let description) {
             owsFailDebug("permanent failure: \(description)")
@@ -331,9 +284,8 @@ public class MessageSenderJobQueue: NSObject {
         transaction.addAsyncCompletionOffMain { self.workStep() }
     }
 
-    func restartOldJobs() {
+    private func restartOldJobs() {
         guard CurrentAppContext().isMainApp else { return }
-        guard isEnabled else { return }
 
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
             let runningRecords: [MessageSenderJobRecord]
@@ -359,9 +311,8 @@ public class MessageSenderJobQueue: NSObject {
         }
     }
 
-    func pruneStaleJobs() {
+    private func pruneStaleJobs() {
         guard CurrentAppContext().isMainApp else { return }
-        guard isEnabled else { return }
 
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
             let staleRecords: [MessageSenderJobRecord]
@@ -382,19 +333,8 @@ public class MessageSenderJobQueue: NSObject {
         }
     }
 
-    /// Unless you need special handling, your setup method can be as simple as
-    ///
-    ///     func setup() {
-    ///         defaultSetup()
-    ///     }
-    ///
-    /// So you might ask, why not just rename this method to `setup`? Because
-    /// `setup` is called from objc, and default implementations from a protocol
-    /// cannot be marked as @objc.
-    func defaultSetup(appReadiness: AppReadiness) {
-        guard isEnabled else { return }
-
-        guard !isSetup.get() else {
+    public func setUp() {
+        guard !self.state.update(block: { $0.isSetup }) else {
             owsFailDebug("already ready already")
             return
         }
@@ -406,26 +346,24 @@ public class MessageSenderJobQueue: NSObject {
             guard let self = self else {
                 return
             }
-            if self.requiresInternet {
-                // FIXME: The returned observer token is never unregistered.
-                // In practice all our JobQueues live forever, so this isn't a problem.
-                NotificationCenter.default.addObserver(
-                    forName: SSKReachability.owsReachabilityDidChange,
-                    object: nil,
-                    queue: nil
-                ) { _ in
-                    if SSKEnvironment.shared.reachabilityManagerRef.isReachable {
-                        self.becameReachable()
-                    }
+            // FIXME: The returned observer token is never unregistered.
+            // In practice all our JobQueues live forever, so this isn't a problem.
+            NotificationCenter.default.addObserver(
+                forName: SSKReachability.owsReachabilityDidChange,
+                object: nil,
+                queue: nil
+            ) { _ in
+                if SSKEnvironment.shared.reachabilityManagerRef.isReachable {
+                    self.becameReachable()
                 }
             }
 
-            self.isSetup.set(true)
-            self.startWorkWhenAppIsReady(appReadiness: appReadiness)
+            self.state.update { $0.isSetup = true }
+            self.workStep()
         }
     }
 
-    func remainingRetries(durableOperation: DurableOperationType) -> UInt {
+    private func remainingRetries(durableOperation: MessageSenderOperation) -> UInt {
         let maxRetries = durableOperation.maxRetries
         let failureCount = durableOperation.jobRecord.failureCount
 
@@ -436,32 +374,27 @@ public class MessageSenderJobQueue: NSObject {
         return maxRetries - failureCount
     }
 
-    func becameReachable() {
-        guard requiresInternet else {
-            owsFailDebug("should only be called if `requiresInternet` is true")
-            return
-        }
-
+    private func becameReachable() {
         _ = self.runAnyQueuedRetry()
     }
 
-    func runAnyQueuedRetry() -> DurableOperationType? {
-        guard let runningDurableOperation = self.runningOperations.first else {
+    func runAnyQueuedRetry() -> OWSOperation? {
+        guard let runningDurableOperation = self.state.update(block: { $0.runningOperations.first }) else {
             return nil
         }
-        runningDurableOperation.operation.runAnyQueuedRetry()
+        runningDurableOperation.runAnyQueuedRetry()
 
         return runningDurableOperation
     }
 
     // MARK: DurableOperationDelegate
 
-    func durableOperationDidSucceed(_ operation: DurableOperationType, transaction: SDSAnyWriteTransaction) {
-        runningOperations.remove(operation)
+    fileprivate func durableOperationDidSucceed(_ operation: MessageSenderOperation, transaction: SDSAnyWriteTransaction) {
+        self.state.update { $0.runningOperations.removeAll(where: { $0 == operation }) }
         operation.jobRecord.anyRemove(transaction: transaction)
     }
 
-    func durableOperation(_ operation: DurableOperationType, didReportError: Error, transaction: SDSAnyWriteTransaction) {
+    fileprivate func durableOperation(_ operation: MessageSenderOperation, didReportError: Error, transaction: SDSAnyWriteTransaction) {
         do {
             try operation.jobRecord.addFailure(transaction: transaction)
         } catch {
@@ -470,24 +403,22 @@ public class MessageSenderJobQueue: NSObject {
         }
     }
 
-    func durableOperation(_ operation: DurableOperationType, didFailWithError error: Error, transaction: SDSAnyWriteTransaction) {
-        runningOperations.remove(operation)
+    fileprivate func durableOperation(_ operation: MessageSenderOperation, didFailWithError error: Error, transaction: SDSAnyWriteTransaction) {
+        self.state.update { $0.runningOperations.removeAll(where: { $0 == operation }) }
         operation.jobRecord.saveAsPermanentlyFailed(transaction: transaction)
     }
 }
 
-public class MessageSenderOperation: OWSOperation {
+private class MessageSenderOperation: OWSOperation {
 
     // MARK: DurableOperation
 
-    public let jobRecord: MessageSenderJobRecord
+    let jobRecord: MessageSenderJobRecord
     weak public var durableOperationDelegate: MessageSenderJobQueue?
-
-    public var operation: OWSOperation { return self }
 
     /// 110 retries corresponds to approximately ~24hr of retry when using
     /// ``OWSOperation/retryIntervalForExponentialBackoff(failureCount:maxBackoff:)``.
-    public let maxRetries: UInt = 110
+    let maxRetries: UInt = 110
 
     // MARK: Init
 
@@ -504,7 +435,7 @@ public class MessageSenderOperation: OWSOperation {
 
     // MARK: OWSOperation
 
-    override public func run() {
+    override func run() {
         Task {
             do {
                 try await SSKEnvironment.shared.messageSenderRef.sendMessage(message)
@@ -515,25 +446,25 @@ public class MessageSenderOperation: OWSOperation {
         }
     }
 
-    override public func didSucceed() {
+    override func didSucceed() {
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: tx)
         }
         future?.resolve()
     }
 
-    override public func didReportError(_ error: Error) {
+    override func didReportError(_ error: Error) {
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
             self.durableOperationDelegate?.durableOperation(self, didReportError: error,
                                                             transaction: transaction)
         }
     }
 
-    override public var retryInterval: TimeInterval {
+    override var retryInterval: TimeInterval {
         OWSOperation.retryIntervalForExponentialBackoff(failureCount: jobRecord.failureCount)
     }
 
-    override public func didFail(error: Error) {
+    override func didFail(error: Error) {
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             self.durableOperationDelegate?.durableOperation(self, didFailWithError: error, transaction: tx)
 
