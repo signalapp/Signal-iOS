@@ -135,7 +135,6 @@ public class OWSUnretryableError: NSObject, CustomNSError, IsRetryableProvider {
 // MARK: -
 
 public enum SSKUnretryableError: Error, IsRetryableProvider {
-    case paymentsProcessingFailure
     case partialLocalProfileFetch
     case stickerDecryptionFailure
     case downloadCouldNotMoveFile
