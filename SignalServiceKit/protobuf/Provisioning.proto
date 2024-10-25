@@ -44,5 +44,6 @@ message ProvisionMessage {
   optional bool readReceipts = 7;
   optional uint32 provisioningVersion = 9;
   optional bytes masterKey = 13;
-  // NEXT ID: 14
+  optional bytes ephemeralBackupKey = 14; // 32 bytes
+  // NEXT ID: 15
 }

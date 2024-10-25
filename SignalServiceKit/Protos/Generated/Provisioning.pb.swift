@@ -207,7 +207,6 @@ struct ProvisioningProtos_ProvisionMessage: @unchecked Sendable {
   /// Clears the value of `provisioningVersion`. Subsequent reads from it will return its default value.
   mutating func clearProvisioningVersion() {self._provisioningVersion = nil}
 
-  /// NEXT ID: 14
   var masterKey: Data {
     get {return _masterKey ?? Data()}
     set {_masterKey = newValue}
@@ -216,6 +215,16 @@ struct ProvisioningProtos_ProvisionMessage: @unchecked Sendable {
   var hasMasterKey: Bool {return self._masterKey != nil}
   /// Clears the value of `masterKey`. Subsequent reads from it will return its default value.
   mutating func clearMasterKey() {self._masterKey = nil}
+
+  /// 32 bytes
+  var ephemeralBackupKey: Data {
+    get {return _ephemeralBackupKey ?? Data()}
+    set {_ephemeralBackupKey = newValue}
+  }
+  /// Returns true if `ephemeralBackupKey` has been explicitly set.
+  var hasEphemeralBackupKey: Bool {return self._ephemeralBackupKey != nil}
+  /// Clears the value of `ephemeralBackupKey`. Subsequent reads from it will return its default value.
+  mutating func clearEphemeralBackupKey() {self._ephemeralBackupKey = nil}
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -234,6 +243,7 @@ struct ProvisioningProtos_ProvisionMessage: @unchecked Sendable {
   fileprivate var _readReceipts: Bool? = nil
   fileprivate var _provisioningVersion: UInt32? = nil
   fileprivate var _masterKey: Data? = nil
+  fileprivate var _ephemeralBackupKey: Data? = nil
 }
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
@@ -334,6 +344,7 @@ extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProto
     7: .same(proto: "readReceipts"),
     9: .same(proto: "provisioningVersion"),
     13: .same(proto: "masterKey"),
+    14: .same(proto: "ephemeralBackupKey"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -355,6 +366,7 @@ extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProto
       case 11: try { try decoder.decodeSingularBytesField(value: &self._pniIdentityKeyPublic) }()
       case 12: try { try decoder.decodeSingularBytesField(value: &self._pniIdentityKeyPrivate) }()
       case 13: try { try decoder.decodeSingularBytesField(value: &self._masterKey) }()
+      case 14: try { try decoder.decodeSingularBytesField(value: &self._ephemeralBackupKey) }()
       default: break
       }
     }
@@ -404,6 +416,9 @@ extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProto
     try { if let v = self._masterKey {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 13)
     } }()
+    try { if let v = self._ephemeralBackupKey {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 14)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -421,6 +436,7 @@ extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProto
     if lhs._readReceipts != rhs._readReceipts {return false}
     if lhs._provisioningVersion != rhs._provisioningVersion {return false}
     if lhs._masterKey != rhs._masterKey {return false}
+    if lhs._ephemeralBackupKey != rhs._ephemeralBackupKey {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

@@ -23,6 +23,7 @@ public final class OWSDeviceProvisioner {
     private let myPni: Pni
     private let profileKey: Data
     private let masterKey: Data
+    private let ephemeralBackupKey: Data?
     private let readReceiptsEnabled: Bool
 
     private let provisioningService: DeviceProvisioningService
@@ -38,6 +39,7 @@ public final class OWSDeviceProvisioner {
         myPni: Pni,
         profileKey: Data,
         masterKey: Data,
+        ephemeralBackupKey: Data?,
         readReceiptsEnabled: Bool,
         provisioningService: DeviceProvisioningService,
         schedulers: Schedulers
@@ -51,6 +53,7 @@ public final class OWSDeviceProvisioner {
         self.myPni = myPni
         self.profileKey = profileKey
         self.masterKey = masterKey
+        self.ephemeralBackupKey = ephemeralBackupKey
         self.readReceiptsEnabled = readReceiptsEnabled
         self.provisioningService = provisioningService
         self.schedulers = schedulers
@@ -90,6 +93,9 @@ public final class OWSDeviceProvisioner {
         messageBuilder.setAci(myAci.rawUUID.uuidString.lowercased())
         messageBuilder.setPni(myPni.rawUUID.uuidString.lowercased())
         messageBuilder.setMasterKey(masterKey)
+        if let ephemeralBackupKey {
+            messageBuilder.setEphemeralBackupKey(ephemeralBackupKey)
+        }
 
         let plainTextProvisionMessage = try messageBuilder.buildSerializedData()
         let cipher = OWSProvisioningCipher(theirPublicKey: theirPublicKey)

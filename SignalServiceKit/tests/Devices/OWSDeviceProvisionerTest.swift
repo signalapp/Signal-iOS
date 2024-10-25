@@ -57,6 +57,7 @@ class OWSDeviceProvisionerTest: XCTestCase {
             myPni: myPni,
             profileKey: profileKey,
             masterKey: masterKey,
+            ephemeralBackupKey: nil,
             readReceiptsEnabled: readReceiptsEnabled,
             provisioningService: mockDeviceProvisioningService,
             schedulers: schedulers

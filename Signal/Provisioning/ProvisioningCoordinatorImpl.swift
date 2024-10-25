@@ -212,6 +212,10 @@ public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
                 )
             }
         }
+
+        // TODO: [link'n'sync]: use `provisionMessage.ephemeralBackupKey` and download
+        // the backup if its not nil.
+
         do {
             try await self.preKeyManager
                 .finalizeRegistrationPreKeys(prekeyBundles, uploadDidSucceed: true)

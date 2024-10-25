@@ -140,6 +140,8 @@ class LinkDeviceViewController: OWSViewController {
         var pniIdentityKeyPair: ECKeyPair?
         var areReadReceiptsEnabled: Bool = true
         var masterKey: Data?
+        // TODO: [link'n'sync]: generate and hold onto the ephemeral backup key
+        let ephemeralBackupKey: Data? = nil
         SSKEnvironment.shared.databaseStorageRef.read { tx in
             localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)
             let identityManager = DependenciesBridge.shared.identityManager
@@ -178,6 +180,7 @@ class LinkDeviceViewController: OWSViewController {
             myPni: myPni,
             profileKey: myProfileKeyData,
             masterKey: masterKey,
+            ephemeralBackupKey: ephemeralBackupKey,
             readReceiptsEnabled: areReadReceiptsEnabled,
             provisioningService: DeviceProvisioningServiceImpl(
                 networkManager: SSKEnvironment.shared.networkManagerRef,
