@@ -1534,6 +1534,14 @@ public struct BackupProto_ChatItem: @unchecked Sendable {
     set {_uniqueStorage()._item = .giftBadge(newValue)}
   }
 
+  public var viewOnceMessage: BackupProto_ViewOnceMessage {
+    get {
+      if case .viewOnceMessage(let v)? = _storage._item {return v}
+      return BackupProto_ViewOnceMessage()
+    }
+    set {_uniqueStorage()._item = .viewOnceMessage(newValue)}
+  }
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public enum OneOf_DirectionalDetails: Equatable, Sendable {
@@ -1551,6 +1559,7 @@ public struct BackupProto_ChatItem: @unchecked Sendable {
     case updateMessage(BackupProto_ChatUpdateMessage)
     case paymentNotification(BackupProto_PaymentNotification)
     case giftBadge(BackupProto_GiftBadge)
+    case viewOnceMessage(BackupProto_ViewOnceMessage)
 
   }
 
@@ -2211,6 +2220,30 @@ public struct BackupProto_GiftBadge: @unchecked Sendable {
   }
 
   public init() {}
+}
+
+public struct BackupProto_ViewOnceMessage: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// Will be null for viewed messages
+  public var attachment: BackupProto_MessageAttachment {
+    get {return _attachment ?? BackupProto_MessageAttachment()}
+    set {_attachment = newValue}
+  }
+  /// Returns true if `attachment` has been explicitly set.
+  public var hasAttachment: Bool {return self._attachment != nil}
+  /// Clears the value of `attachment`. Subsequent reads from it will return its default value.
+  public mutating func clearAttachment() {self._attachment = nil}
+
+  public var reactions: [BackupProto_Reaction] = []
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _attachment: BackupProto_MessageAttachment? = nil
 }
 
 public struct BackupProto_ContactAttachment: @unchecked Sendable {
@@ -7312,6 +7345,7 @@ extension BackupProto_ChatItem: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
     15: .same(proto: "updateMessage"),
     16: .same(proto: "paymentNotification"),
     17: .same(proto: "giftBadge"),
+    18: .same(proto: "viewOnceMessage"),
   ]
 
   fileprivate class _StorageClass {
@@ -7502,6 +7536,19 @@ extension BackupProto_ChatItem: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
             _storage._item = .giftBadge(v)
           }
         }()
+        case 18: try {
+          var v: BackupProto_ViewOnceMessage?
+          var hadOneofValue = false
+          if let current = _storage._item {
+            hadOneofValue = true
+            if case .viewOnceMessage(let m) = current {v = m}
+          }
+          try decoder.decodeSingularMessageField(value: &v)
+          if let v = v {
+            if hadOneofValue {try decoder.handleConflictingOneOf()}
+            _storage._item = .viewOnceMessage(v)
+          }
+        }()
         default: break
         }
       }
@@ -7578,6 +7625,10 @@ extension BackupProto_ChatItem: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
       case .giftBadge?: try {
         guard case .giftBadge(let v)? = _storage._item else { preconditionFailure() }
         try visitor.visitSingularMessageField(value: v, fieldNumber: 17)
+      }()
+      case .viewOnceMessage?: try {
+        guard case .viewOnceMessage(let v)? = _storage._item else { preconditionFailure() }
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 18)
       }()
       case nil: break
       }
@@ -8606,6 +8657,48 @@ extension BackupProto_GiftBadge.State: SwiftProtobuf._ProtoNameProviding {
     2: .same(proto: "REDEEMED"),
     3: .same(proto: "FAILED"),
   ]
+}
+
+extension BackupProto_ViewOnceMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".ViewOnceMessage"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "attachment"),
+    2: .same(proto: "reactions"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._attachment) }()
+      case 2: try { try decoder.decodeRepeatedMessageField(value: &self.reactions) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._attachment {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    if !self.reactions.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.reactions, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: BackupProto_ViewOnceMessage, rhs: BackupProto_ViewOnceMessage) -> Bool {
+    if lhs._attachment != rhs._attachment {return false}
+    if lhs.reactions != rhs.reactions {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
 }
 
 extension BackupProto_ContactAttachment: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {

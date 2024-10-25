@@ -469,9 +469,7 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
                 isVoiceMessage: false,
                 groupMetaMessage: .unspecified,
                 isSmsMessageRestoredFromBackup: chatItem.sms,
-                // TODO: [Backups] pass along if this is view once after proto field is added
                 isViewOnceMessage: false,
-                // TODO: [Backups] restore viewed view-once messages after proto field is added
                 isViewOnceComplete: false,
                 wasRemotelyDeleted: false,
                 changeActionsProtoData: nil,
@@ -509,6 +507,14 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
                 outgoingMessageBuilder.messageSticker = stickerMessage.sticker
             case .giftBadge(let giftBadge):
                 outgoingMessageBuilder.giftBadge = giftBadge.giftBadge
+            case .viewOnceMessage(let viewOnceMessage):
+                outgoingMessageBuilder.isViewOnceMessage = true
+                switch viewOnceMessage.state {
+                case .unviewed:
+                    outgoingMessageBuilder.isViewOnceComplete = false
+                case .complete:
+                    outgoingMessageBuilder.isViewOnceComplete = true
+                }
             }
 
             return TSOutgoingMessage(

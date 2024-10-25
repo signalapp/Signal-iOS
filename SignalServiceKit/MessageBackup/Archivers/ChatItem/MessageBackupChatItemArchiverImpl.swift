@@ -344,7 +344,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
             switch chatItem.item {
             case nil:
                 return restoreFrameError(.invalidProtoData(.chatItemMissingItem))
-            case .standardMessage, .contactMessage, .giftBadge, .paymentNotification, .remoteDeletedMessage, .stickerMessage:
+            case .standardMessage, .contactMessage, .giftBadge, .viewOnceMessage, .paymentNotification, .remoteDeletedMessage, .stickerMessage:
                 return restoreFrameError(.invalidProtoData(.directionlessChatItemNotUpdateMessage))
             case .updateMessage:
                 restoreInteractionResult = chatUpdateMessageArchiver.restoreChatItem(

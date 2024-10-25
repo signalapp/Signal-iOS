@@ -66,12 +66,23 @@ extension MessageBackup {
             let giftBadge: OWSGiftBadge
         }
 
+        struct ViewOnceMessage {
+            enum State {
+                case complete
+                case unviewed(BackupProto_MessageAttachment)
+            }
+            let state: State
+
+            fileprivate let reactions: [BackupProto_Reaction]
+        }
+
         case archivedPayment(Payment)
         case remoteDeleteTombstone
         case text(Text)
         case contactShare(ContactShare)
         case stickerMessage(StickerMessage)
         case giftBadge(GiftBadge)
+        case viewOnceMessage(ViewOnceMessage)
     }
 }
 
@@ -151,6 +162,12 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         } else if let giftBadge = message.giftBadge {
             return archiveGiftBadge(
                 giftBadge,
+                context: context
+            )
+        } else if message.isViewOnceMessage {
+            return archiveViewOnceMessage(
+                message,
+                messageRowId: messageRowId,
                 context: context
             )
         } else {
@@ -690,6 +707,64 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         return .success(.giftBadge(giftBadgeProto))
     }
 
+    // MARK: -
+
+    private func archiveViewOnceMessage(
+        _ message: TSMessage,
+        messageRowId: Int64,
+        context: MessageBackup.RecipientArchivingContext
+    ) -> ArchiveInteractionResult<ChatItemType> {
+        var partialErrors = [ArchiveFrameError]()
+
+        var proto = BackupProto_ViewOnceMessage()
+
+        if !message.isViewOnceComplete {
+            let attachmentResult = attachmentsArchiver.archiveBodyAttachments(
+                messageId: message.uniqueInteractionId,
+                messageRowId: messageRowId,
+                context: context
+            )
+            switch attachmentResult.bubbleUp(ChatItemType.self, partialErrors: &partialErrors) {
+            case .continue(let value):
+                guard let first = value.first else {
+                    return .messageFailure(partialErrors + [.archiveFrameError(
+                        .unviewedViewOnceMessageMissingAttachment,
+                        message.uniqueInteractionId
+                    )])
+                }
+                if value.count > 1 {
+                    partialErrors.append(.archiveFrameError(
+                        .unviewedViewOnceMessageTooManyAttachments(value.count),
+                        message.uniqueInteractionId
+                    ))
+                }
+                proto.attachment = first
+            case .bubbleUpError(let errorResult):
+                return errorResult
+            }
+        }
+
+        let reactions: [BackupProto_Reaction]
+        let reactionsResult = reactionArchiver.archiveReactions(
+            message,
+            context: context
+        )
+        switch reactionsResult.bubbleUp(ChatItemType.self, partialErrors: &partialErrors) {
+        case .continue(let values):
+            reactions = values
+        case .bubbleUpError(let errorResult):
+            return errorResult
+        }
+        proto.reactions = reactions
+
+        if partialErrors.isEmpty {
+            return .success(.viewOnceMessage(proto))
+        } else {
+            return .partialFailure(.viewOnceMessage(proto), partialErrors)
+        }
+
+    }
+
     // MARK: - Restoring
 
     /// Parses the proto structure of message contents into
@@ -747,6 +822,13 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             return restoreGiftBadge(
                 giftBadge,
                 chatItemId: chatItemId,
+                context: context
+            )
+        case .viewOnceMessage(let viewOnceMessage):
+            return restoreViewOnceMessage(
+                viewOnceMessage,
+                chatItemId: chatItemId,
+                chatThread: chatThread,
                 context: context
             )
         case .updateMessage:
@@ -866,6 +948,26 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                 thread: thread,
                 context: context
             ))
+        case .viewOnceMessage(let viewOnceMessage):
+            downstreamObjectResults.append(reactionArchiver.restoreReactions(
+                viewOnceMessage.reactions,
+                chatItemId: chatItemId,
+                message: message,
+                context: context.recipientContext
+            ))
+            switch viewOnceMessage.state {
+            case .unviewed(let attachment):
+                downstreamObjectResults.append(attachmentsArchiver.restoreBodyAttachments(
+                    [attachment],
+                    chatItemId: chatItemId,
+                    messageRowId: messageRowId,
+                    message: message,
+                    thread: thread,
+                    context: context
+                ))
+            case .complete:
+                break
+            }
         case .remoteDeleteTombstone, .giftBadge:
             // Nothing downstream to restore.
             break
@@ -1456,6 +1558,26 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
 
         return .success(.giftBadge(MessageBackup.RestoredMessageContents.GiftBadge(
             giftBadge: giftBadge
+        )))
+    }
+
+    // MARK: -
+
+    private func restoreViewOnceMessage(
+        _ viewOnceMessage: BackupProto_ViewOnceMessage,
+        chatItemId: MessageBackup.ChatItemId,
+        chatThread: MessageBackup.ChatThread,
+        context: MessageBackup.ChatItemRestoringContext
+    ) -> RestoreInteractionResult<MessageBackup.RestoredMessageContents> {
+        let state: MessageBackup.RestoredMessageContents.ViewOnceMessage.State
+        if viewOnceMessage.hasAttachment {
+            state = .unviewed(viewOnceMessage.attachment)
+        } else {
+            state = .complete
+        }
+        return .success(.viewOnceMessage(.init(
+            state: state,
+            reactions: viewOnceMessage.reactions
         )))
     }
 }

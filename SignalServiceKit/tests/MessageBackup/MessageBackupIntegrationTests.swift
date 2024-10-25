@@ -80,6 +80,7 @@ class MessageBackupIntegrationTests: XCTestCase {
         case chatItemStandardMessageWithQuote
         case chatItemStickerMessage
         case chatItemThreadMerge
+        case chatItemViewOnceMessage
 
         case recipient
         case recipientContact
@@ -176,6 +177,8 @@ class MessageBackupIntegrationTests: XCTestCase {
                     return binprotoName.contains("chat_item_sticker_message_")
                 case .chatItemThreadMerge:
                     return binprotoName.contains("chat_item_thread_merge_")
+                case .chatItemViewOnceMessage:
+                    return binprotoName.contains("chat_item_view_once_")
                 case .recipient:
                     return binprotoName.contains("recipient_")
                 case .recipientContact:

@@ -177,6 +177,12 @@ extension MessageBackup {
             /// We failed to read the ``StoryContextAssociatedData``. Note that it can
             /// be nil (missing); this is a SQL error when we tried to read.
             case unableToReadStoryContextAssociatedData(Error)
+
+            /// An unviewed view-once message is missing its attachment.
+            case unviewedViewOnceMessageMissingAttachment
+            /// An unviewed view-once message has more than one attachment.
+            /// Associated value provides the number of attachments.
+            case unviewedViewOnceMessageTooManyAttachments(Int)
         }
 
         private let type: ErrorType
@@ -267,7 +273,9 @@ extension MessageBackup {
                     .learnedProfileUpdateInvalidE164,
                     .learnedProfileUpdateMissingAuthor,
                     .editHistoryFailedToFetch,
-                    .unableToReadStoryContextAssociatedData:
+                    .unableToReadStoryContextAssociatedData,
+                    .unviewedViewOnceMessageMissingAttachment,
+                    .unviewedViewOnceMessageTooManyAttachments:
                 // Log any others as we see them.
                 return nil
             }

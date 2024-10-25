@@ -283,9 +283,7 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
                 serverGuid: nil,
                 wasReceivedByUD: incomingDetails.sealedSender,
                 isSmsMessageRestoredFromBackup: chatItem.sms,
-                // TODO: [Backups] pass along if this is view once after proto field is added
                 isViewOnceMessage: false,
-                // TODO: [Backups] restore viewed view-once messages after proto field is added
                 isViewOnceComplete: false,
                 wasRemotelyDeleted: false,
                 storyAuthorAci: nil,
@@ -320,6 +318,14 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
                 messageBuilder.messageSticker = stickerMessage.sticker
             case .giftBadge(let giftBadge):
                 messageBuilder.giftBadge = giftBadge.giftBadge
+            case .viewOnceMessage(let viewOnceMessage):
+                messageBuilder.isViewOnceMessage = true
+                switch viewOnceMessage.state {
+                case .unviewed:
+                    messageBuilder.isViewOnceComplete = false
+                case .complete:
+                    messageBuilder.isViewOnceComplete = true
+                }
             }
 
             return messageBuilder.build()
