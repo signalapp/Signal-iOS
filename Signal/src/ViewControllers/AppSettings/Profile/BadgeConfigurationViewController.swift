@@ -63,7 +63,7 @@ class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollection
     convenience init(fetchingDataFromLocalProfileWithDelegate delegate: BadgeConfigurationDelegate) {
         let snapshot = SSKEnvironment.shared.profileManagerImplRef.localProfileSnapshot(shouldIncludeAvatar: false)
         let allBadges = snapshot.profileBadgeInfo ?? []
-        let shouldDisplayOnProfile = SSKEnvironment.shared.subscriptionManagerRef.displayBadgesOnProfile
+        let shouldDisplayOnProfile = SubscriptionManagerImpl.displayBadgesOnProfile
 
         self.init(availableBadges: allBadges, shouldDisplayOnProfile: shouldDisplayOnProfile, delegate: delegate)
     }

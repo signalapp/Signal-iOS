@@ -432,7 +432,7 @@ public enum OWSRequestFactory {
             method: "POST",
             parameters: [
                 "receiptCredentialPresentation": receiptCredentialPresentation.base64EncodedString(),
-                "visible": SSKEnvironment.shared.subscriptionManagerRef.displayBadgesOnProfile,
+                "visible": SubscriptionManagerImpl.displayBadgesOnProfile,
                 "primary": false,
             ]
         )

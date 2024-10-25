@@ -50,7 +50,6 @@ public class MockSSKEnvironment: NSObject {
                 remoteConfigManager: StubbableRemoteConfigManager(),
                 signalService: OWSSignalServiceMock(),
                 storageServiceManager: FakeStorageServiceManager(),
-                subscriptionManager: MockSubscriptionManager(),
                 syncManager: OWSMockSyncManager(),
                 systemStoryManager: SystemStoryManagerMock(),
                 versionedProfiles: MockVersionedProfiles(),

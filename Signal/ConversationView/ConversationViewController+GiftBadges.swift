@@ -82,7 +82,7 @@ extension ConversationViewController {
             let mode: BadgeIssueSheetState.Mode
             if isRedeemed {
                 let hasCurrentSubscription = SSKEnvironment.shared.databaseStorageRef.read { transaction -> Bool in
-                    SSKEnvironment.shared.subscriptionManagerRef.hasCurrentSubscription(transaction: transaction)
+                    SubscriptionManagerImpl.hasCurrentSubscription(transaction: transaction)
                 }
                 mode = .giftBadgeExpired(hasCurrentSubscription: hasCurrentSubscription)
             } else {

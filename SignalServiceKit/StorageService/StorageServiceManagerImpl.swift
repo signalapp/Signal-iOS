@@ -1653,7 +1653,6 @@ class StorageServiceOperation: OWSOperation {
                 receiptManager: SSKEnvironment.shared.receiptManagerRef,
                 registrationStateChangeManager: DependenciesBridge.shared.registrationStateChangeManager,
                 storageServiceManager: SSKEnvironment.shared.storageServiceManagerRef,
-                subscriptionManager: SSKEnvironment.shared.subscriptionManagerRef,
                 systemStoryManager: SSKEnvironment.shared.systemStoryManagerRef,
                 tsAccountManager: DependenciesBridge.shared.tsAccountManager,
                 typingIndicators: SSKEnvironment.shared.typingIndicatorsRef,

@@ -1088,7 +1088,6 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
     private let receiptManager: OWSReceiptManager
     private let registrationStateChangeManager: RegistrationStateChangeManager
     private let storageServiceManager: StorageServiceManager
-    private let subscriptionManager: SubscriptionManager
     private let systemStoryManager: SystemStoryManagerProtocol
     private let tsAccountManager: TSAccountManager
     private let typingIndicators: TypingIndicators
@@ -1112,7 +1111,6 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         receiptManager: OWSReceiptManager,
         registrationStateChangeManager: RegistrationStateChangeManager,
         storageServiceManager: StorageServiceManager,
-        subscriptionManager: SubscriptionManager,
         systemStoryManager: SystemStoryManagerProtocol,
         tsAccountManager: TSAccountManager,
         typingIndicators: TypingIndicators,
@@ -1135,7 +1133,6 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         self.receiptManager = receiptManager
         self.registrationStateChangeManager = registrationStateChangeManager
         self.storageServiceManager = storageServiceManager
-        self.subscriptionManager = subscriptionManager
         self.systemStoryManager = systemStoryManager
         self.tsAccountManager = tsAccountManager
         self.typingIndicators = typingIndicators
@@ -1266,8 +1263,8 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         builder.setReadOnboardingStory(systemStoryManager.isOnboardingStoryRead(transaction: transaction))
         builder.setViewedOnboardingStory(systemStoryManager.isOnboardingStoryViewed(transaction: transaction))
 
-        builder.setDisplayBadgesOnProfile(subscriptionManager.displayBadgesOnProfile(transaction: transaction))
-        builder.setSubscriptionManuallyCancelled(subscriptionManager.userManuallyCancelledSubscription(transaction: transaction))
+        builder.setDisplayBadgesOnProfile(SubscriptionManagerImpl.displayBadgesOnProfile(transaction: transaction))
+        builder.setSubscriptionManuallyCancelled(SubscriptionManagerImpl.userManuallyCancelledSubscription(transaction: transaction))
 
         builder.setKeepMutedChatsArchived(SSKPreferences.shouldKeepMutedChatsArchived(transaction: transaction))
 
@@ -1526,18 +1523,18 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             }
         }
 
-        let localDisplayBadgesOnProfile = subscriptionManager.displayBadgesOnProfile(transaction: transaction)
+        let localDisplayBadgesOnProfile = SubscriptionManagerImpl.displayBadgesOnProfile(transaction: transaction)
         if localDisplayBadgesOnProfile != record.displayBadgesOnProfile {
-            subscriptionManager.setDisplayBadgesOnProfile(
+            SubscriptionManagerImpl.setDisplayBadgesOnProfile(
                 record.displayBadgesOnProfile,
                 updateStorageService: false,
                 transaction: transaction
             )
         }
 
-        let localSubscriptionManuallyCancelled = subscriptionManager.userManuallyCancelledSubscription(transaction: transaction)
+        let localSubscriptionManuallyCancelled = SubscriptionManagerImpl.userManuallyCancelledSubscription(transaction: transaction)
         if localSubscriptionManuallyCancelled != record.subscriptionManuallyCancelled {
-            subscriptionManager.setUserManuallyCancelledSubscription(
+            SubscriptionManagerImpl.setUserManuallyCancelledSubscription(
                 record.subscriptionManuallyCancelled,
                 updateStorageService: false,
                 transaction: transaction

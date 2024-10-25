@@ -524,7 +524,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
             }
 
             let hasCurrentSubscription = SSKEnvironment.shared.databaseStorageRef.read { transaction -> Bool in
-                SSKEnvironment.shared.subscriptionManagerRef.hasCurrentSubscription(transaction: transaction)
+                SubscriptionManagerImpl.hasCurrentSubscription(transaction: transaction)
             }
             Logger.info("[Gifting] Showing badge gift expiration sheet (hasCurrentSubscription: \(hasCurrentSubscription))")
             let sheet = BadgeIssueSheet(badge: profileBadge, mode: .giftBadgeExpired(hasCurrentSubscription: hasCurrentSubscription))
@@ -774,7 +774,7 @@ extension DonationSettingsViewController: BadgeConfigurationDelegate {
             }
 
             await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-                SSKEnvironment.shared.subscriptionManagerRef.setDisplayBadgesOnProfile(
+                SubscriptionManagerImpl.setDisplayBadgesOnProfile(
                     displayBadgesOnProfile,
                     updateStorageService: true,
                     transaction: tx

@@ -1167,7 +1167,7 @@ extension OWSUserProfile {
         }
 
         if case .localUser = internalAddress, case .setTo = changes.badges {
-            SSKEnvironment.shared.subscriptionManagerRef.reconcileBadgeStates(transaction: tx)
+            SubscriptionManagerImpl.reconcileBadgeStates(transaction: tx)
         }
 
         if let oldInstance {

@@ -39,7 +39,6 @@ public class AppSetup {
         let remoteConfigManager: (any RemoteConfigManager)?
         let signalService: (any OWSSignalServiceProtocol)?
         let storageServiceManager: (any StorageServiceManager)?
-        let subscriptionManager: (any SubscriptionManager)?
         let svr: SecureValueRecovery?
         let syncManager: (any SyncManagerProtocol)?
         let systemStoryManager: (any SystemStoryManagerProtocol)?
@@ -65,7 +64,6 @@ public class AppSetup {
             remoteConfigManager: (any RemoteConfigManager)? = nil,
             signalService: (any OWSSignalServiceProtocol)? = nil,
             storageServiceManager: (any StorageServiceManager)? = nil,
-            subscriptionManager: (any SubscriptionManager)? = nil,
             svr: SecureValueRecovery? = nil,
             syncManager: (any SyncManagerProtocol)? = nil,
             systemStoryManager: (any SystemStoryManagerProtocol)? = nil,
@@ -90,7 +88,6 @@ public class AppSetup {
             self.remoteConfigManager = remoteConfigManager
             self.signalService = signalService
             self.storageServiceManager = storageServiceManager
-            self.subscriptionManager = subscriptionManager
             self.svr = svr
             self.syncManager = syncManager
             self.systemStoryManager = systemStoryManager
@@ -942,7 +939,6 @@ public class AppSetup {
         )
 
         let preferences = Preferences()
-        let subscriptionManager = testDependencies.subscriptionManager ?? SubscriptionManagerImpl(appReadiness: appReadiness)
         let systemStoryManager = testDependencies.systemStoryManager ?? SystemStoryManager(appReadiness: appReadiness)
         let typingIndicators = TypingIndicatorsImpl()
 
@@ -1040,7 +1036,7 @@ public class AppSetup {
                 receiptManager: MessageBackup.AccountData.Wrappers.ReceiptManager(receiptManager: receiptManager),
                 reactionManager: MessageBackup.AccountData.Wrappers.ReactionManager(),
                 sskPreferences: MessageBackup.AccountData.Wrappers.SSKPreferences(),
-                subscriptionManager: MessageBackup.AccountData.Wrappers.SubscriptionManager(subscriptionManager: subscriptionManager),
+                subscriptionManager: MessageBackup.AccountData.Wrappers.SubscriptionManager(),
                 storyManager: MessageBackup.AccountData.Wrappers.StoryManager(),
                 systemStoryManager: MessageBackup.AccountData.Wrappers.SystemStoryManager(systemStoryManager: systemStoryManager),
                 typingIndicators: MessageBackup.AccountData.Wrappers.TypingIndicators(typingIndicators: typingIndicators),
@@ -1435,7 +1431,6 @@ public class AppSetup {
             phoneNumberUtil: phoneNumberUtil,
             webSocketFactory: webSocketFactory,
             legacyChangePhoneNumber: legacyChangePhoneNumber,
-            subscriptionManager: subscriptionManager,
             systemStoryManager: systemStoryManager,
             contactDiscoveryManager: contactDiscoveryManager,
             notificationPresenter: notificationPresenter,

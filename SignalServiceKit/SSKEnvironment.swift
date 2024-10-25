@@ -89,7 +89,6 @@ public class SSKEnvironment: NSObject {
     public let phoneNumberUtilRef: PhoneNumberUtil
     public let webSocketFactoryRef: WebSocketFactory
     public let legacyChangePhoneNumberRef: LegacyChangePhoneNumber
-    public let subscriptionManagerRef: SubscriptionManager
     public let systemStoryManagerRef: SystemStoryManagerProtocol
     public let contactDiscoveryManagerRef: ContactDiscoveryManager
     public let notificationPresenterRef: any NotificationPresenter
@@ -158,7 +157,6 @@ public class SSKEnvironment: NSObject {
         phoneNumberUtil: PhoneNumberUtil,
         webSocketFactory: WebSocketFactory,
         legacyChangePhoneNumber: LegacyChangePhoneNumber,
-        subscriptionManager: SubscriptionManager,
         systemStoryManager: SystemStoryManagerProtocol,
         contactDiscoveryManager: ContactDiscoveryManager,
         notificationPresenter: any NotificationPresenter,
@@ -220,7 +218,6 @@ public class SSKEnvironment: NSObject {
         self.phoneNumberUtilRef = phoneNumberUtil
         self.webSocketFactoryRef = webSocketFactory
         self.legacyChangePhoneNumberRef = legacyChangePhoneNumber
-        self.subscriptionManagerRef = subscriptionManager
         self.systemStoryManagerRef = systemStoryManager
         self.contactDiscoveryManagerRef = contactDiscoveryManager
         self.notificationPresenterRef = notificationPresenter
@@ -263,6 +260,7 @@ public class SSKEnvironment: NSObject {
         SSKEnvironment.shared.paymentsHelperRef.warmCaches()
         SSKEnvironment.shared.paymentsCurrenciesRef.warmCaches()
         StoryManager.setup(appReadiness: appReadiness)
+        SubscriptionManagerImpl.warmCaches()
         DependenciesBridge.shared.db.read { tx in appExpiryRef.warmCaches(with: tx) }
 
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {

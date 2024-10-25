@@ -209,29 +209,12 @@ public extension Notification.Name {
 @objc
 public class SubscriptionManagerImpl: NSObject {
 
-    public init(appReadiness: AppReadiness) {
-        super.init()
-
-        SwiftSingletons.register(self)
-
-        appReadiness.runNowOrWhenAppWillBecomeReady {
-            Self.warmCaches()
-        }
-
-        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            DispatchQueue.global().async {
-                Self.performMigrationToStorageServiceIfNecessary()
-                Self.performSubscriptionKeepAliveIfNecessary()
-            }
-        }
-    }
-
-    private static func warmCaches() {
+    public static func warmCaches() {
         let value = SSKEnvironment.shared.databaseStorageRef.read { displayBadgesOnProfile(transaction: $0) }
         displayBadgesOnProfileCache.set(value)
     }
 
-    private static func performMigrationToStorageServiceIfNecessary() {
+    public static func performMigrationToStorageServiceIfNecessary() {
         let hasMigratedToStorageService = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             subscriptionKVS.getBool(hasMigratedToStorageServiceKey, defaultValue: false, transaction: transaction)
         }
@@ -240,7 +223,7 @@ public class SubscriptionManagerImpl: NSObject {
 
         Logger.info("[Donations] Migrating to storage service")
 
-        SSKEnvironment.shared.databaseStorageRef.write { transaction in
+        SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
             subscriptionKVS.setBool(true, key: hasMigratedToStorageServiceKey, transaction: transaction)
 
             let localProfile = SSKEnvironment.shared.profileManagerImplRef.localUserProfile
@@ -256,6 +239,8 @@ public class SubscriptionManagerImpl: NSObject {
 
         SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
     }
+
+    // MARK: -
 
     public static var jobQueue: ReceiptCredentialRedemptionJobQueue { SSKEnvironment.shared.smJobQueuesRef.receiptCredentialJobQueue }
 
@@ -1067,7 +1052,7 @@ extension SubscriptionManagerImpl {
         return subscriptionKVS.getBool(userManuallyCancelledSubscriptionKey, transaction: transaction) ?? false
     }
 
-    private static func setUserManuallyCancelledSubscription(_ value: Bool, updateStorageService: Bool = false, transaction: SDSAnyWriteTransaction) {
+    public static func setUserManuallyCancelledSubscription(_ value: Bool, updateStorageService: Bool = false, transaction: SDSAnyWriteTransaction) {
         guard value != userManuallyCancelledSubscription(transaction: transaction) else { return }
         subscriptionKVS.setBool(value, key: userManuallyCancelledSubscriptionKey, transaction: transaction)
         if updateStorageService {
@@ -1075,12 +1060,19 @@ extension SubscriptionManagerImpl {
         }
     }
 
-    private static func displayBadgesOnProfile(transaction: SDSAnyReadTransaction) -> Bool {
+    // MARK: -
+
+    private static var displayBadgesOnProfileCache = AtomicBool(false, lock: .sharedGlobal)
+
+    public static var displayBadgesOnProfile: Bool {
+        displayBadgesOnProfileCache.get()
+    }
+
+    public static func displayBadgesOnProfile(transaction: SDSAnyReadTransaction) -> Bool {
         return subscriptionKVS.getBool(displayBadgesOnProfileKey, transaction: transaction) ?? false
     }
 
-    private static var displayBadgesOnProfileCache = AtomicBool(false, lock: .sharedGlobal)
-    private static func setDisplayBadgesOnProfile(_ value: Bool, updateStorageService: Bool = false, transaction: SDSAnyWriteTransaction) {
+    public static func setDisplayBadgesOnProfile(_ value: Bool, updateStorageService: Bool = false, transaction: SDSAnyWriteTransaction) {
         guard value != displayBadgesOnProfile(transaction: transaction) else { return }
         displayBadgesOnProfileCache.set(value)
         subscriptionKVS.setBool(value, key: displayBadgesOnProfileKey, transaction: transaction)
@@ -1088,6 +1080,8 @@ extension SubscriptionManagerImpl {
             SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
         }
     }
+
+    // MARK: -
 
     fileprivate static func lastSubscriptionExpirationDate(transaction: SDSAnyReadTransaction) -> Date? {
         return subscriptionKVS.getDate(lastSubscriptionExpirationKey, transaction: transaction)
@@ -1272,24 +1266,10 @@ extension SubscriptionManagerImpl {
     }
 }
 
-extension SubscriptionManagerImpl: SubscriptionManager {
-    public func getSubscriberID(transaction: SDSAnyReadTransaction) -> Data? {
-        Self.getSubscriberID(transaction: transaction)
-    }
+// MARK: -
 
-    public func setSubscriberID(_ subscriberID: Data?, transaction: SDSAnyWriteTransaction) {
-        Self.setSubscriberID(subscriberID, transaction: transaction)
-    }
-
-    public func getSubscriberCurrencyCode(transaction: SDSAnyReadTransaction) -> String? {
-        Self.getSubscriberCurrencyCode(transaction: transaction)
-    }
-
-    public func setSubscriberCurrencyCode(_ currencyCode: Currency.Code?, transaction: SDSAnyWriteTransaction) {
-        Self.setSubscriberCurrencyCode(currencyCode, transaction: transaction)
-    }
-
-    public func reconcileBadgeStates(transaction: SDSAnyWriteTransaction) {
+extension SubscriptionManagerImpl {
+    public static func reconcileBadgeStates(transaction: SDSAnyWriteTransaction) {
         let currentBadges = SSKEnvironment.shared.profileManagerImplRef.localUserProfile.badges
 
         let currentSubscriberBadgeIDs = currentBadges.compactMap { (badge: OWSUserProfileBadgeInfo) -> String? in
@@ -1433,7 +1413,7 @@ extension SubscriptionManagerImpl: SubscriptionManager {
         Self.setDisplayBadgesOnProfile(displayBadgesOnProfile, transaction: transaction)
     }
 
-    public func hasCurrentSubscription(transaction: SDSAnyReadTransaction) -> Bool {
+    public static func hasCurrentSubscription(transaction: SDSAnyReadTransaction) -> Bool {
         guard !Self.currentProfileSubscriptionBadges().isEmpty else { return false }
 
         guard Self.getSubscriberID(transaction: transaction) != nil else { return false }
@@ -1444,37 +1424,9 @@ extension SubscriptionManagerImpl: SubscriptionManager {
 
         return lastSubscriptionExpiryDate.isAfterNow
     }
-
-    public func timeSinceLastSubscriptionExpiration(transaction: SDSAnyReadTransaction) -> TimeInterval {
-        guard let lastSubscriptionExpiryDate = Self.lastSubscriptionExpirationDate(transaction: transaction) else {
-            return -Date.distantPast.timeIntervalSinceNow
-        }
-
-        guard lastSubscriptionExpiryDate.isBeforeNow else {
-            return 0
-        }
-
-        return -lastSubscriptionExpiryDate.timeIntervalSinceNow
-    }
-
-    public func userManuallyCancelledSubscription(transaction: SDSAnyReadTransaction) -> Bool {
-        return Self.userManuallyCancelledSubscription(transaction: transaction)
-    }
-
-    public func setUserManuallyCancelledSubscription(_ userCancelled: Bool, updateStorageService: Bool, transaction: SDSAnyWriteTransaction) {
-        Self.setUserManuallyCancelledSubscription(userCancelled, updateStorageService: updateStorageService, transaction: transaction)
-    }
-
-    public var displayBadgesOnProfile: Bool { Self.displayBadgesOnProfileCache.get() }
-
-    public func displayBadgesOnProfile(transaction: SDSAnyReadTransaction) -> Bool {
-        return Self.displayBadgesOnProfile(transaction: transaction)
-    }
-
-    public func setDisplayBadgesOnProfile(_ displayBadgesOnProfile: Bool, updateStorageService: Bool, transaction: SDSAnyWriteTransaction) {
-        Self.setDisplayBadgesOnProfile(displayBadgesOnProfile, updateStorageService: updateStorageService, transaction: transaction)
-    }
 }
+
+// MARK: -
 
 extension SubscriptionManagerImpl {
 

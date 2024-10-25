@@ -358,39 +358,34 @@ public protocol _MessageBackup_AccountData_SubscriptionManagerShim {
 }
 
 public class _MessageBackup_AccountData_SubscriptionManagerWrapper: _MessageBackup_AccountData_SubscriptionManagerShim {
-    let subscriptionManager: SubscriptionManager
-    init(subscriptionManager: SubscriptionManager) {
-        self.subscriptionManager = subscriptionManager
-    }
-
     public func displayBadgesOnProfile(tx: DBReadTransaction) -> Bool {
-        subscriptionManager.displayBadgesOnProfile(transaction: SDSDB.shimOnlyBridge(tx))
+        SubscriptionManagerImpl.displayBadgesOnProfile(transaction: SDSDB.shimOnlyBridge(tx))
     }
     public func setDisplayBadgesOnProfile(value: Bool, tx: DBWriteTransaction) {
-        subscriptionManager.setDisplayBadgesOnProfile(value, updateStorageService: false, transaction: SDSDB.shimOnlyBridge(tx))
+        SubscriptionManagerImpl.setDisplayBadgesOnProfile(value, updateStorageService: false, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     public func getSubscriberID(tx: DBReadTransaction) -> Data? {
-        subscriptionManager.getSubscriberID(transaction: SDSDB.shimOnlyBridge(tx))
+        SubscriptionManagerImpl.getSubscriberID(transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     public func setSubscriberID(subscriberID: Data, tx: DBWriteTransaction) {
-        subscriptionManager.setSubscriberID(subscriberID, transaction: SDSDB.shimOnlyBridge(tx))
+        SubscriptionManagerImpl.setSubscriberID(subscriberID, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     public func getSubscriberCurrencyCode(tx: DBReadTransaction) -> String? {
-        subscriptionManager.getSubscriberCurrencyCode(transaction: SDSDB.shimOnlyBridge(tx))
+        SubscriptionManagerImpl.getSubscriberCurrencyCode(transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     public func setSubscriberCurrencyCode(currencyCode: Currency.Code?, tx: DBWriteTransaction) {
-        subscriptionManager.setSubscriberCurrencyCode(currencyCode, transaction: SDSDB.shimOnlyBridge(tx))
+        SubscriptionManagerImpl.setSubscriberCurrencyCode(currencyCode, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     public func userManuallyCancelledSubscription(tx: DBReadTransaction) -> Bool {
-        subscriptionManager.userManuallyCancelledSubscription(transaction: SDSDB.shimOnlyBridge(tx))
+        SubscriptionManagerImpl.userManuallyCancelledSubscription(transaction: SDSDB.shimOnlyBridge(tx))
     }
     public func setUserManuallyCancelledSubscription(value: Bool, tx: DBWriteTransaction) {
-        subscriptionManager.setUserManuallyCancelledSubscription(value, updateStorageService: false, transaction: SDSDB.shimOnlyBridge(tx))
+        SubscriptionManagerImpl.setUserManuallyCancelledSubscription(value, updateStorageService: false, transaction: SDSDB.shimOnlyBridge(tx))
     }
 }
 

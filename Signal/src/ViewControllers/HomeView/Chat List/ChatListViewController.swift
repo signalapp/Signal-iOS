@@ -795,7 +795,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             SubscriptionManagerImpl.mostRecentlyExpiredBadgeID(transaction: transaction),
             SubscriptionManagerImpl.showExpirySheetOnHomeScreenKey(transaction: transaction),
             SubscriptionManagerImpl.getMostRecentSubscriptionPaymentMethod(transaction: transaction),
-            SSKEnvironment.shared.subscriptionManagerRef.hasCurrentSubscription(transaction: transaction)
+            SubscriptionManagerImpl.hasCurrentSubscription(transaction: transaction)
         )}
 
         if
