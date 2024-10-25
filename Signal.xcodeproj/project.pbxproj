@@ -3269,7 +3269,7 @@
 		F9C5CDE5289453B400548EEE /* UIColor+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB13289453B200548EEE /* UIColor+SSK.swift */; };
 		F9C5CDE7289453B400548EEE /* Locale+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB15289453B200548EEE /* Locale+SSK.swift */; };
 		F9C5CDE8289453B400548EEE /* DispatchQueue+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB16289453B200548EEE /* DispatchQueue+OWS.swift */; };
-		F9C5CDEB289453B400548EEE /* JobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB19289453B200548EEE /* JobQueue.swift */; };
+		F9C5CDEB289453B400548EEE /* JobRecordFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB19289453B200548EEE /* JobRecordFinder.swift */; };
 		F9C5CDEE289453B400548EEE /* SDS+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB1C289453B200548EEE /* SDS+SSK.swift */; };
 		F9C5CDEF289453B400548EEE /* PinnedThreadManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB1D289453B200548EEE /* PinnedThreadManagerImpl.swift */; };
 		F9C5CDF1289453B400548EEE /* NSRegularExpression+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB1F289453B200548EEE /* NSRegularExpression+SSK.swift */; };
@@ -6928,7 +6928,7 @@
 		F9C5CB13289453B200548EEE /* UIColor+SSK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+SSK.swift"; sourceTree = "<group>"; };
 		F9C5CB15289453B200548EEE /* Locale+SSK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Locale+SSK.swift"; sourceTree = "<group>"; };
 		F9C5CB16289453B200548EEE /* DispatchQueue+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DispatchQueue+OWS.swift"; sourceTree = "<group>"; };
-		F9C5CB19289453B200548EEE /* JobQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JobQueue.swift; sourceTree = "<group>"; };
+		F9C5CB19289453B200548EEE /* JobRecordFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JobRecordFinder.swift; sourceTree = "<group>"; };
 		F9C5CB1C289453B200548EEE /* SDS+SSK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SDS+SSK.swift"; sourceTree = "<group>"; };
 		F9C5CB1D289453B200548EEE /* PinnedThreadManagerImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PinnedThreadManagerImpl.swift; sourceTree = "<group>"; };
 		F9C5CB1F289453B200548EEE /* NSRegularExpression+SSK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSRegularExpression+SSK.swift"; sourceTree = "<group>"; };
@@ -11362,8 +11362,8 @@
 				D9DB37F82B72A770007B16C8 /* CallRecordDeleteAllJobQueue.swift */,
 				886A58C9276A760600A1099B /* DonationReceiptCredentialRedemptionJobQueue.swift */,
 				4C9D347E23689E06006A4307 /* IncomingContactSyncJobQueue.swift */,
-				F9C5CB19289453B200548EEE /* JobQueue.swift */,
 				5008FEBB2B1811A0004E73FD /* JobQueueRunner.swift */,
+				F9C5CB19289453B200548EEE /* JobRecordFinder.swift */,
 				D925937928B0497900D5D437 /* LocalUserLeaveGroupJob.swift */,
 				F9C5CAF5289453B200548EEE /* MessageSenderJobQueue.swift */,
 				F98EA264286A469100791EB4 /* SendGiftBadgeJobQueue.swift */,
@@ -16933,10 +16933,10 @@
 				D979CC2B2AD3933B006AAC49 /* InteractionStore+CallRecord.swift in Sources */,
 				50468F2929EE130A00948E02 /* InteractionStore.swift in Sources */,
 				D962346B2C0E937500DAF6CB /* InterleavingCompositeCursor.swift in Sources */,
-				F9C5CDEB289453B400548EEE /* JobQueue.swift in Sources */,
 				5008FEBC2B1811A0004E73FD /* JobQueueRunner.swift in Sources */,
 				D9AE0ADD2918B2960063488B /* JobRecord+Columns.swift in Sources */,
 				D9B8541229137C150058F97B /* JobRecord.swift in Sources */,
+				F9C5CDEB289453B400548EEE /* JobRecordFinder.swift in Sources */,
 				6698FC0D297EFE21004EFC30 /* KeyValueStore.swift in Sources */,
 				6698FC0F297F03FE004EFC30 /* KeyValueStoreFactory.swift in Sources */,
 				D93EA11F2A057FD600579C6F /* LearnMyOwnPniManager.swift in Sources */,

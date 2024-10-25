@@ -5,6 +5,11 @@
 
 import Foundation
 
+public enum JobError: Error {
+    case permanentFailure(description: String)
+    case obsolete(description: String)
+}
+
 /// Durably enqueues a message for sending.
 ///
 /// The queue's operations (`MessageSenderOperation`) uses `MessageSender` to send a message.
@@ -22,7 +27,7 @@ import Foundation
 ///
 /// Both respect the `error.isRetryable` convention to be sure we don't keep retrying in some situations
 /// (e.g. rate limiting)
-public class MessageSenderJobQueue: NSObject, JobQueue {
+public class MessageSenderJobQueue: NSObject {
 
     private let appReadiness: AppReadiness
 
@@ -215,9 +220,263 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
             return existingQueue
         }
     }
+
+    // MARK: - Job Queue
+
+    func add(
+        jobRecord: MessageSenderJobRecord,
+        appReadiness: AppReadiness,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        owsAssertDebug(jobRecord.status == .ready)
+
+        jobRecord.anyInsert(transaction: transaction)
+
+        transaction.addTransactionFinalizationBlock(
+            forKey: "jobQueue.\(MessageSenderJobRecord.jobRecordType.jobRecordLabel).startWorkImmediatelyIfAppIsReady"
+        ) { transaction in
+            self.startWorkImmediatelyIfAppIsReady(appReadiness: appReadiness, transaction: transaction)
+        }
+
+        transaction.addAsyncCompletion(queue: .global()) {
+            self.startWorkWhenAppIsReady(appReadiness: appReadiness)
+        }
+    }
+
+    func startWorkImmediatelyIfAppIsReady(
+        appReadiness: AppReadiness,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        guard isEnabled else { return }
+        guard !CurrentAppContext().isRunningTests else { return }
+        guard appReadiness.isAppReady else { return }
+        guard isSetup.get() else { return }
+        workStep(transaction: transaction)
+    }
+
+    func startWorkWhenAppIsReady(appReadiness: AppReadiness) {
+        guard isEnabled else { return }
+
+        guard !CurrentAppContext().isRunningTests else {
+            DispatchQueue.global().async {
+                self.workStep()
+            }
+            return
+        }
+
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+            guard self.isSetup.get() else {
+                return
+            }
+            DispatchQueue.global().async {
+                self.workStep()
+            }
+        }
+    }
+
+    func workStep() {
+        guard isEnabled else { return }
+
+        guard isSetup.get() else {
+            if !CurrentAppContext().isRunningTests {
+                owsFailDebug("not setup")
+            }
+
+            return
+        }
+
+        SSKEnvironment.shared.databaseStorageRef.write { self.workStep(transaction: $0) }
+    }
+
+    func workStep(transaction: SDSAnyWriteTransaction) {
+        let nextJob: MessageSenderJobRecord?
+
+        do {
+            nextJob = try JobRecordFinderImpl(db: DependenciesBridge.shared.db).getNextReady(transaction: transaction.asV2Write)
+        } catch let error {
+            Logger.error("Couldn't start next job: \(error)")
+            return
+        }
+
+        guard let nextJob else {
+            return
+        }
+
+        do {
+            try nextJob.saveReadyAsRunning(transaction: transaction)
+
+            let operationQueue = operationQueue(jobRecord: nextJob)
+            let durableOperation = try buildOperation(jobRecord: nextJob, transaction: transaction)
+
+            durableOperation.durableOperationDelegate = self
+            owsAssertDebug(durableOperation.durableOperationDelegate != nil)
+
+            let remainingRetries = remainingRetries(durableOperation: durableOperation)
+            durableOperation.remainingRetries = remainingRetries
+
+            transaction.addSyncCompletion {
+                self.runningOperations.append(durableOperation)
+                operationQueue.addOperation(durableOperation.operation)
+            }
+        } catch JobError.permanentFailure(let description) {
+            owsFailDebug("permanent failure: \(description)")
+            nextJob.saveAsPermanentlyFailed(transaction: transaction)
+        } catch JobError.obsolete {
+            // TODO is this even worthwhile to have obsolete state? Should we just delete the task outright?
+            nextJob.saveAsObsolete(transaction: transaction)
+        } catch {
+            owsFailDebug("unexpected error")
+        }
+
+        transaction.addAsyncCompletionOffMain { self.workStep() }
+    }
+
+    func restartOldJobs() {
+        guard CurrentAppContext().isMainApp else { return }
+        guard isEnabled else { return }
+
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
+            let runningRecords: [MessageSenderJobRecord]
+            do {
+                runningRecords = try JobRecordFinderImpl(db: DependenciesBridge.shared.db).allRecords(
+                    status: JobRecord.Status.running,
+                    transaction: transaction.asV2Write
+                )
+            } catch {
+                Logger.error("Couldn't restart old jobs: \(error)")
+                return
+            }
+            Logger.info("marking old `running` \(MessageSenderJobRecord.jobRecordType.jobRecordLabel) JobRecords as ready: \(runningRecords.count)")
+            for jobRecord in runningRecords {
+                do {
+                    try jobRecord.saveRunningAsReady(transaction: transaction)
+                    self.didMarkAsReady(oldJobRecord: jobRecord, transaction: transaction)
+                } catch {
+                    owsFailDebug("failed to mark old running records as ready error: \(error)")
+                    jobRecord.saveAsPermanentlyFailed(transaction: transaction)
+                }
+            }
+        }
+    }
+
+    func pruneStaleJobs() {
+        guard CurrentAppContext().isMainApp else { return }
+        guard isEnabled else { return }
+
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
+            let staleRecords: [MessageSenderJobRecord]
+            do {
+                staleRecords = try JobRecordFinderImpl(db: DependenciesBridge.shared.db).staleRecords(transaction: transaction.asV2Write)
+            } catch {
+                Logger.error("Failed to prune stale jobs! \(error)")
+                return
+            }
+
+            if !staleRecords.isEmpty {
+                Logger.info("Pruning stale \(MessageSenderJobRecord.jobRecordType.jobRecordLabel) job records: \(staleRecords.count).")
+            }
+
+            for jobRecord in staleRecords {
+                jobRecord.anyRemove(transaction: transaction)
+            }
+        }
+    }
+
+    /// Unless you need special handling, your setup method can be as simple as
+    ///
+    ///     func setup() {
+    ///         defaultSetup()
+    ///     }
+    ///
+    /// So you might ask, why not just rename this method to `setup`? Because
+    /// `setup` is called from objc, and default implementations from a protocol
+    /// cannot be marked as @objc.
+    func defaultSetup(appReadiness: AppReadiness) {
+        guard isEnabled else { return }
+
+        guard !isSetup.get() else {
+            owsFailDebug("already ready already")
+            return
+        }
+
+        DispatchQueue.global().async(.promise) {
+            self.restartOldJobs()
+            self.pruneStaleJobs()
+        }.done { [weak self] in
+            guard let self = self else {
+                return
+            }
+            if self.requiresInternet {
+                // FIXME: The returned observer token is never unregistered.
+                // In practice all our JobQueues live forever, so this isn't a problem.
+                NotificationCenter.default.addObserver(
+                    forName: SSKReachability.owsReachabilityDidChange,
+                    object: nil,
+                    queue: nil
+                ) { _ in
+                    if SSKEnvironment.shared.reachabilityManagerRef.isReachable {
+                        self.becameReachable()
+                    }
+                }
+            }
+
+            self.isSetup.set(true)
+            self.startWorkWhenAppIsReady(appReadiness: appReadiness)
+        }
+    }
+
+    func remainingRetries(durableOperation: DurableOperationType) -> UInt {
+        let maxRetries = durableOperation.maxRetries
+        let failureCount = durableOperation.jobRecord.failureCount
+
+        guard maxRetries > failureCount else {
+            return 0
+        }
+
+        return maxRetries - failureCount
+    }
+
+    func becameReachable() {
+        guard requiresInternet else {
+            owsFailDebug("should only be called if `requiresInternet` is true")
+            return
+        }
+
+        _ = self.runAnyQueuedRetry()
+    }
+
+    func runAnyQueuedRetry() -> DurableOperationType? {
+        guard let runningDurableOperation = self.runningOperations.first else {
+            return nil
+        }
+        runningDurableOperation.operation.runAnyQueuedRetry()
+
+        return runningDurableOperation
+    }
+
+    // MARK: DurableOperationDelegate
+
+    func durableOperationDidSucceed(_ operation: DurableOperationType, transaction: SDSAnyWriteTransaction) {
+        runningOperations.remove(operation)
+        operation.jobRecord.anyRemove(transaction: transaction)
+    }
+
+    func durableOperation(_ operation: DurableOperationType, didReportError: Error, transaction: SDSAnyWriteTransaction) {
+        do {
+            try operation.jobRecord.addFailure(transaction: transaction)
+        } catch {
+            owsFailDebug("error while addingFailure: \(error)")
+            operation.jobRecord.saveAsPermanentlyFailed(transaction: transaction)
+        }
+    }
+
+    func durableOperation(_ operation: DurableOperationType, didFailWithError error: Error, transaction: SDSAnyWriteTransaction) {
+        runningOperations.remove(operation)
+        operation.jobRecord.saveAsPermanentlyFailed(transaction: transaction)
+    }
 }
 
-public class MessageSenderOperation: OWSOperation, DurableOperation {
+public class MessageSenderOperation: OWSOperation {
 
     // MARK: DurableOperation
 
