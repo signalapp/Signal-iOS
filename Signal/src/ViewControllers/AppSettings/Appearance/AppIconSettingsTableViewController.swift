@@ -168,6 +168,7 @@ final class AppIconSettingsTableViewController: OWSTableViewController2 {
             self.addSubview(selectedOutlineView)
             selectedOutlineView.autoPinEdgesToSuperviewEdges()
             selectedOutlineView.layer.cornerRadius = Self.selectedOutlineCornerRadius
+            selectedOutlineView.layer.cornerCurve = .continuous
             let borderColor: UIColor = Theme.isDarkThemeEnabled ? .ows_gray05 : .ows_black
             selectedOutlineView.layer.borderColor = borderColor.cgColor
 
@@ -197,6 +198,7 @@ final class AppIconSettingsTableViewController: OWSTableViewController2 {
             button.setImage(image, for: .normal)
             button.clipsToBounds = true
             button.layer.cornerRadius = iconCornerRadius
+            button.layer.cornerCurve = .continuous
 
             if icon.shouldShowShadow {
                 let backgroundView = UIView.container()
