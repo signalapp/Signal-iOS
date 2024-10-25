@@ -139,8 +139,7 @@ public class ScreenLock: NSObject {
                                                 completion completionParam: @escaping ((Outcome) -> Void)) {
         AssertIsOnMainThread()
 
-        let defaultErrorDescription = OWSLocalizedString("SCREEN_LOCK_ENABLE_UNKNOWN_ERROR",
-                                                        comment: "Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode.")
+        let defaultErrorDescription = DeviceAuthenticationErrorMessage.unknownError
 
         // Ensure completion is always called on the main thread.
         let completion = { (outcome: Outcome) in
@@ -198,16 +197,13 @@ public class ScreenLock: NSObject {
             switch laError.code {
             case .biometryNotAvailable:
                 Logger.error("local authentication error: biometryNotAvailable.")
-                return .failure(error: OWSLocalizedString("SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE",
-                                                         comment: "Indicates that Touch ID/Face ID/Phone Passcode are not available on this device."))
+                return .failure(error: ScreenLock.ErrorMessage.authenticationNotAvailable)
             case .biometryNotEnrolled:
                 Logger.error("local authentication error: biometryNotEnrolled.")
-                return .failure(error: OWSLocalizedString("SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED",
-                                                         comment: "Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device."))
+                return .failure(error: ScreenLock.ErrorMessage.authenticationNotEnrolled)
             case .biometryLockout:
                 Logger.error("local authentication error: biometryLockout.")
-                return .failure(error: OWSLocalizedString("SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT",
-                                                         comment: "Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures."))
+                return .failure(error: DeviceAuthenticationErrorMessage.lockout)
             default:
                 // Fall through to second switch
                 break
@@ -216,27 +212,22 @@ public class ScreenLock: NSObject {
             switch laError.code {
             case .authenticationFailed:
                 Logger.error("local authentication error: authenticationFailed.")
-                return .failure(error: OWSLocalizedString("SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED",
-                                                         comment: "Indicates that Touch ID/Face ID/Phone Passcode authentication failed."))
+                return .failure(error: DeviceAuthenticationErrorMessage.authenticationFailed)
             case .userCancel, .userFallback, .systemCancel, .appCancel:
                 Logger.info("local authentication cancelled.")
                 return .cancel
             case .passcodeNotSet:
                 Logger.error("local authentication error: passcodeNotSet.")
-                return .failure(error: OWSLocalizedString("SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET",
-                                                         comment: "Indicates that Touch ID/Face ID/Phone Passcode passcode is not set."))
+                return .failure(error: ScreenLock.ErrorMessage.passcodeNotSet)
             case .touchIDNotAvailable:
                 Logger.error("local authentication error: touchIDNotAvailable.")
-                return .failure(error: OWSLocalizedString("SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE",
-                                                         comment: "Indicates that Touch ID/Face ID/Phone Passcode are not available on this device."))
+                return .failure(error: ScreenLock.ErrorMessage.authenticationNotAvailable)
             case .touchIDNotEnrolled:
                 Logger.error("local authentication error: touchIDNotEnrolled.")
-                return .failure(error: OWSLocalizedString("SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED",
-                                                         comment: "Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device."))
+                return .failure(error: ScreenLock.ErrorMessage.authenticationNotEnrolled)
             case .touchIDLockout:
                 Logger.error("local authentication error: touchIDLockout.")
-                return .failure(error: OWSLocalizedString("SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT",
-                                                         comment: "Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures."))
+                return .failure(error: DeviceAuthenticationErrorMessage.lockout)
             case .invalidContext:
                 owsFailDebug("context not valid.")
                 return .unexpectedFailure(error: defaultErrorDescription)
@@ -256,4 +247,44 @@ public class ScreenLock: NSObject {
                         description: errorDescription,
                         isRetryable: false)
     }
+}
+
+// MARK: Error Messages
+
+extension ScreenLock {
+    private enum ErrorMessage {
+        static let authenticationNotAvailable = OWSLocalizedString(
+            "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE",
+            comment: "Indicates that Touch ID/Face ID/Phone Passcode are not available on this device."
+        )
+        static let authenticationNotEnrolled = OWSLocalizedString(
+            "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED",
+            comment: "Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device."
+        )
+        static let passcodeNotSet = OWSLocalizedString(
+            "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET",
+            comment: "Indicates that Touch ID/Face ID/Phone Passcode passcode is not set."
+        )
+    }
+}
+
+public enum DeviceAuthenticationErrorMessage {
+    public static let errorSheetTitle = OWSLocalizedString(
+        "SCREEN_LOCK_UNLOCK_FAILED",
+        comment: "Title for alert indicating that screen lock could not be unlocked."
+    )
+
+    public static let unknownError = OWSLocalizedString(
+        "SCREEN_LOCK_ENABLE_UNKNOWN_ERROR",
+        comment: "Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode."
+    )
+
+    public static let lockout = OWSLocalizedString(
+        "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT",
+        comment: "Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures."
+    )
+    public static let authenticationFailed = OWSLocalizedString(
+        "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED",
+        comment: "Indicates that Touch ID/Face ID/Phone Passcode authentication failed."
+    )
 }

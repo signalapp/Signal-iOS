@@ -1,0 +1,92 @@
+//
+// Copyright 2024 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+//
+
+import Foundation
+
+public class HeroSheetViewController: StackSheetViewController {
+    private let heroImage: UIImage
+    private let titleText: String
+    private let bodyText: String
+    private let buttonTitle: String
+    private let buttonAction: (() -> Void)?
+
+    /// Creates a hero image sheet with a CTA button.
+    /// - Parameters:
+    ///   - heroImage: Scaled image to display at the top of the sheet
+    ///   - title: Localized title text
+    ///   - body: Localized body text
+    ///   - buttonTitle: Title for the CTA button
+    ///   - didTapButton: Action for the CTA button.
+    ///   If `nil`, the button will dismiss the sheet.
+    public init(
+        heroImage: UIImage,
+        title: String,
+        body: String,
+        buttonTitle: String,
+        didTapButton: (() -> Void)? = nil
+    ) {
+        self.heroImage = heroImage
+        self.titleText = title
+        self.bodyText = body
+        self.buttonTitle = buttonTitle
+        self.buttonAction = didTapButton
+        super.init()
+    }
+
+    public override var sheetBackgroundColor: UIColor {
+        Theme.tableView2PresentedBackgroundColor
+    }
+
+    public override var stackViewInsets: UIEdgeInsets {
+        .init(top: 8, leading: 24, bottom: 32, trailing: 24)
+    }
+
+    public override func viewDidLoad() {
+        super.viewDidLoad()
+
+        let heroImageView = UIImageView(image: self.heroImage)
+        self.stackView.addArrangedSubview(heroImageView)
+        self.stackView.setCustomSpacing(20, after: heroImageView)
+        heroImageView.contentMode = .center
+
+        let titleLabel = UILabel()
+        self.stackView.addArrangedSubview(titleLabel)
+        self.stackView.setCustomSpacing(8, after: titleLabel)
+        titleLabel.text = self.titleText
+        titleLabel.font = .dynamicTypeTitle2.bold()
+        titleLabel.numberOfLines = 0
+        titleLabel.textAlignment = .center
+
+        let bodyLabel = UILabel()
+        self.stackView.addArrangedSubview(bodyLabel)
+        self.stackView.setCustomSpacing(32, after: bodyLabel)
+        bodyLabel.text = self.bodyText
+        bodyLabel.font = .dynamicTypeSubheadline
+        bodyLabel.textColor = UIColor(named: "Signal/secondaryLabel")!
+        bodyLabel.numberOfLines = 0
+        bodyLabel.textAlignment = .center
+
+        let button = UIButton(type: .system, primaryAction: UIAction { [weak self] _ in
+            if let self, let buttonAction {
+                buttonAction()
+            } else {
+                self?.dismiss(animated: true)
+            }
+        })
+        self.stackView.addArrangedSubview(button)
+        var buttonConfiguration = UIButton.Configuration.filled()
+        var buttonTitleAttributes = AttributeContainer()
+        buttonTitleAttributes.font = .dynamicTypeHeadline
+        buttonTitleAttributes.foregroundColor = .white
+        buttonConfiguration.attributedTitle = AttributedString(
+            self.buttonTitle,
+            attributes: buttonTitleAttributes
+        )
+        buttonConfiguration.contentInsets = .init(hMargin: 16, vMargin: 14)
+        buttonConfiguration.background.cornerRadius = 10
+        buttonConfiguration.background.backgroundColor = UIColor(named: "Signal/ultramarine")!
+        button.configuration = buttonConfiguration
+    }
+}

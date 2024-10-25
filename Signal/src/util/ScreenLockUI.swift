@@ -289,10 +289,7 @@ class ScreenLockUI {
         AssertIsOnMainThread()
 
         OWSActionSheets.showActionSheet(
-            title: OWSLocalizedString(
-                "SCREEN_LOCK_UNLOCK_FAILED",
-                comment: "Title for alert indicating that screen lock could not be unlocked."
-            ),
+            title: DeviceAuthenticationErrorMessage.errorSheetTitle,
             message: message,
             buttonAction: { _ in
                 // After the alert, update the UI.
