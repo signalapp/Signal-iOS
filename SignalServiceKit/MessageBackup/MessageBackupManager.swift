@@ -12,7 +12,7 @@ public extension MessageBackup {
         case remote
         /// Export/Import an encrypted backup used to link a new device.
         /// The encryption key used is derived from the aci and a 32-byte "ephemeral" backup key.
-        case linknsync(ephemeralBackupKey: Data)
+        case linknsync(EphemeralBackupKey)
 
         // TODO: [LocalBackups] introduce local mode with its own key scheme.
     }

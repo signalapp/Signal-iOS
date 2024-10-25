@@ -263,10 +263,11 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
             }
             return backupKey.rawData
         case .linknsync(let ephemeralBackupKey):
-            guard ephemeralBackupKey.byteLength == SVR.DerivedKey.backupKeyLength else {
+            let rawKey = ephemeralBackupKey.data
+            guard rawKey.byteLength == SVR.DerivedKey.backupKeyLength else {
                 throw MessageBackupKeyMaterialError.invalidEncryptionKey
             }
-            return ephemeralBackupKey
+            return rawKey
         }
     }
 }

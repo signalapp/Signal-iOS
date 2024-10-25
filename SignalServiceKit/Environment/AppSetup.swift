@@ -1191,6 +1191,15 @@ public class AppSetup {
             tsAccountManager: tsAccountManager
         )
 
+        let linkAndSyncManager = LinkAndSyncManagerImpl(
+            attachmentDownloadManager: attachmentDownloadManager,
+            attachmentUploadManager: attachmentUploadManager,
+            db: db,
+            messageBackupManager: messageBackupManager,
+            networkManager: networkManager,
+            tsAccountManager: tsAccountManager
+        )
+
         let dependenciesBridge = DependenciesBridge(
             accountAttributesUpdater: accountAttributesUpdater,
             adHocCallRecordManager: adHocCallRecordManager,
@@ -1250,6 +1259,7 @@ public class AppSetup {
             keyValueStoreFactory: keyValueStoreFactory,
             learnMyOwnPniManager: learnMyOwnPniManager,
             linkedDevicePniKeyManager: linkedDevicePniKeyManager,
+            linkAndSyncManager: linkAndSyncManager,
             linkPreviewManager: linkPreviewManager,
             linkPreviewSettingStore: linkPreviewSettingStore,
             linkPreviewSettingManager: linkPreviewSettingManager,
