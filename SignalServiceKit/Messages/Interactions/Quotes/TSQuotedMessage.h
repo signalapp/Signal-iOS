@@ -61,20 +61,55 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
 /// (Mantle provides "reasonable" defaults). This undoes that; empty string values are reverted to nil.
 @property (nonatomic, readonly, nullable) NSString *attachmentId;
 
-/// Only should be read for "stub" quoted reply attachments (those without thumbnail-able attachments)
-@property (nonatomic, readonly, nullable) NSString *stubMimeType;
-/// Only should be read for "stub" quoted reply attachments (those without thumbnail-able attachments)
-@property (nonatomic, readonly, nullable) NSString *stubSourceFilename;
+/// The mime type of an attachment that was quoted.
+///
+/// - Important
+/// This should not be confused with the mime type of the thumbnail of this
+/// attachment that is owned by the quote itself!
+///
+/// - Important
+/// This value may be set based on an incoming proto, and may not be accurate.
+/// If the attachment itself is available, prefer reading the mime type from it
+/// directly.
+@property (nonatomic, readonly, nullable) NSString *originalAttachmentMimeType;
+
+/// The source filename of an attachment that was quoted.
+///
+/// - Important
+/// This should not be confused with the mime type of the thumbnail of this
+/// attachment that is owned by the quote itself!
+///
+/// - Important
+/// This value may be set based on an incoming proto, and may not be accurate.
+/// If the attachment itself is available, prefer reading the source filename
+/// from it directly.
+@property (nonatomic, readonly, nullable) NSString *originalAttachmentSourceFilename;
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initStubWithMimeType:(NSString *)mimeType sourceFilename:(NSString *_Nullable)sourceFilename;
++ (instancetype)stubWithOriginalAttachmentMimeType:(NSString *)originalAttachmentMimeType
+                  originalAttachmentSourceFilename:(NSString *_Nullable)originalAttachmentSourceFilename;
 
-- (instancetype)initForV2ThumbnailReference;
++ (instancetype)forV2ThumbnailReferenceWithOriginalAttachmentMimeType:(NSString *)originalAttachmentMimeType
+                                     originalAttachmentSourceFilename:
+                                         (NSString *_Nullable)originalAttachmentSourceFilename;
 
-- (instancetype)initWithLegacyAttachmentId:(NSString *)attachmentId ofType:(OWSAttachmentInfoReference)attachmentType;
++ (instancetype)withLegacyAttachmentId:(NSString *)attachmentId
+                                ofType:(OWSAttachmentInfoReference)attachmentType
+            originalAttachmentMimeType:(NSString *)originalAttachmentMimeType
+      originalAttachmentSourceFilename:(NSString *_Nullable)originalAttachmentSourceFilename;
 
+#if TESTABLE_BUILD
+/// Do not use this constructor directly! Instead, use the static constructors.
+///
+/// Legacy data may contain a `nil` content type, so this constructor is exposed
+/// to facilitate testing the deserialization of that legacy data.
+- (instancetype)initWithAttachmentId:(NSString *_Nullable)attachmentId
+                              ofType:(OWSAttachmentInfoReference)attachmentType
+          originalAttachmentMimeType:(NSString *_Nullable)originalAttachmentMimeType
+    originalAttachmentSourceFilename:(NSString *_Nullable)originalAttachmentSourceFilename;
+#endif
 
 @end
 

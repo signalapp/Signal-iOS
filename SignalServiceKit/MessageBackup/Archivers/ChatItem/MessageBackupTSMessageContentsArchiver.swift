@@ -486,12 +486,13 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         var partialErrors = [MessageBackup.ArchiveFrameError<MessageBackup.InteractionUniqueId>]()
 
         var proto = BackupProto_Quote.QuotedAttachment()
-        if let stubMimeType = attachmentInfo.stubMimeType {
-            proto.contentType = stubMimeType
+        if let mimeType = attachmentInfo.originalAttachmentMimeType {
+            proto.contentType = mimeType
         }
-        if let stubSourceFilename = attachmentInfo.stubSourceFilename {
-            proto.fileName = stubSourceFilename
+        if let sourceFilename = attachmentInfo.originalAttachmentSourceFilename {
+            proto.fileName = sourceFilename
         }
+
         guard attachmentInfo.attachmentType == .V2 else {
             // If its just a stub, early return with no thumbnail image
             return .success(proto)
@@ -1248,16 +1249,20 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         let quotedAttachmentInfo: OWSAttachmentInfo?
         let quotedAttachmentThumbnail: BackupProto_MessageAttachment?
         if let quotedAttachmentProto = quote.attachments.first {
+            let mimeType = quotedAttachmentProto.contentType.nilIfEmpty
+                ?? MimeType.applicationOctetStream.rawValue
+            let sourceFilename = quotedAttachmentProto.fileName.nilIfEmpty
+
             if quotedAttachmentProto.hasThumbnail {
-                quotedAttachmentInfo = .init(forV2ThumbnailReference: ())
+                quotedAttachmentInfo = .forV2ThumbnailReference(
+                    withOriginalAttachmentMimeType: mimeType,
+                    originalAttachmentSourceFilename: sourceFilename
+                )
                 quotedAttachmentThumbnail = quotedAttachmentProto.thumbnail
             } else {
-                let mimeType = quotedAttachmentProto.contentType.nilIfEmpty
-                    ?? MimeType.applicationOctetStream.rawValue
-                let sourceFilename = quotedAttachmentProto.fileName.nilIfEmpty
-                quotedAttachmentInfo = .init(
-                    stubWithMimeType: mimeType,
-                    sourceFilename: sourceFilename
+                quotedAttachmentInfo = .stub(
+                    withOriginalAttachmentMimeType: mimeType,
+                    originalAttachmentSourceFilename: sourceFilename
                 )
                 quotedAttachmentThumbnail = nil
             }
@@ -1309,7 +1314,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             )])
         }
         let date: Date?
-        if linkPreviewProto.hasDate, linkPreviewProto.date > 0 {
+        if linkPreviewProto.hasDate {
             date = .init(millisecondsSince1970: linkPreviewProto.date)
         } else {
             date = nil

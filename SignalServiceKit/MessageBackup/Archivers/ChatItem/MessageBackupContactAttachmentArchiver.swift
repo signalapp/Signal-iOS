@@ -112,6 +112,9 @@ internal class MessageBackupContactAttachmentArchiver: MessageBackupProtoArchive
         if let middleName = contactName.middleName {
             nameProto.middleName = middleName
         }
+        if let nickname = contactName.nickname {
+            nameProto.nickname = nickname
+        }
         return .success(nameProto)
     }
 
@@ -209,6 +212,7 @@ internal class MessageBackupContactAttachmentArchiver: MessageBackupProtoArchive
         var namePrefix: String?
         var nameSuffix: String?
         var middleName: String?
+        var nickname: String?
         if contactProto.hasName {
             if contactProto.name.hasGivenName {
                 givenName = contactProto.name.givenName.stripped
@@ -225,6 +229,9 @@ internal class MessageBackupContactAttachmentArchiver: MessageBackupProtoArchive
             if contactProto.name.hasMiddleName {
                 middleName = contactProto.name.middleName.stripped
             }
+            if contactProto.name.hasNickname {
+                nickname = contactProto.name.nickname.stripped
+            }
         }
 
         var organizationName: String?
@@ -238,6 +245,7 @@ internal class MessageBackupContactAttachmentArchiver: MessageBackupProtoArchive
             namePrefix: namePrefix,
             nameSuffix: nameSuffix,
             middleName: middleName,
+            nickname: nickname,
             organizationName: organizationName
         )
 

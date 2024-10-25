@@ -18,7 +18,7 @@ public struct QuotedReplyAttachmentDataSource {
         /// and have prepared it for use as a totally independent attachment.
         /// No reference to the original attachment is needed.
         /// (It may even have been a legacy attachment!)
-        case pendingAttachment(PendingAttachment)
+        case pendingAttachment(PendingAttachmentSource)
 
         /// The original message's attachment.
         /// Used only if we were unable to transcode and create a PendingAttachment.
@@ -27,9 +27,20 @@ public struct QuotedReplyAttachmentDataSource {
         /// The original can be used at download time as the "source", if it is a stream by then.
         case originalAttachment(OriginalAttachmentSource)
 
-        /// The best source we have is a pointer proto unassociated with any existing attachment.
-        /// Typically this came from the sender of the reply when we were unable to find the original message.
-        case pointer(SSKProtoAttachmentPointer)
+        /// The best source we have is a pointer proto for the thumbnail
+        /// attachment, unassociated with any existing attachment. Typically
+        /// this comes from the sender of a reply for which we were unable to
+        /// find the original message.
+        case quotedAttachmentProto(QuotedAttachmentProtoSource)
+    }
+
+    public struct PendingAttachmentSource {
+        /// A pending attachment representing the thumbnail.
+        let pendingAttachment: PendingAttachment
+        /// The mime type of the original (thumbnailed) attachment.
+        let originalAttachmentMimeType: String
+        /// The source filename of the original (thumbnailed) attachment.
+        let originalAttachmentSourceFilename: String?
     }
 
     /// Reference to an existing attachment to use as the source for the quoted reply.
@@ -49,6 +60,17 @@ public struct QuotedReplyAttachmentDataSource {
         public let thumbnailPointerFromSender: SSKProtoAttachmentPointer?
     }
 
+    /// Mirrors an ``SSKProtoDataMessageQuoteQuotedAttachment``, except with a
+    /// guarantee that the thumbnail is present.
+    public struct QuotedAttachmentProtoSource {
+        /// A proto pointer to the thumbnail attachment.
+        let thumbnail: SSKProtoAttachmentPointer
+        /// The mime type of the original (thumbnailed) attachment.
+        let originalAttachmentMimeType: String
+        /// The source filename of the original (thumbnailed) attachment.
+        let originalAttachmentSourceFilename: String?
+    }
+
     internal init(originalMessageRowId: Int64?, source: Source) {
         self.originalMessageRowId = originalMessageRowId
         self.source = source
@@ -56,9 +78,18 @@ public struct QuotedReplyAttachmentDataSource {
 
     public static func fromPendingAttachment(
         _ pendingAttachment: PendingAttachment,
+        originalAttachmentMimeType: String,
+        originalAttachmentSourceFilename: String?,
         originalMessageRowId: Int64?
     ) -> Self {
-        return .init(originalMessageRowId: originalMessageRowId, source: .pendingAttachment(pendingAttachment))
+        return .init(
+            originalMessageRowId: originalMessageRowId,
+            source: .pendingAttachment(.init(
+                pendingAttachment: pendingAttachment,
+                originalAttachmentMimeType: originalAttachmentMimeType,
+                originalAttachmentSourceFilename: originalAttachmentSourceFilename
+            ))
+        )
     }
 
     public static func fromOriginalAttachment(
@@ -99,48 +130,20 @@ public struct QuotedReplyAttachmentDataSource {
         )
     }
 
-    public static func fromPointerProto(
-        _ proto: SSKProtoAttachmentPointer
+    public static func fromQuotedAttachmentProto(
+        thumbnail: SSKProtoAttachmentPointer,
+        originalAttachmentMimeType: String,
+        originalAttachmentSourceFilename: String?
     ) -> Self {
-        return .init(originalMessageRowId: nil, source: .pointer(proto))
+        return .init(
+            originalMessageRowId: nil,
+            source: .quotedAttachmentProto(.init(
+                thumbnail: thumbnail,
+                originalAttachmentMimeType: originalAttachmentMimeType,
+                originalAttachmentSourceFilename: originalAttachmentSourceFilename
+            ))
+        )
     }
-}
-
-extension QuotedReplyAttachmentDataSource.Source {
-
-    var renderingFlag: AttachmentReference.RenderingFlag {
-        switch self {
-        case .pendingAttachment(let pendingAttachment):
-            return pendingAttachment.renderingFlag
-        case .originalAttachment(let originalAttachmentSource):
-            return originalAttachmentSource.renderingFlag
-        case .pointer(let proto):
-            return .fromProto(proto)
-        }
-    }
-
-    var mimeType: String {
-        switch self {
-        case .pendingAttachment(let pendingAttachment):
-            return pendingAttachment.mimeType
-        case .originalAttachment(let originalAttachmentSource):
-            return originalAttachmentSource.mimeType
-        case .pointer(let proto):
-            return proto.contentType ?? MimeType.applicationOctetStream.rawValue
-        }
-    }
-
-    var sourceFilename: String? {
-        switch self {
-        case .pendingAttachment(let pendingAttachment):
-            return pendingAttachment.sourceFilename
-        case .originalAttachment(let originalAttachmentSource):
-            return originalAttachmentSource.sourceFilename
-        case .pointer(let proto):
-            return proto.fileName?.nilIfEmpty
-        }
-    }
-
 }
 
 public struct OwnedQuotedReplyAttachmentDataSource {

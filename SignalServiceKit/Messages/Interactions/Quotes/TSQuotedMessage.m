@@ -28,54 +28,70 @@ NS_ASSUME_NONNULL_BEGIN
     return _rawAttachmentId.ows_nilIfEmpty;
 }
 
-- (nullable NSString *)stubMimeType
+- (nullable NSString *)originalAttachmentMimeType
 {
     return _contentType;
 }
 
-- (nullable NSString *)stubSourceFilename
+- (nullable NSString *)originalAttachmentSourceFilename
 {
     return _sourceFilename;
-}
-
-- (instancetype)initStubWithMimeType:(NSString *)mimeType sourceFilename:(NSString *_Nullable)sourceFilename
-{
-    return [self initWithAttachmentId:nil
-                               ofType:OWSAttachmentInfoReferenceUnset
-                          contentType:mimeType
-                       sourceFilename:sourceFilename];
-}
-
-- (instancetype)initForV2ThumbnailReference
-{
-    return [self initWithAttachmentId:nil ofType:OWSAttachmentInfoReferenceV2 contentType:nil sourceFilename:nil];
-}
-
-- (instancetype)initWithLegacyAttachmentId:(NSString *)attachmentId ofType:(OWSAttachmentInfoReference)attachmentType
-{
-    return [self initWithAttachmentId:attachmentId ofType:attachmentType contentType:nil sourceFilename:nil];
-}
-
-- (instancetype)initWithAttachmentId:(NSString *_Nullable)attachmentId
-                              ofType:(OWSAttachmentInfoReference)attachmentType
-                         contentType:(NSString *_Nullable)contentType
-                      sourceFilename:(NSString *_Nullable)sourceFilename
-{
-    self = [super init];
-    if (self) {
-        _schemaVersion = self.class.currentSchemaVersion;
-        _rawAttachmentId = attachmentId;
-        _attachmentType = attachmentType;
-        _contentType = contentType;
-        _sourceFilename = sourceFilename;
-    }
-    return self;
 }
 
 + (NSUInteger)currentSchemaVersion
 {
     return 1;
 }
+
+// MARK: -
+
++ (instancetype)stubWithOriginalAttachmentMimeType:(NSString *)originalAttachmentMimeType
+                  originalAttachmentSourceFilename:(NSString *_Nullable)originalAttachmentSourceFilename
+{
+    return [[OWSAttachmentInfo alloc] initWithAttachmentId:nil
+                                                    ofType:OWSAttachmentInfoReferenceUnset
+                                originalAttachmentMimeType:originalAttachmentMimeType
+                          originalAttachmentSourceFilename:originalAttachmentSourceFilename];
+}
+
++ (instancetype)forV2ThumbnailReferenceWithOriginalAttachmentMimeType:(NSString *)originalAttachmentMimeType
+                                     originalAttachmentSourceFilename:
+                                         (NSString *_Nullable)originalAttachmentSourceFilename
+{
+    return [[OWSAttachmentInfo alloc] initWithAttachmentId:nil
+                                                    ofType:OWSAttachmentInfoReferenceV2
+                                originalAttachmentMimeType:originalAttachmentMimeType
+                          originalAttachmentSourceFilename:originalAttachmentSourceFilename];
+}
+
++ (instancetype)withLegacyAttachmentId:(NSString *)attachmentId
+                                ofType:(OWSAttachmentInfoReference)attachmentType
+            originalAttachmentMimeType:(NSString *)originalAttachmentMimeType
+      originalAttachmentSourceFilename:(NSString *_Nullable)originalAttachmentSourceFilename
+{
+    return [[OWSAttachmentInfo alloc] initWithAttachmentId:attachmentId
+                                                    ofType:attachmentType
+                                originalAttachmentMimeType:originalAttachmentMimeType
+                          originalAttachmentSourceFilename:originalAttachmentSourceFilename];
+}
+
+- (instancetype)initWithAttachmentId:(NSString *_Nullable)attachmentId
+                              ofType:(OWSAttachmentInfoReference)attachmentType
+          originalAttachmentMimeType:(NSString *_Nullable)originalAttachmentMimeType
+    originalAttachmentSourceFilename:(NSString *_Nullable)originalAttachmentSourceFilename
+{
+    self = [super init];
+    if (self) {
+        _schemaVersion = self.class.currentSchemaVersion;
+        _rawAttachmentId = attachmentId;
+        _attachmentType = attachmentType;
+        _contentType = originalAttachmentMimeType;
+        _sourceFilename = originalAttachmentSourceFilename;
+    }
+    return self;
+}
+
+// MARK: -
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
@@ -115,6 +131,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 @end
+
+// MARK: -
 
 @interface TSQuotedMessage ()
 @property (nonatomic, readonly) uint64_t timestamp;

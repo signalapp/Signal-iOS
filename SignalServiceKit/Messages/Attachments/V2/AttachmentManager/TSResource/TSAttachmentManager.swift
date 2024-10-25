@@ -325,10 +325,12 @@ public class TSAttachmentManager {
             // We found an attachment stream on the original message! Use it as our quoted attachment
             if let thumbnail = stream.cloneAsThumbnail() {
                 thumbnail.anyInsert(transaction: tx)
-                return .init(
-                    info: OWSAttachmentInfo(
-                        legacyAttachmentId: thumbnail.uniqueId,
-                        ofType: .thumbnail
+                return QuotedAttachmentInfo(
+                    info: .withLegacyAttachmentId(
+                        thumbnail.uniqueId,
+                        ofType: .thumbnail,
+                        originalAttachmentMimeType: stream.mimeType,
+                        originalAttachmentSourceFilename: stream.sourceFilename
                     ),
                     renderingFlag: thumbnail.attachmentType.asRenderingFlag
                 )
@@ -342,19 +344,21 @@ public class TSAttachmentManager {
             MimeTypeUtil.isSupportedVisualMediaMimeType(pointer.mimeType)
         {
             // No attachment stream, but we have a pointer. It's likely this media hasn't finished downloading yet.
-            return .init(
-                info: OWSAttachmentInfo(
-                    legacyAttachmentId: pointer.uniqueId,
-                    ofType: .original
+            return QuotedAttachmentInfo(
+                info: .withLegacyAttachmentId(
+                    pointer.uniqueId,
+                    ofType: .original,
+                    originalAttachmentMimeType: pointer.mimeType,
+                    originalAttachmentSourceFilename: pointer.sourceFilename
                 ),
                 renderingFlag: pointer.attachmentType.asRenderingFlag
             )
         } else {
             // We have an attachment in the original message, but it doesn't support thumbnailing
-            return .init(
-                info: OWSAttachmentInfo(
-                    stubWithMimeType: originalAttachment.mimeType,
-                    sourceFilename: originalAttachment.sourceFilename
+            return QuotedAttachmentInfo(
+                info: .stub(
+                    withOriginalAttachmentMimeType: originalAttachment.mimeType,
+                    originalAttachmentSourceFilename: originalAttachment.sourceFilename
                 ),
                 renderingFlag: originalAttachment.attachmentType.asRenderingFlag
             )

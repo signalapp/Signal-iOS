@@ -127,7 +127,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                     return
                 }
             }
-        case .pendingAttachment, .pointer:
+        case .pendingAttachment, .quotedAttachmentProto:
             break
         }
         try _createQuotedReplyMessageThumbnail(
@@ -763,16 +763,20 @@ public class AttachmentManagerImpl: AttachmentManager {
             info: {
                 guard MimeTypeUtil.isSupportedVisualMediaMimeType(originalAttachment.mimeType) else {
                     // Can't make a thumbnail, just return a stub.
-                    return .init(
-                        info: OWSAttachmentInfo(
-                            stubWithMimeType: originalAttachment.mimeType,
-                            sourceFilename: originalReference.sourceFilename
+                    return QuotedAttachmentInfo(
+                        info: .stub(
+                            withOriginalAttachmentMimeType: originalAttachment.mimeType,
+                            originalAttachmentSourceFilename: originalReference.sourceFilename
                         ),
                         renderingFlag: originalReference.renderingFlag
                     )
                 }
-                return .init(
-                    info: OWSAttachmentInfo(forV2ThumbnailReference: ()),
+
+                return QuotedAttachmentInfo(
+                    info: .forV2ThumbnailReference(
+                        withOriginalAttachmentMimeType: originalAttachment.mimeType,
+                        originalAttachmentSourceFilename: originalReference.sourceFilename
+                    ),
                     renderingFlag: originalReference.renderingFlag
                 )
             }()
@@ -786,16 +790,16 @@ public class AttachmentManagerImpl: AttachmentManager {
         let referenceOwner = AttachmentReference.OwnerBuilder.quotedReplyAttachment(dataSource.owner)
 
         switch dataSource.source.source {
-        case .pointer(let proto):
+        case .quotedAttachmentProto(let quotedAttachmentProtoSource):
             try self._createAttachmentPointer(
-                from: proto,
+                from: quotedAttachmentProtoSource.thumbnail,
                 owner: referenceOwner,
                 sourceOrder: nil,
                 tx: tx
             )
-        case .pendingAttachment(let pendingAttachment):
+        case .pendingAttachment(let pendingAttachmentSource):
             try self._createAttachmentStream(
-                consuming: .pendingAttachment(pendingAttachment),
+                consuming: .pendingAttachment(pendingAttachmentSource.pendingAttachment),
                 owner: referenceOwner,
                 sourceOrder: nil,
                 tx: tx

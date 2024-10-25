@@ -234,8 +234,12 @@ public class TSResourceContentValidatorImpl: TSResourceContentValidator {
         guard let stream = originalAttachment as? TSAttachmentStream else {
             // If we don't have a stream, the best we can do is try to create
             // a pointer proto out of the cdn info of the original.
-            if let proto = TSResourceManagerImpl.buildProtoAsIfWeReceivedThisAttachment(originalAttachment) {
-                return .fromPointerProto(proto)
+            if let phonyThumbnailAttachmentProto = TSResourceManagerImpl.buildProtoAsIfWeReceivedThisAttachment(originalAttachment) {
+                return .fromQuotedAttachmentProto(
+                    thumbnail: phonyThumbnailAttachmentProto,
+                    originalAttachmentMimeType: originalAttachment.mimeType,
+                    originalAttachmentSourceFilename: originalAttachment.sourceFilename
+                )
             } else {
                 Logger.error("Unable to create v2 quote attachment from v1 attachment")
                 class CannotCreateV2FromV1AttachmentError: Error {}
@@ -271,6 +275,8 @@ public class TSResourceContentValidatorImpl: TSResourceContentValidator {
 
         return .fromPendingAttachment(
             pendingAttachment,
+            originalAttachmentMimeType: originalAttachment.mimeType,
+            originalAttachmentSourceFilename: originalAttachment.sourceFilename,
             originalMessageRowId: originalMessageRowId
         )
     }

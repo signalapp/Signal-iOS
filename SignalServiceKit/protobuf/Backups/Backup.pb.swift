@@ -2621,6 +2621,15 @@ public struct BackupProto_ContactAttachment {
     /// Clears the value of `middleName`. Subsequent reads from it will return its default value.
     public mutating func clearMiddleName() {self._middleName = nil}
 
+    public var nickname: String {
+      get {return _nickname ?? String()}
+      set {_nickname = newValue}
+    }
+    /// Returns true if `nickname` has been explicitly set.
+    public var hasNickname: Bool {return self._nickname != nil}
+    /// Clears the value of `nickname`. Subsequent reads from it will return its default value.
+    public mutating func clearNickname() {self._nickname = nil}
+
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
     public init() {}
@@ -2630,6 +2639,7 @@ public struct BackupProto_ContactAttachment {
     fileprivate var _prefix: String? = nil
     fileprivate var _suffix: String? = nil
     fileprivate var _middleName: String? = nil
+    fileprivate var _nickname: String? = nil
   }
 
   public struct Phone {
@@ -9559,6 +9569,7 @@ extension BackupProto_ContactAttachment.Name: SwiftProtobuf.Message, SwiftProtob
     3: .same(proto: "prefix"),
     4: .same(proto: "suffix"),
     5: .same(proto: "middleName"),
+    6: .same(proto: "nickname"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -9572,6 +9583,7 @@ extension BackupProto_ContactAttachment.Name: SwiftProtobuf.Message, SwiftProtob
       case 3: try { try decoder.decodeSingularStringField(value: &self._prefix) }()
       case 4: try { try decoder.decodeSingularStringField(value: &self._suffix) }()
       case 5: try { try decoder.decodeSingularStringField(value: &self._middleName) }()
+      case 6: try { try decoder.decodeSingularStringField(value: &self._nickname) }()
       default: break
       }
     }
@@ -9597,6 +9609,9 @@ extension BackupProto_ContactAttachment.Name: SwiftProtobuf.Message, SwiftProtob
     try { if let v = self._middleName {
       try visitor.visitSingularStringField(value: v, fieldNumber: 5)
     } }()
+    try { if let v = self._nickname {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 6)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -9606,6 +9621,7 @@ extension BackupProto_ContactAttachment.Name: SwiftProtobuf.Message, SwiftProtob
     if lhs._prefix != rhs._prefix {return false}
     if lhs._suffix != rhs._suffix {return false}
     if lhs._middleName != rhs._middleName {return false}
+    if lhs._nickname != rhs._nickname {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

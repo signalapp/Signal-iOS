@@ -239,6 +239,8 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
 
         return .fromPendingAttachment(
             pendingAttachment,
+            originalAttachmentMimeType: originalAttachment.attachment.mimeType,
+            originalAttachmentSourceFilename: originalReference.sourceFilename,
             originalMessageRowId: originalMessageRowId
         )
     }

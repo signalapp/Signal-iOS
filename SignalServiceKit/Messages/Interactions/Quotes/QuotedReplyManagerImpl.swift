@@ -116,8 +116,13 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
         let attachmentBuilder: OwnedAttachmentBuilder<QuotedAttachmentInfo>?
         if
             // We're only interested in the first attachment
-            let thumbnailProto = quoteProto.attachments.first?.thumbnail
+            let quotedAttachment = quoteProto.attachments.first,
+            let thumbnailProto = quotedAttachment.thumbnail
         {
+            let mimeType: String = quotedAttachment.contentType?.nilIfEmpty
+                ?? MimeType.applicationOctetStream.rawValue
+            let sourceFilename = quotedAttachment.fileName
+
             do {
                 let thumbnailAttachmentBuilder = try attachmentManager.createAttachmentPointerBuilder(
                     from: thumbnailProto,
@@ -127,16 +132,21 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                 attachmentBuilder = thumbnailAttachmentBuilder.wrap { attachmentInfo in
                     switch attachmentInfo {
                     case .legacy(let attachmentId):
-                        return .init(
-                            info: OWSAttachmentInfo(
-                                legacyAttachmentId: attachmentId,
-                                ofType: .untrustedPointer
+                        return QuotedAttachmentInfo(
+                            info: .withLegacyAttachmentId(
+                                attachmentId,
+                                ofType: .untrustedPointer,
+                                originalAttachmentMimeType: mimeType,
+                                originalAttachmentSourceFilename: sourceFilename
                             ),
                             renderingFlag: .fromProto(thumbnailProto)
                         )
                     case .v2:
-                        return .init(
-                            info: OWSAttachmentInfo(forV2ThumbnailReference: ()),
+                        return QuotedAttachmentInfo(
+                            info: .forV2ThumbnailReference(
+                                withOriginalAttachmentMimeType: mimeType,
+                                originalAttachmentSourceFilename: sourceFilename
+                            ),
                             renderingFlag: .fromProto(thumbnailProto)
                         )
                     }
@@ -146,10 +156,10 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                 return nil
             }
         } else if let attachmentProto = quoteProto.attachments.first, let mimeType = attachmentProto.contentType {
-            attachmentBuilder = .withoutFinalizer(.init(
-                info: OWSAttachmentInfo.init(
-                    stubWithMimeType: mimeType,
-                    sourceFilename: attachmentProto.fileName
+            attachmentBuilder = .withoutFinalizer(QuotedAttachmentInfo(
+                info: .stub(
+                    withOriginalAttachmentMimeType: mimeType,
+                    originalAttachmentSourceFilename: attachmentProto.fileName
                 ),
                 renderingFlag: .default
             ))
@@ -764,10 +774,10 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
 
         switch quotedAttachment {
         case .stub(let stub):
-            return .withoutFinalizer(buildQuotedMessage(.init(
-                info: .init(
-                    stubWithMimeType: stub.mimeType ?? MimeType.applicationOctetStream.rawValue,
-                    sourceFilename: stub.sourceFilename
+            return .withoutFinalizer(buildQuotedMessage(QuotedAttachmentInfo(
+                info: .stub(
+                    withOriginalAttachmentMimeType: stub.mimeType ?? MimeType.applicationOctetStream.rawValue,
+                    originalAttachmentSourceFilename: stub.sourceFilename
                 ),
                 renderingFlag: .default
             )))

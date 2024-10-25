@@ -424,19 +424,31 @@ public class TSResourceManagerImpl: TSResourceManager {
             // So we will try the following in order:
             // 1. Use the provided fallback proto (meaning the user will need to download
             //    the quote thumbnail from the sender's cdn upload, even though we already
-            //    technically have the original source locally. Not a big deal.
+            //    technically have the original source locally. Not a big deal.)
             // 2. Otherwise try and use the cdn info from the v1 attachment, if it still exists,
             //    and use that to create a new v2 attachment (even if the v1 is already downloaded).
             // 3. Give up. Omit the thumbnail.
-            if let proto = fallbackQuoteProto?.attachments.first?.thumbnail {
+            if
+                let quoteAttachmentProto = fallbackQuoteProto?.attachments.first,
+                let quoteAttachmentContentType = quoteAttachmentProto.contentType,
+                let quoteAttachmentThumnail = quoteAttachmentProto.thumbnail
+            {
                 return newV2QuotedReplyMessageThumbnailBuilder(
-                    from: .pointer(proto),
+                    from: .quotedAttachmentProto(.init(
+                        thumbnail: quoteAttachmentThumnail,
+                        originalAttachmentMimeType: quoteAttachmentContentType,
+                        originalAttachmentSourceFilename: quoteAttachmentProto.fileName
+                    )),
                     originalMessageRowId: dataSource.originalMessageRowId,
                     tx: tx
                 )
-            } else if let proto = Self.buildProtoAsIfWeReceivedThisAttachment(attachment) {
+            } else if let phonyThumbnailAttachmentProto = Self.buildProtoAsIfWeReceivedThisAttachment(attachment) {
                 return newV2QuotedReplyMessageThumbnailBuilder(
-                    from: .pointer(proto),
+                    from: .quotedAttachmentProto(.init(
+                        thumbnail: phonyThumbnailAttachmentProto,
+                        originalAttachmentMimeType: attachment.mimeType,
+                        originalAttachmentSourceFilename: attachment.sourceFilename
+                    )),
                     originalMessageRowId: dataSource.originalMessageRowId,
                     tx: tx
                 )
@@ -456,22 +468,55 @@ public class TSResourceManagerImpl: TSResourceManager {
         from dataSource: QuotedReplyAttachmentDataSource.Source,
         originalMessageRowId: Int64?,
         tx: DBWriteTransaction
-    ) -> OwnedAttachmentBuilder<QuotedAttachmentInfo>? {
-        guard MimeTypeUtil.isSupportedVisualMediaMimeType(dataSource.mimeType) else {
+    ) -> OwnedAttachmentBuilder<QuotedAttachmentInfo> {
+        let (
+            mimeType, sourceFilename, renderingFlag
+        ): (
+            String, String?, AttachmentReference.RenderingFlag
+        ) = {
+            switch dataSource {
+            case .pendingAttachment(let pendingAttachmentSource):
+                return (
+                    pendingAttachmentSource.originalAttachmentMimeType,
+                    pendingAttachmentSource.originalAttachmentSourceFilename,
+                    pendingAttachmentSource.pendingAttachment.renderingFlag
+                )
+            case .originalAttachment(let originalAttachmentSource):
+                return (
+                    originalAttachmentSource.mimeType,
+                    originalAttachmentSource.sourceFilename,
+                    originalAttachmentSource.renderingFlag
+                )
+            case .quotedAttachmentProto(let quotedAttachmentProtoSource):
+                return (
+                    quotedAttachmentProtoSource.originalAttachmentMimeType,
+                    quotedAttachmentProtoSource.originalAttachmentSourceFilename,
+                    .fromProto(quotedAttachmentProtoSource.thumbnail)
+                )
+            }
+        }()
+
+        guard MimeTypeUtil.isSupportedVisualMediaMimeType(mimeType) else {
             // Can't make a thumbnail, just return a stub.
             return .withoutFinalizer(
-                .init(
-                    info: OWSAttachmentInfo(
-                        stubWithMimeType: dataSource.mimeType,
-                        sourceFilename: dataSource.sourceFilename
+                QuotedAttachmentInfo(
+                    info: .stub(
+                        withOriginalAttachmentMimeType: mimeType,
+                        originalAttachmentSourceFilename: sourceFilename
                     ),
-                    renderingFlag: dataSource.renderingFlag
+                    renderingFlag: renderingFlag
                 )
             )
         }
 
         return OwnedAttachmentBuilder<QuotedAttachmentInfo>(
-            info: .init(info: .init(forV2ThumbnailReference: ()), renderingFlag: dataSource.renderingFlag),
+            info: QuotedAttachmentInfo(
+                info: .forV2ThumbnailReference(
+                    withOriginalAttachmentMimeType: mimeType,
+                    originalAttachmentSourceFilename: sourceFilename
+                ),
+                renderingFlag: renderingFlag
+            ),
             finalize: { [attachmentManager, dataSource] ownerId, tx in
                 let replyMessageOwner: AttachmentReference.OwnerBuilder.MessageAttachmentBuilder
                 switch ownerId {

@@ -70,6 +70,7 @@ class MessageBackupIntegrationTests: XCTestCase {
         case chatItemSessionSwitchover
         case chatItemSimpleUpdates
         case chatItemStandardMessageFormatted
+        case chatItemStandardMessageLinkPreview
         case chatItemStandardMessageLongText
         case chatItemStandardMessageSms
         case chatItemStandardMessageSpecialAttachments
@@ -155,6 +156,8 @@ class MessageBackupIntegrationTests: XCTestCase {
                     return binprotoName.contains("chat_item_simple_updates_")
                 case .chatItemStandardMessageFormatted:
                     return binprotoName.contains("chat_item_standard_message_formatted_")
+                case .chatItemStandardMessageLinkPreview:
+                    return binprotoName.contains("chat_item_standard_message_with_link_preview_")
                 case .chatItemStandardMessageLongText:
                     return binprotoName.contains("chat_item_standard_message_long_text_")
                 case .chatItemStandardMessageSms:
@@ -197,6 +200,16 @@ class MessageBackupIntegrationTests: XCTestCase {
                 .lastPathComponent
                 .filenameWithoutExtension
 
+            /// Separate the `Logger` and `XCTFail` steps. We want the test to
+            /// fail, but `XCTFail` is slow to get its output into the console,
+            /// so we'll log the interesting failure message separately so it's
+            /// sequential with whatever else is being logged (such as the next
+            /// test starting).
+            func logFailure(_ message: String) {
+                Logger.error(message)
+                XCTFail(filename)
+            }
+
             do {
                 Logger.info("""
 
@@ -204,14 +217,13 @@ class MessageBackupIntegrationTests: XCTestCase {
                 [TestCase] Running test case: \(filename)
 
                 """)
-                Logger.flush()
 
                 try await runRoundTripTest(
                     testCaseFileUrl: binprotoFileUrl,
                     failureLogOutput: preferredFailureLogOutput
                 )
             } catch TestError.failure(let message) {
-                XCTFail("""
+                logFailure("""
 
                 ------------
 
@@ -222,7 +234,7 @@ class MessageBackupIntegrationTests: XCTestCase {
                 ------------
                 """)
             } catch let error {
-                XCTFail("""
+                logFailure("""
 
                 ------------
 
@@ -234,6 +246,9 @@ class MessageBackupIntegrationTests: XCTestCase {
                 """)
             }
         }
+
+        /// Ensure we write all log output before the test finishes.
+        Logger.flush()
     }
 
     // MARK: -
