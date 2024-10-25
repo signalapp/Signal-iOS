@@ -270,10 +270,6 @@ public class MessageProcessor: NSObject {
         drainPendingEnvelopes()
     }
 
-    public var queuedContentCount: Int {
-        pendingEnvelopes.count
-    }
-
     private static let maxEnvelopeByteCount = 250 * 1024
     public static let largeEnvelopeWarningByteCount = 25 * 1024
     private let serialQueue = DispatchQueue(
@@ -443,7 +439,7 @@ public class MessageProcessor: NSObject {
         tx: SDSAnyWriteTransaction
     ) {
         let error = reallyHandleProcessingRequest(request, context: context, localIdentifiers: localIdentifiers, transaction: tx)
-        tx.addAsyncCompletionOffMain { request.receivedEnvelope.completion(error) }
+        tx.addSyncCompletion { request.receivedEnvelope.completion(error) }
     }
 
     @objc
