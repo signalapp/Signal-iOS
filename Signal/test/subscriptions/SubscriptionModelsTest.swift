@@ -124,7 +124,7 @@ class BadgeIdsTest: XCTestCase {
 
 class SubscriptionManagerDonationConfigurationTest: XCTestCase {
     private typealias JSON = [String: Any]
-    private typealias DonationConfiguration = SubscriptionManagerImpl.DonationConfiguration
+    private typealias DonationConfiguration = DonationSubscriptionManager.DonationConfiguration
 
     private enum CurrencyFixtures {
         static let minimumAmount: Int = 5

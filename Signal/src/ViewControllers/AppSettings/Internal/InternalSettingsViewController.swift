@@ -113,7 +113,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
             messageCount,
             tsAttachmentCount,
             v2AttachmentCount,
-            subscriberID,
+            donationSubscriberID,
             storageServiceManifestVersion
         ) = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return (
@@ -122,7 +122,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
                 TSInteraction.anyCount(transaction: tx),
                 TSAttachment.anyCount(transaction: tx),
                 try? Attachment.Record.fetchCount(tx.unwrapGrdbRead.database),
-                SubscriptionManagerImpl.getSubscriberID(transaction: tx),
+                DonationSubscriptionManager.getSubscriberID(transaction: tx),
                 StorageServiceManifestVersion.getCurrent(tx: tx)
             )
         }
@@ -135,8 +135,8 @@ class InternalSettingsViewController: OWSTableViewController2 {
         regSection.add(.copyableItem(label: "Device ID", value: "\(DependenciesBridge.shared.tsAccountManager.storedDeviceIdWithMaybeTransaction)"))
         regSection.add(.copyableItem(label: "Push Token", value: SSKEnvironment.shared.preferencesRef.pushToken))
         regSection.add(.copyableItem(label: "Profile Key", value: SSKEnvironment.shared.profileManagerRef.localProfileKey.keyData.hexadecimalString))
-        if let subscriberID {
-            regSection.add(.copyableItem(label: "Subscriber ID", value: subscriberID.asBase64Url))
+        if let donationSubscriberID {
+            regSection.add(.copyableItem(label: "Donation Subscriber ID", value: donationSubscriberID.asBase64Url))
         }
         contents.add(regSection)
 

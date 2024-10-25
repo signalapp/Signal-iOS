@@ -11,7 +11,7 @@ public class SignalMessagingJobQueues: NSObject {
         incomingContactSyncJobQueue = IncomingContactSyncJobQueue(appReadiness: appReadiness, db: db, reachabilityManager: reachabilityManager)
         sessionResetJobQueue = SessionResetJobQueue(db: db, reachabilityManager: reachabilityManager)
         tsAttachmentMultisendJobQueue = TSAttachmentMultisendJobQueue(db: db, reachabilityManager: reachabilityManager)
-        receiptCredentialJobQueue = ReceiptCredentialRedemptionJobQueue(db: db, reachabilityManager: reachabilityManager)
+        receiptCredentialJobQueue = DonationReceiptCredentialRedemptionJobQueue(db: db, reachabilityManager: reachabilityManager)
         sendGiftBadgeJobQueue = SendGiftBadgeJobQueue(db: db, reachabilityManager: reachabilityManager)
     }
 
@@ -24,6 +24,6 @@ public class SignalMessagingJobQueues: NSObject {
 
     public let sessionResetJobQueue: SessionResetJobQueue
     public let tsAttachmentMultisendJobQueue: TSAttachmentMultisendJobQueue
-    public let receiptCredentialJobQueue: ReceiptCredentialRedemptionJobQueue
+    public let receiptCredentialJobQueue: DonationReceiptCredentialRedemptionJobQueue
     public let sendGiftBadgeJobQueue: SendGiftBadgeJobQueue
 }

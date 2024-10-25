@@ -10,10 +10,10 @@ extension DonationPaymentDetailsViewController {
     enum DonationMode {
         case oneTime
         case monthly(
-            subscriptionLevel: SubscriptionLevel,
+            subscriptionLevel: DonationSubscriptionLevel,
             subscriberID: Data?,
             currentSubscription: Subscription?,
-            currentSubscriptionLevel: SubscriptionLevel?
+            currentSubscriptionLevel: DonationSubscriptionLevel?
         )
         case gift(thread: TSContactThread, messageText: String)
     }

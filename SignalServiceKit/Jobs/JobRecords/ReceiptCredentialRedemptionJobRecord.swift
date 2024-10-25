@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public final class ReceiptCredentialRedemptionJobRecord: JobRecord, FactoryInitializableFromRecordType {
-    override class var jobRecordType: JobRecordType { .receiptCredentialRedemption }
+public final class DonationReceiptCredentialRedemptionJobRecord: JobRecord, FactoryInitializableFromRecordType {
+    override class var jobRecordType: JobRecordType { .donationReceiptCredentialRedemption }
 
     public let paymentProcessor: String
     public let paymentMethod: String?

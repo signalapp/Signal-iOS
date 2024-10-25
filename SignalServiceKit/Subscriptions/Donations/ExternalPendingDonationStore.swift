@@ -24,8 +24,8 @@ public struct PendingMonthlyIDEALDonation: Codable, Equatable {
     public let subscriberId: Data
     public let clientSecret: String
     public let setupIntentId: String
-    public let newSubscriptionLevel: SubscriptionLevel
-    public let oldSubscriptionLevel: SubscriptionLevel?
+    public let newSubscriptionLevel: DonationSubscriptionLevel
+    public let oldSubscriptionLevel: DonationSubscriptionLevel?
     public let amount: FiatMoney
     public let createDate: Date
 
@@ -33,8 +33,8 @@ public struct PendingMonthlyIDEALDonation: Codable, Equatable {
         subscriberId: Data,
         clientSecret: String,
         setupIntentId: String,
-        newSubscriptionLevel: SubscriptionLevel,
-        oldSubscriptionLevel: SubscriptionLevel?,
+        newSubscriptionLevel: DonationSubscriptionLevel,
+        oldSubscriptionLevel: DonationSubscriptionLevel?,
         amount: FiatMoney
     ) {
         self.subscriberId = subscriberId

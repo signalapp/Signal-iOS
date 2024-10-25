@@ -207,7 +207,7 @@ public extension Notification.Name {
 /// similar things but designed around In-App Payments (StoreKit) and paid-tier
 /// Backups.
 @objc
-public class SubscriptionManagerImpl: NSObject {
+public class DonationSubscriptionManager: NSObject {
 
     public static func warmCaches() {
         let value = SSKEnvironment.shared.databaseStorageRef.read { displayBadgesOnProfile(transaction: $0) }
@@ -242,11 +242,13 @@ public class SubscriptionManagerImpl: NSObject {
 
     // MARK: -
 
-    public static var jobQueue: ReceiptCredentialRedemptionJobQueue { SSKEnvironment.shared.smJobQueuesRef.receiptCredentialJobQueue }
+    private static var jobQueue: DonationReceiptCredentialRedemptionJobQueue {
+        SSKEnvironment.shared.smJobQueuesRef.receiptCredentialJobQueue
+    }
 
     /// - Note
     /// This collection name is reused by other subscription-related stores. For
-    /// example, see ``ReceiptCredentialResultStore``.
+    /// example, see ``DonationReceiptCredentialResultStore``.
     private static let subscriptionKVS = SDSKeyValueStore(collection: "SubscriptionKeyValueStore")
 
     fileprivate static let subscriberIDKey = "subscriberID"
@@ -337,7 +339,7 @@ public class SubscriptionManagerImpl: NSObject {
     public class func finalizeNewSubscription(
         forSubscriberId subscriberId: Data,
         paymentType: RecurringSubscriptionPaymentType,
-        subscription: SubscriptionLevel,
+        subscription: DonationSubscriptionLevel,
         currencyCode: Currency.Code
     ) -> Promise<Subscription> {
         firstly { () -> Promise<Void> in
@@ -381,7 +383,7 @@ public class SubscriptionManagerImpl: NSObject {
     /// Update the subscription level for the given subscriber ID.
     public class func updateSubscriptionLevel(
         for subscriberID: Data,
-        to subscription: SubscriptionLevel,
+        to subscription: DonationSubscriptionLevel,
         currencyCode: Currency.Code
     ) -> Promise<Subscription> {
         Logger.info("[Donations] Updating subscription level")
@@ -437,9 +439,9 @@ public class SubscriptionManagerImpl: NSObject {
                 self.setMostRecentSubscriptionPaymentMethod(paymentMethod: nil, transaction: transaction)
                 self.setUserManuallyCancelledSubscription(true, transaction: transaction)
 
-                DependenciesBridge.shared.receiptCredentialResultStore
+                DependenciesBridge.shared.donationReceiptCredentialResultStore
                     .clearRedemptionSuccessForAnyRecurringSubscription(tx: transaction.asV2Write)
-                DependenciesBridge.shared.receiptCredentialResultStore
+                DependenciesBridge.shared.donationReceiptCredentialResultStore
                     .clearRequestErrorForAnyRecurringSubscription(tx: transaction.asV2Write)
             }
 
@@ -521,7 +523,7 @@ public class SubscriptionManagerImpl: NSObject {
     /// The updated subscription.
     private class func setSubscription(
         for subscriberID: Data,
-        subscription: SubscriptionLevel,
+        subscription: DonationSubscriptionLevel,
         currencyCode: Currency.Code
     ) -> Promise<Subscription> {
         let key = Randomness.generateRandomBytes(UInt(32)).asBase64Url
@@ -625,17 +627,17 @@ public class SubscriptionManagerImpl: NSObject {
 
     /// Represents a known error received during a receipt credential request.
     ///
-    /// Not to be confused with ``ReceiptCredentialRequestError``.
+    /// Not to be confused with ``DonationReceiptCredentialRequestError``.
     public struct KnownReceiptCredentialRequestError: Error {
         /// A code describing this error.
-        public let errorCode: ReceiptCredentialRequestError.ErrorCode
+        public let errorCode: DonationReceiptCredentialRequestError.ErrorCode
 
         /// If this error represents a payment failure, contains a string from
         /// the payment processor describing the payment failure.
         public let chargeFailureCodeIfPaymentFailed: String?
 
         fileprivate init(
-            errorCode: ReceiptCredentialRequestError.ErrorCode,
+            errorCode: DonationReceiptCredentialRequestError.ErrorCode,
             chargeFailureCodeIfPaymentFailed: String? = nil
         ) {
             owsPrecondition(
@@ -784,7 +786,7 @@ public class SubscriptionManagerImpl: NSObject {
     ) -> Error {
         guard
             let httpStatusCode = error.httpStatusCode,
-            let errorCode = ReceiptCredentialRequestError.ErrorCode(rawValue: httpStatusCode)
+            let errorCode = DonationReceiptCredentialRequestError.ErrorCode(rawValue: httpStatusCode)
         else { return error }
 
         if
@@ -1011,7 +1013,7 @@ public class SubscriptionManagerImpl: NSObject {
 
 // MARK: - State management
 
-extension SubscriptionManagerImpl {
+extension DonationSubscriptionManager {
 
     public static func getSubscriberID(transaction: SDSAnyReadTransaction) -> Data? {
         guard let subscriberID = subscriptionKVS.getObject(
@@ -1209,7 +1211,7 @@ public class OWSRetryableSubscriptionError: NSObject, CustomNSError, IsRetryable
     public var isRetryableProvider: Bool { true }
 }
 
-extension SubscriptionManagerImpl {
+extension DonationSubscriptionManager {
 
     private static var cachedBadges = [OneTimeBadgeLevel: CachedBadge]()
 
@@ -1268,7 +1270,7 @@ extension SubscriptionManagerImpl {
 
 // MARK: -
 
-extension SubscriptionManagerImpl {
+extension DonationSubscriptionManager {
     public static func reconcileBadgeStates(transaction: SDSAnyWriteTransaction) {
         let currentBadges = SSKEnvironment.shared.profileManagerImplRef.localUserProfile.badges
 
@@ -1428,7 +1430,7 @@ extension SubscriptionManagerImpl {
 
 // MARK: -
 
-extension SubscriptionManagerImpl {
+extension DonationSubscriptionManager {
 
     public enum RecurringSubscriptionPaymentType {
         case applePay(paymentMethodId: String)

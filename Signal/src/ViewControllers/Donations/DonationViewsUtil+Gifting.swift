@@ -160,7 +160,7 @@ extension DonationViewsUtil {
         ) -> Promise<Void> {
             let jobRecord = SendGiftBadgeJobQueue.createJob(
                 preparedPayment: preparedPayment,
-                receiptRequest: SubscriptionManagerImpl.generateReceiptRequest(),
+                receiptRequest: DonationSubscriptionManager.generateReceiptRequest(),
                 amount: amount,
                 thread: thread,
                 messageText: messageText

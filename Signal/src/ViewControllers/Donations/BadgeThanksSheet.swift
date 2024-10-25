@@ -119,7 +119,7 @@ class BadgeThanksSheet: OWSTableSheetViewController {
     private lazy var shouldMakeVisibleAndPrimary = self.initialVisibleBadgeResolver.switchDefault(for: self.badge.id)
 
     convenience init(
-        receiptCredentialRedemptionSuccess: ReceiptCredentialRedemptionSuccess
+        receiptCredentialRedemptionSuccess: DonationReceiptCredentialRedemptionSuccess
     ) {
         let thanksType: ThanksType = {
             switch receiptCredentialRedemptionSuccess.paymentMethod {
@@ -232,7 +232,7 @@ class BadgeThanksSheet: OWSTableSheetViewController {
             guard let giftBadge = incomingMessage.giftBadge else {
                 throw OWSAssertionError("trying to redeem message without a badge")
             }
-            return SubscriptionManagerImpl.redeemReceiptCredentialPresentation(
+            return DonationSubscriptionManager.redeemReceiptCredentialPresentation(
                 receiptCredentialPresentation: try giftBadge.getReceiptCredentialPresentation()
             )
         }.done(on: DispatchQueue.global()) {

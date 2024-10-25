@@ -76,6 +76,7 @@ public class DependenciesBridge {
     public let deviceManager: OWSDeviceManager
     public let deviceStore: OWSDeviceStore
     public let disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore
+    public let donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore
     public let editManager: EditManager
     public let editMessageStore: EditMessageStore
     public let externalPendingIDEALDonationStore: ExternalPendingIDEALDonationStore
@@ -117,7 +118,6 @@ public class DependenciesBridge {
     public let privateStoryThreadDeletionManager: any PrivateStoryThreadDeletionManager
     public let quotedReplyManager: QuotedReplyManager
     public let reactionStore: any ReactionStore
-    public let receiptCredentialResultStore: ReceiptCredentialResultStore
     public let recipientDatabaseTable: RecipientDatabaseTable
     public let recipientFetcher: RecipientFetcher
     public let recipientHidingManager: RecipientHidingManager
@@ -194,6 +194,7 @@ public class DependenciesBridge {
         deviceManager: OWSDeviceManager,
         deviceStore: OWSDeviceStore,
         disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore,
+        donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore,
         editManager: EditManager,
         editMessageStore: EditMessageStore,
         externalPendingIDEALDonationStore: ExternalPendingIDEALDonationStore,
@@ -235,7 +236,6 @@ public class DependenciesBridge {
         privateStoryThreadDeletionManager: any PrivateStoryThreadDeletionManager,
         quotedReplyManager: QuotedReplyManager,
         reactionStore: any ReactionStore,
-        receiptCredentialResultStore: ReceiptCredentialResultStore,
         recipientDatabaseTable: RecipientDatabaseTable,
         recipientFetcher: RecipientFetcher,
         recipientHidingManager: RecipientHidingManager,
@@ -309,6 +309,7 @@ public class DependenciesBridge {
         self.deviceManager = deviceManager
         self.deviceStore = deviceStore
         self.disappearingMessagesConfigurationStore = disappearingMessagesConfigurationStore
+        self.donationReceiptCredentialResultStore = donationReceiptCredentialResultStore
         self.editManager = editManager
         self.editMessageStore = editMessageStore
         self.externalPendingIDEALDonationStore = externalPendingIDEALDonationStore
@@ -350,7 +351,6 @@ public class DependenciesBridge {
         self.privateStoryThreadDeletionManager = privateStoryThreadDeletionManager
         self.quotedReplyManager = quotedReplyManager
         self.reactionStore = reactionStore
-        self.receiptCredentialResultStore = receiptCredentialResultStore
         self.recipientDatabaseTable = recipientDatabaseTable
         self.recipientFetcher = recipientFetcher
         self.recipientHidingManager = recipientHidingManager

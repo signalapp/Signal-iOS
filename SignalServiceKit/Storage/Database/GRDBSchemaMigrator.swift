@@ -2138,7 +2138,7 @@ public class GRDBSchemaMigrator: NSObject {
                 UPDATE model_SSKJobRecord
                 SET \(JobRecord.columnName(.paymentProcessor)) = 'STRIPE'
                 WHERE \(JobRecord.columnName(.recordType)) = \(SendGiftBadgeJobRecord.recordType)
-                OR \(JobRecord.columnName(.recordType)) = \(ReceiptCredentialRedemptionJobRecord.recordType)
+                OR \(JobRecord.columnName(.recordType)) = \(DonationReceiptCredentialRedemptionJobRecord.recordType)
             """
             try transaction.database.execute(sql: populateSql)
 

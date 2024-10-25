@@ -82,7 +82,7 @@ final class DonateViewControllerTest: SignalBaseTest {
             name: String = "First Level",
             badge: ProfileBadge = badgeOne,
             amounts: [Currency.Code: FiatMoney] = amountsOne
-        ) -> SubscriptionLevel {
+        ) -> DonationSubscriptionLevel {
             .init(
                 level: level,
                 badge: badge,
@@ -95,7 +95,7 @@ final class DonateViewControllerTest: SignalBaseTest {
             name: String = "Second Level",
             badge: ProfileBadge = badgeTwo,
             amounts: [Currency.Code: FiatMoney] = amountsTwo
-        ) -> SubscriptionLevel {
+        ) -> DonationSubscriptionLevel {
             .init(
                 level: level,
                 badge: badge,
@@ -103,13 +103,13 @@ final class DonateViewControllerTest: SignalBaseTest {
             )
         }
 
-        static let subscriptionLevels: [SubscriptionLevel] = [
+        static let subscriptionLevels: [DonationSubscriptionLevel] = [
             levelOneWithDefaults(),
             levelTwoWithDefaults()
         ]
 
         static func configWithDefaults(
-            subscriptionLevels: [SubscriptionLevel] = subscriptionLevels
+            subscriptionLevels: [DonationSubscriptionLevel] = subscriptionLevels
         ) -> State.MonthlyConfiguration {
             .init(levels: subscriptionLevels)
         }
@@ -236,10 +236,10 @@ final class DonateViewControllerTest: SignalBaseTest {
         recurringProcessingViaSubscription: Bool,
         recurringProcessingViaError: Bool
     ) -> State {
-        let recurringError: ReceiptCredentialRequestError? = {
+        let recurringError: DonationReceiptCredentialRequestError? = {
             guard recurringProcessingViaError else { return nil }
 
-            return ReceiptCredentialRequestError(
+            return DonationReceiptCredentialRequestError(
                 errorCode: .paymentStillProcessing,
                 chargeFailureCodeIfPaymentFailed: nil,
                 badge: MonthlyFixtures.badgeOne,
@@ -260,7 +260,7 @@ final class DonateViewControllerTest: SignalBaseTest {
             subscriberID: Data([1, 2, 3]),
             previousMonthlySubscriptionCurrencyCode: nil,
             previousMonthlySubscriptionPaymentMethod: .applePay,
-            oneTimeBoostReceiptCredentialRequestError: ReceiptCredentialRequestError(
+            oneTimeBoostReceiptCredentialRequestError: DonationReceiptCredentialRequestError(
                 errorCode: .paymentStillProcessing,
                 chargeFailureCodeIfPaymentFailed: nil,
                 badge: OneTimeFixtures.badge,

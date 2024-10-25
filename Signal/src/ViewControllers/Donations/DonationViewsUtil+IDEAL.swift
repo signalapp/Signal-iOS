@@ -236,7 +236,7 @@ extension DonationViewsUtil {
         return databaseStorage.read { tx in
             switch donationType {
             case .oneTime:
-                return SubscriptionManagerImpl.getCachedBadge(level: .boostBadge)
+                return DonationSubscriptionManager.getCachedBadge(level: .boostBadge)
                     .fetchIfNeeded()
                     .map(on: DispatchQueue.main) { result in
                         switch result {
@@ -263,7 +263,7 @@ extension DonationViewsUtil {
 
 private extension Stripe.IDEALCallbackType {
 
-    var asSuccessMode: ReceiptCredentialResultStore.Mode {
+    var asSuccessMode: DonationReceiptCredentialResultStore.Mode {
         switch self {
         case .oneTime: return .oneTimeBoost
         case .monthly: return .recurringSubscriptionInitiation

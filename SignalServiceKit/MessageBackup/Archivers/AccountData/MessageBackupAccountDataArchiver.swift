@@ -66,6 +66,7 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
 
     private let chatStyleArchiver: MessageBackupChatStyleArchiver
     private let disappearingMessageConfigurationStore: DisappearingMessagesConfigurationStore
+    private let donationSubscriptionManager: MessageBackup.AccountData.Shims.DonationSubscriptionManager
     private let linkPreviewSettingStore: LinkPreviewSettingStore
     private let localUsernameManager: LocalUsernameManager
     private let phoneNumberDiscoverabilityManager: PhoneNumberDiscoverabilityManager
@@ -74,7 +75,6 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
     private let receiptManager: MessageBackup.AccountData.Shims.ReceiptManager
     private let reactionManager: MessageBackup.AccountData.Shims.ReactionManager
     private let sskPreferences: MessageBackup.AccountData.Shims.SSKPreferences
-    private let subscriptionManager: MessageBackup.AccountData.Shims.SubscriptionManager
     private let storyManager: MessageBackup.AccountData.Shims.StoryManager
     private let systemStoryManager: MessageBackup.AccountData.Shims.SystemStoryManager
     private let typingIndicators: MessageBackup.AccountData.Shims.TypingIndicators
@@ -84,6 +84,7 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
     public init(
         chatStyleArchiver: MessageBackupChatStyleArchiver,
         disappearingMessageConfigurationStore: DisappearingMessagesConfigurationStore,
+        donationSubscriptionManager: MessageBackup.AccountData.Shims.DonationSubscriptionManager,
         linkPreviewSettingStore: LinkPreviewSettingStore,
         localUsernameManager: LocalUsernameManager,
         phoneNumberDiscoverabilityManager: PhoneNumberDiscoverabilityManager,
@@ -92,7 +93,6 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
         receiptManager: MessageBackup.AccountData.Shims.ReceiptManager,
         reactionManager: MessageBackup.AccountData.Shims.ReactionManager,
         sskPreferences: MessageBackup.AccountData.Shims.SSKPreferences,
-        subscriptionManager: MessageBackup.AccountData.Shims.SubscriptionManager,
         storyManager: MessageBackup.AccountData.Shims.StoryManager,
         systemStoryManager: MessageBackup.AccountData.Shims.SystemStoryManager,
         typingIndicators: MessageBackup.AccountData.Shims.TypingIndicators,
@@ -101,6 +101,7 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
     ) {
         self.chatStyleArchiver = chatStyleArchiver
         self.disappearingMessageConfigurationStore = disappearingMessageConfigurationStore
+        self.donationSubscriptionManager = donationSubscriptionManager
         self.linkPreviewSettingStore = linkPreviewSettingStore
         self.localUsernameManager = localUsernameManager
         self.phoneNumberDiscoverabilityManager = phoneNumberDiscoverabilityManager
@@ -108,7 +109,6 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
         self.receiptManager = receiptManager
         self.reactionManager = reactionManager
         self.sskPreferences = sskPreferences
-        self.subscriptionManager = subscriptionManager
         self.storyManager = storyManager
         self.systemStoryManager = systemStoryManager
         self.typingIndicators = typingIndicators
@@ -135,11 +135,11 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
         accountData.familyName = localProfile.familyName ?? ""
         accountData.avatarURLPath = localProfile.avatarUrlPath ?? ""
 
-        if let donationSubscriberId = subscriptionManager.getSubscriberID(tx: context.tx) {
+        if let donationSubscriberId = donationSubscriptionManager.getSubscriberID(tx: context.tx) {
             var donationSubscriberData = BackupProto_AccountData.SubscriberData()
             donationSubscriberData.subscriberID = donationSubscriberId
-            donationSubscriberData.currencyCode = subscriptionManager.getSubscriberCurrencyCode(tx: context.tx) ?? ""
-            donationSubscriberData.manuallyCancelled = subscriptionManager.userManuallyCancelledSubscription(tx: context.tx)
+            donationSubscriberData.currencyCode = donationSubscriptionManager.getSubscriberCurrencyCode(tx: context.tx) ?? ""
+            donationSubscriberData.manuallyCancelled = donationSubscriptionManager.userManuallyCancelledSubscription(tx: context.tx)
 
             accountData.donationSubscriberData = donationSubscriberData
         }
@@ -204,7 +204,7 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
             for: .universal,
             tx: context.tx
         ).durationSeconds
-        let displayBadgesOnProfile = subscriptionManager.displayBadgesOnProfile(tx: context.tx)
+        let displayBadgesOnProfile = donationSubscriptionManager.displayBadgesOnProfile(tx: context.tx)
         let keepMutedChatsArchived = sskPreferences.shouldKeepMutedChatsArchived(tx: context.tx)
         let hasSetMyStoriesPrivacy = storyManager.hasSetMyStoriesPrivacy(tx: context.tx)
         let hasViewedOnboardingStory = systemStoryManager.isOnboardingStoryViewed(tx: context.tx)
@@ -291,9 +291,9 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
         // Restore donation subscription data, if present.
         if accountData.hasDonationSubscriberData {
             let donationSubscriberData = accountData.donationSubscriberData
-            subscriptionManager.setSubscriberID(subscriberID: donationSubscriberData.subscriberID, tx: context.tx)
-            subscriptionManager.setSubscriberCurrencyCode(currencyCode: donationSubscriberData.currencyCode, tx: context.tx)
-            subscriptionManager.setUserManuallyCancelledSubscription(value: donationSubscriberData.manuallyCancelled, tx: context.tx)
+            donationSubscriptionManager.setSubscriberID(subscriberID: donationSubscriberData.subscriberID, tx: context.tx)
+            donationSubscriptionManager.setSubscriberCurrencyCode(currencyCode: donationSubscriberData.currencyCode, tx: context.tx)
+            donationSubscriptionManager.setUserManuallyCancelledSubscription(value: donationSubscriberData.manuallyCancelled, tx: context.tx)
         }
 
         let uploadEra: MessageBackup.RestoredAttachmentUploadEra
@@ -341,7 +341,7 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
             if settings.preferredReactionEmoji.count > 0 {
                 reactionManager.setCustomEmojiSet(emojis: settings.preferredReactionEmoji, tx: context.tx)
             }
-            subscriptionManager.setDisplayBadgesOnProfile(value: settings.displayBadgesOnProfile, tx: context.tx)
+            donationSubscriptionManager.setDisplayBadgesOnProfile(value: settings.displayBadgesOnProfile, tx: context.tx)
             sskPreferences.setShouldKeepMutedChatsArchived(value: settings.keepMutedChatsArchived, tx: context.tx)
             storyManager.setHasSetMyStoriesPrivacy(value: settings.hasSetMyStoriesPrivacy_p, tx: context.tx)
             systemStoryManager.setHasViewedOnboardingStory(value: settings.hasViewedOnboardingStory_p, tx: context.tx)

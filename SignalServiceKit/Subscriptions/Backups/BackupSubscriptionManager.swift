@@ -15,7 +15,7 @@ import LibSignalClient
 /// Settings app rather than in-app UI.
 ///
 /// - Important
-/// Not to be confused with ``SubscriptionManagerImpl``, which does many similar
+/// Not to be confused with ``DonationSubscriptionManager``, which does many similar
 /// things but designed around donations and profile badges.
 public protocol BackupSubscriptionManager {
     typealias PurchaseResult = BackupSubscription.PurchaseResult
@@ -422,11 +422,11 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         case .unattempted:
             logger.info("Generating receipt credential request.")
 
-            // TODO: [BSub] Move this code out of SubscriptionManagerImpl
+            // TODO: [BSub] Move this code out of DonationSubscriptionManager
             let (
                 receiptCredentialRequestContext,
                 receiptCredentialRequest
-            ) = SubscriptionManagerImpl.generateReceiptRequest()
+            ) = DonationSubscriptionManager.generateReceiptRequest()
 
             let nextRedemptionState: RedemptionAttemptState = .receiptCredentialRequesting(
                 request: receiptCredentialRequest,
@@ -450,8 +450,8 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
 
             let receiptCredential: ReceiptCredential
             do {
-                // TODO: [BSub] Move this code out of SubscriptionManagerImpl
-                receiptCredential = try await SubscriptionManagerImpl.requestReceiptCredential(
+                // TODO: [BSub] Move this code out of DonationSubscriptionManager
+                receiptCredential = try await DonationSubscriptionManager.requestReceiptCredential(
                     subscriberId: subscriberId,
                     isValidReceiptLevelPredicate: { receiptLevel -> Bool in
                         /// We'll accept either receipt level here to handle
@@ -466,7 +466,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
                     request: receiptCredentialRequest,
                     logger: logger
                 ).awaitable()
-            } catch let error as SubscriptionManagerImpl.KnownReceiptCredentialRequestError {
+            } catch let error as DonationSubscriptionManager.KnownReceiptCredentialRequestError {
                 switch error.errorCode {
                 case .paymentIntentRedeemed:
                     logger.warn("Subscription had already been redeemed for this period!")
@@ -512,7 +512,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         case .receiptCredentialRedemption(let receiptCredential):
             logger.info("Redeeming receipt credential.")
 
-            let presentation = try SubscriptionManagerImpl.generateReceiptCredentialPresentation(
+            let presentation = try DonationSubscriptionManager.generateReceiptCredentialPresentation(
                 receiptCredential: receiptCredential
             )
 

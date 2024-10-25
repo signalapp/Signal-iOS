@@ -1252,9 +1252,9 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             builder.setPreferredReactionEmoji(customEmojiSet)
         }
 
-        if let subscriberID = SubscriptionManagerImpl.getSubscriberID(transaction: transaction),
-           let subscriberCurrencyCode = SubscriptionManagerImpl.getSubscriberCurrencyCode(transaction: transaction) {
-            builder.setSubscriberID(subscriberID)
+        if let donationSubscriberID = DonationSubscriptionManager.getSubscriberID(transaction: transaction),
+           let subscriberCurrencyCode = DonationSubscriptionManager.getSubscriberCurrencyCode(transaction: transaction) {
+            builder.setSubscriberID(donationSubscriberID)
             builder.setSubscriberCurrencyCode(subscriberCurrencyCode)
         }
 
@@ -1263,8 +1263,8 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         builder.setReadOnboardingStory(systemStoryManager.isOnboardingStoryRead(transaction: transaction))
         builder.setViewedOnboardingStory(systemStoryManager.isOnboardingStoryViewed(transaction: transaction))
 
-        builder.setDisplayBadgesOnProfile(SubscriptionManagerImpl.displayBadgesOnProfile(transaction: transaction))
-        builder.setSubscriptionManuallyCancelled(SubscriptionManagerImpl.userManuallyCancelledSubscription(transaction: transaction))
+        builder.setDisplayBadgesOnProfile(DonationSubscriptionManager.displayBadgesOnProfile(transaction: transaction))
+        builder.setSubscriptionManuallyCancelled(DonationSubscriptionManager.userManuallyCancelledSubscription(transaction: transaction))
 
         builder.setKeepMutedChatsArchived(SSKPreferences.shouldKeepMutedChatsArchived(transaction: transaction))
 
@@ -1514,27 +1514,27 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         }
 
         if let subscriberIDData = record.subscriberID, let subscriberCurrencyCode = record.subscriberCurrencyCode {
-            if subscriberIDData != SubscriptionManagerImpl.getSubscriberID(transaction: transaction) {
-                SubscriptionManagerImpl.setSubscriberID(subscriberIDData, transaction: transaction)
+            if subscriberIDData != DonationSubscriptionManager.getSubscriberID(transaction: transaction) {
+                DonationSubscriptionManager.setSubscriberID(subscriberIDData, transaction: transaction)
             }
 
-            if subscriberCurrencyCode != SubscriptionManagerImpl.getSubscriberCurrencyCode(transaction: transaction) {
-                SubscriptionManagerImpl.setSubscriberCurrencyCode(subscriberCurrencyCode, transaction: transaction)
+            if subscriberCurrencyCode != DonationSubscriptionManager.getSubscriberCurrencyCode(transaction: transaction) {
+                DonationSubscriptionManager.setSubscriberCurrencyCode(subscriberCurrencyCode, transaction: transaction)
             }
         }
 
-        let localDisplayBadgesOnProfile = SubscriptionManagerImpl.displayBadgesOnProfile(transaction: transaction)
+        let localDisplayBadgesOnProfile = DonationSubscriptionManager.displayBadgesOnProfile(transaction: transaction)
         if localDisplayBadgesOnProfile != record.displayBadgesOnProfile {
-            SubscriptionManagerImpl.setDisplayBadgesOnProfile(
+            DonationSubscriptionManager.setDisplayBadgesOnProfile(
                 record.displayBadgesOnProfile,
                 updateStorageService: false,
                 transaction: transaction
             )
         }
 
-        let localSubscriptionManuallyCancelled = SubscriptionManagerImpl.userManuallyCancelledSubscription(transaction: transaction)
+        let localSubscriptionManuallyCancelled = DonationSubscriptionManager.userManuallyCancelledSubscription(transaction: transaction)
         if localSubscriptionManuallyCancelled != record.subscriptionManuallyCancelled {
-            SubscriptionManagerImpl.setUserManuallyCancelledSubscription(
+            DonationSubscriptionManager.setUserManuallyCancelledSubscription(
                 record.subscriptionManuallyCancelled,
                 updateStorageService: false,
                 transaction: transaction

@@ -256,7 +256,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         case .storageManifest:
             SSKEnvironment.shared.storageServiceManagerRef.restoreOrCreateManifestIfNecessary(authedDevice: .implicit)
         case .subscriptionStatus:
-            SubscriptionManagerImpl.performDeviceSubscriptionExpiryUpdate()
+            DonationSubscriptionManager.performDeviceSubscriptionExpiryUpdate()
         }
     }
 

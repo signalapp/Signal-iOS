@@ -76,7 +76,7 @@ extension JobRecord {
         case paypalPaymentId
         case paypalPaymentToken
 
-        // MARK: ReceiptCredentialRedemptionJobRecord
+        // MARK: DonationReceiptCredentialRedemptionJobRecord
 
         case receiptCredentialPresentation
 
@@ -88,7 +88,7 @@ extension JobRecord {
         case isNewSubscription
         case shouldSuppressPaymentAlreadyRedeemed
 
-        // MARK: SendGiftBadgeJobRecord & ReceiptCredentialRedemptionJobRecord
+        // MARK: SendGiftBadgeJobRecord & DonationReceiptCredentialRedemptionJobRecord
 
         case amount
         case currencyCode

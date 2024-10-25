@@ -853,7 +853,7 @@ public class AppSetup {
             messageSenderJobQueue: messageSenderJobQueue
         )
 
-        let receiptCredentialResultStore = ReceiptCredentialResultStoreImpl(
+        let donationReceiptCredentialResultStore = DonationReceiptCredentialResultStoreImpl(
             kvStoreFactory: keyValueStoreFactory
         )
 
@@ -1028,6 +1028,7 @@ public class AppSetup {
             accountDataArchiver: MessageBackupAccountDataArchiverImpl(
                 chatStyleArchiver: messageBackupChatStyleArchiver,
                 disappearingMessageConfigurationStore: disappearingMessagesConfigurationStore,
+                donationSubscriptionManager: MessageBackup.AccountData.Wrappers.DonationSubscriptionManager(),
                 linkPreviewSettingStore: linkPreviewSettingStore,
                 localUsernameManager: localUsernameManager,
                 phoneNumberDiscoverabilityManager: phoneNumberDiscoverabilityManager,
@@ -1036,7 +1037,6 @@ public class AppSetup {
                 receiptManager: MessageBackup.AccountData.Wrappers.ReceiptManager(receiptManager: receiptManager),
                 reactionManager: MessageBackup.AccountData.Wrappers.ReactionManager(),
                 sskPreferences: MessageBackup.AccountData.Wrappers.SSKPreferences(),
-                subscriptionManager: MessageBackup.AccountData.Wrappers.SubscriptionManager(),
                 storyManager: MessageBackup.AccountData.Wrappers.StoryManager(),
                 systemStoryManager: MessageBackup.AccountData.Wrappers.SystemStoryManager(systemStoryManager: systemStoryManager),
                 typingIndicators: MessageBackup.AccountData.Wrappers.TypingIndicators(typingIndicators: typingIndicators),
@@ -1230,6 +1230,7 @@ public class AppSetup {
             deviceManager: deviceManager,
             deviceStore: deviceStore,
             disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
+            donationReceiptCredentialResultStore: donationReceiptCredentialResultStore,
             editManager: editManager,
             editMessageStore: editMessageStore,
             externalPendingIDEALDonationStore: externalPendingIDEALDonationStore,
@@ -1271,7 +1272,6 @@ public class AppSetup {
             privateStoryThreadDeletionManager: privateStoryThreadDeletionManager,
             quotedReplyManager: quotedReplyManager,
             reactionStore: reactionStore,
-            receiptCredentialResultStore: receiptCredentialResultStore,
             recipientDatabaseTable: recipientDatabaseTable,
             recipientFetcher: recipientFetcher,
             recipientHidingManager: recipientHidingManager,

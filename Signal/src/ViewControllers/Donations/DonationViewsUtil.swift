@@ -22,7 +22,7 @@ public class ProfileBadgeLookup {
         self.init(boostBadge: nil, giftBadge: nil, subscriptionLevels: [])
     }
 
-    public init(boostBadge: ProfileBadge?, giftBadge: ProfileBadge?, subscriptionLevels: [SubscriptionLevel]) {
+    public init(boostBadge: ProfileBadge?, giftBadge: ProfileBadge?, subscriptionLevels: [DonationSubscriptionLevel]) {
         self.boostBadge = boostBadge
         self.giftBadge = giftBadge
 
@@ -215,9 +215,9 @@ public final class DonationViewsUtil {
     /// donation.
     public static func completeMonthlyDonations(
         subscriberId: Data,
-        paymentType: SubscriptionManagerImpl.RecurringSubscriptionPaymentType,
-        newSubscriptionLevel: SubscriptionLevel,
-        priorSubscriptionLevel: SubscriptionLevel?,
+        paymentType: DonationSubscriptionManager.RecurringSubscriptionPaymentType,
+        newSubscriptionLevel: DonationSubscriptionLevel,
+        priorSubscriptionLevel: DonationSubscriptionLevel?,
         currencyCode: Currency.Code,
         databaseStorage: SDSDatabaseStorage
     ) -> Promise<Void> {
@@ -265,7 +265,7 @@ public final class DonationViewsUtil {
         amount: FiatMoney,
         paymentMethod: DonationPaymentMethod
     ) -> Promise<Void> {
-        let redemptionJob = SubscriptionManagerImpl.requestAndRedeemReceipt(
+        let redemptionJob = DonationSubscriptionManager.requestAndRedeemReceipt(
             boostPaymentIntentId: paymentIntentId,
             amount: amount,
             paymentProcessor: .stripe,
@@ -276,15 +276,15 @@ public final class DonationViewsUtil {
 
     public static func finalizeAndRedeemSubscription(
         subscriberId: Data,
-        paymentType: SubscriptionManagerImpl.RecurringSubscriptionPaymentType,
-        newSubscriptionLevel: SubscriptionLevel,
-        priorSubscriptionLevel: SubscriptionLevel?,
+        paymentType: DonationSubscriptionManager.RecurringSubscriptionPaymentType,
+        newSubscriptionLevel: DonationSubscriptionLevel,
+        priorSubscriptionLevel: DonationSubscriptionLevel?,
         currencyCode: Currency.Code
     ) -> Promise<Void> {
         firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<Subscription> in
             Logger.info("[Donations] Finalizing new subscription")
 
-            return SubscriptionManagerImpl.finalizeNewSubscription(
+            return DonationSubscriptionManager.finalizeNewSubscription(
                 forSubscriberId: subscriberId,
                 paymentType: paymentType,
                 subscription: newSubscriptionLevel,
@@ -293,7 +293,7 @@ public final class DonationViewsUtil {
         }.then(on: DispatchQueue.sharedUserInitiated) { _ in
             Logger.info("[Donations] Redeeming monthly receipts")
 
-            let redemptionJob = SubscriptionManagerImpl.requestAndRedeemReceipt(
+            let redemptionJob = DonationSubscriptionManager.requestAndRedeemReceipt(
                 subscriberId: subscriberId,
                 subscriptionLevel: newSubscriptionLevel.level,
                 priorSubscriptionLevel: priorSubscriptionLevel?.level,
@@ -306,12 +306,12 @@ public final class DonationViewsUtil {
         }
     }
 
-    public static func loadSubscriptionLevels(badgeStore: BadgeStore) -> Promise<[SubscriptionLevel]> {
-        firstly { () -> Promise<SubscriptionManagerImpl.DonationConfiguration> in
-            SubscriptionManagerImpl.fetchDonationConfiguration()
-        }.map { donationConfiguration -> [SubscriptionLevel] in
+    public static func loadSubscriptionLevels(badgeStore: BadgeStore) -> Promise<[DonationSubscriptionLevel]> {
+        firstly { () -> Promise<DonationSubscriptionManager.DonationConfiguration> in
+            DonationSubscriptionManager.fetchDonationConfiguration()
+        }.map { donationConfiguration -> [DonationSubscriptionLevel] in
             donationConfiguration.subscription.levels
-        }.then { (fetchedSubscriptions: [SubscriptionLevel]) -> Promise<[SubscriptionLevel]> in
+        }.then { (fetchedSubscriptions: [DonationSubscriptionLevel]) -> Promise<[DonationSubscriptionLevel]> in
             let badgeUpdatePromises = fetchedSubscriptions.map { badgeStore.populateAssetsOnBadge($0.badge) }
             return Promise.when(fulfilled: badgeUpdatePromises).map { fetchedSubscriptions }
         }
@@ -319,14 +319,14 @@ public final class DonationViewsUtil {
 
     public static func loadCurrentSubscription(subscriberID: Data?) -> Promise<Subscription?> {
         if let subscriberID = subscriberID {
-            return SubscriptionManagerImpl.getCurrentSubscriptionStatus(for: subscriberID)
+            return DonationSubscriptionManager.getCurrentSubscriptionStatus(for: subscriberID)
         } else {
             return Promise.value(nil)
         }
     }
 
-    public static func subscriptionLevelForSubscription(subscriptionLevels: [SubscriptionLevel],
-                                                        subscription: Subscription) -> SubscriptionLevel? {
+    public static func subscriptionLevelForSubscription(subscriptionLevels: [DonationSubscriptionLevel],
+                                                        subscription: Subscription) -> DonationSubscriptionLevel? {
         subscriptionLevels.first { $0.level == subscription.level }
     }
 
@@ -553,8 +553,8 @@ public final class DonationViewsUtil {
         from viewController: UIViewController,
         donateMode: DonateViewController.DonateMode
     ) {
-        let receiptCredentialRequestError = SSKEnvironment.shared.databaseStorageRef.read { tx -> ReceiptCredentialRequestError? in
-            let resultStore = DependenciesBridge.shared.receiptCredentialResultStore
+        let receiptCredentialRequestError = SSKEnvironment.shared.databaseStorageRef.read { tx -> DonationReceiptCredentialRequestError? in
+            let resultStore = DependenciesBridge.shared.donationReceiptCredentialResultStore
 
             switch donateMode {
             case .oneTime:

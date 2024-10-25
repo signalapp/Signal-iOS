@@ -1276,7 +1276,7 @@
 		7254652A2BA01B4800EABFD2 /* PaymentsHelperImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3465F4DA27287858001663AF /* PaymentsHelperImpl.swift */; };
 		725465382BA01FAA00EABFD2 /* SignalMessagingJobQueues.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9668B34291B088200665298 /* SignalMessagingJobQueues.swift */; };
 		725465392BA01FAA00EABFD2 /* SendGiftBadgeJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98EA264286A469100791EB4 /* SendGiftBadgeJobQueue.swift */; };
-		7254653A2BA01FAA00EABFD2 /* ReceiptCredentialRedemptionJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886A58C9276A760600A1099B /* ReceiptCredentialRedemptionJobQueue.swift */; };
+		7254653A2BA01FAA00EABFD2 /* DonationReceiptCredentialRedemptionJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886A58C9276A760600A1099B /* DonationReceiptCredentialRedemptionJobQueue.swift */; };
 		7254653B2BA01FCC00EABFD2 /* PreparedGiftPayment.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9292633297743EF0097F8FF /* PreparedGiftPayment.swift */; };
 		7254653C2BA01FCC00EABFD2 /* DonationUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00385FD273F6388000B5ABD /* DonationUtilities.swift */; };
 		7254653D2BA01FCC00EABFD2 /* Stripe.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00385FE273F6388000B5ABD /* Stripe.swift */; };
@@ -1289,9 +1289,9 @@
 		725465442BA01FCC00EABFD2 /* Stripe+Subscriptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D96A94A82955270D004EA434 /* Stripe+Subscriptions.swift */; };
 		725465452BA01FCC00EABFD2 /* ProfileBadgesSnapshot+Constructors.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99554702AF566C30001E15C /* ProfileBadgesSnapshot+Constructors.swift */; };
 		725465462BA01FCC00EABFD2 /* Paypal.swift in Sources */ = {isa = PBXBuildFile; fileRef = D938CD5F29283402006FB16A /* Paypal.swift */; };
-		725465472BA01FCC00EABFD2 /* SubscriptionManager+DonationConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98300B12936E6C70018FDC2 /* SubscriptionManager+DonationConfiguration.swift */; };
+		725465472BA01FCC00EABFD2 /* DonationSubscriptionManager+DonationConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98300B12936E6C70018FDC2 /* DonationSubscriptionManager+DonationConfiguration.swift */; };
 		725465482BA01FCC00EABFD2 /* Stripe+IDEAL.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D5836E2B03DFED00EE8FD9 /* Stripe+IDEAL.swift */; };
-		725465492BA01FCC00EABFD2 /* SubscriptionManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886A58C8276A760600A1099B /* SubscriptionManagerImpl.swift */; };
+		725465492BA01FCC00EABFD2 /* DonationSubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886A58C8276A760600A1099B /* DonationSubscriptionManager.swift */; };
 		7254654A2BA01FCC00EABFD2 /* Stripe+3DSecure.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B3A92A2935472F0071EB95 /* Stripe+3DSecure.swift */; };
 		7254654B2BA0268B00EABFD2 /* StripeTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F992ACC328F8C9D900906038 /* StripeTest.swift */; };
 		725465512BA0282D00EABFD2 /* GroupsV2ProfileKeyUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345DE95F23ED9AA500A8E6E3 /* GroupsV2ProfileKeyUpdater.swift */; };
@@ -1776,7 +1776,7 @@
 		C1ED5CA12A72E3D5009AD3FC /* PreKeyTaskManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1ED5CA02A72E3D5009AD3FC /* PreKeyTaskManager.swift */; };
 		C1F09B9F2BB307E100F9E7F5 /* TransformingInputStreamTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F09B9E2BB307E100F9E7F5 /* TransformingInputStreamTests.swift */; };
 		C1F09BA12BB32E5900F9E7F5 /* RegistrationRestoreFromBackupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F09BA02BB32E5900F9E7F5 /* RegistrationRestoreFromBackupViewController.swift */; };
-		C1FB9B732B16495D00D51A3B /* SubscriptionLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1FB9B722B16495D00D51A3B /* SubscriptionLevel.swift */; };
+		C1FB9B732B16495D00D51A3B /* DonationSubscriptionLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1FB9B722B16495D00D51A3B /* DonationSubscriptionLevel.swift */; };
 		C1FB9B752B16498C00D51A3B /* ExternalPendingDonationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1FB9B742B16498C00D51A3B /* ExternalPendingDonationStore.swift */; };
 		C1FE1F612C80CDC30031860B /* AttachmentBackupThumbnail.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1FE1F602C80CDC30031860B /* AttachmentBackupThumbnail.swift */; };
 		C26296B4BDCEDADBDA01DDD2 /* Pods_SignalServiceKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 948B2FC201146EF3BA459226 /* Pods_SignalServiceKit.framework */; };
@@ -2028,8 +2028,8 @@
 		D957877F2C6D2CB60051AC74 /* TSInfoMessage+ThreadMerge.swift in Sources */ = {isa = PBXBuildFile; fileRef = D957877E2C6D2CB60051AC74 /* TSInfoMessage+ThreadMerge.swift */; };
 		D95787812C6D2D010051AC74 /* TSInfoMessage+PhoneNumberChange.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95787802C6D2D010051AC74 /* TSInfoMessage+PhoneNumberChange.swift */; };
 		D95787832C6D2FBA0051AC74 /* OWSDisappearingConfigurationUpdateInfoMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95787822C6D2FBA0051AC74 /* OWSDisappearingConfigurationUpdateInfoMessage.swift */; };
-		D958305A2AE85E1600BB06A4 /* ReceiptCredentialResultStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95830592AE85E1600BB06A4 /* ReceiptCredentialResultStore.swift */; };
-		D95830602AE8931900BB06A4 /* ReceiptCredentialRequestError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D958305F2AE8931900BB06A4 /* ReceiptCredentialRequestError.swift */; };
+		D958305A2AE85E1600BB06A4 /* DonationReceiptCredentialResultStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95830592AE85E1600BB06A4 /* DonationReceiptCredentialResultStore.swift */; };
+		D95830602AE8931900BB06A4 /* DonationReceiptCredentialRequestError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D958305F2AE8931900BB06A4 /* DonationReceiptCredentialRequestError.swift */; };
 		D958C6792B9FBD66002F6888 /* IncomingCallLogEventSyncMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D958C6782B9FBD66002F6888 /* IncomingCallLogEventSyncMessageManager.swift */; };
 		D958C67B2B9FBFBC002F6888 /* IncomingCallLogEventSyncMessageParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = D958C67A2B9FBFBC002F6888 /* IncomingCallLogEventSyncMessageParams.swift */; };
 		D958C67D2BA0F3B2002F6888 /* IncomingCallLogEventSyncMessageManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D958C67C2BA0F3B2002F6888 /* IncomingCallLogEventSyncMessageManagerTest.swift */; };
@@ -2143,7 +2143,7 @@
 		D990CACD2B4DCD83000A99A2 /* ConsumableMockPromise.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93830772A70399C006CDCDE /* ConsumableMockPromise.swift */; };
 		D994C7D12C45D24F009ECEDA /* MessageBackupProfileChangeChatUpdateArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D994C7D02C45D24F009ECEDA /* MessageBackupProfileChangeChatUpdateArchiver.swift */; };
 		D994C7D92C486E54009ECEDA /* ContextMenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D994C7D82C486E54009ECEDA /* ContextMenuButton.swift */; };
-		D995546E2AF563150001E15C /* ReceiptCredentialRedemptionSuccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = D995546D2AF563150001E15C /* ReceiptCredentialRedemptionSuccess.swift */; };
+		D995546E2AF563150001E15C /* DonationReceiptCredentialRedemptionSuccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = D995546D2AF563150001E15C /* DonationReceiptCredentialRedemptionSuccess.swift */; };
 		D995546F2AF5668E0001E15C /* ProfileBadgesSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99554692AF4873E0001E15C /* ProfileBadgesSnapshot.swift */; };
 		D99554752AF5AFE90001E15C /* BadgeThanksSheetPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99554742AF5AFE80001E15C /* BadgeThanksSheetPresenter.swift */; };
 		D99655E32C50433800AD29FB /* MessageBackupLearnedProfileChatUpdateArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99655E22C50433800AD29FB /* MessageBackupLearnedProfileChatUpdateArchiver.swift */; };
@@ -2707,7 +2707,7 @@
 		E1C2A54B2A8FCB0D00AEC4DA /* DeleteSystemContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1C2A54A2A8FCB0D00AEC4DA /* DeleteSystemContactViewController.swift */; };
 		E1D827DA2BDC1F7B0022C1AF /* ReactionBurstManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1D827D82BDC1F6B0022C1AF /* ReactionBurstManagerTests.swift */; };
 		E44AD4E624E98F440035D7B8 /* PhotoCaptureDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44AD4E524E98F430035D7B8 /* PhotoCaptureDismiss.swift */; };
-		E75DD3E02810CDBD00E32C36 /* SubscriptionManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75DD3DF2810CDBD00E32C36 /* SubscriptionManagerTest.swift */; };
+		E75DD3E02810CDBD00E32C36 /* SubscriptionModelsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75DD3DF2810CDBD00E32C36 /* SubscriptionModelsTest.swift */; };
 		E7D7C93F28B580AC003F043B /* Bundle+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7D7C93E28B580AC003F043B /* Bundle+OWS.swift */; };
 		EC7A9D369AF9724FEEE5B653 /* Pods_SignalUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3F39202F831935AAE1C5F54 /* Pods_SignalUITests.framework */; };
 		F02564D8274EDF4600D7B48A /* BadgeIssueSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F02564D7274EDF4600D7B48A /* BadgeIssueSheet.swift */; };
@@ -5072,8 +5072,8 @@
 		8864073027F21AD7009916B6 /* StoryReplyInputToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryReplyInputToolbar.swift; sourceTree = "<group>"; };
 		8868A088287F4514000E74A5 /* NewStorySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewStorySheet.swift; sourceTree = "<group>"; };
 		8868A08B287F4F81000E74A5 /* OWSTableSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSTableSheetViewController.swift; sourceTree = "<group>"; };
-		886A58C8276A760600A1099B /* SubscriptionManagerImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubscriptionManagerImpl.swift; sourceTree = "<group>"; };
-		886A58C9276A760600A1099B /* ReceiptCredentialRedemptionJobQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReceiptCredentialRedemptionJobQueue.swift; sourceTree = "<group>"; };
+		886A58C8276A760600A1099B /* DonationSubscriptionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DonationSubscriptionManager.swift; sourceTree = "<group>"; };
+		886A58C9276A760600A1099B /* DonationReceiptCredentialRedemptionJobQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DonationReceiptCredentialRedemptionJobQueue.swift; sourceTree = "<group>"; };
 		886CB07724E77E5B00753909 /* silence.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = silence.aiff; sourceTree = "<group>"; };
 		8871B16E25F007DE00D4E070 /* ProfileSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSettingsViewController.swift; sourceTree = "<group>"; };
 		8871B17025F0139D00D4E070 /* ProfileNameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileNameViewController.swift; sourceTree = "<group>"; };
@@ -5398,7 +5398,7 @@
 		C1ED5CA02A72E3D5009AD3FC /* PreKeyTaskManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyTaskManager.swift; sourceTree = "<group>"; };
 		C1F09B9E2BB307E100F9E7F5 /* TransformingInputStreamTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransformingInputStreamTests.swift; sourceTree = "<group>"; };
 		C1F09BA02BB32E5900F9E7F5 /* RegistrationRestoreFromBackupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationRestoreFromBackupViewController.swift; sourceTree = "<group>"; };
-		C1FB9B722B16495D00D51A3B /* SubscriptionLevel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionLevel.swift; sourceTree = "<group>"; };
+		C1FB9B722B16495D00D51A3B /* DonationSubscriptionLevel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationSubscriptionLevel.swift; sourceTree = "<group>"; };
 		C1FB9B742B16498C00D51A3B /* ExternalPendingDonationStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExternalPendingDonationStore.swift; sourceTree = "<group>"; };
 		C1FE1F602C80CDC30031860B /* AttachmentBackupThumbnail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentBackupThumbnail.swift; sourceTree = "<group>"; };
 		C597942EF64D456BBE9782A2 /* Pods-SignalTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.debug.xcconfig"; path = "Target Support Files/Pods-SignalTests/Pods-SignalTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -5654,8 +5654,8 @@
 		D957877E2C6D2CB60051AC74 /* TSInfoMessage+ThreadMerge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+ThreadMerge.swift"; sourceTree = "<group>"; };
 		D95787802C6D2D010051AC74 /* TSInfoMessage+PhoneNumberChange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+PhoneNumberChange.swift"; sourceTree = "<group>"; };
 		D95787822C6D2FBA0051AC74 /* OWSDisappearingConfigurationUpdateInfoMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDisappearingConfigurationUpdateInfoMessage.swift; sourceTree = "<group>"; };
-		D95830592AE85E1600BB06A4 /* ReceiptCredentialResultStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptCredentialResultStore.swift; sourceTree = "<group>"; };
-		D958305F2AE8931900BB06A4 /* ReceiptCredentialRequestError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptCredentialRequestError.swift; sourceTree = "<group>"; };
+		D95830592AE85E1600BB06A4 /* DonationReceiptCredentialResultStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationReceiptCredentialResultStore.swift; sourceTree = "<group>"; };
+		D958305F2AE8931900BB06A4 /* DonationReceiptCredentialRequestError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationReceiptCredentialRequestError.swift; sourceTree = "<group>"; };
 		D958C6782B9FBD66002F6888 /* IncomingCallLogEventSyncMessageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomingCallLogEventSyncMessageManager.swift; sourceTree = "<group>"; };
 		D958C67A2B9FBFBC002F6888 /* IncomingCallLogEventSyncMessageParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomingCallLogEventSyncMessageParams.swift; sourceTree = "<group>"; };
 		D958C67C2BA0F3B2002F6888 /* IncomingCallLogEventSyncMessageManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomingCallLogEventSyncMessageManagerTest.swift; sourceTree = "<group>"; };
@@ -5755,7 +5755,7 @@
 		D979CC5A2AD61699006AAC49 /* GroupCallRecordManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupCallRecordManager.swift; sourceTree = "<group>"; };
 		D979CC5C2AD616A4006AAC49 /* GroupCallRecordManagerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupCallRecordManagerTest.swift; sourceTree = "<group>"; };
 		D979DA152B8D1FDD000EEAB8 /* BadgeCountFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeCountFetcher.swift; sourceTree = "<group>"; };
-		D98300B12936E6C70018FDC2 /* SubscriptionManager+DonationConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubscriptionManager+DonationConfiguration.swift"; sourceTree = "<group>"; };
+		D98300B12936E6C70018FDC2 /* DonationSubscriptionManager+DonationConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationSubscriptionManager+DonationConfiguration.swift"; sourceTree = "<group>"; };
 		D984F7202C1A2DE300E1CA49 /* DeleteForMeSyncMessageSettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteForMeSyncMessageSettingsStore.swift; sourceTree = "<group>"; };
 		D984F7232C21FF1600E1CA49 /* DeleteForMeOutgoingSyncMessageTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteForMeOutgoingSyncMessageTest.swift; sourceTree = "<group>"; };
 		D985D86329B91C400087C90C /* ChangePhoneNumberPniManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePhoneNumberPniManagerTest.swift; sourceTree = "<group>"; };
@@ -5772,7 +5772,7 @@
 		D994C7D02C45D24F009ECEDA /* MessageBackupProfileChangeChatUpdateArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupProfileChangeChatUpdateArchiver.swift; sourceTree = "<group>"; };
 		D994C7D82C486E54009ECEDA /* ContextMenuButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuButton.swift; sourceTree = "<group>"; };
 		D99554692AF4873E0001E15C /* ProfileBadgesSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileBadgesSnapshot.swift; sourceTree = "<group>"; };
-		D995546D2AF563150001E15C /* ReceiptCredentialRedemptionSuccess.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReceiptCredentialRedemptionSuccess.swift; sourceTree = "<group>"; };
+		D995546D2AF563150001E15C /* DonationReceiptCredentialRedemptionSuccess.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DonationReceiptCredentialRedemptionSuccess.swift; sourceTree = "<group>"; };
 		D99554702AF566C30001E15C /* ProfileBadgesSnapshot+Constructors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProfileBadgesSnapshot+Constructors.swift"; sourceTree = "<group>"; };
 		D99554742AF5AFE80001E15C /* BadgeThanksSheetPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeThanksSheetPresenter.swift; sourceTree = "<group>"; };
 		D99655E22C50433800AD29FB /* MessageBackupLearnedProfileChatUpdateArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupLearnedProfileChatUpdateArchiver.swift; sourceTree = "<group>"; };
@@ -6349,7 +6349,7 @@
 		E1CFAAA22C9DD2B1003145C3 /* LinkPreviewCallLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewCallLink.swift; sourceTree = "<group>"; };
 		E1D827D82BDC1F6B0022C1AF /* ReactionBurstManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactionBurstManagerTests.swift; sourceTree = "<group>"; };
 		E44AD4E524E98F430035D7B8 /* PhotoCaptureDismiss.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCaptureDismiss.swift; sourceTree = "<group>"; };
-		E75DD3DF2810CDBD00E32C36 /* SubscriptionManagerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubscriptionManagerTest.swift; sourceTree = "<group>"; };
+		E75DD3DF2810CDBD00E32C36 /* SubscriptionModelsTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubscriptionModelsTest.swift; sourceTree = "<group>"; };
 		E7D7C93E28B580AC003F043B /* Bundle+OWS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bundle+OWS.swift"; sourceTree = "<group>"; };
 		EA03B20E7D8DBBE1B07BA967 /* Pods-SignalNSE.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalNSE.debug.xcconfig"; path = "Target Support Files/Pods-SignalNSE/Pods-SignalNSE.debug.xcconfig"; sourceTree = "<group>"; };
 		EC7FF00AFA51D97689DC9C2E /* Pods-SignalUI.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUI.debug.xcconfig"; path = "Target Support Files/Pods-SignalUI/Pods-SignalUI.debug.xcconfig"; sourceTree = "<group>"; };
@@ -11094,30 +11094,8 @@
 		D91A39E62AE2F42000F57A61 /* Subscriptions */ = {
 			isa = PBXGroup;
 			children = (
-				500FE48E2886148800FA090C /* CachedBadge.swift */,
-				D91F7A2C2935A32F00012C64 /* DonationMode.swift */,
-				F98ED2D729255F4D008483DC /* DonationPaymentMethod.swift */,
-				D91A39E82AE2F4C000F57A61 /* DonationPaymentProcessor.swift */,
-				F00385FD273F6388000B5ABD /* DonationUtilities.swift */,
-				C1FB9B742B16498C00D51A3B /* ExternalPendingDonationStore.swift */,
-				D9517ABF292C5A3900DDD37E /* Paypal+API.swift */,
-				D9517ABD292C596B00DDD37E /* Paypal+WebAuthentication.swift */,
-				D938CD5F29283402006FB16A /* Paypal.swift */,
-				F9292633297743EF0097F8FF /* PreparedGiftPayment.swift */,
-				D99554702AF566C30001E15C /* ProfileBadgesSnapshot+Constructors.swift */,
-				D99554692AF4873E0001E15C /* ProfileBadgesSnapshot.swift */,
-				D995546D2AF563150001E15C /* ReceiptCredentialRedemptionSuccess.swift */,
-				D958305F2AE8931900BB06A4 /* ReceiptCredentialRequestError.swift */,
-				D95830592AE85E1600BB06A4 /* ReceiptCredentialResultStore.swift */,
-				F9B3A92A2935472F0071EB95 /* Stripe+3DSecure.swift */,
-				C1D5836E2B03DFED00EE8FD9 /* Stripe+IDEAL.swift */,
-				F98ED2D529255E92008483DC /* Stripe+PaymentMethod.swift */,
-				F9189ABD2947D7C300CD8EF6 /* Stripe+StripeError.swift */,
-				D96A94A82955270D004EA434 /* Stripe+Subscriptions.swift */,
-				F00385FE273F6388000B5ABD /* Stripe.swift */,
-				C1FB9B722B16495D00D51A3B /* SubscriptionLevel.swift */,
-				D98300B12936E6C70018FDC2 /* SubscriptionManager+DonationConfiguration.swift */,
-				886A58C8276A760600A1099B /* SubscriptionManagerImpl.swift */,
+				D986D1372CC8334F00F9803D /* Backups */,
+				D986D1362CC8332F00F9803D /* Donations */,
 			);
 			path = Subscriptions;
 			sourceTree = "<group>";
@@ -11380,12 +11358,12 @@
 				F9C5CA85289453B100548EEE /* JobRecords */,
 				D9F9A63A2BFFFCC400EF13EC /* BulkDeleteInteractionJobQueue.swift */,
 				D9DB37F82B72A770007B16C8 /* CallRecordDeleteAllJobQueue.swift */,
+				886A58C9276A760600A1099B /* DonationReceiptCredentialRedemptionJobQueue.swift */,
 				4C9D347E23689E06006A4307 /* IncomingContactSyncJobQueue.swift */,
 				F9C5CB19289453B200548EEE /* JobQueue.swift */,
 				5008FEBB2B1811A0004E73FD /* JobQueueRunner.swift */,
 				D925937928B0497900D5D437 /* LocalUserLeaveGroupJob.swift */,
 				F9C5CAF5289453B200548EEE /* MessageSenderJobQueue.swift */,
-				886A58C9276A760600A1099B /* ReceiptCredentialRedemptionJobQueue.swift */,
 				F98EA264286A469100791EB4 /* SendGiftBadgeJobQueue.swift */,
 				45D231761DC7E8F10034FA89 /* SessionResetJob.swift */,
 				D9668B34291B088200665298 /* SignalMessagingJobQueues.swift */,
@@ -11508,6 +11486,47 @@
 				D985D86329B91C400087C90C /* ChangePhoneNumberPniManagerTest.swift */,
 			);
 			path = ChangePhoneNumber;
+			sourceTree = "<group>";
+		};
+		D986D1362CC8332F00F9803D /* Donations */ = {
+			isa = PBXGroup;
+			children = (
+				500FE48E2886148800FA090C /* CachedBadge.swift */,
+				D91F7A2C2935A32F00012C64 /* DonationMode.swift */,
+				F98ED2D729255F4D008483DC /* DonationPaymentMethod.swift */,
+				D91A39E82AE2F4C000F57A61 /* DonationPaymentProcessor.swift */,
+				F9C5CAA5289453B200548EEE /* DonationReceipt.swift */,
+				D995546D2AF563150001E15C /* DonationReceiptCredentialRedemptionSuccess.swift */,
+				D958305F2AE8931900BB06A4 /* DonationReceiptCredentialRequestError.swift */,
+				D95830592AE85E1600BB06A4 /* DonationReceiptCredentialResultStore.swift */,
+				F9C5CAAD289453B200548EEE /* DonationReceiptFinder.swift */,
+				C1FB9B722B16495D00D51A3B /* DonationSubscriptionLevel.swift */,
+				D98300B12936E6C70018FDC2 /* DonationSubscriptionManager+DonationConfiguration.swift */,
+				886A58C8276A760600A1099B /* DonationSubscriptionManager.swift */,
+				F00385FD273F6388000B5ABD /* DonationUtilities.swift */,
+				C1FB9B742B16498C00D51A3B /* ExternalPendingDonationStore.swift */,
+				D9517ABF292C5A3900DDD37E /* Paypal+API.swift */,
+				D9517ABD292C596B00DDD37E /* Paypal+WebAuthentication.swift */,
+				D938CD5F29283402006FB16A /* Paypal.swift */,
+				F9292633297743EF0097F8FF /* PreparedGiftPayment.swift */,
+				D99554702AF566C30001E15C /* ProfileBadgesSnapshot+Constructors.swift */,
+				D99554692AF4873E0001E15C /* ProfileBadgesSnapshot.swift */,
+				F9B3A92A2935472F0071EB95 /* Stripe+3DSecure.swift */,
+				C1D5836E2B03DFED00EE8FD9 /* Stripe+IDEAL.swift */,
+				F98ED2D529255E92008483DC /* Stripe+PaymentMethod.swift */,
+				F9189ABD2947D7C300CD8EF6 /* Stripe+StripeError.swift */,
+				D96A94A82955270D004EA434 /* Stripe+Subscriptions.swift */,
+				F00385FE273F6388000B5ABD /* Stripe.swift */,
+			);
+			path = Donations;
+			sourceTree = "<group>";
+		};
+		D986D1372CC8334F00F9803D /* Backups */ = {
+			isa = PBXGroup;
+			children = (
+				D9E43AF32CC193D70001536E /* BackupSubscriptionManager.swift */,
+			);
+			path = Backups;
 			sourceTree = "<group>";
 		};
 		D9872CDE2C9A298300BDFD08 /* ThreadMerge */ = {
@@ -12018,14 +12037,6 @@
 			path = Mocks;
 			sourceTree = "<group>";
 		};
-		D9E43AF52CC193D70001536E /* BackupSubscription */ = {
-			isa = PBXGroup;
-			children = (
-				D9E43AF32CC193D70001536E /* BackupSubscriptionManager.swift */,
-			);
-			path = BackupSubscription;
-			sourceTree = "<group>";
-		};
 		D9E43BC22CC194140001536E /* UserInterface */ = {
 			isa = PBXGroup;
 			children = (
@@ -12390,7 +12401,7 @@
 			isa = PBXGroup;
 			children = (
 				F96B66B42912B8C8004FFFAA /* DonationUtilitiesTest.swift */,
-				E75DD3DF2810CDBD00E32C36 /* SubscriptionManagerTest.swift */,
+				E75DD3DF2810CDBD00E32C36 /* SubscriptionModelsTest.swift */,
 			);
 			path = subscriptions;
 			sourceTree = "<group>";
@@ -12822,7 +12833,6 @@
 			children = (
 				F9C5C9BA289453B100548EEE /* Account */,
 				7255A4C32B98D5A800E95368 /* Attachments */,
-				D9E43AF52CC193D70001536E /* BackupSubscription */,
 				D979DA142B8D1FCF000EEAB8 /* Badge */,
 				F945FE482984795A00C835C7 /* Calls */,
 				D9C2D78529A80BE700D79715 /* ChangePhoneNumber */,
@@ -13590,8 +13600,6 @@
 		F9C5CA9F289453B200548EEE /* Payments */ = {
 			isa = PBXGroup;
 			children = (
-				F9C5CAA5289453B200548EEE /* DonationReceipt.swift */,
-				F9C5CAAD289453B200548EEE /* DonationReceiptFinder.swift */,
 				F9C5CAA1289453B200548EEE /* MobileCoinHelper.swift */,
 				34BB78B4272C510800DA0D04 /* MobileCoinHelperMinimal.swift */,
 				F9C5CAAF289453B200548EEE /* PaymentFinder.swift */,
@@ -16536,7 +16544,7 @@
 				4C3EF802210918740007EBF7 /* SSKProtoEnvelopeTest.swift in Sources */,
 				8803FF6628EF89B50023574A /* StorySharingTests.swift in Sources */,
 				452D1AF12081059C00A67F7F /* StringAdditionsTest.swift in Sources */,
-				E75DD3E02810CDBD00E32C36 /* SubscriptionManagerTest.swift in Sources */,
+				E75DD3E02810CDBD00E32C36 /* SubscriptionModelsTest.swift in Sources */,
 				5033D47329DCB3FF007FEADA /* UrlOpenerTest.swift in Sources */,
 				45A3579827DAAC6A0051CE8B /* UserProfileTest.swift in Sources */,
 				5042EAA3287F96FB00C9B19F /* VisibleBadgeResolverTest.swift in Sources */,
@@ -16790,7 +16798,14 @@
 				D91A39E72AE2F44400F57A61 /* DonationPaymentMethod.swift in Sources */,
 				D91A39E92AE2F4C000F57A61 /* DonationPaymentProcessor.swift in Sources */,
 				F9C5CD7F289453B300548EEE /* DonationReceipt.swift in Sources */,
+				7254653A2BA01FAA00EABFD2 /* DonationReceiptCredentialRedemptionJobQueue.swift in Sources */,
+				D995546E2AF563150001E15C /* DonationReceiptCredentialRedemptionSuccess.swift in Sources */,
+				D95830602AE8931900BB06A4 /* DonationReceiptCredentialRequestError.swift in Sources */,
+				D958305A2AE85E1600BB06A4 /* DonationReceiptCredentialResultStore.swift in Sources */,
 				F9C5CD87289453B300548EEE /* DonationReceiptFinder.swift in Sources */,
+				C1FB9B732B16495D00D51A3B /* DonationSubscriptionLevel.swift in Sources */,
+				725465472BA01FCC00EABFD2 /* DonationSubscriptionManager+DonationConfiguration.swift in Sources */,
+				725465492BA01FCC00EABFD2 /* DonationSubscriptionManager.swift in Sources */,
 				7254653C2BA01FCC00EABFD2 /* DonationUtilities.swift in Sources */,
 				F9C5CC14289453B300548EEE /* DownloadStickerOperation.swift in Sources */,
 				F9C5CC18289453B300548EEE /* DownloadStickerPackOperation.swift in Sources */,
@@ -17354,11 +17369,7 @@
 				F9C5CC3D289453B300548EEE /* ReactionManager.swift in Sources */,
 				6605B9802B194A7900E8A68A /* ReactionStore.swift in Sources */,
 				F9C5CE14289453B400548EEE /* ReadyFlag.swift in Sources */,
-				7254653A2BA01FAA00EABFD2 /* ReceiptCredentialRedemptionJobQueue.swift in Sources */,
 				D9AE0AD32918715E0063488B /* ReceiptCredentialRedemptionJobRecord.swift in Sources */,
-				D995546E2AF563150001E15C /* ReceiptCredentialRedemptionSuccess.swift in Sources */,
-				D95830602AE8931900BB06A4 /* ReceiptCredentialRequestError.swift in Sources */,
-				D958305A2AE85E1600BB06A4 /* ReceiptCredentialResultStore.swift in Sources */,
 				F9C5CC83289453B300548EEE /* ReceiptSender.swift in Sources */,
 				66CD257D2B0C1DAA00139E17 /* RecipientContexts.swift in Sources */,
 				506695E529C29C2F00B6D8D0 /* RecipientDatabaseTable.swift in Sources */,
@@ -17528,9 +17539,6 @@
 				7254653D2BA01FCC00EABFD2 /* Stripe.swift in Sources */,
 				66FC637829DF8BEF00F00DAC /* StyleAttribute.swift in Sources */,
 				6652DF672A04494200EF90E7 /* StyleOnlyMessageBody.swift in Sources */,
-				C1FB9B732B16495D00D51A3B /* SubscriptionLevel.swift in Sources */,
-				725465472BA01FCC00EABFD2 /* SubscriptionManager+DonationConfiguration.swift in Sources */,
-				725465492BA01FCC00EABFD2 /* SubscriptionManagerImpl.swift in Sources */,
 				662C44092A1567E4001F83E2 /* svr2.pb.swift in Sources */,
 				66C2B13D2A0E9116008DDE72 /* SVR2AuthCredential.swift in Sources */,
 				669947BA2A20129000E4DC0C /* SVR2Shims.swift in Sources */,

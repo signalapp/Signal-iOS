@@ -79,13 +79,13 @@ extension ChatListViewController {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(showBadgeSheetIfNecessary),
-            name: ReceiptCredentialRedemptionJob.didSucceedNotification,
+            name: DonationReceiptCredentialRedemptionJob.didSucceedNotification,
             object: nil
         )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(showBadgeSheetIfNecessary),
-            name: ReceiptCredentialRedemptionJob.didFailNotification,
+            name: DonationReceiptCredentialRedemptionJob.didFailNotification,
             object: nil
         )
 

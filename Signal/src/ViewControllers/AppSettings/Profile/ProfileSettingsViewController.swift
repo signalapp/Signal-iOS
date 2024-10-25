@@ -113,7 +113,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
         let snapshot = SSKEnvironment.shared.profileManagerImplRef.localProfileSnapshot(shouldIncludeAvatar: true)
         allBadges = snapshot.profileBadgeInfo ?? []
-        displayBadgesOnProfile = SubscriptionManagerImpl.displayBadgesOnProfile
+        displayBadgesOnProfile = DonationSubscriptionManager.displayBadgesOnProfile
         // TODO: Use `visibleBadges` when `localProfileSnapshot` is removed.
         let visibleBadgeIds = allBadges.filter { $0.isVisible ?? true }.map { $0.badgeId }
         profileValues = ProfileValues(
@@ -724,7 +724,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                 updatePromise
             }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
                 SSKEnvironment.shared.databaseStorageRef.write(.promise) { transaction in
-                    SubscriptionManagerImpl.setDisplayBadgesOnProfile(
+                    DonationSubscriptionManager.setDisplayBadgesOnProfile(
                         displayBadgesOnProfile,
                         updateStorageService: true,
                         transaction: transaction

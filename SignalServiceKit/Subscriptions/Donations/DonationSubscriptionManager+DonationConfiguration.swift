@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-extension SubscriptionManagerImpl {
+extension DonationSubscriptionManager {
     /// Represents donation configuration information fetched from the service,
     /// such as preset donation levels and badge information.
     public struct DonationConfiguration {
@@ -24,7 +24,7 @@ extension SubscriptionManagerImpl {
         }
 
         public struct SubscriptionConfiguration {
-            public let levels: [SubscriptionLevel]
+            public let levels: [DonationSubscriptionLevel]
         }
 
         public struct PaymentMethodsConfiguration: Equatable {
@@ -71,7 +71,7 @@ extension SubscriptionManagerImpl {
     }
 }
 
-extension SubscriptionManagerImpl.DonationConfiguration {
+extension DonationSubscriptionManager.DonationConfiguration {
     enum ParseError: Error, Equatable {
         /// Missing a preset amount for a donation level.
         case missingAmountForLevel(_ level: UInt)
@@ -96,7 +96,7 @@ extension SubscriptionManagerImpl.DonationConfiguration {
     }
 
     /// Parse a service configuration from a response body.
-    static func from(configurationServiceResponse responseBody: Any?) throws -> SubscriptionManagerImpl.DonationConfiguration {
+    static func from(configurationServiceResponse responseBody: Any?) throws -> DonationSubscriptionManager.DonationConfiguration {
         guard let parser = ParamParser(responseObject: responseBody) else {
             throw OWSAssertionError("Missing or invalid response!")
         }
@@ -141,7 +141,7 @@ extension SubscriptionManagerImpl.DonationConfiguration {
         let subscriptionConfig: SubscriptionConfiguration = try {
             /// Query for the preset donation amounts for the given badged
             /// level. Throws if amounts are missing for this level.
-            func makeSubscriptionLevel(fromBadgedLevel level: BadgedLevel) throws -> SubscriptionLevel {
+            func makeSubscriptionLevel(fromBadgedLevel level: BadgedLevel) throws -> DonationSubscriptionLevel {
                 let presetsByCurrencyForLevel: [Currency.Code: FiatMoney] = try presetsByCurrency.mapValues { presets in
                     guard let amountForLevel = presets.subscription.presetsByLevel[level.value] else {
                         throw ParseError.missingAmountForLevel(level.value)
@@ -150,14 +150,14 @@ extension SubscriptionManagerImpl.DonationConfiguration {
                     return amountForLevel
                 }
 
-                return SubscriptionLevel(
+                return DonationSubscriptionLevel(
                     level: level.value,
                     badge: level.badge,
                     amounts: presetsByCurrencyForLevel
                 )
             }
 
-            let subscriptionLevels: [SubscriptionLevel] = try levels.subscription
+            let subscriptionLevels: [DonationSubscriptionLevel] = try levels.subscription
                 .map(makeSubscriptionLevel)
                 .sorted()
 
@@ -173,7 +173,7 @@ extension SubscriptionManagerImpl.DonationConfiguration {
             return PaymentMethodsConfiguration(supportedPaymentMethodsByCurrency: supportedPaymentMethodsByCurrency)
         }()
 
-        return SubscriptionManagerImpl.DonationConfiguration(
+        return DonationSubscriptionManager.DonationConfiguration(
             boost: boostConfig,
             gift: giftConfig,
             subscription: subscriptionConfig,
@@ -184,7 +184,7 @@ extension SubscriptionManagerImpl.DonationConfiguration {
 
 // MARK: - Parse levels
 
-private extension SubscriptionManagerImpl.DonationConfiguration {
+private extension DonationSubscriptionManager.DonationConfiguration {
     struct BadgedLevel {
         let value: UInt
         let badge: ProfileBadge
@@ -254,7 +254,7 @@ private extension SubscriptionManagerImpl.DonationConfiguration {
 
 // MARK: - SEPA maximum boost
 
-private extension SubscriptionManagerImpl.DonationConfiguration {
+private extension DonationSubscriptionManager.DonationConfiguration {
     static func parseSepaBoostMaximum(
         fromParser parser: ParamParser
     ) throws -> FiatMoney {
@@ -269,7 +269,7 @@ private extension Currency.Code {
 
 // MARK: - Parse presets
 
-private extension SubscriptionManagerImpl.DonationConfiguration {
+private extension DonationSubscriptionManager.DonationConfiguration {
     struct BoostPresets {
         let minimum: FiatMoney
         let presets: [FiatMoney]

@@ -88,7 +88,7 @@ extension DonateViewController {
                 approvalParams: approvalParams
             )
         }.then(on: DispatchQueue.main) { (paymentIntentId: String) -> Promise<Void> in
-            let redemptionJob = SubscriptionManagerImpl.requestAndRedeemReceipt(
+            let redemptionJob = DonationSubscriptionManager.requestAndRedeemReceipt(
                 boostPaymentIntentId: paymentIntentId,
                 amount: amount,
                 paymentProcessor: .braintree,

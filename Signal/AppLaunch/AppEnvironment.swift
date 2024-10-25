@@ -122,8 +122,8 @@ public class AppEnvironment: NSObject {
 
             deletedCallRecordCleanupManager.startCleanupIfNecessary()
 
-            SubscriptionManagerImpl.performMigrationToStorageServiceIfNecessary()
-            SubscriptionManagerImpl.performSubscriptionKeepAliveIfNecessary()
+            DonationSubscriptionManager.performMigrationToStorageServiceIfNecessary()
+            DonationSubscriptionManager.performSubscriptionKeepAliveIfNecessary()
         }
     }
 }

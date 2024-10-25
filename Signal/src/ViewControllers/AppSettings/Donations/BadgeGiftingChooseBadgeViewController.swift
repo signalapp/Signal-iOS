@@ -7,8 +7,8 @@ import SignalServiceKit
 public import SignalUI
 
 public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
-    typealias GiftConfiguration = SubscriptionManagerImpl.DonationConfiguration.GiftConfiguration
-    typealias PaymentMethodsConfiguration = SubscriptionManagerImpl.DonationConfiguration.PaymentMethodsConfiguration
+    typealias GiftConfiguration = DonationSubscriptionManager.DonationConfiguration.GiftConfiguration
+    typealias PaymentMethodsConfiguration = DonationSubscriptionManager.DonationConfiguration.PaymentMethodsConfiguration
 
     // MARK: - State management
 
@@ -72,8 +72,8 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
     private func loadData() -> Guarantee<State> {
         firstly {
             Logger.info("[Gifting] Fetching donation configuration...")
-            return SubscriptionManagerImpl.fetchDonationConfiguration()
-        }.then { donationConfiguration -> Promise<SubscriptionManagerImpl.DonationConfiguration> in
+            return DonationSubscriptionManager.fetchDonationConfiguration()
+        }.then { donationConfiguration -> Promise<DonationSubscriptionManager.DonationConfiguration> in
             Logger.info("[Gifting] Populating badge assets...")
             let giftBadge = donationConfiguration.gift.badge
             return SSKEnvironment.shared.profileManagerRef.badgeStore.populateAssetsOnBadge(giftBadge)

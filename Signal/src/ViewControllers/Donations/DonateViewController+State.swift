@@ -19,9 +19,9 @@ extension DonateViewController {
 
         // MARK: Typealiases
 
-        typealias PaymentMethodsConfiguration = SubscriptionManagerImpl.DonationConfiguration.PaymentMethodsConfiguration
-        typealias OneTimeConfiguration = SubscriptionManagerImpl.DonationConfiguration.BoostConfiguration
-        typealias MonthlyConfiguration = SubscriptionManagerImpl.DonationConfiguration.SubscriptionConfiguration
+        typealias PaymentMethodsConfiguration = DonationSubscriptionManager.DonationConfiguration.PaymentMethodsConfiguration
+        typealias OneTimeConfiguration = DonationSubscriptionManager.DonationConfiguration.BoostConfiguration
+        typealias MonthlyConfiguration = DonationSubscriptionManager.DonationConfiguration.SubscriptionConfiguration
 
         // MARK: - One-time state
 
@@ -49,7 +49,7 @@ extension DonateViewController {
             fileprivate let presets: [Currency.Code: DonationUtilities.Preset]
             fileprivate let minimumAmountsByCurrency: [Currency.Code: FiatMoney]
             fileprivate let paymentMethodConfiguration: PaymentMethodsConfiguration
-            fileprivate let receiptCredentialRequestError: ReceiptCredentialRequestError?
+            fileprivate let receiptCredentialRequestError: DonationReceiptCredentialRequestError?
             fileprivate let pendingIDEALOneTimeDonation: PendingOneTimeIDEALDonation?
 
             fileprivate let localNumber: String?
@@ -200,16 +200,16 @@ extension DonateViewController {
                 public let supportedPaymentMethods: Set<DonationPaymentMethod>
             }
 
-            public let subscriptionLevels: [SubscriptionLevel]
+            public let subscriptionLevels: [DonationSubscriptionLevel]
             public let selectedCurrencyCode: Currency.Code
-            public let selectedSubscriptionLevel: SubscriptionLevel?
+            public let selectedSubscriptionLevel: DonationSubscriptionLevel?
             public let currentSubscription: Subscription?
             public let subscriberID: Data?
             public let previousMonthlySubscriptionPaymentMethod: DonationPaymentMethod?
             public let pendingIDEALSubscription: PendingMonthlyIDEALDonation?
 
             fileprivate let paymentMethodConfiguration: PaymentMethodsConfiguration
-            fileprivate let receiptCredentialRequestError: ReceiptCredentialRequestError?
+            fileprivate let receiptCredentialRequestError: DonationReceiptCredentialRequestError?
             fileprivate let localNumber: String?
 
             /// Get the currency codes supported by all subscription levels.
@@ -219,7 +219,7 @@ extension DonateViewController {
             /// example, only one of them could support EUR. This would be a bug, but we
             /// protect against this by requiring the currency to be supported by *all*
             /// levels, not just one.
-            fileprivate static func supportedCurrencyCodes(subscriptionLevels: [SubscriptionLevel]) -> Set<Currency.Code> {
+            fileprivate static func supportedCurrencyCodes(subscriptionLevels: [DonationSubscriptionLevel]) -> Set<Currency.Code> {
                 guard let firstSubscriptionLevel = subscriptionLevels.first else { return [] }
                 var result = Set<Currency.Code>(firstSubscriptionLevel.amounts.keys)
                 for subscriptionLevel in subscriptionLevels {
@@ -240,7 +240,7 @@ extension DonateViewController {
                 selectedSubscriptionLevel?.badge
             }
 
-            public var currentSubscriptionLevel: SubscriptionLevel? {
+            public var currentSubscriptionLevel: DonationSubscriptionLevel? {
                 if let currentSubscription {
                     return DonationViewsUtil.subscriptionLevelForSubscription(
                         subscriptionLevels: subscriptionLevels,
@@ -309,7 +309,7 @@ extension DonateViewController {
                 )
             }
 
-            fileprivate func selectSubscriptionLevel(_ newValue: SubscriptionLevel) -> MonthlyState {
+            fileprivate func selectSubscriptionLevel(_ newValue: DonationSubscriptionLevel) -> MonthlyState {
                 owsPrecondition(subscriptionLevels.contains(newValue), "Subscription level not found")
                 return MonthlyState(
                     subscriptionLevels: subscriptionLevels,
@@ -463,8 +463,8 @@ extension DonateViewController {
             subscriberID: Data?,
             previousMonthlySubscriptionCurrencyCode: Currency.Code?,
             previousMonthlySubscriptionPaymentMethod: DonationPaymentMethod?,
-            oneTimeBoostReceiptCredentialRequestError: ReceiptCredentialRequestError?,
-            recurringSubscriptionReceiptCredentialRequestError: ReceiptCredentialRequestError?,
+            oneTimeBoostReceiptCredentialRequestError: DonationReceiptCredentialRequestError?,
+            recurringSubscriptionReceiptCredentialRequestError: DonationReceiptCredentialRequestError?,
             pendingIDEALOneTimeDonation: PendingOneTimeIDEALDonation?,
             pendingIDEALSubscription: PendingMonthlyIDEALDonation?,
             locale: Locale,
@@ -530,7 +530,7 @@ extension DonateViewController {
                     return nil
                 }
 
-                let selectedMonthlySubscriptionLevel: SubscriptionLevel?
+                let selectedMonthlySubscriptionLevel: DonationSubscriptionLevel?
                 if let current = currentMonthlySubscription {
                     selectedMonthlySubscriptionLevel = (
                         monthlyConfig.levels.first(where: { current.level == $0.level }) ??
@@ -617,7 +617,7 @@ extension DonateViewController {
         /// - The selected level must be in the list
         ///
         /// If any of these conditions are not met, there will be a fatal error.
-        public func selectSubscriptionLevel(_ newSubscriptionLevel: SubscriptionLevel) -> State {
+        public func selectSubscriptionLevel(_ newSubscriptionLevel: DonationSubscriptionLevel) -> State {
             let (oneTime, monthly) = loadedStateOrDie
             return State(
                 donateMode: donateMode,

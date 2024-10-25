@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class SubscriptionLevel: Comparable, Equatable, Codable {
+public class DonationSubscriptionLevel: Comparable, Equatable, Codable {
     public let level: UInt
     public let badge: ProfileBadge
     public let amounts: [Currency.Code: FiatMoney]
@@ -22,11 +22,11 @@ public class SubscriptionLevel: Comparable, Equatable, Codable {
 
     // MARK: Comparable
 
-    public static func < (lhs: SubscriptionLevel, rhs: SubscriptionLevel) -> Bool {
+    public static func < (lhs: DonationSubscriptionLevel, rhs: DonationSubscriptionLevel) -> Bool {
         return lhs.level < rhs.level
     }
 
-    public static func == (lhs: SubscriptionLevel, rhs: SubscriptionLevel) -> Bool {
+    public static func == (lhs: DonationSubscriptionLevel, rhs: DonationSubscriptionLevel) -> Bool {
         return lhs.level == rhs.level
     }
 }

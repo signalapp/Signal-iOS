@@ -44,7 +44,7 @@ extension DonateViewController {
 
             wrappedCompletion(.init(status: .success, errors: nil))
 
-            let redemptionJob = SubscriptionManagerImpl.requestAndRedeemReceipt(
+            let redemptionJob = DonationSubscriptionManager.requestAndRedeemReceipt(
                 boostPaymentIntentId: confirmedIntent.paymentIntentId,
                 amount: amount,
                 paymentProcessor: .stripe,

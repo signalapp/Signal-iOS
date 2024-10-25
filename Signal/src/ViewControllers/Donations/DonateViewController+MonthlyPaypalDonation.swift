@@ -83,7 +83,7 @@ extension DonateViewController {
     /// auth.
     private func preparePaypalSubscriptionBehindActivityIndicator(
         monthlyState monthly: State.MonthlyState,
-        selectedSubscriptionLevel: SubscriptionLevel
+        selectedSubscriptionLevel: DonationSubscriptionLevel
     ) -> Promise<(Data, Paypal.SubscriptionAuthorizationParams)> {
         AssertIsOnMainThread()
 
@@ -97,7 +97,7 @@ extension DonateViewController {
                 if let existingSubscriberId = monthly.subscriberID {
                     Logger.info("[Donations] Cancelling existing subscription")
 
-                    return SubscriptionManagerImpl.cancelSubscription(for: existingSubscriberId)
+                    return DonationSubscriptionManager.cancelSubscription(for: existingSubscriberId)
                 } else {
                     Logger.info("[Donations] No existing subscription to cancel")
 
@@ -106,7 +106,7 @@ extension DonateViewController {
             }.then(on: DispatchQueue.sharedUserInitiated) { () -> Promise<Data> in
                 Logger.info("[Donations] Preparing new monthly subscription with PayPal")
 
-                return SubscriptionManagerImpl.prepareNewSubscription(
+                return DonationSubscriptionManager.prepareNewSubscription(
                     currencyCode: monthly.selectedCurrencyCode
                 )
             }.then(on: DispatchQueue.sharedUserInitiated) { subscriberId -> Promise<(Data, Paypal.SubscriptionAuthorizationParams)> in
@@ -130,14 +130,14 @@ extension DonateViewController {
         subscriberId: Data,
         paymentMethodId: String,
         monthlyState monthly: State.MonthlyState,
-        selectedSubscriptionLevel: SubscriptionLevel
+        selectedSubscriptionLevel: DonationSubscriptionLevel
     ) -> Promise<Void> {
         AssertIsOnMainThread()
 
         let finalizePromise: Promise<Void> = firstly { () -> Promise<Subscription> in
             Logger.info("[Donations] Finalizing new subscription for PayPal donation")
 
-            return SubscriptionManagerImpl.finalizeNewSubscription(
+            return DonationSubscriptionManager.finalizeNewSubscription(
                 forSubscriberId: subscriberId,
                 paymentType: .paypal(paymentMethodId: paymentMethodId),
                 subscription: selectedSubscriptionLevel,
@@ -146,7 +146,7 @@ extension DonateViewController {
         }.then(on: DispatchQueue.sharedUserInitiated) { _ -> Promise<Void> in
             Logger.info("[Donations] Redeeming monthly receipt for PayPal donation")
 
-            let redemptionPromise = SubscriptionManagerImpl.requestAndRedeemReceipt(
+            let redemptionPromise = DonationSubscriptionManager.requestAndRedeemReceipt(
                 subscriberId: subscriberId,
                 subscriptionLevel: selectedSubscriptionLevel.level,
                 priorSubscriptionLevel: monthly.currentSubscriptionLevel?.level,

@@ -314,7 +314,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
             progressView.startAnimating { overlayView.alpha = 1 }
 
             do {
-                try await self.deleteSubscriptionIfNecessary()
+                try await self.deleteDonationSubscriptionIfNecessary()
                 try await self.unregisterAccount()
             } catch {
                 owsFailDebug("Failed to unregister \(error)")
@@ -336,15 +336,15 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
         }
     }
 
-    private func deleteSubscriptionIfNecessary() async throws {
+    private func deleteDonationSubscriptionIfNecessary() async throws {
         let activeSubscriptionId = SSKEnvironment.shared.databaseStorageRef.read {
-            SubscriptionManagerImpl.getSubscriberID(transaction: $0)
+            DonationSubscriptionManager.getSubscriberID(transaction: $0)
         }
         guard let activeSubscriptionId else {
             return
         }
         Logger.info("Found subscriber ID. Canceling subscription...")
-        return try await SubscriptionManagerImpl.cancelSubscription(for: activeSubscriptionId).awaitable()
+        return try await DonationSubscriptionManager.cancelSubscription(for: activeSubscriptionId).awaitable()
     }
 
     private func unregisterAccount() async throws {

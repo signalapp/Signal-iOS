@@ -235,7 +235,7 @@ extension MessageBackup.AccountData {
         public typealias TypingIndicators = _MessageBackup_AccountData_TypingIndicatorsShim
         public typealias Preferences = _MessageBackup_AccountData_PreferencesShim
         public typealias SSKPreferences = _MessageBackup_AccountData_SSKPreferencesShim
-        public typealias SubscriptionManager = _MessageBackup_AccountData_SubscriptionManagerShim
+        public typealias DonationSubscriptionManager = _MessageBackup_AccountData_DonationSubscriptionManagerShim
         public typealias StoryManager = _MessageBackup_AccountData_StoryManagerShim
         public typealias SystemStoryManager = _MessageBackup_AccountData_SystemStoryManagerShim
         public typealias ReactionManager = _MessageBackup_AccountData_ReactionManagerShim
@@ -247,7 +247,7 @@ extension MessageBackup.AccountData {
         public typealias TypingIndicators = _MessageBackup_AccountData_TypingIndicatorsWrapper
         public typealias Preferences = _MessageBackup_AccountData_PreferencesWrapper
         public typealias SSKPreferences = _MessageBackup_AccountData_SSKPreferencesWrapper
-        public typealias SubscriptionManager = _MessageBackup_AccountData_SubscriptionManagerWrapper
+        public typealias DonationSubscriptionManager = _MessageBackup_AccountData_DonationSubscriptionManagerWrapper
         public typealias StoryManager = _MessageBackup_AccountData_StoryManagerWrapper
         public typealias SystemStoryManager = _MessageBackup_AccountData_SystemStoryManagerWrapper
         public typealias ReactionManager = _MessageBackup_AccountData_ReactionManagerWrapper
@@ -344,9 +344,9 @@ public class _MessageBackup_AccountData_SSKPreferencesWrapper: _MessageBackup_Ac
     }
 }
 
-// MARK: SubscriptionManager
+// MARK: DonationSubscriptionManager
 
-public protocol _MessageBackup_AccountData_SubscriptionManagerShim {
+public protocol _MessageBackup_AccountData_DonationSubscriptionManagerShim {
     func displayBadgesOnProfile(tx: DBReadTransaction) -> Bool
     func setDisplayBadgesOnProfile(value: Bool, tx: DBWriteTransaction)
     func getSubscriberID(tx: DBReadTransaction) -> Data?
@@ -357,35 +357,35 @@ public protocol _MessageBackup_AccountData_SubscriptionManagerShim {
     func setUserManuallyCancelledSubscription(value: Bool, tx: DBWriteTransaction)
 }
 
-public class _MessageBackup_AccountData_SubscriptionManagerWrapper: _MessageBackup_AccountData_SubscriptionManagerShim {
+public class _MessageBackup_AccountData_DonationSubscriptionManagerWrapper: _MessageBackup_AccountData_DonationSubscriptionManagerShim {
     public func displayBadgesOnProfile(tx: DBReadTransaction) -> Bool {
-        SubscriptionManagerImpl.displayBadgesOnProfile(transaction: SDSDB.shimOnlyBridge(tx))
+        DonationSubscriptionManager.displayBadgesOnProfile(transaction: SDSDB.shimOnlyBridge(tx))
     }
     public func setDisplayBadgesOnProfile(value: Bool, tx: DBWriteTransaction) {
-        SubscriptionManagerImpl.setDisplayBadgesOnProfile(value, updateStorageService: false, transaction: SDSDB.shimOnlyBridge(tx))
+        DonationSubscriptionManager.setDisplayBadgesOnProfile(value, updateStorageService: false, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     public func getSubscriberID(tx: DBReadTransaction) -> Data? {
-        SubscriptionManagerImpl.getSubscriberID(transaction: SDSDB.shimOnlyBridge(tx))
+        DonationSubscriptionManager.getSubscriberID(transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     public func setSubscriberID(subscriberID: Data, tx: DBWriteTransaction) {
-        SubscriptionManagerImpl.setSubscriberID(subscriberID, transaction: SDSDB.shimOnlyBridge(tx))
+        DonationSubscriptionManager.setSubscriberID(subscriberID, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     public func getSubscriberCurrencyCode(tx: DBReadTransaction) -> String? {
-        SubscriptionManagerImpl.getSubscriberCurrencyCode(transaction: SDSDB.shimOnlyBridge(tx))
+        DonationSubscriptionManager.getSubscriberCurrencyCode(transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     public func setSubscriberCurrencyCode(currencyCode: Currency.Code?, tx: DBWriteTransaction) {
-        SubscriptionManagerImpl.setSubscriberCurrencyCode(currencyCode, transaction: SDSDB.shimOnlyBridge(tx))
+        DonationSubscriptionManager.setSubscriberCurrencyCode(currencyCode, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     public func userManuallyCancelledSubscription(tx: DBReadTransaction) -> Bool {
-        SubscriptionManagerImpl.userManuallyCancelledSubscription(transaction: SDSDB.shimOnlyBridge(tx))
+        DonationSubscriptionManager.userManuallyCancelledSubscription(transaction: SDSDB.shimOnlyBridge(tx))
     }
     public func setUserManuallyCancelledSubscription(value: Bool, tx: DBWriteTransaction) {
-        SubscriptionManagerImpl.setUserManuallyCancelledSubscription(value, updateStorageService: false, transaction: SDSDB.shimOnlyBridge(tx))
+        DonationSubscriptionManager.setUserManuallyCancelledSubscription(value, updateStorageService: false, transaction: SDSDB.shimOnlyBridge(tx))
     }
 }
 

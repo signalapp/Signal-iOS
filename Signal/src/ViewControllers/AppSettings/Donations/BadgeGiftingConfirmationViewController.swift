@@ -7,7 +7,7 @@ import SignalServiceKit
 import SignalUI
 
 class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
-    typealias PaymentMethodsConfiguration = SubscriptionManagerImpl.DonationConfiguration.PaymentMethodsConfiguration
+    typealias PaymentMethodsConfiguration = DonationSubscriptionManager.DonationConfiguration.PaymentMethodsConfiguration
 
     // MARK: - View state
 

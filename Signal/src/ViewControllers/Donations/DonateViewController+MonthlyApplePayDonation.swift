@@ -31,7 +31,7 @@ extension DonateViewController {
             if let existingSubscriberId = monthly.subscriberID {
                 Logger.info("[Donations] Cancelling existing subscription")
 
-                return SubscriptionManagerImpl.cancelSubscription(for: existingSubscriberId)
+                return DonationSubscriptionManager.cancelSubscription(for: existingSubscriberId)
             } else {
                 Logger.info("[Donations] No existing subscription to cancel")
 
@@ -40,7 +40,7 @@ extension DonateViewController {
         }.then(on: DispatchQueue.sharedUserInitiated) { () -> Promise<Data> in
             Logger.info("[Donations] Preparing new monthly subscription with Apple Pay")
 
-            return SubscriptionManagerImpl.prepareNewSubscription(
+            return DonationSubscriptionManager.prepareNewSubscription(
                 currencyCode: monthly.selectedCurrencyCode
             )
         }.then(on: DispatchQueue.sharedUserInitiated) { subscriberId -> Promise<(Data, String)> in
@@ -61,7 +61,7 @@ extension DonateViewController {
         }.then(on: DispatchQueue.sharedUserInitiated) { (subscriberId, paymentMethodId) -> Promise<Data> in
             Logger.info("[Donations] Finalizing new subscription for Apple Pay donation")
 
-            return SubscriptionManagerImpl.finalizeNewSubscription(
+            return DonationSubscriptionManager.finalizeNewSubscription(
                 forSubscriberId: subscriberId,
                 paymentType: .applePay(paymentMethodId: paymentMethodId),
                 subscription: selectedSubscriptionLevel,
@@ -73,7 +73,7 @@ extension DonateViewController {
 
             Logger.info("[Donations] Redeeming monthly receipt for Apple Pay donation")
 
-            let redemptionPromise = SubscriptionManagerImpl.requestAndRedeemReceipt(
+            let redemptionPromise = DonationSubscriptionManager.requestAndRedeemReceipt(
                 subscriberId: subscriberID,
                 subscriptionLevel: selectedSubscriptionLevel.level,
                 priorSubscriptionLevel: monthly.currentSubscriptionLevel?.level,

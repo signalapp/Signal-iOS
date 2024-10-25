@@ -31,9 +31,9 @@ class DonationSettingsViewController: OWSTableViewController2 {
             /// it may also reflect an error external to the subscription.
             case hasSubscription(
                 subscription: Subscription,
-                subscriptionLevel: SubscriptionLevel?,
+                subscriptionLevel: DonationSubscriptionLevel?,
                 previouslyHadActiveSubscription: Bool,
-                receiptCredentialRequestError: ReceiptCredentialRequestError?
+                receiptCredentialRequestError: DonationReceiptCredentialRequestError?
             )
         }
 
@@ -41,7 +41,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
         case loading
         case loadFinished(
             subscriptionStatus: SubscriptionStatus,
-            oneTimeBoostReceiptCredentialRequestError: ReceiptCredentialRequestError?,
+            oneTimeBoostReceiptCredentialRequestError: DonationReceiptCredentialRequestError?,
             profileBadgeLookup: ProfileBadgeLookup,
             pendingOneTimeDonation: PendingOneTimeIDEALDonation?,
             hasAnyBadges: Bool,
@@ -118,7 +118,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
     @objc
     private func didLongPressAvatar(sender: UIGestureRecognizer) {
-        let subscriberID = SSKEnvironment.shared.databaseStorageRef.read { SubscriptionManagerImpl.getSubscriberID(transaction: $0) }
+        let subscriberID = SSKEnvironment.shared.databaseStorageRef.read { DonationSubscriptionManager.getSubscriberID(transaction: $0) }
         guard let subscriberID = subscriberID else { return }
 
         UIPasteboard.general.string = subscriberID.asBase64Url
@@ -151,10 +151,10 @@ class DonationSettingsViewController: OWSTableViewController2 {
             pendingIDEALOneTimeDonation,
             pendingIDEALSubscription
         ) = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            let resultStore = DependenciesBridge.shared.receiptCredentialResultStore
+            let resultStore = DependenciesBridge.shared.donationReceiptCredentialResultStore
 
             return (
-                subscriberID: SubscriptionManagerImpl.getSubscriberID(transaction: tx),
+                subscriberID: DonationSubscriptionManager.getSubscriberID(transaction: tx),
                 hasEverRedeemedRecurringSubscriptionBadge: resultStore.getRedemptionSuccessForAnyRecurringSubscription(tx: tx.asV2Read) != nil,
                 recurringSubscriptionReceiptCredentialRequestError: resultStore.getRequestErrorForAnyRecurringSubscription(tx: tx.asV2Read),
                 oneTimeBoostReceiptCredentialRequestError: resultStore.getRequestError(errorMode: .oneTimeBoost, tx: tx.asV2Read),
@@ -236,8 +236,8 @@ class DonationSettingsViewController: OWSTableViewController2 {
     }
 
     private func loadProfileBadgeLookup() -> Guarantee<ProfileBadgeLookup> {
-        return firstly { () -> Promise<SubscriptionManagerImpl.DonationConfiguration> in
-            SubscriptionManagerImpl.fetchDonationConfiguration()
+        return firstly { () -> Promise<DonationSubscriptionManager.DonationConfiguration> in
+            DonationSubscriptionManager.fetchDonationConfiguration()
         }.map { donationConfiguration -> ProfileBadgeLookup in
             ProfileBadgeLookup(
                 boostBadge: donationConfiguration.boost.badge,
@@ -349,7 +349,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
     private func loadFinishedSections(
         subscriptionStatus: State.SubscriptionStatus,
         profileBadgeLookup: ProfileBadgeLookup,
-        oneTimeBoostReceiptCredentialRequestError: ReceiptCredentialRequestError?,
+        oneTimeBoostReceiptCredentialRequestError: DonationReceiptCredentialRequestError?,
         pendingOneTimeDonation: PendingOneTimeIDEALDonation?,
         hasAnyBadges: Bool,
         hasAnyDonationReceipts: Bool
@@ -497,7 +497,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
     public static func shouldShowExpiredGiftBadgeSheetWithSneakyTransaction() -> Bool {
         let expiredGiftBadgeID = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            SubscriptionManagerImpl.mostRecentlyExpiredGiftBadgeID(transaction: transaction)
+            DonationSubscriptionManager.mostRecentlyExpiredGiftBadgeID(transaction: transaction)
         }
         guard let expiredGiftBadgeID = expiredGiftBadgeID, GiftBadgeIds.contains(expiredGiftBadgeID) else {
             return false
@@ -511,7 +511,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
         }
         Logger.info("[Gifting] Preparing to show gift badge expiration sheet...")
         firstly {
-            SubscriptionManagerImpl.getCachedBadge(level: .giftBadge(.signalGift)).fetchIfNeeded()
+            DonationSubscriptionManager.getCachedBadge(level: .giftBadge(.signalGift)).fetchIfNeeded()
         }.done { [weak self] cachedValue in
             guard let self = self else { return }
             guard UIApplication.shared.frontmostViewController == self else { return }
@@ -519,12 +519,12 @@ class DonationSettingsViewController: OWSTableViewController2 {
                 // The server confirmed this badge doesn't exist. This shouldn't happen,
                 // but clear the flag so that we don't keep trying.
                 Logger.warn("[Gifting] Clearing expired badge ID because the server said it didn't exist")
-                SubscriptionManagerImpl.clearMostRecentlyExpiredBadgeIDWithSneakyTransaction()
+                DonationSubscriptionManager.clearMostRecentlyExpiredBadgeIDWithSneakyTransaction()
                 return
             }
 
             let hasCurrentSubscription = SSKEnvironment.shared.databaseStorageRef.read { transaction -> Bool in
-                SubscriptionManagerImpl.hasCurrentSubscription(transaction: transaction)
+                DonationSubscriptionManager.hasCurrentSubscription(transaction: transaction)
             }
             Logger.info("[Gifting] Showing badge gift expiration sheet (hasCurrentSubscription: \(hasCurrentSubscription))")
             let sheet = BadgeIssueSheet(badge: profileBadge, mode: .giftBadgeExpired(hasCurrentSubscription: hasCurrentSubscription))
@@ -532,7 +532,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
             self.present(sheet, animated: true)
 
             // We've shown it, so don't show it again.
-            SubscriptionManagerImpl.clearMostRecentlyExpiredGiftBadgeIDWithSneakyTransaction()
+            DonationSubscriptionManager.clearMostRecentlyExpiredGiftBadgeIDWithSneakyTransaction()
         }.cauterize()
     }
 
@@ -774,7 +774,7 @@ extension DonationSettingsViewController: BadgeConfigurationDelegate {
             }
 
             await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-                SubscriptionManagerImpl.setDisplayBadgesOnProfile(
+                DonationSubscriptionManager.setDisplayBadgesOnProfile(
                     displayBadgesOnProfile,
                     updateStorageService: true,
                     transaction: tx

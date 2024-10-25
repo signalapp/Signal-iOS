@@ -48,7 +48,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
     enum FinishResult {
         case completedDonation(
             donateSheet: DonateViewController,
-            receiptCredentialSuccessMode: ReceiptCredentialResultStore.Mode
+            receiptCredentialSuccessMode: DonationReceiptCredentialResultStore.Mode
         )
 
         case monthlySubscriptionCancelled(
@@ -228,7 +228,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         }
 
         let cardDonationMode: DonationPaymentDetailsViewController.DonationMode
-        let receiptCredentialSuccessMode: ReceiptCredentialResultStore.Mode
+        let receiptCredentialSuccessMode: DonationReceiptCredentialResultStore.Mode
         switch donateMode {
         case .oneTime:
             cardDonationMode = .oneTime
@@ -525,14 +525,14 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             DonationViewsUtil.wrapPromiseInProgressView(
                 from: self,
                 promise: firstly(on: DispatchQueue.sharedUserInitiated) {
-                    SubscriptionManagerImpl.updateSubscriptionLevel(
+                    DonationSubscriptionManager.updateSubscriptionLevel(
                         for: subscriberID,
                         to: selectedSubscriptionLevel,
                         currencyCode: monthly.selectedCurrencyCode
                     )
                 }.then(on: DispatchQueue.sharedUserInitiated) { subscription -> Promise<Void> in
                     // Treat updates like new subscriptions
-                    let redemptionJob = SubscriptionManagerImpl.requestAndRedeemReceipt(
+                    let redemptionJob = DonationSubscriptionManager.requestAndRedeemReceipt(
                         subscriberId: subscriberID,
                         subscriptionLevel: selectedSubscriptionLevel.level,
                         priorSubscriptionLevel: currentSubscription.level,
@@ -649,7 +649,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
 
         ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modal in
             firstly {
-                SubscriptionManagerImpl.cancelSubscription(for: subscriberID)
+                DonationSubscriptionManager.cancelSubscription(for: subscriberID)
             }.done(on: DispatchQueue.main) { [weak self] in
                 modal.dismiss { [weak self] in
                     guard let self = self else { return }
@@ -684,7 +684,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
     }
 
     internal func didCompleteDonation(
-        receiptCredentialSuccessMode: ReceiptCredentialResultStore.Mode
+        receiptCredentialSuccessMode: DonationReceiptCredentialResultStore.Mode
     ) {
         onFinished(.completedDonation(
             donateSheet: self,
@@ -759,7 +759,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
     /// Requests one-time and monthly badges and preset amounts from the
     /// service, prepares badge assets, and loads local state as appropriate.
     private func loadStateWithSneakyTransaction(currentState: State) -> Guarantee<State> {
-        typealias DonationConfiguration = SubscriptionManagerImpl.DonationConfiguration
+        typealias DonationConfiguration = DonationSubscriptionManager.DonationConfiguration
 
         let (
             subscriberID,
@@ -771,12 +771,12 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             pendingIDEALSubscription
         ) = SSKEnvironment.shared.databaseStorageRef.read {
             (
-                SubscriptionManagerImpl.getSubscriberID(transaction: $0),
-                SubscriptionManagerImpl.getSubscriberCurrencyCode(transaction: $0),
-                SubscriptionManagerImpl.getMostRecentSubscriptionPaymentMethod(transaction: $0),
-                DependenciesBridge.shared.receiptCredentialResultStore
+                DonationSubscriptionManager.getSubscriberID(transaction: $0),
+                DonationSubscriptionManager.getSubscriberCurrencyCode(transaction: $0),
+                DonationSubscriptionManager.getMostRecentSubscriptionPaymentMethod(transaction: $0),
+                DependenciesBridge.shared.donationReceiptCredentialResultStore
                     .getRequestError(errorMode: .oneTimeBoost, tx: $0.asV2Read),
-                DependenciesBridge.shared.receiptCredentialResultStore
+                DependenciesBridge.shared.donationReceiptCredentialResultStore
                     .getRequestErrorForAnyRecurringSubscription(tx: $0.asV2Read),
                 DependenciesBridge.shared.externalPendingIDEALDonationStore.getPendingOneTimeDonation(tx: $0.asV2Read),
                 DependenciesBridge.shared.externalPendingIDEALDonationStore.getPendingSubscription(tx: $0.asV2Read)
@@ -785,7 +785,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
 
         // Start fetching the donation configuration.
         let fetchDonationConfigPromise: Promise<DonationConfiguration> = firstly {
-            SubscriptionManagerImpl.fetchDonationConfiguration()
+            DonationSubscriptionManager.fetchDonationConfiguration()
         }.then(on: DispatchQueue.sharedUserInitiated) { donationConfiguration -> Promise<DonationConfiguration> in
             let boostBadge = donationConfiguration.boost.badge
             let subscriptionBadges = donationConfiguration.subscription.levels.map { $0.badge }

@@ -746,8 +746,8 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
     // MARK: Badge Sheets
 
-    var receiptCredentialResultStore: ReceiptCredentialResultStore {
-        DependenciesBridge.shared.receiptCredentialResultStore
+    private var donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore {
+        DependenciesBridge.shared.donationReceiptCredentialResultStore
     }
 
     @objc
@@ -757,8 +757,8 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         }
 
         let (
-            oneTimeBoostReceiptCredentialRedemptionSuccess,
-            recurringSubscriptionInitiationReceiptCredentialRedemptionSuccess,
+            oneTimeBoostDonationReceiptCredentialRedemptionSuccess,
+            recurringSubscriptionInitiationDonationReceiptCredentialRedemptionSuccess,
 
             oneTimeBoostSuccessHasBeenPresented,
             recurringSubscriptionInitiationSuccessHasBeenPresented,
@@ -771,47 +771,47 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             recurringSubscriptionInitiationErrorHasBeenPresented,
             recurringSubscriptionRenewalErrorHasBeenPresented,
 
-            subscriberID,
+            donationSubscriberID,
             expiredBadgeID,
             shouldShowExpirySheet,
             mostRecentSubscriptionPaymentMethod,
             hasCurrentSubscription
         ) = SSKEnvironment.shared.databaseStorageRef.read { transaction in (
-            receiptCredentialResultStore.getRedemptionSuccess(successMode: .oneTimeBoost, tx: transaction.asV2Read),
-            receiptCredentialResultStore.getRedemptionSuccess(successMode: .recurringSubscriptionInitiation, tx: transaction.asV2Read),
+            donationReceiptCredentialResultStore.getRedemptionSuccess(successMode: .oneTimeBoost, tx: transaction.asV2Read),
+            donationReceiptCredentialResultStore.getRedemptionSuccess(successMode: .recurringSubscriptionInitiation, tx: transaction.asV2Read),
 
-            receiptCredentialResultStore.hasPresentedSuccess(successMode: .oneTimeBoost, tx: transaction.asV2Read),
-            receiptCredentialResultStore.hasPresentedSuccess(successMode: .recurringSubscriptionInitiation, tx: transaction.asV2Read),
+            donationReceiptCredentialResultStore.hasPresentedSuccess(successMode: .oneTimeBoost, tx: transaction.asV2Read),
+            donationReceiptCredentialResultStore.hasPresentedSuccess(successMode: .recurringSubscriptionInitiation, tx: transaction.asV2Read),
 
-            receiptCredentialResultStore.getRequestError(errorMode: .oneTimeBoost, tx: transaction.asV2Read),
-            receiptCredentialResultStore.getRequestError(errorMode: .recurringSubscriptionInitiation, tx: transaction.asV2Read),
-            receiptCredentialResultStore.getRequestError(errorMode: .recurringSubscriptionRenewal, tx: transaction.asV2Read),
+            donationReceiptCredentialResultStore.getRequestError(errorMode: .oneTimeBoost, tx: transaction.asV2Read),
+            donationReceiptCredentialResultStore.getRequestError(errorMode: .recurringSubscriptionInitiation, tx: transaction.asV2Read),
+            donationReceiptCredentialResultStore.getRequestError(errorMode: .recurringSubscriptionRenewal, tx: transaction.asV2Read),
 
-            receiptCredentialResultStore.hasPresentedError(errorMode: .oneTimeBoost, tx: transaction.asV2Read),
-            receiptCredentialResultStore.hasPresentedError(errorMode: .recurringSubscriptionInitiation, tx: transaction.asV2Read),
-            receiptCredentialResultStore.hasPresentedError(errorMode: .recurringSubscriptionRenewal, tx: transaction.asV2Read),
+            donationReceiptCredentialResultStore.hasPresentedError(errorMode: .oneTimeBoost, tx: transaction.asV2Read),
+            donationReceiptCredentialResultStore.hasPresentedError(errorMode: .recurringSubscriptionInitiation, tx: transaction.asV2Read),
+            donationReceiptCredentialResultStore.hasPresentedError(errorMode: .recurringSubscriptionRenewal, tx: transaction.asV2Read),
 
-            SubscriptionManagerImpl.getSubscriberID(transaction: transaction),
-            SubscriptionManagerImpl.mostRecentlyExpiredBadgeID(transaction: transaction),
-            SubscriptionManagerImpl.showExpirySheetOnHomeScreenKey(transaction: transaction),
-            SubscriptionManagerImpl.getMostRecentSubscriptionPaymentMethod(transaction: transaction),
-            SubscriptionManagerImpl.hasCurrentSubscription(transaction: transaction)
+            DonationSubscriptionManager.getSubscriberID(transaction: transaction),
+            DonationSubscriptionManager.mostRecentlyExpiredBadgeID(transaction: transaction),
+            DonationSubscriptionManager.showExpirySheetOnHomeScreenKey(transaction: transaction),
+            DonationSubscriptionManager.getMostRecentSubscriptionPaymentMethod(transaction: transaction),
+            DonationSubscriptionManager.hasCurrentSubscription(transaction: transaction)
         )}
 
         if
-            let oneTimeBoostReceiptCredentialRedemptionSuccess,
+            let oneTimeBoostDonationReceiptCredentialRedemptionSuccess,
             !oneTimeBoostSuccessHasBeenPresented
         {
             BadgeThanksSheetPresenter.load(
-                redemptionSuccess: oneTimeBoostReceiptCredentialRedemptionSuccess,
+                redemptionSuccess: oneTimeBoostDonationReceiptCredentialRedemptionSuccess,
                 successMode: .oneTimeBoost
             ).presentBadgeThanksAndClearSuccess(fromViewController: self)
         } else if
-            let recurringSubscriptionInitiationReceiptCredentialRedemptionSuccess,
+            let recurringSubscriptionInitiationDonationReceiptCredentialRedemptionSuccess,
             !recurringSubscriptionInitiationSuccessHasBeenPresented
         {
             BadgeThanksSheetPresenter.load(
-                redemptionSuccess: recurringSubscriptionInitiationReceiptCredentialRedemptionSuccess,
+                redemptionSuccess: recurringSubscriptionInitiationDonationReceiptCredentialRedemptionSuccess,
                 successMode: .recurringSubscriptionInitiation
             ).presentBadgeThanksAndClearSuccess(fromViewController: self)
         } else if
@@ -840,7 +840,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             )
         } else {
             showBadgeExpirationSheetIfNeeded(
-                subscriberID: subscriberID,
+                donationSubscriberID: donationSubscriberID,
                 expiredBadgeID: expiredBadgeID,
                 shouldShowExpirySheet: shouldShowExpirySheet,
                 mostRecentSubscriptionPaymentMethod: mostRecentSubscriptionPaymentMethod,
@@ -859,8 +859,8 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
     /// of days) to process. If one eventually fails, and we find ourselves with
     /// an error for a failed bank payment, we should present a sheet for it.
     private func showBadgeIssueSheetIfNeeded(
-        receiptCredentialRequestError: ReceiptCredentialRequestError,
-        errorMode: ReceiptCredentialResultStore.Mode
+        receiptCredentialRequestError: DonationReceiptCredentialRequestError,
+        errorMode: DonationReceiptCredentialResultStore.Mode
     ) {
         /// Record that we've presented this error. Important to do even for
         /// errors that don't merit presentation – otherwise, as long as this
@@ -869,7 +869,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         /// presenting a different error.
         func hasPresentedError() {
             SSKEnvironment.shared.databaseStorageRef.write { tx in
-                self.receiptCredentialResultStore.setHasPresentedError(
+                self.donationReceiptCredentialResultStore.setHasPresentedError(
                     errorMode: errorMode,
                     tx: tx.asV2Write
                 )
@@ -956,7 +956,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
     }
 
     private func showBadgeExpirationSheetIfNeeded(
-        subscriberID: Data?,
+        donationSubscriberID: Data?,
         expiredBadgeID: String?,
         shouldShowExpirySheet: Bool,
         mostRecentSubscriptionPaymentMethod: DonationPaymentMethod?,
@@ -974,7 +974,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
         if BoostBadgeIds.contains(expiredBadgeID) {
             firstly {
-                SubscriptionManagerImpl.getBoostBadge()
+                DonationSubscriptionManager.getBoostBadge()
             }.done(on: DispatchQueue.global()) { boostBadge in
                 firstly {
                     SSKEnvironment.shared.profileManagerRef.badgeStore.populateAssetsOnBadge(boostBadge)
@@ -990,7 +990,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                     badgeSheet.delegate = self
                     self.present(badgeSheet, animated: true)
                     SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                        SubscriptionManagerImpl.setShowExpirySheetOnHomeScreenKey(show: false, transaction: transaction)
+                        DonationSubscriptionManager.setShowExpirySheetOnHomeScreenKey(show: false, transaction: transaction)
                     }
                 }.catch { error in
                     owsFailDebug("Failed to fetch boost badge assets for expiry \(error)")
@@ -1016,17 +1016,17 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             /// purposes.
 
             firstly(on: DispatchQueue.global()) { () -> Promise<Subscription?> in
-                guard let subscriberID else {
+                guard let donationSubscriberID else {
                     return .value(nil)
                 }
 
-                return SubscriptionManagerImpl.getCurrentSubscriptionStatus(
-                    for: subscriberID
+                return DonationSubscriptionManager.getCurrentSubscriptionStatus(
+                    for: donationSubscriberID
                 )
             }.done(on: DispatchQueue.global()) { currentSubscription in
                 defer {
                     SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                        SubscriptionManagerImpl.setShowExpirySheetOnHomeScreenKey(show: false, transaction: transaction)
+                        DonationSubscriptionManager.setShowExpirySheetOnHomeScreenKey(show: false, transaction: transaction)
                     }
                 }
 

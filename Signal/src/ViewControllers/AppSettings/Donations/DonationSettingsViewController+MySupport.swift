@@ -67,7 +67,7 @@ extension DonationSettingsViewController {
     func mySupportSection(
         subscriptionStatus: State.SubscriptionStatus,
         profileBadgeLookup: ProfileBadgeLookup,
-        oneTimeBoostReceiptCredentialRequestError: ReceiptCredentialRequestError?,
+        oneTimeBoostReceiptCredentialRequestError: DonationReceiptCredentialRequestError?,
         pendingOneTimeDonation: PendingOneTimeIDEALDonation?,
         hasAnyBadges: Bool
     ) -> OWSTableSection? {
@@ -145,7 +145,7 @@ extension DonationSettingsViewController {
         subscriptionType: RecurringSubscriptionTableItemType,
         subscriptionBadge: ProfileBadge?,
         previouslyHadActiveSubscription: Bool,
-        receiptCredentialRequestError: ReceiptCredentialRequestError?
+        receiptCredentialRequestError: DonationReceiptCredentialRequestError?
     ) -> OWSTableItem? {
         let errorState: MySupportErrorState? = {
             switch subscriptionType {
@@ -295,7 +295,7 @@ extension DonationSettingsViewController {
     private func mySupportOneTimeBoostTableItem(
         boostBadge: ProfileBadge?,
         pendingOneTimeIDEALDonation: PendingOneTimeIDEALDonation?,
-        receiptCredentialRequestError: ReceiptCredentialRequestError?
+        receiptCredentialRequestError: DonationReceiptCredentialRequestError?
     ) -> OWSTableItem? {
 
         var amount: FiatMoney?
@@ -529,7 +529,7 @@ extension DonationSettingsViewController {
 
     private func showOneTimeDonateAndClearErrorAction(title: ShowDonateActionTitle) -> ActionSheetAction {
         clearErrorAndShowDonateAction(title: title.localizedTitle, donateMode: .oneTime) { tx in
-            DependenciesBridge.shared.receiptCredentialResultStore
+            DependenciesBridge.shared.donationReceiptCredentialResultStore
                 .clearRequestError(errorMode: .oneTimeBoost, tx: tx.asV2Write)
         }
     }
@@ -538,11 +538,11 @@ extension DonationSettingsViewController {
         return ActionSheetAction(title: title.localizedTitle) { _ in
             firstly(on: DispatchQueue.global()) {
                 SSKEnvironment.shared.databaseStorageRef.read { tx in
-                    SubscriptionManagerImpl.getSubscriberID(transaction: tx)
+                    DonationSubscriptionManager.getSubscriberID(transaction: tx)
                 }
             }.then(on: DispatchQueue.global()) { subscriberID in
                 guard let subscriberID else { return Promise.value(())}
-                return SubscriptionManagerImpl.cancelSubscription(for: subscriberID)
+                return DonationSubscriptionManager.cancelSubscription(for: subscriberID)
             }.then(on: DispatchQueue.main) {
                 self.loadAndUpdateState()
             }.done(on: DispatchQueue.main) { [weak self] in
@@ -575,7 +575,7 @@ private extension Subscription {
     }
 }
 
-private extension ReceiptCredentialRequestError {
+private extension DonationReceiptCredentialRequestError {
     func mySupportErrorState(
         previouslyHadActiveSubscription: Bool
     ) -> MySupportErrorState {
