@@ -1,4 +1,4 @@
-Introducing Call Links: The missing link for calendar invites and impromptu gatherings.
-• Now you can quickly create an easy link that anyone on Signal can use to join a group call without having to join a Signal group chat first.
-• Call links are reusable and ideal for recurring phone dates with your best friends or weekly check-ins with your coworkers.
-• You can manage your call links, control approval settings, and copy links from the calls tab for quick sharing.
+Giới thiệu Đường dẫn Cuộc gọi: Công cụ hữu ích cho những cuộc gọi bất chợt.
+• Giờ đây bạn có thể nhanh chóng tạo một đường dẫn để bất kỳ người dùng Signal nào cũng có thể dễ dàng sử dụng để tham gia cuộc gọi nhóm mà không cần tham gia nhóm.
+• Đường dẫn cuộc gọi có thể được sử dụng lại và hữu dụng cho những cuộc hẹn gọi lặp lại với bạn bè hay trao đổi mỗi tuần với đồng nghiệp.
+• Bạn có thể quản lý đường dẫn cuộc gọi, kiểm soát cài đặt chấp thuận, và sao chép đường dẫn từ tab cuộc gọi để chia sẻ một cách nhanh chóng.

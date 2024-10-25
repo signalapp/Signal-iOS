@@ -1,4 +1,4 @@
-Introducing Call Links: The missing link for calendar invites and impromptu gatherings.
-• Now you can quickly create an easy link that anyone on Signal can use to join a group call without having to join a Signal group chat first.
-• Call links are reusable and ideal for recurring phone dates with your best friends or weekly check-ins with your coworkers.
-• You can manage your call links, control approval settings, and copy links from the calls tab for quick sharing.
+Memperkenalkan Tautan Panggilan: Fitur tautan baru untuk undangan kalender dan rapat dadakan.
+• Kini Anda dapat langsung membuat tautan praktis yang bisa dipakai siapa pun di Signal untuk bergabung ke panggilan grup tanpa harus gabung dulu ke obrolan grup Signal.
+• Tautan panggilan bisa dipakai ulang dan cocok untuk rutinitas telepon dengan sahabat atau rapat mingguan dengan rekan kerja Anda.
+• Anda bisa mengelola tautan panggilan, mengontrol pengaturan persetujuan, dan menyalin tautan dari tab panggilan untuk berbagi dengan cepat.

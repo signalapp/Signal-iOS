@@ -1,4 +1,4 @@
-Introducing Call Links: The missing link for calendar invites and impromptu gatherings.
-• Now you can quickly create an easy link that anyone on Signal can use to join a group call without having to join a Signal group chat first.
-• Call links are reusable and ideal for recurring phone dates with your best friends or weekly check-ins with your coworkers.
-• You can manage your call links, control approval settings, and copy links from the calls tab for quick sharing.
+Wir stellen vor: Anruflinks – Links für Kalendereinladungen und spontane Treffen.
+• Jetzt kannst du schnell einen einfachen Link erstellen, über den alle auf Signal einem Gruppenanruf beitreten können, ohne zuerst einem Signal-Gruppenchat beitreten zu müssen.
+• Anruflinks sind wiederverwendbar und perfekt für wiederkehrende Telefontermine mit deinen besten Freund*innen oder für wöchentliche Meetings mit deinen Kolleg*innen.
+• Du kannst deine Anruflinks verwalten, Genehmigungseinstellungen steuern und Links über den Tab »Anrufe« kopieren, um sie ganz schnell mit anderen zu teilen.

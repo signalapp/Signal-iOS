@@ -1,4 +1,4 @@
-Introducing Call Links: The missing link for calendar invites and impromptu gatherings.
-• Now you can quickly create an easy link that anyone on Signal can use to join a group call without having to join a Signal group chat first.
-• Call links are reusable and ideal for recurring phone dates with your best friends or weekly check-ins with your coworkers.
-• You can manage your call links, control approval settings, and copy links from the calls tab for quick sharing.
+Predstavujeme odkazy na hovor: ideálneho spoločníka k pozvánkam na udalosti v kalendári a improvizovaným stretnutiam.
+• Teraz môžete rýchlo vytvoriť jednoduchý odkaz, ktorý môže ktokoľvek v aplikácii Signal použiť na pripojenie sa ku skupinovému hovoru bez toho, aby sa musel najprv pripojiť ku skupinovému četu.
+• Odkazy na hovor sú opakovane použiteľné a sú ideálnou voľbou, keď si chcete pravidelne volávať s priateľmi alebo každý týždeň usporiadať online stretnutie s kolegami.
+• Môžete spravovať odkazy na hovory, ovládať nastavenia schvaľovania a kopírovať odkazy z karty hovorov na rýchle zdieľanie.
