@@ -93,9 +93,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>Se añadirá %1$ld persona a la llamada.</string>
+			<string>Se añadirá a %1$ld persona a la llamada.</string>
 			<key>other</key>
-			<string>Se añadirán %1$ld personas a la llamada.</string>
+			<string>Se añadirá a %1$ld personas a la llamada.</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_APPROVE_ALL_REQUESTS_CONFIRMATION_TITLE_%ld</key>
@@ -125,9 +125,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>No se añadirá %1$ld persona a la llamada.</string>
+			<string>No se añadirá a %1$ld persona a la llamada.</string>
 			<key>other</key>
-			<string>No se añadirán %1$ld personas a la llamada.</string>
+			<string>No se añadirá a %1$ld personas a la llamada.</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_DENY_ALL_REQUESTS_CONFIRMATION_TITLE_%ld</key>

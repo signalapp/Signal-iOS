@@ -1612,9 +1612,6 @@
 /* Label for button to mute a thread for a hour. */
 "CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "1 ঘন্টা";
 
-/* Label for button to mute a thread for a minute. */
-"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "1 মিনিট";
-
 /* Label for button to mute a thread for a week. */
 "CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "1 সপ্তাহ";
 
@@ -3256,9 +3253,6 @@
 /* Title for the 'invalid group invite link' alert. */
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "অবৈধ লিঙ্ক";
 
-/* Error message indicating that the local user does not support groups v2. */
-"GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "এই গ্রুপটিতে যোগ দিতে এই ডিভাইসে Signal আপডেট করুন।";
-
 /* Explanation of the 'approve new group members' switch. */
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "গ্রুপের লিঙ্কের মাধ্যমে নতুন সদস্যদের যোগদানের অনুমোদনের জন্য একজন অ্যাডমিনের প্রয়োজন।";
 
@@ -4023,6 +4017,15 @@
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "যে ডিভাইস যুক্ত করতে চান সেটিতে প্রদর্শিত কিউআর কোডটি স্ক্যান করুন";
+
+/* Body text for a sheet when a user tries to link a device informing them that they will need to authenticate their device */
+"LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_BODY" = "Tap continue and enter your phone’s lock to confirm. Do not enter your Signal PIN.";
+
+/* Title for a sheet when a user tries to link a device informing them that they will need to authenticate their device */
+"LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_TITLE" = "Before linking, confirm it’s you";
+
+/* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock device linking. */
+"LINK_NEW_DEVICE_AUTHENTICATION_REASON" = "Authenticate to link a device";
 
 /* Subheading for 'Link New Device' navigation */
 "LINK_NEW_DEVICE_SUBTITLE" = "নতুন একটি ডিভাইস লিঙ্ক করতে QR কোডটি স্ক্যান করুন।";
@@ -5980,9 +5983,6 @@
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "নাম্বার লিখুন";
 
-/* No comment provided by engineer. */
-"REGISTRATION_ERROR" = "নিবন্ধন ত্রুটি";
-
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the description on that screen, explaining what's going on. Embeds {{ duration }}, such as \"7 days\". */
 "REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "আপনার গোপনীয়তা ও নিরাপত্তা নিশ্চিত করতে আপনার অ্যাকাউন্টটি লক করা হয়েছে। আপনার অ্যাকাউন্টটি %1$@ দিন নিষ্ক্রিয় থাকার পরে আপনি আপনার পিনের প্রয়োজন ছাড়াই এই ফোন নম্বরটি পুনরায় নিবন্ধন করতে সক্ষম হবেন। সব কন্টেন্ট মুছে ফেলা হবে।";
 
@@ -6099,9 +6099,6 @@
 
 /* Error message when sending a verification code via voice call failed, but resending via sms might succeed. */
 "REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "আমরা আপনাকে ভয়েস কলের মাধ্যমে যাচাইকরণ কোড পাঠাতে পারিনি। এর পরিবর্তে এসএমএসের মাধ্যমে আপনার কোড সংগ্রহ করার চেষ্টা করুন।";
-
-/* No comment provided by engineer. */
-"RELAY_REGISTERED_ERROR_RECOVERY" = "আপনি যে ফোন নাম্বার নিবন্ধন করার চেষ্টা করছেন সেটি ইতিমধ্যে অন্য সার্ভারে নিবন্ধিত হয়েছে, দয়া করে সেখান থেকে নিবন্ধন মুক্ত করুন এবং আবার চেষ্টা করুন।";
 
 /* Button below the warning to fix a corrupted username. */
 "REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "এখনই ঠিক করুন";
