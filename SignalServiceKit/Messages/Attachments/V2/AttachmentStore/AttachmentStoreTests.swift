@@ -437,7 +437,7 @@ class AttachmentStoreTests: XCTestCase {
         XCTAssertEqual(enumeratedCount, attachmentIdsInOwner.count)
     }
 
-    func testEnumerateAttachments() throws {
+    func testEnumerateAttachmentsWithMediaName() throws {
         let attachmentCount = 100
 
         let threadIds = db.write { tx in
@@ -459,7 +459,7 @@ class AttachmentStoreTests: XCTestCase {
         // Check that we enumerate all the ids we created for the original attachment's id.
         var enumeratedCount = 0
         try db.read { tx in
-            try attachmentStore.enumerateAllAttachments(
+            try attachmentStore.enumerateAllAttachmentsWithMediaName(
                 tx: tx,
                 block: { _ in
                     enumeratedCount += 1

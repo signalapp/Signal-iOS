@@ -45,6 +45,28 @@ public extension Array {
     }
 }
 
+public extension Collection {
+
+    func forEachChunk(chunkSize: Int, _ block: (Self.SubSequence) async throws -> Void) async rethrows {
+        guard !isEmpty else { return }
+        var startIndex = self.startIndex
+        var endIndex = self.index(
+            startIndex,
+            offsetBy: chunkSize,
+            limitedBy: self.endIndex
+        ) ?? self.endIndex
+        while self.distance(from: startIndex, to: endIndex) > 0 {
+            try await block(self[startIndex..<endIndex])
+            startIndex = endIndex
+            endIndex = self.index(
+                startIndex,
+                offsetBy: chunkSize,
+                limitedBy: self.endIndex
+            ) ?? self.endIndex
+        }
+    }
+}
+
 #if TESTABLE_BUILD
 
 public extension Array {

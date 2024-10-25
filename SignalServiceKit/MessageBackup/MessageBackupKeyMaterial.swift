@@ -52,6 +52,12 @@ public protocol MessageBackupKeyMaterial {
         tx: any DBReadTransaction
     ) throws -> MediaTierEncryptionMetadata
 
+    func mediaId(
+        mediaName: String,
+        type: MediaTierEncryptionType,
+        backupKey: SVR.DerivedKeyData
+    ) throws -> Data
+
     /// Builds an encrypting StreamTransform object derived from the backup master key and the backupID
     func createEncryptingStreamTransform(localAci: Aci, tx: DBReadTransaction) throws -> EncryptingStreamTransform
 

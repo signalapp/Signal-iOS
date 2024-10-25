@@ -987,6 +987,7 @@ public class AppSetup {
                 messageBackupRequestManager: messageBackupRequestManager,
                 orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
                 reachabilityManager: reachabilityManager,
+                svr: svr,
                 tsAccountManager: tsAccountManager
             )
         let backupAttachmentUploadStore = BackupAttachmentUploadStoreImpl()

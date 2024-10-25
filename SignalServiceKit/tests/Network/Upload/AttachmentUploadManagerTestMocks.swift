@@ -112,6 +112,10 @@ class _AttachmentUploadManager_MessageBackupKeyMaterialMock: MessageBackupKeyMat
         return .init(type: type, mediaId: Data(), hmacKey: Data(), aesKey: Data(), iv: Data())
     }
 
+    func mediaId(mediaName: String, type: MediaTierEncryptionType, backupKey: SVR.DerivedKeyData) throws -> Data {
+        return Data()
+    }
+
     func createEncryptingStreamTransform(localAci: Aci, tx: DBReadTransaction) throws -> EncryptingStreamTransform {
         fatalError("Unimplemented for tests")
     }

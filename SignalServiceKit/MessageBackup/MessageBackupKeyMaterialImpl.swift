@@ -93,9 +93,8 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
         type: MediaTierEncryptionType,
         tx: any DBReadTransaction
     ) throws -> MediaTierEncryptionMetadata {
-        guard let mediaNameData = mediaName.data(using: .utf8) else {
-            owsFailDebug("Failed to encode data")
-            throw MessageBackupKeyMaterialError.invalidKeyInfo
+        guard let backupKey = svr.data(for: .backupKey, transaction: tx) else {
+            throw MessageBackupKeyMaterialError.missingMasterKey
         }
 
         let (info, length) = {
@@ -107,18 +106,13 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
             }
         }()
 
-        let mediaId = Data(try buildBackupEncryptionMaterial(
-            salt: mediaNameData,
-            info: Constants.MessageBackupMediaIdInfoString,
-            length: Constants.MessageBackupMediaIdDataLength,
-            tx: tx
-        ))
+        let mediaId = try self.mediaId(mediaName: mediaName, type: type, backupKey: backupKey)
 
         let keyBytes = try buildBackupEncryptionMaterial(
             salt: mediaId,
             info: info,
             length: length,
-            tx: tx
+            backupKey: backupKey
         )
 
         guard keyBytes.count == length else {
@@ -145,6 +139,34 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
         }
     }
 
+    public func mediaId(
+        mediaName: String,
+        type: MediaTierEncryptionType,
+        backupKey: SVR.DerivedKeyData
+    ) throws -> Data {
+        guard let mediaNameData = mediaName.data(using: .utf8) else {
+            owsFailDebug("Failed to encode data")
+            throw MessageBackupKeyMaterialError.invalidKeyInfo
+        }
+
+        let info = {
+            switch type {
+            case .attachment:
+                Constants.MessageBackupMediaEncryptionInfoString
+            case .thumbnail:
+                Constants.MessageBackupThumbnailEncryptionInfoString
+            }
+        }()
+
+        let mediaId = Data(try buildBackupEncryptionMaterial(
+            salt: mediaNameData,
+            info: Constants.MessageBackupMediaIdInfoString,
+            length: Constants.MessageBackupMediaIdDataLength,
+            backupKey: backupKey
+        ))
+        return mediaId
+    }
+
     private func buildEncryptionMaterial(localAci: Aci, tx: DBReadTransaction) throws -> (encryptionKey: Data, hmacKey: Data) {
         let keyBytes = try buildBackupEncryptionMaterial(
             salt: try backupID(localAci: localAci, tx: tx),
@@ -166,6 +188,23 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
     ) throws -> [UInt8] {
         guard let backupKey = svr.data(for: .backupKey, transaction: tx) else {
             throw MessageBackupKeyMaterialError.missingMasterKey
+        }
+        return try buildBackupEncryptionMaterial(
+            salt: salt,
+            info: info,
+            length: length,
+            backupKey: backupKey
+        )
+    }
+
+    private func buildBackupEncryptionMaterial(
+        salt: ContiguousBytes,
+        info: String,
+        length: Int,
+        backupKey: SVR.DerivedKeyData
+    ) throws -> [UInt8] {
+        guard backupKey.type == .backupKey else {
+            throw OWSAssertionError("Wrong key provided")
         }
 
         guard let infoData = info.data(using: .utf8) else {
