@@ -34,6 +34,7 @@ public enum AttachmentDownloads {
                 outerEncyptionMetadata: MediaTierEncryptionMetadata,
                 innerEncryptionMetadata: MediaTierEncryptionMetadata
             )
+            case linkNSyncBackup(cdnKey: String)
         }
 
         public var digest: Data? {
@@ -44,6 +45,9 @@ public enum AttachmentDownloads {
                 return digest
             case .mediaTierThumbnail:
                 // No digest for media tier thumbnails; they come from the local user.
+                return nil
+            case .linkNSyncBackup:
+                // No digest for link'n'sync backups; they come from the local user.
                 return nil
             }
         }
@@ -59,6 +63,10 @@ public enum AttachmentDownloads {
                 // They may be padded with 0s to hit bucket sizes, but
                 // we take advantage of the fact that jpegs support
                 // no-op trailing 0s (and all thumbnails are jpegs).
+                return nil
+            case .linkNSyncBackup:
+                // Link'n'sync backups don't include a length out
+                // of band because gzip ignores padding.
                 return nil
             }
         }

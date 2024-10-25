@@ -52,6 +52,7 @@ public protocol LinkAndSyncManager {
     /// to upload a backup, download that backup, and restore data from it.
     /// Once this method returns, provisioning can continue and finish.
     func waitForBackupAndRestore(
+        localIdentifiers: LocalIdentifiers,
         ephemeralBackupKey: EphemeralBackupKey
     ) async throws(SecondaryLinkNSyncError)
 }
@@ -124,6 +125,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
     }
 
     public func waitForBackupAndRestore(
+        localIdentifiers: LocalIdentifiers,
         ephemeralBackupKey: EphemeralBackupKey
     ) async throws(SecondaryLinkNSyncError) {
         guard FeatureFlags.linkAndSync else {
@@ -131,12 +133,19 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             return
         }
         owsAssertDebug(tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice != true)
-        // TODO: [link'n'sync] wait for the primary to upload the backup.
-        // TODO: [link'n'sync] download the backup.
-        // TODO: [link'n'sync] restore from the backup.
+        let backupUploadResponse = try await waitForPrimaryToUploadBackup()
+        let downloadedFileUrl = try await downloadEphemeralBackup(
+            waitForBackupResponse: backupUploadResponse,
+            ephemeralBackupKey: ephemeralBackupKey
+        )
+        try await restoreEphemeralBackup(
+            fileUrl: downloadedFileUrl,
+            localIdentifiers: localIdentifiers,
+            ephemeralBackupKey: ephemeralBackupKey
+        )
     }
 
-    // MARK: - Private methods
+    // MARK: Primary device steps
 
     private func waitForDeviceToLink(
         tokenId: DeviceProvisioningTokenId
@@ -166,7 +175,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                 owsFailDebug("Unexpected response")
                 throw PrimaryLinkNSyncError.errorWaitingForLinkedDevice
             }
-        } catch let error {
+        } catch {
             throw PrimaryLinkNSyncError.networkError
         }
     }
@@ -227,6 +236,78 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             } else {
                 throw PrimaryLinkNSyncError.errorUploadingBackup
             }
+        }
+    }
+
+    // MARK: Linked device steps
+
+    private func waitForPrimaryToUploadBackup() async throws(SecondaryLinkNSyncError) -> Requests.WaitForLinkNSyncBackupUploadResponse {
+        do {
+            let response = try await networkManager.asyncRequest(
+                Requests.waitForLinkNSyncBackupUpload()
+            )
+
+            switch Requests.WaitForLinkNSyncBackupUploadResponseCodes(rawValue: response.responseStatusCode) {
+            case .success:
+                guard
+                    let data = response.responseBodyData,
+                    let response = try? JSONDecoder().decode(
+                        Requests.WaitForLinkNSyncBackupUploadResponse.self,
+                        from: data
+                    )
+                else {
+                    throw SecondaryLinkNSyncError.errorWaitingForBackup
+                }
+                return response
+            case .timeout:
+                throw SecondaryLinkNSyncError.timedOutWaitingForBackup
+            case .invalidParameters, .rateLimited:
+                throw SecondaryLinkNSyncError.errorWaitingForBackup
+            case nil:
+                owsFailDebug("Unexpected response")
+                throw SecondaryLinkNSyncError.errorWaitingForBackup
+            }
+        } catch {
+            throw SecondaryLinkNSyncError.networkError
+        }
+    }
+
+    private func downloadEphemeralBackup(
+        waitForBackupResponse: Requests.WaitForLinkNSyncBackupUploadResponse,
+        ephemeralBackupKey: EphemeralBackupKey
+    ) async throws(SecondaryLinkNSyncError) -> URL {
+        do {
+            return try await attachmentDownloadManager.downloadTransientAttachment(
+                metadata: AttachmentDownloads.DownloadMetadata(
+                    mimeType: MimeType.applicationOctetStream.rawValue,
+                    cdnNumber: waitForBackupResponse.cdn,
+                    encryptionKey: ephemeralBackupKey.data,
+                    source: .linkNSyncBackup(cdnKey: waitForBackupResponse.key)
+                )
+            ).awaitable()
+        } catch {
+            if error.isNetworkFailureOrTimeout {
+                throw SecondaryLinkNSyncError.networkError
+            } else {
+                throw SecondaryLinkNSyncError.errorDownloadingBackup
+            }
+        }
+    }
+
+    private func restoreEphemeralBackup(
+        fileUrl: URL,
+        localIdentifiers: LocalIdentifiers,
+        ephemeralBackupKey: EphemeralBackupKey
+    ) async throws(SecondaryLinkNSyncError) {
+        do {
+            try await messageBackupManager.importEncryptedBackup(
+                fileUrl: fileUrl,
+                localIdentifiers: localIdentifiers,
+                mode: .linknsync(ephemeralBackupKey)
+            )
+        } catch {
+            owsFailDebug("Unable to restore link'n'sync backup: \(error)")
+            throw SecondaryLinkNSyncError.errorRestoringBackup
         }
     }
 
@@ -315,9 +396,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             case rateLimited = 429
         }
 
-        static func waitForLinkNSyncBackupUpload(
-            tokenId: DeviceProvisioningTokenId
-        ) -> TSRequest {
+        static func waitForLinkNSyncBackupUpload() -> TSRequest {
             var urlComponents = URLComponents(string: "v1/devices/transfer_archive")!
             urlComponents.queryItems = [URLQueryItem(
                 name: "timeout",
