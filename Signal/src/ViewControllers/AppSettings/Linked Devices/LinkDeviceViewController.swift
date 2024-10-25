@@ -141,7 +141,10 @@ class LinkDeviceViewController: OWSViewController {
         var areReadReceiptsEnabled: Bool = true
         var masterKey: Data?
         let ephemeralBackupKey: EphemeralBackupKey?
-        if FeatureFlags.linkAndSync {
+        if
+            FeatureFlags.linkAndSync,
+            deviceProvisioningUrl.capabilities.contains(where: { $0 == .linknsync })
+        {
             ephemeralBackupKey = DependenciesBridge.shared.linkAndSyncManager.generateEphemeralBackupKey()
         } else {
             ephemeralBackupKey = nil

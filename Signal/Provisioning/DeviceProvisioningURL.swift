@@ -8,9 +8,23 @@ import SignalServiceKit
 
 class DeviceProvisioningURL {
 
+    public static let ephemeralDeviceIdParamName = "uuid"
+    public static let publicKeyParamName = "pub_key"
+    public static let capabilitiesParamName = "capabilities"
+
+    /// Capabilities communicated in a provisioning QR code.
+    /// NOT to be confused with Account Capabilities; this is a distinct set
+    /// scoped specifically to provisioning to communicate between the primary
+    /// and secondary device.
+    public enum Capability: String {
+        case linknsync = "backup"
+    }
+
     let ephemeralDeviceId: String
 
     let publicKey: PublicKey
+
+    let capabilities: [Capability]
 
     enum Constants {
         static let linkDeviceHost = "linkdevice"
@@ -23,12 +37,24 @@ class DeviceProvisioningURL {
 
         var ephemeralDeviceId: String?
         var publicKey: PublicKey?
+        var capabilities: [Capability] = []
         for queryItem in queryItems {
             switch queryItem.name {
-            case "uuid":
+            case Self.ephemeralDeviceIdParamName:
                 ephemeralDeviceId = queryItem.value
-            case "pub_key":
+            case Self.publicKeyParamName:
                 publicKey = Self.decodePublicKey(queryItem.value)
+            case Self.capabilitiesParamName:
+                capabilities = queryItem.value?
+                    .split(separator: ",")
+                    .compactMap({
+                        guard let capability = Capability(rawValue: String($0)) else {
+                            Logger.warn("unknown capability in provisioning string \($0)")
+                            return nil
+                        }
+                        return capability
+                    })
+                    ?? []
             default:
                 Logger.warn("unknown query item in provisioning string: \(queryItem.name)")
             }
@@ -40,6 +66,7 @@ class DeviceProvisioningURL {
 
         self.ephemeralDeviceId = ephemeralDeviceId
         self.publicKey = publicKey
+        self.capabilities = capabilities
     }
 
     private static func decodePublicKey(_ encodedPublicKey: String?) -> PublicKey? {
