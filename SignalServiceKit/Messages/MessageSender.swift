@@ -115,14 +115,6 @@ public class MessageSender {
     ) async throws -> SignalServiceKit.PreKeyBundle {
         Logger.info("serviceId: \(serviceId).\(deviceId)")
 
-        if deviceRecentlyReportedMissing(serviceId: serviceId, deviceId: deviceId) {
-            // We don't want to retry prekey requests if we've recently gotten a "404
-            // missing device" for the same recipient/device. Fail immediately as
-            // though we hit the "404 missing device" error again.
-            Logger.info("Skipping prekey request to avoid missing device error.")
-            throw MessageSenderError.missingDevice
-        }
-
         // As an optimization, skip the request if an error is guaranteed.
         if willDefinitelyHaveUntrustedIdentityError(for: serviceId) {
             Logger.info("Skipping prekey request due to untrusted identity.")
@@ -171,7 +163,6 @@ public class MessageSender {
         } catch {
             switch error.httpStatusCode {
             case 404:
-                self.reportMissingDeviceError(serviceId: serviceId, deviceId: deviceId)
                 throw MessageSenderError.missingDevice
             case 429:
                 throw MessageSenderError.prekeyRateLimit
@@ -386,54 +377,6 @@ public class MessageSender {
 
         // Let the first error go, only skip starting on the second error
         guard mostRecentError.errorCount > 1 else {
-            return false
-        }
-
-        return true
-    }
-
-    // MARK: - Missing Devices
-
-    private struct CacheKey: Hashable {
-        let serviceId: ServiceId
-        let deviceId: UInt32
-    }
-
-    private let missingDevicesCache = AtomicDictionary<CacheKey, Date>(lock: .init())
-
-    private func reportMissingDeviceError(serviceId: ServiceId, deviceId: UInt32) {
-        assert(!Thread.isMainThread)
-
-        guard deviceId == OWSDevice.primaryDeviceId else {
-            // For now, only bother ignoring primary devices. HTTP 404s should cause
-            // the recipient's device list to be updated, so linked devices shouldn't
-            // be a problem.
-            return
-        }
-
-        let cacheKey = CacheKey(serviceId: serviceId, deviceId: deviceId)
-        missingDevicesCache[cacheKey] = Date()
-    }
-
-    private func deviceRecentlyReportedMissing(serviceId: ServiceId, deviceId: UInt32) -> Bool {
-        assert(!Thread.isMainThread)
-
-        // Prekey rate limits are strict. Therefore, we want to avoid requesting
-        // prekey bundles that are missing on the service (404).
-
-        let cacheKey = CacheKey(serviceId: serviceId, deviceId: deviceId)
-        let recentlyReportedMissingDate = missingDevicesCache[cacheKey]
-
-        guard let recentlyReportedMissingDate else {
-            return false
-        }
-
-        // If the "missing device" was recorded more than N minutes ago, try
-        // another prekey fetch.  It's conceivable that the recipient has
-        // registered (in the primary device case) or linked to the device (in the
-        // secondary device case).
-        let missingDeviceLifetime = kMinuteInterval * 1
-        guard abs(recentlyReportedMissingDate.timeIntervalSinceNow) < missingDeviceLifetime else {
             return false
         }
 
