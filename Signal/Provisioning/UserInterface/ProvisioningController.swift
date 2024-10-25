@@ -40,6 +40,7 @@ public class ProvisioningController: NSObject {
             chatConnectionManager: DependenciesBridge.shared.chatConnectionManager,
             db: DependenciesBridge.shared.db,
             identityManager: DependenciesBridge.shared.identityManager,
+            linkAndSyncManager: DependenciesBridge.shared.linkAndSyncManager,
             messageFactory: ProvisioningCoordinatorImpl.Wrappers.MessageFactory(),
             preKeyManager: DependenciesBridge.shared.preKeyManager,
             profileManager: ProvisioningCoordinatorImpl.Wrappers.ProfileManager(SSKEnvironment.shared.profileManagerImplRef),

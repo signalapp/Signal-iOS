@@ -9,6 +9,19 @@ public struct EphemeralBackupKey {
     fileprivate init(_ data: Data) {
         self.data = data
     }
+
+    public init?(provisioningMessage: ProvisionMessage) {
+        guard let data = provisioningMessage.ephemeralBackupKey else {
+            return nil
+        }
+        self.init(data)
+    }
+
+    #if TESTABLE_BUILD
+    public static func forTesting() -> EphemeralBackupKey {
+        return EphemeralBackupKey(Randomness.generateRandomBytes(UInt(SVR.DerivedKey.backupKeyLength)))
+    }
+    #endif
 }
 
 /// Link'n'Sync errors thrown on the primary device.
@@ -36,7 +49,7 @@ public protocol LinkAndSyncManager {
     /// This key should be included in the provisioning message and then used to encrypt the backup proto we send.
     ///
     /// - returns The ephemeral key to use, or nil if link'n'sync should not be used.
-    func generateEphemeralBackupKey() -> EphemeralBackupKey?
+    func generateEphemeralBackupKey() -> EphemeralBackupKey
 
     /// **Call this on the primary device!**
     /// Once the primary sends the provisioning message to the linked device, call this method
@@ -53,6 +66,7 @@ public protocol LinkAndSyncManager {
     /// Once this method returns, provisioning can continue and finish.
     func waitForBackupAndRestore(
         localIdentifiers: LocalIdentifiers,
+        auth: ChatServiceAuth,
         ephemeralBackupKey: EphemeralBackupKey
     ) async throws(SecondaryLinkNSyncError)
 }
@@ -82,10 +96,8 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         self.tsAccountManager = tsAccountManager
     }
 
-    public func generateEphemeralBackupKey() -> EphemeralBackupKey? {
-        guard FeatureFlags.linkAndSync else {
-            return nil
-        }
+    public func generateEphemeralBackupKey() -> EphemeralBackupKey {
+        owsAssertDebug(FeatureFlags.linkAndSync)
         owsAssertDebug(tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice == true)
         return EphemeralBackupKey(Randomness.generateRandomBytes(UInt(SVR.DerivedKey.backupKeyLength)))
     }
@@ -126,6 +138,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
 
     public func waitForBackupAndRestore(
         localIdentifiers: LocalIdentifiers,
+        auth: ChatServiceAuth,
         ephemeralBackupKey: EphemeralBackupKey
     ) async throws(SecondaryLinkNSyncError) {
         guard FeatureFlags.linkAndSync else {
@@ -133,7 +146,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             return
         }
         owsAssertDebug(tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice != true)
-        let backupUploadResponse = try await waitForPrimaryToUploadBackup()
+        let backupUploadResponse = try await waitForPrimaryToUploadBackup(auth: auth)
         let downloadedFileUrl = try await downloadEphemeralBackup(
             waitForBackupResponse: backupUploadResponse,
             ephemeralBackupKey: ephemeralBackupKey
@@ -197,9 +210,9 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
 
     private func uploadEphemeralBackup(
         metadata: Upload.EncryptedBackupUploadMetadata
-    ) async throws(PrimaryLinkNSyncError) -> Upload.Result<Upload.LocalUploadMetadata> {
+    ) async throws(PrimaryLinkNSyncError) -> Upload.Result<Upload.LinkNSyncUploadMetadata> {
         do {
-            return try await attachmentUploadManager.uploadTransientAttachment(
+            return try await attachmentUploadManager.uploadLinkNSyncAttachment(
                 dataSource: try DataSourcePath(
                     fileUrl: metadata.fileUrl,
                     shouldDeleteOnDeallocation: true
@@ -216,7 +229,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
 
     private func markEphemeralBackupUploaded(
         waitForDeviceToLinkResponse: Requests.WaitForDeviceToLinkResponse,
-        metadata: Upload.Result<Upload.LocalUploadMetadata>
+        metadata: Upload.Result<Upload.LinkNSyncUploadMetadata>
     ) async throws(PrimaryLinkNSyncError) -> Void {
         do {
             let response = try await networkManager.asyncRequest(
@@ -227,7 +240,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                 )
             )
 
-            guard response.responseStatusCode == 204 else {
+            guard response.responseStatusCode == 204 || response.responseStatusCode == 200 else {
                 throw PrimaryLinkNSyncError.errorUploadingBackup
             }
         } catch let error {
@@ -241,10 +254,12 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
 
     // MARK: Linked device steps
 
-    private func waitForPrimaryToUploadBackup() async throws(SecondaryLinkNSyncError) -> Requests.WaitForLinkNSyncBackupUploadResponse {
+    private func waitForPrimaryToUploadBackup(
+        auth: ChatServiceAuth
+    ) async throws(SecondaryLinkNSyncError) -> Requests.WaitForLinkNSyncBackupUploadResponse {
         do {
             let response = try await networkManager.asyncRequest(
-                Requests.waitForLinkNSyncBackupUpload()
+                Requests.waitForLinkNSyncBackupUpload(auth: auth)
             )
 
             switch Requests.WaitForLinkNSyncBackupUploadResponseCodes(rawValue: response.responseStatusCode) {
@@ -312,8 +327,8 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
     }
 
     fileprivate enum Constants {
-        static let waitForDeviceLinkTimeoutSeconds: UInt32 = 60
-        static let waitForBackupUploadTimeoutSeconds: UInt32 = 60
+        static let waitForDeviceLinkTimeoutSeconds: UInt32 = FeatureFlags.linkAndSyncTimeoutSeconds
+        static let waitForBackupUploadTimeoutSeconds: UInt32 = FeatureFlags.linkAndSyncTimeoutSeconds
     }
 
     // MARK: -
@@ -396,7 +411,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             case rateLimited = 429
         }
 
-        static func waitForLinkNSyncBackupUpload() -> TSRequest {
+        static func waitForLinkNSyncBackupUpload(auth: ChatServiceAuth) -> TSRequest {
             var urlComponents = URLComponents(string: "v1/devices/transfer_archive")!
             urlComponents.queryItems = [URLQueryItem(
                 name: "timeout",
@@ -408,6 +423,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                 parameters: nil
             )
             request.shouldHaveAuthorizationHeaders = true
+            request.setAuth(auth)
             request.applyRedactionStrategy(.redactURLForSuccessResponses())
             // The timeout is server side; apply wiggle room for our local clock.
             request.timeoutInterval = 30 + TimeInterval(Constants.waitForBackupUploadTimeoutSeconds)

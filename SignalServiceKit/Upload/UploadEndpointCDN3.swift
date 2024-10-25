@@ -103,7 +103,9 @@ struct UploadEndpointCDN3: UploadEndpoint {
             headers["Upload-Length"] = "\(totalDataLength)"
 
             // On creation, provide a checksum for the server to validate
-            headers["x-signal-checksum-sha256"] = attempt.localMetadata.digest.base64EncodedString()
+            if let metadata = attempt.localMetadata as? ValidatedUploadMetadata {
+                headers["x-signal-checksum-sha256"] = metadata.digest.base64EncodedString()
+            }
         } else {
             // Resuming, slice attachment data in memory.
             // TODO[CDN3]: Avoid slicing file and instead use a input stream

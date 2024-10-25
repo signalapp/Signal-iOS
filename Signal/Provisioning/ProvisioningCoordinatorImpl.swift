@@ -11,6 +11,7 @@ public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     private let chatConnectionManager: ChatConnectionManager
     private let db: any DB
     private let identityManager: OWSIdentityManager
+    private let linkAndSyncManager: LinkAndSyncManager
     private let messageFactory: Shims.MessageFactory
     private let preKeyManager: PreKeyManager
     private let profileManager: Shims.ProfileManager
@@ -29,6 +30,7 @@ public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         chatConnectionManager: ChatConnectionManager,
         db: any DB,
         identityManager: OWSIdentityManager,
+        linkAndSyncManager: LinkAndSyncManager,
         messageFactory: Shims.MessageFactory,
         preKeyManager: PreKeyManager,
         profileManager: Shims.ProfileManager,
@@ -46,6 +48,7 @@ public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         self.chatConnectionManager = chatConnectionManager
         self.db = db
         self.identityManager = identityManager
+        self.linkAndSyncManager = linkAndSyncManager
         self.messageFactory = messageFactory
         self.preKeyManager = preKeyManager
         self.profileManager = profileManager
@@ -213,9 +216,6 @@ public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
             }
         }
 
-        // TODO: [link'n'sync]: use `provisionMessage.ephemeralBackupKey` and download
-        // the backup if its not nil.
-
         do {
             try await self.preKeyManager
                 .finalizeRegistrationPreKeys(prekeyBundles, uploadDidSucceed: true)
@@ -225,6 +225,25 @@ public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
                 .value
         } catch {
             return .genericError(error)
+        }
+
+        if
+            FeatureFlags.linkAndSync,
+            let ephemeralBackupKey = EphemeralBackupKey(provisioningMessage: provisionMessage)
+        {
+            do {
+                try await self.linkAndSyncManager.waitForBackupAndRestore(
+                    localIdentifiers: LocalIdentifiers(
+                        aci: aci,
+                        pni: pni,
+                        e164: phoneNumber
+                    ),
+                    auth: authedDevice.authedAccount.chatServiceAuth,
+                    ephemeralBackupKey: ephemeralBackupKey
+                )
+            } catch {
+                owsFailDebug("Failed link'n'sync \(error)")
+            }
         }
 
         let hasBackedUpMasterKey = self.db.read { tx in

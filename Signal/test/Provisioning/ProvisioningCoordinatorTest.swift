@@ -63,6 +63,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
             chatConnectionManager: chatConnectionManagerMock,
             db: mockDb,
             identityManager: identityManagerMock,
+            linkAndSyncManager: MockLinkAndSyncManager(),
             messageFactory: messageFactoryMock,
             preKeyManager: prekeyManagerMock,
             profileManager: profileManagerMock,
@@ -177,5 +178,26 @@ extension ProvisioningCoordinatorTest {
                 bodyData: responseBody
             ))
         }
+    }
+}
+
+private class MockLinkAndSyncManager: LinkAndSyncManager {
+    func generateEphemeralBackupKey() -> EphemeralBackupKey {
+        return .forTesting()
+    }
+
+    func waitForLinkingAndUploadBackup(
+        ephemeralBackupKey: EphemeralBackupKey,
+        tokenId: DeviceProvisioningTokenId
+    ) async throws(PrimaryLinkNSyncError) {
+        return
+    }
+
+    func waitForBackupAndRestore(
+        localIdentifiers: LocalIdentifiers,
+        auth: ChatServiceAuth,
+        ephemeralBackupKey: EphemeralBackupKey
+    ) async throws(SecondaryLinkNSyncError) {
+        return
     }
 }

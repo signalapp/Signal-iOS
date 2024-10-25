@@ -202,6 +202,28 @@ public struct AttachmentUpload {
     }
 
     public static func buildAttempt(
+        for metadata: Upload.LinkNSyncUploadMetadata,
+        form: Upload.Form,
+        existingSessionUrl: URL? = nil,
+        signalService: OWSSignalServiceProtocol,
+        fileSystem: Upload.Shims.FileSystem,
+        dateProvider: @escaping DateProvider,
+        logger: PrefixedLogger
+    ) async throws -> Upload.Attempt<Upload.LinkNSyncUploadMetadata> {
+        return try await buildAttempt(
+            for: metadata,
+            fileUrl: metadata.fileUrl,
+            encryptedDataLength: metadata.encryptedDataLength,
+            form: form,
+            existingSessionUrl: existingSessionUrl,
+            signalService: signalService,
+            fileSystem: fileSystem,
+            dateProvider: dateProvider,
+            logger: logger
+        )
+    }
+
+    public static func buildAttempt(
         for localMetadata: Upload.EncryptedBackupUploadMetadata,
         form: Upload.Form,
         existingSessionUrl: URL? = nil,

@@ -45,6 +45,7 @@ public enum FeatureFlags {
     public static let messageBackupFileAlpha = build.includes(.dev)
     public static let messageBackupFileAlphaRegistrationFlow = build.includes(.dev)
     public static let linkAndSync = build.includes(.dev)
+    public static let linkAndSyncTimeoutSeconds: UInt32 = 60 * (build.includes(.internal) ? 4 : 1)
 
     public static let callLinkCreate = true
     public static let callLinkSync = true

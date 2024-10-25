@@ -132,6 +132,13 @@ public enum Upload {
         public var isReusedTransitTierUpload: Bool { false }
     }
 
+    public struct LinkNSyncUploadMetadata: UploadMetadata {
+        /// File URL of the link'n'sync transient backup.
+        public let fileUrl: URL
+        /// The length of the file.
+        public let encryptedDataLength: UInt32
+    }
+
     public struct ReusedUploadMetadata: AttachmentUploadMetadata {
         public let cdnKey: String
 

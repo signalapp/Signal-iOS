@@ -7,17 +7,20 @@ import Foundation
 
 /// Applies to attachment uploads, backup proto uploads, etc.
 public protocol UploadMetadata {
+    var encryptedDataLength: UInt32 { get }
+}
+
+/// Includes extra info like digest for validation.
+public protocol ValidatedUploadMetadata: UploadMetadata {
     /// The digest of the encrypted file.  The encrypted file consist of "iv + encrypted data + hmac"
     var digest: Data { get }
 
     /// The length of the unencrypted data
     var plaintextDataLength: UInt32 { get }
-
-    var encryptedDataLength: UInt32 { get }
 }
 
 /// Specifically an upload of an attachment.
-public protocol AttachmentUploadMetadata: UploadMetadata {
+public protocol AttachmentUploadMetadata: ValidatedUploadMetadata {
     /// encryption key + hmac
     var key: Data { get }
 

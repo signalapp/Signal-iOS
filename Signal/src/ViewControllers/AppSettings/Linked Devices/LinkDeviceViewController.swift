@@ -140,8 +140,12 @@ class LinkDeviceViewController: OWSViewController {
         var pniIdentityKeyPair: ECKeyPair?
         var areReadReceiptsEnabled: Bool = true
         var masterKey: Data?
-        // TODO: [link'n'sync]: generate and hold onto the ephemeral backup key
-        let ephemeralBackupKey: Data? = nil
+        let ephemeralBackupKey: EphemeralBackupKey?
+        if FeatureFlags.linkAndSync {
+            ephemeralBackupKey = DependenciesBridge.shared.linkAndSyncManager.generateEphemeralBackupKey()
+        } else {
+            ephemeralBackupKey = nil
+        }
         SSKEnvironment.shared.databaseStorageRef.read { tx in
             localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)
             let identityManager = DependenciesBridge.shared.identityManager
@@ -189,10 +193,19 @@ class LinkDeviceViewController: OWSViewController {
             schedulers: DependenciesBridge.shared.schedulers
         )
 
-        deviceProvisioner.provision().map(on: DispatchQueue.main) { _ in
+        deviceProvisioner.provision().then(on: SyncScheduler()) { tokenId in
             Logger.info("Successfully provisioned device.")
-
-            // TODO: [link'n'sync]: wait on linking using the token id passed into this map
+            if FeatureFlags.linkAndSync, let ephemeralBackupKey {
+                return Promise.wrapAsync {
+                    try await DependenciesBridge.shared.linkAndSyncManager.waitForLinkingAndUploadBackup(
+                        ephemeralBackupKey: ephemeralBackupKey,
+                        tokenId: tokenId
+                    )
+                }
+            } else {
+                return .value(())
+            }
+        }.map(on: DispatchQueue.main) {
             self.delegate?.expectMoreDevices()
             self.popToLinkedDeviceList()
         }.catch(on: DispatchQueue.main) { error in

@@ -13,6 +13,9 @@ public protocol AttachmentUploadManager {
     /// Upload a transient attachment that isn't saved to the database for sending.
     func uploadTransientAttachment(dataSource: DataSource) async throws -> Upload.Result<Upload.LocalUploadMetadata>
 
+    /// Upload a transient link'n'sync attachment that isn't saved to the database for sending.
+    func uploadLinkNSyncAttachment(dataSource: DataSource) async throws -> Upload.Result<Upload.LinkNSyncUploadMetadata>
+
     /// Upload an Attachment to the given endpoint.
     /// Will fail if the attachment doesn't exist or isn't available locally.
     func uploadTransitTierAttachment(attachmentId: Attachment.IDType) async throws
@@ -152,6 +155,50 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             // We don't show progress for transient uploads
             let attempt = try await AttachmentUpload.buildAttempt(
                 for: localMetadata,
+                form: form,
+                signalService: signalService,
+                fileSystem: fileSystem,
+                dateProvider: dateProvider,
+                logger: logger
+            )
+            return try await AttachmentUpload.start(attempt: attempt, dateProvider: dateProvider, progress: nil)
+        } catch {
+            if error.isNetworkFailureOrTimeout {
+                logger.warn("Upload failed due to network error")
+            } else if error is CancellationError {
+                logger.warn("Upload cancelled")
+            } else {
+                if let statusCode = error.httpStatusCode {
+                    logger.warn("Unexpected upload error [status: \(statusCode)]")
+                } else {
+                    logger.warn("Unexpected upload error")
+                }
+            }
+            throw error
+        }
+    }
+
+    public func uploadLinkNSyncAttachment(dataSource: DataSource) async throws -> Upload.Result<Upload.LinkNSyncUploadMetadata> {
+        let logger = PrefixedLogger(prefix: "[Upload]", suffix: "[link'n'sync]")
+
+        let dataLength = dataSource.dataLength
+        guard
+            let sourceURL = dataSource.dataUrl,
+            dataLength > 0,
+            let dataLength = UInt32(exactly: dataLength)
+        else {
+            throw OWSAssertionError("Failed to access data source file")
+        }
+        let metadata = Upload.LinkNSyncUploadMetadata(fileUrl: sourceURL, encryptedDataLength: dataLength)
+        let form = try await Upload.FormRequest(
+            networkManager: networkManager,
+            chatConnectionManager: chatConnectionManager
+        ).start()
+
+        do {
+            // We don't show progress for transient uploads
+            let attempt = try await AttachmentUpload.buildAttempt(
+                for: metadata,
                 form: form,
                 signalService: signalService,
                 fileSystem: fileSystem,
