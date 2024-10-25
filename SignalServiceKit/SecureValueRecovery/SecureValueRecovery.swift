@@ -79,7 +79,7 @@ public enum SVR {
             case .backupKey:
                 guard
                     let bytes = try? hkdf(
-                        outputLength: 32,
+                        outputLength: Self.backupKeyLength,
                         inputKeyMaterial: dataToDeriveFrom,
                         salt: Data(),
                         info: infoData
@@ -90,6 +90,8 @@ public enum SVR {
                 return Data(bytes)
             }
         }
+
+        public static let backupKeyLength = 32
     }
 
     /// An auth credential is needed to talk to the SVR server.

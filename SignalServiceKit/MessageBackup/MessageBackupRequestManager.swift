@@ -183,7 +183,7 @@ public struct MessageBackupRequestManagerImpl: MessageBackupRequestManager {
     /// `MessageBackupAuthCredential` is used to authenticate all further `/v1/archive` operations.
     public func fetchBackupServiceAuth(localAci: Aci, auth: ChatServiceAuth) async throws -> MessageBackupServiceAuth {
         let (backupKey, privateKey) = try db.read { tx in
-            let backupKey = try messageBackupKeyMaterial.backupID(localAci: localAci, tx: tx)
+            let backupKey = try messageBackupKeyMaterial.backupID(localAci: localAci, mode: .remote, tx: tx)
             let privateKey = try messageBackupKeyMaterial.backupPrivateKey(localAci: localAci, tx: tx)
             return (backupKey, privateKey)
         }

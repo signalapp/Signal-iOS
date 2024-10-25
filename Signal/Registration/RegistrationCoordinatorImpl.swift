@@ -466,7 +466,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
             try await self.deps.messageBackupManager.importEncryptedBackup(
                 fileUrl: fileUrl,
-                localIdentifiers: identity.localIdentifiers
+                localIdentifiers: identity.localIdentifiers,
+                mode: .remote
             )
             self.inMemoryState.hasRestoredFromLocalMessageBackup = true
             Logger.info("Finished restore")

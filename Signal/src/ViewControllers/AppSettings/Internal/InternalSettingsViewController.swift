@@ -259,10 +259,16 @@ private extension InternalSettingsViewController {
 
             Task {
                 do {
-                    let metadata = try await messageBackupManager.exportEncryptedBackup(localIdentifiers: localIdentifiers)
+                    let metadata = try await messageBackupManager.exportEncryptedBackup(
+                        localIdentifiers: localIdentifiers,
+                        mode: .remote
+                    )
                     await MainActor.run {
                         let actionSheet = ActionSheetController(title: "Choose backup destination:")
 
+                        // Right now this "local" backup uses the same format and encryption scheme
+                        // as the remote backup. In the future, this should use the local backup
+                        // format and encryption scheme.
                         let localFileAction = ActionSheetAction(title: "Local device") { _ in
                             let activityVC = UIActivityViewController(
                                 activityItems: [metadata.fileUrl],

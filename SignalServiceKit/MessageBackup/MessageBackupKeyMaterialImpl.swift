@@ -41,11 +41,12 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
         return BackupAuthCredentialRequestContext.create(backupKey: backupKey.rawData, aci: localAci.rawUUID)
     }
 
-    public func backupID(localAci: Aci, tx: DBReadTransaction) throws -> Data {
+    public func backupID(localAci: Aci, mode: MessageBackup.EncryptionMode, tx: DBReadTransaction) throws -> Data {
         let keyBytes = try buildBackupEncryptionMaterial(
             salt: localAci.serviceIdBinary,
             info: Constants.MessageBackupIdInfoString,
             length: Constants.MessageBackupIdLength,
+            mode: mode,
             tx: tx
         )
         return Data(keyBytes)
@@ -56,35 +57,59 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
             salt: localAci.serviceIdBinary,
             info: Constants.MessageBackupPrivateKeyInfoString,
             length: Constants.MessageBackupPrivateKeyDataLength,
+            mode: .remote,
             tx: tx
         )
         return try PrivateKey(privateKeyBytes)
     }
 
-    public func messageBackupKey(localAci: Aci, tx: DBReadTransaction) throws -> MessageBackupKey {
-        guard let masterKey = svr.masterKeyDataForKeysSyncMessage(tx: tx) else {
-            throw MessageBackupKeyMaterialError.missingMasterKey
+    public func messageBackupKey(localAci: Aci, mode: MessageBackup.EncryptionMode, tx: DBReadTransaction) throws -> MessageBackupKey {
+        switch mode {
+        case .remote:
+            guard let masterKey = svr.masterKeyDataForKeysSyncMessage(tx: tx) else {
+                throw MessageBackupKeyMaterialError.missingMasterKey
+            }
+            return try MessageBackupKey(masterKey: Array(masterKey), aci: localAci)
+        case .linknsync:
+            // TODO: [link'n'sync] once libsignal API is available, init a MessageBackupKey
+            // from the ephemeral backup key and the backupId derived from it + aci.
+            throw OWSAssertionError("Unsupported")
         }
-        return try MessageBackupKey(masterKey: Array(masterKey), aci: localAci)
     }
 
-    public func createEncryptingStreamTransform(localAci: Aci, tx: DBReadTransaction) throws -> EncryptingStreamTransform {
-        let (encryptionKey, _) = try buildEncryptionMaterial(localAci: localAci, tx: tx)
+    public func createEncryptingStreamTransform(
+        localAci: Aci,
+        mode: MessageBackup.EncryptionMode,
+        tx: DBReadTransaction
+    ) throws -> EncryptingStreamTransform {
+        let (encryptionKey, _) = try buildEncryptionMaterial(localAci: localAci, mode: mode, tx: tx)
         return try EncryptingStreamTransform(iv: Randomness.generateRandomBytes(16), encryptionKey: encryptionKey)
     }
 
-    public func createDecryptingStreamTransform(localAci: Aci, tx: DBReadTransaction) throws -> DecryptingStreamTransform {
-        let (encryptionKey, _) = try buildEncryptionMaterial(localAci: localAci, tx: tx)
+    public func createDecryptingStreamTransform(
+        localAci: Aci,
+        mode: MessageBackup.EncryptionMode,
+        tx: DBReadTransaction
+    ) throws -> DecryptingStreamTransform {
+        let (encryptionKey, _) = try buildEncryptionMaterial(localAci: localAci, mode: mode, tx: tx)
         return try DecryptingStreamTransform(encryptionKey: encryptionKey)
     }
 
-    public func createHmacGeneratingStreamTransform(localAci: Aci, tx: DBReadTransaction) throws -> HmacStreamTransform {
-        let (_, hmacKey) = try buildEncryptionMaterial(localAci: localAci, tx: tx)
+    public func createHmacGeneratingStreamTransform(
+        localAci: Aci,
+        mode: MessageBackup.EncryptionMode,
+        tx: DBReadTransaction
+    ) throws -> HmacStreamTransform {
+        let (_, hmacKey) = try buildEncryptionMaterial(localAci: localAci, mode: mode, tx: tx)
         return try HmacStreamTransform(hmacKey: hmacKey, operation: .generate)
     }
 
-    public func createHmacValidatingStreamTransform(localAci: Aci, tx: DBReadTransaction) throws -> HmacStreamTransform {
-        let (_, hmacKey) = try buildEncryptionMaterial(localAci: localAci, tx: tx)
+    public func createHmacValidatingStreamTransform(
+        localAci: Aci,
+        mode: MessageBackup.EncryptionMode,
+        tx: DBReadTransaction
+    ) throws -> HmacStreamTransform {
+        let (_, hmacKey) = try buildEncryptionMaterial(localAci: localAci, mode: mode, tx: tx)
         return try HmacStreamTransform(hmacKey: hmacKey, operation: .validate)
     }
 
@@ -112,7 +137,7 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
             salt: mediaId,
             info: info,
             length: length,
-            backupKey: backupKey
+            backupKey: backupKey.rawData
         )
 
         guard keyBytes.count == length else {
@@ -162,16 +187,21 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
             salt: mediaNameData,
             info: Constants.MessageBackupMediaIdInfoString,
             length: Constants.MessageBackupMediaIdDataLength,
-            backupKey: backupKey
+            backupKey: backupKey.rawData
         ))
         return mediaId
     }
 
-    private func buildEncryptionMaterial(localAci: Aci, tx: DBReadTransaction) throws -> (encryptionKey: Data, hmacKey: Data) {
+    private func buildEncryptionMaterial(
+        localAci: Aci,
+        mode: MessageBackup.EncryptionMode,
+        tx: DBReadTransaction
+    ) throws -> (encryptionKey: Data, hmacKey: Data) {
         let keyBytes = try buildBackupEncryptionMaterial(
-            salt: try backupID(localAci: localAci, tx: tx),
+            salt: try backupID(localAci: localAci, mode: mode, tx: tx),
             info: Constants.MessageBackupEncryptionInfoString,
             length: Constants.MessageBackupEncryptionDataLength,
+            mode: mode,
             tx: tx
         )
         guard keyBytes.count == Constants.MessageBackupEncryptionDataLength else {
@@ -184,16 +214,14 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
         salt: ContiguousBytes,
         info: String,
         length: Int,
+        mode: MessageBackup.EncryptionMode,
         tx: DBReadTransaction
     ) throws -> [UInt8] {
-        guard let backupKey = svr.data(for: .backupKey, transaction: tx) else {
-            throw MessageBackupKeyMaterialError.missingMasterKey
-        }
         return try buildBackupEncryptionMaterial(
             salt: salt,
             info: info,
             length: length,
-            backupKey: backupKey
+            backupKey: try backupKey(mode: mode, tx: tx)
         )
     }
 
@@ -201,12 +229,8 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
         salt: ContiguousBytes,
         info: String,
         length: Int,
-        backupKey: SVR.DerivedKeyData
+        backupKey: Data
     ) throws -> [UInt8] {
-        guard backupKey.type == .backupKey else {
-            throw OWSAssertionError("Wrong key provided")
-        }
-
         guard let infoData = info.data(using: .utf8) else {
             owsFailDebug("Failed to encode data")
             throw MessageBackupKeyMaterialError.invalidKeyInfo
@@ -214,7 +238,7 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
 
         let keyBytes = try hkdf(
             outputLength: length,
-            inputKeyMaterial: backupKey.rawData,
+            inputKeyMaterial: backupKey,
             salt: salt,
             info: infoData
         )
@@ -224,5 +248,25 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
         }
 
         return keyBytes
+    }
+
+    /// Get the root backup key used by the encryption mode. The key may be derived
+    /// differently depending on the mode, but derivations downstream of it work the same.
+    private func backupKey(mode: MessageBackup.EncryptionMode, tx: DBReadTransaction) throws -> Data {
+        switch mode {
+        case .remote:
+            guard let backupKey = svr.data(for: .backupKey, transaction: tx) else {
+                throw MessageBackupKeyMaterialError.missingMasterKey
+            }
+            guard backupKey.type == .backupKey else {
+                throw OWSAssertionError("Wrong key provided")
+            }
+            return backupKey.rawData
+        case .linknsync(let ephemeralBackupKey):
+            guard ephemeralBackupKey.byteLength == SVR.DerivedKey.backupKeyLength else {
+                throw MessageBackupKeyMaterialError.invalidEncryptionKey
+            }
+            return ephemeralBackupKey
+        }
     }
 }

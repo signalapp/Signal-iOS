@@ -72,6 +72,7 @@ public protocol MessageBackupEncryptedProtoStreamProvider {
     /// once finished.
     func openEncryptedOutputFileStream(
         localAci: Aci,
+        mode: MessageBackup.EncryptionMode,
         tx: DBReadTransaction
     ) -> ProtoStream.OpenOutputStreamResult<ProtoStream.EncryptionMetadataProvider>
 
@@ -81,6 +82,7 @@ public protocol MessageBackupEncryptedProtoStreamProvider {
     func openEncryptedInputFileStream(
         fileUrl: URL,
         localAci: Aci,
+        mode: MessageBackup.EncryptionMode,
         tx: DBReadTransaction
     ) -> ProtoStream.OpenInputStreamResult
 }
@@ -98,6 +100,7 @@ public class MessageBackupEncryptedProtoStreamProviderImpl: MessageBackupEncrypt
 
     public func openEncryptedOutputFileStream(
         localAci: Aci,
+        mode: MessageBackup.EncryptionMode,
         tx: any DBReadTransaction
     ) -> ProtoStream.OpenOutputStreamResult<ProtoStream.EncryptionMetadataProvider> {
         do {
@@ -108,8 +111,8 @@ public class MessageBackupEncryptedProtoStreamProviderImpl: MessageBackupEncrypt
                 inputTrackingTransform,
                 ChunkedOutputStreamTransform(),
                 try GzipStreamTransform(.compress),
-                try backupKeyMaterial.createEncryptingStreamTransform(localAci: localAci, tx: tx),
-                try backupKeyMaterial.createHmacGeneratingStreamTransform(localAci: localAci, tx: tx),
+                try backupKeyMaterial.createEncryptingStreamTransform(localAci: localAci, mode: mode, tx: tx),
+                try backupKeyMaterial.createHmacGeneratingStreamTransform(localAci: localAci, mode: mode, tx: tx),
                 outputTrackingTransform
             ]
 
@@ -144,16 +147,17 @@ public class MessageBackupEncryptedProtoStreamProviderImpl: MessageBackupEncrypt
     public func openEncryptedInputFileStream(
         fileUrl: URL,
         localAci: Aci,
+        mode: MessageBackup.EncryptionMode,
         tx: any DBReadTransaction
     ) -> ProtoStream.OpenInputStreamResult {
-        guard validateBackupHMAC(localAci: localAci, fileUrl: fileUrl, tx: tx) else {
+        guard validateBackupHMAC(localAci: localAci, mode: mode, fileUrl: fileUrl, tx: tx) else {
             return .hmacValidationFailedOnEncryptedFile
         }
 
         do {
             let transforms: [any StreamTransform] = [
-                try backupKeyMaterial.createHmacValidatingStreamTransform(localAci: localAci, tx: tx),
-                try backupKeyMaterial.createDecryptingStreamTransform(localAci: localAci, tx: tx),
+                try backupKeyMaterial.createHmacValidatingStreamTransform(localAci: localAci, mode: mode, tx: tx),
+                try backupKeyMaterial.createDecryptingStreamTransform(localAci: localAci, mode: mode, tx: tx),
                 try GzipStreamTransform(.decompress),
                 ChunkedInputStreamTransform(),
             ]
@@ -167,13 +171,19 @@ public class MessageBackupEncryptedProtoStreamProviderImpl: MessageBackupEncrypt
         }
     }
 
-    private func validateBackupHMAC(localAci: Aci, fileUrl: URL, tx: DBReadTransaction) -> Bool {
+    private func validateBackupHMAC(
+        localAci: Aci,
+        mode: MessageBackup.EncryptionMode,
+        fileUrl: URL,
+        tx: DBReadTransaction
+    ) -> Bool {
         do {
             let inputStreamResult = genericStreamProvider.openInputFileStream(
                 fileUrl: fileUrl,
                 transforms: [
                     try backupKeyMaterial.createHmacGeneratingStreamTransform(
                         localAci: localAci,
+                        mode: mode,
                         tx: tx
                     )
                 ]

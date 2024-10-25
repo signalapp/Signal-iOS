@@ -160,7 +160,8 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     // MARK: - Export
 
     public func exportEncryptedBackup(
-        localIdentifiers: LocalIdentifiers
+        localIdentifiers: LocalIdentifiers,
+        mode: MessageBackup.EncryptionMode
     ) async throws -> Upload.EncryptedBackupUploadMetadata {
         guard FeatureFlags.messageBackupFileAlpha else {
             owsFailDebug("Should not be able to use backups!")
@@ -174,6 +175,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             let metadataProvider: MessageBackup.ProtoStream.EncryptionMetadataProvider
             switch self.encryptedStreamProvider.openEncryptedOutputFileStream(
                 localAci: localIdentifiers.aci,
+                mode: mode,
                 tx: tx
             ) {
             case let .success(_outputStream, _metadataProvider):
@@ -425,7 +427,11 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
     // MARK: - Import
 
-    public func importEncryptedBackup(fileUrl: URL, localIdentifiers: LocalIdentifiers) async throws {
+    public func importEncryptedBackup(
+        fileUrl: URL,
+        localIdentifiers: LocalIdentifiers,
+        mode: MessageBackup.EncryptionMode
+    ) async throws {
         guard FeatureFlags.messageBackupFileAlpha else {
             owsFailDebug("Should not be able to use backups!")
             throw NotImplementedError()
@@ -439,6 +445,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 switch self.encryptedStreamProvider.openEncryptedInputFileStream(
                     fileUrl: fileUrl,
                     localAci: localIdentifiers.aci,
+                    mode: mode,
                     tx: tx
                 ) {
                 case .success(let protoStream, _):
@@ -742,10 +749,11 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
     public func validateEncryptedBackup(
         fileUrl: URL,
-        localIdentifiers: LocalIdentifiers
+        localIdentifiers: LocalIdentifiers,
+        mode: MessageBackup.EncryptionMode
     ) async throws {
         let key = try db.read { tx in
-            return try messageBackupKeyMaterial.messageBackupKey(localAci: localIdentifiers.aci, tx: tx)
+            return try messageBackupKeyMaterial.messageBackupKey(localAci: localIdentifiers.aci, mode: mode, tx: tx)
         }
         let fileSize = OWSFileSystem.fileSize(ofPath: fileUrl.path)?.uint64Value ?? 0
 

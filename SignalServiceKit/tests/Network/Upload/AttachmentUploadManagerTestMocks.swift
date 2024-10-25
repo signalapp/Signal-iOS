@@ -92,7 +92,7 @@ class _AttachmentUploadManager_ChatConnectionManagerMock: ChatConnectionManager 
 }
 
 class _AttachmentUploadManager_MessageBackupKeyMaterialMock: MessageBackupKeyMaterial {
-    func backupID(localAci: Aci, tx: DBReadTransaction) throws -> Data {
+    func backupID(localAci: Aci, mode: MessageBackup.EncryptionMode, tx: DBReadTransaction) throws -> Data {
         fatalError("Unimplemented for tests")
     }
 
@@ -104,7 +104,7 @@ class _AttachmentUploadManager_MessageBackupKeyMaterialMock: MessageBackupKeyMat
         fatalError("Unimplemented for tests")
     }
 
-    func messageBackupKey(localAci: Aci, tx: DBReadTransaction) throws -> MessageBackupKey {
+    func messageBackupKey(localAci: Aci, mode: MessageBackup.EncryptionMode, tx: DBReadTransaction) throws -> MessageBackupKey {
         fatalError("Unimplemented for tests")
     }
 
@@ -116,19 +116,19 @@ class _AttachmentUploadManager_MessageBackupKeyMaterialMock: MessageBackupKeyMat
         return Data()
     }
 
-    func createEncryptingStreamTransform(localAci: Aci, tx: DBReadTransaction) throws -> EncryptingStreamTransform {
+    func createEncryptingStreamTransform(localAci: Aci, mode: MessageBackup.EncryptionMode, tx: DBReadTransaction) throws -> EncryptingStreamTransform {
         fatalError("Unimplemented for tests")
     }
 
-    func createDecryptingStreamTransform(localAci: Aci, tx: DBReadTransaction) throws -> DecryptingStreamTransform {
+    func createDecryptingStreamTransform(localAci: Aci, mode: MessageBackup.EncryptionMode, tx: DBReadTransaction) throws -> DecryptingStreamTransform {
         fatalError("Unimplemented for tests")
     }
 
-    func createHmacGeneratingStreamTransform(localAci: Aci, tx: DBReadTransaction) throws -> HmacStreamTransform {
+    func createHmacGeneratingStreamTransform(localAci: Aci, mode: MessageBackup.EncryptionMode, tx: DBReadTransaction) throws -> HmacStreamTransform {
         fatalError("Unimplemented for tests")
     }
 
-    func createHmacValidatingStreamTransform(localAci: Aci, tx: DBReadTransaction) throws -> HmacStreamTransform {
+    func createHmacValidatingStreamTransform(localAci: Aci, mode: MessageBackup.EncryptionMode, tx: DBReadTransaction) throws -> HmacStreamTransform {
         fatalError("Unimplemented for tests")
     }
 }

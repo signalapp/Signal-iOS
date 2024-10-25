@@ -33,7 +33,10 @@ open class MessageBackupManagerMock: MessageBackupManager {
         )
     }
 
-    public func exportEncryptedBackup(localIdentifiers: LocalIdentifiers) async throws -> Upload.EncryptedBackupUploadMetadata {
+    public func exportEncryptedBackup(
+        localIdentifiers: LocalIdentifiers,
+        mode: MessageBackup.EncryptionMode
+    ) async throws -> Upload.EncryptedBackupUploadMetadata {
         return Upload.EncryptedBackupUploadMetadata(
             fileUrl: URL(string: "file://")!,
             digest: Data(),
@@ -46,9 +49,17 @@ open class MessageBackupManagerMock: MessageBackupManager {
         return URL(string: "file://")!
     }
 
-    public func importEncryptedBackup(fileUrl: URL, localIdentifiers: LocalIdentifiers) async throws {}
+    public func importEncryptedBackup(
+        fileUrl: URL,
+        localIdentifiers: LocalIdentifiers,
+        mode: MessageBackup.EncryptionMode
+    ) async throws {}
     public func importPlaintextBackup(fileUrl: URL, localIdentifiers: LocalIdentifiers) async throws {}
-    public func validateEncryptedBackup(fileUrl: URL, localIdentifiers: LocalIdentifiers) async throws {}
+    public func validateEncryptedBackup(
+        fileUrl: URL,
+        localIdentifiers: LocalIdentifiers,
+        mode: MessageBackup.EncryptionMode
+    ) async throws {}
 }
 
 #endif
