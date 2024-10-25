@@ -10,13 +10,6 @@ import SwiftProtobuf
 
 public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
 
-    private let operationQueue: OperationQueue = {
-        let queue = OperationQueue()
-        queue.maxConcurrentOperationCount = 1
-        queue.name = logTag()
-        return queue
-    }()
-
     private let appReadiness: AppReadiness
 
     init(appReadiness: AppReadiness) {
@@ -131,12 +124,20 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
         // Run the operation & check again when it's done.
         managerState.isRunningOperation = true
 
-        let completionOperation = BlockOperation { self.finishOperation(cleanupBlock: cleanupBlock) }
-        completionOperation.addDependency(nextOperation)
-        operationQueue.addOperations([nextOperation, completionOperation], waitUntilFinished: false)
+        Task {
+            let result = await Result { try await nextOperation() }
+            self.finishOperation(cleanupBlock: {
+                cleanupBlock?(&$0, {
+                    switch result {
+                    case .success(()): nil
+                    case .failure(let error): error
+                    }
+                }())
+            })
+        }
     }
 
-    private func popNextOperation(_ managerState: inout ManagerState) -> (Operation, ((inout ManagerState) -> Void)?)? {
+    private func popNextOperation(_ managerState: inout ManagerState) -> (() async throws -> Void, ((inout ManagerState, (any Error)?) -> Void)?)? {
         if managerState.pendingMutations.hasChanges {
             let pendingMutations = managerState.pendingMutations
             managerState.pendingMutations = PendingMutations()
@@ -167,10 +168,15 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
                 authedDevice: pendingRestore.authedDevice
             )
             if let restoreOperation {
-                pendingRestore.futures.forEach {
-                    $0.resolve(on: SyncScheduler(), with: restoreOperation.promise)
-                }
-                return (restoreOperation, { $0.mostRecentRestoreError = restoreOperation.failingError })
+                return ({
+                    do {
+                        try await restoreOperation()
+                        pendingRestore.futures.forEach { $0.resolve() }
+                    } catch {
+                        pendingRestore.futures.forEach { $0.reject(error) }
+                        throw error
+                    }
+                }, { $0.mostRecentRestoreError = $1 })
             }
         }
 
@@ -180,7 +186,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
 
             let mostRecentRestoreError = managerState.mostRecentRestoreError
 
-            return (BlockOperation {
+            return ({
                 pendingRestoreCompletionFutures.forEach {
                     if let mostRecentRestoreError {
                         $0.reject(mostRecentRestoreError)
@@ -211,7 +217,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
         managerState: ManagerState,
         mode: StorageServiceOperation.Mode,
         authedDevice: AuthedDevice
-    ) -> StorageServiceOperation? {
+    ) -> (() async throws -> Void)? {
         let localIdentifiers: LocalIdentifiers
         let isPrimaryDevice: Bool
         switch authedDevice {
@@ -240,17 +246,19 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
             }
             isPrimaryDevice = implicitIsPrimaryDevice
         }
-        return StorageServiceOperation(
-            mode: mode,
-            localIdentifiers: localIdentifiers,
-            isPrimaryDevice: isPrimaryDevice,
-            authedDevice: authedDevice
-        )
+        return {
+            try await StorageServiceOperation(
+                mode: mode,
+                localIdentifiers: localIdentifiers,
+                isPrimaryDevice: isPrimaryDevice,
+                authedDevice: authedDevice
+            ).run()
+        }
     }
 
-    private func finishOperation(cleanupBlock: ((inout ManagerState) -> Void)?) {
+    private func finishOperation(cleanupBlock: (inout ManagerState) -> Void) {
         updateManagerState { managerState in
-            cleanupBlock?(&managerState)
+            cleanupBlock(&managerState)
             managerState.isRunningOperation = false
         }
     }
@@ -454,17 +462,13 @@ public enum StorageServiceManifestVersion {
     }
 }
 
-class StorageServiceOperation: OWSOperation {
+class StorageServiceOperation {
 
     private static let migrationStore: SDSKeyValueStore = SDSKeyValueStore(collection: "StorageServiceMigration")
     private static let versionKey = "Version"
 
     public static var keyValueStore: SDSKeyValueStore {
         return SDSKeyValueStore(collection: "kOWSStorageServiceOperation_IdentifierMap")
-    }
-
-    override var description: String {
-        return "StorageServiceOperation.\(mode)"
     }
 
     // MARK: -
@@ -480,33 +484,23 @@ class StorageServiceOperation: OWSOperation {
     private let authedDevice: AuthedDevice
     private var authedAccount: AuthedAccount { authedDevice.authedAccount }
 
-    let promise: Promise<Void>
-    private let future: Future<Void>
-
     fileprivate init(mode: Mode, localIdentifiers: LocalIdentifiers, isPrimaryDevice: Bool, authedDevice: AuthedDevice) {
         self.mode = mode
         self.localIdentifiers = localIdentifiers
         self.isPrimaryDevice = isPrimaryDevice
         self.authedDevice = authedDevice
-        (self.promise, self.future) = Promise<Void>.pending()
-        super.init()
-        self.remainingRetries = 4
     }
 
     // MARK: - Run
 
-    override func didSucceed() {
-        super.didSucceed()
-        future.resolve()
-    }
-
-    override func didFail(error: Error) {
-        super.didFail(error: error)
-        future.reject(error)
+    func run() async throws {
+        return try await Retry.performWithBackoff(maxAttempts: 4) {
+            return try await self._run()
+        }
     }
 
     // Called every retry, this is where the bulk of the operation's work should go.
-    override public func run() {
+    private func _run() async throws {
         Logger.info("\(mode)")
 
         // We don't have backup keys, do nothing. We'll try a
@@ -515,23 +509,23 @@ class StorageServiceOperation: OWSOperation {
             return DependenciesBridge.shared.svr.isKeyAvailable(.storageService, transaction: tx.asV2Read)
         }
         guard isKeyAvailable else {
-            return reportSuccess()
+            return
         }
 
         switch mode {
         case .backup:
-            backupPendingChanges()
+            try await backupPendingChanges()
         case .restoreOrCreate:
-            restoreOrCreateManifestIfNecessary()
+            try await restoreOrCreateManifestIfNecessary()
         case .cleanUpUnknownData:
-            cleanUpUnknownData()
+            await cleanUpUnknownData()
         }
     }
 
     // MARK: - Mark Pending Changes
 
-    fileprivate static func recordPendingMutations(_ pendingMutations: PendingMutations) -> Operation {
-        return BlockOperation { SSKEnvironment.shared.databaseStorageRef.write { recordPendingMutations(pendingMutations, transaction: $0) } }
+    fileprivate static func recordPendingMutations(_ pendingMutations: PendingMutations) -> (() async -> Void) {
+        return { await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { recordPendingMutations(pendingMutations, transaction: $0) } }
     }
 
     private static func recordPendingMutations(
@@ -612,7 +606,7 @@ class StorageServiceOperation: OWSOperation {
 
     // MARK: - Backup
 
-    private func backupPendingChanges() {
+    private func backupPendingChanges() async throws {
         var updatedItems: [StorageService.StorageItem] = []
         var deletedIdentifiers: [StorageService.StorageIdentifier] = []
 
@@ -748,7 +742,7 @@ class StorageServiceOperation: OWSOperation {
 
         // If we have no pending changes, we have nothing left to do
         guard !deletedIdentifiers.isEmpty || !updatedItems.isEmpty else {
-            return reportSuccess()
+            return
         }
 
         // If we have invalid identifiers, we intentionally exclude them from the
@@ -772,32 +766,29 @@ class StorageServiceOperation: OWSOperation {
             """
         )
 
-        StorageService.updateManifest(
+        let conflictingManifest = try await StorageService.updateManifest(
             manifest,
             newItems: updatedItems,
             deletedIdentifiers: deletedIdentifiers + invalidIdentifiers,
             chatServiceAuth: authedAccount.chatServiceAuth
-        ).done(on: DispatchQueue.global()) { conflictingManifest in
-            guard let conflictingManifest = conflictingManifest else {
-                Logger.info("Successfully updated to manifest version: \(state.manifestVersion)")
+        ).awaitable()
 
-                // Successfully updated, store our changes.
-                SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                    state.save(clearConsecutiveConflicts: true, transaction: transaction)
-                    StorageServiceUnknownFieldMigrator.didWriteToStorageService(tx: transaction)
-                }
-
-                // Notify our other devices that the storage manifest has changed.
-                SSKEnvironment.shared.syncManagerRef.sendFetchLatestStorageManifestSyncMessage()
-
-                return self.reportSuccess()
-            }
-
+        if let conflictingManifest {
             // Throw away all our work, resolve conflicts, and try again.
-            self.mergeLocalManifest(withRemoteManifest: conflictingManifest, backupAfterSuccess: true)
-        }.catch { error in
-            self.reportError(withUndefinedRetry: error)
+            try await self.mergeLocalManifest(withRemoteManifest: conflictingManifest, backupAfterSuccess: true)
+            return
         }
+
+        Logger.info("Successfully updated to manifest version: \(state.manifestVersion)")
+
+        // Successfully updated, store our changes.
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
+            state.save(clearConsecutiveConflicts: true, transaction: transaction)
+            StorageServiceUnknownFieldMigrator.didWriteToStorageService(tx: transaction)
+        }
+
+        // Notify our other devices that the storage manifest has changed.
+        await SSKEnvironment.shared.syncManagerRef.sendFetchLatestStorageManifestSyncMessage()
     }
 
     private func buildManifestRecord(
@@ -813,7 +804,7 @@ class StorageServiceOperation: OWSOperation {
 
     // MARK: - Restore
 
-    private func restoreOrCreateManifestIfNecessary() {
+    private func restoreOrCreateManifestIfNecessary() async throws {
         let state: State = SSKEnvironment.shared.databaseStorageRef.read { State.current(transaction: $0) }
 
         let greaterThanVersion: UInt64? = {
@@ -825,63 +816,61 @@ class StorageServiceOperation: OWSOperation {
             return state.manifestVersion
         }()
 
-        StorageService.fetchLatestManifest(
-            greaterThanVersion: greaterThanVersion,
-            chatServiceAuth: authedAccount.chatServiceAuth
-        ).done(on: DispatchQueue.global()) { response in
-            switch response {
-            case .noExistingManifest:
-                // There is no existing manifest, lets create one.
-                return self.createNewManifest(version: 1)
-            case .noNewerManifest:
-                // Our manifest version matches the server version, nothing to do here.
-                return self.reportSuccess()
-            case .latestManifest(let manifest):
-                // Our manifest is not the latest, merge in the latest copy.
-                self.mergeLocalManifest(withRemoteManifest: manifest, backupAfterSuccess: false)
-            }
-        }.catch { error in
-            if let storageError = error as? StorageService.StorageError {
-
-                // If we succeeded to fetch the manifest but were unable to decrypt it,
-                // it likely means our keys changed.
-                if case .manifestDecryptionFailed(let previousManifestVersion) = storageError {
-                    // If this is the primary device, throw everything away and re-encrypt
-                    // the social graph with the keys we have locally.
-                    if self.isPrimaryDevice {
-                        Logger.warn("Manifest decryption failed, recreating manifest.")
-                        return self.createNewManifest(version: previousManifestVersion + 1)
-                    }
-
-                    Logger.warn("Manifest decryption failed, clearing storage service keys.")
-
-                    // If this is a linked device, give up and request the latest storage
-                    // service key from the primary device.
-                    SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                        // Clear out the key, it's no longer valid. This will prevent us
-                        // from trying to backup again until the sync response is received.
-                        DependenciesBridge.shared.svr.clearSyncedStorageServiceKey(transaction: transaction.asV2Write)
-                        SSKEnvironment.shared.syncManagerRef.sendKeysSyncRequestMessage(transaction: transaction)
-                    }
-                } else if
-                    case .manifestProtoDeserializationFailed(let previousManifestVersion) = storageError,
-                    self.isPrimaryDevice
-                {
-                    // If decryption succeeded but proto deserialization failed, we somehow ended up with
-                    // byte garbage in storage service. Our only recourse is to throw everything away and
-                    // re-encrypt the social graph with data we have locally.
-                    Logger.warn("Manifest deserialization failed, recreating manifest.")
-                    return self.createNewManifest(version: previousManifestVersion + 1)
+        let response: StorageService.FetchLatestManifestResponse
+        do {
+            response = try await StorageService.fetchLatestManifest(
+                greaterThanVersion: greaterThanVersion,
+                chatServiceAuth: authedAccount.chatServiceAuth
+            ).awaitable()
+        } catch let storageError as StorageService.StorageError {
+            // If we succeeded to fetch the manifest but were unable to decrypt it,
+            // it likely means our keys changed.
+            if case .manifestDecryptionFailed(let previousManifestVersion) = storageError {
+                // If this is the primary device, throw everything away and re-encrypt
+                // the social graph with the keys we have locally.
+                if self.isPrimaryDevice {
+                    Logger.warn("Manifest decryption failed, recreating manifest.")
+                    try await self.createNewManifest(version: previousManifestVersion + 1)
+                    return
                 }
 
-                return self.reportError(storageError)
-            }
+                Logger.warn("Manifest decryption failed, clearing storage service keys.")
 
-            self.reportError(withUndefinedRetry: error)
+                // If this is a linked device, give up and request the latest storage
+                // service key from the primary device.
+                await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
+                    // Clear out the key, it's no longer valid. This will prevent us
+                    // from trying to backup again until the sync response is received.
+                    DependenciesBridge.shared.svr.clearSyncedStorageServiceKey(transaction: transaction.asV2Write)
+                    SSKEnvironment.shared.syncManagerRef.sendKeysSyncRequestMessage(transaction: transaction)
+                }
+            } else if
+                case .manifestProtoDeserializationFailed(let previousManifestVersion) = storageError,
+                self.isPrimaryDevice
+            {
+                // If decryption succeeded but proto deserialization failed, we somehow ended up with
+                // byte garbage in storage service. Our only recourse is to throw everything away and
+                // re-encrypt with data we have locally.
+                Logger.warn("Manifest deserialization failed, recreating manifest.")
+                try await self.createNewManifest(version: previousManifestVersion + 1)
+                return
+            }
+            throw storageError
+        }
+        switch response {
+        case .noExistingManifest:
+            // There is no existing manifest, let's create one.
+            return try await self.createNewManifest(version: 1)
+        case .noNewerManifest:
+            // Our manifest version matches the server version, nothing to do here.
+            return
+        case .latestManifest(let manifest):
+            // Our manifest is not the latest, merge in the latest copy.
+            return try await self.mergeLocalManifest(withRemoteManifest: manifest, backupAfterSuccess: false)
         }
     }
 
-    private func createNewManifest(version: UInt64) {
+    private func createNewManifest(version: UInt64) async throws {
         var allItems: [StorageService.StorageItem] = []
         var state = State()
 
@@ -988,28 +977,25 @@ class StorageServiceOperation: OWSOperation {
         // purge any orphaned records.
         let shouldDeletePreviousRecords = version > 1
 
-        StorageService.updateManifest(
+        let conflictingManifest = try await StorageService.updateManifest(
             manifest,
             newItems: allItems,
             deleteAllExistingRecords: shouldDeletePreviousRecords,
             chatServiceAuth: authedAccount.chatServiceAuth
-        ).done(on: DispatchQueue.global()) { conflictingManifest in
-            guard let conflictingManifest = conflictingManifest else {
-                // Successfully updated, store our changes.
-                SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                    state.save(clearConsecutiveConflicts: true, transaction: transaction)
-                    StorageServiceUnknownFieldMigrator.didWriteToStorageService(tx: transaction)
-                }
+        ).awaitable()
 
-                return self.reportSuccess()
-            }
-
+        if let conflictingManifest {
             // We got a conflicting manifest that we were able to decrypt, so we may not need
             // to recreate our manifest after all. Throw away all our work, resolve conflicts,
             // and try again.
-            self.mergeLocalManifest(withRemoteManifest: conflictingManifest, backupAfterSuccess: true)
-        }.catch { error in
-            self.reportError(withUndefinedRetry: error)
+            try await self.mergeLocalManifest(withRemoteManifest: conflictingManifest, backupAfterSuccess: true)
+            return
+        }
+
+        // Successfully updated, store our changes.
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
+            state.save(clearConsecutiveConflicts: true, transaction: transaction)
+            StorageServiceUnknownFieldMigrator.didWriteToStorageService(tx: transaction)
         }
     }
 
@@ -1018,8 +1004,8 @@ class StorageServiceOperation: OWSOperation {
     private func mergeLocalManifest(
         withRemoteManifest manifest: StorageServiceProtoManifestRecord,
         backupAfterSuccess: Bool
-    ) {
-        var state: State = SSKEnvironment.shared.databaseStorageRef.write { transaction in
+    ) async throws {
+        var state: State = await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
             var state = State.current(transaction: transaction)
 
             normalizePendingMutations(in: &state, transaction: transaction)
@@ -1038,11 +1024,11 @@ class StorageServiceOperation: OWSOperation {
             owsFailDebug("unexpectedly have had numerous repeated conflicts")
 
             // Clear out the consecutive conflicts count so we can try again later.
-            SSKEnvironment.shared.databaseStorageRef.write { transaction in
+            await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
                 state.save(clearConsecutiveConflicts: true, transaction: transaction)
             }
 
-            return reportError(OWSAssertionError("exceeded max consecutive conflicts, creating a new manifest"))
+            throw OWSAssertionError("exceeded max consecutive conflicts, creating a new manifest")
         }
 
         let allManifestItems: Set<StorageService.StorageIdentifier> = Set(manifest.keys.lazy.map {
@@ -1066,31 +1052,32 @@ class StorageServiceOperation: OWSOperation {
 
         Logger.info("\(manifest.logDescription); merging \(newOrUpdatedItems.count); \(localKeysCount) local; \(allManifestItems.count) remote")
 
-        firstly { () -> Promise<Void> in
+        do {
             // First, fetch the local account record if it has been updated. We give this record
             // priority over all other records as it contains things like the user's configuration
             // that we want to update ASAP, especially when restoring after linking.
+            try await {
+                if let storageIdentifier = state.localAccountIdentifier, allManifestItems.contains(storageIdentifier) {
+                    return
+                }
 
-            if let storageIdentifier = state.localAccountIdentifier, allManifestItems.contains(storageIdentifier) {
-                return .value(())
-            }
+                let localAccountIdentifiers = newOrUpdatedItems.filter { $0.type == .account }
+                assert(localAccountIdentifiers.count <= 1)
 
-            let localAccountIdentifiers = newOrUpdatedItems.filter { $0.type == .account }
-            assert(localAccountIdentifiers.count <= 1)
+                guard let newLocalAccountIdentifier = localAccountIdentifiers.first else {
+                    owsFailDebug("remote manifest is missing local account, mark it for update")
+                    state.localAccountChangeState = .updated
+                    return
+                }
 
-            guard let newLocalAccountIdentifier = localAccountIdentifiers.first else {
-                owsFailDebug("remote manifest is missing local account, mark it for update")
-                state.localAccountChangeState = .updated
-                return Promise.value(())
-            }
+                Logger.info("\(manifest.logDescription); merging account record")
 
-            Logger.info("\(manifest.logDescription); merging account record")
+                let item = try await StorageService.fetchItem(
+                    for: newLocalAccountIdentifier,
+                    chatServiceAuth: authedAccount.chatServiceAuth
+                ).awaitable()
 
-            return StorageService.fetchItem(
-                for: newLocalAccountIdentifier,
-                chatServiceAuth: authedAccount.chatServiceAuth
-            ).done(on: DispatchQueue.global()) { item in
-                guard let item = item else {
+                guard let item else {
                     // This can happen in normal use if between fetching the manifest and starting the item
                     // fetch a linked device has updated the manifest.
                     state.localAccountChangeState = .updated
@@ -1101,7 +1088,7 @@ class StorageServiceOperation: OWSOperation {
                     throw OWSAssertionError("unexpected item type for account identifier")
                 }
 
-                SSKEnvironment.shared.databaseStorageRef.write { transaction in
+                await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
                     self.mergeRecord(
                         accountRecord,
                         identifier: item.identifier,
@@ -1114,8 +1101,8 @@ class StorageServiceOperation: OWSOperation {
 
                 // Remove any account record identifiers from the new or updated basket. We've processed them.
                 newOrUpdatedItems.removeAll { localAccountIdentifiers.contains($0) }
-            }
-        }.then(on: DispatchQueue.global()) { () -> Promise<State> in
+            }()
+
             // Clean up our unknown identifiers type map to only reflect identifiers
             // that still exist in the manifest. If we find more unknown identifiers in
             // any batch, we'll add them in `fetchAndMergeItemsInBatches`.
@@ -1124,13 +1111,10 @@ class StorageServiceOperation: OWSOperation {
                 .filter { (recordType, unknownIdentifiers) in !unknownIdentifiers.isEmpty }
 
             // Then, fetch the remaining items in the manifest and resolve any conflicts as appropriate.
-            return Promise.wrapAsync {
-                try await self.fetchAndMergeItemsInBatches(identifiers: newOrUpdatedItems, manifest: manifest, state: state)
-            }
-        }.done(on: DispatchQueue.global()) { updatedState in
-            var mutableState = updatedState
+            var mutableState = try await self.fetchAndMergeItemsInBatches(identifiers: newOrUpdatedItems, manifest: manifest, state: state)
+
             let storageServiceManager = SSKEnvironment.shared.storageServiceManagerRef
-            SSKEnvironment.shared.databaseStorageRef.write { transaction in
+            await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
                 // Update the manifest version to reflect the remote version we just restored to
                 mutableState.manifestVersion = manifest.version
 
@@ -1240,45 +1224,40 @@ class StorageServiceOperation: OWSOperation {
                     storageServiceManager.backupPendingChanges(authedDevice: self.authedDevice)
                 }
             }
-            self.reportSuccess()
-        }.catch { error in
-            if let storageError = error as? StorageService.StorageError {
-
-                // If we succeeded to fetch the records but were unable to decrypt any of them,
-                // it likely means our keys changed.
-                if case .itemDecryptionFailed = storageError {
-                    // If this is the primary device, throw everything away and re-encrypt
-                    // the social graph with the keys we have locally.
-                    if self.isPrimaryDevice {
-                        Logger.warn("Item decryption failed, recreating manifest.")
-                        return self.createNewManifest(version: manifest.version + 1)
-                    }
-
-                    Logger.warn("Item decryption failed, clearing storage service keys.")
-
-                    // If this is a linked device, give up and request the latest storage
-                    // service key from the primary device.
-                    SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                        // Clear out the key, it's no longer valid. This will prevent us
-                        // from trying to backup again until the sync response is received.
-                        DependenciesBridge.shared.svr.clearSyncedStorageServiceKey(transaction: transaction.asV2Write)
-                        SSKEnvironment.shared.syncManagerRef.sendKeysSyncRequestMessage(transaction: transaction)
-                    }
-                } else if
-                    case .itemProtoDeserializationFailed = storageError,
-                    self.isPrimaryDevice
-                {
-                    // If decryption succeeded but proto deserialization failed, we somehow ended up with
-                    // byte garbage in storage service. Our only recourse is to throw everything away and
-                    // re-encrypt the social graph with data we have locally.
-                    Logger.warn("Item deserialization failed, recreating manifest.")
-                    return self.createNewManifest(version: manifest.version + 1)
+        } catch let storageError as StorageService.StorageError {
+            // If we succeeded to fetch the records but were unable to decrypt any of them,
+            // it likely means our keys changed.
+            if case .itemDecryptionFailed = storageError {
+                // If this is the primary device, throw everything away and re-encrypt
+                // the social graph with the keys we have locally.
+                if self.isPrimaryDevice {
+                    Logger.warn("Item decryption failed, recreating manifest.")
+                    try await self.createNewManifest(version: manifest.version + 1)
+                    return
                 }
 
-                return self.reportError(storageError)
-            }
+                Logger.warn("Item decryption failed, clearing storage service keys.")
 
-            self.reportError(withUndefinedRetry: error)
+                // If this is a linked device, give up and request the latest storage
+                // service key from the primary device.
+                await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
+                    // Clear out the key, it's no longer valid. This will prevent us
+                    // from trying to backup again until the sync response is received.
+                    DependenciesBridge.shared.svr.clearSyncedStorageServiceKey(transaction: transaction.asV2Write)
+                    SSKEnvironment.shared.syncManagerRef.sendKeysSyncRequestMessage(transaction: transaction)
+                }
+            } else if
+                case .itemProtoDeserializationFailed = storageError,
+                self.isPrimaryDevice
+            {
+                // If decryption succeeded but proto deserialization failed, we somehow ended up with
+                // byte garbage in storage service. Our only recourse is to throw everything away and
+                // re-encrypt the social graph with data we have locally.
+                Logger.warn("Item deserialization failed, recreating manifest.")
+                try await self.createNewManifest(version: manifest.version + 1)
+                return
+            }
+            throw storageError
         }
     }
 
@@ -1375,27 +1354,27 @@ class StorageServiceOperation: OWSOperation {
 
     // MARK: - Clean Up
 
-    private func cleanUpUnknownData() {
+    private func cleanUpUnknownData() async {
         var (state, migrationVersion) = SSKEnvironment.shared.databaseStorageRef.read { tx in
             var state = State.current(transaction: tx)
             normalizePendingMutations(in: &state, transaction: tx)
             return (state, Self.migrationStore.getInt(Self.versionKey, defaultValue: 0, transaction: tx))
         }
 
-        self.cleanUpUnknownIdentifiers(in: &state)
-        self.cleanUpRecordsWithUnknownFields(in: &state)
-        self.cleanUpOrphanedAccounts(in: &state)
+        await self.cleanUpUnknownIdentifiers(in: &state)
+        await self.cleanUpRecordsWithUnknownFields(in: &state)
+        await self.cleanUpOrphanedAccounts(in: &state)
 
         switch migrationVersion {
         case 0:
-            self.recordPendingMutationsForContactsWithPNIs(in: &state)
-            SSKEnvironment.shared.databaseStorageRef.write { tx in Self.migrationStore.setInt(1, key: Self.versionKey, transaction: tx) }
+            await self.recordPendingMutationsForContactsWithPNIs(in: &state)
+            await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+                Self.migrationStore.setInt(1, key: Self.versionKey, transaction: tx)
+            }
             fallthrough
         default:
             break
         }
-
-        return self.reportSuccess()
     }
 
     private static func isKnownKeyType(_ keyType: StorageServiceProtoManifestRecordKeyType?) -> Bool {
@@ -1417,7 +1396,7 @@ class StorageServiceOperation: OWSOperation {
         }
     }
 
-    private func cleanUpUnknownIdentifiers(in state: inout State) {
+    private func cleanUpUnknownIdentifiers(in state: inout State) async {
         let canParseAnyUnknownIdentifier = state.unknownIdentifiersTypeMap.contains { keyType, unknownIdentifiers in
             guard Self.isKnownKeyType(keyType) else {
                 // We don't know this type, so it's not parseable.
@@ -1436,13 +1415,13 @@ class StorageServiceOperation: OWSOperation {
 
         // We may have learned of new record types. If so, we should refetch the
         // latest manifest so that we can merge these items.
-        SSKEnvironment.shared.databaseStorageRef.write { tx in
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             state.refetchLatestManifest = true
             state.save(transaction: tx)
         }
     }
 
-    private func cleanUpRecordsWithUnknownFields(in state: inout State) {
+    private func cleanUpRecordsWithUnknownFields(in state: inout State) async {
         var shouldCleanUpRecordsWithUnknownFields =
             state.unknownFieldLastCheckedAppVersion != AppVersionImpl.shared.currentAppVersion
         #if DEBUG
@@ -1505,7 +1484,7 @@ class StorageServiceOperation: OWSOperation {
             Logger.info("Unknown fields: Resolved \(resolvedCount) records (\(remainingCount) remaining) for \(debugDescription)")
         }
 
-        SSKEnvironment.shared.databaseStorageRef.write { tx in
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             let stateUpdaters: [any StorageServiceStateUpdater] = [
                 buildAccountUpdater(),
                 buildContactUpdater(),
@@ -1546,7 +1525,7 @@ class StorageServiceOperation: OWSOperation {
         }
     }
 
-    private func cleanUpOrphanedAccounts(in state: inout State) {
+    private func cleanUpOrphanedAccounts(in state: inout State) async {
         // We don't keep unregistered accounts in storage service after a certain
         // amount of time. We may also have records for accounts that no longer
         // exist, e.g. that SignalRecipient was merged with another recipient. We
@@ -1555,21 +1534,21 @@ class StorageServiceOperation: OWSOperation {
 
         let currentDate = Date()
         let currentConfig: RemoteConfig = .current
-        recordPendingAccountMutations(in: &state, shouldUpdate: {
+        await recordPendingAccountMutations(in: &state, shouldUpdate: {
             return $0?.shouldBeInStorageService(currentDate: currentDate, remoteConfig: currentConfig) != true
         })
     }
 
-    private func recordPendingMutationsForContactsWithPNIs(in state: inout State) {
+    private func recordPendingMutationsForContactsWithPNIs(in state: inout State) async {
         // We stored invalid PNIs, so run a one-off migration to fix them.
-        recordPendingAccountMutations(in: &state, shouldUpdate: { $0?.pni != nil })
+        await recordPendingAccountMutations(in: &state, shouldUpdate: { $0?.pni != nil })
     }
 
     private func recordPendingAccountMutations(
         in state: inout State,
         caller: String = #function,
         shouldUpdate: (StorageServiceContact?) -> Bool
-    ) {
+    ) async {
         let recipientUniqueIds = SSKEnvironment.shared.databaseStorageRef.read { tx in
             state.accountIdToIdentifierMap.keys.filter { shouldUpdate(StorageServiceContact.fetch(for: $0, tx: tx)) }
         }
@@ -1580,7 +1559,7 @@ class StorageServiceOperation: OWSOperation {
 
         Logger.info("Marking \(recipientUniqueIds.count) contact records as mutated via \(caller)")
 
-        SSKEnvironment.shared.databaseStorageRef.write { tx in
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             var pendingMutations = PendingMutations()
             pendingMutations.updatedRecipientUniqueIds.formUnion(recipientUniqueIds)
             Self.recordPendingMutations(pendingMutations, in: &state, transaction: tx)

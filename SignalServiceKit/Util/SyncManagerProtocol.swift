@@ -27,7 +27,7 @@ public protocol SyncManagerProtocolSwift {
     func syncAllContactsIfFullSyncRequested() -> Promise<Void>
 
     func sendFetchLatestProfileSyncMessage(tx: SDSAnyWriteTransaction)
-    func sendFetchLatestStorageManifestSyncMessage()
+    func sendFetchLatestStorageManifestSyncMessage() async
     func sendFetchLatestSubscriptionStatusSyncMessage()
 
     func sendKeysSyncMessage()

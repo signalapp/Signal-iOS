@@ -532,7 +532,9 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         _sendFetchLatestSyncMessage(type: .localProfile, tx: tx)
     }
 
-    public func sendFetchLatestStorageManifestSyncMessage() { sendFetchLatestSyncMessage(type: .storageManifest) }
+    public func sendFetchLatestStorageManifestSyncMessage() async {
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in self._sendFetchLatestSyncMessage(type: .storageManifest, tx: tx) }
+    }
 
     public func sendFetchLatestSubscriptionStatusSyncMessage() { sendFetchLatestSyncMessage(type: .subscriptionStatus) }
 

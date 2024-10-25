@@ -30,7 +30,7 @@ public class OWSMockSyncManager: NSObject, SyncManagerProtocol {
         Logger.info("")
     }
 
-    public func sendFetchLatestStorageManifestSyncMessage() {
+    public func sendFetchLatestStorageManifestSyncMessage() async {
         Logger.info("")
     }
 
