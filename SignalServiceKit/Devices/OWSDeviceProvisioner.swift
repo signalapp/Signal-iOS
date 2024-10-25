@@ -59,15 +59,15 @@ public final class OWSDeviceProvisioner {
         self.schedulers = schedulers
     }
 
-    public func provision() -> Promise<Void> {
+    public func provision() -> Promise<DeviceProvisioningTokenId> {
         firstly {
             provisioningService.requestDeviceProvisioningCode()
         }.then(on: schedulers.sharedUserInitiated) { provisioningCode in
-            self.provisionDevice(provisioningCode: provisioningCode)
+            return self.provisionDevice(provisioningCode: provisioningCode)
         }
     }
 
-    private func provisionDevice(provisioningCode: String) -> Promise<Void> {
+    private func provisionDevice(provisioningCode: DeviceProvisioningCodeResponse) -> Promise<DeviceProvisioningTokenId> {
         let messageBody: Data
         do {
             messageBody = try self.buildEncryptedMessageBody(withCode: provisioningCode)
@@ -75,15 +75,16 @@ public final class OWSDeviceProvisioner {
             return Promise(error: error)
         }
         return provisioningService.provisionDevice(messageBody: messageBody, ephemeralDeviceId: ephemeralDeviceId)
+            .map(on: SyncScheduler()) { provisioningCode.tokenId }
     }
 
-    private func buildEncryptedMessageBody(withCode provisioningCode: String) throws -> Data {
+    private func buildEncryptedMessageBody(withCode provisioningCode: DeviceProvisioningCodeResponse) throws -> Data {
         let messageBuilder = ProvisioningProtoProvisionMessage.builder(
             aciIdentityKeyPublic: Data(myAciIdentityKeyPair.publicKey.serialize()),
             aciIdentityKeyPrivate: Data(myAciIdentityKeyPair.privateKey.serialize()),
             pniIdentityKeyPublic: Data(myPniIdentityKeyPair.publicKey.serialize()),
             pniIdentityKeyPrivate: Data(myPniIdentityKeyPair.privateKey.serialize()),
-            provisioningCode: provisioningCode,
+            provisioningCode: provisioningCode.verificationCode,
             profileKey: profileKey
         )
         messageBuilder.setUserAgent(Self.userAgent)

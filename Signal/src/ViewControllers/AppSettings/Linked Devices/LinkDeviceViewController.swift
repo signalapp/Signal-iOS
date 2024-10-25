@@ -189,9 +189,10 @@ class LinkDeviceViewController: OWSViewController {
             schedulers: DependenciesBridge.shared.schedulers
         )
 
-        deviceProvisioner.provision().map(on: DispatchQueue.main) {
+        deviceProvisioner.provision().map(on: DispatchQueue.main) { _ in
             Logger.info("Successfully provisioned device.")
 
+            // TODO: [link'n'sync]: wait on linking using the token id passed into this map
             self.delegate?.expectMoreDevices()
             self.popToLinkedDeviceList()
         }.catch(on: DispatchQueue.main) { error in

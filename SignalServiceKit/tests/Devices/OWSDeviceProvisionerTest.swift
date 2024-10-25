@@ -11,8 +11,8 @@ import LibSignalClient
 
 private class MockDeviceProvisioningService: DeviceProvisioningService {
     var deviceProvisioningCodes = [String]()
-    func requestDeviceProvisioningCode() -> Promise<String> {
-        return .value(deviceProvisioningCodes.removeFirst())
+    func requestDeviceProvisioningCode() -> Promise<DeviceProvisioningCodeResponse> {
+        return .value(.init(verificationCode: deviceProvisioningCodes.removeFirst(), tokenIdentifier: UUID().uuidString))
     }
 
     var provisionedDevices = [(messageBody: Data, ephemeralDeviceId: String)]()
@@ -66,7 +66,7 @@ class OWSDeviceProvisionerTest: XCTestCase {
         let provisioningCode = "ABC123"
         mockDeviceProvisioningService.deviceProvisioningCodes.append(provisioningCode)
 
-        try provisioner.provision().done(on: schedulers.sync) {
+        try provisioner.provision().done(on: schedulers.sync) { _ in
             let (messageBody, _) = self.mockDeviceProvisioningService.provisionedDevices.removeFirst()
             let provisionEnvelope = try ProvisioningProtoProvisionEnvelope(serializedData: messageBody)
             let provisionMessage = try linkedDeviceCipher.decrypt(envelope: provisionEnvelope)
