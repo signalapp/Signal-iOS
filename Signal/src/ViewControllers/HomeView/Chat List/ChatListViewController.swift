@@ -1408,6 +1408,7 @@ extension ChatListViewController {
     private func updateChatListFilter(_ inboxFilter: InboxFilter) {
         viewState.inboxFilter = inboxFilter
         loadCoordinator.saveInboxFilter(inboxFilter)
+        updateBarButtonItems()
     }
 
     private func updateFilterControlSize() {
@@ -1424,7 +1425,7 @@ extension ChatListViewController {
             // This tells UITableView to perform a layout pass, which allows it
             // to adjust to the new filterControl height even when there are no
             // datasource-driven layout changes.
-            tableView.performBatchUpdates {}
+            tableView.performBatchUpdates(nil)
         }
     }
 }
@@ -1720,17 +1721,29 @@ extension ChatListViewController: UIScrollViewDelegate {
         filterControl?.draggingWillEnd(in: scrollView)
     }
 
+    public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate: Bool) {
+        filterControl?.draggingDidEnd(in: scrollView)
+    }
+
     public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        filterControl?.scrollingDidStop(in: scrollView)
+    }
+
+    public func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
         filterControl?.scrollingDidStop(in: scrollView)
     }
 }
 
 extension ChatListViewController: ChatListFilterControlDelegate {
-    func filterControlDidStartFiltering() {
-        // Perform using the default run loop mode so that scroll view decelaration
-        // can finish gracefully before updating table content.
-        RunLoop.current.perform { [self] in
-            enableChatListFilter(filterControl)
+    func filterControlWillStartFiltering() {
+        updateChatListFilter(.unread)
+
+        // Because this happens in response to an interactive gesture, it feels
+        // better to go a little slower than the default animation duration (0.25 sec).
+        UIView.animate(withDuration: 0.4) { [self] in
+            tableView.performBatchUpdates {
+                loadCoordinator.loadIfNecessary()
+            }
         }
     }
 }

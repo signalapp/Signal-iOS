@@ -6,8 +6,9 @@
 import SignalServiceKit
 import UIKit
 
+@MainActor
 protocol ChatListFilterControlDelegate: AnyObject {
-    func filterControlDidStartFiltering()
+    func filterControlWillStartFiltering()
 }
 
 final class ChatListFilterControl: UIView, UIScrollViewDelegate {
@@ -67,8 +68,7 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
         case willStartFiltering
 
         /// `isFiltering == true` where `state >= .filterPending`. Started
-        /// filtering (i.e., called `delegate.filterControlDidStartFiltering()`),
-        /// but haven't finished animating into the "docked" position.
+        /// filtering but haven't finished animating into the "docked" position.
         case filterPending
 
         /// Actively filtering and control is docked to the top of the scroll view.
@@ -97,8 +97,8 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
         }
     }
 
-    private var animationDuration: CGFloat {
-        UIView.inheritedAnimationDuration == 0 ? CATransaction.animationDuration() : UIView.inheritedAnimationDuration
+    private func animationDuration(_ defaultDuration: @autoclosure () -> CGFloat = CATransaction.animationDuration()) -> CGFloat {
+        UIView.inheritedAnimationDuration == 0 ? defaultDuration() : UIView.inheritedAnimationDuration
     }
 
     private var contentHeight: CGFloat {
@@ -150,8 +150,8 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
 
     var preferredContentHeight: CGFloat = 52.0 {
         didSet {
-            if state < .filterPending, let scrollView {
-                scrollView.contentInset.top = preferredContentHeight
+            if state < .filterPending {
+                scrollView?.contentInset.top = -preferredContentHeight
             }
             setNeedsLayout()
         }
@@ -223,6 +223,12 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
         }
     }
 
+    override func didMoveToWindow() {
+        super.didMoveToWindow()
+
+        updateContentInset()
+    }
+
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
         // clippingView's position is logically relative to the scroll view's
         // frame, not its bounds (i.e., it's docked near the top of the scroll
@@ -289,30 +295,48 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
         contentView.frame.size = bounds.size
         contentView.layoutMargins = layoutMargins
 
-        if let scrollView {
-            var contentInset = -contentHeight
+        updateContentOrigin()
+
+        let horizontalMargins = UIEdgeInsets(top: 0, left: layoutMargins.left, bottom: 0, right: layoutMargins.right)
+        let fullBleedRect = contentView.bounds.inset(by: horizontalMargins)
+
+        clearButton.frame = fullBleedRect
+        clearButton.sizeToFit()
+        clearButton.center = contentView.bounds.center
+
+        let imageHeight = clearButton.frame.height
+        let imageSize = CGSize(width: imageHeight, height: imageHeight)
+        for imageView in imageViews {
+            imageView.frame.size = imageSize
+        }
+        imageContainer.frame.size = imageSize
+        imageContainer.center = contentView.bounds.center
+    }
+
+    func updateContentOrigin() {
+        do {
             var scrollIndicatorInset = max(0, -adjustedContentOffset.y)
 
             if state >= .filterPending {
-                contentInset = 0
                 scrollIndicatorInset += contentHeight
             }
 
-            scrollView.contentInset.top = contentInset
-            scrollView.verticalScrollIndicatorInsets.top = scrollIndicatorInset
+            scrollView?.verticalScrollIndicatorInsets.top = scrollIndicatorInset
 
             // clippingView is offset so that its Y position is always at a
             // logical content offset of 0, never behind the top bar. This
             // prevents the contentView from blending with the navigation bar
             // background material.
-            var clippingOrigin = adjustedContentOffset
-            clippingOrigin.y -= contentInset
-            clippingView.frame.origin = clippingOrigin
+            if let scrollView, let container = scrollView.superview {
+                let safeAreaRect = scrollView.frame.inset(by: scrollView.safeAreaInsets)
+                let contentOrigin = container.convert(safeAreaRect.origin, to: self)
+                clippingView.frame.origin = contentOrigin
+            }
         }
 
         // clippingView's height is adjusted so that it's only >0 in the
         // overscroll area where the pull-to-filter gesture is occuring.
-        clippingView.frame.size.height = if state >= .filterPending {
+        clippingView.frame.size.height = if state >= .willStartFiltering {
             contentHeight
         } else {
             max(0, min(contentHeight, -adjustedContentOffset.y))
@@ -339,26 +363,34 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
             contentOrigin.y = min(contentOrigin.y, 0)
             contentView.frame.origin = contentOrigin
         }
+    }
 
-        let horizontalMargins = UIEdgeInsets(top: 0, left: layoutMargins.left, bottom: 0, right: layoutMargins.right)
-        let fullBleedRect = contentView.bounds.inset(by: horizontalMargins)
-
-        clearButton.frame = fullBleedRect
-        clearButton.sizeToFit()
-        clearButton.center = contentView.bounds.center
-
-        let imageHeight = clearButton.frame.height
-        let imageSize = CGSize(width: imageHeight, height: imageHeight)
-        for imageView in imageViews {
-            imageView.frame.size = imageSize
-        }
-        imageContainer.frame.size = imageSize
-        imageContainer.center = contentView.bounds.center
+    // Setting `UIScrollView.contentInset` triggers implicit changes to both
+    // `contentOffset` and `adjustedContentInset`, and also synchronously calls
+    // the associated `UIScrollViewDelegate` methods (`scrollViewDidScroll(_:)`
+    // and `scrollViewDidChangeAdjustedContentInset(_:)`, respectively). Without
+    // a careful explicit adjustment to the content offset, this tends to break
+    // scroll view animations, causing content to snap to a new scroll position
+    // abruptly.
+    //
+    // This method:
+    //     a) avoids changing the content inset if unchanged, in order to avoid
+    //        triggering unwanted delegate callbacks, and
+    //     b) after changing the contentInset, explicitly adjusts the content
+    //        *offset* by a complementary amount, preventing unwanted animation.
+    func updateContentInset() {
+        let newValue = state >= .filterPending ? 0 : -preferredContentHeight
+        guard let scrollView, scrollView.contentInset.top != newValue else { return }
+        let difference = newValue - scrollView.contentInset.top
+        var targetOffset = scrollView.contentOffset
+        targetOffset.y -= difference
+        scrollView.contentInset.top = newValue
+        scrollView.setContentOffset(targetOffset, animated: false)
     }
 
     func startFiltering(animated: Bool) {
         if animated {
-            animateScrollViewTransition { [self] in
+            animateScrollViewTransition(withDuration: animationDuration()) { [self] in
                 UIView.performWithoutAnimation {
                     clippingView.frame = CGRect(x: 0, y: bounds.maxY, width: bounds.width, height: 0)
                     contentView.frame = CGRect(x: 0, y: -contentHeight, width: 0, height: contentHeight)
@@ -410,6 +442,7 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
         } else {
             showClearButton(animated: false)
             state = .filtering
+            updateContentInset()
         }
     }
 
@@ -422,7 +455,7 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
         }
 
         if animated {
-            animateScrollViewTransition { [self] in
+            animateScrollViewTransition(withDuration: animationDuration()) { [self] in
                 clearButton.isUserInteractionEnabled = false
                 scrollView?.contentInset.top = -contentHeight
 
@@ -479,12 +512,17 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
             feedback = nil
             state = .stopping
         case .willStartFiltering:
-            scrollView.contentInset.top = 0
-            showClearButton(animated: true)
+            delegate?.filterControlWillStartFiltering()
             state = .filterPending
-            delegate?.filterControlDidStartFiltering()
         default:
             break
+        }
+    }
+
+    func draggingDidEnd(in scrollView: UIScrollView) {
+        if state == .filterPending {
+            updateContentInset()
+            showClearButton(animated: true)
         }
     }
 
@@ -498,11 +536,11 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
         }
     }
 
-    private func animateScrollViewTransition(_ animations: @escaping () -> Void, completion: (() -> Void)? = nil) {
+    private func animateScrollViewTransition(withDuration duration: CGFloat, _ animations: @escaping () -> Void, completion: (() -> Void)? = nil) {
         guard !isTransitioning else {
             owsFailDebug("already transitioning; falling back to default animation")
 
-            UIView.animate(withDuration: animationDuration, delay: 0, options: .beginFromCurrentState) {
+            UIView.animate(withDuration: duration, delay: 0, options: .beginFromCurrentState) {
                 animations()
             } completion: { _ in
                 completion?()
@@ -514,14 +552,14 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
         isTransitioning = true
 
         if let scrollView {
-            UIView.transition(with: scrollView, duration: animationDuration, options: .allowAnimatedContent) {
+            UIView.transition(with: scrollView, duration: duration, options: .allowAnimatedContent) {
                 animations()
             } completion: { [self] _ in
                 isTransitioning = false
                 completion?()
             }
         } else {
-            UIView.animate(withDuration: animationDuration) {
+            UIView.animate(withDuration: duration) {
                 animations()
             } completion: { [self] _ in
                 isTransitioning = false
@@ -539,14 +577,17 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
         }
 
         let startFrame = imageContainer.frame.intersection(clearButton.frame)
-        let transitionView = TransitionEffectView(frame: startFrame)
-        transitionView.effect = UIBlurEffect(style: .systemUltraThinMaterial)
-        contentView.insertSubview(transitionView, belowSubview: imageContainer)
+        let transitionView = TransitionEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterial))
         let endFrame = clearButton.frame
         let oldBackground = clearButton.configuration?.background
         clearButton.configuration?.background = .clear()
 
-        let transitionAnimator = UIViewPropertyAnimator(duration: 0.7, dampingRatio: 0.75) { [clearButton, imageContainer] in
+        UIView.performWithoutAnimation {
+            transitionView.frame = startFrame
+            contentView.insertSubview(transitionView, belowSubview: imageContainer)
+        }
+
+        let transitionAnimator = UIViewPropertyAnimator(duration: animationDuration(0.7), dampingRatio: 0.75) { [clearButton, imageContainer] in
             let duration = UIView.inheritedAnimationDuration
 
             UIView.animate(withDuration: 0.1 * duration, delay: 0) {
@@ -612,6 +653,11 @@ private extension ChatListFilterControl {
         @available(*, unavailable)
         required init?(coder: NSCoder) {
             fatalError("init(coder:) has not been implemented")
+        }
+
+        override func didMoveToSuperview() {
+            super.didMoveToSuperview()
+            updateMask()
         }
 
         override func layoutSubviews() {

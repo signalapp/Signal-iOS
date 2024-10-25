@@ -854,6 +854,17 @@ extension CLVTableDataSource {
 public class CLVTableView: UITableView {
     fileprivate var lastReloadDate: Date?
 
+    // A `tableFooterView` that always expands to fill available contentSize
+    // when the table view contents otherwise wouldn't fill the space. This
+    // supports Filter by Unread by helping to make transitions between very
+    // large and very small chat lists more consistent. What this does in
+    // practice is to prevent a glitch where the search bar would momentarily
+    // disappears and then animates back in with the adjusted content insets.
+    //
+    // It also allows the user to swipe up to dismiss the search bar (if the
+    // content height is too small, the search bar otherwise becomes un-hideable).
+    let footerView = UIView()
+
     public override func reloadData() {
         AssertIsOnMainThread()
 
@@ -864,10 +875,50 @@ public class CLVTableView: UITableView {
 
     public init() {
         super.init(frame: .zero, style: .grouped)
+        tableFooterView = footerView
     }
 
     @available(*, unavailable, message: "use other constructor instead.")
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    public override func layoutSubviews() {
+        super.layoutSubviews()
+        updateFooterHeight()
+    }
+
+    public override func adjustedContentInsetDidChange() {
+        super.adjustedContentInsetDidChange()
+        updateFooterHeight()
+    }
+
+    private func updateFooterHeight() {
+        let visibleRect = frame.inset(by: adjustedContentInset)
+        let headerHeight = tableHeaderView?.frame.height ?? 0
+
+        // Compute whether the total height content height (excluding the footer)
+        // fits in the available space.
+        var availableHeight = visibleRect.height - headerHeight
+        for section in 0 ..< numberOfSections where availableHeight > 0 {
+            let newValue = availableHeight - rect(forSection: section).height
+            availableHeight = max(0, newValue)
+        }
+
+        // Add one pixel to the final height of the footer to ensure the content
+        // height is always slightly larger than the available space and thus
+        // remains scrollable.
+        //
+        // What this code *doesn't* do is cause scroll indicators to appear when
+        // they shouldn't, because this value is smaller than the amount the
+        // adjusted content insets can change by (i.e., the height of the expanded
+        // search bar).
+        let displayScale = (window?.windowScene?.screen ?? .main).scale
+        let finalHeight = availableHeight + 1 / displayScale
+
+        if footerView.frame.height != finalHeight {
+            footerView.frame.height = finalHeight
+            performBatchUpdates(nil)
+        }
     }
 }
