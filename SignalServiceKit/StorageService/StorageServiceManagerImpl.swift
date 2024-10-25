@@ -1111,19 +1111,19 @@ class StorageServiceOperation {
                 .filter { (recordType, unknownIdentifiers) in !unknownIdentifiers.isEmpty }
 
             // Then, fetch the remaining items in the manifest and resolve any conflicts as appropriate.
-            var mutableState = try await self.fetchAndMergeItemsInBatches(identifiers: newOrUpdatedItems, manifest: manifest, state: state)
+            try await self.fetchAndMergeItemsInBatches(identifiers: newOrUpdatedItems, manifest: manifest, state: &state)
 
             let storageServiceManager = SSKEnvironment.shared.storageServiceManagerRef
             await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
                 // Update the manifest version to reflect the remote version we just restored to
-                mutableState.manifestVersion = manifest.version
+                state.manifestVersion = manifest.version
 
                 // We just did a successful manifest fetch and restore, so we no longer need to refetch it
-                mutableState.refetchLatestManifest = false
+                state.refetchLatestManifest = false
 
                 // We fetched all the previously unknown identifiers, so we don't need to
                 // fetch them again in the future unless they're updated.
-                mutableState.unknownIdentifiersTypeMap = mutableState.unknownIdentifiersTypeMap
+                state.unknownIdentifiersTypeMap = state.unknownIdentifiersTypeMap
                     .filter { (keyType, _) in !Self.isKnownKeyType(keyType) }
 
                 // Save invalid identifiers to remove during the write operation.
@@ -1151,25 +1151,25 @@ class StorageServiceOperation {
                 // non-existent identifier, this device will take care of fixing up the
                 // manifest to remove the reference.)
 
-                mutableState.invalidIdentifiers = allManifestItems.subtracting(mutableState.allIdentifiers)
-                let invalidIdentifierCount = mutableState.invalidIdentifiers.count
+                state.invalidIdentifiers = allManifestItems.subtracting(state.allIdentifiers)
+                let invalidIdentifierCount = state.invalidIdentifiers.count
 
                 // Mark any orphaned records as pending update so we re-add them to the manifest.
 
                 var orphanedGroupV2Count = 0
-                for (groupMasterKey, identifier) in mutableState.groupV2MasterKeyToIdentifierMap where !allManifestItems.contains(identifier) {
-                    mutableState.groupV2ChangeMap[groupMasterKey] = .updated
+                for (groupMasterKey, identifier) in state.groupV2MasterKeyToIdentifierMap where !allManifestItems.contains(identifier) {
+                    state.groupV2ChangeMap[groupMasterKey] = .updated
                     orphanedGroupV2Count += 1
                 }
 
                 var orphanedStoryDistributionListCount = 0
-                for (dlistIdentifier, storageIdentifier) in mutableState.storyDistributionListIdentifierToStorageIdentifierMap where !allManifestItems.contains(storageIdentifier) {
-                    mutableState.storyDistributionListChangeMap[dlistIdentifier] = .updated
+                for (dlistIdentifier, storageIdentifier) in state.storyDistributionListIdentifierToStorageIdentifierMap where !allManifestItems.contains(storageIdentifier) {
+                    state.storyDistributionListChangeMap[dlistIdentifier] = .updated
                     orphanedStoryDistributionListCount += 1
                 }
 
                 var orphanedCallLinkRootKeyCount = 0
-                for (callLinkRootKeyData, storageIdentifier) in mutableState.callLinkRootKeyToStorageIdentifierMap where !allManifestItems.contains(storageIdentifier) {
+                for (callLinkRootKeyData, storageIdentifier) in state.callLinkRootKeyToStorageIdentifierMap where !allManifestItems.contains(storageIdentifier) {
                     // If another client removes a deleted call link, allow it.
                     let callLinkStore = DependenciesBridge.shared.callLinkStore
                     guard
@@ -1179,13 +1179,13 @@ class StorageServiceOperation {
                     else {
                         continue
                     }
-                    mutableState.callLinkRootKeyChangeMap[callLinkRootKeyData] = .updated
+                    state.callLinkRootKeyChangeMap[callLinkRootKeyData] = .updated
                     orphanedCallLinkRootKeyCount += 1
                 }
 
                 var orphanedAccountCount = 0
                 let currentDate = Date()
-                for (recipientUniqueId, identifier) in mutableState.accountIdToIdentifierMap where !allManifestItems.contains(identifier) {
+                for (recipientUniqueId, identifier) in state.accountIdToIdentifierMap where !allManifestItems.contains(identifier) {
                     // Only consider registered recipients as orphaned. If another client
                     // removes an unregistered recipient, allow it.
                     guard
@@ -1195,15 +1195,15 @@ class StorageServiceOperation {
                     else {
                         continue
                     }
-                    mutableState.accountIdChangeMap[recipientUniqueId] = .updated
+                    state.accountIdChangeMap[recipientUniqueId] = .updated
                     orphanedAccountCount += 1
                 }
 
                 let pendingChangesCount = (
-                    mutableState.accountIdChangeMap.count
-                    + mutableState.groupV2ChangeMap.count
-                    + mutableState.storyDistributionListChangeMap.count
-                    + mutableState.callLinkRootKeyChangeMap.count
+                    state.accountIdChangeMap.count
+                    + state.groupV2ChangeMap.count
+                    + state.storyDistributionListChangeMap.count
+                    + state.callLinkRootKeyChangeMap.count
                 )
 
                 Logger.info(
@@ -1218,7 +1218,7 @@ class StorageServiceOperation {
                     """
                 )
 
-                mutableState.save(clearConsecutiveConflicts: true, transaction: transaction)
+                state.save(clearConsecutiveConflicts: true, transaction: transaction)
 
                 if backupAfterSuccess {
                     storageServiceManager.backupPendingChanges(authedDevice: self.authedDevice)
@@ -1265,9 +1265,8 @@ class StorageServiceOperation {
     private func fetchAndMergeItemsInBatches(
         identifiers: [StorageService.StorageIdentifier],
         manifest: StorageServiceProtoManifestRecord,
-        state: State
-    ) async throws -> State {
-        var mutableState = state
+        state: inout State
+    ) async throws {
         var deferredItems = [StorageService.StorageItem]()
         for identifierBatch in identifiers.chunked(by: Self.itemsBatchSize) {
             let fetchedItems = try await StorageService.fetchItems(
@@ -1290,20 +1289,19 @@ class StorageServiceOperation {
             }
 
             await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-                self.mergeItems(batchItems, mutableState: &mutableState, tx: tx)
+                self.mergeItems(batchItems, state: &state, tx: tx)
             }
             Logger.info("\(manifest.logDescription); fetched \(identifierBatch.count) items; processed \(batchItems.count); deferred \(batchDeferredItemCount)")
         }
         for deferredBatch in deferredItems.chunked(by: Self.itemsBatchSize) {
             await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-                self.mergeItems(deferredBatch, mutableState: &mutableState, tx: tx)
+                self.mergeItems(deferredBatch, state: &state, tx: tx)
             }
             Logger.info("\(manifest.logDescription); processed \(deferredBatch.count) deferred items")
         }
-        return mutableState
     }
 
-    private func mergeItems(_ items: some Sequence<StorageService.StorageItem>, mutableState: inout State, tx: SDSAnyWriteTransaction) {
+    private func mergeItems(_ items: some Sequence<StorageService.StorageItem>, state: inout State, tx: SDSAnyWriteTransaction) {
         let contactUpdater = buildContactUpdater()
         let groupV1Updater = buildGroupV1Updater()
         let groupV2Updater = buildGroupV2Updater()
@@ -1317,7 +1315,7 @@ class StorageServiceOperation {
                 self.mergeRecord(
                     record,
                     identifier: item.identifier,
-                    state: &mutableState,
+                    state: &state,
                     stateUpdater: stateUpdater,
                     transaction: tx
                 )
@@ -1339,9 +1337,9 @@ class StorageServiceOperation {
                 // This is not a record type we know about yet, so record this identifier in
                 // our unknown mapping. This allows us to skip fetching it in the future and
                 // not accidentally blow it away when we push an update.
-                var unknownIdentifiersOfType = mutableState.unknownIdentifiersTypeMap[item.identifier.type] ?? []
+                var unknownIdentifiersOfType = state.unknownIdentifiersTypeMap[item.identifier.type] ?? []
                 unknownIdentifiersOfType.append(item.identifier)
-                mutableState.unknownIdentifiersTypeMap[item.identifier.type] = unknownIdentifiersOfType
+                state.unknownIdentifiersTypeMap[item.identifier.type] = unknownIdentifiersOfType
             }
         }
         // Saving here records the new storage identifiers with the *old* manifest
@@ -1349,7 +1347,7 @@ class StorageServiceOperation {
         // manifest, even if we fail part way through the update we'll continue
         // trying to apply the changes we haven't received yet (since we still know
         // we're on an older version overall).
-        mutableState.save(clearConsecutiveConflicts: true, transaction: tx)
+        state.save(clearConsecutiveConflicts: true, transaction: tx)
     }
 
     // MARK: - Clean Up
