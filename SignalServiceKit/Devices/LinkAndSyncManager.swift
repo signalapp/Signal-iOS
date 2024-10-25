@@ -97,11 +97,30 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             owsFailDebug("link'n'sync not available")
             return
         }
-        owsAssertDebug(tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice == true)
-        // TODO: [link'n'sync] wait for the secondary to link.
-        // TODO: [link'n'sync] generate a backup with the ephemeral key.
-        // TODO: [link'n'sync] upload the backup.
-        // TODO: [link'n'sync] mark the backup as uploaded on the server.
+        let (localIdentifiers, registrationState) = db.read { tx in
+            return (
+                tsAccountManager.localIdentifiers(tx: tx),
+                tsAccountManager.registrationState(tx: tx)
+            )
+        }
+        guard let localIdentifiers else {
+            owsFailDebug("Not registered!")
+            return
+        }
+        guard registrationState.isPrimaryDevice == true else {
+            owsFailDebug("Non-primary device waiting for secondary linking")
+            return
+        }
+        let waitForLinkResponse = try await waitForDeviceToLink(tokenId: tokenId)
+        let backupMetadata = try await generateBackup(
+            ephemeralBackupKey: ephemeralBackupKey,
+            localIdentifiers: localIdentifiers
+        )
+        let uploadResult = try await uploadEphemeralBackup(metadata: backupMetadata)
+        try await markEphemeralBackupUploaded(
+            waitForDeviceToLinkResponse: waitForLinkResponse,
+            metadata: uploadResult
+        )
     }
 
     public func waitForBackupAndRestore(
@@ -115,6 +134,100 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         // TODO: [link'n'sync] wait for the primary to upload the backup.
         // TODO: [link'n'sync] download the backup.
         // TODO: [link'n'sync] restore from the backup.
+    }
+
+    // MARK: - Private methods
+
+    private func waitForDeviceToLink(
+        tokenId: DeviceProvisioningTokenId
+    ) async throws(PrimaryLinkNSyncError) -> Requests.WaitForDeviceToLinkResponse {
+        do {
+            let response = try await networkManager.asyncRequest(
+                Requests.waitForDeviceToLink(tokenId: tokenId)
+            )
+
+            switch Requests.WaitForDeviceToLinkResponseCodes(rawValue: response.responseStatusCode) {
+            case .success:
+                guard
+                    let data = response.responseBodyData,
+                    let response = try? JSONDecoder().decode(
+                        Requests.WaitForDeviceToLinkResponse.self,
+                        from: data
+                    )
+                else {
+                    throw PrimaryLinkNSyncError.errorWaitingForLinkedDevice
+                }
+                return response
+            case .timeout:
+                throw PrimaryLinkNSyncError.timedOutWaitingForLinkedDevice
+            case .invalidParameters, .rateLimited:
+                throw PrimaryLinkNSyncError.errorWaitingForLinkedDevice
+            case nil:
+                owsFailDebug("Unexpected response")
+                throw PrimaryLinkNSyncError.errorWaitingForLinkedDevice
+            }
+        } catch let error {
+            throw PrimaryLinkNSyncError.networkError
+        }
+    }
+
+    private func generateBackup(
+        ephemeralBackupKey: EphemeralBackupKey,
+        localIdentifiers: LocalIdentifiers
+    ) async throws(PrimaryLinkNSyncError) -> Upload.EncryptedBackupUploadMetadata {
+        do {
+            return try await messageBackupManager.exportEncryptedBackup(
+                localIdentifiers: localIdentifiers,
+                mode: .linknsync(ephemeralBackupKey)
+            )
+        } catch let error {
+            owsFailDebug("Unable to generate link'n'sync backup: \(error)")
+            throw PrimaryLinkNSyncError.errorGeneratingBackup
+        }
+    }
+
+    private func uploadEphemeralBackup(
+        metadata: Upload.EncryptedBackupUploadMetadata
+    ) async throws(PrimaryLinkNSyncError) -> Upload.Result<Upload.LocalUploadMetadata> {
+        do {
+            return try await attachmentUploadManager.uploadTransientAttachment(
+                dataSource: try DataSourcePath(
+                    fileUrl: metadata.fileUrl,
+                    shouldDeleteOnDeallocation: true
+                )
+            )
+        } catch {
+            if error.isNetworkFailureOrTimeout {
+                throw PrimaryLinkNSyncError.networkError
+            } else {
+                throw PrimaryLinkNSyncError.errorUploadingBackup
+            }
+        }
+    }
+
+    private func markEphemeralBackupUploaded(
+        waitForDeviceToLinkResponse: Requests.WaitForDeviceToLinkResponse,
+        metadata: Upload.Result<Upload.LocalUploadMetadata>
+    ) async throws(PrimaryLinkNSyncError) -> Void {
+        do {
+            let response = try await networkManager.asyncRequest(
+                Requests.markLinkNSyncBackupUploaded(
+                    waitForDeviceToLinkResponse: waitForDeviceToLinkResponse,
+                    cdnNumber: metadata.cdnNumber,
+                    cdnKey: metadata.cdnKey
+                )
+            )
+
+            guard response.responseStatusCode == 204 else {
+                throw PrimaryLinkNSyncError.errorUploadingBackup
+            }
+        } catch let error {
+            if error.isNetworkFailureOrTimeout {
+                throw PrimaryLinkNSyncError.networkError
+            } else {
+                throw PrimaryLinkNSyncError.errorUploadingBackup
+            }
+        }
     }
 
     fileprivate enum Constants {
