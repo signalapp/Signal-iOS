@@ -124,7 +124,7 @@ public class SDSDB: DB {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: @escaping (WriteTx) throws -> T
+        block: (WriteTx) throws -> T
     ) async rethrows -> T {
         return try await databaseStorage.awaitableWrite(file: file, function: function, line: line, block: {try block(WriteTx($0))})
     }

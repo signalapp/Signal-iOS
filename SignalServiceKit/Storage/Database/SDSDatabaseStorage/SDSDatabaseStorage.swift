@@ -12,6 +12,7 @@ import GRDB
 public class SDSDatabaseStorage: NSObject {
 
     private let asyncWriteQueue = DispatchQueue(label: "org.signal.database.write-async", qos: .userInitiated)
+    private let awaitableWriteQueue = ConcurrentTaskQueue(concurrentLimit: 1)
 
     private var hasPendingCrossProcessWrite = false
 
@@ -342,6 +343,7 @@ public class SDSDatabaseStorage: NSObject {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
+        isAwaitableWrite: Bool = false,
         block: (SDSAnyWriteTransaction) throws -> T
     ) throws -> T {
         #if DEBUG
@@ -350,7 +352,7 @@ public class SDSDatabaseStorage: NSObject {
         // tasks. This seems like a reasonable way to check for this in debug
         // builds without adding overhead for other types of builds.
         withUnsafeCurrentTask {
-            owsAssertDebug(Thread.isMainThread || $0 == nil, "Must use awaitableWrite in Tasks.")
+            owsAssertDebug(isAwaitableWrite || Thread.isMainThread || $0 == nil, "Must use awaitableWrite in Tasks.")
         }
         #endif
 
@@ -377,8 +379,18 @@ public class SDSDatabaseStorage: NSObject {
         line: Int = #line,
         block: (SDSAnyWriteTransaction) -> Void
     ) {
+        write(file: file, function: function, line: line, isAwaitableWrite: false, block: block)
+    }
+
+    private func write(
+        file: String,
+        function: String,
+        line: Int,
+        isAwaitableWrite: Bool,
+        block: (SDSAnyWriteTransaction) -> Void
+    ) {
         do {
-            return try writeThrows(file: file, function: function, line: line, block: block)
+            return try writeThrows(file: file, function: function, line: line, isAwaitableWrite: isAwaitableWrite, block: block)
         } catch {
             owsFail("error: \(error.grdbErrorForLogging)")
         }
@@ -391,7 +403,7 @@ public class SDSDatabaseStorage: NSObject {
         line: Int = #line,
         block: (SDSAnyWriteTransaction) throws -> T
     ) rethrows -> T {
-        return try _write(file: file, function: function, line: line, block: block, rescue: { throw $0 })
+        return try _write(file: file, function: function, line: line, isAwaitableWrite: false, block: block, rescue: { throw $0 })
     }
 
     // The "rescue" pattern is used in LibDispatch (and replicated here) to
@@ -400,12 +412,13 @@ public class SDSDatabaseStorage: NSObject {
         file: String,
         function: String,
         line: Int,
+        isAwaitableWrite: Bool,
         block: (SDSAnyWriteTransaction) throws -> T,
         rescue: (Error) throws -> Never
     ) rethrows -> T {
         var value: T!
         var thrown: Error?
-        write(file: file, function: function, line: line) { tx in
+        write(file: file, function: function, line: line, isAwaitableWrite: isAwaitableWrite) { tx in
             do {
                 value = try block(tx)
             } catch {
@@ -488,33 +501,10 @@ public class SDSDatabaseStorage: NSObject {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: @escaping (SDSAnyWriteTransaction) throws -> T
+        block: (SDSAnyWriteTransaction) throws -> T
     ) async rethrows -> T {
-        return try await _awaitableWrite(file: file, function: function, line: line, block: block, rescue: { throw $0 })
-    }
-
-    private func _awaitableWrite<T>(
-        file: String,
-        function: String,
-        line: Int,
-        block: @escaping (SDSAnyWriteTransaction) throws -> T,
-        rescue: (Error) throws -> Never
-    ) async rethrows -> T {
-        let result: Result<T, Error> = await withCheckedContinuation { continuation in
-            asyncWriteQueue.async {
-                do {
-                    let result = try self.write(file: file, function: function, line: line, block: block)
-                    continuation.resume(returning: .success(result))
-                } catch {
-                    continuation.resume(returning: .failure(error))
-                }
-            }
-        }
-        switch result {
-        case .success(let value):
-            return value
-        case .failure(let error):
-            try rescue(error)
+        return try await self.awaitableWriteQueue.run {
+            return try self._write(file: file, function: function, line: line, isAwaitableWrite: true, block: block, rescue: { throw $0 })
         }
     }
 

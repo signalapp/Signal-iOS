@@ -92,7 +92,7 @@ public final class InMemoryDB: DB {
         file: String,
         function: String,
         line: Int,
-        block: @escaping (WriteTransaction) throws -> T
+        block: (WriteTransaction) throws -> T
     ) async rethrows -> T {
         await Task.yield()
         return try write(file: file, function: function, line: line, block: block)

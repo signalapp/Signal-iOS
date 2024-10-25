@@ -52,7 +52,7 @@ public protocol DB {
         file: String,
         function: String,
         line: Int,
-        block: @escaping (WriteTransaction) throws -> T
+        block: (WriteTransaction) throws -> T
     ) async rethrows -> T
 
     // MARK: - Promises
@@ -137,7 +137,7 @@ extension DB {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: @escaping (WriteTransaction) throws -> T
+        block: (WriteTransaction) throws -> T
     ) async rethrows -> T {
         return try await awaitableWrite(file: file, function: function, line: line, block: block)
     }

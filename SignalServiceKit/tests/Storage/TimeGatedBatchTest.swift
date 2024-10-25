@@ -265,7 +265,7 @@ private class MockDB: DB {
         file: String,
         function: String,
         line: Int,
-        block: @escaping (MockTransaction) throws -> T
+        block: (MockTransaction) throws -> T
     ) async rethrows -> T {
         await Task.yield()
         return try queue.sync {
