@@ -1981,6 +1981,9 @@
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "Failed to update device list.";
 
+/* Message appearing on a toast indicating a new device was successfully linked. Embeds {{ device name }} */
+"DEVICE_LIST_UPDATE_NEW_DEVICE_TOAST" = "“%@” linked";
+
 /* A label for this device in the device list. */
 "DEVICE_NAME_THIS_DEVICE" = "This Device";
 
@@ -4026,6 +4029,12 @@
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock device linking. */
 "LINK_NEW_DEVICE_AUTHENTICATION_REASON" = "Authenticate to link a device";
+
+/* Body text for a sheet when a user has started linking a device informing them to finish the process on that other device */
+"LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_BODY" = "Finish linking Signal on your other device.";
+
+/* Title for a sheet when a user has started linking a device informing them to finish the process on that other device */
+"LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE" = "Finish linking on your other device";
 
 /* Subheading for 'Link New Device' navigation */
 "LINK_NEW_DEVICE_SUBTITLE" = "Scan QR Code to link a new device.";

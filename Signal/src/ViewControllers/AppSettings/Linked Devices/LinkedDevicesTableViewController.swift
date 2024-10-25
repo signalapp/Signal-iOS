@@ -11,9 +11,13 @@ import LocalAuthentication
 // the text shown to internal users about it can be changed too.
 private var shouldShowDeviceIdsBecauseUserIsInternal: Bool { DebugFlags.internalSettings }
 
-private struct DisplayableDevice {
+private struct DisplayableDevice: Equatable {
     let device: OWSDevice
     let displayName: String
+
+    static func == (lhs: DisplayableDevice, rhs: DisplayableDevice) -> Bool {
+        lhs.device.deviceId == rhs.device.deviceId && lhs.device.createdAt == rhs.device.createdAt
+    }
 }
 
 class LinkedDevicesTableViewController: OWSTableViewController2 {
@@ -22,7 +26,15 @@ class LinkedDevicesTableViewController: OWSTableViewController2 {
 
     private var pollingRefreshTimer: Timer?
 
-    private var isExpectingMoreDevices = false
+    private var oldDeviceList: [DisplayableDevice] = []
+    private var isExpectingMoreDevices = false {
+        didSet {
+            shouldShowFinishLinkingSheet = isExpectingMoreDevices
+            && FeatureFlags.biometricLinkedDeviceFlow
+        }
+    }
+    private var shouldShowFinishLinkingSheet = false
+    private weak var finishLinkingSheet: HeroSheetViewController?
 
     private let refreshControl = UIRefreshControl()
 
@@ -91,6 +103,36 @@ class LinkedDevicesTableViewController: OWSTableViewController2 {
 
         updateNavigationItems()
         updateTableContents()
+
+        if oldDeviceList != displayableDevices {
+            if
+                isExpectingMoreDevices,
+                let newDevice = displayableDevices.last,
+                newDevice != oldDeviceList.last
+            {
+                if let finishLinkingSheet {
+                    finishLinkingSheet.dismiss(animated: true) {
+                        self.showNewDeviceToast(deviceName: newDevice.displayName)
+                    }
+                } else {
+                    showNewDeviceToast(deviceName: newDevice.displayName)
+                }
+                isExpectingMoreDevices = false
+            }
+
+            oldDeviceList = displayableDevices
+        }
+    }
+
+    private func showNewDeviceToast(deviceName: String) {
+        guard FeatureFlags.biometricLinkedDeviceFlow else { return }
+        presentToast(text: String(
+            format: OWSLocalizedString(
+                "DEVICE_LIST_UPDATE_NEW_DEVICE_TOAST",
+                comment: "Message appearing on a toast indicating a new device was successfully linked. Embeds {{ device name }}"
+            ),
+            deviceName
+        ))
     }
 
     // MARK: - View lifecycle
@@ -106,6 +148,35 @@ class LinkedDevicesTableViewController: OWSTableViewController2 {
 
         pollingRefreshTimer?.invalidate()
         pollingRefreshTimer = nil
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        if shouldShowFinishLinkingSheet {
+            // Only show the sheet once even if viewDidAppear is
+            // called multiple times while waiting for the link.
+            self.shouldShowFinishLinkingSheet = false
+
+            let sheet = HeroSheetViewController(
+                heroImage: UIImage(named: "linked-devices")!,
+                title: OWSLocalizedString(
+                    "LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE",
+                    comment: "Title for a sheet when a user has started linking a device informing them to finish the process on that other device"
+                ),
+                body: OWSLocalizedString(
+                    "LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_BODY",
+                    comment: "Body text for a sheet when a user has started linking a device informing them to finish the process on that other device"
+                ),
+                buttonTitle: CommonStrings.continueButton
+            )
+            self.finishLinkingSheet = sheet
+
+            // Presenting it in viewDidAppear prevents the background dimming
+            DispatchQueue.main.async {
+                self.present(sheet, animated: true)
+            }
+        }
     }
 
     // MARK: - Events
@@ -144,8 +215,6 @@ class LinkedDevicesTableViewController: OWSTableViewController2 {
         AssertIsOnMainThread()
 
         // Got our new device, we can stop refreshing.
-        isExpectingMoreDevices = false
-
         pollingRefreshTimer?.invalidate()
         pollingRefreshTimer = nil
 
