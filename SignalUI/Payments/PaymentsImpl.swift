@@ -422,8 +422,6 @@ public extension PaymentsImpl {
 public extension PaymentsImpl {
 
     private func localMobileCoinAccount(paymentsState: PaymentsState) -> MobileCoinAPI.MobileCoinAccount? {
-        owsAssertDebug(paymentsState.isEnabled)
-
         guard let paymentsEntropy = paymentsState.paymentsEntropy else {
             owsFailDebug("Missing paymentsEntropy.")
             return nil
@@ -437,27 +435,14 @@ public extension PaymentsImpl {
         }
     }
 
-    private func localMobileCoinAccount() -> MobileCoinAPI.MobileCoinAccount? {
-        localMobileCoinAccount(paymentsState: self.paymentsState)
-    }
-
     // Only valid for the recipient
     func unmaskReceiptAmount(data: Data?) -> Amount? {
         guard let data = data else { return nil }
-        let account = localMobileCoinAccount()
+        let account = localMobileCoinAccount(paymentsState: self.paymentsState)
         guard let accountKey = account?.accountKey else { return nil }
         guard let receipt = Receipt(serializedData: data) else { return nil }
         guard let amount = receipt.validateAndUnmaskAmount(accountKey: accountKey) else { return nil }
         return amount
-    }
-
-    // Only valid for the recipient
-    func decryptReceipt(data: Data) -> (Amount?, Receipt?) {
-        let account = localMobileCoinAccount()
-        guard let accountKey = account?.accountKey else { return (nil, nil) }
-        guard let receipt = Receipt(serializedData: data) else { return (nil, nil) }
-        guard let amount = receipt.validateAndUnmaskAmount(accountKey: accountKey) else { return (nil, nil) }
-        return (amount, receipt)
     }
 
     func buildLocalPaymentAddress(paymentsState: PaymentsState) -> TSPaymentAddress? {
@@ -471,21 +456,12 @@ public extension PaymentsImpl {
     }
 
     func walletAddressBase58() -> String? {
-        guard let localAccount = self.localMobileCoinAccount() else {
+        let paymentsState = self.paymentsState
+        owsAssertDebug(paymentsState.isEnabled)
+        guard let localAccount = self.localMobileCoinAccount(paymentsState: paymentsState) else {
             return nil
         }
         return Self.formatAsBase58(publicAddress: localAccount.accountKey.publicAddress)
-    }
-
-    func walletAddressQRUrl() -> URL? {
-        guard let localAccount = self.localMobileCoinAccount() else {
-            return nil
-        }
-        guard let url = URL(string: Self.formatAsUrl(publicAddress: localAccount.accountKey.publicAddress)) else {
-            owsFailDebug("Invalid url.")
-            return nil
-        }
-        return url
     }
 
     func localPaymentAddressProtoData(paymentsState: PaymentsState, tx: SDSAnyReadTransaction) -> Data? {
@@ -1188,10 +1164,6 @@ public extension PaymentsImpl {
 
     static func formatAsBase58(publicAddress: MobileCoin.PublicAddress) -> String {
         MobileCoinAPI.formatAsBase58(publicAddress: publicAddress)
-    }
-
-    static func formatAsUrl(publicAddress: MobileCoin.PublicAddress) -> String {
-        return MobileCoinAPI.formatAsUrl(publicAddress: publicAddress)
     }
 
     static func parseAsPublicAddress(url: URL) -> MobileCoin.PublicAddress? {

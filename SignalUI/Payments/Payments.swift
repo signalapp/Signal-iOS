@@ -11,8 +11,6 @@ public protocol Payments: AnyObject {
 
     func walletAddressBase58() -> String?
 
-    func walletAddressQRUrl() -> URL?
-
     var shouldShowPaymentsUI: Bool { get }
 
     var paymentsEntropy: Data? { get }
@@ -137,10 +135,6 @@ extension MockPayments: PaymentsSwift {
     public var paymentsEntropy: Data? { nil }
 
     public func walletAddressBase58() -> String? {
-        owsFail("Not implemented.")
-    }
-
-    public func walletAddressQRUrl() -> URL? {
         owsFail("Not implemented.")
     }
 

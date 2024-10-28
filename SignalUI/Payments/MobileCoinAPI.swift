@@ -848,10 +848,6 @@ extension MobileCoinAPI {
         return Base58Coder.encode(publicAddress)
     }
 
-    static func formatAsUrl(publicAddress: MobileCoin.PublicAddress) -> String {
-        MobUri.encode(publicAddress)
-    }
-
     static func parseAsPublicAddress(url: URL) -> MobileCoin.PublicAddress? {
         let result = MobUri.decode(uri: url.absoluteString)
         switch result {

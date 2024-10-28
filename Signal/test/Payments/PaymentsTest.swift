@@ -18,26 +18,6 @@ class PaymentsTest: SignalBaseTest {
         SUIEnvironment.shared.paymentsRef = PaymentsImpl(appReadiness: AppReadinessMock())
     }
 
-    func test_urlRoundtrip() {
-        let publicAddressBase58 = "2HWLR6wNtJAYbuyZom35NMrz2uugsBtrdTcmwEtDgGmSHuEWpuosZy9rqLJNXLKWpAWXR8KjFUzScYhmyr1wzi3bYrMffdUzzCFbcRqoKvdPFrTvnS8TB2GmQG3zZbME4gNEs7bvvEQfHQ3SpRk6TQEbMcsfF3G1a1SEWz8v7ucEJZ1Wc9tV1ykfHgAVEZGMHUGeWns34LnUPneEfbzsizafEqY7iXnt9GFntZ53UYx2PNQ3xgWcAc8RPTi7"
-        guard let publicAddress = PaymentsImpl.parse(publicAddressBase58: publicAddressBase58) else {
-            XCTFail("Could not parse publicAddressBase58.")
-            return
-        }
-        XCTAssertEqual(publicAddressBase58, PaymentsImpl.formatAsBase58(publicAddress: publicAddress))
-
-        let urlString = PaymentsImpl.formatAsUrl(publicAddress: publicAddress)
-        guard let url = URL(string: urlString) else {
-            XCTFail("Invalid urlString.")
-            return
-        }
-        guard let publicAddressFromUrl = PaymentsImpl.parseAsPublicAddress(url: url) else {
-            XCTFail("Could not parse url.")
-            return
-        }
-        XCTAssertEqual(publicAddressBase58, PaymentsImpl.formatAsBase58(publicAddress: publicAddressFromUrl))
-    }
-
     func test_passphraseRoundtrip1() {
         let paymentsEntropy = Randomness.generateRandomBytes(PaymentsConstants.paymentsEntropyLength)
         guard let passphrase = SUIEnvironment.shared.paymentsSwiftRef.passphrase(forPaymentsEntropy: paymentsEntropy) else {
