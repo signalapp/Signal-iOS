@@ -56,41 +56,58 @@ public class MessageProcessor: NSObject {
             return Guarantee.value(())
         }
 
-        var shouldWaitForMessageProcessing = self.hasPendingEnvelopes
-        var shouldWaitForGV2MessageProcessing = SSKEnvironment.shared.databaseStorageRef.read {
-            SSKEnvironment.shared.groupsV2MessageProcessorRef.hasPendingJobs(tx: $0)
-        }
         // Check if processing is suspended; if so we need to fork behavior.
-        if SSKEnvironment.shared.messagePipelineSupervisorRef.isMessageProcessingPermitted.negated {
+        let shouldWaitForEverything: Bool
+        if SSKEnvironment.shared.messagePipelineSupervisorRef.isMessageProcessingPermitted {
+            shouldWaitForEverything = true
+        } else {
             switch suspensionBehavior {
             case .alwaysWait:
-                break
+                shouldWaitForEverything = true
             case .onlyWaitIfAlreadyInProgress:
-                // Check if we are already processing, if so wait for that to finish.
-                // If not don't wait even if we have pending messages; those won't process
-                // until we unsuspend.
-                shouldWaitForMessageProcessing = self.isDrainingPendingEnvelopes.get()
-                shouldWaitForGV2MessageProcessing = SSKEnvironment.shared.groupsV2MessageProcessorRef.isActivelyProcessing()
+                shouldWaitForEverything = false
             }
         }
 
-        if shouldWaitForMessageProcessing {
-            return NotificationCenter.default.observe(
-                once: Self.messageProcessorDidDrainQueue
-            ).then { _ in
-                // Recur, in case we've enqueued messages handled in another block.
-                self.waitForProcessingComplete(suspensionBehavior: suspensionBehavior)
-            }.asVoid()
-        } else if shouldWaitForGV2MessageProcessing {
-            return NotificationCenter.default.observe(
-                once: GroupsV2MessageProcessor.didFlushGroupsV2MessageQueue
-            ).then { _ in
-                // Recur, in case we've enqueued messages handled in another block.
-                self.waitForProcessingComplete(suspensionBehavior: suspensionBehavior)
-            }.asVoid()
-        } else {
-            return Guarantee.value(())
+        let shouldWaitForMessageProcessing: () -> Bool = {
+            // Check if we are already processing, if so wait for that to finish.
+            // If not don't wait even if we have pending messages; those won't process
+            // until we unsuspend.
+            return shouldWaitForEverything ? self.hasPendingEnvelopes : self.isDrainingPendingEnvelopes.get()
         }
+        if shouldWaitForMessageProcessing() {
+            let messageProcessingPromise = NotificationCenter.default.observe(once: Self.messageProcessorDidDrainQueue)
+            // We must check (again) after setting up the observer in case we miss the
+            // notification. If you check before setting up the observer, the
+            // notification might fire while the thread is sleeping.
+            if shouldWaitForMessageProcessing() {
+                return messageProcessingPromise.then { _ in
+                    // Recur, in case we've enqueued messages handled in another block.
+                    self.waitForProcessingComplete(suspensionBehavior: suspensionBehavior)
+                }.asVoid()
+            }
+        }
+
+        let shouldWaitForGroupMessageProcessing: () -> Bool = {
+            if shouldWaitForEverything {
+                return SSKEnvironment.shared.databaseStorageRef.read {
+                    SSKEnvironment.shared.groupsV2MessageProcessorRef.hasPendingJobs(tx: $0)
+                }
+            } else {
+                return SSKEnvironment.shared.groupsV2MessageProcessorRef.isActivelyProcessing()
+            }
+        }
+        if shouldWaitForGroupMessageProcessing() {
+            let groupMessageProcessingPromise = NotificationCenter.default.observe(once: GroupsV2MessageProcessor.didFlushGroupsV2MessageQueue)
+            if shouldWaitForGroupMessageProcessing() {
+                return groupMessageProcessingPromise.then { _ in
+                    // Recur, in case we've enqueued messages handled in another block.
+                    self.waitForProcessingComplete(suspensionBehavior: suspensionBehavior)
+                }.asVoid()
+            }
+        }
+
+        return Guarantee.value(())
     }
 
     /// Suspends message processing, but before doing so processes any messages
