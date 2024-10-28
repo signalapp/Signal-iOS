@@ -46,6 +46,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
     private let listMediaManager: ListMediaManager
     private let mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore
     private let reachabilityManager: SSKReachabilityManager
+    private let remoteConfigProvider: RemoteConfigProvider
     private let taskQueue: TaskQueueLoader<TaskRunner>
     private let tsAccountManager: TSAccountManager
 
@@ -63,6 +64,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         messageBackupRequestManager: MessageBackupRequestManager,
         orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore,
         reachabilityManager: SSKReachabilityManager,
+        remoteConfigProvider: RemoteConfigProvider,
         svr: SecureValueRecovery,
         tsAccountManager: TSAccountManager
     ) {
@@ -72,6 +74,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         self.db = db
         self.mediaBandwidthPreferenceStore = mediaBandwidthPreferenceStore
         self.reachabilityManager = reachabilityManager
+        self.remoteConfigProvider = remoteConfigProvider
         self.tsAccountManager = tsAccountManager
 
         self.listMediaManager = ListMediaManager(
@@ -94,6 +97,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             db: db,
             mediaBandwidthPreferenceStore: mediaBandwidthPreferenceStore,
             messageBackupRequestManager: messageBackupRequestManager,
+            remoteConfigProvider: remoteConfigProvider,
             tsAccountManager: tsAccountManager
         )
         self.taskQueue = TaskQueueLoader(
@@ -144,6 +148,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             attachmentTimestamp: timestamp,
             dateProvider: dateProvider,
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
+            remoteConfigProvider: remoteConfigProvider,
             tx: tx
         )
 
@@ -621,6 +626,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         private let db: any DB
         private let mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore
         private let messageBackupRequestManager: MessageBackupRequestManager
+        private let remoteConfigProvider: RemoteConfigProvider
         private let tsAccountManager: TSAccountManager
 
         let store: TaskStore
@@ -635,6 +641,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             db: any DB,
             mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore,
             messageBackupRequestManager: MessageBackupRequestManager,
+            remoteConfigProvider: RemoteConfigProvider,
             tsAccountManager: TSAccountManager
         ) {
             self.attachmentStore = attachmentStore
@@ -644,6 +651,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             self.db = db
             self.mediaBandwidthPreferenceStore = mediaBandwidthPreferenceStore
             self.messageBackupRequestManager = messageBackupRequestManager
+            self.remoteConfigProvider = remoteConfigProvider
             self.tsAccountManager = tsAccountManager
 
             self.store = TaskStore(backupAttachmentDownloadStore: backupAttachmentDownloadStore)
@@ -659,6 +667,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                             attachmentTimestamp: record.record.timestamp,
                             dateProvider: dateProvider,
                             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
+                            remoteConfigProvider: remoteConfigProvider,
                             tx: tx
                         )
                     }
@@ -795,6 +804,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             attachmentTimestamp: UInt64?,
             dateProvider: DateProvider,
             backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
+            remoteConfigProvider: RemoteConfigProvider,
             tx: DBReadTransaction
         ) -> Eligibility {
             if attachment.asStream() != nil {
@@ -812,10 +822,9 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
 
             let isRecent: Bool
             if let attachmentTimestamp {
-                // We're "recent" if our newest owning message is from the last month.
-                isRecent = Date(millisecondsSince1970: attachmentTimestamp)
-                    .addingTimeInterval(kMonthInterval)
-                    .isAfter(dateProvider())
+                // We're "recent" if our newest owning message wouldn't have expired off the queue.
+                isRecent = dateProvider().ows_millisecondsSince1970 - attachmentTimestamp
+                    <= remoteConfigProvider.currentConfig().messageQueueTimeMs
             } else {
                 // If we don't have a timestamp, its a wallpaper and we should always pass
                 // the recency check.

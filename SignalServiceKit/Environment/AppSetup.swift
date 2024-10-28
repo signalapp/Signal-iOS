@@ -987,6 +987,7 @@ public class AppSetup {
                 messageBackupRequestManager: messageBackupRequestManager,
                 orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
                 reachabilityManager: reachabilityManager,
+                remoteConfigProvider: remoteConfigManager,
                 svr: svr,
                 tsAccountManager: tsAccountManager
             )
