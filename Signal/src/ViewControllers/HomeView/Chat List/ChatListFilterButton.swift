@@ -116,7 +116,7 @@ struct ChatListFilterButtonPreviews: PreviewProvider {
     static var previews: some View {
         VStack {
             ChatListFilterButton(title: "Filtered by Unread", showsClearIcon: true)
-            ChatListFilterButton(title: "Clear Filter")
+            ChatListFilterButton(title: "Clear Unread Filter")
         }
     }
 

@@ -547,6 +547,7 @@ extension CLVTableDataSource: UITableViewDataSource {
         case .inboxFilterFooter:
             let filterFooterCell = tableView.dequeueReusableCell(ChatListFilterFooterCell.self, for: indexPath)
             filterFooterCell.primaryAction = .disableChatListFilter(target: viewController)
+            filterFooterCell.title = OWSLocalizedString("CHAT_LIST_EMPTY_FILTER_CLEAR_BUTTON", comment: "Button displayed in chat list to clear the unread filter when no chats are unread")
             cell = filterFooterCell
             guard let inboxFilterSection = renderState.inboxFilterSection else {
                 owsFailDebug("Missing view model in inbox filter section")

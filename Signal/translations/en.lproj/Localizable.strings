@@ -1139,7 +1139,10 @@
 "CHAT_COLORS_AUTO_TOOLTIP" = "Auto matches the color to the wallpaper";
 
 /* Title for context menu action to disable chat list filter (e.g., Filter by Unread) */
-"CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "Clear Filter";
+"CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "Clear Unread Filter";
+
+/* Button displayed in chat list to clear the unread filter when no chats are unread */
+"CHAT_LIST_EMPTY_FILTER_CLEAR_BUTTON" = "Clear Filter";
 
 /* Button at top of chat list indicating the active filter is 'Filtered by Unread' and tapping will clear the filter */
 "CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON" = "Filtered by Unread";

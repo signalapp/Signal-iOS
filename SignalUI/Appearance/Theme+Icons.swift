@@ -276,11 +276,12 @@ public extension Theme {
             return "connections"
         case .contactInfoNoDirectChat:
             return "chat-x"
-        case .chatListFilterByUnread,
-             .contactInfoPendingRequest:
+        case .contactInfoPendingRequest:
             return "chat-badge"
+        case .chatListFilterByUnread:
+            return "chat-badge-light"
         case .chatListClearFilter:
-            return "chat-badge-fill"
+            return "chat-x-light"
         case .contactInfoPhone:
             return "phone"
         case .contactInfoGroups:
