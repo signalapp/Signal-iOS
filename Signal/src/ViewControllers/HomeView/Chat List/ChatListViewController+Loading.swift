@@ -12,9 +12,7 @@ extension ChatListViewController {
             if newValue != viewState.isViewVisible {
                 viewState.isViewVisible = newValue
                 updateCellVisibility()
-                if newValue {
-                    shouldBeUpdatingView = true
-                }
+                shouldBeUpdatingView = newValue
             }
         }
     }
