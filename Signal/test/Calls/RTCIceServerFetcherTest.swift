@@ -11,14 +11,12 @@ import XCTest
 final class TurnServerInfoTest: XCTestCase {
     func testParseTurnServers() throws {
         let testCases: [TestCase] = [
-            .singleTurnServer,
-            .hybridTurnServer,
             .multipleTurnServer,
             .nullableHostnameTurnServer,
         ]
 
         for (idx, testCase) in testCases.enumerated() {
-            let parsedIceServers: [RTCIceServer] = RTCIceServerFetcher.parse(
+            let parsedIceServers: [RTCIceServer] = try RTCIceServerFetcher.parse(
                 turnServerInfoJsonData: testCase.jsonData
             )
 
@@ -58,59 +56,6 @@ private struct TestCase {
         self.jsonData = jsonString.data(using: .utf8)!
     }
 
-    static let singleTurnServer = TestCase(
-        expectedUrls: [
-            "turn:[1111:bbbb:cccc:0:0:0:0:1]",
-            "turn:1.turn.signal.org",
-        ],
-        jsonString: """
-        {
-            "username": "user",
-            "password": "pass",
-            "urls": [
-                "turn:1.turn.signal.org"
-            ],
-            "urlsWithIps": [
-                "turn:[1111:bbbb:cccc:0:0:0:0:1]",
-            ],
-            "hostname": "1.voip.signal.org"
-        }
-        """
-    )
-
-    static let hybridTurnServer = TestCase(
-        expectedUrls: [
-            "turn:[2222:bbbb:cccc:0:0:0:0:1]",
-            "turn:2.turn.signal.org",
-            "turn:[3333:bbbb:cccc:0:0:0:0:1]",
-            "turn:3.turn.signal.org",
-        ],
-        jsonString: """
-        {
-            "username": "user",
-            "password": "pass",
-            "urls": [
-                "turn:2.turn.signal.org"
-            ],
-            "urlsWithIps": [
-                "turn:[2222:bbbb:cccc:0:0:0:0:1]",
-            ],
-            "hostname": "2.voip.signal.org",
-            "iceServers": [{
-                "username": "user",
-                "password": "pass",
-                "urls": [
-                    "turn:3.turn.signal.org"
-                ],
-                "urlsWithIps": [
-                    "turn:[3333:bbbb:cccc:0:0:0:0:1]",
-                ],
-                "hostname": "3.voip.signal.org"
-            }]
-        }
-        """
-    )
-
     static let multipleTurnServer = TestCase(
         expectedUrls: [
             "turn:[4444:bbbb:cccc:0:0:0:0:1]",
@@ -120,7 +65,7 @@ private struct TestCase {
         ],
         jsonString: """
         {
-            "iceServers": [{
+            "relays": [{
                 "username": "user",
                 "password": "pass",
                 "urls": [
@@ -152,7 +97,7 @@ private struct TestCase {
         ],
         jsonString: """
         {
-            "iceServers": [{
+            "relays": [{
                 "username": "user",
                 "password": "pass",
                 "urls": [

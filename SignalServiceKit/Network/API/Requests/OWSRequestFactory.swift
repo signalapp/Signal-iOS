@@ -45,8 +45,8 @@ public enum OWSRequestFactory {
         return TSRequest(url: URL(string: "/v1/config/")!, method: "GET", parameters: [:])
     }
 
-    public static func turnServerInfoRequest() -> TSRequest {
-        return TSRequest(url: URL(string: "v1/calling/relays")!, method: "GET", parameters: [:])
+    public static func callingRelaysRequest() -> TSRequest {
+        return TSRequest(url: URL(string: "v2/calling/relays")!, method: "GET", parameters: [:])
     }
 
     // MARK: - Auth
