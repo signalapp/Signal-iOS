@@ -53,6 +53,10 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
         /// Control is not visible, filtering is disabled.
         case inactive
 
+        /// Control was tracking scroll view dragging, but dragging stopped
+        /// before the threshold.
+        case stopping
+
         /// Control is appearing, tracking scroll position.
         case tracking
 
@@ -185,6 +189,12 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
             imageContainer.addSubview(imageView)
         }
 
+        reconfigureFilterIconImageViews()
+
+        // Animations are removed when the app enters the background or the owning
+        // view controller disappears, so we need to properly clean up our
+        // UIViewPropertyAnimator or the UI will be in an invalid state even if the
+        // animator is recreated.
         NotificationCenter.default.addObserver(self, selector: #selector(cancelFilterIconAnimator), name: UIApplication.didEnterBackgroundNotification, object: nil)
     }
 
@@ -213,28 +223,27 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
         }
     }
 
-    // Animations are removed when the app enters the background or the owning
-    // view controller disappears, so we need to properly clean up our
-    // UIViewPropertyAnimator or the UI will be in an invalid state even if the
-    // animator is recreated.
     @objc private func cancelFilterIconAnimator() {
         guard let filterIconAnimator, filterIconAnimator.state == .active else { return }
         filterIconAnimator.stopAnimation(false)
         filterIconAnimator.finishAnimation(at: .start)
     }
 
-    // Because animations are removed when the view disappears or the app moves
-    // to the background, the animator needs to be lazily recreated whenever the
-    // animation is about to begin or interactively change.
-    private func resetAnimatorIfNecessary() {
+    private func reconfigureFilterIconImageViews() {
+        UIView.performWithoutAnimation {
+            for (imageView, frame) in zip(imageViews, animationFrames) {
+                frame.configure(imageView)
+            }
+        }
+    }
+
+    private func setUpFilterIconAnimatorIfNecessary() {
         guard UIView.areAnimationsEnabled, filterIconAnimator == nil else { return }
 
         let filterIconAnimator = UIViewPropertyAnimator(duration: 1, timingParameters: UICubicTimingParameters())
         self.filterIconAnimator = filterIconAnimator
 
-        for (imageView, frame) in zip(imageViews, animationFrames) {
-            frame.configure(imageView)
-        }
+        reconfigureFilterIconImageViews()
 
         filterIconAnimator.addAnimations { [imageViews, animationFrames] in
             UIView.animateKeyframes(withDuration: UIView.inheritedAnimationDuration, delay: 0) {
@@ -247,7 +256,9 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
         }
 
         filterIconAnimator.addCompletion { [weak self] _ in
-            self?.filterIconAnimator = nil
+            guard let self else { return }
+            self.filterIconAnimator = nil
+            self.reconfigureFilterIconImageViews()
         }
 
         // Activate the animation but leave it paused to advance it manually.
@@ -393,6 +404,13 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
     }
 
     func stopFiltering(animated: Bool) {
+        func cleanUp() {
+            clearButton.alpha = 0
+            imageContainer.alpha = 1
+            state = .inactive
+            cancelFilterIconAnimator()
+        }
+
         if animated {
             animateScrollViewTransition { [self] in
                 clearButton.isUserInteractionEnabled = false
@@ -405,16 +423,12 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
                 UIView.animate(withDuration: UIView.inheritedAnimationDuration) { [self] in
                     contentView.frame = CGRect(x: 0, y: -contentHeight, width: bounds.width, height: contentHeight)
                 }
-            } completion: { [self] in
-                clearButton.alpha = 0
-                imageContainer.alpha = 1
-                state = .inactive
+            } completion: {
+                cleanUp()
             }
         } else {
-            clearButton.alpha = 0
             clearButton.isUserInteractionEnabled = false
-            imageContainer.alpha = 1
-            state = .inactive
+            cleanUp()
         }
     }
 
@@ -424,8 +438,6 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
             contentOffset.y += scrollView.adjustedContentInset.top
             adjustedContentOffset = contentOffset
         }
-
-        resetAnimatorIfNecessary()
 
         if state == .tracking {
             filterIconAnimator?.fractionComplete = fractionComplete
@@ -441,6 +453,7 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
     func draggingWillBegin(in scrollView: UIScrollView) {
         if state < .tracking {
             state = .tracking
+            setUpFilterIconAnimatorIfNecessary()
         }
 
         if feedback == nil {
@@ -453,7 +466,8 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
     func draggingWillEnd(in scrollView: UIScrollView) {
         switch state {
         case .tracking:
-            state = .inactive
+            feedback = nil
+            state = .stopping
         case .willStartFiltering:
             scrollView.contentInset.top = 0
             showClearButton(animated: true)
@@ -465,9 +479,10 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
     }
 
     func scrollingDidStop(in scrollView: UIScrollView) {
-        if state == .tracking {
+        if state <= .tracking {
             feedback = nil
             state = .inactive
+            cancelFilterIconAnimator()
         } else if state == .filterPending {
             state = .filtering
         }
