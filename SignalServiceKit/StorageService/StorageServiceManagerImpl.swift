@@ -771,7 +771,7 @@ class StorageServiceOperation {
             newItems: updatedItems,
             deletedIdentifiers: deletedIdentifiers + invalidIdentifiers,
             chatServiceAuth: authedAccount.chatServiceAuth
-        ).awaitable()
+        )
 
         if let conflictingManifest {
             // Throw away all our work, resolve conflicts, and try again.
@@ -821,7 +821,7 @@ class StorageServiceOperation {
             response = try await StorageService.fetchLatestManifest(
                 greaterThanVersion: greaterThanVersion,
                 chatServiceAuth: authedAccount.chatServiceAuth
-            ).awaitable()
+            )
         } catch let storageError as StorageService.StorageError {
             // If we succeeded to fetch the manifest but were unable to decrypt it,
             // it likely means our keys changed.
@@ -982,7 +982,7 @@ class StorageServiceOperation {
             newItems: allItems,
             deleteAllExistingRecords: shouldDeletePreviousRecords,
             chatServiceAuth: authedAccount.chatServiceAuth
-        ).awaitable()
+        )
 
         if let conflictingManifest {
             // We got a conflicting manifest that we were able to decrypt, so we may not need
@@ -1075,7 +1075,7 @@ class StorageServiceOperation {
                 let item = try await StorageService.fetchItem(
                     for: newLocalAccountIdentifier,
                     chatServiceAuth: authedAccount.chatServiceAuth
-                ).awaitable()
+                )
 
                 guard let item else {
                     // This can happen in normal use if between fetching the manifest and starting the item
@@ -1272,7 +1272,7 @@ class StorageServiceOperation {
             let fetchedItems = try await StorageService.fetchItems(
                 for: Array(identifierBatch),
                 chatServiceAuth: self.authedAccount.chatServiceAuth
-            ).awaitable()
+            )
 
             // We process contacts with ACIs before those without ACIs. We do this to
             // ensure we process split operations first. If we don't, then we'll likely
