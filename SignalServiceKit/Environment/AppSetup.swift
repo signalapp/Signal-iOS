@@ -1025,6 +1025,7 @@ public class AppSetup {
         let backupThreadStore = MessageBackupThreadStore(threadStore: threadStore)
         let backupInteractionStore = MessageBackupInteractionStore(interactionStore: interactionStore)
         let backupStoryStore = MessageBackupStoryStore(storyStore: storyStore)
+        let mrbkStore = MediaRootBackupKeyStore(keyValueStoreFactory: keyValueStoreFactory)
 
         let messageBackupManager = MessageBackupManagerImpl(
             accountDataArchiver: MessageBackupAccountDataArchiverImpl(
@@ -1119,6 +1120,7 @@ public class AppSetup {
             kvStoreFactory: keyValueStoreFactory,
             localRecipientArchiver: MessageBackupLocalRecipientArchiver(),
             messageBackupKeyMaterial: messageBackupKeyMaterial,
+            mrbkStore: mrbkStore,
             plaintextStreamProvider: MessageBackupPlaintextProtoStreamProviderImpl(),
             postFrameRestoreActionManager: MessageBackupPostFrameRestoreActionManager(
                 interactionStore: backupInteractionStore,
@@ -1271,6 +1273,7 @@ public class AppSetup {
             mediaGalleryResourceManager: mediaGalleryResourceManager,
             messageBackupManager: messageBackupManager,
             messageStickerManager: messageStickerManager,
+            mrbkStore: mrbkStore,
             nicknameManager: nicknameManager,
             orphanedBackupAttachmentManager: orphanedBackupAttachmentManager,
             orphanedAttachmentCleaner: orphanedAttachmentCleaner,

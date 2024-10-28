@@ -351,6 +351,13 @@ extension MessageBackup {
     public struct RestoreFrameError<ProtoIdType: MessageBackupLoggableId>: MessageBackupLoggableError {
         public enum ErrorType {
             public enum InvalidProtoDataError {
+                /// No ``BackupProto_BackupInfo`` header found.
+                case missingBackupInfoHeader
+                /// The ``BackupProto_BackupInfo`` has an unsupported version.
+                case unsupportedBackupInfoVersion
+                /// The ``BackupProto_BackupInfo`` had a missing or invalid MediaRootBackupKey.
+                case invalidMediaRootBackupKey
+
                 /// The AccountData frame was missing or not present before other frames.
                 case accountDataNotFound
                 /// Some recipient identifier being referenced was not present earlier in the backup file.
@@ -678,7 +685,13 @@ extension MessageBackup {
             switch type {
             case .invalidProtoData(let invalidProtoDataError):
                 switch invalidProtoDataError {
-                case .accountDataNotFound, .recipientIdNotFound, .chatIdNotFound:
+                case
+                        .missingBackupInfoHeader,
+                        .unsupportedBackupInfoVersion,
+                        .invalidMediaRootBackupKey,
+                        .accountDataNotFound,
+                        .recipientIdNotFound,
+                        .chatIdNotFound:
                     // Collapse these by the id they refer to, which is in the "type".
                     return typeLogString
                 case .customChatColorNotFound(let id):

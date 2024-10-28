@@ -15,6 +15,13 @@ public protocol MessageBackupLoggableId {
 
 extension MessageBackup {
 
+    public struct BackupInfoId: MessageBackupLoggableId {
+        init() {}
+
+        public var typeLogString: String = "BackupProto_BackupInfo"
+        public var idLogString: String = "info"
+    }
+
     /// Represents the result of archiving a single frame.
     public enum ArchiveSingleFrameResult<SuccessType, AppIdType: MessageBackupLoggableId> {
         case success(SuccessType)

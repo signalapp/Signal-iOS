@@ -22,7 +22,6 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
     private class NotImplementedError: Error {}
     private class BackupError: Error {}
-    private class BackupVersionNotSupportedError: Error {}
 
     private let accountDataArchiver: MessageBackupAccountDataArchiver
     private let attachmentDownloadManager: AttachmentDownloadManager
@@ -46,6 +45,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     private let kvStore: KeyValueStore
     private let localRecipientArchiver: MessageBackupLocalRecipientArchiver
     private let messageBackupKeyMaterial: MessageBackupKeyMaterial
+    private let mrbkStore: MediaRootBackupKeyStore
     private let plaintextStreamProvider: MessageBackupPlaintextProtoStreamProvider
     private let postFrameRestoreActionManager: MessageBackupPostFrameRestoreActionManager
     private let releaseNotesRecipientArchiver: MessageBackupReleaseNotesRecipientArchiver
@@ -74,6 +74,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         kvStoreFactory: KeyValueStoreFactory,
         localRecipientArchiver: MessageBackupLocalRecipientArchiver,
         messageBackupKeyMaterial: MessageBackupKeyMaterial,
+        mrbkStore: MediaRootBackupKeyStore,
         plaintextStreamProvider: MessageBackupPlaintextProtoStreamProvider,
         postFrameRestoreActionManager: MessageBackupPostFrameRestoreActionManager,
         releaseNotesRecipientArchiver: MessageBackupReleaseNotesRecipientArchiver,
@@ -101,6 +102,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         self.kvStore = kvStoreFactory.keyValueStore(collection: Constants.keyValueStoreCollectionName)
         self.localRecipientArchiver = localRecipientArchiver
         self.messageBackupKeyMaterial = messageBackupKeyMaterial
+        self.mrbkStore = mrbkStore
         self.plaintextStreamProvider = plaintextStreamProvider
         self.postFrameRestoreActionManager = postFrameRestoreActionManager
         self.releaseNotesRecipientArchiver = releaseNotesRecipientArchiver
@@ -400,6 +402,8 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         backupInfo.version = Constants.supportedBackupVersion
         backupInfo.backupTimeMs = dateProvider().ows_millisecondsSince1970
 
+        backupInfo.mediaRootBackupKey = mrbkStore.getOrGenerateMediaRootBackupKey(tx: tx)
+
         switch stream.writeHeader(backupInfo) {
         case .success:
             break
@@ -522,13 +526,30 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             throw OWSAssertionError("invalid empty header frame")
         case .protoDeserializationError(let error):
             // Fail if we fail to deserialize the header.
+            try processRestoreFrameErrors(errors: [.restoreFrameError(
+                .invalidProtoData(.missingBackupInfoHeader),
+                MessageBackup.BackupInfoId()
+            )])
             throw error
         }
 
         Logger.info("Reading backup with version: \(backupInfo.version) backed up at \(backupInfo.backupTimeMs)")
 
         guard backupInfo.version == Constants.supportedBackupVersion else {
-            throw BackupVersionNotSupportedError()
+            try processRestoreFrameErrors(errors: [.restoreFrameError(
+                .invalidProtoData(.unsupportedBackupInfoVersion),
+                MessageBackup.BackupInfoId()
+            )])
+            throw BackupError()
+        }
+        do {
+            try mrbkStore.setMediaRootBackupKey(fromRestoredBackup: backupInfo, tx: tx)
+        } catch {
+            try processRestoreFrameErrors(errors: [.restoreFrameError(
+                .invalidProtoData(.invalidMediaRootBackupKey),
+                MessageBackup.BackupInfoId()
+            )])
+            throw error
         }
 
         /// Wraps all the various "contexts" we pass to downstream archivers.

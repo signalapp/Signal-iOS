@@ -16,6 +16,7 @@ public struct ProvisionMessage {
     public let pniIdentityKeyPair: ECKeyPair
     public let profileKey: Aes256Key
     public let masterKey: Data
+    public let mrbk: Data?
     public let ephemeralBackupKey: Data?
     public let areReadReceiptsEnabled: Bool?
     public let primaryUserAgent: String?
@@ -141,6 +142,7 @@ public class ProvisioningCipher {
             throw ProvisioningError.invalidProvisionMessage("missing master key from provisioning message")
         }
 
+        let mediaRootBackupKey = proto.mediaRootBackupKey?.nilIfEmpty
         let ephemeralBackupKey = proto.ephemeralBackupKey
 
         return ProvisionMessage(
@@ -151,6 +153,7 @@ public class ProvisioningCipher {
             pniIdentityKeyPair: ECKeyPair(pniIdentityKeyPair),
             profileKey: profileKey,
             masterKey: masterKey,
+            mrbk: mediaRootBackupKey,
             ephemeralBackupKey: ephemeralBackupKey,
             areReadReceiptsEnabled: areReadReceiptsEnabled,
             primaryUserAgent: primaryUserAgent,

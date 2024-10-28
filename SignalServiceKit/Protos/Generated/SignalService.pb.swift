@@ -3128,12 +3128,22 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
     /// Clears the value of `master`. Subsequent reads from it will return its default value.
     mutating func clearMaster() {self._master = nil}
 
+    var mediaRootBackupKey: Data {
+      get {return _mediaRootBackupKey ?? Data()}
+      set {_mediaRootBackupKey = newValue}
+    }
+    /// Returns true if `mediaRootBackupKey` has been explicitly set.
+    var hasMediaRootBackupKey: Bool {return self._mediaRootBackupKey != nil}
+    /// Clears the value of `mediaRootBackupKey`. Subsequent reads from it will return its default value.
+    mutating func clearMediaRootBackupKey() {self._mediaRootBackupKey = nil}
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     init() {}
 
     fileprivate var _storageService: Data? = nil
     fileprivate var _master: Data? = nil
+    fileprivate var _mediaRootBackupKey: Data? = nil
   }
 
   struct MessageRequestResponse: @unchecked Sendable {
@@ -8138,6 +8148,7 @@ extension SignalServiceProtos_SyncMessage.Keys: SwiftProtobuf.Message, SwiftProt
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "storageService"),
     2: .same(proto: "master"),
+    4: .same(proto: "mediaRootBackupKey"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -8148,6 +8159,7 @@ extension SignalServiceProtos_SyncMessage.Keys: SwiftProtobuf.Message, SwiftProt
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularBytesField(value: &self._storageService) }()
       case 2: try { try decoder.decodeSingularBytesField(value: &self._master) }()
+      case 4: try { try decoder.decodeSingularBytesField(value: &self._mediaRootBackupKey) }()
       default: break
       }
     }
@@ -8164,12 +8176,16 @@ extension SignalServiceProtos_SyncMessage.Keys: SwiftProtobuf.Message, SwiftProt
     try { if let v = self._master {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 2)
     } }()
+    try { if let v = self._mediaRootBackupKey {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 4)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SignalServiceProtos_SyncMessage.Keys, rhs: SignalServiceProtos_SyncMessage.Keys) -> Bool {
     if lhs._storageService != rhs._storageService {return false}
     if lhs._master != rhs._master {return false}
+    if lhs._mediaRootBackupKey != rhs._mediaRootBackupKey {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

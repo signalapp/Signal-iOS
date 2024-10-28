@@ -226,6 +226,16 @@ struct ProvisioningProtos_ProvisionMessage: @unchecked Sendable {
   /// Clears the value of `ephemeralBackupKey`. Subsequent reads from it will return its default value.
   mutating func clearEphemeralBackupKey() {self._ephemeralBackupKey = nil}
 
+  /// NEXT ID: 17
+  var mediaRootBackupKey: Data {
+    get {return _mediaRootBackupKey ?? Data()}
+    set {_mediaRootBackupKey = newValue}
+  }
+  /// Returns true if `mediaRootBackupKey` has been explicitly set.
+  var hasMediaRootBackupKey: Bool {return self._mediaRootBackupKey != nil}
+  /// Clears the value of `mediaRootBackupKey`. Subsequent reads from it will return its default value.
+  mutating func clearMediaRootBackupKey() {self._mediaRootBackupKey = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   init() {}
@@ -244,6 +254,7 @@ struct ProvisioningProtos_ProvisionMessage: @unchecked Sendable {
   fileprivate var _provisioningVersion: UInt32? = nil
   fileprivate var _masterKey: Data? = nil
   fileprivate var _ephemeralBackupKey: Data? = nil
+  fileprivate var _mediaRootBackupKey: Data? = nil
 }
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
@@ -345,6 +356,7 @@ extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProto
     9: .same(proto: "provisioningVersion"),
     13: .same(proto: "masterKey"),
     14: .same(proto: "ephemeralBackupKey"),
+    16: .same(proto: "mediaRootBackupKey"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -367,6 +379,7 @@ extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProto
       case 12: try { try decoder.decodeSingularBytesField(value: &self._pniIdentityKeyPrivate) }()
       case 13: try { try decoder.decodeSingularBytesField(value: &self._masterKey) }()
       case 14: try { try decoder.decodeSingularBytesField(value: &self._ephemeralBackupKey) }()
+      case 16: try { try decoder.decodeSingularBytesField(value: &self._mediaRootBackupKey) }()
       default: break
       }
     }
@@ -419,6 +432,9 @@ extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProto
     try { if let v = self._ephemeralBackupKey {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 14)
     } }()
+    try { if let v = self._mediaRootBackupKey {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 16)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -437,6 +453,7 @@ extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProto
     if lhs._provisioningVersion != rhs._provisioningVersion {return false}
     if lhs._masterKey != rhs._masterKey {return false}
     if lhs._ephemeralBackupKey != rhs._ephemeralBackupKey {return false}
+    if lhs._mediaRootBackupKey != rhs._mediaRootBackupKey {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

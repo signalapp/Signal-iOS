@@ -11426,6 +11426,18 @@ public class SSKProtoSyncMessageKeys: NSObject, Codable, NSSecureCoding {
         return proto.hasMaster
     }
 
+    @objc
+    public var mediaRootBackupKey: Data? {
+        guard hasMediaRootBackupKey else {
+            return nil
+        }
+        return proto.mediaRootBackupKey
+    }
+    @objc
+    public var hasMediaRootBackupKey: Bool {
+        return proto.hasMediaRootBackupKey
+    }
+
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -11505,6 +11517,9 @@ extension SSKProtoSyncMessageKeys {
         if let _value = master {
             builder.setMaster(_value)
         }
+        if let _value = mediaRootBackupKey {
+            builder.setMediaRootBackupKey(_value)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -11540,6 +11555,17 @@ public class SSKProtoSyncMessageKeysBuilder: NSObject {
 
     public func setMaster(_ valueParam: Data) {
         proto.master = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setMediaRootBackupKey(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.mediaRootBackupKey = valueParam
+    }
+
+    public func setMediaRootBackupKey(_ valueParam: Data) {
+        proto.mediaRootBackupKey = valueParam
     }
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

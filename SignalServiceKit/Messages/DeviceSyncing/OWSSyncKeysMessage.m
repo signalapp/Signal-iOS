@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly, nullable) NSData *storageServiceKey;
 @property (nonatomic, readonly, nullable) NSData *masterKey;
+@property (nonatomic, readonly, nullable) NSData *mediaRootBackupKey;
 
 @end
 
@@ -20,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithThread:(TSThread *)thread
              storageServiceKey:(nullable NSData *)storageServiceKey
                      masterKey:(nullable NSData *)masterKey
+            mediaRootBackupKey:(nullable NSData *)mediaRootBackupKey
                    transaction:(SDSAnyReadTransaction *)transaction
 {
     self = [super initWithThread:thread transaction:transaction];
@@ -29,6 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     _storageServiceKey = storageServiceKey;
     _masterKey = masterKey;
+    _mediaRootBackupKey = mediaRootBackupKey;
 
     return self;
 }
@@ -47,6 +50,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
     if (self.masterKey) {
         keysBuilder.master = self.masterKey;
+    }
+    if (self.mediaRootBackupKey) {
+        keysBuilder.mediaRootBackupKey = self.mediaRootBackupKey;
     }
 
     SSKProtoSyncMessageBuilder *builder = [SSKProtoSyncMessage builder];

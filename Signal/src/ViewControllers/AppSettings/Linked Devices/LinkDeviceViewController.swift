@@ -149,13 +149,15 @@ class LinkDeviceViewController: OWSViewController {
         } else {
             ephemeralBackupKey = nil
         }
-        SSKEnvironment.shared.databaseStorageRef.read { tx in
+        let mediaRootBackupKey = SSKEnvironment.shared.databaseStorageRef.write { tx in
             localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)
             let identityManager = DependenciesBridge.shared.identityManager
             aciIdentityKeyPair = identityManager.identityKeyPair(for: .aci, tx: tx.asV2Read)
             pniIdentityKeyPair = identityManager.identityKeyPair(for: .pni, tx: tx.asV2Read)
             areReadReceiptsEnabled = OWSReceiptManager.areReadReceiptsEnabled(transaction: tx)
             masterKey = DependenciesBridge.shared.svr.masterKeyDataForKeysSyncMessage(tx: tx.asV2Read)
+            let mrbk = DependenciesBridge.shared.mrbkStore.getOrGenerateMediaRootBackupKey(tx: tx.asV2Write)
+            return mrbk
         }
         let myProfileKeyData = SSKEnvironment.shared.profileManagerRef.localProfileKey.keyData
 
@@ -187,6 +189,7 @@ class LinkDeviceViewController: OWSViewController {
             myPni: myPni,
             profileKey: myProfileKeyData,
             masterKey: masterKey,
+            mrbk: mediaRootBackupKey,
             ephemeralBackupKey: ephemeralBackupKey,
             readReceiptsEnabled: areReadReceiptsEnabled,
             provisioningService: DeviceProvisioningServiceImpl(

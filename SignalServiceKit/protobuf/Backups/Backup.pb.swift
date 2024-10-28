@@ -76,7 +76,7 @@ public enum BackupProto_GroupV2AccessLevel: SwiftProtobuf.Enum, Swift.CaseIterab
 
 }
 
-public struct BackupProto_BackupInfo: Sendable {
+public struct BackupProto_BackupInfo: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -84,6 +84,9 @@ public struct BackupProto_BackupInfo: Sendable {
   public var version: UInt64 = 0
 
   public var backupTimeMs: UInt64 = 0
+
+  /// 32-byte random value generated when the
+  public var mediaRootBackupKey: Data = Data()
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -5476,6 +5479,7 @@ extension BackupProto_BackupInfo: SwiftProtobuf.Message, SwiftProtobuf._MessageI
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "version"),
     2: .same(proto: "backupTimeMs"),
+    3: .same(proto: "mediaRootBackupKey"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -5486,6 +5490,7 @@ extension BackupProto_BackupInfo: SwiftProtobuf.Message, SwiftProtobuf._MessageI
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularUInt64Field(value: &self.version) }()
       case 2: try { try decoder.decodeSingularUInt64Field(value: &self.backupTimeMs) }()
+      case 3: try { try decoder.decodeSingularBytesField(value: &self.mediaRootBackupKey) }()
       default: break
       }
     }
@@ -5498,12 +5503,16 @@ extension BackupProto_BackupInfo: SwiftProtobuf.Message, SwiftProtobuf._MessageI
     if self.backupTimeMs != 0 {
       try visitor.visitSingularUInt64Field(value: self.backupTimeMs, fieldNumber: 2)
     }
+    if !self.mediaRootBackupKey.isEmpty {
+      try visitor.visitSingularBytesField(value: self.mediaRootBackupKey, fieldNumber: 3)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: BackupProto_BackupInfo, rhs: BackupProto_BackupInfo) -> Bool {
     if lhs.version != rhs.version {return false}
     if lhs.backupTimeMs != rhs.backupTimeMs {return false}
+    if lhs.mediaRootBackupKey != rhs.mediaRootBackupKey {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

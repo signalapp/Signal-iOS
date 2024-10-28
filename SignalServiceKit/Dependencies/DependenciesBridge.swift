@@ -106,6 +106,7 @@ public class DependenciesBridge {
     public let mediaGalleryResourceManager: MediaGalleryResourceManager
     public let messageBackupManager: MessageBackupManager
     public let messageStickerManager: MessageStickerManager
+    public let mrbkStore: MediaRootBackupKeyStore
     public let nicknameManager: any NicknameManager
     public let orphanedBackupAttachmentManager: OrphanedBackupAttachmentManager
     public let orphanedAttachmentCleaner: OrphanedAttachmentCleaner
@@ -225,6 +226,7 @@ public class DependenciesBridge {
         mediaGalleryResourceManager: MediaGalleryResourceManager,
         messageBackupManager: MessageBackupManager,
         messageStickerManager: MessageStickerManager,
+        mrbkStore: MediaRootBackupKeyStore,
         nicknameManager: any NicknameManager,
         orphanedBackupAttachmentManager: OrphanedBackupAttachmentManager,
         orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
@@ -341,6 +343,7 @@ public class DependenciesBridge {
         self.mediaGalleryResourceManager = mediaGalleryResourceManager
         self.messageBackupManager = messageBackupManager
         self.messageStickerManager = messageStickerManager
+        self.mrbkStore = mrbkStore
         self.nicknameManager = nicknameManager
         self.orphanedBackupAttachmentManager = orphanedBackupAttachmentManager
         self.orphanedAttachmentCleaner = orphanedAttachmentCleaner

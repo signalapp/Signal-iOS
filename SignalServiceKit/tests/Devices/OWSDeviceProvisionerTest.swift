@@ -45,6 +45,7 @@ class OWSDeviceProvisionerTest: XCTestCase {
         let myPni = Pni.randomForTesting()
         let profileKey = Randomness.generateRandomBytes(UInt(ProfileKey.SIZE))
         let masterKey = Randomness.generateRandomBytes(SVR.masterKeyLengthBytes)
+        let mrbk = Randomness.generateRandomBytes(MediaRootBackupKeyStore.mediaRootBackupKeyLength)
         let readReceiptsEnabled = true
 
         let provisioner = OWSDeviceProvisioner(
@@ -57,6 +58,7 @@ class OWSDeviceProvisionerTest: XCTestCase {
             myPni: myPni,
             profileKey: profileKey,
             masterKey: masterKey,
+            mrbk: mrbk,
             ephemeralBackupKey: nil,
             readReceiptsEnabled: readReceiptsEnabled,
             provisioningService: mockDeviceProvisioningService,

@@ -13,6 +13,7 @@ public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     private let identityManager: OWSIdentityManager
     private let linkAndSyncManager: LinkAndSyncManager
     private let messageFactory: Shims.MessageFactory
+    private let mrbkStore: MediaRootBackupKeyStore
     private let preKeyManager: PreKeyManager
     private let profileManager: Shims.ProfileManager
     private let pushRegistrationManager: Shims.PushRegistrationManager
@@ -32,6 +33,7 @@ public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         identityManager: OWSIdentityManager,
         linkAndSyncManager: LinkAndSyncManager,
         messageFactory: Shims.MessageFactory,
+        mrbkStore: MediaRootBackupKeyStore,
         preKeyManager: PreKeyManager,
         profileManager: Shims.ProfileManager,
         pushRegistrationManager: Shims.PushRegistrationManager,
@@ -50,6 +52,7 @@ public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         self.identityManager = identityManager
         self.linkAndSyncManager = linkAndSyncManager
         self.messageFactory = messageFactory
+        self.mrbkStore = mrbkStore
         self.preKeyManager = preKeyManager
         self.profileManager = profileManager
         self.pushRegistrationManager = pushRegistrationManager
@@ -183,7 +186,7 @@ public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
             authPassword: serverAuthToken
         ))
 
-        await self.db.awaitableWrite { tx in
+        let errorResult: CompleteProvisioningResult? = await self.db.awaitableWrite { tx in
             self.identityManager.setIdentityKeyPair(
                 provisionMessage.aciIdentityKeyPair,
                 for: .aci,
@@ -214,6 +217,20 @@ public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
                     tx: tx
                 )
             }
+
+            do {
+                try self.mrbkStore.setMediaRootBackupKey(fromProvisioningMessage: provisionMessage, tx: tx)
+            } catch {
+                if FeatureFlags.linkAndSync || FeatureFlags.messageBackupFileAlpha {
+                    return .obsoleteLinkedDeviceError
+                } else {
+                    Logger.warn("Invalid MRBK; ignoring")
+                }
+            }
+            return nil
+        }
+        if let errorResult {
+            return errorResult
         }
 
         do {
