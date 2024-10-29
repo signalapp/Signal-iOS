@@ -212,6 +212,7 @@ extension ConversationViewController: CVComponentDelegate {
 
         let sheet = EditHistoryTableSheetViewController(
             message: message,
+            threadViewModel: self.threadViewModel,
             spoilerState: viewState.spoilerState,
             editManager: self.context.editManager,
             database: SSKEnvironment.shared.databaseStorageRef,

@@ -128,6 +128,7 @@ extension ConversationViewController: MessageActionsDelegate {
 
         let detailVC = MessageDetailViewController(
             message: message,
+            threadViewModel: self.threadViewModel,
             spoilerState: self.viewState.spoilerState,
             editManager: self.context.editManager,
             thread: thread
@@ -156,6 +157,7 @@ extension ConversationViewController: MessageActionsDelegate {
         } else {
             detailVC = MessageDetailViewController(
                 message: message,
+                threadViewModel: self.threadViewModel,
                 spoilerState: self.viewState.spoilerState,
                 editManager: self.context.editManager,
                 thread: thread

@@ -21,6 +21,7 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
 
     var parentRenderItems: [CVRenderItem]?
     var renderItems = [CVRenderItem]()
+    let threadViewModel: ThreadViewModel
     let spoilerState: SpoilerRenderState
     private var message: TSMessage
     private let database: SDSDatabaseStorage
@@ -28,11 +29,13 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
 
     init(
         message: TSMessage,
+        threadViewModel: ThreadViewModel,
         spoilerState: SpoilerRenderState,
         editManager: EditManager,
         database: SDSDatabaseStorage,
         databaseChangeObserver: DatabaseChangeObserver
     ) {
+        self.threadViewModel = threadViewModel
         self.spoilerState = spoilerState
         self.message = message
         self.database = database
@@ -154,11 +157,18 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
         return OWSTableItem { [weak self] in
             guard let self = self else { return UITableViewCell() }
 
-            let views = items.map { item in
+            let views = items.enumerated().map { (index, item) in
                 let cellView = CVCellView()
                 cellView.configure(renderItem: item, componentDelegate: self)
                 cellView.isCellVisible = true
                 cellView.autoSetDimension(.height, toSize: item.cellSize.height)
+
+                // Its not 100% ideal to use an alternate mechanism to handle taps, but
+                // hooking up full cell tap handling is a larger effort and for now
+                // we just want to handle long text taps on this view.
+                cellView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.didTapCell)))
+                cellView.tag = index
+
                 return cellView
             }
 
@@ -174,6 +184,26 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
 
             return cell
         }
+    }
+
+    @objc
+    func didTapCell(_ recognizer: UITapGestureRecognizer) {
+        guard
+            let index = recognizer.view?.tag,
+            let item = renderItems[safe: index],
+            item.itemModel.componentState.displayableBodyText?.isTextTruncated == true
+        else {
+            return
+        }
+        let itemViewModel = CVItemViewModelImpl(renderItem: item)
+        let longTextVC = LongTextViewController(
+            itemViewModel: itemViewModel,
+            threadViewModel: threadViewModel,
+            spoilerState: spoilerState
+        )
+        longTextVC.delegate = self
+        let navVc = OWSNavigationController(rootViewController: longTextVC)
+        self.present(navVc, animated: true)
     }
 
     var currentDaysBefore: Int = -1
@@ -454,4 +484,10 @@ extension EditHistoryTableSheetViewController: CVComponentDelegate {
     func didTapMessageRequestAcceptedOptions() {}
 
     func didTapJoinCallLinkCall(callLink: CallLink) {}
+}
+
+extension EditHistoryTableSheetViewController: LongTextViewDelegate {
+    func longTextViewMessageWasDeleted(_ longTextViewController: LongTextViewController) {
+        self.dismiss(animated: true)
+    }
 }

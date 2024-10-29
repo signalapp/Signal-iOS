@@ -25,6 +25,7 @@ class MessageDetailViewController: OWSTableViewController2 {
     private var thread: TSThread? { renderItem?.itemModel.thread }
 
     private(set) var message: TSMessage
+    private let threadViewModel: ThreadViewModel
     public let spoilerState: SpoilerRenderState
     private let editManager: EditManager
     private var wasDeleted: Bool = false
@@ -110,11 +111,13 @@ class MessageDetailViewController: OWSTableViewController2 {
 
     init(
         message: TSMessage,
+        threadViewModel: ThreadViewModel,
         spoilerState: SpoilerRenderState,
         editManager: EditManager,
         thread: TSThread
     ) {
         self.message = message
+        self.threadViewModel = threadViewModel
         self.spoilerState = spoilerState
         self.editManager = editManager
         super.init()
@@ -384,6 +387,7 @@ class MessageDetailViewController: OWSTableViewController2 {
                 guard let self else { return }
                 let sheet = EditHistoryTableSheetViewController(
                     message: self.message,
+                    threadViewModel: self.threadViewModel,
                     spoilerState: self.spoilerState,
                     editManager: self.editManager,
                     database: SSKEnvironment.shared.databaseStorageRef,
