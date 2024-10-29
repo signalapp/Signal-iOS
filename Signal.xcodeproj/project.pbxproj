@@ -1682,6 +1682,9 @@
 		B9D65E532BAE1DA70067322A /* NicknameEditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D65E522BAE1DA70067322A /* NicknameEditorViewController.swift */; };
 		B9D721762C87B8EB007EDA85 /* SwiftUI+Animations.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D721752C87B8EB007EDA85 /* SwiftUI+Animations.swift */; };
 		B9DB91702AF46B9A0051A3FD /* BankTransferMandateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DB916F2AF46B9A0051A3FD /* BankTransferMandateViewController.swift */; };
+		B9E322D52CD01956006DAF3B /* QRCodeScanOrPickDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E322D42CD01956006DAF3B /* QRCodeScanOrPickDelegate.swift */; };
+		B9E322D82CD024A2006DAF3B /* linking-device-light.json in Resources */ = {isa = PBXBuildFile; fileRef = B9E322D72CD024A2006DAF3B /* linking-device-light.json */; };
+		B9E322D92CD024A2006DAF3B /* linking-device-dark.json in Resources */ = {isa = PBXBuildFile; fileRef = B9E322D62CD024A2006DAF3B /* linking-device-dark.json */; };
 		B9EB5ABD1884C002007CBB57 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		B9F2155D2A93C9E8002DCAE0 /* StickerPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F2155C2A93C9E8002DCAE0 /* StickerPickerSheet.swift */; };
 		B9F2155F2A940596002DCAE0 /* ImageEditorStickerItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F2155E2A940596002DCAE0 /* ImageEditorStickerItem.swift */; };
@@ -5373,6 +5376,9 @@
 		B9D65E522BAE1DA70067322A /* NicknameEditorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NicknameEditorViewController.swift; sourceTree = "<group>"; };
 		B9D721752C87B8EB007EDA85 /* SwiftUI+Animations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwiftUI+Animations.swift"; sourceTree = "<group>"; };
 		B9DB916F2AF46B9A0051A3FD /* BankTransferMandateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BankTransferMandateViewController.swift; sourceTree = "<group>"; };
+		B9E322D42CD01956006DAF3B /* QRCodeScanOrPickDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeScanOrPickDelegate.swift; sourceTree = "<group>"; };
+		B9E322D62CD024A2006DAF3B /* linking-device-dark.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "linking-device-dark.json"; sourceTree = "<group>"; };
+		B9E322D72CD024A2006DAF3B /* linking-device-light.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "linking-device-light.json"; sourceTree = "<group>"; };
 		B9EB5ABC1884C002007CBB57 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		B9F2155C2A93C9E8002DCAE0 /* StickerPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerPickerSheet.swift; sourceTree = "<group>"; };
 		B9F2155E2A940596002DCAE0 /* ImageEditorStickerItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorStickerItem.swift; sourceTree = "<group>"; };
@@ -7677,6 +7683,7 @@
 				E44AD4E524E98F430035D7B8 /* PhotoCaptureDismiss.swift */,
 				4CA485BA2232339F004B9E7D /* PhotoCaptureViewController.swift */,
 				3496955B219B605E00DCFE74 /* PhotoLibrary.swift */,
+				B9E322D42CD01956006DAF3B /* QRCodeScanOrPickDelegate.swift */,
 				4C4AE69F224AF21900D4AF6F /* SendMediaNavigationController.swift */,
 			);
 			path = Photos;
@@ -10659,6 +10666,8 @@
 				6605D5022A86D305004DC345 /* indeterminate_spinner_white.json */,
 				887CD48924735D4200FDD265 /* launchApp-iPad.json */,
 				887CD48824735D4200FDD265 /* launchApp-iPhone.json */,
+				B9E322D62CD024A2006DAF3B /* linking-device-dark.json */,
+				B9E322D72CD024A2006DAF3B /* linking-device-light.json */,
 				3406D32A25DD80D600885B14 /* payments_spinner.json */,
 				3406D33025DD832800885B14 /* payments_spinner_dark.json */,
 				3406D32725DD80D600885B14 /* payments_spinner_fail.json */,
@@ -14497,6 +14506,8 @@
 				45CB2FA81CB7146C00E1B343 /* Launch Screen.storyboard in Resources */,
 				887CD48B24735D4200FDD265 /* launchApp-iPad.json in Resources */,
 				887CD48A24735D4200FDD265 /* launchApp-iPhone.json in Resources */,
+				B9E322D92CD024A2006DAF3B /* linking-device-dark.json in Resources */,
+				B9E322D82CD024A2006DAF3B /* linking-device-light.json in Resources */,
 				B6F509971AA53F760068F56A /* Localizable.strings in Resources */,
 				34661FB820C1C0D60056EDD6 /* message_sent.aiff in Resources */,
 				45A2F005204473A3002E978A /* NewMessage.aifc in Resources */,
@@ -16385,6 +16396,7 @@
 				88DF81A328E15D1600F8BA80 /* ProxySettingsViewController.swift in Sources */,
 				4539B5861F79348F007141FF /* PushRegistrationManager.swift in Sources */,
 				D9DCFDAE2A3BB25200C73C0B /* QRCodeGenerator.swift in Sources */,
+				B9E322D52CD01956006DAF3B /* QRCodeScanOrPickDelegate.swift in Sources */,
 				88A4CC12246CE2F50082211F /* QRCodeView.swift in Sources */,
 				3470C8742554926200F5847C /* QuotedMessageView.swift in Sources */,
 				D9E43C0A2CC194140001536E /* RaisedHandsToast.swift in Sources */,

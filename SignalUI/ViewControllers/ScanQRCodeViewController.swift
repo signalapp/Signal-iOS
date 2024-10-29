@@ -141,14 +141,23 @@ public protocol QRCodeScanDelegate: AnyObject {
     // not present, we probably want to ignore the scanned QR code and
     // continue scanning.
     @discardableResult
-    func qrCodeScanViewScanned(_ qrCodeScanViewController: QRCodeScanViewController,
-                               qrCodeData: Data?,
-                               qrCodeString: String?) -> QRCodeScanOutcome
+    func qrCodeScanViewScanned(
+        qrCodeData: Data?,
+        qrCodeString: String?
+    ) -> QRCodeScanOutcome
 
     // QRCodeScanViewController DRYs up asking for camera permissions, etc.
     // If scanning cannot be performed (e.g. a user declined to grant camera
     // permissions), the delegate will be asked to dismiss.
     func qrCodeScanViewDismiss(_ qrCodeScanViewController: QRCodeScanViewController)
+
+    var shouldShowUploadPhotoButton: Bool { get }
+    func didTapUploadPhotoButton(_ qrCodeScanViewController: QRCodeScanViewController)
+}
+
+public extension QRCodeScanDelegate {
+    var shouldShowUploadPhotoButton: Bool { false }
+    func didTapUploadPhotoButton(_ qrCodeScanViewController: QRCodeScanViewController) {}
 }
 
 // MARK: -
@@ -156,7 +165,7 @@ public protocol QRCodeScanDelegate: AnyObject {
 public class QRCodeScanViewController: OWSViewController {
 
     public enum Appearance {
-        case framed(offset: CGPoint = .zero)
+        case framed
         case unadorned
 
         fileprivate var backgroundColor: UIColor {
@@ -170,6 +179,7 @@ public class QRCodeScanViewController: OWSViewController {
     }
 
     private let appearance: Appearance
+    private let showUploadPhotoButton: Bool
 
     public weak var delegate: QRCodeScanDelegate?
 
@@ -185,8 +195,9 @@ public class QRCodeScanViewController: OWSViewController {
         }
     }
 
-    public init(appearance: Appearance) {
+    public init(appearance: Appearance, showUploadPhotoButton: Bool = false) {
         self.appearance = appearance
+        self.showUploadPhotoButton = showUploadPhotoButton
         super.init()
     }
 
@@ -197,6 +208,24 @@ public class QRCodeScanViewController: OWSViewController {
     public override var prefersHomeIndicatorAutoHidden: Bool {
         return true
     }
+
+    private lazy var uploadPhotoButton: UIButton = {
+        let button = OWSRoundedButton { [weak self] in
+            guard let self else { return }
+            self.delegate?.didTapUploadPhotoButton(self)
+        }
+
+        button.ows_contentEdgeInsets = UIEdgeInsets(margin: 14)
+
+        // Always use dark theming since it sits over the scan mask.
+        button.setTemplateImageName(
+            Theme.iconName(.buttonPhotoLibrary),
+            tintColor: .ows_white
+        )
+        button.backgroundColor = .ows_whiteAlpha20
+
+        return button
+    }()
 
     // MARK: - View Lifecycle
 
@@ -341,7 +370,7 @@ public class QRCodeScanViewController: OWSViewController {
         switch appearance {
         case .unadorned:
             break
-        case let .framed(offset):
+        case .framed:
             let shouldAnimateScale = !UIAccessibility.isReduceMotionEnabled
 
             let viewfinder = UIImage(named: "qr_viewfinder")
@@ -350,7 +379,7 @@ public class QRCodeScanViewController: OWSViewController {
             frame.autoHCenterInSuperview()
             frame.centerYAnchor.constraint(
                 equalTo: self.view.safeAreaLayoutGuide.centerYAnchor,
-                constant: offset.y
+                constant: showUploadPhotoButton ? -16 : 0
             ).isActive = true
 
             frame.layer.opacity = 0
@@ -372,6 +401,13 @@ public class QRCodeScanViewController: OWSViewController {
             if shouldAnimateScale {
                 animateViewfinder(frame: frame)
             }
+        }
+
+        if showUploadPhotoButton {
+            view.addSubview(uploadPhotoButton)
+            uploadPhotoButton.autoSetDimensions(to: .square(52))
+            uploadPhotoButton.autoHCenterInSuperview()
+            uploadPhotoButton.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: 16)
         }
 
         firstly {
@@ -606,7 +642,6 @@ extension QRCodeScanViewController: QRCodeSampleBufferScannerDelegate {
         }
 
         let outcome = delegate.qrCodeScanViewScanned(
-            self,
             qrCodeData: qrCodeData,
             qrCodeString: qrCodeString
         )

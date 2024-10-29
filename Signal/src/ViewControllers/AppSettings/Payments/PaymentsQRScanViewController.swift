@@ -16,7 +16,7 @@ public class PaymentsQRScanViewController: OWSViewController {
 
     private weak var delegate: PaymentsQRScanDelegate?
 
-    private let qrCodeScanViewController = QRCodeScanViewController(appearance: .framed())
+    private let qrCodeScanViewController = QRCodeScanViewController(appearance: .framed)
 
     public init(delegate: PaymentsQRScanDelegate) {
         self.delegate = delegate
@@ -90,9 +90,10 @@ extension PaymentsQRScanViewController: QRCodeScanDelegate {
         navigationController?.popViewController(animated: true)
     }
 
-    public func qrCodeScanViewScanned(_ qrCodeScanViewController: QRCodeScanViewController,
-                                      qrCodeData: Data?,
-                                      qrCodeString: String?) -> QRCodeScanOutcome {
+    public func qrCodeScanViewScanned(
+        qrCodeData: Data?,
+        qrCodeString: String?
+    ) -> QRCodeScanOutcome {
         AssertIsOnMainThread()
 
         // Prefer qrCodeString to qrCodeData.  The only valid payload

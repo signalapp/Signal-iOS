@@ -146,9 +146,10 @@ extension OutgoingDeviceTransferQRScanningViewController: QRCodeScanDelegate {
         navigationController?.popViewController(animated: true)
     }
 
-    func qrCodeScanViewScanned(_ qrCodeScanViewController: QRCodeScanViewController,
-                               qrCodeData: Data?,
-                               qrCodeString: String?) -> QRCodeScanOutcome {
+    func qrCodeScanViewScanned(
+        qrCodeData: Data?,
+        qrCodeString: String?
+    ) -> QRCodeScanOutcome {
         AssertIsOnMainThread()
 
         guard let qrCodeString = qrCodeString else {

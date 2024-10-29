@@ -4,9 +4,15 @@
 //
 
 import Foundation
+import Lottie
 
 public class HeroSheetViewController: StackSheetViewController {
-    private let heroImage: UIImage
+    private enum Hero {
+        case image(UIImage)
+        case animation(named: String, height: CGFloat)
+    }
+
+    private let hero: Hero
     private let titleText: String
     private let bodyText: String
     private let buttonTitle: String
@@ -27,7 +33,32 @@ public class HeroSheetViewController: StackSheetViewController {
         buttonTitle: String,
         didTapButton: (() -> Void)? = nil
     ) {
-        self.heroImage = heroImage
+        self.hero = .image(heroImage)
+        self.titleText = title
+        self.bodyText = body
+        self.buttonTitle = buttonTitle
+        self.buttonAction = didTapButton
+        super.init()
+    }
+
+    /// Creates a hero image sheet with a CTA button.
+    /// - Parameters:
+    ///   - heroLottieName: Lottie name to display at the top of the sheet
+    ///   - heroAnimationHeight: Height for the animation view
+    ///   - title: Localized title text
+    ///   - body: Localized body text
+    ///   - buttonTitle: Title for the CTA button
+    ///   - didTapButton: Action for the CTA button.
+    ///   If `nil`, the button will dismiss the sheet.
+    public init(
+        heroAnimationName: String,
+        heroAnimationHeight: CGFloat,
+        title: String,
+        body: String,
+        buttonTitle: String,
+        didTapButton: (() -> Void)? = nil
+    ) {
+        self.hero = .animation(named: heroAnimationName, height: heroAnimationHeight)
         self.titleText = title
         self.bodyText = body
         self.buttonTitle = buttonTitle
@@ -46,10 +77,23 @@ public class HeroSheetViewController: StackSheetViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        let heroImageView = UIImageView(image: self.heroImage)
-        self.stackView.addArrangedSubview(heroImageView)
-        self.stackView.setCustomSpacing(20, after: heroImageView)
-        heroImageView.contentMode = .center
+        let heroView: UIView
+        switch hero {
+        case let .image(image):
+            heroView = UIImageView(image: image)
+            heroView.contentMode = .center
+        case let .animation(lottieName, height):
+            let lottieView = LottieAnimationView(name: lottieName)
+            lottieView.autoSetDimension(.height, toSize: height)
+            lottieView.contentMode = .scaleAspectFit
+            lottieView.loopMode = .loop
+            lottieView.play()
+
+            heroView = lottieView
+        }
+
+        self.stackView.addArrangedSubview(heroView)
+        self.stackView.setCustomSpacing(20, after: heroView)
 
         let titleLabel = UILabel()
         self.stackView.addArrangedSubview(titleLabel)

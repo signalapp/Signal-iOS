@@ -19,19 +19,7 @@ class UsernameLinkScanQRCodeViewController: OWSViewController, OWSNavigationChil
         .portrait
     }
 
-    /// Represents an item selected from the image picker, intended to contain a
-    /// username link QR code.
-    ///
-    /// The image picker returns us a ``PHAsset`` and a convenient
-    /// ``SignalAttachment`` promise whenever an item is selected. It's a little
-    /// clunky, but rather than dealing with loading the asset we can use the
-    /// attachment promise to get the image, so we hold onto both.
-    private struct SelectedPickerItem {
-        let phAsset: PHAsset
-        let attachmentPromise: Promise<SignalAttachment>
-    }
-
-    private var selectedPickerItem: SelectedPickerItem?
+    var selectedAttachment: ImagePickerAttachment?
 
     weak var scanDelegate: UsernameLinkScanDelegate?
 
@@ -46,13 +34,9 @@ class UsernameLinkScanQRCodeViewController: OWSViewController, OWSNavigationChil
     // MARK: - Views
 
     private lazy var scanViewController = {
-        // Because we're overlaying things onto the scan view, the centered
-        // viewfinder frame looks a little off. Shifting it up by 16pt looks
-        // cleaner and matches the designs better.
-        let scanFrameWindowOffset = CGPoint(x: 0, y: -16)
-
         let scanViewController = QRCodeScanViewController(
-            appearance: .framed(offset: scanFrameWindowOffset)
+            appearance: .framed,
+            showUploadPhotoButton: true
         )
 
         scanViewController.delegate = self
@@ -138,7 +122,7 @@ class UsernameLinkScanQRCodeViewController: OWSViewController, OWSNavigationChil
 
     // MARK: Actions
 
-    private func didTapUploadPhotoButton() {
+    func didTapUploadPhotoButton() {
         let imagePickerViewController = ImagePickerGridController()
         imagePickerViewController.delegate = self
         imagePickerViewController.dataSource = self
@@ -153,9 +137,8 @@ class UsernameLinkScanQRCodeViewController: OWSViewController, OWSNavigationChil
 
 // MARK: - Scan delegate
 
-extension UsernameLinkScanQRCodeViewController: QRCodeScanDelegate {
+extension UsernameLinkScanQRCodeViewController: QRCodeScanOrPickDelegate {
     func qrCodeScanViewScanned(
-        _ qrCodeScanViewController: QRCodeScanViewController,
         qrCodeData: Data?,
         qrCodeString: String?
     ) -> QRCodeScanOutcome {
@@ -187,155 +170,5 @@ extension UsernameLinkScanQRCodeViewController: QRCodeScanDelegate {
         _ qrCodeScanViewController: QRCodeScanViewController
     ) {
         dismiss(animated: true)
-    }
-}
-
-// MARK: - Image Picker
-
-extension UsernameLinkScanQRCodeViewController: ImagePickerGridControllerDelegate {
-    func imagePickerDidComplete(_ imagePicker: ImagePickerGridController) {
-        guard let selectedPickerItem = self.selectedPickerItem else {
-            return
-        }
-
-        firstly(on: context.schedulers.sync) { () -> Promise<Usernames.UsernameLink> in
-            return self.parseUsernameLinkFromAttachment(
-                attachmentPromise: selectedPickerItem.attachmentPromise
-            )
-        }
-        .done(on: context.schedulers.main) { usernameLink in
-            guard let scanDelegate = self.scanDelegate else {
-                throw OWSAssertionError("Missing scan delegate!")
-            }
-
-            // Our delegate will handle dismissing us, since in practice we're
-            // not the only controller that needs dismissing.
-            scanDelegate.usernameLinkScanned(usernameLink)
-        }
-        .catch(on: context.schedulers.main) { error in
-            OWSActionSheets.showErrorAlert(
-                message: CommonStrings.somethingWentWrongError,
-                fromViewController: imagePicker
-            )
-        }
-    }
-
-    func imagePickerDidCancel(_ imagePicker: ImagePickerGridController) {
-        imagePicker.dismiss(animated: true)
-    }
-
-    func imagePicker(
-        _ imagePicker: ImagePickerGridController,
-        didSelectAsset asset: PHAsset,
-        attachmentPromise: Promise<SignalAttachment>
-    ) {
-        selectedPickerItem = SelectedPickerItem(
-            phAsset: asset,
-            attachmentPromise: attachmentPromise
-        )
-    }
-
-    func imagePicker(
-        _ imagePicker: ImagePickerGridController,
-        didDeselectAsset asset: PHAsset
-    ) {
-        // Because we only ever have one selected item, we don't need to check
-        // if the deselected asset matches the one we had previously selected.
-        selectedPickerItem = nil
-    }
-
-    func imagePickerDidTryToSelectTooMany(
-        _ imagePicker: ImagePickerGridController
-    ) {
-        // The selection will fail, and there's no need to show an error.
-    }
-}
-
-extension UsernameLinkScanQRCodeViewController: ImagePickerGridControllerDataSource {
-    func imagePicker(
-        _ imagePicker: ImagePickerGridController,
-        isAssetSelected asset: PHAsset
-    ) -> Bool {
-        return selectedPickerItem?.phAsset == asset
-    }
-
-    func imagePickerCanSelectMoreItems(
-        _ imagePicker: ImagePickerGridController
-    ) -> Bool {
-        return selectedPickerItem == nil
-    }
-
-    var numberOfMediaItems: Int {
-        return selectedPickerItem == nil ? 0 : 1
-    }
-}
-
-private extension UsernameLinkScanQRCodeViewController {
-    func parseUsernameLinkFromAttachment(
-        attachmentPromise: Promise<SignalAttachment>
-    ) -> Promise<Usernames.UsernameLink> {
-        struct AttachmentToUsernameLinkFailedError: Error {}
-
-        return firstly(on: context.schedulers.sync) { () -> Promise<SignalAttachment> in
-            return attachmentPromise
-        }
-        .map(on: context.schedulers.sync) { attachment throws -> Usernames.UsernameLink in
-            guard let imageFromAttachment = attachment.image() else {
-                UsernameLogger.shared.error("Unexpectedly failed to get image from attachment!")
-                throw AttachmentToUsernameLinkFailedError()
-            }
-
-            guard let usernameLink = self.parseImageForQRCode(
-                image: imageFromAttachment
-            ) else {
-                UsernameLogger.shared.warn("Image did not contain username link QR code!")
-                throw AttachmentToUsernameLinkFailedError()
-            }
-
-            return usernameLink
-        }
-    }
-
-    private func parseImageForQRCode(image: UIImage) -> Usernames.UsernameLink? {
-        guard let qrCodeDetector = CIDetector(
-            ofType: CIDetectorTypeQRCode,
-            context: nil,
-            options: [CIDetectorAccuracy: CIDetectorAccuracyHigh]
-        ) else {
-            UsernameLogger.shared.error("Failed to create QR code detector!")
-            return nil
-        }
-
-        guard let ciImage = CIImage(image: image) else {
-            UsernameLogger.shared.warn("Failed to create CIImage from image...")
-            return nil
-        }
-
-        let detectedFeatures = qrCodeDetector.features(in: ciImage)
-
-        guard
-            detectedFeatures.count == 1,
-            let qrCodeFeature = detectedFeatures.first as? CIQRCodeFeature
-        else {
-            UsernameLogger.shared.warn("Failed to detect QR code feature... Feature count: \(detectedFeatures.count)")
-            return nil
-        }
-
-        guard
-            let qrCodeMessageString = qrCodeFeature.messageString,
-            let qrCodeMessageUrl = URL(string: qrCodeMessageString)
-        else {
-            UsernameLogger.shared.warn("Failed to get message URL from QR code...")
-            return nil
-        }
-
-        guard let usernameLink = Usernames.UsernameLink(
-            usernameLinkUrl: qrCodeMessageUrl
-        ) else {
-            UsernameLogger.shared.warn("Failed to construct username link from URL...")
-            return nil
-        }
-
-        return usernameLink
     }
 }
