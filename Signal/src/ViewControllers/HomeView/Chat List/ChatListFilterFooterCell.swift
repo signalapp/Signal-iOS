@@ -82,6 +82,8 @@ class ChatListFilterFooterCell: UITableViewCell, ReusableTableViewCell {
         expandedHeight = container.heightAnchor.constraint(equalToConstant: 0)
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
+        maximumContentSizeCategory = .extraExtraExtraLarge
+
         // Disable background highlighting.
         var backgroundConfiguration = UIBackgroundConfiguration.clear()
         backgroundConfiguration.backgroundColor = .systemBackground

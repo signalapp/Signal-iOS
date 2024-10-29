@@ -31,6 +31,7 @@
 		05594CD02C98A00500CCBFF6 /* HostingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05594CCF2C98A00200CCBFF6 /* HostingController.swift */; };
 		058B49932C66805500307D38 /* AVAssetExportSession+Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058B49922C66804B00307D38 /* AVAssetExportSession+Async.swift */; };
 		059982642C6D0C5200C87533 /* ChatListPinInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059982632C6D0C4F00C87533 /* ChatListPinInfo.swift */; };
+		05A180362CD1840F00579FA4 /* UIViewPropertyAnimator+SignalUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05A180352CD1840F00579FA4 /* UIViewPropertyAnimator+SignalUI.swift */; };
 		05B411252C62845000A1EDBC /* ChatListInboxFilterSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B411242C62845000A1EDBC /* ChatListInboxFilterSection.swift */; };
 		0CE014267EDFBD2538E940A0 /* Pods_Signal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FF88FB580BC19B240EEB86A /* Pods_Signal.framework */; };
 		1404D8B3276A353B0068E2F6 /* ChatListViewController+Multiselect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1404D8B2276A353A0068E2F6 /* ChatListViewController+Multiselect.swift */; };
@@ -3602,6 +3603,7 @@
 		05594CCF2C98A00200CCBFF6 /* HostingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostingController.swift; sourceTree = "<group>"; };
 		058B49922C66804B00307D38 /* AVAssetExportSession+Async.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVAssetExportSession+Async.swift"; sourceTree = "<group>"; };
 		059982632C6D0C4F00C87533 /* ChatListPinInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListPinInfo.swift; sourceTree = "<group>"; };
+		05A180352CD1840F00579FA4 /* UIViewPropertyAnimator+SignalUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewPropertyAnimator+SignalUI.swift"; sourceTree = "<group>"; };
 		05B411242C62845000A1EDBC /* ChatListInboxFilterSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListInboxFilterSection.swift; sourceTree = "<group>"; };
 		05E3A4DD8B4442530268AFC1 /* Pods-SignalShareExtension.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.app store release.xcconfig"; path = "Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.app store release.xcconfig"; sourceTree = "<group>"; };
 		05EA61422CC9437F00B16D4E /* Project-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Project-Debug.xcconfig"; sourceTree = "<group>"; };
@@ -7832,6 +7834,7 @@
 				766CE0D72A32968600AD609D /* UIView+AutoLayout.swift */,
 				3402A9E5271D97090084CBAE /* UIView+SignalUI.swift */,
 				762A41682A37D71600057955 /* UIViewController+SignalUI.swift */,
+				05A180352CD1840F00579FA4 /* UIViewPropertyAnimator+SignalUI.swift */,
 			);
 			path = UIKitExtensions;
 			sourceTree = "<group>";
@@ -15801,6 +15804,7 @@
 				3402A9E8271D97090084CBAE /* UIView+SignalUI.swift in Sources */,
 				764FE03F2A2EC2E2004D2804 /* UIViewController+Permissions.swift in Sources */,
 				762A41692A37D71600057955 /* UIViewController+SignalUI.swift in Sources */,
+				05A180362CD1840F00579FA4 /* UIViewPropertyAnimator+SignalUI.swift in Sources */,
 				D9A3E2302A0DABDF00E2A8B5 /* UsernameQuerier.swift in Sources */,
 				76896BF828415ABA00F6C8D2 /* VideoAttachmentPrepViewController.swift in Sources */,
 				3402AA97271D9E180084CBAE /* VideoEditorModel.swift in Sources */,

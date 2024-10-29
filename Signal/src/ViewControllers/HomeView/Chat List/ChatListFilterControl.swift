@@ -4,6 +4,7 @@
 //
 
 import SignalServiceKit
+import SignalUI
 import UIKit
 
 @MainActor
@@ -37,7 +38,6 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
                 }
 
             return UIImage(resource: resource)
-                .withAlignmentRectInsets(.zero)
                 .withConfiguration(configuration)
         }
 
@@ -167,6 +167,7 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
         animationFrames = AnimationFrame.allCases
         imageViews = animationFrames.map { UIImageView(image: $0.image) }
         imageContainer = UIView()
+        imageContainer.translatesAutoresizingMaskIntoConstraints = false
         clearButton = ChatListFilterButton()
         clearButton.alpha = 0
         clearButton.configuration?.title = OWSLocalizedString("CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON", comment: "Button at top of chat list indicating the active filter is 'Filtered by Unread' and tapping will clear the filter")
@@ -175,7 +176,7 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
         super.init(frame: frame)
 
         autoresizesSubviews = false
-        maximumContentSizeCategory = .extraExtraLarge
+        maximumContentSizeCategory = .extraExtraExtraLarge
         preservesSuperviewLayoutMargins = true
         setContentHuggingPriority(.required, for: .vertical)
         ensureContentHeight()
@@ -185,8 +186,28 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
         contentView.addSubview(imageContainer)
         contentView.insertSubview(clearButton, aboveSubview: imageContainer)
 
+        NSLayoutConstraint.activate([
+            imageContainer.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            imageContainer.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+        ])
+
         for imageView in imageViews {
+            imageView.translatesAutoresizingMaskIntoConstraints = false
             imageContainer.addSubview(imageView)
+            imageView.autoPinEdgesToSuperviewEdges()
+
+            let image = imageView.image!
+            let imageRect = CGRect(origin: .zero, size: image.size)
+                .inset(by: image.alignmentRectInsets)
+            let alignmentWidthAdjustment = imageRect.width - imageRect.height
+
+            let variableImageHeight = imageView.heightAnchor.constraint(equalTo: clearButton.heightAnchor)
+            variableImageHeight.priority = .defaultHigh
+            NSLayoutConstraint.activate([
+                variableImageHeight,
+                imageView.heightAnchor.constraint(greaterThanOrEqualToConstant: 38),
+                imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor, multiplier: 1, constant: alignmentWidthAdjustment),
+            ])
         }
 
         reconfigureFilterIconImageViews()
@@ -300,17 +321,11 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
         let horizontalMargins = UIEdgeInsets(top: 0, left: layoutMargins.left, bottom: 0, right: layoutMargins.right)
         let fullBleedRect = contentView.bounds.inset(by: horizontalMargins)
 
-        clearButton.frame = fullBleedRect
-        clearButton.sizeToFit()
-        clearButton.center = contentView.bounds.center
-
-        let imageHeight = clearButton.frame.height
-        let imageSize = CGSize(width: imageHeight, height: imageHeight)
-        for imageView in imageViews {
-            imageView.frame.size = imageSize
+        UIView.performWithoutAnimation {
+            clearButton.frame = fullBleedRect
+            clearButton.sizeToFit()
+            clearButton.center = contentView.bounds.center
         }
-        imageContainer.frame.size = imageSize
-        imageContainer.center = contentView.bounds.center
     }
 
     func updateContentOrigin() {
@@ -576,9 +591,15 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
             return
         }
 
-        let startFrame = imageContainer.frame.intersection(clearButton.frame)
         let transitionView = TransitionEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterial))
         let endFrame = clearButton.frame
+
+        // Ensure that if clearButton.height < imageContainer.height, we don't
+        // shrink the image container down.
+        let startFrame = imageContainer.frame
+            .union(endFrame)
+            .intersection(imageContainer.frame)
+
         let oldBackground = clearButton.configuration?.background
         clearButton.configuration?.background = .clear()
 
@@ -587,20 +608,18 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
             contentView.insertSubview(transitionView, belowSubview: imageContainer)
         }
 
-        let transitionAnimator = UIViewPropertyAnimator(duration: animationDuration(0.7), dampingRatio: 0.75) { [clearButton, imageContainer] in
-            let duration = UIView.inheritedAnimationDuration
+        let transitionAnimator = UIViewPropertyAnimator(duration: animationDuration(0.7), dampingRatio: 0.75)
 
-            UIView.animate(withDuration: 0.1 * duration, delay: 0) {
-                imageContainer.alpha = 0
-            }
+        transitionAnimator.addAnimations(withDurationFactor: 0.1) { [imageContainer] in
+            imageContainer.alpha = 0
+        }
 
-            UIView.animate(withDuration: duration, delay: 0) {
-                transitionView.frame = endFrame
-            }
+        transitionAnimator.addAnimations({ [clearButton] in
+            clearButton.alpha = 1
+        }, delayFactor: 0.33)
 
-            UIView.animate(withDuration: 0.67 * duration, delay: 0.33 * duration) {
-                clearButton.alpha = 1
-            }
+        transitionAnimator.addAnimations {
+            transitionView.frame = endFrame
         }
 
         transitionAnimator.addCompletion { [self] _ in
