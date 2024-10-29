@@ -169,85 +169,17 @@ public class JobRecord: SDSCodableModel {
     /// which finds and removes "stale" records.
     private static let currentProcessIdentifier: String = UUID().uuidString
 
-    var canBeRunByCurrentProcess: Bool {
-        if let exclusiveProcessIdentifier, exclusiveProcessIdentifier != Self.currentProcessIdentifier {
-            return false
-        }
-        return true
-    }
-
     func flagAsExclusiveForCurrentProcessIdentifier() {
         self.exclusiveProcessIdentifier = Self.currentProcessIdentifier
-    }
-}
-
-// MARK: - JobRecordError
-
-enum JobRecordError: Error {
-    case illegalStateTransition
-    case assertionError(message: String)
-}
-
-// MARK: - Setting status
-
-extension JobRecord {
-    func saveRunningAsReady(transaction: SDSAnyWriteTransaction) throws {
-        switch status {
-        case .running:
-            updateStatus(to: .ready, withTransaction: transaction)
-        case
-                .ready,
-                .permanentlyFailed,
-                .obsolete,
-                .unknown:
-            throw JobRecordError.illegalStateTransition
-        }
-    }
-
-    func saveReadyAsRunning(transaction: SDSAnyWriteTransaction) throws {
-        switch status {
-        case .ready:
-            updateStatus(to: .running, withTransaction: transaction)
-        case
-                .running,
-                .permanentlyFailed,
-                .obsolete,
-                .unknown:
-            throw JobRecordError.illegalStateTransition
-        }
-    }
-
-    func saveAsPermanentlyFailed(transaction: SDSAnyWriteTransaction) {
-        updateStatus(to: .permanentlyFailed, withTransaction: transaction)
-    }
-
-    func saveAsObsolete(transaction: SDSAnyWriteTransaction) {
-        updateStatus(to: .obsolete, withTransaction: transaction)
-    }
-
-    private func updateStatus(to newStatus: Status, withTransaction transaction: SDSAnyWriteTransaction) {
-        anyUpdate(transaction: transaction) { record in
-            record.status = newStatus
-        }
     }
 }
 
 // MARK: - Failures
 
 extension JobRecord {
-    func addFailure(transaction: SDSAnyWriteTransaction) throws {
-        switch status {
-        case .running:
-            anyUpdate(transaction: transaction) { record in
-                record.failureCount = min(record.failureCount + 1, UInt.max)
-            }
-        case
-                .ready,
-                .permanentlyFailed,
-                .obsolete,
-                .unknown:
-            throw JobRecordError.illegalStateTransition
-        }
+    public func addInMemoryFailure() {
+        owsAssertDebug(self.id == nil)
+        self.failureCount += 1
     }
 
     public func addFailure(tx: SDSAnyWriteTransaction) {

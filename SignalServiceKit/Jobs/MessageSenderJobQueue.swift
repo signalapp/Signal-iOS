@@ -10,6 +10,11 @@ private enum JobError: Error {
     case obsolete(description: String)
 }
 
+private struct MessageSenderJob {
+    let record: MessageSenderJobRecord
+    let isInMemoryOnly: Bool
+}
+
 /// Durably enqueues a message for sending.
 ///
 /// The queue's operations (`MessageSenderOperation`) uses `MessageSender` to send a message.
@@ -87,28 +92,37 @@ public class MessageSenderJobQueue: NSObject {
             future?.reject(error)
             return
         }
+        owsAssertDebug(jobRecord.status == .ready)
         if exclusiveToCurrentProcessIdentifier {
             jobRecord.flagAsExclusiveForCurrentProcessIdentifier()
+        } else {
+            jobRecord.anyInsert(transaction: transaction)
         }
-        self.add(jobRecord: jobRecord, transaction: transaction)
-        if let future {
-            self.state.update { $0.jobFutures[jobRecord.uniqueId] = future }
+
+        self.state.update {
+            $0.pendingJobs.append(MessageSenderJob(record: jobRecord, isInMemoryOnly: exclusiveToCurrentProcessIdentifier))
+            if let future {
+                $0.jobFutures[jobRecord.uniqueId] = future
+            }
+        }
+
+        transaction.addTransactionFinalizationBlock(forKey: "\(#fileID):\(#line)") { _ in
+            self.startPendingJobRecordsIfPossible()
         }
     }
 
     // MARK: JobQueue
 
     private struct State {
-        var isSetup = false
+        var isLoaded = false
         var runningOperations = [MessageSenderOperation]()
+        var pendingJobs = [MessageSenderJob]()
         var jobFutures = [String: Future<Void>]()
     }
     private let state = AtomicValue<State>(State(), lock: .init())
 
-    private func didMarkAsReady(
-        oldJobRecord: MessageSenderJobRecord,
-        transaction: SDSAnyWriteTransaction
-    ) {
+    private func didMarkAsReady(oldJobRecord: MessageSenderJobRecord, transaction: SDSAnyWriteTransaction) {
+        // TODO: Remove this method and status swapping logic entirely.
         let uniqueId: String
         switch oldJobRecord.messageType {
         case .persisted(let messageId, _):
@@ -129,19 +143,19 @@ public class MessageSenderJobQueue: NSObject {
     }
 
     private func buildOperation(
-        jobRecord: MessageSenderJobRecord,
+        job: MessageSenderJob,
         transaction: SDSAnyReadTransaction
-    ) throws -> MessageSenderOperation {
-        guard let message = PreparedOutgoingMessage.restore(from: jobRecord, tx: transaction) else {
-            throw JobError.obsolete(description: "message no longer exists")
+    ) -> MessageSenderOperation? {
+        guard let message = PreparedOutgoingMessage.restore(from: job.record, tx: transaction) else {
+            return nil
         }
 
         let operation = MessageSenderOperation(
             message: message,
-            jobRecord: jobRecord,
-            future: self.state.update { $0.jobFutures.removeValue(forKey: jobRecord.uniqueId) }
+            job: job,
+            future: self.state.update { $0.jobFutures.removeValue(forKey: job.record.uniqueId) }
         )
-        operation.queuePriority = jobRecord.isHighPriority ? .high : message.sendingQueuePriority(tx: transaction)
+        operation.queuePriority = job.record.isHighPriority ? .high : message.sendingQueuePriority(tx: transaction)
 
         // Media messages run on their own queue to not block future non-media sends,
         // but should not start sending until all previous operations have executed.
@@ -152,7 +166,7 @@ public class MessageSenderJobQueue: NSObject {
         // message C should never send before A and B. However, if you send text
         // messages A, B, then media message C, followed by text message D, D cannot
         // send before A and B, but CAN send before C.
-        switch jobRecord.messageType {
+        switch job.record.messageType {
         case .persisted(_, let useMediaQueue), .editMessage(_, _, let useMediaQueue):
             if useMediaQueue, let sendQueue = senderQueues[message.uniqueThreadId] {
                 let orderMaintainingOperation = Operation()
@@ -216,162 +230,82 @@ public class MessageSenderJobQueue: NSObject {
 
     // MARK: - Job Queue
 
-    private func add(
-        jobRecord: MessageSenderJobRecord,
-        transaction: SDSAnyWriteTransaction
-    ) {
-        owsAssertDebug(jobRecord.status == .ready)
+    private let pendingJobQueue = DispatchQueue(label: "MessageSenderJobQueue.pendingJobRecords")
 
-        jobRecord.anyInsert(transaction: transaction)
-
-        transaction.addTransactionFinalizationBlock(
-            forKey: "jobQueue.\(MessageSenderJobRecord.jobRecordType.jobRecordLabel).startWorkImmediatelyIfAppIsReady"
-        ) { transaction in
-            self.startWorkImmediatelyIfPossible(transaction: transaction)
-        }
-    }
-
-    private func startWorkImmediatelyIfPossible(transaction: SDSAnyWriteTransaction) {
-        guard self.state.update(block: { $0.isSetup }) else { return }
-        workStep(transaction: transaction)
-    }
-
-    private func workStep() {
-        guard self.state.update(block: { $0.isSetup }) else { return }
-        SSKEnvironment.shared.databaseStorageRef.write { self.workStep(transaction: $0) }
-    }
-
-    private func workStep(transaction: SDSAnyWriteTransaction) {
-        let nextJob: MessageSenderJobRecord?
-
-        do {
-            nextJob = try JobRecordFinderImpl(db: DependenciesBridge.shared.db).getNextReady(transaction: transaction.asV2Write)
-        } catch let error {
-            Logger.error("Couldn't start next job: \(error)")
-            return
-        }
-
-        guard let nextJob else {
-            return
-        }
-
-        do {
-            try nextJob.saveReadyAsRunning(transaction: transaction)
-
-            let operationQueue = operationQueue(jobRecord: nextJob)
-            let durableOperation = try buildOperation(jobRecord: nextJob, transaction: transaction)
-
-            durableOperation.durableOperationDelegate = self
-            owsAssertDebug(durableOperation.durableOperationDelegate != nil)
-
-            let remainingRetries = remainingRetries(durableOperation: durableOperation)
-            durableOperation.remainingRetries = remainingRetries
-
-            transaction.addSyncCompletion {
-                self.state.update { $0.runningOperations.append(durableOperation) }
-                operationQueue.addOperation(durableOperation)
+    private func startPendingJobRecordsIfPossible() {
+        pendingJobQueue.async {
+            let pendingJobs = self.state.update {
+                if $0.isLoaded {
+                    let result = $0.pendingJobs
+                    $0.pendingJobs = []
+                    return result
+                }
+                return []
             }
-        } catch JobError.permanentFailure(let description) {
-            owsFailDebug("permanent failure: \(description)")
-            nextJob.saveAsPermanentlyFailed(transaction: transaction)
-        } catch JobError.obsolete {
-            // TODO is this even worthwhile to have obsolete state? Should we just delete the task outright?
-            nextJob.saveAsObsolete(transaction: transaction)
-        } catch {
-            owsFailDebug("unexpected error")
-        }
-
-        transaction.addAsyncCompletionOffMain { self.workStep() }
-    }
-
-    private func restartOldJobs() {
-        guard CurrentAppContext().isMainApp else { return }
-
-        SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            let runningRecords: [MessageSenderJobRecord]
-            do {
-                runningRecords = try JobRecordFinderImpl(db: DependenciesBridge.shared.db).allRecords(
-                    status: JobRecord.Status.running,
-                    transaction: transaction.asV2Write
-                )
-            } catch {
-                Logger.error("Couldn't restart old jobs: \(error)")
-                return
-            }
-            Logger.info("marking old `running` \(MessageSenderJobRecord.jobRecordType.jobRecordLabel) JobRecords as ready: \(runningRecords.count)")
-            for jobRecord in runningRecords {
-                do {
-                    try jobRecord.saveRunningAsReady(transaction: transaction)
-                    self.didMarkAsReady(oldJobRecord: jobRecord, transaction: transaction)
-                } catch {
-                    owsFailDebug("failed to mark old running records as ready error: \(error)")
-                    jobRecord.saveAsPermanentlyFailed(transaction: transaction)
+            if !pendingJobs.isEmpty {
+                SSKEnvironment.shared.databaseStorageRef.write { tx in
+                    for pendingJob in pendingJobs {
+                        self.startJob(pendingJob, tx: tx)
+                    }
                 }
             }
         }
     }
 
-    private func pruneStaleJobs() {
-        guard CurrentAppContext().isMainApp else { return }
+    private func startJob(_ job: MessageSenderJob, tx transaction: SDSAnyWriteTransaction) {
+        let operationQueue = operationQueue(jobRecord: job.record)
+        guard let durableOperation = buildOperation(job: job, transaction: transaction) else {
+            Logger.warn("Dropping obsolete job record.")
+            job.record.anyRemove(transaction: transaction)
+            return
+        }
 
-        SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            let staleRecords: [MessageSenderJobRecord]
-            do {
-                staleRecords = try JobRecordFinderImpl(db: DependenciesBridge.shared.db).staleRecords(transaction: transaction.asV2Write)
-            } catch {
-                Logger.error("Failed to prune stale jobs! \(error)")
-                return
-            }
+        durableOperation.durableOperationDelegate = self
+        owsAssertDebug(durableOperation.durableOperationDelegate != nil)
 
-            if !staleRecords.isEmpty {
-                Logger.info("Pruning stale \(MessageSenderJobRecord.jobRecordType.jobRecordLabel) job records: \(staleRecords.count).")
-            }
-
-            for jobRecord in staleRecords {
-                jobRecord.anyRemove(transaction: transaction)
-            }
+        transaction.addSyncCompletion {
+            self.state.update { $0.runningOperations.append(durableOperation) }
+            operationQueue.addOperation(durableOperation)
         }
     }
 
     public func setUp() {
-        guard !self.state.update(block: { $0.isSetup }) else {
-            owsFailDebug("already ready already")
-            return
-        }
-
-        DispatchQueue.global().async(.promise) {
-            self.restartOldJobs()
-            self.pruneStaleJobs()
-        }.done { [weak self] in
-            guard let self = self else {
-                return
+        let jobRecordFinder = JobRecordFinderImpl<MessageSenderJobRecord>(db: DependenciesBridge.shared.db)
+        Task {
+            if CurrentAppContext().isMainApp {
+                do {
+                    let jobRecords = try await jobRecordFinder.loadRunnableJobs(updateRunnableJobRecord: { jobRecord, tx in
+                        self.didMarkAsReady(oldJobRecord: jobRecord, transaction: SDSDB.shimOnlyBridge(tx))
+                    })
+                    let jobRecordUniqueIds = Set(jobRecords.lazy.map(\.uniqueId))
+                    self.state.update {
+                        var newlyPendingJobs = $0.pendingJobs
+                        newlyPendingJobs.removeAll(where: { jobRecordUniqueIds.contains($0.record.uniqueId) })
+                        $0.pendingJobs = jobRecords.map { MessageSenderJob(record: $0, isInMemoryOnly: false) }
+                        $0.pendingJobs.append(contentsOf: newlyPendingJobs)
+                    }
+                } catch {
+                    owsFailDebug("Couldn't load existing message send jobs: \(error)")
+                }
             }
+
             // FIXME: The returned observer token is never unregistered.
             // In practice all our JobQueues live forever, so this isn't a problem.
+            // We use "unowned" so that don't silently fail (or leak) when this changes.
             NotificationCenter.default.addObserver(
                 forName: SSKReachability.owsReachabilityDidChange,
                 object: nil,
                 queue: nil
-            ) { _ in
+            ) { [unowned self] _ in
                 if SSKEnvironment.shared.reachabilityManagerRef.isReachable {
                     self.becameReachable()
                 }
             }
 
-            self.state.update { $0.isSetup = true }
-            self.workStep()
+            // No matter what, mark it as loaded. This keeps things semi-functional.
+            self.state.update { $0.isLoaded = true }
+            startPendingJobRecordsIfPossible()
         }
-    }
-
-    private func remainingRetries(durableOperation: MessageSenderOperation) -> UInt {
-        let maxRetries = durableOperation.maxRetries
-        let failureCount = durableOperation.jobRecord.failureCount
-
-        guard maxRetries > failureCount else {
-            return 0
-        }
-
-        return maxRetries - failureCount
     }
 
     private func becameReachable() {
@@ -389,23 +323,8 @@ public class MessageSenderJobQueue: NSObject {
 
     // MARK: DurableOperationDelegate
 
-    fileprivate func durableOperationDidSucceed(_ operation: MessageSenderOperation, transaction: SDSAnyWriteTransaction) {
+    fileprivate func durableOperationDidComplete(_ operation: MessageSenderOperation) {
         self.state.update { $0.runningOperations.removeAll(where: { $0 == operation }) }
-        operation.jobRecord.anyRemove(transaction: transaction)
-    }
-
-    fileprivate func durableOperation(_ operation: MessageSenderOperation, didReportError: Error, transaction: SDSAnyWriteTransaction) {
-        do {
-            try operation.jobRecord.addFailure(transaction: transaction)
-        } catch {
-            owsFailDebug("error while addingFailure: \(error)")
-            operation.jobRecord.saveAsPermanentlyFailed(transaction: transaction)
-        }
-    }
-
-    fileprivate func durableOperation(_ operation: MessageSenderOperation, didFailWithError error: Error, transaction: SDSAnyWriteTransaction) {
-        self.state.update { $0.runningOperations.removeAll(where: { $0 == operation }) }
-        operation.jobRecord.saveAsPermanentlyFailed(transaction: transaction)
     }
 }
 
@@ -413,24 +332,26 @@ private class MessageSenderOperation: OWSOperation {
 
     // MARK: DurableOperation
 
-    let jobRecord: MessageSenderJobRecord
+    private let job: MessageSenderJob
     weak public var durableOperationDelegate: MessageSenderJobQueue?
 
     /// 110 retries corresponds to approximately ~24hr of retry when using
     /// ``OWSOperation/retryIntervalForExponentialBackoff(failureCount:maxBackoff:)``.
-    let maxRetries: UInt = 110
+    let maxRetries: Int = 110
 
     // MARK: Init
 
     let message: PreparedOutgoingMessage
     private var future: Future<Void>?
 
-    init(message: PreparedOutgoingMessage, jobRecord: MessageSenderJobRecord, future: Future<Void>?) {
+    init(message: PreparedOutgoingMessage, job: MessageSenderJob, future: Future<Void>?) {
         self.message = message
-        self.jobRecord = jobRecord
+        self.job = job
         self.future = future
 
         super.init()
+
+        self.remainingRetries = UInt(max(0, self.maxRetries - Int(job.record.failureCount)))
     }
 
     // MARK: OWSOperation
@@ -447,28 +368,40 @@ private class MessageSenderOperation: OWSOperation {
     }
 
     override func didSucceed() {
-        SSKEnvironment.shared.databaseStorageRef.write { tx in
-            self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: tx)
+        self.durableOperationDelegate?.durableOperationDidComplete(self)
+        if self.job.isInMemoryOnly {
+            // Nothing to clean up
+        } else {
+            SSKEnvironment.shared.databaseStorageRef.write { tx in
+                self.job.record.anyRemove(transaction: tx)
+            }
         }
         future?.resolve()
     }
 
     override func didReportError(_ error: Error) {
-        SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            self.durableOperationDelegate?.durableOperation(self, didReportError: error,
-                                                            transaction: transaction)
+        if self.job.isInMemoryOnly {
+            self.job.record.addInMemoryFailure()
+        } else {
+            SSKEnvironment.shared.databaseStorageRef.write { transaction in
+                self.job.record.addFailure(tx: transaction)
+            }
         }
     }
 
     override var retryInterval: TimeInterval {
-        OWSOperation.retryIntervalForExponentialBackoff(failureCount: jobRecord.failureCount)
+        OWSOperation.retryIntervalForExponentialBackoff(failureCount: self.job.record.failureCount)
     }
 
     override func didFail(error: Error) {
-        SSKEnvironment.shared.databaseStorageRef.write { tx in
-            self.durableOperationDelegate?.durableOperation(self, didFailWithError: error, transaction: tx)
-
-            self.message.updateWithAllSendingRecipientsMarkedAsFailed(error: error, tx: tx)
+        self.durableOperationDelegate?.durableOperationDidComplete(self)
+        if self.job.isInMemoryOnly {
+            // Nothing to clean up
+        } else {
+            SSKEnvironment.shared.databaseStorageRef.write { tx in
+                self.job.record.anyRemove(transaction: tx)
+                self.message.updateWithAllSendingRecipientsMarkedAsFailed(error: error, tx: tx)
+            }
         }
         future?.reject(error)
     }

@@ -219,8 +219,4 @@ public final class MessageSenderJobRecord: JobRecord, FactoryInitializableFromRe
         try container.encode(removeMessageAfterSending, forKey: .removeMessageAfterSending)
         try container.encode(isHighPriority, forKey: .isHighPriority)
     }
-
-    override var canBeRunByCurrentProcess: Bool {
-        return super.canBeRunByCurrentProcess && !removeMessageAfterSending
-    }
 }

@@ -40,7 +40,10 @@ class MessageSenderJobQueueTest: SSKBaseTest {
         let messageCount = 3
         let jobQueue = MessageSenderJobQueue(appReadiness: AppReadinessMock())
         let (messages, promises) = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-            let messages = (1...messageCount).map { _ in OutgoingMessageFactory().create(transaction: tx) }
+            let contactThread = ContactThreadFactory().create(transaction: tx)
+            let outgoingMessageFactory = OutgoingMessageFactory()
+            outgoingMessageFactory.threadCreator = { _ in contactThread }
+            let messages = (1...messageCount).map { _ in outgoingMessageFactory.create(transaction: tx) }
             let promises = try messages.map {
                 let jobRecord = try MessageSenderJobRecord(
                     persistedMessage: .init(
@@ -113,7 +116,7 @@ class MessageSenderJobQueueTest: SSKBaseTest {
         }
         XCTAssertEqual(1, readyRecords.count)
 
-        var jobRecord = readyRecords.first!
+        let jobRecord = readyRecords.first!
         XCTAssertEqual(0, jobRecord.failureCount)
 
         // simulate permanent failure (via `maxRetries` retryable failures)
@@ -137,11 +140,10 @@ class MessageSenderJobQueueTest: SSKBaseTest {
         } catch {}
 
         self.read { transaction in
-            jobRecord = jobRecord.fetchLatest(transaction: transaction)
+            XCTAssertNil(jobRecord.fetchLatest(transaction: transaction))
         }
 
-        XCTAssertEqual(retryCount + 1, Int(jobRecord.failureCount))
-        XCTAssertEqual(.permanentlyFailed, jobRecord.status)
+        XCTAssertEqual(fakeMessageSender.stubbedFailingErrors.count, 0)
         XCTAssertEqual(
             fakeMessageSender.sentMessages.map { $0.uniqueId },
             Array(repeating: message.uniqueId, count: retryCount + 1)
@@ -182,7 +184,7 @@ class MessageSenderJobQueueTest: SSKBaseTest {
         }
         XCTAssertEqual(1, readyRecords.count)
 
-        var jobRecord = readyRecords.first!
+        let jobRecord = readyRecords.first!
         XCTAssertEqual(0, jobRecord.failureCount)
 
         // simulate permanent failure
@@ -196,21 +198,14 @@ class MessageSenderJobQueueTest: SSKBaseTest {
         } catch {}
 
         self.read { tx in
-            jobRecord = jobRecord.fetchLatest(transaction: tx)
+            XCTAssertNil(jobRecord.fetchLatest(transaction: tx))
         }
-
-        XCTAssertEqual(1, jobRecord.failureCount)
-        XCTAssertEqual(.permanentlyFailed, jobRecord.status)
         XCTAssertEqual(fakeMessageSender.sentMessages.map { $0.uniqueId }, [message.uniqueId])
     }
 }
 
 private extension MessageSenderJobRecord {
-    func fetchLatest(transaction: SDSAnyReadTransaction) -> Self {
-        guard let latest = Self.anyFetch(uniqueId: uniqueId, transaction: transaction) else {
-            owsFail("Failed to fetch latest model! Was the model removed?")
-        }
-
-        return latest
+    func fetchLatest(transaction: SDSAnyReadTransaction) -> Self? {
+        return Self.anyFetch(uniqueId: uniqueId, transaction: transaction)
     }
 }

@@ -22,10 +22,10 @@ public protocol JobRecordFinder<JobRecordType> {
     /// This method may use multiple transactions, may use write transactions,
     /// may delete jobs that can't ever be run, etc.
     ///
-    /// It returns all jobs that can be run.
+    /// It returns all jobs that can be run (and invokes the block for each job).
     ///
     /// Conforming types should avoid long-running write transactions.
-    func loadRunnableJobs() async throws -> [JobRecordType]
+    func loadRunnableJobs(updateRunnableJobRecord: @escaping (JobRecordType, DBWriteTransaction) -> Void) async throws -> [JobRecordType]
 
     func enumerateJobRecords(
         transaction: DBReadTransaction,
@@ -40,50 +40,11 @@ public protocol JobRecordFinder<JobRecordType> {
 }
 
 public extension JobRecordFinder {
-    func getNextReady(transaction: DBReadTransaction) throws -> JobRecordType? {
-        var result: JobRecordType?
-        try enumerateJobRecords(status: .ready, transaction: transaction) { jobRecord, stop in
-            // Skip job records that aren't for the current process, we can't run these.
-            guard jobRecord.canBeRunByCurrentProcess else {
-                return
-            }
-            result = jobRecord
-            stop = true
-        }
-        return result
-    }
-
     func allRecords(status: JobRecord.Status, transaction: DBReadTransaction) throws -> [JobRecordType] {
         var result: [JobRecordType] = []
         try enumerateJobRecords(status: status, transaction: transaction) { jobRecord, _ in
             result.append(jobRecord)
         }
-        return result
-    }
-
-    func staleRecords(transaction: DBReadTransaction) throws -> [JobRecordType] {
-        var result: [JobRecordType] = []
-
-        try enumerateJobRecords(transaction: transaction) { jobRecord, _ in
-            let isStale: Bool = {
-                switch jobRecord.status {
-                case .running:
-                    return false
-                case .ready:
-                    return !jobRecord.canBeRunByCurrentProcess
-                case
-                        .obsolete,
-                        .permanentlyFailed,
-                        .unknown:
-                    return true
-                }
-            }()
-
-            if isStale {
-                result.append(jobRecord)
-            }
-        }
-
         return result
     }
 }
@@ -181,12 +142,12 @@ public class JobRecordFinderImpl<JobRecordType>: JobRecordFinder where JobRecord
         jobRecord.anyRemove(transaction: SDSDB.shimOnlyBridge(tx))
     }
 
-    public func loadRunnableJobs() async throws -> [JobRecordType] {
+    public func loadRunnableJobs(updateRunnableJobRecord: @escaping (JobRecordType, DBWriteTransaction) -> Void) async throws -> [JobRecordType] {
         var allRunnableJobs = [JobRecordType]()
         var afterRowId: JobRecord.RowId?
         while true {
             let (runnableJobs, hasMoreAfterRowId) = try await db.awaitableWrite { tx in
-                try self.fetchAndPruneSomePersistedJobs(afterRowId: afterRowId, tx: tx)
+                try self.fetchAndPruneSomePersistedJobs(afterRowId: afterRowId, updateRunnableJobRecord: updateRunnableJobRecord, tx: tx)
             }
             allRunnableJobs.append(contentsOf: runnableJobs)
             guard let hasMoreAfterRowId else {
@@ -199,16 +160,24 @@ public class JobRecordFinderImpl<JobRecordType>: JobRecordFinder where JobRecord
 
     private func fetchAndPruneSomePersistedJobs(
         afterRowId: JobRecord.RowId?,
+        updateRunnableJobRecord: (JobRecordType, DBWriteTransaction) -> Void,
         tx: DBWriteTransaction
     ) throws -> ([JobRecordType], hasMoreAfterRowId: JobRecord.RowId?) {
         let (jobs, hasMore) = try fetchSomeJobs(afterRowId: afterRowId, tx: tx)
         var runnableJobs = [JobRecordType]()
         for job in jobs {
             let canRunJob: Bool = {
+                // TODO: Schedule a DB migration to fully obsolete these properties.
+
                 // This property is deprecated. If it's set, it means the job was created
                 // for a prior version of the application, and that version definitely
                 // can't be the current process.
-                guard job.exclusiveProcessIdentifier == nil else {
+                if job.exclusiveProcessIdentifier != nil {
+                    return false
+                }
+                // This property is deprecated. If it's set, it means that the job is for a
+                // deprecated type of message that doesn't need to be sent.
+                if (job as? MessageSenderJobRecord)?.removeMessageAfterSending == true {
                     return false
                 }
                 // If a job has failed or is obsolete, we can remove it. We previously
@@ -223,6 +192,7 @@ public class JobRecordFinderImpl<JobRecordType>: JobRecordFinder where JobRecord
                 return true
             }()
             if canRunJob {
+                updateRunnableJobRecord(job, tx)
                 runnableJobs.append(job)
             } else {
                 removeJob(job, tx: tx)

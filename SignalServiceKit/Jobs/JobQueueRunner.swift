@@ -209,7 +209,7 @@ public class JobQueueRunner<
         var oldJobs = [JobFinderType.JobRecordType]()
         if shouldRestartExistingJobs {
             do {
-                oldJobs.append(contentsOf: try await jobFinder.loadRunnableJobs())
+                oldJobs.append(contentsOf: try await jobFinder.loadRunnableJobs(updateRunnableJobRecord: { _, _ in }))
             } catch {
                 Logger.error("Couldn't start existing jobs, so no new jobs will start: \(error)")
                 return
