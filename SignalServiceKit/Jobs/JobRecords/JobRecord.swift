@@ -110,19 +110,22 @@ public class JobRecord: SDSCodableModel {
     public let uniqueId: String
 
     let label: String
-    private(set) var exclusiveProcessIdentifier: String?
+    #if TESTABLE_BUILD
+    var exclusiveProcessIdentifier: String?
+    #else
+    let exclusiveProcessIdentifier: String?
+    #endif
     public private(set) var failureCount: UInt
     private(set) var status: Status
 
     init(
-        exclusiveProcessIdentifier: String?,
         failureCount: UInt,
         status: Status
     ) {
         uniqueId = UUID().uuidString
 
         self.label = Self.jobRecordType.jobRecordLabel
-        self.exclusiveProcessIdentifier = exclusiveProcessIdentifier
+        self.exclusiveProcessIdentifier = nil
         self.failureCount = failureCount
         self.status = status
     }
@@ -158,19 +161,6 @@ public class JobRecord: SDSCodableModel {
         try container.encode(failureCount, forKey: .failureCount)
         try container.encode(status.rawValue, forKey: .status)
         try container.encodeIfPresent(exclusiveProcessIdentifier, forKey: .exclusiveProcessIdentifier)
-    }
-
-    // MARK: - Process Exclusivity
-
-    /// An identifier for the current process.
-    ///
-    /// If a persisted job has a process identifier that does not match the
-    /// current one, it will be cleaned up by ``JobQueue.pruneStaleJobs()``,
-    /// which finds and removes "stale" records.
-    private static let currentProcessIdentifier: String = UUID().uuidString
-
-    func flagAsExclusiveForCurrentProcessIdentifier() {
-        self.exclusiveProcessIdentifier = Self.currentProcessIdentifier
     }
 }
 

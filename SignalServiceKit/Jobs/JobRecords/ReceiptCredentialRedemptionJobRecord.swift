@@ -40,7 +40,6 @@ public final class DonationReceiptCredentialRedemptionJobRecord: JobRecord, Fact
         amount: Decimal?,
         currencyCode: String?,
         boostPaymentIntentID: String,
-        exclusiveProcessIdentifier: String? = nil,
         failureCount: UInt = 0,
         status: Status = .ready
     ) {
@@ -60,7 +59,6 @@ public final class DonationReceiptCredentialRedemptionJobRecord: JobRecord, Fact
         self.boostPaymentIntentID = boostPaymentIntentID
 
         super.init(
-            exclusiveProcessIdentifier: exclusiveProcessIdentifier,
             failureCount: failureCount,
             status: status
         )

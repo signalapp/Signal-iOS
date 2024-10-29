@@ -18,7 +18,6 @@ public final class LocalUserLeaveGroupJobRecord: JobRecord, FactoryInitializable
         threadId: String,
         replacementAdminAci: Aci?,
         waitForMessageProcessing: Bool,
-        exclusiveProcessIdentifier: String? = nil,
         failureCount: UInt = 0,
         status: Status = .ready
     ) {
@@ -27,7 +26,6 @@ public final class LocalUserLeaveGroupJobRecord: JobRecord, FactoryInitializable
         self.waitForMessageProcessing = waitForMessageProcessing
 
         super.init(
-            exclusiveProcessIdentifier: exclusiveProcessIdentifier,
             failureCount: failureCount,
             status: status
         )

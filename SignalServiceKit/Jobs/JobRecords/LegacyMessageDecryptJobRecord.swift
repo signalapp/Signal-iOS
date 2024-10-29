@@ -15,7 +15,6 @@ final class LegacyMessageDecryptJobRecord: JobRecord, FactoryInitializableFromRe
     public init(
         envelopeData: Data?,
         serverDeliveryTimestamp: UInt64,
-        exclusiveProcessIdentifier: String? = nil,
         failureCount: UInt = 0,
         status: Status = .ready
     ) {
@@ -23,7 +22,6 @@ final class LegacyMessageDecryptJobRecord: JobRecord, FactoryInitializableFromRe
         self.serverDeliveryTimestamp = serverDeliveryTimestamp
 
         super.init(
-            exclusiveProcessIdentifier: exclusiveProcessIdentifier,
             failureCount: failureCount,
             status: status
         )

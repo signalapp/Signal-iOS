@@ -47,7 +47,6 @@ public final class CallRecordDeleteAllJobRecord: JobRecord, FactoryInitializable
         deleteAllBeforeCallId: UInt64?,
         deleteAllBeforeConversationId: Data?,
         deleteAllBeforeTimestamp: UInt64,
-        exclusiveProcessIdentifier: String? = nil,
         failureCount: UInt = 0,
         status: Status = .ready
     ) {
@@ -57,7 +56,6 @@ public final class CallRecordDeleteAllJobRecord: JobRecord, FactoryInitializable
         self.deleteAllBeforeTimestamp = deleteAllBeforeTimestamp
 
         super.init(
-            exclusiveProcessIdentifier: exclusiveProcessIdentifier,
             failureCount: failureCount,
             status: status
         )

@@ -61,7 +61,6 @@ public final class IncomingContactSyncJobRecord: JobRecord, FactoryInitializable
     public static func legacy(
         legacyAttachmentId: String?,
         isCompleteContactSync: Bool,
-        exclusiveProcessIdentifier: String? = nil,
         failureCount: UInt = 0,
         status: Status = .ready
     ) -> IncomingContactSyncJobRecord {
@@ -73,7 +72,6 @@ public final class IncomingContactSyncJobRecord: JobRecord, FactoryInitializable
             digest: nil,
             plaintextLength: nil,
             isCompleteContactSync: isCompleteContactSync,
-            exclusiveProcessIdentifier: exclusiveProcessIdentifier,
             failureCount: failureCount,
             status: status
         )
@@ -106,7 +104,6 @@ public final class IncomingContactSyncJobRecord: JobRecord, FactoryInitializable
         digest: Data?,
         plaintextLength: UInt32?,
         isCompleteContactSync: Bool,
-        exclusiveProcessIdentifier: String? = nil,
         failureCount: UInt = 0,
         status: Status = .ready
     ) {
@@ -120,7 +117,6 @@ public final class IncomingContactSyncJobRecord: JobRecord, FactoryInitializable
         self.plaintextLength = plaintextLength
 
         super.init(
-            exclusiveProcessIdentifier: exclusiveProcessIdentifier,
             failureCount: failureCount,
             status: status
         )

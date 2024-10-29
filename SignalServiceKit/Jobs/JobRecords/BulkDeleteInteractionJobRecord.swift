@@ -25,7 +25,6 @@ final class BulkDeleteInteractionJobRecord: JobRecord, FactoryInitializableFromR
         anchorMessageRowId: Int64,
         fullThreadDeletionAnchorMessageRowId: Int64?,
         threadUniqueId: String,
-        exclusiveProcessIdentifier: String? = nil,
         failureCount: UInt = 0,
         status: Status = .ready
     ) {
@@ -34,7 +33,6 @@ final class BulkDeleteInteractionJobRecord: JobRecord, FactoryInitializableFromR
         self.anchorMessageRowId = anchorMessageRowId
 
         super.init(
-            exclusiveProcessIdentifier: exclusiveProcessIdentifier,
             failureCount: failureCount,
             status: status
         )

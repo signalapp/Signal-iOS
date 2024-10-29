@@ -94,7 +94,7 @@ public class MessageSenderJobQueue: NSObject {
         }
         owsAssertDebug(jobRecord.status == .ready)
         if exclusiveToCurrentProcessIdentifier {
-            jobRecord.flagAsExclusiveForCurrentProcessIdentifier()
+            // Nothing to do. Just don't insert it into the database.
         } else {
             jobRecord.anyInsert(transaction: transaction)
         }

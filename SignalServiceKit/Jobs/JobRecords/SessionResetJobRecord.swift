@@ -13,14 +13,12 @@ public final class SessionResetJobRecord: JobRecord, FactoryInitializableFromRec
 
     init(
         contactThreadId: String,
-        exclusiveProcessIdentifier: String? = nil,
         failureCount: UInt = 0,
         status: Status = .ready
     ) {
         self.contactThreadId = contactThreadId
 
         super.init(
-            exclusiveProcessIdentifier: exclusiveProcessIdentifier,
             failureCount: failureCount,
             status: status
         )

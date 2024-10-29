@@ -132,7 +132,6 @@ extension TSAttachmentMultisendJobRecord: ValidatableModel {
                 attachmentIdMap: ["once": ["upon", "a"]],
                 // The encoded object below has a non-story message, which is invalid in the real app.
                 storyMessagesToSend: [],
-                exclusiveProcessIdentifier: nil,
                 failureCount: 3,
                 status: .running
             ),
@@ -142,7 +141,6 @@ extension TSAttachmentMultisendJobRecord: ValidatableModel {
             TSAttachmentMultisendJobRecord(
                 attachmentIdMap: ["once": ["upon", "a"]],
                 storyMessagesToSend: nil,
-                exclusiveProcessIdentifier: nil,
                 failureCount: 3,
                 status: .running
             ),
@@ -167,21 +165,19 @@ extension IncomingContactSyncJobRecord: ValidatableModel {
             IncomingContactSyncJobRecord.legacy(
                 legacyAttachmentId: "darth revan",
                 isCompleteContactSync: true,
-                exclusiveProcessIdentifier: "star wars character",
                 failureCount: 12,
                 status: .ready
             ),
-            Data(#"{"super":{"failureCount":12,"label":"IncomingContactSync","status":1,"uniqueId":"FF3753B3-B1FD-4B4A-96C3-2398EB120136","exclusiveProcessIdentifier":"star wars character","recordType":61},"isCompleteContactSync":true,"attachmentId":"darth revan"}"#.utf8)
+            Data(#"{"super":{"failureCount":12,"label":"IncomingContactSync","status":1,"uniqueId":"FF3753B3-B1FD-4B4A-96C3-2398EB120136","recordType":61},"isCompleteContactSync":true,"attachmentId":"darth revan"}"#.utf8)
         ),
         (
             IncomingContactSyncJobRecord.legacy(
                 legacyAttachmentId: nil,
                 isCompleteContactSync: false,
-                exclusiveProcessIdentifier: "star wars villain",
                 failureCount: 6,
                 status: .permanentlyFailed
             ),
-            Data(#"{"isCompleteContactSync":false,"super":{"uniqueId":"B1341459-3BA3-4AA7-85FF-DECF109A74EA","exclusiveProcessIdentifier":"star wars villain","failureCount":6,"recordType":61,"status":3,"label":"IncomingContactSync"}}"#.utf8)
+            Data(#"{"isCompleteContactSync":false,"super":{"uniqueId":"B1341459-3BA3-4AA7-85FF-DECF109A74EA","failureCount":6,"recordType":61,"status":3,"label":"IncomingContactSync"}}"#.utf8)
         ),
         (
             IncomingContactSyncJobRecord(
@@ -230,21 +226,19 @@ extension LegacyMessageDecryptJobRecord: ValidatableModel {
             LegacyMessageDecryptJobRecord(
                 envelopeData: Data(base64Encoded: "beef")!,
                 serverDeliveryTimestamp: 12,
-                exclusiveProcessIdentifier: "give you up",
                 failureCount: 0,
                 status: .ready
             ),
-            Data(#"{"super":{"failureCount":0,"label":"SSKMessageDecrypt","status":1,"uniqueId":"0D5C1108-FD33-433F-BCF8-1E2084A864A5","exclusiveProcessIdentifier":"give you up","recordType":53},"envelopeData":"beef","serverDeliveryTimestamp":12}"#.utf8)
+            Data(#"{"super":{"failureCount":0,"label":"SSKMessageDecrypt","status":1,"uniqueId":"0D5C1108-FD33-433F-BCF8-1E2084A864A5","recordType":53},"envelopeData":"beef","serverDeliveryTimestamp":12}"#.utf8)
         ),
         (
             LegacyMessageDecryptJobRecord(
                 envelopeData: nil,
                 serverDeliveryTimestamp: 12,
-                exclusiveProcessIdentifier: "give you up",
                 failureCount: 0,
                 status: .ready
             ),
-            Data(#"{"super":{"failureCount":0,"label":"SSKMessageDecrypt","status":1,"uniqueId":"8F8545C6-0683-4FB4-BDB5-291D5876A09C","exclusiveProcessIdentifier":"give you up","recordType":53},"serverDeliveryTimestamp":12}"#.utf8)
+            Data(#"{"super":{"failureCount":0,"label":"SSKMessageDecrypt","status":1,"uniqueId":"8F8545C6-0683-4FB4-BDB5-291D5876A09C","recordType":53},"serverDeliveryTimestamp":12}"#.utf8)
         )
     ]
 
@@ -265,22 +259,20 @@ extension LocalUserLeaveGroupJobRecord: ValidatableModel {
                 threadId: "the wheels on the bus",
                 replacementAdminAci: Aci.constantForTesting("00000000-0000-4000-8000-000000000AAA"),
                 waitForMessageProcessing: true,
-                exclusiveProcessIdentifier: "round and round!",
                 failureCount: 40000,
                 status: .obsolete
             ),
-            Data(#"{"replacementAdminUuid":"00000000-0000-4000-8000-000000000AAA","super":{"failureCount":40000,"label":"LocalUserLeaveGroup","status":4,"uniqueId":"5A4686EC-B396-46BA-8B8C-7FB0F14DB4B1","exclusiveProcessIdentifier":"round and round!","recordType":74},"threadId":"the wheels on the bus","waitForMessageProcessing":true}"#.utf8)
+            Data(#"{"replacementAdminUuid":"00000000-0000-4000-8000-000000000AAA","super":{"failureCount":40000,"label":"LocalUserLeaveGroup","status":4,"uniqueId":"5A4686EC-B396-46BA-8B8C-7FB0F14DB4B1","recordType":74},"threadId":"the wheels on the bus","waitForMessageProcessing":true}"#.utf8)
         ),
         (
             LocalUserLeaveGroupJobRecord(
                 threadId: "the wheels on the bus",
                 replacementAdminAci: nil,
                 waitForMessageProcessing: true,
-                exclusiveProcessIdentifier: "round and round!",
                 failureCount: 40000,
                 status: .obsolete
             ),
-            Data(#"{"super":{"failureCount":40000,"label":"LocalUserLeaveGroup","status":4,"uniqueId":"2733BF8F-0C66-470B-846D-D23FCE1B8AB9","exclusiveProcessIdentifier":"round and round!","recordType":74},"threadId":"the wheels on the bus","waitForMessageProcessing":true}"#.utf8)
+            Data(#"{"super":{"failureCount":40000,"label":"LocalUserLeaveGroup","status":4,"uniqueId":"2733BF8F-0C66-470B-846D-D23FCE1B8AB9","recordType":74},"threadId":"the wheels on the bus","waitForMessageProcessing":true}"#.utf8)
         )
     ]
 
@@ -303,7 +295,6 @@ extension MessageSenderJobRecord: ValidatableModel {
                 messageType: .persisted(messageId: "1668418F-4913-4852-8B01-4E5EF8938B33", useMediaQueue: true),
                 removeMessageAfterSending: false,
                 isHighPriority: true,
-                exclusiveProcessIdentifier: nil,
                 failureCount: UInt(Int.max),
                 status: .unknown
             ),
@@ -315,12 +306,26 @@ extension MessageSenderJobRecord: ValidatableModel {
                 messageType: .none,
                 removeMessageAfterSending: false,
                 isHighPriority: true,
-                exclusiveProcessIdentifier: nil,
                 failureCount: UInt(Int.max),
                 status: .unknown
             ),
             Data(#"{"removeMessageAfterSending":false,"super":{"failureCount":9223372036854775807,"label":"MessageSender","status":0,"uniqueId":"36064A7A-5EAE-4426-84C1-893EF5864279","recordType":35},"isHighPriority":true,"isMediaMessage":true}"#.utf8)
-        )
+        ),
+        (
+            {
+                let jobRecord = MessageSenderJobRecord(
+                    threadId: "6A860318-BC21-46BC-B1B2-695ED5D6D8A2",
+                    messageType: .persisted(messageId: "1668418F-4913-4852-8B01-4E5EF8938B33", useMediaQueue: true),
+                    removeMessageAfterSending: false,
+                    isHighPriority: true,
+                    failureCount: UInt(Int.max),
+                    status: .unknown
+                )
+                jobRecord.exclusiveProcessIdentifier = "abc123"
+                return jobRecord
+            }(),
+            Data(#"{"messageId":"1668418F-4913-4852-8B01-4E5EF8938B33","isMediaMessage":true,"super":{"failureCount":9223372036854775807,"status":0,"label":"MessageSender","uniqueId":"7695E23B-44CB-4A5A-9012-915CB3E331C1","exclusiveProcessIdentifier": "abc123","recordType":35},"removeMessageAfterSending":false,"isHighPriority":true,"threadId":"6A860318-BC21-46BC-B1B2-695ED5D6D8A2"}"#.utf8)
+        ),
     ]
 
     func validate(against: MessageSenderJobRecord) throws {
@@ -384,7 +389,6 @@ extension DonationReceiptCredentialRedemptionJobRecord: ValidatableModel {
                 amount: 0,
                 currencyCode: "EUR",
                 boostPaymentIntentID: "",
-                exclusiveProcessIdentifier: nil,
                 failureCount: 0,
                 status: .ready
             ),
@@ -406,7 +410,6 @@ extension DonationReceiptCredentialRedemptionJobRecord: ValidatableModel {
                 amount: 0,
                 currencyCode: "EUR",
                 boostPaymentIntentID: "",
-                exclusiveProcessIdentifier: nil,
                 failureCount: 0,
                 status: .ready
             ),
@@ -428,11 +431,10 @@ extension DonationReceiptCredentialRedemptionJobRecord: ValidatableModel {
                 amount: 12.5,
                 currencyCode: "USD",
                 boostPaymentIntentID: "beep",
-                exclusiveProcessIdentifier: "bing",
                 failureCount: 0,
                 status: .permanentlyFailed
             ),
-            Data(#"{"targetSubscriptionLevel":12,"currencyCode":"USD","shouldSuppressPaymentAlreadyRedeemed":false,"priorSubscriptionLevel":4,"paymentMethod":"SEPA_DEBIT","amount":"YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGjCwwaVSRudWxs1w0ODxAREhMUFRYXGBgZViRjbGFzc1tOUy5tYW50aXNzYVtOUy5uZWdhdGl2ZVtOUy5leHBvbmVudF5OUy5tYW50aXNzYS5ib1lOUy5sZW5ndGhaTlMuY29tcGFjdIACTxAQfQAAAAAAAAAAAAAAAAAAAAgT\/\/\/\/\/\/\/\/\/\/8QAQnSGxwdHlokY2xhc3NuYW1lWCRjbGFzc2VzXxAaTlNEZWNpbWFsTnVtYmVyUGxhY2Vob2xkZXKlHyAhIiNfEBpOU0RlY2ltYWxOdW1iZXJQbGFjZWhvbGRlcl8QD05TRGVjaW1hbE51bWJlclhOU051bWJlcldOU1ZhbHVlWE5TT2JqZWN0AAgAEQAaACQAKQAyADcASQBMAFEAUwBXAF0AbABzAH8AiwCXAKYAsAC7AL0A0ADRANoA3ADdAOIA7QD2ARMBGQE2AUgBUQFZAAAAAAAAAgEAAAAAAAAAJAAAAAAAAAAAAAAAAAAAAWI=","subscriberID":"feed","receiptCredentailRequest":"dead","isNewSubscription":true,"super":{"failureCount":0,"label":"SubscriptionReceiptCredentailRedemption","status":3,"uniqueId":"47BE1A2B-4B10-44E3-BECF-025F7E81F021","exclusiveProcessIdentifier":"bing","recordType":71},"receiptCredentailRequestContext":"beef","receiptCredentialPresentation":"bade","boostPaymentIntentID":"beep","paymentProcessor":"STRIPE","isBoost":true}"#.utf8)
+            Data(#"{"targetSubscriptionLevel":12,"currencyCode":"USD","shouldSuppressPaymentAlreadyRedeemed":false,"priorSubscriptionLevel":4,"paymentMethod":"SEPA_DEBIT","amount":"YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGjCwwaVSRudWxs1w0ODxAREhMUFRYXGBgZViRjbGFzc1tOUy5tYW50aXNzYVtOUy5uZWdhdGl2ZVtOUy5leHBvbmVudF5OUy5tYW50aXNzYS5ib1lOUy5sZW5ndGhaTlMuY29tcGFjdIACTxAQfQAAAAAAAAAAAAAAAAAAAAgT\/\/\/\/\/\/\/\/\/\/8QAQnSGxwdHlokY2xhc3NuYW1lWCRjbGFzc2VzXxAaTlNEZWNpbWFsTnVtYmVyUGxhY2Vob2xkZXKlHyAhIiNfEBpOU0RlY2ltYWxOdW1iZXJQbGFjZWhvbGRlcl8QD05TRGVjaW1hbE51bWJlclhOU051bWJlcldOU1ZhbHVlWE5TT2JqZWN0AAgAEQAaACQAKQAyADcASQBMAFEAUwBXAF0AbABzAH8AiwCXAKYAsAC7AL0A0ADRANoA3ADdAOIA7QD2ARMBGQE2AUgBUQFZAAAAAAAAAgEAAAAAAAAAJAAAAAAAAAAAAAAAAAAAAWI=","subscriberID":"feed","receiptCredentailRequest":"dead","isNewSubscription":true,"super":{"failureCount":0,"label":"SubscriptionReceiptCredentailRedemption","status":3,"uniqueId":"47BE1A2B-4B10-44E3-BECF-025F7E81F021","recordType":71},"receiptCredentailRequestContext":"beef","receiptCredentialPresentation":"bade","boostPaymentIntentID":"beep","paymentProcessor":"STRIPE","isBoost":true}"#.utf8)
         ),
         (
             DonationReceiptCredentialRedemptionJobRecord(
@@ -450,11 +452,10 @@ extension DonationReceiptCredentialRedemptionJobRecord: ValidatableModel {
                 amount: 12.5,
                 currencyCode: "shoop",
                 boostPaymentIntentID: "de",
-                exclusiveProcessIdentifier: "da boop",
                 failureCount: 0,
                 status: .permanentlyFailed
             ),
-            Data(#"{"targetSubscriptionLevel":12,"currencyCode":"shoop","shouldSuppressPaymentAlreadyRedeemed":false,"priorSubscriptionLevel":4,"amount":"YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGjCwwaVSRudWxs1w0ODxAREhMUFRYXGBgZViRjbGFzc1tOUy5tYW50aXNzYVtOUy5uZWdhdGl2ZVtOUy5leHBvbmVudF5OUy5tYW50aXNzYS5ib1lOUy5sZW5ndGhaTlMuY29tcGFjdIACTxAQfQAAAAAAAAAAAAAAAAAAAAgT\/\/\/\/\/\/\/\/\/\/8QAQnSGxwdHlokY2xhc3NuYW1lWCRjbGFzc2VzXxAaTlNEZWNpbWFsTnVtYmVyUGxhY2Vob2xkZXKlHyAhIiNfEBpOU0RlY2ltYWxOdW1iZXJQbGFjZWhvbGRlcl8QD05TRGVjaW1hbE51bWJlclhOU051bWJlcldOU1ZhbHVlWE5TT2JqZWN0AAgAEQAaACQAKQAyADcASQBMAFEAUwBXAF0AbABzAH8AiwCXAKYAsAC7AL0A0ADRANoA3ADdAOIA7QD2ARMBGQE2AUgBUQFZAAAAAAAAAgEAAAAAAAAAJAAAAAAAAAAAAAAAAAAAAWI=","subscriberID":"feed","receiptCredentailRequest":"dead","isNewSubscription":true,"super":{"failureCount":0,"label":"SubscriptionReceiptCredentailRedemption","status":3,"uniqueId":"FCBD3F8D-F23F-4784-9FE4-0D92BFACC28F","exclusiveProcessIdentifier":"da boop","recordType":71},"receiptCredentailRequestContext":"beef","receiptCredentialPresentation":"bade","boostPaymentIntentID":"de","paymentProcessor":"bank","isBoost":true}"#.utf8)
+            Data(#"{"targetSubscriptionLevel":12,"currencyCode":"shoop","shouldSuppressPaymentAlreadyRedeemed":false,"priorSubscriptionLevel":4,"amount":"YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGjCwwaVSRudWxs1w0ODxAREhMUFRYXGBgZViRjbGFzc1tOUy5tYW50aXNzYVtOUy5uZWdhdGl2ZVtOUy5leHBvbmVudF5OUy5tYW50aXNzYS5ib1lOUy5sZW5ndGhaTlMuY29tcGFjdIACTxAQfQAAAAAAAAAAAAAAAAAAAAgT\/\/\/\/\/\/\/\/\/\/8QAQnSGxwdHlokY2xhc3NuYW1lWCRjbGFzc2VzXxAaTlNEZWNpbWFsTnVtYmVyUGxhY2Vob2xkZXKlHyAhIiNfEBpOU0RlY2ltYWxOdW1iZXJQbGFjZWhvbGRlcl8QD05TRGVjaW1hbE51bWJlclhOU051bWJlcldOU1ZhbHVlWE5TT2JqZWN0AAgAEQAaACQAKQAyADcASQBMAFEAUwBXAF0AbABzAH8AiwCXAKYAsAC7AL0A0ADRANoA3ADdAOIA7QD2ARMBGQE2AUgBUQFZAAAAAAAAAgEAAAAAAAAAJAAAAAAAAAAAAAAAAAAAAWI=","subscriberID":"feed","receiptCredentailRequest":"dead","isNewSubscription":true,"super":{"failureCount":0,"label":"SubscriptionReceiptCredentailRedemption","status":3,"uniqueId":"FCBD3F8D-F23F-4784-9FE4-0D92BFACC28F","recordType":71},"receiptCredentailRequestContext":"beef","receiptCredentialPresentation":"bade","boostPaymentIntentID":"de","paymentProcessor":"bank","isBoost":true}"#.utf8)
         ),
         (
             DonationReceiptCredentialRedemptionJobRecord(
@@ -472,11 +473,10 @@ extension DonationReceiptCredentialRedemptionJobRecord: ValidatableModel {
                 amount: nil,
                 currencyCode: nil,
                 boostPaymentIntentID: "na na na na na na na na na na na na na na na na na na na na",
-                exclusiveProcessIdentifier: "batman!",
                 failureCount: 0,
                 status: .permanentlyFailed
             ),
-            Data(#"{"subscriberID":"deef","isNewSubscription":true,"shouldSuppressPaymentAlreadyRedeemed":false,"super":{"failureCount":0,"label":"SubscriptionReceiptCredentailRedemption","status":3,"uniqueId":"BCFED95C-5550-42BD-8F0C-69AE5459FC8A","exclusiveProcessIdentifier":"batman!","recordType":71},"receiptCredentailRequestContext":"feeb","paymentProcessor":"not svb","targetSubscriptionLevel":12,"priorSubscriptionLevel":4,"receiptCredentailRequest":"aded","isBoost":true,"boostPaymentIntentID":"na na na na na na na na na na na na na na na na na na na na"}"#.utf8)
+            Data(#"{"subscriberID":"deef","isNewSubscription":true,"shouldSuppressPaymentAlreadyRedeemed":false,"super":{"failureCount":0,"label":"SubscriptionReceiptCredentailRedemption","status":3,"uniqueId":"BCFED95C-5550-42BD-8F0C-69AE5459FC8A","recordType":71},"receiptCredentailRequestContext":"feeb","paymentProcessor":"not svb","targetSubscriptionLevel":12,"priorSubscriptionLevel":4,"receiptCredentailRequest":"aded","isBoost":true,"boostPaymentIntentID":"na na na na na na na na na na na na na na na na na na na na"}"#.utf8)
         )
     ]
 
@@ -516,11 +516,10 @@ extension SendGiftBadgeJobRecord: ValidatableModel {
                 paypalPaymentToken: "florp",
                 threadId: "paul",
                 messageText: "blarp",
-                exclusiveProcessIdentifier: "carp",
                 failureCount: 9,
                 status: .ready
             ),
-            Data(#"{"paypalPaymentToken":"florp","threadId":"paul","paymentIntentClientSecret":"secret","amount":"YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGjCwwaVSRudWxs1w0ODxAREhMUFRYXGBgZViRjbGFzc1tOUy5tYW50aXNzYVtOUy5uZWdhdGl2ZVtOUy5leHBvbmVudF5OUy5tYW50aXNzYS5ib1lOUy5sZW5ndGhaTlMuY29tcGFjdIACTxAQfgAAAAAAAAAAAAAAAAAAAAgT\/\/\/\/\/\/\/\/\/\/8QAQnSGxwdHlokY2xhc3NuYW1lWCRjbGFzc2VzXxAaTlNEZWNpbWFsTnVtYmVyUGxhY2Vob2xkZXKlHyAhIiNfEBpOU0RlY2ltYWxOdW1iZXJQbGFjZWhvbGRlcl8QD05TRGVjaW1hbE51bWJlclhOU051bWJlcldOU1ZhbHVlWE5TT2JqZWN0AAgAEQAaACQAKQAyADcASQBMAFEAUwBXAF0AbABzAH8AiwCXAKYAsAC7AL0A0ADRANoA3ADdAOIA7QD2ARMBGQE2AUgBUQFZAAAAAAAAAgEAAAAAAAAAJAAAAAAAAAAAAAAAAAAAAWI=","receiptCredentailRequest":"dead","paymentMethodId":"carp","messageText":"blarp","paypalPayerId":"borp","super":{"failureCount":9,"label":"SendGiftBadge","status":1,"uniqueId":"E39E84CE-CC61-4E1F-95DD-809BA20EA0AC","exclusiveProcessIdentifier":"carp","recordType":73},"boostPaymentIntentID":"yarp","receiptCredentailRequestContext":"beef","paypalPaymentId":"gorp","paymentProcessor":"money","currencyCode":"zhoop"}"#.utf8)
+            Data(#"{"paypalPaymentToken":"florp","threadId":"paul","paymentIntentClientSecret":"secret","amount":"YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGjCwwaVSRudWxs1w0ODxAREhMUFRYXGBgZViRjbGFzc1tOUy5tYW50aXNzYVtOUy5uZWdhdGl2ZVtOUy5leHBvbmVudF5OUy5tYW50aXNzYS5ib1lOUy5sZW5ndGhaTlMuY29tcGFjdIACTxAQfgAAAAAAAAAAAAAAAAAAAAgT\/\/\/\/\/\/\/\/\/\/8QAQnSGxwdHlokY2xhc3NuYW1lWCRjbGFzc2VzXxAaTlNEZWNpbWFsTnVtYmVyUGxhY2Vob2xkZXKlHyAhIiNfEBpOU0RlY2ltYWxOdW1iZXJQbGFjZWhvbGRlcl8QD05TRGVjaW1hbE51bWJlclhOU051bWJlcldOU1ZhbHVlWE5TT2JqZWN0AAgAEQAaACQAKQAyADcASQBMAFEAUwBXAF0AbABzAH8AiwCXAKYAsAC7AL0A0ADRANoA3ADdAOIA7QD2ARMBGQE2AUgBUQFZAAAAAAAAAgEAAAAAAAAAJAAAAAAAAAAAAAAAAAAAAWI=","receiptCredentailRequest":"dead","paymentMethodId":"carp","messageText":"blarp","paypalPayerId":"borp","super":{"failureCount":9,"label":"SendGiftBadge","status":1,"uniqueId":"E39E84CE-CC61-4E1F-95DD-809BA20EA0AC","recordType":73},"boostPaymentIntentID":"yarp","receiptCredentailRequestContext":"beef","paypalPaymentId":"gorp","paymentProcessor":"money","currencyCode":"zhoop"}"#.utf8)
         ),
         (
             SendGiftBadgeJobRecord(
@@ -537,11 +536,10 @@ extension SendGiftBadgeJobRecord: ValidatableModel {
                 paypalPaymentToken: nil,
                 threadId: "paul",
                 messageText: "blarp",
-                exclusiveProcessIdentifier: "carp",
                 failureCount: 9,
                 status: .ready
             ),
-            Data(#"{"amount":"YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGjCwwaVSRudWxs1w0ODxAREhMUFRYXGBgZViRjbGFzc1tOUy5tYW50aXNzYVtOUy5uZWdhdGl2ZVtOUy5leHBvbmVudF5OUy5tYW50aXNzYS5ib1lOUy5sZW5ndGhaTlMuY29tcGFjdIACTxAQfgAAAAAAAAAAAAAAAAAAAAgT\/\/\/\/\/\/\/\/\/\/8QAQnSGxwdHlokY2xhc3NuYW1lWCRjbGFzc2VzXxAaTlNEZWNpbWFsTnVtYmVyUGxhY2Vob2xkZXKlHyAhIiNfEBpOU0RlY2ltYWxOdW1iZXJQbGFjZWhvbGRlcl8QD05TRGVjaW1hbE51bWJlclhOU051bWJlcldOU1ZhbHVlWE5TT2JqZWN0AAgAEQAaACQAKQAyADcASQBMAFEAUwBXAF0AbABzAH8AiwCXAKYAsAC7AL0A0ADRANoA3ADdAOIA7QD2ARMBGQE2AUgBUQFZAAAAAAAAAgEAAAAAAAAAJAAAAAAAAAAAAAAAAAAAAWI=","super":{"failureCount":9,"label":"SendGiftBadge","status":1,"uniqueId":"A3865D66-C078-4FDF-8557-89859DBA8F07","exclusiveProcessIdentifier":"carp","recordType":73},"receiptCredentailRequestContext":"beef","paymentProcessor":"money","currencyCode":"zhoop","messageText":"blarp","receiptCredentailRequest":"dead","threadId":"paul"}"#.utf8)
+            Data(#"{"amount":"YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGjCwwaVSRudWxs1w0ODxAREhMUFRYXGBgZViRjbGFzc1tOUy5tYW50aXNzYVtOUy5uZWdhdGl2ZVtOUy5leHBvbmVudF5OUy5tYW50aXNzYS5ib1lOUy5sZW5ndGhaTlMuY29tcGFjdIACTxAQfgAAAAAAAAAAAAAAAAAAAAgT\/\/\/\/\/\/\/\/\/\/8QAQnSGxwdHlokY2xhc3NuYW1lWCRjbGFzc2VzXxAaTlNEZWNpbWFsTnVtYmVyUGxhY2Vob2xkZXKlHyAhIiNfEBpOU0RlY2ltYWxOdW1iZXJQbGFjZWhvbGRlcl8QD05TRGVjaW1hbE51bWJlclhOU051bWJlcldOU1ZhbHVlWE5TT2JqZWN0AAgAEQAaACQAKQAyADcASQBMAFEAUwBXAF0AbABzAH8AiwCXAKYAsAC7AL0A0ADRANoA3ADdAOIA7QD2ARMBGQE2AUgBUQFZAAAAAAAAAgEAAAAAAAAAJAAAAAAAAAAAAAAAAAAAAWI=","super":{"failureCount":9,"label":"SendGiftBadge","status":1,"uniqueId":"A3865D66-C078-4FDF-8557-89859DBA8F07","recordType":73},"receiptCredentailRequestContext":"beef","paymentProcessor":"money","currencyCode":"zhoop","messageText":"blarp","receiptCredentailRequest":"dead","threadId":"paul"}"#.utf8)
         )
     ]
 
@@ -571,11 +569,10 @@ extension SessionResetJobRecord: ValidatableModel {
         (
             SessionResetJobRecord(
                 contactThreadId: "this",
-                exclusiveProcessIdentifier: "the way",
                 failureCount: 14,
                 status: .ready
             ),
-            Data(#"{"super":{"failureCount":14,"label":"SessionReset","status":1,"uniqueId":"EB87D2DC-9289-455D-B7FC-08ECA4C731CF","exclusiveProcessIdentifier":"the way","recordType":52},"contactThreadId":"this"}"#.utf8)
+            Data(#"{"super":{"failureCount":14,"label":"SessionReset","status":1,"uniqueId":"EB87D2DC-9289-455D-B7FC-08ECA4C731CF","recordType":52},"contactThreadId":"this"}"#.utf8)
         )
     ]
 
@@ -596,11 +593,10 @@ extension CallRecordDeleteAllJobRecord: ValidatableModel {
                 deleteAllBeforeCallId: nil,
                 deleteAllBeforeConversationId: nil,
                 deleteAllBeforeTimestamp: 1234,
-                exclusiveProcessIdentifier: "blorp",
                 failureCount: 19,
                 status: .ready
             ),
-            Data(#"{"super":{"label":"CallRecordDeleteAll","uniqueId":"3989CCA4-8C1D-43FC-95C0-C3F59850AE2F","exclusiveProcessIdentifier":"blorp","failureCount":19,"recordType":100,"status":1},"CRDAJR_sendDeleteAllSyncMessage":true,"CRDAJR_deleteAllBeforeTimestamp":1234}"#.utf8)
+            Data(#"{"super":{"label":"CallRecordDeleteAll","uniqueId":"3989CCA4-8C1D-43FC-95C0-C3F59850AE2F","failureCount":19,"recordType":100,"status":1},"CRDAJR_sendDeleteAllSyncMessage":true,"CRDAJR_deleteAllBeforeTimestamp":1234}"#.utf8)
         ),
         (
             CallRecordDeleteAllJobRecord(
@@ -608,11 +604,10 @@ extension CallRecordDeleteAllJobRecord: ValidatableModel {
                 deleteAllBeforeCallId: 6789,
                 deleteAllBeforeConversationId: Aci.constantForTesting("E84A2412-09CB-4EFB-9B1D-3BEB65C14481").serviceIdBinary.asData,
                 deleteAllBeforeTimestamp: 1234,
-                exclusiveProcessIdentifier: "blorp",
                 failureCount: 19,
                 status: .ready
             ),
-            Data(#"{"CRDAJR_deleteAllBeforeConversationId":"6EokEgnLTvubHTvrZcFEgQ==","CRDAJR_deleteAllBeforeTimestamp":1234,"CRDAJR_deleteAllBeforeCallId":"6789","super":{"label":"CallRecordDeleteAll","status":1,"exclusiveProcessIdentifier":"blorp","recordType":100,"failureCount":19,"uniqueId":"C58527B5-C6C8-4CCB-B8FE-AA966A77E8F0"},"CRDAJR_sendDeleteAllSyncMessage":true}"#.utf8)
+            Data(#"{"CRDAJR_deleteAllBeforeConversationId":"6EokEgnLTvubHTvrZcFEgQ==","CRDAJR_deleteAllBeforeTimestamp":1234,"CRDAJR_deleteAllBeforeCallId":"6789","super":{"label":"CallRecordDeleteAll","status":1,"recordType":100,"failureCount":19,"uniqueId":"C58527B5-C6C8-4CCB-B8FE-AA966A77E8F0"},"CRDAJR_sendDeleteAllSyncMessage":true}"#.utf8)
         ),
         (
             CallRecordDeleteAllJobRecord(
@@ -620,11 +615,10 @@ extension CallRecordDeleteAllJobRecord: ValidatableModel {
                 deleteAllBeforeCallId: 6789,
                 deleteAllBeforeConversationId: Data(repeating: 5, count: 32),
                 deleteAllBeforeTimestamp: 1234,
-                exclusiveProcessIdentifier: "blorp",
                 failureCount: 19,
                 status: .ready
             ),
-            Data(#"{"super":{"failureCount":19,"recordType":100,"label":"CallRecordDeleteAll","uniqueId":"9C207777-FB9F-463D-9B31-08A1B31E4C33","status":1,"exclusiveProcessIdentifier":"blorp"},"CRDAJR_sendDeleteAllSyncMessage":true,"CRDAJR_deleteAllBeforeTimestamp":1234,"CRDAJR_deleteAllBeforeCallId":"6789","CRDAJR_deleteAllBeforeConversationId":"BQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQU="}"#.utf8)
+            Data(#"{"super":{"failureCount":19,"recordType":100,"label":"CallRecordDeleteAll","uniqueId":"9C207777-FB9F-463D-9B31-08A1B31E4C33","status":1},"CRDAJR_sendDeleteAllSyncMessage":true,"CRDAJR_deleteAllBeforeTimestamp":1234,"CRDAJR_deleteAllBeforeCallId":"6789","CRDAJR_deleteAllBeforeConversationId":"BQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQU="}"#.utf8)
         ),
     ]
 

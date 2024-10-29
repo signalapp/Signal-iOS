@@ -40,7 +40,6 @@ public final class SendGiftBadgeJobRecord: JobRecord, FactoryInitializableFromRe
         paypalPaymentToken: String?,
         threadId: String,
         messageText: String,
-        exclusiveProcessIdentifier: String? = nil,
         failureCount: UInt = 0,
         status: Status = .ready
     ) {
@@ -62,7 +61,6 @@ public final class SendGiftBadgeJobRecord: JobRecord, FactoryInitializableFromRe
         self.messageText = messageText
 
         super.init(
-            exclusiveProcessIdentifier: exclusiveProcessIdentifier,
             failureCount: failureCount,
             status: status
         )

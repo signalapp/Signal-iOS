@@ -38,7 +38,6 @@ public final class TSAttachmentMultisendJobRecord: JobRecord, FactoryInitializab
     public init(
         attachmentIdMap: [String: [String]],
         storyMessagesToSend: [OutgoingStoryMessage]?,
-        exclusiveProcessIdentifier: String? = nil,
         failureCount: UInt = 0,
         status: Status = .ready
     ) {
@@ -46,7 +45,6 @@ public final class TSAttachmentMultisendJobRecord: JobRecord, FactoryInitializab
         self.unsavedMessagesToSend = storyMessagesToSend
 
         super.init(
-            exclusiveProcessIdentifier: exclusiveProcessIdentifier,
             failureCount: failureCount,
             status: status
         )
