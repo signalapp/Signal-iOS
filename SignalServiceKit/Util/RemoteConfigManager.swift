@@ -909,7 +909,7 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
                 shouldUseLibsignalForUnidentifiedWebsocket,
                 in: CurrentAppContext().appUserDefaults()
             )
-            let enableShadowingForUnidentifiedWebsocket = isEnabledFlags[IsEnabledFlag.experimentalTransportShadowingEnabled.rawValue] ?? true
+            let enableShadowingForUnidentifiedWebsocket = isEnabledFlags[IsEnabledFlag.experimentalTransportShadowingEnabled.rawValue] ?? false
             ChatConnectionManagerImpl.saveEnableShadowingForUnidentifiedWebsocket(
                 enableShadowingForUnidentifiedWebsocket,
                 in: CurrentAppContext().appUserDefaults()
