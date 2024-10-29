@@ -223,6 +223,16 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
         }
     }
 
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        // clippingView's position is logically relative to the scroll view's
+        // frame, not its bounds (i.e., it's docked near the top of the scroll
+        // view regardless of scroll position). This means we should ignore the
+        // default hit testing that's relative to scroll position and just
+        // consult clippingView directly.
+        let point = convert(point, to: clippingView)
+        return clippingView.hitTest(point, with: event)
+    }
+
     @objc private func cancelFilterIconAnimator() {
         guard let filterIconAnimator, filterIconAnimator.state == .active else { return }
         filterIconAnimator.stopAnimation(false)
