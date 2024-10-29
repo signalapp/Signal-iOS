@@ -44,7 +44,7 @@ class TSInfoMessagePersistableGroupUpdateItemTest: XCTestCase {
 }
 
 extension TSInfoMessage.PersistableGroupUpdateItem: ValidatableModel {
-    static var constants: [(TSInfoMessage.PersistableGroupUpdateItem, base64JsonData: Data)] {
+    static var constants: [(TSInfoMessage.PersistableGroupUpdateItem, jsonData: Data)] {
         [
             (
                 .sequenceOfInviteLinkRequestAndCancels(
@@ -52,14 +52,14 @@ extension TSInfoMessage.PersistableGroupUpdateItem: ValidatableModel {
                     count: 12,
                     isTail: true
                 ),
-                Data(base64Encoded: "eyJzZXF1ZW5jZU9mSW52aXRlTGlua1JlcXVlc3RBbmRDYW5jZWxzIjp7ImNvdW50IjoxMiwiaXNUYWlsIjp0cnVlLCJyZXF1ZXN0ZXIiOiI1NkVFMEVGNC1BN0RGLTRCNTItQkZBRi1DNjM3RjE1QjRGRUMifX0=")!
+                Data(#"{"sequenceOfInviteLinkRequestAndCancels":{"count":12,"isTail":true,"requester":"56EE0EF4-A7DF-4B52-BFAF-C637F15B4FEC"}}"#.utf8)
             ),
             (
                 .sequenceOfInviteLinkRequestAndCancels(
                     requester: Aci.constantForTesting("56EE0EF4-A7DF-4B52-BFAF-C637F15B4FEC").codableUuid,
                     count: 0,
                     isTail: false),
-                Data(base64Encoded: "eyJzZXF1ZW5jZU9mSW52aXRlTGlua1JlcXVlc3RBbmRDYW5jZWxzIjp7ImlzVGFpbCI6ZmFsc2UsImNvdW50IjowLCJyZXF1ZXN0ZXIiOiI1NkVFMEVGNC1BN0RGLTRCNTItQkZBRi1DNjM3RjE1QjRGRUMifX0=")!
+                Data(#"{"sequenceOfInviteLinkRequestAndCancels":{"isTail":false,"count":0,"requester":"56EE0EF4-A7DF-4B52-BFAF-C637F15B4FEC"}}"#.utf8)
             ),
             (
                 .invitedPniPromotedToFullMemberAci(
@@ -67,7 +67,7 @@ extension TSInfoMessage.PersistableGroupUpdateItem: ValidatableModel {
                     inviter: Aci.constantForTesting("56EE0EF4-A7DF-4B52-BFAF-C637F15B5FEE").codableUuid
 
                 ),
-                Data(base64Encoded: "eyJpbnZpdGVkUG5pUHJvbW90ZWRUb0Z1bGxNZW1iZXJBY2kiOnsibmV3TWVtYmVyIjoiNTZFRTBFRjQtQTdERi00QjUyLUJGQUYtQzYzN0YxNUI0RkVDIiwiaW52aXRlciI6IjU2RUUwRUY0LUE3REYtNEI1Mi1CRkFGLUM2MzdGMTVCNUZFRSJ9fQ==")!
+                Data(#"{"invitedPniPromotedToFullMemberAci":{"newMember":"56EE0EF4-A7DF-4B52-BFAF-C637F15B4FEC","inviter":"56EE0EF4-A7DF-4B52-BFAF-C637F15B5FEE"}}"#.utf8)
             )
         ]
     }

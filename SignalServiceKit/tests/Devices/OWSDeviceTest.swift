@@ -67,7 +67,7 @@ class OWSDeviceTest: XCTestCase {
 }
 
 extension OWSDevice: ValidatableModel {
-    static let constants: [(OWSDevice, base64JsonData: Data)] = [
+    static let constants: [(OWSDevice, jsonData: Data)] = [
         (
             OWSDevice(
                 deviceId: 1,
@@ -75,7 +75,7 @@ extension OWSDevice: ValidatableModel {
                 createdAt: Date(millisecondsSince1970: 814929600000),
                 lastSeenAt: Date(millisecondsSince1970: 1680897600000)
             ),
-            Data(base64Encoded: "eyJjcmVhdGVkQXQiOi0xNjMzNzc2MDAsImRldmljZUlkIjoxLCJsYXN0U2VlbkF0Ijo3MDI1OTA0MDAsInVuaXF1ZUlkIjoiOUMxRTUwNjEtQUM1RC00ODMwLTk4M0UtNzVFMzU1QzAzMTkyIiwibmFtZSI6IlVrbFFJRTVoZEdoaGJpQlRhR1ZzYkhrZ0xTQnRhWE56SUhsdmRTd2diV0Z1TGdvPSIsInJlY29yZFR5cGUiOjMzfQ==")!
+            Data(#"{"createdAt":-163377600,"deviceId":1,"lastSeenAt":702590400,"uniqueId":"9C1E5061-AC5D-4830-983E-75E355C03192","name":"UklQIE5hdGhhbiBTaGVsbHkgLSBtaXNzIHlvdSwgbWFuLgo=","recordType":33}"#.utf8)
         ),
         (
             OWSDevice(
@@ -84,7 +84,7 @@ extension OWSDevice: ValidatableModel {
                 createdAt: Date(millisecondsSince1970: 0),
                 lastSeenAt: Date(millisecondsSince1970: 1)
             ),
-            Data(base64Encoded: "eyJjcmVhdGVkQXQiOi05NzgzMDcyMDAsImRldmljZUlkIjoxMiwidW5pcXVlSWQiOiJFMjRCNkE5OC1CMzQyLTRBMEMtOUI4Mi1CQjQ1OTE1ODUzQjAiLCJsYXN0U2VlbkF0IjotOTc4MzA3MTk5Ljk5ODk5OTk1LCJyZWNvcmRUeXBlIjozM30=")!
+            Data(#"{"createdAt":-978307200,"deviceId":12,"uniqueId":"E24B6A98-B342-4A0C-9B82-BB45915853B0","lastSeenAt":-978307199.99899995,"recordType":33}"#.utf8)
         )
     ]
 

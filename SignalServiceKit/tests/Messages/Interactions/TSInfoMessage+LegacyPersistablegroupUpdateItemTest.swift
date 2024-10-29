@@ -90,36 +90,36 @@ class TSInfoMessageLegacyPersistableGroupUpdateItemTest: XCTestCase {
 }
 
 extension TSInfoMessage.LegacyPersistableGroupUpdateItem: ValidatableModel {
-    static var constants: [(TSInfoMessage.LegacyPersistableGroupUpdateItem, base64JsonData: Data)] {
+    static var constants: [(TSInfoMessage.LegacyPersistableGroupUpdateItem, jsonData: Data)] {
         [
             (
                 .sequenceOfInviteLinkRequestAndCancels(count: 12, isTail: true),
-                Data(base64Encoded: "eyJzZXF1ZW5jZU9mSW52aXRlTGlua1JlcXVlc3RBbmRDYW5jZWxzIjp7ImNvdW50IjoxMiwiaXNUYWlsIjp0cnVlfX0=")!
+                Data(#"{"sequenceOfInviteLinkRequestAndCancels":{"count":12,"isTail":true}}"#.utf8)
             ),
             (
                 .sequenceOfInviteLinkRequestAndCancels(count: 0, isTail: false),
-                Data(base64Encoded: "eyJzZXF1ZW5jZU9mSW52aXRlTGlua1JlcXVlc3RBbmRDYW5jZWxzIjp7ImNvdW50IjowLCJpc1RhaWwiOmZhbHNlfX0=")!
+                Data(#"{"sequenceOfInviteLinkRequestAndCancels":{"count":0,"isTail":false}}"#.utf8)
             ),
             (
                 .invitedPniPromotedToFullMemberAci(
                     pni: Pni.constantForTesting("PNI:7CE80DE3-6243-4AD5-AE60-0D1F205391DA").codableUuid,
                     aci: Aci.constantForTesting("56EE0EF4-A7DF-4B52-BFAF-C637F15B4FEC").codableUuid
                 ),
-                Data(base64Encoded: "eyJpbnZpdGVkUG5pUHJvbW90ZWRUb0Z1bGxNZW1iZXJBY2kiOnsicG5pIjoiN0NFODBERTMtNjI0My00QUQ1LUFFNjAtMEQxRjIwNTM5MURBIiwiYWNpIjoiNTZFRTBFRjQtQTdERi00QjUyLUJGQUYtQzYzN0YxNUI0RkVDIn19")!
+                Data(#"{"invitedPniPromotedToFullMemberAci":{"pni":"7CE80DE3-6243-4AD5-AE60-0D1F205391DA","aci":"56EE0EF4-A7DF-4B52-BFAF-C637F15B4FEC"}}"#.utf8)
             ),
             (
                 .inviteRemoved(
                     invitee: Aci.constantForTesting("56EE0EF4-A7DF-4B52-BFAF-C637F15B4FEC").codableUppercaseString,
                     wasLocalUser: false
                 ),
-                Data(base64Encoded: "eyJpbnZpdGVSZW1vdmVkIjp7Imludml0ZWUiOiI1NkVFMEVGNC1BN0RGLTRCNTItQkZBRi1DNjM3RjE1QjRGRUMiLCJ3YXNMb2NhbFVzZXIiOmZhbHNlfX0=")!
+                Data(#"{"inviteRemoved":{"invitee":"56EE0EF4-A7DF-4B52-BFAF-C637F15B4FEC","wasLocalUser":false}}"#.utf8)
             ),
             (
                 .inviteRemoved(
                     invitee: Pni.constantForTesting("PNI:7CE80DE3-6243-4AD5-AE60-0D1F205391DA").codableUppercaseString,
                     wasLocalUser: true
                 ),
-                Data(base64Encoded: "eyJpbnZpdGVSZW1vdmVkIjp7Indhc0xvY2FsVXNlciI6dHJ1ZSwiaW52aXRlZSI6IlBOSTo3Q0U4MERFMy02MjQzLTRBRDUtQUU2MC0wRDFGMjA1MzkxREEifX0=")!
+                Data(#"{"inviteRemoved":{"wasLocalUser":true,"invitee":"PNI:7CE80DE3-6243-4AD5-AE60-0D1F205391DA"}}"#.utf8)
             ),
         ]
     }

@@ -10,7 +10,7 @@ enum ValidatableModelError: Error {
 }
 
 protocol ValidatableModel {
-    /// Contains pairs of constant instances, alongside base64-encoded JSON
+    /// Contains pairs of constant instances, alongside JSON data
     /// produced by serializing the instance at the time of writing.
     ///
     /// To maintain backwards-compatibility, all serialized data here must
@@ -18,7 +18,7 @@ protocol ValidatableModel {
     /// are made such that this old data fails to deserialize as expected, then
     /// data from old app versions in the wild may also fail to decode as
     /// expected.
-    static var constants: [(Self, base64JsonData: Data)] { get }
+    static var constants: [(Self, jsonData: Data)] { get }
 
     /// Validate this instance against the given model.
     ///
