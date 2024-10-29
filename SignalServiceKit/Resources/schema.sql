@@ -254,6 +254,7 @@ CREATE
             ,"BDIJR_anchorMessageRowId" INTEGER
             ,"BDIJR_fullThreadDeletionAnchorMessageRowId" INTEGER
             ,"BDIJR_threadUniqueId" TEXT
+            ,"receiptCredential" BLOB
         )
 ;
 

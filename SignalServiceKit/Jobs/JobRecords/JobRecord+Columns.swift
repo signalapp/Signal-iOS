@@ -78,7 +78,8 @@ extension JobRecord {
 
         // MARK: DonationReceiptCredentialRedemptionJobRecord
 
-        case receiptCredentialPresentation
+        case _receiptCredentialPresentation = "receiptCredentialPresentation"
+        case _receiptCredential = "receiptCredential"
 
         case isBoost
 

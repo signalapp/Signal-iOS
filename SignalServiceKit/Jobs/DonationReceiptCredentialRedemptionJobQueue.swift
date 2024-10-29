@@ -321,9 +321,6 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
         let receiptCredentialRequest = try ReceiptCredentialRequest(
             contents: [UInt8](jobRecord.receiptCredentialRequest)
         )
-        let receiptCredentialPresentation = try jobRecord.receiptCredentialPresentation.map {
-            try ReceiptCredentialPresentation(contents: [UInt8]($0))
-        }
 
         let paymentType: PaymentType
         if jobRecord.isBoost {
@@ -353,7 +350,7 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
             paymentType: paymentType,
             receiptCredentialRequest: receiptCredentialRequest,
             receiptCredentialRequestContext: receiptCredentialRequestContext,
-            receiptCredentialPresentation: receiptCredentialPresentation
+            receiptCredentialPresentation: try jobRecord.getReceiptCredentialPresentation()
         )
     }
 
@@ -586,16 +583,13 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
             ).awaitable()
         }
 
-        let receiptCredentialPresentation = try DonationSubscriptionManager.generateReceiptCredentialPresentation(
-            receiptCredential: receiptCredential
-        )
-
-        // TODO: [Donations] We should persist the receipt credential, rather than the presentation.
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-            jobRecord.setReceiptCredentialPresentation(receiptCredentialPresentation.serialize().asData, tx: tx)
+            jobRecord.setReceiptCredential(receiptCredential, tx: tx)
         }
 
-        return receiptCredentialPresentation
+        return try DonationSubscriptionManager.generateReceiptCredentialPresentation(
+            receiptCredential: receiptCredential
+        )
     }
 
     private func persistErrorCode(

@@ -379,6 +379,7 @@ extension DonationReceiptCredentialRedemptionJobRecord: ValidatableModel {
                 paymentMethod: "SEPA_DEBIT",
                 receiptCredentialRequestContext: Data(base64Encoded: "beef")!,
                 receiptCredentialRequest: Data(base64Encoded: "dead")!,
+                receiptCredential: nil,
                 receiptCredentialPresentation: Data(base64Encoded: "bade")!,
                 subscriberID: Data(base64Encoded: "feed")!,
                 targetSubscriptionLevel: 12,
@@ -400,6 +401,7 @@ extension DonationReceiptCredentialRedemptionJobRecord: ValidatableModel {
                 paymentMethod: "SEPA_DEBIT",
                 receiptCredentialRequestContext: Data(base64Encoded: "beef")!,
                 receiptCredentialRequest: Data(base64Encoded: "dead")!,
+                receiptCredential: nil,
                 receiptCredentialPresentation: Data(base64Encoded: "bade")!,
                 subscriberID: Data(base64Encoded: "feed")!,
                 targetSubscriptionLevel: 12,
@@ -421,6 +423,7 @@ extension DonationReceiptCredentialRedemptionJobRecord: ValidatableModel {
                 paymentMethod: "SEPA_DEBIT",
                 receiptCredentialRequestContext: Data(base64Encoded: "beef")!,
                 receiptCredentialRequest: Data(base64Encoded: "dead")!,
+                receiptCredential: nil,
                 receiptCredentialPresentation: Data(base64Encoded: "bade")!,
                 subscriberID: Data(base64Encoded: "feed")!,
                 targetSubscriptionLevel: 12,
@@ -442,6 +445,7 @@ extension DonationReceiptCredentialRedemptionJobRecord: ValidatableModel {
                 paymentMethod: nil,
                 receiptCredentialRequestContext: Data(base64Encoded: "beef")!,
                 receiptCredentialRequest: Data(base64Encoded: "dead")!,
+                receiptCredential: nil,
                 receiptCredentialPresentation: Data(base64Encoded: "bade")!,
                 subscriberID: Data(base64Encoded: "feed")!,
                 targetSubscriptionLevel: 12,
@@ -463,6 +467,7 @@ extension DonationReceiptCredentialRedemptionJobRecord: ValidatableModel {
                 paymentMethod: nil,
                 receiptCredentialRequestContext: Data(base64Encoded: "feeb")!,
                 receiptCredentialRequest: Data(base64Encoded: "aded")!,
+                receiptCredential: nil,
                 receiptCredentialPresentation: nil,
                 subscriberID: Data(base64Encoded: "deef")!,
                 targetSubscriptionLevel: 12,
@@ -477,6 +482,28 @@ extension DonationReceiptCredentialRedemptionJobRecord: ValidatableModel {
                 status: .permanentlyFailed
             ),
             Data(#"{"subscriberID":"deef","isNewSubscription":true,"shouldSuppressPaymentAlreadyRedeemed":false,"super":{"failureCount":0,"label":"SubscriptionReceiptCredentailRedemption","status":3,"uniqueId":"BCFED95C-5550-42BD-8F0C-69AE5459FC8A","recordType":71},"receiptCredentailRequestContext":"feeb","paymentProcessor":"not svb","targetSubscriptionLevel":12,"priorSubscriptionLevel":4,"receiptCredentailRequest":"aded","isBoost":true,"boostPaymentIntentID":"na na na na na na na na na na na na na na na na na na na na"}"#.utf8)
+        ),
+        (
+            DonationReceiptCredentialRedemptionJobRecord(
+                paymentProcessor: "not svb",
+                paymentMethod: nil,
+                receiptCredentialRequestContext: Data(base64Encoded: "feeb")!,
+                receiptCredentialRequest: Data(base64Encoded: "aded")!,
+                receiptCredential: Data(base64Encoded: "deda"),
+                receiptCredentialPresentation: nil,
+                subscriberID: Data(base64Encoded: "deef")!,
+                targetSubscriptionLevel: 12,
+                priorSubscriptionLevel: 4,
+                isNewSubscription: true,
+                shouldSuppressPaymentAlreadyRedeemed: false,
+                isBoost: true,
+                amount: nil,
+                currencyCode: nil,
+                boostPaymentIntentID: "na na na na na na na na na na na na na na na na na na na na",
+                failureCount: 0,
+                status: .permanentlyFailed
+            ),
+            Data(#"{"subscriberID":"deef","isNewSubscription":true,"shouldSuppressPaymentAlreadyRedeemed":false,"super":{"failureCount":0,"label":"SubscriptionReceiptCredentailRedemption","status":3,"uniqueId":"BCFED95C-5550-42BD-8F0C-69AE5459FC8A","recordType":71},"receiptCredentailRequestContext":"feeb","paymentProcessor":"not svb","targetSubscriptionLevel":12,"priorSubscriptionLevel":4,"receiptCredentailRequest":"aded","receiptCredential":"deda","isBoost":true,"boostPaymentIntentID":"na na na na na na na na na na na na na na na na na na na na"}"#.utf8)
         )
     ]
 
@@ -485,7 +512,8 @@ extension DonationReceiptCredentialRedemptionJobRecord: ValidatableModel {
             paymentProcessor == against.paymentProcessor,
             receiptCredentialRequestContext == against.receiptCredentialRequestContext,
             receiptCredentialRequest == against.receiptCredentialRequest,
-            receiptCredentialPresentation == against.receiptCredentialPresentation,
+            _receiptCredential == against._receiptCredential,
+            _receiptCredentialPresentation == against._receiptCredentialPresentation,
             subscriberID == against.subscriberID,
             targetSubscriptionLevel == against.targetSubscriptionLevel,
             priorSubscriptionLevel == against.priorSubscriptionLevel,

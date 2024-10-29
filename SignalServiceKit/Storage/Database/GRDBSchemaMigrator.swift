@@ -303,6 +303,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addCallLinkTable
         case deleteIncomingGroupSyncJobRecords
         case deleteKnownStickerPackTable
+        case addReceiptCredentialColumnToJobRecord
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -364,7 +365,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 95
+    public static let grdbSchemaVersionLatest: UInt = 96
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -3639,6 +3640,13 @@ public class GRDBSchemaMigrator: NSObject {
 
         migrator.registerMigration(.deleteKnownStickerPackTable) { tx in
             try tx.database.execute(sql: "DROP TABLE IF EXISTS model_KnownStickerPack")
+            return .success(())
+        }
+
+        migrator.registerMigration(.addReceiptCredentialColumnToJobRecord) { tx in
+            try tx.database.alter(table: "model_SSKJobRecord") { table in
+                table.add(column: "receiptCredential", .blob)
+            }
             return .success(())
         }
 
