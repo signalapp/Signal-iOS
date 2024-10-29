@@ -45,7 +45,7 @@ public extension DatabaseRecovery {
     static func rebuildExistingDatabase(databaseStorage: SDSDatabaseStorage) {
         Logger.info("Attempting to reindex the database...")
         do {
-            try databaseStorage.writeThrows { tx in
+            try databaseStorage.performWrite { tx in
                 try SqliteUtil.reindex(db: tx.unwrapGrdbWrite.database)
             }
             Logger.info("Reindexed database")

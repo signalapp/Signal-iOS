@@ -339,7 +339,7 @@ public class SDSDatabaseStorage: NSObject {
         return value
     }
 
-    public func writeThrows<T>(
+    public func performWrite<T>(
         file: String = #file,
         function: String = #function,
         line: Int = #line,
@@ -379,18 +379,8 @@ public class SDSDatabaseStorage: NSObject {
         line: Int = #line,
         block: (SDSAnyWriteTransaction) -> Void
     ) {
-        write(file: file, function: function, line: line, isAwaitableWrite: false, block: block)
-    }
-
-    private func write(
-        file: String,
-        function: String,
-        line: Int,
-        isAwaitableWrite: Bool,
-        block: (SDSAnyWriteTransaction) -> Void
-    ) {
         do {
-            return try writeThrows(file: file, function: function, line: line, isAwaitableWrite: isAwaitableWrite, block: block)
+            return try performWrite(file: file, function: function, line: line, isAwaitableWrite: false, block: block)
         } catch {
             owsFail("error: \(error.grdbErrorForLogging)")
         }
@@ -418,12 +408,21 @@ public class SDSDatabaseStorage: NSObject {
     ) rethrows -> T {
         var value: T!
         var thrown: Error?
-        write(file: file, function: function, line: line, isAwaitableWrite: isAwaitableWrite) { tx in
-            do {
-                value = try block(tx)
-            } catch {
-                thrown = error
+        do {
+            try performWrite(
+                file: file,
+                function: function,
+                line: line,
+                isAwaitableWrite: isAwaitableWrite
+            ) { tx in
+                do {
+                    value = try block(tx)
+                } catch {
+                    thrown = error
+                }
             }
+        } catch {
+            owsFail("error: \(error.grdbErrorForLogging)")
         }
         if let thrown {
             try rescue(thrown.grdbErrorForLogging)
