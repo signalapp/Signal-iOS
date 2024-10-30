@@ -23,7 +23,7 @@ public protocol OrphanedBackupAttachmentManager {
     func didCreateOrUpdateAttachment(
         withMediaName mediaName: String,
         tx: DBWriteTransaction
-    ) throws
+    )
 }
 
 public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManager {
@@ -82,24 +82,27 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
     public func didCreateOrUpdateAttachment(
         withMediaName mediaName: String,
         tx: DBWriteTransaction
-    ) throws {
+    ) {
         guard FeatureFlags.messageBackupFileAlpha else {
             return
         }
-        try orphanedBackupAttachmentStore.removeAll(
-            withMediaName: mediaName,
-            tx: tx
-        )
+        try! OrphanedBackupAttachment
+            .filter(Column(OrphanedBackupAttachment.CodingKeys.mediaName) == mediaName)
+            .deleteAll(tx.databaseConnection)
         for type in MediaTierEncryptionType.allCases {
-            let mediaId = try messageBackupKeyMaterial.mediaEncryptionMetadata(
-                mediaName: mediaName,
-                type: type,
-                tx: tx
-            ).mediaId
-            try orphanedBackupAttachmentStore.removeAll(
-                withMediaID: mediaId,
-                tx: tx
-            )
+            guard
+                let mediaId = try? messageBackupKeyMaterial.mediaEncryptionMetadata(
+                    mediaName: mediaName,
+                    type: type,
+                    tx: tx
+                ).mediaId
+            else {
+                owsFailDebug("Missing media id encryption material")
+                continue
+            }
+            try! OrphanedBackupAttachment
+                .filter(Column(OrphanedBackupAttachment.CodingKeys.mediaId) == mediaId)
+                .deleteAll(tx.databaseConnection)
         }
     }
 
@@ -427,7 +430,7 @@ open class OrphanedBackupAttachmentManagerMock: OrphanedBackupAttachmentManager 
     open func didCreateOrUpdateAttachment(
         withMediaName mediaName: String,
         tx: DBWriteTransaction
-    ) throws {
+    ) {
         // Do nothing
     }
 }

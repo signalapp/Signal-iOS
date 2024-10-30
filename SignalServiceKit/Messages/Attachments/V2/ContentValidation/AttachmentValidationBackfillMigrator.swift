@@ -275,7 +275,7 @@ public class AttachmentValidationBackfillMigratorImpl: AttachmentValidationBackf
             tx: tx
         )
         // Clear out the orphan record for the _new_ ancillary files.
-        try orphanedAttachmentCleaner.releasePendingAttachment(
+        orphanedAttachmentCleaner.releasePendingAttachment(
             withId: revalidatedAttachment.orphanRecordId,
             tx: tx
         )

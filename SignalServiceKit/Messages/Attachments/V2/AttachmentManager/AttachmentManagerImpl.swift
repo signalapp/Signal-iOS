@@ -280,7 +280,7 @@ public class AttachmentManagerImpl: AttachmentManager {
         )
 
         if let mediaName = attachmentParams.mediaName {
-            try orphanedBackupAttachmentManager.didCreateOrUpdateAttachment(
+            orphanedBackupAttachmentManager.didCreateOrUpdateAttachment(
                 withMediaName: mediaName,
                 tx: tx
             )
@@ -494,7 +494,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             )
 
             if let mediaName = attachmentParams.mediaName {
-                try orphanedBackupAttachmentManager.didCreateOrUpdateAttachment(
+                orphanedBackupAttachmentManager.didCreateOrUpdateAttachment(
                     withMediaName: mediaName,
                     tx: tx
                 )
@@ -684,10 +684,10 @@ public class AttachmentManagerImpl: AttachmentManager {
                 )
                 if hasOrphanRecord {
                     // Make sure to clear out the pending attachment from the orphan table so it isn't deleted!
-                    try orphanedAttachmentCleaner.releasePendingAttachment(withId: pendingAttachment.orphanRecordId, tx: tx)
+                    orphanedAttachmentCleaner.releasePendingAttachment(withId: pendingAttachment.orphanRecordId, tx: tx)
                 }
                 if let mediaName = attachmentParams.mediaName {
-                    try orphanedBackupAttachmentManager.didCreateOrUpdateAttachment(
+                    orphanedBackupAttachmentManager.didCreateOrUpdateAttachment(
                         withMediaName: mediaName,
                         tx: tx
                     )
@@ -715,7 +715,7 @@ public class AttachmentManagerImpl: AttachmentManager {
 
                         if hasOrphanRecord {
                             // Make sure to clear out the pending attachment from the orphan table so it isn't deleted!
-                            try self.orphanedAttachmentCleaner.releasePendingAttachment(
+                            self.orphanedAttachmentCleaner.releasePendingAttachment(
                                 withId: pendingAttachment.orphanRecordId,
                                 tx: tx
                             )
@@ -726,6 +726,8 @@ public class AttachmentManagerImpl: AttachmentManager {
                 }
 
                 // Already have an attachment with the same plaintext hash or media name! Create a new reference to it instead.
+                // If this fails and throws, the database won't be in an invalid state even if not rolled
+                // back; the existing attachment just doesn't get its new owner.
                 try attachmentStore.addOwner(
                     referenceParams,
                     for: existingAttachmentId,
@@ -864,7 +866,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             )
 
             if let mediaName = attachmentParams.mediaName {
-                try orphanedBackupAttachmentManager.didCreateOrUpdateAttachment(
+                orphanedBackupAttachmentManager.didCreateOrUpdateAttachment(
                     withMediaName: mediaName,
                     tx: tx
                 )

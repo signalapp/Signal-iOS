@@ -1671,9 +1671,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         tx: tx
                     )
                     // Make sure to clear out the pending attachment from the orphan table so it isn't deleted!
-                    try self.orphanedAttachmentCleaner.releasePendingAttachment(withId: pendingAttachment.orphanRecordId, tx: tx)
+                    self.orphanedAttachmentCleaner.releasePendingAttachment(withId: pendingAttachment.orphanRecordId, tx: tx)
 
-                    try self.orphanedBackupAttachmentManager.didCreateOrUpdateAttachment(
+                    self.orphanedBackupAttachmentManager.didCreateOrUpdateAttachment(
                         withMediaName: Attachment.mediaName(digestSHA256Ciphertext: pendingAttachment.digestSHA256Ciphertext),
                         tx: tx
                     )
@@ -1723,7 +1723,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                             )
 
                             // Make sure to clear out the pending attachment from the orphan table so it isn't deleted!
-                            try self.orphanedAttachmentCleaner.releasePendingAttachment(withId: pendingAttachment.orphanRecordId, tx: tx)
+                            self.orphanedAttachmentCleaner.releasePendingAttachment(withId: pendingAttachment.orphanRecordId, tx: tx)
                         }
                     } else {
                         throw error
@@ -1856,14 +1856,14 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     )
 
                     if let mediaName = attachmentParams.mediaName {
-                        try self.orphanedBackupAttachmentManager.didCreateOrUpdateAttachment(
+                        self.orphanedBackupAttachmentManager.didCreateOrUpdateAttachment(
                             withMediaName: mediaName,
                             tx: tx
                         )
                     }
 
                     // Make sure to clear out the pending attachment from the orphan table so it isn't deleted!
-                    try self.orphanedAttachmentCleaner.releasePendingAttachment(withId: pendingAttachment.orphanRecordId, tx: tx)
+                    self.orphanedAttachmentCleaner.releasePendingAttachment(withId: pendingAttachment.orphanRecordId, tx: tx)
 
                     guard let attachment = self.attachmentStore.fetchFirst(
                         owner: referenceParams.owner.id,
@@ -1894,7 +1894,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                             )
 
                             // Make sure to clear out the pending attachment from the orphan table so it isn't deleted!
-                            try self.orphanedAttachmentCleaner.releasePendingAttachment(withId: pendingAttachment.orphanRecordId, tx: tx)
+                            self.orphanedAttachmentCleaner.releasePendingAttachment(withId: pendingAttachment.orphanRecordId, tx: tx)
                         }
                     } else {
                         throw error
@@ -2029,14 +2029,14 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     )
 
                     if let mediaName = attachmentParams.mediaName {
-                        try self.orphanedBackupAttachmentManager.didCreateOrUpdateAttachment(
+                        self.orphanedBackupAttachmentManager.didCreateOrUpdateAttachment(
                             withMediaName: mediaName,
                             tx: tx
                         )
                     }
 
                     // Make sure to clear out the pending attachment from the orphan table so it isn't deleted!
-                    try self.orphanedAttachmentCleaner.releasePendingAttachment(withId: pendingThumbnailAttachment.orphanRecordId, tx: tx)
+                    self.orphanedAttachmentCleaner.releasePendingAttachment(withId: pendingThumbnailAttachment.orphanRecordId, tx: tx)
 
                     guard let attachment = self.attachmentStore.fetchFirst(
                         owner: referenceParams.owner.id,
@@ -2067,7 +2067,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                             )
 
                             // Make sure to clear out the pending attachment from the orphan table so it isn't deleted!
-                            try self.orphanedAttachmentCleaner.releasePendingAttachment(
+                            self.orphanedAttachmentCleaner.releasePendingAttachment(
                                 withId: pendingThumbnailAttachment.orphanRecordId,
                                 tx: tx
                             )

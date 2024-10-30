@@ -45,7 +45,7 @@ public protocol OrphanedAttachmentCleaner {
     /// 7. Close write transaction
     ///
     /// If the attachment file(s) get deleted between steps 2 and 4, then this
-    /// method will throw in step 6 rolling back the write transaction in step 4/5.
+    /// method will crash in step 6 rolling back the write transaction in step 4/5.
     ///
     /// This ensures that when we reach step 7, either:
     /// A. Step 6 succeeded, attachment is created and not marked for deletion
@@ -55,7 +55,7 @@ public protocol OrphanedAttachmentCleaner {
     func releasePendingAttachment(
         withId: OrphanedAttachmentRecord.IDType,
         tx: DBWriteTransaction
-    ) throws
+    )
 }
 
 public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
@@ -123,13 +123,14 @@ public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
         return id
     }
 
-    public func releasePendingAttachment(withId id: OrphanedAttachmentRecord.IDType, tx: any DBWriteTransaction) throws {
+    public func releasePendingAttachment(withId id: OrphanedAttachmentRecord.IDType, tx: any DBWriteTransaction) {
         let db = tx.databaseConnection
-        let foundRecord = try OrphanedAttachmentRecord.fetchOne(db, key: id)
+        let foundRecord = try! OrphanedAttachmentRecord.fetchOne(db, key: id)
         guard let foundRecord else {
-            throw OWSAssertionError("Pending attachment not marked for deletion")
+            owsFailDebug("Pending attachment not marked for deletion")
+            return
         }
-        try foundRecord.delete(db)
+        try! foundRecord.delete(db)
 
         // Remove from skipped row ids.
         // This isn't critical; now that the row is gone skipping the id does nothing.

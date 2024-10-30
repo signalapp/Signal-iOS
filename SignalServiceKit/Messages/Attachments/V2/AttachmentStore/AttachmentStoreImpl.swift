@@ -573,11 +573,18 @@ public class AttachmentStoreImpl: AttachmentStore {
             throw OWSAssertionError("No sqlite id assigned to inserted attachment")
         }
 
-        try addOwner(
-            referenceParams,
-            for: attachmentRowId,
-            tx: tx
-        )
+        do {
+            try addOwner(
+                referenceParams,
+                for: attachmentRowId,
+                tx: tx
+            )
+        } catch let ownerError {
+            // We have to delete the ownerless attachment if owner creation failed.
+            // Crash if the delete fails; that will certainly roll back the transaction.
+            try! attachmentRecord.delete(tx.databaseConnection)
+            throw ownerError
+        }
     }
 
     /// The "global wallpaper" reference is a special case.
@@ -600,9 +607,12 @@ public class AttachmentStoreImpl: AttachmentStore {
             .fetchOne(db)
 
         let newRecord = try referenceParams.buildRecord(attachmentRowId: attachmentRowId)
+        guard let newRecord = newRecord as? ThreadAttachmentReferenceRecord else {
+            throw OWSAssertionError("Non matching record type")
+        }
         try newRecord.checkAllUInt64FieldsFitInInt64()
 
-        if let oldRecord, oldRecord == (newRecord as? ThreadAttachmentReferenceRecord) {
+        if let oldRecord, oldRecord == newRecord {
             // They're the same, no need to do anything.
             return
         }
@@ -610,17 +620,30 @@ public class AttachmentStoreImpl: AttachmentStore {
         // First we insert the new row and then we delete the old one, so that the deletion
         // of the old one doesn't trigger any unecessary zero-refcount attachment deletions.
         try newRecord.insert(db)
-        if let oldRecord {
-            // Delete the old row. Match the timestamp and attachment so we are sure its the old one.
-            let deleteCount = try AttachmentReference.ThreadAttachmentReferenceRecord
-                .filter(ownerRowIdColumn == nil)
-                .filter(timestampColumn == oldRecord.creationTimestamp)
-                .filter(attachmentRowIdColumn == oldRecord.attachmentRowId)
-                .deleteAll(db)
 
-            // It should have deleted only the single previous row; if this matched
-            // both the equality check above should have exited early.
-            owsAssertDebug(deleteCount == 1)
+        func deleteRecord(_ record: AttachmentReference.ThreadAttachmentReferenceRecord) throws -> Int {
+            return try AttachmentReference.ThreadAttachmentReferenceRecord
+                .filter(ownerRowIdColumn == nil)
+                .filter(timestampColumn == record.creationTimestamp)
+                .filter(attachmentRowIdColumn == record.attachmentRowId)
+                .deleteAll(db)
+        }
+
+        do {
+            if let oldRecord {
+                // Delete the old row. Match the timestamp and attachment so we are sure its the old one.
+                let deleteCount = try deleteRecord(oldRecord)
+
+                // It should have deleted only the single previous row; if this matched
+                // both the equality check above should have exited early.
+                owsAssertDebug(deleteCount == 1)
+            }
+        } catch let deleteError {
+            // If we failed the subsequent delete, delete the new
+            // owner reference we created (or we'll end up with two).
+            // Crash if the delete fails; that will certainly roll back the transaction.
+            _ = try! deleteRecord(newRecord)
+            throw deleteError
         }
     }
 

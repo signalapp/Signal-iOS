@@ -20,18 +20,6 @@ public protocol OrphanedBackupAttachmentStore {
         tx: DBWriteTransaction
     ) throws
 
-    /// Remove all pending task rows with the given media name
-    func removeAll(
-        withMediaName mediaName: String,
-        tx: DBWriteTransaction
-    ) throws
-
-    /// Remove all pending task rows with the given media id
-    func removeAll(
-        withMediaID mediaId: Data,
-        tx: DBWriteTransaction
-    ) throws
-
     /// Remove all records from the table.
     /// Called if e.g. a backup subscription expires or is cancelled.
     func removeAll(tx: DBWriteTransaction) throws
@@ -64,26 +52,6 @@ public class OrphanedBackupAttachmentStoreImpl: OrphanedBackupAttachmentStore {
     ) throws {
         let db = tx.databaseConnection
         try record.delete(db)
-    }
-
-    public func removeAll(
-        withMediaName mediaName: String,
-        tx: DBWriteTransaction
-    ) throws {
-        let db = SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database
-        try OrphanedBackupAttachment
-            .filter(Column(OrphanedBackupAttachment.CodingKeys.mediaName) == mediaName)
-            .deleteAll(db)
-    }
-
-    public func removeAll(
-        withMediaID mediaId: Data,
-        tx: DBWriteTransaction
-    ) throws {
-        let db = SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database
-        try OrphanedBackupAttachment
-            .filter(Column(OrphanedBackupAttachment.CodingKeys.mediaId) == mediaId)
-            .deleteAll(db)
     }
 
     public func removeAll(tx: DBWriteTransaction) throws {
