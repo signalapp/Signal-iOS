@@ -530,7 +530,7 @@
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Mostrar en mi perfil";
 
 /* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_MAKE_FEATURED" = "Seleccionar como insignia a mostrar";
+"BADGE_THANKS_MAKE_FEATURED" = "Seleccionar como insignia para mostrar en mi perfil";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the title of that sheet. */
 "BADGE_THANKS_TITLE" = "¡Gracias por tu apoyo!";
@@ -1139,7 +1139,10 @@
 "CHAT_COLORS_AUTO_TOOLTIP" = "Hace que el color de las burbujas combine con el del fondo de pantalla del chat";
 
 /* Title for context menu action to disable chat list filter (e.g., Filter by Unread) */
-"CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "Restablecer filtro";
+"CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "Clear Unread Filter";
+
+/* Button displayed in chat list to clear the unread filter when no chats are unread */
+"CHAT_LIST_EMPTY_FILTER_CLEAR_BUTTON" = "Clear Filter";
 
 /* Button at top of chat list indicating the active filter is 'Filtered by Unread' and tapping will clear the filter */
 "CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON" = "Filtrar por no leído";
@@ -1981,6 +1984,9 @@
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "No se ha podido actualizar la lista de dispositivos.";
 
+/* Message appearing on a toast indicating a new device was successfully linked. Embeds {{ device name }} */
+"DEVICE_LIST_UPDATE_NEW_DEVICE_TOAST" = "“%1$@” linked";
+
 /* A label for this device in the device list. */
 "DEVICE_NAME_THIS_DEVICE" = "Este dispositivo";
 
@@ -2144,7 +2150,7 @@
 "DISMISS_CONTEXT_MENU" = "Ocultar menú contextual";
 
 /* Title for switch to enable sharing of badges publicly */
-"DISPLAY_BADGES_ON_PROFILE_SETTING" = "Mostrar insignias en el perfil";
+"DISPLAY_BADGES_ON_PROFILE_SETTING" = "Mostrar insignias en mi perfil";
 
 /* Title for the proxy confirmation */
 "DO_YOU_WANT_TO_USE_PROXY" = "¿Quieres usar esta dirección de proxy?";
@@ -2435,7 +2441,7 @@
 "DONATION_SCREENS_HEADER_READ_MORE" = "Más información";
 
 /* On donation screens, a small amount of information text is shown. This is the title for that text. */
-"DONATION_SCREENS_HEADER_TITLE" = "Privacidad por encima de los beneficios";
+"DONATION_SCREENS_HEADER_TITLE" = "La privacidad por encima de las ganancias";
 
 /* Button title confirming the user wants to begin a new donation. */
 "DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_DONATE_ACTION" = "Donar";
@@ -2792,7 +2798,7 @@
 "FEATURED_BADGE_SECTION_HEADER" = "Selecciona una insignia";
 
 /* The title for the featured badge settings page */
-"FEATURED_BADGE_SETTINGS_TITLE" = "Insignia a mostrar";
+"FEATURED_BADGE_SETTINGS_TITLE" = "Insignia en mi perfil";
 
 /* Users can choose to learn more about how to find account info, which will open a sheet with additional information. This is the body of that sheet. */
 "FIND_ACCOUNT_INFO_SHEET_BODY" = "Busca tu IBAN, un número de hasta 34 caracteres, en la parte superior de tu extracto bancario. El nombre que introduzcas debe coincidir con tu nombre completo, tal como aparece en tu cuenta bancaria. Contacta con tu banco para obtener más información.";
@@ -4018,6 +4024,12 @@
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Escanea el código QR que se muestra en el dispositivo que quieres vincular.";
 
+/* Title for QR Scanning screen instructions sheet */
+"LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_BODY" = "Use this device to scan the QR code displayed on the device you want to link";
+
+/* Title for QR Scanning screen instructions sheet */
+"LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_TITLE" = "Scan QR Code";
+
 /* Body text for a sheet when a user tries to link a device informing them that they will need to authenticate their device */
 "LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_BODY" = "Tap continue and enter your phone’s lock to confirm. Do not enter your Signal PIN.";
 
@@ -4026,6 +4038,12 @@
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock device linking. */
 "LINK_NEW_DEVICE_AUTHENTICATION_REASON" = "Authenticate to link a device";
+
+/* Body text for a sheet when a user has started linking a device informing them to finish the process on that other device */
+"LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_BODY" = "Finish linking Signal on your other device.";
+
+/* Title for a sheet when a user has started linking a device informing them to finish the process on that other device */
+"LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE" = "Finish linking on your other device";
 
 /* Subheading for 'Link New Device' navigation */
 "LINK_NEW_DEVICE_SUBTITLE" = "Escanea el código QR para vincular un dispositivo nuevo.";
@@ -4871,7 +4889,7 @@
 "ONBOARDING_PERMISSIONS_CONTACTS_TITLE" = "Contactos";
 
 /* Description of the 'Notifications' permission in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_NOTIFICATIONS_DESCRIPTION" = "Recibir notificaciones cuando lleguen nuevos mensajes.";
+"ONBOARDING_PERMISSIONS_NOTIFICATIONS_DESCRIPTION" = "Recibe notificaciones cuando te lleguen mensajes nuevos.";
 
 /* Title introducing the 'Notifications' permission in the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_NOTIFICATIONS_TITLE" = "Notificaciones";
@@ -4919,10 +4937,10 @@
 "ONBOARDING_VERIFICATION_BACK_LINK" = "¿Número incorrecto?";
 
 /* Label for button to perform verification with a phone call. */
-"ONBOARDING_VERIFICATION_CALL_ME_BUTTON" = "Llamarme";
+"ONBOARDING_VERIFICATION_CALL_ME_BUTTON" = "Enviar código por llamada";
 
 /* Format string for button counting down time until phone call verification can be performed. Embeds {{time remaining}}. */
-"ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "Llámame en %1$@";
+"ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "Enviar código por llamada en %1$@";
 
 /* Label for a progress spinner currently validating code */
 "ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Verificando código…";
@@ -6833,13 +6851,13 @@
 "SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "Retirar fondos";
 
 /* Label for button in the 'Save Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_BUTTON" = "Guardar tu frase";
+"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_BUTTON" = "Guardar frase";
 
 /* Description for the 'Save Passphrase' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_DESCRIPTION" = "La frase de recuperación también te permite restaurar tu saldo.";
 
 /* Title for the 'Save Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_TITLE" = "Guardar tu frase";
+"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_TITLE" = "Guardar frase";
 
 /* Label for button in the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "Actualizar PIN";
@@ -7259,7 +7277,7 @@
 "SETTINGS_PINS_TITLE" = "PIN de Signal";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Define ajustes para evitar la censura, servidor proxy, redirigir llamadas y remitente confidencial.";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Define ajustes para las funciones evitar censura, servidor proxy, redirigir llamadas y remitente confidencial.";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "Ajustes avanzados";

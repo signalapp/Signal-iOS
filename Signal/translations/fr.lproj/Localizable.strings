@@ -143,7 +143,7 @@
 "ALERT_SAVE" = "Enregistrer";
 
 /* Message for UI warning about an unknown contact thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "Vous n’avez aucun groupe en commun avec cette personne. Examinez attentivement les demandes avant d’accepter pour éviter les messages indésirés.";
+"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "Vous n'avez aucun groupe en commun avec cette personne. Pour éviter les messages indésirables, examinez attentivement les demandes avant de les accepter.";
 
 /* Message for UI warning about an unknown group thread. */
 "ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "Aucun des membres de ce groupe n’est dans vos contacts. Examinez attentivement les demandes avant de les accepter pour éviter les messages non désirés.";
@@ -686,7 +686,7 @@
 "BUTTON_SUBMIT" = "Envoyer";
 
 /* Label for the 'unmute' button. */
-"BUTTON_UNMUTE" = "Réactiver";
+"BUTTON_UNMUTE" = "Réactiver le son";
 
 /* Label for the 'view' button. */
 "BUTTON_VIEW" = "Afficher";
@@ -887,7 +887,7 @@
 "CALL_VIEW_TURN_VIDEO_ON_LABEL" = "Activer la caméra";
 
 /* Accessibility label for unmuting the microphone */
-"CALL_VIEW_UNMUTE_LABEL" = "Réactiver";
+"CALL_VIEW_UNMUTE_LABEL" = "Réactiver le micro";
 
 /* Shown in the header below the name of the call while waiting for the host to allow you to enter the call. */
 "CALL_WAITING_TO_BE_LET_IN" = "En attente d’admission…";
@@ -1139,7 +1139,10 @@
 "CHAT_COLORS_AUTO_TOOLTIP" = "Adaptez automatiquement la couleur au fond d’écran";
 
 /* Title for context menu action to disable chat list filter (e.g., Filter by Unread) */
-"CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "Supprimer le filtre";
+"CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "Clear Unread Filter";
+
+/* Button displayed in chat list to clear the unread filter when no chats are unread */
+"CHAT_LIST_EMPTY_FILTER_CLEAR_BUTTON" = "Clear Filter";
 
 /* Button at top of chat list indicating the active filter is 'Filtered by Unread' and tapping will clear the filter */
 "CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON" = "Filtrer les messages non lus";
@@ -1676,7 +1679,7 @@
 "CONVERSATION_SETTINGS_UNBLOCK_USER" = "Débloquer l’utilisateur";
 
 /* Label for button to unmute a thread. */
-"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Réactiver les notifications";
+"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Réactiver le son";
 
 /* Button to start a video call */
 "CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "vidéo";
@@ -1981,6 +1984,9 @@
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "Impossible de mettre à jour la liste des appareils";
 
+/* Message appearing on a toast indicating a new device was successfully linked. Embeds {{ device name }} */
+"DEVICE_LIST_UPDATE_NEW_DEVICE_TOAST" = "“%1$@” linked";
+
 /* A label for this device in the device list. */
 "DEVICE_NAME_THIS_DEVICE" = "Cet appareil";
 
@@ -2273,7 +2279,7 @@
 "DONATION_BADGE_ISSUE_SHEET_TRY_AGAIN_BUTTON_TITLE" = "Réessayer";
 
 /* When donating on behalf of a friend, a badge will be sent. This shows how long the badge lasts. Embeds {{formatted duration}}. */
-"DONATION_FOR_A_FRIEND_ROW_DURATION" = "Dure %1$@";
+"DONATION_FOR_A_FRIEND_ROW_DURATION" = "Durée : %1$@";
 
 /* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the text on that sheet. */
 "DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY" = "Votre macaron est arrivé à expiration et ne sera plus affiché sur votre profil.";
@@ -2528,7 +2534,7 @@
 "DONATION_VIEW_MY_SUPPORT_TITLE" = "Mon soutien";
 
 /* Title for the \"other ways to donate\" section on the donation view. */
-"DONATION_VIEW_OTHER_WAYS_TO_DONATE_TITLE" = "Autres façons de faire un don";
+"DONATION_VIEW_OTHER_WAYS_TO_DONATE_TITLE" = "Nous soutenir autrement";
 
 /* Title on the 'Donate to Signal' screen */
 "DONATION_VIEW_TITLE" = "Faire un don à Signal";
@@ -3059,10 +3065,10 @@
 "GROUP_CALL_REQUEST_DENIED_MESSAGE" = "Votre demande de participation à cet appel a été refusée.";
 
 /* notification body when you join a group call and an already-joined participant has an untrusted safety number */
-"GROUP_CALL_SAFETY_NUMBER_CHANGE_AT_JOIN_BODY" = "L’un des participants de l’appel a changé de numéro de sécurité. Veuillez appuyer pour voir.";
+"GROUP_CALL_SAFETY_NUMBER_CHANGE_AT_JOIN_BODY" = "Un participant a changé de numéro de sécurité. Touchez l'écran pour l'afficher.";
 
 /* notification body when a group call participant joins with an untrusted safety number */
-"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "L’un des participants ayant rejoint l’appel a changé de numéro de sécurité. Veuillez appuyer pour voir.";
+"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Un participant qui a rejoint l'appel a changé de numéro de sécurité. Touchez l'écran pour l'afficher.";
 
 /* Toast view text informing user about swiping to screen share */
 "GROUP_CALL_SCREEN_SHARE_TOAST" = "Balayez vers le haut pour visualiser le partage d’écran";
@@ -3200,19 +3206,19 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "Les paramètres du groupe ont été changés afin d’autoriser tous les membres à envoyer des messages.";
 
 /* Message indicating that 'announcement-only' mode was disabled by the local user. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "Vous avez changé les paramètres du groupe afin d’autoriser tous les membres à envoyer des messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "Vous avez modifié les paramètres du groupe : tous les membres peuvent maintenant envoyer des messages.";
 
 /* Message indicating that 'announcement-only' mode was disabled by a remote user. Embeds {{ user who disabled 'announcement-only' mode }}. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%1$@ a changé les paramètres du groupe afin d’autoriser tous les membres à envoyer des messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%1$@ a modifié les paramètres du groupe : tous les membres peuvent maintenant envoyer des messages.";
 
 /* Message indicating that 'announcement-only' mode was enabled. */
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "Les paramètres du groupe ont été changés afin de n’autoriser que les administrateurs à envoyer des messages.";
 
 /* Message indicating that 'announcement-only' mode was enabled by the local user. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "Vous avez changé les paramètres du groupe afin de n’autoriser que les administrateurs à envoyer des messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "Vous avez modifié les paramètres du groupe : seuls les admins peuvent maintenant envoyer des messages.";
 
 /* Message indicating that 'announcement-only' mode was enabled by a remote user. Embeds {{ user who enabled 'announcement-only' mode }}. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%1$@ a changé les paramètres du groupe afin de n’autoriser que les administrateurs à envoyer des messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%1$@ a modifié les paramètres du groupe : seuls les admins peuvent maintenant envoyer des messages.";
 
 /* Subtitle indicating that the local user has been blocked from joining the group */
 "GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "Vous ne pouvez pas rejoindre le groupe via le lien, car un administrateur vous a retiré.";
@@ -3563,10 +3569,10 @@
 "GROUP_UPDATED_DESCRIPTION_UPDATED" = "La description du groupe a été changée.";
 
 /* Message indicating that the group's description was changed by the local user.. */
-"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_LOCAL_USER" = "Vous avez changé la description du groupe.";
+"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_LOCAL_USER" = "Vous avez modifié la description du groupe.";
 
 /* Message indicating that the group's description was changed by a remote user. Embeds {{ user who changed the name }}. */
-"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ a changé la description du groupe.";
+"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ a modifié la description du groupe.";
 
 /* Message indicating that the group's name was removed. */
 "GROUP_UPDATED_NAME_REMOVED" = "Le nom du groupe a été supprimé.";
@@ -4018,6 +4024,12 @@
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Scannez le code QR affiché sur l’appareil à associer.";
 
+/* Title for QR Scanning screen instructions sheet */
+"LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_BODY" = "Use this device to scan the QR code displayed on the device you want to link";
+
+/* Title for QR Scanning screen instructions sheet */
+"LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_TITLE" = "Scan QR Code";
+
 /* Body text for a sheet when a user tries to link a device informing them that they will need to authenticate their device */
 "LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_BODY" = "Tap continue and enter your phone’s lock to confirm. Do not enter your Signal PIN.";
 
@@ -4026,6 +4038,12 @@
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock device linking. */
 "LINK_NEW_DEVICE_AUTHENTICATION_REASON" = "Authenticate to link a device";
+
+/* Body text for a sheet when a user has started linking a device informing them to finish the process on that other device */
+"LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_BODY" = "Finish linking Signal on your other device.";
+
+/* Title for a sheet when a user has started linking a device informing them to finish the process on that other device */
+"LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE" = "Finish linking on your other device";
 
 /* Subheading for 'Link New Device' navigation */
 "LINK_NEW_DEVICE_SUBTITLE" = "Scannez le code QR pour associer un nouvel appareil.";
@@ -4586,7 +4604,7 @@
 "MY_STORY_TAP_TO_ADD" = "Appuyez pour ajouter";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current name, which may be a profile name or an address book name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ a récemment changé son nom de profil de %2$@ à %3$@";
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ a récemment remplacé son nom de profil \"%2$@\" par un nouveau nom de profil : \"%3$@\"";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Ignorer";
@@ -5498,7 +5516,7 @@
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Avertissement";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "Avec un code PIN, les informations stockées dans Signal sont chiffrées, et vous seul y avez accès. Votre profil, vos contacts et vos paramètres sont restaurés si vous réinstallez Signal. Vous n’avez pas besoin du code PIN pour ouvrir l’appli.";
+"PIN_CREATION_EXPLANATION" = "Avec un code PIN, les informations stockées dans Signal restent chiffrées, et vous seul y avez accès. Votre profil, vos contacts et vos paramètres sont restaurés si vous réinstallez Signal. Vous n'avez pas besoin du code PIN pour ouvrir l'app.";
 
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "En savoir plus sur les PIN";
@@ -5717,10 +5735,10 @@
 "PROFILE_BIO_VIEW_TITLE_FORMAT" = "À propos de (%1$@)";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%1$@ a changé son nom de profil de %2$@ à %3$@.";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%1$@ a remplacé son nom de profil \"%2$@\" par un nouveau nom de profil : \"%3$@\".";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ a changé son nom de profil à %2$@.";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ a remplacé son nom de profil par %2$@.";
 
 /* Title for the profile name view. */
 "PROFILE_NAME_VIEW_TITLE" = "Votre nom";
@@ -5774,13 +5792,13 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Le profil ne peut être mis à jour qu’une fois connecté à Internet.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Votre profil et les modifications qui y sont apportées seront visibles par vos interlocuteurs, vos contacts et vos groupes.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Vos contacts, vos groupes et les personnes avec qui vous échangez des messages peuvent voir votre profil et les modifications que vous y apportez.";
 
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "Profil";
 
 /* Footer below the usernames section of the profile settings explaining username visibility. */
-"PROFILE_VIEW_USERNAME_DESCRIPTION" = "Votre nom d’utilisateur, votre code QR et votre lien ne s’affichent pas dans votre profil. Partagez votre nom d’utilisateur uniquement avec les personnes en qui vous avez confiance.";
+"PROFILE_VIEW_USERNAME_DESCRIPTION" = "Votre nom d'utilisateur, votre code QR et votre lien ne s'affichent pas sur votre profil. Ne partagez votre nom d'utilisateur qu'avec des personnes de confiance.";
 
 /* Footer below the usernames section of the profile settings when a username has not been set. */
 "PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION" = "Vos amis peuvent désormais vous contacter grâce à votre nom d’utilisateur facultatif, ce qui vous évite de partager votre numéro de téléphone.";
@@ -5963,7 +5981,7 @@
 "REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_ACTION" = "Mettre à jour";
 
 /* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the description text on that alert. */
-"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_DESCRIPTION" = "Pour poursuivre la procédure d’inscription, veuillez installer la dernière version de Signal.";
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_DESCRIPTION" = "Merci d'installer la dernière version de Signal pour poursuivre l'inscription.";
 
 /* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the title on that alert. */
 "REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_TITLE" = "Mise à jour requise";
@@ -6317,7 +6335,7 @@
 "SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Je n’ai pas Signal sur mon téléphone…";
 
 /* alert body */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Accédez à l’App Store sur votre téléphone, installez Signal, complétez la procédure d’inscription et vous pourrez alors relier votre iPad au même compte.";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Depuis votre téléphone, accédez à l'App Store, installez Signal et finalisez le processus d'inscription. Vous pourrez ensuite associer votre iPad au même compte.";
 
 /* alert title */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Installer Signal sur votre téléphone";
@@ -6461,10 +6479,10 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "Vous avez manuellement désactivé le contournement de la censure.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Le contournement de la censure ne peut être activé qu’une fois connecté à Internet.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Pour activer le contournement de la censure, vous devez être connecté à Internet.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Le contournement de la censure n’est pas nécessaire ; vous êtes déjà connecté au service Signal.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Le contournement de la censure n'est pas nécessaire : vous êtes déjà connecté au service Signal.";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Activer le journal de débogage";
@@ -6503,7 +6521,7 @@
 "SETTINGS_APPEARANCE_APP_ICON" = "Icône de l’appli";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Afficher les photos des contacts du téléphone lorsqu’elles sont disponibles.";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Afficher les photos associées aux contacts du téléphone lorsqu'elles sont disponibles.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
 "SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Utiliser les photos des contacts du téléphone";
@@ -6533,7 +6551,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Toujours relayer les appels";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Relayez tous les appels par un serveur Signal pour éviter de divulguer votre adresse IP à votre contact. L’activation de cette option réduira la qualité des appels.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Relayer tous les appels via un serveur Signal pour éviter de révéler votre adresse IP à votre contact. L'activation de cette option réduit la qualité des appels.";
 
 /* Label for the 'edit phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Modifier le numéro";
@@ -6674,7 +6692,7 @@
 "SETTINGS_LINK_PREVIEWS" = "Générer des aperçus de liens";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Pour les messages que vous envoyez, récupérez des aperçus de lien directement des sites Web.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Récupérer des aperçus de lien depuis les sites web lorsque vous envoyez un message.";
 
 /* Label for the 'never' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "Jamais";
@@ -7247,7 +7265,7 @@
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "Rappels de code PIN";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "Avec un code PIN, les informations stockées dans Signal sont chiffrées, et vous seul y avez accès. Votre profil, vos contacts et vos paramètres sont restaurés si vous réinstallez Signal. Vous n’avez pas besoin du code PIN pour ouvrir l’appli.";
+"SETTINGS_PINS_FOOTER" = "Avec un code PIN, les informations stockées dans Signal restent chiffrées, et vous seul y avez accès. Votre profil, vos contacts et vos paramètres sont restaurés si vous réinstallez Signal. Attention : vous ne pouvez pas récupérer votre code PIN si vous l'oubliez.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Changer de code PIN";
@@ -7340,13 +7358,13 @@
 "SETTINGS_SHARING_SUGGESTIONS" = "Partager des contacts avec iOS";
 
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Autorisez iOS à accéder aux contacts et aux conversations pour utiliser des fonctions comme les suggestions de partage et les notifications.";
+"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Autoriser iOS à accéder aux contacts et conversations Signal pour activer des fonctionnalités telles que les notifications et les suggestions de partage.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Blocage d’inscription";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Exige votre code PIN Signal pour réenregistrer votre numéro de téléphone sur Signal.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Exiger la saisie du code PIN Signal pour réenregistrer votre numéro de téléphone sur Signal.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Indicateurs de saisie";
@@ -7355,10 +7373,10 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Expéditeur scellé";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Afficher l’icône d’état";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Afficher l'icône d'état";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Autoriser de tous";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Activer pour tous les utilisateurs";
 
 /* table section footer */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Activer l'option \"Expéditeur scellé\" pour les messages provenant d'expéditeurs qui ne figurent pas dans vos contacts ou avec qui vous n'avez pas partagé votre profil.";
@@ -7919,7 +7937,7 @@
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "Lorsque vous enverrez des messages à ce contact, le délai avant disparition des messages éphémères sera défini sur %1$@.";
 
 /* Indicator warning about an unknown contact thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Aucun groupe en commun. Examinez les demandes avec attention.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Aucun groupe en commun. Examinez attentivement les demandes avant de les accepter.";
 
 /* Indicator warning about an unknown group thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "Aucun contact dans ce groupe. Examinez les demandes avec attention.";
@@ -8144,7 +8162,7 @@
 "USE_PROXY_BUTTON" = "Utiliser un proxy";
 
 /* Explanation of when you should use a signal proxy */
-"USE_PROXY_EXPLANATION" = "N’utilisez un proxy que s'il vous est impossible de vous connecter à Signal via les données mobiles ou le Wi-Fi.";
+"USE_PROXY_EXPLANATION" = "N'utiliser un proxy que lorsqu'il est impossible de se connecter à Signal via les données mobiles ou le Wi-Fi.";
 
 /* Description of username links and QR codes on the username education sheet */
 "USERNAME_EDUCATION_LINK_DESCRIPTION" = "Les noms d’utilisateur sont associés à des codes QR uniques et des liens que vous pouvez envoyer à vos amis afin de démarrer rapidement une conversation.";

@@ -1139,7 +1139,10 @@
 "CHAT_COLORS_AUTO_TOOLTIP" = "Колір автоматично узгоджується зі шпалерами";
 
 /* Title for context menu action to disable chat list filter (e.g., Filter by Unread) */
-"CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "Скасувати фільтр";
+"CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "Clear Unread Filter";
+
+/* Button displayed in chat list to clear the unread filter when no chats are unread */
+"CHAT_LIST_EMPTY_FILTER_CLEAR_BUTTON" = "Clear Filter";
 
 /* Button at top of chat list indicating the active filter is 'Filtered by Unread' and tapping will clear the filter */
 "CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON" = "Показано непрочитані";
@@ -1980,6 +1983,9 @@
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "Не вдалось оновити список пристроїв.";
+
+/* Message appearing on a toast indicating a new device was successfully linked. Embeds {{ device name }} */
+"DEVICE_LIST_UPDATE_NEW_DEVICE_TOAST" = "“%1$@” linked";
 
 /* A label for this device in the device list. */
 "DEVICE_NAME_THIS_DEVICE" = "Цей пристрій";
@@ -3128,7 +3134,7 @@
 "GROUP_DESCRIPTION_PLACEHOLDER" = "Додайте опис групи…";
 
 /* Footer text when editing the group description */
-"GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "Опис групи побачать учасники цієї групи та запрошені особи.";
+"GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "Опис групи буде видно її учасникам і запрошеним користувачам.";
 
 /* Title for the group description view. */
 "GROUP_DESCRIPTION_VIEW_TITLE" = "Опис групи";
@@ -3191,34 +3197,34 @@
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "Користувач %1$@ увімкнув адміністраторське затвердження для посилання на цю групу.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the name of the member. }} */
-"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%1$@ не може бути автоматично доданим вами до цієї групи. Його було запрошено приєднатися без можливості бачити жодного повідомлення групи до тих пір, поки він не прийме запрошення.";
+"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "Ви не можете автоматично додати користувача %1$@ в цю групу. Користувачеві було надіслано запрошення, він зможе бачити повідомлення в групі лише після його прийняття.";
 
 /* Message for an alert indicating that some members were invited to a group. */
-"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Ці користувачі не можуть бути автоматично додані вами у цій групі. Вони були запрошені приєднатися і не бачать інших повідомлень групи, поки не приймуть запрошення.";
+"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Ви не можете автоматично додати цих користувачів у групу. Їм було надіслано запрошення, вони зможуть бачити повідомлення в групі лише після їх прийняття.";
 
 /* Message indicating that 'announcement-only' mode was disabled. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "Налаштування групи змінені, щоб усі користувачі мали змогу відправляти повідомлення.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "Налаштування групи змінено, і тепер усі учасники мають змогу надсилати повідомлення.";
 
 /* Message indicating that 'announcement-only' mode was disabled by the local user. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "Ви змінили налаштування групи, щоб усі користувачі мали змогу відправляти повідомлення.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "Ви змінили налаштування групи, і тепер усі учасники мають змогу надсилати повідомлення.";
 
 /* Message indicating that 'announcement-only' mode was disabled by a remote user. Embeds {{ user who disabled 'announcement-only' mode }}. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%1$@ змінив налаштування групи, щоб усі користувачі мали змогу відправляти повідомлення.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "Користувач %1$@ змінив налаштування групи, і тепер усі учасники мають змогу надсилати повідомлення.";
 
 /* Message indicating that 'announcement-only' mode was enabled. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "Налаштування групи змінені, щоб лише адміністратори мали змогу відправляти повідомлення.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "Налаштування групи змінено, і тепер лише адміністратори мають змогу надсилати повідомлення.";
 
 /* Message indicating that 'announcement-only' mode was enabled by the local user. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "Ви змінили налаштування групи, щоб лише адміністратори мали змогу відправляти повідомлення.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "Ви змінили налаштування групи, і тепер лише адміністратори мають змогу надсилати повідомлення.";
 
 /* Message indicating that 'announcement-only' mode was enabled by a remote user. Embeds {{ user who enabled 'announcement-only' mode }}. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%1$@ змінив налаштування групи, щоб лише адміністратори мали змогу відправляти повідомлення.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "Користувач %1$@ змінив налаштування групи, і тепер лише адміністратори мають змогу надсилати повідомлення.";
 
 /* Subtitle indicating that the local user has been blocked from joining the group */
 "GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "Ви не можете приєднатись до групи за посиланням, оскільки адміністратор групи вилучив вас.";
 
 /* Title indicating that you cannot join a group in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "Неможливо приєднатись до групи";
+"GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "Неможливо приєднатися до групи";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Це посилання на групу вже не дійсне.";
@@ -3227,13 +3233,13 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "Група";
 
 /* Label for the 'join' button in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "Приєднатись";
+"GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "Приєднатися";
 
 /* Label indicating that the group info is being loaded in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Завантаження…";
 
 /* Message text for the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Ви бажаєте приєднатися до цієї групи і поширити ваше ім'я і фото серед її учасників?";
+"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Хочете приєднатися до цієї групи та поділитися своїм іменем і фото з її учасниками?";
 
 /* Label for the 'request to join' button in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_REQUEST_TO_JOIN_BUTTON" = "Надіслати запит";
@@ -3242,16 +3248,16 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_REQUEST_TO_JOIN_MESSAGE" = "Адміністратор цієї групи повинен прийняти ваш запит на приєднання, щоб ви стали її учасником. Коли ви відправите запит, інші учасники зможуть бачити ваше ім'я й фото.";
 
 /* Error message the attempt to request to join the group failed due to network connectivity. */
-"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "Переконайтеся, що ви в мережі і спробуйте знову.";
+"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "Переконайтеся, що ви в мережі, і надішліть запит ще раз.";
 
 /* Error message the attempt to request to join the group failed. */
-"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "Спробуйте ще, будь ласка.";
+"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "Спробуйте ще раз.";
 
 /* Message for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "Це посилання на групу недійсне. Впевніться у правильності посилання та відредагуйте за потреби перед новою спробою приєднатись.";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "Це посилання на групу недійсне. Запевніться в його правильності й за потреби відредагуйте посилання перед новою спробою приєднатися.";
 
 /* Title for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Хибне посилання";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Недійсне посилання";
 
 /* Explanation of the 'approve new group members' switch. */
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "Нових учасників, які приєднуються до групи за посиланням, повинен затверджувати адміністратор.";
@@ -3275,10 +3281,10 @@
 "GROUP_LINK_PROMOTION_UPDATE" = "Запросіть друзів до своєї групи, надіславши їм посилання";
 
 /* Description text in the 'group link QR code' view. */
-"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "Люди, які сканують цей код, зможуть приєднатися до вашої групи. Адміністраторам все одно доведеться затверджувати нових учасників, якщо ви ввімкнули це налаштування.";
+"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "Люди, які зісканують цей код, зможуть приєднатися до вашої групи. Адміністраторам усе одно доведеться затверджувати нових учасників, якщо ви ввімкнули це налаштування.";
 
 /* Label for the 'share code' button in the 'group link QR code' view. */
-"GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON" = "Поділитись кодом";
+"GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON" = "Поділитися кодом";
 
 /* The title for the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_TITLE" = "QR-код";
@@ -3299,7 +3305,7 @@
 "GROUP_LINK_VIEW_RESET_LINK" = "Скинути посилання";
 
 /* Title for the 'confirm reset link' alert in the 'group link' view. */
-"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "Ви впевнені, що бажаєте оновити посилання на групу? Люди більше не зможуть приєднуватись до групи за цим посиланням.";
+"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "Ви точно хочете скинути посилання на цю групу? Долучатися до групи за поточним посиланням стане неможливо.";
 
 /* Label for the 'share link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_SHARE_LINK" = "Поділитися";
@@ -3326,31 +3332,31 @@
 "GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "Ви тепер адміністратор.";
 
 /* Message indicating that the local user was granted administrator role by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ зробив(-а) вас адміністратором.";
+"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "Користувач %1$@ зробив вас адміністратором.";
 
 /* Message indicating that the local user accepted an invite to the group. */
 "GROUP_LOCAL_USER_INVITE_ACCEPTED" = "Ви прийняли запрошення в групу.";
 
 /* Message indicating that the local user accepted an invite to the group. Embeds {{user who invited the local user}}. */
-"GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "Ви прийняли запрошення в групу від %1$@.";
+"GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "Ви прийняли запрошення в групу від користувача %1$@.";
 
 /* Message indicating that the local user declined an invite to the group. */
 "GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER" = "Ви відхилили запрошення в групу.";
 
 /* Message indicating that the local user declined an invite to the group. Embeds {{user who invited the local user}}. */
-"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "Ви відхилили запрошення в групу від %1$@.";
+"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "Ви відхилили запрошення в групу від користувача %1$@.";
 
 /* Message indicating that the local user's invite was revoked by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "%1$@ відкликав(-а) ваше запрошення в групу.";
+"GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "Користувач %1$@ відкликав ваше запрошення в групу.";
 
 /* Message indicating that the local user's invite was revoked by an unknown user. */
-"GROUP_LOCAL_USER_INVITE_REVOKED_BY_UNKNOWN_USER" = "Ваше запрошення в групу було відкликано.";
+"GROUP_LOCAL_USER_INVITE_REVOKED_BY_UNKNOWN_USER" = "Ваше запрошення в групу відкликано.";
 
 /* Message indicating that the local user was invited to the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "%1$@запросив вас.";
+"GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "Вас запросив користувач %1$@.";
 
 /* Message indicating that the local user was invited to the group. */
-"GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "Ви були запрошені в групу.";
+"GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "Вас запросили в групу.";
 
 /* Message indicating that the local user has joined the group. */
 "GROUP_LOCAL_USER_JOINED_THE_GROUP" = "Ви приєдналися до групи.";
@@ -3380,10 +3386,10 @@
 "GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "Ви надіслали запит на приєднання до групи.";
 
 /* Message indicating that the local user had their administrator role revoked. */
-"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "Ваші привілеї адміністратора були відкликані.";
+"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "У вас забрали права адміністратора.";
 
 /* Message indicating that the local user had their administrator role revoked by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ відкликав(-а) ваші привілеї адміністратора.";
+"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "Користувач %1$@ забрав у вас права адміністратора.";
 
 /* Message indicating that the local user was added to the group. */
 "GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP" = "Один з учасників додав вас до групи.";
@@ -3398,13 +3404,13 @@
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Учасники";
 
 /* A title string for a view that allows a user to review name collisions in group membership */
-"GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Перегляд учасників";
+"GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Переглянути учасників";
 
 /* Placeholder text for 'group name' field. */
-"GROUP_NAME_PLACEHOLDER" = "Ім'я групи (обов'язково)";
+"GROUP_NAME_PLACEHOLDER" = "Назва групи (обов'язково)";
 
 /* Title for the group name view. */
-"GROUP_NAME_VIEW_TITLE" = "Ім'я Групи";
+"GROUP_NAME_VIEW_TITLE" = "Назва групи";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "Користувач %1$@ прийняв запрошення в групу.";
@@ -3416,10 +3422,10 @@
 "GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "Користувач %1$@ прийняв запрошення в групу від користувача %2$@.";
 
 /* Message indicating that a remote user was added to the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "Ви додали %1$@.";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "Ви додали користувача %1$@.";
 
 /* Message indicating that a remote user was added to the group by another user. Embeds {{ %1$@ user who added the user, %2$@ user who was added}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ додав  %2$@.";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "Користувач %1$@ додав користувача %2$@.";
 
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "Користувача %1$@ додано до групи.";
@@ -3434,7 +3440,7 @@
 "GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "Користувач %1$@ відхилив ваше запрошення в групу.";
 
 /* Message indicating that a remote user was granted administrator role. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "%1$@ тепер админістратор";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "%1$@ тепер адміністратор";
 
 /* Message indicating that a remote user was granted administrator role by local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "Ви зробили користувача %1$@ адміністратором.";
@@ -3443,10 +3449,10 @@
 "GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "Користувач %1$@ зробив користувача %2$@ адміністратором.";
 
 /* Message indicating that a remote user's invite was revoked by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "Запрошення в групу для %1$@ було відкликано.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "Запрошення користувача %1$@ у групу відкликано.";
 
 /* Message indicating that a remote user was invited to the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "Ви запросили %1$@ в групу.";
+"GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "Ви запросили користувача %1$@ в групу.";
 
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "Користувач %1$@ приєднався до групи.";
@@ -3491,10 +3497,10 @@
 "GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%1$@ хоче приєднатися до групи за допомогою посилання.";
 
 /* Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "Привілеї адміністратора у %1$@ були відкликані.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "У користувача %1$@ забрали права адміністратора.";
 
 /* Message indicating that a remote user had their administrator role revoked by local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "Ви відкликали привілеї адміністратора у %1$@.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "Ви забрали права адміністратора в користувача %1$@.";
 
 /* Message indicating that a remote user had their administrator role revoked by another user. Embeds {{ %1$@ user who revoked, %2$@ user who was granted administrator role}}. */
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "Користувач %1$@ забрав права адміністратора в користувача %2$@.";
@@ -3536,13 +3542,13 @@
 "GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ видалив фото.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED" = "Фото групи було оновлено.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "Фото групи оновлено.";
 
 /* Message indicating that the group's avatar was changed. */
 "GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "Ви оновили фото.";
 
 /* Message indicating that the group's avatar was changed by a remote user. Embeds {{user who changed the avatar}}. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ оновив фото.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "Користувач %1$@ оновив фото.";
 
 /* Info message indicating that the group was updated by the local user. */
 "GROUP_UPDATED_BY_LOCAL_USER" = "Ви оновили групу.";
@@ -3566,7 +3572,7 @@
 "GROUP_UPDATED_DESCRIPTION_UPDATED_BY_LOCAL_USER" = "Ви змінили опис групи.";
 
 /* Message indicating that the group's description was changed by a remote user. Embeds {{ user who changed the name }}. */
-"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ змінив опис групи.";
+"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "Користувач %1$@ змінив опис групи.";
 
 /* Message indicating that the group's name was removed. */
 "GROUP_UPDATED_NAME_REMOVED" = "Група була видалена.";
@@ -3578,16 +3584,16 @@
 "GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "Користувач %1$@ видалив назву групи.";
 
 /* Message indicating that the group's name was changed by the local user. Embeds {{new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "Ви змінили ім'я групи на \"%1$@\".";
+"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "Ви змінили назву групи на «%1$@».";
 
 /* Message indicating that the group's name was changed by a remote user. Embeds {{ %1$@ user who changed the name, %2$@ new group name}}. */
 "GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "Користувач %1$@ змінив назву групи на «%2$@».";
 
 /* Message indicating that the group's name was changed. Embeds {{new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Назва групи тепер \"%1$@\".";
+"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Тепер група називається «%1$@».";
 
 /* Message indicating that the group was migrated. */
-"GROUP_WAS_MIGRATED" = "Цю групу було оновлено до Нової групи.";
+"GROUP_WAS_MIGRATED" = "Цю групу оновлено до нової.";
 
 /* Message indicating that the local user was invited after the group was migrated. */
 "GROUP_WAS_MIGRATED_LOCAL_USER_INVITED" = "Вас не вдалося додати до нової групи, тому вас запрошують приєднатися.";
@@ -3599,7 +3605,7 @@
 "GROUPS_ANNOUNCEMENT_ONLY_ADMINISTRATORS" = "адміністратори";
 
 /* Format for indicator that only group administrators can starts a group call and sends messages to an 'announcement-only' group. Embeds {{ a \"admins\" link. }}. */
-"GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "Відправити повідомлення можуть лише: %1$@";
+"GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "Надсилати повідомлення можуть тільки %1$@";
 
 /* Label indicating the user can contact a group administrators of an 'announcement-only' group. */
 "GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "Написати адміністратору";
@@ -3611,19 +3617,19 @@
 "GROUPS_BLOCK_REQUEST_SHEET_BLOCK_BUTTON" = "Заблокувати запит";
 
 /* Message for sheet offering to let the user block a request to join the group. Embeds {{ the requester's name }}. */
-"GROUPS_BLOCK_REQUEST_SHEET_MESSAGE" = "%1$@ не зможе приєднатися до групи або надсилати запит на приєднання за посиланням групи. Додати користувача до групи може адміністратор.";
+"GROUPS_BLOCK_REQUEST_SHEET_MESSAGE" = "Користувач %1$@ не зможе ні приєднатися до групи, ні надіслати запит на приєднання, скориставшись посиланням на групу. Але цього користувача може додати адміністратор.";
 
 /* Title for sheet asking if the user wants to block a request to join the group. */
 "GROUPS_BLOCK_REQUEST_SHEET_TITLE" = "Заблокувати запит?";
 
 /* Message for the 'can't replace group admin' alert. */
-"GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Виберіть нового адміністратора для цієї групи, перш ніж покинути її.";
+"GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Перш ніж покинути цю групу, оберіть нового адміністратора.";
 
 /* Error message indicating that a member can't be added to a group because they are already in the group. */
-"GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "Користувач вже в групі.";
+"GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "Користувач уже в групі.";
 
 /* Error indicating that an error occurred while accepting an invite. */
-"GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Не вдалось прийняти запрошення.";
+"GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Не вдалося прийняти запрошення.";
 
 /* Label for 'block group' button in group invite view. */
 "GROUPS_INVITE_BLOCK_GROUP" = "Заблокувати групу";
@@ -3638,22 +3644,22 @@
 "GROUPS_INVITE_FRIENDS_BUTTON" = "Запросити друзів";
 
 /* Label indicating a legacy group. */
-"GROUPS_LEGACY_GROUP_INDICATOR" = "Спадкована Група";
+"GROUPS_LEGACY_GROUP_INDICATOR" = "Застаріла група";
 
 /* Message for the 'replace group admin' alert. */
-"GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "Перш ніж покинути цю групу, виберіть для неї нового адміністратора.";
+"GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "Перш ніж покинути цю групу, оберіть нового адміністратора.";
 
 /* Title for the 'replace group admin' alert. */
-"GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Виберіть Нового Адміністратора";
+"GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Оберіть нового адміністратора";
 
 /* Label for the 'replace group admin' button. */
-"GROUPS_REPLACE_ADMIN_BUTTON" = "Виберіть нового адміністратора";
+"GROUPS_REPLACE_ADMIN_BUTTON" = "Обрати нового адміністратора";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
-"GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "Досягнуто ліміт на рекомендовану кількість користувачів у групі";
+"GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "Досягнуто рекомендованої максимальної кількості учасників";
 
 /* Message asking the user to confirm that they want to add a member to the group. */
-"GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "Все одно додати користувача?";
+"GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "Усе одно додати учасника?";
 
 /* Label for button that lets the user view the request to join the group. */
 "GROUPS_VIEW_REQUEST_BUTTON" = "Переглянути запит";
@@ -3707,13 +3713,13 @@
 "HOME_VIEW_DRAFT_PREFIX" = "Чернетка: ";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Дехто з ваших контактів користується Signal, включно з %1$@.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Серед ваших контактів є користувачі Signal, зокрема %1$@.";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds {{The names of 2 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Дехто з ваших контактів користується Signal, включно з %1$@ та %2$@.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Серед ваших контактів є користувачі Signal, зокрема %1$@ і %2$@.";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Дехто з ваших контактів користується Signal, включно з %1$@, %2$@ та %3$@.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Серед ваших контактів є користувачі Signal, зокрема %1$@, %2$@ і %3$@.";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Почніть перший чат.";
@@ -3722,10 +3728,10 @@
 "HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "Користувач %1$@ додав вас до групи";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
-"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Запит спілкування";
+"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Запит на повідомлення";
 
 /* Format string when search returns no results. Embeds {{search term}} */
-"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Нічого не знайдено за запитом '%1$@'";
+"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "За запитом «%1$@» нічого не знайдено";
 
 /* Title for the conversation list's 'archive' mode. */
 "HOME_VIEW_TITLE_ARCHIVE" = "Архів";
@@ -3734,7 +3740,7 @@
 "HOME_VIEW_TITLE_SELECT_CHATS" = "Вибрати чати";
 
 /* Title 'Read All' button in the toolbar of the ChatList if multi-section is active. */
-"HOME_VIEW_TOOLBAR_READ_ALL" = "Прочитати усі";
+"HOME_VIEW_TOOLBAR_READ_ALL" = "Прочитати всі";
 
 /* Label for both bank chooser header and the bank form field on the iDEAL payment detail page. */
 "IDEAL_DONATION_CHOOSE_YOUR_BANK_LABEL" = "Виберіть свій банк";
@@ -3749,7 +3755,7 @@
 "IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_TITLE" = "Підтвердьте ваш донат через %1$@";
 
 /* The image editor hint that you can draw blur */
-"IMAGE_EDITOR_BLUR_HINT" = "Малюй щоб розмити";
+"IMAGE_EDITOR_BLUR_HINT" = "Замалюйте зону, щоб її розмити";
 
 /* The image editor setting to blur faces */
 "IMAGE_EDITOR_BLUR_SETTING" = "Розмити обличчя";
@@ -3761,7 +3767,7 @@
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Ви можете надіслати максимум %1$@ зображення";
 
 /* alert title */
-"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Не вдалося обрати додаток.";
+"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Не вдалось вибрати вкладення.";
 
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "триває з'єднання…";
@@ -3875,7 +3881,7 @@
 "INFO_MESSAGE_UNBLOCKED_OTHER_USER" = "Ви розблокували цю людину.";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
-"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%1$@ змінює номер телефону.";
+"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "Користувач %1$@ змінив номер телефону.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%1$@ тепер користується Signal!";
@@ -3893,13 +3899,13 @@
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Стікери";
 
 /* accessibility hint for the button which records voice memos */
-"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "Торкніться двічі та утримуйте для запису. Відпустіть, щоб відправити, чи потягніть у бік, щоб скасувати. Торкніться двічі та потягніть угору, щоб записувати без утримування.";
+"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "Торкніться двічі та утримуйте для запису. Відпустіть, щоб надіслати або потягніть ліворуч, щоб скасувати. Торкніться двічі та потягніть угору, щоб записувати без утримування.";
 
 /* accessibility label for the button which records voice memos */
-"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "Голосове Повідомлення";
+"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "Голосове повідомлення";
 
 /* Message for the alert indicating that an audio file is invalid. */
-"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Хибний аудіофайл.";
+"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Неправильний аудіофайл.";
 
 /* The provided proxy host address is not valid */
 "INVALID_PROXY_HOST_ERROR" = "Введена адреса проксі-сервера недійсна. Будь ласка, перевірте її і спробуйте ще раз.";
@@ -3908,7 +3914,7 @@
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Щоб запросити друзів у Signal, надайте застосунку доступ до контактів у параметрах iOS.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Надати доступ до контактів";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Надайте доступ до «Контактів»";
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Запросити друзів у Signal";
@@ -3923,7 +3929,7 @@
 "INVITE_FRIENDS_PICKER_TITLE" = "Запрошення";
 
 /* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
-"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Якщо запросити кілька користувачів одночасно, то створиться група й одержувачі зможуть побачити одне одного.";
+"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Якщо ви запросите кілька користувачів одночасно, їм буде надіслано групове повідомлення, і кожен одержувач зможе побачити інших.";
 
 /* Button to join an active group call */
 "JOIN_CALL_PILL_BUTTON" = "Приєднатися";
@@ -3938,16 +3944,16 @@
 "KEY_COMMAND_ARCHIVE" = "Заархівувати чат";
 
 /* A keyboard command to open the current conversation's attachment picker. */
-"KEY_COMMAND_ATTACHMENTS" = "Показати додатки";
+"KEY_COMMAND_ATTACHMENTS" = "Показати вкладення";
 
 /* A keyboard command to open the current conversation's settings. */
 "KEY_COMMAND_CONVERSATION_INFO" = "Перейти до налаштуваннь чату";
 
 /* A keyboard command to focus the current conversation's input field. */
-"KEY_COMMAND_FOCUS_COMPOSER" = "Перемістити фокус на поле введення";
+"KEY_COMMAND_FOCUS_COMPOSER" = "Активувати панель введення";
 
 /* A keyboard command to open the current conversations GIF picker. */
-"KEY_COMMAND_GIF_SEARCH" = "Перейти до Пошуку GIF";
+"KEY_COMMAND_GIF_SEARCH" = "Перейти до пошуку GIF-зображень";
 
 /* A keyboard command to present the new group dialog. */
 "KEY_COMMAND_NEW_GROUP" = "Нова група";
@@ -3983,7 +3989,7 @@
 "LEAVE_GROUP_ACTION" = "Покинути групу";
 
 /* Error indicating that a group could not be left. */
-"LEAVE_GROUP_FAILED" = "Сталася помилка під час виходу з групи.";
+"LEAVE_GROUP_FAILED" = "Під час виходу з групи сталася помилка.";
 
 /* Text in a sheet explaining details about 'Legacy Groups'. */
 "LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "Застарілі групи — це групи, що не підтримують такі функції, як @згадування й адміністрування. Більшість застарілих груп було оновлено до нових автоматично чи вручну. Через тривалий період бездіяльності цю групу більше не можна оновити.\n\nЩоби продовжити спілкування в цьому чаті, потрібно створити нову групу.";
@@ -4001,22 +4007,28 @@
 "LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "Що таке Нові Групи?";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_BODY" = "Це хибний QR-код. Переконайтеся, що ви скануєте QR-код на пристрої, який ви хочете прив’язати.";
+"LINK_DEVICE_INVALID_CODE_BODY" = "Це не QR-код для зв'язування. Переконайтеся, що ви скануєте QR-код на пристрої, який хочете зв’язати.";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_TITLE" = "Не вдалося прив’язати пристрій";
+"LINK_DEVICE_INVALID_CODE_TITLE" = "Не вдалося зв'язати пристрій";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_BODY" = "Цей пристрій отримає доступ до ваших груп, контактів та розмов, зможе відправити повідомлення від вашого імені.";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Прив’язати пристрій?";
+"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Зв'язати пристрій?";
 
 /* attempt another linking */
-"LINK_DEVICE_RESTART" = "Повторити";
+"LINK_DEVICE_RESTART" = "Зв'язати ще раз";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Зіскануйте QR-код на пристрої, який ви хочете зв'язати зі своїм акаунтом.";
+
+/* Title for QR Scanning screen instructions sheet */
+"LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_BODY" = "Use this device to scan the QR code displayed on the device you want to link";
+
+/* Title for QR Scanning screen instructions sheet */
+"LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_TITLE" = "Scan QR Code";
 
 /* Body text for a sheet when a user tries to link a device informing them that they will need to authenticate their device */
 "LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_BODY" = "Tap continue and enter your phone’s lock to confirm. Do not enter your Signal PIN.";
@@ -4026,6 +4038,12 @@
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock device linking. */
 "LINK_NEW_DEVICE_AUTHENTICATION_REASON" = "Authenticate to link a device";
+
+/* Body text for a sheet when a user has started linking a device informing them to finish the process on that other device */
+"LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_BODY" = "Finish linking Signal on your other device.";
+
+/* Title for a sheet when a user has started linking a device informing them to finish the process on that other device */
+"LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE" = "Finish linking on your other device";
 
 /* Subheading for 'Link New Device' navigation */
 "LINK_NEW_DEVICE_SUBTITLE" = "Зіскануйте QR-код, щоб зв'язати новий пристрій.";
@@ -4049,34 +4067,34 @@
 "LINKED_DEVICES_TITLE" = "Зв’язані пристрої";
 
 /* Alert Title */
-"LINKING_DEVICE_FAILED_TITLE" = "Не вдалося прив’язати пристрій";
+"LINKING_DEVICE_FAILED_TITLE" = "Не вдалося зв'язати пристрій";
 
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "Для перенесення акаунту Signal обом пристроям необхідно надати доступ до локальної мережі.";
 
 /* A button asking the user if they need further help getting their transfer working. */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP" = "Потрібна Допомога?";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP" = "Потрібна допомога?";
 
 /* First step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "На усіх пристроях відкрийте Налаштування";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "На кожного пристрої відкрийте параметри";
 
 /* Third step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Увімкніть «Локальна мережа»";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Увімкніть «Локальну мережу»";
 
 /* Second step for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Перейти в Signal";
 
 /* Title for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Увімкніть доступ до Локальної мережі";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Надайте доступ до локальної мережі";
 
 /* A string indicating that the user can search for a location */
-"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Пошук за іменем чи адресою";
+"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Пошук за назвою / адресою";
 
 /* The title for the location picker view */
 "LOCATION_PICKER_TITLE" = "Обрати місце";
 
 /* Title for the 'logging' help section. */
-"LOGGING_SECTION" = "Логування";
+"LOGGING_SECTION" = "Реєстрація помилок";
 
 /* Footer for the 'logging' help section. */
 "LOGGING_SECTION_FOOTER" = "Журнали налагодження можуть допомогти фахівцям Signal усунути помилки та збої.";
@@ -7556,7 +7574,7 @@
 "STORIES_INFO_ACTION" = "Інформація";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "Оновлень поки що немає.";
+"STORIES_NO_RECENT_MESSAGES" = "Нових історій поки що немає.";
 
 /* The subtitle when this story has no replies */
 "STORIES_NO_REPLIES_SUBTITLE" = "Усі учасники групового чату можуть переглядати відповіді";
