@@ -1703,7 +1703,7 @@ extension ChatListViewController {
     }
 }
 
-extension ChatListViewController: UIScrollViewDelegate {
+extension ChatListViewController: UIScrollViewExtendedDelegate {
     public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         filterControl?.draggingWillBegin(in: scrollView)
         cancelSearch()
@@ -1714,6 +1714,10 @@ extension ChatListViewController: UIScrollViewDelegate {
     }
 
     public func scrollViewDidChangeAdjustedContentInset(_ scrollView: UIScrollView) {
+        filterControl?.updateScrollPosition(in: scrollView)
+    }
+
+    public func scrollViewDidChangeContentSize(_ scrollView: UIScrollView) {
         filterControl?.updateScrollPosition(in: scrollView)
     }
 

@@ -7,6 +7,10 @@ private import ObjectiveC.runtime
 import SignalServiceKit
 public import SignalUI
 
+@objc protocol UIScrollViewExtendedDelegate: UIScrollViewDelegate {
+    @objc func scrollViewDidChangeContentSize(_ scrollView: UIScrollView)
+}
+
 class CLVTableDataSource: NSObject {
     private var viewState: CLVViewState!
 
@@ -854,6 +858,8 @@ extension CLVTableDataSource {
 public class CLVTableView: UITableView {
     fileprivate var lastReloadDate: Date?
 
+    private var contentSizeDidChange: ((UIScrollView) -> Void)?
+
     // A `tableFooterView` that always expands to fill available contentSize
     // when the table view contents otherwise wouldn't fill the space. This
     // supports Filter by Unread by helping to make transitions between very
@@ -865,14 +871,6 @@ public class CLVTableView: UITableView {
     // content height is too small, the search bar otherwise becomes un-hideable).
     let footerView = UIView()
 
-    public override func reloadData() {
-        AssertIsOnMainThread()
-
-        lastReloadDate = Date()
-        super.reloadData()
-        (dataSource as? CLVTableDataSource)?.calcRefreshTimer()
-    }
-
     public init() {
         super.init(frame: .zero, style: .grouped)
         tableFooterView = footerView
@@ -881,6 +879,54 @@ public class CLVTableView: UITableView {
     @available(*, unavailable, message: "use other constructor instead.")
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    public override var dataSource: (any UITableViewDataSource)? {
+        didSet {
+            updateExtendedScrollViewDelegate()
+        }
+    }
+
+    public override var delegate: (any UITableViewDelegate)? {
+        didSet {
+            updateExtendedScrollViewDelegate()
+        }
+    }
+
+    public override var contentSize: CGSize {
+        didSet {
+            if let contentSizeDidChange, contentSize != oldValue {
+                contentSizeDidChange(self)
+            }
+        }
+    }
+
+    // Tests that the scroll view delegate conforms to UIScrollViewExtendedDelegate
+    // and sets up a `contentSizeDidChange` callback that doesn't need to perform
+    // a dynamic cast on every call. This is similar to how UIScrollView checks
+    // whether its delegate responds to various selectors up front so that
+    // rapidly-called methods like `-scrollViewDidScroll:` don't pay the cost
+    // of a `-respondsToSelector:` check with every call.
+    private func updateExtendedScrollViewDelegate() {
+        if
+            let dataSource = dataSource as? CLVTableDataSource,
+            delegate === dataSource,
+            let scrollViewDelegate = dataSource.scrollViewDelegate as? UIScrollViewExtendedDelegate
+        {
+            contentSizeDidChange = { [weak scrollViewDelegate] scrollView in
+                scrollViewDelegate?.scrollViewDidChangeContentSize(scrollView)
+            }
+        } else {
+            contentSizeDidChange = nil
+        }
+    }
+
+    public override func reloadData() {
+        AssertIsOnMainThread()
+
+        lastReloadDate = Date()
+        super.reloadData()
+        (dataSource as? CLVTableDataSource)?.calcRefreshTimer()
     }
 
     public override func layoutSubviews() {
