@@ -1,4 +1,1 @@
-スケジュール調整や突然の集まりの時に便利な通話リンクのご紹介です。
-• Signalのグループチャットに参加していなくても、Signalユーザーなら誰でもグループ通話に参加できる便利なリンクをすばやく作成できるようになりました。
-• 通話リンクは何度でも使えるので、親友との恒例の電話でのおしゃべりや、同僚との毎週の打ち合わせに最適です。
-• 通話リンクの管理や、承認・不承認の設定、通話タブからのリンクのコピーによる素早い共有などが可能です。
+• Now you can easily see all of your unread chats by pulling down in the chat list. Quickly filter what's unread, but feel free to take your time while deciding whether or not to leave them on read.

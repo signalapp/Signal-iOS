@@ -1,4 +1,1 @@
-Giới thiệu Đường dẫn Cuộc gọi: Công cụ hữu ích cho những cuộc gọi bất chợt.
-• Giờ đây bạn có thể nhanh chóng tạo một đường dẫn để bất kỳ người dùng Signal nào cũng có thể dễ dàng sử dụng để tham gia cuộc gọi nhóm mà không cần tham gia nhóm.
-• Đường dẫn cuộc gọi có thể được sử dụng lại và hữu dụng cho những cuộc hẹn gọi lặp lại với bạn bè hay trao đổi mỗi tuần với đồng nghiệp.
-• Bạn có thể quản lý đường dẫn cuộc gọi, kiểm soát cài đặt chấp thuận, và sao chép đường dẫn từ tab cuộc gọi để chia sẻ một cách nhanh chóng.
+• Now you can easily see all of your unread chats by pulling down in the chat list. Quickly filter what's unread, but feel free to take your time while deciding whether or not to leave them on read.

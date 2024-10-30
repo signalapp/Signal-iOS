@@ -1,4 +1,1 @@
-Vi introducerer opkaldslinks: Den manglende forbindelse mellem kalenderinvitationer og improviserede sammenkomster.
-• Nu kan du nemt og hurtigt oprette et link, som alle på Signal kan bruge til at deltage i et gruppeopkald uden krav om at være med i en Signal-gruppechat.
-• Opkaldslink kan genbruges og er ideelle til faste telefonaftaler med dine bedste venner eller ugentlige samtaler med dine kolleger.
-• Du kan administrere dine opkaldslinks, styre godkendelser og kopiere links fra opkaldsfanen for hurtig deling.
+• Now you can easily see all of your unread chats by pulling down in the chat list. Quickly filter what's unread, but feel free to take your time while deciding whether or not to leave them on read.

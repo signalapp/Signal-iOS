@@ -1,4 +1,1 @@
-Apresentamos os links de chamadas: a ligação perdida para convites de calendário e encontros à última hora.
-• Agora pode criar rapidamente um link fácil que qualquer pessoa no Signal pode usar para se juntar a uma chamada de grupo, sem ter de se juntar a um chat de grupo do Signal primeiro.
-• Os links de chamada são reutilizáveis e ideais para chamadas regulares com amigos ou para reuniões com colegas de trabalho.
-• Pode gerir os seus links de chamadas, controlar definições de aprovação e criar links a partir do separador de chamadas para uma partilha rápida.
+• Now you can easily see all of your unread chats by pulling down in the chat list. Quickly filter what's unread, but feel free to take your time while deciding whether or not to leave them on read.

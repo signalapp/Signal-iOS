@@ -1,4 +1,1 @@
-Los enlaces de llamada han llegado a Signal: la solución ideal para tus invitaciones de calendario y reuniones improvisadas.
-• Crea un enlace para que cualquier persona en Signal se una a una llamada grupal, sin necesidad de estar en un grupo.
-• Vuelve a usar los enlaces tantas veces como quieras para charlas recurrentes con tus amigos o reuniones semanales de trabajo.
-• Gestiona tus enlaces, cópialos desde la pestaña Llamadas para compartirlos y elige cómo se aprueban las solicitudes.
+• Now you can easily see all of your unread chats by pulling down in the chat list. Quickly filter what's unread, but feel free to take your time while deciding whether or not to leave them on read.

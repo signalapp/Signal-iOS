@@ -1,4 +1,1 @@
-Maak kennis met oproeplinks: de ontbrekende schakel voor agenda-uitnodigingen en spontane bijeenkomsten.
-• Je kunt nu snel en gemakkelijk een link maken die iedereen op Signal kan gebruiken om deel te nemen aan een groepsoproep zonder eerst lid te worden van een Signal-groepschat.
-• Oproeplinks kun je steeds opnieuw gebruiken. Ze zijn ideaal voor al die gesprekken met je beste vrienden of wekelijkse check-ins met je collega's.
-• Via het tabblad Oproepen kun je oproeplinks en goedkeuringsinstellingen beheren en links kopiëren om gemakkelijk te delen.
+• Now you can easily see all of your unread chats by pulling down in the chat list. Quickly filter what's unread, but feel free to take your time while deciding whether or not to leave them on read.

@@ -1,4 +1,1 @@
-新推出的「通話連結」：這是行事曆邀請和即興聚會不可缺少的一環。
-• 現在，你可以快速建立一個簡單的連結，讓 Signal 上的任何人都可以使用來加入群組通話，而無需先加入 Signal 群組聊天。
-• 通話連結可重複使用，非常適合與知心好友作定期電話約會，或與同事進行每週匯報。
-• 你可以管理通話連結、控制核准設定，以及從通話選項標籤複製連結，以便快速分享。
+• Now you can easily see all of your unread chats by pulling down in the chat list. Quickly filter what's unread, but feel free to take your time while deciding whether or not to leave them on read.

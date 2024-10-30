@@ -1,4 +1,1 @@
-Przedstawiamy linki do połączenia: brakujące ogniwo między zaproszeniami z kalendarza i spontanicznymi spotkaniami.
-• Od teraz możesz szybko utworzyć prosty link, dzięki któremu każdy użytkownik Signal będzie mógł dołączyć do rozmowy grupowej bez konieczności wcześniejszego dołączania do grupowego czatu Signal.
-• Linki do połączeń możesz wykorzystywać więcej niż raz, dzięki czemu idealnie nadadzą się do regularnych rozmów telefonicznych z przyjaciółmi lub cotygodniowych spotkań ze współpracownikami.
-• Zarządzaj linkami do połączeń, zmieniaj ustawienia zatwierdzenia i kopiuj linki z karty połączeń w celu szybkiego udostępniania.
+• Now you can easily see all of your unread chats by pulling down in the chat list. Quickly filter what's unread, but feel free to take your time while deciding whether or not to leave them on read.

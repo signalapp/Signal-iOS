@@ -1,4 +1,1 @@
-Memperkenalkan Pautan Panggilan: Penghubung yang diperlukan untuk jemputan kalendar dan perjumpaan spontan.
-• Kini anda boleh membuat pautan mudah dengan cepat yang boleh digunakan oleh sesiapa sahaja di Signal untuk menyertai panggilan kumpulan tanpa perlu menyertai sembang kumpulan Signal terlebih dahulu.
-• Pautan panggilan boleh diguna semula dan sesuai untuk janji temu telefon berulang dengan rakan baik atau mesyuarat mingguan dengan rakan sekerja.
-• Anda boleh mengurus pautan panggilan anda, mengawal tetapan kelulusan dan menyalin pautan daripada tab panggilan untuk perkongsian pantas.
+• Now you can easily see all of your unread chats by pulling down in the chat list. Quickly filter what's unread, but feel free to take your time while deciding whether or not to leave them on read.

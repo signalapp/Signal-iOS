@@ -1,4 +1,1 @@
-Arama Bağlantıları Tanıtımı: Takvim davetleri ve doğaçlama toplantılar için eksik olan bağlantı.
-• Bundan böyle Signal'deki herkesin önce bir Signal grup sohbetine katılmak zorunda kalmadan, grup aramasına katılmak için kullanabileceği kolay bir bağlantıyı hızla oluşturabilirsin.
-• Arama bağlantıları yeniden kullanılabilir ve en iyi arkadaşlarınla sürekli yaptığın telefon görüşmeleri veya iş arkadaşlarınla haftalık buluşmalar için idealdir.
-• Arama bağlantılarını yönetebilir, onay ayarlarını kontrol edebilir ve hızlı paylaşım için bağlantıları aramalar sekmesinden kopyalayabilirsin.
+• Now you can easily see all of your unread chats by pulling down in the chat list. Quickly filter what's unread, but feel free to take your time while deciding whether or not to leave them on read.

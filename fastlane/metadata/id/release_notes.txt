@@ -1,4 +1,1 @@
-Memperkenalkan Tautan Panggilan: Fitur tautan baru untuk undangan kalender dan rapat dadakan.
-• Kini Anda dapat langsung membuat tautan praktis yang bisa dipakai siapa pun di Signal untuk bergabung ke panggilan grup tanpa harus gabung dulu ke obrolan grup Signal.
-• Tautan panggilan bisa dipakai ulang dan cocok untuk rutinitas telepon dengan sahabat atau rapat mingguan dengan rekan kerja Anda.
-• Anda bisa mengelola tautan panggilan, mengontrol pengaturan persetujuan, dan menyalin tautan dari tab panggilan untuk berbagi dengan cepat.
+• Now you can easily see all of your unread chats by pulling down in the chat list. Quickly filter what's unread, but feel free to take your time while deciding whether or not to leave them on read.

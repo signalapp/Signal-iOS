@@ -1,4 +1,1 @@
-Predstavljamo Poveznice na poziv: idealne za sve vrste poziva, od onih koji ste već uvrstili u kalendar do onih planiranih u zadnji čas.
-• Sada možete brzo stvoriti poveznicu koju svi korisnici Signala mogu koristiti za pridruživanje grupnom pozivu bez potrebe da se prethodno pridruže grupnom razgovoru.
-• Poveznice na poziv mogu se koristiti više puta, a idealne su za redovite telefonske pozive s prijateljima ili tjedne sastanke s kolegama.
-• Možete upravljati svojim poveznicama na poziv, njihovim postavkama pridruživanja te kopirati poveznice s kartice poziva kako biste ih jednostavno podijelili s drugima.
+• Now you can easily see all of your unread chats by pulling down in the chat list. Quickly filter what's unread, but feel free to take your time while deciding whether or not to leave them on read.

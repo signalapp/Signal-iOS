@@ -1,4 +1,1 @@
-Vi lanserer anropslenker: Lenker som gjør det lettere å invitere til møter og spontane samtaler.
-• Nå kan du enkelt lage lenker som gir alle på Signal muligheten til å bli med i gruppesamtaler uten å måtte bli medlem av dem først.
-• Anropslenkene kan brukes flere ganger og passer perfekt for regelmessige telefonsamtaler med gode venner og ukentlige møter med kolleger.
-• Du kan enkelt styre, kopiere og dele anropslenkene dine, samt velge innstillinger for hvem som kan bruke dem.
+• Now you can easily see all of your unread chats by pulling down in the chat list. Quickly filter what's unread, but feel free to take your time while deciding whether or not to leave them on read.

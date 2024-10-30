@@ -1,4 +1,1 @@
-Predstavujeme odkazy na hovor: ideálneho spoločníka k pozvánkam na udalosti v kalendári a improvizovaným stretnutiam.
-• Teraz môžete rýchlo vytvoriť jednoduchý odkaz, ktorý môže ktokoľvek v aplikácii Signal použiť na pripojenie sa ku skupinovému hovoru bez toho, aby sa musel najprv pripojiť ku skupinovému četu.
-• Odkazy na hovor sú opakovane použiteľné a sú ideálnou voľbou, keď si chcete pravidelne volávať s priateľmi alebo každý týždeň usporiadať online stretnutie s kolegami.
-• Môžete spravovať odkazy na hovory, ovládať nastavenia schvaľovania a kopírovať odkazy z karty hovorov na rýchle zdieľanie.
+• Now you can easily see all of your unread chats by pulling down in the chat list. Quickly filter what's unread, but feel free to take your time while deciding whether or not to leave them on read.

@@ -1,4 +1,1 @@
-נעים להכיר: לינקים לשיחות — הקישור המושלם להזמנות ביומן או למפגשים מאולתרים.
-• עכשיו אפשר ליצור במהירות לינק שכולם ב–Signal יוכלו להשתמש בו כדי להצטרף לשיחה קבוצתית מבלי להצטרף קודם לצ׳אט קבוצתי של Signal.
-• לינקים לשיחות ניתנים לשימוש חוזר והם מושלמים לדייטים חוזרים בטלפון עם הבסטיז או עדכונים שבועיים עם קולגות לעבודה.
-• אפשר לנהל את הלינקים שלך לשיחות, לשלוט בהגדרות האישור, ולהעתיק לינקים מלשונית השיחות לשיתוף מהיר.
+• Now you can easily see all of your unread chats by pulling down in the chat list. Quickly filter what's unread, but feel free to take your time while deciding whether or not to leave them on read.

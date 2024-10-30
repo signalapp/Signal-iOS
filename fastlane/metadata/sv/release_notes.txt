@@ -1,4 +1,1 @@
-Vi introducerar samtalslänkar: Den saknade länken för kalenderinbjudningar och spontana sammankomster.
-• Nu kan du snabbt skapa en enkel länk som alla på Signal kan använda för att gå med i ett gruppsamtal utan att först behöva gå med i en Signal-gruppchatt.
-• Samtalslänkar är återanvändbara och idealiska för återkommande telefondejter med dina bästa vänner eller veckovisa avstämningar med dina kollegor.
-• Du kan hantera dina samtalslänkar, kontrollera godkännandeinställningar och kopiera länkar från samtalsfliken för snabb delning.
+• Now you can easily see all of your unread chats by pulling down in the chat list. Quickly filter what's unread, but feel free to take your time while deciding whether or not to leave them on read.

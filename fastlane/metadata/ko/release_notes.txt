@@ -1,4 +1,1 @@
-일정 초대와 즉석 모임을 위한 링크 '통화 링크'를 소개합니다.
-• 이제 Signal 그룹 대화에 먼저 참여하지 않고서도 Signal 사용자라면 누구나 그룹 통화에 참여할 수 있는 간편한 링크를 빠르게 만들 수 있습니다.
-• 통화 링크는 다시 사용할 수 있으며, 친구와의 통화나 직장 동료와의 주간 미팅 등 반복되는 통화 일정에 사용하기 좋습니다.
-• 통화 탭에서 통화 링크를 관리하고, 승인 설정을 제어하고, 링크를 복사하여 빠르게 공유할 수 있습니다.
+• Now you can easily see all of your unread chats by pulling down in the chat list. Quickly filter what's unread, but feel free to take your time while deciding whether or not to leave them on read.

@@ -1,4 +1,1 @@
-Îți prezentăm Linkurile apelurilor: veriga lipsă din invitațiile din calendar și din întâlnirile de ultim moment.
-• Acum poți crea rapid un link simplu pe care oricine de pe Signal îl poate folosi pentru a se alătura unui apel de grup fără a fi nevoie să se alăture mai întâi la o conversație de grup Signal.
-• Linkurile apelurilor sunt reutilizabile și ideale pentru întâlniri telefonice recurente cu cei mai buni prieteni ai tăi sau pentru check-in-uri săptămânale cu colegii tăi.
-• Poți să gestionezi linkurile apelurilor tale, să controlezi setările de aprobare și să copiezi linkurile, din fila Apeluri pentru partajare rapidă.
+• Now you can easily see all of your unread chats by pulling down in the chat list. Quickly filter what's unread, but feel free to take your time while deciding whether or not to leave them on read.

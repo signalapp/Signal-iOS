@@ -1,4 +1,1 @@
-通话链接新功能上线：无论是提前邀请，还是临时通话，通话链接都能搞定。
-• 现在您可以快速创建一个简易链接，让 Signal 用户无需提前加入群组聊天即可加入群组通话。
-• 通话链接可重复使用，非常适合用于与好友定期通话或与同事每周签到。
-• 您可以管理通话链接，控制批准设置，并可以直接从通话选项卡中复制链接，实现快速分享。
+• Now you can easily see all of your unread chats by pulling down in the chat list. Quickly filter what's unread, but feel free to take your time while deciding whether or not to leave them on read.
