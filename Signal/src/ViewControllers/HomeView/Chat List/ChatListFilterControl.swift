@@ -515,7 +515,7 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
         }
 
         if feedback == nil {
-            let feedback = UIImpactFeedbackGenerator(style: .medium)
+            let feedback = UIImpactFeedbackGenerator(style: .heavy)
             feedback.prepare()
             self.feedback = feedback
         }
