@@ -316,12 +316,12 @@ public class SDSDatabaseStorage: NSObject {
         return value
     }
 
-    public func performWrite<T>(
+    public func performWriteWithTxCompletion<T>(
         file: String = #file,
         function: String = #function,
         line: Int = #line,
         isAwaitableWrite: Bool = false,
-        block: (SDSAnyWriteTransaction) throws -> T
+        block: (SDSAnyWriteTransaction) -> TransactionCompletion<T>
     ) throws -> T {
         #if DEBUG
         // When running in a Task, we should ensure that callers don't use
@@ -342,9 +342,9 @@ public class SDSDatabaseStorage: NSObject {
             }
         }
 
-        return try grdbStorage.write { tx in
-            return try Bench(title: benchTitle, logIfLongerThan: timeoutThreshold, logInProduction: true) {
-                return try block(tx.asAnyWrite)
+        return try grdbStorage.writeWithTxCompletion { tx in
+            return Bench(title: benchTitle, logIfLongerThan: timeoutThreshold, logInProduction: true) {
+                return block(tx.asAnyWrite)
             }
         }
     }
@@ -357,7 +357,17 @@ public class SDSDatabaseStorage: NSObject {
         block: (SDSAnyWriteTransaction) -> Void
     ) {
         do {
-            return try performWrite(file: file, function: function, line: line, isAwaitableWrite: false, block: block)
+            try performWriteWithTxCompletion(
+                file: file,
+                function: function,
+                line: line,
+                isAwaitableWrite: false,
+                block: {
+                    block($0)
+                    // The block can't throw; always commit.
+                    return .commit(())
+                }
+            )
         } catch {
             owsFail("error: \(error.grdbErrorForLogging)")
         }
@@ -370,12 +380,32 @@ public class SDSDatabaseStorage: NSObject {
         line: Int = #line,
         block: (SDSAnyWriteTransaction) throws -> T
     ) rethrows -> T {
-        return try _write(file: file, function: function, line: line, isAwaitableWrite: false, block: block, rescue: { throw $0 })
+        return try _writeCommitIfThrows(file: file, function: function, line: line, isAwaitableWrite: false, block: block, rescue: { throw $0 })
+    }
+
+    @discardableResult
+    public func writeWithTxCompletion<T>(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        block: (SDSAnyWriteTransaction) -> TransactionCompletion<T>
+    ) -> T {
+        do {
+            return try performWriteWithTxCompletion(
+                file: file,
+                function: function,
+                line: line,
+                isAwaitableWrite: false,
+                block: block
+            )
+        } catch {
+            owsFail("error: \(error.grdbErrorForLogging)")
+        }
     }
 
     // The "rescue" pattern is used in LibDispatch (and replicated here) to
     // allow "rethrows" to work properly.
-    private func _write<T>(
+    private func _writeCommitIfThrows<T>(
         file: String,
         function: String,
         line: Int,
@@ -386,7 +416,7 @@ public class SDSDatabaseStorage: NSObject {
         var value: T!
         var thrown: Error?
         do {
-            try performWrite(
+            try performWriteWithTxCompletion(
                 file: file,
                 function: function,
                 line: line,
@@ -397,6 +427,8 @@ public class SDSDatabaseStorage: NSObject {
                 } catch {
                     thrown = error
                 }
+                // Always commit regardless of thrown errors.
+                return .commit(())
             }
         } catch {
             owsFail("error: \(error.grdbErrorForLogging)")
@@ -445,6 +477,16 @@ public class SDSDatabaseStorage: NSObject {
         asyncWrite(file: file, function: function, line: line, block: block, completionQueue: .main, completion: completion)
     }
 
+    public func asyncWriteWithTxCompletion<T>(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        block: @escaping (SDSAnyWriteTransaction) -> TransactionCompletion<T>,
+        completion: ((T) -> Void)?
+    ) {
+        asyncWriteWithTxCompletion(file: file, function: function, line: line, block: block, completionQueue: .main, completion: completion)
+    }
+
     public func asyncWrite<T>(
         file: String = #file,
         function: String = #function,
@@ -461,6 +503,22 @@ public class SDSDatabaseStorage: NSObject {
         }
     }
 
+    public func asyncWriteWithTxCompletion<T>(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        block: @escaping (SDSAnyWriteTransaction) -> TransactionCompletion<T>,
+        completionQueue: DispatchQueue,
+        completion: ((T) -> Void)?
+    ) {
+        self.asyncWriteQueue.async {
+            let result = self.writeWithTxCompletion(file: file, function: function, line: line, block: block)
+            if let completion {
+                completionQueue.async(execute: { completion(result) })
+            }
+        }
+    }
+
     // MARK: - Awaitable
 
     public func awaitableWrite<T>(
@@ -470,7 +528,28 @@ public class SDSDatabaseStorage: NSObject {
         block: (SDSAnyWriteTransaction) throws -> T
     ) async rethrows -> T {
         return try await self.awaitableWriteQueue.run {
-            return try self._write(file: file, function: function, line: line, isAwaitableWrite: true, block: block, rescue: { throw $0 })
+            return try self._writeCommitIfThrows(file: file, function: function, line: line, isAwaitableWrite: true, block: block, rescue: { throw $0 })
+        }
+    }
+
+    public func awaitableWriteWithTxCompletion<T>(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        block: (SDSAnyWriteTransaction) -> TransactionCompletion<T>
+    ) async -> T {
+        return await self.awaitableWriteQueue.run {
+            do {
+                return try self.performWriteWithTxCompletion(
+                    file: file,
+                    function: function,
+                    line: line,
+                    isAwaitableWrite: true,
+                    block: block
+                )
+            } catch {
+                owsFail("error: \(error.grdbErrorForLogging)")
+            }
         }
     }
 
@@ -508,6 +587,20 @@ public class SDSDatabaseStorage: NSObject {
                 } catch {
                     future.reject(error)
                 }
+            }
+        }
+    }
+
+    public func writeWithTxCompletion<T>(
+        _: PromiseNamespace,
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        _ block: @escaping (SDSAnyWriteTransaction) -> TransactionCompletion<T>
+    ) -> Guarantee<T> {
+        return Guarantee { future in
+            self.asyncWriteQueue.async {
+                future(self.writeWithTxCompletion(file: file, function: function, line: line, block: block))
             }
         }
     }
@@ -552,7 +645,7 @@ protocol SDSDatabaseStorageAdapter {
     associatedtype ReadTransaction
     associatedtype WriteTransaction
     func read(block: (ReadTransaction) -> Void) throws
-    func write(block: (WriteTransaction) -> Void) throws
+    func writeWithTxCompletion(block: (WriteTransaction) -> TransactionCompletion<Void>) throws
 }
 
 // MARK: -

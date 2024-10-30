@@ -46,6 +46,15 @@ public protocol DB {
         completion: ((T) -> Void)?
     )
 
+    func asyncWriteWithTxCompletion<T>(
+        file: String,
+        function: String,
+        line: Int,
+        block: @escaping (WriteTransaction) -> TransactionCompletion<T>,
+        completionQueue: DispatchQueue,
+        completion: ((T) -> Void)?
+    )
+
     // MARK: - Awaitable Methods
 
     func awaitableWrite<T>(
@@ -54,6 +63,13 @@ public protocol DB {
         line: Int,
         block: (WriteTransaction) throws -> T
     ) async rethrows -> T
+
+    func awaitableWriteWithTxCompletion<T>(
+        file: String,
+        function: String,
+        line: Int,
+        block: (WriteTransaction) -> TransactionCompletion<T>
+    ) async -> T
 
     // MARK: - Promises
 
@@ -71,6 +87,13 @@ public protocol DB {
         _ block: @escaping (WriteTransaction) throws -> T
     ) -> Promise<T>
 
+    func writePromiseWithTxCompletion<T>(
+        file: String,
+        function: String,
+        line: Int,
+        _ block: @escaping (WriteTransaction) -> TransactionCompletion<T>
+    ) -> Guarantee<T>
+
     // MARK: - Value Methods
 
     func read<T>(
@@ -86,6 +109,13 @@ public protocol DB {
         line: Int,
         block: (WriteTransaction) throws -> T
     ) rethrows -> T
+
+    func writeWithTxCompletion<T>(
+        file: String,
+        function: String,
+        line: Int,
+        block: (WriteTransaction) -> TransactionCompletion<T>
+    ) -> T
 
     // MARK: - Observation
 
@@ -131,6 +161,17 @@ extension DB {
         asyncWrite(file: file, function: function, line: line, block: block, completionQueue: completionQueue, completion: completion)
     }
 
+    public func asyncWriteWithTxCompletion<T>(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        block: @escaping (WriteTransaction) -> TransactionCompletion<T>,
+        completionQueue: DispatchQueue = .main,
+        completion: ((T) -> Void)? = nil
+    ) {
+        asyncWriteWithTxCompletion(file: file, function: function, line: line, block: block, completionQueue: completionQueue, completion: completion)
+    }
+
     // MARK: - Awaitable Methods
 
     public func awaitableWrite<T>(
@@ -140,6 +181,15 @@ extension DB {
         block: (WriteTransaction) throws -> T
     ) async rethrows -> T {
         return try await awaitableWrite(file: file, function: function, line: line, block: block)
+    }
+
+    public func awaitableWriteWithTxCompletion<T>(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        block: (WriteTransaction) -> TransactionCompletion<T>
+    ) async -> T {
+        return await awaitableWriteWithTxCompletion(file: file, function: function, line: line, block: block)
     }
 
     // MARK: - Promises
@@ -162,6 +212,15 @@ extension DB {
         return writePromise(file: file, function: function, line: line, block)
     }
 
+    public func writePromiseWithTxCompletion<T>(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        _ block: @escaping (WriteTransaction) -> TransactionCompletion<T>
+    ) -> Guarantee<T> {
+        return writePromiseWithTxCompletion(file: file, function: function, line: line, block)
+    }
+
     // MARK: - Value Methods
 
     public func read<T>(
@@ -180,6 +239,15 @@ extension DB {
         block: (WriteTransaction) throws -> T
     ) rethrows -> T {
         return try write(file: file, function: function, line: line, block: block)
+    }
+
+    public func writeWithTxCompletion<T>(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        block: (WriteTransaction) -> TransactionCompletion<T>
+    ) -> T {
+        return writeWithTxCompletion(file: file, function: function, line: line, block: block)
     }
 
     // MARK: - Touching

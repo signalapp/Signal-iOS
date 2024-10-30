@@ -261,6 +261,31 @@ private class MockDB: DB {
         }
     }
 
+    public func asyncWriteWithTxCompletion<T>(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        block: @escaping (MockTransaction) -> TransactionCompletion<T>,
+        completionQueue: DispatchQueue,
+        completion: ((T) -> Void)?
+    ) {
+        asyncWrite(
+            file: file,
+            function: function,
+            line: line,
+            block: { tx in
+                switch block(tx) {
+                case .commit(let t):
+                    return t
+                case .rollback(let t):
+                    return t
+                }
+            },
+            completionQueue: completionQueue,
+            completion: completion
+        )
+    }
+
     public func awaitableWrite<T>(
         file: String,
         function: String,
@@ -271,6 +296,27 @@ private class MockDB: DB {
         return try queue.sync {
             return try self.performWrite(block: block)
         }
+    }
+
+    public func awaitableWriteWithTxCompletion<T>(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        block: (MockTransaction) -> TransactionCompletion<T>
+    ) async -> T? {
+        return await awaitableWrite(
+            file: file,
+            function: function,
+            line: line,
+            block: { tx in
+                switch block(tx) {
+                case .commit(let t):
+                    return t
+                case .rollback:
+                    return nil
+                }
+            }
+        )
     }
 
     // MARK: - Promises
@@ -307,6 +353,28 @@ private class MockDB: DB {
         }
     }
 
+    public func writePromiseWithTxCompletion<T>(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        _ block: @escaping (MockTransaction) -> TransactionCompletion<T>
+    ) -> Guarantee<T> {
+        let promise: Promise<T> = writePromise(
+            file: file,
+            function: function,
+            line: line,
+            { tx in
+                switch block(tx) {
+                case .commit(let t):
+                    return t
+                case .rollback(let t):
+                    return t
+                }
+            }
+        )
+        return promise.recover({ _ in fatalError() })
+    }
+
     // MARK: - Value Methods
 
     public func read<T>(
@@ -329,6 +397,27 @@ private class MockDB: DB {
         return try queue.sync {
             return try performWrite(block: block)
         }
+    }
+
+    public func writeWithTxCompletion<T>(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        block: (MockTransaction) -> TransactionCompletion<T>
+    ) -> T {
+        return write(
+            file: file,
+            function: function,
+            line: line,
+            block: { tx in
+                switch block(tx) {
+                case .commit(let t):
+                    return t
+                case .rollback(let t):
+                    return t
+                }
+            }
+        )
     }
 
     public func add(

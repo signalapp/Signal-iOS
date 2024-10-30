@@ -88,6 +88,20 @@ public final class InMemoryDB: DB {
         }
     }
 
+    public func asyncWriteWithTxCompletion<T>(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        block: @escaping (WriteTransaction) -> TransactionCompletion<T>,
+        completionQueue: DispatchQueue,
+        completion: ((T) -> Void)?
+    ) {
+        schedulers.global().async {
+            let result = self.writeWithTxCompletion(file: file, function: function, line: line, block: block)
+            if let completion { completionQueue.async({ completion(result) }) }
+        }
+    }
+
     public func awaitableWrite<T>(
         file: String,
         function: String,
@@ -96,6 +110,16 @@ public final class InMemoryDB: DB {
     ) async rethrows -> T {
         await Task.yield()
         return try write(file: file, function: function, line: line, block: block)
+    }
+
+    public func awaitableWriteWithTxCompletion<T>(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        block: (WriteTransaction) -> TransactionCompletion<T>
+    ) async -> T {
+        await Task.yield()
+        return writeWithTxCompletion(file: file, function: function, line: line, block: block)
     }
 
     public func readPromise<T>(
@@ -114,6 +138,15 @@ public final class InMemoryDB: DB {
         _ block: @escaping (WriteTransaction) throws -> T
     ) -> Promise<T> {
         return Promise.wrapAsync { try await self.awaitableWrite(file: file, function: function, line: line, block: block) }
+    }
+
+    public func writePromiseWithTxCompletion<T>(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        _ block: @escaping (WriteTransaction) -> TransactionCompletion<T>
+    ) -> Guarantee<T> {
+        return Guarantee.wrapAsync { await self.awaitableWriteWithTxCompletion(file: file, function: function, line: line, block: block) }
     }
 
     // MARK: - Value Methods
@@ -149,10 +182,19 @@ public final class InMemoryDB: DB {
         line: Int,
         block: (WriteTransaction) throws -> T
     ) rethrows -> T {
-        return try _write(block: block, rescue: { throw $0 })
+        return try _writeCommitIfThrows(block: block, rescue: { throw $0 })
     }
 
-    private func _write<T>(
+    public func writeWithTxCompletion<T>(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        block: (WriteTransaction) -> TransactionCompletion<T>
+    ) -> T {
+        return _writeWithTxCompletion(block: block)
+    }
+
+    private func _writeCommitIfThrows<T>(
         block: (WriteTransaction) throws -> T,
         rescue: (Error) throws -> Never
     ) rethrows -> T {
@@ -176,6 +218,32 @@ public final class InMemoryDB: DB {
             try rescue(thrownError)
         }
         return result!
+    }
+
+    private func _writeWithTxCompletion<T>(
+        block: (WriteTransaction) -> TransactionCompletion<T>
+    ) -> T {
+        return try! databaseQueue.writeWithoutTransaction { db in
+            var result: T!
+            try db.inTransaction {
+                let tx = WriteTransaction(db: db)
+                defer {
+                    tx.syncCompletions.forEach { $0() }
+                    tx.asyncCompletions.forEach {
+                        $0.0.async($0.1)
+                    }
+                }
+                switch block(tx) {
+                case .commit(let t):
+                    result = t
+                    return .commit
+                case .rollback(let t):
+                    result = t
+                    return .rollback
+                }
+            }
+            return result
+        }
     }
 
     // MARK: - Helpers

@@ -645,8 +645,6 @@ extension DatabaseChangeObserverImpl: TransactionObserver {
     }
 
     public func databaseDidRollback(_ db: Database) {
-        owsFailDebug("TODO: test this if we ever use it.")
-
         DatabaseChangeObserverImpl.serializedSync {
             pendingChanges = ObservedDatabaseChanges(concurrencyMode: .databaseChangeObserverSerialQueue)
 

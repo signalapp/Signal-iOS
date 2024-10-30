@@ -366,19 +366,20 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
     }
 
     @discardableResult
-    public func write<T>(block: (GRDBWriteTransaction) throws -> T) throws -> T {
+    public func writeWithTxCompletion<T>(
+        block: (GRDBWriteTransaction) -> TransactionCompletion<T>
+    ) throws -> T {
 
         var value: T!
-        var thrown: Error?
-        try write { (transaction) in
-            do {
-                value = try block(transaction)
-            } catch {
-                thrown = error
+        let _: Void = try writeWithTxCompletion { (transaction) in
+            let result = block(transaction)
+            switch result {
+            case .commit(let t):
+                value = t
+            case .rollback(let t):
+                value = t
             }
-        }
-        if let error = thrown {
-            throw error.grdbErrorForLogging
+            return result.typeErased
         }
         return value
     }
@@ -406,9 +407,7 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
         }
     }
 
-    @objc
-    public func write(block: (GRDBWriteTransaction) -> Void) throws {
-
+    public func writeWithTxCompletion(block: (GRDBWriteTransaction) -> TransactionCompletion<Void>) throws {
         #if TESTABLE_BUILD
         owsAssertDebug(Self.canOpenTransaction)
         // Check for nested tractions.
@@ -426,14 +425,19 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
         var syncCompletions: [GRDBWriteTransaction.CompletionBlock] = []
         var asyncCompletions: [GRDBWriteTransaction.AsyncCompletion] = []
 
-        try pool.write { database in
-            autoreleasepool {
-                let transaction = GRDBWriteTransaction(database: database)
-                block(transaction)
-                transaction.finalizeTransaction()
+        try pool.writeWithoutTransaction { database in
+            try database.inTransaction {
+                let txCompletion: TransactionCompletion<Void> = autoreleasepool {
+                    let transaction = GRDBWriteTransaction(database: database)
+                    let txComplection = block(transaction)
+                    transaction.finalizeTransaction()
 
-                syncCompletions = transaction.syncCompletions
-                asyncCompletions = transaction.asyncCompletions
+                    syncCompletions = transaction.syncCompletions
+                    asyncCompletions = transaction.asyncCompletions
+
+                    return txComplection
+                }
+                return txCompletion.asGRDBCompletion
             }
         }
 

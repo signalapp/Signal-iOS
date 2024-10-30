@@ -118,6 +118,17 @@ public class SDSDB: DB {
         databaseStorage.asyncWrite(file: file, function: function, line: line, block: {block(WriteTx($0))}, completionQueue: completionQueue, completion: completion)
     }
 
+    public func asyncWriteWithTxCompletion<T>(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        block: @escaping (WriteTx) -> TransactionCompletion<T>,
+        completionQueue: DispatchQueue,
+        completion: ((T) -> Void)?
+    ) {
+        databaseStorage.asyncWriteWithTxCompletion(file: file, function: function, line: line, block: {block(WriteTx($0))}, completionQueue: completionQueue, completion: completion)
+    }
+
     // MARK: Awaitable Methods
 
     public func awaitableWrite<T>(
@@ -127,6 +138,15 @@ public class SDSDB: DB {
         block: (WriteTx) throws -> T
     ) async rethrows -> T {
         return try await databaseStorage.awaitableWrite(file: file, function: function, line: line, block: {try block(WriteTx($0))})
+    }
+
+    public func awaitableWriteWithTxCompletion<T>(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        block: (WriteTx) -> TransactionCompletion<T>
+    ) async -> T {
+        return await databaseStorage.awaitableWriteWithTxCompletion(file: file, function: function, line: line, block: {block(WriteTx($0))})
     }
 
     // MARK: Promises
@@ -149,6 +169,15 @@ public class SDSDB: DB {
         return databaseStorage.write(.promise, file: file, function: function, line: line, {try block(WriteTx($0))})
     }
 
+    public func writePromiseWithTxCompletion<T>(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        _ block: @escaping (WriteTx) -> TransactionCompletion<T>
+    ) -> Guarantee<T> {
+        return databaseStorage.writeWithTxCompletion(.promise, file: file, function: function, line: line, {block(WriteTx($0))})
+    }
+
     // MARK: Value Methods
 
     public func read<T>(
@@ -167,6 +196,15 @@ public class SDSDB: DB {
         block: (WriteTx) throws -> T
     ) rethrows -> T {
         return try databaseStorage.write(file: file, function: function, line: line, block: {try block(WriteTx($0))})
+    }
+
+    public func writeWithTxCompletion<T>(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        block: (WriteTx) -> TransactionCompletion<T>
+    ) -> T {
+        return databaseStorage.writeWithTxCompletion(file: file, function: function, line: line, block: {block(WriteTx($0))})
     }
 
     // MARK: - Observation

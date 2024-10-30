@@ -876,6 +876,8 @@
 		664657472ACB66630099DE1C /* TSAccountManagerObjcBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664657462ACB66630099DE1C /* TSAccountManagerObjcBridge.swift */; };
 		66485EB02CCC515A00B8613F /* MessageBackupInternalErrorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66485EAF2CCC50FA00B8613F /* MessageBackupInternalErrorViewController.swift */; };
 		66485EB32CD03F6400B8613F /* MessageBackupErrorPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66485EB22CD03F5D00B8613F /* MessageBackupErrorPresenter.swift */; };
+		66485EB72CD1331D00B8613F /* TransactionCompletion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66485EB62CD1331700B8613F /* TransactionCompletion.swift */; };
+		66485EB92CD17D6400B8613F /* DbRollbackTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66485EB82CD17D5D00B8613F /* DbRollbackTests.swift */; };
 		6649651C2BDC6EAD00E2DE98 /* AVAsset+Attachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6649651B2BDC6EAD00E2DE98 /* AVAsset+Attachment.swift */; };
 		6649651E2BDF169F00E2DE98 /* UIImage+Attachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6649651D2BDF169F00E2DE98 /* UIImage+Attachment.swift */; };
 		664BA8452BB5CE12005638E0 /* PreparedOutgoingMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664BA8442BB5CE12005638E0 /* PreparedOutgoingMessage.swift */; };
@@ -4573,6 +4575,8 @@
 		664657462ACB66630099DE1C /* TSAccountManagerObjcBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAccountManagerObjcBridge.swift; sourceTree = "<group>"; };
 		66485EAF2CCC50FA00B8613F /* MessageBackupInternalErrorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupInternalErrorViewController.swift; sourceTree = "<group>"; };
 		66485EB22CD03F5D00B8613F /* MessageBackupErrorPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupErrorPresenter.swift; sourceTree = "<group>"; };
+		66485EB62CD1331700B8613F /* TransactionCompletion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionCompletion.swift; sourceTree = "<group>"; };
+		66485EB82CD17D5D00B8613F /* DbRollbackTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DbRollbackTests.swift; sourceTree = "<group>"; };
 		6649651B2BDC6EAD00E2DE98 /* AVAsset+Attachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVAsset+Attachment.swift"; sourceTree = "<group>"; };
 		6649651D2BDF169F00E2DE98 /* UIImage+Attachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Attachment.swift"; sourceTree = "<group>"; };
 		664BA8442BB5CE12005638E0 /* PreparedOutgoingMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreparedOutgoingMessage.swift; sourceTree = "<group>"; };
@@ -12541,6 +12545,7 @@
 			children = (
 				F97217F928DCA35F00113D9F /* Database */,
 				D9B95A9329E682CA00D7CB95 /* JobRecords */,
+				66485EB82CD17D5D00B8613F /* DbRollbackTests.swift */,
 				F94261DE289B1B5400460798 /* InteractionFinderTest.swift */,
 				F94261DD289B1B5400460798 /* ModelReadCacheTest.swift */,
 				F94261D9289B1B5400460798 /* OWSIdentityManagerTests.swift */,
@@ -13553,6 +13558,7 @@
 				F9C5CA39289453B100548EEE /* SDSTableMetadata.swift */,
 				F9C5CA43289453B100548EEE /* SDSTransaction.swift */,
 				F9C5CA4D289453B100548EEE /* SSKAccessors+SDS.h */,
+				66485EB62CD1331700B8613F /* TransactionCompletion.swift */,
 			);
 			path = Database;
 			sourceTree = "<group>";
@@ -17686,6 +17692,7 @@
 				725465252BA017EF00EABFD2 /* ThreadUtil.swift in Sources */,
 				F9C5CD90289453B300548EEE /* TimeElapsedChallenge.swift in Sources */,
 				50F86FC42AFEFEC20045F58B /* TimeGatedBatch.swift in Sources */,
+				66485EB72CD1331D00B8613F /* TransactionCompletion.swift in Sources */,
 				C14EC1A22BA891D200A4D064 /* TransformingInputStream.swift in Sources */,
 				C1CF83D42B9A207800CDC9C4 /* TransformingOutputStream.swift in Sources */,
 				661170C42ABA4D9900A1B16D /* TSAccountManager.swift in Sources */,
@@ -17940,6 +17947,7 @@
 				F94D130628C1667600B2C478 /* DatabaseRecoveryTest.swift in Sources */,
 				724E68642C91FA73002199F3 /* DataHexadecimalTest.swift in Sources */,
 				F9426265289B1B5500460798 /* Date+SSKTest.swift in Sources */,
+				66485EB92CD17D6400B8613F /* DbRollbackTests.swift in Sources */,
 				F94C912428FDECC40065DF75 /* DecimalTest.swift in Sources */,
 				D9CA8AB32B6ACC0600787167 /* DeletedCallRecordCleanupManagerTest.swift in Sources */,
 				D91AC9362B61C79600814975 /* DeletedCallRecordStoreTest.swift in Sources */,

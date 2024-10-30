@@ -45,12 +45,21 @@ public extension DatabaseRecovery {
     static func rebuildExistingDatabase(databaseStorage: SDSDatabaseStorage) {
         Logger.info("Attempting to reindex the database...")
         do {
-            try databaseStorage.performWrite { tx in
-                try SqliteUtil.reindex(db: tx.unwrapGrdbWrite.database)
+            // We use the `performWrite` method directly instead of the usual
+            // `write` methods because we explicitly do NOT want to owsFail if
+            // opening the write throws an error (probably a corruption error).
+            try databaseStorage.performWriteWithTxCompletion { tx in
+                do {
+                    try SqliteUtil.reindex(db: tx.unwrapGrdbWrite.database)
+                    Logger.info("Reindexed database")
+                    return .commit(())
+                } catch {
+                    Logger.warn("Failed to reindex database")
+                    return .rollback(())
+                }
             }
-            Logger.info("Reindexed database")
         } catch {
-            Logger.warn("Failed to reindex database")
+            Logger.warn("Failed to write to database")
         }
     }
 }
