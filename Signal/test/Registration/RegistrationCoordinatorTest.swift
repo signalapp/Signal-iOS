@@ -114,6 +114,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             featureFlags: featureFlags,
             keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
             localUsernameManager: localUsernameManagerMock,
+            messageBackupErrorPresenter: NoOpMessageBackupErrorPresenter(),
             messageBackupManager: MessageBackupManagerMock(),
             messagePipelineSupervisor: mockMessagePipelineSupervisor,
             messageProcessor: mockMessageProcessor,

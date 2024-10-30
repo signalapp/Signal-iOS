@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SwiftProtobuf
+
 extension MessageBackup {
 
     public typealias RawError = Swift.Error
@@ -280,6 +282,10 @@ extension MessageBackup {
                 return nil
             }
         }
+
+        public var shouldLog: Bool {
+            return true
+        }
     }
 
     /// Error archiving an entire category of frames; not attributable to a
@@ -344,6 +350,10 @@ extension MessageBackup {
         public var collapseKey: String? {
             // Log each of these as we see them.
             return nil
+        }
+
+        public var shouldLog: Bool {
+            return true
         }
     }
 
@@ -809,6 +819,15 @@ extension MessageBackup {
                 return callsiteLogString
             }
         }
+
+        public var shouldLog: Bool {
+            switch type {
+            case .unimplemented:
+                return false
+            default:
+                return true
+            }
+        }
     }
 }
 
@@ -825,60 +844,87 @@ internal protocol MessageBackupLoggableError {
     /// Instead we collapse these similar logs together, keep a count, and log that.
     /// If this is non-nil, we do that collapsing, otherwise we log as-is.
     var collapseKey: String? { get }
+
+    var shouldLog: Bool { get }
 }
 
 extension MessageBackup {
 
-    internal static func log<T: MessageBackupLoggableError>(_ errors: [T]) {
-        var logAsIs = [String]()
+    internal struct LoggableErrorAndProto {
+        let error: any MessageBackupLoggableError
+        /// Nil for archiving, if we fail to even parse the proto on restore,
+        /// or if the feature flag is disabled such that this would be unused.
+        let protoJson: String?
+
+        init(
+            error: any MessageBackupLoggableError,
+            protoFrame: SwiftProtobuf.Message? = nil
+        ) {
+            self.error = error
+            // Don't serialize proto frames if we aren't displaying errors.
+            if let protoFrame, FeatureFlags.messageBackupErrorDisplay {
+                do {
+                    self.protoJson = try protoFrame.jsonString()
+                } catch let jsonError {
+                    self.protoJson = "Unable to json encode proto: \(jsonError)"
+                }
+            } else {
+                self.protoJson = nil
+            }
+        }
+    }
+
+    internal static func collapse(_ errors: [LoggableErrorAndProto]) -> [CollapsedErrorLog] {
         var collapsedLogs = OrderedDictionary<String, CollapsedErrorLog>()
         for error in errors {
-            guard let collapseKey = error.collapseKey else {
-                logAsIs.append(
-                    error.typeLogString + " "
-                    + error.idLogString + " "
-                    + error.callsiteLogString
-                )
+            guard error.error.shouldLog else {
                 continue
             }
+            let collapseKey = error.error.collapseKey ?? UUID().uuidString
 
             if var existingLog = collapsedLogs[collapseKey] {
                 existingLog.collapse(error)
                 collapsedLogs.replace(key: collapseKey, value: existingLog)
             } else {
-                var newLog = CollapsedErrorLog()
-                newLog.collapse(error)
+                var newLog = CollapsedErrorLog(error)
                 collapsedLogs.append(key: collapseKey, value: newLog)
             }
         }
-
-        logAsIs.forEach { Logger.error($0) }
-        collapsedLogs.orderedValues.forEach { $0.log() }
+        return Array(collapsedLogs.orderedValues)
     }
 
     fileprivate static let maxCollapsedIdLogCount = 10
 
-    fileprivate struct CollapsedErrorLog {
-        var typeLogString: String?
-        var exampleCallsiteString: String?
-        var errorCount: UInt = 0
-        var idLogStrings: [String] = []
+    public struct CollapsedErrorLog {
+        public private(set) var typeLogString: String
+        public private(set) var exampleCallsiteString: String
+        public private(set) var exampleProtoFrameJson: String?
+        public private(set) var errorCount: UInt = 0
+        public private(set) var idLogStrings: [String] = []
 
-        mutating func collapse(_ error: MessageBackupLoggableError) {
+        init(_ error: LoggableErrorAndProto) {
+            self.typeLogString = error.error.typeLogString
+            self.exampleCallsiteString = error.error.callsiteLogString
+            self.exampleProtoFrameJson = error.protoJson
+            self.collapse(error)
+        }
+
+        mutating func collapse(_ error: LoggableErrorAndProto) {
             self.errorCount += 1
-            self.typeLogString = self.typeLogString ?? error.typeLogString
-            self.exampleCallsiteString = self.exampleCallsiteString ?? error.callsiteLogString
+            if exampleProtoFrameJson == nil, let protoJson = error.protoJson {
+                self.exampleProtoFrameJson = protoJson
+            }
             if idLogStrings.count < MessageBackup.maxCollapsedIdLogCount {
-                idLogStrings.append(error.idLogString)
+                idLogStrings.append(error.error.idLogString)
             }
         }
 
-        func log() {
+        internal func log() {
             Logger.error(
-                (typeLogString ?? "") + " "
+                (typeLogString) + " "
                 + "Repeated \(errorCount) times. "
                 + "from: \(idLogStrings) "
-                + "example callsite: \(exampleCallsiteString ?? "none")"
+                + "example callsite: \(exampleCallsiteString)"
             )
         }
     }

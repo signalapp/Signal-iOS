@@ -31,6 +31,7 @@ public class MockSSKEnvironment: NSObject {
             currentCallProvider: CurrentCallNoOpProvider(),
             notificationPresenter: NoopNotificationPresenterImpl(),
             incrementalTSAttachmentMigrator: IncrementalMessageTSAttachmentMigratorMock(),
+            messageBackupErrorPresenterFactory: NoOpMessageBackupErrorPresenterFactory(),
             testDependencies: AppSetup.TestDependencies(
                 accountServiceClient: FakeAccountServiceClient(),
                 contactManager: FakeContactsManager(),

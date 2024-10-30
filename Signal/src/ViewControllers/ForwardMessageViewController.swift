@@ -156,6 +156,27 @@ class ForwardMessageViewController: InteractiveSheetViewController {
         present(content: .single(item: builder.build()), from: fromViewController, delegate: delegate)
     }
 
+    public class func present(
+        forMessageBody messageBody: MessageBody,
+        from fromViewController: UIViewController,
+        delegate: ForwardMessageDelegate
+    ) {
+        present(
+            content: .single(item: ForwardMessageItem.Item(
+                interaction: nil,
+                attachments: nil,
+                contactShare: nil,
+                messageBody: messageBody,
+                linkPreviewDraft: nil,
+                stickerMetadata: nil,
+                stickerAttachment: nil,
+                textAttachment: nil
+            )),
+            from: fromViewController,
+            delegate: delegate
+        )
+    }
+
     private class func present(content: Content,
                                from fromViewController: UIViewController,
                                delegate: ForwardMessageDelegate) {

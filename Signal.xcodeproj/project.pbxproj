@@ -874,6 +874,8 @@
 		6646573F2AC3B9190099DE1C /* MockRegistrationStateChangeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6646573E2AC3B9190099DE1C /* MockRegistrationStateChangeManager.swift */; };
 		664657412AC4FB720099DE1C /* NotificationPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664657402AC4FB720099DE1C /* NotificationPresenter.swift */; };
 		664657472ACB66630099DE1C /* TSAccountManagerObjcBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664657462ACB66630099DE1C /* TSAccountManagerObjcBridge.swift */; };
+		66485EB02CCC515A00B8613F /* MessageBackupInternalErrorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66485EAF2CCC50FA00B8613F /* MessageBackupInternalErrorViewController.swift */; };
+		66485EB32CD03F6400B8613F /* MessageBackupErrorPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66485EB22CD03F5D00B8613F /* MessageBackupErrorPresenter.swift */; };
 		6649651C2BDC6EAD00E2DE98 /* AVAsset+Attachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6649651B2BDC6EAD00E2DE98 /* AVAsset+Attachment.swift */; };
 		6649651E2BDF169F00E2DE98 /* UIImage+Attachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6649651D2BDF169F00E2DE98 /* UIImage+Attachment.swift */; };
 		664BA8452BB5CE12005638E0 /* PreparedOutgoingMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664BA8442BB5CE12005638E0 /* PreparedOutgoingMessage.swift */; };
@@ -4569,6 +4571,8 @@
 		6646573E2AC3B9190099DE1C /* MockRegistrationStateChangeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockRegistrationStateChangeManager.swift; sourceTree = "<group>"; };
 		664657402AC4FB720099DE1C /* NotificationPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPresenter.swift; sourceTree = "<group>"; };
 		664657462ACB66630099DE1C /* TSAccountManagerObjcBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAccountManagerObjcBridge.swift; sourceTree = "<group>"; };
+		66485EAF2CCC50FA00B8613F /* MessageBackupInternalErrorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupInternalErrorViewController.swift; sourceTree = "<group>"; };
+		66485EB22CD03F5D00B8613F /* MessageBackupErrorPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupErrorPresenter.swift; sourceTree = "<group>"; };
 		6649651B2BDC6EAD00E2DE98 /* AVAsset+Attachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVAsset+Attachment.swift"; sourceTree = "<group>"; };
 		6649651D2BDF169F00E2DE98 /* UIImage+Attachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Attachment.swift"; sourceTree = "<group>"; };
 		664BA8442BB5CE12005638E0 /* PreparedOutgoingMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreparedOutgoingMessage.swift; sourceTree = "<group>"; };
@@ -8109,6 +8113,7 @@
 				34BECE2C1F7ABCE000D7438D /* GifPicker */,
 				34386A4C207D0C01009F5D9C /* HomeView */,
 				4C4F360E2284516F00A8DF48 /* MediaGallery */,
+				66485EB12CD03F3300B8613F /* MessageBackup */,
 				34995F122411838C00C70546 /* NewGroupView */,
 				3497971D25DAA86100E99FA4 /* Payments */,
 				34969558219B605E00DCFE74 /* Photos */,
@@ -9071,6 +9076,14 @@
 			path = RegistrationStateChangeManager;
 			sourceTree = "<group>";
 		};
+		66485EB12CD03F3300B8613F /* MessageBackup */ = {
+			isa = PBXGroup;
+			children = (
+				66485EAF2CCC50FA00B8613F /* MessageBackupInternalErrorViewController.swift */,
+			);
+			path = MessageBackup;
+			sourceTree = "<group>";
+		};
 		6649651A2BDC6E8D00E2DE98 /* Playback */ = {
 			isa = PBXGroup;
 			children = (
@@ -9183,6 +9196,7 @@
 				66CD25902B0EC20800139E17 /* MessageBackupConstants.swift */,
 				66FFDADB2C823C270079C0E7 /* MessageBackupContexts.swift */,
 				D90D4D832BBB61680097C573 /* MessageBackupEmptyFrameId.swift */,
+				66485EB22CD03F5D00B8613F /* MessageBackupErrorPresenter.swift */,
 				66232AE02CC0271F00AE6A76 /* MessageBackupFullTextSearchIndexer.swift */,
 				C1A0F79C2B9F57340009DC0D /* MessageBackupKeyMaterial.swift */,
 				C1A0F79E2B9F59920009DC0D /* MessageBackupKeyMaterialImpl.swift */,
@@ -16304,6 +16318,7 @@
 				346EAA14250199A400E8AB6F /* MemberRequestView.swift in Sources */,
 				4CB5F26920F7D060004D1B42 /* MessageActions.swift in Sources */,
 				4CB5F26720F6E1E2004D1B42 /* MessageActionsToolbar.swift in Sources */,
+				66485EB02CCC515A00B8613F /* MessageBackupInternalErrorViewController.swift in Sources */,
 				45F32C242057297A00A300D5 /* MessageDetailViewController.swift in Sources */,
 				66CDB7522AF9D117009A36EC /* MessageFetchBGRefreshTask.swift in Sources */,
 				34DE9C02256575300080E4AF /* MessageLoader.swift in Sources */,
@@ -17085,6 +17100,7 @@
 				66FFDADC2C823C270079C0E7 /* MessageBackupContexts.swift in Sources */,
 				C1CA5F8E2BE2F21C00D733CA /* MessageBackupDistributionListRecipientArchiver.swift in Sources */,
 				D90D4D842BBB61680097C573 /* MessageBackupEmptyFrameId.swift in Sources */,
+				66485EB32CD03F6400B8613F /* MessageBackupErrorPresenter.swift in Sources */,
 				662590D12B5B525E001FDCDD /* MessageBackupErrors.swift in Sources */,
 				D91D9C8C2C3F06400009E4F7 /* MessageBackupExpirationTimerChatUpdateArchiver.swift in Sources */,
 				66232AE12CC0272900AE6A76 /* MessageBackupFullTextSearchIndexer.swift in Sources */,

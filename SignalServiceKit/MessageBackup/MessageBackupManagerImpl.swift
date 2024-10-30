@@ -22,6 +22,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
     private class NotImplementedError: Error {}
     private class BackupError: Error {}
+    private typealias LoggableErrorAndProto = MessageBackup.LoggableErrorAndProto
 
     private let accountDataArchiver: MessageBackupAccountDataArchiver
     private let attachmentDownloadManager: AttachmentDownloadManager
@@ -39,6 +40,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     private let disappearingMessagesJob: OWSDisappearingMessagesJob
     private let distributionListRecipientArchiver: MessageBackupDistributionListRecipientArchiver
     private let encryptedStreamProvider: MessageBackupEncryptedProtoStreamProvider
+    private let errorPresenter: MessageBackupErrorPresenter
     private let fullTextSearchIndexer: MessageBackupFullTextSearchIndexer
     private let groupRecipientArchiver: MessageBackupGroupRecipientArchiver
     private let incrementalTSAttachmentMigrator: IncrementalMessageTSAttachmentMigrator
@@ -68,6 +70,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         disappearingMessagesJob: OWSDisappearingMessagesJob,
         distributionListRecipientArchiver: MessageBackupDistributionListRecipientArchiver,
         encryptedStreamProvider: MessageBackupEncryptedProtoStreamProvider,
+        errorPresenter: MessageBackupErrorPresenter,
         fullTextSearchIndexer: MessageBackupFullTextSearchIndexer,
         groupRecipientArchiver: MessageBackupGroupRecipientArchiver,
         incrementalTSAttachmentMigrator: IncrementalMessageTSAttachmentMigrator,
@@ -96,6 +99,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         self.disappearingMessagesJob = disappearingMessagesJob
         self.distributionListRecipientArchiver = distributionListRecipientArchiver
         self.encryptedStreamProvider = encryptedStreamProvider
+        self.errorPresenter = errorPresenter
         self.fullTextSearchIndexer = fullTextSearchIndexer
         self.groupRecipientArchiver = groupRecipientArchiver
         self.incrementalTSAttachmentMigrator = incrementalTSAttachmentMigrator
@@ -236,6 +240,10 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         tx: DBWriteTransaction
     ) throws {
         let startTimeMs = Date().ows_millisecondsSince1970
+        var errors = [LoggableErrorAndProto]()
+        defer {
+            self.processErrors(errors: errors, tx: tx)
+        }
 
         try writeHeader(stream: stream, tx: tx)
 
@@ -259,7 +267,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         case .success:
             break
         case .failure(let error):
-            MessageBackup.log([error])
+            errors.append(LoggableErrorAndProto(error: error))
             throw OWSAssertionError("Failed to archive account data")
         }
 
@@ -271,7 +279,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         case .success(let success):
             localRecipientId = success
         case .failure(let error):
-            MessageBackup.log([error])
+            errors.append(LoggableErrorAndProto(error: error))
             throw OWSAssertionError("Failed to archive local recipient!")
         }
 
@@ -290,7 +298,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         case .success:
             break
         case .failure(let error):
-            MessageBackup.log([error])
+            errors.append(LoggableErrorAndProto(error: error))
             throw OWSAssertionError("Failed to archive release notes channel!")
         }
 
@@ -301,9 +309,10 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         case .success:
             break
         case .partialSuccess(let partialFailures):
-            try processArchiveFrameErrors(errors: partialFailures)
+            errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0) })
         case .completeFailure(let error):
-            try processFatalArchivingError(error: error)
+            errors.append(LoggableErrorAndProto(error: error))
+            throw BackupError()
         }
 
         switch groupRecipientArchiver.archiveAllGroupRecipients(
@@ -313,9 +322,10 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         case .success:
             break
         case .partialSuccess(let partialFailures):
-            try processArchiveFrameErrors(errors: partialFailures)
+            errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0) })
         case .completeFailure(let error):
-            try processFatalArchivingError(error: error)
+            errors.append(LoggableErrorAndProto(error: error))
+            throw BackupError()
         }
 
         switch distributionListRecipientArchiver.archiveAllDistributionListRecipients(
@@ -325,9 +335,10 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         case .success:
             break
         case .partialSuccess(let partialFailures):
-            try processArchiveFrameErrors(errors: partialFailures)
+            errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0) })
         case .completeFailure(let error):
-            try processFatalArchivingError(error: error)
+            errors.append(LoggableErrorAndProto(error: error))
+            throw BackupError()
         }
 
         // TODO: [Backups] Archive call link recipients.
@@ -347,9 +358,10 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         case .success:
             break
         case .partialSuccess(let partialFailures):
-            try processArchiveFrameErrors(errors: partialFailures)
+            errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0) })
         case .completeFailure(let error):
-            try processFatalArchivingError(error: error)
+            errors.append(LoggableErrorAndProto(error: error))
+            throw BackupError()
         }
 
         let chatItemArchiveResult = chatItemArchiver.archiveInteractions(
@@ -360,9 +372,10 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         case .success:
             break
         case .partialSuccess(let partialFailures):
-            try processArchiveFrameErrors(errors: partialFailures)
+            errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0) })
         case .completeFailure(let error):
-            try processFatalArchivingError(error: error)
+            errors.append(LoggableErrorAndProto(error: error))
+            throw BackupError()
         }
 
         let archivingContext = MessageBackup.ArchivingContext(
@@ -378,9 +391,10 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         case .success:
             break
         case .partialSuccess(let partialFailures):
-            try processArchiveFrameErrors(errors: partialFailures)
+            errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0) })
         case .completeFailure(let error):
-            try processFatalArchivingError(error: error)
+            errors.append(LoggableErrorAndProto(error: error))
+            throw BackupError()
         }
 
         try stream.closeFileStream()
@@ -410,23 +424,6 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         case .fileIOError(let error), .protoSerializationError(let error):
             throw error
         }
-    }
-
-    private func processArchiveFrameErrors<IdType>(
-        errors: [MessageBackup.ArchiveFrameError<IdType>]
-    ) throws {
-        MessageBackup.log(errors)
-        // At time of writing, we want to fail for every single error.
-        if errors.isEmpty.negated {
-            throw BackupError()
-        }
-    }
-
-    private func processFatalArchivingError(
-        error: MessageBackup.FatalArchivingError
-    ) throws {
-        MessageBackup.log([error])
-        throw BackupError()
     }
 
     // MARK: - Import
@@ -514,6 +511,11 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     ) throws {
         let startTimeMs = Date().ows_millisecondsSince1970
 
+        var frameErrors = [LoggableErrorAndProto]()
+        defer {
+            self.processErrors(errors: frameErrors, tx: tx)
+        }
+
         let backupInfo: BackupProto_BackupInfo
         var hasMoreFrames = false
         switch stream.readHeader() {
@@ -526,29 +528,35 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             throw OWSAssertionError("invalid empty header frame")
         case .protoDeserializationError(let error):
             // Fail if we fail to deserialize the header.
-            try processRestoreFrameErrors(errors: [.restoreFrameError(
+            frameErrors.append(LoggableErrorAndProto(error: MessageBackup.RestoreFrameError.restoreFrameError(
                 .invalidProtoData(.missingBackupInfoHeader),
                 MessageBackup.BackupInfoId()
-            )])
+            )))
             throw error
         }
 
         Logger.info("Reading backup with version: \(backupInfo.version) backed up at \(backupInfo.backupTimeMs)")
 
         guard backupInfo.version == Constants.supportedBackupVersion else {
-            try processRestoreFrameErrors(errors: [.restoreFrameError(
-                .invalidProtoData(.unsupportedBackupInfoVersion),
-                MessageBackup.BackupInfoId()
-            )])
+            frameErrors.append(LoggableErrorAndProto(
+                error: MessageBackup.RestoreFrameError.restoreFrameError(
+                    .invalidProtoData(.unsupportedBackupInfoVersion),
+                    MessageBackup.BackupInfoId()
+                ),
+                protoFrame: backupInfo
+            ))
             throw BackupError()
         }
         do {
             try mrbkStore.setMediaRootBackupKey(fromRestoredBackup: backupInfo, tx: tx)
         } catch {
-            try processRestoreFrameErrors(errors: [.restoreFrameError(
-                .invalidProtoData(.invalidMediaRootBackupKey),
-                MessageBackup.BackupInfoId()
-            )])
+            frameErrors.append(LoggableErrorAndProto(
+                error: MessageBackup.RestoreFrameError.restoreFrameError(
+                    .invalidProtoData(.invalidMediaRootBackupKey),
+                    MessageBackup.BackupInfoId()
+                ),
+                protoFrame: backupInfo
+            ))
             throw error
         }
 
@@ -648,9 +656,10 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 case .success:
                     continue
                 case .partialRestore(let errors):
-                    try processRestoreFrameErrors(errors: errors)
+                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, protoFrame: recipient) })
                 case .failure(let errors):
-                    try processRestoreFrameErrors(errors: errors)
+                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, protoFrame: recipient) })
+                    throw BackupError()
                 }
             case .chat(let chat):
                 let chatResult = chatArchiver.restore(
@@ -661,9 +670,10 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 case .success:
                     continue
                 case .partialRestore(let errors):
-                    try processRestoreFrameErrors(errors: errors)
+                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, protoFrame: chat) })
                 case .failure(let errors):
-                    try processRestoreFrameErrors(errors: errors)
+                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, protoFrame: chat) })
+                    throw BackupError()
                 }
             case .chatItem(let chatItem):
                 let chatItemResult = chatItemArchiver.restore(
@@ -674,9 +684,10 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 case .success:
                     continue
                 case .partialRestore(let errors):
-                    try processRestoreFrameErrors(errors: errors)
+                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, protoFrame: chatItem) })
                 case .failure(let errors):
-                    try processRestoreFrameErrors(errors: errors)
+                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, protoFrame: chatItem) })
+                    throw BackupError()
                 }
             case .account(let backupProtoAccountData):
                 let accountDataResult = accountDataArchiver.restore(
@@ -688,9 +699,10 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 case .success:
                     continue
                 case .partialRestore(let errors):
-                    try processRestoreFrameErrors(errors: errors)
+                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, protoFrame: backupProtoAccountData) })
                 case .failure(let errors):
-                    try processRestoreFrameErrors(errors: errors)
+                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, protoFrame: backupProtoAccountData) })
+                    throw BackupError()
                 }
             case .stickerPack(let backupProtoStickerPack):
                 let stickerPackResult = stickerPackArchiver.restore(
@@ -701,26 +713,27 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 case .success:
                     continue
                 case .partialRestore(let errors):
-                    try processRestoreFrameErrors(errors: errors)
+                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, protoFrame: backupProtoStickerPack) })
                 case .failure(let errors):
-                    try processRestoreFrameErrors(errors: errors)
+                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, protoFrame: backupProtoStickerPack) })
+                    throw BackupError()
                 }
             case .adHocCall(let backupProtoAdHocCall):
                 // TODO: [Backups] Restore ad-hoc calls.
-                try processRestoreFrameErrors(errors: [.restoreFrameError(
+                frameErrors.append(LoggableErrorAndProto(error: MessageBackup.RestoreFrameError.restoreFrameError(
                     .unimplemented,
                     MessageBackup.AdHocCallId(
                         backupProtoAdHocCall.callID,
                         recipientId: backupProtoAdHocCall.recipientID
                     )
-                )])
+                )))
             case nil:
                 if hasMoreFrames {
                     owsFailDebug("Frame missing item!")
-                    try processRestoreFrameErrors(errors: [.restoreFrameError(
+                    frameErrors.append(LoggableErrorAndProto(error: MessageBackup.RestoreFrameError.restoreFrameError(
                         .invalidProtoData(.frameMissingItem),
                         MessageBackup.EmptyFrameId.shared
-                    )])
+                    )))
                 }
             }
         }
@@ -752,15 +765,16 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         Logger.info("Imported \(stream.numberOfReadFrames) in \(endTimeMs - startTimeMs)ms")
     }
 
-    private func processRestoreFrameErrors<IdType>(errors: [MessageBackup.RestoreFrameError<IdType>]) throws {
-        MessageBackup.log(errors)
-        // At time of writing, we want to fail for every single error.
-        if errors.isEmpty.negated {
-            throw BackupError()
-        }
-    }
-
     // MARK: -
+
+    private func processErrors(
+        errors: [LoggableErrorAndProto],
+        tx: DBWriteTransaction
+    ) {
+        let collapsedErrors = MessageBackup.collapse(errors)
+        collapsedErrors.forEach { $0.log() }
+        errorPresenter.persistErrors(collapsedErrors, tx: tx)
+    }
 
     /// TSAttachments must be migrated to v2 Attachments before we can create or restore backups.
     /// Normally this migration happens in the background; force it to run and finish now.

@@ -147,7 +147,8 @@ class NSEEnvironment {
             callMessageHandler: NSECallMessageHandler(),
             currentCallProvider: CurrentCallNoOpProvider(),
             notificationPresenter: NotificationPresenterImpl(),
-            incrementalTSAttachmentMigrator: NoOpIncrementalMessageTSAttachmentMigrator()
+            incrementalTSAttachmentMigrator: NoOpIncrementalMessageTSAttachmentMigrator(),
+            messageBackupErrorPresenterFactory: NoOpMessageBackupErrorPresenterFactory()
         )
 
         databaseContinuation.prepareDatabase().done(on: DispatchQueue.main) { finalSetupContinuation in

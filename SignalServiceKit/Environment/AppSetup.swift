@@ -106,6 +106,7 @@ public class AppSetup {
         currentCallProvider: any CurrentCallProvider,
         notificationPresenter: any NotificationPresenter,
         incrementalTSAttachmentMigrator: IncrementalMessageTSAttachmentMigrator,
+        messageBackupErrorPresenterFactory: MessageBackupErrorPresenterFactory,
         testDependencies: TestDependencies = TestDependencies()
     ) -> AppSetup.DatabaseContinuation {
         configureUnsatisfiableConstraintLogging()
@@ -1027,6 +1028,13 @@ public class AppSetup {
         let backupStoryStore = MessageBackupStoryStore(storyStore: storyStore)
         let mrbkStore = MediaRootBackupKeyStore(keyValueStoreFactory: keyValueStoreFactory)
 
+        let messageBackupErrorPresenter = messageBackupErrorPresenterFactory.build(
+            appReadiness: appReadiness,
+            db: db,
+            keyValueStoreFactory: keyValueStoreFactory,
+            tsAccountManager: tsAccountManager
+        )
+
         let messageBackupManager = MessageBackupManagerImpl(
             accountDataArchiver: MessageBackupAccountDataArchiverImpl(
                 chatStyleArchiver: messageBackupChatStyleArchiver,
@@ -1099,6 +1107,7 @@ public class AppSetup {
             encryptedStreamProvider: MessageBackupEncryptedProtoStreamProviderImpl(
                 backupKeyMaterial: messageBackupKeyMaterial
             ),
+            errorPresenter: messageBackupErrorPresenter,
             fullTextSearchIndexer: MessageBackupFullTextSearchIndexerImpl(
                 appReadiness: appReadiness,
                 dateProvider: dateProvider,
@@ -1271,6 +1280,7 @@ public class AppSetup {
             masterKeySyncManager: masterKeySyncManager,
             mediaBandwidthPreferenceStore: mediaBandwidthPreferenceStore,
             mediaGalleryResourceManager: mediaGalleryResourceManager,
+            messageBackupErrorPresenter: messageBackupErrorPresenter,
             messageBackupManager: messageBackupManager,
             messageStickerManager: messageStickerManager,
             mrbkStore: mrbkStore,

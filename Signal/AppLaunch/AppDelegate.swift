@@ -389,7 +389,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             callMessageHandler: WebRTCCallMessageHandler(),
             currentCallProvider: currentCall,
             notificationPresenter: NotificationPresenterImpl(),
-            incrementalTSAttachmentMigrator: launchContext.incrementalMessageTSAttachmentMigrator
+            incrementalTSAttachmentMigrator: launchContext.incrementalMessageTSAttachmentMigrator,
+            messageBackupErrorPresenterFactory: MessageBackupErrorPresenterFactoryInternal()
         )
         setupNSEInteroperation()
         SUIEnvironment.shared.setUp(
