@@ -179,15 +179,7 @@ class LinkDeviceViewController: OWSViewController {
         var pniIdentityKeyPair: ECKeyPair?
         var areReadReceiptsEnabled: Bool = true
         var masterKey: Data?
-        let ephemeralBackupKey: EphemeralBackupKey?
-        if
-            FeatureFlags.linkAndSync,
-            deviceProvisioningUrl.capabilities.contains(where: { $0 == .linknsync })
-        {
-            ephemeralBackupKey = DependenciesBridge.shared.linkAndSyncManager.generateEphemeralBackupKey()
-        } else {
-            ephemeralBackupKey = nil
-        }
+        var isLinkAndSyncEnabled = false
         let mediaRootBackupKey = SSKEnvironment.shared.databaseStorageRef.write { tx in
             localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)
             let identityManager = DependenciesBridge.shared.identityManager
@@ -195,9 +187,21 @@ class LinkDeviceViewController: OWSViewController {
             pniIdentityKeyPair = identityManager.identityKeyPair(for: .pni, tx: tx.asV2Read)
             areReadReceiptsEnabled = OWSReceiptManager.areReadReceiptsEnabled(transaction: tx)
             masterKey = DependenciesBridge.shared.svr.masterKeyDataForKeysSyncMessage(tx: tx.asV2Read)
+            isLinkAndSyncEnabled = DependenciesBridge.shared.linkAndSyncManager.isLinkAndSyncEnabledOnPrimary(tx: tx.asV2Read)
             let mrbk = DependenciesBridge.shared.mrbkStore.getOrGenerateMediaRootBackupKey(tx: tx.asV2Write)
             return mrbk
         }
+
+        let ephemeralBackupKey: EphemeralBackupKey?
+        if
+            isLinkAndSyncEnabled,
+            deviceProvisioningUrl.capabilities.contains(where: { $0 == .linknsync })
+        {
+            ephemeralBackupKey = DependenciesBridge.shared.linkAndSyncManager.generateEphemeralBackupKey()
+        } else {
+            ephemeralBackupKey = nil
+        }
+
         let myProfileKeyData = SSKEnvironment.shared.profileManagerRef.localProfileKey.keyData
 
         guard let myAci = localIdentifiers?.aci, let myPhoneNumber = localIdentifiers?.phoneNumber else {
@@ -240,7 +244,7 @@ class LinkDeviceViewController: OWSViewController {
 
         deviceProvisioner.provision().then(on: SyncScheduler()) { tokenId in
             Logger.info("Successfully provisioned device.")
-            if FeatureFlags.linkAndSync, let ephemeralBackupKey {
+            if isLinkAndSyncEnabled, let ephemeralBackupKey {
                 return Promise.wrapAsync {
                     try await DependenciesBridge.shared.linkAndSyncManager.waitForLinkingAndUploadBackup(
                         ephemeralBackupKey: ephemeralBackupKey,

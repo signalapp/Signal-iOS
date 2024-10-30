@@ -417,7 +417,7 @@ public class ProvisioningController: NSObject {
         }
 
         var capabilities = [String]()
-        if FeatureFlags.linkAndSync {
+        if FeatureFlags.linkAndSyncSecondary {
             capabilities.append(DeviceProvisioningURL.Capability.linknsync.rawValue)
         }
 

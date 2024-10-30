@@ -1207,6 +1207,7 @@ public class AppSetup {
             attachmentDownloadManager: attachmentDownloadManager,
             attachmentUploadManager: attachmentUploadManager,
             db: db,
+            keyValueStoreFactory: keyValueStoreFactory,
             messageBackupManager: messageBackupManager,
             networkManager: networkManager,
             tsAccountManager: tsAccountManager

@@ -184,6 +184,13 @@ extension ProvisioningCoordinatorTest {
 }
 
 private class MockLinkAndSyncManager: LinkAndSyncManager {
+
+    func isLinkAndSyncEnabledOnPrimary(tx: DBReadTransaction) -> Bool {
+        true
+    }
+
+    func setIsLinkAndSyncEnabledOnPrimary(_ isEnabled: Bool, tx: DBWriteTransaction) {}
+
     func generateEphemeralBackupKey() -> EphemeralBackupKey {
         return .forTesting()
     }

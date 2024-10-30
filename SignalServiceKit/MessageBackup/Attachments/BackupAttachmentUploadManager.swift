@@ -76,6 +76,9 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         currentUploadEra: String,
         tx: DBWriteTransaction
     ) throws {
+        guard FeatureFlags.messageBackupFileAlpha else {
+            return
+        }
         guard let referencedStream = referencedAttachment.asReferencedStream else {
             // We only upload streams
             return
@@ -152,6 +155,9 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         private let errorCounts = ErrorCounts()
 
         func runTask(record: Store.Record, loader: TaskQueueLoader<TaskRunner>) async -> TaskRecordResult {
+            guard FeatureFlags.messageBackupFileAlpha else {
+                return .cancelled
+            }
             let attachment = db.read { tx in
                 return self.attachmentStore.fetch(id: record.record.attachmentRowId, tx: tx)
             }

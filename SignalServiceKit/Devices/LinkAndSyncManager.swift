@@ -44,6 +44,10 @@ public enum SecondaryLinkNSyncError: Error {
 
 public protocol LinkAndSyncManager {
 
+    func isLinkAndSyncEnabledOnPrimary(tx: DBReadTransaction) -> Bool
+
+    func setIsLinkAndSyncEnabledOnPrimary(_ isEnabled: Bool, tx: DBWriteTransaction)
+
     /// **Call this on the primary device!**
     /// Generate an ephemeral backup key on a primary device to be used to link'n'sync a new linked device.
     /// This key should be included in the provisioning message and then used to encrypt the backup proto we send.
@@ -76,6 +80,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
     private let attachmentDownloadManager: AttachmentDownloadManager
     private let attachmentUploadManager: AttachmentUploadManager
     private let db: any DB
+    private let kvStore: KeyValueStore
     private let messageBackupManager: MessageBackupManager
     private let networkManager: NetworkManager
     private let tsAccountManager: TSAccountManager
@@ -84,6 +89,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         attachmentDownloadManager: AttachmentDownloadManager,
         attachmentUploadManager: AttachmentUploadManager,
         db: any DB,
+        keyValueStoreFactory: KeyValueStoreFactory,
         messageBackupManager: MessageBackupManager,
         networkManager: NetworkManager,
         tsAccountManager: TSAccountManager
@@ -91,13 +97,29 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         self.attachmentDownloadManager = attachmentDownloadManager
         self.attachmentUploadManager = attachmentUploadManager
         self.db = db
+        self.kvStore = keyValueStoreFactory.keyValueStore(collection: "LinkAndSyncManagerImpl")
         self.messageBackupManager = messageBackupManager
         self.networkManager = networkManager
         self.tsAccountManager = tsAccountManager
     }
 
+    public func isLinkAndSyncEnabledOnPrimary(tx: DBReadTransaction) -> Bool {
+        if FeatureFlags.linkAndSyncOverridePrimary {
+            return true
+        }
+        return kvStore.getBool(Constants.enabledOnPrimaryKey, defaultValue: false, transaction: tx)
+    }
+
+    public func setIsLinkAndSyncEnabledOnPrimary(_ isEnabled: Bool, tx: DBWriteTransaction) {
+        guard FeatureFlags.linkAndSyncTogglePrimary else {
+            owsFailDebug("Toggling not allowed")
+            return
+        }
+        kvStore.setBool(isEnabled, key: Constants.enabledOnPrimaryKey, transaction: tx)
+    }
+
     public func generateEphemeralBackupKey() -> EphemeralBackupKey {
-        owsAssertDebug(FeatureFlags.linkAndSync)
+        owsAssertDebug(FeatureFlags.linkAndSyncTogglePrimary || FeatureFlags.linkAndSyncOverridePrimary)
         owsAssertDebug(tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice == true)
         return EphemeralBackupKey(Randomness.generateRandomBytes(UInt(SVR.DerivedKey.backupKeyLength)))
     }
@@ -106,7 +128,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         ephemeralBackupKey: EphemeralBackupKey,
         tokenId: DeviceProvisioningTokenId
     ) async throws(PrimaryLinkNSyncError) {
-        guard FeatureFlags.linkAndSync else {
+        guard FeatureFlags.linkAndSyncTogglePrimary || FeatureFlags.linkAndSyncOverridePrimary else {
             owsFailDebug("link'n'sync not available")
             return
         }
@@ -141,7 +163,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         auth: ChatServiceAuth,
         ephemeralBackupKey: EphemeralBackupKey
     ) async throws(SecondaryLinkNSyncError) {
-        guard FeatureFlags.linkAndSync else {
+        guard FeatureFlags.linkAndSyncSecondary else {
             owsFailDebug("link'n'sync not available")
             return
         }
@@ -327,6 +349,8 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
     }
 
     fileprivate enum Constants {
+        static let enabledOnPrimaryKey = "enabledOnPrimaryKey"
+
         static let waitForDeviceLinkTimeoutSeconds: UInt32 = FeatureFlags.linkAndSyncTimeoutSeconds
         static let waitForBackupUploadTimeoutSeconds: UInt32 = FeatureFlags.linkAndSyncTimeoutSeconds
     }

@@ -169,7 +169,11 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         localIdentifiers: LocalIdentifiers,
         mode: MessageBackup.EncryptionMode
     ) async throws -> Upload.EncryptedBackupUploadMetadata {
-        guard FeatureFlags.messageBackupFileAlpha else {
+        guard
+            FeatureFlags.messageBackupFileAlpha
+            || FeatureFlags.linkAndSyncTogglePrimary
+            || FeatureFlags.linkAndSyncOverridePrimary
+        else {
             owsFailDebug("Should not be able to use backups!")
             throw NotImplementedError()
         }
@@ -447,7 +451,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         localIdentifiers: LocalIdentifiers,
         mode: MessageBackup.EncryptionMode
     ) async throws {
-        guard FeatureFlags.messageBackupFileAlpha else {
+        guard FeatureFlags.messageBackupFileAlpha || FeatureFlags.linkAndSyncSecondary else {
             owsFailDebug("Should not be able to use backups!")
             throw NotImplementedError()
         }

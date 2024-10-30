@@ -163,7 +163,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
     }
 
     public func restoreAttachmentsIfNeeded() async throws {
-        guard FeatureFlags.messageBackupFileAlpha else {
+        guard FeatureFlags.messageBackupFileAlpha || FeatureFlags.linkAndSyncSecondary else {
             return
         }
         guard appReadiness.isAppReady else {
@@ -181,7 +181,9 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             Logger.info("Skipping backup attachment downloads while not on wifi")
             return
         }
-        try await listMediaManager.queryListMediaIfNeeded()
+        if FeatureFlags.messageBackupFileAlpha {
+            try await listMediaManager.queryListMediaIfNeeded()
+        }
         try await taskQueue.loadAndRunTasks()
     }
 
@@ -832,7 +834,8 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             }
 
             let canDownloadMediaTierFullsize =
-                attachment.mediaTierInfo != nil
+                FeatureFlags.messageBackupFileAlpha
+                && attachment.mediaTierInfo != nil
                 && (isRecent || shouldStoreAllMediaLocally)
 
             let canDownloadTransitTierFullsize: Bool
@@ -848,7 +851,8 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             }
 
             let canDownloadThumbnail =
-                AttachmentBackupThumbnail.canBeThumbnailed(attachment)
+                FeatureFlags.messageBackupFileAlpha
+                && AttachmentBackupThumbnail.canBeThumbnailed(attachment)
                 && attachment.thumbnailMediaTierInfo != nil
 
             let downloadPriority: AttachmentDownloadPriority =
