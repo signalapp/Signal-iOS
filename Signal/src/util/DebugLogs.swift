@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SSZipArchive
 import zlib
 import SignalServiceKit
 import SignalUI
@@ -229,17 +228,18 @@ class DebugLogs: NSObject {
         }
 
         // Phase 2. Zip up the log files.
-        let zipFilePath = zipDirPath.appendingFileExtension("zip")
-        let zipSuccess = SSZipArchive.createZipFile(
-            atPath: zipFilePath,
-            withContentsOfDirectory: zipDirPath,
-            keepParentDirectory: true,
-            compressionLevel: Z_DEFAULT_COMPRESSION,
-            password: nil,
-            aes: false,
-            progressHandler: nil
-        )
-        guard zipSuccess else {
+        let zipDirUrl = URL(fileURLWithPath: zipDirPath)
+        let zipFileUrl = URL(fileURLWithPath: zipDirPath.appendingFileExtension("zip"))
+        let fileCoordinator = NSFileCoordinator()
+        var zipError: NSError?
+        fileCoordinator.coordinate(readingItemAt: zipDirUrl, options: [.forUploading], error: &zipError) { temporaryFileUrl in
+            do {
+                try FileManager.default.copyItem(at: temporaryFileUrl, to: zipFileUrl)
+            } catch {
+                Logger.warn("Couldn't copy zipped file: \(error)")
+            }
+        }
+        if zipError != nil || !OWSFileSystem.fileOrFolderExists(url: zipFileUrl) {
             let errorMessage = OWSLocalizedString(
                 "DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS",
                 comment: "Error indicating that the debug logs could not be packaged."
@@ -248,22 +248,22 @@ class DebugLogs: NSObject {
             return
         }
 
-        OWSFileSystem.protectFileOrFolder(atPath: zipFilePath)
+        OWSFileSystem.protectFileOrFolder(atPath: zipFileUrl.path)
         OWSFileSystem.deleteFile(zipDirPath)
 
         // Phase 3. Upload the log files.
         DebugLogUploader.uploadFile(
-            fileUrl: URL(fileURLWithPath: zipFilePath),
+            fileUrl: zipFileUrl,
             mimeType: MimeType.applicationZip.rawValue
         ).done(on: DispatchQueue.global()) { url in
-            OWSFileSystem.deleteFile(zipFilePath)
+            OWSFileSystem.deleteFile(zipFileUrl.path)
             wrappedSuccess(url)
         }.catch(on: DispatchQueue.global()) { error in
             let errorMessage = OWSLocalizedString(
                 "DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG",
                 comment: "Error indicating that a debug log could not be uploaded."
             )
-            wrappedFailure(errorMessage, zipFilePath)
+            wrappedFailure(errorMessage, zipFileUrl.path)
         }
     }
 
