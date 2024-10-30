@@ -57,7 +57,6 @@ public class SDSDatabaseStorage: NSObject {
         }
     }
 
-    @objc
     public class var baseDir: URL {
         return URL(
             fileURLWithPath: CurrentAppContext().appDatabaseBaseDirectoryPath(),
@@ -65,12 +64,6 @@ public class SDSDatabaseStorage: NSObject {
         )
     }
 
-    @objc
-    public static var grdbDatabaseDirUrl: URL {
-        return GRDBDatabaseStorageAdapter.databaseDirUrl()
-    }
-
-    @objc
     public static var grdbDatabaseFileUrl: URL {
         return GRDBDatabaseStorageAdapter.databaseFileUrl()
     }
@@ -129,11 +122,6 @@ public class SDSDatabaseStorage: NSObject {
         }
     }
 
-    @objc
-    public func deleteGrdbFiles() {
-        GRDBDatabaseStorageAdapter.removeAllFiles()
-    }
-
     public func resetAllStorage() {
         YDBStorage.deleteYDBStorage()
         do {
@@ -146,7 +134,6 @@ public class SDSDatabaseStorage: NSObject {
 
     // MARK: - Id Mapping
 
-    @objc
     public func updateIdMapping(thread: TSThread, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .grdbWrite(let grdb):
@@ -156,7 +143,6 @@ public class SDSDatabaseStorage: NSObject {
         }
     }
 
-    @objc
     public func updateIdMapping(interaction: TSInteraction, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .grdbWrite(let grdb):
@@ -168,7 +154,6 @@ public class SDSDatabaseStorage: NSObject {
 
     // MARK: - Touch
 
-    @objc(touchInteraction:shouldReindex:transaction:)
     public func touch(interaction: TSInteraction, shouldReindex: Bool, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .grdbWrite(let grdb):
@@ -201,7 +186,6 @@ public class SDSDatabaseStorage: NSObject {
         touch(thread: thread, shouldReindex: shouldReindex, shouldUpdateChatListUi: true, transaction: transaction)
     }
 
-    @objc(touchStoryMessage:transaction:)
     public func touch(storyMessage: StoryMessage, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .grdbWrite(let grdb):
@@ -246,9 +230,7 @@ public class SDSDatabaseStorage: NSObject {
         postCrossProcessNotificationActiveAsync()
     }
 
-    @objc
     public static let didReceiveCrossProcessNotificationActiveAsync = Notification.Name("didReceiveCrossProcessNotificationActiveAsync")
-    @objc
     public static let didReceiveCrossProcessNotificationAlwaysSync = Notification.Name("didReceiveCrossProcessNotificationAlwaysSync")
 
     private func postCrossProcessNotificationActiveAsync() {
@@ -298,11 +280,6 @@ public class SDSDatabaseStorage: NSObject {
     @objc(readWithBlock:)
     public func readObjC(block: (SDSAnyReadTransaction) -> Void) {
         read(file: "objc", function: "block", line: 0, block: block)
-    }
-
-    @objc(readWithBlock:file:function:line:)
-    public func readObjC(block: (SDSAnyReadTransaction) -> Void, file: UnsafePointer<CChar>, function: UnsafePointer<CChar>, line: Int) {
-        read(file: String(cString: file), function: String(cString: function), line: line, block: block)
     }
 
     @discardableResult
@@ -431,16 +408,6 @@ public class SDSDatabaseStorage: NSObject {
     }
 
     // MARK: - Async
-
-    @objc(asyncReadWithBlock:)
-    public func asyncReadObjC(block: @escaping (SDSAnyReadTransaction) -> Void) {
-        asyncRead(file: "objc", function: "block", line: 0, block: block)
-    }
-
-    @objc(asyncReadWithBlock:completion:)
-    public func asyncReadObjC(block: @escaping (SDSAnyReadTransaction) -> Void, completion: @escaping () -> Void) {
-        asyncRead(file: "objc", function: "block", line: 0, block: block, completion: completion)
-    }
 
     public func asyncRead<T>(
         file: String = #file,
@@ -571,9 +538,7 @@ public class SDSDatabaseStorage: NSObject {
         asyncWrite(file: file, function: function, line: line, block: block, completion: nil)
     }
 
-    public static func owsFormatLogMessage(file: String = #file,
-                                           function: String = #function,
-                                           line: Int = #line) -> String {
+    private static func owsFormatLogMessage(file: String = #file, function: String = #function, line: Int = #line) -> String {
         let filename = (file as NSString).lastPathComponent
         // We format the filename & line number in a format compatible
         // with XCode's "Open Quickly..." feature.
@@ -592,50 +557,32 @@ protocol SDSDatabaseStorageAdapter {
 
 // MARK: -
 
-@objc
-public class SDS: NSObject {
-    @objc
-    public class func fitsInInt64(_ value: UInt64) -> Bool {
+public enum SDS {
+    public static func fitsInInt64(_ value: UInt64) -> Bool {
         return value <= Int64.max
-    }
-
-    @objc
-    public func fitsInInt64(_ value: UInt64) -> Bool {
-        return SDS.fitsInInt64(value)
-    }
-
-    @objc(fitsInInt64WithNSNumber:)
-    public class func fitsInInt64(nsNumber value: NSNumber) -> Bool {
-        return fitsInInt64(value.uint64Value)
-    }
-
-    @objc(fitsInInt64WithNSNumber:)
-    public func fitsInInt64(nsNumber value: NSNumber) -> Bool {
-        return SDS.fitsInInt64(nsNumber: value)
     }
 }
 
 // MARK: -
 
-@objc
-public extension SDSDatabaseStorage {
-    func logFileSizes() {
+extension SDSDatabaseStorage {
+    public func logFileSizes() {
         Logger.info("Database: \(databaseFileSize), WAL: \(databaseWALFileSize), SHM: \(databaseSHMFileSize)")
     }
 
-    var databaseFileSize: UInt64 {
+    public var databaseFileSize: UInt64 {
         grdbStorage.databaseFileSize
     }
 
-    var databaseWALFileSize: UInt64 {
+    public var databaseWALFileSize: UInt64 {
         grdbStorage.databaseWALFileSize
     }
 
-    var databaseSHMFileSize: UInt64 {
+    public var databaseSHMFileSize: UInt64 {
         grdbStorage.databaseSHMFileSize
     }
 
-    var databaseCombinedFileSize: UInt64 {
+    public var databaseCombinedFileSize: UInt64 {
         databaseFileSize + databaseWALFileSize + databaseSHMFileSize
     }
 }

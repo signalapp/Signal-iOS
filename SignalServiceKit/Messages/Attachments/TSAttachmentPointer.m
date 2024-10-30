@@ -253,7 +253,7 @@ static const NSUInteger kMaxAttachmentsPerDataMessage = 100;
     }
 
     UInt64 serverId = attachmentProto.cdnID;
-    if (![SDS fitsInInt64:serverId]) {
+    if (serverId > INT64_MAX) {
         OWSFailDebug(@"Invalid server id.");
         return nil;
     }
