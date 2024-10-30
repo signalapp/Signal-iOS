@@ -591,6 +591,7 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
             return
         }
 
+        let filterIconImageView = UIImageView(image: animationFrames.last!.image.withConfiguration(.filterIconDisappearing))
         let transitionView = TransitionEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterial))
         let endFrame = clearButton.frame
 
@@ -604,14 +605,19 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
         clearButton.configuration?.background = .clear()
 
         UIView.performWithoutAnimation {
+            imageContainer.alpha = 0
+
+            transitionView.contentView.backgroundColor = .filterIconActiveBackground
             transitionView.frame = startFrame
+            transitionView.contentView.addSubview(filterIconImageView)
             contentView.insertSubview(transitionView, belowSubview: imageContainer)
+            filterIconImageView.frame = transitionView.contentView.convert(imageViews.last!.frame, from: imageContainer)
         }
 
         let transitionAnimator = UIViewPropertyAnimator(duration: animationDuration(0.7), dampingRatio: 0.75)
 
-        transitionAnimator.addAnimations(withDurationFactor: 0.1) { [imageContainer] in
-            imageContainer.alpha = 0
+        transitionAnimator.addAnimations(withDurationFactor: 0.1) {
+            filterIconImageView.alpha = 0
         }
 
         transitionAnimator.addAnimations({ [clearButton] in
@@ -619,7 +625,9 @@ final class ChatListFilterControl: UIView, UIScrollViewDelegate {
         }, delayFactor: 0.33)
 
         transitionAnimator.addAnimations {
+            transitionView.contentView.backgroundColor = .clear
             transitionView.frame = endFrame
+            filterIconImageView.center = transitionView.contentView.bounds.center
         }
 
         transitionAnimator.addCompletion { [self] _ in
@@ -648,7 +656,33 @@ private extension UIImage.Configuration {
     }
 
     static var filterIconFiltering: UIImage.SymbolConfiguration {
-        filterIconBase.applying(UIImage.SymbolConfiguration(paletteColors: [.Signal.ultramarine, .Signal.secondaryBackground]))
+        filterIconBase.applying(UIImage.SymbolConfiguration(paletteColors: [.filterIconActiveForeground, .filterIconActiveBackground]))
+    }
+
+    static var filterIconDisappearing: UIImage.SymbolConfiguration {
+        filterIconBase.applying(UIImage.SymbolConfiguration(paletteColors: [.filterIconActiveForeground, .clear]))
+    }
+}
+
+private extension UIColor {
+    static var filterIconActiveForeground: UIColor {
+        UIColor { traitCollection in
+            if traitCollection.userInterfaceStyle == .dark {
+                .Signal.label
+            } else {
+                .Signal.ultramarine
+            }
+        }
+    }
+
+    static var filterIconActiveBackground: UIColor {
+        UIColor { traitCollection in
+            if traitCollection.userInterfaceStyle == .dark {
+                .Signal.ultramarine
+            } else {
+                .Signal.secondaryUltramarineBackground
+            }
+        }
     }
 }
 
