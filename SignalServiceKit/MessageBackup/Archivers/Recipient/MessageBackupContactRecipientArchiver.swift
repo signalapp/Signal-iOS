@@ -92,6 +92,9 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
         /// Track all the `ServiceId`s that we've archived, so we don't attempt
         /// to archive a `Contact` frame twice for the same service ID.
         var archivedServiceIds = Set<ServiceId>()
+        /// Track all the phone numbers we've archived too, so we don't attempt to archive a
+        /// `Contact` twice for the same e164.
+        var archivedPhoneNumbers = Set<String>()
 
         /// First, we enumerate all `SignalRecipient`s, which are our "primary
         /// key" for contacts. They directly contain many of the fields we store
@@ -127,6 +130,9 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
             }
             if let pni = contactAddress.pni {
                 archivedServiceIds.insert(pni)
+            }
+            if let e164 = contactAddress.e164 {
+                archivedPhoneNumbers.insert(e164.stringValue)
             }
 
             var isStoryHidden = false
@@ -226,6 +232,15 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
                 if !inserted {
                     /// Bail early if we've already archived a `Contact` for this
                     /// service ID.
+                    return
+                }
+            }
+            if let phoneNumber = userProfile.phoneNumber {
+                let (inserted, _) = archivedPhoneNumbers.insert(phoneNumber)
+
+                if !inserted {
+                    /// Bail early if we've already archived a `Contact` for this
+                    /// phone number.
                     return
                 }
             }
