@@ -19,7 +19,6 @@ public extension MessageBackup {
             let mediaId: Data
             let hmacKey: Data
             let aesKey: Data
-            let iv: Data
 
             var asParameters: [String: Any] {
                 [
@@ -30,8 +29,7 @@ public extension MessageBackup {
                     "objectLength": self.objectLength,
                     "mediaId": self.mediaId.asBase64Url,
                     "hmacKey": self.hmacKey.base64EncodedString(),
-                    "encryptionKey": self.aesKey.base64EncodedString(),
-                    "iv": self.iv.base64EncodedString()
+                    "encryptionKey": self.aesKey.base64EncodedString()
                 ]
             }
         }

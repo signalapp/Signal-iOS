@@ -109,7 +109,7 @@ class _AttachmentUploadManager_MessageBackupKeyMaterialMock: MessageBackupKeyMat
     }
 
     func mediaEncryptionMetadata(mediaName: String, type: MediaTierEncryptionType, tx: DBReadTransaction) throws -> MediaTierEncryptionMetadata {
-        return .init(type: type, mediaId: Data(), hmacKey: Data(), aesKey: Data(), iv: Data())
+        return .init(type: type, mediaId: Data(), hmacKey: Data(), aesKey: Data())
     }
 
     func mediaId(mediaName: String, type: MediaTierEncryptionType, backupKey: SVR.DerivedKeyData) throws -> Data {

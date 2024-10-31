@@ -150,16 +150,14 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
                 type: type,
                 mediaId: mediaId,
                 hmacKey: Data(Array(keyBytes[0..<32])),
-                aesKey: Data(Array(keyBytes[32..<64])),
-                iv: Data(Array(keyBytes[64..<80]))
+                aesKey: Data(Array(keyBytes[32..<64]))
             )
         case .thumbnail:
             return MediaTierEncryptionMetadata(
                 type: type,
                 mediaId: mediaId,
                 hmacKey: Data(Array(keyBytes[32..<64])),
-                aesKey: Data(Array(keyBytes[0..<32])),
-                iv: Randomness.generateRandomBytes(16)
+                aesKey: Data(Array(keyBytes[0..<32]))
             )
         }
     }

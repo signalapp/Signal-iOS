@@ -23,7 +23,6 @@ public struct MediaTierEncryptionMetadata: Equatable {
     let mediaId: Data
     let hmacKey: Data
     let aesKey: Data
-    let iv: Data
 
     public var encryptionKey: Data {
         return aesKey + hmacKey

@@ -736,7 +736,6 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             let (encryptedThumbnailData, encryptedThumbnailMetadata) = try Cryptography.encrypt(
                 thumbnailData,
                 encryptionKey: encryptionKey.encryptionKey,
-                iv: encryptionKey.iv,
                 applyExtraPadding: true
             )
 
@@ -906,8 +905,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                 objectLength: result.localUploadMetadata.encryptedDataLength,
                 mediaId: mediaEncryptionMetadata.mediaId,
                 hmacKey: mediaEncryptionMetadata.hmacKey,
-                aesKey: mediaEncryptionMetadata.aesKey,
-                iv: mediaEncryptionMetadata.iv
+                aesKey: mediaEncryptionMetadata.aesKey
             ),
             auth: auth
         )
