@@ -6,7 +6,6 @@
 public protocol MessageBackupErrorPresenterFactory {
 
     func build(
-        appReadiness: AppReadiness,
         db: any DB,
         keyValueStoreFactory: KeyValueStoreFactory,
         tsAccountManager: TSAccountManager
@@ -21,8 +20,8 @@ public protocol MessageBackupErrorPresenter {
     /// We only care to hold onto the latest set of backup errors.
     func persistErrors(_ errors: [MessageBackup.CollapsedErrorLog], tx: DBWriteTransaction)
 
-    /// Force presentation during registration; calls completion when presentation has finished.
-    func forcePresentDuringRegistration(completion: @escaping () -> Void)
+    /// Present over the current view controller; calls completion when presentation has finished.
+    func presentOverTopmostViewController(completion: @escaping () -> Void)
 }
 
 public class NoOpMessageBackupErrorPresenterFactory: MessageBackupErrorPresenterFactory {
@@ -30,7 +29,6 @@ public class NoOpMessageBackupErrorPresenterFactory: MessageBackupErrorPresenter
     public init() {}
 
     public func build(
-        appReadiness: AppReadiness,
         db: any DB,
         keyValueStoreFactory: KeyValueStoreFactory,
         tsAccountManager: TSAccountManager
@@ -47,7 +45,7 @@ public class NoOpMessageBackupErrorPresenter: MessageBackupErrorPresenter {
         // do nothing
     }
 
-    public func forcePresentDuringRegistration(completion: @escaping () -> Void) {
+    public func presentOverTopmostViewController(completion: @escaping () -> Void) {
         // do nothing
     }
 }

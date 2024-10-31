@@ -10,13 +10,11 @@ import UIKit
 /// For internal (nightly) use only. Produces MessageBackupErrorPresenterInternal.
 class MessageBackupErrorPresenterFactoryInternal: MessageBackupErrorPresenterFactory {
     func build(
-        appReadiness: AppReadiness,
         db: any DB,
         keyValueStoreFactory: KeyValueStoreFactory,
         tsAccountManager: TSAccountManager
     ) -> MessageBackupErrorPresenter {
         return MessageBackupErrorPresenterInternal(
-            appReadiness: appReadiness,
             db: db,
             keyValueStoreFactory: keyValueStoreFactory,
             tsAccountManager: tsAccountManager
@@ -27,7 +25,6 @@ class MessageBackupErrorPresenterFactoryInternal: MessageBackupErrorPresenterFac
 /// For internal (nightly) use only. Presents MessageBackupInternalErrorViewController when backups emits errors.
 class MessageBackupErrorPresenterInternal: MessageBackupErrorPresenter {
 
-    private let appReadiness: AppReadiness
     private let db: any DB
     private let tsAccountManager: TSAccountManager
 
@@ -37,26 +34,13 @@ class MessageBackupErrorPresenterInternal: MessageBackupErrorPresenter {
     private static let hasBeenDisplayedKey = "hasBeenDisplayed"
 
     init(
-        appReadiness: AppReadiness,
         db: any DB,
         keyValueStoreFactory: KeyValueStoreFactory,
         tsAccountManager: TSAccountManager
     ) {
-        self.appReadiness = appReadiness
         self.db = db
         self.tsAccountManager = tsAccountManager
         self.kvStore = keyValueStoreFactory.keyValueStore(collection: "MessageBackupErrorPresenterImpl")
-
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(presentErrorsIfNeededWithDelay),
-            name: .registrationStateDidChange,
-            object: nil
-        )
-
-        appReadiness.runNowOrWhenUIDidBecomeReadySync { [weak self] in
-            self?.presentErrorsIfNeededWithDelay()
-        }
     }
 
     func persistErrors(_ errors: [SignalServiceKit.MessageBackup.CollapsedErrorLog], tx outerTx: DBWriteTransaction) {
@@ -90,44 +74,16 @@ class MessageBackupErrorPresenterInternal: MessageBackupErrorPresenter {
             self.db.write { innerTx in
                 self.kvStore.setString(stringified, key: Self.stringifiedErrorsKey, transaction: innerTx)
                 self.kvStore.setBool(false, key: Self.hasBeenDisplayedKey, transaction: innerTx)
-
-                innerTx.addAsyncCompletion(on: DispatchQueue.main) { [weak self] in
-                    self?.presentErrorsIfNeeded()
-                }
             }
         }
     }
 
-    private var forceDuringRegistration = false
-
-    func forcePresentDuringRegistration(completion: @escaping () -> Void) {
-        self.forceDuringRegistration = true
-        self.presentErrorsIfNeeded(completion: completion)
-    }
-
-    @objc
-    private func presentErrorsIfNeededWithDelay() {
-        // Introduce a small delay to get the UI set up.
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
-            self.presentErrorsIfNeeded()
-        }
-    }
-
-    private func presentErrorsIfNeeded(completion: (() -> Void)? = nil) {
-        defer { self.forceDuringRegistration = false }
+    func presentOverTopmostViewController(completion: @escaping () -> Void) {
         guard FeatureFlags.messageBackupErrorDisplay else {
-            completion?()
-            return
-        }
-        guard forceDuringRegistration || appReadiness.isUIReady else {
-            completion?()
+            completion()
             return
         }
         let isRegistered = tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
-        guard forceDuringRegistration || isRegistered else {
-            completion?()
-            return
-        }
         let errorString: String? = db.write { tx in
             if kvStore.getBool(Self.hasBeenDisplayedKey, defaultValue: false, transaction: tx) {
                 return nil
@@ -137,7 +93,7 @@ class MessageBackupErrorPresenterInternal: MessageBackupErrorPresenter {
             return errorString
         }
         guard let errorString else {
-            completion?()
+            completion()
             return
         }
 

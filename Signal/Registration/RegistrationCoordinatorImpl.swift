@@ -473,7 +473,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             Logger.info("Finished restore")
         }.recover(on: schedulers.main) { error in
             let (guarantee, future) = Guarantee<Void>.pending()
-            self.deps.messageBackupErrorPresenter.forcePresentDuringRegistration {
+            self.deps.messageBackupErrorPresenter.presentOverTopmostViewController {
                 future.resolve()
             }
             return guarantee

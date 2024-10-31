@@ -183,6 +183,8 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         }
     }
 
+    private var hasPresentedBackupErrors = false
+
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
@@ -192,6 +194,11 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             hasEverPresentedExperienceUpgrade = true
         } else if !hasEverAppeared {
             presentGetStartedBannerIfNecessary()
+        }
+
+        if !hasPresentedBackupErrors {
+            hasPresentedBackupErrors = true
+            DependenciesBridge.shared.messageBackupErrorPresenter.presentOverTopmostViewController(completion: {})
         }
 
         // Whether or not the theme has changed, always ensure

@@ -1029,7 +1029,6 @@ public class AppSetup {
         let mrbkStore = MediaRootBackupKeyStore(keyValueStoreFactory: keyValueStoreFactory)
 
         let messageBackupErrorPresenter = messageBackupErrorPresenterFactory.build(
-            appReadiness: appReadiness,
             db: db,
             keyValueStoreFactory: keyValueStoreFactory,
             tsAccountManager: tsAccountManager

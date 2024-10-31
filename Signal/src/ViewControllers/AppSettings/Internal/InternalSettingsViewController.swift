@@ -277,9 +277,11 @@ private extension InternalSettingsViewController {
             canCancel: false
         ) { modal in
             func dismissModalAndToast(_ message: String) {
-                modal.dismiss {
-                    self.presentToast(text: message)
-                }
+                DependenciesBridge.shared.messageBackupErrorPresenter.presentOverTopmostViewController(completion: {
+                    modal.dismiss {
+                        self.presentToast(text: message)
+                    }
+                })
             }
 
             Task {
@@ -301,7 +303,7 @@ private extension InternalSettingsViewController {
                             )
                             activityVC.popoverPresentationController?.sourceView = self.view
                             activityVC.completionWithItemsHandler = { _, _, _, _ in
-                                modal.dismiss()
+                                dismissModalAndToast("Done")
                             }
                             modal.present(activityVC, animated: true)
                         }
