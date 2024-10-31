@@ -279,8 +279,10 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         chatItem.chatID = chatId.value
         chatItem.authorID = details.author.value
         chatItem.dateSent = details.dateCreated
-        chatItem.expireStartDate = details.expireStartDate ?? 0
-        chatItem.expiresInMs = details.expiresInMs ?? 0
+        if let expiresInMs = details.expiresInMs, expiresInMs > 0 {
+            chatItem.expireStartDate = details.expireStartDate ?? 0
+            chatItem.expiresInMs = expiresInMs
+        }
         chatItem.sms = details.isSmsPreviouslyRestoredFromBackup
         chatItem.item = details.chatItemType
         chatItem.directionalDetails = details.directionalDetails
