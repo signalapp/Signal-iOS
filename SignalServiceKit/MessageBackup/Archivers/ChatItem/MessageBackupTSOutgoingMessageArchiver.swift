@@ -403,6 +403,8 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
             switch context.recipientContext[recipientID] {
             case .contact(let address):
                 recipientAddress = address.asInteropAddress()
+            case .localAddress:
+                recipientAddress = context.recipientContext.localIdentifiers.aciAddress
             case .none:
                 // Missing recipient! Fail this one recipient but keep going.
                 partialErrors.append(.restoreFrameError(
@@ -410,7 +412,7 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
                     chatItem.id
                 ))
                 continue
-            case .localAddress, .group, .distributionList, .releaseNotesChannel:
+            case .group, .distributionList, .releaseNotesChannel:
                 // Recipients can only be contacts.
                 partialErrors.append(.restoreFrameError(
                     .invalidProtoData(.outgoingNonContactMessageRecipient),

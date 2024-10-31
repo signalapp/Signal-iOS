@@ -503,7 +503,22 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
             })
         }
 
-        let results = attachmentStore.fetchReferencedAttachments(owners: attachments.map(\.owner.id), tx: context.tx)
+        let results: [ReferencedAttachment]
+        if
+            attachments.count == 1,
+            let attachment = attachments.first,
+            case let .messageBodyAttachment(messageRowId) = attachment.owner.id,
+            attachment.proto.contentType == MimeType.textXSignalPlain.rawValue
+        {
+            // A single body attachment thats of type text gets swizzled to a long
+            // text attachment.
+            results = attachmentStore.fetchReferencedAttachments(
+                for: .messageOversizeText(messageRowId: messageRowId),
+                tx: context.tx
+            )
+        } else {
+            results = attachmentStore.fetchReferencedAttachments(owners: attachments.map(\.owner.id), tx: context.tx)
+        }
         if results.isEmpty && !attachments.isEmpty {
             return .messageFailure([.restoreFrameError(
                 .failedToCreateAttachment,

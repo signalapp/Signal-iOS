@@ -168,7 +168,13 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             return
         }
         owsAssertDebug(tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice != true)
-        let backupUploadResponse = try await waitForPrimaryToUploadBackup(auth: auth)
+        let backupUploadResponse: Requests.WaitForLinkNSyncBackupUploadResponse
+        do {
+            backupUploadResponse = try await waitForPrimaryToUploadBackup(auth: auth)
+        } catch {
+            // Try one more time by default.
+            backupUploadResponse = try await waitForPrimaryToUploadBackup(auth: auth)
+        }
         let downloadedFileUrl = try await downloadEphemeralBackup(
             waitForBackupResponse: backupUploadResponse,
             ephemeralBackupKey: ephemeralBackupKey
