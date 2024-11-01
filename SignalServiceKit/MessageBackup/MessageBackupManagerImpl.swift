@@ -31,6 +31,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     private let backupAttachmentUploadManager: BackupAttachmentUploadManager
     private let backupRequestManager: MessageBackupRequestManager
     private let backupStickerPackDownloadStore: BackupStickerPackDownloadStore
+    private let callLinkRecipientArchiver: MessageBackupCallLinkRecipientArchiver
     private let chatArchiver: MessageBackupChatArchiver
     private let chatItemArchiver: MessageBackupChatItemArchiver
     private let contactRecipientArchiver: MessageBackupContactRecipientArchiver
@@ -61,6 +62,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         backupAttachmentUploadManager: BackupAttachmentUploadManager,
         backupRequestManager: MessageBackupRequestManager,
         backupStickerPackDownloadStore: BackupStickerPackDownloadStore,
+        callLinkRecipientArchiver: MessageBackupCallLinkRecipientArchiver,
         chatArchiver: MessageBackupChatArchiver,
         chatItemArchiver: MessageBackupChatItemArchiver,
         contactRecipientArchiver: MessageBackupContactRecipientArchiver,
@@ -90,6 +92,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         self.backupAttachmentUploadManager = backupAttachmentUploadManager
         self.backupRequestManager = backupRequestManager
         self.backupStickerPackDownloadStore = backupStickerPackDownloadStore
+        self.callLinkRecipientArchiver = callLinkRecipientArchiver
         self.chatArchiver = chatArchiver
         self.chatItemArchiver = chatItemArchiver
         self.contactRecipientArchiver = contactRecipientArchiver
@@ -359,7 +362,18 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             throw BackupError()
         }
 
-        // TODO: [Backups] Archive call link recipients.
+        switch callLinkRecipientArchiver.archiveAllCallLinkRecipients(
+            stream: stream,
+            context: recipientArchivingContext
+        ) {
+        case .success:
+            break
+        case .partialSuccess(let partialFailures):
+            errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0) })
+        case .completeFailure(let error):
+            errors.append(LoggableErrorAndProto(error: error))
+            throw BackupError()
+        }
 
         let chatArchivingContext = MessageBackup.ChatArchivingContext(
             currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
@@ -679,9 +693,12 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                         recipient: recipient,
                         context: contexts.recipient
                     )
-                case .callLink(_):
-                    // TODO: [Backups] Restore call link recipients.
-                    recipientResult = .failure([.restoreFrameError(.unimplemented, recipient.recipientId)])
+                case .callLink(let callLinkRecipientProto):
+                    recipientResult = callLinkRecipientArchiver.restoreCallLinkRecipientProto(
+                        callLinkRecipientProto,
+                        recipient: recipient,
+                        context: contexts.recipient
+                    )
                 }
 
                 switch recipientResult {

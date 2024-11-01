@@ -42,6 +42,7 @@ extension MessageBackup {
 
     public typealias GroupId = Data
     public typealias DistributionId = Data
+    public typealias CallLinkId = Int64
 
     /**
      * As we go archiving recipients, we use this object to track mappings from the addressing we use in the app
@@ -58,6 +59,7 @@ extension MessageBackup {
             case contact(ContactAddress)
             case group(GroupId)
             case distributionList(DistributionId)
+            case callLink(CallLinkId)
         }
 
         let localRecipientId: RecipientId
@@ -70,6 +72,7 @@ extension MessageBackup {
         private let contactAciMap = SharedMap<Aci, RecipientId>()
         private let contactPniMap = SharedMap<Pni, RecipientId>()
         private let contactE164ap = SharedMap<E164, RecipientId>()
+        private let callLinkIdMap = SharedMap<CallLinkId, RecipientId>()
 
         init(
             currentBackupAttachmentUploadEra: String?,
@@ -123,6 +126,8 @@ extension MessageBackup {
                 if let e164 = contactAddress.e164 {
                     contactE164ap[e164] = currentRecipientId
                 }
+            case .callLink(let callLinkId):
+                callLinkIdMap[callLinkId] = currentRecipientId
             }
             return currentRecipientId
         }
@@ -148,6 +153,8 @@ extension MessageBackup {
                     } else {
                         return nil
                     }
+                case .callLink(let callLinkId):
+                    return callLinkIdMap[callLinkId]
                 }
             }
         }
@@ -229,6 +236,8 @@ extension MessageBackup.RecipientArchivingContext.Address: MessageBackupLoggable
             return "TSGroupThread"
         case .distributionList:
             return "TSPrivateStoryThread"
+        case .callLink:
+            return "CallLinkRecord"
         }
     }
 
@@ -243,6 +252,8 @@ extension MessageBackup.RecipientArchivingContext.Address: MessageBackupLoggable
             return groupId.base64EncodedString()
         case .distributionList(let distributionId):
             return distributionId.base64EncodedString()
+        case .callLink(let callLinkId):
+            return String(callLinkId)
         }
     }
 }

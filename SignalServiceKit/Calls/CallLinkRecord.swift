@@ -117,6 +117,40 @@ public struct CallLinkRecord: Codable, PersistableRecord, FetchableRecord {
         }
     }
 
+    static func insertFromBackup(
+        rootKey: CallLinkRootKey,
+        adminPasskey: Data?,
+        name: String,
+        restrictions: CallLinkRecord.Restrictions,
+        expiration: UInt64,
+        tx: DBWriteTransaction
+    ) throws -> CallLinkRecord {
+        do {
+            return try CallLinkRecord.fetchOne(
+                tx.databaseConnection,
+                sql: """
+                INSERT INTO \(CallLinkRecord.databaseTableName) (
+                    \(CallLinkRecord.CodingKeys.roomId.rawValue),
+                    \(CallLinkRecord.CodingKeys.rootKey.rawValue),
+                    \(CallLinkRecord.CodingKeys.adminPasskey.rawValue),
+                    \(CallLinkRecord.CodingKeys.name.rawValue),
+                    \(CallLinkRecord.CodingKeys.restrictions.rawValue),
+                    \(CallLinkRecord.CodingKeys.expiration.rawValue)
+                ) VALUES (?, ?, ?, ?, ?, ?) RETURNING *
+                """,
+                arguments: [
+                    rootKey.deriveRoomId(),
+                    rootKey.bytes, adminPasskey,
+                    name,
+                    restrictions.rawValue,
+                    expiration
+                ]
+            )!
+        } catch {
+            throw error.grdbErrorForLogging
+        }
+    }
+
     public mutating func clearNeedsFetch() {
         self.pendingFetchCounter = 0
     }

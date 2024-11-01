@@ -1059,6 +1059,9 @@ public class AppSetup {
             backupAttachmentUploadManager: backupAttachmentUploadManager,
             backupRequestManager: messageBackupRequestManager,
             backupStickerPackDownloadStore: backupStickerPackDownloadStore,
+            callLinkRecipientArchiver: MessageBackupCallLinkRecipientArchiver(
+                callLinkStore: callLinkStore
+            ),
             chatArchiver: MessageBackupChatArchiverImpl(
                 chatStyleArchiver: messageBackupChatStyleArchiver,
                 dmConfigurationStore: disappearingMessagesConfigurationStore,

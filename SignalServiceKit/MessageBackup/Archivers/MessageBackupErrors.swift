@@ -185,6 +185,9 @@ extension MessageBackup {
             /// An unviewed view-once message has more than one attachment.
             /// Associated value provides the number of attachments.
             case unviewedViewOnceMessageTooManyAttachments(Int)
+
+            /// Restrictions for a call link are unknown.
+            case callLinkRestrictionsUnknown
         }
 
         private let type: ErrorType
@@ -277,7 +280,8 @@ extension MessageBackup {
                     .editHistoryFailedToFetch,
                     .unableToReadStoryContextAssociatedData,
                     .unviewedViewOnceMessageMissingAttachment,
-                    .unviewedViewOnceMessageTooManyAttachments:
+                    .unviewedViewOnceMessageTooManyAttachments,
+                    .callLinkRestrictionsUnknown:
                 // Log any others as we see them.
                 return nil
             }
@@ -307,6 +311,9 @@ extension MessageBackup {
 
             /// Error iterating over all sticker packs for backup purposes.
             case stickerPackIteratorError(RawError)
+
+            /// Error iterating over al call link records for backup purposes.
+            case callLinkRecordIteratorError(RawError)
 
             /// These should never happen; it means some invariant in the backup code
             /// we could not enforce with the type system was broken. Nothing was wrong with
@@ -621,6 +628,13 @@ extension MessageBackup {
 
                 /// A ``BackupProto_GiftBadge/state`` was unrecognized.
                 case unrecognizedGiftBadgeState
+
+                /// A ``BackupProto_CallLink/rootKey`` was invalid.
+                case callLinkInvalidRootKey
+                /// A ``BackupProto_CallLink/restrictions`` was unknown.
+                case callLinkRestrictionsUnknownType
+                /// A ``BackupProto_CallLink/restrictions`` was unrecognized.
+                case callLinkRestrictionsUnrecognizedType
             }
 
             /// The proto contained invalid or self-contradictory data, e.g an invalid ACI.
@@ -794,7 +808,10 @@ extension MessageBackup {
                         .filePointerMissingDigest,
                         .filePointerMissingSize,
                         .invalidAttachmentClientUUID,
-                        .unrecognizedGiftBadgeState:
+                        .unrecognizedGiftBadgeState,
+                        .callLinkInvalidRootKey,
+                        .callLinkRestrictionsUnknownType,
+                        .callLinkRestrictionsUnrecognizedType:
                     // Collapse all others by the id of the containing frame.
                     return idLogString
                 }
@@ -807,7 +824,10 @@ extension MessageBackup {
             case .databaseModelMissingRowId(let modelClass):
                 // Collapse these by the relevant class.
                 return "\(modelClass)"
-            case .databaseInsertionFailed(let rawError), .uploadEraDerivationFailed(let rawError), .failedToEnqueueAttachmentDownload(let rawError):
+            case
+                .databaseInsertionFailed(let rawError),
+                .uploadEraDerivationFailed(let rawError),
+                .failedToEnqueueAttachmentDownload(let rawError):
                 // We don't want to re-log every instance of this we see if they repeat.
                 // Collapse them by the raw error itself.
                 return "\(rawError)"

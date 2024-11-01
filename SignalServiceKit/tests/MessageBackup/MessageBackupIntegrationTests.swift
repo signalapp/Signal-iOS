@@ -83,6 +83,7 @@ class MessageBackupIntegrationTests: XCTestCase {
         case chatItemViewOnceMessage
 
         case recipient
+        case recipientCallLink
         case recipientContact
         case recipientDistributionList
         case recipientGroup
@@ -181,6 +182,8 @@ class MessageBackupIntegrationTests: XCTestCase {
                     return binprotoName.contains("chat_item_view_once_")
                 case .recipient:
                     return binprotoName.contains("recipient_")
+                case .recipientCallLink:
+                    return binprotoName.contains("recipient_call_link_")
                 case .recipientContact:
                     return binprotoName.contains("recipient_contacts_")
                 case .recipientDistributionList:
