@@ -109,27 +109,11 @@ public class OWSMessageDecrypter {
             transaction: transaction
         )
 
-        transaction.addAsyncCompletionOffMain {
-            SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                let profileKeyMessage = OWSProfileKeyMessage(thread: contactThread, transaction: transaction)
-                let preparedMessage = PreparedOutgoingMessage.preprepared(
-                    transientMessageWithoutAttachments: profileKeyMessage
-                )
-                SSKEnvironment.shared.messageSenderJobQueueRef.add(
-                    .promise,
-                    message: preparedMessage,
-                    transaction: transaction
-                ).done(on: DispatchQueue.global()) {
-                    Logger.info("Successfully sent reactive profile key message after non-UD message from \(sourceAci)")
-                }.catch(on: DispatchQueue.global()) { error in
-                    if error is UntrustedIdentityError {
-                        Logger.info("Failed to send reactive profile key message after non-UD message from \(sourceAci) (\(error))")
-                    } else {
-                        owsFailDebug("Failed to send reactive profile key message after non-UD message from \(sourceAci) (\(error))")
-                    }
-                }
-            }
-        }
+        let profileKeyMessage = OWSProfileKeyMessage(thread: contactThread, transaction: transaction)
+        let preparedMessage = PreparedOutgoingMessage.preprepared(
+            transientMessageWithoutAttachments: profileKeyMessage
+        )
+        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: transaction)
     }
 
     private struct UnsealedEnvelope {
