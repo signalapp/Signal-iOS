@@ -92,15 +92,19 @@ class _AttachmentUploadManager_ChatConnectionManagerMock: ChatConnectionManager 
 }
 
 class _AttachmentUploadManager_MessageBackupKeyMaterialMock: MessageBackupKeyMaterial {
+    func backupKey(mode: MessageBackup.EncryptionMode, tx: any DBReadTransaction) throws -> BackupKey {
+        fatalError("Unimplemented for tests")
+    }
+
     func backupID(localAci: Aci, mode: MessageBackup.EncryptionMode, tx: DBReadTransaction) throws -> Data {
         fatalError("Unimplemented for tests")
     }
 
-    func backupPrivateKey(localAci: Aci, tx: DBReadTransaction) throws -> PrivateKey {
+    func backupPrivateKey(localAci: Aci, mode: MessageBackup.EncryptionMode, tx: DBReadTransaction) throws -> PrivateKey {
         fatalError("Unimplemented for tests")
     }
 
-    func backupAuthRequestContext(localAci: Aci, tx: DBReadTransaction) throws -> BackupAuthCredentialRequestContext {
+    func backupAuthRequestContext(localAci: Aci, type: MessageBackupAuthCredentialType, tx: DBReadTransaction) throws -> BackupAuthCredentialRequestContext {
         fatalError("Unimplemented for tests")
     }
 
@@ -112,7 +116,7 @@ class _AttachmentUploadManager_MessageBackupKeyMaterialMock: MessageBackupKeyMat
         return .init(type: type, mediaId: Data(), hmacKey: Data(), aesKey: Data())
     }
 
-    func mediaId(mediaName: String, type: MediaTierEncryptionType, backupKey: SVR.DerivedKeyData) throws -> Data {
+    func mediaId(mediaName: String, type: MediaTierEncryptionType, backupKey: BackupKey) throws -> Data {
         return Data()
     }
 

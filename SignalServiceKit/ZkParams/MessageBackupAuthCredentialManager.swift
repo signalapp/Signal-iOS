@@ -155,7 +155,7 @@ public struct MessageBackupAuthCredentialManagerImpl: MessageBackupAuthCredentia
             do {
                 let redemptionDate = Date(timeIntervalSince1970: TimeInterval($0.redemptionTime))
                 let backupRequestContext = try db.read { tx in
-                    return try messageBackupKeyMaterial.backupAuthRequestContext(localAci: localAci, tx: tx)
+                    return try messageBackupKeyMaterial.backupAuthRequestContext(localAci: localAci, type: purpose.credentialType, tx: tx)
                 }
                 let backupAuthResponse = try BackupAuthCredentialResponse(contents: [UInt8]($0.credential))
                 let credential = try backupRequestContext.receive(

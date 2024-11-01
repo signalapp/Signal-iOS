@@ -31,6 +31,11 @@ public struct MediaTierEncryptionMetadata: Equatable {
 
 public protocol MessageBackupKeyMaterial {
 
+    func backupKey(
+        mode: MessageBackup.EncryptionMode,
+        tx: DBReadTransaction
+    ) throws -> BackupKey
+
     /// Backup ID material derived from a combination of the backup key and the
     /// local ACI.  This ID is used both as the salt for the backup encryption and
     /// to create the anonymous credentials for interacting with server stored backups
@@ -41,13 +46,20 @@ public protocol MessageBackupKeyMaterial {
     ) throws -> Data
 
     /// Private key derived from the BackupKey + ACI that is used for signing backup auth presentations.
-    /// Always implicitly uses ``MessageBackup/EncryptionMode/remote``.
-    func backupPrivateKey(localAci: Aci, tx: DBReadTransaction) throws -> PrivateKey
+    func backupPrivateKey(
+        localAci: Aci,
+        mode: MessageBackup.EncryptionMode,
+        tx: DBReadTransaction
+    ) throws -> PrivateKey
 
     /// LibSignal.BackupAuthCredentialRequestContext derived from the ACI and BackupKey and used primarily
     /// for building backup credentials.
     /// Always implicitly uses ``MessageBackup/EncryptionMode/remote``.
-    func backupAuthRequestContext(localAci: Aci, tx: DBReadTransaction) throws -> BackupAuthCredentialRequestContext
+    func backupAuthRequestContext(
+        localAci: Aci,
+        type: MessageBackupAuthCredentialType,
+        tx: DBReadTransaction
+    ) throws -> BackupAuthCredentialRequestContext
 
     func messageBackupKey(
         localAci: Aci,
@@ -61,12 +73,6 @@ public protocol MessageBackupKeyMaterial {
         type: MediaTierEncryptionType,
         tx: any DBReadTransaction
     ) throws -> MediaTierEncryptionMetadata
-
-    func mediaId(
-        mediaName: String,
-        type: MediaTierEncryptionType,
-        backupKey: SVR.DerivedKeyData
-    ) throws -> Data
 
     /// Builds an encrypting StreamTransform object derived from the backup master key and the backupID
     func createEncryptingStreamTransform(
@@ -92,4 +98,10 @@ public protocol MessageBackupKeyMaterial {
         mode: MessageBackup.EncryptionMode,
         tx: DBReadTransaction
     ) throws -> HmacStreamTransform
+
+    func mediaId(
+        mediaName: String,
+        type: MediaTierEncryptionType,
+        backupKey: BackupKey
+    ) throws -> Data
 }

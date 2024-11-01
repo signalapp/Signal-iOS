@@ -178,7 +178,7 @@ public struct MessageBackupRequestManagerImpl: MessageBackupRequestManager {
     /// Onetime request to reserve this backup ID.
     public func reserveBackupId(localAci: Aci, auth: ChatServiceAuth) async throws {
         let backupRequestContext = try db.read { tx in
-            return try messageBackupKeyMaterial.backupAuthRequestContext(localAci: localAci, tx: tx)
+            return try messageBackupKeyMaterial.backupAuthRequestContext(localAci: localAci, type: .messages, tx: tx)
         }
         let base64RequestContext = Data(backupRequestContext.getRequest().serialize()).base64EncodedString()
         let request = try OWSRequestFactory.reserveBackupId(backupId: base64RequestContext, auth: auth)
@@ -195,7 +195,7 @@ public struct MessageBackupRequestManagerImpl: MessageBackupRequestManager {
     ) async throws -> MessageBackupServiceAuth {
         let (backupKey, privateKey) = try db.read { tx in
             let backupKey = try messageBackupKeyMaterial.backupID(localAci: localAci, mode: .remote, tx: tx)
-            let privateKey = try messageBackupKeyMaterial.backupPrivateKey(localAci: localAci, tx: tx)
+            let privateKey = try messageBackupKeyMaterial.backupPrivateKey(localAci: localAci, mode: .remote, tx: tx)
             return (backupKey, privateKey)
         }
 

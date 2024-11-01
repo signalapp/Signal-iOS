@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 public protocol BackupAttachmentDownloadManager {
 
@@ -85,7 +86,6 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             messageBackupRequestManager: messageBackupRequestManager,
             messageBackupKeyMaterial: messageBackupKeyMaterial,
             orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
-            svr: svr,
             tsAccountManager: tsAccountManager
         )
 
@@ -237,7 +237,6 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         private let messageBackupRequestManager: MessageBackupRequestManager
         private let messageBackupKeyMaterial: MessageBackupKeyMaterial
         private let orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore
-        private let svr: SecureValueRecovery
         private let tsAccountManager: TSAccountManager
 
         private let kvStore: KeyValueStore
@@ -250,7 +249,6 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             messageBackupRequestManager: MessageBackupRequestManager,
             messageBackupKeyMaterial: MessageBackupKeyMaterial,
             orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore,
-            svr: SecureValueRecovery,
             tsAccountManager: TSAccountManager
         ) {
             self.attachmentStore = attachmentStore
@@ -260,7 +258,6 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             self.messageBackupRequestManager = messageBackupRequestManager
             self.messageBackupKeyMaterial = messageBackupKeyMaterial
             self.orphanedBackupAttachmentStore = orphanedBackupAttachmentStore
-            self.svr = svr
             self.tsAccountManager = tsAccountManager
         }
 
@@ -288,7 +285,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                     self.tsAccountManager.localIdentifiers(tx: tx)?.aci,
                     currentUploadEra,
                     try self.needsToQueryListMedia(currentUploadEra: currentUploadEra, tx: tx),
-                    svr.data(for: .backupKey, transaction: tx)
+                    try messageBackupKeyMaterial.backupKey(mode: .remote, tx: tx)
                 )
             }
             guard needsToQuery else {
@@ -297,9 +294,6 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
 
             guard let localAci else {
                 throw OWSAssertionError("Not registered")
-            }
-            guard let backupKey else {
-                throw OWSAssertionError("Missing backup key")
             }
 
             let messageBackupAuth = try await messageBackupRequestManager.fetchBackupServiceAuth(
@@ -557,7 +551,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         /// Today, this loads the map into memory. If the memory load of this dictionary ever becomes
         /// a problem, we can write it to an ephemeral sqlite table with a UNIQUE mediaId column.
         private func buildMediaIdMap(
-            backupKey: SVR.DerivedKeyData,
+            backupKey: BackupKey,
             tx: DBReadTransaction
         ) throws -> [Data: LocalAttachment] {
             var map = [Data: LocalAttachment]()
@@ -566,11 +560,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                     owsFailDebug("Query returned attachment without media name!")
                     return
                 }
-                let fullsizeMediaId = try self.messageBackupKeyMaterial.mediaId(
-                    mediaName: mediaName,
-                    type: .attachment,
-                    backupKey: backupKey
-                )
+                let fullsizeMediaId = Data(try backupKey.deriveMediaId(mediaName))
                 map[fullsizeMediaId] = LocalAttachment(
                     attachment: attachment,
                     isThumbnail: false,
@@ -581,11 +571,9 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                     || attachment.thumbnailMediaTierInfo != nil
                 {
                     // Also prep a thumbnail media name.
-                    let thumbnailMediaId = try self.messageBackupKeyMaterial.mediaId(
-                        mediaName: mediaName,
-                        type: .thumbnail,
-                        backupKey: backupKey
-                    )
+                    let thumbnailMediaId = Data(try backupKey.deriveMediaId(
+                        AttachmentBackupThumbnail.thumbnailMediaName(fullsizeMediaName: mediaName)
+                    ))
                     map[thumbnailMediaId] = LocalAttachment(
                         attachment: attachment,
                         isThumbnail: true,
