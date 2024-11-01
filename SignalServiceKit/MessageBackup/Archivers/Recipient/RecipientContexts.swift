@@ -41,8 +41,44 @@ extension MessageBackup {
     }
 
     public typealias GroupId = Data
-    public typealias DistributionId = Data
     public typealias CallLinkId = Int64
+
+    public struct DistributionId: Hashable {
+
+        let value: UUID
+        let isMyStoryId: Bool
+
+        init(_ value: UUID) {
+            self.value = value
+
+            /// The same hardcoded My Story UUID (all 0's) is shared across clients.
+            /// We use the uuid ("distributionId") encoded into the backup proto to determine if this is
+            /// "My Story" or not. The same mechanism of shared all-0s-UUID is used in StorageService.
+            /// Check, though, that the value didn't drift just in case.
+            owsAssertBeta(
+                TSPrivateStoryThread.myStoryUniqueId == "00000000-0000-0000-0000-000000000000",
+                "My Story hardcoded id drifted; legacy backups may now be invalid"
+            )
+            self.isMyStoryId = value.uuidString == TSPrivateStoryThread.myStoryUniqueId
+        }
+
+        init?(distributionListItem: BackupProto_DistributionListItem) {
+            guard let uuid = UUID(data: distributionListItem.distributionID) else {
+                return nil
+            }
+            self.init(uuid)
+        }
+
+        init?(storyThread: TSPrivateStoryThread) {
+            guard
+                let uuidData = storyThread.distributionListIdentifier,
+                let uuid = UUID(data: uuidData)
+            else {
+                return nil
+            }
+            self.init(uuid)
+        }
+    }
 
     /**
      * As we go archiving recipients, we use this object to track mappings from the addressing we use in the app
@@ -251,7 +287,7 @@ extension MessageBackup.RecipientArchivingContext.Address: MessageBackupLoggable
             // Rely on the scrubber to scrub the id.
             return groupId.base64EncodedString()
         case .distributionList(let distributionId):
-            return distributionId.base64EncodedString()
+            return distributionId.value.uuidString
         case .callLink(let callLinkId):
             return String(callLinkId)
         }

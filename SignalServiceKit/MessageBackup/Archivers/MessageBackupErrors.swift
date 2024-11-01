@@ -91,16 +91,16 @@ extension MessageBackup {
             /// A group call record had an invalid call status.
             case groupCallRecordHadInvalidCallStatus
 
+            /// A distribution list had no distributionId; the distribution id assigned in the error should be ignored.
+            case distributionListMissingDistributionId
+            /// A distribution list had ``TSThreadStoryViewMode/default``.
+            case distributionListHasDefaultViewMode
+            /// A custom (non-MyStory) distribution list had a ``TSThreadStoryViewMode/blocklist``.
+            case customDistributionListBlocklistViewMode
             /// A distributionListIdentifier memberRecipientId was invalid
             case invalidDistributionListMemberAddress
-            /// The story distribution list contained memberRecipientIds for a privacy mode
-            /// that didn't expect any.
-            case distributionListUnexpectedRecipients
             /// The story distribution list was marked as deleted but missing a deletion timestamp
             case distributionListMissingDeletionTimestamp
-            /// The story distribution list was missing memberRecipiendIds for a privacy mode
-            /// where they should be present.
-            case distributionListMissingRecipients
 
             /// An interaction used to create a verification-state update was
             /// missing info as to its author.
@@ -218,7 +218,12 @@ extension MessageBackup {
         }
 
         public var idLogString: String {
-            return "\(id.typeLogString).\(id.idLogString)"
+            switch type {
+            case .distributionListMissingDistributionId:
+                return "\(id.typeLogString).{ID missing}"
+            default:
+                return "\(id.typeLogString).\(id.idLogString)"
+            }
         }
 
         public var callsiteLogString: String {
@@ -235,14 +240,15 @@ extension MessageBackup {
                 // Collapse these by the id they refer to, which is in the "type".
                 return idLogString
             case
-                    .distributionListMissingDeletionTimestamp,
-                    .distributionListMissingRecipients,
-                    .distributionListUnexpectedRecipients,
                     .fileIOError,
                     .groupMasterKeyError,
                     .contactThreadMissingAddress,
                     .themedCustomChatColor,
                     .unknownWallpaper,
+                    .distributionListMissingDistributionId,
+                    .distributionListHasDefaultViewMode,
+                    .customDistributionListBlocklistViewMode,
+                    .distributionListMissingDeletionTimestamp,
                     .invalidDistributionListMemberAddress,
                     .invalidIncomingMessageAuthor,
                     .invalidOutgoingMessageRecipient,
@@ -532,8 +538,10 @@ extension MessageBackup {
                 case invalidDistributionListId
                 /// `BackupProto_DistributionList.privacyMode` was missing, or contained an unknown privacy mode
                 case invalidDistributionListPrivacyMode
-                /// The specified `BackupProto_DistributionList.privacyMode` was missing a list of associated member IDs
-                case invalidDistributionListPrivacyModeMissingRequiredMembers
+                /// A custom (non-MyStory) distribution list had ``BackupProto_DistributionList/PrivacyMode/all``
+                /// or ``BackupProto_DistributionList/PrivacyMode/allExcept``, which are only allowed
+                /// for My Story.
+                case customDistributionListPrivacyModeAllOrAllExcept
                 /// `BackupProto_DistributionListItem.deletionTimestamp` was invalid
                 case invalidDistributionListDeletionTimestamp
 
@@ -778,7 +786,7 @@ extension MessageBackup {
                         .distributionListItemMissingItem,
                         .invalidDistributionListId,
                         .invalidDistributionListPrivacyMode,
-                        .invalidDistributionListPrivacyModeMissingRequiredMembers,
+                        .customDistributionListPrivacyModeAllOrAllExcept,
                         .invalidDistributionListDeletionTimestamp,
                         .distributionListUsedAsChat,
                         .emptyChatUpdateMessage,
