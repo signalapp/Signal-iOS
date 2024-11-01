@@ -22,7 +22,7 @@ class ThreadRemoverImpl: ThreadRemover {
     private let chatColorSettingStore: ChatColorSettingStore
     private let databaseStorage: Shims.DatabaseStorage
     private let disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore
-    private let sdsThreadRemover: Shims.SDSThreadRemover
+    private let lastVisibleInteractionStore: LastVisibleInteractionStore
     private let threadAssociatedDataStore: ThreadAssociatedDataStore
     private let threadReadCache: Shims.ThreadReadCache
     private let threadReplyInfoStore: ThreadReplyInfoStore
@@ -34,7 +34,7 @@ class ThreadRemoverImpl: ThreadRemover {
         chatColorSettingStore: ChatColorSettingStore,
         databaseStorage: Shims.DatabaseStorage,
         disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore,
-        sdsThreadRemover: Shims.SDSThreadRemover,
+        lastVisibleInteractionStore: LastVisibleInteractionStore,
         threadAssociatedDataStore: ThreadAssociatedDataStore,
         threadReadCache: Shims.ThreadReadCache,
         threadReplyInfoStore: ThreadReplyInfoStore,
@@ -45,7 +45,7 @@ class ThreadRemoverImpl: ThreadRemover {
         self.chatColorSettingStore = chatColorSettingStore
         self.databaseStorage = databaseStorage
         self.disappearingMessagesConfigurationStore = disappearingMessagesConfigurationStore
-        self.sdsThreadRemover = sdsThreadRemover
+        self.lastVisibleInteractionStore = lastVisibleInteractionStore
         self.threadAssociatedDataStore = threadAssociatedDataStore
         self.threadReadCache = threadReadCache
         self.threadReplyInfoStore = threadReplyInfoStore
@@ -69,7 +69,7 @@ class ThreadRemoverImpl: ThreadRemover {
         threadStore.removeThread(thread, tx: tx)
         threadReadCache.didRemove(thread: thread, tx: tx)
         try? wallpaperStore.reset(for: thread, tx: tx)
-        sdsThreadRemover.didRemove(thread: thread, tx: tx)
+        lastVisibleInteractionStore.clearLastVisibleInteraction(for: thread, tx: tx)
     }
 }
 
@@ -79,13 +79,11 @@ extension ThreadRemoverImpl {
     enum Shims {
         typealias ThreadReadCache = _ThreadRemoverImpl_ThreadReadCacheShim
         typealias DatabaseStorage = _ThreadRemoverImpl_DatabaseStorageShim
-        typealias SDSThreadRemover = _ThreadRemoverImpl_SDSThreadRemoverShim
     }
 
     enum Wrappers {
         typealias ThreadReadCache = _ThreadRemoverImpl_ThreadReadCacheWrapper
         typealias DatabaseStorage = _ThreadRemoverImpl_DatabaseStorageWrapper
-        typealias SDSThreadRemover = _ThreadRemoverImpl_SDSThreadRemoverWrapper
     }
 }
 
@@ -117,16 +115,6 @@ class _ThreadRemoverImpl_DatabaseStorageWrapper: _ThreadRemoverImpl_DatabaseStor
     }
 }
 
-protocol _ThreadRemoverImpl_SDSThreadRemoverShim {
-    func didRemove(thread: TSThread, tx: DBWriteTransaction)
-}
-
-class _ThreadRemoverImpl_SDSThreadRemoverWrapper: _ThreadRemoverImpl_SDSThreadRemoverShim {
-    func didRemove(thread: TSThread, tx: DBWriteTransaction) {
-        thread.clearLastVisibleInteraction(transaction: SDSDB.shimOnlyBridge(tx))
-    }
-}
-
 // MARK: - Unit Tests
 
 #if TESTABLE_BUILD
@@ -137,10 +125,6 @@ class ThreadRemover_MockThreadReadCache: ThreadRemoverImpl.Shims.ThreadReadCache
 
 class ThreadRemover_MockDatabaseStorage: ThreadRemoverImpl.Shims.DatabaseStorage {
     func updateIdMapping(thread: TSThread, tx: DBWriteTransaction) {}
-}
-
-class ThreadRemover_MockSDSThreadRemover: ThreadRemoverImpl.Shims.SDSThreadRemover {
-    func didRemove(thread: TSThread, tx: DBWriteTransaction) {}
 }
 
 #endif

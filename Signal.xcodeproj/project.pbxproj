@@ -928,6 +928,7 @@
 		666654212AD0B03F00B23B32 /* MasterKeySyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 666654202AD0B03F00B23B32 /* MasterKeySyncManager.swift */; };
 		66681CDF2C58174F00E50136 /* BackupAttachmentDownloadStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66681CDE2C58174F00E50136 /* BackupAttachmentDownloadStoreTests.swift */; };
 		666B0A8E2C0CD37100737CA0 /* TSResourceContentValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 666B0A8D2C0CD37100737CA0 /* TSResourceContentValidator.swift */; };
+		6671DC872CD44CA8002620EF /* LastVisibleInteractionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6671DC862CD44C9B002620EF /* LastVisibleInteractionStore.swift */; };
 		66734F012CA1ED3F00558494 /* BackupAttachmentUploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66734F002CA1ED3A00558494 /* BackupAttachmentUploadManager.swift */; };
 		6673FF702978C40300F96CFD /* SVRAuthCredentialStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF6F2978C40300F96CFD /* SVRAuthCredentialStorage.swift */; };
 		6673FF722979B33800F96CFD /* SVRAuthCredentialStorageImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF712979B33800F96CFD /* SVRAuthCredentialStorageImpl.swift */; };
@@ -4660,6 +4661,7 @@
 		666654202AD0B03F00B23B32 /* MasterKeySyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasterKeySyncManager.swift; sourceTree = "<group>"; };
 		66681CDE2C58174F00E50136 /* BackupAttachmentDownloadStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentDownloadStoreTests.swift; sourceTree = "<group>"; };
 		666B0A8D2C0CD37100737CA0 /* TSResourceContentValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceContentValidator.swift; sourceTree = "<group>"; };
+		6671DC862CD44C9B002620EF /* LastVisibleInteractionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LastVisibleInteractionStore.swift; sourceTree = "<group>"; };
 		66734F002CA1ED3A00558494 /* BackupAttachmentUploadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentUploadManager.swift; sourceTree = "<group>"; };
 		6673FF6F2978C40300F96CFD /* SVRAuthCredentialStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRAuthCredentialStorage.swift; sourceTree = "<group>"; };
 		6673FF712979B33800F96CFD /* SVRAuthCredentialStorageImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRAuthCredentialStorageImpl.swift; sourceTree = "<group>"; };
@@ -13536,6 +13538,7 @@
 			isa = PBXGroup;
 			children = (
 				D9CA61492C2F670300F99EA3 /* StoryThreads */,
+				6671DC862CD44C9B002620EF /* LastVisibleInteractionStore.swift */,
 				502D45432A05A34B00B8BCE0 /* ThreadRemover.swift */,
 				D9F9A63E2C013EF100EF13EC /* ThreadSoftDeleteManager.swift */,
 				5033D46029D638FD007FEADA /* ThreadStore.swift */,
@@ -17171,6 +17174,7 @@
 				F9C5CDEB289453B400548EEE /* JobRecordFinder.swift in Sources */,
 				6698FC0D297EFE21004EFC30 /* KeyValueStore.swift in Sources */,
 				6698FC0F297F03FE004EFC30 /* KeyValueStoreFactory.swift in Sources */,
+				6671DC872CD44CA8002620EF /* LastVisibleInteractionStore.swift in Sources */,
 				D93EA11F2A057FD600579C6F /* LearnMyOwnPniManager.swift in Sources */,
 				66076B692BC0A06C0043D547 /* LegacyAttachmentMigrator.swift in Sources */,
 				D9CA5BF729B3F61E00D9AAD1 /* LegacyChangePhoneNumber+ChangeTokens.swift in Sources */,

@@ -230,6 +230,7 @@ public class AppSetup {
 
         let signalAccountStore = SignalAccountStoreImpl()
         let threadStore = ThreadStoreImpl()
+        let lastVisibleInteractionStore = LastVisibleInteractionStore(keyValueStoreFactory: keyValueStoreFactory)
         let userProfileStore = UserProfileStoreImpl()
         let usernameLookupRecordStore = UsernameLookupRecordStoreImpl()
         let nicknameRecordStore = NicknameRecordStoreImpl()
@@ -712,7 +713,7 @@ public class AppSetup {
             chatColorSettingStore: chatColorSettingStore,
             databaseStorage: ThreadRemoverImpl.Wrappers.DatabaseStorage(databaseStorage),
             disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
-            sdsThreadRemover: ThreadRemoverImpl.Wrappers.SDSThreadRemover(),
+            lastVisibleInteractionStore: lastVisibleInteractionStore,
             threadAssociatedDataStore: threadAssociatedDataStore,
             threadReadCache: ThreadRemoverImpl.Wrappers.ThreadReadCache(modelReadCaches.threadReadCache),
             threadReplyInfoStore: threadReplyInfoStore,
@@ -1272,6 +1273,7 @@ public class AppSetup {
             interactionDeleteManager: interactionDeleteManager,
             interactionStore: interactionStore,
             keyValueStoreFactory: keyValueStoreFactory,
+            lastVisibleInteractionStore: lastVisibleInteractionStore,
             learnMyOwnPniManager: learnMyOwnPniManager,
             linkedDevicePniKeyManager: linkedDevicePniKeyManager,
             linkAndSyncManager: linkAndSyncManager,

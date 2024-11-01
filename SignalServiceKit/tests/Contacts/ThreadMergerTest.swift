@@ -63,7 +63,7 @@ final class ThreadMergerTest: XCTestCase {
             chatColorSettingStore: chatColorSettingStore,
             databaseStorage: ThreadRemover_MockDatabaseStorage(),
             disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
-            sdsThreadRemover: ThreadRemover_MockSDSThreadRemover(),
+            lastVisibleInteractionStore: LastVisibleInteractionStore(keyValueStoreFactory: keyValueStoreFactory),
             threadAssociatedDataStore: threadAssociatedDataStore,
             threadReadCache: ThreadRemover_MockThreadReadCache(),
             threadReplyInfoStore: threadReplyInfoStore,
