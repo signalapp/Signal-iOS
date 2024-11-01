@@ -138,7 +138,6 @@ public class OWSSignalService: OWSSignalServiceProtocol {
             let baseUrl = frontingURLWithPathPrefix
             let securityPolicy = censorshipConfiguration.domainFrontSecurityPolicy
             let extraHeaders = ["Host": censorshipConfiguration.hostHeader(signalServiceInfo.type) ?? TSConstants.censorshipReflectorHost]
-            Logger.debug("baseUrl (fronting): \(baseUrl)")
             return OWSURLSessionEndpoint(
                 baseUrl: baseUrl,
                 frontingInfo: frontingInfo,
@@ -153,7 +152,6 @@ public class OWSSignalService: OWSSignalServiceProtocol {
             } else {
                 securityPolicy = OWSURLSession.defaultSecurityPolicy
             }
-            Logger.debug("baseUrl (no fronting): \(baseUrl)")
             return OWSURLSessionEndpoint(
                 baseUrl: baseUrl,
                 frontingInfo: nil,

@@ -30,7 +30,6 @@ public enum RingrtcFieldTrials {
     }
 
     static func saveNwPathMonitorTrialState(isEnabled: Bool, in userDefaults: UserDefaults) {
-        Logger.info("Saving RingRTC nwPathMonitor field trial state as \(isEnabled)")
         if isEnabled {
             userDefaults.removeObject(forKey: disableNwPathMonitorTrialKey)
         } else {

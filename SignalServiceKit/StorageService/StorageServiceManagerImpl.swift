@@ -501,8 +501,6 @@ class StorageServiceOperation {
 
     // Called every retry, this is where the bulk of the operation's work should go.
     private func _run() async throws {
-        Logger.info("\(mode)")
-
         // We don't have backup keys, do nothing. We'll try a
         // fresh restore once the keys are set.
         let isKeyAvailable = SSKEnvironment.shared.databaseStorageRef.read { tx in
@@ -1353,6 +1351,8 @@ class StorageServiceOperation {
     // MARK: - Clean Up
 
     private func cleanUpUnknownData() async {
+        Logger.info("")
+
         var (state, migrationVersion) = SSKEnvironment.shared.databaseStorageRef.read { tx in
             var state = State.current(transaction: tx)
             normalizePendingMutations(in: &state, transaction: tx)

@@ -97,11 +97,11 @@ public class OWSMessageDecrypter {
         let lastProfileKeyMessageDate = store.getDate(sourceAci.serviceIdUppercaseString, transaction: transaction)
         let timeSinceProfileKeyMessage = abs(lastProfileKeyMessageDate?.timeIntervalSinceNow ?? .infinity)
         guard timeSinceProfileKeyMessage > RemoteConfig.current.reactiveProfileKeyAttemptInterval else {
-            Logger.warn("Skipping reactive profile key message after non-UD message from \(sourceAci), last reactive profile key message sent \(lastProfileKeyMessageDate!.ows_millisecondsSince1970).")
+            Logger.warn("Skipping reactive profile key for \(sourceAci), last reactive profile key message sent \(lastProfileKeyMessageDate!.ows_millisecondsSince1970).")
             return
         }
 
-        Logger.info("Sending reactive profile key message after non-UD message from: \(sourceAci)")
+        Logger.info("Sending reactive profile key to \(sourceAci)")
         store.setDate(Date(), key: sourceAci.serviceIdUppercaseString, transaction: transaction)
 
         let contactThread = TSContactThread.getOrCreateThread(

@@ -57,37 +57,27 @@ class SyncPushTokensJob: NSObject {
 
         let pushToken = regResult.apnsToken
 
-        Logger.info("Fetched pushToken: \(redact(pushToken))")
-
-        var shouldUploadTokens = false
+        let reason: String
 
         if SSKEnvironment.shared.preferencesRef.pushToken != pushToken {
-            Logger.info("Push tokens changed.")
-            shouldUploadTokens = true
+            reason = "changed"
         } else if mode == .forceUpload {
-            Logger.info("Forced uploading, even though tokens didn't change.")
-            shouldUploadTokens = true
+            reason = "forced"
         } else if AppVersionImpl.shared.lastAppVersion != AppVersionImpl.shared.currentAppVersion {
-            Logger.info("Uploading due to fresh install or app upgrade.")
-            shouldUploadTokens = true
+            reason = "upgraded"
         } else if !Self.hasUploadedTokensOnce.get() {
-            Logger.info("Uploading for app launch.")
-            shouldUploadTokens = true
-        }
-
-        guard shouldUploadTokens else {
+            reason = "launched"
+        } else {
             Logger.info("No reason to upload pushToken: \(redact(pushToken))")
             return
         }
 
-        Logger.warn("uploading tokens to account servers. pushToken: \(redact(pushToken))")
+        Logger.warn("Uploading push token; reason: \(reason), pushToken: \(redact(pushToken))")
         try await self.updatePushTokens(pushToken: pushToken, auth: auth)
 
         await recordPushTokensLocally(pushToken: pushToken)
 
         Self.hasUploadedTokensOnce.set(true)
-
-        Logger.info("completed successfully.")
     }
 
     class func run(mode: Mode = .normal) {

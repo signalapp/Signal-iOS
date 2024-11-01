@@ -149,7 +149,7 @@ public class CVCell: UICollectionViewCell, CVItemCell, CVRootComponentHost {
     private func applyLastLayoutAttributes() {
 
         guard let layoutAttributes = self.lastLayoutAttributes else {
-            Logger.warn("Missing layoutAttributes.")
+            Logger.verbose("Missing layoutAttributes.")
             return
         }
 

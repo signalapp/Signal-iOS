@@ -794,7 +794,6 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
         if nextAttempt.isBeforeNow {
             refresh()
         } else {
-            Logger.info("Scheduling remote config refresh for \(nextAttempt).")
             refreshTimer = Timer.scheduledTimer(
                 withTimeInterval: nextAttempt.timeIntervalSinceNow,
                 repeats: false

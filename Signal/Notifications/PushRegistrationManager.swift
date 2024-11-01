@@ -246,8 +246,6 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
     // User notification settings must be registered *before* AppDelegate will
     // return any requested push tokens.
     public func registerUserNotificationSettings() async {
-        Logger.info("registering user notification settings")
-
         await SSKEnvironment.shared.notificationPresenterImplRef.registerNotificationSettings()
     }
 

@@ -633,7 +633,6 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
                     if (error as? DatabaseError)?.resultCode == .SQLITE_BUSY {
                         // It is expected that the busy-handler (aka busyMode callback)
                         // will abort checkpoints if there is contention.
-                        Logger.warn("Didn't checkpoint because we were busy")
                     } else {
                         owsFailDebug("Checkpoint failed. Error: \(error.grdbErrorForLogging)")
                     }

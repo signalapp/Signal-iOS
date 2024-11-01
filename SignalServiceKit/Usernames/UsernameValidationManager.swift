@@ -176,7 +176,7 @@ public class UsernameValidationManagerImpl: UsernameValidationManager {
         }
         .done(on: context.schedulers.global()) { whoamiResponse throws in
             let validationSucceeded: Bool = {
-                self.logger.info("Comparing usernames: \(localUsername == nil), \(whoamiResponse.usernameHash == nil)")
+                self.logger.info("Comparing usernames; local: \(localUsername != nil), remote: \(whoamiResponse.usernameHash != nil)")
 
                 switch (localUsername, whoamiResponse.usernameHash) {
                 case (nil, nil):

@@ -45,9 +45,10 @@ public class GroupV2UpdatesImpl {
         let groupId = groupInfoToRefresh.groupId
         let groupSecretParams = groupInfoToRefresh.groupSecretParams
         if let lastRefreshDate = groupInfoToRefresh.lastRefreshDate {
-            Logger.info("Auto-refreshing group: \(groupId.hexadecimalString) which hasn't been refreshed in \(-lastRefreshDate.timeIntervalSinceNow/kDayInterval) days.")
+            let formattedDays = String(format: "%.1f", -lastRefreshDate.timeIntervalSinceNow/kDayInterval)
+            Logger.info("Auto-refreshing group: \(groupId.base64EncodedString()) which hasn't been refreshed in \(formattedDays) days.")
         } else {
-            Logger.info("Auto-refreshing group: \(groupId.hexadecimalString) which has never been refreshed.")
+            Logger.info("Auto-refreshing group: \(groupId.base64EncodedString()) which has never been refreshed.")
         }
 
         do {

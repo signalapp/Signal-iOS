@@ -75,8 +75,6 @@ extension OWSSyncManager: SyncManagerProtocolObjc {
     // MARK: - Configuration Sync
 
     private func _sendConfigurationSyncMessage(tx: SDSAnyWriteTransaction) {
-        Logger.info("")
-
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         guard tsAccountManager.registrationState(tx: tx.asV2Read).isRegistered else {
             return

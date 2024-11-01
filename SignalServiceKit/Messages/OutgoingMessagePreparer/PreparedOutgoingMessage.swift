@@ -395,7 +395,7 @@ extension Array where Element == PreparedOutgoingMessage {
 extension PreparedOutgoingMessage: CustomStringConvertible {
 
     public var description: String {
-        return "Prepared message \(type(of: messageForSending)), timestamp: \(messageForSending.timestamp)"
+        return "\(type(of: messageForSending)), timestamp: \(messageForSending.timestamp)"
     }
 }
 
