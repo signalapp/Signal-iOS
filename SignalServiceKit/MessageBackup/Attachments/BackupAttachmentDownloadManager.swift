@@ -303,6 +303,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             }
 
             let messageBackupAuth = try await messageBackupRequestManager.fetchBackupServiceAuth(
+                for: .download(.media),
                 localAci: localAci,
                 auth: .implicit()
             )

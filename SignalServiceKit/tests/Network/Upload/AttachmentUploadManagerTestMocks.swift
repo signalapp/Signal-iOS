@@ -134,7 +134,11 @@ class _AttachmentUploadManager_MessageBackupKeyMaterialMock: MessageBackupKeyMat
 }
 
 class _AttachmentUploadManager_MessageBackupRequestManagerMock: MessageBackupRequestManager {
-    func fetchBackupServiceAuth(localAci: Aci, auth: ChatServiceAuth) async throws -> MessageBackupServiceAuth {
+    func fetchBackupServiceAuth(
+        for purpose: MessageBackupAuthCredentialManager.Purpose,
+        localAci: Aci,
+        auth: ChatServiceAuth
+    ) async throws -> MessageBackupServiceAuth {
         fatalError("Unimplemented for tests")
     }
 

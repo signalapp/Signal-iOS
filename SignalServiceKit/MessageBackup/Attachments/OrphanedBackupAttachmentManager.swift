@@ -345,6 +345,7 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
             let messageBackupAuth: MessageBackupServiceAuth
             do {
                 messageBackupAuth = try await messageBackupRequestManager.fetchBackupServiceAuth(
+                    for: .delete(.media),
                     localAci: localAci,
                     auth: .implicit()
                 )

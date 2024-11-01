@@ -81,7 +81,18 @@ public extension MessageBackup {
 
 public protocol MessageBackupRequestManager {
 
-    func fetchBackupServiceAuth(localAci: Aci, auth: ChatServiceAuth) async throws -> MessageBackupServiceAuth
+    /// Creates a ``MessageBackupServiceAuth``, which wraps a ``MessageBackupAuthCredential``.
+    /// Created from local ACI and the current valid backup credential. This
+    /// `MessageBackupServiceAuth` is used to authenticate all further `/v1/archive` operations.
+    ///
+    /// - Parameter purpose
+    /// The intended purpose for this service auth. This influences the steps
+    /// taken in fetching the credentials underlying the returned service auth.
+    func fetchBackupServiceAuth(
+        for purpose: MessageBackupAuthCredentialManager.Purpose,
+        localAci: Aci,
+        auth: ChatServiceAuth
+    ) async throws -> MessageBackupServiceAuth
 
     func reserveBackupId(localAci: Aci, auth: ChatServiceAuth) async throws
 
@@ -177,18 +188,23 @@ public struct MessageBackupRequestManagerImpl: MessageBackupRequestManager {
 
     // MARK: - Backup Auth
 
-    /// Create a `MessageBackupAuthCredential` from local ACI and the current valid backup credential. This
-    /// `MessageBackupAuthCredential` is used to authenticate all further `/v1/archive` operations.
-    public func fetchBackupServiceAuth(localAci: Aci, auth: ChatServiceAuth) async throws -> MessageBackupServiceAuth {
+    public func fetchBackupServiceAuth(
+        for purpose: MessageBackupAuthCredentialManager.Purpose,
+        localAci: Aci,
+        auth: ChatServiceAuth
+    ) async throws -> MessageBackupServiceAuth {
         let (backupKey, privateKey) = try db.read { tx in
             let backupKey = try messageBackupKeyMaterial.backupID(localAci: localAci, mode: .remote, tx: tx)
             let privateKey = try messageBackupKeyMaterial.backupPrivateKey(localAci: localAci, tx: tx)
             return (backupKey, privateKey)
         }
+
         let authCredential = try await messageBackupAuthCredentialManager.fetchBackupCredential(
+            for: purpose,
             localAci: localAci,
-            auth: auth
+            chatServiceAuth: auth
         )
+
         return try MessageBackupServiceAuth(backupKey: backupKey, privateKey: privateKey, authCredential: authCredential)
     }
 

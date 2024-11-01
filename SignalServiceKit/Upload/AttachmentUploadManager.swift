@@ -887,7 +887,11 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         result: Upload.AttachmentResult,
         logger: PrefixedLogger
     ) async throws -> UInt32 {
-        let auth = try await messageBackupRequestManager.fetchBackupServiceAuth(localAci: localAci, auth: .implicit())
+        let auth = try await messageBackupRequestManager.fetchBackupServiceAuth(
+            for: .upload(.media),
+            localAci: localAci,
+            auth: .implicit()
+        )
         let mediaEncryptionMetadata = try db.read { tx in
             try messageBackupKeyMaterial.mediaEncryptionMetadata(
                 mediaName: mediaName,

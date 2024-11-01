@@ -133,7 +133,11 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
         try await backupRequestManager.reserveBackupId(localAci: localIdentifiers.aci, auth: auth)
 
-        let backupAuth = try await backupRequestManager.fetchBackupServiceAuth(localAci: localIdentifiers.aci, auth: auth)
+        let backupAuth = try await backupRequestManager.fetchBackupServiceAuth(
+            for: .oneTimeKeySetup(.messages),
+            localAci: localIdentifiers.aci,
+            auth: auth
+        )
 
         try await backupRequestManager.registerBackupKeys(auth: backupAuth)
 
@@ -144,7 +148,11 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     }
 
     public func downloadEncryptedBackup(localIdentifiers: LocalIdentifiers, auth: ChatServiceAuth) async throws -> URL {
-        let backupAuth = try await backupRequestManager.fetchBackupServiceAuth(localAci: localIdentifiers.aci, auth: auth)
+        let backupAuth = try await backupRequestManager.fetchBackupServiceAuth(
+            for: .download(.messages),
+            localAci: localIdentifiers.aci,
+            auth: auth
+        )
         let metadata = try await backupRequestManager.fetchBackupRequestMetadata(auth: backupAuth)
         let tmpFileUrl = try await attachmentDownloadManager.downloadBackup(metadata: metadata).awaitable()
 
@@ -161,7 +169,11 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     ) async throws -> Upload.Result<Upload.EncryptedBackupUploadMetadata> {
         // This will return early if this device has already registered the backup ID.
         try await reserveAndRegister(localIdentifiers: localIdentifiers, auth: auth)
-        let backupAuth = try await backupRequestManager.fetchBackupServiceAuth(localAci: localIdentifiers.aci, auth: auth)
+        let backupAuth = try await backupRequestManager.fetchBackupServiceAuth(
+            for: .upload(.messages),
+            localAci: localIdentifiers.aci,
+            auth: auth
+        )
         let form = try await backupRequestManager.fetchBackupUploadForm(auth: backupAuth)
         return try await attachmentUploadManager.uploadBackup(localUploadMetadata: metadata, form: form)
     }

@@ -6,8 +6,43 @@
 import Foundation
 public import LibSignalClient
 
+/// The purposes for which one could need a Backup auth credential. The intended
+/// purpose influences what steps are taken when retrieving a credential.
+public enum MessageBackupAuthCredentialPurpose {
+    /// The credential will be used for one-time set-up of keys related to a
+    /// user's Backup.
+    case oneTimeKeySetup(MessageBackupAuthCredentialType)
+    /// The credential will be used for download, for example of a Backup file
+    /// or attachments.
+    case download(MessageBackupAuthCredentialType)
+    /// The credential will be used for upload, for example of a Backup file or
+    /// attachments.
+    case upload(MessageBackupAuthCredentialType)
+    /// The credential will be used for delete, for example of a Backup file or
+    /// attachments.
+    case delete(MessageBackupAuthCredentialType)
+
+    var credentialType: MessageBackupAuthCredentialType {
+        switch self {
+        case .delete(let credentialType), .download(let credentialType), .oneTimeKeySetup(let credentialType), .upload(let credentialType):
+            return credentialType
+        }
+    }
+}
+
+public enum MessageBackupAuthCredentialType: String, Codable, CaseIterable  {
+    case media
+    case messages
+}
+
 public protocol MessageBackupAuthCredentialManager {
-    func fetchBackupCredential(localAci: Aci, auth: ChatServiceAuth) async throws -> BackupAuthCredential
+    typealias Purpose = MessageBackupAuthCredentialPurpose
+
+    func fetchBackupCredential(
+        for purpose: Purpose,
+        localAci: Aci,
+        chatServiceAuth auth: ChatServiceAuth
+    ) async throws -> BackupAuthCredential
 }
 
 public struct MessageBackupAuthCredentialManagerImpl: MessageBackupAuthCredentialManager {
@@ -43,8 +78,11 @@ public struct MessageBackupAuthCredentialManagerImpl: MessageBackupAuthCredentia
         self.networkManager = networkManager
     }
 
-    public func fetchBackupCredential(localAci: Aci, auth: ChatServiceAuth) async throws -> BackupAuthCredential {
-
+    public func fetchBackupCredential(
+        for purpose: Purpose,
+        localAci: Aci,
+        chatServiceAuth auth: ChatServiceAuth
+    ) async throws -> BackupAuthCredential {
         let authCredential = db.read { tx -> BackupAuthCredential? in
             let lastCredentialFetchTime = kvStore.getDate(
                 Constants.keyValueStoreLastCredentialFetchTimeKey,
@@ -68,7 +106,7 @@ public struct MessageBackupAuthCredentialManagerImpl: MessageBackupAuthCredentia
             return authCredential
         }
 
-        let authCredentials = try await fetchNewAuthCredentials(localAci: localAci, auth: auth)
+        let authCredentials = try await fetchNewAuthCredentials(localAci: localAci, for: purpose, auth: auth)
 
         await db.awaitableWrite { tx in
             self.authCredentialStore.removeAllBackupAuthCredentials(tx: tx)
@@ -91,6 +129,7 @@ public struct MessageBackupAuthCredentialManagerImpl: MessageBackupAuthCredentia
 
     private func fetchNewAuthCredentials(
         localAci: Aci,
+        for purpose: Purpose,
         auth: ChatServiceAuth
     ) async throws -> [ReceivedBackupAuthCredentials] {
 
