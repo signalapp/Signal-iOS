@@ -417,7 +417,29 @@ public class ProvisioningController: NSObject {
         }
 
         var capabilities = [String]()
-        if FeatureFlags.linkAndSyncSecondary {
+
+        let shouldLinkAndSync: Bool = {
+            switch DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction {
+            case .unregistered:
+                return FeatureFlags.linkAndSyncSecondary
+            case .delinked, .relinking:
+                // We don't allow relinking secondaries to link'n'sync.
+                return false
+            case
+                .registered,
+                .provisioned,
+                .reregistering,
+                .transferred,
+                .transferringIncoming,
+                .transferringLinkedOutgoing,
+                .transferringPrimaryOutgoing,
+                .deregistered:
+                owsFailDebug("How are we provisioning from this state?")
+                return false
+            }
+        }()
+
+        if shouldLinkAndSync {
             capabilities.append(DeviceProvisioningURL.Capability.linknsync.rawValue)
         }
 
