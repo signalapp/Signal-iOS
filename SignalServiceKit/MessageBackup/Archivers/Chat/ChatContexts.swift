@@ -213,6 +213,7 @@ extension MessageBackup {
         public struct PostFrameRestoreActions {
             var isPinned: Bool
             var lastVisibleInteractionRowId: Int64?
+            var hadAnyUnreadMessages: Bool = false
 
             var shouldBeMarkedVisible: Bool {
                 isPinned || lastVisibleInteractionRowId != nil
@@ -234,6 +235,7 @@ extension MessageBackup {
 
         func updateLastVisibleInteractionRowId(
             interactionRowId: Int64,
+            wasRead: Bool,
             chatId: ChatId
         ) {
             var actions = postFrameRestoreActions[chatId] ?? .default
@@ -245,6 +247,7 @@ extension MessageBackup {
             {
                 actions.lastVisibleInteractionRowId = interactionRowId
             }
+            actions.hadAnyUnreadMessages = actions.hadAnyUnreadMessages || !wasRead
             postFrameRestoreActions[chatId] = actions
         }
     }

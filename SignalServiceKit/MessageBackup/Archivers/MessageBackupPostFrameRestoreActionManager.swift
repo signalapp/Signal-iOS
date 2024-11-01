@@ -11,17 +11,20 @@ public class MessageBackupPostFrameRestoreActionManager {
     typealias ChatActions = MessageBackup.ChatRestoringContext.PostFrameRestoreActions
 
     private let interactionStore: MessageBackupInteractionStore
+    private let lastVisibleInteractionStore: LastVisibleInteractionStore
     private let recipientDatabaseTable: RecipientDatabaseTable
     private let sskPreferences: Shims.SSKPreferences
     private let threadStore: MessageBackupThreadStore
 
     init(
         interactionStore: MessageBackupInteractionStore,
+        lastVisibleInteractionStore: LastVisibleInteractionStore,
         recipientDatabaseTable: RecipientDatabaseTable,
         sskPreferences: Shims.SSKPreferences,
         threadStore: MessageBackupThreadStore
     ) {
         self.interactionStore = interactionStore
+        self.lastVisibleInteractionStore = lastVisibleInteractionStore
         self.recipientDatabaseTable = recipientDatabaseTable
         self.sskPreferences = sskPreferences
         self.threadStore = threadStore
@@ -56,6 +59,23 @@ public class MessageBackupPostFrameRestoreActionManager {
                     context: chatItemContext.chatContext
                 )
             }
+            if
+                let lastVisibleInteractionRowId = actions.lastVisibleInteractionRowId,
+                let lastVisibleInteractionRowId = UInt64(exactly: lastVisibleInteractionRowId),
+                !actions.hadAnyUnreadMessages
+            {
+                // If we had no unread messages but we have some message,
+                // set that as the last visible message so that thats what
+                // we scroll to.
+                lastVisibleInteractionStore.setLastVisibleInteraction(
+                    TSThread.LastVisibleInteraction(
+                        sortId: lastVisibleInteractionRowId,
+                        onScreenPercentage: 1
+                    ),
+                    for: thread.tsThread,
+                    tx: chatItemContext.tx
+                )
+            }
         }
         if wasAnyThreadVisible {
             sskPreferences.setHasSavedThread(true, tx: chatItemContext.tx)
@@ -86,6 +106,8 @@ public class MessageBackupPostFrameRestoreActionManager {
             infoMessage,
             in: chatThread,
             chatId: chatId,
+            // This info message is directionless
+            directionalDetails: .directionless(BackupProto_ChatItem.DirectionlessMessageDetails()),
             context: chatItemContext
         )
     }

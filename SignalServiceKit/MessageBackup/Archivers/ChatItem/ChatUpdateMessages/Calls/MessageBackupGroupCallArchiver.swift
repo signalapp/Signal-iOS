@@ -147,11 +147,20 @@ final class MessageBackupGroupCallArchiver {
             thread: groupThread,
             sentAtTimestamp: chatItem.dateSent
         )
+
+        guard let directionalDetails = chatItem.directionalDetails else {
+            return .messageFailure([.restoreFrameError(
+                .invalidProtoData(.chatItemMissingDirectionalDetails),
+                chatItem.id
+            )])
+        }
+
         do {
             try interactionStore.insert(
                 groupCallInteraction,
                 in: chatThread,
                 chatId: chatItem.typedChatId,
+                directionalDetails: directionalDetails,
                 context: context
             )
         } catch let error {

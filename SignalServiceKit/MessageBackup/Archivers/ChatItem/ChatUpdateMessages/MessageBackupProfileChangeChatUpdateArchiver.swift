@@ -114,11 +114,19 @@ final class MessageBackupProfileChangeChatUpdateArchiver {
             )
         )
 
+        guard let directionalDetails = chatItem.directionalDetails else {
+            return .messageFailure([.restoreFrameError(
+                .invalidProtoData(.chatItemMissingDirectionalDetails),
+                chatItem.id
+            )])
+        }
+
         do {
             try interactionStore.insert(
                 profileChangeInfoMessage,
                 in: chatThread,
                 chatId: chatItem.typedChatId,
+                directionalDetails: directionalDetails,
                 context: context
             )
         } catch let error {

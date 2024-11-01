@@ -144,11 +144,17 @@ final class MessageBackupExpirationTimerChatUpdateArchiver {
             configurationDurationSeconds: UInt32(clamping: expiresInSeconds), // Safe to clamp, we checked for overflow above
             createdByRemoteName: createdByRemoteName
         )
+
+        guard let directionalDetails = chatItem.directionalDetails else {
+            return invalidProtoData(.chatItemMissingDirectionalDetails)
+        }
+
         do {
             try interactionStore.insert(
                 dmUpdateInfoMessage,
                 in: chatThread,
                 chatId: chatItem.typedChatId,
+                directionalDetails: directionalDetails,
                 context: context
             )
         } catch let error {

@@ -336,6 +336,7 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
                 message,
                 in: chatThread,
                 chatId: chatItem.typedChatId,
+                directionalDetails: incomingDetails,
                 context: context
             )
         } catch let error {

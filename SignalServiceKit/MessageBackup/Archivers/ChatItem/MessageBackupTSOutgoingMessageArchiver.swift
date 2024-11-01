@@ -530,6 +530,7 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
                 outgoingMessage,
                 in: chatThread,
                 chatId: chatItem.typedChatId,
+                directionalDetails: outgoingDetails,
                 context: context
             )
         } catch let error {

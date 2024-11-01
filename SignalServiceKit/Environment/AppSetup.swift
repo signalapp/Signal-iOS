@@ -1136,6 +1136,7 @@ public class AppSetup {
             plaintextStreamProvider: MessageBackupPlaintextProtoStreamProviderImpl(),
             postFrameRestoreActionManager: MessageBackupPostFrameRestoreActionManager(
                 interactionStore: backupInteractionStore,
+                lastVisibleInteractionStore: lastVisibleInteractionStore,
                 recipientDatabaseTable: recipientDatabaseTable,
                 sskPreferences: MessageBackupPostFrameRestoreActionManager.Wrappers.SSKPreferences(),
                 threadStore: backupThreadStore

@@ -564,28 +564,55 @@ final class MessageBackupSimpleChatUpdateArchiver {
             simpleChatUpdateInteraction = .simpleInfoMessage(.acceptedMessageRequest)
         }
 
-        let interactionToInsert: TSInteraction = switch simpleChatUpdateInteraction {
+        guard let directionalDetails = chatItem.directionalDetails else {
+            return .messageFailure([.restoreFrameError(
+                .invalidProtoData(.chatItemMissingDirectionalDetails),
+                chatItem.id
+            )])
+        }
+
+        switch simpleChatUpdateInteraction {
         case .simpleInfoMessage(let infoMessageType):
-            TSInfoMessage(
+            let infoMessage = TSInfoMessage(
                 thread: thread,
                 messageType: infoMessageType,
                 timestamp: chatItem.dateSent
             )
+            do {
+                try interactionStore.insert(
+                    infoMessage,
+                    in: chatThread,
+                    chatId: chatItem.typedChatId,
+                    directionalDetails: directionalDetails,
+                    context: context
+                )
+            } catch let error {
+                return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
+            }
         case .prebuiltInfoMessage(let infoMessage):
-            infoMessage
+            do {
+                try interactionStore.insert(
+                    infoMessage,
+                    in: chatThread,
+                    chatId: chatItem.typedChatId,
+                    directionalDetails: directionalDetails,
+                    context: context
+                )
+            } catch let error {
+                return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
+            }
         case .errorMessage(let errorMessage):
-            errorMessage
-        }
-
-        do {
-            try interactionStore.insert(
-                interactionToInsert,
-                in: chatThread,
-                chatId: chatItem.typedChatId,
-                context: context
-            )
-        } catch let error {
-            return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
+            do {
+                try interactionStore.insert(
+                    errorMessage,
+                    in: chatThread,
+                    chatId: chatItem.typedChatId,
+                    directionalDetails: directionalDetails,
+                    context: context
+                )
+            } catch let error {
+                return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
+            }
         }
 
         return .success(())

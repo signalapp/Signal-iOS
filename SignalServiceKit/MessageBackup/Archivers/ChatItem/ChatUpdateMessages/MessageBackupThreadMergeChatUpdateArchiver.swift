@@ -103,11 +103,19 @@ final class MessageBackupThreadMergeChatUpdateArchiver {
             previousE164: previousE164.stringValue
         )
 
+        guard let directionalDetails = chatItem.directionalDetails else {
+            return .messageFailure([.restoreFrameError(
+                .invalidProtoData(.chatItemMissingDirectionalDetails),
+                chatItem.id
+            )])
+        }
+
         do {
             try interactionStore.insert(
                 threadMergeInfoMessage,
                 in: chatThread,
                 chatId: chatItem.typedChatId,
+                directionalDetails: directionalDetails,
                 context: context
             )
         } catch let error {

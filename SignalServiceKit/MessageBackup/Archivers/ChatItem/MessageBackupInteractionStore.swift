@@ -30,13 +30,127 @@ public final class MessageBackupInteractionStore {
         {}
     }
 
+    // MARK: Per type inserts
+
+    func insert(
+        _ interaction: TSIncomingMessage,
+        in thread: MessageBackup.ChatThread,
+        chatId: MessageBackup.ChatId,
+        directionalDetails: BackupProto_ChatItem.IncomingMessageDetails,
+        context: MessageBackup.ChatItemRestoringContext
+    ) throws {
+        let wasRead = BackupProto_ChatItem.OneOf_DirectionalDetails
+            .incoming(directionalDetails).wasRead
+        interaction.wasRead = wasRead
+        try insert(
+            interaction: interaction,
+            in: thread,
+            chatId: chatId,
+            wasRead: wasRead,
+            context: context
+        )
+    }
+
+    func insert(
+        _ interaction: TSOutgoingMessage,
+        in thread: MessageBackup.ChatThread,
+        chatId: MessageBackup.ChatId,
+        directionalDetails: BackupProto_ChatItem.OutgoingMessageDetails,
+        context: MessageBackup.ChatItemRestoringContext
+    ) throws {
+        let wasRead = BackupProto_ChatItem.OneOf_DirectionalDetails
+            .outgoing(directionalDetails).wasRead
+        try insert(
+            interaction: interaction,
+            in: thread,
+            chatId: chatId,
+            wasRead: wasRead,
+            context: context
+        )
+    }
+
+    func insert(
+        _ interaction: TSInfoMessage,
+        in thread: MessageBackup.ChatThread,
+        chatId: MessageBackup.ChatId,
+        directionalDetails: BackupProto_ChatItem.OneOf_DirectionalDetails,
+        context: MessageBackup.ChatItemRestoringContext
+    ) throws {
+        let wasRead = directionalDetails.wasRead
+        interaction.wasRead = wasRead
+        try insert(
+            interaction: interaction,
+            in: thread,
+            chatId: chatId,
+            wasRead: wasRead,
+            context: context
+        )
+    }
+
+    func insert(
+        _ interaction: TSErrorMessage,
+        in thread: MessageBackup.ChatThread,
+        chatId: MessageBackup.ChatId,
+        directionalDetails: BackupProto_ChatItem.OneOf_DirectionalDetails,
+        context: MessageBackup.ChatItemRestoringContext
+    ) throws {
+        let wasRead = directionalDetails.wasRead
+        interaction.wasRead = wasRead
+        try insert(
+            interaction: interaction,
+            in: thread,
+            chatId: chatId,
+            wasRead: wasRead,
+            context: context
+        )
+    }
+
+    func insert(
+        _ interaction: TSCall,
+        in thread: MessageBackup.ChatThread,
+        chatId: MessageBackup.ChatId,
+        directionalDetails: BackupProto_ChatItem.OneOf_DirectionalDetails,
+        context: MessageBackup.ChatItemRestoringContext
+    ) throws {
+        let wasRead = directionalDetails.wasRead
+        interaction.wasRead = wasRead
+        try insert(
+            interaction: interaction,
+            in: thread,
+            chatId: chatId,
+            wasRead: wasRead,
+            context: context
+        )
+    }
+
+    func insert(
+        _ interaction: OWSGroupCallMessage,
+        in thread: MessageBackup.ChatThread,
+        chatId: MessageBackup.ChatId,
+        directionalDetails: BackupProto_ChatItem.OneOf_DirectionalDetails,
+        context: MessageBackup.ChatItemRestoringContext
+    ) throws {
+        let wasRead = directionalDetails.wasRead
+        interaction.wasRead = wasRead
+        try insert(
+            interaction: interaction,
+            in: thread,
+            chatId: chatId,
+            wasRead: wasRead,
+            context: context
+        )
+    }
+
+    // MARK: Insert
+
     // Even generating the sql string itself is expensive when multiplied by 200k messages.
     // So we generate the string once and cache it (on top of caching the Statement)
     private var cachedSQL: String?
-    func insert(
-        _ interaction: TSInteraction,
+    private func insert(
+        interaction: TSInteraction,
         in thread: MessageBackup.ChatThread,
         chatId: MessageBackup.ChatId,
+        wasRead: Bool,
         context: MessageBackup.ChatItemRestoringContext
     ) throws {
         guard interaction.shouldBeSaved else {
@@ -95,8 +209,26 @@ public final class MessageBackupInteractionStore {
         if shouldAppearInInbox {
             context.chatContext.updateLastVisibleInteractionRowId(
                 interactionRowId: interactionRowId,
+                wasRead: wasRead,
                 chatId: chatId
             )
+        }
+    }
+}
+
+extension BackupProto_ChatItem.OneOf_DirectionalDetails {
+
+    var wasRead: Bool {
+        switch self {
+        case .incoming(let incomingMessageDetails):
+            return incomingMessageDetails.read
+        case .outgoing:
+            // Outgoing messages are always implicitly read
+            return true
+        case .directionless:
+            // Since we don't track read state for directionless
+            // messages, just treat them as read.
+            return true
         }
     }
 }

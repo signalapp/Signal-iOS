@@ -223,11 +223,20 @@ final class MessageBackupGroupUpdateMessageArchiver {
             groupThread: groupThread,
             updateItems: persistableUpdates
         )
+
+        guard let directionalDetails = chatItem.directionalDetails else {
+            return .messageFailure([.restoreFrameError(
+                .invalidProtoData(.chatItemMissingDirectionalDetails),
+                chatItem.id
+            )])
+        }
+
         do {
             try interactionStore.insert(
                 infoMessage,
                 in: chatThread,
                 chatId: chatItem.typedChatId,
+                directionalDetails: directionalDetails,
                 context: context
             )
         } catch let error {
