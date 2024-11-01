@@ -10,10 +10,15 @@ public struct MessageBackupServiceAuth {
     private let authHeaders: [String: String]
     public let publicKey: PublicKey
 
-    public init(backupKey: Data, privateKey: PrivateKey, authCredential: BackupAuthCredential) throws {
+    // Remember the type of auth this credential represents (message vs media).
+    // This makes it easier to cache requested information correctly based on the type
+    public let type: MessageBackupAuthCredentialType
+
+    public init(backupKey: Data, privateKey: PrivateKey, authCredential: BackupAuthCredential, type: MessageBackupAuthCredentialType) throws {
         let backupServerPublicParams = try GenericServerPublicParams(contents: [UInt8](TSConstants.backupServerPublicParams))
         let presentation = authCredential.present(serverParams: backupServerPublicParams).serialize()
         let signedPresentation = privateKey.generateSignature(message: presentation)
+        self.type = type
 
         self.publicKey = privateKey.publicKey
         self.authHeaders = [

@@ -203,7 +203,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
             let messageBackupAuth: MessageBackupServiceAuth
             do {
                 messageBackupAuth = try await messageBackupRequestManager.fetchBackupServiceAuth(
-                    for: .upload(.media),
+                    for: .media,
                     localAci: localAci,
                     auth: .implicit()
                 )

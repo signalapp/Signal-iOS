@@ -3,23 +3,19 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public struct EphemeralBackupKey {
-    public let data: Data
+public import LibSignalClient
 
-    fileprivate init(_ data: Data) {
-        self.data = data
-    }
-
-    public init?(provisioningMessage: ProvisionMessage) {
+extension BackupKey {
+    public convenience init?(provisioningMessage: ProvisionMessage) {
         guard let data = provisioningMessage.ephemeralBackupKey else {
             return nil
         }
-        self.init(data)
+        try? self.init(contents: Array(data))
     }
 
     #if TESTABLE_BUILD
-    public static func forTesting() -> EphemeralBackupKey {
-        return EphemeralBackupKey(Randomness.generateRandomBytes(UInt(SVR.DerivedKey.backupKeyLength)))
+    public static func forTesting() -> BackupKey {
+        return try! BackupKey(contents: Array(Randomness.generateRandomBytes(UInt(SVR.DerivedKey.backupKeyLength))))
     }
     #endif
 }
@@ -53,14 +49,14 @@ public protocol LinkAndSyncManager {
     /// This key should be included in the provisioning message and then used to encrypt the backup proto we send.
     ///
     /// - returns The ephemeral key to use, or nil if link'n'sync should not be used.
-    func generateEphemeralBackupKey() -> EphemeralBackupKey
+    func generateEphemeralBackupKey() -> BackupKey
 
     /// **Call this on the primary device!**
     /// Once the primary sends the provisioning message to the linked device, call this method
     /// to wait on the linked device to link, generate a backup, and upload it. Once this method returns,
     /// the primary's role is complete and the user can exit.
     func waitForLinkingAndUploadBackup(
-        ephemeralBackupKey: EphemeralBackupKey,
+        ephemeralBackupKey: BackupKey,
         tokenId: DeviceProvisioningTokenId
     ) async throws(PrimaryLinkNSyncError)
 
@@ -71,7 +67,7 @@ public protocol LinkAndSyncManager {
     func waitForBackupAndRestore(
         localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth,
-        ephemeralBackupKey: EphemeralBackupKey
+        ephemeralBackupKey: BackupKey
     ) async throws(SecondaryLinkNSyncError)
 }
 
@@ -118,14 +114,14 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         kvStore.setBool(isEnabled, key: Constants.enabledOnPrimaryKey, transaction: tx)
     }
 
-    public func generateEphemeralBackupKey() -> EphemeralBackupKey {
+    public func generateEphemeralBackupKey() -> BackupKey {
         owsAssertDebug(FeatureFlags.linkAndSyncTogglePrimary || FeatureFlags.linkAndSyncOverridePrimary)
         owsAssertDebug(tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice == true)
-        return EphemeralBackupKey(Randomness.generateRandomBytes(UInt(SVR.DerivedKey.backupKeyLength)))
+        return try! BackupKey(contents: Array(Randomness.generateRandomBytes(UInt(SVR.DerivedKey.backupKeyLength))))
     }
 
     public func waitForLinkingAndUploadBackup(
-        ephemeralBackupKey: EphemeralBackupKey,
+        ephemeralBackupKey: BackupKey,
         tokenId: DeviceProvisioningTokenId
     ) async throws(PrimaryLinkNSyncError) {
         guard FeatureFlags.linkAndSyncTogglePrimary || FeatureFlags.linkAndSyncOverridePrimary else {
@@ -161,7 +157,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
     public func waitForBackupAndRestore(
         localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth,
-        ephemeralBackupKey: EphemeralBackupKey
+        ephemeralBackupKey: BackupKey
     ) async throws(SecondaryLinkNSyncError) {
         guard FeatureFlags.linkAndSyncSecondary else {
             owsFailDebug("link'n'sync not available")
@@ -222,13 +218,13 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
     }
 
     private func generateBackup(
-        ephemeralBackupKey: EphemeralBackupKey,
+        ephemeralBackupKey: BackupKey,
         localIdentifiers: LocalIdentifiers
     ) async throws(PrimaryLinkNSyncError) -> Upload.EncryptedBackupUploadMetadata {
         do {
             return try await messageBackupManager.exportEncryptedBackup(
                 localIdentifiers: localIdentifiers,
-                mode: .linknsync(ephemeralBackupKey)
+                backupKey: ephemeralBackupKey
             )
         } catch let error {
             owsFailDebug("Unable to generate link'n'sync backup: \(error)")
@@ -317,14 +313,14 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
 
     private func downloadEphemeralBackup(
         waitForBackupResponse: Requests.WaitForLinkNSyncBackupUploadResponse,
-        ephemeralBackupKey: EphemeralBackupKey
+        ephemeralBackupKey: BackupKey
     ) async throws(SecondaryLinkNSyncError) -> URL {
         do {
             return try await attachmentDownloadManager.downloadTransientAttachment(
                 metadata: AttachmentDownloads.DownloadMetadata(
                     mimeType: MimeType.applicationOctetStream.rawValue,
                     cdnNumber: waitForBackupResponse.cdn,
-                    encryptionKey: ephemeralBackupKey.data,
+                    encryptionKey: ephemeralBackupKey.serialize().asData,
                     source: .linkNSyncBackup(cdnKey: waitForBackupResponse.key)
                 )
             ).awaitable()
@@ -340,13 +336,13 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
     private func restoreEphemeralBackup(
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
-        ephemeralBackupKey: EphemeralBackupKey
+        ephemeralBackupKey: BackupKey
     ) async throws(SecondaryLinkNSyncError) {
         do {
             try await messageBackupManager.importEncryptedBackup(
                 fileUrl: fileUrl,
                 localIdentifiers: localIdentifiers,
-                mode: .linknsync(ephemeralBackupKey)
+                backupKey: ephemeralBackupKey
             )
         } catch {
             owsFailDebug("Unable to restore link'n'sync backup: \(error)")

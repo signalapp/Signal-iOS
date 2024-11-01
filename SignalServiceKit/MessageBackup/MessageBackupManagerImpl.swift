@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import LibSignalClient
+public import LibSignalClient
 
 public enum BackupValidationError: Error {
     case unknownFields([String])
@@ -16,6 +16,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     private enum Constants {
         static let keyValueStoreCollectionName = "MessageBackupManager"
         static let keyValueStoreHasReservedBackupKey = "HasReservedBackupKey"
+        static let keyValueStoreHasReservedMediaBackupKey = "HasReservedMediaBackupKey"
 
         static let supportedBackupVersion: UInt64 = 1
     }
@@ -122,34 +123,33 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     /// These registration calls are safe to call multiple times, but to avoid unecessary network calls, the app will remember if
     /// backups have been successfully registered on this device and will no-op in this case.
     private func reserveAndRegister(localIdentifiers: LocalIdentifiers, auth: ChatServiceAuth) async throws {
-        guard db.read(block: { tx in
-            return kvStore.getBool(Constants.keyValueStoreHasReservedBackupKey, transaction: tx) ?? false
-        }).negated else {
+        let (hasReservedBackupKey, hasReservedMediaBackupKey) = db.read { tx in
+            return (
+                kvStore.getBool(Constants.keyValueStoreHasReservedBackupKey, transaction: tx) ?? false,
+                kvStore.getBool(Constants.keyValueStoreHasReservedMediaBackupKey, transaction: tx) ?? false
+            )
+        }
+
+        if hasReservedBackupKey && hasReservedMediaBackupKey {
             return
         }
 
         // Both reserveBackupId and registerBackupKeys can be called multiple times, so if
         // we think the backupId needs to be registered, register the public key at the same time.
-
-        try await backupRequestManager.reserveBackupId(localAci: localIdentifiers.aci, auth: auth)
-
-        let backupAuth = try await backupRequestManager.fetchBackupServiceAuth(
-            for: .oneTimeKeySetup(.messages),
-            localAci: localIdentifiers.aci,
-            auth: auth
-        )
-
-        try await backupRequestManager.registerBackupKeys(auth: backupAuth)
+        let localAci = localIdentifiers.aci
+        try await backupRequestManager.reserveBackupId(localAci: localAci, auth: auth)
+        try await backupRequestManager.registerBackupKeys(localAci: localAci, auth: auth)
 
         // Remember this device has registered for backups
         await db.awaitableWrite { [weak self] tx in
             self?.kvStore.setBool(true, key: Constants.keyValueStoreHasReservedBackupKey, transaction: tx)
+            self?.kvStore.setBool(true, key: Constants.keyValueStoreHasReservedMediaBackupKey, transaction: tx)
         }
     }
 
     public func downloadEncryptedBackup(localIdentifiers: LocalIdentifiers, auth: ChatServiceAuth) async throws -> URL {
         let backupAuth = try await backupRequestManager.fetchBackupServiceAuth(
-            for: .download(.messages),
+            for: .messages,
             localAci: localIdentifiers.aci,
             auth: auth
         )
@@ -170,7 +170,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         // This will return early if this device has already registered the backup ID.
         try await reserveAndRegister(localIdentifiers: localIdentifiers, auth: auth)
         let backupAuth = try await backupRequestManager.fetchBackupServiceAuth(
-            for: .upload(.messages),
+            for: .messages,
             localAci: localIdentifiers.aci,
             auth: auth
         )
@@ -182,7 +182,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
     public func exportEncryptedBackup(
         localIdentifiers: LocalIdentifiers,
-        mode: MessageBackup.EncryptionMode
+        backupKey: BackupKey
     ) async throws -> Upload.EncryptedBackupUploadMetadata {
         guard
             FeatureFlags.messageBackupFileAlpha
@@ -202,7 +202,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 let metadataProvider: MessageBackup.ProtoStream.EncryptionMetadataProvider
                 switch self.encryptedStreamProvider.openEncryptedOutputFileStream(
                     localAci: localIdentifiers.aci,
-                    mode: mode,
+                    backupKey: backupKey,
                     tx: tx
                 ) {
                 case let .success(_outputStream, _metadataProvider):
@@ -475,7 +475,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     public func importEncryptedBackup(
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
-        mode: MessageBackup.EncryptionMode
+        backupKey: BackupKey
     ) async throws {
         guard FeatureFlags.messageBackupFileAlpha || FeatureFlags.linkAndSyncSecondary else {
             owsFailDebug("Should not be able to use backups!")
@@ -492,7 +492,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                     switch self.encryptedStreamProvider.openEncryptedInputFileStream(
                         fileUrl: fileUrl,
                         localAci: localIdentifiers.aci,
-                        mode: mode,
+                        backupKey: backupKey,
                         tx: tx
                     ) {
                     case .success(let protoStream, _):
@@ -846,11 +846,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     public func validateEncryptedBackup(
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
-        mode: MessageBackup.EncryptionMode
+        backupKey: BackupKey
     ) async throws {
-        let key = try db.read { tx in
-            return try messageBackupKeyMaterial.messageBackupKey(localAci: localIdentifiers.aci, mode: mode, tx: tx)
-        }
+        let key = try backupKey.asMessageBackupKey(for: localIdentifiers.aci)
         let fileSize = OWSFileSystem.fileSize(ofPath: fileUrl.path)?.uint64Value ?? 0
 
         do {

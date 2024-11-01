@@ -888,7 +888,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         logger: PrefixedLogger
     ) async throws -> UInt32 {
         let auth = try await messageBackupRequestManager.fetchBackupServiceAuth(
-            for: .upload(.media),
+            for: .media,
             localAci: localAci,
             auth: .implicit()
         )

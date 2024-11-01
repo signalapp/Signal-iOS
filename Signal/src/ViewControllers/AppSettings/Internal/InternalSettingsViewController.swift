@@ -263,6 +263,7 @@ private extension InternalSettingsViewController {
     }
 
     func exportMessageBackupProto() {
+        let messageBackupKeyMaterial = DependenciesBridge.shared.messageBackupKeyMaterial
         let messageBackupManager = DependenciesBridge.shared.messageBackupManager
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
@@ -286,9 +287,12 @@ private extension InternalSettingsViewController {
 
             Task {
                 do {
+                    let backupKey = try SSKEnvironment.shared.databaseStorageRef.read { tx in
+                        try messageBackupKeyMaterial.backupKey(type: .messages, tx: tx.asV2Read)
+                    }
                     let metadata = try await messageBackupManager.exportEncryptedBackup(
                         localIdentifiers: localIdentifiers,
-                        mode: .remote
+                        backupKey: backupKey
                     )
                     await MainActor.run {
                         let actionSheet = ActionSheetController(title: "Choose backup destination:")

@@ -10,11 +10,13 @@ class AuthCredentialStore {
     private let callLinkAuthCredentialStore: any KeyValueStore
     private let groupAuthCredentialStore: any KeyValueStore
     private let backupAuthCredentialStore: any KeyValueStore
+    private let mediaAuthCredentialStore: any KeyValueStore
 
     init(keyValueStoreFactory: any KeyValueStoreFactory) {
         self.callLinkAuthCredentialStore = keyValueStoreFactory.keyValueStore(collection: "CallLinkAuthCredential")
         self.groupAuthCredentialStore = keyValueStoreFactory.keyValueStore(collection: "GroupsV2Impl.authCredentialStoreStore")
         self.backupAuthCredentialStore = keyValueStoreFactory.keyValueStore(collection: "BackupAuthCredential")
+        self.mediaAuthCredentialStore = keyValueStoreFactory.keyValueStore(collection: "MediaAuthCredential")
     }
 
     private static func callLinkAuthCredentialKey(for redemptionTime: UInt64) -> String {
@@ -86,11 +88,13 @@ class AuthCredentialStore {
     }
 
     func backupAuthCredential(
-        for redemptionTime: UInt64,
+        for credentialType: MessageBackupAuthCredentialType,
+        redemptionTime: UInt64,
         tx: DBReadTransaction
     ) -> BackupAuthCredential? {
+        let store = credentialType == .messages ? backupAuthCredentialStore : mediaAuthCredentialStore
         do {
-            return try backupAuthCredentialStore.getData(
+            return try store.getData(
                 Self.backupAuthCredentialKey(for: redemptionTime),
                 transaction: tx
             ).map {
@@ -104,17 +108,20 @@ class AuthCredentialStore {
 
     func setBackupAuthCredential(
         _ credential: BackupAuthCredential,
-        for redemptionTime: UInt64,
+        for credentialType: MessageBackupAuthCredentialType,
+        redemptionTime: UInt64,
         tx: DBWriteTransaction
     ) {
-        backupAuthCredentialStore.setData(
+        let store = credentialType == .messages ? backupAuthCredentialStore : mediaAuthCredentialStore
+        store.setData(
             credential.serialize().asData,
             key: Self.backupAuthCredentialKey(for: redemptionTime),
             transaction: tx
         )
     }
 
-    func removeAllBackupAuthCredentials(tx: DBWriteTransaction) {
-        backupAuthCredentialStore.removeAll(transaction: tx)
+    func removeAllBackupAuthCredentials(for credentialType: MessageBackupAuthCredentialType, tx: DBWriteTransaction) {
+        let store = credentialType == .messages ? backupAuthCredentialStore : mediaAuthCredentialStore
+        store.removeAll(transaction: tx)
     }
 }

@@ -10,12 +10,16 @@ import Foundation
 extension OWSRequestFactory {
     public static func reserveBackupId(
         backupId: String,
+        mediaBackupId: String,
         auth: ChatServiceAuth = .implicit()
     ) throws -> TSRequest {
         let request = TSRequest(
             url: URL(string: "v1/archives/backupid")!,
             method: "PUT",
-            parameters: ["backupAuthCredentialRequest": backupId]
+            parameters: [
+                "messagesBackupAuthCredentialRequest": backupId,
+                "mediaBackupAuthCredentialRequest": mediaBackupId
+            ]
         )
         request.setAuth(auth)
         return request

@@ -464,10 +464,14 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     auth: identity.chatServiceAuth
                 )
             }
+            // Get Backup Key
+            let backupKey = try self.deps.db.read { tx in
+                return try self.deps.messageBackupKeyMaterial.backupKey(type: .messages, tx: tx)
+            }
             try await self.deps.messageBackupManager.importEncryptedBackup(
                 fileUrl: fileUrl,
                 localIdentifiers: identity.localIdentifiers,
-                mode: .remote
+                backupKey: backupKey
             )
             self.inMemoryState.hasRestoredFromLocalMessageBackup = true
             Logger.info("Finished restore")

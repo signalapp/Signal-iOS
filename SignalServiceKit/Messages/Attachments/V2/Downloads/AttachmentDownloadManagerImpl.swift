@@ -812,7 +812,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             }
 
             guard let auth = try? await messageBackupRequestManager.fetchBackupServiceAuth(
-                for: .download(.media),
+                for: .media,
                 localAci: localAci,
                 auth: .implicit()
             ) else {

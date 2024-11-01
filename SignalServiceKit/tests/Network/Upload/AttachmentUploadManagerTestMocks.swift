@@ -92,54 +92,25 @@ class _AttachmentUploadManager_ChatConnectionManagerMock: ChatConnectionManager 
 }
 
 class _AttachmentUploadManager_MessageBackupKeyMaterialMock: MessageBackupKeyMaterial {
-    func backupKey(mode: MessageBackup.EncryptionMode, tx: any DBReadTransaction) throws -> BackupKey {
+    func backupKey(
+        type: MessageBackupAuthCredentialType,
+        tx: DBReadTransaction
+    ) throws -> BackupKey {
         fatalError("Unimplemented for tests")
     }
 
-    func backupID(localAci: Aci, mode: MessageBackup.EncryptionMode, tx: DBReadTransaction) throws -> Data {
-        fatalError("Unimplemented for tests")
-    }
-
-    func backupPrivateKey(localAci: Aci, mode: MessageBackup.EncryptionMode, tx: DBReadTransaction) throws -> PrivateKey {
-        fatalError("Unimplemented for tests")
-    }
-
-    func backupAuthRequestContext(localAci: Aci, type: MessageBackupAuthCredentialType, tx: DBReadTransaction) throws -> BackupAuthCredentialRequestContext {
-        fatalError("Unimplemented for tests")
-    }
-
-    func messageBackupKey(localAci: Aci, mode: MessageBackup.EncryptionMode, tx: DBReadTransaction) throws -> MessageBackupKey {
-        fatalError("Unimplemented for tests")
-    }
-
-    func mediaEncryptionMetadata(mediaName: String, type: MediaTierEncryptionType, tx: DBReadTransaction) throws -> MediaTierEncryptionMetadata {
+    func mediaEncryptionMetadata(
+        mediaName: String,
+        type: MediaTierEncryptionType,
+        tx: any DBReadTransaction
+    ) throws -> MediaTierEncryptionMetadata {
         return .init(type: type, mediaId: Data(), hmacKey: Data(), aesKey: Data())
-    }
-
-    func mediaId(mediaName: String, type: MediaTierEncryptionType, backupKey: BackupKey) throws -> Data {
-        return Data()
-    }
-
-    func createEncryptingStreamTransform(localAci: Aci, mode: MessageBackup.EncryptionMode, tx: DBReadTransaction) throws -> EncryptingStreamTransform {
-        fatalError("Unimplemented for tests")
-    }
-
-    func createDecryptingStreamTransform(localAci: Aci, mode: MessageBackup.EncryptionMode, tx: DBReadTransaction) throws -> DecryptingStreamTransform {
-        fatalError("Unimplemented for tests")
-    }
-
-    func createHmacGeneratingStreamTransform(localAci: Aci, mode: MessageBackup.EncryptionMode, tx: DBReadTransaction) throws -> HmacStreamTransform {
-        fatalError("Unimplemented for tests")
-    }
-
-    func createHmacValidatingStreamTransform(localAci: Aci, mode: MessageBackup.EncryptionMode, tx: DBReadTransaction) throws -> HmacStreamTransform {
-        fatalError("Unimplemented for tests")
     }
 }
 
 class _AttachmentUploadManager_MessageBackupRequestManagerMock: MessageBackupRequestManager {
     func fetchBackupServiceAuth(
-        for purpose: MessageBackupAuthCredentialManager.Purpose,
+        for type: MessageBackupAuthCredentialType,
         localAci: Aci,
         auth: ChatServiceAuth
     ) async throws -> MessageBackupServiceAuth {
@@ -148,7 +119,7 @@ class _AttachmentUploadManager_MessageBackupRequestManagerMock: MessageBackupReq
 
     func reserveBackupId(localAci: Aci, auth: ChatServiceAuth) async throws { }
 
-    func registerBackupKeys(auth: MessageBackupServiceAuth) async throws { }
+    func registerBackupKeys(localAci: Aci, auth: ChatServiceAuth) async throws {}
 
     func fetchBackupUploadForm(auth: MessageBackupServiceAuth) async throws -> Upload.Form {
         fatalError("Unimplemented for tests")

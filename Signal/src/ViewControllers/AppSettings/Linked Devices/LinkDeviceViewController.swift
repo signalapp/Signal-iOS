@@ -192,7 +192,7 @@ class LinkDeviceViewController: OWSViewController {
             return mrbk
         }
 
-        let ephemeralBackupKey: EphemeralBackupKey?
+        let ephemeralBackupKey: BackupKey?
         if
             isLinkAndSyncEnabled,
             deviceProvisioningUrl.capabilities.contains(where: { $0 == .linknsync })

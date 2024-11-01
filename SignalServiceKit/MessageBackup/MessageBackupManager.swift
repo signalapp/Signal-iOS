@@ -4,19 +4,7 @@
 //
 
 import Foundation
-
-public extension MessageBackup {
-    enum EncryptionMode {
-        /// Export/Import an encrypted backup to/from the remote server.
-        /// The encryption key used derives entirely from the local account keychain.
-        case remote
-        /// Export/Import an encrypted backup used to link a new device.
-        /// The encryption key used is derived from the aci and a 32-byte "ephemeral" backup key.
-        case linknsync(EphemeralBackupKey)
-
-        // TODO: [LocalBackups] introduce local mode with its own key scheme.
-    }
-}
+public import LibSignalClient
 
 public protocol MessageBackupManager {
 
@@ -39,7 +27,7 @@ public protocol MessageBackupManager {
     /// - SeeAlso ``uploadEncryptedBackup(metadata:localIdentifiers:auth:)``
     func exportEncryptedBackup(
         localIdentifiers: LocalIdentifiers,
-        mode: MessageBackup.EncryptionMode
+        backupKey: BackupKey
     ) async throws -> Upload.EncryptedBackupUploadMetadata
 
     /// Export a plaintext backup binary at the returned file URL.
@@ -52,7 +40,7 @@ public protocol MessageBackupManager {
     func importEncryptedBackup(
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
-        mode: MessageBackup.EncryptionMode
+        backupKey: BackupKey
     ) async throws
 
     /// Import a backup from the plaintext binary file at the given local URL.
@@ -64,6 +52,6 @@ public protocol MessageBackupManager {
     func validateEncryptedBackup(
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
-        mode: MessageBackup.EncryptionMode
+        backupKey: BackupKey
     ) async throws
 }

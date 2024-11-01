@@ -6,40 +6,14 @@
 import Foundation
 public import LibSignalClient
 
-/// The purposes for which one could need a Backup auth credential. The intended
-/// purpose influences what steps are taken when retrieving a credential.
-public enum MessageBackupAuthCredentialPurpose {
-    /// The credential will be used for one-time set-up of keys related to a
-    /// user's Backup.
-    case oneTimeKeySetup(MessageBackupAuthCredentialType)
-    /// The credential will be used for download, for example of a Backup file
-    /// or attachments.
-    case download(MessageBackupAuthCredentialType)
-    /// The credential will be used for upload, for example of a Backup file or
-    /// attachments.
-    case upload(MessageBackupAuthCredentialType)
-    /// The credential will be used for delete, for example of a Backup file or
-    /// attachments.
-    case delete(MessageBackupAuthCredentialType)
-
-    var credentialType: MessageBackupAuthCredentialType {
-        switch self {
-        case .delete(let credentialType), .download(let credentialType), .oneTimeKeySetup(let credentialType), .upload(let credentialType):
-            return credentialType
-        }
-    }
-}
-
-public enum MessageBackupAuthCredentialType: String, Codable, CaseIterable  {
+public enum MessageBackupAuthCredentialType: String, Codable, CaseIterable, CodingKeyRepresentable  {
     case media
     case messages
 }
 
 public protocol MessageBackupAuthCredentialManager {
-    typealias Purpose = MessageBackupAuthCredentialPurpose
-
     func fetchBackupCredential(
-        for purpose: Purpose,
+        for credentialType: MessageBackupAuthCredentialType,
         localAci: Aci,
         chatServiceAuth auth: ChatServiceAuth
     ) async throws -> BackupAuthCredential
@@ -52,7 +26,11 @@ public struct MessageBackupAuthCredentialManagerImpl: MessageBackupAuthCredentia
         static let numberOfDaysFetchIntervalInSeconds: TimeInterval = 3 * kDayInterval
 
         static let keyValueStoreCollectionName = "MessageBackupAuthCredentialManager"
-        static let keyValueStoreLastCredentialFetchTimeKey = "LastCredentialFetchTime"
+
+        private static let keyValueStoreLastBackupCredentialFetchTimeKeyPrefix = "LastCredentialFetchTime:"
+        static func cacheKey(for credentialType: MessageBackupAuthCredentialType) -> String {
+            keyValueStoreLastBackupCredentialFetchTimeKeyPrefix + credentialType.rawValue
+        }
     }
 
     private let authCredentialStore: AuthCredentialStore
@@ -79,20 +57,22 @@ public struct MessageBackupAuthCredentialManagerImpl: MessageBackupAuthCredentia
     }
 
     public func fetchBackupCredential(
-        for purpose: Purpose,
+        for credentialType: MessageBackupAuthCredentialType,
         localAci: Aci,
         chatServiceAuth auth: ChatServiceAuth
     ) async throws -> BackupAuthCredential {
+        let fetchTimeKey = Constants.cacheKey(for: credentialType)
         let authCredential = db.read { tx -> BackupAuthCredential? in
-            let lastCredentialFetchTime = kvStore.getDate(
-                Constants.keyValueStoreLastCredentialFetchTimeKey,
-                transaction: tx
-            ) ?? .distantPast
+            let lastCredentialFetchTime = kvStore.getDate(fetchTimeKey, transaction: tx) ?? .distantPast
 
             // every 3 days fetch 7 days worth
             if abs(lastCredentialFetchTime.timeIntervalSinceNow) < Constants.numberOfDaysFetchIntervalInSeconds {
                 let redemptionTime = self.dateProvider().startOfTodayUTCTimestamp()
-                if let backupAuthCredential = self.authCredentialStore.backupAuthCredential(for: redemptionTime, tx: tx) {
+                if let backupAuthCredential = self.authCredentialStore.backupAuthCredential(
+                    for: credentialType,
+                    redemptionTime: redemptionTime,
+                    tx: tx
+                ) {
                     return backupAuthCredential
                 } else {
                     owsFailDebug("Error retrieving cached auth credential")
@@ -106,21 +86,32 @@ public struct MessageBackupAuthCredentialManagerImpl: MessageBackupAuthCredentia
             return authCredential
         }
 
-        let authCredentials = try await fetchNewAuthCredentials(localAci: localAci, for: purpose, auth: auth)
+        let authCredentials = try await fetchNewAuthCredentials(localAci: localAci, for: credentialType, auth: auth)
 
         await db.awaitableWrite { tx in
-            self.authCredentialStore.removeAllBackupAuthCredentials(tx: tx)
-            for receivedCredential in authCredentials {
-                self.authCredentialStore.setBackupAuthCredential(
-                    receivedCredential.credential,
-                    for: receivedCredential.redemptionTime,
-                    tx: tx
-                )
+            // Fetch both credential types if either is needed.
+            MessageBackupAuthCredentialType.allCases.forEach { credentialType in
+                guard let receivedCredentials = authCredentials[credentialType] else {
+                    if credentialType == credentialType {
+                        // If the requested media type fails, make some noise about it.
+                        owsFailDebug("Failed to retrieve credentials for \(credentialType.rawValue)")
+                    }
+                    return
+                }
+                self.authCredentialStore.removeAllBackupAuthCredentials(for: credentialType, tx: tx)
+                for receivedCredential in receivedCredentials {
+                    self.authCredentialStore.setBackupAuthCredential(
+                        receivedCredential.credential,
+                        for: credentialType,
+                        redemptionTime: receivedCredential.redemptionTime,
+                        tx: tx
+                    )
+                }
+                kvStore.setDate(dateProvider(), key: fetchTimeKey, transaction: tx)
             }
-            kvStore.setDate(dateProvider(), key: Constants.keyValueStoreLastCredentialFetchTimeKey, transaction: tx)
         }
 
-        guard let authCredential = authCredentials.first?.credential else {
+        guard let authCredential = authCredentials[credentialType]?.first?.credential else {
             throw OWSAssertionError("The server didn't give us any auth credentials.")
         }
 
@@ -129,9 +120,9 @@ public struct MessageBackupAuthCredentialManagerImpl: MessageBackupAuthCredentia
 
     private func fetchNewAuthCredentials(
         localAci: Aci,
-        for purpose: Purpose,
+        for credentialType: MessageBackupAuthCredentialType,
         auth: ChatServiceAuth
-    ) async throws -> [ReceivedBackupAuthCredentials] {
+    ) async throws -> [MessageBackupAuthCredentialType: [ReceivedBackupAuthCredentials]] {
 
         let startTimestamp = self.dateProvider().startOfTodayUTCTimestamp()
         let endTimestamp = startTimestamp + UInt64(Constants.numberOfDaysToFetchInSeconds)
@@ -151,32 +142,34 @@ public struct MessageBackupAuthCredentialManagerImpl: MessageBackupAuthCredentia
         let authCredentialRepsonse = try JSONDecoder().decode(BackupCredentialResponse.self, from: data)
 
         let backupServerPublicParams = try GenericServerPublicParams(contents: [UInt8](TSConstants.backupServerPublicParams))
-        return try authCredentialRepsonse.credentials.map {
-            do {
-                let redemptionDate = Date(timeIntervalSince1970: TimeInterval($0.redemptionTime))
-                let backupRequestContext = try db.read { tx in
-                    return try messageBackupKeyMaterial.backupAuthRequestContext(localAci: localAci, type: purpose.credentialType, tx: tx)
+        return try authCredentialRepsonse.credentials.reduce(into: [MessageBackupAuthCredentialType: [ReceivedBackupAuthCredentials]]()) { result, element in
+            let type = element.key
+            result[type] = try element.value.compactMap {
+                do {
+                    let redemptionDate = Date(timeIntervalSince1970: TimeInterval($0.redemptionTime))
+                    let backupRequestContext = try db.read { tx in
+                        let backupKey = try messageBackupKeyMaterial.backupKey(type: type, tx: tx)
+                        return BackupAuthCredentialRequestContext.create(backupKey: backupKey.serialize(), aci: localAci.rawUUID)
+                    }
+                    let backupAuthResponse = try BackupAuthCredentialResponse(contents: [UInt8]($0.credential))
+                    let credential = try backupRequestContext.receive(
+                        backupAuthResponse,
+                        timestamp: redemptionDate,
+                        params: backupServerPublicParams
+                    )
+                    return ReceivedBackupAuthCredentials(redemptionTime: $0.redemptionTime, credential: credential)
+                } catch MessageBackupKeyMaterialError.missingMasterKey where type != credentialType {
+                    return nil
+                } catch {
+                    owsFailDebug("Error creating credential")
+                    throw error
                 }
-                let backupAuthResponse = try BackupAuthCredentialResponse(contents: [UInt8]($0.credential))
-                let credential = try backupRequestContext.receive(
-                    backupAuthResponse,
-                    timestamp: redemptionDate,
-                    params: backupServerPublicParams
-                )
-                return ReceivedBackupAuthCredentials(redemptionTime: $0.redemptionTime, credential: credential)
-            } catch {
-                owsFailDebug("Error creating credential")
-                throw error
             }
         }
     }
 
     private struct BackupCredentialResponse: Decodable {
-        enum CodingKeys: String, CodingKey {
-            case credentials
-        }
-
-        var credentials: [AuthCredential]
+        var credentials: [MessageBackupAuthCredentialType: [AuthCredential]]
 
         struct AuthCredential: Decodable {
             var redemptionTime: UInt64

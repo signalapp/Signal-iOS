@@ -4,6 +4,7 @@
 //
 
 import Foundation
+public import LibSignalClient
 
 #if TESTABLE_BUILD
 
@@ -35,7 +36,7 @@ open class MessageBackupManagerMock: MessageBackupManager {
 
     public func exportEncryptedBackup(
         localIdentifiers: LocalIdentifiers,
-        mode: MessageBackup.EncryptionMode
+        backupKey: BackupKey
     ) async throws -> Upload.EncryptedBackupUploadMetadata {
         return Upload.EncryptedBackupUploadMetadata(
             fileUrl: URL(string: "file://")!,
@@ -52,13 +53,13 @@ open class MessageBackupManagerMock: MessageBackupManager {
     public func importEncryptedBackup(
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
-        mode: MessageBackup.EncryptionMode
+        backupKey: BackupKey
     ) async throws {}
     public func importPlaintextBackup(fileUrl: URL, localIdentifiers: LocalIdentifiers) async throws {}
     public func validateEncryptedBackup(
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
-        mode: MessageBackup.EncryptionMode
+        backupKey: BackupKey
     ) async throws {}
 }
 

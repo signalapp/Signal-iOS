@@ -24,7 +24,7 @@ public final class OWSDeviceProvisioner {
     private let profileKey: Data
     private let masterKey: Data
     private let mrbk: Data
-    private let ephemeralBackupKey: EphemeralBackupKey?
+    private let ephemeralBackupKey: BackupKey?
     private let readReceiptsEnabled: Bool
 
     private let provisioningService: DeviceProvisioningService
@@ -41,7 +41,7 @@ public final class OWSDeviceProvisioner {
         profileKey: Data,
         masterKey: Data,
         mrbk: Data,
-        ephemeralBackupKey: EphemeralBackupKey?,
+        ephemeralBackupKey: BackupKey?,
         readReceiptsEnabled: Bool,
         provisioningService: DeviceProvisioningService,
         schedulers: Schedulers
@@ -99,7 +99,7 @@ public final class OWSDeviceProvisioner {
         messageBuilder.setMasterKey(masterKey)
         messageBuilder.setMediaRootBackupKey(mrbk)
         if let ephemeralBackupKey {
-            messageBuilder.setEphemeralBackupKey(ephemeralBackupKey.data)
+            messageBuilder.setEphemeralBackupKey(ephemeralBackupKey.serialize().asData)
         }
 
         let plainTextProvisionMessage = try messageBuilder.buildSerializedData()

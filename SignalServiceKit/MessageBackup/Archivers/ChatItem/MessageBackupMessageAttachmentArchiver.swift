@@ -423,7 +423,7 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
     internal static func currentUploadEra() throws -> String {
         // TODO: [Backups] use actual subscription id. For now use a fixed,
         // arbitrary id, so that it never changes.
-        let backupSubscriptionId = Data(repeating: 5, count: 32)
+        let backupSubscriptionId = Data(repeating: 4, count: 32)
         return try Attachment.uploadEra(backupSubscriptionId: backupSubscriptionId)
     }
 

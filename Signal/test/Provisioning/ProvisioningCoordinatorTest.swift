@@ -191,12 +191,12 @@ private class MockLinkAndSyncManager: LinkAndSyncManager {
 
     func setIsLinkAndSyncEnabledOnPrimary(_ isEnabled: Bool, tx: DBWriteTransaction) {}
 
-    func generateEphemeralBackupKey() -> EphemeralBackupKey {
+    func generateEphemeralBackupKey() -> BackupKey {
         return .forTesting()
     }
 
     func waitForLinkingAndUploadBackup(
-        ephemeralBackupKey: EphemeralBackupKey,
+        ephemeralBackupKey: BackupKey,
         tokenId: DeviceProvisioningTokenId
     ) async throws(PrimaryLinkNSyncError) {
         return
@@ -205,7 +205,7 @@ private class MockLinkAndSyncManager: LinkAndSyncManager {
     func waitForBackupAndRestore(
         localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth,
-        ephemeralBackupKey: EphemeralBackupKey
+        ephemeralBackupKey: BackupKey
     ) async throws(SecondaryLinkNSyncError) {
         return
     }

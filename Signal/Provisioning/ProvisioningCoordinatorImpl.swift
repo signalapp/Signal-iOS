@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 public import SignalServiceKit
 
 public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
@@ -246,7 +247,7 @@ public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
 
         if
             FeatureFlags.linkAndSyncSecondary,
-            let ephemeralBackupKey = EphemeralBackupKey(provisioningMessage: provisionMessage)
+            let ephemeralBackupKey = BackupKey(provisioningMessage: provisionMessage)
         {
             do {
                 try await self.linkAndSyncManager.waitForBackupAndRestore(

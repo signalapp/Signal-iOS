@@ -337,7 +337,11 @@ public class AppSetup {
             twoFAManager: SVR2.Wrappers.OWS2FAManager(ows2FAManager)
         )
 
-        let messageBackupKeyMaterial = MessageBackupKeyMaterialImpl(svr: svr)
+        let mrbkStore = MediaRootBackupKeyStore(keyValueStoreFactory: keyValueStoreFactory)
+        let messageBackupKeyMaterial = MessageBackupKeyMaterialImpl(
+            mrbkStore: mrbkStore,
+            svr: svr
+        )
         let messageBackupRequestManager = MessageBackupRequestManagerImpl(
             dateProvider: dateProvider,
             db: db,
@@ -1027,7 +1031,6 @@ public class AppSetup {
         let backupThreadStore = MessageBackupThreadStore(threadStore: threadStore)
         let backupInteractionStore = MessageBackupInteractionStore(interactionStore: interactionStore)
         let backupStoryStore = MessageBackupStoryStore(storyStore: storyStore)
-        let mrbkStore = MediaRootBackupKeyStore(keyValueStoreFactory: keyValueStoreFactory)
 
         let messageBackupErrorPresenter = messageBackupErrorPresenterFactory.build(
             db: db,
@@ -1287,6 +1290,7 @@ public class AppSetup {
             mediaBandwidthPreferenceStore: mediaBandwidthPreferenceStore,
             mediaGalleryResourceManager: mediaGalleryResourceManager,
             messageBackupErrorPresenter: messageBackupErrorPresenter,
+            messageBackupKeyMaterial: messageBackupKeyMaterial,
             messageBackupManager: messageBackupManager,
             messageStickerManager: messageStickerManager,
             mrbkStore: mrbkStore,

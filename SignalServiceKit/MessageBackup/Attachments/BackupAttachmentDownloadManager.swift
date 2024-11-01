@@ -285,7 +285,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                     self.tsAccountManager.localIdentifiers(tx: tx)?.aci,
                     currentUploadEra,
                     try self.needsToQueryListMedia(currentUploadEra: currentUploadEra, tx: tx),
-                    try messageBackupKeyMaterial.backupKey(mode: .remote, tx: tx)
+                    try messageBackupKeyMaterial.backupKey(type: .media, tx: tx)
                 )
             }
             guard needsToQuery else {
@@ -297,7 +297,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             }
 
             let messageBackupAuth = try await messageBackupRequestManager.fetchBackupServiceAuth(
-                for: .download(.media),
+                for: .media,
                 localAci: localAci,
                 auth: .implicit()
             )
