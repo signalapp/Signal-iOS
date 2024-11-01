@@ -540,7 +540,7 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
         }
 
         let urlSession = self
-        let request: URLRequest
+        var request: URLRequest
         do {
             request = try urlSession.endpoint.buildRequest(
                 rawRequestUrl.absoluteString,
@@ -552,6 +552,8 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
             owsFailDebug("Missing or invalid request: \(rawRequestUrl).")
             return Promise(error: OWSHTTPError.invalidRequest(requestUrl: rawRequestUrl))
         }
+
+        request.timeoutInterval = rawRequest.timeoutInterval
 
         var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "\(#function)")
 

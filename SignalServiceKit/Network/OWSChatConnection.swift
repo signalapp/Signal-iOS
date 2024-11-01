@@ -1376,7 +1376,7 @@ private class WebSocketConnection {
 
         webSocket.write(data: messageData)
 
-        let socketTimeoutSeconds: TimeInterval = 10
+        let socketTimeoutSeconds: TimeInterval = requestInfo.request.timeoutInterval
         DispatchQueue.global().asyncAfter(deadline: .now() + socketTimeoutSeconds) { [weak delegate, weak requestInfo] in
             guard let delegate = delegate,
                   let requestInfo = requestInfo else {
@@ -1850,7 +1850,7 @@ internal class OWSChatConnectionUsingLibSignal<Service: ChatService>: OWSChatCon
         owsAssertDebug(requestUrl.host == nil)
         owsAssertDebug(!requestUrl.path.hasPrefix("/"))
 
-        let libsignalRequest = ChatService.Request(method: requestInfo.httpMethod, pathAndQuery: "/\(requestUrl.relativeString)", headers: httpHeaders.headers, body: body, timeout: 10)
+        let libsignalRequest = ChatService.Request(method: requestInfo.httpMethod, pathAndQuery: "/\(requestUrl.relativeString)", headers: httpHeaders.headers, body: body, timeout: request.timeoutInterval)
 
         Logger.info("\(label) Making request")
 
