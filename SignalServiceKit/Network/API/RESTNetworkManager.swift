@@ -99,7 +99,7 @@ class RESTNetworkManager {
 private class RESTSessionManager {
 
     private let urlSession: OWSURLSessionProtocol
-    public let createdDate = Date()
+    let createdDate = MonotonicDate()
 
     init() {
         assertOnQueue(networkManagerQueue)
@@ -189,13 +189,13 @@ private class RESTSessionManager {
 // Concurrent requests can interfere with each other. Therefore we use a pool
 // do not re-use a session manager until its request succeeds or fails.
 private class OWSSessionManagerPool {
-    private let maxSessionManagerAge = 5 * kMinuteInterval
+    private let maxSessionManagerAge = 5 * 60 * NSEC_PER_SEC
 
     // must only be accessed from the networkManagerQueue for thread-safety
     private var pool: [RESTSessionManager] = []
 
     // accessed from both networkManagerQueue and the main thread so needs a lock
-    @Atomic private var lastDiscardDate: Date?
+    @Atomic private var lastDiscardDate: MonotonicDate?
 
     init() {
         NotificationCenter.default.addObserver(
@@ -213,13 +213,13 @@ private class OWSSessionManagerPool {
     @objc
     private func isCensorshipCircumventionActiveDidChange() {
         AssertIsOnMainThread()
-        lastDiscardDate = Date()
+        lastDiscardDate = MonotonicDate()
     }
 
     @objc
     private func isSignalProxyReadyDidChange() {
         AssertIsOnMainThread()
-        lastDiscardDate = Date()
+        lastDiscardDate = MonotonicDate()
     }
 
     func get() -> RESTSessionManager {
@@ -250,9 +250,9 @@ private class OWSSessionManagerPool {
     }
 
     private func shouldDiscardSessionManager(_ sessionManager: RESTSessionManager) -> Bool {
-        if lastDiscardDate?.isAfter(sessionManager.createdDate) ?? false {
+        if let lastDiscardDate, sessionManager.createdDate < lastDiscardDate {
             return true
         }
-        return fabs(sessionManager.createdDate.timeIntervalSinceNow) > maxSessionManagerAge
+        return (MonotonicDate() - sessionManager.createdDate) > maxSessionManagerAge
     }
 }
