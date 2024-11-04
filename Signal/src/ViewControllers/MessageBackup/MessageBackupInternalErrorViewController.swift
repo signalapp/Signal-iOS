@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SignalServiceKit
 import SignalUI
 import UIKit
@@ -31,6 +32,7 @@ class MessageBackupErrorPresenterInternal: MessageBackupErrorPresenter {
     private let kvStore: KeyValueStore
 
     private static let stringifiedErrorsKey = "stringifiedErrors"
+    private static let validationErrorKey = "validationError"
     private static let hadFatalErrorKey = "hadFatalError"
     private static let hasBeenDisplayedKey = "hasBeenDisplayed"
 
@@ -82,22 +84,35 @@ class MessageBackupErrorPresenterInternal: MessageBackupErrorPresenter {
         }
     }
 
+    func persistValidationError(_ error: MessageBackupValidationError) async {
+        await self.db.awaitableWrite { tx in
+            self.kvStore.setString(error.errorMessage, key: Self.validationErrorKey, transaction: tx)
+            self.kvStore.setBool(false, key: Self.hasBeenDisplayedKey, transaction: tx)
+        }
+    }
+
     func presentOverTopmostViewController(completion: @escaping () -> Void) {
         guard FeatureFlags.messageBackupErrorDisplay else {
             completion()
             return
         }
         let isRegistered = tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
-        let (errorString, hadFatalError): (String?, Bool) = db.write { tx in
+        let errorString: String?
+        let hadFatalError: Bool
+        let validationErrorString: String?
+        (errorString, hadFatalError, validationErrorString) = db.write { tx in
             let hadFatalError = kvStore.getBool(Self.hadFatalErrorKey, defaultValue: false, transaction: tx)
             if kvStore.getBool(Self.hasBeenDisplayedKey, defaultValue: false, transaction: tx) {
-                return (nil, hadFatalError)
+                return (nil, hadFatalError, nil)
             }
             let errorString = kvStore.getString(Self.stringifiedErrorsKey, transaction: tx)
+            let validationErrorString = self.kvStore.getString(Self.validationErrorKey, transaction: tx)
             kvStore.setBool(true, key: Self.hasBeenDisplayedKey, transaction: tx)
-            return (errorString, hadFatalError)
+            kvStore.setString(nil, key: Self.stringifiedErrorsKey, transaction: tx)
+            kvStore.setString(nil, key: Self.validationErrorKey, transaction: tx)
+            return (errorString, hadFatalError, validationErrorString)
         }
-        guard let errorString else {
+        guard errorString != nil || validationErrorString != nil else {
             completion()
             return
         }
@@ -105,6 +120,7 @@ class MessageBackupErrorPresenterInternal: MessageBackupErrorPresenter {
         let vc = MessageBackupInternalErrorViewController(
             errorString: errorString,
             hadFatalError: hadFatalError,
+            validationErrorString: validationErrorString,
             isRegistered: isRegistered,
             completion: completion
         )
@@ -127,8 +143,9 @@ private class MessageBackupInternalErrorViewController: OWSViewController {
     // MARK: Initializers
 
     fileprivate init(
-        errorString: String,
+        errorString: String?,
         hadFatalError: Bool,
+        validationErrorString: String?,
         isRegistered: Bool,
         completion: (() -> Void)?
     ) {
@@ -142,7 +159,19 @@ private class MessageBackupInternalErrorViewController: OWSViewController {
             \n\nPlease send the errors below to your nearest iOS dev.\n
             Feel free to edit to remove any private info before sending.\n\n
             """)
-        text.append(errorString)
+
+        if let errorString, let validationErrorString {
+            text.append("Hit both iOS and validator errors\n\n")
+            text.append("------Validator error------\n")
+            text.append(validationErrorString)
+            text.append("\n\n------iOS errors------\n")
+            text.append(errorString)
+        } else  if let errorString {
+            text.append(errorString)
+        } else  if let validationErrorString {
+            text.append("------Validator error------\n")
+            text.append(validationErrorString)
+        }
         self.originalText = text
         self.isRegistered = isRegistered
         self.completion = completion

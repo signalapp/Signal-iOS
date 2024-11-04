@@ -216,10 +216,16 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         localIdentifiers: LocalIdentifiers
     ) async throws(PrimaryLinkNSyncError) -> Upload.EncryptedBackupUploadMetadata {
         do {
-            return try await messageBackupManager.exportEncryptedBackup(
+            let metadata = try await messageBackupManager.exportEncryptedBackup(
                 localIdentifiers: localIdentifiers,
                 backupKey: ephemeralBackupKey
             )
+            try await messageBackupManager.validateEncryptedBackup(
+                fileUrl: metadata.fileUrl,
+                localIdentifiers: localIdentifiers,
+                backupKey: ephemeralBackupKey
+            )
+            return metadata
         } catch let error {
             owsFailDebug("Unable to generate link'n'sync backup: \(error)")
             throw PrimaryLinkNSyncError.errorGeneratingBackup

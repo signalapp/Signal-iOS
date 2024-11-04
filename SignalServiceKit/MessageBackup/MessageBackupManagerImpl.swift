@@ -872,6 +872,8 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         } catch {
             switch error {
             case let validationError as MessageBackupValidationError:
+                await errorPresenter.persistValidationError(validationError)
+                Logger.error("Backup validation failed \(validationError.errorMessage)")
                 throw BackupValidationError.validationFailed(
                     message: validationError.errorMessage,
                     unknownFields: validationError.unknownFields.fields
