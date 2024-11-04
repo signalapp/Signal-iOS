@@ -111,6 +111,16 @@ class InternalSettingsViewController: OWSTableViewController2 {
                 selector: #selector(toggleLinkAndSync(_:)))
             )
         }
+        if
+            FeatureFlags.linkAndSyncTogglePrimary
+            || FeatureFlags.linkAndSyncOverridePrimary
+            || FeatureFlags.linkAndSyncSecondary
+            || FeatureFlags.messageBackupFileAlpha
+        {
+            debugSection.add(.actionItem(withText: "Validate Message Backup") {
+                self.validateMessageBackupProto()
+            })
+        }
 
         if FeatureFlags.messageBackupFileAlpha {
             debugSection.add(.actionItem(withText: "Export Message Backup proto") {
@@ -260,6 +270,44 @@ private extension InternalSettingsViewController {
             )
         }
 
+    }
+
+    func validateMessageBackupProto() {
+        let messageBackupKeyMaterial = DependenciesBridge.shared.messageBackupKeyMaterial
+        let messageBackupManager = DependenciesBridge.shared.messageBackupManager
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+
+        guard let localIdentifiers = SSKEnvironment.shared.databaseStorageRef.read(block: {tx in
+            return tsAccountManager.localIdentifiers(tx: tx.asV2Read)
+        }) else {
+            return
+        }
+        Task {
+            do {
+                let backupKey = try SSKEnvironment.shared.databaseStorageRef.read { tx in
+                    try messageBackupKeyMaterial.backupKey(type: .messages, tx: tx.asV2Read)
+                }
+                let metadata = try await messageBackupManager.exportEncryptedBackup(
+                    localIdentifiers: localIdentifiers,
+                    backupKey: backupKey
+                )
+                try await messageBackupManager.validateEncryptedBackup(
+                    fileUrl: metadata.fileUrl,
+                    localIdentifiers: localIdentifiers,
+                    backupKey: backupKey
+                )
+                try? FileManager.default.removeItem(at: metadata.fileUrl)
+                await MainActor.run {
+                    self.presentToast(text: "Passed validation")
+                }
+            } catch {
+                await MainActor.run {
+                    DependenciesBridge.shared.messageBackupErrorPresenter.presentOverTopmostViewController(completion: {
+                        self.presentToast(text: "Failed validation")
+                    })
+                }
+            }
+        }
     }
 
     func exportMessageBackupProto() {
