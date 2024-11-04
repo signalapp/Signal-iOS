@@ -1121,7 +1121,6 @@ public class AppSetup {
                 fullTextSearchIndexer: MessageBackupFullTextSearchIndexerImpl.Wrappers.FullTextSearchIndexer(),
                 interactionStore: interactionStore,
                 keyValueStoreFactory: keyValueStoreFactory,
-                mentionStore: MessageBackupFullTextSearchIndexerImpl.Wrappers.MentionStore(),
                 searchableNameIndexer: searchableNameIndexer
             ),
             groupRecipientArchiver: MessageBackupGroupRecipientArchiver(

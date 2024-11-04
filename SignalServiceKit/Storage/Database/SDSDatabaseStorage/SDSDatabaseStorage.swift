@@ -162,7 +162,11 @@ public class SDSDatabaseStorage: NSObject {
             }
         }
         if shouldReindex, let message = interaction as? TSMessage {
-            FullTextSearchIndexer.update(message, tx: transaction)
+            do {
+                try FullTextSearchIndexer.update(message, tx: transaction)
+            } catch {
+                owsFail("Error: \(error)")
+            }
         }
     }
 

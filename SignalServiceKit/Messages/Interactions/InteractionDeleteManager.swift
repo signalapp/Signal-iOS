@@ -309,7 +309,11 @@ final class InteractionDeleteManagerImpl: InteractionDeleteManager {
         interactionReadCache.didRemove(interaction: interaction, transaction: tx)
 
         if let message = interaction as? TSMessage {
-            FullTextSearchIndexer.delete(message, tx: tx)
+            do {
+                try FullTextSearchIndexer.delete(message, tx: tx)
+            } catch {
+                owsFailBeta("Error: \(error)")
+            }
 
             if !(message.attachmentIds ?? []).isEmpty {
                 mediaGalleryResourceManager.didRemove(message: message, tx: tx.asV2Write)

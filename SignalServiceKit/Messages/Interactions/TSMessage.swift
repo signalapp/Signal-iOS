@@ -675,12 +675,20 @@ public extension TSMessage {
 
     @objc
     internal func _anyDidInsert(tx: SDSAnyWriteTransaction) {
-        FullTextSearchIndexer.insert(self, tx: tx)
+        do {
+            try FullTextSearchIndexer.insert(self, tx: tx)
+        } catch {
+            owsFail("Error: \(error)")
+        }
     }
 
     @objc
     internal func _anyDidUpdate(tx: SDSAnyWriteTransaction) {
-        FullTextSearchIndexer.update(self, tx: tx)
+        do {
+            try FullTextSearchIndexer.update(self, tx: tx)
+        } catch {
+            owsFail("Error: \(error)")
+        }
     }
 }
 

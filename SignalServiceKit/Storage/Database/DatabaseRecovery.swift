@@ -660,7 +660,11 @@ public extension DatabaseRecovery {
                     guard let message = interaction as? TSMessage else {
                         return
                     }
-                    FullTextSearchIndexer.insert(message, tx: tx)
+                    do {
+                        try FullTextSearchIndexer.insert(message, tx: tx)
+                    } catch {
+                        owsFail("Error: \(error)")
+                    }
                 }
             }
 
