@@ -96,7 +96,6 @@ public protocol OWSURLSessionProtocol: AnyObject {
 
     var endpoint: OWSURLSessionEndpoint { get }
 
-    var failOnError: Bool { get set }
     // By default OWSURLSession treats 4xx and 5xx responses as errors.
     var require2xxOr3xx: Bool { get set }
     var allowRedirects: Bool { get set }
@@ -260,49 +259,44 @@ extension OWSURLSessionProtocol {
         ignoreAppExpiry: Bool = false,
         progressBlock: ProgressBlock? = nil
     ) async throws -> any HTTPResponse {
-        do {
-            let multipartBodyFileURL = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
-            defer {
-                do {
-                    try OWSFileSystem.deleteFileIfExists(url: multipartBodyFileURL)
-                } catch {
-                    owsFailDebug("Error: \(error)")
-                }
+        let multipartBodyFileURL = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
+        defer {
+            do {
+                try OWSFileSystem.deleteFileIfExists(url: multipartBodyFileURL)
+            } catch {
+                owsFailDebug("Error: \(error)")
             }
-            let boundary = OWSMultipartBody.createMultipartFormBoundary()
-            // Order of form parts matters.
-            let textParts = textPartsDictionary.map { (key, value) in
-                OWSMultipartTextPart(key: key, value: value)
-            }
-            try OWSMultipartBody.write(
-                inputFile: inputFileURL,
-                outputFile: multipartBodyFileURL,
-                name: name,
-                fileName: fileName,
-                mimeType: mimeType,
-                boundary: boundary,
-                textParts: textParts
-            )
-            guard let bodyFileSize = OWSFileSystem.fileSize(of: multipartBodyFileURL) else {
-                throw OWSAssertionError("Missing bodyFileSize.")
-            }
-
-            var request = request
-            request.httpMethod = HTTPMethod.post.methodName
-            request.setValue(Self.userAgentHeaderValueSignalIos, forHTTPHeaderField: Self.userAgentHeaderKey)
-            request.setValue(Self.acceptLanguageHeaderValue, forHTTPHeaderField: Self.acceptLanguageHeaderKey)
-            request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-            request.setValue(String(format: "%llu", bodyFileSize.uint64Value), forHTTPHeaderField: "Content-Length")
-
-            return try await performUpload(
-                request: request,
-                fileUrl: multipartBodyFileURL,
-                ignoreAppExpiry: ignoreAppExpiry,
-                progressBlock: progressBlock
-            )
-        } catch {
-            owsFailDebugUnlessNetworkFailure(error)
-            throw error
         }
+        let boundary = OWSMultipartBody.createMultipartFormBoundary()
+        // Order of form parts matters.
+        let textParts = textPartsDictionary.map { (key, value) in
+            OWSMultipartTextPart(key: key, value: value)
+        }
+        try OWSMultipartBody.write(
+            inputFile: inputFileURL,
+            outputFile: multipartBodyFileURL,
+            name: name,
+            fileName: fileName,
+            mimeType: mimeType,
+            boundary: boundary,
+            textParts: textParts
+        )
+        guard let bodyFileSize = OWSFileSystem.fileSize(of: multipartBodyFileURL) else {
+            throw OWSAssertionError("Missing bodyFileSize.")
+        }
+
+        var request = request
+        request.httpMethod = HTTPMethod.post.methodName
+        request.setValue(Self.userAgentHeaderValueSignalIos, forHTTPHeaderField: Self.userAgentHeaderKey)
+        request.setValue(Self.acceptLanguageHeaderValue, forHTTPHeaderField: Self.acceptLanguageHeaderKey)
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        request.setValue(String(format: "%llu", bodyFileSize.uint64Value), forHTTPHeaderField: "Content-Length")
+
+        return try await performUpload(
+            request: request,
+            fileUrl: multipartBodyFileURL,
+            ignoreAppExpiry: ignoreAppExpiry,
+            progressBlock: progressBlock
+        )
     }
 }

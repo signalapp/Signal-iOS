@@ -310,6 +310,9 @@ private enum DebugLogUploader {
             getUploadParameters(fileUrl: fileUrl)
         }.then(on: DispatchQueue.global()) { (uploadParameters: UploadParameters) -> Promise<URL> in
             uploadFile(fileUrl: fileUrl, mimeType: mimeType, uploadParameters: uploadParameters)
+        }.recover(on: DispatchQueue.global()) { error -> Promise<URL> in
+            Logger.warn("\(error)")
+            throw error
         }
     }
 

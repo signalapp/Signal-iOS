@@ -62,17 +62,6 @@ public class OWSChatConnection: NSObject {
     fileprivate let currentCallProvider: any CurrentCallProvider
     fileprivate let registrationStateChangeManager: RegistrationStateChangeManager
 
-    fileprivate static func label(forRequest request: TSRequest,
-                                  connectionType: OWSChatConnectionType,
-                                  requestInfo: RequestInfo?) -> String {
-
-        var label = "\(connectionType), \(request)"
-        if let requestInfo = requestInfo {
-            label += ", [\(requestInfo.requestId)]"
-        }
-        return label
-    }
-
     // This var must be thread-safe.
     public var currentState: OWSChatConnectionState {
         owsFailDebug("should be using a concrete subclass")
@@ -562,28 +551,44 @@ public class OWSChatConnection: NSObject {
         let isIdentifiedRequest = request.shouldHaveAuthorizationHeaders && !request.isUDRequest
         owsAssertDebug(isIdentifiedConnection == isIdentifiedRequest)
 
-        let (response, requestInfo) = try await withCheckedThrowingContinuation { continuation in
-            self.serialQueue.async {
-                self.makeRequestInternal(
-                    request,
-                    unsubmittedRequestToken: unsubmittedRequestToken,
-                    success: { continuation.resume(returning: ($0, $1)) },
-                    failure: { continuation.resume(throwing: $0) }
-                )
+        let requestId = UInt64.random(in: .min ... .max)
+        let requestDescription = "\(request) [\(requestId)]"
+        do {
+            Logger.info("Sending… -> \(requestDescription)")
+
+            let (response, _) = try await withCheckedThrowingContinuation { continuation in
+                self.serialQueue.async {
+                    self.makeRequestInternal(
+                        request,
+                        requestId: requestId,
+                        unsubmittedRequestToken: unsubmittedRequestToken,
+                        success: { continuation.resume(returning: ($0, $1)) },
+                        failure: { continuation.resume(throwing: $0) }
+                    )
+                }
             }
+
+            Logger.info("HTTP \(response.responseStatusCode) <- \(requestDescription)")
+
+            OutageDetection.shared.reportConnectionSuccess()
+            return response
+        } catch {
+            if let statusCode = error.httpStatusCode {
+                Logger.warn("HTTP \(statusCode) <- \(requestDescription)")
+            } else {
+                Logger.warn("Failure. <- \(requestDescription): \(error)")
+            }
+            throw error
         }
-
-        let label = Self.label(forRequest: request, connectionType: connectionType, requestInfo: requestInfo)
-        Logger.info("\(label): Request Succeeded (\(response.responseStatusCode))")
-
-        OutageDetection.shared.reportConnectionSuccess()
-        return response
     }
 
-    fileprivate func makeRequestInternal(_ request: TSRequest,
-                                         unsubmittedRequestToken: UnsubmittedRequestToken,
-                                         success: @escaping RequestSuccessInternal,
-                                         failure: @escaping RequestFailure) {
+    fileprivate func makeRequestInternal(
+        _ request: TSRequest,
+        requestId: UInt64,
+        unsubmittedRequestToken: UnsubmittedRequestToken,
+        success: @escaping RequestSuccessInternal,
+        failure: @escaping RequestFailure
+    ) {
         assertOnQueue(self.serialQueue)
         owsFailDebug("should be using a concrete subclass")
         guard let requestUrl = request.url else {
@@ -688,30 +693,33 @@ public class OWSChatConnectionUsingSSKWebSocket: OWSChatConnection {
 
     // MARK: - Message Sending
 
-    fileprivate override func makeRequestInternal(_ request: TSRequest,
-                                                  unsubmittedRequestToken: UnsubmittedRequestToken,
-                                                  success: @escaping RequestSuccessInternal,
-                                                  failure: @escaping RequestFailure) {
+    fileprivate override func makeRequestInternal(
+        _ request: TSRequest,
+        requestId: UInt64,
+        unsubmittedRequestToken: UnsubmittedRequestToken,
+        success: @escaping RequestSuccessInternal,
+        failure: @escaping RequestFailure
+    ) {
         assertOnQueue(self.serialQueue)
 
         defer {
             removeUnsubmittedRequestToken(unsubmittedRequestToken)
         }
 
-        guard let requestInfo = RequestInfo(request: request,
-                                            connectionType: type,
-                                            success: success,
-                                            failure: failure) else {
+        guard let requestInfo = RequestInfo(
+            request: request,
+            requestId: requestId,
+            connectionType: type,
+            success: success,
+            failure: failure
+        ) else {
             // Failure already reported
             return
         }
-        let label = Self.label(forRequest: request,
-                               connectionType: type,
-                               requestInfo: requestInfo)
         let requestUrl = requestInfo.requestUrl
 
         guard let currentWebSocket, currentWebSocket.state == .open else {
-            Logger.warn("\(label) Missing currentWebSocket.")
+            Logger.warn("[\(requestId)]: Missing currentWebSocket.")
             failure(.networkFailure(requestUrl: requestUrl))
             return
         }
@@ -734,7 +742,7 @@ public class OWSChatConnectionUsingSSKWebSocket: OWSChatConnection {
             do {
                 jsonData = try JSONSerialization.data(withJSONObject: request.parameters, options: [])
             } catch {
-                owsFailDebug("\(label) Error: \(error).")
+                owsFailDebug("[\(requestId)]: \(error)")
                 requestInfo.didFailInvalidRequest()
                 return
             }
@@ -760,18 +768,16 @@ public class OWSChatConnectionUsingSSKWebSocket: OWSChatConnection {
             let messageData = try messageBuilder.buildSerializedData()
 
             guard currentWebSocket.state == .open else {
-                owsFailDebug("\(label) Socket not open.")
+                owsFailDebug("[\(requestId)]: Socket not open.")
                 requestInfo.didFailInvalidRequest()
                 return
             }
-
-            Logger.info("\(label) Making request")
 
             currentWebSocket.sendRequest(requestInfo: requestInfo,
                                          messageData: messageData,
                                          delegate: self)
         } catch {
-            owsFailDebug("\(label), Error: \(error).")
+            owsFailDebug("[\(requestId)]: \(error)")
             requestInfo.didFailInvalidRequest()
             return
         }
@@ -785,12 +791,8 @@ public class OWSChatConnectionUsingSSKWebSocket: OWSChatConnection {
         let responseStatus = message.status
         let responseData: Data? = message.hasBody ? message.body : nil
 
-        if DebugFlags.internalLogging,
-           message.hasMessage,
-           let responseMessage = message.message {
-            Logger.info("received WebSocket response \(currentWebSocket.logPrefix), requestId: \(message.requestID), status: \(message.status), message: \(responseMessage)")
-        } else {
-            Logger.info("received WebSocket response \(currentWebSocket.logPrefix), requestId: \(message.requestID), status: \(message.status)")
+        if DebugFlags.internalLogging, message.hasMessage, let responseMessage = message.message {
+            Logger.info("received WebSocket response for requestId: \(message.requestID), message: \(responseMessage)")
         }
 
         ensureBackgroundKeepAlive(.receiveResponse)
@@ -1050,7 +1052,7 @@ private class RequestInfo {
 
     let httpMethod: String
 
-    let requestId: UInt64 = UInt64.random(in: .min ... .max)
+    let requestId: UInt64
 
     let connectionType: OWSChatConnectionType
 
@@ -1074,26 +1076,26 @@ private class RequestInfo {
     typealias RequestSuccess = OWSChatConnection.RequestSuccessInternal
     typealias RequestFailure = OWSChatConnection.RequestFailure
 
-    init?(request: TSRequest,
-          connectionType: OWSChatConnectionType,
-          success: @escaping RequestSuccess,
-          failure: @escaping RequestFailure) {
-        let fallbackLabel: () -> String = {
-            OWSChatConnection.label(forRequest: request, connectionType: connectionType, requestInfo: nil)
-        }
-
+    init?(
+        request: TSRequest,
+        requestId: UInt64 = UInt64.random(in: .min ... .max),
+        connectionType: OWSChatConnectionType,
+        success: @escaping RequestSuccess,
+        failure: @escaping RequestFailure
+    ) {
         guard let requestUrl = request.url else {
-            owsFailDebug("\(fallbackLabel()) Missing requestUrl.")
+            owsFailDebug("[\(requestId)]: Missing requestUrl.")
             failure(.invalidRequest(requestUrl: request.url!))
             return nil
         }
         guard let httpMethod = request.httpMethod.nilIfEmpty else {
-            owsFailDebug("\(fallbackLabel()) Missing httpMethod.")
+            owsFailDebug("[\(requestId)]: Missing httpMethod.")
             failure(.invalidRequest(requestUrl: request.url!))
             return nil
         }
 
         self.request = request
+        self.requestId = requestId
         self.requestUrl = requestUrl
         self.httpMethod = httpMethod
         self.connectionType = connectionType
@@ -1150,7 +1152,6 @@ private class RequestInfo {
         case .complete:
             return false
         case .incomplete(_, let failure):
-            Logger.warn("\(error)")
             failure(error)
             return true
         }
@@ -1524,11 +1525,14 @@ internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnectionUsingSS
         }
     }
 
-    fileprivate override func makeRequestInternal(_ request: TSRequest,
-                                                  unsubmittedRequestToken: UnsubmittedRequestToken,
-                                                  success: @escaping RequestSuccessInternal,
-                                                  failure: @escaping RequestFailure) {
-        super.makeRequestInternal(request, unsubmittedRequestToken: unsubmittedRequestToken, success: { [weak self] response, requestInfo in
+    fileprivate override func makeRequestInternal(
+        _ request: TSRequest,
+        requestId: UInt64,
+        unsubmittedRequestToken: UnsubmittedRequestToken,
+        success: @escaping RequestSuccessInternal,
+        failure: @escaping RequestFailure
+    ) {
+        super.makeRequestInternal(request, requestId: requestId, unsubmittedRequestToken: unsubmittedRequestToken, success: { [weak self] response, requestInfo in
             success(response, requestInfo)
             if let self, self.shouldSendShadowRequest() {
                 let shouldNotify = self.shadowingFrequency == 1.0
@@ -1800,10 +1804,13 @@ internal class OWSChatConnectionUsingLibSignal<Service: ChatService>: OWSChatCon
         "[\(type): libsignal]"
     }
 
-    fileprivate override func makeRequestInternal(_ request: TSRequest,
-                                                  unsubmittedRequestToken: UnsubmittedRequestToken,
-                                                  success: @escaping RequestSuccessInternal,
-                                                  failure: @escaping RequestFailure) {
+    fileprivate override func makeRequestInternal(
+        _ request: TSRequest,
+        requestId: UInt64,
+        unsubmittedRequestToken: UnsubmittedRequestToken,
+        success: @escaping RequestSuccessInternal,
+        failure: @escaping RequestFailure
+    ) {
         var unsubmittedRequestTokenForEarlyExit: Optional = unsubmittedRequestToken
         defer {
             if let unsubmittedRequestTokenForEarlyExit {
@@ -1811,16 +1818,16 @@ internal class OWSChatConnectionUsingLibSignal<Service: ChatService>: OWSChatCon
             }
         }
 
-        guard let requestInfo = RequestInfo(request: request,
-                                            connectionType: type,
-                                            success: success,
-                                            failure: failure) else {
+        guard let requestInfo = RequestInfo(
+            request: request,
+            requestId: requestId,
+            connectionType: type,
+            success: success,
+            failure: failure
+        ) else {
             // Failure already reported by the init.
             return
         }
-        let label = Self.label(forRequest: request,
-                               connectionType: type,
-                               requestInfo: requestInfo)
 
         let httpHeaders = OWSHttpHeaders(httpHeaders: request.allHTTPHeaderFields, overwriteOnConflict: false)
         httpHeaders.addDefaultHeaders()
@@ -1833,7 +1840,7 @@ internal class OWSChatConnectionUsingLibSignal<Service: ChatService>: OWSChatCon
             do {
                 body = try JSONSerialization.data(withJSONObject: request.parameters, options: [])
             } catch {
-                owsFailDebug("\(label) Error: \(error).")
+                owsFailDebug("[\(requestId)]: \(error).")
                 requestInfo.didFailInvalidRequest()
                 return
             }
@@ -1852,8 +1859,6 @@ internal class OWSChatConnectionUsingLibSignal<Service: ChatService>: OWSChatCon
 
         let libsignalRequest = ChatService.Request(method: requestInfo.httpMethod, pathAndQuery: "/\(requestUrl.relativeString)", headers: httpHeaders.headers, body: body, timeout: request.timeoutInterval)
 
-        Logger.info("\(label) Making request")
-
         unsubmittedRequestTokenForEarlyExit = nil
         _ = Promise.wrapAsync { [self, chatService] in
             // LibSignalClient's ChatService doesn't keep track of outstanding requests,
@@ -1864,9 +1869,7 @@ internal class OWSChatConnectionUsingLibSignal<Service: ChatService>: OWSChatCon
             return try await chatService.sendAndDebug(libsignalRequest)
         }.done(on: self.serialQueue) { (response: ChatService.Response, debugInfo: ChatService.DebugInfo) in
             if DebugFlags.internalLogging {
-                Logger.info("\(label) received response, status: \(response.status), message: \(response.message), route: \(debugInfo.connectionInfo)")
-            } else {
-                Logger.info("\(label) received response, status: \(response.status)")
+                Logger.info("received response for requestId: \(requestId), message: \(response.message), route: \(debugInfo.connectionInfo)")
             }
 
             self.ensureBackgroundKeepAlive(.receiveResponse)
@@ -1888,7 +1891,7 @@ internal class OWSChatConnectionUsingLibSignal<Service: ChatService>: OWSChatCon
             case .webSocketError(_), .connectionFailed(_):
                 requestInfo.didFailDueToNetwork()
             default:
-                owsFailDebug("\(label) failed with an unexpected error: \(error)")
+                owsFailDebug("[\(requestId)] failed with an unexpected error: \(error)")
                 requestInfo.didFailDueToNetwork()
             }
         }

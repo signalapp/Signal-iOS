@@ -71,6 +71,9 @@ public class GiphyAPI: NSObject {
                 throw OWSAssertionError("unable to parse trending images")
             }
             return imageInfos
+        }.recover(on: DispatchQueue.global()) { error -> Promise<[GiphyImageInfo]> in
+            Logger.warn("Request failed: \(error.shortDescription)")
+            throw error
         }
     }
 

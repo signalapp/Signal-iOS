@@ -13,8 +13,6 @@ public class BaseOWSURLSessionMock: OWSURLSessionProtocol {
 
     public var endpoint: OWSURLSessionEndpoint
 
-    public var failOnError: Bool = true
-
     public var require2xxOr3xx: Bool = true
 
     public var allowRedirects: Bool = true

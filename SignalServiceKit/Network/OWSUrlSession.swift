@@ -21,15 +21,6 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
 
     public let endpoint: OWSURLSessionEndpoint
 
-    public var failOnError: Bool {
-        get {
-            _failOnError.get()
-        }
-        set {
-            _failOnError.set(newValue)
-        }
-    }
-
     public var require2xxOr3xx: Bool {
         get {
             _require2xxOr3xx.get()
@@ -195,15 +186,10 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
         let requestConfig = self.requestConfig(requestUrl: request.url!)
         let task = session.dataTask(with: request)
 
-        let (urlResponse, responseData): (URLResponse?, Data)
-        do {
-            (urlResponse, responseData) = try await runTask(task, taskState: {
-                return DataTaskState(progressBlock: nil, completion: $0)
-            })
-        } catch {
-            Logger.warn("\(error)")
-            throw error
-        }
+        let (urlResponse, responseData) = try await runTask(task, taskState: {
+            return DataTaskState(progressBlock: nil, completion: $0)
+        })
+
         return try handleDataResult(
             urlResponse: urlResponse,
             responseData: responseData,
@@ -256,8 +242,6 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
 
     // MARK: Backing Vars
 
-    private let _failOnError = AtomicBool(true, lock: .sharedGlobal)
-
     private let _require2xxOr3xx = AtomicBool(true, lock: .sharedGlobal)
 
     private let _shouldHandleRemoteDeprecation = AtomicBool(false, lock: .sharedGlobal)
@@ -295,7 +279,6 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
     private struct RequestConfig {
         let requestUrl: URL
         let require2xxOr3xx: Bool
-        let failOnError: Bool
         let shouldHandleRemoteDeprecation: Bool
     }
 
@@ -304,7 +287,6 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
         return RequestConfig(
             requestUrl: requestUrl,
             require2xxOr3xx: require2xxOr3xx,
-            failOnError: failOnError,
             shouldHandleRemoteDeprecation: shouldHandleRemoteDeprecation
         )
     }
@@ -323,7 +305,6 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
         let requestUrl = requestConfig.requestUrl
 
         if error.isNetworkFailureOrTimeout {
-            Logger.warn("Request failed: \(error)")
             return OWSHTTPError.networkFailure(requestUrl: requestUrl)
         }
 
@@ -332,12 +313,6 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
             HTTPUtils.logCurl(for: originalRequest)
         }
 #endif
-
-        if requestConfig.failOnError, !error.isUnknownDomainError {
-            owsFailDebugUnlessNetworkFailure(error)
-        } else {
-            Logger.error("Request failed: \(error)")
-        }
 
         return OWSHTTPError.invalidResponse(requestUrl: requestUrl)
     }
@@ -358,26 +333,21 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
                 if let originalRequest {
                     HTTPUtils.logCurl(for: originalRequest)
                 }
-                Logger.verbose("Status code: \(statusCode)")
 #endif
 
                 let requestUrl = requestConfig.requestUrl
                 if statusCode > 0 {
                     let responseHeaders = OWSHttpHeaders(response: httpUrlResponse)
-                    let error = OWSHTTPError.forServiceResponse(
+                    throw OWSHTTPError.forServiceResponse(
                         requestUrl: requestUrl,
                         responseStatus: statusCode,
                         responseHeaders: responseHeaders,
                         responseError: nil,
                         responseData: responseData
                     )
-                    Logger.warn("Request failed: \(error)")
-                    throw error
                 } else {
                     owsFailDebug("Missing status code.")
-                    let error = OWSHTTPError.networkFailure(requestUrl: requestUrl)
-                    Logger.warn("Request failed: \(error)")
-                    throw error
+                    throw OWSHTTPError.networkFailure(requestUrl: requestUrl)
                 }
             }
         }
@@ -517,11 +487,15 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
         request.timeoutInterval = rawRequest.timeoutInterval
 
         do {
+            Logger.info("Sending… -> \(rawRequest.description)")
             let response = try await performUpload(request: request, requestData: requestBody, progressBlock: nil)
-            Logger.info("Success: \(rawRequest.description)")
+            Logger.info("HTTP \(response.responseStatusCode) <- \(rawRequest.description)")
             return response
+        } catch where error.httpStatusCode != nil {
+            Logger.warn("HTTP \(error.httpStatusCode!) <- \(rawRequest.description)")
+            throw error
         } catch {
-            Logger.warn("Failure: \(rawRequest.description), error: \(error)")
+            Logger.warn("Failure. <- \(rawRequest.description): \(error)")
             throw error
         }
     }
@@ -546,7 +520,6 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
                 return DataTaskState(progressBlock: progressBlock, completion: $0)
             })
         } catch {
-            Logger.warn("\(error)")
             throw handleError(error, originalRequest: task.originalRequest, requestConfig: requestConfig)
         }
         return try handleDataResult(
@@ -570,15 +543,10 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
         let requestConfig = self.requestConfig(requestUrl: requestUrl)
         let task = taskBlock()
 
-        let (urlResponse, downloadUrl): (URLResponse?, URL)
-        do {
-            (urlResponse, downloadUrl) = try await runTask(task, taskState: {
-                return DownloadTaskState(progressBlock: progressBlock, completion: $0)
-            })
-        } catch {
-            Logger.warn("\(error)")
-            throw error
-        }
+        let (urlResponse, downloadUrl) = try await runTask(task, taskState: {
+            return DownloadTaskState(progressBlock: progressBlock, completion: $0)
+        })
+
         return try handleDownloadResult(
             urlResponse: urlResponse,
             downloadUrl: downloadUrl,
@@ -1121,18 +1089,5 @@ extension URLSessionDelegateBox: URLSessionWebSocketDelegate {
 
     public func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didCloseWith closeCode: URLSessionWebSocketTask.CloseCode, reason: Data?) {
         weakDelegate?.urlSession(session, webSocketTask: webSocketTask, didCloseWith: closeCode, reason: reason)
-    }
-}
-
-// MARK: -
-
-extension Error {
-    var isUnknownDomainError: Bool {
-        switch self {
-        case URLError.cannotFindHost:
-            return true
-        default:
-            return false
-        }
     }
 }

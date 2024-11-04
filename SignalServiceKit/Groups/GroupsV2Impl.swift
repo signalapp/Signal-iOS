@@ -1124,9 +1124,9 @@ public class GroupsV2Impl: GroupsV2 {
     private func performServiceRequestAttempt(request: GroupsV2Request) async throws -> HTTPResponse {
 
         let urlSession = self.urlSession
-        urlSession.failOnError = false
 
-        Logger.info("Making group request: \(request.method) \(request.urlString)")
+        let requestDescription = "G2 \(request.method) \(request.urlString)"
+        Logger.info("Sending… -> \(requestDescription)")
 
         do {
             let response = try await urlSession.performRequest(
@@ -1143,24 +1143,26 @@ public class GroupsV2Impl: GroupsV2 {
             }
 
             // NOTE: responseObject may be nil; not all group v2 responses have bodies.
-            Logger.info("Request succeeded: \(request.method) \(request.urlString)")
+            Logger.info("HTTP \(statusCode) <- \(requestDescription)")
 
             return response
         } catch {
+            if let statusCode = error.httpStatusCode {
+                Logger.warn("HTTP \(statusCode) <- \(requestDescription)")
+            } else {
+                Logger.warn("Failure. <- \(requestDescription): \(error)")
+            }
+
             if error.isNetworkFailureOrTimeout {
                 throw error
             }
 
-            if let statusCode = error.httpStatusCode {
-                if [400, 401, 403, 404, 409].contains(statusCode) {
-                    // These status codes will be handled by performServiceRequest.
-                    Logger.warn("Request error: \(error)")
-                    throw error
-                }
+            // These status codes will be handled by performServiceRequest.
+            if let statusCode = error.httpStatusCode, [400, 401, 403, 404, 409].contains(statusCode) {
+                throw error
             }
 
-            Logger.warn("Request failed: \(request.method) \(request.urlString)")
-            owsFailDebug("Request error: \(error)")
+            owsFailDebug("Couldn't send request.")
             throw error
         }
     }

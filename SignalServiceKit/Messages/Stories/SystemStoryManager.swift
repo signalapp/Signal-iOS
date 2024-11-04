@@ -121,7 +121,9 @@ public class SystemStoryManager: NSObject, SystemStoryManagerProtocol {
     @discardableResult
     public func enqueueOnboardingStoryDownload() -> Promise<Void> {
         return chainedPromise.enqueue { [weak self] in
-            return self?.downloadOnboardingStoryIfNeeded() ?? .init(error: OWSAssertionError("SystemStoryManager unretained"))
+            return (self?.downloadOnboardingStoryIfNeeded() ?? .init(error: OWSAssertionError("SystemStoryManager unretained"))).catch(on: DispatchQueue.global()) { error in
+                Logger.warn("\(error)")
+            }
         }
     }
 

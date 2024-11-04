@@ -30,7 +30,13 @@ public class RemoteMegaphoneFetcher {
 
         Logger.info("Beginning remote megaphone fetch.")
 
-        let megaphones = try await fetchRemoteMegaphones()
+        let megaphones: [RemoteMegaphoneModel]
+        do {
+            megaphones = try await fetchRemoteMegaphones()
+        } catch {
+            Logger.warn("\(error)")
+            throw error
+        }
 
         Logger.info("Syncing \(megaphones.count) fetched remote megaphones with local state.")
 
@@ -178,6 +184,7 @@ private extension RemoteMegaphoneFetcher {
 
                 return try RemoteMegaphoneModel.Manifest.parseFrom(responseJson: responseJson)
             } catch where remainingRetries > 0 && error.isNetworkFailureOrTimeout {
+                Logger.warn("Retrying after failure: \(error)")
                 remainingRetries -= 1
                 continue
             }
@@ -234,6 +241,7 @@ private extension RemoteMegaphoneFetcher {
                 }
                 return try RemoteMegaphoneModel.Translation.parseFrom(responseJson: responseJson)
             } catch where remainingRetries > 0 && error.isNetworkFailureOrTimeout {
+                Logger.warn("Retrying after failure: \(error)")
                 remainingRetries -= 1
                 continue
             }

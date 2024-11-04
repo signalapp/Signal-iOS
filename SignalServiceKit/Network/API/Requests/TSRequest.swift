@@ -113,11 +113,12 @@ public class TSRequest: NSMutableURLRequest {
     }
 
     public override var description: String {
+        let prefix = "\(self.isUDRequest ? "UD" : "ID") \(self.httpMethod)"
         switch redactionStrategy {
         case .none:
-            return "{ \(self.httpMethod): \(String(describing: self.url)) }"
+            return "\(prefix) \(self.url?.relativeString ?? "")"
         case .redactURLForSuccessResponses(let replacementString):
-            return "{ \(self.httpMethod): \(replacementString) }"
+            return "\(prefix) \(replacementString)"
         }
     }
 }

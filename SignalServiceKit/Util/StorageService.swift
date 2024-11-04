@@ -508,6 +508,7 @@ public struct StorageService {
         body: Data? = nil,
         chatServiceAuth: ChatServiceAuth
     ) async throws -> StorageResponse {
+        let requestDescription = "SS \(method) \(endpoint)"
         do {
             let (username, password) = try await SignalServiceRestClient.shared.requestStorageAuth(chatServiceAuth: chatServiceAuth).awaitable()
 
@@ -517,7 +518,7 @@ public struct StorageService {
             httpHeaders.addHeader("Content-Type", value: MimeType.applicationXProtobuf.rawValue, overwriteOnConflict: true)
             try httpHeaders.addAuthHeader(username: username, password: password)
 
-            Logger.info("Storage request started: \(method) \(endpoint)")
+            Logger.info("Sending… -> \(requestDescription)")
 
             let urlSession = self.urlSession
             // Some 4xx responses are expected;
@@ -556,11 +557,11 @@ public struct StorageService {
             // The layers that use this only want to process 200 and 409 responses,
             // anything else we should raise as an error.
 
-            Logger.info("Storage request succeeded: \(method) \(endpoint)")
+            Logger.info("HTTP \(statusCode) <- \(requestDescription)")
 
             return StorageResponse(status: status, data: responseData)
         } catch {
-            owsFailDebugUnlessNetworkFailure(error)
+            Logger.warn("Failure. <- \(requestDescription): \(error)")
             throw StorageError.networkError(statusCode: 0, underlyingError: error)
         }
     }

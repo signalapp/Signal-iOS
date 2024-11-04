@@ -38,11 +38,9 @@ class RESTNetworkManager {
         failure failureParam: @escaping Failure
     ) {
         let isUdRequest = request.isUDRequest
-        let label = isUdRequest ? "UD request" : "Non-UD request"
         if (isUdRequest) {
             owsPrecondition(!request.shouldHaveAuthorizationHeaders)
         }
-        Logger.info("Making \(label): \(request)")
 
         let sessionManagerPool = isUdRequest ? self.udSessionManagerPool : self.nonUdSessionManagerPool
         let sessionManager = sessionManagerPool.get()
@@ -58,7 +56,6 @@ class RESTNetworkManager {
                 sessionManagerPool.returnToPool(sessionManager)
             }
             completionQueue.async {
-                Logger.info("\(label) succeeded (\(response.responseStatusCode)) : \(request)")
                 successParam(response)
                 OutageDetection.shared.reportConnectionSuccess()
             }

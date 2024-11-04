@@ -1552,6 +1552,7 @@ extension OWSProfileManager: ProfileManager {
                 DispatchQueue.global().async {
                     parameters?.future.reject(error)
                 }
+                Logger.warn("Retrying profile update after \(retryDelay)s due to error: \(error)")
                 DispatchQueue.main.asyncAfter(deadline: .now() + retryDelay) {
                     self._updateProfileOnServiceIfNecessary(retryDelay: retryDelay * 2)
                 }
@@ -1769,6 +1770,7 @@ extension OWSProfileManager: ProfileManager {
         } catch {
             // Other errors cause us to give up immediately.
             await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in self.tryToDequeueProfileChanges(profileChanges, tx: tx) }
+            Logger.error("Discarding profile update due to fatal error: \(error)")
             throw error
         }
     }
@@ -1804,6 +1806,7 @@ extension OWSProfileManager: ProfileManager {
                 // Ignore the error because it's not likely to go away if we retry. If we
                 // can't decrypt the existing avatar, then we don't really have any choice
                 // other than blowing it away.
+                Logger.warn("Dropping unfetchable avatar: \(error)")
             }
             if let avatarFilename = localUserProfile.avatarFileName, let avatarData = localProfileAvatarData {
                 return (.changeAvatar(avatarData), .setTo(avatarFilename))
