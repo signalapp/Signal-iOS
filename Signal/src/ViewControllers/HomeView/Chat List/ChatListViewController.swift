@@ -34,12 +34,13 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
     // MARK: View Lifecycle
 
-    private lazy var filterControl: ChatListFilterControl? = if FeatureFlags.chatListFilter {
-        ChatListFilterControl()
-    } else {
-        nil
+    private var container: ChatListContainerView!
+    private var filterControl: ChatListFilterControl? { container.filterControl }
+
+    public override func loadView() {
+        container = ChatListContainerView(tableView: tableView, searchBar: searchBar)
+        view = container
     }
-    private var filterControlNeedsSizeChange = true
 
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -58,8 +59,6 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         }
 
         // Table View
-        view.addSubview(tableView)
-        tableView.autoPinEdgesToSuperviewEdges()
         tableView.accessibilityIdentifier = "ChatListViewController.tableView"
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 60
@@ -67,7 +66,6 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         tableView.allowsMultipleSelectionDuringEditing = true
 
         if let filterControl {
-            tableView.tableHeaderView = filterControl
             filterControl.clearAction = .disableChatListFilter(target: self)
             filterControl.delegate = self
         }
@@ -252,16 +250,6 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
         if FeatureFlags.chatListFilter {
             updateFilterControl(animated: false)
-            updateFilterControlSize()
-        }
-    }
-
-    public override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-
-        if let filterControl {
-            tableView.bringSubviewToFront(filterControl)
-            updateFilterControlSize()
         }
     }
 
@@ -308,6 +296,8 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
         guard isViewLoaded else { return }
 
+        container.willTransition(to: size, with: coordinator)
+
         // There is a subtle difference in when the split view controller
         // transitions between collapsed and expanded state on iPad vs
         // when it does on iPhone. We reloadData here in order to ensure
@@ -337,17 +327,6 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                     getStartedBanner.view.alpha = 1
                 }
             }
-        }
-    }
-
-    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-
-        if traitCollection.preferredContentSizeCategory != previousTraitCollection?.preferredContentSizeCategory {
-            // The filter control needs to match the size of the search bar, which
-            // changes depending on dynamic type. Set a flag so that we can
-            // calculate the new search bar size in `viewDidLayoutSubviews()`.
-            filterControlNeedsSizeChange = true
         }
     }
 
@@ -1385,11 +1364,9 @@ extension ChatListViewController {
             // filtering state.
             loadCoordinator.loadIfNecessary()
         } else {
-            UIView.animate(withDuration: CATransaction.animationDuration()) { [filterControl, loadCoordinator, tableView] in
-                tableView.performBatchUpdates { [loadCoordinator] in
-                    filterControl?.startFiltering(animated: true)
-                    loadCoordinator.loadIfNecessary()
-                }
+            UIView.animate(withDuration: CATransaction.animationDuration()) { [filterControl, loadCoordinator] in
+                filterControl?.startFiltering(animated: true)
+                loadCoordinator.loadIfNecessary()
             }
         }
     }
@@ -1416,24 +1393,6 @@ extension ChatListViewController {
         viewState.inboxFilter = inboxFilter
         loadCoordinator.saveInboxFilter(inboxFilter)
         updateBarButtonItems()
-    }
-
-    private func updateFilterControlSize() {
-        guard let filterControl, filterControlNeedsSizeChange else { return }
-        filterControlNeedsSizeChange = false
-
-        let searchBarHeight = searchBar.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).height
-
-        // Performed without animation so it can't interact with a view controller
-        // transition or some other animation.
-        UIView.performWithoutAnimation {
-            filterControl.preferredContentHeight = searchBarHeight
-
-            // This tells UITableView to perform a layout pass, which allows it
-            // to adjust to the new filterControl height even when there are no
-            // datasource-driven layout changes.
-            tableView.performBatchUpdates(nil)
-        }
     }
 }
 
@@ -1710,22 +1669,10 @@ extension ChatListViewController {
     }
 }
 
-extension ChatListViewController: UIScrollViewExtendedDelegate {
+extension ChatListViewController: UIScrollViewDelegate {
     public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         filterControl?.draggingWillBegin(in: scrollView)
         cancelSearch()
-    }
-
-    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        filterControl?.updateScrollPosition(in: scrollView)
-    }
-
-    public func scrollViewDidChangeAdjustedContentInset(_ scrollView: UIScrollView) {
-        filterControl?.updateScrollPosition(in: scrollView)
-    }
-
-    public func scrollViewDidChangeContentSize(_ scrollView: UIScrollView) {
-        filterControl?.updateScrollPosition(in: scrollView)
     }
 
     public func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
