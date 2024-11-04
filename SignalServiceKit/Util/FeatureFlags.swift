@@ -54,7 +54,7 @@ public enum FeatureFlags {
     /// Whether link'n'sync is enabled on the secondary/linked device.
     /// Both primary and secondary must be enabled to link'n'sync.
     public static let linkAndSyncSecondary = build.includes(.internal)
-    public static let linkAndSyncTimeoutSeconds: UInt32 = 60 * (build.includes(.internal) ? 60 : 1)
+    public static let linkAndSyncTimeoutSeconds: UInt32 = 60 * (build.includes(.internal) ? 5 : 1)
 
     public static let callLinkCreate = true
     public static let callLinkSync = true
