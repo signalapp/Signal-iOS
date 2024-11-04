@@ -229,24 +229,18 @@ public class MessageProcessor: NSObject {
             return
         }
 
-        // Drop any too-large messages on the floor. Well behaving clients should never send them.
-        guard envelopeData.count <= Self.maxEnvelopeByteCount else {
-            completion(OWSAssertionError("Oversize envelope, envelopeSource: \(envelopeSource)."))
-            return
-        }
-
-        // Take note of any messages larger than we expect, but still process them.
-        // This likely indicates a misbehaving sending client.
-        if envelopeData.count > Self.largeEnvelopeWarningByteCount {
-            owsFailDebug("Unexpectedly large envelope, envelopeSource: \(envelopeSource).")
-        }
-
         let protoEnvelope: SSKProtoEnvelope
         do {
             protoEnvelope = try SSKProtoEnvelope(serializedData: envelopeData)
         } catch {
             owsFailDebug("Failed to parse encrypted envelope \(error), envelopeSource: \(envelopeSource)")
             completion(error)
+            return
+        }
+
+        // Drop any too-large messages on the floor. Well behaving clients should never send them.
+        guard (protoEnvelope.content ?? Data()).count <= Self.maxEnvelopeByteCount else {
+            completion(OWSAssertionError("Oversize envelope, envelopeSource: \(envelopeSource)."))
             return
         }
 
@@ -287,8 +281,7 @@ public class MessageProcessor: NSObject {
         drainPendingEnvelopes()
     }
 
-    private static let maxEnvelopeByteCount = 250 * 1024
-    public static let largeEnvelopeWarningByteCount = 25 * 1024
+    private static let maxEnvelopeByteCount = 256 * 1024
     private let serialQueue = DispatchQueue(
         label: "org.signal.message-processor",
         autoreleaseFrequency: .workItem
