@@ -90,18 +90,10 @@ class DeviceTransferService: NSObject {
         set { serialQueue.sync { _transferState = newValue } }
     }
 
-    private(set) var identity: SecIdentity?
-    private(set) var session: MCSession? {
-        didSet {
-            if let oldValue = oldValue {
-                DeviceSleepManager.shared.removeBlock(blockObject: oldValue)
-            }
+    private let sleepBlockObject = DeviceSleepManager.BlockObject(blockReason: "device transfer")
 
-            if let session = session {
-                DeviceSleepManager.shared.addBlock(blockObject: session)
-            }
-        }
-    }
+    private(set) var identity: SecIdentity?
+    private(set) var session: MCSession?
     private(set) lazy var peerId = MCPeerID(displayName: UUID().uuidString)
 
     private lazy var newDeviceServiceBrowser: MCNearbyServiceBrowser = {
@@ -154,6 +146,8 @@ class DeviceTransferService: NSObject {
         let session = MCSession(peer: peerId, securityIdentity: [identity], encryptionPreference: .required)
         session.delegate = self
         self.session = session
+
+        DeviceSleepManager.shared.addBlock(blockObject: sleepBlockObject)
 
         newDeviceServiceAdvertiser.startAdvertisingPeer()
 
@@ -218,6 +212,8 @@ class DeviceTransferService: NSObject {
         session.delegate = self
         self.session = session
 
+        DeviceSleepManager.shared.addBlock(blockObject: sleepBlockObject)
+
         transferState = .outgoing(
             newDevicePeerId: peerId,
             newDeviceCertificateHash: certificateHash,
@@ -277,6 +273,8 @@ class DeviceTransferService: NSObject {
         session?.disconnect()
         session = nil
         identity = nil
+
+        DeviceSleepManager.shared.removeBlock(blockObject: sleepBlockObject)
 
         // It is possible that we get here because the app was backgrounded
         // after a failed launch. In that case, `tsAccountManager` will not be

@@ -373,8 +373,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         screenLockUI.startObserving()
     }
 
-    private func setUpMainAppEnvironment(launchContext: LaunchContext) -> Guarantee<(AppSetup.FinalContinuation, NSObject)> {
-        let sleepBlockObject = NSObject()
+    private func setUpMainAppEnvironment(launchContext: LaunchContext) -> Guarantee<(AppSetup.FinalContinuation, DeviceSleepManager.BlockObject)> {
+        let sleepBlockObject = DeviceSleepManager.BlockObject(blockReason: "app launch")
         DeviceSleepManager.shared.addBlock(blockObject: sleepBlockObject)
 
         let _currentCall = AtomicValue<SignalCall?>(nil, lock: .init())
@@ -458,7 +458,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     private func didLoadDatabase(
         finalContinuation: AppSetup.FinalContinuation,
         launchContext: LaunchContext,
-        sleepBlockObject: NSObject,
+        sleepBlockObject: DeviceSleepManager.BlockObject,
         window: UIWindow
     ) {
         AssertIsOnMainThread()
@@ -983,7 +983,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         window: UIWindow
     ) {
         var launchContext = launchContext
-        let recoveryViewController = DatabaseRecoveryViewController<(AppSetup.FinalContinuation, NSObject)>(
+        let recoveryViewController = DatabaseRecoveryViewController<(AppSetup.FinalContinuation, DeviceSleepManager.BlockObject)>(
             appReadiness: appReadiness,
             corruptDatabaseStorage: launchContext.databaseStorage,
             keychainStorage: launchContext.keychainStorage,

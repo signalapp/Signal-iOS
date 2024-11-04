@@ -72,6 +72,8 @@ public class AudioPlayer: NSObject {
 
     private let audioActivity: AudioActivity
 
+    private let sleepBlockObject = DeviceSleepManager.BlockObject(blockReason: "audio player")
+
     public convenience init(decryptedFileUrl: URL, audioBehavior: AudioBehavior) {
         self.init(source: .decryptedFile(decryptedFileUrl), audioBehavior: audioBehavior)
     }
@@ -102,7 +104,7 @@ public class AudioPlayer: NSObject {
     }
 
     deinit {
-        DeviceSleepManager.shared.removeBlock(blockObject: self)
+        DeviceSleepManager.shared.removeBlock(blockObject: sleepBlockObject)
         stop()
     }
 
@@ -163,7 +165,7 @@ public class AudioPlayer: NSObject {
         self.audioPlayerPoller = audioPlayerPoller
 
         // Prevent device from sleeping while playing audio.
-        DeviceSleepManager.shared.addBlock(blockObject: self)
+        DeviceSleepManager.shared.addBlock(blockObject: sleepBlockObject)
     }
 
     public func pause() {
@@ -186,7 +188,7 @@ public class AudioPlayer: NSObject {
 
         endAudioActivities()
 
-        DeviceSleepManager.shared.removeBlock(blockObject: self)
+        DeviceSleepManager.shared.removeBlock(blockObject: sleepBlockObject)
     }
 
     public func setupAudioPlayer() {
@@ -271,7 +273,7 @@ public class AudioPlayer: NSObject {
         delegate?.setAudioProgress(0, duration: 0, playbackRate: playbackRate)
 
         endAudioActivities()
-        DeviceSleepManager.shared.removeBlock(blockObject: self)
+        DeviceSleepManager.shared.removeBlock(blockObject: sleepBlockObject)
         teardownRemoteCommandCenter()
     }
 

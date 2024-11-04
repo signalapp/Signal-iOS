@@ -111,9 +111,6 @@ public class AppSetup {
     ) -> AppSetup.DatabaseContinuation {
         configureUnsatisfiableConstraintLogging()
 
-        let sleepBlockObject = NSObject()
-        DeviceSleepManager.shared.addBlock(blockObject: sleepBlockObject)
-
         let backgroundTask = OWSBackgroundTask(label: #function)
 
         // Order matters here.

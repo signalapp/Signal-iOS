@@ -191,6 +191,8 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         self.callUIAdapter = CallUIAdapter()
     }
 
+    private let sleepBlockObject = DeviceSleepManager.BlockObject(blockReason: "call")
+
     func didUpdateCall(from oldValue: SignalCall?, to newValue: SignalCall?) {
         switch oldValue?.mode {
         case nil:
@@ -224,11 +226,11 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         updateIsVideoEnabled()
 
         // Prevent device from sleeping while we have an active call.
-        if let oldValue {
-            self.deviceSleepManager.removeBlock(blockObject: oldValue)
+        if oldValue != nil {
+            self.deviceSleepManager.removeBlock(blockObject: sleepBlockObject)
         }
-        if let newValue {
-            self.deviceSleepManager.addBlock(blockObject: newValue)
+        if newValue != nil {
+            self.deviceSleepManager.addBlock(blockObject: sleepBlockObject)
         }
 
         if !UIDevice.current.isIPad {

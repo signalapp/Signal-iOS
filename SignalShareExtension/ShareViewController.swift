@@ -61,8 +61,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         Logger.info("")
 
-        // We don't need to use DeviceSleepManager in the SAE.
-
         // We don't need to use applySignalAppearence in the SAE.
 
         if appContext.isRunningTests {
@@ -228,8 +226,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
             // We don't need to use SyncPushTokensJob in the SAE.
         }
-
-        // We don't need to use DeviceSleepManager in the SAE.
 
         AppVersionImpl.shared.saeLaunchDidComplete()
 
