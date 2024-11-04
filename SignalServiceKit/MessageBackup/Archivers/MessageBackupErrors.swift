@@ -880,19 +880,31 @@ extension MessageBackup {
 
     internal struct LoggableErrorAndProto {
         let error: any MessageBackupLoggableError
+        let wasFatal: Bool
         /// Nil for archiving, if we fail to even parse the proto on restore,
         /// or if the feature flag is disabled such that this would be unused.
         let protoJson: String?
 
         init(
             error: any MessageBackupLoggableError,
+            wasFatal: Bool,
             protoFrame: SwiftProtobuf.Message? = nil
         ) {
             self.error = error
+            self.wasFatal = wasFatal
             // Don't serialize proto frames if we aren't displaying errors.
             if let protoFrame, FeatureFlags.messageBackupErrorDisplay {
                 do {
-                    self.protoJson = try protoFrame.jsonString()
+                    self.protoJson = try String(
+                        data: JSONSerialization.data(
+                            withJSONObject: JSONSerialization.jsonObject(
+                                with: protoFrame.jsonUTF8Data(),
+                                options: .mutableContainers
+                            ),
+                            options: .prettyPrinted
+                        ),
+                        encoding: .utf8
+                    )
                 } catch let jsonError {
                     self.protoJson = "Unable to json encode proto: \(jsonError)"
                 }
@@ -914,7 +926,7 @@ extension MessageBackup {
                 existingLog.collapse(error)
                 collapsedLogs.replace(key: collapseKey, value: existingLog)
             } else {
-                var newLog = CollapsedErrorLog(error)
+                let newLog = CollapsedErrorLog(error)
                 collapsedLogs.append(key: collapseKey, value: newLog)
             }
         }
@@ -929,16 +941,19 @@ extension MessageBackup {
         public private(set) var exampleProtoFrameJson: String?
         public private(set) var errorCount: UInt = 0
         public private(set) var idLogStrings: [String] = []
+        public private(set) var wasFatal: Bool
 
         init(_ error: LoggableErrorAndProto) {
             self.typeLogString = error.error.typeLogString
             self.exampleCallsiteString = error.error.callsiteLogString
             self.exampleProtoFrameJson = error.protoJson
+            self.wasFatal = error.wasFatal
             self.collapse(error)
         }
 
         mutating func collapse(_ error: LoggableErrorAndProto) {
             self.errorCount += 1
+            self.wasFatal = wasFatal || error.wasFatal
             if exampleProtoFrameJson == nil, let protoJson = error.protoJson {
                 self.exampleProtoFrameJson = protoJson
             }
@@ -950,6 +965,7 @@ extension MessageBackup {
         internal func log() {
             Logger.error(
                 (typeLogString) + " "
+                + "WasFatal? \(wasFatal). "
                 + "Repeated \(errorCount) times. "
                 + "from: \(idLogStrings) "
                 + "example callsite: \(exampleCallsiteString)"

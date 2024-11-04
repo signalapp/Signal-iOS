@@ -88,7 +88,7 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
             // Just log these errors, but count as success and proceed.
             MessageBackup
                 .collapse(partialErrors
-                    .map { MessageBackup.LoggableErrorAndProto(error: $0) }
+                    .map { MessageBackup.LoggableErrorAndProto(error: $0, wasFatal: false) }
                 )
                 .forEach { $0.log() }
         }
@@ -473,10 +473,13 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
             } catch {
                 // Just log these errors, but count as success and proceed.
                 // The wallpaper just won't upload.
-                MessageBackup.collapse([.init(error: MessageBackup.ArchiveFrameError<IDType>.archiveFrameError(
-                    .failedToEnqueueAttachmentForUpload,
-                    errorId
-                ))]).forEach { $0.log() }
+                MessageBackup.collapse([.init(
+                    error: MessageBackup.ArchiveFrameError<IDType>.archiveFrameError(
+                        .failedToEnqueueAttachmentForUpload,
+                        errorId
+                    ),
+                    wasFatal: false
+                )]).forEach { $0.log() }
             }
         }
 

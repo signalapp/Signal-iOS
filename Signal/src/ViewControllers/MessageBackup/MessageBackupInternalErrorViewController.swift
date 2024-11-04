@@ -31,6 +31,7 @@ class MessageBackupErrorPresenterInternal: MessageBackupErrorPresenter {
     private let kvStore: KeyValueStore
 
     private static let stringifiedErrorsKey = "stringifiedErrors"
+    private static let hadFatalErrorKey = "hadFatalError"
     private static let hasBeenDisplayedKey = "hasBeenDisplayed"
 
     init(
@@ -52,9 +53,11 @@ class MessageBackupErrorPresenterInternal: MessageBackupErrorPresenter {
             return
         }
 
+        let hadFatalError = errors.contains(where: \.wasFatal)
         let stringified = errors
             .map {
                 var text = ($0.typeLogString) + "\n"
+                + "wasFatal: \($0.wasFatal)\n"
                 + "Repeated \($0.errorCount) times, from: \($0.idLogStrings)\n"
                 + "Example callsite: \($0.exampleCallsiteString)"
                 if let exampleProtoFrameJson = $0.exampleProtoFrameJson {
@@ -73,6 +76,7 @@ class MessageBackupErrorPresenterInternal: MessageBackupErrorPresenter {
 
             self.db.write { innerTx in
                 self.kvStore.setString(stringified, key: Self.stringifiedErrorsKey, transaction: innerTx)
+                self.kvStore.setBool(hadFatalError, key: Self.hadFatalErrorKey, transaction: innerTx)
                 self.kvStore.setBool(false, key: Self.hasBeenDisplayedKey, transaction: innerTx)
             }
         }
@@ -84,13 +88,14 @@ class MessageBackupErrorPresenterInternal: MessageBackupErrorPresenter {
             return
         }
         let isRegistered = tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
-        let errorString: String? = db.write { tx in
+        let (errorString, hadFatalError): (String?, Bool) = db.write { tx in
+            let hadFatalError = kvStore.getBool(Self.hadFatalErrorKey, defaultValue: false, transaction: tx)
             if kvStore.getBool(Self.hasBeenDisplayedKey, defaultValue: false, transaction: tx) {
-                return nil
+                return (nil, hadFatalError)
             }
             let errorString = kvStore.getString(Self.stringifiedErrorsKey, transaction: tx)
             kvStore.setBool(true, key: Self.hasBeenDisplayedKey, transaction: tx)
-            return errorString
+            return (errorString, hadFatalError)
         }
         guard let errorString else {
             completion()
@@ -99,6 +104,7 @@ class MessageBackupErrorPresenterInternal: MessageBackupErrorPresenter {
 
         let vc = MessageBackupInternalErrorViewController(
             errorString: errorString,
+            hadFatalError: hadFatalError,
             isRegistered: isRegistered,
             completion: completion
         )
@@ -122,10 +128,22 @@ private class MessageBackupInternalErrorViewController: OWSViewController {
 
     fileprivate init(
         errorString: String,
+        hadFatalError: Bool,
         isRegistered: Bool,
         completion: (() -> Void)?
     ) {
-        self.originalText = errorString
+        var text: String
+        if hadFatalError {
+            text = "!!!Backup import or export FAILED!!!"
+        } else {
+            text = "Backup import or export succeeded with errors"
+        }
+        text.append("""
+            \n\nPlease send the errors below to your nearest iOS dev.\n
+            Feel free to edit to remove any private info before sending.\n\n
+            """)
+        text.append(errorString)
+        self.originalText = text
         self.isRegistered = isRegistered
         self.completion = completion
         super.init()

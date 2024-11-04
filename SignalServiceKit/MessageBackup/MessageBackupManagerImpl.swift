@@ -300,7 +300,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         case .success:
             break
         case .failure(let error):
-            errors.append(LoggableErrorAndProto(error: error))
+            errors.append(LoggableErrorAndProto(error: error, wasFatal: true))
             throw OWSAssertionError("Failed to archive account data")
         }
 
@@ -312,7 +312,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         case .success(let success):
             localRecipientId = success
         case .failure(let error):
-            errors.append(LoggableErrorAndProto(error: error))
+            errors.append(LoggableErrorAndProto(error: error, wasFatal: true))
             throw OWSAssertionError("Failed to archive local recipient!")
         }
 
@@ -331,7 +331,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         case .success:
             break
         case .failure(let error):
-            errors.append(LoggableErrorAndProto(error: error))
+            errors.append(LoggableErrorAndProto(error: error, wasFatal: true))
             throw OWSAssertionError("Failed to archive release notes channel!")
         }
 
@@ -342,9 +342,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         case .success:
             break
         case .partialSuccess(let partialFailures):
-            errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0) })
+            errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0, wasFatal: false) })
         case .completeFailure(let error):
-            errors.append(LoggableErrorAndProto(error: error))
+            errors.append(LoggableErrorAndProto(error: error, wasFatal: true))
             throw BackupError()
         }
 
@@ -355,9 +355,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         case .success:
             break
         case .partialSuccess(let partialFailures):
-            errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0) })
+            errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0, wasFatal: false) })
         case .completeFailure(let error):
-            errors.append(LoggableErrorAndProto(error: error))
+            errors.append(LoggableErrorAndProto(error: error, wasFatal: true))
             throw BackupError()
         }
 
@@ -368,9 +368,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         case .success:
             break
         case .partialSuccess(let partialFailures):
-            errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0) })
+            errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0, wasFatal: false) })
         case .completeFailure(let error):
-            errors.append(LoggableErrorAndProto(error: error))
+            errors.append(LoggableErrorAndProto(error: error, wasFatal: true))
             throw BackupError()
         }
 
@@ -381,9 +381,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         case .success:
             break
         case .partialSuccess(let partialFailures):
-            errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0) })
+            errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0, wasFatal: false) })
         case .completeFailure(let error):
-            errors.append(LoggableErrorAndProto(error: error))
+            errors.append(LoggableErrorAndProto(error: error, wasFatal: true))
             throw BackupError()
         }
 
@@ -402,9 +402,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         case .success:
             break
         case .partialSuccess(let partialFailures):
-            errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0) })
+            errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0, wasFatal: false) })
         case .completeFailure(let error):
-            errors.append(LoggableErrorAndProto(error: error))
+            errors.append(LoggableErrorAndProto(error: error, wasFatal: true))
             throw BackupError()
         }
 
@@ -416,9 +416,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         case .success:
             break
         case .partialSuccess(let partialFailures):
-            errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0) })
+            errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0, wasFatal: false) })
         case .completeFailure(let error):
-            errors.append(LoggableErrorAndProto(error: error))
+            errors.append(LoggableErrorAndProto(error: error, wasFatal: true))
             throw BackupError()
         }
 
@@ -435,9 +435,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         case .success:
             break
         case .partialSuccess(let partialFailures):
-            errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0) })
+            errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0, wasFatal: false) })
         case .completeFailure(let error):
-            errors.append(LoggableErrorAndProto(error: error))
+            errors.append(LoggableErrorAndProto(error: error, wasFatal: true))
             throw BackupError()
         }
 
@@ -586,10 +586,13 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             throw OWSAssertionError("invalid empty header frame")
         case .protoDeserializationError(let error):
             // Fail if we fail to deserialize the header.
-            frameErrors.append(LoggableErrorAndProto(error: MessageBackup.RestoreFrameError.restoreFrameError(
-                .invalidProtoData(.missingBackupInfoHeader),
-                MessageBackup.BackupInfoId()
-            )))
+            frameErrors.append(LoggableErrorAndProto(
+                error: MessageBackup.RestoreFrameError.restoreFrameError(
+                    .invalidProtoData(.missingBackupInfoHeader),
+                    MessageBackup.BackupInfoId()
+                ),
+                wasFatal: true
+            ))
             throw error
         }
 
@@ -601,6 +604,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                     .invalidProtoData(.unsupportedBackupInfoVersion),
                     MessageBackup.BackupInfoId()
                 ),
+                wasFatal: true,
                 protoFrame: backupInfo
             ))
             throw BackupError()
@@ -613,6 +617,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                     .invalidProtoData(.invalidMediaRootBackupKey),
                     MessageBackup.BackupInfoId()
                 ),
+                wasFatal: true,
                 protoFrame: backupInfo
             ))
             throw error
@@ -717,9 +722,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 case .success:
                     continue
                 case .partialRestore(let errors):
-                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, protoFrame: recipient) })
+                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: recipient) })
                 case .failure(let errors):
-                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, protoFrame: recipient) })
+                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: true, protoFrame: recipient) })
                     throw BackupError()
                 }
             case .chat(let chat):
@@ -731,9 +736,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 case .success:
                     continue
                 case .partialRestore(let errors):
-                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, protoFrame: chat) })
+                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: chat) })
                 case .failure(let errors):
-                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, protoFrame: chat) })
+                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: true, protoFrame: chat) })
                     throw BackupError()
                 }
             case .chatItem(let chatItem):
@@ -745,9 +750,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 case .success:
                     continue
                 case .partialRestore(let errors):
-                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, protoFrame: chatItem) })
+                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: chatItem) })
                 case .failure(let errors):
-                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, protoFrame: chatItem) })
+                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: true, protoFrame: chatItem) })
                     throw BackupError()
                 }
             case .account(let backupProtoAccountData):
@@ -760,9 +765,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 case .success:
                     continue
                 case .partialRestore(let errors):
-                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, protoFrame: backupProtoAccountData) })
+                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: backupProtoAccountData) })
                 case .failure(let errors):
-                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, protoFrame: backupProtoAccountData) })
+                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: true, protoFrame: backupProtoAccountData) })
                     throw BackupError()
                 }
             case .stickerPack(let backupProtoStickerPack):
@@ -774,27 +779,33 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 case .success:
                     continue
                 case .partialRestore(let errors):
-                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, protoFrame: backupProtoStickerPack) })
+                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: backupProtoStickerPack) })
                 case .failure(let errors):
-                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, protoFrame: backupProtoStickerPack) })
+                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: true, protoFrame: backupProtoStickerPack) })
                     throw BackupError()
                 }
             case .adHocCall(let backupProtoAdHocCall):
                 // TODO: [Backups] Restore ad-hoc calls.
-                frameErrors.append(LoggableErrorAndProto(error: MessageBackup.RestoreFrameError.restoreFrameError(
-                    .unimplemented,
-                    MessageBackup.AdHocCallId(
-                        backupProtoAdHocCall.callID,
-                        recipientId: backupProtoAdHocCall.recipientID
-                    )
-                )))
+                frameErrors.append(LoggableErrorAndProto(
+                    error: MessageBackup.RestoreFrameError.restoreFrameError(
+                        .unimplemented,
+                        MessageBackup.AdHocCallId(
+                            backupProtoAdHocCall.callID,
+                            recipientId: backupProtoAdHocCall.recipientID
+                        )
+                    ),
+                    wasFatal: false
+                ))
             case nil:
                 if hasMoreFrames {
                     owsFailDebug("Frame missing item!")
-                    frameErrors.append(LoggableErrorAndProto(error: MessageBackup.RestoreFrameError.restoreFrameError(
-                        .invalidProtoData(.frameMissingItem),
-                        MessageBackup.EmptyFrameId.shared
-                    )))
+                    frameErrors.append(LoggableErrorAndProto(
+                        error: MessageBackup.RestoreFrameError.restoreFrameError(
+                            .invalidProtoData(.frameMissingItem),
+                            MessageBackup.EmptyFrameId.shared
+                        ),
+                        wasFatal: false
+                    ))
                 }
             }
         }
