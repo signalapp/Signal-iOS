@@ -61,24 +61,19 @@ class _AttachmentUploadManager_NetworkManagerMock: NetworkManager {
 
 public class _AttachmentUploadManager_OWSURLSessionMock: BaseOWSURLSessionMock {
 
-    public var promiseForUploadDataTaskBlock: ((URLRequest, Data, ProgressBlock?) -> Promise<HTTPResponse>)?
-    public override func uploadTaskPromise(request: URLRequest, data requestData: Data, progress progressBlock: ProgressBlock?) -> Promise<HTTPResponse> {
-        return promiseForUploadDataTaskBlock!(request, requestData, progressBlock)
+    public var performUploadDataBlock: ((URLRequest, Data, ProgressBlock?) async throws -> any HTTPResponse)?
+    public override func performUpload(request: URLRequest, requestData: Data, progressBlock: ProgressBlock?) async throws -> any HTTPResponse {
+        return try await performUploadDataBlock!(request, requestData, progressBlock)
     }
 
-    public var promiseForUploadFileTaskBlock: ((URLRequest, URL, Bool, ProgressBlock?) -> Promise<HTTPResponse>)?
-    public override func uploadTaskPromise(
-        request: URLRequest,
-        fileUrl: URL,
-        ignoreAppExpiry: Bool = false,
-        progress progressBlock: ProgressBlock? = nil
-    ) -> Promise<HTTPResponse> {
-        return promiseForUploadFileTaskBlock!(request, fileUrl, ignoreAppExpiry, progressBlock)
+    public var performUploadFileBlock: ((URLRequest, URL, Bool, ProgressBlock?) async throws -> any HTTPResponse)?
+    public override func performUpload(request: URLRequest, fileUrl: URL, ignoreAppExpiry: Bool, progressBlock: ProgressBlock?) async throws -> any HTTPResponse {
+        return try await performUploadFileBlock!(request, fileUrl, ignoreAppExpiry, progressBlock)
     }
 
-    public var promiseForDataTaskBlock: ((URLRequest) -> Promise<HTTPResponse>)?
-    public override func dataTaskPromise(request: URLRequest, ignoreAppExpiry: Bool = false) -> Promise<HTTPResponse> {
-        return promiseForDataTaskBlock!(request)
+    public var performRequestBlock: ((URLRequest) async throws -> any HTTPResponse)?
+    public override func performRequest(request: URLRequest, ignoreAppExpiry: Bool) async throws -> any HTTPResponse {
+        return try await performRequestBlock!(request)
     }
 }
 

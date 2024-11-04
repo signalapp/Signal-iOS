@@ -75,9 +75,8 @@ public class SystemStoryManager: NSObject, SystemStoryManagerProtocol {
     private let overlayKvStore = SDSKeyValueStore(collection: "StoryViewerOnboardingOverlay")
     private let groupStoryEducationStore = SDSKeyValueStore(collection: "GroupStoryEducation")
 
-    private lazy var queue = schedulers.queue(label: "org.signal.story.onboarding", qos: .utility)
-
-    private lazy var chainedPromise = ChainedPromise<Void>(scheduler: queue)
+    private let queue: Scheduler
+    internal let chainedPromise: ChainedPromise<Void>
 
     public convenience init(appReadiness: AppReadiness) {
         self.init(
@@ -97,6 +96,8 @@ public class SystemStoryManager: NSObject, SystemStoryManagerProtocol {
         self.fileSystem = fileSystem
         self.schedulers = schedulers
         self.storyMessageFactory = storyMessageFactory
+        self.queue = schedulers.queue(label: "org.signal.story.onboarding", qos: .utility)
+        self.chainedPromise = ChainedPromise<Void>(scheduler: self.queue)
         super.init()
 
         if CurrentAppContext().isMainApp {

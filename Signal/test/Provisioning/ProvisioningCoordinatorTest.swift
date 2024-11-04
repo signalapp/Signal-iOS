@@ -171,14 +171,14 @@ extension ProvisioningCoordinatorTest {
 
         var responder: ((TSRequest) -> Data)?
 
-        override func promiseForTSRequest(_ rawRequest: TSRequest) -> Promise<HTTPResponse> {
+        override func performRequest(_ rawRequest: TSRequest) async throws -> any HTTPResponse {
             let responseBody = responder!(rawRequest)
-            return .value(HTTPResponseImpl(
+            return HTTPResponseImpl(
                 requestUrl: rawRequest.url!,
                 status: 200,
                 headers: OWSHttpHeaders(),
                 bodyData: responseBody
-            ))
+            )
         }
     }
 }

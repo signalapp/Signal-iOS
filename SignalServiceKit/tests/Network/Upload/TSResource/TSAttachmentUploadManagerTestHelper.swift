@@ -49,28 +49,28 @@ class TSAttachmentUploadManagerMockHelper {
                 return .init(error: OWSAssertionError("Mock request missing"))
             }
             self.capturedRequests.append(.uploadForm(request))
-            return authDataTaskBlock(request, canUseWebSocket)
+            return Promise.wrapAsync { try await authDataTaskBlock(request, canUseWebSocket) }
         }
 
-        mockURLSession.promiseForDataTaskBlock = { request in
+        mockURLSession.performRequestBlock = { request in
             switch self.activeUploadRequestMocks.removeFirst() {
             case .uploadLocation(let requestBlock):
                 self.capturedRequests.append(.uploadLocation(request))
-                return requestBlock(request)
+                return try await requestBlock(request)
             case .uploadProgress(let requestBlock):
                 self.capturedRequests.append(.uploadProgress(request))
-                return requestBlock(request)
+                return try await requestBlock(request)
             case .uploadForm, .uploadTask:
-                return .init(error: OWSAssertionError("Mock request missing"))
+                throw OWSAssertionError("Mock request missing")
             }
         }
 
-        mockURLSession.promiseForUploadFileTaskBlock = { request, url, _, _ in
+        mockURLSession.performUploadFileBlock = { request, url, _, _ in
             guard case let .uploadTask(requestBlock) = self.activeUploadRequestMocks.removeFirst() else {
-                return .init(error: OWSAssertionError("Mock request missing"))
+                throw OWSAssertionError("Mock request missing")
             }
             self.capturedRequests.append(.uploadTask(request))
-            return requestBlock(request, url)
+            return try await requestBlock(request, url)
         }
     }
 
@@ -87,12 +87,12 @@ class TSAttachmentUploadManagerMockHelper {
                 cdnNumber: version
             )
             self.activeUploadRequestMocks = self.authToUploadRequestMockMap[authString] ?? .init()
-            return .value(HTTPResponseImpl(
+            return HTTPResponseImpl(
                 requestUrl: request.url!,
                 status: statusCode,
                 headers: OWSHttpHeaders(),
                 bodyData: try! JSONEncoder().encode(form)
-            ))
+            )
         }))
         return (authString, location)
     }
@@ -102,12 +102,12 @@ class TSAttachmentUploadManagerMockHelper {
         let location = "https://resume/location/\(UUID().uuidString)"
         enqueue(auth: auth, request: .uploadLocation({ request in
             let headers = [ "Location": location ]
-            return .value(HTTPResponseImpl(
+            return HTTPResponseImpl(
                 requestUrl: request.url!,
                 status: statusCode,
                 headers: OWSHttpHeaders(httpHeaders: headers, overwriteOnConflict: true),
                 bodyData: nil
-            ))
+            )
         }))
         return location
     }
@@ -140,12 +140,12 @@ class TSAttachmentUploadManagerMockHelper {
                 statusCode = 201 // This could also be a 200
             }
 
-            return .value(HTTPResponseImpl(
+            return HTTPResponseImpl(
                 requestUrl: request.url!,
                 status: statusCode,
                 headers: OWSHttpHeaders(httpHeaders: headers, overwriteOnConflict: true),
                 bodyData: nil
-            ))
+            )
         }))
     }
 
@@ -159,17 +159,17 @@ class TSAttachmentUploadManagerMockHelper {
             var statusCode = 200
             switch type {
             case .networkError:
-                return .init(error: OWSHTTPError.networkFailure(requestUrl: request.url!))
+                throw OWSHTTPError.networkFailure(requestUrl: request.url!)
             case .failure:
                 statusCode = 500
                 fallthrough // Use the same response code as success
             case .success:
-                return .value(HTTPResponseImpl(
+                return HTTPResponseImpl(
                     requestUrl: request.url!,
                     status: statusCode,
                     headers: OWSHttpHeaders(),
                     bodyData: nil
-                ))
+                )
             }
         }))
     }

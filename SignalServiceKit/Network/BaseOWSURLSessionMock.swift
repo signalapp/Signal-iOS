@@ -5,6 +5,8 @@
 
 import Foundation
 
+#if TESTABLE_BUILD
+
 public class BaseOWSURLSessionMock: OWSURLSessionProtocol {
 
     // MARK: - OWSURLSessionProtocol conformance
@@ -81,78 +83,81 @@ public class BaseOWSURLSessionMock: OWSURLSessionProtocol {
 
     public func promiseForTSRequest(_ rawRequest: TSRequest) -> Promise<HTTPResponse> {
         // Want different behavior? Write a custom mock class
-        return .value(HTTPResponseImpl(
+        return Promise.wrapAsync { try await self.performRequest(rawRequest) }
+    }
+
+    public func performRequest(_ rawRequest: TSRequest) async throws -> any HTTPResponse {
+        // Want different behavior? Write a custom mock class
+        return HTTPResponseImpl(
             requestUrl: rawRequest.url!,
             status: 200,
             headers: OWSHttpHeaders(),
             bodyData: nil
-        ))
+        )
     }
 
     // MARK: Tasks
 
-    public func uploadTaskPromise(
+    public func performUpload(
         request: URLRequest,
-        data requestData: Data,
-        progress progressBlock: ProgressBlock?
-    ) -> Promise<HTTPResponse> {
+        requestData: Data,
+        progressBlock: ProgressBlock?
+    ) async throws -> any HTTPResponse {
         // Want different behavior? Write a custom mock class
-        return .value(HTTPResponseImpl(
+        return HTTPResponseImpl(
             requestUrl: request.url!,
             status: 200,
             headers: OWSHttpHeaders(),
             bodyData: nil
-        ))
+        )
     }
 
-    public func uploadTaskPromise(
+    public func performUpload(
         request: URLRequest,
         fileUrl: URL,
         ignoreAppExpiry: Bool,
-        progress progressBlock: ProgressBlock?
-    ) -> Promise<HTTPResponse> {
+        progressBlock: ProgressBlock?
+    ) async throws -> any HTTPResponse {
         // Want different behavior? Write a custom mock class
-        return .value(HTTPResponseImpl(
+        return HTTPResponseImpl(
             requestUrl: request.url!,
             status: 200,
             headers: OWSHttpHeaders(),
             bodyData: nil
-        ))
+        )
     }
 
-    public func dataTaskPromise(request: URLRequest, ignoreAppExpiry: Bool = false) -> Promise<HTTPResponse> {
+    public func performRequest(request: URLRequest, ignoreAppExpiry: Bool) async throws -> any HTTPResponse {
         // Want different behavior? Write a custom mock class
-        return .value(HTTPResponseImpl(
+        return HTTPResponseImpl(
             requestUrl: request.url!,
             status: 200,
             headers: OWSHttpHeaders(),
             bodyData: nil
-        ))
+        )
     }
 
-    public func downloadTaskPromise(
+    public func performDownload(
         request: URLRequest,
-        progress progressBlock: ProgressBlock?
-    ) -> Promise<OWSUrlDownloadResponse> {
+        progressBlock: ProgressBlock?
+    ) async throws -> OWSUrlDownloadResponse {
         // Want different behavior? Write a custom mock class
-        return .value(OWSUrlDownloadResponse(
-            task: URLSession.shared.dataTask(with: request),
+        return OWSUrlDownloadResponse(
             httpUrlResponse: HTTPURLResponse(),
             downloadUrl: URL(fileURLWithPath: request.url!.lastPathComponent)
-        ))
+        )
     }
 
-    public func downloadTaskPromise(
+    public func performDownload(
         requestUrl: URL,
         resumeData: Data,
-        progress progressBlock: ProgressBlock?
-    ) -> Promise<OWSUrlDownloadResponse> {
+        progressBlock: ProgressBlock?
+    ) async throws -> OWSUrlDownloadResponse {
         // Want different behavior? Write a custom mock class
-        return .value(OWSUrlDownloadResponse(
-            task: URLSession.shared.downloadTask(with: URLRequest(url: requestUrl)),
+        return OWSUrlDownloadResponse(
             httpUrlResponse: HTTPURLResponse(),
             downloadUrl: URL(fileURLWithPath: requestUrl.lastPathComponent)
-        ))
+        )
     }
 
     public func webSocketTask(
@@ -164,3 +169,5 @@ public class BaseOWSURLSessionMock: OWSURLSessionProtocol {
         fatalError("Not implemented.")
     }
 }
+
+#endif

@@ -59,7 +59,6 @@ extension HTTPMethod: CustomStringConvertible {
 // MARK: - OWSUrlDownloadResponse
 
 public struct OWSUrlDownloadResponse {
-    public let task: URLSessionTask
     public let httpUrlResponse: HTTPURLResponse
     public let downloadUrl: URL
 
@@ -127,34 +126,36 @@ public protocol OWSURLSessionProtocol: AnyObject {
 
     func promiseForTSRequest(_ rawRequest: TSRequest) -> Promise<HTTPResponse>
 
-    func uploadTaskPromise(
-        request: URLRequest,
-        data requestData: Data,
-        progress progressBlock: ProgressBlock?
-    ) -> Promise<HTTPResponse>
+    func performRequest(_ rawRequest: TSRequest) async throws -> HTTPResponse
 
-    func uploadTaskPromise(
+    func performUpload(
+        request: URLRequest,
+        requestData: Data,
+        progressBlock: ProgressBlock?
+    ) async throws -> HTTPResponse
+
+    func performUpload(
         request: URLRequest,
         fileUrl: URL,
         ignoreAppExpiry: Bool,
-        progress progressBlock: ProgressBlock?
-    ) -> Promise<HTTPResponse>
+        progressBlock: ProgressBlock?
+    ) async throws -> HTTPResponse
 
-    func dataTaskPromise(
+    func performRequest(
         request: URLRequest,
         ignoreAppExpiry: Bool
-    ) -> Promise<HTTPResponse>
+    ) async throws -> HTTPResponse
 
-    func downloadTaskPromise(
+    func performDownload(
         requestUrl: URL,
         resumeData: Data,
-        progress progressBlock: ProgressBlock?
-    ) -> Promise<OWSUrlDownloadResponse>
+        progressBlock: ProgressBlock?
+    ) async throws -> OWSUrlDownloadResponse
 
-    func downloadTaskPromise(
+    func performDownload(
         request: URLRequest,
-        progress progressBlock: ProgressBlock?
-    ) -> Promise<OWSUrlDownloadResponse>
+        progressBlock: ProgressBlock?
+    ) async throws -> OWSUrlDownloadResponse
 
     func webSocketTask(
         requestUrl: URL,
@@ -188,6 +189,60 @@ extension OWSURLSessionProtocol {
 // MARK: -
 
 public extension OWSURLSessionProtocol {
+    // MARK: - Promise Shims
+
+    func promiseForTSRequest(_ rawRequest: TSRequest) -> Promise<HTTPResponse> {
+        return Promise.wrapAsync { try await self.performRequest(rawRequest) }
+    }
+
+    func uploadTaskPromise(
+        request: URLRequest,
+        data requestData: Data,
+        progress progressBlock: ProgressBlock?
+    ) -> Promise<HTTPResponse> {
+        return Promise.wrapAsync {
+            return try await self.performUpload(request: request, requestData: requestData, progressBlock: progressBlock)
+        }
+    }
+
+    func uploadTaskPromise(
+        request: URLRequest,
+        fileUrl: URL,
+        ignoreAppExpiry: Bool,
+        progress progressBlock: ProgressBlock?
+    ) -> Promise<HTTPResponse> {
+        return Promise.wrapAsync {
+            return try await self.performUpload(request: request, fileUrl: fileUrl, ignoreAppExpiry: ignoreAppExpiry, progressBlock: progressBlock)
+        }
+    }
+
+    func dataTaskPromise(
+        request: URLRequest,
+        ignoreAppExpiry: Bool
+    ) -> Promise<HTTPResponse> {
+        return Promise.wrapAsync {
+            return try await self.performRequest(request: request, ignoreAppExpiry: ignoreAppExpiry)
+        }
+    }
+
+    func downloadTaskPromise(
+        requestUrl: URL,
+        resumeData: Data,
+        progress progressBlock: ProgressBlock?
+    ) -> Promise<OWSUrlDownloadResponse> {
+        return Promise.wrapAsync {
+            return try await self.performDownload(requestUrl: requestUrl, resumeData: resumeData, progressBlock: progressBlock)
+        }
+    }
+
+    func downloadTaskPromise(
+        request: URLRequest,
+        progress progressBlock: ProgressBlock?
+    ) -> Promise<OWSUrlDownloadResponse> {
+        return Promise.wrapAsync {
+            return try await self.performDownload(request: request, progressBlock: progressBlock)
+        }
+    }
 
     // MARK: - Upload Tasks Convenience
 

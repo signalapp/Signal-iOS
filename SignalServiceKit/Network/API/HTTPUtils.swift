@@ -31,14 +31,6 @@ private extension Dictionary where Key == String {
 
 class HTTPUtils {
     #if TESTABLE_BUILD
-    public static func logCurl(for task: URLSessionTask) {
-        guard let request = task.originalRequest else {
-            Logger.debug("attempted to log curl on a task with no original request")
-            return
-        }
-        logCurl(for: request)
-    }
-
     public static func logCurl(for request: URLRequest) {
         guard let httpMethod = request.httpMethod else {
             Logger.debug("attempted to log curl on a request with no http method")

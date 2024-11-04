@@ -6,15 +6,15 @@
 import Foundation
 @testable import SignalServiceKit
 
-typealias TSRequestDataTaskBlock = ((TSRequest, Bool) -> Promise<HTTPResponse>)
-typealias DataTaskPromiseBlock = ((URLRequest) -> Promise<HTTPResponse>)
-typealias UploadTaskPromiseBlock = ((URLRequest, URL) -> Promise<HTTPResponse>)
+typealias PerformTSRequestBlock = ((TSRequest, Bool) async throws -> any HTTPResponse)
+typealias PerformRequestBlock = ((URLRequest) async throws -> any HTTPResponse)
+typealias PerformUploadBlock = ((URLRequest, URL) async throws -> any HTTPResponse)
 
 enum MockRequestType {
-    case uploadForm(TSRequestDataTaskBlock)
-    case uploadLocation(DataTaskPromiseBlock)
-    case uploadProgress(DataTaskPromiseBlock)
-    case uploadTask(UploadTaskPromiseBlock)
+    case uploadForm(PerformTSRequestBlock)
+    case uploadLocation(PerformRequestBlock)
+    case uploadProgress(PerformRequestBlock)
+    case uploadTask(PerformUploadBlock)
 }
 
 enum MockResultType {
@@ -86,28 +86,28 @@ class AttachmentUploadManagerMockHelper {
                 return .init(error: OWSAssertionError("Mock request missing"))
             }
             self.capturedRequests.append(.uploadForm(request))
-            return authDataTaskBlock(request, canUseWebSocket)
+            return Promise.wrapAsync { try await authDataTaskBlock(request, canUseWebSocket) }
         }
 
-        mockURLSession.promiseForDataTaskBlock = { request in
+        mockURLSession.performRequestBlock = { request in
             switch self.activeUploadRequestMocks.removeFirst() {
             case .uploadLocation(let requestBlock):
                 self.capturedRequests.append(.uploadLocation(request))
-                return requestBlock(request)
+                return try await requestBlock(request)
             case .uploadProgress(let requestBlock):
                 self.capturedRequests.append(.uploadProgress(request))
-                return requestBlock(request)
+                return try await requestBlock(request)
             case .uploadForm, .uploadTask:
-                return .init(error: OWSAssertionError("Mock request missing"))
+                throw OWSAssertionError("Mock request missing")
             }
         }
 
-        mockURLSession.promiseForUploadFileTaskBlock = { request, url, _, _ in
+        mockURLSession.performUploadFileBlock = { request, url, _, _ in
             guard case let .uploadTask(requestBlock) = self.activeUploadRequestMocks.removeFirst() else {
-                return .init(error: OWSAssertionError("Mock request missing"))
+                throw OWSAssertionError("Mock request missing")
             }
             self.capturedRequests.append(.uploadTask(request))
-            return requestBlock(request, url)
+            return try await requestBlock(request, url)
         }
     }
 
@@ -124,12 +124,12 @@ class AttachmentUploadManagerMockHelper {
                 cdnNumber: version
             )
             self.activeUploadRequestMocks = self.authToUploadRequestMockMap[authString] ?? .init()
-            return .value(HTTPResponseImpl(
+            return HTTPResponseImpl(
                 requestUrl: request.url!,
                 status: statusCode,
                 headers: OWSHttpHeaders(),
                 bodyData: try! JSONEncoder().encode(form)
-            ))
+            )
         }))
         return (authString, location)
     }
@@ -139,12 +139,12 @@ class AttachmentUploadManagerMockHelper {
         let location = "https://resume/location/\(UUID().uuidString)"
         enqueue(auth: auth, request: .uploadLocation({ request in
             let headers = [ "Location": location ]
-            return .value(HTTPResponseImpl(
+            return HTTPResponseImpl(
                 requestUrl: request.url!,
                 status: statusCode,
                 headers: OWSHttpHeaders(httpHeaders: headers, overwriteOnConflict: true),
                 bodyData: nil
-            ))
+            )
         }))
         return location
     }
@@ -177,12 +177,12 @@ class AttachmentUploadManagerMockHelper {
                 statusCode = 201 // This could also be a 200
             }
 
-            return .value(HTTPResponseImpl(
+            return HTTPResponseImpl(
                 requestUrl: request.url!,
                 status: statusCode,
                 headers: OWSHttpHeaders(httpHeaders: headers, overwriteOnConflict: true),
                 bodyData: nil
-            ))
+            )
         }))
     }
 
@@ -196,17 +196,17 @@ class AttachmentUploadManagerMockHelper {
             var statusCode = 200
             switch type {
             case .networkError:
-                return .init(error: OWSHTTPError.networkFailure(requestUrl: request.url!))
+                throw OWSHTTPError.networkFailure(requestUrl: request.url!)
             case .failure:
                 statusCode = 500
                 fallthrough // Use the same response code as success
             case .success:
-                return .value(HTTPResponseImpl(
+                return HTTPResponseImpl(
                     requestUrl: request.url!,
                     status: statusCode,
                     headers: OWSHttpHeaders(),
                     bodyData: nil
-                ))
+                )
             }
         }))
     }
