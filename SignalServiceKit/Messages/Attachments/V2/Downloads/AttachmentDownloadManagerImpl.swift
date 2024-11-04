@@ -1325,18 +1325,18 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     guard let requestUrl = request.url else {
                         throw OWSAssertionError("Request missing url.")
                     }
-                    downloadResponse = try await urlSession.downloadTaskPromise(
+                    downloadResponse = try await urlSession.performDownload(
                         requestUrl: requestUrl,
                         resumeData: resumeData,
-                        progress: progress
-                    ).awaitable()
+                        progressBlock: progress
+                    )
                 } else {
-                    downloadResponse = try await urlSession.downloadTaskPromise(
+                    downloadResponse = try await urlSession.performDownload(
                         urlPath,
                         method: .get,
                         headers: headers,
-                        progress: progress
-                    ).awaitable()
+                        progressBlock: progress
+                    )
                 }
                 let downloadUrl = downloadResponse.downloadUrl
                 guard let fileSize = OWSFileSystem.fileSize(of: downloadUrl) else {

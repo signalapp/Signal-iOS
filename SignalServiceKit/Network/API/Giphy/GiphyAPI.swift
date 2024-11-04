@@ -56,12 +56,12 @@ public class GiphyAPI: NSObject {
         }
 
         let urlSession = buildURLSession()
-        return firstly(on: DispatchQueue.global()) { () -> Promise<HTTPResponse> in
+        return Promise.wrapAsync {
             var request = try urlSession.endpoint.buildRequest(urlString, method: .get)
             guard ContentProxy.configureProxiedRequest(request: &request) else {
                 throw OWSAssertionError("Invalid URL")
             }
-            return urlSession.dataTaskPromise(request: request, ignoreAppExpiry: false)
+            return try await urlSession.performRequest(request: request, ignoreAppExpiry: false)
         }.map(on: DispatchQueue.global()) { (response: HTTPResponse) -> [GiphyImageInfo] in
             guard let json = response.responseBodyJson else {
                 throw OWSAssertionError("Missing or invalid JSON")

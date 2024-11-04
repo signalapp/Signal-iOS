@@ -169,28 +169,28 @@ class DebugUIMessagesAssetLoader {
         }
 
         let urlSession = OWSURLSession(securityPolicy: OWSURLSession.defaultSecurityPolicy, configuration: .ephemeral)
-        urlSession.dataTaskPromise(url.absoluteString, method: .get)
-            .done { response in
-                guard let data = response.responseBodyData, data.count > 0 else {
-                    owsFailDebug("Error write url response [\(url)]: \(filePath)")
-                    completion(.failure(DebugUIError.downloadFailed))
-                    return
-                }
-                do {
-                    let fileUrl = URL(fileURLWithPath: filePath)
-                    try data.write(to: fileUrl, options: .atomic)
-                    owsAssertDebug(FileManager.default.fileExists(atPath: filePath))
-                    completion(.success(()))
-                } catch {
-                    owsFailDebug("Error downloading [\(url)]: \(error)")
-                    completion(.failure(error))
-                }
+        Promise.wrapAsync {
+            return try await urlSession.performRequest(url.absoluteString, method: .get)
+        }.done { response in
+            guard let data = response.responseBodyData, data.count > 0 else {
+                owsFailDebug("Error write url response [\(url)]: \(filePath)")
+                completion(.failure(DebugUIError.downloadFailed))
+                return
             }
-            .catch { error in
-                owsFailDebug("Error downloading url[\(url)]: \(error)")
+            do {
+                let fileUrl = URL(fileURLWithPath: filePath)
+                try data.write(to: fileUrl, options: .atomic)
+                owsAssertDebug(FileManager.default.fileExists(atPath: filePath))
+                completion(.success(()))
+            } catch {
+                owsFailDebug("Error downloading [\(url)]: \(error)")
                 completion(.failure(error))
             }
-
+        }
+        .catch { error in
+            owsFailDebug("Error downloading url[\(url)]: \(error)")
+            completion(.failure(error))
+        }
     }
 
     // MARK: -

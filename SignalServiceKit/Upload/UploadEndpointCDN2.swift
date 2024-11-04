@@ -53,12 +53,12 @@ struct UploadEndpointCDN2: UploadEndpoint {
         headers["Content-Type"] = MimeType.applicationOctetStream.rawValue
 
         do {
-            let response = try await urlSession.dataTaskPromise(
+            let response = try await urlSession.performRequest(
                 urlString,
                 method: .post,
                 headers: headers,
                 body: nil
-            ).awaitable()
+            )
 
             guard response.responseStatusCode == 201 else {
                 throw OWSAssertionError("Invalid statusCode: \(response.responseStatusCode).")
@@ -92,12 +92,12 @@ struct UploadEndpointCDN2: UploadEndpoint {
         headers["Content-Range"] = "bytes */\(attempt.encryptedDataLength)"
 
         let urlSession = signalService.urlSessionForCdn(cdnNumber: uploadForm.cdnNumber, maxResponseSize: nil)
-        let response = try await urlSession.dataTaskPromise(
+        let response = try await urlSession.performRequest(
             attempt.uploadLocation.absoluteString,
             method: .put,
             headers: headers,
             body: nil
-        ).awaitable()
+        )
 
         let statusCode = response.responseStatusCode
         switch statusCode {
@@ -186,13 +186,13 @@ struct UploadEndpointCDN2: UploadEndpoint {
 
         do {
             let urlSession = signalService.urlSessionForCdn(cdnNumber: uploadForm.cdnNumber, maxResponseSize: nil)
-            let response = try await urlSession.uploadTaskPromise(
+            let response = try await urlSession.performUpload(
                 attempt.uploadLocation.absoluteString,
                 method: .put,
                 headers: headers,
                 fileUrl: fileUrl,
-                progress: progressBlock
-            ).awaitable()
+                progressBlock: progressBlock
+            )
             switch response.responseStatusCode {
             case 200, 201:
                 return

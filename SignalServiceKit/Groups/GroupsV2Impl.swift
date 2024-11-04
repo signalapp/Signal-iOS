@@ -1129,12 +1129,12 @@ public class GroupsV2Impl: GroupsV2 {
         Logger.info("Making group request: \(request.method) \(request.urlString)")
 
         do {
-            let response = try await urlSession.dataTaskPromise(
+            let response = try await urlSession.performRequest(
                 request.urlString,
                 method: request.method,
                 headers: request.headers.headers,
                 body: request.bodyData
-            ).awaitable()
+            )
 
             let statusCode = response.responseStatusCode
             let hasValidStatusCode = [200, 206].contains(statusCode)

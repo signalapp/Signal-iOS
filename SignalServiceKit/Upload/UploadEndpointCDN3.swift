@@ -42,11 +42,11 @@ struct UploadEndpointCDN3: UploadEndpoint {
         let response: HTTPResponse
         do {
             let url = attempt.uploadLocation.appendingPathComponent(uploadForm.cdnKey)
-            response = try await urlSession.dataTaskPromise(
+            response = try await urlSession.performRequest(
                 url.absoluteString,
                 method: .head,
                 headers: headers
-            ).awaitable()
+            )
         } catch {
             switch error.httpStatusCode ?? 0 {
             case 404, 410, 403:
@@ -134,13 +134,13 @@ struct UploadEndpointCDN3: UploadEndpoint {
         }
 
         do {
-            let response = try await urlSession.uploadTaskPromise(
+            let response = try await urlSession.performUpload(
                 uploadURL,
                 method: method,
                 headers: headers,
                 fileUrl: temporaryFileUrl,
-                progress: progressBlock
-            ).awaitable()
+                progressBlock: progressBlock
+            )
 
             switch response.responseStatusCode {
             case 200...204:

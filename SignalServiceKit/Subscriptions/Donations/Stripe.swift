@@ -387,12 +387,14 @@ fileprivate extension Stripe {
                 headers["Idempotency-Key"] = idempotencyKey
             }
 
-            return urlSession.dataTaskPromise(
-                endpoint,
-                method: .post,
-                headers: headers,
-                body: formData
-            )
+            return Promise.wrapAsync {
+                return try await urlSession.performRequest(
+                    endpoint,
+                    method: .post,
+                    headers: headers,
+                    body: formData
+                )
+            }
         }
     }
 }

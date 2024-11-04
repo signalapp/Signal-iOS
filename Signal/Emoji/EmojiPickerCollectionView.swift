@@ -607,8 +607,8 @@ private class EmojiSearchIndex: NSObject {
         }
 
         let urlSession = SSKEnvironment.shared.signalServiceRef.urlSessionForUpdates()
-        firstly {
-            urlSession.dataTaskPromise(self.remoteManifestURL.absoluteString, method: .get)
+        Promise.wrapAsync {
+            return try await urlSession.performRequest(self.remoteManifestURL.absoluteString, method: .get)
         }.done { response in
             guard response.responseStatusCode == 200 else {
                 throw OWSAssertionError("Bad response code for emoji manifest fetch")
@@ -708,8 +708,8 @@ private class EmojiSearchIndex: NSObject {
 
         let urlSession = SSKEnvironment.shared.signalServiceRef.urlSessionForUpdates()
         let request = String(format: remoteSearchFormat, searchIndexVersion, localization)
-        firstly {
-            urlSession.dataTaskPromise(request, method: .get)
+        Promise.wrapAsync {
+            return try await urlSession.performRequest(request, method: .get)
         }.done { response in
             guard response.responseStatusCode == 200 else {
                 throw OWSAssertionError("Bad response code for emoji index fetch")

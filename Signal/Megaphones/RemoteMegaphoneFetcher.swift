@@ -167,10 +167,10 @@ private extension RemoteMegaphoneFetcher {
         var remainingRetries = remainingRetries
         while true {
             do {
-                let response = try await getUrlSession().dataTaskPromise(
+                let response = try await getUrlSession().performRequest(
                     .manifestUrlPath,
                     method: .get
-                ).awaitable()
+                )
 
                 guard let responseJson = response.responseBodyJson else {
                     throw OWSAssertionError("Missing body JSON for manifest!")
@@ -228,7 +228,7 @@ private extension RemoteMegaphoneFetcher {
                 ) else {
                     throw OWSAssertionError("Failed to create translation URL path for manifest \(manifest.id)")
                 }
-                let response = try await getUrlSession().dataTaskPromise(translationUrlPath, method: .get).awaitable()
+                let response = try await getUrlSession().performRequest(translationUrlPath, method: .get)
                 guard let responseJson = response.responseBodyJson else {
                     throw OWSAssertionError("Missing body JSON for translation!")
                 }
@@ -257,10 +257,10 @@ private extension RemoteMegaphoneFetcher {
         var remainingRetries = remainingRetries
         while !FileManager.default.fileExists(atPath: imageFileUrl.path) {
             do {
-                let response = try await getUrlSession().downloadTaskPromise(
+                let response = try await getUrlSession().performDownload(
                     imageRemoteUrlPath,
                     method: .get
-                ).awaitable()
+                )
 
                 do {
                     try FileManager.default.moveItem(

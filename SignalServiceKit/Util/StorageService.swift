@@ -523,12 +523,12 @@ public struct StorageService {
             // Some 4xx responses are expected;
             // we'll discriminate the status code ourselves.
             urlSession.require2xxOr3xx = false
-            let response = try await urlSession.dataTaskPromise(
+            let response = try await urlSession.performRequest(
                 endpoint,
                 method: method,
                 headers: httpHeaders.headers,
                 body: body
-            ).awaitable()
+            )
 
             let status: StorageResponse.Status
 

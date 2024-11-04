@@ -322,8 +322,8 @@ private enum DebugLogUploader {
 
     private static func getUploadParameters(fileUrl: URL) -> Promise<UploadParameters> {
         let url = URL(string: "https://debuglogs.org/")!
-        return firstly(on: DispatchQueue.global()) { () -> Promise<(HTTPResponse)> in
-            buildOWSURLSession().dataTaskPromise(url.absoluteString, method: .get, ignoreAppExpiry: true)
+        return Promise.wrapAsync {
+            return try await buildOWSURLSession().performRequest(url.absoluteString, method: .get, ignoreAppExpiry: true)
         }.map(on: DispatchQueue.global()) { (response: HTTPResponse) -> (UploadParameters) in
             guard let responseObject = response.responseBodyJson else {
                 throw OWSAssertionError("Invalid response.")
@@ -371,7 +371,7 @@ private enum DebugLogUploader {
         mimeType: String,
         uploadParameters: UploadParameters
     ) -> Promise<URL> {
-        firstly(on: DispatchQueue.global()) { () -> Promise<(HTTPResponse)> in
+        return Promise.wrapAsync {
             let urlSession = buildOWSURLSession()
 
             guard let url = URL(string: uploadParameters.uploadUrl) else {
@@ -382,22 +382,23 @@ private enum DebugLogUploader {
             var textParts = uploadParameters.fieldMap
             textParts.append(key: "Content-Type", value: mimeType)
 
-            return urlSession.multiPartUploadTaskPromise(request: request,
-                                                         fileUrl: fileUrl,
-                                                         name: "file",
-                                                         fileName: fileUrl.lastPathComponent,
-                                                         mimeType: mimeType,
-                                                         textParts: textParts,
-                                                         ignoreAppExpiry: true,
-                                                         progress: nil)
-        }.map(on: DispatchQueue.global()) { (response: HTTPResponse) -> URL in
+            let response = try await urlSession.performMultiPartUpload(
+                request: request,
+                fileUrl: fileUrl,
+                name: "file",
+                fileName: fileUrl.lastPathComponent,
+                mimeType: mimeType,
+                textParts: textParts,
+                ignoreAppExpiry: true,
+                progressBlock: nil
+            )
+
             let statusCode = response.responseStatusCode
             // We'll accept any 2xx status code.
-            let statusCodeClass = statusCode - (statusCode % 100)
-            guard statusCodeClass == 200 else {
-                Logger.error("statusCode: \(statusCode), \(statusCodeClass)")
+            guard statusCode/100 == 2 else {
+                Logger.error("statusCode: \(statusCode)")
                 Logger.error("headers: \(response.responseHeaders)")
-                throw OWSAssertionError("Invalid status code: \(statusCode), \(statusCodeClass)")
+                throw OWSAssertionError("Invalid status code: \(statusCode)")
             }
 
             let urlString = "https://debuglogs.org/\(uploadParameters.uploadKey)"

@@ -1115,14 +1115,22 @@ public extension TSAttachmentDownloadManager {
                 guard let requestUrl = request.url else {
                     return Promise(error: OWSAssertionError("Request missing url."))
                 }
-                return urlSession.downloadTaskPromise(requestUrl: requestUrl,
-                                                      resumeData: resumeData,
-                                                      progress: progress)
+                return Promise.wrapAsync {
+                    return try await urlSession.performDownload(
+                        requestUrl: requestUrl,
+                        resumeData: resumeData,
+                        progressBlock: progress
+                    )
+                }
             } else {
-                return urlSession.downloadTaskPromise(urlPath,
-                                                      method: .get,
-                                                      headers: headers,
-                                                      progress: progress)
+                return Promise.wrapAsync {
+                    return try await urlSession.performDownload(
+                        urlPath,
+                        method: .get,
+                        headers: headers,
+                        progressBlock: progress
+                    )
+                }
             }
         }.map(on: schedulers.global()) { (response: OWSUrlDownloadResponse) in
             let downloadUrl = response.downloadUrl

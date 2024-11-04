@@ -133,7 +133,7 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
     }
 
     func fetchStringResource(from url: URL) async throws -> (URL, String) {
-        let response = try await self.buildOWSURLSession().dataTaskPromise(url.absoluteString, method: .get, ignoreAppExpiry: true).awaitable()
+        let response = try await self.buildOWSURLSession().performRequest(url.absoluteString, method: .get, ignoreAppExpiry: true)
         let statusCode = response.responseStatusCode
         guard statusCode >= 200 && statusCode < 300 else {
             Logger.warn("Invalid response: \(statusCode).")
@@ -147,7 +147,7 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
     }
 
     private func fetchImageResource(from url: URL) async throws -> Data {
-        let httpResponse = try await self.buildOWSURLSession().dataTaskPromise(url.absoluteString, method: .get, ignoreAppExpiry: true).awaitable()
+        let httpResponse = try await self.buildOWSURLSession().performRequest(url.absoluteString, method: .get, ignoreAppExpiry: true)
         let statusCode = httpResponse.responseStatusCode
         guard statusCode >= 200 && statusCode < 300 else {
             Logger.warn("Invalid response: \(statusCode).")

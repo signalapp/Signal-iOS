@@ -541,11 +541,9 @@ public class SystemStoryManager: NSObject, SystemStoryManagerProtocol {
     private func fetchFilenames(
         urlSession: OWSURLSessionProtocol
     ) -> Promise<[String]> {
-        return urlSession.dataTaskPromise(
-            on: schedulers.global(),
-            Constants.manifestPath,
-            method: .get
-        ).map(on: queue) { (response: HTTPResponse) throws -> [String] in
+        return Promise.wrapAsync {
+            return try await urlSession.performRequest(Constants.manifestPath, method: .get)
+        }.map(on: queue) { (response: HTTPResponse) throws -> [String] in
             guard
                 let json = response.responseBodyJson,
                 let responseDictionary = json as? [String: AnyObject],
@@ -571,11 +569,9 @@ public class SystemStoryManager: NSObject, SystemStoryManagerProtocol {
         urlSession: OWSURLSessionProtocol,
         url: String
     ) -> Promise<TSResourceDataSource> {
-        return urlSession.downloadTaskPromise(
-            on: schedulers.global(),
-            url,
-            method: .get
-        ).map(on: self.queue) { [fileSystem, storyMessageFactory] result in
+        return Promise.wrapAsync {
+            return try await urlSession.performDownload(url, method: .get)
+        }.map(on: self.queue) { [fileSystem, storyMessageFactory] result in
             let resultUrl = result.downloadUrl
 
             guard fileSystem.fileOrFolderExists(url: resultUrl) else {

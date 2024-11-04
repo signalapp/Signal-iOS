@@ -162,12 +162,13 @@ public class SSKReachabilityManagerImpl: NSObject, SSKReachabilityManager {
 
         Logger.info("Scheduling wakeup request for pending message sends.")
 
-        firstly {
-            backgroundSession.downloadTaskPromise(TSConstants.mainServiceIdentifiedURL, method: .get)
-        }.done(on: DispatchQueue.global()) { _ in
-            Logger.info("Finished wakeup request.")
-        }.catch(on: DispatchQueue.global()) { error in
-            Logger.info("Failed wakeup request \(error)")
+        Task { [backgroundSession] in
+            do {
+                _ = try await backgroundSession.performDownload(TSConstants.mainServiceIdentifiedURL, method: .get)
+                Logger.info("Finished wakeup request.")
+            } catch {
+                Logger.warn("Failed wakeup request \(error)")
+            }
         }
     }
 }

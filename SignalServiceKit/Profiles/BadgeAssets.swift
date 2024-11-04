@@ -116,7 +116,8 @@ public class BadgeAssets: NSObject {
 
         // TODO: Badges — Censorship circumvention
         let urlSession = SSKEnvironment.shared.signalServiceRef.urlSessionForUpdates2()
-        return urlSession.downloadTaskPromise(remoteSourceUrl.absoluteString, method: .get).map { result in
+        return Promise.wrapAsync { [remoteSourceUrl] in
+            let result = try await urlSession.performDownload(remoteSourceUrl.absoluteString, method: .get)
             let resultUrl = result.downloadUrl
 
             guard OWSFileSystem.fileOrFolderExists(url: resultUrl) else {

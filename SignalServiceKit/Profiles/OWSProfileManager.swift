@@ -2264,7 +2264,7 @@ extension OWSProfileManager {
         do {
             Logger.info("")
             let urlSession = self.avatarUrlSession
-            let response = try await urlSession.downloadTaskPromise(avatarUrlPath, method: .get).awaitable()
+            let response = try await urlSession.performDownload(avatarUrlPath, method: .get)
             let decryptedFileUrl = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
             try decryptAvatar(at: response.downloadUrl, to: decryptedFileUrl, profileKey: profileKey)
             guard Data.ows_isValidImage(at: decryptedFileUrl, mimeType: nil) else {
