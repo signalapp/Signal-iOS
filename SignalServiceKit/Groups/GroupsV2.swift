@@ -96,7 +96,7 @@ public protocol GroupsV2 {
     func createNewGroupOnService(
         groupModel: TSGroupModelV2,
         disappearingMessageToken: DisappearingMessageToken
-    ) async throws
+    ) async throws -> any GroupV2Snapshot
 
     func loadProfileKeyCredentials(
         for acis: [Aci],
@@ -616,7 +616,7 @@ public class MockGroupsV2: GroupsV2 {
     public func createNewGroupOnService(
         groupModel: TSGroupModelV2,
         disappearingMessageToken: DisappearingMessageToken
-    ) async throws {
+    ) async throws -> any GroupV2Snapshot {
         owsFail("Not implemented.")
     }
 

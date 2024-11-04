@@ -82,69 +82,67 @@ public class GroupsV2Impl: GroupsV2 {
     public func createNewGroupOnService(
         groupModel: TSGroupModelV2,
         disappearingMessageToken: DisappearingMessageToken
-    ) async throws {
-        let groupV2Params = try groupModel.groupV2Params()
-
+    ) async throws -> any GroupV2Snapshot {
         do {
-            let groupProto = try await self.buildProtoToCreateNewGroupOnService(
+            return try await _createNewGroupOnService(
                 groupModel: groupModel,
                 disappearingMessageToken: disappearingMessageToken,
-                groupV2Params: groupV2Params
+                isRetryingAfterRecoverable400: false
             )
-            let requestBuilder: RequestBuilder = { authCredential -> GroupsV2Request in
-                return try StorageService.buildNewGroupRequest(
-                    groupProto: groupProto,
-                    groupV2Params: groupV2Params,
-                    authCredential: authCredential
-                )
-            }
-
-            // New-group protos contain a profile key credential for each
-            // member. If the proto we're submitting contains a profile key
-            // credential that's expired, we'll get back a generic 400.
-            // Consequently, if we get a 400 we should attempt to recover
-            // (see below).
-
-            _ = try await performServiceRequest(
-                requestBuilder: requestBuilder,
-                groupId: nil,
-                behavior400: .reportForRecovery,
-                behavior403: .fail,
-                behavior404: .fail
-            )
-        } catch {
-            guard case GroupsV2Error.serviceRequestHitRecoverable400 = error else {
-                throw error
-            }
-
-            // We likely failed to create the group because one of the profile
-            // key credentials we submitted was expired, possibly due to drift
-            // between our local clock and the service. We should try again
-            // exactly once, forcing a refresh of all the credentials first.
-
-            let groupProto = try await buildProtoToCreateNewGroupOnService(
+        } catch GroupsV2Error.serviceRequestHitRecoverable400 {
+            // We likely failed to create the group because one of the profile key
+            // credentials we submitted was expired, possibly due to drift between our
+            // local clock and the service. We should try again exactly once, forcing a
+            // refresh of all the credentials first.
+            return try await _createNewGroupOnService(
                 groupModel: groupModel,
                 disappearingMessageToken: disappearingMessageToken,
-                groupV2Params: groupV2Params,
-                shouldForceRefreshProfileKeyCredentials: true
-            )
-
-            let requestBuilder: RequestBuilder = { authCredential -> GroupsV2Request in
-                return try StorageService.buildNewGroupRequest(
-                    groupProto: groupProto,
-                    groupV2Params: groupV2Params,
-                    authCredential: authCredential
-                )
-            }
-
-            _ = try await performServiceRequest(
-                requestBuilder: requestBuilder,
-                groupId: nil,
-                behavior400: .fail,
-                behavior403: .fail,
-                behavior404: .fail
+                isRetryingAfterRecoverable400: true
             )
         }
+    }
+
+    private func _createNewGroupOnService(
+        groupModel: TSGroupModelV2,
+        disappearingMessageToken: DisappearingMessageToken,
+        isRetryingAfterRecoverable400: Bool
+    ) async throws -> any GroupV2Snapshot {
+        let groupV2Params = try groupModel.groupV2Params()
+
+        let groupProto = try await self.buildProtoToCreateNewGroupOnService(
+            groupModel: groupModel,
+            disappearingMessageToken: disappearingMessageToken,
+            groupV2Params: groupV2Params,
+            shouldForceRefreshProfileKeyCredentials: isRetryingAfterRecoverable400
+        )
+
+        let requestBuilder: RequestBuilder = { authCredential -> GroupsV2Request in
+            return try StorageService.buildNewGroupRequest(
+                groupProto: groupProto,
+                groupV2Params: groupV2Params,
+                authCredential: authCredential
+            )
+        }
+
+        let response = try await performServiceRequest(
+            requestBuilder: requestBuilder,
+            groupId: nil,
+            behavior400: isRetryingAfterRecoverable400 ? .fail : .reportForRecovery,
+            behavior403: .fail,
+            behavior404: .fail
+        )
+
+        let groupResponseProto = try GroupsProtoGroupResponse(serializedData: response.responseBodyData ?? Data())
+
+        guard let groupProto = groupResponseProto.group else {
+            throw OWSAssertionError("Missing group state in response.")
+        }
+
+        return try GroupsV2Protos.parse(
+            groupProto: groupProto,
+            downloadedAvatars: GroupV2DownloadedAvatars.from(groupModel: groupModel),
+            groupV2Params: groupV2Params
+        )
     }
 
     /// Construct the proto to create a new group on the service.

@@ -22,16 +22,19 @@ public struct GroupsV2Request {
 
 public extension StorageService {
 
-    static func buildNewGroupRequest(groupProto: GroupsProtoGroup,
-                                     groupV2Params: GroupV2Params,
-                                     authCredential: AuthCredentialWithPni) throws -> GroupsV2Request {
-
+    static func buildNewGroupRequest(
+        groupProto: GroupsProtoGroup,
+        groupV2Params: GroupV2Params,
+        authCredential: AuthCredentialWithPni
+    ) throws -> GroupsV2Request {
         let protoData = try groupProto.serializedData()
-        return try buildGroupV2Request(protoData: protoData,
-                                       urlString: "/v1/groups/",
-                                       method: .put,
-                                       groupV2Params: groupV2Params,
-                                       authCredential: authCredential)
+        return try buildGroupV2Request(
+            protoData: protoData,
+            urlString: "v2/groups",
+            method: .put,
+            groupV2Params: groupV2Params,
+            authCredential: authCredential
+        )
     }
 
     static func buildUpdateGroupRequest(groupChangeProto: GroupsProtoGroupChangeActions,

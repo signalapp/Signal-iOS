@@ -231,13 +231,9 @@ public class GroupManager: NSObject {
             proposedGroupModel = try builder.buildAsV2()
         }
 
-        try await SSKEnvironment.shared.groupsV2Ref.createNewGroupOnService(
+        let groupV2Snapshot = try await SSKEnvironment.shared.groupsV2Ref.createNewGroupOnService(
             groupModel: proposedGroupModel,
             disappearingMessageToken: disappearingMessageToken
-        )
-
-        let groupV2Snapshot = try await SSKEnvironment.shared.groupsV2Ref.fetchCurrentGroupV2Snapshot(
-            groupModel: proposedGroupModel
         )
 
         let thread = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
