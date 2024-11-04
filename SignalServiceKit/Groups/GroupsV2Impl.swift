@@ -82,7 +82,7 @@ public class GroupsV2Impl: GroupsV2 {
     public func createNewGroupOnService(
         groupModel: TSGroupModelV2,
         disappearingMessageToken: DisappearingMessageToken
-    ) async throws -> any GroupV2Snapshot {
+    ) async throws -> GroupV2Snapshot {
         do {
             return try await _createNewGroupOnService(
                 groupModel: groupModel,
@@ -106,7 +106,7 @@ public class GroupsV2Impl: GroupsV2 {
         groupModel: TSGroupModelV2,
         disappearingMessageToken: DisappearingMessageToken,
         isRetryingAfterRecoverable400: Bool
-    ) async throws -> any GroupV2Snapshot {
+    ) async throws -> GroupV2Snapshot {
         let groupV2Params = try groupModel.groupV2Params()
 
         let groupProto = try await self.buildProtoToCreateNewGroupOnService(

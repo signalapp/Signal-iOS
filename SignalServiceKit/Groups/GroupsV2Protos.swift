@@ -432,7 +432,7 @@ public class GroupsV2Protos {
 
         let revision = groupProto.revision
         let groupSecretParams = groupV2Params.groupSecretParams
-        return GroupV2SnapshotImpl(
+        return GroupV2Snapshot(
             groupSecretParams: groupSecretParams,
             groupProto: groupProto,
             revision: revision,

@@ -96,7 +96,7 @@ public protocol GroupsV2 {
     func createNewGroupOnService(
         groupModel: TSGroupModelV2,
         disappearingMessageToken: DisappearingMessageToken
-    ) async throws -> any GroupV2Snapshot
+    ) async throws -> GroupV2Snapshot
 
     func loadProfileKeyCredentials(
         for acis: [Aci],
@@ -356,34 +356,6 @@ public protocol GroupV2Updates {
 
 // MARK: -
 
-public protocol GroupV2Snapshot {
-    var groupSecretParams: GroupSecretParams { get }
-
-    var debugDescription: String { get }
-
-    var revision: UInt32 { get }
-
-    var title: String { get }
-    var descriptionText: String? { get }
-
-    var avatarUrlPath: String? { get }
-    var avatarData: Data? { get }
-
-    var groupMembership: GroupMembership { get }
-
-    var groupAccess: GroupAccess { get }
-
-    var disappearingMessageToken: DisappearingMessageToken { get }
-
-    var profileKeys: [Aci: Data] { get }
-
-    var inviteLinkPassword: Data? { get }
-
-    var isAnnouncementsOnly: Bool { get }
-}
-
-// MARK: -
-
 public struct GroupV2Change {
     public var snapshot: GroupV2Snapshot?
     public var changeActionsProto: GroupsProtoGroupChangeActions?
@@ -616,7 +588,7 @@ public class MockGroupsV2: GroupsV2 {
     public func createNewGroupOnService(
         groupModel: TSGroupModelV2,
         disappearingMessageToken: DisappearingMessageToken
-    ) async throws -> any GroupV2Snapshot {
+    ) async throws -> GroupV2Snapshot {
         owsFail("Not implemented.")
     }
 

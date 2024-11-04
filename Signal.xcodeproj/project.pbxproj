@@ -1266,7 +1266,7 @@
 		724D47B92B97C301001BE973 /* VersionedProfilesImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470249F238C85850078D72C /* VersionedProfilesImpl.swift */; };
 		724D47BA2B97C51D001BE973 /* GroupsV2Protos.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3456A73123D63EBE00947219 /* GroupsV2Protos.swift */; };
 		724D47BB2B97C558001BE973 /* GroupV2Params.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB3C5B23C6644B001651FC /* GroupV2Params.swift */; };
-		724D47BC2B97C57C001BE973 /* GroupV2SnapshotImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB3C5A23C6644B001651FC /* GroupV2SnapshotImpl.swift */; };
+		724D47BC2B97C57C001BE973 /* GroupV2Snapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB3C5A23C6644B001651FC /* GroupV2Snapshot.swift */; };
 		724D47BD2B97C5B9001BE973 /* GroupsV2Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB3C5823C6644B001651FC /* GroupsV2Utils.swift */; };
 		724E68642C91FA73002199F3 /* DataHexadecimalTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 724E68632C91FA73002199F3 /* DataHexadecimalTest.swift */; };
 		725464EC2B9F6EB900EABFD2 /* TSAttachmentMultisendJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9C50FF22F495F60054A33F /* TSAttachmentMultisendJob.swift */; };
@@ -4047,7 +4047,7 @@
 		34B6A904218B4C90007C4606 /* TypingIndicatorInteraction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TypingIndicatorInteraction.swift; sourceTree = "<group>"; };
 		34BB3C5823C6644B001651FC /* GroupsV2Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2Utils.swift; sourceTree = "<group>"; };
 		34BB3C5923C6644B001651FC /* GroupsV2OutgoingChangesImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2OutgoingChangesImpl.swift; sourceTree = "<group>"; };
-		34BB3C5A23C6644B001651FC /* GroupV2SnapshotImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupV2SnapshotImpl.swift; sourceTree = "<group>"; };
+		34BB3C5A23C6644B001651FC /* GroupV2Snapshot.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupV2Snapshot.swift; sourceTree = "<group>"; };
 		34BB3C5B23C6644B001651FC /* GroupV2Params.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupV2Params.swift; sourceTree = "<group>"; };
 		34BB3C5C23C6644B001651FC /* GroupsV2Impl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2Impl.swift; sourceTree = "<group>"; };
 		34BB78B4272C510800DA0D04 /* MobileCoinHelperMinimal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MobileCoinHelperMinimal.swift; sourceTree = "<group>"; };
@@ -14057,7 +14057,7 @@
 				D99A0F5F29F34FDA002E02E3 /* GroupUpdateInfoMessageInserter.swift */,
 				662590BA2B50922D001FDCDD /* GroupUpdateInfoMessageInserterBackupHelper.swift */,
 				34BB3C5B23C6644B001651FC /* GroupV2Params.swift */,
-				34BB3C5A23C6644B001651FC /* GroupV2SnapshotImpl.swift */,
+				34BB3C5A23C6644B001651FC /* GroupV2Snapshot.swift */,
 				340B870D23DF3E3A00BE0AFC /* GroupV2UpdatesImpl.swift */,
 				F9C5CBAC289453B200548EEE /* NewGroupSeed.swift */,
 				340B06C623C8DA2600929588 /* StorageService+GroupsV2.swift */,
@@ -17128,7 +17128,7 @@
 				662590BB2B50922D001FDCDD /* GroupUpdateInfoMessageInserterBackupHelper.swift in Sources */,
 				667AF9E22B4DC5EE008AEE5D /* GroupUpdateSource.swift in Sources */,
 				724D47BB2B97C558001BE973 /* GroupV2Params.swift in Sources */,
-				724D47BC2B97C57C001BE973 /* GroupV2SnapshotImpl.swift in Sources */,
+				724D47BC2B97C57C001BE973 /* GroupV2Snapshot.swift in Sources */,
 				725465552BA0282D00EABFD2 /* GroupV2UpdatesImpl.swift in Sources */,
 				668A012F2C2B6088007B8808 /* Guarantee+Race.swift in Sources */,
 				668A01302C2B6088007B8808 /* Guarantee+Timeout.swift in Sources */,
