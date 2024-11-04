@@ -634,7 +634,11 @@ public class MessageSender {
         do {
             try await waitForPreKeyRotationIfNeeded()
             let senderCertificates = try await SSKEnvironment.shared.udManagerRef.fetchSenderCertificates(certificateExpirationPolicy: .permissive)
-            try await sendPreparedMessage(message, canLookUpPhoneNumbers: true, senderCertificates: senderCertificates)
+            try await sendPreparedMessage(
+                message,
+                recoveryState: OuterRecoveryState(),
+                senderCertificates: senderCertificates
+            )
         } catch {
             if message.wasSentToAnyRecipient {
                 // Always ignore the sync error...
@@ -662,9 +666,33 @@ public class MessageSender {
         )
     }
 
+    /// Certain errors are "correctable" and result in immediate retries. For
+    /// example, if there's a newly-added device, we should encrypt the message
+    /// for that device and try to send it immediately. However, some of these
+    /// errors can *theoretically* happen ad nauseam (but they shouldn't). To
+    /// avoid tight retry loops, we handle them immediately just once and then
+    /// use the standard retry logic if they happen repeatedly.
+    private struct OuterRecoveryState {
+        var canLookUpPhoneNumbers = true
+
+        // Sender key sends will fail if a single recipient has an invalid access
+        // token, but the server can't identify the recipient for us. To recover,
+        // fall back to a fanout; this will fail only for the affect recipient.
+        var canUseMultiRecipientSealedSender = true
+
+        var canHandleMultiRecipientMismatchedDevices = true
+        var canHandleMultiRecipientStaleDevices = true
+
+        func mutated(_ block: (inout Self) -> Void) -> Self {
+            var mutableSelf = self
+            block(&mutableSelf)
+            return mutableSelf
+        }
+    }
+
     private func sendPreparedMessage(
         _ message: TSOutgoingMessage,
-        canLookUpPhoneNumbers: Bool,
+        recoveryState: OuterRecoveryState,
         senderCertificates: SenderCertificates
     ) async throws {
         let nextAction: SendMessageNextAction? = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
@@ -707,7 +735,7 @@ public class MessageSender {
             // *again* in a new transaction. Things may change for that subsequent
             // attempt, and if there's still missing phone numbers at that point, we'll
             // skip them for this message.
-            if canLookUpPhoneNumbers, !phoneNumbersToFetch.isEmpty {
+            if recoveryState.canLookUpPhoneNumbers, !phoneNumbersToFetch.isEmpty {
                 return .lookUpPhoneNumbersAndTryAgain(phoneNumbersToFetch)
             }
 
@@ -754,11 +782,7 @@ public class MessageSender {
 
             let senderKeyRecipients: [ServiceId]
             let sendViaSenderKey: (@Sendable () async -> [(ServiceId, any Error)])?
-            if !message.canSendWithSenderKey {
-                Logger.warn("Fanning out \(message.timestamp) because of a prior error")
-                senderKeyRecipients = []
-                sendViaSenderKey = nil
-            } else if thread.usesSenderKey {
+            if recoveryState.canUseMultiRecipientSealedSender, thread.usesSenderKey {
                 (senderKeyRecipients, sendViaSenderKey) = self.prepareSenderKeyMessageSend(
                     for: serviceIds,
                     in: thread,
@@ -784,12 +808,14 @@ public class MessageSender {
             )
         }
 
+        let retryRecoveryState: OuterRecoveryState
+
         switch nextAction {
         case .none:
             return
         case .lookUpPhoneNumbersAndTryAgain(let phoneNumbers):
             try await lookUpPhoneNumbers(phoneNumbers)
-            try await sendPreparedMessage(message, canLookUpPhoneNumbers: false, senderCertificates: senderCertificates)
+            retryRecoveryState = recoveryState.mutated({ $0.canLookUpPhoneNumbers = false })
         case .sendPreparedMessage(let serializedMessage, let thread, let fanoutRecipients, let sendViaSenderKey, let udAccess, let localIdentifiers):
             let perRecipientErrors = await sendPreparedMessage(
                 message: message,
@@ -800,10 +826,30 @@ public class MessageSender {
                 udAccess: udAccess,
                 localIdentifiers: localIdentifiers
             )
+            let recipientErrors = MessageSenderRecipientErrors(recipientErrors: perRecipientErrors)
+            if recipientErrors.containsAny(of: .invalidAuthHeader, .invalidRecipient, .oversizeMessage) {
+                retryRecoveryState = recoveryState.mutated({ $0.canUseMultiRecipientSealedSender = false })
+                break
+            }
+            if recoveryState.canHandleMultiRecipientMismatchedDevices, recipientErrors.containsAny(of: .deviceUpdate) {
+                retryRecoveryState = recoveryState.mutated({ $0.canHandleMultiRecipientMismatchedDevices = false })
+                break
+            }
+            if recoveryState.canHandleMultiRecipientStaleDevices, recipientErrors.containsAny(of: .staleDevices) {
+                retryRecoveryState = recoveryState.mutated({ $0.canHandleMultiRecipientStaleDevices = false })
+                break
+            }
             if !perRecipientErrors.isEmpty {
                 try await handleSendFailure(message: message, thread: thread, perRecipientErrors: perRecipientErrors)
             }
+            return
         }
+
+        try await sendPreparedMessage(
+            message,
+            recoveryState: retryRecoveryState,
+            senderCertificates: senderCertificates
+        )
     }
 
     private func sendPreparedMessage(
@@ -1073,99 +1119,92 @@ public class MessageSender {
         return SerializedMessage(plaintextData: plaintextData, payloadId: payloadId)
     }
 
+    private struct InnerRecoveryState {
+        var canHandleMismatchedDevices = true
+        var canHandleStaleDevices = true
+        var canHandleCaptcha = true
+
+        func mutated(_ block: (inout Self) -> Void) -> Self {
+            var mutableSelf = self
+            block(&mutableSelf)
+            return mutableSelf
+        }
+    }
+
     @discardableResult
     func performMessageSend(
         _ messageSend: OWSMessageSend,
         sealedSenderParameters: SealedSenderParameters?
     ) async throws -> [SentDeviceMessage] {
-        return try await performMessageSendAttempt(
-            messageSend,
-            sealedSenderParameters: sealedSenderParameters,
-            remainingAttempts: 3
-        )
-    }
-
-    private func retryMessageSend(
-        _ messageSend: OWSMessageSend,
-        remainingAttempts: Int,
-        orThrow error: Error,
-        sealedSenderParameters: SealedSenderParameters?
-    ) async throws -> [SentDeviceMessage] {
-        guard remainingAttempts > 1 else {
-            throw error
-        }
-        return try await performMessageSendAttempt(
-            messageSend,
-            sealedSenderParameters: sealedSenderParameters,
-            remainingAttempts: remainingAttempts - 1
-        )
+        return try await performMessageSendAttempt(messageSend, recoveryState: InnerRecoveryState(), sealedSenderParameters: sealedSenderParameters)
     }
 
     private func performMessageSendAttempt(
         _ messageSend: OWSMessageSend,
-        sealedSenderParameters: SealedSenderParameters?,
-        remainingAttempts: Int
+        recoveryState: InnerRecoveryState,
+        sealedSenderParameters: SealedSenderParameters?
     ) async throws -> [SentDeviceMessage] {
-        // The caller has access to the error, so they must throw it if no more
-        // retries are allowed.
-        owsPrecondition(remainingAttempts > 0)
-
         let message = messageSend.message
         let serviceId = messageSend.serviceId
 
         Logger.info("Sending message: \(type(of: message)); timestamp: \(message.timestamp); serviceId: \(serviceId)")
 
-        let deviceMessages: [DeviceMessage]
+        let retryRecoveryState: InnerRecoveryState
         do {
-            deviceMessages = try await buildDeviceMessages(
+            let deviceMessages = try await buildDeviceMessages(
                 messageSend: messageSend,
                 sealedSenderParameters: sealedSenderParameters
             )
-        } catch {
-            switch error {
-            case RequestMakerUDAuthError.udAuthFailure:
-                return try await retryMessageSend(
-                    messageSend,
-                    remainingAttempts: remainingAttempts,
-                    orThrow: error,
-                    sealedSenderParameters: nil  // Retry as an unsealed send.
-                )
-            default:
-                break
-            }
-            throw error
-        }
 
-        if shouldSkipMessageSend(messageSend, deviceMessages: deviceMessages) {
-            // This emulates the completion logic of an actual successful send (see below).
-            await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-                message.updateWithSkippedRecipient(messageSend.localIdentifiers.aciAddress, transaction: tx)
-            }
-            return []
-        }
-
-        for deviceMessage in deviceMessages {
-            let hasValidMessageType: Bool = {
-                switch deviceMessage.type {
-                case .unidentifiedSender:
-                    return sealedSenderParameters != nil
-                case .ciphertext, .prekeyBundle, .plaintextContent:
-                    return sealedSenderParameters == nil
-                case .unknown, .keyExchange, .receipt, .senderkeyMessage:
-                    return false
+            if shouldSkipMessageSend(messageSend, deviceMessages: deviceMessages) {
+                // This emulates the completion logic of an actual successful send (see below).
+                await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+                    message.updateWithSkippedRecipient(messageSend.localIdentifiers.aciAddress, transaction: tx)
                 }
-            }()
-            guard hasValidMessageType else {
-                owsFailDebug("Invalid message type: \(deviceMessage.type)")
-                throw OWSUnretryableMessageSenderError()
+                return []
             }
-        }
 
-        return try await sendDeviceMessages(
-            deviceMessages,
-            messageSend: messageSend,
-            sealedSenderParameters: sealedSenderParameters,
-            remainingAttempts: remainingAttempts
+            for deviceMessage in deviceMessages {
+                let hasValidMessageType: Bool = {
+                    switch deviceMessage.type {
+                    case .unidentifiedSender:
+                        return sealedSenderParameters != nil
+                    case .ciphertext, .prekeyBundle, .plaintextContent:
+                        return sealedSenderParameters == nil
+                    case .unknown, .keyExchange, .receipt, .senderkeyMessage:
+                        return false
+                    }
+                }()
+                guard hasValidMessageType else {
+                    owsFailDebug("Invalid message type: \(deviceMessage.type)")
+                    throw OWSUnretryableMessageSenderError()
+                }
+            }
+
+            return try await sendDeviceMessages(
+                deviceMessages,
+                messageSend: messageSend,
+                sealedSenderParameters: sealedSenderParameters
+            )
+        } catch RequestMakerUDAuthError.udAuthFailure {
+            owsPrecondition(sealedSenderParameters != nil)
+            // This failure can happen on pre key fetches or message sends.
+            return try await performMessageSendAttempt(
+                messageSend,
+                recoveryState: recoveryState,
+                sealedSenderParameters: nil  // Retry as an unsealed send.
+            )
+        } catch DeviceMessagesError.mismatchedDevices where recoveryState.canHandleMismatchedDevices {
+            retryRecoveryState = recoveryState.mutated({ $0.canHandleMismatchedDevices = false })
+        } catch DeviceMessagesError.staleDevices where recoveryState.canHandleStaleDevices {
+            retryRecoveryState = recoveryState.mutated({ $0.canHandleStaleDevices = false })
+        } catch where error.httpStatusCode == 428 && recoveryState.canHandleCaptcha {
+            retryRecoveryState = recoveryState.mutated({ $0.canHandleCaptcha = false })
+        }
+        return try await performMessageSendAttempt(
+            messageSend,
+            recoveryState: retryRecoveryState,
+            sealedSenderParameters: sealedSenderParameters
         )
     }
 
@@ -1365,11 +1404,17 @@ public class MessageSender {
         }
     }
 
+    private enum DeviceMessagesError: Error, IsRetryableProvider {
+        case mismatchedDevices
+        case staleDevices
+
+        var isRetryableProvider: Bool { true }
+    }
+
     private func sendDeviceMessages(
         _ deviceMessages: [DeviceMessage],
         messageSend: OWSMessageSend,
-        sealedSenderParameters: SealedSenderParameters?,
-        remainingAttempts: Int
+        sealedSenderParameters: SealedSenderParameters?
     ) async throws -> [SentDeviceMessage] {
         let message: TSOutgoingMessage = messageSend.message
 
@@ -1404,8 +1449,7 @@ public class MessageSender {
             return try await messageSendDidFail(
                 messageSend,
                 responseError: error,
-                sealedSenderParameters: sealedSenderParameters,
-                remainingAttempts: remainingAttempts
+                sealedSenderParameters: sealedSenderParameters
             )
         }
     }
@@ -1487,73 +1531,55 @@ public class MessageSender {
         return sentDeviceMessages
     }
 
-    private struct MessageSendFailureResponse: Decodable {
-        let code: Int?
-        let extraDevices: [UInt32]?
-        let missingDevices: [UInt32]?
-        let staleDevices: [UInt32]?
+    struct MismatchedDevices: Decodable {
+        let extraDevices: [Int8]
+        let missingDevices: [Int8]
 
-        static func parse(_ responseData: Data?) -> MessageSendFailureResponse? {
-            guard let responseData = responseData else {
-                return nil
-            }
-            do {
-                return try JSONDecoder().decode(MessageSendFailureResponse.self, from: responseData)
-            } catch {
-                owsFailDebug("Error: \(error)")
-                return nil
-            }
+        fileprivate static func parse(_ responseData: Data) throws -> Self {
+            return try JSONDecoder().decode(Self.self, from: responseData)
+        }
+    }
+
+    struct StaleDevices: Decodable {
+        let staleDevices: [Int8]
+
+        fileprivate static func parse(_ responseData: Data) throws -> Self {
+            return try JSONDecoder().decode(Self.self, from: responseData)
         }
     }
 
     private func messageSendDidFail(
         _ messageSend: OWSMessageSend,
         responseError: Error,
-        sealedSenderParameters: SealedSenderParameters?,
-        remainingAttempts: Int
+        sealedSenderParameters: SealedSenderParameters?
     ) async throws -> [SentDeviceMessage] {
         let message: TSOutgoingMessage = messageSend.message
 
         Logger.warn("\(type(of: message)) to \(messageSend.serviceId), timestamp: \(message.timestamp), error: \(responseError)")
 
-        let httpError: OWSHTTPError?
-        switch responseError {
-        case RequestMakerUDAuthError.udAuthFailure:
-            return try await retryMessageSend(
-                messageSend,
-                remainingAttempts: remainingAttempts,
-                orThrow: responseError,
-                sealedSenderParameters: nil  // Retry as an unsealed send.
-            )
-        case let responseError as OWSHTTPError:
-            httpError = responseError
-        default:
-            owsFailDebug("Unexpected error when sending a message.")
-            httpError = nil
-        }
-        switch httpError?.httpStatusCode {
+        switch responseError.httpStatusCode {
         case 401:
             Logger.warn("Unable to send due to invalid credentials.")
             throw MessageSendUnauthorizedError()
         case 404:
             try await failSendForUnregisteredRecipient(messageSend)
         case 409:
-            Logger.warn("Mismatched devices for \(messageSend.serviceId)")
-
-            guard let response = MessageSendFailureResponse.parse(responseError.httpResponseData) else {
-                owsFailDebug("Couldn't parse JSON response.")
-                throw OWSRetryableMessageSenderError()
-            }
-
-            await handleMismatchedDevices(for: messageSend.serviceId, response: response)
-        case 410:
-            guard let response = MessageSendFailureResponse.parse(responseError.httpResponseData) else {
-                owsFailDebug("Couldn't parse JSON response.")
-                throw OWSRetryableMessageSenderError()
-            }
+            let response = try MismatchedDevices.parse(responseError.httpResponseData ?? Data())
             await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-                self.handleStaleDevices(response.staleDevices, for: messageSend.serviceId, tx: tx.asV2Write)
+                handleMismatchedDevices(
+                    serviceId: messageSend.serviceId,
+                    missingDevices: response.missingDevices,
+                    extraDevices: response.extraDevices,
+                    tx: tx
+                )
             }
+            throw DeviceMessagesError.mismatchedDevices
+        case 410:
+            let response = try StaleDevices.parse(responseError.httpResponseData ?? Data())
+            await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+                handleStaleDevices(serviceId: messageSend.serviceId, staleDevices: response.staleDevices, tx: tx)
+            }
+            throw DeviceMessagesError.staleDevices
         case 428:
             // SPAM TODO: Only retry messages with -hasRenderableContent
             Logger.warn("Server requested user complete spam challenge.")
@@ -1564,18 +1590,10 @@ public class MessageSender {
             // The resolver has 10s to asynchronously resolve a challenge If it
             // resolves, great! We'll let MessageSender auto-retry. Otherwise, it'll be
             // marked as "pending"
-        case let statusCode? where (500...599).contains(statusCode):
             throw responseError
         default:
-            break
+            throw responseError
         }
-
-        return try await retryMessageSend(
-            messageSend,
-            remainingAttempts: remainingAttempts,
-            orThrow: responseError,
-            sealedSenderParameters: sealedSenderParameters
-        )
     }
 
     private func failSendForUnregisteredRecipient(_ messageSend: OWSMessageSend) async throws -> Never {
@@ -1632,30 +1650,21 @@ public class MessageSender {
         )
     }
 
-    private func handleMismatchedDevices(for serviceId: ServiceId, response: MessageSendFailureResponse) async {
-        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
-            self.updateDevices(
-                serviceId: serviceId,
-                devicesToAdd: response.missingDevices ?? [],
-                devicesToRemove: response.extraDevices ?? [],
-                transaction: transaction
-            )
-        }
+    func handleMismatchedDevices(serviceId: ServiceId, missingDevices: [Int8], extraDevices: [Int8], tx: SDSAnyWriteTransaction) {
+        Logger.warn("Mismatched devices for \(serviceId): +\(missingDevices) -\(extraDevices)")
+        self.updateDevices(
+            serviceId: serviceId,
+            devicesToAdd: missingDevices.compactMap({ UInt32(exactly: $0) }),
+            devicesToRemove: extraDevices.compactMap({ UInt32(exactly: $0) }),
+            transaction: tx
+        )
     }
 
-    // Called when the server indicates that the devices no longer exist - e.g. when the remote recipient has reinstalled.
-    func handleStaleDevices(_ staleDevices: [UInt32]?, for serviceId: ServiceId, tx: DBWriteTransaction) {
-        let staleDevices = staleDevices ?? []
-
-        Logger.warn("staleDevices: \(staleDevices) for \(serviceId)")
-
-        guard !staleDevices.isEmpty else {
-            return
-        }
-
+    func handleStaleDevices(serviceId: ServiceId, staleDevices: [Int8], tx: SDSAnyWriteTransaction) {
+        Logger.warn("Stale devices for \(serviceId): \(staleDevices)")
         let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
-        for staleDeviceId in staleDevices {
-            sessionStore.archiveSession(for: serviceId, deviceId: staleDeviceId, tx: tx)
+        for staleDeviceId in staleDevices.compactMap({ UInt32(exactly: $0) }) {
+            sessionStore.archiveSession(for: serviceId, deviceId: staleDeviceId, tx: tx.asV2Write)
         }
     }
 

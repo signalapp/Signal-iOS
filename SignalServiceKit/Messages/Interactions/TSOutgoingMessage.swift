@@ -367,21 +367,6 @@ public extension TSOutgoingMessage {
     @objc
     var isStorySend: Bool { isGroupStoryReply }
 
-    @objc
-    var canSendWithSenderKey: Bool {
-        // Sometimes we can fail to send a SenderKey message for an unknown reason. For example,
-        // the server may reject the message because one of our recipients has an invalid access
-        // token, but we don't know which recipient is the culprit. If we ever hit any of these
-        // non-transient failures, we should not send this message with sender key.
-        //
-        // By sending the message with traditional fanout, this *should* put things in order so
-        // that our next SenderKey message will send successfully.
-        guard let states = recipientAddressStates else { return true }
-        return states
-            .compactMap { $0.value.errorCode }
-            .allSatisfy { $0 != SenderKeyUnavailableError.errorCode }
-    }
-
     @objc(buildPniSignatureMessageIfNeededWithTransaction:)
     func buildPniSignatureMessageIfNeeded(transaction tx: SDSAnyReadTransaction) -> SSKProtoPniSignatureMessage? {
         guard recipientAddressStates?.count == 1 else {

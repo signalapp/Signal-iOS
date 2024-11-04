@@ -445,63 +445,6 @@ class MessageDeletedBeforeSentError: NSObject, CustomNSError, IsRetryableProvide
 
 // MARK: -
 
-class SenderKeyEphemeralError: NSObject, CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
-    private let customLocalizedDescription: String
-
-    init(customLocalizedDescription: String) {
-        self.customLocalizedDescription = customLocalizedDescription
-    }
-
-    // NSError bridging: the domain of the error.
-    public static let errorDomain = OWSError.errorDomain
-
-    // NSError bridging: the error code within the given domain.
-    public var errorCode: Int { OWSErrorCode.senderKeyEphemeralFailure.rawValue }
-
-    // NSError bridging: the error code within the given domain.
-    public var errorUserInfo: [String: Any] {
-        [NSLocalizedDescriptionKey: self.localizedDescription]
-    }
-
-    public var localizedDescription: String { customLocalizedDescription }
-
-    public var isRetryableProvider: Bool { true }
-}
-
-// MARK: -
-
-class SenderKeyUnavailableError: NSObject, CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
-    private let customLocalizedDescription: String
-
-    init(customLocalizedDescription: String) {
-        self.customLocalizedDescription = customLocalizedDescription
-    }
-
-    // NSError bridging: the domain of the error.
-    public static let errorDomain = OWSError.errorDomain
-
-    public static var errorCode: Int { OWSErrorCode.senderKeyUnavailable.rawValue }
-
-    // NSError bridging: the error code within the given domain.
-    public var errorCode: Int { Self.errorCode }
-
-    // NSError bridging: the error code within the given domain.
-    public var errorUserInfo: [String: Any] {
-        [NSLocalizedDescriptionKey: self.localizedDescription]
-    }
-
-    public var localizedDescription: String { customLocalizedDescription }
-
-    /// These errors are retryable in the sense that a sent message can be
-    /// retried and be successful, just not with sender key. If any intended
-    /// recipient has previously failed with this error code in a prior send,
-    /// the next send attempt will restrict itself to fanout send and not use
-    /// sender key.
-    public var isRetryableProvider: Bool { true }
-}
-
-// MARK: -
-
 class MessageSendUnauthorizedError: NSObject, CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
     // NSError bridging: the domain of the error.
     public static let errorDomain = OWSError.errorDomain
