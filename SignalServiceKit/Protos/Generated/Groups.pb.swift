@@ -990,12 +990,49 @@ struct GroupsProtos_GroupChange: @unchecked Sendable {
   init() {}
 }
 
+struct GroupsProtos_GroupExternalCredential: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var token: String = String()
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+struct GroupsProtos_GroupResponse: @unchecked Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var group: GroupsProtos_Group {
+    get {return _group ?? GroupsProtos_Group()}
+    set {_group = newValue}
+  }
+  /// Returns true if `group` has been explicitly set.
+  var hasGroup: Bool {return self._group != nil}
+  /// Clears the value of `group`. Subsequent reads from it will return its default value.
+  mutating func clearGroup() {self._group = nil}
+
+  var groupSendEndorsementsResponse: Data = Data()
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+
+  fileprivate var _group: GroupsProtos_Group? = nil
+}
+
 struct GroupsProtos_GroupChanges: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
   var groupChanges: [Data] = []
+
+  var groupSendEndorsementsResponse: Data = Data()
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -1032,16 +1069,27 @@ struct GroupsProtos_GroupChanges: @unchecked Sendable {
   init() {}
 }
 
-struct GroupsProtos_GroupExternalCredential: Sendable {
+struct GroupsProtos_GroupChangeResponse: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var token: String = String()
+  var groupChange: GroupsProtos_GroupChange {
+    get {return _groupChange ?? GroupsProtos_GroupChange()}
+    set {_groupChange = newValue}
+  }
+  /// Returns true if `groupChange` has been explicitly set.
+  var hasGroupChange: Bool {return self._groupChange != nil}
+  /// Clears the value of `groupChange`. Subsequent reads from it will return its default value.
+  mutating func clearGroupChange() {self._groupChange = nil}
+
+  var groupSendEndorsementsResponse: Data = Data()
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   init() {}
+
+  fileprivate var _groupChange: GroupsProtos_GroupChange? = nil
 }
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
@@ -2840,10 +2888,85 @@ extension GroupsProtos_GroupChange.Actions.ModifyAnnouncementsOnlyAction: SwiftP
   }
 }
 
+extension GroupsProtos_GroupExternalCredential: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".GroupExternalCredential"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "token"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.token) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.token.isEmpty {
+      try visitor.visitSingularStringField(value: self.token, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: GroupsProtos_GroupExternalCredential, rhs: GroupsProtos_GroupExternalCredential) -> Bool {
+    if lhs.token != rhs.token {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension GroupsProtos_GroupResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".GroupResponse"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "group"),
+    2: .standard(proto: "group_send_endorsements_response"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._group) }()
+      case 2: try { try decoder.decodeSingularBytesField(value: &self.groupSendEndorsementsResponse) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._group {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    if !self.groupSendEndorsementsResponse.isEmpty {
+      try visitor.visitSingularBytesField(value: self.groupSendEndorsementsResponse, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: GroupsProtos_GroupResponse, rhs: GroupsProtos_GroupResponse) -> Bool {
+    if lhs._group != rhs._group {return false}
+    if lhs.groupSendEndorsementsResponse != rhs.groupSendEndorsementsResponse {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
 extension GroupsProtos_GroupChanges: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GroupChanges"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "groupChanges"),
+    2: .standard(proto: "group_send_endorsements_response"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -2853,6 +2976,7 @@ extension GroupsProtos_GroupChanges: SwiftProtobuf.Message, SwiftProtobuf._Messa
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeRepeatedBytesField(value: &self.groupChanges) }()
+      case 2: try { try decoder.decodeSingularBytesField(value: &self.groupSendEndorsementsResponse) }()
       default: break
       }
     }
@@ -2862,11 +2986,15 @@ extension GroupsProtos_GroupChanges: SwiftProtobuf.Message, SwiftProtobuf._Messa
     if !self.groupChanges.isEmpty {
       try visitor.visitRepeatedBytesField(value: self.groupChanges, fieldNumber: 1)
     }
+    if !self.groupSendEndorsementsResponse.isEmpty {
+      try visitor.visitSingularBytesField(value: self.groupSendEndorsementsResponse, fieldNumber: 2)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: GroupsProtos_GroupChanges, rhs: GroupsProtos_GroupChanges) -> Bool {
     if lhs.groupChanges != rhs.groupChanges {return false}
+    if lhs.groupSendEndorsementsResponse != rhs.groupSendEndorsementsResponse {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -2956,10 +3084,11 @@ extension GroupsProtos_GroupChanges.GroupChangeState: SwiftProtobuf.Message, Swi
   }
 }
 
-extension GroupsProtos_GroupExternalCredential: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".GroupExternalCredential"
+extension GroupsProtos_GroupChangeResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".GroupChangeResponse"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "token"),
+    1: .standard(proto: "group_change"),
+    2: .standard(proto: "group_send_endorsements_response"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -2968,21 +3097,30 @@ extension GroupsProtos_GroupExternalCredential: SwiftProtobuf.Message, SwiftProt
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularStringField(value: &self.token) }()
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._groupChange) }()
+      case 2: try { try decoder.decodeSingularBytesField(value: &self.groupSendEndorsementsResponse) }()
       default: break
       }
     }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if !self.token.isEmpty {
-      try visitor.visitSingularStringField(value: self.token, fieldNumber: 1)
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._groupChange {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    if !self.groupSendEndorsementsResponse.isEmpty {
+      try visitor.visitSingularBytesField(value: self.groupSendEndorsementsResponse, fieldNumber: 2)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: GroupsProtos_GroupExternalCredential, rhs: GroupsProtos_GroupExternalCredential) -> Bool {
-    if lhs.token != rhs.token {return false}
+  static func ==(lhs: GroupsProtos_GroupChangeResponse, rhs: GroupsProtos_GroupChangeResponse) -> Bool {
+    if lhs._groupChange != rhs._groupChange {return false}
+    if lhs.groupSendEndorsementsResponse != rhs.groupSendEndorsementsResponse {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

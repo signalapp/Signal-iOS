@@ -303,6 +303,19 @@ message GroupChange {
   uint32 changeEpoch = 3;
 }
 
+// External credentials
+
+message GroupExternalCredential {
+  string token = 1;
+}
+
+// API responses
+
+message GroupResponse {
+  Group group = 1;
+  bytes group_send_endorsements_response = 2;
+}
+
 message GroupChanges {
   message GroupChangeState {
     GroupChange groupChange = 1;
@@ -310,8 +323,10 @@ message GroupChanges {
   }
 
   repeated bytes /*GroupChangeState*/ groupChanges = 1;
+  bytes group_send_endorsements_response = 2;
 }
 
-message GroupExternalCredential {
-  string token = 1;
+message GroupChangeResponse {
+  GroupChange group_change = 1;
+  bytes group_send_endorsements_response = 2;
 }
