@@ -69,7 +69,6 @@ public class Preferences: NSObject {
     private enum UserDefaultsKeys {
         static let deviceScale = "OWSPreferencesKeyDeviceScale"
         static let isAudibleErrorLoggingEnabled = "IsAudibleErrorLoggingEnabled"
-        static let enableDebugLog = "Debugging Log Enabled Key"
     }
 
     private static let preferencesCollection = "SignalPreferences"
@@ -165,23 +164,6 @@ public class Preferences: NSObject {
     }
 
     // MARK: Logging
-
-    public static var isLoggingEnabled: Bool {
-        // See: setIsLoggingEnabled.
-        if let preference = UserDefaults.app.object(forKey: UserDefaultsKeys.enableDebugLog) as? Bool {
-            return preference
-        }
-        return true
-    }
-
-    public static func setIsLoggingEnabled(_ value: Bool) {
-        owsAssertDebug(CurrentAppContext().isMainApp)
-
-        // Logging preferences are stored in UserDefaults instead of the database, so that we can (optionally) start
-        // logging before the database is initialized. This is important because sometimes there are problems *with* the
-        // database initialization, and without logging it would be hard to track down.
-        UserDefaults.app.set(value, forKey: UserDefaultsKeys.enableDebugLog)
-    }
 
     @objc
     public static var isAudibleErrorLoggingEnabled: Bool {

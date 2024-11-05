@@ -166,8 +166,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             return true
         }
 
-        debugLogger.setUpFileLoggingIfNeeded(appContext: mainAppContext, canLaunchInBackground: true)
-        debugLogger.wipeLogsIfDisabled(appContext: mainAppContext)
+        debugLogger.enableFileLogging(appContext: mainAppContext, canLaunchInBackground: true)
         DebugLogger.configureSwiftLogging()
         if DebugFlags.audibleErrorLogging {
             debugLogger.enableErrorReporting()

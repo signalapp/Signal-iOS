@@ -56,22 +56,13 @@ final class HelpViewController: OWSTableViewController2 {
         let loggingSection = OWSTableSection()
         loggingSection.headerTitle = OWSLocalizedString("LOGGING_SECTION", comment: "Title for the 'logging' help section.")
         loggingSection.footerTitle = OWSLocalizedString("LOGGING_SECTION_FOOTER", comment: "Footer for the 'logging' help section.")
-        loggingSection.add(.switch(
-            withText: OWSLocalizedString("SETTINGS_ADVANCED_DEBUGLOG", comment: ""),
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "enable_debug_log"),
-            isOn: { Preferences.isLoggingEnabled },
-            target: self,
-            selector: #selector(didToggleEnableLogSwitch)
+        loggingSection.add(.item(
+            name: OWSLocalizedString("SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", comment: ""),
+            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "submit_debug_log"),
+            actionBlock: {
+                DebugLogs.submitLogs()
+            }
         ))
-        if Preferences.isLoggingEnabled {
-            loggingSection.add(.item(
-                name: OWSLocalizedString("SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", comment: ""),
-                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "submit_debug_log"),
-                actionBlock: {
-                    DebugLogs.submitLogs()
-                }
-            ))
-        }
         contents.add(loggingSection)
 
         let aboutSection = OWSTableSection()
@@ -95,16 +86,5 @@ final class HelpViewController: OWSTableViewController2 {
         contents.add(aboutSection)
 
         self.contents = contents
-    }
-
-    @objc
-    private func didToggleEnableLogSwitch(sender: UISwitch) {
-        let debugLogger = DebugLogger.shared
-        let mainAppContext = CurrentAppContext() as! MainAppContext
-
-        Preferences.setIsLoggingEnabled(sender.isOn)
-        debugLogger.setUpFileLoggingIfNeeded(appContext: mainAppContext, canLaunchInBackground: true)
-        debugLogger.wipeLogsIfDisabled(appContext: mainAppContext)
-        updateTableContents()
     }
 }
