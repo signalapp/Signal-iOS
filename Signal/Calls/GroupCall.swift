@@ -154,21 +154,28 @@ class GroupCall: SignalRingRTC.GroupCallDelegate {
         observers.elements.forEach { $0.groupCallLocalDeviceStateChanged(self) }
     }
 
-    private var remoteStateChangeDebounceId: UUID?
+    @MainActor
+    private var groupCallRemoteDeviceStatesChangedObserverTask: Task<Void, Never>?
     @MainActor
     func groupCall(onRemoteDeviceStatesChanged groupCall: SignalRingRTC.GroupCall) {
-        // Debounce this event 0.5s to avoid spamming the calls UI with group changes.
-        let debounceId = UUID()
-        self.remoteStateChangeDebounceId = debounceId
-        firstly(on: DispatchQueue.main){ () -> Guarantee<Void> in
-            return Guarantee.after(wallInterval: 0.25)
-        }.done(on: DispatchQueue.main) {
-            if
-                let id = self.remoteStateChangeDebounceId,
-                debounceId == id
-            {
-                self.observers.elements.forEach { $0.groupCallRemoteDeviceStatesChanged(self) }
+        // Debounce this event 0.25s to avoid spamming the calls UI with group changes.
+        groupCallRemoteDeviceStatesChangedObserverTask?.cancel()
+        groupCallRemoteDeviceStatesChangedObserverTask = Task { [weak self] in
+            do {
+                try await Task.sleep(nanoseconds: 250_000_000)
+            } catch is CancellationError {
+                return
+            } catch {
+                owsFailDebug("unexpected error: \(error)")
+                return
             }
+
+            guard let self else { return }
+
+            for element in observers.elements {
+                element.groupCallRemoteDeviceStatesChanged(self)
+            }
+            groupCallRemoteDeviceStatesChangedObserverTask = nil
         }
     }
 
