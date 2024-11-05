@@ -169,15 +169,6 @@ public class SDSDB: DB {
         return databaseStorage.write(.promise, file: file, function: function, line: line, {try block(WriteTx($0))})
     }
 
-    public func writePromiseWithTxCompletion<T>(
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
-        _ block: @escaping (WriteTx) -> TransactionCompletion<T>
-    ) -> Guarantee<T> {
-        return databaseStorage.writeWithTxCompletion(.promise, file: file, function: function, line: line, {block(WriteTx($0))})
-    }
-
     // MARK: Value Methods
 
     public func read<T>(

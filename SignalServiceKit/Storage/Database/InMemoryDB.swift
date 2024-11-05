@@ -140,15 +140,6 @@ public final class InMemoryDB: DB {
         return Promise.wrapAsync { try await self.awaitableWrite(file: file, function: function, line: line, block: block) }
     }
 
-    public func writePromiseWithTxCompletion<T>(
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
-        _ block: @escaping (WriteTransaction) -> TransactionCompletion<T>
-    ) -> Guarantee<T> {
-        return Guarantee.wrapAsync { await self.awaitableWriteWithTxCompletion(file: file, function: function, line: line, block: block) }
-    }
-
     // MARK: - Value Methods
 
     public func read<T>(

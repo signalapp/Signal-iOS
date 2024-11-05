@@ -353,28 +353,6 @@ private class MockDB: DB {
         }
     }
 
-    public func writePromiseWithTxCompletion<T>(
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
-        _ block: @escaping (MockTransaction) -> TransactionCompletion<T>
-    ) -> Guarantee<T> {
-        let promise: Promise<T> = writePromise(
-            file: file,
-            function: function,
-            line: line,
-            { tx in
-                switch block(tx) {
-                case .commit(let t):
-                    return t
-                case .rollback(let t):
-                    return t
-                }
-            }
-        )
-        return promise.recover({ _ in fatalError() })
-    }
-
     // MARK: - Value Methods
 
     public func read<T>(

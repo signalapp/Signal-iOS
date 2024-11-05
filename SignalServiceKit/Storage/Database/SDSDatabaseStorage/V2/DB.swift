@@ -87,13 +87,6 @@ public protocol DB {
         _ block: @escaping (WriteTransaction) throws -> T
     ) -> Promise<T>
 
-    func writePromiseWithTxCompletion<T>(
-        file: String,
-        function: String,
-        line: Int,
-        _ block: @escaping (WriteTransaction) -> TransactionCompletion<T>
-    ) -> Guarantee<T>
-
     // MARK: - Value Methods
 
     func read<T>(
@@ -210,15 +203,6 @@ extension DB {
         _ block: @escaping (WriteTransaction) throws -> T
     ) -> Promise<T> {
         return writePromise(file: file, function: function, line: line, block)
-    }
-
-    public func writePromiseWithTxCompletion<T>(
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
-        _ block: @escaping (WriteTransaction) -> TransactionCompletion<T>
-    ) -> Guarantee<T> {
-        return writePromiseWithTxCompletion(file: file, function: function, line: line, block)
     }
 
     // MARK: - Value Methods
