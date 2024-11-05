@@ -90,6 +90,9 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
                     stream: stream,
                     context: context
                 )
+            } else if let thread = thread as? TSGroupThread, thread.isGroupV1Thread {
+                // Skip gv1 threads; count as success.
+                result = .success
             } else {
                 result = .completeFailure(.fatalArchiveError(.unrecognizedThreadType))
             }
