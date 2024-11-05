@@ -15,12 +15,7 @@ final class ChatListContainerView: UIView {
     private var sizeForControllerTransition: CGSize?
     private var smallestSafeArea = CGRect.infinite
     private var observation: NSKeyValueObservation?
-    private var transitionAnimator: UIViewPropertyAnimator?
     private var _filterControl: ChatListFilterControl?
-
-    private var isTransitioning: Bool {
-        transitionAnimator != nil
-    }
 
     var filterControl: ChatListFilterControl? {
         _filterControl
@@ -107,38 +102,6 @@ final class ChatListContainerView: UIView {
         }
     }
 
-    // FIXME: unify this method with `ChatListFilterControl.State.isAnimatingTransition`
-    func animateTransition(withDuration duration: CGFloat, animations: @escaping () -> Void, completion: (() -> Void)? = nil) {
-        if let transitionAnimator {
-            // If we're already transitioning, just add the new animation to
-            // the in-progress transition.
-
-            transitionAnimator.addAnimations {
-                animations()
-            }
-
-            if let completion {
-                transitionAnimator.addCompletion { _ in
-                    completion()
-                }
-            }
-        } else {
-            let transitionAnimator = UIViewPropertyAnimator(duration: duration, curve: .easeInOut)
-            self.transitionAnimator = transitionAnimator
-
-            transitionAnimator.addAnimations {
-                animations()
-            }
-
-            transitionAnimator.addCompletion { _ in
-                self.transitionAnimator = nil
-                completion?()
-            }
-
-            transitionAnimator.startAnimation()
-        }
-    }
-
     private func scrollPositionDidChange() {
         var contentOffset = tableView.contentOffset
         contentOffset.y += tableView.adjustedContentInset.top
@@ -146,12 +109,15 @@ final class ChatListContainerView: UIView {
     }
 
     private func updateContentHeight() {
-        guard !isTransitioning, let filterControl else { return }
+        guard let filterControl, !filterControl.isAnimatingTransition else { return }
 
-        let height = if filterControl.state >= .willStartFiltering {
-            filterControl.preferredContentHeight
-        } else {
-            max(0, min(filterControl.preferredContentHeight, tableView.contentInset.top - adjustedContentOffset.y))
+        let height: CGFloat
+
+        switch filterControl.state {
+        case .triggered, .filterPending, .filtering:
+            height = filterControl.preferredContentHeight
+        case .inactive, .starting, .stopping:
+            height = max(0, min(filterControl.preferredContentHeight, tableView.contentInset.top - adjustedContentOffset.y))
         }
 
         UIView.performWithoutAnimation {
