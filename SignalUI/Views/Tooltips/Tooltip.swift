@@ -28,10 +28,6 @@ public struct Tooltip {
     /// Default value is  `.dismiss`.
     public let tapAction: TapAction?
 
-    // Colors
-    private static let label = UIColor(named: "Signal/label")!
-    private static let secondaryLabel = UIColor(named: "Signal/secondaryLabel")!
-
     // Layout
     public let hSpacing: CGFloat = 12
     public let vSpacing: CGFloat = 0
@@ -56,13 +52,13 @@ public struct Tooltip {
         guard let title else { return nil }
         return NSAttributedString(string: title, attributes: [
             .font: UIFont.dynamicTypeHeadline,
-            .foregroundColor: Self.label,
+            .foregroundColor: UIColor.Signal.label,
         ])
     }
 
     var attributedMessage: NSAttributedString? {
         guard let message else { return nil }
-        let textColor = title != nil ? Self.secondaryLabel : Self.label
+        let textColor = title != nil ? UIColor.Signal.secondaryLabel : UIColor.Signal.label
         return NSAttributedString(string: message, attributes: [
             .font: UIFont.dynamicTypeSubheadline,
             .foregroundColor: textColor,
@@ -121,7 +117,7 @@ public struct Tooltip {
             let imageView = UIImageView(image: Theme.iconImage(icon))
             imageView.setCompressionResistanceHigh()
             imageView.setContentHuggingHigh()
-            imageView.tintColor = Tooltip.label
+            imageView.tintColor = UIColor.Signal.label
             return imageView
         }()
 
@@ -150,7 +146,7 @@ public struct Tooltip {
             imageView.addGestureRecognizer(tapGesture)
             imageView.setCompressionResistanceHigh()
             imageView.setContentHuggingHigh()
-            imageView.tintColor = Tooltip.secondaryLabel
+            imageView.tintColor = UIColor.Signal.secondaryLabel
             return imageView
         }()
 

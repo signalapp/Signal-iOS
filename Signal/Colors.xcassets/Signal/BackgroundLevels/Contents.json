@@ -4,6 +4,6 @@
     "version" : 1
   },
   "properties" : {
-    "generate-swift-asset-symbol-extensions" : "disabled"
+    "provides-namespace" : true
   }
 }

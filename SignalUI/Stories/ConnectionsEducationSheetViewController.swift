@@ -11,10 +11,10 @@ public class ConnectionsEducationSheetViewController: StackSheetViewController {
     }
 
     public override var sheetBackgroundColor: UIColor {
-        UIColor(named: "Signal/secondaryBackground")!
+        UIColor.Signal.secondaryBackground
     }
     public override var handleBackgroundColor: UIColor {
-        UIColor(named: "Signal/transparentSeparator")!
+        UIColor.Signal.transparentSeparator
     }
 
     public init() {
@@ -104,7 +104,7 @@ public class ConnectionsEducationSheetViewController: StackSheetViewController {
             label.font = .dynamicTypeBody
 
             let bulletPoint = UIView()
-            bulletPoint.backgroundColor = UIColor(named: "Signal/tertiaryLabel")!
+            bulletPoint.backgroundColor = UIColor.Signal.tertiaryLabel
 
             addArrangedSubview(.spacer(withWidth: 4))
             addArrangedSubview(bulletPoint)
