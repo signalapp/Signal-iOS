@@ -412,11 +412,9 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         // Initially position offscreen, we'll animate it in.
         collectionPickerView.frame = collectionPickerView.frame.offsetBy(dx: 0, dy: collectionPickerView.frame.height)
 
-        Task {
-            await UIView.animate(duration: 0.25, options: .curveEaseInOut) {
-                collectionPickerView.superview?.layoutIfNeeded()
-                self.titleView.rotateIcon(.up)
-            }
+        UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut) {
+            collectionPickerView.superview?.layoutIfNeeded()
+            self.titleView.rotateIcon(.up)
         }
     }
 
@@ -424,14 +422,13 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         assert(isShowingCollectionPickerController)
         isShowingCollectionPickerController = false
 
-        Task { [self] in
-            await UIView.animate(duration: 0.25, options: .curveEaseInOut) { [self] in
-                collectionPickerController.view.frame = collectionPickerController.view.frame.offsetBy(
-                    dx: 0,
-                    dy: collectionPickerController.view.height
-                )
-                titleView.rotateIcon(.down)
-            }
+        UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut) { [self] in
+            collectionPickerController.view.frame = collectionPickerController.view.frame.offsetBy(
+                dx: 0,
+                dy: collectionPickerController.view.height
+            )
+            titleView.rotateIcon(.down)
+        } completion: { [self] _ in
             collectionPickerController.popToRootViewController(animated: false)
             collectionPickerController.view.removeFromSuperview()
             collectionPickerController.removeFromParent()

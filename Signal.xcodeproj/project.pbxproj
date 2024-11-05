@@ -1014,7 +1014,6 @@
 		668A01372C2B6088007B8808 /* Thenable+Race.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668A01242C2B6088007B8808 /* Thenable+Race.swift */; };
 		668A01382C2B6088007B8808 /* Thenable+Timeout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668A01252C2B6088007B8808 /* Thenable+Timeout.swift */; };
 		668A01392C2B6088007B8808 /* Thenable+When.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668A01262C2B6088007B8808 /* Thenable+When.swift */; };
-		668A013A2C2B6088007B8808 /* UIView+Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668A01272C2B6088007B8808 /* UIView+Async.swift */; };
 		668A013D2C2B60A1007B8808 /* PromiseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668A013B2C2B60A0007B8808 /* PromiseTests.swift */; };
 		668A01402C2B60B0007B8808 /* NSObjectTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668A013F2C2B60B0007B8808 /* NSObjectTest.swift */; };
 		668A01442C2B6117007B8808 /* StringSanitizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668A01432C2B6117007B8808 /* StringSanitizerTests.swift */; };
@@ -4749,7 +4748,6 @@
 		668A01242C2B6088007B8808 /* Thenable+Race.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Thenable+Race.swift"; sourceTree = "<group>"; };
 		668A01252C2B6088007B8808 /* Thenable+Timeout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Thenable+Timeout.swift"; sourceTree = "<group>"; };
 		668A01262C2B6088007B8808 /* Thenable+When.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Thenable+When.swift"; sourceTree = "<group>"; };
-		668A01272C2B6088007B8808 /* UIView+Async.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Async.swift"; sourceTree = "<group>"; };
 		668A013B2C2B60A0007B8808 /* PromiseTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PromiseTests.swift; sourceTree = "<group>"; };
 		668A013F2C2B60B0007B8808 /* NSObjectTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSObjectTest.swift; sourceTree = "<group>"; };
 		668A01432C2B6117007B8808 /* StringSanitizerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringSanitizerTests.swift; sourceTree = "<group>"; };
@@ -13992,7 +13990,6 @@
 				F9C5CB13289453B200548EEE /* UIColor+SSK.swift */,
 				45BB93371E688E14001E3939 /* UIDevice+FeatureSupport.swift */,
 				F9C5CB4D289453B200548EEE /* UIImage+OWS.swift */,
-				668A01272C2B6088007B8808 /* UIView+Async.swift */,
 				3402A9E0271D96570084CBAE /* UIView+OWS.swift */,
 				6600F34B298C81CD00B1EDB7 /* UnknownEnumCodable.swift */,
 				F9D5BFCE2979AFF4001737E5 /* URLPathComponents.swift */,
@@ -17981,7 +17978,6 @@
 				6649651E2BDF169F00E2DE98 /* UIImage+Attachment.swift in Sources */,
 				F9C5CE1F289453B400548EEE /* UIImage+OWS.swift in Sources */,
 				663D02DD2C06717900350632 /* UInt64SafeRecord.swift in Sources */,
-				668A013A2C2B6088007B8808 /* UIView+Async.swift in Sources */,
 				7255A4CB2B98E04900E95368 /* UIView+OWS.swift in Sources */,
 				668A00E92C2B5F59007B8808 /* UnfairLock.swift in Sources */,
 				50D6A93F2AA9167400B7F093 /* UniqueObjectRecipientMerger.swift in Sources */,
