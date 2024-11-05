@@ -1139,10 +1139,10 @@
 "CHAT_COLORS_AUTO_TOOLTIP" = "Faz corresponder automaticamente a cor com o fundo de ecrã";
 
 /* Title for context menu action to disable chat list filter (e.g., Filter by Unread) */
-"CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "Clear Unread Filter";
+"CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "Limpar filtro não lido";
 
 /* Button displayed in chat list to clear the unread filter when no chats are unread */
-"CHAT_LIST_EMPTY_FILTER_CLEAR_BUTTON" = "Clear Filter";
+"CHAT_LIST_EMPTY_FILTER_CLEAR_BUTTON" = "Limpar filtro";
 
 /* Button at top of chat list indicating the active filter is 'Filtered by Unread' and tapping will clear the filter */
 "CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON" = "Filtrado por não lido";
@@ -1985,7 +1985,7 @@
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "Falha ao atualizar a lista de dispositivos.";
 
 /* Message appearing on a toast indicating a new device was successfully linked. Embeds {{ device name }} */
-"DEVICE_LIST_UPDATE_NEW_DEVICE_TOAST" = "“%1$@” linked";
+"DEVICE_LIST_UPDATE_NEW_DEVICE_TOAST" = "“%1$@” vinculado";
 
 /* A label for this device in the device list. */
 "DEVICE_NAME_THIS_DEVICE" = "Este dispositivo";
@@ -4025,25 +4025,25 @@
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Leia o código QR que se encontra no dispositivo a associar.";
 
 /* Title for QR Scanning screen instructions sheet */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_BODY" = "Use this device to scan the QR code displayed on the device you want to link";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_BODY" = "Utilize este dispositivo para ler o código QR apresentado no dispositivo que pretende conectar";
 
 /* Title for QR Scanning screen instructions sheet */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_TITLE" = "Scan QR Code";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_TITLE" = "Ler código QR";
 
 /* Body text for a sheet when a user tries to link a device informing them that they will need to authenticate their device */
-"LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_BODY" = "Tap continue and enter your phone’s lock to confirm. Do not enter your Signal PIN.";
+"LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_BODY" = "Toque em continuar e introduza o desbloqueio do seu telemóvel para confirmar. Não introduza o seu PIN do Signal.";
 
 /* Title for a sheet when a user tries to link a device informing them that they will need to authenticate their device */
-"LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_TITLE" = "Before linking, confirm it’s you";
+"LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_TITLE" = "Antes de vincular, confirme que é o utilizador";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock device linking. */
-"LINK_NEW_DEVICE_AUTHENTICATION_REASON" = "Authenticate to link a device";
+"LINK_NEW_DEVICE_AUTHENTICATION_REASON" = "Autentique para vincular um dispositivo";
 
 /* Body text for a sheet when a user has started linking a device informing them to finish the process on that other device */
-"LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_BODY" = "Finish linking Signal on your other device.";
+"LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_BODY" = "Terminou de associar o Signal ao seu outro dispositivo.";
 
 /* Title for a sheet when a user has started linking a device informing them to finish the process on that other device */
-"LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE" = "Finish linking on your other device";
+"LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE" = "Terminou a associação ao seu outro dispositivo";
 
 /* Subheading for 'Link New Device' navigation */
 "LINK_NEW_DEVICE_SUBTITLE" = "Leia o código QR para associar um dispositivo novo.";

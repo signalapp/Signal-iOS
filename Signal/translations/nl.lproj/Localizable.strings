@@ -785,7 +785,7 @@
 "CALL_LINK_LOBBY_SHARING_INFO_PHONE_NUMBER_SHARING_ON" = "Iedereen die via de link aan deze oproep deelneemt, ziet je naam, foto en telefoonnummer.";
 
 /* Text shown in a confirmation popup when deleting multiple calls from the calls tab. */
-"CALL_LINK_MULTI_CONFIRM" = "Deze oproeplinks zullen niet langer werken voor personen die ze al hebben ontvangen.";
+"CALL_LINK_MULTI_CONFIRM" = "Oproeplinks die jij hebt gemaakt, zullen niet langer werken voor personen die ze al hebben ontvangen.";
 
 /* Title for button to approve all requests to join a call. */
 "CALL_LINK_REQUEST_SHEET_APPROVE_ALL_BUTTON" = "Alle goedkeuren";
@@ -1139,10 +1139,10 @@
 "CHAT_COLORS_AUTO_TOOLTIP" = "‘Auto’ betekent dat er automatisch een kleur wordt gekozen die past bij de achtergrond";
 
 /* Title for context menu action to disable chat list filter (e.g., Filter by Unread) */
-"CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "Clear Unread Filter";
+"CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "Ongelezen filter verwijderen";
 
 /* Button displayed in chat list to clear the unread filter when no chats are unread */
-"CHAT_LIST_EMPTY_FILTER_CLEAR_BUTTON" = "Clear Filter";
+"CHAT_LIST_EMPTY_FILTER_CLEAR_BUTTON" = "Filter verwijderen";
 
 /* Button at top of chat list indicating the active filter is 'Filtered by Unread' and tapping will clear the filter */
 "CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON" = "Gefilterd op ongelezen";
@@ -1985,7 +1985,7 @@
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "Het bijwerken van de lijst met apparaten is mislukt.";
 
 /* Message appearing on a toast indicating a new device was successfully linked. Embeds {{ device name }} */
-"DEVICE_LIST_UPDATE_NEW_DEVICE_TOAST" = "“%1$@” linked";
+"DEVICE_LIST_UPDATE_NEW_DEVICE_TOAST" = "‘%1$@’ gekoppeld";
 
 /* A label for this device in the device list. */
 "DEVICE_NAME_THIS_DEVICE" = "Dit apparaat";
@@ -4025,25 +4025,25 @@
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Scan de QR-code die wordt weergegeven op het apparaat dat je wilt koppelen.";
 
 /* Title for QR Scanning screen instructions sheet */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_BODY" = "Use this device to scan the QR code displayed on the device you want to link";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_BODY" = "Gebruik dit apparaat om de QR-code te scannen die wordt weergegeven op het apparaat dat je wilt koppelen";
 
 /* Title for QR Scanning screen instructions sheet */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_TITLE" = "Scan QR Code";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_TITLE" = "QR-code scannen";
 
 /* Body text for a sheet when a user tries to link a device informing them that they will need to authenticate their device */
-"LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_BODY" = "Tap continue and enter your phone’s lock to confirm. Do not enter your Signal PIN.";
+"LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_BODY" = "Tik op doorgaan en ontgrendel met je telefoonvergrendeling om te bevestigen. Voer niet je Signal-pincode in.";
 
 /* Title for a sheet when a user tries to link a device informing them that they will need to authenticate their device */
-"LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_TITLE" = "Before linking, confirm it’s you";
+"LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_TITLE" = "Bevestig dat jij het bent voordat je een apparaat koppelt";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock device linking. */
-"LINK_NEW_DEVICE_AUTHENTICATION_REASON" = "Authenticate to link a device";
+"LINK_NEW_DEVICE_AUTHENTICATION_REASON" = "Verifieer om een apparaat te koppelen";
 
 /* Body text for a sheet when a user has started linking a device informing them to finish the process on that other device */
-"LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_BODY" = "Finish linking Signal on your other device.";
+"LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_BODY" = "Voltooi het koppelen van Signal op je andere apparaat.";
 
 /* Title for a sheet when a user has started linking a device informing them to finish the process on that other device */
-"LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE" = "Finish linking on your other device";
+"LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE" = "Voltooi het koppelen op je andere apparaat";
 
 /* Subheading for 'Link New Device' navigation */
 "LINK_NEW_DEVICE_SUBTITLE" = "Scan een QR-code om een nieuw apparaat te koppelen.";

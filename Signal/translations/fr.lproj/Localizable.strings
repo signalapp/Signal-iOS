@@ -1139,10 +1139,10 @@
 "CHAT_COLORS_AUTO_TOOLTIP" = "Adaptez automatiquement la couleur au fond d’écran";
 
 /* Title for context menu action to disable chat list filter (e.g., Filter by Unread) */
-"CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "Clear Unread Filter";
+"CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "Supprimer le filtre \"Non lu\"";
 
 /* Button displayed in chat list to clear the unread filter when no chats are unread */
-"CHAT_LIST_EMPTY_FILTER_CLEAR_BUTTON" = "Clear Filter";
+"CHAT_LIST_EMPTY_FILTER_CLEAR_BUTTON" = "Supprimer le filtre";
 
 /* Button at top of chat list indicating the active filter is 'Filtered by Unread' and tapping will clear the filter */
 "CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON" = "Filtrer les messages non lus";
@@ -1466,7 +1466,7 @@
 "CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Mettre la conversation en sourdine pour…";
 
 /* 1 day */
-"CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 jour";
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "24 heures";
 
 /* 1 hour */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1H" = "1 heure";
@@ -1610,7 +1610,7 @@
 "CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Désactivée";
 
 /* Label for button to mute a thread for a day. */
-"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "1 jour";
+"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "24 heures";
 
 /* Label for button to mute a thread for a hour. */
 "CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "1 heure";
@@ -1967,13 +1967,13 @@
 "DEREGISTRATION_NOTIFICATION" = "Vous avez été déconnecté de Signal sur cet appareil.";
 
 /* Label for button that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Inscrire ce numéro de téléphone de nouveau";
+"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Réenregistrer ce numéro de téléphone";
 
 /* Label warning the user that they have been de-registered. */
 "DEREGISTRATION_WARNING" = "Cet appareil n’est plus enregistré. Vous avez probablement inscrit votre numéro de téléphone sur Signal depuis un autre appareil.";
 
 /* If the user has been deregistered, they'll see a warning. This is This is the call to action on that warning. */
-"DEREGISTRATION_WARNING_ACTION_TITLE" = "Enregistrer l’appareil de nouveau";
+"DEREGISTRATION_WARNING_ACTION_TITLE" = "Réenregistrer l'appareil";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Dernière activité %1$@";
@@ -1985,7 +1985,7 @@
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "Impossible de mettre à jour la liste des appareils";
 
 /* Message appearing on a toast indicating a new device was successfully linked. Embeds {{ device name }} */
-"DEVICE_LIST_UPDATE_NEW_DEVICE_TOAST" = "“%1$@” linked";
+"DEVICE_LIST_UPDATE_NEW_DEVICE_TOAST" = "\"%1$@\" associé.";
 
 /* A label for this device in the device list. */
 "DEVICE_NAME_THIS_DEVICE" = "Cet appareil";
@@ -2750,7 +2750,7 @@
 "ERROR_SENDING_DELINKED" = "Votre appareil n’est plus associé. Veuillez l’associer de nouveau pour continuer à envoyer des messages.";
 
 /* Error indicating a send failure due to a deregistered application. */
-"ERROR_SENDING_DEREGISTERED" = "Votre appareil n’est plus inscrit. Veuillez le réinscrire pour continuer à envoyer des messages.";
+"ERROR_SENDING_DEREGISTERED" = "Votre appareil n'est plus enregistré. Réinscrivez-vous pour continuer à envoyer des messages.";
 
 /* Error indicating a send failure due to an expired application. */
 "ERROR_SENDING_EXPIRED" = "Votre version de Signal  est arrivée à expiration. Passez à la nouvelle version pour continuer à envoyer des messages.";
@@ -4013,7 +4013,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "Impossible d’associer l’appareil.";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Cet appareil pourra voir vos groupes et contacts, accéder à vos conversations et envoyer des messages en votre nom.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Cet appareil pourra afficher vos groupes et vos contacts, accéder à vos conversations et envoyer des messages via votre profil.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Associer cet appareil ?";
@@ -4025,25 +4025,25 @@
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Scannez le code QR affiché sur l’appareil à associer.";
 
 /* Title for QR Scanning screen instructions sheet */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_BODY" = "Use this device to scan the QR code displayed on the device you want to link";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_BODY" = "Utilisez cet appareil pour scanner le code QR affiché sur l'appareil à associer.";
 
 /* Title for QR Scanning screen instructions sheet */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_TITLE" = "Scan QR Code";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_TITLE" = "Scanner le code QR";
 
 /* Body text for a sheet when a user tries to link a device informing them that they will need to authenticate their device */
-"LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_BODY" = "Tap continue and enter your phone’s lock to confirm. Do not enter your Signal PIN.";
+"LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_BODY" = "Appuyez sur \"Continuer\", puis utilisez la méthode de déverrouillage de votre téléphone. Ne saisissez pas votre code PIN Signal.";
 
 /* Title for a sheet when a user tries to link a device informing them that they will need to authenticate their device */
-"LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_TITLE" = "Before linking, confirm it’s you";
+"LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_TITLE" = "Avant d'associer votre appareil, merci de confirmer votre identité.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock device linking. */
-"LINK_NEW_DEVICE_AUTHENTICATION_REASON" = "Authenticate to link a device";
+"LINK_NEW_DEVICE_AUTHENTICATION_REASON" = "Pour associer un appareil, veuillez vous authentifier.";
 
 /* Body text for a sheet when a user has started linking a device informing them to finish the process on that other device */
-"LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_BODY" = "Finish linking Signal on your other device.";
+"LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_BODY" = "Utilisez votre autre appareil pour terminer l'association de Signal.";
 
 /* Title for a sheet when a user has started linking a device informing them to finish the process on that other device */
-"LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE" = "Finish linking on your other device";
+"LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE" = "Terminer l'association sur l'autre appareil";
 
 /* Subheading for 'Link New Device' navigation */
 "LINK_NEW_DEVICE_SUBTITLE" = "Scannez le code QR pour associer un nouvel appareil.";
@@ -6143,7 +6143,7 @@
 "REREGISTER_INVALID_PIN_WARNING_SKIPPABLE_FORMAT" = "Il vous reste %1$@. Si vous dépassez le nombre de tentatives autorisé, vous pouvez créer un nouveau PIN. Vous pouvez vous inscrire à nouveau et utiliser votre compte mais vous perdrez certains paramètres sauvegardés, comme les informations relatives à votre profil.";
 
 /* If the user is re-registering, they may need to enter their PIN to restore all their data. If they enter the incorrect PIN, they will be shown a warning. Embeds {{ number of attempts }}, such as \"3 attempts\". */
-"REREGISTER_INVALID_PIN_WARNING_UNSKIPPABLE_FORMAT" = "Il vous reste %1$@. Si vous dépassez le nombre de tentatives autorisé, votre compte sera bloqué pendant 7 jours. Après 7 jours d’inactivité, vous pouvez vous inscrire à nouveau sans votre code PIN. Tout votre contenu sera supprimé.";
+"REREGISTER_INVALID_PIN_WARNING_UNSKIPPABLE_FORMAT" = "Il vous reste %1$@. Si vous dépassez le nombre de tentatives autorisé, votre compte sera bloqué pendant 7 jours. Au bout de 7 jours d'inactivité, vous pourrez vous réinscrire sans votre code PIN. Tout votre contenu sera supprimé.";
 
 /* Configure reactions reset button text */
 "RESET" = "Réinitialiser";
@@ -6176,7 +6176,7 @@
 "SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "Confirmé précédemment";
 
 /* Title for the 'safety number confirmation' view */
-"SAFETY_NUMBER_CONFIRMATION_TITLE" = "Changements des numéros de sécurité";
+"SAFETY_NUMBER_CONFIRMATION_TITLE" = "Changements de numéros de sécurité";
 
 /* Text explaining that the given contact has had their safety number verified. */
 "SAFETY_NUMBER_CONFIRMATION_VERIFIED" = "Vérifié";
@@ -6329,7 +6329,7 @@
 "SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Finaliser l’association";
 
 /* header text before the user can link this device */
-"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Lancer Signal sur votre téléphone pour relier cet iPad à votre compte";
+"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Lancer Signal sur votre téléphone pour associer cet iPad à votre compte";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
 "SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Je n’ai pas Signal sur mon téléphone…";
@@ -6344,7 +6344,7 @@
 "SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Sur votre téléphone, touchez votre photo de profil pour accéder aux paramètres Signal, puis sélectionnez \"Appareils associés\" et \"Associer un nouvel appareil \". Vous pouvez ensuite scanner ce code avec votre téléphone :";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
-"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Obtenez de l’aide ici pour relier votre iPad";
+"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Besoin d'aide pour associer votre iPad ? C'est par ici !";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
 "SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Lire le code QR avec votre téléphone";
@@ -6884,7 +6884,7 @@
 "SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "Les paiements ne sont pas activés";
 
 /* Message for the 'payments not registered' alert. */
-"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "Ré-inscrivez-vous pour envoyer des paiements.";
+"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "Réinscrivez-vous pour effectuer des paiements.";
 
 /* Title for the 'payments not registered' alert. */
 "SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_TITLE" = "Non inscrit";
@@ -7307,7 +7307,7 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Activer le blocage d’inscription ?";
 
 /* Label for re-link button. */
-"SETTINGS_RELINK_BUTTON" = "Relier de nouveau";
+"SETTINGS_RELINK_BUTTON" = "Réassocier";
 
 /* Label for re-registration button. */
 "SETTINGS_REREGISTER_BUTTON" = "S’inscrire de nouveau";
@@ -8120,7 +8120,7 @@
 "UNLINKED_WARNING" = "Cet appareil n’est plus associé. Associez-le de nouveau pour continuer à utiliser Signal.";
 
 /* If this device has become unlinked from their primary device, they'll see a warning. This is the call to action on that warning. */
-"UNLINKED_WARNING_ACTION_TITLE" = "Relier l’appareil";
+"UNLINKED_WARNING_ACTION_TITLE" = "Réassocier l'appareil";
 
 /* Alert title when unlinking device fails */
 "UNLINKING_FAILED_ALERT_TITLE" = "Signal n’a pas pu annuler le lien avec votre appareil.";

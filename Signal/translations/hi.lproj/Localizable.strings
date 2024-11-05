@@ -1139,10 +1139,10 @@
 "CHAT_COLORS_AUTO_TOOLTIP" = "अपने आप वॉलपेपर के रंग जैसा हो जाता है";
 
 /* Title for context menu action to disable chat list filter (e.g., Filter by Unread) */
-"CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "Clear Unread Filter";
+"CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "अपठित फिल्टर साफ करें";
 
 /* Button displayed in chat list to clear the unread filter when no chats are unread */
-"CHAT_LIST_EMPTY_FILTER_CLEAR_BUTTON" = "Clear Filter";
+"CHAT_LIST_EMPTY_FILTER_CLEAR_BUTTON" = "फ़िल्टर हटाएँ";
 
 /* Button at top of chat list indicating the active filter is 'Filtered by Unread' and tapping will clear the filter */
 "CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON" = "अपठित द्वारा छांटा गया";
@@ -1985,7 +1985,7 @@
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "डिवाइस की सूची को अपडेट नहीं हो पा रही है।";
 
 /* Message appearing on a toast indicating a new device was successfully linked. Embeds {{ device name }} */
-"DEVICE_LIST_UPDATE_NEW_DEVICE_TOAST" = "“%1$@” linked";
+"DEVICE_LIST_UPDATE_NEW_DEVICE_TOAST" = "“%1$@” को लिंक किया गया";
 
 /* A label for this device in the device list. */
 "DEVICE_NAME_THIS_DEVICE" = "यह डिवाइस";
@@ -4025,25 +4025,25 @@
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "उस QR कोड को स्कैन करें जो उस डिवाइस पर दिख रहा है जिसे आप लिंक करना चाहते हैं।";
 
 /* Title for QR Scanning screen instructions sheet */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_BODY" = "Use this device to scan the QR code displayed on the device you want to link";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_BODY" = "जिस डिवाइस को आप लिंक करना चाहते हैं उस पर प्रदर्शित QR कोड को स्कैन करने के लिए इस डिवाइस का उपयोग करें";
 
 /* Title for QR Scanning screen instructions sheet */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_TITLE" = "Scan QR Code";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_TITLE" = "QR कोड स्कैन करें";
 
 /* Body text for a sheet when a user tries to link a device informing them that they will need to authenticate their device */
-"LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_BODY" = "Tap continue and enter your phone’s lock to confirm. Do not enter your Signal PIN.";
+"LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_BODY" = "'जारी रखें' पर टैप करें और पुष्टि करने के लिए अपने फ़ोन का लॉक दर्ज करें। अपना Signal पिन दर्ज न करें।";
 
 /* Title for a sheet when a user tries to link a device informing them that they will need to authenticate their device */
-"LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_TITLE" = "Before linking, confirm it’s you";
+"LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_TITLE" = "लिंक करने से पहले, पुष्टि करें कि यह आप ही हैं";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock device linking. */
-"LINK_NEW_DEVICE_AUTHENTICATION_REASON" = "Authenticate to link a device";
+"LINK_NEW_DEVICE_AUTHENTICATION_REASON" = "किसी डिवाइस को लिंक करने के लिए ऑथेंटिकेट करें";
 
 /* Body text for a sheet when a user has started linking a device informing them to finish the process on that other device */
-"LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_BODY" = "Finish linking Signal on your other device.";
+"LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_BODY" = "Signal को अपने अन्य डिवाइस पर लिंक करना समाप्त करें।";
 
 /* Title for a sheet when a user has started linking a device informing them to finish the process on that other device */
-"LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE" = "Finish linking on your other device";
+"LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE" = "अपने दूसरे डिवाइस पर लिंक करना समाप्त करें";
 
 /* Subheading for 'Link New Device' navigation */
 "LINK_NEW_DEVICE_SUBTITLE" = "नया डिवाइस लिंक करने के लिए QR कोड स्कैन करें।";
