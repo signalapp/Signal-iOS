@@ -52,7 +52,7 @@ public enum FeatureFlags {
     public static let callLinkSync = true
     public static let callLinkJoin = true
 
-    public static let chatListFilter = true
+    public static let chatListFilter = build.includes(.beta)
 
     public static let versionedExpireTimer = true
 
