@@ -276,7 +276,8 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
         // Async save the schema update in the database
         DatabaseStorageAsyncWrite(SSKEnvironment.shared.databaseStorageRef, ^(SDSAnyWriteTransaction *transaction) {
             TSAttachment *_Nullable latestInstance = [TSAttachment anyFetchWithUniqueId:self.uniqueId
-                                                                            transaction:transaction];
+                                                                            transaction:transaction
+                                                                            ignoreCache:true];
             if (latestInstance == nil) {
                 return;
             }

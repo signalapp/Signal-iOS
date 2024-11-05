@@ -339,7 +339,8 @@ extension ForwardMessageViewController {
                         let interactionId = item.interaction?.uniqueId,
                         let latestInteraction = TSInteraction.anyFetch(
                             uniqueId: interactionId,
-                            transaction: transaction
+                            transaction: transaction,
+                            ignoreCache: true
                         ),
                         hasRenderableContent(interaction: latestInteraction, tx: transaction)
                     else {
