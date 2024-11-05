@@ -1691,6 +1691,7 @@
 		B9E322D52CD01956006DAF3B /* QRCodeScanOrPickDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E322D42CD01956006DAF3B /* QRCodeScanOrPickDelegate.swift */; };
 		B9E322D82CD024A2006DAF3B /* linking-device-light.json in Resources */ = {isa = PBXBuildFile; fileRef = B9E322D72CD024A2006DAF3B /* linking-device-light.json */; };
 		B9E322D92CD024A2006DAF3B /* linking-device-dark.json in Resources */ = {isa = PBXBuildFile; fileRef = B9E322D62CD024A2006DAF3B /* linking-device-dark.json */; };
+		B9E322E72CD170ED006DAF3B /* SignalList.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E322E62CD170ED006DAF3B /* SignalList.swift */; };
 		B9EB5ABD1884C002007CBB57 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		B9F2155D2A93C9E8002DCAE0 /* StickerPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F2155C2A93C9E8002DCAE0 /* StickerPickerSheet.swift */; };
 		B9F2155F2A940596002DCAE0 /* ImageEditorStickerItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F2155E2A940596002DCAE0 /* ImageEditorStickerItem.swift */; };
@@ -5425,6 +5426,7 @@
 		B9E322D42CD01956006DAF3B /* QRCodeScanOrPickDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeScanOrPickDelegate.swift; sourceTree = "<group>"; };
 		B9E322D62CD024A2006DAF3B /* linking-device-dark.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "linking-device-dark.json"; sourceTree = "<group>"; };
 		B9E322D72CD024A2006DAF3B /* linking-device-light.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "linking-device-light.json"; sourceTree = "<group>"; };
+		B9E322E62CD170ED006DAF3B /* SignalList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalList.swift; sourceTree = "<group>"; };
 		B9EB5ABC1884C002007CBB57 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		B9F2155C2A93C9E8002DCAE0 /* StickerPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerPickerSheet.swift; sourceTree = "<group>"; };
 		B9F2155E2A940596002DCAE0 /* ImageEditorStickerItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorStickerItem.swift; sourceTree = "<group>"; };
@@ -7886,6 +7888,7 @@
 				34A954DA271B4F3E00B05242 /* ColorOrGradientSwatchView.swift */,
 				34A95506271B510400B05242 /* ConversationStyle.swift */,
 				34A954D6271B4F3E00B05242 /* GroupNameColors.swift */,
+				B9E322E62CD170ED006DAF3B /* SignalList.swift */,
 				B9F817632BA263A900EAEE23 /* SignalSymbols.swift */,
 				34A954D4271B4F3E00B05242 /* Theme+Icons.swift */,
 				7677E40C29F75C4200AC6A75 /* Theme.swift */,
@@ -15903,6 +15906,7 @@
 				66FC638E29EDABAC00F00DAC /* SearchDisplayConfigurations.swift in Sources */,
 				66FBC4E328DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift in Sources */,
 				3402AA3C271D9DCD0084CBAE /* SheetViewController.swift in Sources */,
+				B9E322E72CD170ED006DAF3B /* SignalList.swift in Sources */,
 				B9F817642BA263A900EAEE23 /* SignalSymbols.swift in Sources */,
 				342FFE57271DA8C9000AC89F /* Sounds+SignalUI.swift in Sources */,
 				3402AA4F271D9DCD0084CBAE /* SpamCaptchaViewController.swift in Sources */,

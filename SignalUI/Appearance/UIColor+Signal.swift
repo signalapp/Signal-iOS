@@ -32,10 +32,14 @@ extension UIKit.UIColor.Signal {
     }
 
     public static var secondaryBackground: UIColor {
-        UIColor.byUserInterfaceLevel(
-            base: UIColor.Signal.BackgroundLevels.secondaryBackgroundBase,
-            elevated: UIColor.Signal.BackgroundLevels.secondaryBackgroundElevated
-        )
+        if #available(iOS 16.0, *) {
+            UIColor.byUserInterfaceLevel(
+                base: UIColor.Signal.BackgroundLevels.secondaryBackgroundBase,
+                elevated: UIColor.Signal.BackgroundLevels.secondaryBackgroundElevated
+            )
+        } else {
+            UIColor.secondarySystemBackground
+        }
     }
 
     public static var tertiaryBackground: UIColor {
@@ -46,10 +50,14 @@ extension UIKit.UIColor.Signal {
     }
 
     public static var groupedBackground: UIColor {
-        UIColor.byUserInterfaceLevel(
-            base: UIColor.Signal.BackgroundLevels.groupedBackgroundBase,
-            elevated: UIColor.Signal.BackgroundLevels.groupedBackgroundElevated
-        )
+        if #available(iOS 16.0, *) {
+            UIColor.byUserInterfaceLevel(
+                base: UIColor.Signal.BackgroundLevels.groupedBackgroundBase,
+                elevated: UIColor.Signal.BackgroundLevels.groupedBackgroundElevated
+            )
+        } else {
+            UIColor.systemGroupedBackground
+        }
     }
 
     public static var secondaryGroupedBackground: UIColor {
@@ -60,10 +68,14 @@ extension UIKit.UIColor.Signal {
     }
 
     public static var tertiaryGroupedBackground: UIColor {
-        UIColor.byUserInterfaceLevel(
-            base: UIColor.Signal.BackgroundLevels.tertiaryGroupedBackgroundBase,
-            elevated: UIColor.Signal.BackgroundLevels.tertiaryGroupedBackgroundElevated
-        )
+        if #available(iOS 16.0, *) {
+            UIColor.byUserInterfaceLevel(
+                base: UIColor.Signal.BackgroundLevels.tertiaryGroupedBackgroundBase,
+                elevated: UIColor.Signal.BackgroundLevels.tertiaryGroupedBackgroundElevated
+            )
+        } else {
+            UIColor.tertiarySystemGroupedBackground
+        }
     }
 
     public static var accent: UIColor { UIColor.Signal.ultramarine }
