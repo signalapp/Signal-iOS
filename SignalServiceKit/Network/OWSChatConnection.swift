@@ -500,7 +500,7 @@ public class OWSChatConnection: NSObject {
     }
 
     @objc
-    private func isCensorshipCircumventionActiveDidChange(_ notification: NSNotification) {
+    fileprivate func isCensorshipCircumventionActiveDidChange(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
         cycleSocket()
@@ -1466,6 +1466,11 @@ internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnectionUsingSS
         applyDesiredSocketState()
     }
 
+    fileprivate override func isCensorshipCircumventionActiveDidChange(_ notification: NSNotification) {
+        self.chatService = Self.makeChatService(libsignalNet: libsignalNet)
+        super.isCensorshipCircumventionActiveDidChange(notification)
+    }
+
     private func shouldSendShadowRequest() -> Bool {
         assertOnQueue(serialQueue)
         if CurrentAppContext().isRunningTests {
@@ -1678,6 +1683,20 @@ internal class OWSChatConnectionUsingLibSignal<Service: ChatService>: OWSChatCon
 
     fileprivate override func isSignalProxyReadyDidChange(_ notification: NSNotification) {
         // We'd like to *immediately* switch over to the new proxy settings,
+        // but the new chat service will start closed,
+        // and we need to make sure there's not a window where we claim to be open but aren't.
+        // Similarly, we need to not race between marking ourselves closed
+        // and installing the new chat service, or the old one could get re-opened.
+        // Using the serialQueue to manage all this is consistent with the previous implementation.
+        self.serialQueue.async {
+            self.resetChatService()
+        }
+        // Note that this includes its own serialQueue.async, so we might as well do it here.
+        applyDesiredSocketState()
+    }
+
+    fileprivate override func isCensorshipCircumventionActiveDidChange(_ notification: NSNotification) {
+        // We'd like to *immediately* switch over to the new CC settings,
         // but the new chat service will start closed,
         // and we need to make sure there's not a window where we claim to be open but aren't.
         // Similarly, we need to not race between marking ourselves closed

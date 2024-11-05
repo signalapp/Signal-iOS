@@ -4,6 +4,7 @@
 //
 
 import Foundation
+public import LibSignalClient
 
 extension Notification.Name {
     public static var isCensorshipCircumventionActiveDidChange: Self {
@@ -20,12 +21,17 @@ public class OWSSignalServiceObjC: NSObject {
 
 public class OWSSignalService: OWSSignalServiceProtocol {
     private let keyValueStore = SDSKeyValueStore(collection: "kTSStorageManager_OWSSignalService")
+    private let libsignalNet: Net?
 
     @Atomic public private(set) var isCensorshipCircumventionActive: Bool = false {
         didSet {
             guard isCensorshipCircumventionActive != oldValue else {
                 return
             }
+
+            // Update libsignal's Net instance first, so that connections can be recreated by notification observers.
+            libsignalNet?.setCensorshipCircumventionEnabled(isCensorshipCircumventionActive)
+
             NotificationCenter.default.postNotificationNameAsync(
                 .isCensorshipCircumventionActiveDidChange,
                 object: nil,
@@ -179,7 +185,8 @@ public class OWSSignalService: OWSSignalServiceProtocol {
 
     // MARK: - Internal Implementation
 
-    public init() {
+    public init(libsignalNet: Net?) {
+        self.libsignalNet = libsignalNet
         observeNotifications()
     }
 
