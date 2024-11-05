@@ -43,7 +43,8 @@ public enum FeatureFlags {
     public static let doNotSendGroupChangeMessagesOnProfileKeyRotation = false
 
     public static let messageBackupErrorDisplay = build.includes(.internal)
-    public static let messageBackupFileAlpha = build.includes(.dev)
+    public static let messageBackupFileAlpha = build.includes(.internal)
+    public static let messageBackupRemoteExportAlpha = build.includes(.dev) || messageBackupFileAlpha
     public static let messageBackupFileAlphaRegistrationFlow = build.includes(.dev)
     /// Whether we show a toggle in internal settings on the primary to enable link'n'sync.
     /// Both primary and secondary must be enabled to link'n'sync.
