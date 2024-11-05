@@ -357,7 +357,7 @@ final public class Theme: NSObject {
 
     @objc
     public class var launchScreenBackgroundColor: UIColor {
-        return isDarkThemeEnabled ? .ows_signalBlueDark : .ows_signalBlue
+        backgroundColor
     }
 
     // MARK: - Table View

@@ -636,29 +636,15 @@ private class NoSelectedConversationViewController: OWSViewController {
 
     override func loadView() {
         view = UIView()
+        view.backgroundColor = UIColor.Signal.background
 
         logoImageView.image = #imageLiteral(resourceName: "signal-logo-128").withRenderingMode(.alwaysTemplate)
+        logoImageView.tintColor = UIColor.Signal.quaternaryLabel
         logoImageView.contentMode = .scaleAspectFit
         logoImageView.autoSetDimension(.height, toSize: 112)
         view.addSubview(logoImageView)
 
         logoImageView.autoCenterInSuperview()
-    }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        applyTheme()
-    }
-
-    override func themeDidChange() {
-        super.themeDidChange()
-        applyTheme()
-    }
-
-    private func applyTheme() {
-        view.backgroundColor = Theme.backgroundColor
-        logoImageView.tintColor = Theme.isDarkThemeEnabled ? UIColor.white.withAlphaComponent(0.12) : UIColor.black.withAlphaComponent(0.12)
     }
 }
 

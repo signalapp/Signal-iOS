@@ -213,7 +213,8 @@ class DonationReceiptViewController: OWSTableViewController2 {
         private class func headerView() -> UIView {
             let signalLogo = UIImage(named: "signal-full-logo")
             let signalLogoView = UIImageView(image: signalLogo)
-            signalLogoView.autoSetDimensions(to: CGSize(width: 100, height: 31))
+
+            signalLogoView.autoSetDimensions(to: CGSize(width: 140, height: 40))
 
             let currentDateView = label(dateFormatter().string(from: Date()),
                                         fontSize: 13,
