@@ -251,21 +251,47 @@ final public class Theme: NSObject {
 
     // MARK: - UI Colors
 
+    private static var currentThemeTraitCollection: UITraitCollection {
+        isDarkThemeEnabled ? darkTraitCollection : lightTraitCollection
+    }
+
+    private static var lightTraitCollection: UITraitCollection {
+        UITraitCollection(userInterfaceStyle: .light)
+    }
+
+    private static var darkTraitCollection: UITraitCollection {
+        UITraitCollection(userInterfaceStyle: .dark)
+    }
+
+    private static var elevatedLightTraitCollection: UITraitCollection {
+        UITraitCollection(traitsFrom: [
+            lightTraitCollection,
+            UITraitCollection(userInterfaceLevel: .elevated),
+        ])
+    }
+
+    private static var elevatedDarkTraitCollection: UITraitCollection {
+        UITraitCollection(traitsFrom: [
+            darkTraitCollection,
+            UITraitCollection(userInterfaceLevel: .elevated),
+        ])
+    }
+
     @objc
     public class var backgroundColor: UIColor {
-        isDarkThemeEnabled ? darkThemeBackgroundColor : .white
+        isDarkThemeEnabled
+        ? darkThemeBackgroundColor
+        : UIColor.Signal.background.resolvedColor(with: lightTraitCollection)
     }
 
     public class var secondaryBackgroundColor: UIColor {
-        isDarkThemeEnabled ? darkThemeSecondaryBackgroundColor : lightThemeSecondaryBackgroundColor
-    }
-
-    public class var lightThemeSecondaryBackgroundColor: UIColor {
-        .ows_gray02
+        isDarkThemeEnabled
+        ? darkThemeSecondaryBackgroundColor
+        : UIColor.Signal.secondaryBackground.resolvedColor(with: lightTraitCollection)
     }
 
     public class var darkThemeSecondaryBackgroundColor: UIColor {
-        .ows_gray80
+        UIColor.Signal.secondaryBackground.resolvedColor(with: darkTraitCollection)
     }
 
     public class var washColor: UIColor {
@@ -284,26 +310,28 @@ final public class Theme: NSObject {
         isDarkThemeEnabled ? darkThemeSecondaryTextAndIconColor : lightThemeSecondaryTextAndIconColor
     }
 
-    public class var ternaryTextColor: UIColor { .ows_gray45 }
+    public class var ternaryTextColor: UIColor {
+        UIColor.Signal.tertiaryLabel.resolvedColor(with: currentThemeTraitCollection)
+    }
 
-    public class var placeholderColor: UIColor { .ows_gray45 }
+    public class var placeholderColor: UIColor { ternaryTextColor }
 
     public class var snippetColor: UIColor {
         isDarkThemeEnabled ? darkThemeSnippetColor : lightThemeSnippetColor
     }
 
     public class var hairlineColor: UIColor {
-        isDarkThemeEnabled ? .ows_gray75 : .ows_gray15
+        UIColor.Signal.opaqueSeparator.resolvedColor(with: currentThemeTraitCollection)
     }
 
     public class var outlineColor: UIColor {
-        isDarkThemeEnabled ? .ows_gray75 : .ows_gray15
+        hairlineColor
     }
 
     public class var backdropColor: UIColor { .ows_blackAlpha40 }
 
     public class var navbarBackgroundColor: UIColor {
-        isDarkThemeEnabled ? darkThemeNavbarBackgroundColor : .white
+        backgroundColor
     }
 
     public class var navbarTitleColor: UIColor { primaryTextColor }
@@ -316,7 +344,7 @@ final public class Theme: NSObject {
     // * Fine detail (e.g., text, non-filled icons) should use Theme.accentBlueColor.
     //   It is brighter in dark mode, improving legibility.
     public class var accentBlueColor: UIColor {
-        isDarkThemeEnabled ? .ows_accentBlueDark : .ows_accentBlue
+        UIColor.Signal.accent.resolvedColor(with: currentThemeTraitCollection)
     }
 
     public class var conversationButtonBackgroundColor: UIColor {
@@ -341,11 +369,15 @@ final public class Theme: NSObject {
     public class var cellSeparatorColor: UIColor { hairlineColor }
 
     public class var tableCell2BackgroundColor: UIColor {
-        isDarkThemeEnabled ? darkThemeTableCell2BackgroundColor : .white
+        isDarkThemeEnabled
+        ? darkThemeTableCell2BackgroundColor
+        : UIColor.Signal.secondaryGroupedBackground.resolvedColor(with: lightTraitCollection)
     }
 
     public class var tableCell2PresentedBackgroundColor: UIColor {
-        isDarkThemeEnabled ? darkThemeTableCell2PresentedBackgroundColor : .white
+        isDarkThemeEnabled
+        ? darkThemeTableCell2PresentedBackgroundColor
+        : UIColor.Signal.secondaryGroupedBackground.resolvedColor(with: elevatedLightTraitCollection)
     }
 
     public class var tableCell2SelectedBackgroundColor: UIColor {
@@ -365,11 +397,15 @@ final public class Theme: NSObject {
     }
 
     public class var tableView2BackgroundColor: UIColor {
-        isDarkThemeEnabled ? darkThemeTableView2BackgroundColor : .ows_gray10
+        isDarkThemeEnabled
+        ? darkThemeTableView2BackgroundColor
+        : UIColor.Signal.groupedBackground.resolvedColor(with: lightTraitCollection)
     }
 
     public class var tableView2PresentedBackgroundColor: UIColor {
-        isDarkThemeEnabled ? darkThemeTableView2PresentedBackgroundColor : .ows_gray10
+        isDarkThemeEnabled
+        ? darkThemeTableView2PresentedBackgroundColor
+        : UIColor.Signal.groupedBackground.resolvedColor(with: elevatedLightTraitCollection)
     }
 
     public class var tableView2SeparatorColor: UIColor {
@@ -382,31 +418,47 @@ final public class Theme: NSObject {
 
     // MARK: - Light Theme Colors
 
-    public class var lightThemePrimaryColor: UIColor { .ows_gray90 }
+    public class var lightThemePrimaryColor: UIColor {
+        UIColor.Signal.label.resolvedColor(with: lightTraitCollection)
+    }
 
-    public class var lightThemeSecondaryTextAndIconColor: UIColor { .ows_gray60 }
+    public class var lightThemeSecondaryTextAndIconColor: UIColor {
+        UIColor.Signal.secondaryLabel.resolvedColor(with: lightTraitCollection)
+    }
 
     public class var lightThemeSnippetColor: UIColor { .ows_gray45 }
 
     // MARK: - Dark Theme Colors
 
-    public class var darkThemeBackgroundColor: UIColor { .black }
+    public class var darkThemeBackgroundColor: UIColor {
+        UIColor.Signal.background.resolvedColor(with: darkTraitCollection)
+    }
 
-    public class var darkThemePrimaryColor: UIColor { .ows_gray02 }
+    public class var darkThemePrimaryColor: UIColor {
+        UIColor.Signal.label.resolvedColor(with: darkTraitCollection)
+    }
 
-    public class var darkThemeSecondaryTextAndIconColor: UIColor { .ows_gray25 }
+    public class var darkThemeSecondaryTextAndIconColor: UIColor {
+        UIColor.Signal.secondaryLabel.resolvedColor(with: darkTraitCollection)
+     }
 
     public class var darkThemeSnippetColor: UIColor { .ows_gray25 }
 
     public class var darkThemeWashColor: UIColor { .ows_gray75 }
 
-    public class var darkThemeNavbarBackgroundColor: UIColor { .black }
+    public class var darkThemeNavbarBackgroundColor: UIColor {
+        darkThemeBackgroundColor
+    }
 
     public class var darkThemeNavbarIconColor: UIColor { .ows_gray15 }
 
-    public class var darkThemeTableCell2BackgroundColor: UIColor { .ows_gray90 }
+    public class var darkThemeTableCell2BackgroundColor: UIColor {
+        UIColor.Signal.secondaryGroupedBackground.resolvedColor(with: darkTraitCollection)
+    }
 
-    public class var darkThemeTableCell2PresentedBackgroundColor: UIColor { .ows_gray80 }
+    public class var darkThemeTableCell2PresentedBackgroundColor: UIColor {
+        UIColor.Signal.secondaryGroupedBackground.resolvedColor(with: elevatedDarkTraitCollection)
+    }
 
     public class var darkThemeTableCell2SelectedBackgroundColor: UIColor { .ows_gray80 }
 
@@ -416,9 +468,13 @@ final public class Theme: NSObject {
 
     public class var darkThemeTableCell2PresentedSelectedBackgroundColor: UIColor { .ows_gray75 }
 
-    public class var darkThemeTableView2BackgroundColor: UIColor { .black }
+    public class var darkThemeTableView2BackgroundColor: UIColor {
+        UIColor.Signal.groupedBackground.resolvedColor(with: darkTraitCollection)
+    }
 
-    public class var darkThemeTableView2PresentedBackgroundColor: UIColor { .ows_gray90 }
+    public class var darkThemeTableView2PresentedBackgroundColor: UIColor {
+        UIColor.Signal.groupedBackground.resolvedColor(with: elevatedDarkTraitCollection)
+    }
 
     public class var darkThemeTableView2SeparatorColor: UIColor { .ows_gray75 }
 

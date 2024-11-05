@@ -70,7 +70,7 @@ open class OWSTableViewController2: OWSViewController {
     public var defaultCellHeight: CGFloat = 50
 
     public var isUsingPresentedStyle: Bool {
-        return presentingViewController != nil
+        presentingViewController != nil || traitCollection.userInterfaceLevel == .elevated
     }
 
     private static let cellIdentifier = "cellIdentifier"
