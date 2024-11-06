@@ -160,7 +160,7 @@ final class MessageBackupGroupCallArchiver {
                 groupCallInteraction,
                 in: chatThread,
                 chatId: chatItem.typedChatId,
-                directionalDetails: directionalDetails,
+                wasRead: groupCall.read,
                 context: context
             )
         } catch let error {

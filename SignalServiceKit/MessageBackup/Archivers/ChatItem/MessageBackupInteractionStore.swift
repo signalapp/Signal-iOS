@@ -109,10 +109,9 @@ public final class MessageBackupInteractionStore {
         _ interaction: TSCall,
         in thread: MessageBackup.ChatThread,
         chatId: MessageBackup.ChatId,
-        directionalDetails: BackupProto_ChatItem.OneOf_DirectionalDetails,
+        wasRead: Bool,
         context: MessageBackup.ChatItemRestoringContext
     ) throws {
-        let wasRead = directionalDetails.wasRead
         interaction.wasRead = wasRead
         try insert(
             interaction: interaction,
@@ -127,10 +126,9 @@ public final class MessageBackupInteractionStore {
         _ interaction: OWSGroupCallMessage,
         in thread: MessageBackup.ChatThread,
         chatId: MessageBackup.ChatId,
-        directionalDetails: BackupProto_ChatItem.OneOf_DirectionalDetails,
+        wasRead: Bool,
         context: MessageBackup.ChatItemRestoringContext
     ) throws {
-        let wasRead = directionalDetails.wasRead
         interaction.wasRead = wasRead
         try insert(
             interaction: interaction,

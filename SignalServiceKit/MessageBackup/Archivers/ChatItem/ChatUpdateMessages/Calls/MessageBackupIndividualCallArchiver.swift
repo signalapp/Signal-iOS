@@ -189,19 +189,12 @@ final class MessageBackupIndividualCallArchiver {
             sentAtTimestamp: chatItem.dateSent
         )
 
-        guard let directionalDetails = chatItem.directionalDetails else {
-            return .messageFailure([.restoreFrameError(
-                .invalidProtoData(.chatItemMissingDirectionalDetails),
-                chatItem.id
-            )])
-        }
-
         do {
             try interactionStore.insert(
                 individualCallInteraction,
                 in: chatThread,
                 chatId: chatItem.typedChatId,
-                directionalDetails: directionalDetails,
+                wasRead: individualCall.read,
                 context: context
             )
         } catch let error {
