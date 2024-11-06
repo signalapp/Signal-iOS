@@ -1293,6 +1293,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
     private let mostRecentTask = AtomicValue<Task<Void, Never>?>(nil, lock: .init())
 
     private func enqueueNotificationAction(afterCommitting tx: SDSAnyWriteTransaction? = nil, _ block: @escaping () async -> Void) {
+        let startTime = CACurrentMediaTime()
         let pendingTask = Self.pendingTasks.buildPendingTask(label: "NotificationAction")
         let commitGuarantee = tx.map {
             let (guarantee, future) = Guarantee<Void>.pending()
@@ -1305,7 +1306,16 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 defer { pendingTask.complete() }
                 await oldTask?.value
                 await commitGuarantee?.awaitable()
+                let queueTime = CACurrentMediaTime()
                 await block()
+                let endTime = CACurrentMediaTime()
+
+                let tooLargeThreshold: TimeInterval = 2
+                if endTime - startTime >= tooLargeThreshold {
+                    let formattedQueueDuration = String(format: "%.2f", queueTime - startTime)
+                    let formattedNotifyDuration = String(format: "%.2f", endTime - queueTime)
+                    Logger.warn("Couldn't post notification within \(tooLargeThreshold) seconds; \(formattedQueueDuration)s + \(formattedNotifyDuration)s")
+                }
             }
         }
     }
