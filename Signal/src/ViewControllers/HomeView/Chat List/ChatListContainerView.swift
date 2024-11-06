@@ -39,7 +39,8 @@ final class ChatListContainerView: UIView {
             _filterControl = filterControl
             insertSubview(filterControl, aboveSubview: tableView)
 
-            observation = tableView.observe(\.contentOffset) { [unowned self] _, _ in
+            observation = tableView.observe(\.contentOffset) { [weak self] _, _ in
+                guard let self else { return }
                 scrollPositionDidChange()
                 updateContentHeight()
                 filterControl.setAdjustedContentOffset(adjustedContentOffset)
