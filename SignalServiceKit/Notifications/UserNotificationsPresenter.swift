@@ -170,7 +170,7 @@ class UserNotificationPresenter {
             || category == .incomingReactionWithActions_CanReply
             || category == .incomingReactionWithActions_CannotReply
         )
-        if checkForCancel && hasReceivedSyncMessageRecentlyWithSneakyTransaction {
+        if checkForCancel, !isMainAppAndActive, hasReceivedSyncMessageRecentlyWithSneakyTransaction {
             assert(userInfo[AppNotificationUserInfoKey.threadId] != nil)
             trigger = UNTimeIntervalNotificationTrigger(timeInterval: kNotificationDelayForRemoteRead, repeats: false)
         } else {
