@@ -92,6 +92,7 @@ extension MessageBackup {
 
         private var currentChatId = ChatId(value: 1)
         private let map = SharedMap<ThreadUniqueId, ChatId>()
+        public var gv1ThreadIds = Set<ThreadUniqueId>()
         private let threadCache = SharedMap<ChatId, TSThread>()
 
         internal init(

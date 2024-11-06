@@ -91,6 +91,8 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
                     context: context
                 )
             } else if let thread = thread as? TSGroupThread, thread.isGroupV1Thread {
+                // Remember which threads were gv1 so we can silently drop their messages.
+                context.gv1ThreadIds.insert(thread.uniqueThreadIdentifier)
                 // Skip gv1 threads; count as success.
                 result = .success
             } else {

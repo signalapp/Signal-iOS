@@ -155,24 +155,24 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
     ) -> ArchiveMultiFrameResult {
         var partialErrors = [ArchiveFrameError]()
 
-        guard
-            let chatId = context[interaction.uniqueThreadIdentifier],
-            let thread = context[chatId]
-        else {
+        let chatId = context[interaction.uniqueThreadIdentifier]
+        let thread = chatId.map { context[$0] } ?? nil
+
+        if
+            context.gv1ThreadIds.contains(interaction.uniqueThreadIdentifier)
+            || (thread as? TSGroupThread)?.isGroupV1Thread == true
+        {
+            /// We are knowingly dropping GV1 data from backups, so we'll skip
+            /// archiving any interactions for GV1 threads without errors.
+            return .success
+        }
+
+        guard let chatId, let thread  else {
             partialErrors.append(.archiveFrameError(
                 .referencedThreadIdMissing(interaction.uniqueThreadIdentifier),
                 interaction.uniqueInteractionId
             ))
             return .partialSuccess(partialErrors)
-        }
-
-        if
-            let groupThread = thread as? TSGroupThread,
-            groupThread.isGroupV1Thread
-        {
-            /// We are knowingly dropping GV1 data from backups, so we'll skip
-            /// archiving any interactions for GV1 threads without errors.
-            return .success
         }
 
         let archiveInteractionResult: MessageBackup.ArchiveInteractionResult<MessageBackup.InteractionArchiveDetails>
