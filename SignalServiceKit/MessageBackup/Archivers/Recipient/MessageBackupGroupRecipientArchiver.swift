@@ -238,6 +238,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
         let groupSnapshot = groupProto.snapshot
 
         var groupMembershipBuilder = GroupMembership.Builder()
+        var fullGroupMemberAcis = Set<Aci>()
         for fullMember in groupSnapshot.members {
             guard let aci = try? Aci.parseFrom(serviceIdBinary: fullMember.userID) else {
                 return restoreFrameError(.invalidProtoData(.invalidAci(protoClass: BackupProto_Group.Member.self)))
@@ -247,6 +248,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
             }
 
             groupMembershipBuilder.addFullMember(aci, role: role)
+            fullGroupMemberAcis.insert(aci)
         }
         for invitedMember in groupSnapshot.membersPendingProfileKey {
             guard invitedMember.hasMember else {
@@ -333,6 +335,16 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
         }
 
         // MARK: Store group properties that live outside the group model
+
+        do {
+            try threadStore.insertFullGroupMemberRecords(
+                acis: fullGroupMemberAcis,
+                groupThread: groupThread,
+                context: context
+            )
+        } catch let error {
+            return restoreFrameError(.databaseInsertionFailed(error))
+        }
 
         if let disappearingMessageTimer = groupSnapshot.extractDisappearingMessageTimer {
             disappearingMessageConfigStore.set(

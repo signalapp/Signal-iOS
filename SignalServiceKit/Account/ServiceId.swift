@@ -97,13 +97,28 @@ public struct NormalizedDatabaseRecordAddress {
     public let serviceId: ServiceId?
     public let phoneNumber: String?
 
+    public init(aci: Aci) {
+        self.serviceId = aci
+        self.phoneNumber = nil
+    }
+
+    private init(phoneNumber: String, pni: Pni?) {
+        self.serviceId = pni
+        self.phoneNumber = phoneNumber
+    }
+
+    private init(phoneNumber: String?, pni: Pni) {
+        self.serviceId = pni
+        self.phoneNumber = phoneNumber
+    }
+
     public init?(aci: Aci?, phoneNumber: String?, pni: Pni?) {
         if let aci {
-            self.serviceId = aci
-            self.phoneNumber = nil
-        } else if phoneNumber != nil || pni != nil {
-            self.phoneNumber = phoneNumber
-            self.serviceId = pni
+            self.init(aci: aci)
+        } else if let pni {
+            self.init(phoneNumber: phoneNumber, pni: pni)
+        } else if let phoneNumber {
+            self.init(phoneNumber: phoneNumber, pni: pni)
         } else {
             return nil
         }

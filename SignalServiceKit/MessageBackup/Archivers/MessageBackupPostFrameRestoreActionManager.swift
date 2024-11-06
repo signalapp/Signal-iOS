@@ -76,6 +76,16 @@ public class MessageBackupPostFrameRestoreActionManager {
                     tx: chatItemContext.tx
                 )
             }
+            switch thread.threadType {
+            case .contact:
+                break
+            case .groupV2(let groupThread):
+                try updateLastInteractionTimestamps(
+                    for: groupThread,
+                    actions: actions,
+                    context: chatItemContext.chatContext
+                )
+            }
         }
         if wasAnyThreadVisible {
             sskPreferences.setHasSavedThread(true, tx: chatItemContext.tx)
@@ -110,6 +120,33 @@ public class MessageBackupPostFrameRestoreActionManager {
             directionalDetails: .directionless(BackupProto_ChatItem.DirectionlessMessageDetails()),
             context: chatItemContext
         )
+    }
+
+    private func updateLastInteractionTimestamps(
+        for groupThread: TSGroupThread,
+        actions: ChatActions,
+        context: MessageBackup.ChatRestoringContext
+    ) throws {
+        for memberAddress in groupThread.groupMembership.fullMembers {
+            guard let memberAci = memberAddress.aci else {
+                // We only restore v2 groups which always have acis for
+                // full group members.
+                throw OWSAssertionError("Non aci group member in backup!")
+            }
+            guard let latestTimestamp = actions.groupMemberLastInteractionTimestamp[memberAci] else {
+                continue
+            }
+            let groupMember = try TSGroupMember.groupMember(
+                for: memberAci,
+                in: groupThread,
+                tx: context.tx
+            )
+
+            try groupMember?.updateWith(
+                lastInteractionTimestamp: latestTimestamp,
+                tx: context.tx
+            )
+        }
     }
 }
 

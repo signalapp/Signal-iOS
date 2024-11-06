@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
+
 public final class MessageBackupThreadStore {
 
     private let threadStore: ThreadStore
@@ -98,6 +100,22 @@ public final class MessageBackupThreadStore {
         let record = try groupThread.asRecord()
         try record.insert(context.tx.databaseConnection)
         return groupThread
+    }
+
+    func insertFullGroupMemberRecords(
+        acis: Set<Aci>,
+        groupThread: TSGroupThread,
+        context: MessageBackup.RestoringContext
+    ) throws {
+        for aci in acis {
+            let groupMember = TSGroupMember(
+                address: NormalizedDatabaseRecordAddress(aci: aci),
+                groupThreadId: groupThread.uniqueId,
+                // This gets updated in post frame restore actions.
+                lastInteractionTimestamp: 0
+            )
+            try groupMember.insert(context.tx.databaseConnection)
+        }
     }
 
     /// We _have_ to do this in a separate step from group thread creation; we create the group

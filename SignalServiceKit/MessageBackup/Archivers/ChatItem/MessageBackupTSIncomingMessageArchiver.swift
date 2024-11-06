@@ -336,6 +336,7 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
                 message,
                 in: chatThread,
                 chatId: chatItem.typedChatId,
+                senderAci: authorAci,
                 directionalDetails: incomingDetails,
                 context: context
             )

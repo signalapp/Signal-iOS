@@ -103,7 +103,7 @@ extension TSGroupThread {
             return
         }
 
-        groupMember.updateWith(
+        groupMember.anyUpdateWith(
             lastInteractionTimestamp: message.timestamp,
             transaction: tx
         )

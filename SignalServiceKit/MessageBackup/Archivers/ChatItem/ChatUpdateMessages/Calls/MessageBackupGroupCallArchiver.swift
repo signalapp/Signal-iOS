@@ -160,6 +160,7 @@ final class MessageBackupGroupCallArchiver {
                 groupCallInteraction,
                 in: chatThread,
                 chatId: chatItem.typedChatId,
+                startedCallAci: startedCallAci,
                 wasRead: groupCall.read,
                 context: context
             )

@@ -215,6 +215,11 @@ extension MessageBackup {
             var lastVisibleInteractionRowId: Int64?
             var hadAnyUnreadMessages: Bool = false
 
+            /// Maintained for group chats only.
+            /// Maps a group member's aci (including the local user's aci) to the
+            /// largest timestamp for messages sent by that member.
+            var groupMemberLastInteractionTimestamp = SharedMap<Aci, UInt64>()
+
             var shouldBeMarkedVisible: Bool {
                 isPinned || lastVisibleInteractionRowId != nil
             }
@@ -249,6 +254,22 @@ extension MessageBackup {
             }
             actions.hadAnyUnreadMessages = actions.hadAnyUnreadMessages || !wasRead
             postFrameRestoreActions[chatId] = actions
+        }
+
+        func updateGroupMemberLastInteractionTimestamp(
+            groupThread: TSGroupThread,
+            chatId: ChatId,
+            senderAci: Aci,
+            timestamp: UInt64
+        ) {
+            var actions = postFrameRestoreActions[chatId] ?? .default
+            let oldTimestamp = actions.groupMemberLastInteractionTimestamp[senderAci]
+            if
+                oldTimestamp == nil
+                || oldTimestamp! < timestamp
+            {
+                actions.groupMemberLastInteractionTimestamp[senderAci] = timestamp
+            }
         }
     }
 

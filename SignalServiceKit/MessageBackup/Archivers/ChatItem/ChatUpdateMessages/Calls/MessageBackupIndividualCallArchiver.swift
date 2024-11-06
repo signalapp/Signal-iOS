@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
+
 final class MessageBackupIndividualCallArchiver {
     typealias Details = MessageBackup.InteractionArchiveDetails
     typealias ArchiveChatUpdateMessageResult = MessageBackup.ArchiveInteractionResult<Details>
@@ -182,6 +184,16 @@ final class MessageBackupIndividualCallArchiver {
             return .messageFailure([.restoreFrameError(.invalidProtoData(.individualCallUnrecognizedType), chatItem.id)])
         }
 
+        let callerAci: Aci?
+        switch callRecordDirection {
+        case .outgoing:
+            callerAci = context.recipientContext.localIdentifiers.aci
+        case .incoming:
+            // Note: we may not _have_ an aci if this call
+            // was made before the introduction of acis.
+            callerAci = contactThread.contactAddress.aci
+        }
+
         let individualCallInteraction = TSCall(
             callType: callInteractionType,
             offerType: callInteractionOfferType,
@@ -194,6 +206,7 @@ final class MessageBackupIndividualCallArchiver {
                 individualCallInteraction,
                 in: chatThread,
                 chatId: chatItem.typedChatId,
+                callerAci: callerAci,
                 wasRead: individualCall.read,
                 context: context
             )
