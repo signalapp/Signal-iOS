@@ -191,7 +191,7 @@ public extension OWSURLSessionProtocol {
     // MARK: - Promise Shims
 
     func promiseForTSRequest(_ rawRequest: TSRequest) -> Promise<HTTPResponse> {
-        return Promise.wrapAsync { try await self.performRequest(rawRequest) }
+        return Promise.wrapAsync { try await self.performRequest(rawRequest) }.map(on: DispatchQueue.global(), { $0 })
     }
 
     // MARK: - Upload Tasks Convenience
