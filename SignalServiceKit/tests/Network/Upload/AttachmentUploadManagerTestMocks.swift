@@ -90,7 +90,7 @@ class _AttachmentUploadManager_MessageBackupKeyMaterialMock: MessageBackupKeyMat
     func backupKey(
         type: MessageBackupAuthCredentialType,
         tx: DBReadTransaction
-    ) throws -> BackupKey {
+    ) throws(MessageBackupKeyMaterialError) -> BackupKey {
         fatalError("Unimplemented for tests")
     }
 
@@ -98,7 +98,7 @@ class _AttachmentUploadManager_MessageBackupKeyMaterialMock: MessageBackupKeyMat
         mediaName: String,
         type: MediaTierEncryptionType,
         tx: any DBReadTransaction
-    ) throws -> MediaTierEncryptionMetadata {
+    ) throws(MessageBackupKeyMaterialError) -> MediaTierEncryptionMetadata {
         return .init(type: type, mediaId: Data(), hmacKey: Data(), aesKey: Data())
     }
 }

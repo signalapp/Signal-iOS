@@ -90,19 +90,26 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
             .filter(Column(OrphanedBackupAttachment.CodingKeys.mediaName) == mediaName)
             .deleteAll(tx.databaseConnection)
         for type in MediaTierEncryptionType.allCases {
-            guard
-                let mediaId = try? messageBackupKeyMaterial.mediaEncryptionMetadata(
+            do {
+                let mediaId = try messageBackupKeyMaterial.mediaEncryptionMetadata(
                     mediaName: mediaName,
                     type: type,
                     tx: tx
                 ).mediaId
-            else {
-                owsFailDebug("Missing media id encryption material")
-                continue
+                try! OrphanedBackupAttachment
+                    .filter(Column(OrphanedBackupAttachment.CodingKeys.mediaId) == mediaId)
+                    .deleteAll(tx.databaseConnection)
+            } catch let messageBackupKeyMaterialError {
+                switch messageBackupKeyMaterialError {
+                case .missingMediaRootBackupKey:
+                    // If we don't have root keys, we definitely don't have any
+                    // orphaned backup media. quit.
+                    continue
+                case .missingMasterKey, .derivationError:
+                    owsFailDebug("Unexpected encryption material error")
+                }
             }
-            try! OrphanedBackupAttachment
-                .filter(Column(OrphanedBackupAttachment.CodingKeys.mediaId) == mediaId)
-                .deleteAll(tx.databaseConnection)
+
         }
     }
 

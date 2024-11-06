@@ -6,8 +6,11 @@
 import Foundation
 public import LibSignalClient
 
-enum MessageBackupKeyMaterialError: Error {
+public enum MessageBackupKeyMaterialError: Error {
     case missingMasterKey
+    case missingMediaRootBackupKey
+    /// Encountered an error using libsignal methods to derive keys.
+    case derivationError(Error)
 }
 
 public enum MediaTierEncryptionType: CaseIterable {
@@ -36,11 +39,11 @@ public protocol MessageBackupKeyMaterial {
     func backupKey(
         type: MessageBackupAuthCredentialType,
         tx: DBReadTransaction
-    ) throws -> BackupKey
+    ) throws(MessageBackupKeyMaterialError) -> BackupKey
 
     func mediaEncryptionMetadata(
         mediaName: String,
         type: MediaTierEncryptionType,
         tx: any DBReadTransaction
-    ) throws -> MediaTierEncryptionMetadata
+    ) throws(MessageBackupKeyMaterialError) -> MediaTierEncryptionMetadata
 }

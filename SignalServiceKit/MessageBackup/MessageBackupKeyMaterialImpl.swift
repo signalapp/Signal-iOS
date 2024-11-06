@@ -20,12 +20,15 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
 
     /// Get the root backup key used by the encryption mode. The key may be derived
     /// differently depending on the mode, but derivations downstream of it work the same.
-    public func backupKey(type: MessageBackupAuthCredentialType, tx: DBReadTransaction) throws -> BackupKey {
+    public func backupKey(
+        type: MessageBackupAuthCredentialType,
+        tx: DBReadTransaction
+    ) throws(MessageBackupKeyMaterialError) -> BackupKey {
         let resultData: Data
         switch type {
         case .media:
             guard let backupKey = mrbkStore.getMediaRootBackupKey(tx: tx) else {
-                throw MessageBackupKeyMaterialError.missingMasterKey
+                throw MessageBackupKeyMaterialError.missingMediaRootBackupKey
             }
             resultData = backupKey
         case .messages:
@@ -33,26 +36,40 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
                 throw MessageBackupKeyMaterialError.missingMasterKey
             }
             guard backupKey.type == .backupKey else {
-                throw OWSAssertionError("Wrong key provided")
+                owsFailDebug("Wrong key provided")
+                throw MessageBackupKeyMaterialError.missingMasterKey
             }
             resultData = backupKey.rawData
         }
-        return try resultData.withUnsafeBytes { try BackupKey(contents: Array($0)) }
+        do {
+            return try resultData.withUnsafeBytes { try BackupKey(contents: Array($0)) }
+        } catch {
+            throw MessageBackupKeyMaterialError.derivationError(error)
+        }
     }
 
     public func mediaEncryptionMetadata(
         mediaName: String,
         type: MediaTierEncryptionType,
         tx: any DBReadTransaction
-    ) throws -> MediaTierEncryptionMetadata {
+    ) throws(MessageBackupKeyMaterialError) -> MediaTierEncryptionMetadata {
         let backupKey = try backupKey(type: .media, tx: tx)
-        let mediaId = try backupKey.deriveMediaId(mediaName)
+        let mediaId: [UInt8]
+        do {
+            mediaId = try backupKey.deriveMediaId(mediaName)
+        } catch {
+            throw MessageBackupKeyMaterialError.derivationError(error)
+        }
         let keyBytes: [UInt8]
-        switch type {
-        case .attachment:
-            keyBytes = try backupKey.deriveMediaEncryptionKey(mediaId)
-        case .thumbnail:
-            keyBytes = try backupKey.deriveThumbnailTransitEncryptionKey(mediaId)
+        do {
+            switch type {
+            case .attachment:
+                keyBytes = try backupKey.deriveMediaEncryptionKey(mediaId)
+            case .thumbnail:
+                keyBytes = try backupKey.deriveThumbnailTransitEncryptionKey(mediaId)
+            }
+        } catch {
+            throw MessageBackupKeyMaterialError.derivationError(error)
         }
         return MediaTierEncryptionMetadata(
             type: type,
@@ -69,16 +86,16 @@ open class MessageBackupKeyMaterialMock: MessageBackupKeyMaterial {
     public func backupKey(
         type: MessageBackupAuthCredentialType,
         tx: any DBReadTransaction
-    ) throws -> BackupKey {
-        throw OWSAssertionError("Unimplemented")
+    ) throws(MessageBackupKeyMaterialError) -> BackupKey {
+        fatalError("Unimplemented")
     }
 
     public func mediaEncryptionMetadata(
         mediaName: String,
         type: MediaTierEncryptionType,
         tx: any DBReadTransaction
-    ) throws -> MediaTierEncryptionMetadata {
-        throw OWSAssertionError("Unimplemented")
+    ) throws(MessageBackupKeyMaterialError) -> MediaTierEncryptionMetadata {
+        fatalError("Unimplemented")
     }
 }
 
