@@ -176,7 +176,14 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         }
 
         let archiveInteractionResult: MessageBackup.ArchiveInteractionResult<MessageBackup.InteractionArchiveDetails>
-        if let incomingMessage = interaction as? TSIncomingMessage {
+        if
+            let message = interaction as? TSMessage,
+            message.isGroupStoryReply
+        {
+            // We skip group story reply messages, as stories
+            // aren't backed up so neither should their replies.
+            return .success
+        } else if let incomingMessage = interaction as? TSIncomingMessage {
             archiveInteractionResult = incomingMessageArchiver.archiveIncomingMessage(
                 incomingMessage,
                 thread: thread,
