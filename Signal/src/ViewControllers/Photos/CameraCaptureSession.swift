@@ -1442,15 +1442,13 @@ private protocol PhotoCaptureDelegate: AnyObject {
     func photoCaptureDidProduce(result: Result<Data, Error>)
 }
 
-private class PhotoCapture: NSObject {
+private class PhotoCapture {
 
     let avCaptureOutput = AVCapturePhotoOutput()
 
     var flashMode: AVCaptureDevice.FlashMode = .off
 
-    override init() {
-        super.init()
-
+    init() {
         avCaptureOutput.isLivePhotoCaptureEnabled = false
         avCaptureOutput.isHighResolutionCaptureEnabled = true
     }
@@ -1672,7 +1670,7 @@ extension UIImage.Orientation: @retroactive CustomStringConvertible {
 // MARK: -
 
 extension CGSize {
-    func scaledToFit(max: CGFloat) -> CGSize {
+    fileprivate func scaledToFit(max: CGFloat) -> CGSize {
         if width > height {
             if width > max {
                 let scale = max / width
@@ -1690,7 +1688,7 @@ extension CGSize {
         }
     }
 
-    func cropped(toAspectRatio aspectRatio: CGFloat) -> CGSize {
+    fileprivate func cropped(toAspectRatio aspectRatio: CGFloat) -> CGSize {
         guard aspectRatio > 0, aspectRatio <= 1 else {
             owsFailDebug("invalid aspectRatio: \(aspectRatio)")
             return self
@@ -1707,7 +1705,7 @@ extension CGSize {
 // MARK: -
 
 extension AVCaptureDevice.FlashMode {
-    var toTorchMode: AVCaptureDevice.TorchMode {
+    fileprivate var toTorchMode: AVCaptureDevice.TorchMode {
         switch self {
         case .auto:
             return .auto
@@ -1724,7 +1722,7 @@ extension AVCaptureDevice.FlashMode {
 
 extension CMAcceleration {
 
-    var deviceOrientation: AVCaptureVideoOrientation? {
+    fileprivate var deviceOrientation: AVCaptureVideoOrientation? {
         if x >= 0.75 {
             return .landscapeLeft
         } else if x <= -0.75 {
