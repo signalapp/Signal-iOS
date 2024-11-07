@@ -32,6 +32,30 @@ public protocol StorageServiceManager: StorageServiceManagerObjc {
     @discardableResult
     func restoreOrCreateManifestIfNecessary(authedDevice: AuthedDevice) -> Promise<Void>
 
+    /// Creates a brand-new manifest based on local state, pointing to brand-new
+    /// records.
+    /// - Important
+    /// This method is synchronized internally, and multiple calls will be
+    /// serialized. However, this is an expensive operation (as all existing
+    /// records need to be deleted and recreated from scratch), so callers
+    /// should take care to avoid unnecessary calls.
+    /// - Note
+    /// The new manifest's version will be `currentVersion + 1`.
+    func rotateManifest(authedDevice: AuthedDevice) async throws
+
+    /// Wipes all local state related to Storage Service, without mutating
+    /// remote state.
+    ///
+    /// - Note
+    /// The expected behavior after calling this method is that the next time we
+    /// perform a backup we will create a brand-new manifest with version 1, as
+    /// we have no local manifest version. However, since we still (probably)
+    /// have a remote manifest this backup will be rejected, and we'll merge in
+    /// the remote manifest, then re-attempt our backup.
+    ///
+    /// This is a weird behavior to specifically want, and new callers who are
+    /// interested in forcing a manifest recreation should probably prefer
+    /// ``rotateManifest`` instead.
     func resetLocalData(transaction: DBWriteTransaction)
 
     /// Waits for pending restores to finish.

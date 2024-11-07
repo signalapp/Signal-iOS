@@ -801,4 +801,5 @@ private class MockStorageServiceManager: StorageServiceManager {
     func setLocalIdentifiers(_ localIdentifiers: LocalIdentifiersObjC) { owsFail("Not implemented!") }
     func backupPendingChanges(authedDevice: AuthedDevice) { owsFail("Not implemented!") }
     func restoreOrCreateManifestIfNecessary(authedDevice: AuthedDevice) -> Promise<Void> { owsFail("Not implemented!") }
+    func rotateManifest(authedDevice: AuthedDevice) async throws { owsFail("Not implemented!") }
 }

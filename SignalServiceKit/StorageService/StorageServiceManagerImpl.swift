@@ -72,6 +72,12 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
         /// window between initialization and when the database is loaded.
         var localIdentifiers: LocalIdentifiers?
 
+        struct PendingManifestRotation {
+            var authedDevice: AuthedDevice
+            var continuations: [CheckedContinuation<Void, Error>]
+        }
+        var pendingManifestRotation: PendingManifestRotation?
+
         var hasPendingCleanup = false
 
         struct PendingBackup {
@@ -138,6 +144,36 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
     }
 
     private func popNextOperation(_ managerState: inout ManagerState) -> (() async throws -> Void, ((inout ManagerState, (any Error)?) -> Void)?)? {
+        if let pendingManifestRotation = managerState.pendingManifestRotation {
+            managerState.pendingManifestRotation = nil
+
+            func resumeContinuations(_ error: Error?) {
+                for continuation in pendingManifestRotation.continuations {
+                    if let error {
+                        continuation.resume(throwing: error)
+                    } else {
+                        continuation.resume()
+                    }
+                }
+            }
+
+            if let rotateManifestOperation = buildOperation(
+                managerState: managerState,
+                mode: .rotateManifest,
+                authedDevice: pendingManifestRotation.authedDevice
+            ) {
+                let cleanupBlock: ((inout ManagerState, (any Error)?) -> Void) = { _, error in
+                    resumeContinuations(error)
+                }
+
+                return (rotateManifestOperation, cleanupBlock)
+            } else {
+                /// Resume the continuations, but don't return `nil` since there
+                /// may be other operations we can pop instead.
+                resumeContinuations(OWSAssertionError("Failed to build rotate manifest operation!"))
+            }
+        }
+
         if managerState.pendingMutations.hasChanges {
             let pendingMutations = managerState.pendingMutations
             managerState.pendingMutations = PendingMutations()
@@ -349,6 +385,18 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
         return promise
     }
 
+    public func rotateManifest(authedDevice: AuthedDevice) async throws {
+        try await withCheckedThrowingContinuation { continuation in
+            updateManagerState { managerState in
+                var pendingRotation = managerState.pendingManifestRotation ?? .init(authedDevice: .implicit, continuations: [])
+                pendingRotation.continuations.append(continuation)
+                pendingRotation.authedDevice = authedDevice.orIfImplicitUse(pendingRotation.authedDevice)
+
+                managerState.pendingManifestRotation = pendingRotation
+            }
+        }
+    }
+
     public func backupPendingChanges(authedDevice: AuthedDevice) {
         updateManagerState { managerState in
             var pendingBackup = managerState.pendingBackup ?? .init(authedDevice: .implicit)
@@ -467,13 +515,14 @@ class StorageServiceOperation {
     private static let migrationStore: SDSKeyValueStore = SDSKeyValueStore(collection: "StorageServiceMigration")
     private static let versionKey = "Version"
 
-    public static var keyValueStore: SDSKeyValueStore {
+    fileprivate static var keyValueStore: SDSKeyValueStore {
         return SDSKeyValueStore(collection: "kOWSStorageServiceOperation_IdentifierMap")
     }
 
     // MARK: -
 
     fileprivate enum Mode {
+        case rotateManifest
         case backup
         case restoreOrCreate
         case cleanUpUnknownData
@@ -501,16 +550,34 @@ class StorageServiceOperation {
 
     // Called every retry, this is where the bulk of the operation's work should go.
     private func _run() async throws {
+        let (
+            isKeyAvailable,
+            currentStateIfRotatingManifest
+        ): (
+            Bool,
+            State?
+        ) = SSKEnvironment.shared.databaseStorageRef.read { tx in
+            let isKeyAvailable = DependenciesBridge.shared.svr.isKeyAvailable(.storageService, transaction: tx.asV2Read)
+
+            switch mode {
+            case .rotateManifest:
+                return (isKeyAvailable, State.current(transaction: tx))
+            case .backup, .restoreOrCreate, .cleanUpUnknownData:
+                return (isKeyAvailable, nil)
+            }
+        }
+
         // We don't have backup keys, do nothing. We'll try a
         // fresh restore once the keys are set.
-        let isKeyAvailable = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            return DependenciesBridge.shared.svr.isKeyAvailable(.storageService, transaction: tx.asV2Read)
-        }
         guard isKeyAvailable else {
             return
         }
 
         switch mode {
+        case .rotateManifest:
+            try await createNewManifest(
+                version: currentStateIfRotatingManifest!.manifestVersion + 1
+            )
         case .backup:
             try await backupPendingChanges()
         case .restoreOrCreate:

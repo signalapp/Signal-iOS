@@ -1648,18 +1648,29 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             return
         }
 
-        // Trigger a re-creation of the storage manifest, our keys have changed
-        storageServiceManager.resetLocalData(transaction: transaction)
-
-        // If the app is ready start that restoration.
-        guard appReadiness.isAppReady else { return }
-
+        let authedDeviceForStorageServiceSync: AuthedDevice
         switch mode {
+        case .dontSyncStorageService:
+            return
         case .syncStorageService(let authedAccount):
-            storageServiceManager.restoreOrCreateManifestIfNecessary(authedDevice: authedAccount.authedDevice(isPrimaryDevice: true))
+            authedDeviceForStorageServiceSync = authedAccount.authedDevice(isPrimaryDevice: true)
+        }
 
-            let syncManager = self.syncManager
-            storageServiceManager.waitForPendingRestores().observe { _ in
+        /// When the app is ready, trigger a rotation of the Storage Service
+        /// manifest since our keys have changed and the remote manifest is
+        /// encrypted with out-of-date keys.
+        ///
+        /// It's okay if this doesn't succeed (e.g., the rotation fails or is
+        /// interrupted), as the next time we attempt to back up or restore
+        /// we'll run into encryption errors, from which we'll automatically
+        /// recover by creating a new manifest anyway. However, we might as well
+        /// be proactive about that now.
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync { [storageServiceManager, syncManager] in
+            Task {
+                try? await storageServiceManager.rotateManifest(
+                    authedDevice: authedDeviceForStorageServiceSync
+                )
+
                 // Sync our new keys with linked devices, but wait until the storage
                 // service restore is done. That way we avoid the linked device getting
                 // the new keys first, failing to decrypt old storage service data,
@@ -1669,8 +1680,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                 // both storage service and the linked device have the latest stuff.
                 syncManager.sendKeysSyncMessage()
             }
-        case .dontSyncStorageService:
-            break
         }
     }
 }

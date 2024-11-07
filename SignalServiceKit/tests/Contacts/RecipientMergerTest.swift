@@ -21,6 +21,7 @@ private class MockStorageServiceManager: StorageServiceManager {
     func backupPendingChanges(authedDevice: AuthedDevice) {}
     func resetLocalData(transaction: DBWriteTransaction) {}
     func restoreOrCreateManifestIfNecessary(authedDevice: AuthedDevice) -> Promise<Void> { Promise<Void>(error: OWSGenericError("Not implemented.")) }
+    func rotateManifest(authedDevice: AuthedDevice) async throws { throw OWSGenericError("Not implemented.") }
     func waitForPendingRestores() -> Promise<Void> { Promise<Void>(error: OWSGenericError("Not implemented.")) }
 }
 
