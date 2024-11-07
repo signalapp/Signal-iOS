@@ -152,7 +152,7 @@ struct StorageServiceProtos_WriteOperation: @unchecked Sendable {
   fileprivate var _manifest: StorageServiceProtos_StorageManifest? = nil
 }
 
-struct StorageServiceProtos_ManifestRecord: Sendable {
+struct StorageServiceProtos_ManifestRecord: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -163,6 +163,8 @@ struct StorageServiceProtos_ManifestRecord: Sendable {
   var sourceDevice: UInt32 = 0
 
   var keys: [StorageServiceProtos_ManifestRecord.Key] = []
+
+  var recordIkm: Data = Data()
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -1194,6 +1196,7 @@ extension StorageServiceProtos_ManifestRecord: SwiftProtobuf.Message, SwiftProto
     1: .same(proto: "version"),
     3: .same(proto: "sourceDevice"),
     2: .same(proto: "keys"),
+    4: .same(proto: "recordIkm"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1205,6 +1208,7 @@ extension StorageServiceProtos_ManifestRecord: SwiftProtobuf.Message, SwiftProto
       case 1: try { try decoder.decodeSingularUInt64Field(value: &self.version) }()
       case 2: try { try decoder.decodeRepeatedMessageField(value: &self.keys) }()
       case 3: try { try decoder.decodeSingularUInt32Field(value: &self.sourceDevice) }()
+      case 4: try { try decoder.decodeSingularBytesField(value: &self.recordIkm) }()
       default: break
       }
     }
@@ -1220,6 +1224,9 @@ extension StorageServiceProtos_ManifestRecord: SwiftProtobuf.Message, SwiftProto
     if self.sourceDevice != 0 {
       try visitor.visitSingularUInt32Field(value: self.sourceDevice, fieldNumber: 3)
     }
+    if !self.recordIkm.isEmpty {
+      try visitor.visitSingularBytesField(value: self.recordIkm, fieldNumber: 4)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -1227,6 +1234,7 @@ extension StorageServiceProtos_ManifestRecord: SwiftProtobuf.Message, SwiftProto
     if lhs.version != rhs.version {return false}
     if lhs.sourceDevice != rhs.sourceDevice {return false}
     if lhs.keys != rhs.keys {return false}
+    if lhs.recordIkm != rhs.recordIkm {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

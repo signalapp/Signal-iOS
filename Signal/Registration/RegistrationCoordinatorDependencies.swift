@@ -32,6 +32,7 @@ public struct RegistrationCoordinatorDependencies {
     public let schedulers: Schedulers
     public let sessionManager: RegistrationSessionManager
     public let signalService: OWSSignalServiceProtocol
+    public let storageServiceRecordIkmCapabilityStore: StorageServiceRecordIkmCapabilityStore
     public let storageServiceManager: StorageServiceManager
     public let svr: SecureValueRecovery
     public let svrAuthCredentialStore: SVRAuthCredentialStorage
@@ -69,6 +70,7 @@ public struct RegistrationCoordinatorDependencies {
             schedulers: DependenciesBridge.shared.schedulers,
             sessionManager: DependenciesBridge.shared.registrationSessionManager,
             signalService: SSKEnvironment.shared.signalServiceRef,
+            storageServiceRecordIkmCapabilityStore: DependenciesBridge.shared.storageServiceRecordIkmCapabilityStore,
             storageServiceManager: SSKEnvironment.shared.storageServiceManagerRef,
             svr: DependenciesBridge.shared.svr,
             svrAuthCredentialStore: DependenciesBridge.shared.svrCredentialStorage,

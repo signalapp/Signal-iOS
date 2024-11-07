@@ -525,7 +525,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             return withStorageServiceKey { $0 }
         case .storageServiceManifest(let version):
             return withStorageServiceKey { Self.deriveStorageServiceManifestKey(version: version, storageServiceKey: $0) }
-        case .storageServiceRecord(let identifier):
+        case .legacy_storageServiceRecord(let identifier):
             return withStorageServiceKey { Self.deriveStorageServiceRecordKey(identifier: identifier, storageServiceKey: $0) }
         case .backupKey:
             return withMasterKey(Self.deriveBackupKey(masterKey:))
@@ -567,7 +567,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     }
 
     private static func deriveStorageServiceRecordKey(identifier: StorageService.StorageIdentifier, storageServiceKey: SVR.DerivedKeyData) -> SVR.DerivedKeyData? {
-        let keyType = SVR.DerivedKey.storageServiceRecord(identifier: identifier)
+        let keyType = SVR.DerivedKey.legacy_storageServiceRecord(identifier: identifier)
         return SVR.DerivedKeyData(keyType.derivedData(from: storageServiceKey.rawData), keyType)
     }
 

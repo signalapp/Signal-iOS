@@ -10,6 +10,8 @@ public import SignalRingRTC
 
 @objc(OWSFakeStorageServiceManager)
 public class FakeStorageServiceManager: NSObject, StorageServiceManager {
+    public func currentManifestVersion(tx: DBReadTransaction) -> UInt64 { 0 }
+    public func currentManifestHasRecordIkm(tx: DBReadTransaction) -> Bool { false }
     public func recordPendingUpdates(updatedRecipientUniqueIds: [RecipientUniqueId]) {}
     public func recordPendingUpdates(updatedAddresses: [SignalServiceAddress]) {}
     public func recordPendingUpdates(updatedGroupV2MasterKeys: [Data]) {}

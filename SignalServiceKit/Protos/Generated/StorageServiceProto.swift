@@ -920,6 +920,16 @@ public struct StorageServiceProtoManifestRecord: Codable, CustomDebugStringConve
     public var sourceDevice: UInt32 {
         return proto.sourceDevice
     }
+    public var recordIkm: Data? {
+        guard hasRecordIkm else {
+            return nil
+        }
+        return proto.recordIkm
+    }
+    public var hasRecordIkm: Bool {
+        return !proto.recordIkm.isEmpty
+    }
+
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -981,6 +991,9 @@ extension StorageServiceProtoManifestRecord {
         var builder = StorageServiceProtoManifestRecordBuilder(version: version)
         builder.setSourceDevice(sourceDevice)
         builder.setKeys(keys)
+        if let _value = recordIkm {
+            builder.setRecordIkm(_value)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -1013,6 +1026,16 @@ public struct StorageServiceProtoManifestRecordBuilder {
 
     public mutating func setKeys(_ wrappedItems: [StorageServiceProtoManifestRecordKey]) {
         proto.keys = wrappedItems.map { $0.proto }
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setRecordIkm(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.recordIkm = valueParam
+    }
+
+    public mutating func setRecordIkm(_ valueParam: Data) {
+        proto.recordIkm = valueParam
     }
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

@@ -66,6 +66,7 @@ message ManifestRecord {
   uint64 version = 1;
   uint32 sourceDevice = 3;
   repeated Key keys = 2;
+  bytes recordIkm = 4;
 }
 
 message StorageRecord {

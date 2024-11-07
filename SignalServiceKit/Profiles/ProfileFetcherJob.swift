@@ -28,6 +28,8 @@ public class ProfileFetcherJob {
     private let recipientDatabaseTable: any RecipientDatabaseTable
     private let recipientManager: any SignalRecipientManager
     private let recipientMerger: any RecipientMerger
+    private let storageServiceRecordIkmCapabilityStore: any StorageServiceRecordIkmCapabilityStore
+    private let storageServiceRecordIkmMigrator: any StorageServiceRecordIkmMigrator
     private let syncManager: any SyncManagerProtocol
     private let tsAccountManager: any TSAccountManager
     private let udManager: any OWSUDManager
@@ -45,6 +47,8 @@ public class ProfileFetcherJob {
         recipientDatabaseTable: any RecipientDatabaseTable,
         recipientManager: any SignalRecipientManager,
         recipientMerger: any RecipientMerger,
+        storageServiceRecordIkmCapabilityStore: any StorageServiceRecordIkmCapabilityStore,
+        storageServiceRecordIkmMigrator: any StorageServiceRecordIkmMigrator,
         syncManager: any SyncManagerProtocol,
         tsAccountManager: any TSAccountManager,
         udManager: any OWSUDManager,
@@ -61,6 +65,8 @@ public class ProfileFetcherJob {
         self.recipientDatabaseTable = recipientDatabaseTable
         self.recipientManager = recipientManager
         self.recipientMerger = recipientMerger
+        self.storageServiceRecordIkmCapabilityStore = storageServiceRecordIkmCapabilityStore
+        self.storageServiceRecordIkmMigrator = storageServiceRecordIkmMigrator
         self.syncManager = syncManager
         self.tsAccountManager = tsAccountManager
         self.udManager = udManager
@@ -389,7 +395,10 @@ public class ProfileFetcherJob {
         localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction
     ) {
+        let registrationState = tsAccountManager.registrationState(tx: tx)
+
         var shouldSendProfileSync = false
+
         if
             localIdentifiers.contains(serviceId: serviceId),
             fetchedCapabilities.deleteSync,
@@ -398,6 +407,30 @@ public class ProfileFetcherJob {
             deleteForMeSyncMessageSettingsStore.enableSending(tx: tx)
 
             shouldSendProfileSync = true
+        }
+
+        if
+            localIdentifiers.contains(serviceId: serviceId),
+            fetchedCapabilities.storageServiceRecordIkm
+        {
+            if !storageServiceRecordIkmCapabilityStore.isRecordIkmCapable(tx: tx) {
+                storageServiceRecordIkmCapabilityStore.setIsRecordIkmCapable(tx: tx)
+
+                shouldSendProfileSync = true
+            }
+
+            if registrationState.isRegisteredPrimaryDevice {
+                /// Only primary devices should perform the `recordIkm`
+                /// migration, since only primaries can create a Storage Service
+                /// manifest.
+                ///
+                /// We want to do this in a transaction completion block, since
+                /// it'll read from the database and we want to ensure this
+                /// write has completed.
+                tx.addAsyncCompletion(on: DispatchQueue.global()) { [storageServiceRecordIkmMigrator] in
+                    storageServiceRecordIkmMigrator.migrateToManifestRecordIkmIfNecessary()
+                }
+            }
         }
 
         if
@@ -413,7 +446,7 @@ public class ProfileFetcherJob {
 
         if
             shouldSendProfileSync,
-            DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx).isRegistered
+            registrationState.isRegistered
         {
             /// If some capability is newly enabled, we want all devices to be aware.
             /// This would happen automatically the next time those devices

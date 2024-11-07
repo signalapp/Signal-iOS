@@ -2457,6 +2457,7 @@
 		D925F560298D8F9400158EE4 /* Usernames+UsernameLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F552298349EF00158EE4 /* Usernames+UsernameLink.swift */; };
 		D925F561298D8F9400158EE4 /* Usernames+ParsedUsername.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840C3297A0ECE00F7ED6D /* Usernames+ParsedUsername.swift */; };
 		D925F563298D8F9400158EE4 /* Usernames.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840BE297A04EB00F7ED6D /* Usernames.swift */; };
+		D927372D2CD2DD1800E15D95 /* StorageServiceRecordIkmMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D927372C2CD2DD0D00E15D95 /* StorageServiceRecordIkmMigrator.swift */; };
 		D92AB7D829E3BEE30081CA7D /* OWSDeviceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92AB7D729E3BEE30081CA7D /* OWSDeviceManager.swift */; };
 		D92C57552A2925AD00A03BB7 /* TSInfoMessage+DisplayableGroupUpdateItemTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92C57542A2925AD00A03BB7 /* TSInfoMessage+DisplayableGroupUpdateItemTest.swift */; };
 		D93086272C616391008E3A27 /* TSOutgoingMessage+Builder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93086262C616391008E3A27 /* TSOutgoingMessage+Builder.swift */; };
@@ -2748,6 +2749,7 @@
 		D9F9A6412C06645F00EF13EC /* DeleteForMeOutgoingSyncMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F9A6402C06645F00EF13EC /* DeleteForMeOutgoingSyncMessageManager.swift */; };
 		D9F9A6452C07ADEB00EF13EC /* DeleteForMeOutgoingSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F9A6442C07ADEB00EF13EC /* DeleteForMeOutgoingSyncMessage.swift */; };
 		D9FC1C912C6FE5A50023AB87 /* MessageBackupTSMessageEditHistoryArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9FC1C902C6FE5A50023AB87 /* MessageBackupTSMessageEditHistoryArchiver.swift */; };
+		D9FD2DF52CD959B700099627 /* StorageServiceRecordIkmCapabilityStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9FD2DF42CD959B000099627 /* StorageServiceRecordIkmCapabilityStore.swift */; };
 		E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		E1447D8F2CCACFFD004D8FA2 /* MessageBackupCallLinkRecipientArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1447D8E2CCACFFA004D8FA2 /* MessageBackupCallLinkRecipientArchiver.swift */; };
 		E14EDF6E2A71AFDF00F0FD7C /* RecipientContextMenuHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E14EDF6D2A71AFDF00F0FD7C /* RecipientContextMenuHelper.swift */; };
@@ -6194,6 +6196,7 @@
 		D925F55E298C743E00158EE4 /* UsernameLookupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLookupManager.swift; sourceTree = "<group>"; };
 		D925F566298DC33E00158EE4 /* MockUsernameLookupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockUsernameLookupManager.swift; sourceTree = "<group>"; };
 		D925F56F298DF41B00158EE4 /* UsernameLookupRecordTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLookupRecordTest.swift; sourceTree = "<group>"; };
+		D927372C2CD2DD0D00E15D95 /* StorageServiceRecordIkmMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageServiceRecordIkmMigrator.swift; sourceTree = "<group>"; };
 		D92AB7D729E3BEE30081CA7D /* OWSDeviceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDeviceManager.swift; sourceTree = "<group>"; };
 		D92C57542A2925AD00A03BB7 /* TSInfoMessage+DisplayableGroupUpdateItemTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+DisplayableGroupUpdateItemTest.swift"; sourceTree = "<group>"; };
 		D93086262C616391008E3A27 /* TSOutgoingMessage+Builder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSOutgoingMessage+Builder.swift"; sourceTree = "<group>"; };
@@ -6506,6 +6509,7 @@
 		D9F9A6402C06645F00EF13EC /* DeleteForMeOutgoingSyncMessageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteForMeOutgoingSyncMessageManager.swift; sourceTree = "<group>"; };
 		D9F9A6442C07ADEB00EF13EC /* DeleteForMeOutgoingSyncMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeleteForMeOutgoingSyncMessage.swift; sourceTree = "<group>"; };
 		D9FC1C902C6FE5A50023AB87 /* MessageBackupTSMessageEditHistoryArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupTSMessageEditHistoryArchiver.swift; sourceTree = "<group>"; };
+		D9FD2DF42CD959B000099627 /* StorageServiceRecordIkmCapabilityStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageServiceRecordIkmCapabilityStore.swift; sourceTree = "<group>"; };
 		E1447D8E2CCACFFA004D8FA2 /* MessageBackupCallLinkRecipientArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupCallLinkRecipientArchiver.swift; sourceTree = "<group>"; };
 		E14EDF6D2A71AFDF00F0FD7C /* RecipientContextMenuHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientContextMenuHelper.swift; sourceTree = "<group>"; };
 		E1650B9A2CD0507100304C58 /* recipient_call_link_00.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = recipient_call_link_00.binproto; sourceTree = "<group>"; };
@@ -10831,6 +10835,8 @@
 			children = (
 				88E34F2622F269E900966CC2 /* StorageServiceManagerImpl.swift */,
 				88E34F2822F26CC100966CC2 /* StorageServiceProto+Sync.swift */,
+				D9FD2DF42CD959B000099627 /* StorageServiceRecordIkmCapabilityStore.swift */,
+				D927372C2CD2DD0D00E15D95 /* StorageServiceRecordIkmMigrator.swift */,
 				6619A1CC2B33B7F6004B38FE /* StorageServiceUnknownFieldMigrator.swift */,
 			);
 			path = StorageService;
@@ -17764,6 +17770,8 @@
 				725465582BA0283B00EABFD2 /* StorageServiceManagerImpl.swift in Sources */,
 				7254655A2BA0283B00EABFD2 /* StorageServiceProto+Sync.swift in Sources */,
 				F9C5CC92289453B300548EEE /* StorageServiceProto.swift in Sources */,
+				D9FD2DF52CD959B700099627 /* StorageServiceRecordIkmCapabilityStore.swift in Sources */,
+				D927372D2CD2DD1800E15D95 /* StorageServiceRecordIkmMigrator.swift in Sources */,
 				725465592BA0283B00EABFD2 /* StorageServiceUnknownFieldMigrator.swift in Sources */,
 				667EDE6628FA0372001FB487 /* StoryBadgeCountManager.swift in Sources */,
 				66D709E928E3999400B5013A /* StoryContextAssociatedData.swift in Sources */,

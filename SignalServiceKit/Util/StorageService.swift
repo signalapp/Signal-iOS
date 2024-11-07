@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import LibSignalClient
 public import SignalRingRTC
 
 @objc
@@ -25,6 +25,11 @@ public protocol StorageServiceManagerObjc {
 }
 
 public protocol StorageServiceManager: StorageServiceManagerObjc {
+    /// The version of the latest known Storage Service manifest.
+    func currentManifestVersion(tx: DBReadTransaction) -> UInt64
+    /// Whether the latest-known Storage Service manifest contains a `recordIkm`.
+    func currentManifestHasRecordIkm(tx: DBReadTransaction) -> Bool
+
     func recordPendingUpdates(callLinkRootKeys: [CallLinkRootKey])
 
     func backupPendingChanges(authedDevice: AuthedDevice)
@@ -333,8 +338,8 @@ public struct StorageService {
     public static func updateManifest(
         _ manifest: StorageServiceProtoManifestRecord,
         newItems: [StorageItem],
-        deletedIdentifiers: [StorageIdentifier] = [],
-        deleteAllExistingRecords: Bool = false,
+        deletedIdentifiers: [StorageIdentifier],
+        deleteAllExistingRecords: Bool,
         chatServiceAuth: ChatServiceAuth
     ) async throws -> StorageServiceProtoManifestRecord? {
         Logger.info("newItems: \(newItems.count), deletedIdentifiers: \(deletedIdentifiers.count), deleteAllExistingRecords: \(deleteAllExistingRecords)")
@@ -366,21 +371,38 @@ public struct StorageService {
 
         // Encrypt the new items
         builder.setInsertItem(try newItems.map { item in
-            let itemData = try item.record.serializedData()
-            let encryptedItemData: Data
-            let itemEncryptionResult = SSKEnvironment.shared.databaseStorageRef.read(block: { tx in
-                return DependenciesBridge.shared.svr.encrypt(
-                    keyType: .storageServiceRecord(identifier: item.identifier),
-                    data: itemData,
-                    transaction: tx.asV2Read
-                )
-            })
-            switch itemEncryptionResult {
-            case .success(let data):
-                encryptedItemData = data
-            case .masterKeyMissing, .cryptographyError:
+            let plaintextRecordData = try item.record.serializedData()
+
+            let encryptedItemData = { () -> Data? in
+                if let manifestRecordIkm: ManifestRecordIkm = .from(manifest: manifest) {
+                    /// If we have a `recordIkm`, we should always use it.
+                    return try? manifestRecordIkm.encryptStorageItem(
+                        plaintextRecordData: plaintextRecordData,
+                        itemIdentifier: item.identifier
+                    )
+                } else {
+                    /// If we don't have a `recordIkm` yet, fall back to the
+                    /// SVR-derived key.
+                    let itemEncryptionResult = SSKEnvironment.shared.databaseStorageRef.read(block: { tx in
+                        return DependenciesBridge.shared.svr.encrypt(
+                            keyType: .legacy_storageServiceRecord(identifier: item.identifier),
+                            data: plaintextRecordData,
+                            transaction: tx.asV2Read
+                        )
+                    })
+                    switch itemEncryptionResult {
+                    case .success(let data):
+                        return data
+                    case .masterKeyMissing, .cryptographyError:
+                        return nil
+                    }
+                }
+            }()
+
+            guard let encryptedItemData else {
                 throw StorageError.itemEncryptionFailed(identifier: item.identifier)
             }
+
             let itemWrapperBuilder = StorageServiceProtoStorageItem.builder(key: item.identifier.data, value: encryptedItemData)
             return itemWrapperBuilder.buildInfallibly()
         })
@@ -433,18 +455,12 @@ public struct StorageService {
         }
     }
 
-    /// Fetch an item record from the service
-    ///
-    /// Returns nil if this record does not exist
-    public static func fetchItem(for key: StorageIdentifier, chatServiceAuth: ChatServiceAuth) async throws -> StorageItem? {
-        return try await fetchItems(for: [key], chatServiceAuth: chatServiceAuth).first
-    }
-
     /// Fetch a list of item records from the service
     ///
     /// The response will include only the items that could be found on the service
     public static func fetchItems(
         for identifiers: [StorageIdentifier],
+        manifest: StorageServiceProtoManifestRecord,
         chatServiceAuth: ChatServiceAuth
     ) async throws -> [StorageItem] {
         Logger.info("")
@@ -478,32 +494,118 @@ public struct StorageService {
 
         let keyToIdentifier = Dictionary(uniqueKeysWithValues: keys.map { ($0.data, $0) })
 
-        return try itemsProto.items.map { item in
-            let encryptedItemData = item.value
+        return try itemsProto.items.map { item throws -> StorageItem in
             guard let itemIdentifier = keyToIdentifier[item.key] else {
                 owsFailDebug("missing identifier for fetched item")
                 throw StorageError.assertion
             }
-            let itemDecryptionResult = SSKEnvironment.shared.databaseStorageRef.read(block: { tx in
-                return DependenciesBridge.shared.svr.decrypt(
-                    keyType: .storageServiceRecord(identifier: itemIdentifier),
-                    encryptedData: encryptedItemData,
-                    transaction: tx.asV2Read
-                )
-            })
-            switch itemDecryptionResult {
-            case .success(let itemData):
+
+            let decryptedItemData: Data
+            if let manifestRecordIkm: ManifestRecordIkm = .from(manifest: manifest) {
                 do {
-                    let record = try StorageServiceProtoStorageRecord(serializedData: itemData)
-                    return StorageItem(identifier: itemIdentifier, record: record)
+                    decryptedItemData = try manifestRecordIkm.decryptStorageItem(
+                        encryptedRecordData: item.value,
+                        itemIdentifier: itemIdentifier
+                    )
                 } catch {
-                    Logger.error("Failed to deserialize item proto after decryption succeeded")
-                    throw StorageError.itemProtoDeserializationFailed(identifier: itemIdentifier)
+                    Logger.error("Failed to decrypt record using recordIkm!")
+                    throw StorageError.itemDecryptionFailed(identifier: itemIdentifier)
                 }
-            case .masterKeyMissing, .cryptographyError:
-                throw StorageError.itemDecryptionFailed(identifier: itemIdentifier)
+            } else {
+                /// If we don't yet have a `recordIkm` set we should
+                /// continue using the SVR-derived record key.
+                let itemDecryptionResult = SSKEnvironment.shared.databaseStorageRef.read(block: { tx in
+                    return DependenciesBridge.shared.svr.decrypt(
+                        keyType: .legacy_storageServiceRecord(identifier: itemIdentifier),
+                        encryptedData: item.value,
+                        transaction: tx.asV2Read
+                    )
+                })
+                switch itemDecryptionResult {
+                case .success(let itemData):
+                    decryptedItemData = itemData
+                case .masterKeyMissing, .cryptographyError:
+                    Logger.error("Failed to decrypt record using SVR-derived key!")
+                    throw StorageError.itemDecryptionFailed(identifier: itemIdentifier)
+                }
             }
 
+            do {
+                let record = try StorageServiceProtoStorageRecord(serializedData: decryptedItemData)
+                return StorageItem(identifier: itemIdentifier, record: record)
+            } catch {
+                Logger.error("Storage Service record decrypted successfully, but was malformed!")
+                throw StorageError.itemProtoDeserializationFailed(identifier: itemIdentifier)
+            }
+        }
+    }
+
+    // MARK: -
+
+    /// Wraps a `recordIkm` stored in a Storage Service manifest, which is used
+    /// to encrypt/decrypt Storage Service records ("storage items").
+    struct ManifestRecordIkm {
+        static let expectedLength: UInt = 32
+
+        private let data: Data
+        private let manifestVersion: UInt64
+
+        private init(data: Data, manifestVersion: UInt64) {
+            self.data = data
+            self.manifestVersion = manifestVersion
+        }
+
+        static func from(manifest: StorageServiceProtoManifestRecord) -> ManifestRecordIkm? {
+            guard let recordIkm = manifest.recordIkm else {
+                return nil
+            }
+
+            return ManifestRecordIkm(
+                data: recordIkm,
+                manifestVersion: manifest.version
+            )
+        }
+
+        static func generateForNewManifest() -> Data {
+            return Randomness.generateRandomBytes(Self.expectedLength)
+        }
+
+        // MARK: -
+
+        func encryptStorageItem(
+            plaintextRecordData: Data,
+            itemIdentifier: StorageIdentifier
+        ) throws -> Data {
+            let recordKey = try recordKey(forIdentifier: itemIdentifier)
+
+            return try Aes256GcmEncryptedData.encrypt(
+                plaintextRecordData,
+                key: recordKey
+            ).concatenate()
+        }
+
+        func decryptStorageItem(
+            encryptedRecordData: Data,
+            itemIdentifier: StorageIdentifier
+        ) throws -> Data {
+            let recordKey = try recordKey(forIdentifier: itemIdentifier)
+
+            return try Aes256GcmEncryptedData(
+                concatenated: encryptedRecordData
+            ).decrypt(key: recordKey)
+        }
+
+        private func recordKey(forIdentifier identifier: StorageIdentifier) throws -> Data {
+            /// The info used to derive the key incorporates the identifier for
+            /// this Storage Service record.
+            let infoData = "20240801_SIGNAL_STORAGE_SERVICE_ITEM_".data(using: .utf8)! + identifier.data
+
+            return try hkdf(
+                outputLength: 32,
+                inputKeyMaterial: data,
+                salt: Data(),
+                info: infoData
+            ).asData
         }
     }
 

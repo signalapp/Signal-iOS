@@ -66,6 +66,20 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
 
     // MARK: -
 
+    public func currentManifestVersion(tx: DBReadTransaction) -> UInt64 {
+        return StorageServiceOperation.State.current(
+            transaction: SDSDB.shimOnlyBridge(tx)
+        ).manifestVersion
+    }
+
+    public func currentManifestHasRecordIkm(tx: DBReadTransaction) -> Bool {
+        return StorageServiceOperation.State.current(
+            transaction: SDSDB.shimOnlyBridge(tx)
+        ).manifestRecordIkm != nil
+    }
+
+    // MARK: -
+
     private struct ManagerState {
         /// The local user's identifiers. In the future, this should be provided
         /// when this class is initialized. For now, it's an Optional to handle the
@@ -819,7 +833,11 @@ class StorageServiceOperation {
         // Bump the manifest version
         state.manifestVersion += 1
 
-        let manifest = buildManifestRecord(manifestVersion: state.manifestVersion, identifiers: state.allIdentifiers)
+        let manifest = buildManifestRecord(
+            manifestVersion: state.manifestVersion,
+            manifestRecordIkm: state.manifestRecordIkm,
+            identifiers: state.allIdentifiers
+        )
 
         Logger.info(
             """
@@ -835,6 +853,7 @@ class StorageServiceOperation {
             manifest,
             newItems: updatedItems,
             deletedIdentifiers: deletedIdentifiers + invalidIdentifiers,
+            deleteAllExistingRecords: false,
             chatServiceAuth: authedAccount.chatServiceAuth
         )
 
@@ -858,10 +877,18 @@ class StorageServiceOperation {
 
     private func buildManifestRecord(
         manifestVersion: UInt64,
+        manifestRecordIkm: Data?,
         identifiers identifiersParam: [StorageService.StorageIdentifier]
     ) -> StorageServiceProtoManifestRecord {
         let identifiers = StorageService.StorageIdentifier.deduplicate(identifiersParam)
         var manifestBuilder = StorageServiceProtoManifestRecord.builder(version: manifestVersion)
+        if let manifestRecordIkm {
+            owsAssertDebug(
+                manifestRecordIkm.count == StorageService.ManifestRecordIkm.expectedLength,
+                "Found manifest recordIkm with unexpected length! Who generated it?"
+            )
+            manifestBuilder.setRecordIkm(manifestRecordIkm)
+        }
         manifestBuilder.setKeys(identifiers.map { $0.buildRecord() })
         manifestBuilder.setSourceDevice(DependenciesBridge.shared.tsAccountManager.storedDeviceIdWithMaybeTransaction)
         return manifestBuilder.buildInfallibly()
@@ -942,6 +969,17 @@ class StorageServiceOperation {
         state.manifestVersion = version
 
         SSKEnvironment.shared.databaseStorageRef.read { transaction in
+            if
+                DependenciesBridge.shared.storageServiceRecordIkmCapabilityStore
+                    .isRecordIkmCapable(tx: transaction.asV2Read)
+            {
+                /// If we are `recordIkm`-capable, we should generate a new one
+                /// each time we create a new manifest. The records recreated
+                /// alongside this manifest will be encrypted using this newly-
+                /// generated value.
+                state.manifestRecordIkm = StorageService.ManifestRecordIkm.generateForNewManifest()
+            }
+
             let shouldInterceptForMigration =
                 StorageServiceUnknownFieldMigrator.shouldInterceptLocalManifestBeforeUploading(tx: transaction)
 
@@ -1033,7 +1071,11 @@ class StorageServiceOperation {
         }
 
         let identifiers = allItems.map { $0.identifier }
-        let manifest = buildManifestRecord(manifestVersion: state.manifestVersion, identifiers: identifiers)
+        let manifest = buildManifestRecord(
+            manifestVersion: state.manifestVersion,
+            manifestRecordIkm: state.manifestRecordIkm,
+            identifiers: identifiers
+        )
 
         Logger.info("Creating a new manifest with manifest version: \(version). Total keys: \(allItems.count)")
 
@@ -1045,6 +1087,7 @@ class StorageServiceOperation {
         let conflictingManifest = try await StorageService.updateManifest(
             manifest,
             newItems: allItems,
+            deletedIdentifiers: [],
             deleteAllExistingRecords: shouldDeletePreviousRecords,
             chatServiceAuth: authedAccount.chatServiceAuth
         )
@@ -1055,6 +1098,10 @@ class StorageServiceOperation {
             // and try again.
             try await self.mergeLocalManifest(withRemoteManifest: conflictingManifest, backupAfterSuccess: true)
             return
+        } else {
+            /// We created a new manifest, so let's tell our other devices to go
+            /// fetch it.
+            await SSKEnvironment.shared.syncManagerRef.sendFetchLatestStorageManifestSyncMessage()
         }
 
         // Successfully updated, store our changes.
@@ -1137,10 +1184,11 @@ class StorageServiceOperation {
 
                 Logger.info("\(manifest.logDescription); merging account record")
 
-                let item = try await StorageService.fetchItem(
-                    for: newLocalAccountIdentifier,
+                let item = try await StorageService.fetchItems(
+                    for: [newLocalAccountIdentifier],
+                    manifest: manifest,
                     chatServiceAuth: authedAccount.chatServiceAuth
-                )
+                ).first
 
                 guard let item else {
                     // This can happen in normal use if between fetching the manifest and starting the item
@@ -1182,6 +1230,22 @@ class StorageServiceOperation {
             await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
                 // Update the manifest version to reflect the remote version we just restored to
                 state.manifestVersion = manifest.version
+
+                /// Update the manifest `recordIkm` to reflect the remote one we
+                /// just merged in. We need to save this, since it should only
+                /// change if we are fully recreating the manifest and
+                /// reuploading all records.
+                state.manifestRecordIkm = manifest.recordIkm
+                if
+                    isPrimaryDevice,
+                    let localManifestRecordIkm = state.manifestRecordIkm,
+                    let remoteManifestRecordIkm = manifest.recordIkm
+                {
+                    owsAssertDebug(
+                        localManifestRecordIkm == remoteManifestRecordIkm,
+                        "Primary unexpectedly found a remote manifest recordIkm that doesn't match the local one. Who rotated it?"
+                    )
+                }
 
                 // We just did a successful manifest fetch and restore, so we no longer need to refetch it
                 state.refetchLatestManifest = false
@@ -1336,6 +1400,7 @@ class StorageServiceOperation {
         for identifierBatch in identifiers.chunked(by: Self.itemsBatchSize) {
             let fetchedItems = try await StorageService.fetchItems(
                 for: Array(identifierBatch),
+                manifest: manifest,
                 chatServiceAuth: self.authedAccount.chatServiceAuth
             )
 
@@ -1794,6 +1859,10 @@ class StorageServiceOperation {
             get { _refetchLatestManifest ?? false }
             set { _refetchLatestManifest = newValue }
         }
+
+        /// Input Keying Material (IKM) used to encrypt records tracked by the
+        /// current manifest.
+        fileprivate var manifestRecordIkm: Data?
 
         fileprivate var consecutiveConflicts: Int = 0
 

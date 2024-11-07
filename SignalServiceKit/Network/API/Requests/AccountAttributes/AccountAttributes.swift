@@ -126,6 +126,7 @@ public struct AccountAttributes: Codable {
         public let paymentActivation = true
         public let deleteSyncSendSupport = true
         public let versionedExpireTimer = FeatureFlags.versionedExpireTimer
+        public let storageServiceRecordIkm = FeatureFlags.storageServiceRecordIkmMigration
 
         public enum CodingKeys: String, CodingKey {
             case transfer
@@ -134,6 +135,7 @@ public struct AccountAttributes: Codable {
             case paymentActivation
             case deleteSyncSendSupport = "deleteSync"
             case versionedExpireTimer = "versionedExpirationTimer"
+            case storageServiceRecordIkm = "ssre2"
         }
 
         public init(hasSVRBackups: Bool) {

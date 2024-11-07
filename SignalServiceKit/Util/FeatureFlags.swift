@@ -66,6 +66,8 @@ public enum FeatureFlags {
     public static let versionedExpireTimer = true
 
     public static let biometricLinkedDeviceFlow = build.includes(.dev)
+
+    public static let storageServiceRecordIkmMigration = false
 }
 
 // MARK: -

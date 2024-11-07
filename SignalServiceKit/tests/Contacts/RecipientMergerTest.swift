@@ -10,6 +10,8 @@ import XCTest
 @testable import SignalServiceKit
 
 private class MockStorageServiceManager: StorageServiceManager {
+    func currentManifestVersion(tx: DBReadTransaction) -> UInt64 { 0 }
+    func currentManifestHasRecordIkm(tx: DBReadTransaction) -> Bool { false }
     func recordPendingUpdates(updatedRecipientUniqueIds: [RecipientUniqueId]) {}
     func recordPendingUpdates(updatedAddresses: [SignalServiceAddress]) {}
     func recordPendingUpdates(updatedGroupV2MasterKeys: [Data]) {}

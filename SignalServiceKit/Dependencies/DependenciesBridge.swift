@@ -64,6 +64,7 @@ public class DependenciesBridge {
     public let callRecordStore: CallRecordStore
     public let changePhoneNumberPniManager: ChangePhoneNumberPniManager
     public let chatColorSettingStore: ChatColorSettingStore
+    public let chatConnectionManager: ChatConnectionManager
     public let contactShareManager: ContactShareManager
     public let currentCallProvider: any CurrentCallProvider
     public let databaseChangeObserver: DatabaseChangeObserver
@@ -135,7 +136,7 @@ public class DependenciesBridge {
     public let searchableNameIndexer: SearchableNameIndexer
     public let sentMessageTranscriptReceiver: SentMessageTranscriptReceiver
     public let signalProtocolStoreManager: SignalProtocolStoreManager
-    public let chatConnectionManager: ChatConnectionManager
+    public let storageServiceRecordIkmCapabilityStore: StorageServiceRecordIkmCapabilityStore
     public let svr: SecureValueRecovery
     public let svrCredentialStorage: SVRAuthCredentialStorage
     public let threadAssociatedDataStore: ThreadAssociatedDataStore
@@ -258,6 +259,7 @@ public class DependenciesBridge {
         searchableNameIndexer: SearchableNameIndexer,
         sentMessageTranscriptReceiver: SentMessageTranscriptReceiver,
         signalProtocolStoreManager: SignalProtocolStoreManager,
+        storageServiceRecordIkmCapabilityStore: StorageServiceRecordIkmCapabilityStore,
         svr: SecureValueRecovery,
         svrCredentialStorage: SVRAuthCredentialStorage,
         threadAssociatedDataStore: ThreadAssociatedDataStore,
@@ -307,6 +309,7 @@ public class DependenciesBridge {
         self.callRecordStore = callRecordStore
         self.changePhoneNumberPniManager = changePhoneNumberPniManager
         self.chatColorSettingStore = chatColorSettingStore
+        self.chatConnectionManager = chatConnectionManager
         self.contactShareManager = contactShareManager
         self.currentCallProvider = currentCallProvider
         self.databaseChangeObserver = databaseChangeObserver
@@ -378,7 +381,7 @@ public class DependenciesBridge {
         self.searchableNameIndexer = searchableNameIndexer
         self.sentMessageTranscriptReceiver = sentMessageTranscriptReceiver
         self.signalProtocolStoreManager = signalProtocolStoreManager
-        self.chatConnectionManager = chatConnectionManager
+        self.storageServiceRecordIkmCapabilityStore = storageServiceRecordIkmCapabilityStore
         self.svr = svr
         self.svrCredentialStorage = svrCredentialStorage
         self.threadAssociatedDataStore = threadAssociatedDataStore

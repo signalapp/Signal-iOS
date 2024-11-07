@@ -3060,6 +3060,28 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func restoreFromStorageService(
         accountIdentity: AccountIdentity
     ) -> Guarantee<RegistrationStep> {
+        if FeatureFlags.storageServiceRecordIkmMigration {
+            db.write { tx in
+                switch mode {
+                case .registering, .reRegistering:
+                    break
+                case .changingNumber:
+                    owsFailDebug("Unexpectedly restoring from Storage Service while changing number, rather than during (re)registration! Bailing.")
+                    return
+                }
+
+                /// We are (re-)registering, which means we have no devices.
+                /// Consequently, we can hardcode this capability to `true`.
+                ///
+                /// This is important because the `restoreOrCreateManifest` call
+                /// below may end up creating a brand-new Storage Service manifest,
+                /// and we want to ensure it's created with a `recordIkm`.
+                ///
+                /// - SeeAlso `StorageServiceRecordIkmCapabilityStore`
+                deps.storageServiceRecordIkmCapabilityStore.setIsRecordIkmCapable(tx: tx)
+            }
+        }
+
         return deps
             .storageServiceManager.restoreOrCreateManifestIfNecessary(
                 authedDevice: accountIdentity.authedDevice

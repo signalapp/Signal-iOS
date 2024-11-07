@@ -1216,6 +1216,10 @@ public class AppSetup {
             tsAccountManager: tsAccountManager
         )
 
+        let storageServiceRecordIkmCapabilityStore = StorageServiceRecordIkmCapabilityStoreImpl(
+            keyValueStoreFactory: keyValueStoreFactory
+        )
+
         let dependenciesBridge = DependenciesBridge(
             accountAttributesUpdater: accountAttributesUpdater,
             adHocCallRecordManager: adHocCallRecordManager,
@@ -1315,6 +1319,7 @@ public class AppSetup {
             searchableNameIndexer: searchableNameIndexer,
             sentMessageTranscriptReceiver: sentMessageTranscriptReceiver,
             signalProtocolStoreManager: signalProtocolStoreManager,
+            storageServiceRecordIkmCapabilityStore: storageServiceRecordIkmCapabilityStore,
             svr: svr,
             svrCredentialStorage: svrCredentialStorage,
             threadAssociatedDataStore: threadAssociatedDataStore,
@@ -1381,6 +1386,13 @@ public class AppSetup {
             recipientDatabaseTable: recipientDatabaseTable,
             recipientManager: recipientManager,
             recipientMerger: recipientMerger,
+            storageServiceRecordIkmCapabilityStore: storageServiceRecordIkmCapabilityStore,
+            storageServiceRecordIkmMigrator: StorageServiceRecordIkmMigratorImpl(
+                db: db,
+                storageServiceRecordIkmCapabilityStore: storageServiceRecordIkmCapabilityStore,
+                storageServiceManager: storageServiceManager,
+                tsAccountManager: tsAccountManager
+            ),
             syncManager: syncManager,
             tsAccountManager: tsAccountManager,
             udManager: udManager,
