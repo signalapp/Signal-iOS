@@ -17,14 +17,14 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  # Path format pulled from https://github.com/actions/runner-images/blob/main/images/macos/macos-14-Readme.md#xcode
+  # Path format pulled from https://github.com/actions/runner-images/blob/main/images/macos/macos-15-Readme.md#xcode
   DEVELOPER_DIR: /Applications/Xcode_16.1.app
 
 jobs:
   build_and_test:
     name: Build and Test
     timeout-minutes: 20
-    runs-on: macos-14-xlarge
+    runs-on: macos-15-xlarge
     env:
       FASTLANE_XCODEBUILD_SETTINGS_RETRIES: 7
 
@@ -80,7 +80,7 @@ jobs:
 
     timeout-minutes: 10
 
-    runs-on: macos-14
+    runs-on: macos-15
 
     if: github.event_name == 'pull_request'
 
@@ -98,7 +98,7 @@ jobs:
 
     timeout-minutes: 5
 
-    runs-on: macos-14
+    runs-on: macos-15
 
     if: github.event_name == 'pull_request'
 
