@@ -1672,6 +1672,7 @@
 		B95A765C2B76C5BB00AA7E97 /* AvatarViewPresentationContextProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95A765B2B76C5BB00AA7E97 /* AvatarViewPresentationContextProvider.swift */; };
 		B95A765E2B76E93500AA7E97 /* FindByUsernameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95A765D2B76E93500AA7E97 /* FindByUsernameViewController.swift */; };
 		B96D6D792B9F83270039EB99 /* SignalSymbols-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = B96D6D782B9F83270039EB99 /* SignalSymbols-Regular.otf */; };
+		B96FEE2C2CDC070200836191 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 05104D142C88CDB300F8851F /* Colors.xcassets */; };
 		B9754F542C73AD49000000E4 /* ConversationAvatarView+SwiftUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9754F532C73AD49000000E4 /* ConversationAvatarView+SwiftUI.swift */; };
 		B982ACFF2BA8FD2A00AD7E81 /* SignalSymbols-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = B982ACFE2BA8FD2A00AD7E81 /* SignalSymbols-Bold.otf */; };
 		B982AD012BA8FD3200AD7E81 /* SignalSymbols-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = B982AD002BA8FD3100AD7E81 /* SignalSymbols-Light.otf */; };
@@ -14573,6 +14574,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B96FEE2C2CDC070200836191 /* Colors.xcassets in Resources */,
 				3478504C1FD7496D007B8332 /* Images.xcassets in Resources */,
 				4535186E1FC635DD00210559 /* MainInterface.storyboard in Resources */,
 				5010526B2BDB23F50097DDC5 /* PrivacyInfo.xcprivacy in Resources */,
