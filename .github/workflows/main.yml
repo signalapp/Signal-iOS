@@ -37,7 +37,13 @@ jobs:
       - name: Set Xcode version
         run: |
           echo DEVELOPER_DIR=/Applications/${{matrix.xcode}}.app >> "$GITHUB_ENV"
+
       - uses: actions/checkout@v4
+
+      - name: Check Xcode version
+        run: |
+          Scripts/check_xcode_version.py
+
       - uses: ./.github/actions/clone-everything
         with:
           access-token: ${{ secrets.ACCESS_TOKEN }}
