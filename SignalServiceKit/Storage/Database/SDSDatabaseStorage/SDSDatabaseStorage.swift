@@ -595,20 +595,6 @@ public class SDSDatabaseStorage: NSObject {
         }
     }
 
-    public func writeWithTxCompletion<T>(
-        _: PromiseNamespace,
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
-        _ block: @escaping (SDSAnyWriteTransaction) -> TransactionCompletion<T>
-    ) -> Guarantee<T> {
-        return Guarantee { future in
-            self.asyncWriteQueue.async {
-                future(self.writeWithTxCompletion(file: file, function: function, line: line, block: block))
-            }
-        }
-    }
-
     // MARK: - Obj-C Bridge
 
     /// NOTE: Do NOT call these methods directly. See SDSDatabaseStorage+Objc.h.
