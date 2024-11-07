@@ -1139,10 +1139,10 @@
 "CHAT_COLORS_AUTO_TOOLTIP" = "Hace que el color de las burbujas combine con el del fondo de pantalla del chat";
 
 /* Title for context menu action to disable chat list filter (e.g., Filter by Unread) */
-"CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "Clear Unread Filter";
+"CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "Dejar de filtrar por chats no leídos";
 
 /* Button displayed in chat list to clear the unread filter when no chats are unread */
-"CHAT_LIST_EMPTY_FILTER_CLEAR_BUTTON" = "Clear Filter";
+"CHAT_LIST_EMPTY_FILTER_CLEAR_BUTTON" = "Quitar filtro";
 
 /* Button at top of chat list indicating the active filter is 'Filtered by Unread' and tapping will clear the filter */
 "CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON" = "Filtrar por no leído";
@@ -1151,7 +1151,7 @@
 "CHAT_LIST_TITLE_INBOX" = "Chats";
 
 /* Title for context menu action to enable Filter by Unread */
-"CHAT_LIST_UNREAD_FILTER_MENU_ACTION" = "Filtrar por No leído";
+"CHAT_LIST_UNREAD_FILTER_MENU_ACTION" = "Filtrar por no leído";
 
 /* Message displayed on chat list when Filter by Unread is enabled but no unread chats are available */
 "CHAT_LIST_UNREAD_FILTER_NO_CHATS" = "No hay chats sin leer";
@@ -1388,19 +1388,19 @@
 "CONTACT_SUPPORT_FILTER_QUESTION_SHORT" = "Pregunta";
 
 /* The localized representation of the 'something not working' support filter. */
-"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING" = "Algo no funciona";
+"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING" = "Algo no funciona bien";
 
 /* A brief localized representation of the 'something not working' support filter. */
 "CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "Algo no funciona";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal no ha podido completar la solicitud de asistencia.";
+"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal no ha podido completar tu solicitud de asistencia.";
 
 /* button text */
-"CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "Inténtalo de nuevo";
+"CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "Reintentar";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "El registro de depuración nos ayuda a solucionar tu problema más rápido. Enviar tu registro es opcional.";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "El registro de depuración nos ayudará a solucionar tu problema más rápido. Enviar tu registro es opcional.";
 
 /* Alert title */
 "CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "¿Enviar registro?";
@@ -1439,7 +1439,7 @@
 "CONTEXT_MENU_FORWARD_MESSAGE" = "Reenviar";
 
 /* Context menu button title */
-"CONTEXT_MENU_PAYMENT_DETAILS" = "Detalles del pago";
+"CONTEXT_MENU_PAYMENT_DETAILS" = "Detalles de pago";
 
 /* Context menu button title */
 "CONTEXT_MENU_REPLY" = "Responder";
@@ -1583,7 +1583,7 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "No notificar en chat silenciado";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "¿Recibir notificaciones de menciones, incluso en chats silenciados?";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "¿Recibir notificaciones si te mencionan en chats silenciados?";
 
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Menciones";
@@ -1628,7 +1628,7 @@
 "CONVERSATION_SETTINGS_MUTED_BUTTON" = "silenciado";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
-"CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "hasta: %1$@";
+"CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "hasta %1$@";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "Silenciado hasta %1$@";
@@ -1637,7 +1637,7 @@
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Crear contacto nuevo";
 
 /* Section title of the 'mutual groups' section in conversation settings view when the contact shares no mutual groups. */
-"CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "No hay grupos en común";
+"CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "No tienes grupos en común";
 
 /* Label for 'permissions' action in conversation settings view. */
 "CONVERSATION_SETTINGS_PERMISSIONS" = "Permisos";
@@ -1733,16 +1733,16 @@
 "CREDIT_OR_DEBIT_CARD_DONATION_ERROR_EXPIRED_CARD" = "Tu tarjeta ha caducado. Comprueba que los datos de tu tarjeta son correctos e inténtalo de nuevo.";
 
 /* Credit/debit card donation error for decline failures where the card number is incorrect. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INCORRECT_CARD_NUMBER" = "El número de tu tarjeta no es correcto. Comprueba que los datos de tu tarjeta son correctos e inténtalo de nuevo.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INCORRECT_CARD_NUMBER" = "El número de tu tarjeta es incorrecto. Comprueba que los datos de tu tarjeta son correctos e inténtalo de nuevo.";
 
 /* Credit/debit card donation error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
 "CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "El número CVC de tu tarjeta es incorrecto. Comprueba que los datos de tu tarjeta son correctos e inténtalo de nuevo.";
 
 /* Credit/debit card donation error for decline failures where the expiration month on the payment method is incorrect. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INVALID_EXPIRY_MONTH" = "El mes de vencimiento de tu tarjeta no es correcto. Comprueba que los datos de tu tarjeta son correctos e inténtalo de nuevo.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INVALID_EXPIRY_MONTH" = "El mes de vencimiento de tu tarjeta es incorrecto. Comprueba que los datos de tu tarjeta son correctos e inténtalo de nuevo.";
 
 /* Credit/debit card donation error for decline failures where the expiration year on the payment method is incorrect. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INVALID_EXPIRY_YEAR" = "El año de vencimiento de tu tarjeta no es correcto. Comprueba que los datos de tu tarjeta son correctos e inténtalo de nuevo.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INVALID_EXPIRY_YEAR" = "El año de vencimiento de tu tarjeta es incorrecto. Comprueba que los datos de tu tarjeta son correctos e inténtalo de nuevo.";
 
 /* Credit/debit card donation error for unspecified decline failures. */
 "CREDIT_OR_DEBIT_CARD_DONATION_ERROR_OTHER" = "Comprueba que los datos de tu tarjeta son correctos e inténtalo de nuevo. Si el problema persiste, contacta con tu banco.";
@@ -1751,7 +1751,7 @@
 "CREDIT_OR_DEBIT_CARD_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Comprueba que los datos de tu tarjeta son correctos e inténtalo de nuevo.";
 
 /* Title for the 'crop/scale image' dialog. */
-"CROP_SCALE_IMAGE_VIEW_TITLE" = "Editar foto";
+"CROP_SCALE_IMAGE_VIEW_TITLE" = "Arrastra para encuadrar";
 
 /* Title for the 'currency picker' view in the app settings. */
 "CURRENCY_PICKER_VIEW_TITLE" = "Establecer moneda";
@@ -1985,7 +1985,7 @@
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "No se ha podido actualizar la lista de dispositivos.";
 
 /* Message appearing on a toast indicating a new device was successfully linked. Embeds {{ device name }} */
-"DEVICE_LIST_UPDATE_NEW_DEVICE_TOAST" = "“%1$@” linked";
+"DEVICE_LIST_UPDATE_NEW_DEVICE_TOAST" = "\"%1$@\" se ha vinculado";
 
 /* A label for this device in the device list. */
 "DEVICE_NAME_THIS_DEVICE" = "Este dispositivo";
@@ -4025,25 +4025,25 @@
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Escanea el código QR que se muestra en el dispositivo que quieres vincular.";
 
 /* Title for QR Scanning screen instructions sheet */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_BODY" = "Use this device to scan the QR code displayed on the device you want to link";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_BODY" = "Usa este dispositivo para escanear el código QR que se muestra en el dispositivo que quieres vincular";
 
 /* Title for QR Scanning screen instructions sheet */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_TITLE" = "Scan QR Code";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_TITLE" = "Escanear código QR";
 
 /* Body text for a sheet when a user tries to link a device informing them that they will need to authenticate their device */
-"LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_BODY" = "Tap continue and enter your phone’s lock to confirm. Do not enter your Signal PIN.";
+"LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_BODY" = "Toca continuar e introduce el patrón de bloqueo de tu teléfono para confirmar. No introduzcas tu PIN de Signal.";
 
 /* Title for a sheet when a user tries to link a device informing them that they will need to authenticate their device */
-"LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_TITLE" = "Before linking, confirm it’s you";
+"LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_TITLE" = "Antes de vincular tu dispositivo, confirma que eres tú";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock device linking. */
-"LINK_NEW_DEVICE_AUTHENTICATION_REASON" = "Authenticate to link a device";
+"LINK_NEW_DEVICE_AUTHENTICATION_REASON" = "Para vincular un dispositivo, debes autenticarte";
 
 /* Body text for a sheet when a user has started linking a device informing them to finish the process on that other device */
-"LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_BODY" = "Finish linking Signal on your other device.";
+"LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_BODY" = "Termina de vincular Signal en tu otro dispositivo.";
 
 /* Title for a sheet when a user has started linking a device informing them to finish the process on that other device */
-"LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE" = "Finish linking on your other device";
+"LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE" = "Completa la vinculación en tu otro dispositivo";
 
 /* Subheading for 'Link New Device' navigation */
 "LINK_NEW_DEVICE_SUBTITLE" = "Escanea el código QR para vincular un dispositivo nuevo.";
@@ -4127,7 +4127,7 @@
 "MEDIA_EDITOR_TEXT_FIELD_ADD_MESSAGE" = "Añadir mensaje";
 
 /* Shown in place of message input text in media editor when 'View Once' is on. */
-"MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "Contenido para ver solo una vez";
+"MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "Archivo multimedia";
 
 /* VoiceOver description for a generic audio file in All Media */
 "MEDIA_GALLERY_A11Y_AUDIO_FILE" = "archivo de audio";
@@ -4232,7 +4232,7 @@
 "MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "Ver paquete de stickers";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_PAYMENT_DETAILS" = "Detalles del pago";
+"MESSAGE_ACTION_PAYMENT_DETAILS" = "Detalles de pago";
 
 /* Label for button to call a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "Llamar";
@@ -4835,10 +4835,10 @@
 "ONBOARDING_2FA_CREATE_NEW_PIN" = "Crear nuevo PIN";
 
 /* Button asking if the user would like to enter an alphanumeric PIN */
-"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Introduce PIN alfanumérico";
+"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Introducir PIN alfanumérico";
 
 /* Button asking if the user would like to enter an numeric PIN */
-"ONBOARDING_2FA_ENTER_NUMERIC" = "Introduce PIN numérico";
+"ONBOARDING_2FA_ENTER_NUMERIC" = "Introducir PIN numérico";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_FORGOT_PIN_LINK" = "¿Necesitas ayuda?";
@@ -4937,10 +4937,10 @@
 "ONBOARDING_VERIFICATION_BACK_LINK" = "¿Número incorrecto?";
 
 /* Label for button to perform verification with a phone call. */
-"ONBOARDING_VERIFICATION_CALL_ME_BUTTON" = "Enviar código por llamada";
+"ONBOARDING_VERIFICATION_CALL_ME_BUTTON" = "Llamarme";
 
 /* Format string for button counting down time until phone call verification can be performed. Embeds {{time remaining}}. */
-"ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "Enviar código por llamada en %1$@";
+"ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "Llamarme en %1$@";
 
 /* Label for a progress spinner currently validating code */
 "ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Verificando código…";
@@ -5375,10 +5375,10 @@
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "No se ha podido procesar el mensaje recibido";
 
 /* inbox cell and notification text for an already viewed view-once media message. */
-"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "Archivo de visualización única";
+"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "Archivo multimedia";
 
 /* Label for outgoing view-once messages. */
-"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Archivos multimedia";
+"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Archivo multimedia";
 
 /* inbox cell and notification text for a view-once photo. */
 "PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "Foto de visualización única";
@@ -5915,7 +5915,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Ha reaccionado con %1$@ a tu vídeo";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Ha reaccionado con %1$@ a tu archivo";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reacción a tu archivo multimedia: %1$@";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Ha reaccionado con %1$@ a tu mensaje de voz";
@@ -6483,9 +6483,6 @@
 
 /* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "No es necesario activar la opción Evitar censura: ya tienes acceso al servicio de Signal.";
-
-/* No comment provided by engineer. */
-"SETTINGS_ADVANCED_DEBUGLOG" = "Activar registro de depuración";
 
 /* Label for the 'advanced pin settings' button. */
 "SETTINGS_ADVANCED_PIN_SETTINGS" = "Ajustes avanzados del PIN";
