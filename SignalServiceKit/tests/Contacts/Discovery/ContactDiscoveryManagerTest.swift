@@ -56,18 +56,14 @@ final class ContactDiscoveryManagerTest: XCTestCase {
 
         // Step 1: Contact intersection fails with a rate limit error.
         taskQueue.onPerform = { phoneNumbers, mode in
-            throw ContactDiscoveryError(
-                kind: .rateLimit, debugDescription: "", retryable: true, retryAfterDate: retryDate1
-            )
+            throw ContactDiscoveryError.rateLimit(retryAfter: retryDate1)
         }
         let result1 = try await lookUpAndReturnRateLimitDate(phoneNumbers: ["+16505550100"], mode: .contactIntersection)
         XCTAssertEqual(result1, retryDate1)
 
         // Step 2: One-off requests should still be possible, despite the earlier error.
         taskQueue.onPerform = { phoneNumbers, mode in
-            throw ContactDiscoveryError(
-                kind: .rateLimit, debugDescription: "", retryable: true, retryAfterDate: retryDate2
-            )
+            throw ContactDiscoveryError.rateLimit(retryAfter: retryDate2)
         }
         let result2 = try await lookUpAndReturnRateLimitDate(phoneNumbers: ["+16505550100"], mode: .oneOffUserRequest)
         XCTAssertEqual(result2, retryDate2)
@@ -126,8 +122,8 @@ final class ContactDiscoveryManagerTest: XCTestCase {
         do {
             _ = try await manager.lookUp(phoneNumbers: phoneNumbers, mode: mode)
             return nil
-        } catch let error as ContactDiscoveryError where error.kind == .rateLimit {
-            return error.retryAfterDate
+        } catch ContactDiscoveryError.rateLimit(let retryAfter) {
+            return retryAfter
         }
     }
 

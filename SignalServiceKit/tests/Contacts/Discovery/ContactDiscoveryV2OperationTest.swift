@@ -164,9 +164,12 @@ final class ContactDiscoveryV2OperationTest: XCTestCase {
         XCTAssertEqual(persistentState.token, initialToken)
         XCTAssertEqual(persistentState.prevE164s, initialPrevE164s)
 
-        let contactDiscoveryError = try XCTUnwrap(operationError as? ContactDiscoveryError)
-        XCTAssertEqual(contactDiscoveryError.kind, .rateLimit)
-        XCTAssertEqual(try XCTUnwrap(contactDiscoveryError.retryAfterDate?.timeIntervalSinceNow), 1234, accuracy: 10)
+        switch try XCTUnwrap(operationError as? ContactDiscoveryError) {
+        case .invalidToken, .retryableError, .terminalError:
+            XCTFail("Wrong type of error.")
+        case .rateLimit(let retryAfter):
+            XCTAssertEqual(retryAfter.timeIntervalSinceNow, 1234, accuracy: 10)
+        }
     }
 
     /// If the server reports an invalid token, we should clear the token.

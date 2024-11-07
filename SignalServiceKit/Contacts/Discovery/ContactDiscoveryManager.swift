@@ -181,12 +181,7 @@ public final class ContactDiscoveryManagerImpl: NSObject, ContactDiscoveryManage
         for pendingRequest in pendingRequests {
             // If this request is being rate limited, throw an error.
             if let retryDate = retryDates[pendingRequest.mode] {
-                pendingRequest.continuation.resume(throwing: ContactDiscoveryError(
-                    kind: .rateLimit,
-                    debugDescription: "cached rate limit",
-                    retryable: true,
-                    retryAfterDate: retryDate
-                ))
+                pendingRequest.continuation.resume(throwing: ContactDiscoveryError.rateLimit(retryAfter: retryDate))
                 continue
             }
 
@@ -258,11 +253,13 @@ public final class ContactDiscoveryManagerImpl: NSObject, ContactDiscoveryManage
     }
 
     private func handleRateLimitErrorIfNeeded(error: Error, mode: ContactDiscoveryMode) {
-        guard let newRetryDate = (error as? ContactDiscoveryError)?.retryAfterDate else {
-            return
-        }
-        lock.withLock {
-            rawRetryDates[mode] = [rawRetryDates[mode], newRetryDate].compacted().max()
+        switch error as? ContactDiscoveryError {
+        case nil, .invalidToken, .retryableError, .terminalError:
+            break
+        case .rateLimit(let retryAfter):
+            lock.withLock {
+                rawRetryDates[mode] = [rawRetryDates[mode], retryAfter].compacted().max()
+            }
         }
     }
 

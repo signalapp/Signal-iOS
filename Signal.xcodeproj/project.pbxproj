@@ -3226,7 +3226,7 @@
 		F9C5CCB9289453B300548EEE /* OWSDisappearingMessagesConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C9D1289453B100548EEE /* OWSDisappearingMessagesConfiguration.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CCBA289453B300548EEE /* TSThread.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C9D2289453B100548EEE /* TSThread.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CCC0289453B300548EEE /* ContactDiscoveryTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9D9289453B100548EEE /* ContactDiscoveryTask.swift */; };
-		F9C5CCC3289453B300548EEE /* ContactDiscoveryOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9DC289453B100548EEE /* ContactDiscoveryOperation.swift */; };
+		F9C5CCC3289453B300548EEE /* ContactDiscoveryError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9DC289453B100548EEE /* ContactDiscoveryError.swift */; };
 		F9C5CCC4289453B300548EEE /* OWSDisappearingMessagesConfiguration+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9DD289453B100548EEE /* OWSDisappearingMessagesConfiguration+SDS.swift */; };
 		F9C5CCC5289453B300548EEE /* SignalAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9DE289453B100548EEE /* SignalAccount.swift */; };
 		F9C5CCC8289453B300548EEE /* SignalRecipient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9E1289453B100548EEE /* SignalRecipient.swift */; };
@@ -6999,7 +6999,7 @@
 		F9C5C9D1289453B100548EEE /* OWSDisappearingMessagesConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSDisappearingMessagesConfiguration.h; sourceTree = "<group>"; };
 		F9C5C9D2289453B100548EEE /* TSThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSThread.h; sourceTree = "<group>"; };
 		F9C5C9D9289453B100548EEE /* ContactDiscoveryTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryTask.swift; sourceTree = "<group>"; };
-		F9C5C9DC289453B100548EEE /* ContactDiscoveryOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryOperation.swift; sourceTree = "<group>"; };
+		F9C5C9DC289453B100548EEE /* ContactDiscoveryError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryError.swift; sourceTree = "<group>"; };
 		F9C5C9DD289453B100548EEE /* OWSDisappearingMessagesConfiguration+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSDisappearingMessagesConfiguration+SDS.swift"; sourceTree = "<group>"; };
 		F9C5C9DE289453B100548EEE /* SignalAccount.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalAccount.swift; sourceTree = "<group>"; };
 		F9C5C9E1289453B100548EEE /* SignalRecipient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalRecipient.swift; sourceTree = "<group>"; };
@@ -13526,8 +13526,8 @@
 		F9C5C9D5289453B100548EEE /* Discovery */ = {
 			isa = PBXGroup;
 			children = (
+				F9C5C9DC289453B100548EEE /* ContactDiscoveryError.swift */,
 				506A924E28FA232100A2EFC2 /* ContactDiscoveryManager.swift */,
-				F9C5C9DC289453B100548EEE /* ContactDiscoveryOperation.swift */,
 				F9C5C9D9289453B100548EEE /* ContactDiscoveryTask.swift */,
 				5049FA2D28BEAABE00D6E099 /* ContactDiscoveryV2Operation.swift */,
 			);
@@ -16961,8 +16961,8 @@
 				D958E2AF2B58696700EE9831 /* ConsumableMockGuarantee.swift in Sources */,
 				D990CACD2B4DCD83000A99A2 /* ConsumableMockPromise.swift in Sources */,
 				F9C5CCE4289453B300548EEE /* Contact.swift in Sources */,
+				F9C5CCC3289453B300548EEE /* ContactDiscoveryError.swift in Sources */,
 				506A924F28FA232100A2EFC2 /* ContactDiscoveryManager.swift in Sources */,
-				F9C5CCC3289453B300548EEE /* ContactDiscoveryOperation.swift in Sources */,
 				F9C5CCC0289453B300548EEE /* ContactDiscoveryTask.swift in Sources */,
 				5049FA2F28BEAABE00D6E099 /* ContactDiscoveryV2Operation.swift in Sources */,
 				506A99D42B86B39F00E3C753 /* ContactManager.swift in Sources */,

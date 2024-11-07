@@ -1093,16 +1093,16 @@ extension OWSContactsManager: ContactManager {
                 )
             },
             onError: { error, attemptCount in
-                if let cdsError = error as? ContactDiscoveryError {
-                    if cdsError.code == ContactDiscoveryError.Kind.rateLimit.rawValue {
-                        Logger.error("Contact intersection hit rate limit with error: \(error)")
-                        throw error
-                    }
-                    if !cdsError.retrySuggested {
-                        Logger.error("Contact intersection error suggests not to retry. Aborting without rescheduling.")
-                        throw error
-                    }
+                if case ContactDiscoveryError.rateLimit(retryAfter: _) = error {
+                    Logger.error("Contact intersection hit rate limit with error: \(error)")
+                    throw error
                 }
+
+                if error is ContactDiscoveryError, !error.isRetryable {
+                    Logger.error("Contact intersection error suggests not to retry. Aborting without rescheduling.")
+                    throw error
+                }
+
                 // TODO: Abort if another contact intersection succeeds in the meantime.
                 Logger.warn("Contact intersection failed with error: \(error). Rescheduling.")
                 try await Task.sleep(nanoseconds: OWSOperation.retryIntervalForExponentialBackoffNs(failureCount: attemptCount, maxBackoff: .infinity))

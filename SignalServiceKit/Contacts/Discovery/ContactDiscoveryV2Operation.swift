@@ -71,7 +71,7 @@ extension LibSignalClient.Net: ContactDiscoveryConnection {
                 return nil
             }
             guard let e164 = E164("+\(entry.e164)") else {
-                throw ContactDiscoveryError.assertionError(description: "malformed e164")
+                throw OWSAssertionError("malformed e164")
             }
             return ContactDiscoveryResult(e164: e164, pni: pni, aci: entry.aci)
         }
@@ -211,43 +211,18 @@ final class ContactDiscoveryV2Operation<ConnectionType: ContactDiscoveryConnecti
         case .rateLimitedError(retryAfter: let retryAfter, message: let message):
             let retryAfterDate = Date(timeIntervalSinceNow: retryAfter)
             Logger.warn("CDSv2: Rate limited until \(retryAfterDate): \(message)")
-            return ContactDiscoveryError(
-                kind: .rateLimit,
-                debugDescription: "quota rate limit",
-                retryable: true,
-                retryAfterDate: retryAfterDate
-            )
+            return ContactDiscoveryError.rateLimit(retryAfter: retryAfterDate)
         case .cdsiInvalidToken:
             // If the token is wrong, throw away the current token. The next request
             // will get a new, valid token, at the cost of consuming additional quota.
             await persistentState?.reset()
-            return ContactDiscoveryError(
-                kind: .genericClientError,
-                debugDescription: "invalid token",
-                retryable: true,
-                retryAfterDate: nil
-            )
+            return ContactDiscoveryError.invalidToken
         case .networkProtocolError(let message):
-            return ContactDiscoveryError(
-                kind: .genericClientError,
-                debugDescription: "protocol error: \(message)",
-                retryable: true,
-                retryAfterDate: nil
-            )
+            return ContactDiscoveryError.retryableError("protocol error: \(message)")
         case .webSocketError(let message):
-            return ContactDiscoveryError(
-                kind: .genericServerError,
-                debugDescription: "web socket error: \(message)",
-                retryable: true,
-                retryAfterDate: nil
-            )
+            return ContactDiscoveryError.retryableError("web socket error: \(message)")
         default:
-            return ContactDiscoveryError(
-                kind: .generic,
-                debugDescription: "libsignal-net error: \(libSignalError)",
-                retryable: false,
-                retryAfterDate: nil
-            )
+            return ContactDiscoveryError.terminalError("libsignal-net error: \(libSignalError)")
         }
     }
 }
@@ -294,7 +269,7 @@ private class ContactDiscoveryV2PersistentStateImpl: ContactDiscoveryV2Persisten
             do {
                 let prevE164s = try CdsPreviousE164.fetchAll(transaction.unwrapGrdbRead.database).map {
                     guard let e164 = E164($0.e164) else {
-                        throw ContactDiscoveryError.assertionError(description: "Found malformed E164 in database.")
+                        throw OWSAssertionError("Found malformed E164 in database.")
                     }
                     return e164
                 }
