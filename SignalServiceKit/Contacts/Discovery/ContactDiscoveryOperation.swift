@@ -98,19 +98,3 @@ extension ContactDiscoveryError: IsRetryableProvider {
         retrySuggested
     }
 }
-
-struct ContactDiscoveryE164Collection<T: Collection> where T.Element == E164 {
-    let values: T
-    let encodedValues: Data
-
-    init(_ e164s: T) {
-        self.values = e164s
-        self.encodedValues = Self.buildEncodedValues(for: e164s)
-    }
-
-    private static func buildEncodedValues(for e164s: T) -> Data {
-        var result = Data()
-        result.reserveCapacity(MemoryLayout<UInt64>.size * e164s.count)
-        return e164s.reduce(into: result) { $0.append($1.uint64Value.bigEndianData) }
-    }
-}

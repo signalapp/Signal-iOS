@@ -19,7 +19,6 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
     private let recipientMerger: RecipientMerger
     private let tsAccountManager: TSAccountManager
     private let udManager: OWSUDManager
-    private let websocketFactory: WebSocketFactory
     private let libsignalNet: Net
 
     init(
@@ -30,7 +29,6 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
         recipientMerger: RecipientMerger,
         tsAccountManager: TSAccountManager,
         udManager: OWSUDManager,
-        websocketFactory: WebSocketFactory,
         libsignalNet: Net
     ) {
         self.db = db
@@ -40,7 +38,6 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
         self.recipientMerger = recipientMerger
         self.tsAccountManager = tsAccountManager
         self.udManager = udManager
-        self.websocketFactory = websocketFactory
         self.libsignalNet = libsignalNet
     }
 
@@ -61,18 +58,18 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
             ContactDiscoveryV2Operation(
                 e164sToLookup: e164s,
                 mode: mode,
-                udManager: ContactDiscoveryV2Operation.Wrappers.UDManager(db: db, udManager: udManager),
-                websocketFactory: websocketFactory,
-                libsignalNet: libsignalNet
+                udManager: ContactDiscoveryV2Operation<LibSignalClient.Net>.Wrappers.UDManager(db: db, udManager: udManager),
+                connectionImpl: libsignalNet,
+                remoteAttestation: ContactDiscoveryV2Operation<LibSignalClient.Net>.Wrappers.RemoteAttestation()
             ).perform(on: workQueue)
-        }.map(on: workQueue) { (discoveryResults: [ContactDiscoveryV2Operation.DiscoveryResult]) -> Set<SignalRecipient> in
+        }.map(on: workQueue) { (discoveryResults: [ContactDiscoveryResult]) -> Set<SignalRecipient> in
             try self.processResults(requestedPhoneNumbers: e164s, discoveryResults: discoveryResults)
         }
     }
 
     private func processResults(
         requestedPhoneNumbers: Set<E164>,
-        discoveryResults: [ContactDiscoveryV2Operation.DiscoveryResult]
+        discoveryResults: [ContactDiscoveryResult]
     ) throws -> Set<SignalRecipient> {
         var registeredRecipients = Set<SignalRecipient>()
 

@@ -239,10 +239,6 @@ public class RemoteConfig {
         return false
     }
 
-    public var cdsiLookupWithLibsignal: Bool {
-        return isEnabled(.cdsiLookupWithLibsignal, defaultValue: true)
-    }
-
     public var messageQueueTime: TimeInterval {
         return interval(.messageQueueTimeInSeconds, defaultInterval: 45 * kDayInterval)
     }
@@ -425,7 +421,6 @@ private enum IsEnabledFlag: String, FlagType {
     case cardGiftDonationKillSwitch = "ios.cardGiftDonationKillSwitch"
     case cardMonthlyDonationKillSwitch = "ios.cardMonthlyDonationKillSwitch"
     case cardOneTimeDonationKillSwitch = "ios.cardOneTimeDonationKillSwitch"
-    case cdsiLookupWithLibsignal = "ios.cdsiLookup.libsignal"
     case deleteForMeSyncMessageSending = "ios.deleteForMeSyncMessage.sending"
     case enableAutoAPNSRotation = "ios.enableAutoAPNSRotation"
     case enableGifSearch = "global.gifSearch"
@@ -450,7 +445,6 @@ private enum IsEnabledFlag: String, FlagType {
         case .cardGiftDonationKillSwitch: false
         case .cardMonthlyDonationKillSwitch: false
         case .cardOneTimeDonationKillSwitch: false
-        case .cdsiLookupWithLibsignal: false
         case .deleteForMeSyncMessageSending: false
         case .enableAutoAPNSRotation: false
         case .enableGifSearch: false
@@ -476,7 +470,6 @@ private enum IsEnabledFlag: String, FlagType {
         case .cardGiftDonationKillSwitch: false
         case .cardMonthlyDonationKillSwitch: false
         case .cardOneTimeDonationKillSwitch: false
-        case .cdsiLookupWithLibsignal: true
         case .deleteForMeSyncMessageSending: false
         case .enableAutoAPNSRotation: false
         case .enableGifSearch: false

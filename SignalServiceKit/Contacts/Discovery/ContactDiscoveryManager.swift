@@ -107,7 +107,6 @@ public final class ContactDiscoveryManagerImpl: NSObject, ContactDiscoveryManage
         recipientMerger: RecipientMerger,
         tsAccountManager: TSAccountManager,
         udManager: OWSUDManager,
-        websocketFactory: WebSocketFactory,
         libsignalNet: Net
     ) {
         self.init(
@@ -119,7 +118,6 @@ public final class ContactDiscoveryManagerImpl: NSObject, ContactDiscoveryManage
                 recipientMerger: recipientMerger,
                 tsAccountManager: tsAccountManager,
                 udManager: udManager,
-                websocketFactory: websocketFactory,
                 libsignalNet: libsignalNet
             )
         )

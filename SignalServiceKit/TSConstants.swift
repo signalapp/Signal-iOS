@@ -46,7 +46,6 @@ public class TSConstants {
     public static var textSecureCDN0ServerURL: String { shared.textSecureCDN0ServerURL }
     public static var textSecureCDN2ServerURL: String { shared.textSecureCDN2ServerURL }
     public static var textSecureCDN3ServerURL: String { shared.textSecureCDN3ServerURL }
-    public static var contactDiscoveryV2URL: String { shared.contactDiscoveryV2URL }
     public static var storageServiceURL: String { shared.storageServiceURL }
     public static var sfuURL: String { shared.sfuURL }
     public static var sfuTestURL: String { shared.sfuTestURL }
@@ -64,10 +63,7 @@ public class TSConstants {
     public static var cdn2CensorshipPrefix: String { shared.cdn2CensorshipPrefix }
     public static var cdn3CensorshipPrefix: String { shared.cdn3CensorshipPrefix }
     public static var storageServiceCensorshipPrefix: String { shared.storageServiceCensorshipPrefix }
-    public static var contactDiscoveryV2CensorshipPrefix: String { shared.contactDiscoveryV2CensorshipPrefix }
     public static var svr2CensorshipPrefix: String { shared.svr2CensorshipPrefix }
-
-    static var contactDiscoveryV2MrEnclave: MrEnclave { shared.contactDiscoveryV2MrEnclave }
 
     static var svr2Enclave: MrEnclave { shared.svr2Enclave }
     static var svr2PreviousEnclaves: [MrEnclave] { shared.svr2PreviousEnclaves }
@@ -105,7 +101,6 @@ public protocol TSConstantsProtocol: AnyObject {
     var textSecureCDN0ServerURL: String { get }
     var textSecureCDN2ServerURL: String { get }
     var textSecureCDN3ServerURL: String { get }
-    var contactDiscoveryV2URL: String { get }
     var storageServiceURL: String { get }
     var sfuURL: String { get }
     var sfuTestURL: String { get }
@@ -123,10 +118,7 @@ public protocol TSConstantsProtocol: AnyObject {
     var cdn2CensorshipPrefix: String { get }
     var cdn3CensorshipPrefix: String { get }
     var storageServiceCensorshipPrefix: String { get }
-    var contactDiscoveryV2CensorshipPrefix: String { get }
     var svr2CensorshipPrefix: String { get }
-
-    var contactDiscoveryV2MrEnclave: MrEnclave { get }
 
     var svr2Enclave: MrEnclave { get }
     var svr2PreviousEnclaves: [MrEnclave] { get }
@@ -164,7 +156,6 @@ private class TSConstantsProduction: TSConstantsProtocol {
     public let textSecureCDN0ServerURL = "https://cdn.signal.org"
     public let textSecureCDN2ServerURL = "https://cdn2.signal.org"
     public let textSecureCDN3ServerURL = "https://cdn3.signal.org"
-    public let contactDiscoveryV2URL = "wss://cdsi.signal.org"
     public let storageServiceURL = "https://storage.signal.org"
     public let sfuURL = "https://sfu.voip.signal.org"
     public let sfuTestURL = "https://sfu.test.voip.signal.org"
@@ -182,10 +173,7 @@ private class TSConstantsProduction: TSConstantsProtocol {
     public let cdn2CensorshipPrefix = "cdn2"
     public let cdn3CensorshipPrefix = "cdn3"
     public let storageServiceCensorshipPrefix = "storage"
-    public let contactDiscoveryV2CensorshipPrefix = "cdsi"
     public let svr2CensorshipPrefix = "svr2"
-
-    public let contactDiscoveryV2MrEnclave = MrEnclave("0f6fd79cdfdaa5b2e6337f534d3baf999318b0c462a7ac1f41297a3e4b424a57")
 
     public let svr2Enclave = MrEnclave("9314436a9a144992bb3680770ea5fd7934a7ffd29257844a33763a238903d570")
 
@@ -218,7 +206,6 @@ private class TSConstantsStaging: TSConstantsProtocol {
     public let textSecureCDN0ServerURL = "https://cdn-staging.signal.org"
     public let textSecureCDN2ServerURL = "https://cdn2-staging.signal.org"
     public let textSecureCDN3ServerURL = "https://cdn3-staging.signal.org"
-    public let contactDiscoveryV2URL = "wss://cdsi.staging.signal.org"
     public let storageServiceURL = "https://storage-staging.signal.org"
     public let sfuURL = "https://sfu.staging.voip.signal.org"
     public let svr2URL = "wss://svr2.staging.signal.org"
@@ -238,11 +225,7 @@ private class TSConstantsStaging: TSConstantsProtocol {
     public let cdn2CensorshipPrefix = "cdn2-staging"
     public let cdn3CensorshipPrefix = "cdn3-staging"
     public let storageServiceCensorshipPrefix = "storage-staging"
-    public let contactDiscoveryV2CensorshipPrefix = "cdsi-staging"
     public let svr2CensorshipPrefix = "svr2-staging"
-
-    // CDS uses the same EnclaveName and MrEnclave
-    public let contactDiscoveryV2MrEnclave = MrEnclave("0f6fd79cdfdaa5b2e6337f534d3baf999318b0c462a7ac1f41297a3e4b424a57")
 
     public let svr2Enclave = MrEnclave("38e01eff4fe357dc0b0e8ef7a44b4abc5489fbccba3a78780f3872c277f62bf3")
 
@@ -285,8 +268,6 @@ public class TSConstantsMock: TSConstantsProtocol {
 
     public lazy var textSecureCDN3ServerURL = defaultValues.textSecureCDN3ServerURL
 
-    public lazy var contactDiscoveryV2URL = defaultValues.contactDiscoveryV2URL
-
     public lazy var storageServiceURL = defaultValues.storageServiceURL
 
     public lazy var sfuURL = defaultValues.sfuURL
@@ -317,11 +298,7 @@ public class TSConstantsMock: TSConstantsProtocol {
 
     public lazy var storageServiceCensorshipPrefix = defaultValues.storageServiceCensorshipPrefix
 
-    public lazy var contactDiscoveryV2CensorshipPrefix = defaultValues.contactDiscoveryV2CensorshipPrefix
-
     public lazy var svr2CensorshipPrefix = defaultValues.svr2CensorshipPrefix
-
-    public lazy var contactDiscoveryV2MrEnclave = defaultValues.contactDiscoveryV2MrEnclave
 
     public lazy var svr2Enclave = defaultValues.svr2Enclave
 
