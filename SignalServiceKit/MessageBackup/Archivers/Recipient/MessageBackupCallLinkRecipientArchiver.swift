@@ -46,6 +46,7 @@ public class MessageBackupCallLinkRecipientArchiver: MessageBackupProtoArchiver 
                         switch restrictions {
                         case .none: return .none
                         case .adminApproval: return .adminApproval
+                        case .unknown: return .unknown
                         }
                     } else {
                         return .unknown
@@ -122,8 +123,7 @@ public class MessageBackupCallLinkRecipientArchiver: MessageBackupProtoArchiver 
         case .none:
             restrictions = .none
         case .unknown:
-            partialErrors.append(.restoreFrameError(.invalidProtoData(.callLinkRestrictionsUnknownType), recipient.recipientId))
-            restrictions = .adminApproval
+            restrictions = .unknown
         case .UNRECOGNIZED:
             partialErrors.append(.restoreFrameError(.invalidProtoData(.callLinkRestrictionsUnrecognizedType), recipient.recipientId))
             restrictions = .adminApproval

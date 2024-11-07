@@ -159,13 +159,26 @@ public struct CallLinkRecord: Codable, PersistableRecord, FetchableRecord {
         self.pendingFetchCounter += 1
     }
 
-    // This is currently an enum, but depending on what restrictions are added
-    // in the future, it seems like it may need to become an OptionSet. By
-    // using `1` here, this could be trivially switched to being interpreted as
-    // an OptionSet in the future.
     public enum Restrictions: Int {
         case none = 0
         case adminApproval = 1
+        case unknown = -1
+
+        init(_ ringRtcValue: SignalRingRTC.CallLinkState.Restrictions) {
+            switch ringRtcValue {
+            case .none: self = .none
+            case .adminApproval: self = .adminApproval
+            case .unknown: self = .unknown
+            }
+        }
+
+        var asRingRtcValue: SignalRingRTC.CallLinkState.Restrictions {
+            switch self {
+            case .none: .none
+            case .adminApproval: .adminApproval
+            case .unknown: .unknown
+            }
+        }
     }
 
     public mutating func updateState(_ callLinkState: CallLinkState) {
@@ -180,7 +193,7 @@ public struct CallLinkRecord: Codable, PersistableRecord, FetchableRecord {
         if let restrictions, let revoked, let expiration {
             return CallLinkState(
                 name: self.name,
-                requiresAdminApproval: restrictions == .adminApproval,
+                restrictions: restrictions.asRingRtcValue,
                 revoked: revoked,
                 expiration: Date(timeIntervalSince1970: TimeInterval(expiration))
             )

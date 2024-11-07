@@ -8,7 +8,7 @@ public import SignalRingRTC
 
 public struct CallLinkState {
     public let name: String?
-    public let requiresAdminApproval: Bool
+    public let restrictions: SignalRingRTC.CallLinkState.Restrictions
     public let revoked: Bool
     public let expiration: Date
 
@@ -16,23 +16,27 @@ public struct CallLinkState {
         public static let defaultRequiresAdminApproval = true
     }
 
-    init(name: String?, requiresAdminApproval: Bool, revoked: Bool, expiration: Date) {
+    init(name: String?, restrictions: SignalRingRTC.CallLinkState.Restrictions, revoked: Bool, expiration: Date) {
         self.name = name
-        self.requiresAdminApproval = requiresAdminApproval
+        self.restrictions = restrictions
         self.revoked = revoked
         self.expiration = expiration
     }
 
     public init(_ rawValue: SignalRingRTC.CallLinkState) {
         self.name = rawValue.name.nilIfEmpty
-        self.requiresAdminApproval = {
-            switch rawValue.restrictions {
-            case .adminApproval: return true
-            case .none, .unknown: return false
-            }
-        }()
+        self.restrictions = rawValue.restrictions
         self.revoked = rawValue.revoked
         self.expiration = rawValue.expiration
+    }
+
+    public var requiresAdminApproval: Bool {
+        switch self.restrictions {
+        case .adminApproval, .unknown:
+            return true
+        case .none:
+            return false
+        }
     }
 
     public var localizedName: String {

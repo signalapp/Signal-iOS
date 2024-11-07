@@ -632,8 +632,6 @@ extension MessageBackup {
 
                 /// A ``BackupProto_CallLink/rootKey`` was invalid.
                 case callLinkInvalidRootKey
-                /// A ``BackupProto_CallLink/restrictions`` was unknown.
-                case callLinkRestrictionsUnknownType
                 /// A ``BackupProto_CallLink/restrictions`` was unrecognized.
                 case callLinkRestrictionsUnrecognizedType
             }
@@ -811,7 +809,6 @@ extension MessageBackup {
                         .invalidAttachmentClientUUID,
                         .unrecognizedGiftBadgeState,
                         .callLinkInvalidRootKey,
-                        .callLinkRestrictionsUnknownType,
                         .callLinkRestrictionsUnrecognizedType:
                     // Collapse all others by the id of the containing frame.
                     return idLogString
