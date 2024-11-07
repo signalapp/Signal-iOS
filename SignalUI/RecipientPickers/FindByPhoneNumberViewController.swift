@@ -236,29 +236,31 @@ public class FindByPhoneNumberViewController: OWSTableViewController2 {
         phoneNumberTextField.resignFirstResponder()
 
         if requiresRegisteredNumber {
-            ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: true) { modal in
-                firstly { () -> Promise<Set<SignalRecipient>> in
-                    SSKEnvironment.shared.contactDiscoveryManagerRef.lookUp(phoneNumbers: [phoneNumber], mode: .oneOffUserRequest)
-                }.done(on: DispatchQueue.main) { [weak self] recipients in
-                    modal.dismissIfNotCanceled {
-                        guard let self = self else { return }
-                        guard let recipient = recipients.first else {
-                            return OWSActionSheets.showErrorAlert(
-                                message: MessageSenderNoSuchSignalRecipientError().userErrorDescription,
+            ModalActivityIndicatorViewController.present(
+                fromViewController: self,
+                canCancel: true,
+                asyncBlock: { modal in
+                    do {
+                        let recipients = try await SSKEnvironment.shared.contactDiscoveryManagerRef.lookUp(phoneNumbers: [phoneNumber], mode: .oneOffUserRequest)
+                        modal.dismissIfNotCanceled {
+                            guard let recipient = recipients.first else {
+                                return OWSActionSheets.showErrorAlert(
+                                    message: MessageSenderNoSuchSignalRecipientError().userErrorDescription,
+                                    dismissalDelegate: self
+                                )
+                            }
+                            self.findByPhoneNumberDelegate?.findByPhoneNumber(self, didSelectAddress: recipient.address)
+                        }
+                    } catch {
+                        modal.dismissIfNotCanceled {
+                            OWSActionSheets.showErrorAlert(
+                                message: error.userErrorDescription,
                                 dismissalDelegate: self
                             )
                         }
-                        self.findByPhoneNumberDelegate?.findByPhoneNumber(self, didSelectAddress: recipient.address)
-                    }
-                }.catch(on: DispatchQueue.main) { error in
-                    modal.dismissIfNotCanceled {
-                        OWSActionSheets.showErrorAlert(
-                            message: error.userErrorDescription,
-                            dismissalDelegate: self
-                        )
                     }
                 }
-            }
+            )
         } else {
             findByPhoneNumberDelegate?.findByPhoneNumber(self, didSelectAddress: SignalServiceAddress(phoneNumber: phoneNumber))
         }

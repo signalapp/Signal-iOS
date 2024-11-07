@@ -67,7 +67,7 @@ final class ContactDiscoveryV2OperationTest: XCTestCase {
     private lazy var persistentState = MockContactDiscoveryV2PersistentState()
 
     /// In .oneOffUserRequest mode, we should disregard tokens entirely.
-    func testOneOffRequest() throws {
+    func testOneOffRequest() async throws {
         let aci = Aci.randomForTesting()
         let pni = Pni.randomForTesting()
 
@@ -96,22 +96,16 @@ final class ContactDiscoveryV2OperationTest: XCTestCase {
         }
 
         // Run the discovery operation.
-        var operationResults: [ContactDiscoveryResult]?
-        let operationExpectation = expectation(description: "Waiting for operation.")
-        operation.perform(on: DispatchQueue.main).done { results in
-            operationResults = results
-            operationExpectation.fulfill()
-        }.cauterize()
-        waitForExpectations(timeout: 10)
+        let operationResults = try await operation.perform()
 
         // Make sure we got back the result we expected.
-        XCTAssertEqual(operationResults?.count, 1)
-        XCTAssertEqual(operationResults?.first?.e164.stringValue, "+16505550100")
-        XCTAssertEqual(operationResults?.first?.pni, pni)
-        XCTAssertEqual(operationResults?.first?.aci, aci)
+        XCTAssertEqual(operationResults.count, 1)
+        XCTAssertEqual(operationResults.first?.e164.stringValue, "+16505550100")
+        XCTAssertEqual(operationResults.first?.pni, pni)
+        XCTAssertEqual(operationResults.first?.aci, aci)
     }
 
-    func testNotDiscoverable() throws {
+    func testNotDiscoverable() async throws {
         let connection = MockContactDiscoveryConnection()
         let operation = ContactDiscoveryV2Operation(
             e164sToLookup: [try XCTUnwrap(E164("+16505550100"))],
@@ -130,20 +124,14 @@ final class ContactDiscoveryV2OperationTest: XCTestCase {
         }
 
         // Run the discovery operation.
-        var operationResults: [ContactDiscoveryResult]?
-        let operationExpectation = expectation(description: "Waiting for operation.")
-        operation.perform(on: DispatchQueue.main).done { results in
-            operationResults = results
-            operationExpectation.fulfill()
-        }.cauterize()
-        waitForExpectations(timeout: 10)
+        let operationResults = try await operation.perform()
 
         // Make sure we got back the result we expected.
-        XCTAssertEqual(operationResults?.count, 0)
+        XCTAssertEqual(operationResults.count, 0)
     }
 
     /// If the server reports a rate limit, we should parse "retry after".
-    func testRateLimitError() throws {
+    func testRateLimitError() async throws {
         let connection = MockContactDiscoveryConnection()
         let operation = ContactDiscoveryV2Operation(
             e164sToLookup: [try XCTUnwrap(E164("+16505550100"))],
@@ -166,12 +154,11 @@ final class ContactDiscoveryV2OperationTest: XCTestCase {
 
         // Run the discovery operation.
         var operationError: Error?
-        let operationExpectation = expectation(description: "Waiting for operation.")
-        operation.perform(on: DispatchQueue.main).catch { error in
+        do {
+            _ = try await operation.perform()
+        } catch {
             operationError = error
-            operationExpectation.fulfill()
-        }.cauterize()
-        waitForExpectations(timeout: 10)
+        }
 
         // Make sure the local state wasn't modified.
         XCTAssertEqual(persistentState.token, initialToken)
@@ -183,7 +170,7 @@ final class ContactDiscoveryV2OperationTest: XCTestCase {
     }
 
     /// If the server reports an invalid token, we should clear the token.
-    func testInvalidTokenError() throws {
+    func testInvalidTokenError() async throws {
         let connection = MockContactDiscoveryConnection()
         let operation = ContactDiscoveryV2Operation(
             e164sToLookup: [try XCTUnwrap(E164("+16505550100"))],
@@ -202,11 +189,12 @@ final class ContactDiscoveryV2OperationTest: XCTestCase {
         }
 
         // Run the discovery operation.
-        let operationExpectation = expectation(description: "Waiting for operation.")
-        operation.perform(on: DispatchQueue.main).catch { error in
-            operationExpectation.fulfill()
-        }.cauterize()
-        waitForExpectations(timeout: 10)
+        do {
+            _ = try await operation.perform()
+            XCTFail("Must throw error.")
+        } catch is ContactDiscoveryError {
+            // Ok.
+        }
 
         // Make sure the local state was cleared.
         XCTAssertNil(persistentState.token)

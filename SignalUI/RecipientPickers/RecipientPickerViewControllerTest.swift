@@ -11,10 +11,10 @@ import XCTest
 
 final class RecipientPickerViewControllerTests: XCTestCase {
     private struct MockContactDiscoveryManager: ContactDiscoveryManager {
-        var lookUpBlock: ((Set<String>) -> Promise<Set<SignalRecipient>>)?
+        var lookUpBlock: ((Set<String>) async throws -> Set<SignalRecipient>)?
 
-        func lookUp(phoneNumbers: Set<String>, mode: ContactDiscoveryMode) -> Promise<Set<SignalRecipient>> {
-            lookUpBlock?(phoneNumbers) ?? .value([])
+        func lookUp(phoneNumbers: Set<String>, mode: ContactDiscoveryMode) async throws -> Set<SignalRecipient> {
+            return try await lookUpBlock?(phoneNumbers) ?? []
         }
     }
 
@@ -54,7 +54,7 @@ final class RecipientPickerViewControllerTests: XCTestCase {
         }
     }
 
-    func testPhoneNumberFinderLookUp() throws {
+    func testPhoneNumberFinderLookUp() async throws {
         struct TestCase {
             var searchResult: PhoneNumberFinder.SearchResult
             var isValid: Bool
@@ -72,18 +72,17 @@ final class RecipientPickerViewControllerTests: XCTestCase {
                 localNumber: "+16505550100",
                 contactDiscoveryManager: MockContactDiscoveryManager(lookUpBlock: { phoneNumbers in
                     XCTAssertTrue(testCase.isValid)
-                    return .value(testCase.isFound ? [
+                    return testCase.isFound ? [
                         SignalRecipient(
                             aci: Aci.randomForTesting(),
                             pni: Pni.randomForTesting(),
                             phoneNumber: E164(phoneNumbers.first)!
                         )
-                    ] : [])
+                    ] : []
                 }),
                 phoneNumberUtil: PhoneNumberUtil(swiftValues: PhoneNumberUtilSwiftValues())
             )
-            let resultPromise = finder.lookUp(phoneNumber: testCase.searchResult)
-            let lookupResult = try XCTUnwrap(resultPromise.result).get()
+            let lookupResult = try await finder.lookUp(phoneNumber: testCase.searchResult).awaitable()
             switch lookupResult {
             case .success:
                 XCTAssertTrue(testCase.isFound, context)

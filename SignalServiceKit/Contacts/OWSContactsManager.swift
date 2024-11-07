@@ -966,7 +966,9 @@ extension OWSContactsManager: ContactManager {
             Logger.info("Performing delta intersection for \(phoneNumbersToIntersect.count) phone numbers.")
         }
 
-        let intersectionPromise = intersectContacts(phoneNumbersToIntersect, retryDelaySeconds: 1)
+        let intersectionPromise = Promise.wrapAsync {
+            return try await self.intersectContacts(phoneNumbersToIntersect)
+        }
         intersectionPromise.done(on: swiftValues.intersectionQueue) { intersectedRecipients in
             // Mark it as complete. If the app crashes after this transaction, we'll
             // avoid a redundant (expensive) intersection when we retry.
@@ -1079,41 +1081,33 @@ extension OWSContactsManager: ContactManager {
         }
     }
 
-    private func intersectContacts(
-        _ phoneNumbers: Set<String>,
-        retryDelaySeconds: TimeInterval
-    ) -> Promise<Set<SignalRecipient>> {
-        owsAssertDebug(retryDelaySeconds > 0)
-
+    private func intersectContacts(_ phoneNumbers: Set<String>) async throws -> Set<SignalRecipient> {
         if phoneNumbers.isEmpty {
-            return .value([])
+            return []
         }
-        return SSKEnvironment.shared.contactDiscoveryManagerRef.lookUp(
-            phoneNumbers: phoneNumbers,
-            mode: .contactIntersection
-        ).recover(on: DispatchQueue.global()) { (error) -> Promise<Set<SignalRecipient>> in
-            var retryAfter: TimeInterval = retryDelaySeconds
-
-            if let cdsError = error as? ContactDiscoveryError {
-                guard cdsError.code != ContactDiscoveryError.Kind.rateLimit.rawValue else {
-                    Logger.error("Contact intersection hit rate limit with error: \(error)")
-                    return Promise(error: error)
+        return try await Retry.performRepeatedly(
+            block: {
+                return try await SSKEnvironment.shared.contactDiscoveryManagerRef.lookUp(
+                    phoneNumbers: phoneNumbers,
+                    mode: .contactIntersection
+                )
+            },
+            onError: { error, attemptCount in
+                if let cdsError = error as? ContactDiscoveryError {
+                    if cdsError.code == ContactDiscoveryError.Kind.rateLimit.rawValue {
+                        Logger.error("Contact intersection hit rate limit with error: \(error)")
+                        throw error
+                    }
+                    if !cdsError.retrySuggested {
+                        Logger.error("Contact intersection error suggests not to retry. Aborting without rescheduling.")
+                        throw error
+                    }
                 }
-                guard cdsError.retrySuggested else {
-                    Logger.error("Contact intersection error suggests not to retry. Aborting without rescheduling.")
-                    return Promise(error: error)
-                }
-                if let retryAfterDate = cdsError.retryAfterDate {
-                    retryAfter = max(retryAfter, retryAfterDate.timeIntervalSinceNow)
-                }
+                // TODO: Abort if another contact intersection succeeds in the meantime.
+                Logger.warn("Contact intersection failed with error: \(error). Rescheduling.")
+                try await Task.sleep(nanoseconds: OWSOperation.retryIntervalForExponentialBackoffNs(failureCount: attemptCount, maxBackoff: .infinity))
             }
-
-            // TODO: Abort if another contact intersection succeeds in the meantime.
-            Logger.warn("Contact intersection failed with error: \(error). Rescheduling.")
-            return Guarantee.after(seconds: retryAfter).then(on: DispatchQueue.global()) {
-                self.intersectContacts(phoneNumbers, retryDelaySeconds: retryDelaySeconds * 2)
-            }
-        }
+        )
     }
 
     private static let unknownAddressFetchDateMap = AtomicDictionary<Aci, Date>(lock: .sharedGlobal)

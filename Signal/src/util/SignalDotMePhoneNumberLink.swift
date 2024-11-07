@@ -25,21 +25,24 @@ class SignalDotMePhoneNumberLink {
     private static func open(url: URL, fromViewController: UIViewController, block: @escaping (SignalServiceAddress) -> Void) {
         guard let phoneNumber = pattern.parseFirstMatch(inText: url.absoluteString.lowercased()) else { return }
 
-        ModalActivityIndicatorViewController.present(fromViewController: fromViewController, canCancel: true) { modal in
-            firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<Set<SignalRecipient>> in
-                SSKEnvironment.shared.contactDiscoveryManagerRef.lookUp(phoneNumbers: [phoneNumber], mode: .oneOffUserRequest)
-            }.done(on: DispatchQueue.main) { signalRecipients in
-                modal.dismissIfNotCanceled {
-                    guard let recipient = signalRecipients.first else {
-                        return OWSActionSheets.showErrorAlert(message: MessageSenderNoSuchSignalRecipientError().userErrorDescription)
+        ModalActivityIndicatorViewController.present(
+            fromViewController: fromViewController,
+            canCancel: true,
+            asyncBlock: { modal in
+                do {
+                    let signalRecipients = try await SSKEnvironment.shared.contactDiscoveryManagerRef.lookUp(phoneNumbers: [phoneNumber], mode: .oneOffUserRequest)
+                    modal.dismissIfNotCanceled {
+                        guard let recipient = signalRecipients.first else {
+                            return OWSActionSheets.showErrorAlert(message: MessageSenderNoSuchSignalRecipientError().userErrorDescription)
+                        }
+                        block(recipient.address)
                     }
-                    block(recipient.address)
-                }
-            }.catch(on: DispatchQueue.main) { error in
-                modal.dismissIfNotCanceled {
-                    OWSActionSheets.showErrorAlert(message: error.userErrorDescription)
+                } catch {
+                    modal.dismissIfNotCanceled {
+                        OWSActionSheets.showErrorAlert(message: error.userErrorDescription)
+                    }
                 }
             }
-        }
+        )
     }
 }

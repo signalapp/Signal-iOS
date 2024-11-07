@@ -40,11 +40,11 @@ enum TimeGatedBatch {
         function: String = #function,
         line: Int = #line,
         block: (T, DBWriteTransaction) throws -> Void
-    ) rethrows {
+    ) async rethrows {
         var isDone = false
         var objectEnumerator = objects.makeIterator()
         while !isDone {
-            try db.write(file: file, function: function, line: line) { tx in
+            try await db.awaitableWrite(file: file, function: function, line: line) { tx in
                 let startTime = CACurrentMediaTime()
                 while true {
                     guard let object = objectEnumerator.next() else {

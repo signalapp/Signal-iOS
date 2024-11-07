@@ -24,12 +24,12 @@ protocol ContactDiscoveryV2PersistentState {
     ///       written. This is most useful when saving the initial token or
     ///       resetting the token after it's been corrupted.
     ///   - newE164s: The e164s that should be saved.
-    func save(newToken: Data, clearE164s: Bool, newE164s: Set<E164>) throws
+    func save(newToken: Data, clearE164s: Bool, newE164s: Set<E164>) async throws
 
     /// Reset the token.
     ///
     /// The next call to `load()` will return `nil`.
-    func reset()
+    func reset() async
 }
 
 // MARK: -
@@ -131,28 +131,22 @@ final class ContactDiscoveryV2Operation<ConnectionType: ContactDiscoveryConnecti
         self.remoteAttestation = remoteAttestation
     }
 
-    func perform(on queue: DispatchQueue) -> Promise<[ContactDiscoveryResult]> {
-        return firstly(on: queue) {
-            return self.remoteAttestation.authForCDSI()
-        }.then(on: queue) { cdsiAuth in
+    func perform() async throws -> [ContactDiscoveryResult] {
+        do {
+            let cdsiAuth = try await self.remoteAttestation.authForCDSI().awaitable()
             let request = try self.buildRequest()
             let auth = LibSignalClient.Auth(username: cdsiAuth.username, password: cdsiAuth.password)
-            return Promise.wrapAsync {
-                try await self.connectionImpl.performRequest(request, auth: auth)
-            }.then(on: queue) { tokenResult in
-                // We need to persist the token & new e164s before dealing with the result.
-                // If we don't, a interrupted request could lead to a corrupted token.
-                try self.handle(
-                    token: tokenResult.token,
-                    initialRequestHadToken: request.token != nil,
-                    newE164s: request.newE164s
-                )
-                return Promise.wrapAsync {
-                    try await self.connectionImpl.continueRequest(afterAckingToken: tokenResult)
-                }
-            }
-        }.recover(on: queue) { error -> Promise<[ContactDiscoveryResult]> in
-            let resolvedError = self.handle(error: error)
+            let tokenResult = try await self.connectionImpl.performRequest(request, auth: auth)
+            // We need to persist the token & new e164s before dealing with the result.
+            // If we don't, a interrupted request could lead to a corrupted token.
+            try await self.handle(
+                token: tokenResult.token,
+                initialRequestHadToken: request.token != nil,
+                newE164s: request.newE164s
+            )
+            return try await self.connectionImpl.continueRequest(afterAckingToken: tokenResult)
+        } catch {
+            let resolvedError = await self.handle(error: error)
             Logger.warn("CDSv2: Failed with error: \(resolvedError)")
             throw resolvedError
         }
@@ -193,8 +187,8 @@ final class ContactDiscoveryV2Operation<ConnectionType: ContactDiscoveryConnecti
         token: Data,
         initialRequestHadToken: Bool,
         newE164s: Set<E164>
-    ) throws {
-        try persistentState?.save(
+    ) async throws {
+        try await persistentState?.save(
             newToken: token,
             clearE164s: !initialRequestHadToken,
             newE164s: newE164s
@@ -203,16 +197,16 @@ final class ContactDiscoveryV2Operation<ConnectionType: ContactDiscoveryConnecti
 
     // MARK: - Errors
 
-    private func handle(error: Error) -> Error {
+    private func handle(error: Error) async -> Error {
         switch error {
         case let libSignalError as LibSignalClient.SignalError:
-            return handle(libSignalError: libSignalError)
+            return await handle(libSignalError: libSignalError)
         default:
             return error
         }
     }
 
-    private func handle(libSignalError: LibSignalClient.SignalError) -> ContactDiscoveryError {
+    private func handle(libSignalError: LibSignalClient.SignalError) async -> ContactDiscoveryError {
         switch libSignalError {
         case .rateLimitedError(retryAfter: let retryAfter, message: let message):
             let retryAfterDate = Date(timeIntervalSinceNow: retryAfter)
@@ -226,7 +220,7 @@ final class ContactDiscoveryV2Operation<ConnectionType: ContactDiscoveryConnecti
         case .cdsiInvalidToken:
             // If the token is wrong, throw away the current token. The next request
             // will get a new, valid token, at the cost of consuming additional quota.
-            persistentState?.reset()
+            await persistentState?.reset()
             return ContactDiscoveryError(
                 kind: .genericClientError,
                 debugDescription: "invalid token",
@@ -316,8 +310,8 @@ private class ContactDiscoveryV2PersistentStateImpl: ContactDiscoveryV2Persisten
         }
     }
 
-    func save(newToken: Data, clearE164s: Bool, newE164s: Set<E164>) throws {
-        try SSKEnvironment.shared.databaseStorageRef.write { transaction in
+    func save(newToken: Data, clearE164s: Bool, newE164s: Set<E164>) async throws {
+        try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
             let database = transaction.unwrapGrdbWrite.database
 
             Self.tokenStore.setData(newToken, key: Self.tokenKey, transaction: transaction)
@@ -338,9 +332,9 @@ private class ContactDiscoveryV2PersistentStateImpl: ContactDiscoveryV2Persisten
         }
     }
 
-    func reset() {
+    func reset() async {
         Logger.warn("CDSv2: Resetting token")
-        SSKEnvironment.shared.databaseStorageRef.write { transaction in
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
             Self.tokenStore.removeValue(forKey: Self.tokenKey, transaction: transaction)
         }
     }

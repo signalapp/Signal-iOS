@@ -1292,9 +1292,8 @@ struct PhoneNumberFinder {
             }
             validE164ToLookUp = validE164
         }
-        return firstly {
-            contactDiscoveryManager.lookUp(phoneNumbers: [validE164ToLookUp], mode: .oneOffUserRequest)
-        }.map { signalRecipients in
+        return Promise.wrapAsync { [contactDiscoveryManager] in
+            let signalRecipients = try await contactDiscoveryManager.lookUp(phoneNumbers: [validE164ToLookUp], mode: .oneOffUserRequest)
             if let signalRecipient = signalRecipients.first {
                 return .success(signalRecipient)
             } else {
