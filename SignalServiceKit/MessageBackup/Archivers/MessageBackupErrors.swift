@@ -140,12 +140,6 @@ extension MessageBackup {
             /// the expected SDS record type, ``OWSDisappearingConfigurationUpdateInfoMessage``.
             case disappearingMessageConfigUpdateNotExpectedSDSRecordType
             /// An ``OWSDisappearingConfigurationUpdateInfoMessage`` info
-            /// message was unexpectedly found in a non-contact thread.
-            /// - Note
-            /// Disappearing message timer updates for groups are handled by
-            /// "group update metadata" on ``TSInfoMessage``s.
-            case disappearingMessageConfigUpdateNotInContactThread
-            /// An ``OWSDisappearingConfigurationUpdateInfoMessage`` info
             /// message was unexpectedly missing author info.
             case disappearingMessageConfigUpdateMissingAuthor
 
@@ -274,7 +268,6 @@ extension MessageBackup {
                     .simpleChatUpdateMessageNotInContactThread,
                     .missingPaymentInformation,
                     .disappearingMessageConfigUpdateNotExpectedSDSRecordType,
-                    .disappearingMessageConfigUpdateNotInContactThread,
                     .disappearingMessageConfigUpdateMissingAuthor,
                     .profileChangeUpdateMissingAuthor,
                     .profileChangeUpdateMissingNames,

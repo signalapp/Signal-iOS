@@ -64,12 +64,23 @@ final class MessageBackupGroupUpdateMessageArchiver {
         case .precomputed(let persistableGroupUpdateItemsWrapper):
             groupUpdateItems = persistableGroupUpdateItemsWrapper.updateItems
         }
+        return archiveGroupUpdateItems(
+            groupUpdateItems,
+            for: infoMessage,
+            context: context
+        )
+    }
 
+    func archiveGroupUpdateItems(
+        _ groupUpdateItems: [TSInfoMessage.PersistableGroupUpdateItem],
+        for interaction: TSInteraction,
+        context: MessageBackup.ChatArchivingContext
+    ) -> ArchiveChatUpdateMessageResult {
         var partialErrors = [ArchiveFrameError]()
 
         let contentsResult = Self.archiveGroupUpdates(
             groupUpdates: groupUpdateItems,
-            interactionId: infoMessage.uniqueInteractionId,
+            interactionId: interaction.uniqueInteractionId,
             localIdentifiers: context.recipientContext.localIdentifiers,
             partialErrors: &partialErrors
         )
@@ -89,7 +100,7 @@ final class MessageBackupGroupUpdateMessageArchiver {
         let details = Details(
             author: context.recipientContext.localRecipientId,
             directionalDetails: .directionless(directionlessDetails),
-            dateCreated: infoMessage.timestamp,
+            dateCreated: interaction.timestamp,
             expireStartDate: nil,
             expiresInMs: nil,
             isSealedSender: false,
