@@ -198,7 +198,9 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
     ) -> ArchiveMultiFrameResult {
         let chatId = context.assignChatId(to: thread)
 
-        let recipientAddress = MessageBackup.RecipientArchivingContext.Address.group(thread.groupId)
+        let recipientAddress = MessageBackup.RecipientArchivingContext.Address.group(
+            MessageBackup.GroupId(groupModel: thread.groupModel)
+        )
         guard let recipientId = context.recipientContext[recipientAddress] else {
             return .partialSuccess([.archiveFrameError(
                 .referencedRecipientIdMissing(recipientAddress),

@@ -5,7 +5,32 @@
 
 import SignalRingRTC
 
+extension MessageBackup {
+    public struct CallLinkRecordId: Hashable, MessageBackupLoggableId {
+        let rowId: Int64
+
+        public init(_ callLinkRecord: CallLinkRecord) {
+            self.rowId = callLinkRecord.id
+        }
+
+        public init?(callRecordConversationId: CallRecord.ConversationID) {
+            switch callRecordConversationId {
+            case .thread:
+                return nil
+            case .callLink(let callLinkRowId):
+                self.rowId = callLinkRowId
+            }
+        }
+
+        // MARK: MessageBackupLoggableId
+
+        public var typeLogString: String { "CallLinkRecord" }
+        public var idLogString: String { "\(rowId)" }
+    }
+}
+
 public class MessageBackupCallLinkRecipientArchiver: MessageBackupProtoArchiver {
+    typealias CallLinkRecordId = MessageBackup.CallLinkRecordId
     typealias RecipientAppId = MessageBackup.RecipientArchivingContext.Address
     typealias ArchiveMultiFrameResult = MessageBackup.ArchiveMultiFrameResult<RecipientAppId>
     private typealias ArchiveFrameError = MessageBackup.ArchiveFrameError<RecipientAppId>
@@ -53,7 +78,8 @@ public class MessageBackupCallLinkRecipientArchiver: MessageBackupProtoArchiver 
                     }
                 }()
 
-                let callLinkAppId: RecipientAppId = .callLink(record.id)
+                let callLinkRecordId = CallLinkRecordId(record)
+                let callLinkAppId: RecipientAppId = .callLink(callLinkRecordId)
                 if let expirationMs = record.expirationMs {
                     // Lacking an expiration is a valid state. It can occur 1) if we hadn't
                     // yet fetched the expiration from the server at the time of backup, or
@@ -65,7 +91,7 @@ public class MessageBackupCallLinkRecipientArchiver: MessageBackupProtoArchiver 
                 let recipientId = context.assignRecipientId(to: callLinkAppId)
                 Self.writeFrameToStream(
                     stream,
-                    objectId: .callLink(record.id)
+                    objectId: callLinkAppId
                 ) {
                     var recipient = BackupProto_Recipient()
                     recipient.id = recipientId.value
@@ -139,8 +165,9 @@ public class MessageBackupCallLinkRecipientArchiver: MessageBackupProtoArchiver 
                 isUpcoming: true, // will be set false later if we process a corresponding ad hoc call frame
                 tx: context.tx
             )
-            context[recipient.recipientId] = .callLink(record.id)
-            context[record.id] = record
+            let callLinkRecordId = CallLinkRecordId(record)
+            context[recipient.recipientId] = .callLink(callLinkRecordId)
+            context[callLinkRecordId] = record
         } catch {
             return .failure([.restoreFrameError(.databaseInsertionFailed(error), recipient.recipientId)])
         }

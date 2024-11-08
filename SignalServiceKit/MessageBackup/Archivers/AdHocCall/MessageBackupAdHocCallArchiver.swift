@@ -4,27 +4,31 @@
 //
 
 public extension MessageBackup {
-    struct AdHocCallAppId: MessageBackupLoggableId {
-        private let callId: UInt64
 
-        init(_ callId: UInt64) {
-            self.callId = callId
+    /// The ringRTC-provided call id for a call, shared across participating clients
+    /// and persisted to the backup.
+    /// Uniquely identifies an Ad-hoc Call in both the app and the backup.
+    /// Representations of past non-ad-hoc calls also have call ids, but have
+    /// alternative identifiers because they are represented as ChatItems.
+    struct CallId: MessageBackupLoggableId {
+        let value: UInt64
+
+        init(callRecord: CallRecord) {
+            self.value = callRecord.callId
+        }
+
+        init(adHocCall: BackupProto_AdHocCall) {
+            self.value = adHocCall.callID
         }
 
         public var typeLogString: String { "CallRecord" }
-        public var idLogString: String { String(callId) }
+        public var idLogString: String { String(value) }
     }
 
-    struct AdHocCallId: MessageBackupLoggableId {
-        private let callId: UInt64
-
-        init(_ callId: UInt64) {
-            self.callId = callId
-        }
-
-        public var typeLogString: String { "BackupProto_AdHocCall" }
-        public var idLogString: String { String(callId) }
-    }
+    // We use the same identifier (the CallId from RingRTC) to identify
+    // ad-hoc calls both in the running app and in the backup proto.
+    typealias AdHocCallAppId = CallId
+    typealias AdHocCallId = CallId
 }
 
 public protocol MessageBackupAdHocCallArchiver: MessageBackupProtoArchiver {
@@ -92,27 +96,29 @@ public class MessageBackupAdHocCallArchiverImpl: MessageBackupAdHocCallArchiver 
                 // actually `.joined`).
                 adHocCallProto.state = .generic
 
-                switch record.conversationId {
-                case .callLink(let callLinkRowId):
-                    guard let value = context.recipientContext[.callLink(callLinkRowId)]?.value else {
-                        partialErrors.append(.archiveFrameError(
-                            .referencedRecipientIdMissing(.callLink(callLinkRowId)),
-                            AdHocCallAppId(record.callId)
-                        ))
-                        return
-                    }
-                    adHocCallProto.recipientID = value
-                default:
+                let recordId = AdHocCallAppId(callRecord: record)
+
+                guard
+                    let callLinkRecordId = MessageBackup.CallLinkRecordId(callRecordConversationId: record.conversationId)
+                else {
                     partialErrors.append(.archiveFrameError(
                         .adHocCallDoesNotHaveCallLinkAsConversationId,
-                        AdHocCallAppId(record.callId)
+                        recordId
                     ))
                     return
                 }
+                guard let recipientId = context.recipientContext[.callLink(callLinkRecordId)] else {
+                    partialErrors.append(.archiveFrameError(
+                        .referencedRecipientIdMissing(.callLink(callLinkRecordId)),
+                        recordId
+                    ))
+                    return
+                }
+                adHocCallProto.recipientID = recipientId.value
 
                 let error = Self.writeFrameToStream(
                     stream,
-                    objectId: AdHocCallAppId(record.callId)
+                    objectId: recordId
                 ) {
                     var frame = BackupProto_Frame()
                     frame.adHocCall = adHocCallProto
@@ -140,6 +146,8 @@ public class MessageBackupAdHocCallArchiverImpl: MessageBackupAdHocCallArchiver 
     ) -> RestoreFrameResult {
         var partialErrors = [MessageBackup.RestoreFrameError<AdHocCallId>]()
 
+        let callId = AdHocCallId(adHocCall: adHocCall)
+
         let state: CallRecord.CallStatus.CallLinkCallStatus
         switch adHocCall.state {
         case .generic:
@@ -147,36 +155,36 @@ public class MessageBackupAdHocCallArchiverImpl: MessageBackupAdHocCallArchiver 
         case .unknownState:
             partialErrors.append(
                 .restoreFrameError(.invalidProtoData(.adHocCallUnknownState),
-                AdHocCallId(adHocCall.callID)
+                callId
             ))
             state = .generic
         case .UNRECOGNIZED:
             partialErrors.append(
                 .restoreFrameError(.invalidProtoData(.adHocCallUnrecognizedState),
-                AdHocCallId(adHocCall.callID)
+                callId
             ))
             state = .generic
         }
 
-        let callLinkRowId: MessageBackup.CallLinkId
+        let callLinkRecordId: MessageBackup.CallLinkRecordId
         let recipientId = adHocCall.callLinkRecipientId
         switch context.recipientContext[recipientId] {
-        case .callLink(let callLinkId):
-            callLinkRowId = callLinkId
+        case .callLink(let _callLinkRecordId):
+            callLinkRecordId = _callLinkRecordId
         default:
             return .failure([.restoreFrameError(
                 .invalidProtoData(.recipientOfAdHocCallWasNotCallLink),
-                AdHocCallId(adHocCall.callID)
+                callId
             )])
         }
         let adHocCallRecord = CallRecord(
-            callId: adHocCall.callID,
-            callLinkRowId: callLinkRowId,
+            callId: callId.value,
+            callLinkRowId: callLinkRecordId.rowId,
             callStatus: state,
             callBeganTimestamp: adHocCall.callTimestamp
         )
 
-        if let callLinkRecord = context.recipientContext[callLinkRowId] {
+        if let callLinkRecord = context.recipientContext[callLinkRecordId] {
             do {
                 var callLinkRecord = callLinkRecord
                 callLinkRecord.didInsertCallRecord()
@@ -185,7 +193,7 @@ public class MessageBackupAdHocCallArchiverImpl: MessageBackupAdHocCallArchiver 
                 partialErrors.append(
                     .restoreFrameError(
                         .databaseInsertionFailed(error),
-                        AdHocCallId(adHocCall.callID)
+                        callId
                     )
                 )
             }

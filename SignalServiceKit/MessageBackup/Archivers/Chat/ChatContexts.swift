@@ -179,7 +179,7 @@ extension MessageBackup {
             case .contact(let tSContactThread):
                 contactThreadMap[chatId] = (thread.threadRowId, tSContactThread)
             case .groupV2(let tSGroupThread):
-                groupIdMap[chatId] = (thread.threadRowId, tSGroupThread.groupId)
+                groupIdMap[chatId] = (thread.threadRowId, MessageBackup.GroupId(groupModel: tSGroupThread.groupModel))
             }
             recipientToChatMap[recipientId] = chatId
         }
@@ -263,7 +263,7 @@ extension MessageBackup {
             senderAci: Aci,
             timestamp: UInt64
         ) {
-            var actions = postFrameRestoreActions[chatId] ?? .default
+            let actions = postFrameRestoreActions[chatId] ?? .default
             let oldTimestamp = actions.groupMemberLastInteractionTimestamp[senderAci]
             if
                 oldTimestamp == nil

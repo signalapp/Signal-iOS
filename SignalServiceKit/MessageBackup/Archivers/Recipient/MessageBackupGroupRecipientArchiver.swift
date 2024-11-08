@@ -13,6 +13,7 @@ import LibSignalClient
 /// thread. Its just that our group thread contains all the metadata
 /// corresponding to both the Chat and Recipient parts of the Backup proto.
 public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
+    typealias GroupId = MessageBackup.GroupId
     typealias RecipientId = MessageBackup.RecipientId
     typealias RecipientAppId = MessageBackup.RecipientArchivingContext.Address
 
@@ -84,7 +85,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
             return
         }
 
-        let groupId = groupModel.groupId
+        let groupId = GroupId(groupModel: groupModel)
         let groupMembership = groupModel.groupMembership
 
         let groupAppId: RecipientAppId = .group(groupId)
@@ -382,8 +383,9 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
 
         // MARK: Return successfully!
 
-        context[recipient.recipientId] = .group(groupModel.groupId)
-        context[groupModel.groupId] = groupThread
+        let groupId = GroupId(groupModel: groupModel)
+        context[recipient.recipientId] = .group(groupId)
+        context[groupId] = groupThread
 
         if partialErrors.isEmpty {
             return .success

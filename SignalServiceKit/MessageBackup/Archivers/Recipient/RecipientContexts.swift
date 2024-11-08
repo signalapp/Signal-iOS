@@ -44,8 +44,16 @@ extension MessageBackup {
         }
     }
 
-    public typealias GroupId = Data
-    public typealias CallLinkId = Int64
+    public struct GroupId: Hashable, MessageBackupLoggableId {
+        let value: Data
+
+        init(groupModel: TSGroupModel) {
+            self.value = groupModel.groupId
+        }
+
+        public var typeLogString: String { "Group" }
+        public var idLogString: String { value.base64EncodedString() }
+    }
 
     public struct DistributionId: Hashable {
 
@@ -99,7 +107,7 @@ extension MessageBackup {
             case contact(ContactAddress)
             case group(GroupId)
             case distributionList(DistributionId)
-            case callLink(CallLinkId)
+            case callLink(CallLinkRecordId)
         }
 
         let localRecipientId: RecipientId
@@ -112,7 +120,7 @@ extension MessageBackup {
         private let contactAciMap = SharedMap<Aci, RecipientId>()
         private let contactPniMap = SharedMap<Pni, RecipientId>()
         private let contactE164ap = SharedMap<E164, RecipientId>()
-        private let callLinkIdMap = SharedMap<CallLinkId, RecipientId>()
+        private let callLinkIdMap = SharedMap<CallLinkRecordId, RecipientId>()
 
         init(
             currentBackupAttachmentUploadEra: String?,
@@ -207,7 +215,7 @@ extension MessageBackup {
             case contact(ContactAddress)
             case group(GroupId)
             case distributionList(DistributionId)
-            case callLink(CallLinkId)
+            case callLink(CallLinkRecordId)
         }
 
         let localIdentifiers: LocalIdentifiers
@@ -217,7 +225,7 @@ extension MessageBackup {
         /// By comparison, TSContactThread is created when we restore the Chat frame.
         /// We cache the TSGroupThread here to avoid fetching later when we do restore the Chat.
         private let groupThreadCache = SharedMap<GroupId, TSGroupThread>()
-        private let callLinkRecordCache = SharedMap<CallLinkId, CallLinkRecord>()
+        private let callLinkRecordCache = SharedMap<CallLinkRecordId, CallLinkRecord>()
 
         init(
             localIdentifiers: LocalIdentifiers,
@@ -237,7 +245,7 @@ extension MessageBackup {
             set(newValue) { groupThreadCache[id] = newValue }
         }
 
-        subscript(_ id: CallLinkId) -> CallLinkRecord? {
+        subscript(_ id: CallLinkRecordId) -> CallLinkRecord? {
             get { callLinkRecordCache[id] }
             set(newValue) { callLinkRecordCache[id] = newValue }
         }
@@ -296,11 +304,11 @@ extension MessageBackup.RecipientArchivingContext.Address: MessageBackupLoggable
             return contactAddress.idLogString
         case .group(let groupId):
             // Rely on the scrubber to scrub the id.
-            return groupId.base64EncodedString()
+            return groupId.idLogString
         case .distributionList(let distributionId):
             return distributionId.value.uuidString
-        case .callLink(let callLinkId):
-            return String(callLinkId)
+        case .callLink(let callLinkRecordId):
+            return callLinkRecordId.idLogString
         }
     }
 }
