@@ -442,13 +442,22 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         var quote = BackupProto_Quote()
         quote.authorID = authorId.value
         quote.type = quotedMessage.isGiftBadge ? .giftbadge : .normal
-        switch quotedMessage.bodySource {
-        case .local, .unknown:
-            quote.targetSentTimestamp = quotedMessage.timestampValue?.uint64Value ?? 0
-        case .remote, .story:
-            quote.targetSentTimestamp = 0
-        @unknown default:
-            quote.targetSentTimestamp = 0
+
+        let targetSentTimestamp: UInt64? = {
+            switch quotedMessage.bodySource {
+            case .local, .unknown:
+                return quotedMessage.timestampValue?.uint64Value
+            case .remote, .story:
+                return nil
+            @unknown default:
+                return nil
+            }
+        }()
+        // The proto's targetSentTimestamp is an optional field
+        // and should be unset (not 0) if the target message could
+        // not be found at the time the quote was received.
+        if let targetSentTimestamp, targetSentTimestamp > 0 {
+            quote.targetSentTimestamp = targetSentTimestamp
         }
 
         if let body = quotedMessage.body {
