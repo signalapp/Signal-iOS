@@ -207,12 +207,11 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
         groupId: Data,
         groupSecretParams: GroupSecretParams
     ) async throws -> TSGroupThread {
-        let groupUpdateMode = GroupUpdateMode.upToCurrentRevisionImmediately
         return try await tryToRefreshV2GroupThread(
             groupId: groupId,
             spamReportingMetadata: .learnedByLocallyInitatedRefresh,
             groupSecretParams: groupSecretParams,
-            groupUpdateMode: groupUpdateMode
+            groupUpdateMode: .upToCurrentRevisionImmediately
         )
     }
 
@@ -221,12 +220,11 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
         groupSecretParams: GroupSecretParams,
         groupModelOptions: TSGroupModelOptions
     ) async throws -> TSGroupThread {
-        let groupUpdateMode = GroupUpdateMode.upToCurrentRevisionImmediately
         return try await tryToRefreshV2GroupThread(
             groupId: groupId,
             spamReportingMetadata: .learnedByLocallyInitatedRefresh,
             groupSecretParams: groupSecretParams,
-            groupUpdateMode: groupUpdateMode,
+            groupUpdateMode: .upToCurrentRevisionImmediately,
             groupModelOptions: groupModelOptions
         )
     }

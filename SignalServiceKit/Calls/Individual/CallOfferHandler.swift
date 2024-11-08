@@ -9,13 +9,13 @@ import SignalRingRTC
 
 public class CallOfferHandlerImpl {
     private let identityManager: any OWSIdentityManager
-    private let notificationPresenter: NotificationPresenterImpl
+    private let notificationPresenter: NotificationPresenter
     private let profileManager: any ProfileManager
     private let tsAccountManager: any TSAccountManager
 
     public init(
         identityManager: any OWSIdentityManager,
-        notificationPresenter: NotificationPresenterImpl,
+        notificationPresenter: NotificationPresenter,
         profileManager: any ProfileManager,
         tsAccountManager: any TSAccountManager
     ) {
@@ -95,7 +95,7 @@ public class CallOfferHandlerImpl {
         if let untrustedIdentity {
             Logger.warn("missed a call due to untrusted identity")
 
-            let notificationInfo = NotificationPresenterImpl.CallNotificationInfo(
+            let notificationInfo = CallNotificationInfo(
                 groupingId: UUID(),
                 thread: thread,
                 caller: caller
@@ -105,19 +105,19 @@ public class CallOfferHandlerImpl {
             case .verified, .defaultAcknowledged:
                 owsFailDebug("shouldn't have missed a call due to untrusted identity if the identity is verified")
                 let sentAtTimestamp = Date(millisecondsSince1970: sentAtTimestamp)
-                self.notificationPresenter.presentMissedCall(
+                self.notificationPresenter.notifyUserOfMissedCall(
                     notificationInfo: notificationInfo,
                     offerMediaType: offerMediaType,
                     sentAt: sentAtTimestamp,
                     tx: tx
                 )
             case .default:
-                self.notificationPresenter.presentMissedCallBecauseOfNewIdentity(
+                self.notificationPresenter.notifyUserOfMissedCallBecauseOfNewIdentity(
                     notificationInfo: notificationInfo,
                     tx: tx
                 )
             case .noLongerVerified:
-                self.notificationPresenter.presentMissedCallBecauseOfNoLongerVerifiedIdentity(
+                self.notificationPresenter.notifyUserOfMissedCallBecauseOfNoLongerVerifiedIdentity(
                     notificationInfo: notificationInfo,
                     tx: tx
                 )

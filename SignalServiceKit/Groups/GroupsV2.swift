@@ -338,6 +338,12 @@ public protocol GroupV2Updates {
         groupSecretParams: GroupSecretParams
     ) async throws -> TSGroupThread
 
+    func tryToRefreshV2GroupUpToCurrentRevisionImmediately(
+        groupId: Data,
+        groupSecretParams: GroupSecretParams,
+        groupModelOptions: TSGroupModelOptions
+    ) async throws -> TSGroupThread
+
     func tryToRefreshV2GroupThread(
         groupId: Data,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
@@ -749,6 +755,14 @@ public class MockGroupV2Updates: GroupV2Updates {
     public func tryToRefreshV2GroupUpToCurrentRevisionImmediately(
         groupId: Data,
         groupSecretParams: GroupSecretParams
+    ) async throws -> TSGroupThread {
+        owsFail("Not implemented.")
+    }
+
+    public func tryToRefreshV2GroupUpToCurrentRevisionImmediately(
+        groupId: Data,
+        groupSecretParams: GroupSecretParams,
+        groupModelOptions: TSGroupModelOptions
     ) async throws -> TSGroupThread {
         owsFail("Not implemented.")
     }

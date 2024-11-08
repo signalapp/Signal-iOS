@@ -607,13 +607,8 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             tx: transaction
         )
     }
-}
 
-// MARK: -
-
-public extension OWSSyncManager {
-
-    func sendInitialSyncRequestsAwaitingCreatedThreadOrdering(timeoutSeconds: TimeInterval) -> Promise<[String]> {
+    public func sendInitialSyncRequestsAwaitingCreatedThreadOrdering(timeoutSeconds: TimeInterval) -> Promise<[String]> {
         Logger.info("")
         guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
             return Promise(error: OWSAssertionError("Unexpectedly tried to send sync request before registration."))
@@ -636,8 +631,10 @@ public extension OWSSyncManager {
         }
     }
 
-    fileprivate func sendSyncRequestMessage(_ requestType: SSKProtoSyncMessageRequestType,
-                                            transaction: SDSAnyWriteTransaction) {
+    private func sendSyncRequestMessage(
+        _ requestType: SSKProtoSyncMessageRequestType,
+        transaction: SDSAnyWriteTransaction
+    ) {
         switch requestType {
         case .unknown:
             owsFailDebug("should not request unknown")

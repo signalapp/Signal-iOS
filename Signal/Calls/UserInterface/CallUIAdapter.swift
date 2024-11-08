@@ -11,7 +11,6 @@ import WebRTC
 import UIKit
 
 protocol CallUIAdaptee: AnyObject {
-    var notificationPresenterImpl: NotificationPresenterImpl { get }
     var callService: CallService { get }
 
     init(showNamesOnCallScreen: Bool, useSystemCallLog: Bool)
@@ -133,8 +132,8 @@ public class CallUIAdapter: NSObject {
 
         let sentAtTimestamp = Date(millisecondsSince1970: individualCall.sentAtTimestamp)
         SSKEnvironment.shared.databaseStorageRef.read { tx in
-            SSKEnvironment.shared.notificationPresenterImplRef.presentMissedCall(
-                notificationInfo: NotificationPresenterImpl.CallNotificationInfo(
+            SSKEnvironment.shared.notificationPresenterRef.notifyUserOfMissedCall(
+                notificationInfo: CallNotificationInfo(
                     groupingId: individualCall.commonState.localId,
                     thread: individualCall.thread,
                     caller: callerAci

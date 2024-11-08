@@ -4,6 +4,14 @@
 //
 
 public class NoopNotificationPresenterImpl: NotificationPresenter {
+    public func registerNotificationSettings() async {
+        Logger.warn("")
+    }
+
+    public func notifyUserOfGenericIncomingMessage() async {
+        Logger.warn("")
+    }
+
     public var expectErrors: Bool = false
 
     public init() {}
@@ -11,27 +19,27 @@ public class NoopNotificationPresenterImpl: NotificationPresenter {
     public func notifyUser(forIncomingMessage incomingMessage: TSIncomingMessage,
                            thread: TSThread,
                            transaction: SDSAnyReadTransaction) {
-        Logger.warn("skipping notification for: \(incomingMessage.description)")
+        Logger.warn("")
     }
 
     public func notifyUser(forIncomingMessage incomingMessage: TSIncomingMessage,
                            editTarget: TSIncomingMessage,
                            thread: TSThread,
                            transaction: SDSAnyReadTransaction) {
-        Logger.warn("skipping notification for: \(incomingMessage.description)")
+        Logger.warn("")
     }
 
     public func notifyUser(forReaction reaction: OWSReaction,
                            onOutgoingMessage message: TSOutgoingMessage,
                            thread: TSThread,
                            transaction: SDSAnyReadTransaction) {
-        Logger.warn("skipping notification for: \(reaction.description)")
+        Logger.warn("")
     }
 
     public func notifyUser(forErrorMessage errorMessage: TSErrorMessage,
                            thread: TSThread,
                            transaction: SDSAnyWriteTransaction) {
-        Logger.warn("skipping notification for: \(errorMessage.description)")
+        Logger.warn("")
     }
 
     public func notifyUser(
@@ -40,58 +48,74 @@ public class NoopNotificationPresenterImpl: NotificationPresenter {
         wantsSound: Bool,
         transaction: SDSAnyWriteTransaction
     ) {
-        Logger.warn("skipping notification for: \(message.description)")
+        Logger.warn("")
     }
 
     public func notifyUser(forPreviewableInteraction previewableInteraction: TSInteraction & OWSPreviewText,
                            thread: TSThread,
                            wantsSound: Bool,
                            transaction: SDSAnyWriteTransaction) {
-        Logger.warn("skipping notification for: \(previewableInteraction.description)")
+        Logger.warn("")
     }
 
     public func notifyTestPopulation(ofErrorMessage errorString: String) {
         owsAssertDebug(expectErrors, "Internal error message: \(errorString)")
-        Logger.warn("Skipping internal error notification: \(errorString)")
+        Logger.warn("")
     }
 
     public func notifyUser(forFailedStorySend storyMessage: StoryMessage, to thread: TSThread, transaction: SDSAnyWriteTransaction) {
-        Logger.warn("skipping failed story send notification")
+        Logger.warn("")
+    }
+
+    public func notifyUserOfFailedSend(inThread thread: TSThread) {
+        Logger.warn("")
+    }
+
+    public func notifyUserOfMissedCall(notificationInfo: CallNotificationInfo, offerMediaType: TSRecentCallOfferType, sentAt timestamp: Date, tx: SDSAnyReadTransaction) {
+        Logger.warn("")
+    }
+
+    public func notifyUserOfMissedCallBecauseOfNewIdentity(notificationInfo: CallNotificationInfo, tx: SDSAnyReadTransaction) {
+        Logger.warn("")
+    }
+
+    public func notifyUserOfMissedCallBecauseOfNoLongerVerifiedIdentity(notificationInfo: CallNotificationInfo, tx: SDSAnyReadTransaction) {
+        Logger.warn("")
+    }
+
+    public func notifyForGroupCallSafetyNumberChange(callTitle: String, threadUniqueId: String?, roomId: Data?, presentAtJoin: Bool) {
+        Logger.warn("")
     }
 
     public func notifyUserToRelaunchAfterTransfer(completion: @escaping () -> Void) {
-        Logger.warn("skipping transfer relaunch notification")
+        Logger.warn("")
     }
 
     public func notifyUserOfDeregistration(tx: DBWriteTransaction) {
-        Logger.warn("skipping deregistration notification")
-    }
-
-    public func notifyUserOfDeregistration(transaction: SDSAnyWriteTransaction) {
-        Logger.warn("skipping deregistration notification")
+        Logger.warn("")
     }
 
     public func clearAllNotifications() {
-        Logger.warn("clearAllNotifications")
+        Logger.warn("")
     }
 
     public func cancelNotifications(threadId: String) {
-        Logger.warn("cancelNotifications for threadId: \(threadId)")
+        Logger.warn("")
     }
 
     public func cancelNotifications(messageIds: [String]) {
-        Logger.warn("cancelNotifications for messageIds: \(messageIds)")
+        Logger.warn("")
     }
 
     public func cancelNotifications(reactionId: String) {
-        Logger.warn("cancelNotifications for reactionId: \(reactionId)")
+        Logger.warn("")
     }
 
     public func cancelNotificationsForMissedCalls(threadUniqueId: String) {
-        Logger.warn("cancelNotificationsForMissedCalls for threadId: \(threadUniqueId)")
+        Logger.warn("")
     }
 
     public func cancelNotifications(for storyMessage: StoryMessage) {
-        Logger.warn("cancelNotifications(for storyMessage:) \(storyMessage.uniqueId)")
+        Logger.warn("")
     }
 }

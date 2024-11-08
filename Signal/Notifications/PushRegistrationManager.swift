@@ -214,7 +214,7 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
             defer {
                 completionSignal.signal()
             }
-            await SSKEnvironment.shared.notificationPresenterImplRef.postGenericIncomingMessageNotification()
+            await SSKEnvironment.shared.notificationPresenterRef.notifyUserOfGenericIncomingMessage()
             do {
                 try await SyncPushTokensJob(mode: .forceUpload).run()
             } catch {
@@ -246,7 +246,7 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
     // User notification settings must be registered *before* AppDelegate will
     // return any requested push tokens.
     public func registerUserNotificationSettings() async {
-        await SSKEnvironment.shared.notificationPresenterImplRef.registerNotificationSettings()
+        await SSKEnvironment.shared.notificationPresenterRef.registerNotificationSettings()
     }
 
     /**

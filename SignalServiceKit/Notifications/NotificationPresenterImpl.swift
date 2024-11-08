@@ -5,7 +5,7 @@
 
 import Foundation
 import Intents
-public import LibSignalClient
+import LibSignalClient
 
 /// There are two primary components in our system notification integration:
 ///
@@ -230,25 +230,6 @@ public class NotificationPresenterImpl: NotificationPresenter {
 
     // MARK: - Calls
 
-    public struct CallNotificationInfo {
-        /// Basically a per-call unique identifier. When posting multiple
-        /// notifications with the same `groupingId`, only the latest notification
-        /// will be shown.
-        let groupingId: UUID
-
-        /// The thread that was called.
-        let thread: TSContactThread
-
-        /// The user who called the thread.
-        let caller: Aci
-
-        public init(groupingId: UUID, thread: TSContactThread, caller: Aci) {
-            self.groupingId = groupingId
-            self.thread = thread
-            self.caller = caller
-        }
-    }
-
     private struct CallPreview {
         let notificationTitle: String
         let threadIdentifier: String
@@ -297,7 +278,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         }
     }
 
-    public func presentMissedCall(
+    public func notifyUserOfMissedCall(
         notificationInfo: CallNotificationInfo,
         offerMediaType: TSRecentCallOfferType,
         sentAt timestamp: Date,
@@ -389,7 +370,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         }
     }
 
-    public func presentMissedCallBecauseOfNoLongerVerifiedIdentity(
+    public func notifyUserOfMissedCallBecauseOfNoLongerVerifiedIdentity(
         notificationInfo: CallNotificationInfo,
         tx: SDSAnyReadTransaction
     ) {
@@ -416,7 +397,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         }
     }
 
-    public func presentMissedCallBecauseOfNewIdentity(
+    public func notifyUserOfMissedCallBecauseOfNewIdentity(
         notificationInfo: CallNotificationInfo,
         tx: SDSAnyReadTransaction
     ) {
@@ -795,7 +776,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         }
     }
 
-    public func notifyForFailedSend(inThread thread: TSThread) {
+    public func notifyUserOfFailedSend(inThread thread: TSThread) {
         let notificationTitle: String? = databaseStorage.read { tx in
             switch self.previewType(tx: tx) {
             case .noNameNoPreview:
@@ -1167,15 +1148,13 @@ public class NotificationPresenterImpl: NotificationPresenter {
     }
 
     public func notifyUserOfDeregistration(tx: DBWriteTransaction) {
-        notifyUserOfDeregistration(transaction: SDSDB.shimOnlyBridge(tx))
-    }
+        let sdsTx = SDSDB.shimOnlyBridge(tx)
 
-    public func notifyUserOfDeregistration(transaction: SDSAnyWriteTransaction) {
         let notificationBody = OWSLocalizedString(
             "DEREGISTRATION_NOTIFICATION",
             comment: "Notification warning the user that they have been de-registered."
         )
-        enqueueNotificationAction(afterCommitting: transaction) {
+        enqueueNotificationAction(afterCommitting: sdsTx) {
             await self.notifyViaPresenter(
                 category: .deregistration,
                 title: nil,
@@ -1190,9 +1169,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         }
     }
 
-    /// Note that this method is not serialized with other notifications
-    /// actions.
-    public func postGenericIncomingMessageNotification() async {
+    public func notifyUserOfGenericIncomingMessage() async {
         await presenter.postGenericIncomingMessageNotification()
     }
 

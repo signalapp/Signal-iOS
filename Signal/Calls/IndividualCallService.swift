@@ -38,7 +38,7 @@ final class IndividualCallService: CallServiceStateObserver {
     private var contactManager: any ContactManager { SSKEnvironment.shared.contactManagerRef }
     private var databaseStorage: SDSDatabaseStorage { SSKEnvironment.shared.databaseStorageRef }
     private var networkManager: NetworkManager { SSKEnvironment.shared.networkManagerRef }
-    private var notificationPresenter: NotificationPresenterImpl { SSKEnvironment.shared.notificationPresenterImplRef }
+    private var notificationPresenter: NotificationPresenter { SSKEnvironment.shared.notificationPresenterRef }
     private var preferences: Preferences { SSKEnvironment.shared.preferencesRef }
     private var profileManager: any ProfileManager { SSKEnvironment.shared.profileManagerRef }
     private var tsAccountManager: any TSAccountManager { DependenciesBridge.shared.tsAccountManager }

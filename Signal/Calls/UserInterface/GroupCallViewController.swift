@@ -1591,14 +1591,14 @@ extension GroupCallViewController: CallViewControllerWindowReference {
             let atLeastOneUnresolvedPresentAtJoin = unresolvedAddresses.contains { membersAtJoin?.contains($0) ?? false }
             switch groupCall.concreteType {
             case .groupThread(let call):
-                SSKEnvironment.shared.notificationPresenterImplRef.notifyForGroupCallSafetyNumberChange(
+                SSKEnvironment.shared.notificationPresenterRef.notifyForGroupCallSafetyNumberChange(
                     callTitle: call.groupThread.groupNameOrDefault,
                     threadUniqueId: call.groupThread.uniqueId,
                     roomId: nil,
                     presentAtJoin: atLeastOneUnresolvedPresentAtJoin
                 )
             case .callLink(let call):
-                SSKEnvironment.shared.notificationPresenterImplRef.notifyForGroupCallSafetyNumberChange(
+                SSKEnvironment.shared.notificationPresenterRef.notifyForGroupCallSafetyNumberChange(
                     callTitle: call.callLinkState.localizedName,
                     threadUniqueId: nil,
                     roomId: call.callLink.rootKey.deriveRoomId(),

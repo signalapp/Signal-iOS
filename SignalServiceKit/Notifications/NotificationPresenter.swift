@@ -3,9 +3,14 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+public import LibSignalClient
 
 public protocol NotificationPresenter {
+    func registerNotificationSettings() async
+
+    /// Note that this method is not serialized with other notification actions.
+    func notifyUserOfGenericIncomingMessage() async
+
     func notifyUser(forIncomingMessage: TSIncomingMessage, thread: TSThread, transaction: SDSAnyReadTransaction)
 
     func notifyUser(forIncomingMessage: TSIncomingMessage, editTarget: TSIncomingMessage, thread: TSThread, transaction: SDSAnyReadTransaction)
@@ -22,11 +27,37 @@ public protocol NotificationPresenter {
 
     func notifyUser(forFailedStorySend: StoryMessage, to: TSThread, transaction: SDSAnyWriteTransaction)
 
+    func notifyUserOfFailedSend(inThread thread: TSThread)
+
+    func notifyUserOfMissedCall(
+        notificationInfo: CallNotificationInfo,
+        offerMediaType: TSRecentCallOfferType,
+        sentAt timestamp: Date,
+        tx: SDSAnyReadTransaction
+    )
+
+    func notifyUserOfMissedCallBecauseOfNewIdentity(
+        notificationInfo: CallNotificationInfo,
+        tx: SDSAnyReadTransaction
+    )
+
+    func notifyUserOfMissedCallBecauseOfNoLongerVerifiedIdentity(
+        notificationInfo: CallNotificationInfo,
+        tx: SDSAnyReadTransaction
+    )
+
+    func notifyForGroupCallSafetyNumberChange(
+        callTitle: String,
+        threadUniqueId: String?,
+        roomId: Data?,
+        presentAtJoin: Bool
+    )
+
     /// Notify user to relaunch the app after we deliberately terminate when an incoming device transfer completes.
     func notifyUserToRelaunchAfterTransfer(completion: @escaping () -> Void)
 
     /// Notify user of an auth error that has caused their device to be logged out (e.g. a 403 from the chat server).
-    func notifyUserOfDeregistration(transaction: SDSAnyWriteTransaction)
+    func notifyUserOfDeregistration(tx: DBWriteTransaction)
 
     func clearAllNotifications()
 
@@ -39,17 +70,6 @@ public protocol NotificationPresenter {
     func cancelNotificationsForMissedCalls(threadUniqueId: String)
 
     func cancelNotifications(for storyMessage: StoryMessage)
-
-    func notifyUserOfDeregistration(tx: DBWriteTransaction)
-}
-
-/// Which notifications should be suppressed (based on which view is currently visible).
-enum NotificationSuppressionRule {
-    /// Includes reactions to messages in the thread.
-    case messagesInThread(threadUniqueId: String)
-    case groupStoryReplies(threadUniqueId: String?, storyMessageTimestamp: UInt64)
-    case failedStorySends
-    case none
 }
 
 @objc
@@ -58,4 +78,36 @@ class NotificationPresenterObjC: NSObject {
     static func cancelNotifications(for messageId: String) {
         SSKEnvironment.shared.notificationPresenterRef.cancelNotifications(messageIds: [messageId])
     }
+}
+
+// MARK: -
+
+public struct CallNotificationInfo {
+    /// Basically a per-call unique identifier. When posting multiple
+    /// notifications with the same `groupingId`, only the latest notification
+    /// will be shown.
+    let groupingId: UUID
+
+    /// The thread that was called.
+    let thread: TSContactThread
+
+    /// The user who called the thread.
+    let caller: Aci
+
+    public init(groupingId: UUID, thread: TSContactThread, caller: Aci) {
+        self.groupingId = groupingId
+        self.thread = thread
+        self.caller = caller
+    }
+}
+
+// MARK: -
+
+/// Which notifications should be suppressed (based on which view is currently visible).
+enum NotificationSuppressionRule {
+    /// Includes reactions to messages in the thread.
+    case messagesInThread(threadUniqueId: String)
+    case groupStoryReplies(threadUniqueId: String?, storyMessageTimestamp: UInt64)
+    case failedStorySends
+    case none
 }

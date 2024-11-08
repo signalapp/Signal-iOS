@@ -56,8 +56,6 @@ public class SSKEnvironment: NSObject {
     public let receiptSenderRef: ReceiptSender
     public let reachabilityManagerRef: SSKReachabilityManager
     public let syncManagerRef: SyncManagerProtocol
-    /// This should be deprecated.
-    public var syncManagerImplRef: OWSSyncManager { syncManagerRef as! OWSSyncManager }
     public let typingIndicatorsRef: TypingIndicators
     public let stickerManagerRef: StickerManager
     @objc
@@ -68,8 +66,6 @@ public class SSKEnvironment: NSObject {
     public let storageServiceManagerRef: StorageServiceManager
     public let sskPreferencesRef: SSKPreferences
     public let groupV2UpdatesRef: GroupV2Updates
-    /// This should be deprecated.
-    public var groupV2UpdatesImplRef: GroupV2UpdatesImpl { groupV2UpdatesRef as! GroupV2UpdatesImpl }
     public let messageFetcherJobRef: MessageFetcherJob
     public let versionedProfilesRef: VersionedProfilesSwift
     @objc
@@ -90,8 +86,6 @@ public class SSKEnvironment: NSObject {
     public let systemStoryManagerRef: SystemStoryManagerProtocol
     public let contactDiscoveryManagerRef: ContactDiscoveryManager
     public let notificationPresenterRef: any NotificationPresenter
-    /// This should be deprecated.
-    public var notificationPresenterImplRef: NotificationPresenterImpl { notificationPresenterRef as! NotificationPresenterImpl }
     public let messageSendLogRef: MessageSendLog
     public let messageSenderJobQueueRef: MessageSenderJobQueue
     public let localUserLeaveGroupJobQueueRef: LocalUserLeaveGroupJobQueue

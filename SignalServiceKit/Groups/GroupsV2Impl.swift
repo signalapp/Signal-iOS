@@ -1581,7 +1581,7 @@ public class GroupsV2Impl: GroupsV2 {
             //
             // Download and update database with the group state.
             do {
-                _ = try await SSKEnvironment.shared.groupV2UpdatesImplRef.tryToRefreshV2GroupUpToCurrentRevisionImmediately(
+                _ = try await SSKEnvironment.shared.groupV2UpdatesRef.tryToRefreshV2GroupUpToCurrentRevisionImmediately(
                     groupId: groupId,
                     groupSecretParams: groupV2Params.groupSecretParams,
                     groupModelOptions: .didJustAddSelfViaGroupLink
