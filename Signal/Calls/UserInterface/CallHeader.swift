@@ -247,7 +247,10 @@ class CallHeader: UIView {
                     return willNotifyOthersText(groupThreadCall: groupThreadCall)
                 }
             case .callLink:
-                return whoIsHereText(joinedMembers: ringRtcCall.peekInfo?.joinedMembers ?? [])
+                return whoIsHereText(joinedMembers: (
+                    ringRtcCall.peekInfo?.joinedMembers.nilIfEmpty
+                    ?? Array(repeating: nil, count: Int(ringRtcCall.peekInfo?.deviceCountExcludingPendingDevices ?? 0))
+                ))
             }
         case .pending:
             return OWSLocalizedString(
@@ -293,13 +296,14 @@ class CallHeader: UIView {
         return String(format: formatString, callerName)
     }
 
-    private func whoIsHereText(joinedMembers: [UUID]) -> String {
+    private func whoIsHereText(joinedMembers: [UUID?]) -> String {
         if joinedMembers.isEmpty {
             return noOneElseIsHereText()
         }
         let upToTwoKnownMemberNames: [String] = SSKEnvironment.shared.databaseStorageRef.read { tx -> [String] in
             joinedMembers
                 .lazy
+                .compactMap { $0 }
                 .map { SSKEnvironment.shared.contactManagerRef.displayName(for: SignalServiceAddress(Aci(fromUUID: $0)), tx: tx) }
                 .filter { $0.hasKnownValue }
                 .prefix(2)
