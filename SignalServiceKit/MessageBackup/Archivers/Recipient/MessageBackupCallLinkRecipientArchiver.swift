@@ -54,12 +54,12 @@ public class MessageBackupCallLinkRecipientArchiver: MessageBackupProtoArchiver 
                 }()
 
                 let callLinkAppId: RecipientAppId = .callLink(record.id)
-                if let expiration = record.expiration {
+                if let expirationMs = record.expirationMs {
                     // Lacking an expiration is a valid state. It can occur 1) if we hadn't
                     // yet fetched the expiration from the server at the time of backup, or
                     // 2) if someone deletes a call link before we're able to fetch the
                     // expiration.
-                    callLink.expirationMs = UInt64(expiration)
+                    callLink.expirationMs = expirationMs
                 }
 
                 let recipientId = context.assignRecipientId(to: callLinkAppId)
@@ -135,7 +135,7 @@ public class MessageBackupCallLinkRecipientArchiver: MessageBackupProtoArchiver 
                 adminPasskey: adminKey,
                 name: callLinkProto.name,
                 restrictions: restrictions,
-                expiration: callLinkProto.expirationMs,
+                expiration: callLinkProto.expirationSec,
                 tx: context.tx
             )
             context[recipient.recipientId] = .callLink(record.id)
@@ -148,5 +148,20 @@ public class MessageBackupCallLinkRecipientArchiver: MessageBackupProtoArchiver 
         } else {
             return .partialRestore(partialErrors)
         }
+    }
+}
+
+fileprivate extension CallLinkRecord {
+    var expirationMs: UInt64? {
+        if let expiration {
+            return UInt64(expiration) * 1000
+        }
+        return nil
+    }
+}
+
+fileprivate extension BackupProto_CallLink {
+    var expirationSec: UInt64 {
+        self.expirationMs / 1000
     }
 }
