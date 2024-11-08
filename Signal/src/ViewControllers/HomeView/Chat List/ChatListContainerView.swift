@@ -37,8 +37,8 @@ final class ChatListContainerView: UIView {
             observation = tableView.observe(\.contentOffset) { [weak self] _, _ in
                 guard let self else { return }
                 scrollPositionDidChange()
-                updateContentHeight()
-                filterControl.setAdjustedContentOffset(adjustedContentOffset)
+                filterControl.adjustedContentOffsetDidChange(adjustedContentOffset)
+                layoutFilterControl()
             }
         }
     }
@@ -108,17 +108,10 @@ final class ChatListContainerView: UIView {
         adjustedContentOffset = contentOffset
     }
 
-    private func updateContentHeight() {
+    private func layoutFilterControl() {
         guard let filterControl, !filterControl.isAnimatingTransition else { return }
 
-        let height: CGFloat
-
-        switch filterControl.state {
-        case .triggered, .filterPending, .filtering:
-            height = filterControl.preferredContentHeight
-        case .inactive, .starting, .stopping:
-            height = max(0, min(filterControl.preferredContentHeight, tableView.contentInset.top - adjustedContentOffset.y))
-        }
+        let height = filterControl.preferredContentHeight * filterControl.fractionComplete
 
         UIView.performWithoutAnimation {
             filterControl.frame = CGRect(x: 0, y: safeAreaInsets.top, width: bounds.width, height: height)

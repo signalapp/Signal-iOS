@@ -9,7 +9,7 @@ import UIKit
 
 @MainActor
 protocol ChatListFilterControlDelegate: AnyObject {
-    func filterControlWillStartFiltering()
+    func filterControlWillChangeState(to state: ChatListFilterControl.FilterState)
 }
 
 final class ChatListFilterControl: UIView {
@@ -19,7 +19,7 @@ final class ChatListFilterControl: UIView {
             AnimationFrame(step: 1, relativeStartTime: 0.36, relativeDuration: 0.2, isFiltering: false),
             AnimationFrame(step: 2, relativeStartTime: 0.56, relativeDuration: 0.2, isFiltering: false),
             AnimationFrame(step: 3, relativeStartTime: 0.76, relativeDuration: 0.2, isFiltering: false),
-            AnimationFrame(step: 3, relativeStartTime: 0.99, relativeDuration: 0, isFiltering: true),
+            AnimationFrame(step: 3, relativeStartTime: 0.95, relativeDuration: 0.05, isFiltering: true),
         ]
 
         var step: Int
@@ -50,47 +50,53 @@ final class ChatListFilterControl: UIView {
         }
     }
 
-    enum State {
-        /// Control is not visible, filtering is disabled.
-        case inactive
+    enum FilterState: Equatable {
+        case on, off
 
-        /// Control was tracking scroll view dragging, but dragging stopped
-        /// before the threshold.
-        case stopping
+        var isOn: Bool {
+            switch self {
+            case .on:
+                return true
+            case .off:
+                return false
+            }
+        }
+    }
+
+    private enum ControlState: Equatable {
+        /// Control is not visible, filtering is disabled.
+        case off
+
+        /// Actively filtering and control is docked to the top of the scroll view.
+        case on
 
         /// Control is tracking scroll view offset, but gesture threshold has
         /// not been reached.
-        case starting
+        case tracking(state: FilterState)
 
-        /// Control enters this state while interactively dragging the scroll
-        /// view, indicating that filtering will begin when the user lifts
-        /// their finger and dragging ends. Can't return to `starting` after
-        /// entering this state.
-        case triggered
+        case pending(newState: FilterState)
 
-        /// `isFiltering == true` where `state >= .filterPending`. Started
-        /// filtering but haven't finished animating into the "docked" position.
-        case filterPending
+        case committed(newState: FilterState)
 
-        /// Actively filtering and control is docked to the top of the scroll view.
-        case filtering
+        case transitioning(newState: FilterState)
 
         fileprivate var affectsContentInset: Bool {
-            isFiltering
+            filterState.isOn
         }
 
-        fileprivate var isFiltering: Bool {
+        fileprivate var filterState: FilterState {
             switch self {
-            case .filterPending, .filtering:
-                return true
-            case .inactive, .starting, .stopping, .triggered:
-                return false
+            case .off, .tracking(state: .off), .pending(newState: .on), .committed(newState: .off), .transitioning(newState: .off):
+                return .off
+            case .on, .tracking(state: .on), .pending(newState: .off), .committed(newState: .on), .transitioning(newState: .on):
+                return .on
             }
         }
     }
 
     private let animationFrames: [AnimationFrame]
     private let clearButton: ChatListFilterButton
+    private let clearButtonContainer: UIView
     private let contentHeightConstraint: NSLayoutConstraint
     private let contentView: UIView
     private let imageContainer: UIView
@@ -99,8 +105,6 @@ final class ChatListFilterControl: UIView {
     private var contentTranslationConstraint: NSLayoutConstraint!
     private var feedback: UIImpactFeedbackGenerator?
     private var filterIconAnimator: UIViewPropertyAnimator?
-    private var fractionComplete: CGFloat = 0.0
-    private var isTracking = false
     private var scrollViewTransitionAnimator: UIViewPropertyAnimator?
 
     private unowned let container: ChatListContainerView
@@ -120,17 +124,40 @@ final class ChatListFilterControl: UIView {
         UIView.inheritedAnimationDuration == 0 ? defaultDuration() : UIView.inheritedAnimationDuration
     }
 
+    private(set) var fractionComplete: CGFloat = 0.0
+
+    // For the forward phase of the gesture (pull to filter), `fractionComplete`
+    // is in the range [0, 1]. For the reverse phase (pull to clear), the range
+    // [1, 2] is used. This makes computing both content height (which defines
+    // the clipping rect) and content translation very simple:
+    //
+    //     contentHeight = fractionComplete * preferredContentHeight
+    //     contentTranslation: contentView.bottom = self.top + (fractionComplete * preferredContentHeight)
     private func updateFractionComplete() {
-        let position = max(0, -adjustedContentOffset.y)
-        let limit = swipeGestureThreshold
-        fractionComplete = min(1, position / limit)
-        setNeedsLayout()
+        var fraction: CGFloat {
+            let position = max(0, -adjustedContentOffset.y)
+            let limit = swipeGestureThreshold
+            return min(1, position / limit)
+        }
+
+        switch state {
+        case .off, .transitioning(newState: .off):
+            fractionComplete = 0
+        case .tracking(state: .off):
+            fractionComplete = fraction
+        case .on, .pending(newState: .on), .committed(newState: .on), .transitioning(newState: .on):
+            fractionComplete = 1
+        case .tracking(state: .on):
+            fractionComplete = fraction + 1
+        case .pending(newState: .off), .committed(newState: .off):
+            fractionComplete = 2
+        }
     }
 
-    private(set) var state = State.inactive {
+    private var state = ControlState.off {
         didSet {
             if state != oldValue {
-                setNeedsLayout()
+                updateFractionComplete()
             }
         }
     }
@@ -149,16 +176,16 @@ final class ChatListFilterControl: UIView {
 
     var isAnimatingTransition: Bool {
         switch state {
-        case .inactive, .triggered, .filterPending, .filtering:
+        case .transitioning:
+            return true
+        case .off, .on, .tracking, .pending, .committed:
             return false
-        case .starting, .stopping:
-            return !isTracking
         }
     }
 
     /// Whether the control is in the filtering state or transitioning into it (i.e., pending).
     var isFiltering: Bool {
-        state.isFiltering
+        state.filterState.isOn
     }
 
     var preferredContentHeight: CGFloat = 52.0 {
@@ -193,10 +220,15 @@ final class ChatListFilterControl: UIView {
         imageContainer.translatesAutoresizingMaskIntoConstraints = false
 
         clearButton = ChatListFilterButton()
-        clearButton.alpha = 0
         clearButton.configuration?.title = OWSLocalizedString("CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON", comment: "Button at top of chat list indicating the active filter is 'Filtered by Unread' and tapping will clear the filter")
         clearButton.isUserInteractionEnabled = false
+        clearButton.setContentHuggingPriority(.required, for: .vertical)
         clearButton.showsClearIcon = true
+        clearButton.translatesAutoresizingMaskIntoConstraints = false
+
+        clearButtonContainer = UIView()
+        clearButtonContainer.alpha = 0
+        clearButtonContainer.translatesAutoresizingMaskIntoConstraints = false
 
         super.init(frame: .zero)
 
@@ -208,7 +240,10 @@ final class ChatListFilterControl: UIView {
         contentTranslationConstraint = contentView.bottomAnchor.constraint(equalTo: topAnchor, constant: 0)
 
         contentView.addSubview(imageContainer)
-        contentView.insertSubview(clearButton, aboveSubview: imageContainer)
+        contentView.insertSubview(clearButtonContainer, aboveSubview: imageContainer)
+
+        clearButtonContainer.addSubview(clearButton)
+        clearButton.autoPinEdgesToSuperviewEdges()
 
         NSLayoutConstraint.activate([
             contentHeightConstraint,
@@ -217,6 +252,11 @@ final class ChatListFilterControl: UIView {
             contentView.trailingAnchor.constraint(equalTo: trailingAnchor),
             imageContainer.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             imageContainer.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            clearButtonContainer.topAnchor.constraint(greaterThanOrEqualTo: contentView.layoutMarginsGuide.topAnchor),
+            clearButtonContainer.bottomAnchor.constraint(lessThanOrEqualTo: contentView.layoutMarginsGuide.bottomAnchor),
+            clearButtonContainer.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            clearButtonContainer.leadingAnchor.constraint(greaterThanOrEqualTo: contentView.leadingAnchor),
+            clearButtonContainer.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor),
         ])
 
         for imageView in imageViews {
@@ -316,28 +356,51 @@ final class ChatListFilterControl: UIView {
         filterIconAnimator.pauseAnimation()
     }
 
-    override func layoutSubviews() {
-        super.layoutSubviews()
+    func adjustedContentOffsetDidChange(_ adjustedContentOffset: CGPoint) {
+        self.adjustedContentOffset = adjustedContentOffset
+        guard !isAnimatingTransition else { return }
 
-        let horizontalMargins = UIEdgeInsets(top: 0, left: layoutMargins.left, bottom: 0, right: layoutMargins.right)
-        let fullBleedRect = contentView.bounds.inset(by: horizontalMargins)
+        updateContentOrigin()
 
-        UIView.performWithoutAnimation {
-            clearButton.frame = fullBleedRect
-            clearButton.sizeToFit()
-            clearButton.center = contentView.bounds.center
+        switch state {
+        case .tracking(state: .off) where fractionComplete == 1:
+            feedback?.impactOccurred()
+            feedback = nil
+            state = .pending(newState: .on)
+
+            // Finish remaining 5% / 50 ms of animation
+            filterIconAnimator?.pausesOnCompletion = true
+            filterIconAnimator?.startAnimation()
+
+            applyBounceEffect(to: imageContainer)
+
+        case .tracking(state: .off):
+            filterIconAnimator?.fractionComplete = min(fractionComplete, 0.95)
+
+        case .tracking(state: .on) where fractionComplete == 2:
+            feedback?.impactOccurred()
+            feedback = nil
+            state = .pending(newState: .off)
+
+            previousClearButtonConfiguration = clearButton.configuration
+            UIView.transition(with: clearButton, duration: 0.1, options: .transitionCrossDissolve) { [self] in
+                var configuration = previousClearButtonConfiguration
+                configuration?.baseForegroundColor = .filterIconActiveForeground
+                configuration?.baseBackgroundColor = .filterIconActiveBackground
+                clearButton.configuration = configuration
+            }
+
+            applyBounceEffect(to: clearButtonContainer)
+
+        default:
+            break
         }
     }
 
-    func updateContentOrigin() {
-        switch (state, isTracking) {
-        case (.inactive, _), (.starting, false), (.stopping, false):
-            contentTranslationConstraint.constant = 0
-        case (.starting, true), (.stopping, true):
-            contentTranslationConstraint.constant = fractionComplete * preferredContentHeight
-        case (.triggered, _), (.filterPending, _), (.filtering, _):
-            contentTranslationConstraint.constant = preferredContentHeight
-        }
+    private var previousClearButtonConfiguration: UIButton.Configuration?
+
+    private func updateContentOrigin() {
+        contentTranslationConstraint.constant = fractionComplete * preferredContentHeight
     }
 
     // Setting `UIScrollView.contentInset` triggers implicit changes to both
@@ -364,127 +427,149 @@ final class ChatListFilterControl: UIView {
     }
 
     func startFiltering(animated: Bool) {
-        guard state != .filtering  else { return }
+        guard state != .on else { return }
 
-        isTracking = false
-        state = .filtering
         showClearButton(animated: false)
 
         if animated {
+            state = .transitioning(newState: .on)
             UIView.animate(withDuration: animationDuration()) { [self] in
                 frame.height = preferredContentHeight
                 updateContentInsetIfNecessary()
                 updateContentOrigin()
                 layoutIfNeeded()
+            } completion: { [self] _ in
+                state = .on
             }
         } else {
+            state = .on
             updateContentInsetIfNecessary()
             updateContentOrigin()
         }
     }
 
     func stopFiltering(animated: Bool) {
+        guard state != .off else { return }
+
         func cleanUp() {
-            clearButton.alpha = 0
+            if let configuration = previousClearButtonConfiguration {
+                previousClearButtonConfiguration = nil
+                clearButton.configuration = configuration
+            }
             imageContainer.alpha = 1
             cancelFilterIconAnimator()
         }
 
         clearButton.isUserInteractionEnabled = false
-        isTracking = false
-        state = .inactive
 
         if animated {
+            state = .transitioning(newState: .off)
             UIView.animate(withDuration: animationDuration()) { [self] in
+                clearButtonContainer.alpha = 0
                 frame.height = 0
                 updateContentInsetIfNecessary()
                 updateContentOrigin()
                 layoutIfNeeded()
-            } completion: { _ in
+            } completion: { [self] _ in
+                state = .off
                 cleanUp()
             }
         } else {
+            clearButtonContainer.alpha = 0
+            state = .off
+            updateContentInsetIfNecessary()
             cleanUp()
         }
     }
 
-    func setAdjustedContentOffset(_ adjustedContentOffset: CGPoint) {
-        self.adjustedContentOffset = adjustedContentOffset
-        guard isTracking else { return }
-
-        updateContentOrigin()
+    func draggingWillBegin(in scrollView: UIScrollView) {
+        func prepareFeedback() {
+            let feedback = UIImpactFeedbackGenerator(style: .heavy)
+            feedback.prepare()
+            self.feedback = feedback
+        }
 
         switch state {
-        case .starting where fractionComplete == 1:
-            feedback?.impactOccurred()
-            feedback = nil
-            isTracking = false
-            state = .triggered
-            filterIconAnimator?.fractionComplete = 1
-        case .starting, .stopping:
-            // Limiting to 99% means that even if a rapid swipe has enough velocity
-            // to exceed the threshold, if the drag has stopped and we've moved to
-            // the 'stopping' state, the filter icon won't turn blue.
-            filterIconAnimator?.fractionComplete = min(fractionComplete, 0.99)
+        case .off:
+            state = .tracking(state: .off)
+            setUpFilterIconAnimatorIfNecessary()
+            prepareFeedback()
+        case .on:
+            state = .tracking(state: .on)
+            prepareFeedback()
         default:
             break
         }
     }
 
-    func draggingWillBegin(in scrollView: UIScrollView) {
-        if state == .inactive || state == .stopping {
-            isTracking = true
-            state = .starting
-            setUpFilterIconAnimatorIfNecessary()
-        }
-
-        if feedback == nil {
-            let feedback = UIImpactFeedbackGenerator(style: .heavy)
-            feedback.prepare()
-            self.feedback = feedback
-        }
-    }
-
     func draggingWillEnd(in scrollView: UIScrollView) {
-        if state == .triggered {
-            delegate?.filterControlWillStartFiltering()
-            state = .filterPending
+        switch state {
+        case let .pending(newState):
+            delegate?.filterControlWillChangeState(to: newState)
+            state = .committed(newState: newState)
+        default:
+            break
         }
     }
 
     func draggingDidEnd(in scrollView: UIScrollView) {
         switch state {
-        case .starting:
+        case .tracking(state: .off):
             feedback = nil
-            if fractionComplete > 0 {
-                state = .stopping
-            } else {
-                isTracking = false
-                state = .inactive
+            if fractionComplete <= 0 {
+                cancelFilterIconAnimator()
+                state = .off
             }
-        case .filterPending:
+        case .committed(newState: .on):
             updateContentInsetIfNecessary()
             showClearButton(animated: true)
+            state = .on
+        case .tracking(state: .on):
+            feedback = nil
+            if fractionComplete <= 1 {
+                state = .on
+            }
+        case .committed(newState: .off):
+            stopFiltering(animated: true)
         default:
             break
         }
     }
 
     func scrollingDidStop(in scrollView: UIScrollView) {
-        if state == .stopping {
-            feedback = nil
-            isTracking = false
-            state = .inactive
+        switch state {
+        case .tracking(state: .off):
             cancelFilterIconAnimator()
-        } else if state == .filterPending {
-            state = .filtering
+            fallthrough
+        case .committed(newState: .off):
+            state = .off
+
+        case .tracking(state: .on), .committed(newState: .on):
+            state = .on
+
+        default:
+            break
+        }
+    }
+
+    private func applyBounceEffect(to view: UIView) {
+        UIView.animateKeyframes(withDuration: animationDuration(0.2), delay: 0) {
+            UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.5) {
+                let height = view.bounds.height
+                let width = view.bounds.width
+                view.transform = .init(scaleX: (width + 3) / width, y: (height + 3) / height)
+            }
+
+            UIView.addKeyframe(withRelativeStartTime: 0.5, relativeDuration: 0.5) {
+                view.transform = .identity
+            }
         }
     }
 
     private func showClearButton(animated: Bool) {
         guard animated else {
             UIView.performWithoutAnimation {
-                clearButton.alpha = 1
+                clearButtonContainer.alpha = 1
                 clearButton.isUserInteractionEnabled = true
                 imageContainer.alpha = 0
             }
@@ -493,7 +578,7 @@ final class ChatListFilterControl: UIView {
 
         let filterIconImageView = UIImageView(image: animationFrames.last!.image.withConfiguration(.filterIconDisappearing))
         let transitionView = TransitionEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterial))
-        let endFrame = clearButton.frame
+        let endFrame = clearButtonContainer.frame
 
         // Ensure that if clearButton.height < imageContainer.height, we don't
         // shrink the image container down.
@@ -520,8 +605,8 @@ final class ChatListFilterControl: UIView {
             filterIconImageView.alpha = 0
         }
 
-        transitionAnimator.addAnimations({ [clearButton] in
-            clearButton.alpha = 1
+        transitionAnimator.addAnimations({ [clearButtonContainer] in
+            clearButtonContainer.alpha = 1
         }, delayFactor: 0.33)
 
         transitionAnimator.addAnimations {

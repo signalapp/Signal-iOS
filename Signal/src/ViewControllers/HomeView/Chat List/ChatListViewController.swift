@@ -1364,7 +1364,7 @@ extension ChatListViewController {
             // filtering state.
             loadCoordinator.loadIfNecessary()
         } else {
-            UIView.animate(withDuration: CATransaction.animationDuration()) { [filterControl, loadCoordinator] in
+            tableView.performBatchUpdates {
                 filterControl?.startFiltering(animated: true)
                 loadCoordinator.loadIfNecessary()
             }
@@ -1374,7 +1374,8 @@ extension ChatListViewController {
     func disableChatListFilter(_ sender: AnyObject?) {
         updateChatListFilter(.none)
         updateBarButtonItems()
-        tableView.performBatchUpdates { [self] in
+
+        tableView.performBatchUpdates {
             filterControl?.stopFiltering(animated: true)
             loadCoordinator.loadIfNecessary()
         }
@@ -1693,8 +1694,13 @@ extension ChatListViewController: UIScrollViewDelegate {
 }
 
 extension ChatListViewController: ChatListFilterControlDelegate {
-    func filterControlWillStartFiltering() {
-        updateChatListFilter(.unread)
+    func filterControlWillChangeState(to state: ChatListFilterControl.FilterState) {
+        switch state {
+        case .on:
+            updateChatListFilter(.unread)
+        case .off:
+            updateChatListFilter(.none)
+        }
 
         // Because this happens in response to an interactive gesture, it feels
         // better to go a little slower than the default animation duration (0.25 sec).
