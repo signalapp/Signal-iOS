@@ -378,7 +378,12 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
             )
         case .distributionList:
             return .failure([.restoreFrameError(
-                .invalidProtoData(.distributionListUsedAsChat),
+                .invalidProtoData(.distributionListUsedAsChatRecipient),
+                chat.chatId
+            )])
+        case .callLink:
+            return .failure([.restoreFrameError(
+                .invalidProtoData(.callLinkUsedAsChatRecipient),
                 chat.chatId
             )])
         }

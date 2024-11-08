@@ -1287,7 +1287,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             )])
         case .localAddress:
             authorAddress = context.recipientContext.localIdentifiers.aciAddress
-        case .group, .distributionList, .releaseNotesChannel:
+        case .group, .distributionList, .releaseNotesChannel, .callLink:
             // Groups and distritibution lists cannot be an authors of a message!
             return .messageFailure([.restoreFrameError(
                 .invalidProtoData(.incomingMessageNotFromAciOrE164),

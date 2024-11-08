@@ -1144,6 +1144,11 @@ public class AppSetup {
             stickerPackArchiver: MessageBackupStickerPackArchiverImpl(
                 backupStickerPackDownloadStore: backupStickerPackDownloadStore,
                 stickerManager: MessageBackup.Wrappers.StickerManager()
+            ),
+            adHocCallArchiver: MessageBackupAdHocCallArchiverImpl(
+                callRecordStore: callRecordStore,
+                callLinkRecordStore: callLinkStore,
+                adHocCallRecordManager: adHocCallRecordManager
             )
         )
 

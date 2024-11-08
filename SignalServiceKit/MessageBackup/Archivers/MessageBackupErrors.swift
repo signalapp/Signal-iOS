@@ -182,6 +182,10 @@ extension MessageBackup {
 
             /// Restrictions for a call link are unknown.
             case callLinkRestrictionsUnknown
+
+            /// An ad hoc call's ``CallRecord/conversationId`` is not a
+            /// call link, which is illegal.
+            case adHocCallDoesNotHaveCallLinkAsConversationId
         }
 
         private let type: ErrorType
@@ -280,7 +284,8 @@ extension MessageBackup {
                     .unableToReadStoryContextAssociatedData,
                     .unviewedViewOnceMessageMissingAttachment,
                     .unviewedViewOnceMessageTooManyAttachments,
-                    .callLinkRestrictionsUnknown:
+                    .callLinkRestrictionsUnknown,
+                    .adHocCallDoesNotHaveCallLinkAsConversationId:
                 // Log any others as we see them.
                 return nil
             }
@@ -311,8 +316,11 @@ extension MessageBackup {
             /// Error iterating over all sticker packs for backup purposes.
             case stickerPackIteratorError(RawError)
 
-            /// Error iterating over al call link records for backup purposes.
+            /// Error iterating over all call link records for backup purposes.
             case callLinkRecordIteratorError(RawError)
+
+            /// Error iterating over all ad hoc calls for backup purposes.
+            case adHocCallIteratorError(RawError)
 
             /// These should never happen; it means some invariant in the backup code
             /// we could not enforce with the type system was broken. Nothing was wrong with
@@ -538,8 +546,12 @@ extension MessageBackup {
                 /// `BackupProto_DistributionListItem.deletionTimestamp` was invalid
                 case invalidDistributionListDeletionTimestamp
 
-                /// ``BackupProto_DistributionListItem`` was used as a chat; this isn't allowed.
-                case distributionListUsedAsChat
+                /// ``BackupProto_DistributionListItem`` was used as a recipient for
+                /// a ``BackupProto_Chat``; this isn't allowed.
+                case distributionListUsedAsChatRecipient
+                /// ``BackupProto_CallLink`` was used as a recipient for something
+                /// other than a ``BackupProto_AdHocCall``; this isn't allowed.
+                case callLinkUsedAsChatRecipient
 
                 /// A ``BackupProto/ChatUpdateMessage/update`` was empty.
                 case emptyChatUpdateMessage
@@ -634,6 +646,14 @@ extension MessageBackup {
                 case callLinkInvalidRootKey
                 /// A ``BackupProto_CallLink/restrictions`` was unrecognized.
                 case callLinkRestrictionsUnrecognizedType
+
+                /// A ``BackupProto_AdHocCall/state`` was unknown.
+                case adHocCallUnknownState
+                /// A ``BackupProto_AdHocCall/state`` was unrecognized.
+                case adHocCallUnrecognizedState
+                /// The recipient on an ad hoc call was not a call link. No other
+                /// recipient types are valid for an ad hoc call.
+                case recipientOfAdHocCallWasNotCallLink
             }
 
             /// The proto contained invalid or self-contradictory data, e.g an invalid ACI.
@@ -779,7 +799,7 @@ extension MessageBackup {
                         .invalidDistributionListPrivacyMode,
                         .customDistributionListPrivacyModeAllOrAllExcept,
                         .invalidDistributionListDeletionTimestamp,
-                        .distributionListUsedAsChat,
+                        .distributionListUsedAsChatRecipient,
                         .emptyChatUpdateMessage,
                         .unrecognizedSimpleChatUpdate,
                         .verificationStateChangeNotFromContact,
@@ -809,7 +829,11 @@ extension MessageBackup {
                         .invalidAttachmentClientUUID,
                         .unrecognizedGiftBadgeState,
                         .callLinkInvalidRootKey,
-                        .callLinkRestrictionsUnrecognizedType:
+                        .callLinkRestrictionsUnrecognizedType,
+                        .callLinkUsedAsChatRecipient,
+                        .adHocCallUnknownState,
+                        .adHocCallUnrecognizedState,
+                        .recipientOfAdHocCallWasNotCallLink:
                     // Collapse all others by the id of the containing frame.
                     return idLogString
                 }

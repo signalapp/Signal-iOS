@@ -355,7 +355,7 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
                 switch context[RecipientId(value: $0)] {
                 case .contact(let contactAddress):
                     return contactAddress
-                case .distributionList, .group, .localAddress, .releaseNotesChannel, .none:
+                case .distributionList, .group, .localAddress, .releaseNotesChannel, .callLink, .none:
                     partialErrors.append(.restoreFrameError(
                         .invalidProtoData(.invalidDistributionListMember(protoClass: BackupProto_DistributionList.self)),
                         recipientId

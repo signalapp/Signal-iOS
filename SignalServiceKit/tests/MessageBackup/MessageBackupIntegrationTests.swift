@@ -55,6 +55,8 @@ class MessageBackupIntegrationTests: XCTestCase {
 
         case accountData
 
+        case adHocCall
+
         case chat
 
         case chatItem
@@ -130,6 +132,8 @@ class MessageBackupIntegrationTests: XCTestCase {
                     return binprotoName.contains("standard_frames")
                 case .accountData:
                     return binprotoName.contains("account_data_")
+                case .adHocCall:
+                    return binprotoName.contains("ad_hoc_call_")
                 case .chat:
                     return binprotoName.contains("chat_")
                 case .chatItem:

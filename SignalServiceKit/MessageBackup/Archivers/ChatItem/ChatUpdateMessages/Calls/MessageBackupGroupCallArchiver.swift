@@ -292,7 +292,7 @@ private extension MessageBackup.RecipientRestoringContext {
         case .contact(let contactAddress):
             guard let aci = contactAddress.aci else { fallthrough }
             return .found(aci)
-        case .group, .distributionList, .releaseNotesChannel:
+        case .group, .distributionList, .releaseNotesChannel, .callLink:
             return .missing(.restoreFrameError(
                 .invalidProtoData(.groupCallRecipientIdNotAnAci(recipientId)),
                 chatItemId

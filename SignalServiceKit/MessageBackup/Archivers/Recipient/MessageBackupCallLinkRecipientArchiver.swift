@@ -130,7 +130,7 @@ public class MessageBackupCallLinkRecipientArchiver: MessageBackupProtoArchiver 
         }
 
         do {
-            _ = try callLinkStore.insertFromBackup(
+            let record = try callLinkStore.insertFromBackup(
                 rootKey: rootKey,
                 adminPasskey: adminKey,
                 name: callLinkProto.name,
@@ -138,6 +138,7 @@ public class MessageBackupCallLinkRecipientArchiver: MessageBackupProtoArchiver 
                 expiration: callLinkProto.expirationMs,
                 tx: context.tx
             )
+            context[recipient.recipientId] = .callLink(record.id)
         } catch {
             return .failure([.restoreFrameError(.databaseInsertionFailed(error), recipient.recipientId)])
         }

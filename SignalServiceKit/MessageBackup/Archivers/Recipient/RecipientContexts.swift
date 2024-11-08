@@ -38,6 +38,10 @@ extension MessageBackup {
         fileprivate init(sendStatus: BackupProto_SendStatus) {
             self.init(value: sendStatus.recipientID)
         }
+
+        fileprivate init(adHocCall: BackupProto_AdHocCall) {
+            self.init(value: adHocCall.recipientID)
+        }
     }
 
     public typealias GroupId = Data
@@ -203,6 +207,7 @@ extension MessageBackup {
             case contact(ContactAddress)
             case group(GroupId)
             case distributionList(DistributionId)
+            case callLink(CallLinkId)
         }
 
         let localIdentifiers: LocalIdentifiers
@@ -333,5 +338,12 @@ extension BackupProto_SendStatus {
 
     public var destinationRecipientId: MessageBackup.RecipientId {
         return MessageBackup.RecipientId(sendStatus: self)
+    }
+}
+
+extension BackupProto_AdHocCall {
+
+    public var callLinkRecipientId: MessageBackup.RecipientId {
+        return MessageBackup.RecipientId(adHocCall: self)
     }
 }

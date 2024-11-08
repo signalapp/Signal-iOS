@@ -2787,6 +2787,12 @@
 		E1650BD92CD0508C00304C58 /* recipient_call_link_07.binproto in Resources */ = {isa = PBXBuildFile; fileRef = E1650BAF2CD0508C00304C58 /* recipient_call_link_07.binproto */; };
 		E16B440E2BBF242C00D2583E /* ReactionsModelTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E16B440D2BBF242C00D2583E /* ReactionsModelTest.swift */; };
 		E18C4A7729EF2ECC007534D4 /* SignalAccountTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E18C4A7629EF2ECC007534D4 /* SignalAccountTest.swift */; };
+		E19B35462CD2E8C40078A678 /* ad_hoc_call_01.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = E19B35432CD2E8C40078A678 /* ad_hoc_call_01.txtproto */; };
+		E19B35472CD2E8C40078A678 /* ad_hoc_call_02.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = E19B35452CD2E8C40078A678 /* ad_hoc_call_02.txtproto */; };
+		E19B35482CD2E8C40078A678 /* ad_hoc_call_00.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = E19B35412CD2E8C40078A678 /* ad_hoc_call_00.txtproto */; };
+		E19B35492CD2E8C40078A678 /* ad_hoc_call_02.binproto in Resources */ = {isa = PBXBuildFile; fileRef = E19B35442CD2E8C40078A678 /* ad_hoc_call_02.binproto */; };
+		E19B354A2CD2E8C40078A678 /* ad_hoc_call_00.binproto in Resources */ = {isa = PBXBuildFile; fileRef = E19B35402CD2E8C40078A678 /* ad_hoc_call_00.binproto */; };
+		E19B354B2CD2E8C40078A678 /* ad_hoc_call_01.binproto in Resources */ = {isa = PBXBuildFile; fileRef = E19B35422CD2E8C40078A678 /* ad_hoc_call_01.binproto */; };
 		E1A090382A4B909B00F2BE8B /* RecipientHidingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A090372A4B909B00F2BE8B /* RecipientHidingManager.swift */; };
 		E1B32F842CA6162A002141F4 /* LinkPreviewCallLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1CFAAA22C9DD2B1003145C3 /* LinkPreviewCallLink.swift */; };
 		E1B628DA2CCC59E600C4DC7F /* chat_item_view_once_11.binproto in Resources */ = {isa = PBXBuildFile; fileRef = E1B628D22CCC59E600C4DC7F /* chat_item_view_once_11.binproto */; };
@@ -6546,6 +6552,12 @@
 		E1650BC02CD0508C00304C58 /* recipient_call_link_15.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = recipient_call_link_15.txtproto; sourceTree = "<group>"; };
 		E16B440D2BBF242C00D2583E /* ReactionsModelTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReactionsModelTest.swift; sourceTree = "<group>"; };
 		E18C4A7629EF2ECC007534D4 /* SignalAccountTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalAccountTest.swift; sourceTree = "<group>"; };
+		E19B35402CD2E8C40078A678 /* ad_hoc_call_00.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = ad_hoc_call_00.binproto; sourceTree = "<group>"; };
+		E19B35412CD2E8C40078A678 /* ad_hoc_call_00.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = ad_hoc_call_00.txtproto; sourceTree = "<group>"; };
+		E19B35422CD2E8C40078A678 /* ad_hoc_call_01.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = ad_hoc_call_01.binproto; sourceTree = "<group>"; };
+		E19B35432CD2E8C40078A678 /* ad_hoc_call_01.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = ad_hoc_call_01.txtproto; sourceTree = "<group>"; };
+		E19B35442CD2E8C40078A678 /* ad_hoc_call_02.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = ad_hoc_call_02.binproto; sourceTree = "<group>"; };
+		E19B35452CD2E8C40078A678 /* ad_hoc_call_02.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = ad_hoc_call_02.txtproto; sourceTree = "<group>"; };
 		E1A090372A4B909B00F2BE8B /* RecipientHidingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientHidingManager.swift; sourceTree = "<group>"; };
 		E1A0AD8B16E13FDD0071E604 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		E1B628BC2CCC59E600C4DC7F /* chat_item_view_once_00.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = chat_item_view_once_00.binproto; sourceTree = "<group>"; };
@@ -11263,6 +11275,12 @@
 				D90AA0A62CC9616A00021CB0 /* account_data_26.txtproto */,
 				D90AA0A72CC9616A00021CB0 /* account_data_27.binproto */,
 				D90AA0A82CC9616A00021CB0 /* account_data_27.txtproto */,
+				E19B35402CD2E8C40078A678 /* ad_hoc_call_00.binproto */,
+				E19B35412CD2E8C40078A678 /* ad_hoc_call_00.txtproto */,
+				E19B35422CD2E8C40078A678 /* ad_hoc_call_01.binproto */,
+				E19B35432CD2E8C40078A678 /* ad_hoc_call_01.txtproto */,
+				E19B35442CD2E8C40078A678 /* ad_hoc_call_02.binproto */,
+				E19B35452CD2E8C40078A678 /* ad_hoc_call_02.txtproto */,
 				D90AA0AF2CC9616A00021CB0 /* chat_00.binproto */,
 				D90AA0B02CC9616A00021CB0 /* chat_00.txtproto */,
 				D90AA0B12CC9616A00021CB0 /* chat_01.binproto */,
@@ -14777,6 +14795,12 @@
 				D90AA3B92CC9616B00021CB0 /* account_data_26.txtproto in Resources */,
 				D90AA3CD2CC9616B00021CB0 /* account_data_27.binproto in Resources */,
 				D90AA6152CC9616B00021CB0 /* account_data_27.txtproto in Resources */,
+				E19B354A2CD2E8C40078A678 /* ad_hoc_call_00.binproto in Resources */,
+				E19B35482CD2E8C40078A678 /* ad_hoc_call_00.txtproto in Resources */,
+				E19B354B2CD2E8C40078A678 /* ad_hoc_call_01.binproto in Resources */,
+				E19B35462CD2E8C40078A678 /* ad_hoc_call_01.txtproto in Resources */,
+				E19B35492CD2E8C40078A678 /* ad_hoc_call_02.binproto in Resources */,
+				E19B35472CD2E8C40078A678 /* ad_hoc_call_02.txtproto in Resources */,
 				D90AA4632CC9616B00021CB0 /* chat_00.binproto in Resources */,
 				D90AA40D2CC9616B00021CB0 /* chat_00.txtproto in Resources */,
 				D90AA3AA2CC9616B00021CB0 /* chat_01.binproto in Resources */,

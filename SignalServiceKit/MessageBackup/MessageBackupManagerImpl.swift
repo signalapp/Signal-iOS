@@ -54,6 +54,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     private let postFrameRestoreActionManager: MessageBackupPostFrameRestoreActionManager
     private let releaseNotesRecipientArchiver: MessageBackupReleaseNotesRecipientArchiver
     private let stickerPackArchiver: MessageBackupStickerPackArchiver
+    private let adHocCallArchiver: MessageBackupAdHocCallArchiver
 
     public init(
         accountDataArchiver: MessageBackupAccountDataArchiver,
@@ -84,7 +85,8 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         plaintextStreamProvider: MessageBackupPlaintextProtoStreamProvider,
         postFrameRestoreActionManager: MessageBackupPostFrameRestoreActionManager,
         releaseNotesRecipientArchiver: MessageBackupReleaseNotesRecipientArchiver,
-        stickerPackArchiver: MessageBackupStickerPackArchiver
+        stickerPackArchiver: MessageBackupStickerPackArchiver,
+        adHocCallArchiver: MessageBackupAdHocCallArchiver
     ) {
         self.accountDataArchiver = accountDataArchiver
         self.attachmentDownloadManager = attachmentDownloadManager
@@ -115,6 +117,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         self.postFrameRestoreActionManager = postFrameRestoreActionManager
         self.releaseNotesRecipientArchiver = releaseNotesRecipientArchiver
         self.stickerPackArchiver = stickerPackArchiver
+        self.adHocCallArchiver = adHocCallArchiver
     }
 
     // MARK: - Remote backups
@@ -432,6 +435,20 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             context: archivingContext
         )
         switch stickerPackArchiveResult {
+        case .success:
+            break
+        case .partialSuccess(let partialFailures):
+            errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0, wasFatal: false) })
+        case .completeFailure(let error):
+            errors.append(LoggableErrorAndProto(error: error, wasFatal: true))
+            throw BackupError()
+        }
+
+        let adHocCallArchiveResult = adHocCallArchiver.archiveAdHocCalls(
+            stream: stream,
+            context: chatArchivingContext
+        )
+        switch adHocCallArchiveResult {
         case .success:
             break
         case .partialSuccess(let partialFailures):
@@ -785,17 +802,19 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                     throw BackupError()
                 }
             case .adHocCall(let backupProtoAdHocCall):
-                // TODO: [Backups] Restore ad-hoc calls.
-                frameErrors.append(LoggableErrorAndProto(
-                    error: MessageBackup.RestoreFrameError.restoreFrameError(
-                        .unimplemented,
-                        MessageBackup.AdHocCallId(
-                            backupProtoAdHocCall.callID,
-                            recipientId: backupProtoAdHocCall.recipientID
-                        )
-                    ),
-                    wasFatal: false
-                ))
+                let adHocCallResult = adHocCallArchiver.restore(
+                    backupProtoAdHocCall,
+                    context: contexts.chatItem
+                )
+                switch adHocCallResult {
+                case .success:
+                    continue
+                case .partialRestore(let errors):
+                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: backupProtoAdHocCall) })
+                case .failure(let errors):
+                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: true, protoFrame: backupProtoAdHocCall) })
+                    throw BackupError()
+                }
             case nil:
                 if hasMoreFrames {
                     owsFailDebug("Frame missing item!")

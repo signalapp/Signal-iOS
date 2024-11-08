@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import GRDB
+public import GRDB
 public import LibSignalClient
 
 /// Represents the result of a ``CallRecordStore`` fetch where a record having
@@ -124,6 +124,12 @@ public protocol CallRecordStore {
         intoThreadRowId intoRowId: Int64,
         tx: DBWriteTransaction
     )
+
+    /// Enumerate all ad hoc call records.
+    func enumerateAdHocCallRecords(
+        tx: DBReadTransaction,
+        block: (CallRecord) -> Void
+    ) throws
 
     /// Fetch the record for the given call ID in the given thread, if one
     /// exists.
@@ -420,6 +426,22 @@ class CallRecordStoreImpl: CallRecordStore {
                 sql: sqlString,
                 arguments: StatementArguments(sqlArgs)
             ))
+        } catch {
+            throw error.grdbErrorForLogging
+        }
+    }
+
+    func enumerateAdHocCallRecords(
+        tx: DBReadTransaction,
+        block: (CallRecord) -> Void
+    ) throws {
+        do {
+            let cursor = try CallRecord
+                .filter(Column(CallRecord.CodingKeys.callType) == CallRecord.CallType.adHocCall.rawValue)
+                .fetchCursor(tx.databaseConnection)
+            while let value = try cursor.next() {
+                block(value)
+            }
         } catch {
             throw error.grdbErrorForLogging
         }

@@ -412,7 +412,7 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
                     chatItem.id
                 ))
                 continue
-            case .group, .distributionList, .releaseNotesChannel:
+            case .group, .distributionList, .releaseNotesChannel, .callLink:
                 // Recipients can only be contacts.
                 partialErrors.append(.restoreFrameError(
                     .invalidProtoData(.outgoingNonContactMessageRecipient),

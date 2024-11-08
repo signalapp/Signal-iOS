@@ -110,7 +110,7 @@ internal class MessageBackupReactionArchiver: MessageBackupProtoArchiver {
                     ))
                     continue
                 }
-            case .group, .distributionList, .releaseNotesChannel:
+            case .group, .distributionList, .releaseNotesChannel, .callLink:
                 // Referencing a group or distributionList as the author is invalid.
                 reactionErrors.append(.restoreFrameError(
                     .invalidProtoData(.reactionNotFromAciOrE164),

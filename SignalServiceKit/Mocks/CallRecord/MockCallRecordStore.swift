@@ -48,6 +48,13 @@ class MockCallRecordStore: CallRecordStore {
         })
     }
 
+    func enumerateAdHocCallRecords(tx: any DBReadTransaction, block: (CallRecord) -> Void) throws {
+        callRecords.forEach { record in
+            guard record.callType == .adHocCall else { return }
+            block(record)
+        }
+    }
+
     var askedToUpdateRecordStatusTo: CallRecord.CallStatus?
     func updateCallAndUnreadStatus(callRecord: CallRecord, newCallStatus: CallRecord.CallStatus, tx: DBWriteTransaction) {
         askedToUpdateRecordStatusTo = newCallStatus

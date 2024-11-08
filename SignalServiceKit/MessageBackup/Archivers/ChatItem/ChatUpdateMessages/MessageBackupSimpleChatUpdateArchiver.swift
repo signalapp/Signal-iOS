@@ -454,7 +454,7 @@ final class MessageBackupSimpleChatUpdateArchiver {
                 infoMessageType = .typeLocalUserEndedSession
             case .contact:
                 infoMessageType = .typeRemoteUserEndedSession
-            case .releaseNotesChannel, .group, .distributionList:
+            case .releaseNotesChannel, .group, .distributionList, .callLink:
                 return invalidProtoData(.endSessionNotFromContact)
             }
 
@@ -474,7 +474,7 @@ final class MessageBackupSimpleChatUpdateArchiver {
                 contactAddress = context.recipientContext.localIdentifiers.aciAddress
             case .contact(let _contactAddress):
                 contactAddress = _contactAddress.asInteropAddress()
-            case .releaseNotesChannel, .group, .distributionList:
+            case .releaseNotesChannel, .group, .distributionList, .callLink:
                 return invalidProtoData(.decryptionErrorNotFromContact)
             }
 
@@ -493,7 +493,7 @@ final class MessageBackupSimpleChatUpdateArchiver {
             case .contact(let contactAddress):
                 guard let aci = contactAddress.aci else { fallthrough }
                 senderAci = aci
-            case .releaseNotesChannel, .group, .distributionList:
+            case .releaseNotesChannel, .group, .distributionList, .callLink:
                 return invalidProtoData(.paymentsActivatedNotFromAci)
             }
 
@@ -512,7 +512,7 @@ final class MessageBackupSimpleChatUpdateArchiver {
             case .contact(let contactAddress):
                 guard let aci = contactAddress.aci else { fallthrough }
                 senderAci = aci
-            case .releaseNotesChannel, .group, .distributionList:
+            case .releaseNotesChannel, .group, .distributionList, .callLink:
                 return invalidProtoData(.paymentsActivatedNotFromAci)
             }
 
@@ -530,7 +530,7 @@ final class MessageBackupSimpleChatUpdateArchiver {
                 senderAddress = nil
             case .contact(let contactAddress):
                 senderAddress = contactAddress.asInteropAddress()
-            case .releaseNotesChannel, .group, .distributionList:
+            case .releaseNotesChannel, .group, .distributionList, .callLink:
                 return invalidProtoData(.unsupportedProtocolVersionNotFromAci)
             }
 
