@@ -1053,9 +1053,21 @@ public final class MessageReceiver {
             storyTimestamp = storyContext.sentTimestamp
             storyAuthorAci = Aci.parseFrom(aciString: storyContext.authorAci)
             Logger.info("Processing storyContext for message w/ts \(envelope.timestamp), storyTimestamp: \(String(describing: storyTimestamp)), authorAci: \(String(describing: storyAuthorAci))")
-            guard storyAuthorAci != nil else {
+            guard let storyAuthorAci else {
                 owsFailDebug("Discarding story reply with invalid ACI")
                 return nil
+            }
+
+            if thread.isGroupThread {
+                // Drop group story replies if we can't find the story message
+                guard StoryFinder.story(
+                    timestamp: storyContext.sentTimestamp,
+                    author: storyAuthorAci,
+                    transaction: tx
+                ) != nil else {
+                    Logger.warn("Couldn't find story message; discarding group story reply")
+                    return nil
+                }
             }
         }
 

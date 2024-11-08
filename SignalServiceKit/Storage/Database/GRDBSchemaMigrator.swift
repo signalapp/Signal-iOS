@@ -304,6 +304,7 @@ public class GRDBSchemaMigrator: NSObject {
         case deleteIncomingGroupSyncJobRecords
         case deleteKnownStickerPackTable
         case addReceiptCredentialColumnToJobRecord
+        case dropOrphanedGroupStoryReplies
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -365,7 +366,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 96
+    public static let grdbSchemaVersionLatest: UInt = 97
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -3646,6 +3647,33 @@ public class GRDBSchemaMigrator: NSObject {
         migrator.registerMigration(.addReceiptCredentialColumnToJobRecord) { tx in
             try tx.database.alter(table: "model_SSKJobRecord") { table in
                 table.add(column: "receiptCredential", .blob)
+            }
+            return .success(())
+        }
+
+        migrator.registerMigration(.dropOrphanedGroupStoryReplies) { tx in
+            let groupThreadUniqueIdCursor = try String.fetchCursor(tx.database, sql: """
+                SELECT uniqueId
+                FROM model_TSThread
+                WHERE groupModel IS NOT NULL;
+                """
+            )
+
+            while let threadUniqueId = try groupThreadUniqueIdCursor.next() {
+                try tx.database.execute(
+                    sql: """
+                    DELETE FROM model_TSInteraction
+                    WHERE (
+                        uniqueThreadId = ?
+                        AND isGroupStoryReply = 1
+                        AND recordType IS NOT 70
+                        AND (storyTimestamp, storyAuthorUuidString) NOT IN (
+                            SELECT timestamp, authorUuid
+                            FROM model_StoryMessage
+                        )
+                    );
+                    """,
+                    arguments: [threadUniqueId])
             }
             return .success(())
         }
