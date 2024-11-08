@@ -245,8 +245,10 @@ extension TSAttachmentMigration {
         /// Phase 3 when running as an iterative migration.
         /// - Returns
         /// True if any rows were migrated; callers should keep calling until it returns false.
-        public static func completeNextIterativeTSMessageMigrationBatch(tx: GRDBWriteTransaction) throws -> Bool {
-            let batchSize = 5
+        public static func completeNextIterativeTSMessageMigrationBatch(
+            batchSize: Int = 5,
+            tx: GRDBWriteTransaction
+        ) throws -> Bool {
             let count = try Self.completeTSMessageMigrationBatch(batchSize: batchSize, tx: tx)
             return count > 0
         }

@@ -244,6 +244,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         // migration a launch-blocking GRDB migration.
         let incrementalMessageTSAttachmentMigrationStore = IncrementalTSAttachmentMigrationStore()
         let incrementalMessageTSAttachmentMigrator = IncrementalMessageTSAttachmentMigratorImpl(
+            appContext: mainAppContext,
             appReadiness: appReadiness,
             databaseStorage: databaseStorage,
             store: incrementalMessageTSAttachmentMigrationStore
