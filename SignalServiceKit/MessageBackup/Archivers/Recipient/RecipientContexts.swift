@@ -217,6 +217,7 @@ extension MessageBackup {
         /// By comparison, TSContactThread is created when we restore the Chat frame.
         /// We cache the TSGroupThread here to avoid fetching later when we do restore the Chat.
         private let groupThreadCache = SharedMap<GroupId, TSGroupThread>()
+        private let callLinkRecordCache = SharedMap<CallLinkId, CallLinkRecord>()
 
         init(
             localIdentifiers: LocalIdentifiers,
@@ -234,6 +235,11 @@ extension MessageBackup {
         subscript(_ id: GroupId) -> TSGroupThread? {
             get { groupThreadCache[id] }
             set(newValue) { groupThreadCache[id] = newValue }
+        }
+
+        subscript(_ id: CallLinkId) -> CallLinkRecord? {
+            get { callLinkRecordCache[id] }
+            set(newValue) { callLinkRecordCache[id] = newValue }
         }
 
         // MARK: Post-Frame Restore

@@ -176,6 +176,21 @@ public class MessageBackupAdHocCallArchiverImpl: MessageBackupAdHocCallArchiver 
             callBeganTimestamp: adHocCall.callTimestamp
         )
 
+        if let callLinkRecord = context.recipientContext[callLinkRowId] {
+            do {
+                var callLinkRecord = callLinkRecord
+                callLinkRecord.didInsertCallRecord()
+                try callLinkRecordStore.update(callLinkRecord, tx: context.tx)
+            } catch {
+                partialErrors.append(
+                    .restoreFrameError(
+                        .databaseInsertionFailed(error),
+                        AdHocCallId(adHocCall.callID)
+                    )
+                )
+            }
+        }
+
         callRecordStore.insert(
             callRecord: adHocCallRecord,
             tx: context.tx

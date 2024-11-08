@@ -16,6 +16,7 @@ public protocol CallLinkRecordStore {
         name: String,
         restrictions: CallLinkRecord.Restrictions,
         expiration: UInt64,
+        isUpcoming: Bool,
         tx: DBWriteTransaction
     ) throws -> CallLinkRecord
     func fetchOrInsert(rootKey: CallLinkRootKey, tx: any DBWriteTransaction) throws -> (record: CallLinkRecord, inserted: Bool)
@@ -56,6 +57,7 @@ public class CallLinkRecordStoreImpl: CallLinkRecordStore {
         name: String,
         restrictions: CallLinkRecord.Restrictions,
         expiration: UInt64,
+        isUpcoming: Bool,
         tx: DBWriteTransaction
     ) throws -> CallLinkRecord {
         return try CallLinkRecord.insertFromBackup(
@@ -64,6 +66,7 @@ public class CallLinkRecordStoreImpl: CallLinkRecordStore {
             name: name,
             restrictions: restrictions,
             expiration: expiration,
+            isUpcoming: isUpcoming,
             tx: tx
         )
     }
@@ -142,7 +145,7 @@ public class CallLinkRecordStoreImpl: CallLinkRecordStore {
 final class MockCallLinkRecordStore: CallLinkRecordStore {
     func fetch(rowId: Int64, tx: any DBReadTransaction) throws -> CallLinkRecord? { fatalError() }
     func fetch(roomId: Data, tx: any DBReadTransaction) throws -> CallLinkRecord? { fatalError() }
-    func insertFromBackup(rootKey: SignalRingRTC.CallLinkRootKey, adminPasskey: Data?, name: String, restrictions: CallLinkRecord.Restrictions, expiration: UInt64, tx: any DBWriteTransaction) throws -> CallLinkRecord { fatalError() }
+    func insertFromBackup(rootKey: SignalRingRTC.CallLinkRootKey, adminPasskey: Data?, name: String, restrictions: CallLinkRecord.Restrictions, expiration: UInt64, isUpcoming: Bool, tx: any DBWriteTransaction) throws -> CallLinkRecord { fatalError() }
     func fetchOrInsert(rootKey: CallLinkRootKey, tx: any DBWriteTransaction) throws -> (record: CallLinkRecord, inserted: Bool) { fatalError() }
     func update(_ callLinkRecord: CallLinkRecord, tx: any DBWriteTransaction) throws { fatalError() }
     func delete(_ callLinkRecord: CallLinkRecord, tx: any DBWriteTransaction) throws { fatalError() }

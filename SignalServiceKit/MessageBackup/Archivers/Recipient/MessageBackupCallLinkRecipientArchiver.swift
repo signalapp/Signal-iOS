@@ -136,9 +136,11 @@ public class MessageBackupCallLinkRecipientArchiver: MessageBackupProtoArchiver 
                 name: callLinkProto.name,
                 restrictions: restrictions,
                 expiration: callLinkProto.expirationSec,
+                isUpcoming: true, // will be set false later if we process a corresponding ad hoc call frame
                 tx: context.tx
             )
             context[recipient.recipientId] = .callLink(record.id)
+            context[record.id] = record
         } catch {
             return .failure([.restoreFrameError(.databaseInsertionFailed(error), recipient.recipientId)])
         }

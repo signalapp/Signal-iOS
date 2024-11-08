@@ -123,6 +123,7 @@ public struct CallLinkRecord: Codable, PersistableRecord, FetchableRecord {
         name: String,
         restrictions: CallLinkRecord.Restrictions,
         expiration: UInt64,
+        isUpcoming: Bool,
         tx: DBWriteTransaction
     ) throws -> CallLinkRecord {
         do {
@@ -135,15 +136,18 @@ public struct CallLinkRecord: Codable, PersistableRecord, FetchableRecord {
                     \(CallLinkRecord.CodingKeys.adminPasskey.rawValue),
                     \(CallLinkRecord.CodingKeys.name.rawValue),
                     \(CallLinkRecord.CodingKeys.restrictions.rawValue),
-                    \(CallLinkRecord.CodingKeys.expiration.rawValue)
-                ) VALUES (?, ?, ?, ?, ?, ?) RETURNING *
+                    \(CallLinkRecord.CodingKeys.expiration.rawValue),
+                    \(CallLinkRecord.CodingKeys.isUpcoming.rawValue)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING *
                 """,
                 arguments: [
                     rootKey.deriveRoomId(),
-                    rootKey.bytes, adminPasskey,
+                    rootKey.bytes,
+                    adminPasskey,
                     name,
                     restrictions.rawValue,
-                    expiration
+                    expiration,
+                    isUpcoming
                 ]
             )!
         } catch {
