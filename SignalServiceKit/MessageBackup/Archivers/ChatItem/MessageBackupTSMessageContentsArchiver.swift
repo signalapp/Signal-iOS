@@ -1627,7 +1627,7 @@ private extension ArchivedPayment {
                 timestamp: payment?.timestamp,
                 blockIndex: payment?.blockIndex,
                 blockTimestamp: payment?.blockTimestamp,
-                transaction: payment?.transaction,
+                transaction: payment?.transaction.nilIfEmpty,
                 receipt: payment?.receipt,
                 senderOrRecipientAci: senderOrRecipientAci,
                 interactionUniqueId: interactionUniqueId
