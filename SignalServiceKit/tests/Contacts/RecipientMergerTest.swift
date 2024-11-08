@@ -10,6 +10,7 @@ import XCTest
 @testable import SignalServiceKit
 
 private class MockStorageServiceManager: StorageServiceManager {
+    func setLocalIdentifiers(_ localIdentifiers: LocalIdentifiers) {}
     func currentManifestVersion(tx: DBReadTransaction) -> UInt64 { 0 }
     func currentManifestHasRecordIkm(tx: DBReadTransaction) -> Bool { false }
     func recordPendingUpdates(updatedRecipientUniqueIds: [RecipientUniqueId]) {}
@@ -19,7 +20,6 @@ private class MockStorageServiceManager: StorageServiceManager {
     func recordPendingUpdates(callLinkRootKeys: [CallLinkRootKey]) {}
     func recordPendingUpdates(groupModel: TSGroupModel) {}
     func recordPendingLocalAccountUpdates() {}
-    func setLocalIdentifiers(_ localIdentifiers: LocalIdentifiersObjC) {}
     func backupPendingChanges(authedDevice: AuthedDevice) {}
     func resetLocalData(transaction: DBWriteTransaction) {}
     func restoreOrCreateManifestIfNecessary(authedDevice: AuthedDevice) -> Promise<Void> { Promise<Void>(error: OWSGenericError("Not implemented.")) }

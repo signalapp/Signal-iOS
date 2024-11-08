@@ -101,15 +101,15 @@ class BlockingManagerTests: SSKBaseTest {
         // Setup
         let noLongerBlockedAci = Aci.randomForTesting()
         let noLongerBlockedPhoneNumber = E164("+17635550100")!
-        let noLongerBlockedGroupId = TSGroupModel.generateRandomV1GroupId()
+        let noLongerBlockedGroupId = TSGroupModel.generateRandomGroupId(.V2)
 
         let stillBlockedAci = Aci.randomForTesting()
         let stillBlockedPhoneNumber = E164("+17635550101")!
-        let stillBlockedGroupId = TSGroupModel.generateRandomV1GroupId()
+        let stillBlockedGroupId = TSGroupModel.generateRandomGroupId(.V2)
 
         let newlyBlockedAci = Aci.randomForTesting()
         let newlyBlockedPhoneNumber = E164("+17635550101")!
-        let newlyBlockedGroupId = TSGroupModel.generateRandomV1GroupId()
+        let newlyBlockedGroupId = TSGroupModel.generateRandomGroupId(.V2)
 
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             SSKEnvironment.shared.blockingManagerRef.addBlockedAddress(

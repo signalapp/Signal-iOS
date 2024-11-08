@@ -141,7 +141,7 @@ extension OutgoingStoryMessage {
             transaction: transaction
         )
 
-        thread.updateWithLastSentStoryTimestamp(NSNumber(value: storyMessage.timestamp), transaction: transaction)
+        thread.updateWithLastSentStoryTimestamp(storyMessage.timestamp, transaction: transaction)
 
         // If story sending for a group was implicitly enabled, explicitly enable it
         if let groupThread = thread as? TSGroupThread, !groupThread.isStorySendExplicitlyEnabled {
@@ -190,7 +190,7 @@ extension OutgoingStoryMessage {
 
         storyMessage.updateRecipientStates(recipientStates, transaction: transaction)
 
-        privateStoryThread.updateWithLastSentStoryTimestamp(NSNumber(value: storyMessage.timestamp), transaction: transaction)
+        privateStoryThread.updateWithLastSentStoryTimestamp(storyMessage.timestamp, transaction: transaction)
 
         // We skip the sync transcript for this message, since it's for
         // an already existing StoryMessage that has been sync'd to our

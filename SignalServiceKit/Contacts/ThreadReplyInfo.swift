@@ -16,21 +16,3 @@ public struct ThreadReplyInfo: Codable {
         self._author = author.codableUuid
     }
 }
-
-public class ThreadReplyInfoObjC: NSObject {
-    private let wrappedValue: ThreadReplyInfo
-
-    public init(_ wrappedValue: ThreadReplyInfo) {
-        self.wrappedValue = wrappedValue
-    }
-
-    @objc
-    func save(threadUniqueId: String, tx: SDSAnyWriteTransaction) {
-        DependenciesBridge.shared.threadReplyInfoStore.save(wrappedValue, for: threadUniqueId, tx: tx.asV2Write)
-    }
-
-    @objc
-    static func delete(threadUniqueId: String, tx: SDSAnyWriteTransaction) {
-        DependenciesBridge.shared.threadReplyInfoStore.remove(for: threadUniqueId, tx: tx.asV2Write)
-    }
-}

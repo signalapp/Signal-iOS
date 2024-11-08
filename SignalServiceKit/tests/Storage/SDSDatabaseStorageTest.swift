@@ -82,8 +82,8 @@ class SDSDatabaseStorageTest: SSKBaseTest {
                 return
             }
             XCTAssertNil(firstThread.messageDraft)
-            firstThread.update(
-                withDraft: MessageBody(text: "Some draft", ranges: .empty),
+            firstThread.updateWithDraft(
+                draftMessageBody: MessageBody(text: "Some draft", ranges: .empty),
                 replyInfo: nil,
                 editTargetTimestamp: nil,
                 transaction: transaction

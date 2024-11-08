@@ -12,8 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// Represents a story distribution list.
 @interface TSPrivateStoryThread : TSThread
 
-@property (nonatomic, readonly) BOOL allowsReplies;
-@property (nonatomic, readonly) NSString *name;
+@property (nonatomic) BOOL allowsReplies;
+@property (nonatomic) NSString *name;
 
 /// - SeeAlso:
 /// ``TSThread/storyViewMode``. In combination with that property, describes the
@@ -87,16 +87,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 // clang-format on
 
 // --- CODE GENERATION MARKER
-
-- (void)updateWithAllowsReplies:(BOOL)allowsReplies
-           updateStorageService:(BOOL)updateStorageService
-                    transaction:(SDSAnyWriteTransaction *)transaction
-    NS_SWIFT_NAME(updateWithAllowsReplies(_:updateStorageService:transaction:));
-
-- (void)updateWithName:(NSString *)name
-    updateStorageService:(BOOL)updateStorageService
-             transaction:(SDSAnyWriteTransaction *)transaction
-    NS_SWIFT_NAME(updateWithName(_:updateStorageService:transaction:));
 
 @end
 

@@ -245,7 +245,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         authCredentialStore.removeAllGroupAuthCredentials(tx: tx)
         authCredentialStore.removeAllCallLinkAuthCredentials(tx: tx)
 
-        storageServiceManager.setLocalIdentifiers(.init(.init(aci: aci, pni: pni, e164: e164)))
+        storageServiceManager.setLocalIdentifiers(LocalIdentifiers(aci: aci, pni: pni, e164: e164))
 
         let recipient = recipientMerger.applyMergeForLocalAccount(
             aci: aci,

@@ -1665,10 +1665,6 @@ extension AppSetup.FinalContinuation {
         let storageServiceManager = sskEnvironment.storageServiceManagerRef
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
-        let updateLocalIdentifiers: (LocalIdentifiersObjC) -> Void = { [weak storageServiceManager] localIdentifiers in
-            storageServiceManager?.setLocalIdentifiers(localIdentifiers)
-        }
-
         if
             tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
             && !willResumeInProgressRegistration
@@ -1677,7 +1673,7 @@ extension AppSetup.FinalContinuation {
             guard let localIdentifiers else {
                 return false
             }
-            updateLocalIdentifiers(LocalIdentifiersObjC(localIdentifiers))
+            storageServiceManager.setLocalIdentifiers(localIdentifiers)
             // We are fully registered, and we're not in the middle of registration, so
             // ensure discoverability is configured.
             setUpDefaultDiscoverability()

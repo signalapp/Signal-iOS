@@ -163,10 +163,12 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
                 owsFailDebug("Missing thread.")
                 return
             }
-            thread.update(withDraft: nil,
-                          replyInfo: nil,
-                          editTargetTimestamp: nil,
-                          transaction: transaction)
+            thread.updateWithDraft(
+                draftMessageBody: nil,
+                replyInfo: nil,
+                editTargetTimestamp: nil,
+                transaction: transaction
+            )
         }
 
         if didAddToProfileWhitelist {
@@ -297,25 +299,24 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
                     return
                 }
 
-                let replyInfo: ThreadReplyInfoObjC?
+                let replyInfo: ThreadReplyInfo?
                 if
                     let quotedReply,
                     let originalMessageTimestamp = quotedReply.originalMessageTimestamp,
                     let aci = quotedReply.originalMessageAuthorAddress.aci
                 {
-                    replyInfo = ThreadReplyInfoObjC(ThreadReplyInfo(
+                    replyInfo = ThreadReplyInfo(
                         timestamp: originalMessageTimestamp,
                         author: aci
-                    ))
+                    )
                 } else {
                     replyInfo = nil
                 }
-                var editTargetTimestamp: NSNumber?
-                if let timestamp = inputToolbar.editTarget?.timestamp {
-                    editTargetTimestamp = NSNumber(value: timestamp)
-                }
-                thread.update(
-                    withDraft: currentDraft,
+
+                let editTargetTimestamp: UInt64? = inputToolbar.editTarget?.timestamp
+
+                thread.updateWithDraft(
+                    draftMessageBody: currentDraft,
                     replyInfo: replyInfo,
                     editTargetTimestamp: editTargetTimestamp,
                     transaction: transaction

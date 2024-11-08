@@ -62,7 +62,7 @@ class BlockingManagerStateTests: SSKBaseTest {
         // Remove both a known entry and a (likely) non-entry
         XCTAssertNotNil(dut.removeBlockedGroup(victimGroup.groupId))
         XCTAssertTrue(dut.removeBlockedRecipientId(victimRecipientId))
-        XCTAssertNil(dut.removeBlockedGroup(TSGroupModel.generateRandomV1GroupId()))
+        XCTAssertNil(dut.removeBlockedGroup(TSGroupModel.generateRandomGroupId(.V2)))
         XCTAssertFalse(dut.removeBlockedRecipientId(generateRecipientId()))
 
         // Verify — One and only one item in each set should have been removed
@@ -339,6 +339,6 @@ class BlockingManagerStateTests: SSKBaseTest {
     }
 
     func generateRandomGroupModel() -> TSGroupModel {
-        GroupManager.fakeGroupModel(groupId: TSGroupModel.generateRandomV1GroupId())!
+        GroupManager.fakeGroupModel(groupId: TSGroupModel.generateRandomGroupId(.V2))!
     }
 }

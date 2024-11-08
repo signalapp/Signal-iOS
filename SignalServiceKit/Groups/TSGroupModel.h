@@ -57,8 +57,6 @@ typedef NS_CLOSED_ENUM(uint32_t, GroupsVersion) {
 
 @property (nonatomic, readonly) NSString *groupNameOrDefault;
 
-+ (NSData *)generateRandomV1GroupId;
-
 @end
 
 NS_ASSUME_NONNULL_END

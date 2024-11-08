@@ -8,6 +8,94 @@ import LibSignalClient
 public import SignalRingRTC
 import SwiftProtobuf
 
+public protocol StorageServiceManager {
+    /// Updates the local user's identity.
+    ///
+    /// Called during app launch, registration, and change number.
+    func setLocalIdentifiers(_ localIdentifiers: LocalIdentifiers)
+
+    /// The version of the latest known Storage Service manifest.
+    func currentManifestVersion(tx: DBReadTransaction) -> UInt64
+    /// Whether the latest-known Storage Service manifest contains a `recordIkm`.
+    func currentManifestHasRecordIkm(tx: DBReadTransaction) -> Bool
+
+    func recordPendingUpdates(updatedRecipientUniqueIds: [RecipientUniqueId])
+    func recordPendingUpdates(updatedAddresses: [SignalServiceAddress])
+    func recordPendingUpdates(updatedGroupV2MasterKeys: [Data])
+    func recordPendingUpdates(updatedStoryDistributionListIds: [Data])
+    func recordPendingUpdates(callLinkRootKeys: [CallLinkRootKey])
+    func recordPendingLocalAccountUpdates()
+
+    func backupPendingChanges(authedDevice: AuthedDevice)
+
+    @discardableResult
+    func restoreOrCreateManifestIfNecessary(authedDevice: AuthedDevice) -> Promise<Void>
+
+    /// Creates a brand-new manifest based on local state, pointing to brand-new
+    /// records.
+    /// - Important
+    /// This method is synchronized internally, and multiple calls will be
+    /// serialized. However, this is an expensive operation (as all existing
+    /// records need to be deleted and recreated from scratch), so callers
+    /// should take care to avoid unnecessary calls.
+    /// - Note
+    /// The new manifest's version will be `currentVersion + 1`.
+    func rotateManifest(authedDevice: AuthedDevice) async throws
+
+    /// Wipes all local state related to Storage Service, without mutating
+    /// remote state.
+    ///
+    /// - Note
+    /// The expected behavior after calling this method is that the next time we
+    /// perform a backup we will create a brand-new manifest with version 1, as
+    /// we have no local manifest version. However, since we still (probably)
+    /// have a remote manifest this backup will be rejected, and we'll merge in
+    /// the remote manifest, then re-attempt our backup.
+    ///
+    /// This is a weird behavior to specifically want, and new callers who are
+    /// interested in forcing a manifest recreation should probably prefer
+    /// ``rotateManifest`` instead.
+    func resetLocalData(transaction: DBWriteTransaction)
+
+    /// Waits for pending restores to finish.
+    ///
+    /// When this is resolved, it means the current device has the latest state
+    /// available on storage service.
+    ///
+    /// If this device believes there's new state available on storage service
+    /// but the request to fetch it has failed, this Promise will be rejected.
+    ///
+    /// If the local device doesn't believe storage service has new state, this
+    /// will resolve without performing any network requests.
+    ///
+    /// Due to the asynchronous nature of network requests, it's possible for
+    /// another device to write to storage service at the same time the returned
+    /// Promise resolves. Therefore, the precise behavior of this method is best
+    /// described as: "if this device has knowledge that storage service has new
+    /// state at the time this method is invoked, the returned Promise will be
+    /// resolved after that state has been fetched".
+    func waitForPendingRestores() -> Promise<Void>
+}
+
+extension StorageServiceManager {
+    public func recordPendingUpdates(groupModel: TSGroupModel) {
+        if let groupModelV2 = groupModel as? TSGroupModelV2 {
+            let masterKey: GroupMasterKey
+            do {
+                masterKey = try groupModelV2.masterKey()
+            } catch {
+                owsFailDebug("Missing master key: \(error)")
+                return
+            }
+            recordPendingUpdates(updatedGroupV2MasterKeys: [ masterKey.serialize().asData ])
+        } else {
+            owsFailDebug("How did we end up with pending updates to a V1 group?")
+        }
+    }
+}
+
+// MARK: -
+
 public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
 
     private let appReadiness: AppReadiness
@@ -58,9 +146,9 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
         backupPendingChanges(authedDevice: .implicit)
     }
 
-    public func setLocalIdentifiers(_ localIdentifiers: LocalIdentifiersObjC) {
+    public func setLocalIdentifiers(_ localIdentifiers: LocalIdentifiers) {
         updateManagerState { managerState in
-            managerState.localIdentifiers = localIdentifiers.wrappedValue
+            managerState.localIdentifiers = localIdentifiers
         }
     }
 
@@ -363,22 +451,6 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
         updatePendingMutations { $0.updatedCallLinkRootKeys.formUnion(callLinkRootKeys.lazy.map(\.bytes)) }
     }
 
-    @objc
-    public func recordPendingUpdates(groupModel: TSGroupModel) {
-        if let groupModelV2 = groupModel as? TSGroupModelV2 {
-            let masterKey: GroupMasterKey
-            do {
-                masterKey = try groupModelV2.masterKey()
-            } catch {
-                owsFailDebug("Missing master key: \(error)")
-                return
-            }
-            recordPendingUpdates(updatedGroupV2MasterKeys: [ masterKey.serialize().asData ])
-        } else {
-            owsFailDebug("How did we end up with pending updates to a V1 group?")
-        }
-    }
-
     public func recordPendingLocalAccountUpdates() {
         Logger.info("Recording pending local account updates")
 
@@ -517,12 +589,6 @@ private struct PendingMutations {
 }
 
 // MARK: -
-
-public enum StorageServiceManifestVersion {
-    public static func getCurrent(tx: SDSAnyReadTransaction) -> UInt64 {
-        return StorageServiceOperation.State.current(transaction: tx).manifestVersion
-    }
-}
 
 class StorageServiceOperation {
 

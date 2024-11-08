@@ -182,11 +182,6 @@ NSUInteger const TSGroupModelSchemaVersion = 2;
     return groupName.length > 0 ? groupName : TSGroupThread.defaultGroupName;
 }
 
-+ (NSData *)generateRandomV1GroupId
-{
-    return [Randomness generateRandomBytes:kGroupIdLengthV1];
-}
-
 - (NSString *)debugDescription
 {
     NSMutableString *result = [NSMutableString new];

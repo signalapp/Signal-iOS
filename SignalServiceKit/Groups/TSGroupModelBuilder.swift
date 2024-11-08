@@ -111,19 +111,33 @@ public struct TSGroupModelBuilder {
     }
 
     public func build() throws -> TSGroupModel {
-
         try checkUsers()
 
         let groupsVersion = self.groupsVersion ?? .V2
-
         let newGroupSeed = self.newGroupSeed ?? NewGroupSeed()
 
-        let groupId = try buildGroupId(groupsVersion: groupsVersion,
-                                       newGroupSeed: newGroupSeed)
+        let groupId: Data
+        if let builderValue = self.groupId {
+            groupId = builderValue
+        } else {
+            switch groupsVersion {
+            case .V1:
+                groupId = newGroupSeed.groupIdV1
+            case .V2:
+                groupId = newGroupSeed.groupIdV2
+            }
+        }
 
-        var groupSecretParams: GroupSecretParams?
-        if groupsVersion == .V2 {
-            groupSecretParams = try buildGroupSecretParams(newGroupSeed: newGroupSeed)
+        let groupSecretParams: GroupSecretParams?
+        switch groupsVersion {
+        case .V1:
+            groupSecretParams = nil
+        case .V2:
+            if let builderValue = groupSecretParamsData {
+                groupSecretParams = try GroupSecretParams(contents: [UInt8](builderValue))
+            } else {
+                groupSecretParams = newGroupSeed.groupSecretParams
+            }
         }
 
         return try build(
@@ -212,28 +226,6 @@ public struct TSGroupModelBuilder {
             throw OWSAssertionError("[GV1] Should be impossible to create a V1 group!")
         }
         return model
-    }
-
-    private func buildGroupId(groupsVersion: GroupsVersion,
-                              newGroupSeed: NewGroupSeed) throws -> Data {
-        if let value = groupId {
-            return value
-        }
-
-        switch groupsVersion {
-        case .V1:
-            return newGroupSeed.groupIdV1
-        case .V2:
-            return newGroupSeed.groupIdV2
-        }
-    }
-
-    private func buildGroupSecretParams(newGroupSeed: NewGroupSeed) throws -> GroupSecretParams {
-        if let groupSecretParamsData {
-            return try GroupSecretParams(contents: [UInt8](groupSecretParamsData))
-        }
-
-        return newGroupSeed.groupSecretParams
     }
 
     private func buildGroupAccess(groupsVersion: GroupsVersion) -> GroupAccess {

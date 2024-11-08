@@ -790,6 +790,7 @@ private class MockStorageServiceManager: StorageServiceManager {
         didRecordPendingLocalAccountUpdates = true
     }
 
+    func setLocalIdentifiers(_ localIdentifiers: LocalIdentifiers) { owsFail("Not implemented!") }
     func currentManifestVersion(tx: DBReadTransaction) -> UInt64 { owsFail("Not implemented") }
     func currentManifestHasRecordIkm(tx: DBReadTransaction) -> Bool { owsFail("Not implemented") }
     func waitForPendingRestores() -> Promise<Void> { owsFail("Not implemented") }
@@ -800,7 +801,6 @@ private class MockStorageServiceManager: StorageServiceManager {
     func recordPendingUpdates(updatedStoryDistributionListIds: [Data]) { owsFail("Not implemented!") }
     func recordPendingUpdates(callLinkRootKeys: [CallLinkRootKey]) { owsFail("Not implemented!") }
     func recordPendingUpdates(groupModel: TSGroupModel) { owsFail("Not implemented!") }
-    func setLocalIdentifiers(_ localIdentifiers: LocalIdentifiersObjC) { owsFail("Not implemented!") }
     func backupPendingChanges(authedDevice: AuthedDevice) { owsFail("Not implemented!") }
     func restoreOrCreateManifestIfNecessary(authedDevice: AuthedDevice) -> Promise<Void> { owsFail("Not implemented!") }
     func rotateManifest(authedDevice: AuthedDevice) async throws { owsFail("Not implemented!") }

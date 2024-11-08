@@ -17,7 +17,7 @@ public struct NewGroupSeed {
     public let groupSecretParams: GroupSecretParams
 
     public init() {
-        self.init(groupIdV1: TSGroupModel.generateRandomV1GroupId())
+        self.init(groupIdV1: TSGroupModel.generateRandomGroupId(.V1))
     }
 
     private init(groupIdV1: Data) {

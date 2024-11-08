@@ -261,10 +261,12 @@ extension SendMessageFlow {
                     throw OWSAssertionError("Unexpected thread state.")
             }
             return SSKEnvironment.shared.databaseStorageRef.write { transaction -> TSThread in
-                thread.update(withDraft: messageBody,
-                              replyInfo: nil,
-                              editTargetTimestamp: nil,
-                              transaction: transaction)
+                thread.updateWithDraft(
+                    draftMessageBody: messageBody,
+                    replyInfo: nil,
+                    editTargetTimestamp: nil,
+                    transaction: transaction
+                )
                 return thread
             }
         }.done { (thread: TSThread) in

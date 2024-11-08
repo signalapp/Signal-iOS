@@ -37,7 +37,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, TSThreadStoryViewMode) {
 @interface TSThread : BaseModel
 
 @property (nonatomic) TSThreadStoryViewMode storyViewMode;
-@property (nonatomic, readonly, nullable) NSNumber *lastSentStoryTimestamp;
+@property (nonatomic, nullable) NSNumber *lastSentStoryTimestamp;
 
 @property (nonatomic) BOOL shouldThreadBeVisible;
 @property (nonatomic, readonly, nullable) NSDate *creationDate;
@@ -66,6 +66,11 @@ typedef NS_CLOSED_ENUM(NSUInteger, TSThreadStoryViewMode) {
 @property (nonatomic) uint64_t lastInteractionRowId;
 
 @property (nonatomic, nullable) NSNumber *editTargetTimestamp;
+
+@property (atomic, readonly) uint64_t mutedUntilTimestampObsolete;
+@property (nonatomic, readonly, nullable) NSDate *mutedUntilDateObsolete;
+
+@property (nonatomic) TSThreadMentionNotificationMode mentionNotificationMode;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithUniqueId:(NSString *)uniqueId NS_DESIGNATED_INITIALIZER;
@@ -144,43 +149,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
                                           needsToUpdateLastVisibleSortId:(BOOL)needsToUpdateLastVisibleSortId
                                                              transaction:(SDSAnyWriteTransaction *)transaction
     NS_SWIFT_NAME(updateOnInteractionsRemoved(needsToUpdateLastInteractionRowId:needsToUpdateLastVisibleSortId:transaction:));
-
-#pragma mark Archival
-
-/**
- *  Sets the draft of a thread. Typically called when leaving a conversation view.
- *
- *  @param draftMessageBody Draft to be saved.
- *  @param transaction Database transaction.
- */
-- (void)updateWithDraft:(nullable MessageBody *)draftMessageBody
-              replyInfo:(nullable ThreadReplyInfoObjC *)replyInfo
-    editTargetTimestamp:(nullable NSNumber *)editTargetTimestamp
-            transaction:(SDSAnyWriteTransaction *)transaction;
-
-@property (atomic, readonly) uint64_t mutedUntilTimestampObsolete;
-@property (nonatomic, readonly, nullable) NSDate *mutedUntilDateObsolete;
-
-@property (nonatomic, readonly) TSThreadMentionNotificationMode mentionNotificationMode;
-
-#pragma mark - Update With... Methods
-
-- (void)updateWithMentionNotificationMode:(TSThreadMentionNotificationMode)mentionNotificationMode
-                      wasLocallyInitiated:(bool)wasLocallyInitiated
-                              transaction:(SDSAnyWriteTransaction *)transaction
-    NS_SWIFT_NAME(updateWithMentionNotificationMode(_:wasLocallyInitiated:transaction:));
-
-- (void)updateWithShouldThreadBeVisible:(BOOL)shouldThreadBeVisible
-                            transaction:(SDSAnyWriteTransaction *)transaction
-    NS_SWIFT_NAME(updateWithShouldThreadBeVisible(_:transaction:));
-
-- (void)updateWithLastSentStoryTimestamp:(nullable NSNumber *)lastSentStoryTimestamp
-                             transaction:(SDSAnyWriteTransaction *)transaction
-    NS_SWIFT_NAME(updateWithLastSentStoryTimestamp(_:transaction:));
-
-- (void)updateWithStoryViewMode:(TSThreadStoryViewMode)storyViewMode
-                    transaction:(SDSAnyWriteTransaction *)transaction
-    NS_SWIFT_NAME(updateWithStoryViewMode(_:transaction:));
 
 #pragma mark - Merging
 

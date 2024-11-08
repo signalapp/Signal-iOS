@@ -389,3 +389,16 @@ public extension TSGroupModel {
         return filePaths
     }
 }
+
+// MARK: -
+
+extension TSGroupModel {
+    static func generateRandomGroupId(_ version: GroupsVersion) -> Data {
+        let length = switch version {
+        case .V1: kGroupIdLengthV1
+        case .V2: kGroupIdLengthV2
+        }
+
+        return Randomness.generateRandomBytes(length)
+    }
+}

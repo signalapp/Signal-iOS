@@ -20,8 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TSThread ()
 
-@property (nonatomic, nullable) NSNumber *lastSentStoryTimestamp;
-
 @property (nonatomic, nullable) NSDate *creationDate;
 @property (nonatomic) BOOL isArchivedObsolete;
 @property (nonatomic) BOOL isMarkedUnreadObsolete;
@@ -31,8 +29,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) NSDate *mutedUntilDateObsolete;
 @property (nonatomic) uint64_t lastVisibleSortIdObsolete;
 @property (nonatomic) double lastVisibleSortIdOnScreenPercentageObsolete;
-
-@property (nonatomic) TSThreadMentionNotificationMode mentionNotificationMode;
 
 @end
 
@@ -502,59 +498,6 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
     }
 
     return [archivalDate compare:lastMessageDate] != NSOrderedAscending;
-}
-
-- (void)updateWithDraft:(nullable MessageBody *)draftMessageBody
-              replyInfo:(nullable ThreadReplyInfoObjC *)replyInfo
-    editTargetTimestamp:(nullable NSNumber *)editTargetTimestamp
-            transaction:(SDSAnyWriteTransaction *)transaction
-{
-    [self anyUpdateWithTransaction:transaction
-                             block:^(TSThread *thread) {
-                                 thread.messageDraft = draftMessageBody.text;
-                                 thread.messageDraftBodyRanges = draftMessageBody.ranges;
-                                 thread.editTargetTimestamp = editTargetTimestamp;
-                             }];
-    if (replyInfo != nil) {
-        [replyInfo saveWithThreadUniqueId:self.uniqueId tx:transaction];
-    } else {
-        [ThreadReplyInfoObjC deleteWithThreadUniqueId:self.uniqueId tx:transaction];
-    }
-}
-
-- (void)updateWithMentionNotificationMode:(TSThreadMentionNotificationMode)mentionNotificationMode
-                      wasLocallyInitiated:(bool)wasLocallyInitiated
-                              transaction:(SDSAnyWriteTransaction *)transaction
-{
-    [self anyUpdateWithTransaction:transaction
-                             block:^(TSThread *thread) { thread.mentionNotificationMode = mentionNotificationMode; }];
-    if (wasLocallyInitiated && self.isGroupV2Thread) {
-        TSGroupThread *groupThread = (TSGroupThread *)self;
-        [SSKEnvironment.shared.storageServiceManagerObjcRef recordPendingUpdatesWithGroupModel:groupThread.groupModel];
-    }
-}
-
-- (void)updateWithShouldThreadBeVisible:(BOOL)shouldThreadBeVisible transaction:(SDSAnyWriteTransaction *)transaction
-{
-    [self anyUpdateWithTransaction:transaction
-                             block:^(TSThread *thread) { thread.shouldThreadBeVisible = shouldThreadBeVisible; }];
-}
-
-- (void)updateWithLastSentStoryTimestamp:(nullable NSNumber *)lastSentStoryTimestamp
-                             transaction:(SDSAnyWriteTransaction *)transaction
-{
-    [self anyUpdateWithTransaction:transaction
-                             block:^(TSThread *thread) {
-                                 if (lastSentStoryTimestamp.unsignedIntegerValue
-                                     > thread.lastSentStoryTimestamp.unsignedIntegerValue) {
-                                     thread.lastSentStoryTimestamp = lastSentStoryTimestamp;
-                                 }
-                             }];
-}
-
-- (void)updateWithStoryViewMode:(TSThreadStoryViewMode)storyViewMode transaction:(SDSAnyWriteTransaction *)transaction
-{
-    [self anyUpdateWithTransaction:transaction block:^(TSThread *thread) { thread.storyViewMode = storyViewMode; }];
 }
 
 #pragma mark - Merging

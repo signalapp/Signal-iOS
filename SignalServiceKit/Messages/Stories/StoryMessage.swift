@@ -426,7 +426,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         record.anyInsert(transaction: transaction)
 
         for thread in record.threads(transaction: transaction) {
-            thread.updateWithLastSentStoryTimestamp(NSNumber(value: record.timestamp), transaction: transaction)
+            thread.updateWithLastSentStoryTimestamp(record.timestamp, transaction: transaction)
 
             // If story sending for a group was implicitly enabled, explicitly enable it
             if let thread = thread as? TSGroupThread, !thread.isStorySendExplicitlyEnabled {

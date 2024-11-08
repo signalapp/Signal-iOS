@@ -66,8 +66,6 @@ public class SSKEnvironment: NSObject {
     public let signalServiceRef: OWSSignalServiceProtocol
     public let accountServiceClientRef: AccountServiceClient
     public let storageServiceManagerRef: StorageServiceManager
-    @objc
-    public var storageServiceManagerObjcRef: StorageServiceManagerObjc { storageServiceManagerRef }
     public let sskPreferencesRef: SSKPreferences
     public let groupV2UpdatesRef: GroupV2Updates
     /// This should be deprecated.

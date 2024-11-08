@@ -146,7 +146,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
                 TSAttachment.anyCount(transaction: tx),
                 try? Attachment.Record.fetchCount(tx.unwrapGrdbRead.database),
                 DonationSubscriptionManager.getSubscriberID(transaction: tx),
-                StorageServiceManifestVersion.getCurrent(tx: tx)
+                SSKEnvironment.shared.storageServiceManagerRef.currentManifestVersion(tx: tx.asV2Read)
             )
         }
 
