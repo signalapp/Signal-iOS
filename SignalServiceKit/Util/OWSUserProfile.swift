@@ -1431,21 +1431,6 @@ extension OWSUserProfile {
 
         anyUpsert(transaction: tx)
     }
-
-    /// Updates the profile key for this model on disk with no other
-    /// side-effects, such as triggering profile fetches, updating storage
-    /// service, or posting local notifications.
-    ///
-    /// - Important
-    /// Only callers who are updating the profile in a vacuum should call this.
-    public func upsertProfileKeyWithNoSideEffects(
-        _ profileKey: Aes256Key,
-        tx: SDSAnyWriteTransaction
-    ) {
-        self.profileKey = profileKey
-
-        anyUpsert(transaction: tx)
-    }
 }
 
 // MARK: -
