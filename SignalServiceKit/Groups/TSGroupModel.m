@@ -11,10 +11,21 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// Be careful tweaking this value. We currently store group avatars in the group model,
-// and a ton of these live in memory at any time. Avoid increasing this value until we have
-// a better solution.
-const NSUInteger kMaxAvatarSize = 500 * 1000;
+const NSUInteger kMaxEncryptedAvatarSize = 3 * 1024 * 1024;
+const NSUInteger kMaxAvatarSize = (kMaxEncryptedAvatarSize
+    /* The length of the padding. See GroupSecretParams:encrypt_blob_with_padding in LibSignal. */
+    - sizeof(uint32_t)
+    /* Overhead from GroupAttributeBlob (protobuf) via GroupV2Params.encryptGroupAvatar(_:). */
+    /* One byte for "2:LEN" & 4 bytes to represent more than 2 MiB of data (2^21). */
+    - 1
+    - 4
+    /* The padding bytes themselves. See ClientZkGroupCipher.encryptBlob(randomness:plaintext:). */
+    - 0
+    /* Encryption tag & nonce. See GroupSecretParams:encrypt_blob in LibSignal. */
+    - 16
+    - 12
+    /* Reserved byte. See GroupSecretParams:encrypt_blob in LibSignal. */
+    - 1);
 const CGFloat kMaxAvatarDimension = 1024;
 const NSUInteger kGroupIdLengthV1 = 16;
 const NSUInteger kGroupIdLengthV2 = 32;
