@@ -348,13 +348,13 @@ extension SignalRecipient: IndexableName {
             }
 
             guard let phoneNumberObj = SSKEnvironment.shared.phoneNumberUtilRef.parseE164(phoneNumber) else {
-                owsFailDebug("couldn't parse phoneNumber: \(phoneNumber)")
+                Logger.error("couldn't parse phoneNumber: \(phoneNumber)")
                 return nil
             }
 
             let nationalNumber = SSKEnvironment.shared.phoneNumberUtilRef.formattedNationalNumber(for: phoneNumberObj)
             guard let digitScalars = nationalNumber?.unicodeScalars.filter({ CharacterSet.decimalDigits.contains($0) }) else {
-                owsFailDebug("couldn't parse phoneNumber: \(phoneNumber)")
+                Logger.error("couldn't parse phoneNumber: \(phoneNumber)")
                 return nil
             }
 
