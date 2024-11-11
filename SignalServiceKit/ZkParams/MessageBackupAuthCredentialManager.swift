@@ -23,14 +23,8 @@ public struct MessageBackupAuthCredentialManagerImpl: MessageBackupAuthCredentia
 
     private enum Constants {
         static let numberOfDaysToFetchInSeconds: TimeInterval = 7 * kDayInterval
-        static let numberOfDaysFetchIntervalInSeconds: TimeInterval = 3 * kDayInterval
-
+        static let numberOfDaysRemainingFutureCredentialsInSeconds: TimeInterval = 4 * kDayInterval
         static let keyValueStoreCollectionName = "MessageBackupAuthCredentialManager"
-
-        private static let keyValueStoreLastBackupCredentialFetchTimeKeyPrefix = "LastCredentialFetchTime:"
-        static func cacheKey(for credentialType: MessageBackupAuthCredentialType) -> String {
-            keyValueStoreLastBackupCredentialFetchTimeKeyPrefix + credentialType.rawValue
-        }
     }
 
     private let authCredentialStore: AuthCredentialStore
@@ -61,22 +55,28 @@ public struct MessageBackupAuthCredentialManagerImpl: MessageBackupAuthCredentia
         localAci: Aci,
         chatServiceAuth auth: ChatServiceAuth
     ) async throws -> BackupAuthCredential {
-        let fetchTimeKey = Constants.cacheKey(for: credentialType)
-        let authCredential = db.read { tx -> BackupAuthCredential? in
-            let lastCredentialFetchTime = kvStore.getDate(fetchTimeKey, transaction: tx) ?? .distantPast
+        let redemptionTime = self.dateProvider().startOfTodayUTCTimestamp()
+        let futureRedemptionTime = redemptionTime + UInt64(Constants.numberOfDaysRemainingFutureCredentialsInSeconds)
 
-            // every 3 days fetch 7 days worth
-            if abs(lastCredentialFetchTime.timeIntervalSinceNow) < Constants.numberOfDaysFetchIntervalInSeconds {
-                let redemptionTime = self.dateProvider().startOfTodayUTCTimestamp()
-                if let backupAuthCredential = self.authCredentialStore.backupAuthCredential(
-                    for: credentialType,
-                    redemptionTime: redemptionTime,
-                    tx: tx
-                ) {
-                    return backupAuthCredential
-                } else {
-                    owsFailDebug("Error retrieving cached auth credential")
-                }
+        let authCredential = db.read { tx -> BackupAuthCredential? in
+            // Check there are more than 4 days of credentials remaining.
+            // If not, return nil and trigger a credential fetch.
+            guard let _ = self.authCredentialStore.backupAuthCredential(
+                for: credentialType,
+                redemptionTime: futureRedemptionTime,
+                tx: tx
+            ) else {
+                return nil
+            }
+
+            if let backupAuthCredential = self.authCredentialStore.backupAuthCredential(
+                for: credentialType,
+                redemptionTime: redemptionTime,
+                tx: tx
+            ) {
+                return backupAuthCredential
+            } else {
+                owsFailDebug("Error retrieving cached auth credential")
             }
 
             return nil
@@ -107,7 +107,6 @@ public struct MessageBackupAuthCredentialManagerImpl: MessageBackupAuthCredentia
                         tx: tx
                     )
                 }
-                kvStore.setDate(dateProvider(), key: fetchTimeKey, transaction: tx)
             }
         }
 
@@ -126,6 +125,7 @@ public struct MessageBackupAuthCredentialManagerImpl: MessageBackupAuthCredentia
 
         let startTimestamp = self.dateProvider().startOfTodayUTCTimestamp()
         let endTimestamp = startTimestamp + UInt64(Constants.numberOfDaysToFetchInSeconds)
+        let timestampRange = startTimestamp...endTimestamp
 
         let request = OWSRequestFactory.backupAuthenticationCredentialRequest(
             from: startTimestamp,
@@ -145,6 +145,10 @@ public struct MessageBackupAuthCredentialManagerImpl: MessageBackupAuthCredentia
         return try authCredentialRepsonse.credentials.reduce(into: [MessageBackupAuthCredentialType: [ReceivedBackupAuthCredentials]]()) { result, element in
             let type = element.key
             result[type] = try element.value.compactMap {
+                guard timestampRange.contains($0.redemptionTime) else {
+                    owsFailDebug("Dropping \(type.rawValue) backup credential we didn't ask for")
+                    return nil
+                }
                 do {
                     let redemptionDate = Date(timeIntervalSince1970: TimeInterval($0.redemptionTime))
                     let backupRequestContext = try db.read { tx in
