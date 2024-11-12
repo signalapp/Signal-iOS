@@ -10,8 +10,6 @@ public import UIKit
 
 public class ProvisioningSplashViewController: ProvisioningBaseViewController {
 
-    let modeSwitchButton = UIButton()
-
     public override var primaryLayoutMargins: UIEdgeInsets {
         var defaultMargins = super.primaryLayoutMargins
         // we want the hero image a bit closer to the top than most
@@ -25,6 +23,7 @@ public class ProvisioningSplashViewController: ProvisioningBaseViewController {
         view.addSubview(primaryView)
         primaryView.autoPinEdgesToSuperviewEdges()
 
+        let modeSwitchButton = UIButton()
         view.addSubview(modeSwitchButton)
         modeSwitchButton.setTemplateImageName(
             "link-slash",
@@ -33,7 +32,10 @@ public class ProvisioningSplashViewController: ProvisioningBaseViewController {
         modeSwitchButton.autoSetDimensions(to: CGSize(square: 40))
         modeSwitchButton.autoPinEdge(toSuperviewMargin: .trailing)
         modeSwitchButton.autoPinEdge(toSuperviewMargin: .top)
-        modeSwitchButton.addTarget(self, action: #selector(didTapModeSwitch), for: .touchUpInside)
+        modeSwitchButton.addAction(UIAction { [weak self] _ in
+            guard let self else { return }
+            self.provisioningController.provisioningSplashRequestedModeSwitch(viewController: self)
+        }, for: .touchUpInside)
         modeSwitchButton.accessibilityIdentifier = "onboarding.splash.modeSwitch"
 
         view.backgroundColor = Theme.backgroundColor
@@ -97,13 +99,6 @@ public class ProvisioningSplashViewController: ProvisioningBaseViewController {
     }
 
     // MARK: - Events
-
-    @objc
-   private func didTapModeSwitch() {
-       Logger.info("")
-
-       provisioningController.provisioningSplashRequestedModeSwitch(viewController: self)
-   }
 
     @objc
     private func explanationLabelTapped(sender: UIGestureRecognizer) {
