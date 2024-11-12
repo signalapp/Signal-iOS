@@ -879,6 +879,7 @@
 		66485EB92CD17D6400B8613F /* DbRollbackTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66485EB82CD17D5D00B8613F /* DbRollbackTests.swift */; };
 		6649651C2BDC6EAD00E2DE98 /* AVAsset+Attachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6649651B2BDC6EAD00E2DE98 /* AVAsset+Attachment.swift */; };
 		6649651E2BDF169F00E2DE98 /* UIImage+Attachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6649651D2BDF169F00E2DE98 /* UIImage+Attachment.swift */; };
+		664A4D2D2CDEDD0800AC26F3 /* MessageBackupAvatarFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664A4D2C2CDEDCF600AC26F3 /* MessageBackupAvatarFetcher.swift */; };
 		664BA8452BB5CE12005638E0 /* PreparedOutgoingMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664BA8442BB5CE12005638E0 /* PreparedOutgoingMessage.swift */; };
 		664BA8472BB5CE1A005638E0 /* UnpreparedOutgoingMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664BA8462BB5CE1A005638E0 /* UnpreparedOutgoingMessage.swift */; };
 		664BA84A2BB5DFE1005638E0 /* ContactShareDraft.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664BA8492BB5DFE1005638E0 /* ContactShareDraft.swift */; };
@@ -4621,6 +4622,7 @@
 		66485EB82CD17D5D00B8613F /* DbRollbackTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DbRollbackTests.swift; sourceTree = "<group>"; };
 		6649651B2BDC6EAD00E2DE98 /* AVAsset+Attachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVAsset+Attachment.swift"; sourceTree = "<group>"; };
 		6649651D2BDF169F00E2DE98 /* UIImage+Attachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Attachment.swift"; sourceTree = "<group>"; };
+		664A4D2C2CDEDCF600AC26F3 /* MessageBackupAvatarFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupAvatarFetcher.swift; sourceTree = "<group>"; };
 		664BA8442BB5CE12005638E0 /* PreparedOutgoingMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreparedOutgoingMessage.swift; sourceTree = "<group>"; };
 		664BA8462BB5CE1A005638E0 /* UnpreparedOutgoingMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnpreparedOutgoingMessage.swift; sourceTree = "<group>"; };
 		664BA8492BB5DFE1005638E0 /* ContactShareDraft.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactShareDraft.swift; sourceTree = "<group>"; };
@@ -9909,6 +9911,7 @@
 		66CD255A2B06884700139E17 /* Recipient */ = {
 			isa = PBXGroup;
 			children = (
+				664A4D2C2CDEDCF600AC26F3 /* MessageBackupAvatarFetcher.swift */,
 				E1447D8E2CCACFFA004D8FA2 /* MessageBackupCallLinkRecipientArchiver.swift */,
 				6619A1CA2B2D176E004B38FE /* MessageBackupContactAddress.swift */,
 				66CD256D2B06E14F00139E17 /* MessageBackupContactRecipientArchiver.swift */,
@@ -17259,6 +17262,7 @@
 				66CD25642B06949C00139E17 /* MessageBackupAccountDataArchiver.swift in Sources */,
 				D9CA61482C2E2D0000F99EA3 /* MessageBackupAdHocCallArchiver.swift in Sources */,
 				C18806342BD8080B0024044A /* MessageBackupAuthCredentialManager.swift in Sources */,
+				664A4D2D2CDEDD0800AC26F3 /* MessageBackupAvatarFetcher.swift in Sources */,
 				E1447D8F2CCACFFD004D8FA2 /* MessageBackupCallLinkRecipientArchiver.swift in Sources */,
 				66CD25662B0695F400139E17 /* MessageBackupChatArchiver.swift in Sources */,
 				66CD25682B06960F00139E17 /* MessageBackupChatItemArchiver.swift in Sources */,

@@ -148,6 +148,11 @@ public protocol GroupsV2 {
         groupSecretParams: GroupSecretParams
     ) async throws -> Data
 
+    func fetchGroupAvatarRestoredFromBackup(
+        groupModel: TSGroupModelV2,
+        avatarUrlPath: String
+    ) async throws -> Data
+
     func joinGroupViaInviteLink(
         groupId: Data,
         groupSecretParams: GroupSecretParams,
@@ -709,6 +714,13 @@ public class MockGroupsV2: GroupsV2 {
         groupSecretParams: GroupSecretParams
     ) async throws -> Data {
         owsFail("Not implemented.")
+    }
+
+    public func fetchGroupAvatarRestoredFromBackup(
+        groupModel: TSGroupModelV2,
+        avatarUrlPath: String
+    ) async throws -> Data {
+        owsFail("Not implemented")
     }
 
     public func joinGroupViaInviteLink(

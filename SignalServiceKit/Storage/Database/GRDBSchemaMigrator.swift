@@ -305,6 +305,7 @@ public class GRDBSchemaMigrator: NSObject {
         case deleteKnownStickerPackTable
         case addReceiptCredentialColumnToJobRecord
         case dropOrphanedGroupStoryReplies
+        case addMessageBackupAvatarFetchQueue
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -366,7 +367,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 97
+    public static let grdbSchemaVersionLatest: UInt = 98
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -3674,6 +3675,17 @@ public class GRDBSchemaMigrator: NSObject {
                     );
                     """,
                     arguments: [threadUniqueId])
+            }
+            return .success(())
+        }
+
+        migrator.registerMigration(.addMessageBackupAvatarFetchQueue) { tx in
+            try tx.database.create(table: "MessageBackupAvatarFetchQueue") { table in
+                table.column("id", .integer).primaryKey().notNull()
+                table.column("groupThreadRowId", .integer)
+                    .references("model_TSThread", column: "id", onDelete: .cascade)
+                table.column("groupAvatarUrl", .text)
+                table.column("serviceId", .blob)
             }
             return .success(())
         }

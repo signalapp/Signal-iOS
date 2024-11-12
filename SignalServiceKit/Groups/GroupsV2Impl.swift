@@ -1425,6 +1425,19 @@ public class GroupsV2Impl: GroupsV2 {
         return try downloadedAvatars.avatarData(for: avatarUrlPath)
     }
 
+    public func fetchGroupAvatarRestoredFromBackup(
+        groupModel: TSGroupModelV2,
+        avatarUrlPath: String
+    ) async throws -> Data {
+        let groupV2Params = try GroupV2Params(groupSecretParams: groupModel.secretParams())
+        let downloadedAvatars = try await fetchAvatarData(
+            avatarUrlPaths: [avatarUrlPath],
+            downloadedAvatars: GroupV2DownloadedAvatars(),
+            groupV2Params: groupV2Params
+        )
+        return try downloadedAvatars.avatarData(for: avatarUrlPath)
+    }
+
     public func joinGroupViaInviteLink(
         groupId: Data,
         groupSecretParams: GroupSecretParams,

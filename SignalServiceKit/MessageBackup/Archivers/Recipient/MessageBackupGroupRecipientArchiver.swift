@@ -23,6 +23,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
     typealias RestoreFrameResult = MessageBackup.RestoreFrameResult<RecipientId>
     private typealias RestoreFrameError = MessageBackup.RestoreFrameError<RecipientId>
 
+    private let avatarFetcher: MessageBackupAvatarFetcher
     private let disappearingMessageConfigStore: DisappearingMessagesConfigurationStore
     private let groupsV2: GroupsV2
     private let profileManager: MessageBackup.Shims.ProfileManager
@@ -32,12 +33,14 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
     private var logger: MessageBackupLogger { .shared }
 
     public init(
+        avatarFetcher: MessageBackupAvatarFetcher,
         disappearingMessageConfigStore: DisappearingMessagesConfigurationStore,
         groupsV2: GroupsV2,
         profileManager: MessageBackup.Shims.ProfileManager,
         storyStore: MessageBackupStoryStore,
         threadStore: MessageBackupThreadStore
     ) {
+        self.avatarFetcher = avatarFetcher
         self.disappearingMessageConfigStore = disappearingMessageConfigStore
         self.groupsV2 = groupsV2
         self.profileManager = profileManager
@@ -377,8 +380,11 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
             }
         }
 
-        if groupModel.avatarUrlPath != nil {
-            // TODO: [Backups] Enqueue download of the group avatar.
+        do {
+            try avatarFetcher.enqueueFetchOfGroupAvatar(groupThread, tx: context.tx)
+        } catch let error {
+            // Don't fail entirely, we just won't fetch the avatar.
+            partialErrors.append(.restoreFrameError(.databaseInsertionFailed(error), recipient.recipientId))
         }
 
         // MARK: Return successfully!

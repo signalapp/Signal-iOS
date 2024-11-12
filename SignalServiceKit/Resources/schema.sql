@@ -2295,3 +2295,16 @@ CREATE
         ON "DeletedCallRecord"("deletedAtTimestamp"
 )
 ;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "MessageBackupAvatarFetchQueue" (
+            "id" INTEGER PRIMARY KEY NOT NULL
+            ,"groupThreadRowId" INTEGER REFERENCES "model_TSThread"("id"
+        )
+            ON DELETE
+                CASCADE
+                ,"groupAvatarUrl" TEXT
+                ,"serviceId" BLOB
+)
+;

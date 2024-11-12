@@ -301,6 +301,7 @@ public extension DatabaseRecovery {
             QueuedBackupAttachmentUpload.databaseTableName,
             QueuedBackupStickerPackDownload.databaseTableName,
             OrphanedBackupAttachment.databaseTableName,
+            "MessageBackupAvatarFetchQueue",
         ]
 
         private static func prepareToCopyTablesWithBestEffort(

@@ -17,6 +17,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
     typealias RestoreFrameResult = MessageBackup.RestoreFrameResult<RecipientId>
     private typealias RestoreFrameError = MessageBackup.RestoreFrameError<RecipientId>
 
+    private let avatarFetcher: MessageBackupAvatarFetcher
     private let blockingManager: MessageBackup.Shims.BlockingManager
     private let profileManager: MessageBackup.Shims.ProfileManager
     private let recipientDatabaseTable: any RecipientDatabaseTable
@@ -29,6 +30,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
     private let usernameLookupManager: UsernameLookupManager
 
     public init(
+        avatarFetcher: MessageBackupAvatarFetcher,
         blockingManager: MessageBackup.Shims.BlockingManager,
         profileManager: MessageBackup.Shims.ProfileManager,
         recipientDatabaseTable: any RecipientDatabaseTable,
@@ -40,6 +42,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
         tsAccountManager: TSAccountManager,
         usernameLookupManager: UsernameLookupManager
     ) {
+        self.avatarFetcher = avatarFetcher
         self.blockingManager = blockingManager
         self.profileManager = profileManager
         self.recipientDatabaseTable = recipientDatabaseTable
@@ -525,7 +528,13 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
             tx: context.tx
         )
 
-        // TODO: [Backups] Enqueue a fetch of this contact's profile and download of their avatar (even if we have no profile key).
+        if let serviceId = aci ?? pni {
+            do {
+                try avatarFetcher.enqueueFetchOfUserProfile(serviceId: serviceId, tx: context.tx)
+            } catch let error {
+                partialErrors.append(.restoreFrameError(.databaseInsertionFailed(error), recipientProto.recipientId))
+            }
+        }
 
         if partialErrors.isEmpty {
             return .success

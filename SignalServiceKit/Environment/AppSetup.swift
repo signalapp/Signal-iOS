@@ -1015,6 +1015,34 @@ public class AppSetup {
         let reactionStore: any ReactionStore = ReactionStoreImpl()
         let disappearingMessagesJob = OWSDisappearingMessagesJob(appReadiness: appReadiness, databaseStorage: databaseStorage)
 
+        let storageServiceRecordIkmCapabilityStore = StorageServiceRecordIkmCapabilityStoreImpl(
+            keyValueStoreFactory: keyValueStoreFactory
+        )
+
+        let profileFetcher = ProfileFetcherImpl(
+            db: db,
+            deleteForMeSyncMessageSettingsStore: deleteForMeSyncMessageSettingsStore,
+            disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
+            identityManager: identityManager,
+            paymentsHelper: paymentsHelper,
+            profileManager: profileManager,
+            reachabilityManager: reachabilityManager,
+            recipientDatabaseTable: recipientDatabaseTable,
+            recipientManager: recipientManager,
+            recipientMerger: recipientMerger,
+            storageServiceRecordIkmCapabilityStore: storageServiceRecordIkmCapabilityStore,
+            storageServiceRecordIkmMigrator: StorageServiceRecordIkmMigratorImpl(
+                db: db,
+                storageServiceRecordIkmCapabilityStore: storageServiceRecordIkmCapabilityStore,
+                storageServiceManager: storageServiceManager,
+                tsAccountManager: tsAccountManager
+            ),
+            syncManager: syncManager,
+            tsAccountManager: tsAccountManager,
+            udManager: udManager,
+            versionedProfiles: versionedProfiles
+        )
+
         let messageBackupChatStyleArchiver = MessageBackupChatStyleArchiver(
             attachmentManager: attachmentManager,
             attachmentStore: attachmentStore,
@@ -1032,6 +1060,14 @@ public class AppSetup {
         let messageBackupErrorPresenter = messageBackupErrorPresenterFactory.build(
             db: db,
             keyValueStoreFactory: keyValueStoreFactory,
+            tsAccountManager: tsAccountManager
+        )
+        let messageBackupAvatarFetcher = MessageBackupAvatarFetcher(
+            appReadiness: appReadiness,
+            db: db,
+            groupsV2: groupsV2,
+            profileFetcher: profileFetcher,
+            threadStore: threadStore,
             tsAccountManager: tsAccountManager
         )
 
@@ -1087,6 +1123,7 @@ public class AppSetup {
                 threadStore: backupThreadStore
             ),
             contactRecipientArchiver: MessageBackupContactRecipientArchiver(
+                avatarFetcher: messageBackupAvatarFetcher,
                 blockingManager: MessageBackup.Wrappers.BlockingManager(blockingManager),
                 profileManager: MessageBackup.Wrappers.ProfileManager(profileManager),
                 recipientDatabaseTable: recipientDatabaseTable,
@@ -1121,6 +1158,7 @@ public class AppSetup {
                 searchableNameIndexer: searchableNameIndexer
             ),
             groupRecipientArchiver: MessageBackupGroupRecipientArchiver(
+                avatarFetcher: messageBackupAvatarFetcher,
                 disappearingMessageConfigStore: disappearingMessagesConfigurationStore,
                 groupsV2: groupsV2,
                 profileManager: MessageBackup.Wrappers.ProfileManager(profileManager),
@@ -1219,10 +1257,6 @@ public class AppSetup {
             messageBackupManager: messageBackupManager,
             networkManager: networkManager,
             tsAccountManager: tsAccountManager
-        )
-
-        let storageServiceRecordIkmCapabilityStore = StorageServiceRecordIkmCapabilityStoreImpl(
-            keyValueStoreFactory: keyValueStoreFactory
         )
 
         let dependenciesBridge = DependenciesBridge(
@@ -1380,29 +1414,6 @@ public class AppSetup {
         let sskPreferences = SSKPreferences()
         let groupV2Updates = testDependencies.groupV2Updates ?? GroupV2UpdatesImpl(appReadiness: appReadiness)
         let messageFetcherJob = MessageFetcherJob(appReadiness: appReadiness)
-        let profileFetcher = ProfileFetcherImpl(
-            db: db,
-            deleteForMeSyncMessageSettingsStore: deleteForMeSyncMessageSettingsStore,
-            disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
-            identityManager: identityManager,
-            paymentsHelper: paymentsHelper,
-            profileManager: profileManager,
-            reachabilityManager: reachabilityManager,
-            recipientDatabaseTable: recipientDatabaseTable,
-            recipientManager: recipientManager,
-            recipientMerger: recipientMerger,
-            storageServiceRecordIkmCapabilityStore: storageServiceRecordIkmCapabilityStore,
-            storageServiceRecordIkmMigrator: StorageServiceRecordIkmMigratorImpl(
-                db: db,
-                storageServiceRecordIkmCapabilityStore: storageServiceRecordIkmCapabilityStore,
-                storageServiceManager: storageServiceManager,
-                tsAccountManager: tsAccountManager
-            ),
-            syncManager: syncManager,
-            tsAccountManager: tsAccountManager,
-            udManager: udManager,
-            versionedProfiles: versionedProfiles
-        )
         let messagePipelineSupervisor = MessagePipelineSupervisor()
         let paymentsCurrencies = testDependencies.paymentsCurrencies ?? PaymentsCurrenciesImpl(appReadiness: appReadiness)
         let spamChallengeResolver = SpamChallengeResolver(appReadiness: appReadiness)
