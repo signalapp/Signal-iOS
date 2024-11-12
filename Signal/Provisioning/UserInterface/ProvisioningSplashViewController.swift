@@ -67,8 +67,12 @@ public class ProvisioningSplashViewController: ProvisioningBaseViewController {
         explanationLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(explanationLabelTapped)))
         explanationLabel.accessibilityIdentifier = "onboarding.splash." + "explanationLabel"
 
-        let continueButton = self.primaryButton(title: CommonStrings.continueButton,
-                                                    selector: #selector(continuePressed))
+        let continueButton = self.primaryButton(title: CommonStrings.continueButton, action: .init(handler: { [weak self] _ in
+            guard let self else { return }
+            Task { @MainActor in
+                await self.provisioningController.provisioningSplashDidComplete(viewController: self)
+            }
+        }))
         continueButton.accessibilityIdentifier = "onboarding.splash." + "continueButton"
         let primaryButtonView = ProvisioningBaseViewController.horizontallyWrap(primaryButton: continueButton)
 
@@ -109,12 +113,5 @@ public class ProvisioningSplashViewController: ProvisioningBaseViewController {
         let url = TSConstants.legalTermsUrl
         let safariVC = SFSafariViewController(url: url)
         present(safariVC, animated: true)
-    }
-
-    @objc
-    private func continuePressed() {
-        Logger.info("")
-
-        provisioningController.provisioningSplashDidComplete(viewController: self)
     }
 }

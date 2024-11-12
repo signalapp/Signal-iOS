@@ -20,12 +20,9 @@ class ProvisioningPermissionsViewController: ProvisioningBaseViewController {
         content.didMove(toParent: self)
     }
 
-    func needsToAskForAnyPermissions() -> Guarantee<Bool> {
-        Guarantee { resolve in
-            UNUserNotificationCenter.current().getNotificationSettings { settings in
-                resolve(settings.authorizationStatus == .notDetermined)
-            }
-        }
+    func needsToAskForAnyPermissions() async -> Bool {
+        let settings = await UNUserNotificationCenter.current().notificationSettings()
+        return settings.authorizationStatus == .notDetermined
     }
 }
 

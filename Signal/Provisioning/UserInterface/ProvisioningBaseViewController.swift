@@ -92,6 +92,18 @@ public class ProvisioningBaseViewController: OWSViewController, OWSNavigationChi
         return button
     }
 
+    func primaryButton(title: String, action: UIAction) -> OWSFlatButton {
+        let button = OWSFlatButton.button(
+            title: title,
+            font: UIFont.dynamicTypeBodyClamped.semibold(),
+            titleColor: .white,
+            backgroundColor: .ows_accentBlue,
+            action: action)
+        button.button.layer.cornerRadius = 14
+        button.contentEdgeInsets = UIEdgeInsets(hMargin: 4, vMargin: 14)
+        return button
+    }
+
     func linkButton(title: String, selector: Selector) -> OWSFlatButton {
         linkButton(title: title, target: self, selector: selector)
     }

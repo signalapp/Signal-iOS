@@ -134,45 +134,27 @@ public class ProvisioningController: NSObject {
         SignalApp.shared.showRegistration(loader: loader, desiredMode: .registering, appReadiness: appReadiness)
     }
 
-    public func provisioningSplashDidComplete(viewController: UIViewController) {
-        AssertIsOnMainThread()
-
+    @MainActor
+    public func provisioningSplashDidComplete(viewController: UIViewController) async {
         Logger.info("")
-
-        pushPermissionsViewOrSkipToRegistration(onto: viewController)
+        await pushPermissionsViewOrSkipToRegistration(onto: viewController)
     }
 
-    private func pushPermissionsViewOrSkipToRegistration(
-        onto oldViewController: UIViewController
-    ) {
+    @MainActor
+    private func pushPermissionsViewOrSkipToRegistration(onto oldViewController: UIViewController) async {
         // Disable interaction during the asynchronous operation.
         oldViewController.view.isUserInteractionEnabled = false
 
         let newViewController = ProvisioningPermissionsViewController(provisioningController: self)
+        let needsToAskForAnyPermissions = await newViewController.needsToAskForAnyPermissions()
 
-        firstly(on: DispatchQueue.sharedUserInitiated) {
-            newViewController.needsToAskForAnyPermissions()
-        }.timeout(
-            // If we don't get an answer quickly, assume we need to ask. We don't
-            // expect to hit this timeout, but we really don't want to keep users
-            // waiting during registration.
-            seconds: 1,
-            substituteValue: true
-        ).recover(on: DispatchQueue.main) { error in
-            // This could only happen if something rejects, which we don't expect.
-            // However, because it's registration, we assume we need to ask instead of
-            // crashing—that's better than preventing registration.
-            owsFailDebug("\(error)")
-            return .value(true)
-        }.done(on: DispatchQueue.main) { (needsToAskForAnyPermissions: Bool) in
-            // Always re-enable interaction in case the user restart registration.
-            oldViewController.view.isUserInteractionEnabled = true
+        // Always re-enable interaction in case the user restart registration.
+        oldViewController.view.isUserInteractionEnabled = true
 
-            if needsToAskForAnyPermissions {
-                oldViewController.navigationController?.pushViewController(newViewController, animated: true)
-            } else {
-                self.provisioningPermissionsDidComplete(viewController: oldViewController)
-            }
+        if needsToAskForAnyPermissions {
+            oldViewController.navigationController?.pushViewController(newViewController, animated: true)
+        } else {
+            self.provisioningPermissionsDidComplete(viewController: oldViewController)
         }
     }
 
