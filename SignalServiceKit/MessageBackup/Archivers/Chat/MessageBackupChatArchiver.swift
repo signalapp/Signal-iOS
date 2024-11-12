@@ -171,7 +171,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
 
         guard let recipientId = context.recipientContext[recipientAddress] else {
             return .partialSuccess([.archiveFrameError(
-                .referencedRecipientIdMissing(recipientAddress),
+                .contactThreadMissingRecipient(recipientAddress),
                 thread.uniqueThreadIdentifier
             )])
         }

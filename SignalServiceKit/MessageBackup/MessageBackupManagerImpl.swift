@@ -863,8 +863,16 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         tx: DBWriteTransaction
     ) {
         let collapsedErrors = MessageBackup.collapse(errors)
-        collapsedErrors.forEach { $0.log() }
-        errorPresenter.persistErrors(collapsedErrors, tx: tx)
+        var maxLogLevel = -1
+        collapsedErrors.forEach { collapsedError in
+            collapsedError.log()
+            maxLogLevel = max(maxLogLevel, collapsedError.logLevel.rawValue)
+        }
+        // Only present errors if some error rises above warning.
+        // (But if one does, present _all_ errors).
+        if maxLogLevel > MessageBackup.LogLevel.warning.rawValue {
+            errorPresenter.persistErrors(collapsedErrors, tx: tx)
+        }
     }
 
     /// TSAttachments must be migrated to v2 Attachments before we can create or restore backups.
