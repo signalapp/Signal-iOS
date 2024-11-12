@@ -61,13 +61,16 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
                     key
                 ))
                 fallthrough
-            case .gradient(let gradientColor1, let gradientColor2, let angleRadians):
+            case .gradient(let gradientColor1, let gradientColor2, var angleRadians):
                 var gradient = BackupProto_ChatStyle.Gradient()
 
                 /// Convert radians to degrees. We manually round since the
                 /// float math is slightly lossy and sometimes gives back
                 /// `N.99999999999`; we want to return `N+1`, but the `UInt32`
                 /// conversion always rounds down.
+                while angleRadians < 0 {
+                    angleRadians += .pi * 2
+                }
                 gradient.angle = UInt32(round(angleRadians * 180 / .pi))
 
                 /// iOS only supports 2 "positions"; hardcode them.
