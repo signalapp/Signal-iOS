@@ -105,7 +105,7 @@ final class ChatListFilterControl: UIView {
     private var contentTranslationConstraint: NSLayoutConstraint!
     private var feedback: UIImpactFeedbackGenerator?
     private var filterIconAnimator: UIViewPropertyAnimator?
-    private var scrollViewTransitionAnimator: UIViewPropertyAnimator?
+    private var previousClearButtonConfiguration: UIButton.Configuration?
 
     private unowned let container: ChatListContainerView
     private weak var scrollView: UIScrollView?
@@ -385,7 +385,7 @@ final class ChatListFilterControl: UIView {
             previousClearButtonConfiguration = clearButton.configuration
             UIView.transition(with: clearButton, duration: 0.1, options: .transitionCrossDissolve) { [self] in
                 var configuration = previousClearButtonConfiguration
-                configuration?.baseForegroundColor = .filterIconActiveForeground
+                configuration?.baseForegroundColor = .Signal.label
                 configuration?.baseBackgroundColor = .filterIconActiveBackground
                 clearButton.configuration = configuration
             }
@@ -396,8 +396,6 @@ final class ChatListFilterControl: UIView {
             break
         }
     }
-
-    private var previousClearButtonConfiguration: UIButton.Configuration?
 
     private func updateContentOrigin() {
         contentTranslationConstraint.constant = fractionComplete * preferredContentHeight
