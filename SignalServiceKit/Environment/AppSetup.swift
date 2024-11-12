@@ -1126,9 +1126,11 @@ public class AppSetup {
                 avatarFetcher: messageBackupAvatarFetcher,
                 blockingManager: MessageBackup.Wrappers.BlockingManager(blockingManager),
                 profileManager: MessageBackup.Wrappers.ProfileManager(profileManager),
-                recipientDatabaseTable: recipientDatabaseTable,
                 recipientHidingManager: recipientHidingManager,
                 recipientManager: recipientManager,
+                recipientStore: MessageBackupRecipientStore(
+                    searchableNameIndexer: searchableNameIndexer
+                ),
                 signalServiceAddressCache: signalServiceAddressCache,
                 storyStore: backupStoryStore,
                 threadStore: backupThreadStore,

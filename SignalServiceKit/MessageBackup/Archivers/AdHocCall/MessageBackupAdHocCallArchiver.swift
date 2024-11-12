@@ -199,10 +199,14 @@ public class MessageBackupAdHocCallArchiverImpl: MessageBackupAdHocCallArchiver 
             }
         }
 
-        callRecordStore.insert(
-            callRecord: adHocCallRecord,
-            tx: context.tx
-        )
+        do {
+            try callRecordStore.insert(
+                callRecord: adHocCallRecord,
+                tx: context.tx
+            )
+        } catch {
+            return .failure(partialErrors + [.restoreFrameError(.databaseInsertionFailed(error), callId)])
+        }
 
         if partialErrors.isEmpty {
             return .success

@@ -265,16 +265,20 @@ private extension GroupCallRecordManager {
         }
 
         logger.info("Creating or updating record for group call join.")
-        createOrUpdateCallRecord(
-            callId: callId,
-            groupThread: groupThread,
-            groupThreadRowId: groupThreadRowId,
-            callDirection: callDirection,
-            groupCallStatus: groupCallStatus,
-            callEventTimestamp: joinTimestamp,
-            shouldSendSyncMessage: true,
-            tx: tx.asV2Write
-        )
+        do {
+            try createOrUpdateCallRecord(
+                callId: callId,
+                groupThread: groupThread,
+                groupThreadRowId: groupThreadRowId,
+                callDirection: callDirection,
+                groupCallStatus: groupCallStatus,
+                callEventTimestamp: joinTimestamp,
+                shouldSendSyncMessage: true,
+                tx: tx.asV2Write
+            )
+        } catch let error {
+            owsFailBeta("Failed to insert call record: \(error)")
+        }
     }
 
     /// Create or update a call record in response to the local declining a ring
@@ -293,15 +297,19 @@ private extension GroupCallRecordManager {
         }
 
         logger.info("Creating or updating record for group ring decline.")
-        createOrUpdateCallRecord(
-            callId: callIdFromRingId(ringId),
-            groupThread: groupThread,
-            groupThreadRowId: groupThreadRowId,
-            callDirection: .incoming,
-            groupCallStatus: .ringingDeclined,
-            callEventTimestamp: Date().ows_millisecondsSince1970,
-            shouldSendSyncMessage: true,
-            tx: tx.asV2Write
-        )
+        do {
+            try createOrUpdateCallRecord(
+                callId: callIdFromRingId(ringId),
+                groupThread: groupThread,
+                groupThreadRowId: groupThreadRowId,
+                callDirection: .incoming,
+                groupCallStatus: .ringingDeclined,
+                callEventTimestamp: Date().ows_millisecondsSince1970,
+                shouldSendSyncMessage: true,
+                tx: tx.asV2Write
+            )
+        } catch let error {
+            owsFailBeta("Failed to insert call record: \(error)")
+        }
     }
 }

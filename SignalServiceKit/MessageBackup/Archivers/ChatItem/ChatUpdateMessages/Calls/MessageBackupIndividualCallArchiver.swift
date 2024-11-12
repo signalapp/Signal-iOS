@@ -215,22 +215,26 @@ final class MessageBackupIndividualCallArchiver {
         }
 
         if individualCall.hasCallID {
-            let callRecord = individualCallRecordManager.createRecordForInteraction(
-                individualCallInteraction: individualCallInteraction,
-                individualCallInteractionRowId: individualCallInteraction.sqliteRowId!,
-                contactThread: contactThread,
-                contactThreadRowId: chatThread.threadRowId,
-                callId: individualCall.callID,
-                callType: callRecordType,
-                callDirection: callRecordDirection,
-                individualCallStatus: callRecordStatus,
-                callEventTimestamp: individualCall.startedCallTimestamp,
-                shouldSendSyncMessage: false,
-                tx: context.tx
-            )
-
-            if individualCall.read {
-                callRecordStore.markAsRead(callRecord: callRecord, tx: context.tx)
+            let callRecord: CallRecord
+            do {
+                callRecord = try individualCallRecordManager.createRecordForInteraction(
+                    individualCallInteraction: individualCallInteraction,
+                    individualCallInteractionRowId: individualCallInteraction.sqliteRowId!,
+                    contactThread: contactThread,
+                    contactThreadRowId: chatThread.threadRowId,
+                    callId: individualCall.callID,
+                    callType: callRecordType,
+                    callDirection: callRecordDirection,
+                    individualCallStatus: callRecordStatus,
+                    callEventTimestamp: individualCall.startedCallTimestamp,
+                    shouldSendSyncMessage: false,
+                    tx: context.tx
+                )
+                if individualCall.read {
+                    try callRecordStore.markAsRead(callRecord: callRecord, tx: context.tx)
+                }
+            } catch {
+                return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
             }
         }
 

@@ -20,9 +20,9 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
     private let avatarFetcher: MessageBackupAvatarFetcher
     private let blockingManager: MessageBackup.Shims.BlockingManager
     private let profileManager: MessageBackup.Shims.ProfileManager
-    private let recipientDatabaseTable: any RecipientDatabaseTable
     private let recipientHidingManager: RecipientHidingManager
     private let recipientManager: any SignalRecipientManager
+    private let recipientStore: MessageBackupRecipientStore
     private let signalServiceAddressCache: SignalServiceAddressCache
     private let storyStore: MessageBackupStoryStore
     private let threadStore: MessageBackupThreadStore
@@ -33,9 +33,9 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
         avatarFetcher: MessageBackupAvatarFetcher,
         blockingManager: MessageBackup.Shims.BlockingManager,
         profileManager: MessageBackup.Shims.ProfileManager,
-        recipientDatabaseTable: any RecipientDatabaseTable,
         recipientHidingManager: RecipientHidingManager,
         recipientManager: any SignalRecipientManager,
+        recipientStore: MessageBackupRecipientStore,
         signalServiceAddressCache: SignalServiceAddressCache,
         storyStore: MessageBackupStoryStore,
         threadStore: MessageBackupThreadStore,
@@ -45,9 +45,9 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
         self.avatarFetcher = avatarFetcher
         self.blockingManager = blockingManager
         self.profileManager = profileManager
-        self.recipientDatabaseTable = recipientDatabaseTable
         self.recipientHidingManager = recipientHidingManager
         self.recipientManager = recipientManager
+        self.recipientStore = recipientStore
         self.signalServiceAddressCache = signalServiceAddressCache
         self.storyStore = storyStore
         self.threadStore = threadStore
@@ -103,7 +103,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
         /// key" for contacts. They directly contain many of the fields we store
         /// in a `Contact` recipient, with the other fields keyed off data in
         /// the recipient.
-        recipientDatabaseTable.enumerateAll(tx: context.tx) { recipient in
+        let recipientBlock: (SignalRecipient) -> Void = { recipient in
             guard
                 let contactAddress = MessageBackup.ContactAddress(
                     aci: recipient.aci,
@@ -141,7 +141,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
             var isStoryHidden = false
             if let aci = recipient.aci {
                 do {
-                    isStoryHidden = try storyStore.getOrCreateStoryContextAssociatedData(
+                    isStoryHidden = try self.storyStore.getOrCreateStoryContextAssociatedData(
                         for: aci,
                         context: context
                     ).isHidden
@@ -153,12 +153,12 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
                 }
             }
 
-            let contact = buildContactRecipient(
+            let contact = self.buildContactRecipient(
                 aci: contactAddress.aci,
                 pni: contactAddress.pni,
                 e164: contactAddress.e164,
                 username: recipient.aci.flatMap { aci in
-                    usernameLookupManager.fetchUsername(
+                    self.usernameLookupManager.fetchUsername(
                         forAci: aci,
                         transaction: context.tx
                     )
@@ -167,7 +167,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
                 isWhitelisted: whitelistedAddresses.contains(recipient.address),
                 isStoryHidden: isStoryHidden,
                 visibility: { () -> BackupProto_Contact.Visibility in
-                    guard let hiddenRecipient = recipientHidingManager.fetchHiddenRecipient(
+                    guard let hiddenRecipient = self.recipientHidingManager.fetchHiddenRecipient(
                         signalRecipient: recipient,
                         tx: context.tx
                     ) else {
@@ -175,9 +175,9 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
                     }
 
                     if
-                        recipientHidingManager.isHiddenRecipientThreadInMessageRequest(
+                        self.recipientHidingManager.isHiddenRecipientThreadInMessageRequest(
                             hiddenRecipient: hiddenRecipient,
-                            contactThread: threadStore.fetchContactThread(
+                            contactThread: self.threadStore.fetchContactThread(
                                 recipient: recipient,
                                 context: context
                             ),
@@ -206,6 +206,12 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
             )
 
             writeToStream(contact: contact, contactAddress: contactAddress)
+        }
+
+        do {
+            try recipientStore.enumerateAllSignalRecipients(context, block: recipientBlock)
+        } catch {
+            return .completeFailure(.fatalArchiveError(.recipientIteratorError(error)))
         }
 
         /// After enumerating all `SignalRecipient`s, we enumerate
@@ -455,7 +461,11 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
             isRegistered: isRegistered,
             unregisteredAtTimestamp: unregisteredTimestamp
         )
-        recipientDatabaseTable.insertRecipient(recipient, transaction: context.tx)
+        do {
+            try recipientStore.insertRecipient(recipient, context: context)
+        } catch {
+            return .failure([.restoreFrameError(.databaseInsertionFailed(error), recipientProto.recipientId)])
+        }
 
         /// No Backup code should be relying on the SSA cache, but once we've
         /// finished restoring and launched we want the cache to have accurate

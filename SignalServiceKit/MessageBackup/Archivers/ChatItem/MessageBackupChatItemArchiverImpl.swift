@@ -65,7 +65,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         backupAttachmentDownloadManager: backupAttachmentDownloadManager
     )
     private lazy var reactionArchiver = MessageBackupReactionArchiver(
-        reactionStore: reactionStore
+        reactionStore: MessageBackupReactionStore()
     )
     private lazy var contentsArchiver = MessageBackupTSMessageContentsArchiver(
         interactionStore: interactionStore,

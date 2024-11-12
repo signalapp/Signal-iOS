@@ -203,18 +203,22 @@ public final class GroupCallRecordRingUpdateHandler: GroupCallRecordRingUpdateDe
             )
 
             ringUpdateLogger.info("Creating group call record for ring update.")
-            _ = groupCallRecordManager.createGroupCallRecord(
-                callId: callId,
-                groupCallInteraction: newGroupCallInteraction,
-                groupCallInteractionRowId: interactionRowId,
-                groupThreadRowId: groupThreadRowId,
-                callDirection: .incoming,
-                groupCallStatus: groupCallStatus,
-                groupCallRingerAci: ringerAci,
-                callEventTimestamp: callEventTimestamp,
-                shouldSendSyncMessage: false,
-                tx: tx
-            )
+            do {
+                _ = try groupCallRecordManager.createGroupCallRecord(
+                    callId: callId,
+                    groupCallInteraction: newGroupCallInteraction,
+                    groupCallInteractionRowId: interactionRowId,
+                    groupThreadRowId: groupThreadRowId,
+                    callDirection: .incoming,
+                    groupCallStatus: groupCallStatus,
+                    groupCallRingerAci: ringerAci,
+                    callEventTimestamp: callEventTimestamp,
+                    shouldSendSyncMessage: false,
+                    tx: tx
+                )
+            } catch let error {
+                owsFailBeta("Failed to insert call record: \(error)")
+            }
         }
     }
 }

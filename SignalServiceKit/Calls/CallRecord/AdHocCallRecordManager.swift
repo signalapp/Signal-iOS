@@ -70,7 +70,11 @@ final class AdHocCallRecordManagerImpl: AdHocCallRecordManager {
                 callStatus: status,
                 callBeganTimestamp: timestamp
             )
-            callRecordStore.insert(callRecord: callRecord, tx: tx)
+            do {
+                try callRecordStore.insert(callRecord: callRecord, tx: tx)
+            } catch let error {
+                owsFailBeta("Failed to insert call record: \(error)")
+            }
             var callLink = callLink
             callLink.didInsertCallRecord()
             try callLinkStore.update(callLink, tx: tx)

@@ -56,11 +56,11 @@ final class GroupCallRecordManagerTest: XCTestCase {
 
     // MARK: - Create or update record
 
-    func testCreateOrUpdate_CallsCreateAndInsertsInteraction() {
+    func testCreateOrUpdate_CallsCreateAndInsertsInteraction() throws {
         let (thread, _) = createInteraction()
 
-        mockDB.write { tx in
-            snoopingGroupCallRecordManager.createOrUpdateCallRecord(
+        try mockDB.write { tx in
+            try snoopingGroupCallRecordManager.createOrUpdateCallRecord(
                 callId: .maxRandom,
                 groupThread: thread,
                 groupThreadRowId: thread.sqliteRowId!,
@@ -76,7 +76,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
         XCTAssertTrue(snoopingGroupCallRecordManager.didAskToCreate)
     }
 
-    func testCreateOrUpdate_CallsUpdate() {
+    func testCreateOrUpdate_CallsUpdate() throws {
         let (thread, interaction) = createInteraction()
 
         let callRecord = CallRecord(
@@ -90,8 +90,8 @@ final class GroupCallRecordManagerTest: XCTestCase {
         )
         mockCallRecordStore.callRecords.append(callRecord)
 
-        mockDB.write { tx in
-            snoopingGroupCallRecordManager.createOrUpdateCallRecord(
+        try mockDB.write { tx in
+            try snoopingGroupCallRecordManager.createOrUpdateCallRecord(
                 callId: callRecord.callId,
                 groupThread: thread,
                 groupThreadRowId: thread.sqliteRowId!,
@@ -106,13 +106,13 @@ final class GroupCallRecordManagerTest: XCTestCase {
         XCTAssertTrue(snoopingGroupCallRecordManager.didAskToUpdate)
     }
 
-    func testCreateOrUpdate_DoesNothingIfRecentlyDeleted() {
+    func testCreateOrUpdate_DoesNothingIfRecentlyDeleted() throws {
         let (thread, _) = createInteraction()
 
         mockCallRecordStore.fetchMock = { .matchDeleted }
 
-        mockDB.write { tx in
-            snoopingGroupCallRecordManager.createOrUpdateCallRecord(
+        try mockDB.write { tx in
+            try snoopingGroupCallRecordManager.createOrUpdateCallRecord(
                 callId: .maxRandom,
                 groupThread: thread,
                 groupThreadRowId: thread.sqliteRowId!,
@@ -129,12 +129,12 @@ final class GroupCallRecordManagerTest: XCTestCase {
 
     // MARK: - Create group call record
 
-    func testCreateGroupCallRecord() {
+    func testCreateGroupCallRecord() throws {
         let (thread1, interaction1) = createInteraction()
         let (thread2, interaction2) = createInteraction()
 
-        _ = mockDB.write { tx in
-            groupCallRecordManager.createGroupCallRecord(
+        _ = try mockDB.write { tx in
+            try groupCallRecordManager.createGroupCallRecord(
                 callId: .maxRandom,
                 groupCallInteraction: interaction1,
                 groupCallInteractionRowId: interaction1.sqliteRowId!,
@@ -151,8 +151,8 @@ final class GroupCallRecordManagerTest: XCTestCase {
         XCTAssertEqual(mockCallRecordStore.callRecords.count, 1)
         XCTAssertEqual(mockOutgoingSyncMessageManager.syncMessageSendCount, 0)
 
-        _ = mockDB.write { tx in
-            groupCallRecordManager.createGroupCallRecord(
+        _ = try mockDB.write { tx in
+            try groupCallRecordManager.createGroupCallRecord(
                 callId: .maxRandom,
                 groupCallInteraction: interaction2,
                 groupCallInteractionRowId: interaction2.sqliteRowId!,
@@ -171,11 +171,11 @@ final class GroupCallRecordManagerTest: XCTestCase {
         XCTAssertEqual(mockOutgoingSyncMessageManager.syncMessageSendCount, 1)
     }
 
-    func testCreateGroupCallRecordForPeek() {
+    func testCreateGroupCallRecordForPeek() throws {
         let (thread, interaction) = createInteraction()
 
-        _ = mockDB.write { tx in
-            groupCallRecordManager.createGroupCallRecordForPeek(
+        _ = try mockDB.write { tx in
+            try groupCallRecordManager.createGroupCallRecordForPeek(
                 callId: .maxRandom,
                 groupCallInteraction: interaction,
                 groupCallInteractionRowId: interaction.sqliteRowId!,
@@ -197,7 +197,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
 
     // MARK: Update record
 
-    func testUpdate_Updates() {
+    func testUpdate_Updates() throws {
         let (thread, interaction) = createInteraction()
 
         let callRecord = CallRecord(
@@ -211,8 +211,8 @@ final class GroupCallRecordManagerTest: XCTestCase {
         )
         mockCallRecordStore.callRecords.append(callRecord)
 
-        mockDB.write { tx in
-            groupCallRecordManager.createOrUpdateCallRecord(
+        try mockDB.write { tx in
+            try groupCallRecordManager.createOrUpdateCallRecord(
                 callId: callRecord.callId,
                 groupThread: thread,
                 groupThreadRowId: thread.sqliteRowId!,
@@ -229,7 +229,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
         XCTAssertEqual(mockOutgoingSyncMessageManager.syncMessageSendCount, 1)
     }
 
-    func testUpdate_SkipsDirectionAndSyncMessage() {
+    func testUpdate_SkipsDirectionAndSyncMessage() throws {
         let (thread, interaction) = createInteraction()
 
         let callRecord = CallRecord(
@@ -243,8 +243,8 @@ final class GroupCallRecordManagerTest: XCTestCase {
         )
         mockCallRecordStore.callRecords.append(callRecord)
 
-        mockDB.write { tx in
-            groupCallRecordManager.createOrUpdateCallRecord(
+        try mockDB.write { tx in
+            try groupCallRecordManager.createOrUpdateCallRecord(
                 callId: callRecord.callId,
                 groupThread: thread,
                 groupThreadRowId: thread.sqliteRowId!,
@@ -265,7 +265,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
     /// status that's illegal per the record's current state.
     ///
     /// In this test, we try to illegally go from "joined" to "generic".
-    func testUpdate_SkipsSyncMessageIfStatusTransitionDisallowed() {
+    func testUpdate_SkipsSyncMessageIfStatusTransitionDisallowed() throws {
         let (thread, interaction) = createInteraction()
 
         let callRecord = CallRecord(
@@ -279,8 +279,8 @@ final class GroupCallRecordManagerTest: XCTestCase {
         )
         mockCallRecordStore.callRecords.append(callRecord)
 
-        mockDB.write { tx in
-            groupCallRecordManager.createOrUpdateCallRecord(
+        try mockDB.write { tx in
+            try groupCallRecordManager.createOrUpdateCallRecord(
                 callId: callRecord.callId,
                 groupThread: thread,
                 groupThreadRowId: thread.sqliteRowId!,
@@ -297,7 +297,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
         XCTAssertEqual(mockOutgoingSyncMessageManager.syncMessageSendCount, 0)
     }
 
-    func testUpdate_UpdatesCallBeganTimestamp() {
+    func testUpdate_UpdatesCallBeganTimestamp() throws {
         let (thread, interaction) = createInteraction()
 
         let callRecord = CallRecord(
@@ -311,8 +311,8 @@ final class GroupCallRecordManagerTest: XCTestCase {
         )
         mockCallRecordStore.callRecords.append(callRecord)
 
-        mockDB.write { tx in
-            groupCallRecordManager.createOrUpdateCallRecord(
+        try mockDB.write { tx in
+            try groupCallRecordManager.createOrUpdateCallRecord(
                 callId: callRecord.callId,
                 groupThread: thread,
                 groupThreadRowId: thread.sqliteRowId!,

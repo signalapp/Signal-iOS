@@ -305,7 +305,17 @@ final class MessageBackupTSMessageEditHistoryArchiver<MessageType: TSMessage>
                 read: wasRead
             )
 
-            editMessageStore.insert(editRecord, tx: context.tx)
+            do {
+                try editMessageStore.insert(editRecord, tx: context.tx)
+            } catch {
+                return .partialRestore(
+                    (),
+                    [.restoreFrameError(
+                        .databaseInsertionFailed(error),
+                        topLevelChatItem.id
+                    )] + partialErrors
+                )
+            }
         }
 
         if partialErrors.isEmpty {

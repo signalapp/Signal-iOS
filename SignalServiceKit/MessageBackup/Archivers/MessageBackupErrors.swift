@@ -133,6 +133,8 @@ extension MessageBackup {
             /// thread was not, in fact, in a 1:1 thread.
             case simpleChatUpdateMessageNotInContactThread
 
+            /// We failed to fetch payment information for a payment message.
+            case paymentInfoFetchFailed(RawError)
             /// The payment message was missing required additional payment information.
             case missingPaymentInformation
 
@@ -270,6 +272,7 @@ extension MessageBackup {
                     .verificationStateChangeNotExpectedSDSRecordType,
                     .unknownProtocolVersionNotExpectedSDSRecordType,
                     .simpleChatUpdateMessageNotInContactThread,
+                    .paymentInfoFetchFailed,
                     .missingPaymentInformation,
                     .disappearingMessageConfigUpdateNotExpectedSDSRecordType,
                     .disappearingMessageConfigUpdateMissingAuthor,
@@ -300,6 +303,9 @@ extension MessageBackup {
     /// single frame.
     public struct FatalArchivingError: MessageBackupLoggableError {
         public enum ErrorType {
+            /// Error iterating over all SignalRecipients for backup purposes.
+            case recipientIteratorError(RawError)
+
             /// Error iterating over all threads for backup purposes.
             case threadIteratorError(RawError)
             /// We fetched a thread (via the iterator) with no sqlite row id.
@@ -312,6 +318,9 @@ extension MessageBackup {
             case interactionIteratorError(RawError)
             /// We fetched an interaction (via the iterator) with no sqlite row id.
             case fetchedInteractionMissingRowId
+
+            /// Error fetching reactions for a message.
+            case reactionIteratorError(RawError)
 
             /// Error iterating over all sticker packs for backup purposes.
             case stickerPackIteratorError(RawError)

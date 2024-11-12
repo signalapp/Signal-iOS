@@ -306,7 +306,11 @@ public class EditManagerImpl: EditManager {
             pastRevisionId: priorRevisionRowId,
             read: editTargetWrapper.wasRead
         )
-        context.editMessageStore.insert(editRecord, tx: tx)
+        do {
+            try context.editMessageStore.insert(editRecord, tx: tx)
+        } catch {
+            owsFailDebug("Unexpected edit record insertion error \(error)")
+        }
 
         return latestRevisionMessage
     }

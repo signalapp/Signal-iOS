@@ -24,7 +24,7 @@ public protocol IndividualCallRecordManager {
         contactThreadRowId: Int64,
         callId: UInt64,
         tx: DBWriteTransaction
-    )
+    ) throws
 
     /// Create a call record for the given interaction's current state.
     func createRecordForInteraction(
@@ -39,7 +39,7 @@ public protocol IndividualCallRecordManager {
         callEventTimestamp: UInt64,
         shouldSendSyncMessage: Bool,
         tx: DBWriteTransaction
-    ) -> CallRecord
+    ) throws -> CallRecord
 
     /// Update the given call record.
     func updateRecord(
@@ -119,7 +119,7 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
         contactThreadRowId: Int64,
         callId: UInt64,
         tx: DBWriteTransaction
-    ) {
+    ) throws {
         guard
             let callDirection = CallRecord.CallDirection(
                 individualCallInteractionType: individualCallInteraction.callType
@@ -145,7 +145,7 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
                 tx: tx
             )
         case .matchNotFound:
-            _ = createRecordForInteraction(
+            _ = try createRecordForInteraction(
                 individualCallInteraction: individualCallInteraction,
                 individualCallInteractionRowId: individualCallInteractionRowId,
                 contactThread: contactThread,
@@ -173,7 +173,7 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
         callEventTimestamp: UInt64,
         shouldSendSyncMessage: Bool,
         tx: DBWriteTransaction
-    ) -> CallRecord {
+    ) throws -> CallRecord {
         logger.info("Creating new 1:1 call record from interaction.")
 
         let callRecord = CallRecord(
@@ -186,7 +186,7 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
             callBeganTimestamp: callEventTimestamp
         )
 
-        callRecordStore.insert(callRecord: callRecord, tx: tx)
+        let insertResult = Result(catching: { try callRecordStore.insert(callRecord: callRecord, tx: tx) })
 
         if shouldSendSyncMessage {
             outgoingSyncMessageManager.sendSyncMessage(
@@ -196,6 +196,8 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
                 tx: tx
             )
         }
+
+        try insertResult.get()
 
         return callRecord
     }

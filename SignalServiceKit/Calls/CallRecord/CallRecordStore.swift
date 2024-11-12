@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public import GRDB
+import GRDB
 public import LibSignalClient
 
 /// Represents the result of a ``CallRecordStore`` fetch where a record having
@@ -36,7 +36,7 @@ public protocol CallRecordStore {
     /// Insert the given call record.
     /// - Important
     /// Posts an `.inserted` ``CallRecordStoreNotification``.
-    func insert(callRecord: CallRecord, tx: DBWriteTransaction)
+    func insert(callRecord: CallRecord, tx: DBWriteTransaction) throws
 
     /// Deletes the given call records and creates ``DeletedCallRecord``s
     /// in their place.
@@ -81,7 +81,7 @@ public protocol CallRecordStore {
     func markAsRead(
         callRecord: CallRecord,
         tx: DBWriteTransaction
-    )
+    ) throws
 
     /// Update the direction of the given call record.
     func updateDirection(
@@ -112,7 +112,7 @@ public protocol CallRecordStore {
         callRecord: CallRecord,
         callEndedTimestamp: UInt64,
         tx: DBWriteTransaction
-    )
+    ) throws
 
     /// Update all relevant records in response to a thread merge.
     /// - Parameter fromThreadRowId
@@ -171,13 +171,15 @@ class CallRecordStoreImpl: CallRecordStore {
 
     // MARK: - Protocol methods
 
-    func insert(callRecord: CallRecord, tx: DBWriteTransaction) {
-        _insert(callRecord: callRecord, tx: tx)
+    func insert(callRecord: CallRecord, tx: DBWriteTransaction) throws {
+        let insertResult = Result<Void, Error>.init(catching: { try _insert(callRecord: callRecord, tx: tx) })
 
         postNotification(
             updateType: .inserted,
             tx: tx
         )
+
+        try insertResult.get()
     }
 
     private var deletedCallRecordIds = [CallRecord.ID]()
@@ -214,13 +216,9 @@ class CallRecordStoreImpl: CallRecordStore {
         )
     }
 
-    func markAsRead(callRecord: CallRecord, tx: DBWriteTransaction) {
+    func markAsRead(callRecord: CallRecord, tx: DBWriteTransaction) throws {
         callRecord.unreadStatus = .read
-        do {
-            try callRecord.update(tx.databaseConnection)
-        } catch let error {
-            owsFailBeta("Failed to update call record: \(error)")
-        }
+        try callRecord.update(tx.databaseConnection)
     }
 
     func updateDirection(
@@ -266,13 +264,9 @@ class CallRecordStoreImpl: CallRecordStore {
         callRecord: CallRecord,
         callEndedTimestamp: UInt64,
         tx: DBWriteTransaction
-    ) {
+    ) throws {
         callRecord.callEndedTimestamp = callEndedTimestamp
-        do {
-            try callRecord.update(tx.databaseConnection)
-        } catch let error {
-            owsFailBeta("Failed to update call record: \(error)")
-        }
+        try callRecord.update(tx.databaseConnection)
     }
 
     func updateWithMergedThread(
@@ -337,12 +331,8 @@ class CallRecordStoreImpl: CallRecordStore {
 
     // MARK: - Mutations (impl)
 
-    func _insert(callRecord: CallRecord, tx: DBWriteTransaction) {
-        do {
-            try callRecord.insert(tx.databaseConnection)
-        } catch let error {
-            owsFailBeta("Failed to insert call record: \(error)")
-        }
+    func _insert(callRecord: CallRecord, tx: DBWriteTransaction) throws {
+        try callRecord.insert(tx.databaseConnection)
     }
 
     func _delete(callRecords: [CallRecord], tx: DBWriteTransaction) {

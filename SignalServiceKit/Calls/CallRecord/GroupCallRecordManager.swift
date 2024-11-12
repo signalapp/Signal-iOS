@@ -16,7 +16,7 @@ public protocol GroupCallRecordManager {
         callEventTimestamp: UInt64,
         shouldSendSyncMessage: Bool,
         tx: DBWriteTransaction
-    )
+    ) throws
 
     /// Create a group call record with the given parameters.
     ///
@@ -35,7 +35,7 @@ public protocol GroupCallRecordManager {
         callEventTimestamp: UInt64,
         shouldSendSyncMessage: Bool,
         tx: DBWriteTransaction
-    ) -> CallRecord
+    ) throws -> CallRecord
 
     /// Update an group existing call record with the given parameters.
     ///
@@ -81,8 +81,8 @@ public extension GroupCallRecordManager {
         groupCallInteractionRowId: Int64,
         groupThreadRowId: Int64,
         tx: DBWriteTransaction
-    ) -> CallRecord {
-        createGroupCallRecord(
+    ) throws -> CallRecord {
+        try createGroupCallRecord(
             callId: callId,
             groupCallInteraction: groupCallInteraction,
             groupCallInteractionRowId: groupCallInteractionRowId,
@@ -125,7 +125,7 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
         callEventTimestamp: UInt64,
         shouldSendSyncMessage: Bool,
         tx: DBWriteTransaction
-    ) {
+    ) throws {
         // We never have a group call ringer in this flow.
         let groupCallRingerAci: Aci? = nil
 
@@ -153,7 +153,7 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
                 tx: tx
             )
 
-            _ = createGroupCallRecord(
+            _ = try createGroupCallRecord(
                 callId: callId,
                 groupCallInteraction: newGroupCallInteraction,
                 groupCallInteractionRowId: interactionRowId,
@@ -179,7 +179,7 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
         callEventTimestamp: UInt64,
         shouldSendSyncMessage: Bool,
         tx: DBWriteTransaction
-    ) -> CallRecord {
+    ) throws -> CallRecord {
         let newCallRecord = CallRecord(
             callId: callId,
             interactionRowId: groupCallInteractionRowId,
@@ -191,7 +191,7 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
             callBeganTimestamp: callEventTimestamp
         )
 
-        callRecordStore.insert(callRecord: newCallRecord, tx: tx)
+        let insertResult = Result.init(catching: { try callRecordStore.insert(callRecord: newCallRecord, tx: tx) })
 
         if shouldSendSyncMessage {
             outgoingSyncMessageManager.sendSyncMessage(
@@ -201,6 +201,8 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
                 tx: tx
             )
         }
+
+        try insertResult.get()
 
         return newCallRecord
     }

@@ -186,7 +186,17 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         uniqueInteractionId: MessageBackup.InteractionUniqueId,
         context: MessageBackup.RecipientArchivingContext
     ) -> MessageBackup.ArchiveInteractionResult<ChatItemType> {
-        guard let historyItem = archivedPaymentStore.fetch(for: archivedPaymentMessage, tx: context.tx) else {
+        let historyItem: ArchivedPayment?
+        do {
+            historyItem = try archivedPaymentStore.fetch(
+                for: archivedPaymentMessage,
+                interactionUniqueId: uniqueInteractionId.value,
+                tx: context.tx
+            )
+        } catch {
+            return .messageFailure([.archiveFrameError(.paymentInfoFetchFailed(error), uniqueInteractionId)])
+        }
+        guard let historyItem else {
             return .messageFailure([.archiveFrameError(.missingPaymentInformation, uniqueInteractionId)])
         }
 
@@ -1031,7 +1041,13 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                 chatItemId
             )])
         }
-        archivedPaymentStore.insert(archivedPayment, tx: context.tx)
+        do {
+            try archivedPaymentStore.insert(archivedPayment, tx: context.tx)
+        } catch {
+            return .messageFailure([
+                .restoreFrameError(.databaseInsertionFailed(error), chatItemId)
+            ])
+        }
         return .success(())
     }
 

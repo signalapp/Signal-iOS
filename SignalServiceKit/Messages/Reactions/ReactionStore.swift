@@ -35,24 +35,6 @@ public protocol ReactionStore {
         tx: DBReadTransaction
     ) -> [String]
 
-    /// Create a new reaction from a backup.
-    func createReactionFromRestoredBackup(
-        uniqueMessageId: String,
-        emoji: String,
-        reactorAci: Aci,
-        sentAtTimestamp: UInt64,
-        sortOrder: UInt64,
-        tx: DBWriteTransaction
-    )
-    func createReactionFromRestoredBackup(
-        uniqueMessageId: String,
-        emoji: String,
-        reactorE164: E164,
-        sentAtTimestamp: UInt64,
-        sortOrder: UInt64,
-        tx: DBWriteTransaction
-    )
-
     /// Delete all reaction records associated with this message
     func deleteAllReactions(
         messageId: MessageId,
@@ -83,40 +65,6 @@ public class ReactionStoreImpl: ReactionStore {
     public func allUniqueIds(messageId: MessageId, tx: DBReadTransaction) -> [String] {
         ReactionFinder(uniqueMessageId: messageId)
             .allUniqueIds(transaction: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead)
-    }
-
-    public func createReactionFromRestoredBackup(
-        uniqueMessageId: String,
-        emoji: String,
-        reactorAci: Aci,
-        sentAtTimestamp: UInt64,
-        sortOrder: UInt64,
-        tx: DBWriteTransaction
-    ) {
-        OWSReaction.fromRestoredBackup(
-            uniqueMessageId: uniqueMessageId,
-            emoji: emoji,
-            reactorAci: reactorAci,
-            sentAtTimestamp: sentAtTimestamp,
-            sortOrder: sortOrder
-        ).anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    public func createReactionFromRestoredBackup(
-        uniqueMessageId: String,
-        emoji: String,
-        reactorE164: E164,
-        sentAtTimestamp: UInt64,
-        sortOrder: UInt64,
-        tx: DBWriteTransaction
-    ) {
-        OWSReaction.fromRestoredBackup(
-            uniqueMessageId: uniqueMessageId,
-            emoji: emoji,
-            reactorE164: reactorE164,
-            sentAtTimestamp: sentAtTimestamp,
-            sortOrder: sortOrder
-        ).anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     public func deleteAllReactions(messageId: MessageId, tx: DBWriteTransaction) {

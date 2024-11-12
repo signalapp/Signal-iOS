@@ -148,13 +148,6 @@ final class MessageBackupGroupCallArchiver {
             sentAtTimestamp: chatItem.dateSent
         )
 
-        guard let directionalDetails = chatItem.directionalDetails else {
-            return .messageFailure([.restoreFrameError(
-                .invalidProtoData(.chatItemMissingDirectionalDetails),
-                chatItem.id
-            )])
-        }
-
         do {
             try interactionStore.insert(
                 groupCallInteraction,
@@ -213,26 +206,30 @@ final class MessageBackupGroupCallArchiver {
                 groupCallRingerAci = nil
             }
 
-            let callRecord = groupCallRecordManager.createGroupCallRecord(
-                callId: groupCall.callID,
-                groupCallInteraction: groupCallInteraction,
-                groupCallInteractionRowId: groupCallInteraction.sqliteRowId!,
-                groupThreadRowId: chatThread.threadRowId,
-                callDirection: callDirection,
-                groupCallStatus: callStatus,
-                groupCallRingerAci: groupCallRingerAci,
-                callEventTimestamp: groupCall.startedCallTimestamp,
-                shouldSendSyncMessage: false,
-                tx: context.tx
-            )
-            callRecordStore.updateCallEndedTimestamp(
-                callRecord: callRecord,
-                callEndedTimestamp: groupCall.endedCallTimestamp,
-                tx: context.tx
-            )
-
-            if groupCall.read {
-                callRecordStore.markAsRead(callRecord: callRecord, tx: context.tx)
+            let callRecord: CallRecord
+            do {
+                callRecord = try groupCallRecordManager.createGroupCallRecord(
+                    callId: groupCall.callID,
+                    groupCallInteraction: groupCallInteraction,
+                    groupCallInteractionRowId: groupCallInteraction.sqliteRowId!,
+                    groupThreadRowId: chatThread.threadRowId,
+                    callDirection: callDirection,
+                    groupCallStatus: callStatus,
+                    groupCallRingerAci: groupCallRingerAci,
+                    callEventTimestamp: groupCall.startedCallTimestamp,
+                    shouldSendSyncMessage: false,
+                    tx: context.tx
+                )
+                try callRecordStore.updateCallEndedTimestamp(
+                    callRecord: callRecord,
+                    callEndedTimestamp: groupCall.endedCallTimestamp,
+                    tx: context.tx
+                )
+                if groupCall.read {
+                    try callRecordStore.markAsRead(callRecord: callRecord, tx: context.tx)
+                }
+            } catch {
+                return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
             }
         }
 

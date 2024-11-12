@@ -194,9 +194,13 @@ class CallRecordMissedCallManagerImpl: CallRecordMissedCallManager {
                 while let unreadCallRecord = try unreadCallCursor.next() {
                     markedAsReadCount += 1
 
-                    callRecordStore.markAsRead(
-                        callRecord: unreadCallRecord, tx: tx
-                    )
+                    do {
+                        try callRecordStore.markAsRead(
+                            callRecord: unreadCallRecord, tx: tx
+                        )
+                    } catch let error {
+                        owsFailBeta("Failed to update call record: \(error)")
+                    }
                 }
 
                 owsAssertDebug(
