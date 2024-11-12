@@ -155,9 +155,19 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             owsFailDebug("Downloading attachments for uninserted message!")
             return
         }
+        var ownerTypes = AttachmentReference.MessageOwnerTypeRaw.allCases
+        // Do not enqueue download of the thumbnail for quotes for which
+        // we have the target message locally; the thumbnail will be filled in
+        // IFF we download the original attachment.
+        if
+            let quotedMessage = message.quotedMessage,
+            quotedMessage.bodySource == .local
+        {
+            ownerTypes.removeAll(where: { $0 == .quotedReplyAttachment })
+        }
         let referencedAttachments = attachmentStore
             .fetchReferencedAttachments(
-                owners: AttachmentReference.MessageOwnerTypeRaw.allCases.map {
+                owners: ownerTypes.map {
                     $0.with(messageRowId: messageRowId)
                 },
                 tx: tx
