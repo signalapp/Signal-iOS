@@ -364,6 +364,7 @@ public class AppSetup {
         let orphanedBackupAttachmentManager = OrphanedBackupAttachmentManagerImpl(
             appReadiness: appReadiness,
             attachmentStore: attachmentStore,
+            dateProvider: dateProvider,
             db: db,
             messageBackupKeyMaterial: messageBackupKeyMaterial,
             messageBackupRequestManager: messageBackupRequestManager,
@@ -1064,9 +1065,11 @@ public class AppSetup {
         )
         let messageBackupAvatarFetcher = MessageBackupAvatarFetcher(
             appReadiness: appReadiness,
+            dateProvider: dateProvider,
             db: db,
             groupsV2: groupsV2,
             profileFetcher: profileFetcher,
+            reachabilityManager: reachabilityManager,
             threadStore: threadStore,
             tsAccountManager: tsAccountManager
         )
@@ -1412,7 +1415,10 @@ public class AppSetup {
             kvStoreFactory: keyValueStoreFactory,
             recipientDatabaseTable: recipientDatabaseTable
         )
-        let stickerManager = StickerManager(appReadiness: appReadiness)
+        let stickerManager = StickerManager(
+            appReadiness: appReadiness,
+            dateProvider: dateProvider
+        )
         let sskPreferences = SSKPreferences()
         let groupV2Updates = testDependencies.groupV2Updates ?? GroupV2UpdatesImpl(appReadiness: appReadiness)
         let messageFetcherJob = MessageFetcherJob(appReadiness: appReadiness)

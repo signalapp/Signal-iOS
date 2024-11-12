@@ -2306,5 +2306,13 @@ CREATE
                 CASCADE
                 ,"groupAvatarUrl" TEXT
                 ,"serviceId" BLOB
+                ,"numRetries" INTEGER NOT NULL DEFAULT 0
+                ,"nextRetryTimestamp" INTEGER NOT NULL DEFAULT 0
+)
+;
+
+CREATE
+    INDEX "index_MessageBackupAvatarFetchQueue_on_nextRetryTimestamp"
+        ON "MessageBackupAvatarFetchQueue"("nextRetryTimestamp"
 )
 ;

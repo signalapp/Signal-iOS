@@ -66,6 +66,7 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         )
         self.taskQueue = TaskQueueLoader(
             maxConcurrentTasks: Constants.numParallelUploads,
+            dateProvider: dateProvider,
             db: db,
             runner: taskRunner
         )

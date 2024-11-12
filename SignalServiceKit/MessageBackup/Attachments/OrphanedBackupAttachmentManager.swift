@@ -39,6 +39,7 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
     public init(
         appReadiness: AppReadiness,
         attachmentStore: AttachmentStore,
+        dateProvider: @escaping DateProvider,
         db: any DB,
         messageBackupKeyMaterial: MessageBackupKeyMaterial,
         messageBackupRequestManager: MessageBackupRequestManager,
@@ -60,6 +61,7 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
         )
         self.taskQueue = TaskQueueLoader(
             maxConcurrentTasks: 1, /* one at a time, speed isn't critical */
+            dateProvider: dateProvider,
             db: db,
             runner: taskRunner
         )

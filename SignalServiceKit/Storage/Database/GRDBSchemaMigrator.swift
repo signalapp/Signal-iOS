@@ -306,6 +306,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addReceiptCredentialColumnToJobRecord
         case dropOrphanedGroupStoryReplies
         case addMessageBackupAvatarFetchQueue
+        case addMessageBackupAvatarFetchQueueRetries
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -367,7 +368,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 98
+    public static let grdbSchemaVersionLatest: UInt = 99
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -3687,6 +3688,19 @@ public class GRDBSchemaMigrator: NSObject {
                 table.column("groupAvatarUrl", .text)
                 table.column("serviceId", .blob)
             }
+            return .success(())
+        }
+
+        migrator.registerMigration(.addMessageBackupAvatarFetchQueueRetries) { tx in
+            try tx.database.alter(table: "MessageBackupAvatarFetchQueue") { table in
+                table.add(column: "numRetries", .integer).notNull().defaults(to: 0)
+                table.add(column: "nextRetryTimestamp", .integer).notNull().defaults(to: 0)
+            }
+            try tx.database.create(
+                index: "index_MessageBackupAvatarFetchQueue_on_nextRetryTimestamp",
+                on: "MessageBackupAvatarFetchQueue",
+                columns: ["nextRetryTimestamp"]
+            )
             return .success(())
         }
 

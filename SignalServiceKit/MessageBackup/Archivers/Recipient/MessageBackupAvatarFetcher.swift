@@ -11,26 +11,39 @@ import LibSignalClient
 public class MessageBackupAvatarFetcher {
 
     private let appReadiness: AppReadiness
+    private let db: any DB
+    private let reachabilityManager: SSKReachabilityManager
+    private let store: TaskStore
     private let taskQueue: TaskQueueLoader<TaskRunner>
     private let tsAccountManager: TSAccountManager
 
     public init(
         appReadiness: AppReadiness,
+        dateProvider: @escaping DateProvider,
         db: any DB,
         groupsV2: GroupsV2,
         profileFetcher: ProfileFetcher,
+        reachabilityManager: SSKReachabilityManager,
         threadStore: ThreadStore,
         tsAccountManager: TSAccountManager
     ) {
         self.appReadiness = appReadiness
+        self.db = db
+        self.reachabilityManager = reachabilityManager
         self.tsAccountManager = tsAccountManager
+        let store = TaskStore()
+        self.store = store
         self.taskQueue = TaskQueueLoader(
             maxConcurrentTasks: 3,
+            dateProvider: dateProvider,
             db: db,
             runner: TaskRunner(
+                dateProvider: dateProvider,
                 db: db,
                 groupsV2: groupsV2,
                 profileFetcher: profileFetcher,
+                reachabilityManager: reachabilityManager,
+                store: store,
                 threadStore: threadStore,
                 tsAccountManager: tsAccountManager
             )
@@ -77,6 +90,12 @@ public class MessageBackupAvatarFetcher {
             name: .registrationStateDidChange,
             object: nil
         )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(reachabililityDidChange),
+            name: SSKReachability.owsReachabilityDidChange,
+            object: nil
+        )
     }
 
     @objc
@@ -86,27 +105,41 @@ public class MessageBackupAvatarFetcher {
         }
     }
 
+    @objc
+    private func reachabililityDidChange() {
+        Task {
+            try await runIfNeeded()
+        }
+    }
+
     // MARK: - TaskRunner
 
     private final class TaskRunner: TaskRecordRunner {
+        let dateProvider: DateProvider
         let db: any DB
         let groupsV2: GroupsV2
         let profileFetcher: ProfileFetcher
+        let reachabilityManager: SSKReachabilityManager
         let store: TaskStore
         let threadStore: ThreadStore
         let tsAccountManager: TSAccountManager
 
         init(
+            dateProvider: @escaping DateProvider,
             db: any DB,
             groupsV2: GroupsV2,
             profileFetcher: ProfileFetcher,
+            reachabilityManager: SSKReachabilityManager,
+            store: TaskStore,
             threadStore: ThreadStore,
             tsAccountManager: TSAccountManager
         ) {
+            self.dateProvider = dateProvider
             self.db = db
             self.groupsV2 = groupsV2
             self.profileFetcher = profileFetcher
-            self.store = TaskStore()
+            self.reachabilityManager = reachabilityManager
+            self.store = store
             self.threadStore = threadStore
             self.tsAccountManager = tsAccountManager
         }
@@ -122,6 +155,21 @@ public class MessageBackupAvatarFetcher {
 
             if let serviceId = record.serviceId {
                 do {
+                    let profile = try db.read { tx in
+                        return try OWSUserProfile
+                            .filter(Column(OWSUserProfile.CodingKeys.serviceIdString) == serviceId.serviceIdUppercaseString)
+                            .fetchOne(tx.databaseConnection)
+                    }
+                    if profile?.avatarFileName != nil {
+                        // We already have an avatar for this profile;
+                        // no need to fetch anything.
+                        return .cancelled
+                    }
+                } catch {
+                    return .unretryableError(error)
+                }
+
+                do {
                     _ = try await profileFetcher.fetchProfileImpl(
                         for: serviceId,
                         options: .opportunistic,
@@ -129,9 +177,16 @@ public class MessageBackupAvatarFetcher {
                     )
                     return .success
                 } catch {
-                    // Don't bother retrying; we'll fetch profiles
-                    // throughout the app.
-                    return .unretryableError(error)
+                    // If we failed and think we aren't reachable,
+                    // stop trying future tasks.
+                    if !reachabilityManager.isReachable {
+                        try? await loader.stop()
+                    }
+                    if record.retryDelay() != nil {
+                        return .retryableError(error)
+                    } else {
+                        return .unretryableError(error)
+                    }
                 }
             } else if let threadRowId = record.groupThreadRowId {
                 let thread = db.read { threadStore.fetchThread(rowId: threadRowId, tx: $0) }
@@ -173,9 +228,16 @@ public class MessageBackupAvatarFetcher {
                     }
                     return .success
                 } catch {
-                    // Don't bother retrying; we'll eventually fetch a group
-                    // snapshot and get the avatar.
-                    return .unretryableError(error)
+                    // If we failed and think we aren't reachable,
+                    // stop trying future tasks.
+                    if !reachabilityManager.isReachable {
+                        try? await loader.stop()
+                    }
+                    if record.retryDelay() != nil {
+                        return .retryableError(error)
+                    } else {
+                        return .unretryableError(error)
+                    }
                 }
             } else {
                 return .cancelled
@@ -183,7 +245,17 @@ public class MessageBackupAvatarFetcher {
         }
 
         func didSucceed(record: Record, tx: DBWriteTransaction) throws {}
-        func didFail(record: Record, error: any Error, isRetryable: Bool, tx: DBWriteTransaction) throws {}
+
+        func didFail(record: Record, error: any Error, isRetryable: Bool, tx: DBWriteTransaction) throws {
+            guard isRetryable, let retryDelay = record.retryDelay() else {
+                return
+            }
+            var record = record
+            record.nextRetryTimestamp = dateProvider().addingTimeInterval(retryDelay).ows_millisecondsSince1970
+            record.numRetries += 1
+            try record.update(tx.databaseConnection)
+        }
+
         func didCancel(record: Record, tx: DBWriteTransaction) throws {}
     }
 
@@ -196,6 +268,7 @@ public class MessageBackupAvatarFetcher {
 
         func peek(count: UInt, tx: DBReadTransaction) throws -> [Record] {
             return try Record
+                .order(Column(Record.CodingKeys.nextRetryTimestamp).asc)
                 .limit(Int(count))
                 .fetchAll(tx.databaseConnection)
         }
@@ -221,11 +294,17 @@ public class MessageBackupAvatarFetcher {
         // Or this is set (for fetching the profile for a user)
         let serviceId: ServiceId?
 
+        var nextRetryTimestamp: UInt64
+        var numRetries: Int
+
         private init(groupThreadRowId: Int64?, groupAvatarUrl: String?, serviceId: ServiceId?) {
             self._id = nil
             self.groupThreadRowId = groupThreadRowId
             self.groupAvatarUrl = groupAvatarUrl
             self.serviceId = serviceId
+            // Set this in the past so we "retry" immediately for the first try.
+            self.nextRetryTimestamp = 0
+            self.numRetries = 0
         }
 
         static func forGroupAvatar(groupThread: TSGroupThread, avatarUrl: String) -> Self? {
@@ -235,6 +314,22 @@ public class MessageBackupAvatarFetcher {
 
         static func forUserProfile(serviceId: ServiceId) -> Self {
             return .init(groupThreadRowId: nil, groupAvatarUrl: nil, serviceId: serviceId)
+        }
+
+        /// Returns nil if it should not retry.
+        func retryDelay() -> TimeInterval? {
+            switch numRetries {
+            case 0:
+                // We can afford to use a high delay;
+                // the job run itself has in-memory retries.
+                return 60 * 2
+            case 1:
+                return 60 * 60
+            case 2:
+                return 60 * 60 * 24
+            default:
+                return nil
+            }
         }
 
         // MARK: FetchableRecord
@@ -254,6 +349,8 @@ public class MessageBackupAvatarFetcher {
             case groupThreadRowId
             case groupAvatarUrl
             case serviceId
+            case nextRetryTimestamp
+            case numRetries
         }
 
         init(from decoder: any Decoder) throws {
@@ -264,6 +361,8 @@ public class MessageBackupAvatarFetcher {
             self.serviceId = try container
                 .decodeIfPresent(Data.self, forKey: .serviceId)
                 .map(ServiceId.parseFrom(serviceIdBinary:))
+            self.nextRetryTimestamp = try container.decode(UInt64.self, forKey: .nextRetryTimestamp)
+            self.numRetries = try container.decode(Int.self, forKey: .numRetries)
         }
 
         func encode(to encoder: any Encoder) throws {
@@ -272,6 +371,8 @@ public class MessageBackupAvatarFetcher {
             try container.encodeIfPresent(groupThreadRowId, forKey: .groupThreadRowId)
             try container.encodeIfPresent(groupAvatarUrl, forKey: .groupAvatarUrl)
             try container.encodeIfPresent(serviceId?.serviceIdBinary.asData, forKey: .serviceId)
+            try container.encode(nextRetryTimestamp, forKey: .nextRetryTimestamp)
+            try container.encode(numRetries, forKey: .numRetries)
         }
     }
 }

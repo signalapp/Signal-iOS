@@ -79,11 +79,15 @@ public class StickerManager: NSObject {
 
     // MARK: - Initializers
 
-    init(appReadiness: AppReadiness) {
+    init(
+        appReadiness: AppReadiness,
+        dateProvider: @escaping DateProvider
+    ) {
 
         // Task queue to install any sticker packs restored from a backup
         self.queueLoader = TaskQueueLoader(
             maxConcurrentTasks: 4,
+            dateProvider: dateProvider,
             db: DependenciesBridge.shared.db,
             runner: StickerPackDownloadTaskRunner(
                 store: StickerPackDownloadTaskRecordStore(

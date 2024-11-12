@@ -92,7 +92,12 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             stickerManager: stickerManager,
             tsAccountManager: tsAccountManager
         )
-        self.queueLoader = TaskQueueLoader(maxConcurrentTasks: 4, db: db, runner: taskRunner)
+        self.queueLoader = TaskQueueLoader(
+            maxConcurrentTasks: 4,
+            dateProvider: dateProvider,
+            db: db,
+            runner: taskRunner
+        )
         self.tsAccountManager = tsAccountManager
 
         appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
