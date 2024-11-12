@@ -1358,7 +1358,7 @@
 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "Je voudrais suggérer une nouvelle fonctionnalité";
 
 /* A brief localized representation of the 'feature request' support filter. */
-"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST_SHORT" = "Suggestion relative aux fonctionnalités";
+"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST_SHORT" = "Suggestion de fonctionnalité";
 
 /* The localized representation of the 'feedback' support filter. */
 "CONTACT_SUPPORT_FILTER_FEEDBACK" = "J’ai des commentaires sur l’appli";
@@ -2531,7 +2531,7 @@
 "DONATION_VIEW_MORE_SECTION_TITLE" = "Plus";
 
 /* Title for the 'my support' section in the donation view */
-"DONATION_VIEW_MY_SUPPORT_TITLE" = "Mon soutien";
+"DONATION_VIEW_MY_SUPPORT_TITLE" = "Ma contribution";
 
 /* Title for the \"other ways to donate\" section on the donation view. */
 "DONATION_VIEW_OTHER_WAYS_TO_DONATE_TITLE" = "Nous soutenir autrement";
@@ -7871,7 +7871,7 @@
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "En cours de traitement";
 
 /* Sustainer view Cancel Subscription button title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Annuler l’abonnement";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Résilier les dons mensuels";
 
 /* Confirm Cancellation? Action sheet confirm button */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "Confirmer";

@@ -856,7 +856,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ hat ihre/seine Beitrittsanfrage über den Gruppenlink gestellt und zurückgezogen.</string>
+			<string>%2$@ hat eine Beitrittsanfrage über den Gruppenlink gestellt und zurückgezogen.</string>
 			<key>other</key>
 			<string>%2$@ hat %1$d Beitrittsanfragen über den Gruppenlink gestellt und zurückgezogen.</string>
 		</dict>
@@ -1240,7 +1240,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ hat 1 Person eingeladen</string>
+			<string>%2$@ hat %1$d Person eingeladen</string>
 			<key>other</key>
 			<string>%2$@ hat %1$d Personen eingeladen</string>
 		</dict>

@@ -856,9 +856,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ ha solicitado y cancelado participar en el grupo vía enlace.</string>
+			<string>%2$@ ha solicitado y cancelado unirse al grupo mediante enlace.</string>
 			<key>other</key>
-			<string>%2$@ ha solicitado y cancelado %1$d veces participar en el grupo vía enlace.</string>
+			<string>%2$@ ha solicitado y cancelado %1$d veces unirse al grupo mediante enlace.</string>
 		</dict>
 	</dict>
 	<key>GROUP_STORY_VIEWERS_%d</key>
