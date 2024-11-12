@@ -293,10 +293,6 @@ extension MessageBackup {
                 return nil
             }
         }
-
-        public var shouldLog: Bool {
-            return true
-        }
     }
 
     /// Error archiving an entire category of frames; not attributable to a
@@ -373,10 +369,6 @@ extension MessageBackup {
         public var collapseKey: String? {
             // Log each of these as we see them.
             return nil
-        }
-
-        public var shouldLog: Bool {
-            return true
         }
     }
 
@@ -695,9 +687,6 @@ extension MessageBackup {
             /// enforce with the type system was broken. Nothing was wrong with
             /// the proto; its the iOS code that has a bug somewhere.
             case developerError(OWSAssertionError)
-
-            // TODO: [Backups] remove once all known types are handled.
-            case unimplemented
         }
 
         private let type: ErrorType
@@ -865,18 +854,6 @@ extension MessageBackup {
             case .developerError:
                 // Log each of these as we see them.
                 return nil
-            case .unimplemented:
-                // Collapse these by the callsite.
-                return callsiteLogString
-            }
-        }
-
-        public var shouldLog: Bool {
-            switch type {
-            case .unimplemented:
-                return false
-            default:
-                return true
             }
         }
     }
@@ -895,8 +872,6 @@ internal protocol MessageBackupLoggableError {
     /// Instead we collapse these similar logs together, keep a count, and log that.
     /// If this is non-nil, we do that collapsing, otherwise we log as-is.
     var collapseKey: String? { get }
-
-    var shouldLog: Bool { get }
 }
 
 extension MessageBackup {
@@ -940,9 +915,6 @@ extension MessageBackup {
     internal static func collapse(_ errors: [LoggableErrorAndProto]) -> [CollapsedErrorLog] {
         var collapsedLogs = OrderedDictionary<String, CollapsedErrorLog>()
         for error in errors {
-            guard error.error.shouldLog else {
-                continue
-            }
             let collapseKey = error.error.collapseKey ?? UUID().uuidString
 
             if var existingLog = collapsedLogs[collapseKey] {
