@@ -1671,6 +1671,7 @@
 		B93296652BB5CF3200B8BD39 /* NicknameRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93296642BB5CF3200B8BD39 /* NicknameRecord.swift */; };
 		B93296672BB5CF7500B8BD39 /* NicknameRecordStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93296662BB5CF7500B8BD39 /* NicknameRecordStore.swift */; };
 		B93296692BBB3FF200B8BD39 /* ProfileName.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95BBAC12BB36025009EFB4A /* ProfileName.swift */; };
+		B9488E752CDED27200C1294B /* ScrollOffset.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9488E742CDED27200C1294B /* ScrollOffset.swift */; };
 		B95A765C2B76C5BB00AA7E97 /* AvatarViewPresentationContextProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95A765B2B76C5BB00AA7E97 /* AvatarViewPresentationContextProvider.swift */; };
 		B95A765E2B76E93500AA7E97 /* FindByUsernameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95A765D2B76E93500AA7E97 /* FindByUsernameViewController.swift */; };
 		B96D6D792B9F83270039EB99 /* SignalSymbols-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = B96D6D782B9F83270039EB99 /* SignalSymbols-Regular.otf */; };
@@ -5415,6 +5416,7 @@
 		B9327B3D2BBCC2EB00CCDBBA /* MockNicknameManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockNicknameManager.swift; sourceTree = "<group>"; };
 		B93296642BB5CF3200B8BD39 /* NicknameRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NicknameRecord.swift; sourceTree = "<group>"; };
 		B93296662BB5CF7500B8BD39 /* NicknameRecordStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NicknameRecordStore.swift; sourceTree = "<group>"; };
+		B9488E742CDED27200C1294B /* ScrollOffset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollOffset.swift; sourceTree = "<group>"; };
 		B95A765B2B76C5BB00AA7E97 /* AvatarViewPresentationContextProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarViewPresentationContextProvider.swift; sourceTree = "<group>"; };
 		B95A765D2B76E93500AA7E97 /* FindByUsernameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindByUsernameViewController.swift; sourceTree = "<group>"; };
 		B95BBAC12BB36025009EFB4A /* ProfileName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileName.swift; sourceTree = "<group>"; };
@@ -7903,11 +7905,11 @@
 		34A954D2271B4F3E00B05242 /* Appearance */ = {
 			isa = PBXGroup;
 			children = (
+				B9488E732CDED25900C1294B /* SwiftUI */,
 				34A954D8271B4F3E00B05242 /* ColorOrGradient+SignalUI.swift */,
 				34A954DA271B4F3E00B05242 /* ColorOrGradientSwatchView.swift */,
 				34A95506271B510400B05242 /* ConversationStyle.swift */,
 				34A954D6271B4F3E00B05242 /* GroupNameColors.swift */,
-				B9E322E62CD170ED006DAF3B /* SignalList.swift */,
 				B9F817632BA263A900EAEE23 /* SignalSymbols.swift */,
 				34A954D4271B4F3E00B05242 /* Theme+Icons.swift */,
 				7677E40C29F75C4200AC6A75 /* Theme.swift */,
@@ -10960,6 +10962,15 @@
 				B9327B3D2BBCC2EB00CCDBBA /* MockNicknameManager.swift */,
 			);
 			path = Contacts;
+			sourceTree = "<group>";
+		};
+		B9488E732CDED25900C1294B /* SwiftUI */ = {
+			isa = PBXGroup;
+			children = (
+				B9488E742CDED27200C1294B /* ScrollOffset.swift */,
+				B9E322E62CD170ED006DAF3B /* SignalList.swift */,
+			);
+			path = SwiftUI;
 			sourceTree = "<group>";
 		};
 		B99B155B2A71B9F300E26DAC /* Stories */ = {
@@ -15937,6 +15948,7 @@
 				7677E41129F7A60500AC6A75 /* ScreenLockViewController.swift in Sources */,
 				05594CCE2C989F1900CCBFF6 /* ScrollableWhenCompact.swift in Sources */,
 				0510F69E2C91EB3000FA3FDE /* ScrollBounceBehaviorIfAvailable.swift in Sources */,
+				B9488E752CDED27200C1294B /* ScrollOffset.swift in Sources */,
 				50597BBF2B97D629004681E1 /* SearchableNameFinder.swift in Sources */,
 				66FC638E29EDABAC00F00DAC /* SearchDisplayConfigurations.swift in Sources */,
 				66FBC4E328DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift in Sources */,

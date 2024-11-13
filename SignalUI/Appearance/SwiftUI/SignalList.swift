@@ -5,6 +5,8 @@
 
 public import SwiftUI
 
+// MARK: - SignalList
+
 public struct SignalList<Content: View>: View {
     private var content: Content
 
@@ -16,6 +18,7 @@ public struct SignalList<Content: View>: View {
         List {
             content
         }
+        .readScrollOffset()
         .listStyle(.insetGrouped)
     }
 
@@ -29,6 +32,8 @@ public struct SignalList<Content: View>: View {
         }
     }
 }
+
+// MARK: - SignalSection
 
 public struct SignalSection<Content: View, Header: View, Footer: View>: View {
 
@@ -73,7 +78,9 @@ public struct SignalSection<Content: View, Header: View, Footer: View>: View {
         switch components {
         case let .contentHeaderFooter(content, header, footer):
             Section {
-                content
+                ContentView {
+                    content
+                }
             } header: {
                 HeaderView {
                     header
@@ -83,7 +90,9 @@ public struct SignalSection<Content: View, Header: View, Footer: View>: View {
             }
         case let .contentHeader(content, header):
             Section {
-                content
+                ContentView {
+                    content
+                }
             } header: {
                 HeaderView {
                     header
@@ -91,14 +100,33 @@ public struct SignalSection<Content: View, Header: View, Footer: View>: View {
             }
         case let .contentFooter(content, footer):
             Section {
-                content
+                ContentView {
+                    content
+                }
             } footer: {
                 footer
             }
         case let .content(content):
             Section {
-                content
+                ContentView {
+                    content
+                }
             }
+        }
+    }
+
+    private struct ContentView<C: View>: View {
+        private let content: C
+
+        init(@ViewBuilder content: () -> C) {
+            self.content = content()
+        }
+
+        var body: some View {
+            content
+            // The table cells have a top margin of 12, so the top of
+            // the cell is 12 points above the top of the content.
+                .provideScrollAnchor(correction: -12)
         }
     }
 
@@ -115,9 +143,12 @@ public struct SignalSection<Content: View, Header: View, Footer: View>: View {
                 .textCase(.none)
                 .font(.headline)
                 .foregroundStyle(.primary)
+                .provideScrollAnchor(correction: 4)
         }
     }
 }
+
+// MARK: - Previews
 
 @available(iOS 18.0, *)
 #Preview {

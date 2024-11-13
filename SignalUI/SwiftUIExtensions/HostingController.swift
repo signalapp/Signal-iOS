@@ -35,6 +35,16 @@ extension EnvironmentValues {
 /// environment, allowing SwiftUI views to explicitly control whether animations
 /// are performed during a navigation transition, or after completion.
 open class HostingController<Wrapped: View>: UIHostingController<_HostingControllerWrapperView<Wrapped>> {
+
+    private var scrollOffset: CGFloat = 0 {
+        didSet {
+            let scrollOffsetDidFlip = scrollOffset * oldValue <= 0
+            if scrollOffsetDidFlip {
+                owsNavigationController?.updateNavbarAppearance(animated: true)
+            }
+        }
+    }
+
     public init(wrappedView: Wrapped) {
         super.init(rootView: _HostingControllerWrapperView(wrappedView: wrappedView))
     }
@@ -46,6 +56,10 @@ open class HostingController<Wrapped: View>: UIHostingController<_HostingControl
 
     open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+
+        rootView.scrollOffsetDidChange = { [weak self] scrollOffset in
+            self?.scrollOffset = scrollOffset
+        }
 
         rootView.appearanceTransitionState = .appearing
 
@@ -71,12 +85,30 @@ open class HostingController<Wrapped: View>: UIHostingController<_HostingControl
     }
 }
 
+extension HostingController: OWSNavigationChildController {
+    private var usesSolidNavbarStyle: Bool {
+        scrollOffset <= 0
+    }
+
+    public var preferredNavigationBarStyle: OWSNavigationBarStyle {
+        usesSolidNavbarStyle ? .solid : .blur
+    }
+
+    public var navbarBackgroundColorOverride: UIColor? {
+        usesSolidNavbarStyle ? UIColor.Signal.groupedBackground : nil
+    }
+}
+
 public struct _HostingControllerWrapperView<Wrapped: View>: View {
     fileprivate var wrappedView: Wrapped
     fileprivate var appearanceTransitionState: HostingControllerAppearanceTransitionState?
+    fileprivate var scrollOffsetDidChange: ((CGFloat) -> Void)?
 
     public var body: some View {
         wrappedView
             .environment(\.appearanceTransitionState, appearanceTransitionState)
+            .onPreferenceChange(ScrollOffsetPreferenceKey.self) { scrollOffset in
+                scrollOffsetDidChange?(scrollOffset)
+            }
     }
 }
