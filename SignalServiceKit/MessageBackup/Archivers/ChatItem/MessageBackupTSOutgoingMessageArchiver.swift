@@ -387,11 +387,18 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
             )])
         }
 
-        guard let expiresInSeconds: UInt32 = .msToSecs(chatItem.expiresInMs) else {
-            return .messageFailure([.restoreFrameError(
-                .invalidProtoData(.expirationTimerOverflowedLocalType),
-                chatItem.id
-            )])
+        let expiresInSeconds: UInt32
+        if chatItem.hasExpiresInMs {
+            guard let _expiresInSeconds: UInt32 = .msToSecs(chatItem.expiresInMs) else {
+                return .messageFailure([.restoreFrameError(
+                    .invalidProtoData(.expirationTimerOverflowedLocalType),
+                    chatItem.id
+                )])
+            }
+            expiresInSeconds = _expiresInSeconds
+        } else {
+            // 0 == no expiration
+            expiresInSeconds = 0
         }
 
         var partialErrors = [RestoreFrameError]()
@@ -441,7 +448,7 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
         }
 
         let expireStartDate: UInt64
-        if chatItem.expireStartDate > 0 {
+        if chatItem.hasExpireStartDate {
             expireStartDate = chatItem.expireStartDate
         } else if
             expiresInSeconds > 0,

@@ -157,7 +157,9 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
     ) -> BackupProto_ChatItem.IncomingMessageDetails {
         var incomingDetails = BackupProto_ChatItem.IncomingMessageDetails()
         incomingDetails.dateReceived = incomingMessage.receivedAtTimestamp
-        incomingDetails.dateServerSent = incomingMessage.serverTimestamp?.uint64Value ?? 0
+        if let dateServerSent = incomingMessage.serverTimestamp?.uint64Value {
+            incomingDetails.dateServerSent = dateServerSent
+        }
         // The message may not have been marked read if it's a past revision,
         // but its edit record will have been.
         incomingDetails.read = editRecord?.read ?? incomingMessage.wasRead
@@ -212,14 +214,21 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
             )])
         }
 
-        guard let expiresInSeconds: UInt32 = .msToSecs(chatItem.expiresInMs) else {
-            return .messageFailure([.restoreFrameError(
-                .invalidProtoData(.expirationTimerOverflowedLocalType),
-                chatItem.id
-            )])
+        let expiresInSeconds: UInt32
+        if chatItem.hasExpiresInMs {
+            guard let _expiresInSeconds: UInt32 = .msToSecs(chatItem.expiresInMs) else {
+                return .messageFailure([.restoreFrameError(
+                    .invalidProtoData(.expirationTimerOverflowedLocalType),
+                    chatItem.id
+                )])
+            }
+            expiresInSeconds = _expiresInSeconds
+        } else {
+            // 0 == no expiration
+            expiresInSeconds = 0
         }
         let expireStartDate: UInt64
-        if chatItem.expireStartDate > 0 {
+        if chatItem.hasExpireStartDate {
             expireStartDate = chatItem.expireStartDate
         } else if
             expiresInSeconds > 0,

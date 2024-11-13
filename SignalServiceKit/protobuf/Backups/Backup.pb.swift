@@ -85,7 +85,7 @@ public struct BackupProto_BackupInfo: @unchecked Sendable {
 
   public var backupTimeMs: UInt64 = 0
 
-  /// 32-byte random value generated when the
+  /// 32-byte random value generated when the backup is uploaded for the first time.
   public var mediaRootBackupKey: Data = Data()
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
@@ -1146,13 +1146,34 @@ public struct BackupProto_Chat: Sendable {
 
   public var archived: Bool = false
 
-  /// 0 = unpinned, otherwise chat is considered pinned and will be displayed in ascending order
-  public var pinnedOrder: UInt32 = 0
+  /// will be displayed in ascending order
+  public var pinnedOrder: UInt32 {
+    get {return _pinnedOrder ?? 0}
+    set {_pinnedOrder = newValue}
+  }
+  /// Returns true if `pinnedOrder` has been explicitly set.
+  public var hasPinnedOrder: Bool {return self._pinnedOrder != nil}
+  /// Clears the value of `pinnedOrder`. Subsequent reads from it will return its default value.
+  public mutating func clearPinnedOrder() {self._pinnedOrder = nil}
 
-  /// 0 = no expire timer.
-  public var expirationTimerMs: UInt64 = 0
+  public var expirationTimerMs: UInt64 {
+    get {return _expirationTimerMs ?? 0}
+    set {_expirationTimerMs = newValue}
+  }
+  /// Returns true if `expirationTimerMs` has been explicitly set.
+  public var hasExpirationTimerMs: Bool {return self._expirationTimerMs != nil}
+  /// Clears the value of `expirationTimerMs`. Subsequent reads from it will return its default value.
+  public mutating func clearExpirationTimerMs() {self._expirationTimerMs = nil}
 
-  public var muteUntilMs: UInt64 = 0
+  /// UINT64_MAX (2^63 - 1) = "always muted".
+  public var muteUntilMs: UInt64 {
+    get {return _muteUntilMs ?? 0}
+    set {_muteUntilMs = newValue}
+  }
+  /// Returns true if `muteUntilMs` has been explicitly set.
+  public var hasMuteUntilMs: Bool {return self._muteUntilMs != nil}
+  /// Clears the value of `muteUntilMs`. Subsequent reads from it will return its default value.
+  public mutating func clearMuteUntilMs() {self._muteUntilMs = nil}
 
   public var markedUnread: Bool = false
 
@@ -1173,6 +1194,9 @@ public struct BackupProto_Chat: Sendable {
 
   public init() {}
 
+  fileprivate var _pinnedOrder: UInt32? = nil
+  fileprivate var _expirationTimerMs: UInt64? = nil
+  fileprivate var _muteUntilMs: UInt64? = nil
   fileprivate var _style: BackupProto_ChatStyle? = nil
 }
 
@@ -1309,7 +1333,8 @@ public struct BackupProto_DistributionListItem: @unchecked Sendable {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  /// distribution list ids are uuids
+  /// distribution ids are UUIDv4s. "My Story" is represented
+  /// by an all-0 UUID (00000000-0000-0000-0000-000000000000).
   public var distributionID: Data = Data()
 
   public var item: BackupProto_DistributionListItem.OneOf_Item? = nil
@@ -1426,15 +1451,23 @@ public struct BackupProto_ChatItem: @unchecked Sendable {
 
   /// timestamp of when expiration timer started ticking down
   public var expireStartDate: UInt64 {
-    get {return _storage._expireStartDate}
+    get {return _storage._expireStartDate ?? 0}
     set {_uniqueStorage()._expireStartDate = newValue}
   }
+  /// Returns true if `expireStartDate` has been explicitly set.
+  public var hasExpireStartDate: Bool {return _storage._expireStartDate != nil}
+  /// Clears the value of `expireStartDate`. Subsequent reads from it will return its default value.
+  public mutating func clearExpireStartDate() {_uniqueStorage()._expireStartDate = nil}
 
   /// how long timer of message is (ms)
   public var expiresInMs: UInt64 {
-    get {return _storage._expiresInMs}
+    get {return _storage._expiresInMs ?? 0}
     set {_uniqueStorage()._expiresInMs = newValue}
   }
+  /// Returns true if `expiresInMs` has been explicitly set.
+  public var hasExpiresInMs: Bool {return _storage._expiresInMs != nil}
+  /// Clears the value of `expiresInMs`. Subsequent reads from it will return its default value.
+  public mutating func clearExpiresInMs() {_uniqueStorage()._expiresInMs = nil}
 
   /// ordered from oldest to newest
   public var revisions: [BackupProto_ChatItem] {
@@ -1573,7 +1606,14 @@ public struct BackupProto_ChatItem: @unchecked Sendable {
 
     public var dateReceived: UInt64 = 0
 
-    public var dateServerSent: UInt64 = 0
+    public var dateServerSent: UInt64 {
+      get {return _dateServerSent ?? 0}
+      set {_dateServerSent = newValue}
+    }
+    /// Returns true if `dateServerSent` has been explicitly set.
+    public var hasDateServerSent: Bool {return self._dateServerSent != nil}
+    /// Clears the value of `dateServerSent`. Subsequent reads from it will return its default value.
+    public mutating func clearDateServerSent() {self._dateServerSent = nil}
 
     public var read: Bool = false
 
@@ -1582,6 +1622,8 @@ public struct BackupProto_ChatItem: @unchecked Sendable {
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
     public init() {}
+
+    fileprivate var _dateServerSent: UInt64? = nil
   }
 
   public struct OutgoingMessageDetails: Sendable {
@@ -3095,7 +3137,14 @@ public struct BackupProto_FilePointer: @unchecked Sendable {
 
     public var cdnNumber: UInt32 = 0
 
-    public var uploadTimestamp: UInt64 = 0
+    public var uploadTimestamp: UInt64 {
+      get {return _uploadTimestamp ?? 0}
+      set {_uploadTimestamp = newValue}
+    }
+    /// Returns true if `uploadTimestamp` has been explicitly set.
+    public var hasUploadTimestamp: Bool {return self._uploadTimestamp != nil}
+    /// Clears the value of `uploadTimestamp`. Subsequent reads from it will return its default value.
+    public mutating func clearUploadTimestamp() {self._uploadTimestamp = nil}
 
     public var key: Data = Data()
 
@@ -3106,6 +3155,8 @@ public struct BackupProto_FilePointer: @unchecked Sendable {
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
     public init() {}
+
+    fileprivate var _uploadTimestamp: UInt64? = nil
   }
 
   /// References attachments that are invalid in such a way where download
@@ -3669,8 +3720,15 @@ public struct BackupProto_GroupCall: Sendable {
 
   public var startedCallTimestamp: UInt64 = 0
 
-  /// The time the call ended. 0 indicates an unknown time.
-  public var endedCallTimestamp: UInt64 = 0
+  /// The time the call ended.
+  public var endedCallTimestamp: UInt64 {
+    get {return _endedCallTimestamp ?? 0}
+    set {_endedCallTimestamp = newValue}
+  }
+  /// Returns true if `endedCallTimestamp` has been explicitly set.
+  public var hasEndedCallTimestamp: Bool {return self._endedCallTimestamp != nil}
+  /// Clears the value of `endedCallTimestamp`. Subsequent reads from it will return its default value.
+  public mutating func clearEndedCallTimestamp() {self._endedCallTimestamp = nil}
 
   public var read: Bool = false
 
@@ -3760,6 +3818,7 @@ public struct BackupProto_GroupCall: Sendable {
   fileprivate var _callID: UInt64? = nil
   fileprivate var _ringerRecipientID: UInt64? = nil
   fileprivate var _startedCallRecipientID: UInt64? = nil
+  fileprivate var _endedCallTimestamp: UInt64? = nil
 }
 
 public struct BackupProto_SimpleChatUpdate: Sendable {
@@ -3973,7 +4032,6 @@ public struct BackupProto_GroupChangeChatUpdate: Sendable {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
-    /// Note: group expiration timer changes are represented as ExpirationTimerChatUpdate.
     public var update: BackupProto_GroupChangeChatUpdate.Update.OneOf_Update? = nil
 
     public var genericGroupUpdate: BackupProto_GenericGroupUpdate {
@@ -4250,7 +4308,6 @@ public struct BackupProto_GroupChangeChatUpdate: Sendable {
 
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    /// Note: group expiration timer changes are represented as ExpirationTimerChatUpdate.
     public enum OneOf_Update: Equatable, Sendable {
       case genericGroupUpdate(BackupProto_GenericGroupUpdate)
       case groupCreationUpdate(BackupProto_GroupCreationUpdate)
@@ -7013,9 +7070,9 @@ extension BackupProto_Chat: SwiftProtobuf.Message, SwiftProtobuf._MessageImpleme
       case 1: try { try decoder.decodeSingularUInt64Field(value: &self.id) }()
       case 2: try { try decoder.decodeSingularUInt64Field(value: &self.recipientID) }()
       case 3: try { try decoder.decodeSingularBoolField(value: &self.archived) }()
-      case 4: try { try decoder.decodeSingularUInt32Field(value: &self.pinnedOrder) }()
-      case 5: try { try decoder.decodeSingularUInt64Field(value: &self.expirationTimerMs) }()
-      case 6: try { try decoder.decodeSingularUInt64Field(value: &self.muteUntilMs) }()
+      case 4: try { try decoder.decodeSingularUInt32Field(value: &self._pinnedOrder) }()
+      case 5: try { try decoder.decodeSingularUInt64Field(value: &self._expirationTimerMs) }()
+      case 6: try { try decoder.decodeSingularUInt64Field(value: &self._muteUntilMs) }()
       case 7: try { try decoder.decodeSingularBoolField(value: &self.markedUnread) }()
       case 8: try { try decoder.decodeSingularBoolField(value: &self.dontNotifyForMentionsIfMuted) }()
       case 9: try { try decoder.decodeSingularMessageField(value: &self._style) }()
@@ -7039,15 +7096,15 @@ extension BackupProto_Chat: SwiftProtobuf.Message, SwiftProtobuf._MessageImpleme
     if self.archived != false {
       try visitor.visitSingularBoolField(value: self.archived, fieldNumber: 3)
     }
-    if self.pinnedOrder != 0 {
-      try visitor.visitSingularUInt32Field(value: self.pinnedOrder, fieldNumber: 4)
-    }
-    if self.expirationTimerMs != 0 {
-      try visitor.visitSingularUInt64Field(value: self.expirationTimerMs, fieldNumber: 5)
-    }
-    if self.muteUntilMs != 0 {
-      try visitor.visitSingularUInt64Field(value: self.muteUntilMs, fieldNumber: 6)
-    }
+    try { if let v = self._pinnedOrder {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 4)
+    } }()
+    try { if let v = self._expirationTimerMs {
+      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 5)
+    } }()
+    try { if let v = self._muteUntilMs {
+      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 6)
+    } }()
     if self.markedUnread != false {
       try visitor.visitSingularBoolField(value: self.markedUnread, fieldNumber: 7)
     }
@@ -7067,9 +7124,9 @@ extension BackupProto_Chat: SwiftProtobuf.Message, SwiftProtobuf._MessageImpleme
     if lhs.id != rhs.id {return false}
     if lhs.recipientID != rhs.recipientID {return false}
     if lhs.archived != rhs.archived {return false}
-    if lhs.pinnedOrder != rhs.pinnedOrder {return false}
-    if lhs.expirationTimerMs != rhs.expirationTimerMs {return false}
-    if lhs.muteUntilMs != rhs.muteUntilMs {return false}
+    if lhs._pinnedOrder != rhs._pinnedOrder {return false}
+    if lhs._expirationTimerMs != rhs._expirationTimerMs {return false}
+    if lhs._muteUntilMs != rhs._muteUntilMs {return false}
     if lhs.markedUnread != rhs.markedUnread {return false}
     if lhs.dontNotifyForMentionsIfMuted != rhs.dontNotifyForMentionsIfMuted {return false}
     if lhs._style != rhs._style {return false}
@@ -7361,8 +7418,8 @@ extension BackupProto_ChatItem: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
     var _chatID: UInt64 = 0
     var _authorID: UInt64 = 0
     var _dateSent: UInt64 = 0
-    var _expireStartDate: UInt64 = 0
-    var _expiresInMs: UInt64 = 0
+    var _expireStartDate: UInt64? = nil
+    var _expiresInMs: UInt64? = nil
     var _revisions: [BackupProto_ChatItem] = []
     var _sms: Bool = false
     var _directionalDetails: BackupProto_ChatItem.OneOf_DirectionalDetails?
@@ -7579,12 +7636,12 @@ extension BackupProto_ChatItem: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
       if _storage._dateSent != 0 {
         try visitor.visitSingularUInt64Field(value: _storage._dateSent, fieldNumber: 3)
       }
-      if _storage._expireStartDate != 0 {
-        try visitor.visitSingularUInt64Field(value: _storage._expireStartDate, fieldNumber: 4)
-      }
-      if _storage._expiresInMs != 0 {
-        try visitor.visitSingularUInt64Field(value: _storage._expiresInMs, fieldNumber: 5)
-      }
+      try { if let v = _storage._expireStartDate {
+        try visitor.visitSingularUInt64Field(value: v, fieldNumber: 4)
+      } }()
+      try { if let v = _storage._expiresInMs {
+        try visitor.visitSingularUInt64Field(value: v, fieldNumber: 5)
+      } }()
       if !_storage._revisions.isEmpty {
         try visitor.visitRepeatedMessageField(value: _storage._revisions, fieldNumber: 6)
       }
@@ -7684,7 +7741,7 @@ extension BackupProto_ChatItem.IncomingMessageDetails: SwiftProtobuf.Message, Sw
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularUInt64Field(value: &self.dateReceived) }()
-      case 2: try { try decoder.decodeSingularUInt64Field(value: &self.dateServerSent) }()
+      case 2: try { try decoder.decodeSingularUInt64Field(value: &self._dateServerSent) }()
       case 3: try { try decoder.decodeSingularBoolField(value: &self.read) }()
       case 4: try { try decoder.decodeSingularBoolField(value: &self.sealedSender) }()
       default: break
@@ -7693,12 +7750,16 @@ extension BackupProto_ChatItem.IncomingMessageDetails: SwiftProtobuf.Message, Sw
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
     if self.dateReceived != 0 {
       try visitor.visitSingularUInt64Field(value: self.dateReceived, fieldNumber: 1)
     }
-    if self.dateServerSent != 0 {
-      try visitor.visitSingularUInt64Field(value: self.dateServerSent, fieldNumber: 2)
-    }
+    try { if let v = self._dateServerSent {
+      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 2)
+    } }()
     if self.read != false {
       try visitor.visitSingularBoolField(value: self.read, fieldNumber: 3)
     }
@@ -7710,7 +7771,7 @@ extension BackupProto_ChatItem.IncomingMessageDetails: SwiftProtobuf.Message, Sw
 
   public static func ==(lhs: BackupProto_ChatItem.IncomingMessageDetails, rhs: BackupProto_ChatItem.IncomingMessageDetails) -> Bool {
     if lhs.dateReceived != rhs.dateReceived {return false}
-    if lhs.dateServerSent != rhs.dateServerSent {return false}
+    if lhs._dateServerSent != rhs._dateServerSent {return false}
     if lhs.read != rhs.read {return false}
     if lhs.sealedSender != rhs.sealedSender {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -9714,7 +9775,7 @@ extension BackupProto_FilePointer.AttachmentLocator: SwiftProtobuf.Message, Swif
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self.cdnKey) }()
       case 2: try { try decoder.decodeSingularUInt32Field(value: &self.cdnNumber) }()
-      case 3: try { try decoder.decodeSingularUInt64Field(value: &self.uploadTimestamp) }()
+      case 3: try { try decoder.decodeSingularUInt64Field(value: &self._uploadTimestamp) }()
       case 4: try { try decoder.decodeSingularBytesField(value: &self.key) }()
       case 5: try { try decoder.decodeSingularBytesField(value: &self.digest) }()
       case 6: try { try decoder.decodeSingularUInt32Field(value: &self.size) }()
@@ -9724,15 +9785,19 @@ extension BackupProto_FilePointer.AttachmentLocator: SwiftProtobuf.Message, Swif
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
     if !self.cdnKey.isEmpty {
       try visitor.visitSingularStringField(value: self.cdnKey, fieldNumber: 1)
     }
     if self.cdnNumber != 0 {
       try visitor.visitSingularUInt32Field(value: self.cdnNumber, fieldNumber: 2)
     }
-    if self.uploadTimestamp != 0 {
-      try visitor.visitSingularUInt64Field(value: self.uploadTimestamp, fieldNumber: 3)
-    }
+    try { if let v = self._uploadTimestamp {
+      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 3)
+    } }()
     if !self.key.isEmpty {
       try visitor.visitSingularBytesField(value: self.key, fieldNumber: 4)
     }
@@ -9748,7 +9813,7 @@ extension BackupProto_FilePointer.AttachmentLocator: SwiftProtobuf.Message, Swif
   public static func ==(lhs: BackupProto_FilePointer.AttachmentLocator, rhs: BackupProto_FilePointer.AttachmentLocator) -> Bool {
     if lhs.cdnKey != rhs.cdnKey {return false}
     if lhs.cdnNumber != rhs.cdnNumber {return false}
-    if lhs.uploadTimestamp != rhs.uploadTimestamp {return false}
+    if lhs._uploadTimestamp != rhs._uploadTimestamp {return false}
     if lhs.key != rhs.key {return false}
     if lhs.digest != rhs.digest {return false}
     if lhs.size != rhs.size {return false}
@@ -10336,7 +10401,7 @@ extension BackupProto_GroupCall: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
       case 3: try { try decoder.decodeSingularUInt64Field(value: &self._ringerRecipientID) }()
       case 4: try { try decoder.decodeSingularUInt64Field(value: &self._startedCallRecipientID) }()
       case 5: try { try decoder.decodeSingularUInt64Field(value: &self.startedCallTimestamp) }()
-      case 6: try { try decoder.decodeSingularUInt64Field(value: &self.endedCallTimestamp) }()
+      case 6: try { try decoder.decodeSingularUInt64Field(value: &self._endedCallTimestamp) }()
       case 7: try { try decoder.decodeSingularBoolField(value: &self.read) }()
       default: break
       }
@@ -10363,9 +10428,9 @@ extension BackupProto_GroupCall: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
     if self.startedCallTimestamp != 0 {
       try visitor.visitSingularUInt64Field(value: self.startedCallTimestamp, fieldNumber: 5)
     }
-    if self.endedCallTimestamp != 0 {
-      try visitor.visitSingularUInt64Field(value: self.endedCallTimestamp, fieldNumber: 6)
-    }
+    try { if let v = self._endedCallTimestamp {
+      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 6)
+    } }()
     if self.read != false {
       try visitor.visitSingularBoolField(value: self.read, fieldNumber: 7)
     }
@@ -10378,7 +10443,7 @@ extension BackupProto_GroupCall: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
     if lhs._ringerRecipientID != rhs._ringerRecipientID {return false}
     if lhs._startedCallRecipientID != rhs._startedCallRecipientID {return false}
     if lhs.startedCallTimestamp != rhs.startedCallTimestamp {return false}
-    if lhs.endedCallTimestamp != rhs.endedCallTimestamp {return false}
+    if lhs._endedCallTimestamp != rhs._endedCallTimestamp {return false}
     if lhs.read != rhs.read {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true

@@ -558,6 +558,9 @@ public class AttachmentManagerImpl: AttachmentManager {
         return .success(Attachment.TransitTierInfo(
             cdnNumber: attachmentLocator.cdnNumber,
             cdnKey: attachmentLocator.cdnKey,
+            // Note that this can be unset, which presents as 0,
+            // so we'll treat this as having uploaded in the distant
+            // past, which is fine and matches desired behavior.
             uploadTimestamp: attachmentLocator.uploadTimestamp,
             encryptionKey: attachmentLocator.key,
             unencryptedByteCount: attachmentLocator.size,

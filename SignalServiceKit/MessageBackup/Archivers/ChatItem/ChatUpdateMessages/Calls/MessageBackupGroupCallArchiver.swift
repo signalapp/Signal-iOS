@@ -73,7 +73,9 @@ final class MessageBackupGroupCallArchiver {
             case .read: true
             case .unread: false
             }
-            groupCallUpdate.endedCallTimestamp = associatedCallRecord.callEndedTimestamp
+            if associatedCallRecord.callEndedTimestamp > 0 {
+                groupCallUpdate.endedCallTimestamp = associatedCallRecord.callEndedTimestamp
+            }
         }
 
         if let ringerAci = associatedCallRecord?.groupCallRingerAci {
@@ -220,11 +222,13 @@ final class MessageBackupGroupCallArchiver {
                     shouldSendSyncMessage: false,
                     tx: context.tx
                 )
-                try callRecordStore.updateCallEndedTimestamp(
-                    callRecord: callRecord,
-                    callEndedTimestamp: groupCall.endedCallTimestamp,
-                    tx: context.tx
-                )
+                if groupCall.hasEndedCallTimestamp {
+                    try callRecordStore.updateCallEndedTimestamp(
+                        callRecord: callRecord,
+                        callEndedTimestamp: groupCall.endedCallTimestamp,
+                        tx: context.tx
+                    )
+                }
                 if groupCall.read {
                     try callRecordStore.markAsRead(callRecord: callRecord, tx: context.tx)
                 }

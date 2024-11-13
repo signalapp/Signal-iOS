@@ -234,14 +234,13 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
 
         let threadAssociatedData = threadStore.fetchOrDefaultAssociatedData(for: thread.tsThread, context: context)
 
-        let thisThreadPinnedOrder: UInt32
+        let thisThreadPinnedOrder: UInt32?
         let pinnedThreadIds = pinnedThreadStore.pinnedThreadIds(tx: context.tx)
         if let pinnedThreadIndex: Int = pinnedThreadIds.firstIndex(of: thread.tsThread.uniqueId) {
             // Add one so we don't start at 0.
             thisThreadPinnedOrder = UInt32(clamping: pinnedThreadIndex + 1)
         } else {
-            // Hardcoded 0 for unpinned.
-            thisThreadPinnedOrder = 0
+            thisThreadPinnedOrder = nil
         }
 
         let versionedExpireTimerToken = dmConfigurationStore.fetchOrBuildDefault(
@@ -261,10 +260,16 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         chat.id = chatId.value
         chat.recipientID = recipientId.value
         chat.archived = threadAssociatedData.isArchived
-        chat.pinnedOrder = thisThreadPinnedOrder
-        chat.expirationTimerMs = UInt64(versionedExpireTimerToken.durationSeconds) * 1000
+        if let thisThreadPinnedOrder {
+            chat.pinnedOrder = thisThreadPinnedOrder
+        }
+        if versionedExpireTimerToken.isEnabled {
+            chat.expirationTimerMs = UInt64(versionedExpireTimerToken.durationSeconds) * 1000
+        }
         chat.expireTimerVersion = versionedExpireTimerToken.version
-        chat.muteUntilMs = threadAssociatedData.mutedUntilTimestamp
+        if threadAssociatedData.isMuted {
+            chat.muteUntilMs = threadAssociatedData.mutedUntilTimestamp
+        }
         chat.markedUnread = threadAssociatedData.isMarkedUnread
         chat.dontNotifyForMentionsIfMuted = dontNotifyForMentionsIfMuted
 
@@ -393,7 +398,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         context.mapChatId(chat.chatId, to: chatThread, recipientId: chat.typedRecipientId)
 
         var mutedUntilTimestamp: UInt64?
-        if chat.muteUntilMs != 0 {
+        if chat.hasMuteUntilMs {
             mutedUntilTimestamp = chat.muteUntilMs
         }
 
@@ -409,7 +414,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
             return .failure(partialErrors + [.restoreFrameError(.databaseInsertionFailed(error), chat.chatId)])
         }
 
-        if chat.pinnedOrder != 0 {
+        if chat.hasPinnedOrder {
             let newPinnedThreadIds = context.pinnedThreadOrder(
                 newPinnedThreadId: MessageBackup.ThreadUniqueId(chatThread: chatThread),
                 newPinnedThreadChatId: chat.chatId,
@@ -418,11 +423,17 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
             pinnedThreadStore.updatePinnedThreadIds(newPinnedThreadIds.map(\.value), tx: context.tx)
         }
 
-        guard let expiresInSeconds: UInt32 = .msToSecs(chat.expirationTimerMs) else {
-            return .failure([.restoreFrameError(
-                .invalidProtoData(.expirationTimerOverflowedLocalType),
-                chat.chatId
-            )])
+        let expiresInSeconds: UInt32
+        if chat.hasExpirationTimerMs {
+            guard let _expiresInSeconds: UInt32 = .msToSecs(chat.expirationTimerMs) else {
+                return .failure([.restoreFrameError(
+                    .invalidProtoData(.expirationTimerOverflowedLocalType),
+                    chat.chatId
+                )])
+            }
+            expiresInSeconds = _expiresInSeconds
+        } else {
+            expiresInSeconds = 0
         }
 
         dmConfigurationStore.set(

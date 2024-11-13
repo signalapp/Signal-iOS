@@ -679,7 +679,9 @@ extension ReferencedAttachment {
             var transitTierLocator = BackupProto_FilePointer.AttachmentLocator()
             transitTierLocator.cdnKey = transitTierInfo.cdnKey
             transitTierLocator.cdnNumber = transitTierInfo.cdnNumber
-            transitTierLocator.uploadTimestamp = transitTierInfo.uploadTimestamp
+            if transitTierInfo.uploadTimestamp > 0 {
+                transitTierLocator.uploadTimestamp = transitTierInfo.uploadTimestamp
+            }
             transitTierLocator.key = transitTierInfo.encryptionKey
             transitTierLocator.digest = transitTierInfo.digestSHA256Ciphertext
             if let unencryptedByteCount = transitTierInfo.unencryptedByteCount {
