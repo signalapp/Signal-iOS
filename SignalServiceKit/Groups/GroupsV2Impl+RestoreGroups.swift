@@ -13,7 +13,7 @@ public extension GroupsV2Impl {
     // A list of all groups we've learned of from the storage service.
     //
     // Values are irrelevant (bools).
-    private static let allStorageServiceGroupIds = SDSKeyValueStore(collection: "GroupsV2Impl.groupsFromStorageService_All")
+    private static let allStorageServiceGroupMasterKeys = SDSKeyValueStore(collection: "GroupsV2Impl.groupsFromStorageService_All")
 
     // A list of the groups we need to try to restore. Values are serialized GroupV2Records.
     private static let storageServiceGroupsToRestore = SDSKeyValueStore(collection: "GroupsV2Impl.groupsFromStorageService_EnqueuedRecordForRestore")
@@ -24,13 +24,13 @@ public extension GroupsV2Impl {
     // A list of the groups we failed to restore.
     //
     // Values are irrelevant (bools).
-    private static let failedStorageServiceGroupIds = SDSKeyValueStore(collection: "GroupsV2Impl.groupsFromStorageService_Failed")
+    private static let failedStorageServiceGroupMasterKeys = SDSKeyValueStore(collection: "GroupsV2Impl.groupsFromStorageService_Failed")
 
     static func isGroupKnownToStorageService(groupModel: TSGroupModelV2, transaction: SDSAnyReadTransaction) -> Bool {
         do {
             let masterKeyData = try groupModel.masterKey().serialize().asData
             let key = restoreGroupKey(forMasterKeyData: masterKeyData)
-            return allStorageServiceGroupIds.hasValue(forKey: key, transaction: transaction)
+            return allStorageServiceGroupMasterKeys.hasValue(forKey: key, transaction: transaction)
         } catch {
             owsFailDebug("Error: \(error)")
             return false
@@ -60,11 +60,11 @@ public extension GroupsV2Impl {
 
         let key = restoreGroupKey(forMasterKeyData: groupRecord.masterKey)
 
-        if !allStorageServiceGroupIds.hasValue(forKey: key, transaction: transaction) {
-            allStorageServiceGroupIds.setBool(true, key: key, transaction: transaction)
+        if !allStorageServiceGroupMasterKeys.hasValue(forKey: key, transaction: transaction) {
+            allStorageServiceGroupMasterKeys.setBool(true, key: key, transaction: transaction)
         }
 
-        guard !failedStorageServiceGroupIds.hasValue(forKey: key, transaction: transaction) else {
+        guard !failedStorageServiceGroupMasterKeys.hasValue(forKey: key, transaction: transaction) else {
             // Past restore attempts failed in an unrecoverable way.
             return
         }
@@ -191,7 +191,7 @@ public extension GroupsV2Impl {
             await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
                 self.storageServiceGroupsToRestore.removeValue(forKey: key, transaction: transaction)
                 self.legacyStorageServiceGroupsToRestore.removeValue(forKey: key, transaction: transaction)
-                self.failedStorageServiceGroupIds.setBool(true, key: key, transaction: transaction)
+                self.failedStorageServiceGroupMasterKeys.setBool(true, key: key, transaction: transaction)
             }
         }
 
