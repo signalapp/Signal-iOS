@@ -1358,7 +1358,7 @@
 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "Je voudrais suggérer une nouvelle fonctionnalité";
 
 /* A brief localized representation of the 'feature request' support filter. */
-"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST_SHORT" = "Suggestion relative aux fonctionnalités";
+"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST_SHORT" = "Suggestion de fonctionnalité";
 
 /* The localized representation of the 'feedback' support filter. */
 "CONTACT_SUPPORT_FILTER_FEEDBACK" = "J’ai des commentaires sur l’appli";
@@ -1517,7 +1517,7 @@
 "CONVERSATION_SETTINGS_ALL_MEDIA_HEADER" = "Tous les médias";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choisissez qui peut modifier le nom, la photo et la description du groupe, ou encore le délai avant disparition des messages éphémères.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choisissez qui peut modifier le nom, la photo et la présentation du groupe, ou encore le délai avant disparition des messages éphémères.";
 
 /* Footer string for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_FOOTER" = "Soutenez Signal et gagnez des macarons à afficher sur votre profil. Appuyez sur un macaron pour en savoir plus.";
@@ -2531,7 +2531,7 @@
 "DONATION_VIEW_MORE_SECTION_TITLE" = "Plus";
 
 /* Title for the 'my support' section in the donation view */
-"DONATION_VIEW_MY_SUPPORT_TITLE" = "Mon soutien";
+"DONATION_VIEW_MY_SUPPORT_TITLE" = "Ma contribution";
 
 /* Title for the \"other ways to donate\" section on the donation view. */
 "DONATION_VIEW_OTHER_WAYS_TO_DONATE_TITLE" = "Nous soutenir autrement";
@@ -2900,7 +2900,7 @@
 "GIF_VIEW_SEARCH_ERROR" = "Erreur. Touchez pour réessayer.";
 
 /* Indicates that the user's search had no results. */
-"GIF_VIEW_SEARCH_NO_RESULTS" = "Il n’y a aucun résultat.";
+"GIF_VIEW_SEARCH_NO_RESULTS" = "Aucun résultat.";
 
 /* Placeholder text for the search field in GIF view */
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Saisissez votre recherche";
@@ -3131,16 +3131,16 @@
 "GROUP_DESCRIPTION_MORE" = "plus";
 
 /* Placeholder text for 'group description' field. */
-"GROUP_DESCRIPTION_PLACEHOLDER" = "Ajouter une description du groupe…";
+"GROUP_DESCRIPTION_PLACEHOLDER" = "Présenter le groupe en quelques mots…";
 
 /* Footer text when editing the group description */
-"GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "La description du groupe sera visible aux membres de ce groupe et aux personnes invitées.";
+"GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "La présentation du groupe sera accessible aux membres de ce groupe et aux invités.";
 
 /* Title for the group description view. */
-"GROUP_DESCRIPTION_VIEW_TITLE" = "Description du groupe";
+"GROUP_DESCRIPTION_VIEW_TITLE" = "Présentation du groupe";
 
 /* Title for the group description view. Embeds {{ the number of characters that can be added to the description without hitting the length limit }}. */
-"GROUP_DESCRIPTION_VIEW_TITLE_FORMAT" = "Description du groupe (%1$@)";
+"GROUP_DESCRIPTION_VIEW_TITLE_FORMAT" = "Présentation du groupe (%1$@)";
 
 /* Message indicating that the group invite link was disabled. */
 "GROUP_INVITE_LINK_DISABLED" = "Le lien du groupe a été désactivé.";
@@ -3557,22 +3557,22 @@
 "GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ a mis le groupe à jour.";
 
 /* Message indicating that the group's description was removed. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED" = "La description du groupe a été effacée.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED" = "La présentation du groupe a été supprimée.";
 
 /* Message indicating that the group's description was removed by the local user. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "Vous avez effacé la description du groupe.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "Vous avez supprimé la présentation du groupe.";
 
 /* Message indicating that the group's description was removed by a remote user. Embeds {{user who removed the name}}. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ a effacé la description du groupe.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ a supprimé la présentation du groupe.";
 
 /* Message indicating that the group's description was changed. */
-"GROUP_UPDATED_DESCRIPTION_UPDATED" = "La description du groupe a été changée.";
+"GROUP_UPDATED_DESCRIPTION_UPDATED" = "La présentation du groupe a été modifiée.";
 
 /* Message indicating that the group's description was changed by the local user.. */
-"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_LOCAL_USER" = "Vous avez modifié la description du groupe.";
+"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_LOCAL_USER" = "Vous avez modifié la présentation du groupe.";
 
 /* Message indicating that the group's description was changed by a remote user. Embeds {{ user who changed the name }}. */
-"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ a modifié la description du groupe.";
+"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ a modifié la présentation du groupe.";
 
 /* Message indicating that the group's name was removed. */
 "GROUP_UPDATED_NAME_REMOVED" = "Le nom du groupe a été supprimé.";
@@ -7823,7 +7823,7 @@
 "SUPPORT_DESCRIPTION_PLACEHOLDER" = "Que se passe-t-il ? Dites-nous pourquoi vous nous contactez.";
 
 /* Default prompt for user description in support email requests */
-"SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "Décrivez-nous la situation : ";
+"SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "Décrivez-nous le problème : ";
 
 /* Message for alert dialog presented when a support email failed to send */
 "SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "Veuillez envoyer votre demande d’assistance à support@signal.org";
@@ -7871,7 +7871,7 @@
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "En cours de traitement";
 
 /* Sustainer view Cancel Subscription button title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Annuler l’abonnement";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Résilier les dons mensuels";
 
 /* Confirm Cancellation? Action sheet confirm button */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "Confirmer";

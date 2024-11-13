@@ -1709,7 +1709,7 @@
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Cargando más mensajes…";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Más información";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Leer más";
 
 /* Indicator that a value has been copied to the clipboard. */
 "COPIED_TO_CLIPBOARD" = "Copiado al portapapeles";
@@ -2033,22 +2033,22 @@
 "DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "Transferir desde dispositivo iOS";
 
 /* A warning for the device transfer 'choice' view indicating you can only have one device registered with your number */
-"DEVICE_TRANSFER_CHOICE_WARNING" = "Si continúas, se desactivará Signal en el resto de los dispositivos registrados con el mismo número de teléfono.";
+"DEVICE_TRANSFER_CHOICE_WARNING" = "Si continúas, se desactivará Signal en otros dispositivos registrados con el mismo número de teléfono.";
 
 /* Button shown to contract a QR code and exit the fullscreen view. */
-"DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "Disminuir vista";
+"DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "Reducir";
 
 /* An error indicating that the other device closed signal mid-transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "No se ha podido completar la transferencia. Asegúrate de que Signal está abierto en ambos dispositivos e inténtalo de nuevo.";
+"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "No se ha podido completar la transferencia. Asegúrate de que la aplicación Signal esté abierta en ambos dispositivos e inténtalo de nuevo.";
 
 /* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "No se ha podido verificar tu nuevo dispositivo. Inténtalo de nuevo.";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "No se ha podido completar la transferencia. Asegúrate de que tus dispositivos están cerca e inténtalo de nuevo.";
+"DEVICE_TRANSFER_ERROR_GENERIC" = "No se ha podido completar la transferencia. Asegúrate de que tus dispositivos estén cerca uno del otro e inténtalo de nuevo.";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "Para configurar este iPad como dispositivo vinculado, debes escanear el código con el iPad que tenías enlazado anteriormente";
+"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "Para configurar este iPad como dispositivo vinculado, debes escanear el código con tu iPad anterior";
 
 /* An error indicating the user must scan this code with a primary device to transfer. */
 "DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "Para transferir tu cuenta, debes escanear el código con tu iPhone";
@@ -2072,7 +2072,7 @@
 "DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Acerca tu dispositivo anterior, asegúrate de que Wi-Fi y Bluetooth estén habilitados y escanea este código QR.";
 
 /* The second explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Escanea este código QR con la cámara del otro dispositivo iOS.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Escanea este código QR con la cámara de tu otro dispositivo iOS.";
 
 /* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
 "DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "¿No aparece el aviso en tu dispositivo anterior?";
@@ -2132,7 +2132,7 @@
 "DISAPPEARING_MESSAGES_SECONDS" = "segundos";
 
 /* subheading in privacy settings */
-"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "Si activas esta función, los mensajes enviados y recibidos en nuevos chats que tú inicies desaparecerán tras ser vistos.";
+"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "Si activas esta función, los mensajes enviados y recibidos en nuevos chats que inicies desaparecerán tras ser vistos.";
 
 /* The unit for a number of weeks */
 "DISAPPEARING_MESSAGES_WEEKS" = "semanas";
@@ -2204,10 +2204,10 @@
 "DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "Tu donación a través de iDEAL aún se está procesando. Consulta la aplicación de tu banco para aprobar el pago antes de hacer otra donación.";
 
 /* Message in an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment. */
-"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "Las transferencias bancarias suelen tardar 1 día hábil en procesarse. Espera hasta que se complete esta donación antes de realizar otra.";
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "Las transferencias bancarias suelen tardar un día hábil en procesarse. Espera hasta que se complete esta donación antes de realizar otra.";
 
 /* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently processing via bank payment. */
-"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "Las transferencias bancarias suelen tardar 1 día hábil en procesarse. Espera hasta que se complete esta donación antes de actualizar tu suscripción.";
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "Las transferencias bancarias suelen tardar un día hábil en procesarse. Espera hasta que se complete esta donación antes de actualizar tu suscripción.";
 
 /* Message for an alert shown when the user tries to donate via bank transfer, but the amount they want to donate is too large. Embeds {{ the maximum allowed donation amount }}. */
 "DONATE_SCREEN_ERROR_MESSAGE_FORMAT_BANK_TRANSFER_AMOUNT_TOO_LARGE" = "Puedes enviar hasta %1$@ mediante transferencia bancaria. Prueba con un importe o un método de pago diferentes.";
@@ -2219,10 +2219,10 @@
 "DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "Tu donación aún se está procesando. Este proceso puede llevar unos minutos dependiendo de tu conexión. Espera hasta que se complete esta donación antes de actualizar tu suscripción.";
 
 /* If the user tries to donate to Signal but no amount is selected, this error message is shown. */
-"DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "Selecciona una cantidad para donar.";
+"DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "Selecciona una importe para donar.";
 
 /* If the user tries to donate to Signal but they've entered an amount that's too small, this error message is shown. Embeds {{currency string}}, such as \"$5\". */
-"DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT_FORMAT" = "La cantidad mínima que puedes donar es de %1$@.";
+"DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT_FORMAT" = "El importe mínimo que puedes donar es de %1$@.";
 
 /* Title for an alert presented when the user tries to make a donation, but already has a donation that is currently awaiting authorization. */
 "DONATE_SCREEN_ERROR_TITLE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "Donación pendiente de autorización";
@@ -2267,10 +2267,10 @@
 "DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_PROCESSING_TITLE" = "Donación pendiente";
 
 /* Message for a sheet explaining that a one-time donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
-"DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "Tu donación está pendiente. Podrás mostrar la insignia %1$@ en tu perfil cuando recibamos tu donación.\n\nLas transferencias bancarias suelen tardar 1 día hábil en procesarse.";
+"DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "Tu donación está pendiente. Podrás mostrar la insignia %1$@ en tu perfil cuando recibamos tu donación.\n\nLas transferencias bancarias suelen tardar un día hábil en procesarse.";
 
 /* Message for a sheet explaining that a recurring donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
-"DONATION_BADGE_ISSUE_SHEET_RECURRING_BANK_PAYMENT_PROCESSING_MESSAGE" = "Tu donación mensual está pendiente. Podrás mostrar la insignia %1$@ en tu perfil cuando recibamos tu donación.\n\nLas transferencias bancarias suelen tardar 1 día hábil en procesarse.";
+"DONATION_BADGE_ISSUE_SHEET_RECURRING_BANK_PAYMENT_PROCESSING_MESSAGE" = "Tu donación mensual está pendiente. Podrás mostrar la insignia %1$@ en tu perfil cuando recibamos tu donación.\n\nLas transferencias bancarias suelen tardar un día hábil en procesarse.";
 
 /* Title for a button asking the user to renew their subscription, because it has expired. */
 "DONATION_BADGE_ISSUE_SHEET_RENEW_SUBSCRIPTION_BUTTON_TITLE" = "Renovar suscripción";
@@ -2279,7 +2279,7 @@
 "DONATION_BADGE_ISSUE_SHEET_TRY_AGAIN_BUTTON_TITLE" = "Reintentar";
 
 /* When donating on behalf of a friend, a badge will be sent. This shows how long the badge lasts. Embeds {{formatted duration}}. */
-"DONATION_FOR_A_FRIEND_ROW_DURATION" = "Dura %1$@";
+"DONATION_FOR_A_FRIEND_ROW_DURATION" = "Duración: %1$@";
 
 /* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the text on that sheet. */
 "DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY" = "Tu insignia de donación ha caducado y ya no podrás mostrarla en tu perfil.";
@@ -2288,7 +2288,7 @@
 "DONATION_FROM_A_FRIEND_BADGE_EXPIRED_TITLE" = "Tu insignia de donación ha caducado";
 
 /* Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the text on that sheet. Embeds {{contact name}}. */
-"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_BODY_FORMAT" = "La insignia de donación que %1$@ te regaló ha caducado y ya no puedes reclamarla.";
+"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_BODY_FORMAT" = "La insignia de donación que %1$@ te regaló ha caducado y ya no puedes canjearla.";
 
 /* Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the title on that sheet. */
 "DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_TITLE" = "Tu insignia de donación ha caducado";
@@ -2297,13 +2297,13 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_BADGE_REDEEMED" = "Canjeada";
 
 /* Users can donate on behalf of a friend, and the friend will receive a badge. This is a short paragraph on the screen where users choose the badge their friend will receive. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_DESCRIPTION" = "Apoya a Signal haciendo una donación en nombre de un amigo o familiar que use Signal. La persona que elijas podrá mostrar que apoya a Signal en su perfil.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_DESCRIPTION" = "Apoya a Signal haciendo una donación en nombre de un amigo o familiar que use Signal. La persona que elijas podrá mostrar su insignia de apoyo a Signal en su perfil.";
 
 /* Users can donate on behalf of a friend, and the friend will receive a badge. This is the title on the screen where users choose the badge their friend will receive. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_TITLE" = "Donar en nombre de alguien";
 
 /* Title on the screen where you choose who you're going to donate on behalf of. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_RECIPIENT_TITLE" = "Seleccionar persona";
+"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_RECIPIENT_TITLE" = "Seleccionar contacto";
 
 /* Users can donate on a friend's behalf. This is the title on the screen where users confirm the donation, and can write a message for the friend. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_CONFIRMATION_SCREEN_TITLE" = "Confirmar donación";
@@ -2324,7 +2324,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_BODY" = "No se ha podido procesar el pago y no se ha aplicado ningún cargo. Inténtalo de nuevo.";
 
 /* Users can donate on a friend's behalf. If the payment fails and the user has not been charged, an error dialog will be shown. This is the title of that dialog. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_TITLE" = "Fallo en el pago";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_TITLE" = "No se ha podido completar el pago";
 
 /* Users can donate on a friend's behalf. If the payment was processed but the donation failed to send, this error message will be shown. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_BODY" = "Tu pago se ha procesado, pero Signal no ha podido enviar tu mensaje de donación. Contacta con el equipo de asistencia.";
@@ -2342,7 +2342,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_RECEIVED_TITLE_FORMAT" = "%1$@ ha hecho una donación a Signal en tu nombre";
 
 /* Users can donate on a friend's behalf. This is the error message that appears if the try to do this, but the recipient is blocked. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_BODY" = "No puedes hacer una donación en nombre de esta persona porque la tienes bloqueada.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_BODY" = "No puedes hacer una donación en nombre de esta persona porque la has bloqueado.";
 
 /* Users can donate on a friend's behalf. This is the title for an error message that appears if the try to do this, but the recipient is blocked. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_TITLE" = "No se puede realizar la donación";
@@ -2351,7 +2351,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE" = "Canjear";
 
 /* When you receive a badge as a result of a donation from a friend, a screen is shown. This toast is shown when dismissing that screen if you do not redeem the badge. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_LATER" = "Puedes reclamar tu insignia de donación más tarde";
+"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_LATER" = "Puedes canjear tu insignia de donación más tarde";
 
 /* A friend has donated on your behalf and you received a badge. A sheet opens for you to redeem this badge. Embeds {{contact's short name, such as a first name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_TITLE_FORMAT" = "%1$@ ha hecho una donación en tu nombre";
@@ -2363,7 +2363,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Donación en nombre de %1$@";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the text on that sheet. Embeds {{recipient name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "Has hecho una donación a Signal en nombre de %1$@. Podrá mostrar que apoya a Signal en su perfil.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "Has hecho una donación a Signal en nombre de %1$@. Podrá mostrar su insignia de apoyo a Signal en su perfil.";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the title on that sheet. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_TITLE" = "¡Gracias por tu apoyo!";
@@ -2372,7 +2372,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_VIEW" = "Ver";
 
 /* A friend has donated on your behalf and you received a badge. This text says that you received a badge, and from whom. Embeds {{contact's short name, such as a first name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_YOU_RECEIVED_A_BADGE_FORMAT" = "¡%1$@ ha hecho una donación a Signal en tu nombre! Muestra tu apoyo a Signal en tu perfil.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_YOU_RECEIVED_A_BADGE_FORMAT" = "¡%1$@ ha hecho una donación a Signal en tu nombre! Muestra tu insignia de apoyo a Signal en tu perfil.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 1st paragraph of that screen. */
 "DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "Mensajería privada. Sin anuncios, ni rastreos, ni vigilancia.";
@@ -2399,7 +2399,7 @@
 "DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "Compartir justificante";
 
 /* Footer text at the bottom of donation receipts */
-"DONATION_RECEIPT_FOOTER" = "Gracias por apoyar a Signal. Tu contribución ayuda a impulsar nuestra misión: desarrollar tecnología de código abierto centrada en la privacidad, que protege la libertad de expresión y hace posible una comunicación segura para millones de personas en todo el mundo. Si resides en Estados Unidos, guarda este recibo para tus declaraciones fiscales. Signal Technology Foundation es una organización sin ánimo de lucro exenta de impuestos en Estados Unidos bajo la sección 501(c)(3) del código tributario de EE. UU. (Internal Revenue Code). Nuestro número de identificación fiscal es 82-4506840.";
+"DONATION_RECEIPT_FOOTER" = "Gracias por apoyar a Signal. Con tu contribución, impulsas nuestra misión de desarrollar tecnología de código abierto centrada en la privacidad, que protege la libertad de expresión y permite una comunicación segura para millones de personas en todo el mundo. Si resides en Estados Unidos, guarda este recibo para tus declaraciones fiscales. Signal Technology Foundation es una organización sin ánimo de lucro exenta de impuestos en Estados Unidos bajo la sección 501(c)(3) del código tributario de EE. UU. (Internal Revenue Code). Nuestro número de identificación fiscal es 82-4506840.";
 
 /* Title for receipts for donations given on a friend's behalf */
 "DONATION_RECEIPT_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "Donación en nombre de alguien";
@@ -2453,7 +2453,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_RENEW_SUBSCRIPTION" = "Renovar suscripción";
 
 /* Title for an action in an action sheet asking the user to try again, in reference to a donation that failed. */
-"DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_TRY_AGAIN" = "Inténtalo de nuevo";
+"DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_TRY_AGAIN" = "Reintentar";
 
 /* Prompt the user asking if they want to keep the current in-flight, but unauthorized donation, or try again. */
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "No se ha podido confirmar tu donación a través de iDEAL. Consulta la aplicación de tu banco para aprobar tu donación o inténtalo de nuevo.";
@@ -2549,16 +2549,16 @@
 "DOUBLE_TAP_TO_EDIT_ALERT_TITLE" = "Toca dos veces para editar";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Puedes dar acceso en la aplicación Ajustes de iOS.";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Puedes habilitar el acceso en la aplicación Ajustes de iOS.";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal necesita acceso a los contactos para poder editar la información de tus contactos.";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal necesita acceso a los contactos para poder editar la información de tus contactos";
 
 /* The navbar title for the 'update group' view. */
 "EDIT_GROUP_DEFAULT_TITLE" = "Editar grupo";
 
 /* Error message indicating the a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Esta persona debe actualizar Signal para formar parte del grupo.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Esta persona debe actualizar Signal para unirse al grupo.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Imagen no válida.";
@@ -2666,19 +2666,19 @@
 "ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "No se ha podido cargar el registro de depuración.";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "No se ha podido enviar el mensaje a esta persona porque la tienes bloqueada.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "No se ha podido enviar el mensaje a esta persona porque la has bloqueado.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "No se ha podido enviar el mensaje porque no se detallan destinatarios válidos.";
 
 /* Error indicating that a socket request failed. */
-"ERROR_DESCRIPTION_REQUEST_FAILED" = "Se ha producido un error en la solicitud de la red.";
+"ERROR_DESCRIPTION_REQUEST_FAILED" = "Error en la solicitud de red";
 
 /* Error indicating that a socket request timed out. */
 "ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "Se superó el tiempo de espera para la solicitud de red.";
 
 /* Error indicating that a socket response failed. */
-"ERROR_DESCRIPTION_RESPONSE_FAILED" = "Respuesta del servidor no válida.";
+"ERROR_DESCRIPTION_RESPONSE_FAILED" = "Respuesta no válida del servicio.";
 
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Este dispositivo ya no está registrado con tu número de teléfono. Vuelve a instalar Signal.";
@@ -2714,7 +2714,7 @@
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "La clave del destinatario no es válida.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "El mensaje recibido no está sincronizado.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Error de sincronización en el mensaje recibido";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_VERSION" = "Se ha recibido un mensaje no compatible con esta versión.";
@@ -2741,7 +2741,7 @@
 "ERROR_NETWORK_FAILURE" = "Error de red";
 
 /* Format string for an error alert notification message. Embeds {{ error string }} */
-"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Ayúdanos a mejorar Signal enviándonos un reporte del error ocurrido junto con el registro de depuración de tu dispositivo a support@signal.org; %1$@";
+"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Ayúdanos a mejorar Signal enviándonos un reporte de este error junto con el registro de depuración de tu dispositivo a support@signal.org; %1$@";
 
 /* Format string for an error alert notification title. */
 "ERROR_NOTIFICATION_TITLE" = "Signal Beta: Se ha producido un error";
@@ -3338,13 +3338,13 @@
 "GROUP_LOCAL_USER_INVITE_ACCEPTED" = "Has aceptado una invitación al grupo.";
 
 /* Message indicating that the local user accepted an invite to the group. Embeds {{user who invited the local user}}. */
-"GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "Has aceptado una invitación de %1$@ para participar en el grupo.";
+"GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "Has aceptado una invitación de %1$@ para unirte al grupo.";
 
 /* Message indicating that the local user declined an invite to the group. */
 "GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER" = "Has rechazado una invitación al grupo.";
 
 /* Message indicating that the local user declined an invite to the group. Embeds {{user who invited the local user}}. */
-"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "Has rechazado una invitación de %1$@ para participar en el grupo.";
+"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "Has rechazado una invitación de %1$@ para unirte al grupo.";
 
 /* Message indicating that the local user's invite was revoked by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "%1$@ ha retirado tu invitación al grupo.";
@@ -3419,7 +3419,7 @@
 "GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%1$@ ha aceptado tu invitación al grupo.";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{ %1$@ user who accepted their invite, %2$@ user who invited the user}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%1$@ ha aceptado una invitación de %2$@ para participar en el grupo.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%1$@ ha aceptado una invitación de %2$@ para unirse al grupo.";
 
 /* Message indicating that a remote user was added to the group by the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "Has añadido a %1$@.";
@@ -4127,7 +4127,7 @@
 "MEDIA_EDITOR_TEXT_FIELD_ADD_MESSAGE" = "Añadir mensaje";
 
 /* Shown in place of message input text in media editor when 'View Once' is on. */
-"MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "Archivo multimedia";
+"MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "Visualización única";
 
 /* VoiceOver description for a generic audio file in All Media */
 "MEDIA_GALLERY_A11Y_AUDIO_FILE" = "archivo de audio";
@@ -5993,7 +5993,7 @@
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Código de país";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is a description on the screen that asks them this question. */
-"REGISTRATION_DEVICE_TRANSFER_CHOICE_EXPLANATION" = "Si continúas, Signal se desactivará en otros dispositivos registrados con el mismo número de teléfono.";
+"REGISTRATION_DEVICE_TRANSFER_CHOICE_EXPLANATION" = "Si continúas, se desactivará Signal en otros dispositivos registrados con el mismo número de teléfono.";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is the title on the screen that asks them this question. */
 "REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE" = "Transferir cuenta y mensajes";
@@ -7820,7 +7820,7 @@
 "SUPPORT_CONTACT_US_HEADER" = "Contacta con nosotros";
 
 /* Placeholder string for support description */
-"SUPPORT_DESCRIPTION_PLACEHOLDER" = "Cuéntanos qué ocurre";
+"SUPPORT_DESCRIPTION_PLACEHOLDER" = "Cuéntanos qué pasa";
 
 /* Default prompt for user description in support email requests */
 "SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "Cuéntanos cuál es el problema: ";

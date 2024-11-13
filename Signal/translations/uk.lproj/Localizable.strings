@@ -4994,7 +4994,7 @@
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Користувач %1$@ встановив таймер тимчасових повідомлень: %2$@.";
 
 /* Label warning the user that the Signal service may be down. */
-"OUTAGE_WARNING" = "Наразі в Signal виникли технічні неполадки. Ми намагаємося відновити сервіс якомога швидше.";
+"OUTAGE_WARNING" = "У Signal виникли технічні проблеми. Ми робимо все можливе, щоб якнайшвидше відновити роботу.";
 
 /* Label for action link when the user has an outdated payment client */
 "OUTDATED_PAYMENT_CLIENT_ACTION_TITLE" = "Оновити зараз";
@@ -5516,7 +5516,7 @@
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Попередження";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PIN-коди зберігають інформацію в Signal зашифрованою, тому тільки ви можете отримати до неї доступ. Ваш профіль, налаштування та контакти буде відновлено, коли ви встановите застосунок знов. PIN-код не потрібен, щоб відкрити застосунок.";
+"PIN_CREATION_EXPLANATION" = "PIN-коди забезпечують шифрування інформації, що зберігається в Signal, щоб отримати до неї доступ могли тільки ви. У разі перевстановлення Signal ви зможете відновити свій профіль, налаштування й контакти. Щоб відкрити застосунок, PIN-код не потрібен.";
 
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "Детальніше про PIN-коди";
@@ -5567,7 +5567,7 @@
 "PIN_CREATION_SKIP" = "Вимкнути PIN-код";
 
 /* Title of the 'pin creation' view. */
-"PIN_CREATION_TITLE" = "Створити PIN-код";
+"PIN_CREATION_TITLE" = "Створіть PIN-код";
 
 /* Label indicating that the attempted PIN is too weak */
 "PIN_CREATION_WEAK_ERROR" = "Виберіть більш надійний PIN-код";
@@ -5624,7 +5624,7 @@
 "PIN_REMINDER_TITLE" = "Введіть свій PIN-код Signal";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "ПІН повинен містити щонайменше 4 цифри.";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "Мінімальна довжина PIN-коду — 4 цифри";
 
 /* An explanation that you have already pinned the maximum number of conversations. */
 "PINNED_CONVERSATION_LIMIT" = "Ви можете закріпити до 4-х чатів.";
@@ -5633,7 +5633,7 @@
 "PINNED_SECTION_TITLE" = "Закріплено";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_ACTION" = "Створити PIN-код";
+"PINS_MEGAPHONE_ACTION" = "Створіть PIN-код";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_BODY" = "Завершіть створення Signal PIN.";
