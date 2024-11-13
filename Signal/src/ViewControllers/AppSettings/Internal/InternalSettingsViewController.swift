@@ -99,24 +99,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
             }
         ))
 
-        if FeatureFlags.linkAndSyncTogglePrimary && !FeatureFlags.linkAndSyncOverridePrimary {
-            debugSection.add(.switch(
-                withText: "Link'n'Sync",
-                isOn: {
-                    DependenciesBridge.shared.db.read {
-                        DependenciesBridge.shared.linkAndSyncManager.isLinkAndSyncEnabledOnPrimary(tx: $0)
-                    }
-                },
-                target: self,
-                selector: #selector(toggleLinkAndSync(_:)))
-            )
-        }
-        if
-            FeatureFlags.linkAndSyncTogglePrimary
-            || FeatureFlags.linkAndSyncOverridePrimary
-            || FeatureFlags.linkAndSyncSecondary
-            || FeatureFlags.messageBackupFileAlpha
-        {
+        if FeatureFlags.linkAndSync || FeatureFlags.messageBackupFileAlpha {
             debugSection.add(.actionItem(withText: "Validate Message Backup") {
                 self.validateMessageBackupProto()
             })
@@ -258,18 +241,6 @@ private extension InternalSettingsViewController {
             }
         }
         SpinningCheckmarks.shouldSpin = !wasSpinning
-    }
-
-    @objc
-    func toggleLinkAndSync(_ sender: Any) {
-        let linkAndSyncManager = DependenciesBridge.shared.linkAndSyncManager
-        DependenciesBridge.shared.db.write { tx in
-            linkAndSyncManager.setIsLinkAndSyncEnabledOnPrimary(
-                !linkAndSyncManager.isLinkAndSyncEnabledOnPrimary(tx: tx),
-                tx: tx
-            )
-        }
-
     }
 
     func validateMessageBackupProto() {

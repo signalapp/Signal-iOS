@@ -46,15 +46,7 @@ public enum FeatureFlags {
     public static let messageBackupFileAlpha = build.includes(.internal)
     public static let messageBackupRemoteExportAlpha = build.includes(.dev) || messageBackupFileAlpha
     public static let messageBackupFileAlphaRegistrationFlow = build.includes(.dev)
-    /// Whether we show a toggle in internal settings on the primary to enable link'n'sync.
-    /// Both primary and secondary must be enabled to link'n'sync.
-    public static let linkAndSyncTogglePrimary = build.includes(.internal)
-    /// If true, link'n'sync is enabled on the primary regardless of the toggle setting.
-    /// Both primary and secondary must be enabled to link'n'sync.g
-    public static let linkAndSyncOverridePrimary = false
-    /// Whether link'n'sync is enabled on the secondary/linked device.
-    /// Both primary and secondary must be enabled to link'n'sync.
-    public static let linkAndSyncSecondary = build.includes(.internal)
+    public static let linkAndSync = build.includes(.internal)
     public static let linkAndSyncTimeoutSeconds: UInt32 = 60 * (build.includes(.internal) ? 5 : 1)
 
     public static let callLinkCreate = true

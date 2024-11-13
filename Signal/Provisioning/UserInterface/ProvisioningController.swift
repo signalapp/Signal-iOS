@@ -403,7 +403,7 @@ public class ProvisioningController: NSObject {
         let shouldLinkAndSync: Bool = {
             switch DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction {
             case .unregistered:
-                return FeatureFlags.linkAndSyncSecondary
+                return FeatureFlags.linkAndSync
             case .delinked, .relinking:
                 // We don't allow relinking secondaries to link'n'sync.
                 return false

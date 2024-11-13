@@ -222,7 +222,7 @@ public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
             do {
                 try self.mrbkStore.setMediaRootBackupKey(fromProvisioningMessage: provisionMessage, tx: tx)
             } catch {
-                if FeatureFlags.linkAndSyncSecondary || FeatureFlags.messageBackupFileAlpha {
+                if FeatureFlags.linkAndSync || FeatureFlags.messageBackupFileAlpha {
                     return .obsoleteLinkedDeviceError
                 } else {
                     Logger.warn("Invalid MRBK; ignoring")
@@ -246,7 +246,7 @@ public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         }
 
         if
-            FeatureFlags.linkAndSyncSecondary,
+            FeatureFlags.linkAndSync,
             let ephemeralBackupKey = BackupKey(provisioningMessage: provisionMessage)
         {
             do {

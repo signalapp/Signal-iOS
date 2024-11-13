@@ -40,10 +40,6 @@ public enum SecondaryLinkNSyncError: Error {
 
 public protocol LinkAndSyncManager {
 
-    func isLinkAndSyncEnabledOnPrimary(tx: DBReadTransaction) -> Bool
-
-    func setIsLinkAndSyncEnabledOnPrimary(_ isEnabled: Bool, tx: DBWriteTransaction)
-
     /// **Call this on the primary device!**
     /// Generate an ephemeral backup key on a primary device to be used to link'n'sync a new linked device.
     /// This key should be included in the provisioning message and then used to encrypt the backup proto we send.
@@ -99,23 +95,8 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         self.tsAccountManager = tsAccountManager
     }
 
-    public func isLinkAndSyncEnabledOnPrimary(tx: DBReadTransaction) -> Bool {
-        if FeatureFlags.linkAndSyncOverridePrimary {
-            return true
-        }
-        return kvStore.getBool(Constants.enabledOnPrimaryKey, defaultValue: false, transaction: tx)
-    }
-
-    public func setIsLinkAndSyncEnabledOnPrimary(_ isEnabled: Bool, tx: DBWriteTransaction) {
-        guard FeatureFlags.linkAndSyncTogglePrimary else {
-            owsFailDebug("Toggling not allowed")
-            return
-        }
-        kvStore.setBool(isEnabled, key: Constants.enabledOnPrimaryKey, transaction: tx)
-    }
-
     public func generateEphemeralBackupKey() -> BackupKey {
-        owsAssertDebug(FeatureFlags.linkAndSyncTogglePrimary || FeatureFlags.linkAndSyncOverridePrimary)
+        owsAssertDebug(FeatureFlags.linkAndSync)
         owsAssertDebug(tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice == true)
         return try! BackupKey(contents: Array(Randomness.generateRandomBytes(UInt(SVR.DerivedKey.backupKeyLength))))
     }
@@ -124,7 +105,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         ephemeralBackupKey: BackupKey,
         tokenId: DeviceProvisioningTokenId
     ) async throws(PrimaryLinkNSyncError) {
-        guard FeatureFlags.linkAndSyncTogglePrimary || FeatureFlags.linkAndSyncOverridePrimary else {
+        guard FeatureFlags.linkAndSync else {
             owsFailDebug("link'n'sync not available")
             return
         }
@@ -159,7 +140,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         auth: ChatServiceAuth,
         ephemeralBackupKey: BackupKey
     ) async throws(SecondaryLinkNSyncError) {
-        guard FeatureFlags.linkAndSyncSecondary else {
+        guard FeatureFlags.linkAndSync else {
             owsFailDebug("link'n'sync not available")
             return
         }

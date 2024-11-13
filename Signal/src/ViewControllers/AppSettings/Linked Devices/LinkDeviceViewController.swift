@@ -136,36 +136,79 @@ class LinkDeviceViewController: OWSViewController {
     // MARK: -
 
     func confirmProvisioningWithUrl(_ deviceProvisioningUrl: DeviceProvisioningURL) {
-        let title = NSLocalizedString(
-            "LINK_DEVICE_PERMISSION_ALERT_TITLE",
-            comment: "confirm the users intent to link a new device"
-        )
-        let linkingDescription = NSLocalizedString(
-            "LINK_DEVICE_PERMISSION_ALERT_BODY",
-            comment: "confirm the users intent to link a new device"
-        )
+        if FeatureFlags.linkAndSync, deviceProvisioningUrl.capabilities.contains(.linknsync) {
+            // TODO: use the real ux not a standard action sheet
+            let title = NSLocalizedString(
+                "LINK_DEVICE_CONFIRMATION_ALERT_TITLE",
+                comment: "confirm the users intent to link a new device"
+            )
 
-        let actionSheet = ActionSheetController(title: title, message: linkingDescription)
-        actionSheet.addAction(ActionSheetAction(
-            title: CommonStrings.cancelButton,
-            style: .cancel,
-            handler: { _ in
-                DispatchQueue.main.async {
-                    self.popToLinkedDeviceList()
+            let actionSheet = ActionSheetController(title: title, message: nil)
+            actionSheet.addAction(ActionSheetAction(
+                title: CommonStrings.cancelButton,
+                style: .cancel,
+                handler: { _ in
+                    DispatchQueue.main.async {
+                        self.popToLinkedDeviceList()
+                    }
                 }
-            }
-        ))
-        actionSheet.addAction(ActionSheetAction(
-            title: NSLocalizedString("CONFIRM_LINK_NEW_DEVICE_ACTION", comment: "Button text"),
-            style: .default,
-            handler: { _ in
-                self.provisionWithUrl(deviceProvisioningUrl)
-            }
-        ))
-        presentActionSheet(actionSheet)
+            ))
+            actionSheet.addAction(ActionSheetAction(
+                title: NSLocalizedString(
+                    "LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE",
+                    comment: "title for choosing to send message history when linking a new device"
+                ),
+                style: .default,
+                handler: { _ in
+                    self.provisionWithUrl(deviceProvisioningUrl, shouldLinkNSync: true)
+                }
+            ))
+            actionSheet.addAction(ActionSheetAction(
+                title: NSLocalizedString(
+                    "LINK_DEVICE_CONFIRMATION_ALERT_DONT_TRANSFER_TITLE",
+                    comment: "title for declining to send message history when linking a new device"
+                ),
+                style: .default,
+                handler: { _ in
+                    self.provisionWithUrl(deviceProvisioningUrl, shouldLinkNSync: false)
+                }
+            ))
+            presentActionSheet(actionSheet)
+        } else {
+            let title = NSLocalizedString(
+                "LINK_DEVICE_PERMISSION_ALERT_TITLE",
+                comment: "confirm the users intent to link a new device"
+            )
+            let linkingDescription = NSLocalizedString(
+                "LINK_DEVICE_PERMISSION_ALERT_BODY",
+                comment: "confirm the users intent to link a new device"
+            )
+
+            let actionSheet = ActionSheetController(title: title, message: linkingDescription)
+            actionSheet.addAction(ActionSheetAction(
+                title: CommonStrings.cancelButton,
+                style: .cancel,
+                handler: { _ in
+                    DispatchQueue.main.async {
+                        self.popToLinkedDeviceList()
+                    }
+                }
+            ))
+            actionSheet.addAction(ActionSheetAction(
+                title: NSLocalizedString("CONFIRM_LINK_NEW_DEVICE_ACTION", comment: "Button text"),
+                style: .default,
+                handler: { _ in
+                    self.provisionWithUrl(deviceProvisioningUrl, shouldLinkNSync: false)
+                }
+            ))
+            presentActionSheet(actionSheet)
+        }
     }
 
-    private func provisionWithUrl(_ deviceProvisioningUrl: DeviceProvisioningURL) {
+    private func provisionWithUrl(
+        _ deviceProvisioningUrl: DeviceProvisioningURL,
+        shouldLinkNSync: Bool
+    ) {
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
             // Optimistically set this flag.
             DependenciesBridge.shared.deviceManager.setMightHaveUnknownLinkedDevice(
@@ -179,7 +222,6 @@ class LinkDeviceViewController: OWSViewController {
         var pniIdentityKeyPair: ECKeyPair?
         var areReadReceiptsEnabled: Bool = true
         var masterKey: Data?
-        var isLinkAndSyncEnabled = false
         let mediaRootBackupKey = SSKEnvironment.shared.databaseStorageRef.write { tx in
             localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)
             let identityManager = DependenciesBridge.shared.identityManager
@@ -187,14 +229,14 @@ class LinkDeviceViewController: OWSViewController {
             pniIdentityKeyPair = identityManager.identityKeyPair(for: .pni, tx: tx.asV2Read)
             areReadReceiptsEnabled = OWSReceiptManager.areReadReceiptsEnabled(transaction: tx)
             masterKey = DependenciesBridge.shared.svr.masterKeyDataForKeysSyncMessage(tx: tx.asV2Read)
-            isLinkAndSyncEnabled = DependenciesBridge.shared.linkAndSyncManager.isLinkAndSyncEnabledOnPrimary(tx: tx.asV2Read)
             let mrbk = DependenciesBridge.shared.mrbkStore.getOrGenerateMediaRootBackupKey(tx: tx.asV2Write)
             return mrbk
         }
 
         let ephemeralBackupKey: BackupKey?
         if
-            isLinkAndSyncEnabled,
+            FeatureFlags.linkAndSync,
+            shouldLinkNSync,
             deviceProvisioningUrl.capabilities.contains(where: { $0 == .linknsync })
         {
             ephemeralBackupKey = DependenciesBridge.shared.linkAndSyncManager.generateEphemeralBackupKey()
@@ -244,7 +286,7 @@ class LinkDeviceViewController: OWSViewController {
 
         deviceProvisioner.provision().then(on: SyncScheduler()) { tokenId in
             Logger.info("Successfully provisioned device.")
-            if isLinkAndSyncEnabled, let ephemeralBackupKey {
+            if let ephemeralBackupKey {
                 return Promise.wrapAsync {
                     try await DependenciesBridge.shared.linkAndSyncManager.waitForLinkingAndUploadBackup(
                         ephemeralBackupKey: ephemeralBackupKey,
@@ -260,7 +302,7 @@ class LinkDeviceViewController: OWSViewController {
         }.catch(on: DispatchQueue.main) { error in
             Logger.error("Failed to provision device with error: \(error)")
             self.presentActionSheet(self.retryActionSheetController(error: error, retryBlock: { [weak self] in
-                self?.provisionWithUrl(deviceProvisioningUrl)
+                self?.provisionWithUrl(deviceProvisioningUrl, shouldLinkNSync: shouldLinkNSync)
             }))
         }
     }
