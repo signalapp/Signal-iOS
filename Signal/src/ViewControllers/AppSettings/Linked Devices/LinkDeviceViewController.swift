@@ -8,7 +8,7 @@ import SignalServiceKit
 import SignalUI
 
 protocol LinkDeviceViewControllerDelegate: AnyObject {
-    func expectMoreDevices()
+    func didFinishLinking(linkNSyncTask: Task<Void, Error>?)
 }
 
 class LinkDeviceViewController: OWSViewController {
@@ -284,21 +284,22 @@ class LinkDeviceViewController: OWSViewController {
             schedulers: DependenciesBridge.shared.schedulers
         )
 
-        deviceProvisioner.provision().then(on: SyncScheduler()) { tokenId in
+        deviceProvisioner.provision().map(on: DispatchQueue.main) { tokenId in
             Logger.info("Successfully provisioned device.")
+            let linkNSyncTask: Task<Void, Error>?
             if let ephemeralBackupKey {
-                return Promise.wrapAsync {
+                linkNSyncTask = Task {
                     try await DependenciesBridge.shared.linkAndSyncManager.waitForLinkingAndUploadBackup(
                         ephemeralBackupKey: ephemeralBackupKey,
                         tokenId: tokenId
                     )
                 }
             } else {
-                return .value(())
+                linkNSyncTask = nil
             }
-        }.map(on: DispatchQueue.main) {
-            self.delegate?.expectMoreDevices()
-            self.popToLinkedDeviceList()
+            self.popToLinkedDeviceList {
+                self.delegate?.didFinishLinking(linkNSyncTask: linkNSyncTask)
+            }
         }.catch(on: DispatchQueue.main) { error in
             Logger.error("Failed to provision device with error: \(error)")
             self.presentActionSheet(self.retryActionSheetController(error: error, retryBlock: { [weak self] in
@@ -343,9 +344,10 @@ class LinkDeviceViewController: OWSViewController {
         }
     }
 
-    private func popToLinkedDeviceList() {
+    private func popToLinkedDeviceList(_ completion: (() -> Void)? = nil) {
         navigationController?.popViewController(animated: true, completion: {
             UIViewController.attemptRotationToDeviceOrientation()
+            completion?()
         })
     }
 

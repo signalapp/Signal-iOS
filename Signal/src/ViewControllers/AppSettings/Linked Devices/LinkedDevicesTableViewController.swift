@@ -563,6 +563,30 @@ extension LinkedDevicesTableViewController: DatabaseChangeDelegate {
 
 extension LinkedDevicesTableViewController: LinkDeviceViewControllerDelegate {
 
+    func didFinishLinking(linkNSyncTask: Task<Void, Error>?) {
+        guard let linkNSyncTask else {
+            expectMoreDevices()
+            return
+        }
+        Task { @MainActor in
+            // TODO: use the appropriate UX for loading, and show percent progress
+            let loadingViewController = ModalActivityIndicatorViewController(canCancel: false, presentationDelay: 0)
+            loadingViewController.modalPresentationStyle = .overFullScreen
+            self.present(loadingViewController, animated: false)
+            do {
+                try await linkNSyncTask.value
+            } catch {
+                loadingViewController.dismiss(animated: false) {
+                    DependenciesBridge.shared.messageBackupErrorPresenter.presentOverTopmostViewController(completion: {})
+                }
+                self.expectMoreDevices()
+                return
+            }
+            self.refreshDevices()
+            loadingViewController.dismiss(animated: false)
+        }
+    }
+
     func expectMoreDevices() {
 
         isExpectingMoreDevices = true
