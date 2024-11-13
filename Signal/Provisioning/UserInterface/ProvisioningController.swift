@@ -257,8 +257,13 @@ public class ProvisioningController: NSObject {
                 return
             }
 
-            let confirmVC = ProvisioningSetDeviceNameViewController(provisioningController: self)
-            navigationController.pushViewController(confirmVC, animated: true)
+            if FeatureFlags.linkAndSync, message.ephemeralBackupKey != nil {
+                // Don't confirm the name in link'n'sync, just keep going.
+                self.didSetDeviceName(UIDevice.current.name, from: viewController)
+            } else {
+                let confirmVC = ProvisioningSetDeviceNameViewController(provisioningController: self)
+                navigationController.pushViewController(confirmVC, animated: true)
+            }
         }.catch { error in
             switch error {
             case PromiseError.cancelled:
