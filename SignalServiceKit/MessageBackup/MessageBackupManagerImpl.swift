@@ -186,7 +186,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     public func exportEncryptedBackup(
         localIdentifiers: LocalIdentifiers,
         backupKey: BackupKey
-    ) async throws -> Upload.EncryptedBackupUploadMetadata {
+    ) async throws -> ProgressReportingTask<Upload.EncryptedBackupUploadMetadata, Error> {
         guard
             FeatureFlags.messageBackupFileAlpha
             || FeatureFlags.linkAndSync
@@ -197,60 +197,25 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
         await migrateAttachmentsBeforeBackup()
 
-        let result: Result<Upload.EncryptedBackupUploadMetadata, Error>
-        result = await db.awaitableWriteWithTxCompletion { tx in
-            do {
-                let outputStream: MessageBackupProtoOutputStream
-                let metadataProvider: MessageBackup.ProtoStream.EncryptionMetadataProvider
-                switch self.encryptedStreamProvider.openEncryptedOutputFileStream(
-                    localAci: localIdentifiers.aci,
-                    backupKey: backupKey,
-                    tx: tx
-                ) {
-                case let .success(_outputStream, _metadataProvider):
-                    outputStream = _outputStream
-                    metadataProvider = _metadataProvider
-                case .unableToOpenFileStream:
-                    throw OWSAssertionError("Unable to open output stream")
-                }
+        let progress = try MessageBackupExportProgress.prepare(db: db)
 
-                try self._exportBackup(
-                    outputStream: outputStream,
-                    localIdentifiers: localIdentifiers,
-                    tx: tx
-                )
-
-                let metadata = try metadataProvider()
-                return .commit(Result.success(metadata))
-            } catch let error {
-                return .rollback(Result.failure(error))
-            }
-        }
-        return try result.get()
-    }
-
-    public func exportPlaintextBackup(
-        localIdentifiers: LocalIdentifiers
-    ) async throws -> URL {
-        guard FeatureFlags.messageBackupFileAlpha else {
-            owsFailDebug("Should not be able to use backups!")
-            throw NotImplementedError()
-        }
-
-        await migrateAttachmentsBeforeBackup()
-
-        let result: Result<URL, Error>
-        result = await db.awaitableWriteWithTxCompletion { tx in
-            do {
-                let url = try self.databaseChangeObserver.disable(tx: tx) { tx in
+        let task = Task {
+            let result: Result<Upload.EncryptedBackupUploadMetadata, Error>
+            result = await db.awaitableWriteWithTxCompletion { tx in
+                do {
                     let outputStream: MessageBackupProtoOutputStream
-                    let fileUrl: URL
-                    switch self.plaintextStreamProvider.openPlaintextOutputFileStream() {
-                    case .success(let _outputStream, let _fileUrl):
+                    let metadataProvider: MessageBackup.ProtoStream.EncryptionMetadataProvider
+                    switch self.encryptedStreamProvider.openEncryptedOutputFileStream(
+                        localAci: localIdentifiers.aci,
+                        backupKey: backupKey,
+                        progress: progress,
+                        tx: tx
+                    ) {
+                    case let .success(_outputStream, _metadataProvider):
                         outputStream = _outputStream
-                        fileUrl = _fileUrl
+                        metadataProvider = _metadataProvider
                     case .unableToOpenFileStream:
-                        throw OWSAssertionError("Unable to open output file stream!")
+                        throw OWSAssertionError("Unable to open output stream")
                     }
 
                     try self._exportBackup(
@@ -259,14 +224,60 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                         tx: tx
                     )
 
-                    return fileUrl
+                    let metadata = try metadataProvider()
+                    return .commit(Result.success(metadata))
+                } catch let error {
+                    return .rollback(Result.failure(error))
                 }
-                return .commit(.success(url))
-            } catch let error {
-                return .rollback(.failure(error))
             }
+            return try result.get()
         }
-        return try result.get()
+        return ProgressReportingTask(task: task, progress: progress.progress)
+    }
+
+    public func exportPlaintextBackup(
+        localIdentifiers: LocalIdentifiers
+    ) async throws -> ProgressReportingTask<URL, Error> {
+        guard FeatureFlags.messageBackupFileAlpha else {
+            owsFailDebug("Should not be able to use backups!")
+            throw NotImplementedError()
+        }
+
+        await migrateAttachmentsBeforeBackup()
+
+        let progress = try MessageBackupExportProgress.prepare(db: db)
+
+        let task = Task {
+            let result: Result<URL, Error>
+            result = await db.awaitableWriteWithTxCompletion { tx in
+                do {
+                    let url = try self.databaseChangeObserver.disable(tx: tx) { tx in
+                        let outputStream: MessageBackupProtoOutputStream
+                        let fileUrl: URL
+                        switch self.plaintextStreamProvider.openPlaintextOutputFileStream(progress: progress) {
+                        case .success(let _outputStream, let _fileUrl):
+                            outputStream = _outputStream
+                            fileUrl = _fileUrl
+                        case .unableToOpenFileStream:
+                            throw OWSAssertionError("Unable to open output file stream!")
+                        }
+
+                        try self._exportBackup(
+                            outputStream: outputStream,
+                            localIdentifiers: localIdentifiers,
+                            tx: tx
+                        )
+
+                        return fileUrl
+                    }
+                    return .commit(.success(url))
+                } catch let error {
+                    return .rollback(.failure(error))
+                }
+            }
+            return try result.get()
+        }
+        return ProgressReportingTask(task: task, progress: progress.progress)
     }
 
     private func _exportBackup(
@@ -492,7 +503,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
         backupKey: BackupKey
-    ) async throws {
+    ) async throws -> ProgressReportingTask<Void, Error> {
         guard FeatureFlags.messageBackupFileAlpha || FeatureFlags.linkAndSync else {
             owsFailDebug("Should not be able to use backups!")
             throw NotImplementedError()
@@ -500,45 +511,51 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
         await migrateAttachmentsBeforeBackup()
 
-        let result: Result<Void, Error>
-        result = await db.awaitableWriteWithTxCompletion { tx in
-            do {
-                try self.databaseChangeObserver.disable(tx: tx) { tx in
-                    let inputStream: MessageBackupProtoInputStream
-                    switch self.encryptedStreamProvider.openEncryptedInputFileStream(
-                        fileUrl: fileUrl,
-                        localAci: localIdentifiers.aci,
-                        backupKey: backupKey,
-                        tx: tx
-                    ) {
-                    case .success(let protoStream, _):
-                        inputStream = protoStream
-                    case .fileNotFound:
-                        throw OWSAssertionError("File not found!")
-                    case .unableToOpenFileStream:
-                        throw OWSAssertionError("Unable to open input stream!")
-                    case .hmacValidationFailedOnEncryptedFile:
-                        throw OWSAssertionError("HMAC validation failed on encrypted file!")
-                    }
+        let progress = try MessageBackupImportProgress.prepare(fileUrl: fileUrl)
 
-                    try self._importBackup(
-                        inputStream: inputStream,
-                        localIdentifiers: localIdentifiers,
-                        tx: tx
-                    )
+        let task = Task {
+            let result: Result<Void, Error>
+            result = await db.awaitableWriteWithTxCompletion { tx in
+                do {
+                    try self.databaseChangeObserver.disable(tx: tx) { tx in
+                        let inputStream: MessageBackupProtoInputStream
+                        switch self.encryptedStreamProvider.openEncryptedInputFileStream(
+                            fileUrl: fileUrl,
+                            localAci: localIdentifiers.aci,
+                            backupKey: backupKey,
+                            progress: progress,
+                            tx: tx
+                        ) {
+                        case .success(let protoStream, _):
+                            inputStream = protoStream
+                        case .fileNotFound:
+                            throw OWSAssertionError("File not found!")
+                        case .unableToOpenFileStream:
+                            throw OWSAssertionError("Unable to open input stream!")
+                        case .hmacValidationFailedOnEncryptedFile:
+                            throw OWSAssertionError("HMAC validation failed on encrypted file!")
+                        }
+
+                        try self._importBackup(
+                            inputStream: inputStream,
+                            localIdentifiers: localIdentifiers,
+                            tx: tx
+                        )
+                    }
+                    return .commit(.success(()))
+                } catch let error {
+                    return .rollback(.failure(error))
                 }
-                return .commit(.success(()))
-            } catch let error {
-                return .rollback(.failure(error))
             }
+            return try result.get()
         }
-        return try result.get()
+        return ProgressReportingTask(task: task, progress: progress.progress)
     }
 
     public func importPlaintextBackup(
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers
-    ) async throws {
+    ) async throws -> ProgressReportingTask<Void, Error> {
         guard FeatureFlags.messageBackupFileAlpha else {
             owsFailDebug("Should not be able to use backups!")
             throw NotImplementedError()
@@ -546,36 +563,43 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
         await migrateAttachmentsBeforeBackup()
 
-        let result: Result<Void, Error>
-        result = await db.awaitableWriteWithTxCompletion { tx in
-            do {
-                try self.databaseChangeObserver.disable(tx: tx) { tx in
-                    let inputStream: MessageBackupProtoInputStream
-                    switch self.plaintextStreamProvider.openPlaintextInputFileStream(
-                        fileUrl: fileUrl
-                    ) {
-                    case .success(let protoStream, _):
-                        inputStream = protoStream
-                    case .fileNotFound:
-                        throw OWSAssertionError("File not found!")
-                    case .unableToOpenFileStream:
-                        throw OWSAssertionError("Unable to open input stream!")
-                    case .hmacValidationFailedOnEncryptedFile:
-                        throw OWSAssertionError("HMAC validation failed: how did this happen for a plaintext backup?")
-                    }
+        let progress = try MessageBackupImportProgress.prepare(fileUrl: fileUrl)
 
-                    try self._importBackup(
-                        inputStream: inputStream,
-                        localIdentifiers: localIdentifiers,
-                        tx: tx
-                    )
+        let task = Task {
+            let result: Result<Void, Error>
+            result = await db.awaitableWriteWithTxCompletion { tx in
+                do {
+                    try self.databaseChangeObserver.disable(tx: tx) { tx in
+                        let inputStream: MessageBackupProtoInputStream
+                        switch self.plaintextStreamProvider.openPlaintextInputFileStream(
+                            fileUrl: fileUrl,
+                            progress: progress
+                        ) {
+                        case .success(let protoStream, _):
+                            inputStream = protoStream
+                        case .fileNotFound:
+                            throw OWSAssertionError("File not found!")
+                        case .unableToOpenFileStream:
+                            throw OWSAssertionError("Unable to open input stream!")
+                        case .hmacValidationFailedOnEncryptedFile:
+                            throw OWSAssertionError("HMAC validation failed: how did this happen for a plaintext backup?")
+                        }
+
+                        try self._importBackup(
+                            inputStream: inputStream,
+                            localIdentifiers: localIdentifiers,
+                            tx: tx
+                        )
+                    }
+                    return .commit(.success(()))
+                } catch let error {
+                    return .rollback(.failure(error))
                 }
-                return .commit(.success(()))
-            } catch let error {
-                return .rollback(.failure(error))
             }
+            return try result.get()
         }
-        return try result.get()
+
+        return ProgressReportingTask(task: task, progress: progress.progress)
     }
 
     private func _importBackup(

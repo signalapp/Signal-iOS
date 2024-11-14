@@ -308,10 +308,11 @@ class MessageBackupIntegrationTests: XCTestCase {
         try await deps.messageBackupManager.importPlaintextBackup(
             fileUrl: testCaseFileUrl,
             localIdentifiers: localIdentifiers
-        )
+        ).task.value
 
         let exportedBackupUrl = try await deps.messageBackupManager
             .exportPlaintextBackup(localIdentifiers: localIdentifiers)
+            .task.value
 
         try compareViaLibsignal(
             sharedTestCaseBackupUrl: testCaseFileUrl,
@@ -385,9 +386,12 @@ class MessageBackupIntegrationTests: XCTestCase {
     private func readBackupTimeMs(testCaseFileUrl: URL) throws -> UInt64 {
         let plaintextStreamProvider = MessageBackupPlaintextProtoStreamProviderImpl()
 
+        let progress = try MessageBackupImportProgress.prepare(fileUrl: testCaseFileUrl)
+
         let stream: MessageBackupProtoInputStream
         switch plaintextStreamProvider.openPlaintextInputFileStream(
-            fileUrl: testCaseFileUrl
+            fileUrl: testCaseFileUrl,
+            progress: progress
         ) {
         case .success(let _stream, _):
             stream = _stream

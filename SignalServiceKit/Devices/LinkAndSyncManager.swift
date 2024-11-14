@@ -63,7 +63,8 @@ public protocol LinkAndSyncManager {
     func waitForBackupAndRestore(
         localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth,
-        ephemeralBackupKey: BackupKey
+        ephemeralBackupKey: BackupKey,
+        progressBlock: @escaping (Float) -> Void
     ) async throws(SecondaryLinkNSyncError)
 }
 
@@ -138,7 +139,8 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
     public func waitForBackupAndRestore(
         localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth,
-        ephemeralBackupKey: BackupKey
+        ephemeralBackupKey: BackupKey,
+        progressBlock: @escaping (Float) -> Void
     ) async throws(SecondaryLinkNSyncError) {
         guard FeatureFlags.linkAndSync else {
             owsFailDebug("link'n'sync not available")
@@ -153,7 +155,8 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         try await restoreEphemeralBackup(
             fileUrl: downloadedFileUrl,
             localIdentifiers: localIdentifiers,
-            ephemeralBackupKey: ephemeralBackupKey
+            ephemeralBackupKey: ephemeralBackupKey,
+            progressBlock: progressBlock
         )
     }
 
@@ -200,7 +203,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             let metadata = try await messageBackupManager.exportEncryptedBackup(
                 localIdentifiers: localIdentifiers,
                 backupKey: ephemeralBackupKey
-            )
+            ).task.value
             try await messageBackupManager.validateEncryptedBackup(
                 fileUrl: metadata.fileUrl,
                 localIdentifiers: localIdentifiers,
@@ -317,14 +320,21 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
     private func restoreEphemeralBackup(
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
-        ephemeralBackupKey: BackupKey
+        ephemeralBackupKey: BackupKey,
+        progressBlock: @escaping (Float) -> Void
     ) async throws(SecondaryLinkNSyncError) {
         do {
-            try await messageBackupManager.importEncryptedBackup(
+            let task = try await messageBackupManager.importEncryptedBackup(
                 fileUrl: fileUrl,
                 localIdentifiers: localIdentifiers,
                 backupKey: ephemeralBackupKey
             )
+            var observation: NSKeyValueObservation? = task.progress.observe(\.fractionCompleted, changeHandler: { progress, _ in
+                progressBlock(Float(progress.fractionCompleted))
+            })
+            try await task.task.value
+            owsAssertDebug(observation != nil)
+            observation = nil
         } catch {
             owsFailDebug("Unable to restore link'n'sync backup: \(error)")
             throw SecondaryLinkNSyncError.errorRestoringBackup

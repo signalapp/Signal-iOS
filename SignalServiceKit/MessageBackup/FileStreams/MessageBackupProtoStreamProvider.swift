@@ -47,12 +47,17 @@ public protocol MessageBackupPlaintextProtoStreamProvider {
     /// Open an output stream to write a plaintext backup to a file on disk. The
     /// caller owns the returned stream, and is responsible for closing it once
     /// finished.
-    func openPlaintextOutputFileStream() -> ProtoStream.OpenOutputStreamResult<URL>
+    func openPlaintextOutputFileStream(
+        progress: MessageBackupExportProgress
+    ) -> ProtoStream.OpenOutputStreamResult<URL>
 
     /// Open an input stream to read a plaintext backup from a file on disk. The
     /// caller becomes the owner of the stream, and is responsible for closing
     /// it once finished.
-    func openPlaintextInputFileStream(fileUrl: URL) -> ProtoStream.OpenInputStreamResult
+    func openPlaintextInputFileStream(
+        fileUrl: URL,
+        progress: MessageBackupImportProgress
+    ) -> ProtoStream.OpenInputStreamResult
 }
 
 /// Creates streams for reading and writing to an encrypted Backup file on-disk.
@@ -73,6 +78,7 @@ public protocol MessageBackupEncryptedProtoStreamProvider {
     func openEncryptedOutputFileStream(
         localAci: Aci,
         backupKey: BackupKey,
+        progress: MessageBackupExportProgress,
         tx: DBReadTransaction
     ) -> ProtoStream.OpenOutputStreamResult<ProtoStream.EncryptionMetadataProvider>
 
@@ -83,6 +89,7 @@ public protocol MessageBackupEncryptedProtoStreamProvider {
         fileUrl: URL,
         localAci: Aci,
         backupKey: BackupKey,
+        progress: MessageBackupImportProgress,
         tx: DBReadTransaction
     ) -> ProtoStream.OpenInputStreamResult
 }
@@ -101,6 +108,7 @@ public class MessageBackupEncryptedProtoStreamProviderImpl: MessageBackupEncrypt
     public func openEncryptedOutputFileStream(
         localAci: Aci,
         backupKey: BackupKey,
+        progress: MessageBackupExportProgress,
         tx: any DBReadTransaction
     ) -> ProtoStream.OpenOutputStreamResult<ProtoStream.EncryptionMetadataProvider> {
         do {
@@ -123,7 +131,8 @@ public class MessageBackupEncryptedProtoStreamProviderImpl: MessageBackupEncrypt
             let outputStream: MessageBackupProtoOutputStream
             let fileUrl: URL
             switch genericStreamProvider.openOutputFileStream(
-                transforms: transforms
+                transforms: transforms,
+                progress: progress
             ) {
             case .success(let _outputStream, let _fileUrl):
                 outputStream = _outputStream
@@ -152,6 +161,7 @@ public class MessageBackupEncryptedProtoStreamProviderImpl: MessageBackupEncrypt
         fileUrl: URL,
         localAci: Aci,
         backupKey: BackupKey,
+        progress: MessageBackupImportProgress,
         tx: any DBReadTransaction
     ) -> ProtoStream.OpenInputStreamResult {
         guard validateBackupHMAC(localAci: localAci, backupKey: backupKey, fileUrl: fileUrl, tx: tx) else {
@@ -161,6 +171,7 @@ public class MessageBackupEncryptedProtoStreamProviderImpl: MessageBackupEncrypt
         do {
             let messageBackupKey = try backupKey.asMessageBackupKey(for: localAci)
             let transforms: [any StreamTransform] = [
+                InputProgressStreamTransform(progress: progress),
                 try HmacStreamTransform(hmacKey: Data(messageBackupKey.hmacKey), operation: .validate),
                 try DecryptingStreamTransform(encryptionKey: Data(messageBackupKey.aesKey)),
                 try GzipStreamTransform(.decompress),
@@ -216,18 +227,25 @@ public class MessageBackupPlaintextProtoStreamProviderImpl: MessageBackupPlainte
         self.genericStreamProvider = GenericStreamProvider()
     }
 
-    public func openPlaintextOutputFileStream() -> ProtoStream.OpenOutputStreamResult<URL> {
+    public func openPlaintextOutputFileStream(
+        progress: MessageBackupExportProgress
+    ) -> ProtoStream.OpenOutputStreamResult<URL> {
         let transforms: [any StreamTransform] = [
             ChunkedOutputStreamTransform(),
         ]
 
         return genericStreamProvider.openOutputFileStream(
-            transforms: transforms
+            transforms: transforms,
+            progress: progress
         )
     }
 
-    public func openPlaintextInputFileStream(fileUrl: URL) -> ProtoStream.OpenInputStreamResult {
+    public func openPlaintextInputFileStream(
+        fileUrl: URL,
+        progress: MessageBackupImportProgress
+    ) -> ProtoStream.OpenInputStreamResult {
         let transforms: [any StreamTransform] = [
+            InputProgressStreamTransform(progress: progress),
             ChunkedInputStreamTransform(),
         ]
 
@@ -246,7 +264,8 @@ private class GenericStreamProvider {
     init() {}
 
     func openOutputFileStream(
-        transforms: [any StreamTransform]
+        transforms: [any StreamTransform],
+        progress: MessageBackupExportProgress
     ) -> ProtoStream.OpenOutputStreamResult<URL> {
         let fileUrl = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
         guard let outputStream = OutputStream(url: fileUrl, append: false) else {
@@ -268,7 +287,8 @@ private class GenericStreamProvider {
         )
 
         let messageBackupOutputStream = MessageBackupProtoOutputStreamImpl(
-            outputStream: transformingOutputStream
+            outputStream: transformingOutputStream,
+            progress: progress
         )
 
         return .success(messageBackupOutputStream, fileUrl)
@@ -317,5 +337,19 @@ private class GenericStreamProvider {
                 _hadError.set(true)
             }
         }
+    }
+}
+
+private class InputProgressStreamTransform: StreamTransform {
+
+    private let progress: MessageBackupImportProgress
+
+    init(progress: MessageBackupImportProgress) {
+        self.progress = progress
+    }
+
+    func transform(data: Data) throws -> Data {
+        progress.didReadBytes(byteLength: Int64(data.byteLength))
+        return data
     }
 }

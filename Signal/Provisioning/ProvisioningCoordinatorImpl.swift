@@ -249,6 +249,17 @@ public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
             FeatureFlags.linkAndSync,
             let ephemeralBackupKey = BackupKey(provisioningMessage: provisionMessage)
         {
+            // TODO: display progress in a less hacky way.
+            let progressBlock: (Float) -> Void = await Task { @MainActor in
+                let vc = LinkAndSyncLoadingViewController()
+                vc.modalPresentationStyle = .overFullScreen
+                UIApplication.shared.frontmostViewController?.present(vc, animated: false)
+                return {  [vc] (progress: Float) in
+                    DispatchQueue.main.asyncIfNecessary {
+                        vc.percentCompleted = progress
+                    }
+                }
+            }.value
             do {
                 try await self.linkAndSyncManager.waitForBackupAndRestore(
                     localIdentifiers: LocalIdentifiers(
@@ -257,11 +268,15 @@ public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
                         e164: phoneNumber
                     ),
                     auth: authedDevice.authedAccount.chatServiceAuth,
-                    ephemeralBackupKey: ephemeralBackupKey
+                    ephemeralBackupKey: ephemeralBackupKey,
+                    progressBlock: progressBlock
                 )
             } catch {
                 owsFailDebug("Failed link'n'sync \(error)")
             }
+            await Task { @MainActor in
+                UIApplication.shared.frontmostViewController?.dismiss(animated: false)
+            }.value
         }
 
         let hasBackedUpMasterKey = self.db.read { tx in

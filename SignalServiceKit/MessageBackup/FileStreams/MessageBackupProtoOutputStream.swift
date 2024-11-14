@@ -41,9 +41,14 @@ public protocol MessageBackupProtoOutputStream {
 internal class MessageBackupProtoOutputStreamImpl: MessageBackupProtoOutputStream {
 
     private let outputStream: OutputStreamable
+    private let progress: MessageBackupExportProgress
 
-    internal init(outputStream: OutputStreamable) {
+    internal init(
+        outputStream: OutputStreamable,
+        progress: MessageBackupExportProgress
+    ) {
         self.outputStream = outputStream
+        self.progress = progress
     }
 
     public private(set) var numberOfWrittenFrames: UInt64 = 0
@@ -60,6 +65,7 @@ internal class MessageBackupProtoOutputStreamImpl: MessageBackupProtoOutputStrea
         } catch {
             return .fileIOError(error)
         }
+        progress.didExportFrame()
         return .success
     }
 
@@ -76,6 +82,7 @@ internal class MessageBackupProtoOutputStreamImpl: MessageBackupProtoOutputStrea
             return .fileIOError(error)
         }
         numberOfWrittenFrames += 1
+        progress.didExportFrame()
         return .success
     }
 

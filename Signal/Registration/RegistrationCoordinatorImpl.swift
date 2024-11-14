@@ -472,7 +472,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 fileUrl: fileUrl,
                 localIdentifiers: identity.localIdentifiers,
                 backupKey: backupKey
-            )
+            ).task.value
             self.inMemoryState.hasRestoredFromLocalMessageBackup = true
             Logger.info("Finished restore")
         }.recover(on: schedulers.main) { error in

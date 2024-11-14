@@ -205,7 +205,8 @@ private class MockLinkAndSyncManager: LinkAndSyncManager {
     func waitForBackupAndRestore(
         localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth,
-        ephemeralBackupKey: BackupKey
+        ephemeralBackupKey: BackupKey,
+        progressBlock: @escaping (Float) -> Void
     ) async throws(SecondaryLinkNSyncError) {
         return
     }

@@ -37,25 +37,39 @@ open class MessageBackupManagerMock: MessageBackupManager {
     public func exportEncryptedBackup(
         localIdentifiers: LocalIdentifiers,
         backupKey: BackupKey
-    ) async throws -> Upload.EncryptedBackupUploadMetadata {
-        return Upload.EncryptedBackupUploadMetadata(
-            fileUrl: URL(string: "file://")!,
-            digest: Data(),
-            encryptedDataLength: 0,
-            plaintextDataLength: 0
+    ) async throws -> ProgressReportingTask<Upload.EncryptedBackupUploadMetadata, Error> {
+        return ProgressReportingTask(
+            task: Task {
+                return Upload.EncryptedBackupUploadMetadata(
+                    fileUrl: URL(string: "file://")!,
+                    digest: Data(),
+                    encryptedDataLength: 0,
+                    plaintextDataLength: 0
+                )
+            },
+            progress: Progress(totalUnitCount: 0)
         )
     }
 
-    public func exportPlaintextBackup(localIdentifiers: LocalIdentifiers) async throws -> URL {
-        return URL(string: "file://")!
+    public func exportPlaintextBackup(
+        localIdentifiers: LocalIdentifiers
+    ) async throws -> ProgressReportingTask<URL, Error> {
+        return ProgressReportingTask(task: Task { URL(string: "file://")! }, progress: Progress(totalUnitCount: 0))
     }
 
     public func importEncryptedBackup(
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
         backupKey: BackupKey
-    ) async throws {}
-    public func importPlaintextBackup(fileUrl: URL, localIdentifiers: LocalIdentifiers) async throws {}
+    ) async throws -> ProgressReportingTask<Void, Error> {
+        return ProgressReportingTask(task: Task {}, progress: Progress(totalUnitCount: 0))
+    }
+    public func importPlaintextBackup(
+        fileUrl: URL,
+        localIdentifiers: LocalIdentifiers
+    ) async throws -> ProgressReportingTask<Void, Error> {
+        return ProgressReportingTask(task: Task {}, progress: Progress(totalUnitCount: 0))
+    }
     public func validateEncryptedBackup(
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,

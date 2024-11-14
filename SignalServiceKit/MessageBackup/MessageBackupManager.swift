@@ -28,10 +28,12 @@ public protocol MessageBackupManager {
     func exportEncryptedBackup(
         localIdentifiers: LocalIdentifiers,
         backupKey: BackupKey
-    ) async throws -> Upload.EncryptedBackupUploadMetadata
+    ) async throws -> ProgressReportingTask<Upload.EncryptedBackupUploadMetadata, Error>
 
     /// Export a plaintext backup binary at the returned file URL.
-    func exportPlaintextBackup(localIdentifiers: LocalIdentifiers) async throws -> URL
+    func exportPlaintextBackup(
+        localIdentifiers: LocalIdentifiers
+    ) async throws -> ProgressReportingTask<URL, Error>
 
     // MARK: - Import
 
@@ -41,10 +43,13 @@ public protocol MessageBackupManager {
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
         backupKey: BackupKey
-    ) async throws
+    ) async throws -> ProgressReportingTask<Void, Error>
 
     /// Import a backup from the plaintext binary file at the given local URL.
-    func importPlaintextBackup(fileUrl: URL, localIdentifiers: LocalIdentifiers) async throws
+    func importPlaintextBackup(
+        fileUrl: URL,
+        localIdentifiers: LocalIdentifiers
+    ) async throws -> ProgressReportingTask<Void, Error>
 
     // MARK: -
 

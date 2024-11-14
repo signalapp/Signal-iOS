@@ -4090,6 +4090,9 @@
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "Linking Device Failed";
 
+/* Title shown when loading messages during linking process */
+"LINKING_SYNCING_MESSAGES_TITLE" = "Syncing messages";
+
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "In order to transfer your Signal account, you need to enable local network access on both devices.";
 

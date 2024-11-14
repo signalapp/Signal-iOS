@@ -763,6 +763,7 @@
 		66076B652BC07EE80043D547 /* EditManagerTSResourcesImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66076B622BC07EE70043D547 /* EditManagerTSResourcesImpl.swift */; };
 		66076B662BC07EE80043D547 /* MockEditManagerTSResources.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66076B632BC07EE80043D547 /* MockEditManagerTSResources.swift */; };
 		66076B692BC0A06C0043D547 /* LegacyAttachmentMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66076B682BC0A06C0043D547 /* LegacyAttachmentMigrator.swift */; };
+		660FA9112CE58CD7006F9C34 /* LinkAndSyncLoadingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 660FA9102CE58CD0006F9C34 /* LinkAndSyncLoadingViewController.swift */; };
 		661170C12ABA459D00A1B16D /* RegistrationIdGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661170C02ABA459D00A1B16D /* RegistrationIdGenerator.swift */; };
 		661170C42ABA4D9900A1B16D /* TSAccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661170C32ABA4D9900A1B16D /* TSAccountManager.swift */; };
 		661170C62ABA4E9C00A1B16D /* MockTSAccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661170C52ABA4E9C00A1B16D /* MockTSAccountManager.swift */; };
@@ -1037,6 +1038,8 @@
 		669379F52C3C7EA800EED7A0 /* TSAttachmentMigration+ImageMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669379F42C3C7EA800EED7A0 /* TSAttachmentMigration+ImageMetadata.swift */; };
 		669379F72C3C847000EED7A0 /* TSAttachmentMigration+AttachmentValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669379F62C3C847000EED7A0 /* TSAttachmentMigration+AttachmentValidator.swift */; };
 		66937A032C3F4EFC00EED7A0 /* TSAttachmentMigration+StoryMessageAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66937A022C3F4EFC00EED7A0 /* TSAttachmentMigration+StoryMessageAttachment.swift */; };
+		6694BAB12CE570B00015633F /* ProgressReportingTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6694BAB02CE570A30015633F /* ProgressReportingTask.swift */; };
+		6694BAB32CE5792B0015633F /* MessageBackupProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6694BAB22CE579270015633F /* MessageBackupProgress.swift */; };
 		6694BF682B36484900B18764 /* PinnedThreadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6694BF672B36484800B18764 /* PinnedThreadManager.swift */; };
 		6694BF6A2B3650E400B18764 /* PinnedThreadStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6694BF692B3650E400B18764 /* PinnedThreadStore.swift */; };
 		6694BF6C2B3656D500B18764 /* MockPinnedThreadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6694BF6B2B3656D500B18764 /* MockPinnedThreadManager.swift */; };
@@ -4508,6 +4511,7 @@
 		66076B622BC07EE70043D547 /* EditManagerTSResourcesImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditManagerTSResourcesImpl.swift; sourceTree = "<group>"; };
 		66076B632BC07EE80043D547 /* MockEditManagerTSResources.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockEditManagerTSResources.swift; sourceTree = "<group>"; };
 		66076B682BC0A06C0043D547 /* LegacyAttachmentMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyAttachmentMigrator.swift; sourceTree = "<group>"; };
+		660FA9102CE58CD0006F9C34 /* LinkAndSyncLoadingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkAndSyncLoadingViewController.swift; sourceTree = "<group>"; };
 		661170C02ABA459D00A1B16D /* RegistrationIdGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationIdGenerator.swift; sourceTree = "<group>"; };
 		661170C32ABA4D9900A1B16D /* TSAccountManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAccountManager.swift; sourceTree = "<group>"; };
 		661170C52ABA4E9C00A1B16D /* MockTSAccountManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockTSAccountManager.swift; sourceTree = "<group>"; };
@@ -4785,6 +4789,8 @@
 		669379F42C3C7EA800EED7A0 /* TSAttachmentMigration+ImageMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSAttachmentMigration+ImageMetadata.swift"; sourceTree = "<group>"; };
 		669379F62C3C847000EED7A0 /* TSAttachmentMigration+AttachmentValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSAttachmentMigration+AttachmentValidator.swift"; sourceTree = "<group>"; };
 		66937A022C3F4EFC00EED7A0 /* TSAttachmentMigration+StoryMessageAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSAttachmentMigration+StoryMessageAttachment.swift"; sourceTree = "<group>"; };
+		6694BAB02CE570A30015633F /* ProgressReportingTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressReportingTask.swift; sourceTree = "<group>"; };
+		6694BAB22CE579270015633F /* MessageBackupProgress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupProgress.swift; sourceTree = "<group>"; };
 		6694BF672B36484800B18764 /* PinnedThreadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedThreadManager.swift; sourceTree = "<group>"; };
 		6694BF692B3650E400B18764 /* PinnedThreadStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedThreadStore.swift; sourceTree = "<group>"; };
 		6694BF6B2B3656D500B18764 /* MockPinnedThreadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPinnedThreadManager.swift; sourceTree = "<group>"; };
@@ -8736,6 +8742,7 @@
 		50E7E1CD2BACBE7D00A94861 /* UserInterface */ = {
 			isa = PBXGroup;
 			children = (
+				660FA9102CE58CD0006F9C34 /* LinkAndSyncLoadingViewController.swift */,
 				66AA0BA32A819FFA00F7DC80 /* ProvisioningBaseViewController.swift */,
 				4C3A2BC62356620E004B3986 /* ProvisioningController.swift */,
 				6605D4EF2A82DCC7004DC345 /* ProvisioningModeSwitchConfirmationViewController.swift */,
@@ -9304,6 +9311,7 @@
 				665C0D5B2ADF538100539A37 /* MessageBackupManager.swift */,
 				665C0D5D2ADF53E200539A37 /* MessageBackupManagerImpl.swift */,
 				C10E9FAE2BB778E100A609B9 /* MessageBackupManagerMock.swift */,
+				6694BAB22CE579270015633F /* MessageBackupProgress.swift */,
 				C17310A42BD9D43D00B7A151 /* MessageBackupRemoteInfo.swift */,
 				C14391122BD1C0DF00ED6FCB /* MessageBackupRequestManager.swift */,
 				C17310A62BD9D45400B7A151 /* MessageBackupServiceAuth.swift */,
@@ -14009,6 +14017,7 @@
 				F9C5CB58289453B200548EEE /* Platform.swift */,
 				768F720C2A22CEAC002C4E7D /* Preferences.swift */,
 				D95C39EB296E1BC600A9DA23 /* PrefixedLogger.swift */,
+				6694BAB02CE570A30015633F /* ProgressReportingTask.swift */,
 				4CB93DC12180FF07004B9764 /* ProximityMonitoringManager.swift */,
 				F9C5CB42289453B200548EEE /* ReadyFlag.swift */,
 				F9C5CB46289453B200548EEE /* Refinery.swift */,
@@ -16475,6 +16484,7 @@
 				45C845AD291466C0005F6EA5 /* JournalingOrderedDictionary.swift in Sources */,
 				5045F44229E0DB7100058E5F /* LaunchJobs.swift in Sources */,
 				D9C30DDB2A20072F009C2184 /* LegacyGroupLearnMoreViewController.swift in Sources */,
+				660FA9112CE58CD7006F9C34 /* LinkAndSyncLoadingViewController.swift in Sources */,
 				505C2ED42997015800C23FB2 /* LinkDeviceViewController.swift in Sources */,
 				3437F63A2512835300AC1767 /* LinkedDevicesTableViewController.swift in Sources */,
 				B9E322E92CD191CF006DAF3B /* LinkedDevicesView.swift in Sources */,
@@ -17321,6 +17331,7 @@
 				665F6F9D2C5C2FAD0002915C /* MessageBackupMessageAttachmentArchiver.swift in Sources */,
 				D94D67CD2C9DEF870091B485 /* MessageBackupPostFrameRestoreActionManager.swift in Sources */,
 				D994C7D12C45D24F009ECEDA /* MessageBackupProfileChangeChatUpdateArchiver.swift in Sources */,
+				6694BAB32CE5792B0015633F /* MessageBackupProgress.swift in Sources */,
 				66CD25592B0685E000139E17 /* MessageBackupProtoArchiver.swift in Sources */,
 				66CD25752B0807BC00139E17 /* MessageBackupProtoInputStream.swift in Sources */,
 				66CD25772B0807C700139E17 /* MessageBackupProtoOutputStream.swift in Sources */,
@@ -17643,6 +17654,7 @@
 				72901D2D2C9B129B000406DC /* ProfileManagerProtocol.swift in Sources */,
 				B93296692BBB3FF200B8BD39 /* ProfileName.swift in Sources */,
 				50F77AA02AAA7B8A00FB70C5 /* ProfileWhitelistMerger.swift in Sources */,
+				6694BAB12CE570B00015633F /* ProgressReportingTask.swift in Sources */,
 				668A01322C2B6088007B8808 /* Promise.swift in Sources */,
 				72901D2F2C9B1918000406DC /* ProtoUtils.swift in Sources */,
 				F9C5CC9D289453B300548EEE /* Provisioning.pb.swift in Sources */,
