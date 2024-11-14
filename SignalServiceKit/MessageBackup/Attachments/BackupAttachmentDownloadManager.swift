@@ -830,10 +830,11 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
 
             let canDownloadTransitTierFullsize: Bool
             if let transitTierInfo = attachment.transitTierInfo {
+                let timestampForComparison = max(transitTierInfo.uploadTimestamp, attachmentTimestamp ?? 0)
                 // Download if the upload was < 45 days old,
                 // otherwise don't bother trying automatically.
                 // (The user could still try a manual download later).
-                canDownloadTransitTierFullsize = Date(millisecondsSince1970: transitTierInfo.uploadTimestamp)
+                canDownloadTransitTierFullsize = Date(millisecondsSince1970: timestampForComparison)
                     .addingTimeInterval(45 * kDayInterval)
                     .isAfter(dateProvider())
             } else {
