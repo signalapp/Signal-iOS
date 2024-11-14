@@ -64,6 +64,7 @@ class MessageBackupIntegrationTests: XCTestCase {
         case chatItemExpirationTimerUpdate
         case chatItemGiftBadge
         case chatItemGroupCall
+        case chatItemGroupChangeChatUpdate
         case chatItemIndividualCall
         case chatItemLearnedProfile
         case chatItemPaymentNotification
@@ -146,6 +147,8 @@ class MessageBackupIntegrationTests: XCTestCase {
                     return binprotoName.contains("chat_item_gift_badge_")
                 case .chatItemGroupCall:
                     return binprotoName.contains("chat_item_group_call_update_")
+                case .chatItemGroupChangeChatUpdate:
+                    return binprotoName.contains("chat_item_group_change_chat_update_")
                 case .chatItemIndividualCall:
                     return binprotoName.contains("chat_item_individual_call_update_")
                 case .chatItemLearnedProfile:
