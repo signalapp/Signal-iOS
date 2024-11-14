@@ -149,6 +149,7 @@ NS_ASSUME_NONNULL_BEGIN
                        bodySource:(TSQuotedMessageContentSource)bodySource
      receivedQuotedAttachmentInfo:(nullable OWSAttachmentInfo *)attachmentInfo
                       isGiftBadge:(BOOL)isGiftBadge
+          isTargetMessageViewOnce:(BOOL)isTargetMessageViewOnce
 {
     OWSAssertDebug(authorAddress.isValid);
 
@@ -164,6 +165,7 @@ NS_ASSUME_NONNULL_BEGIN
     _bodySource = bodySource;
     _quotedAttachment = attachmentInfo;
     _isGiftBadge = isGiftBadge;
+    _isTargetMessageViewOnce = isTargetMessageViewOnce;
 
     return self;
 }
@@ -175,6 +177,7 @@ NS_ASSUME_NONNULL_BEGIN
                        bodyRanges:(nullable MessageBodyRanges *)bodyRanges
        quotedAttachmentForSending:(nullable OWSAttachmentInfo *)attachmentInfo
                       isGiftBadge:(BOOL)isGiftBadge
+          isTargetMessageViewOnce:(BOOL)isTargetMessageViewOnce
 {
     OWSAssertDebug(authorAddress.isValid);
 
@@ -195,6 +198,7 @@ NS_ASSUME_NONNULL_BEGIN
     _bodySource = TSQuotedMessageContentSourceLocal;
     _quotedAttachment = attachmentInfo;
     _isGiftBadge = isGiftBadge;
+    _isTargetMessageViewOnce = isTargetMessageViewOnce;
 
     return self;
 }
@@ -233,8 +237,9 @@ NS_ASSUME_NONNULL_BEGIN
                                              bodySource:(TSQuotedMessageContentSource)bodySource
                                    quotedAttachmentInfo:(nullable OWSAttachmentInfo *)attachmentInfo
                                             isGiftBadge:(BOOL)isGiftBadge
+                                isTargetMessageViewOnce:(BOOL)isTargetMessageViewOnce
 {
-    OWSAssertDebug(body != nil || attachmentInfo != nil || isGiftBadge);
+    OWSAssertDebug(body != nil || attachmentInfo != nil || isGiftBadge || isTargetMessageViewOnce);
     OWSAssertDebug(authorAddress.isValid);
 
     uint64_t rawTimestamp;
@@ -251,7 +256,8 @@ NS_ASSUME_NONNULL_BEGIN
                                            bodyRanges:bodyRanges
                                            bodySource:bodySource
                          receivedQuotedAttachmentInfo:attachmentInfo
-                                          isGiftBadge:isGiftBadge];
+                                          isGiftBadge:isGiftBadge
+                              isTargetMessageViewOnce:isTargetMessageViewOnce];
 }
 
 - (nullable NSNumber *)getTimestampValue

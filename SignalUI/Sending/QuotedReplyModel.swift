@@ -333,6 +333,16 @@ public class QuotedReplyModel {
             return buildQuotedReplyModel(originalContent: .giftBadge)
         }
 
+        if quotedMessage.isTargetMessageViewOnce {
+            return buildQuotedReplyModel(originalContent: .text(.init(
+                text: OWSLocalizedString(
+                    "PER_MESSAGE_EXPIRATION_NOT_VIEWABLE",
+                    comment: "inbox cell and notification text for an already viewed view-once media message."
+                ),
+                ranges: .empty
+            )))
+        }
+
         let attachmentReference = DependenciesBridge.shared.tsResourceStore.quotedAttachmentReference(
             for: message,
             tx: transaction.asV2Read

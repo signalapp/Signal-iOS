@@ -126,6 +126,14 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
 @property (nonatomic, readonly, nullable) MessageBodyRanges *bodyRanges;
 
 @property (nonatomic, readonly) BOOL isGiftBadge;
+/// If we found the target message at receive time (TSQuotedMessageContentSourceLocal),
+/// true if that target message was view once.
+/// If we did not find the target message (TSQuotedMessageContentSourceRemote), will always
+/// be false because we do not know if the target message was view-once. In these cases, we
+/// take the body off the Quote proto we receive.
+/// At send time, we always set the body of the outgoing Quote proto as the localized string
+/// that indicates this was a reply to a view-once message.
+@property (nonatomic, readonly) BOOL isTargetMessageViewOnce;
 
 #pragma mark - Attachments
 
@@ -142,7 +150,8 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
                              body:(nullable NSString *)body
                        bodyRanges:(nullable MessageBodyRanges *)bodyRanges
        quotedAttachmentForSending:(nullable OWSAttachmentInfo *)attachmentInfo
-                      isGiftBadge:(BOOL)isGiftBadge;
+                      isGiftBadge:(BOOL)isGiftBadge
+          isTargetMessageViewOnce:(BOOL)isTargetMessageViewOnce;
 
 // used when receiving quoted messages. Do not call directly outside AttachmentManager.
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
@@ -151,7 +160,8 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
                        bodyRanges:(nullable MessageBodyRanges *)bodyRanges
                        bodySource:(TSQuotedMessageContentSource)bodySource
      receivedQuotedAttachmentInfo:(nullable OWSAttachmentInfo *)attachmentInfo
-                      isGiftBadge:(BOOL)isGiftBadge;
+                      isGiftBadge:(BOOL)isGiftBadge
+          isTargetMessageViewOnce:(BOOL)isTargetMessageViewOnce;
 
 // used when restoring quoted messages from backups
 + (instancetype)quotedMessageWithTargetMessageTimestamp:(nullable NSNumber *)timestamp
@@ -160,7 +170,8 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
                                              bodyRanges:(nullable MessageBodyRanges *)bodyRanges
                                              bodySource:(TSQuotedMessageContentSource)bodySource
                                    quotedAttachmentInfo:(nullable OWSAttachmentInfo *)attachmentInfo
-                                            isGiftBadge:(BOOL)isGiftBadge;
+                                            isGiftBadge:(BOOL)isGiftBadge
+                                isTargetMessageViewOnce:(BOOL)isTargetMessageViewOnce;
 
 @end
 

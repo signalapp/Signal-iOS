@@ -3272,7 +3272,8 @@ public struct BackupProto_Quote: Sendable {
     public typealias RawValue = Int
     case unknown // = 0
     case normal // = 1
-    case giftbadge // = 2
+    case giftBadge // = 2
+    case viewOnce // = 3
     case UNRECOGNIZED(Int)
 
     public init() {
@@ -3283,7 +3284,8 @@ public struct BackupProto_Quote: Sendable {
       switch rawValue {
       case 0: self = .unknown
       case 1: self = .normal
-      case 2: self = .giftbadge
+      case 2: self = .giftBadge
+      case 3: self = .viewOnce
       default: self = .UNRECOGNIZED(rawValue)
       }
     }
@@ -3292,7 +3294,8 @@ public struct BackupProto_Quote: Sendable {
       switch self {
       case .unknown: return 0
       case .normal: return 1
-      case .giftbadge: return 2
+      case .giftBadge: return 2
+      case .viewOnce: return 3
       case .UNRECOGNIZED(let i): return i
       }
     }
@@ -3301,7 +3304,8 @@ public struct BackupProto_Quote: Sendable {
     public static let allCases: [BackupProto_Quote.TypeEnum] = [
       .unknown,
       .normal,
-      .giftbadge,
+      .giftBadge,
+      .viewOnce,
     ]
 
   }
@@ -9975,7 +9979,8 @@ extension BackupProto_Quote.TypeEnum: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     0: .same(proto: "UNKNOWN"),
     1: .same(proto: "NORMAL"),
-    2: .same(proto: "GIFTBADGE"),
+    2: .same(proto: "GIFT_BADGE"),
+    3: .same(proto: "VIEW_ONCE"),
   ]
 }
 

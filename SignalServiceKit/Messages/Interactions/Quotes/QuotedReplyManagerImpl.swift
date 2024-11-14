@@ -107,7 +107,8 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                 bodyRanges: nil,
                 bodySource: .remote,
                 receivedQuotedAttachmentInfo: nil,
-                isGiftBadge: true
+                isGiftBadge: true,
+                isTargetMessageViewOnce: false
             ))
         }
 
@@ -180,7 +181,8 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                 bodyRanges: bodyRanges,
                 bodySource: .remote,
                 receivedQuotedAttachmentInfo: attachmentInfo?.info,
-                isGiftBadge: false
+                isGiftBadge: false,
+                isTargetMessageViewOnce: false
             )
         }
 
@@ -218,18 +220,15 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
 
         if originalMessage.isViewOnceMessage {
             // We construct a quote that does not include any of the quoted message's renderable content.
-            let body = OWSLocalizedString(
-                "PER_MESSAGE_EXPIRATION_NOT_VIEWABLE",
-                comment: "inbox cell and notification text for an already viewed view-once media message."
-            )
             return .withoutFinalizer(TSQuotedMessage(
                 timestamp: originalMessage.timestamp,
                 authorAddress: authorAddress,
-                body: body,
+                body: nil,
                 bodyRanges: nil,
                 bodySource: .local,
                 receivedQuotedAttachmentInfo: nil,
-                isGiftBadge: false
+                isGiftBadge: false,
+                isTargetMessageViewOnce: true
             ))
         }
 
@@ -299,7 +298,8 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                 bodyRanges: bodyRanges,
                 bodySource: .local,
                 receivedQuotedAttachmentInfo: attachmentInfo?.info,
-                isGiftBadge: isGiftBadge
+                isGiftBadge: isGiftBadge,
+                isTargetMessageViewOnce: false
             )
         }
 
@@ -637,6 +637,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                 originalMessageTimestamp: draft.originalMessageTimestamp,
                 originalMessageAuthorAddress: draft.originalMessageAuthorAddress,
                 originalMessageIsGiftBadge: draft.content.isGiftBadge,
+                originalMessageIsViewOnce: draft.content.isViewOnce,
                 threadUniqueId: draft.threadUniqueId,
                 quoteBody: draft.bodyForSending,
                 attachment: nil,
@@ -675,6 +676,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                 originalMessageTimestamp: draft.originalMessageTimestamp,
                 originalMessageAuthorAddress: draft.originalMessageAuthorAddress,
                 originalMessageIsGiftBadge: draft.content.isGiftBadge,
+                originalMessageIsViewOnce: draft.content.isViewOnce,
                 threadUniqueId: draft.threadUniqueId,
                 quoteBody: draft.bodyForSending,
                 attachment: nil,
@@ -716,6 +718,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             originalMessageTimestamp: draft.originalMessageTimestamp,
             originalMessageAuthorAddress: draft.originalMessageAuthorAddress,
             originalMessageIsGiftBadge: draft.content.isGiftBadge,
+            originalMessageIsViewOnce: draft.content.isViewOnce,
             threadUniqueId: draft.threadUniqueId,
             quoteBody: draft.bodyForSending,
             attachment: quoteAttachment,
@@ -751,7 +754,8 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                 bodyRanges: nil,
                 bodySource: .remote,
                 quotedAttachmentInfo: nil,
-                isGiftBadge: false
+                isGiftBadge: false,
+                isTargetMessageViewOnce: false
             ))
         }
 
@@ -764,7 +768,8 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                 body: body?.text,
                 bodyRanges: body?.ranges,
                 quotedAttachmentForSending: attachmentInfo?.info,
-                isGiftBadge: draft.originalMessageIsGiftBadge
+                isGiftBadge: draft.originalMessageIsGiftBadge,
+                isTargetMessageViewOnce: draft.originalMessageIsViewOnce
             )
         }
 
@@ -842,6 +847,15 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
         if quote.isGiftBadge {
             hasQuotedGiftBadge = true
             quoteBuilder.setType(.giftBadge)
+        }
+
+        if quote.isTargetMessageViewOnce {
+            if !hasQuotedText {
+                quoteBuilder.setText(OWSLocalizedString(
+                    "PER_MESSAGE_EXPIRATION_NOT_VIEWABLE",
+                    comment: "inbox cell and notification text for an already viewed view-once media message."
+                ))
+            }
         }
 
         guard hasQuotedText || hasQuotedAttachment || hasQuotedGiftBadge else {

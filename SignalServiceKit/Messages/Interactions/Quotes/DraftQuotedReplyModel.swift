@@ -75,6 +75,15 @@ public class DraftQuotedReplyModel {
             }
         }
 
+        public var isViewOnce: Bool {
+            switch self {
+            case .viewOnce:
+                return true
+            default:
+                return false
+            }
+        }
+
         public var isRemotelySourced: Bool {
             switch self {
             case .edit(_, let quotedMessage, _):

@@ -464,7 +464,13 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
 
         var quote = BackupProto_Quote()
         quote.authorID = authorId.value
-        quote.type = quotedMessage.isGiftBadge ? .giftbadge : .normal
+        if quotedMessage.isGiftBadge {
+            quote.type = .giftBadge
+        } else if quotedMessage.isTargetMessageViewOnce {
+            quote.type = .viewOnce
+        } else {
+            quote.type = .normal
+        }
 
         let targetSentTimestamp: UInt64? = {
             switch quotedMessage.bodySource {
@@ -1048,7 +1054,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                 senderOrRecipientAci: senderOrRecipientAci,
                 direction: direction,
                 interactionUniqueId: message.uniqueId
-        ) else {
+            ) else {
             return .messageFailure([.restoreFrameError(
                 .invalidProtoData(.unrecognizedPaymentTransaction),
                 chatItemId
@@ -1379,18 +1385,24 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         }
 
         let isGiftBadge: Bool
+        let isTargetMessageViewOnce: Bool
         switch quote.type {
         case .UNRECOGNIZED, .unknown, .normal:
             isGiftBadge = false
-        case .giftbadge:
+            isTargetMessageViewOnce = false
+        case .viewOnce:
+            isGiftBadge = false
+            isTargetMessageViewOnce = true
+        case .giftBadge:
             isGiftBadge = true
+            isTargetMessageViewOnce = false
         }
 
         let quotedAttachmentInfo: OWSAttachmentInfo?
         let quotedAttachmentThumbnail: BackupProto_MessageAttachment?
         if let quotedAttachmentProto = quote.attachments.first {
             let mimeType = quotedAttachmentProto.contentType.nilIfEmpty
-                ?? MimeType.applicationOctetStream.rawValue
+            ?? MimeType.applicationOctetStream.rawValue
             let sourceFilename = quotedAttachmentProto.fileName.nilIfEmpty
 
             if quotedAttachmentProto.hasThumbnail {
@@ -1411,7 +1423,12 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             quotedAttachmentThumbnail = nil
         }
 
-        guard quoteBody != nil || quotedAttachmentInfo != nil || isGiftBadge else {
+        guard
+            quoteBody != nil
+            || quotedAttachmentInfo != nil
+            || isGiftBadge
+            || isTargetMessageViewOnce
+        else {
             return .messageFailure([.restoreFrameError(
                 .invalidProtoData(.quotedMessageEmptyContent),
                 chatItemId
@@ -1425,7 +1442,8 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             bodyRanges: quoteBody?.ranges,
             bodySource: bodySource,
             quotedAttachmentInfo: quotedAttachmentInfo,
-            isGiftBadge: isGiftBadge
+            isGiftBadge: isGiftBadge,
+            isTargetMessageViewOnce: isTargetMessageViewOnce
         )
 
         if partialErrors.isEmpty {

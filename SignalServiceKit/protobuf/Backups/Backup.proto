@@ -663,7 +663,8 @@ message Quote {
   enum Type {
     UNKNOWN = 0;
     NORMAL = 1;
-    GIFTBADGE = 2;
+    GIFT_BADGE = 2;
+    VIEW_ONCE = 3;
   }
 
   message QuotedAttachment {
