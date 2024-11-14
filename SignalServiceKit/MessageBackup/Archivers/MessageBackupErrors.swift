@@ -40,6 +40,9 @@ extension MessageBackup {
             /// e.g. we try to archive the chat style of a thread, but there is no ``MessageBackup.CustomChatColorId``.
             case referencedCustomChatColorMissing(CustomChatColor.Key)
 
+            /// We were unable to fetch the OWSRecipientIdentity for a recipient.
+            case unableToFetchRecipientIdentity(RawError)
+
             /// An error generating the master key for a group, causing the group to be skipped.
             case groupMasterKeyError(RawError)
 
@@ -249,6 +252,7 @@ extension MessageBackup {
                     .contactThreadMissingRecipient,
                     .themedCustomChatColor,
                     .unknownWallpaper,
+                    .unableToFetchRecipientIdentity,
                     .distributionListMissingDistributionId,
                     .distributionListHasDefaultViewMode,
                     .customDistributionListBlocklistViewMode,
@@ -305,6 +309,7 @@ extension MessageBackup {
                     .referencedRecipientIdMissing,
                     .referencedThreadIdMissing,
                     .referencedCustomChatColorMissing,
+                    .unableToFetchRecipientIdentity,
                     .fileIOError,
                     .groupMasterKeyError,
                     .themedCustomChatColor,
@@ -487,6 +492,9 @@ extension MessageBackup {
 
                 /// A ``BackupProto/Recipient`` with a missing destination.
                 case recipientMissingDestination
+
+                /// A ``BackupProto_Contact`` with unknown identityState.
+                case unknownContactIdentityState
 
                 /// A ``BackupProto/Contact`` with no aci, pni, or e164.
                 case contactWithoutIdentifiers
@@ -826,6 +834,7 @@ extension MessageBackup {
                         .invalidProfileKey,
                         .invalidDistributionListMember,
                         .recipientMissingDestination,
+                        .unknownContactIdentityState,
                         .contactWithoutIdentifiers,
                         .otherContactWithLocalIdentifiers,
                         .contactWithoutRegistrationInfo,
@@ -956,6 +965,7 @@ extension MessageBackup {
                         .invalidProfileKey,
                         .invalidDistributionListMember,
                         .recipientMissingDestination,
+                        .unknownContactIdentityState,
                         .contactWithoutIdentifiers,
                         .otherContactWithLocalIdentifiers,
                         .contactWithoutRegistrationInfo,

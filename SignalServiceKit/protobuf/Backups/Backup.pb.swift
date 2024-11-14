@@ -663,11 +663,60 @@ public struct BackupProto_Contact: @unchecked Sendable {
 
   public var hideStory: Bool = false
 
+  public var identityKey: Data {
+    get {return _identityKey ?? Data()}
+    set {_identityKey = newValue}
+  }
+  /// Returns true if `identityKey` has been explicitly set.
+  public var hasIdentityKey: Bool {return self._identityKey != nil}
+  /// Clears the value of `identityKey`. Subsequent reads from it will return its default value.
+  public mutating func clearIdentityKey() {self._identityKey = nil}
+
+  public var identityState: BackupProto_Contact.IdentityState = .default
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public enum OneOf_Registration: Equatable, Sendable {
     case registered(BackupProto_Contact.Registered)
     case notRegistered(BackupProto_Contact.NotRegistered)
+
+  }
+
+  public enum IdentityState: SwiftProtobuf.Enum, Swift.CaseIterable {
+    public typealias RawValue = Int
+    case `default` // = 0
+    case verified // = 1
+    case unverified // = 2
+    case UNRECOGNIZED(Int)
+
+    public init() {
+      self = .default
+    }
+
+    public init?(rawValue: Int) {
+      switch rawValue {
+      case 0: self = .default
+      case 1: self = .verified
+      case 2: self = .unverified
+      default: self = .UNRECOGNIZED(rawValue)
+      }
+    }
+
+    public var rawValue: Int {
+      switch self {
+      case .default: return 0
+      case .verified: return 1
+      case .unverified: return 2
+      case .UNRECOGNIZED(let i): return i
+      }
+    }
+
+    // The compiler won't synthesize support with the UNRECOGNIZED case.
+    public static let allCases: [BackupProto_Contact.IdentityState] = [
+      .default,
+      .verified,
+      .unverified,
+    ]
 
   }
 
@@ -740,6 +789,7 @@ public struct BackupProto_Contact: @unchecked Sendable {
   fileprivate var _profileKey: Data? = nil
   fileprivate var _profileGivenName: String? = nil
   fileprivate var _profileFamilyName: String? = nil
+  fileprivate var _identityKey: Data? = nil
 }
 
 public struct BackupProto_Group: @unchecked Sendable {
@@ -6295,6 +6345,8 @@ extension BackupProto_Contact: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     11: .same(proto: "profileGivenName"),
     12: .same(proto: "profileFamilyName"),
     13: .same(proto: "hideStory"),
+    14: .same(proto: "identityKey"),
+    15: .same(proto: "identityState"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -6340,6 +6392,8 @@ extension BackupProto_Contact: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
       case 11: try { try decoder.decodeSingularStringField(value: &self._profileGivenName) }()
       case 12: try { try decoder.decodeSingularStringField(value: &self._profileFamilyName) }()
       case 13: try { try decoder.decodeSingularBoolField(value: &self.hideStory) }()
+      case 14: try { try decoder.decodeSingularBytesField(value: &self._identityKey) }()
+      case 15: try { try decoder.decodeSingularEnumField(value: &self.identityState) }()
       default: break
       }
     }
@@ -6394,6 +6448,12 @@ extension BackupProto_Contact: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     if self.hideStory != false {
       try visitor.visitSingularBoolField(value: self.hideStory, fieldNumber: 13)
     }
+    try { if let v = self._identityKey {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 14)
+    } }()
+    if self.identityState != .default {
+      try visitor.visitSingularEnumField(value: self.identityState, fieldNumber: 15)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -6410,9 +6470,19 @@ extension BackupProto_Contact: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     if lhs._profileGivenName != rhs._profileGivenName {return false}
     if lhs._profileFamilyName != rhs._profileFamilyName {return false}
     if lhs.hideStory != rhs.hideStory {return false}
+    if lhs._identityKey != rhs._identityKey {return false}
+    if lhs.identityState != rhs.identityState {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
+}
+
+extension BackupProto_Contact.IdentityState: SwiftProtobuf._ProtoNameProviding {
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "DEFAULT"),
+    1: .same(proto: "VERIFIED"),
+    2: .same(proto: "UNVERIFIED"),
+  ]
 }
 
 extension BackupProto_Contact.Visibility: SwiftProtobuf._ProtoNameProviding {

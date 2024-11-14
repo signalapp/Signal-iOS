@@ -1128,6 +1128,7 @@ public class AppSetup {
             contactRecipientArchiver: MessageBackupContactRecipientArchiver(
                 avatarFetcher: messageBackupAvatarFetcher,
                 blockingManager: MessageBackup.Wrappers.BlockingManager(blockingManager),
+                dateProvider: dateProvider,
                 profileManager: MessageBackup.Wrappers.ProfileManager(profileManager),
                 recipientHidingManager: recipientHidingManager,
                 recipientManager: recipientManager,

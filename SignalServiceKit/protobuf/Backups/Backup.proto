@@ -115,6 +115,12 @@ message Recipient {
 }
 
 message Contact {
+  enum IdentityState {
+    DEFAULT = 0;
+    VERIFIED = 1;
+    UNVERIFIED = 2;
+  }
+
   message Registered { }
   message NotRegistered {
     uint64 unregisteredTimestamp = 1;
@@ -143,6 +149,8 @@ message Contact {
   optional string profileGivenName = 11;
   optional string profileFamilyName = 12;
   bool hideStory = 13;
+  optional bytes identityKey = 14;
+  IdentityState identityState = 15;
 }
 
 message Group {

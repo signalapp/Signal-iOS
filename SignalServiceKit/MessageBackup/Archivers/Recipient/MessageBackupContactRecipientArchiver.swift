@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import GRDB
 import LibSignalClient
 
 /// Archives ``SignalRecipient``s as ``BackupProto_Contact`` recipients.
@@ -19,6 +20,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
 
     private let avatarFetcher: MessageBackupAvatarFetcher
     private let blockingManager: MessageBackup.Shims.BlockingManager
+    private let dateProvider: DateProvider
     private let profileManager: MessageBackup.Shims.ProfileManager
     private let recipientHidingManager: RecipientHidingManager
     private let recipientManager: any SignalRecipientManager
@@ -32,6 +34,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
     public init(
         avatarFetcher: MessageBackupAvatarFetcher,
         blockingManager: MessageBackup.Shims.BlockingManager,
+        dateProvider: @escaping DateProvider,
         profileManager: MessageBackup.Shims.ProfileManager,
         recipientHidingManager: RecipientHidingManager,
         recipientManager: any SignalRecipientManager,
@@ -44,6 +47,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
     ) {
         self.avatarFetcher = avatarFetcher
         self.blockingManager = blockingManager
+        self.dateProvider = dateProvider
         self.profileManager = profileManager
         self.recipientHidingManager = recipientHidingManager
         self.recipientManager = recipientManager
@@ -153,6 +157,23 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
                 }
             }
 
+            let identity: OWSRecipientIdentity?
+            do {
+                // Read directly from the OWSRecipientIdentity table, bypassing
+                // OWSIdentityManager, as we already are working directly
+                // with the SignalRecipient and don't need serviceId-based checks.
+                identity = try RecipientIdentityRecord
+                    .filter(Column(RecipientIdentityRecord.CodingKeys.uniqueId) == recipient.uniqueId)
+                    .fetchOne(context.tx.databaseConnection)
+                    .map { try OWSRecipientIdentity.fromRecord($0) }
+            } catch let error {
+                errors.append(.archiveFrameError(
+                    .unableToFetchRecipientIdentity(error),
+                    .contact(contactAddress)
+                ))
+                return
+            }
+
             let contact = self.buildContactRecipient(
                 aci: contactAddress.aci,
                 pni: contactAddress.pni,
@@ -202,7 +223,8 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
                 userProfile: self.profileManager.getUserProfile(
                     for: recipient.address,
                     tx: context.tx
-                )
+                ),
+                identity: identity
             )
 
             writeToStream(contact: contact, contactAddress: contactAddress)
@@ -295,7 +317,10 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
 
                     return .notRegistered(notRegistered)
                 }(),
-                userProfile: userProfile
+                userProfile: userProfile,
+                // We don't have (and can't fetch) identity info for
+                // profile addresses without SignalRecipients.
+                identity: nil
             )
 
             writeToStream(
@@ -321,7 +346,8 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
         isStoryHidden: Bool,
         visibility: BackupProto_Contact.Visibility,
         registration: BackupProto_Contact.OneOf_Registration,
-        userProfile: OWSUserProfile?
+        userProfile: OWSUserProfile?,
+        identity: OWSRecipientIdentity?
     ) -> BackupProto_Contact {
         var contact = BackupProto_Contact()
         contact.blocked = isBlocked
@@ -329,6 +355,17 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
         contact.hideStory = isStoryHidden
         contact.visibility = visibility
         contact.registration = registration
+        if let identityKey = identity?.identityKey {
+            contact.identityKey = identityKey
+        }
+        switch identity?.verificationState {
+        case nil, .default, .defaultAcknowledged:
+            contact.identityState = .default
+        case .verified:
+            contact.identityState = .verified
+        case .noLongerVerified:
+            contact.identityState = .unverified
+        }
 
         if let aci {
             contact.aci = aci.rawUUID.data
@@ -477,6 +514,42 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
             contactProto.hasUsername
         {
             usernameLookupManager.saveUsername(contactProto.username, forAci: aci, transaction: context.tx)
+        }
+
+        if contactProto.hasIdentityKey {
+            let verificationState: OWSVerificationState
+            switch contactProto.identityState {
+            case .default:
+                verificationState = .default
+            case .verified:
+                verificationState = .verified
+            case .unverified:
+                verificationState = .noLongerVerified
+            case .UNRECOGNIZED:
+                return .failure([.restoreFrameError(
+                    .invalidProtoData(.unknownContactIdentityState),
+                    recipientProto.recipientId
+                )])
+            }
+
+            // Write directly to the OWSRecipientIdentity table, bypassing
+            // OWSIdentityManager, as we already are working directly
+            // with the SignalRecipient and don't need serviceId-based checks.
+            let identity = OWSRecipientIdentity(
+                recipientUniqueId: recipient.uniqueId,
+                identityKey: contactProto.identityKey,
+                isFirstKnownKey: true,
+                createdAt: dateProvider(),
+                verificationState: verificationState
+            )
+            do {
+                try identity.asRecord().insert(context.tx.databaseConnection)
+            } catch {
+                return .failure([.restoreFrameError(
+                    .databaseInsertionFailed(error),
+                    recipientProto.recipientId
+                )])
+            }
         }
 
         if contactProto.profileSharing {
