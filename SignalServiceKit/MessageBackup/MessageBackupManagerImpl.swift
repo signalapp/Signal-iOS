@@ -929,8 +929,10 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                     unknownFields: validationError.unknownFields.fields
                 )
             case SignalError.ioError(let description):
+                Logger.error("Backup validation i/o error: \(description)")
                 throw BackupValidationError.ioError(description)
             default:
+                Logger.error("Backup validation unknown error: \(error)")
                 throw BackupValidationError.unknownError
             }
         }
