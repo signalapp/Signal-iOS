@@ -587,7 +587,7 @@ extension LinkedDevicesTableViewController: LinkDeviceViewControllerDelegate {
         }
     }
 
-    func expectMoreDevices() {
+    private func expectMoreDevices() {
 
         isExpectingMoreDevices = true
 

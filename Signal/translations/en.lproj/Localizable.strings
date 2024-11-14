@@ -4072,6 +4072,18 @@
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Learn more";
 
+/* Text that appears where the linked device list would be indicating that there are no linked devices. */
+"LINKED_DEVICES_EMPTY_STATE" = "No linked devices";
+
+/* Description for header of the linked devices list */
+"LINKED_DEVICES_HEADER_DESCRIPTION" = "Use Signal on desktop or iPad. Your messages will sync to your linked devices.";
+
+/* Footer text below the list of currently-linked devices */
+"LINKED_DEVICES_LIST_FOOTER" = "Messages and chat info are protected by end-to-end encryption on all devices";
+
+/* Title above the list of currently-linked devices */
+"LINKED_DEVICES_LIST_TITLE" = "Linked Devices";
+
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Linked Devices";
 

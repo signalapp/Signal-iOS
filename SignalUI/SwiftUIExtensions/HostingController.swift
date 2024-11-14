@@ -26,6 +26,39 @@ extension EnvironmentValues {
     }
 }
 
+// MARK: - HostingContainer
+
+/// Container view controller around ``HostingController``.
+/// Useful when you want to manually set navigation item bar buttons from a
+/// UIKit context, to avoid `UIHostingController`'s behavior of only displaying
+/// bar buttons once fully appeared.
+open class HostingContainer<Wrapped: View>: UIViewController {
+    private let hostingController: HostingController<Wrapped>
+
+    public init(wrappedView: Wrapped) {
+        self.hostingController = .init(wrappedView: wrappedView)
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    @available(*, unavailable)
+    public required init?(coder: NSCoder) {
+        fatalError("unimplemented")
+    }
+
+    open override func viewDidLoad() {
+        addChild(hostingController)
+        view.addSubview(hostingController.view)
+        hostingController.view.autoPinEdgesToSuperviewEdges()
+        hostingController.didMove(toParent: self)
+    }
+}
+
+extension HostingContainer: OWSNavigationChildController {
+    public var childForOWSNavigationConfiguration: (any OWSNavigationChildController)? {
+        hostingController
+    }
+}
+
 // MARK: - HostingController
 
 /// Extends UIHostingController by wrapping its `rootView` and adding additional

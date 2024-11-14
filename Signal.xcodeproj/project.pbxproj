@@ -1694,6 +1694,7 @@
 		B9E322D82CD024A2006DAF3B /* linking-device-light.json in Resources */ = {isa = PBXBuildFile; fileRef = B9E322D72CD024A2006DAF3B /* linking-device-light.json */; };
 		B9E322D92CD024A2006DAF3B /* linking-device-dark.json in Resources */ = {isa = PBXBuildFile; fileRef = B9E322D62CD024A2006DAF3B /* linking-device-dark.json */; };
 		B9E322E72CD170ED006DAF3B /* SignalList.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E322E62CD170ED006DAF3B /* SignalList.swift */; };
+		B9E322E92CD191CF006DAF3B /* LinkedDevicesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E322E82CD191CF006DAF3B /* LinkedDevicesView.swift */; };
 		B9EB5ABD1884C002007CBB57 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		B9F2155D2A93C9E8002DCAE0 /* StickerPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F2155C2A93C9E8002DCAE0 /* StickerPickerSheet.swift */; };
 		B9F2155F2A940596002DCAE0 /* ImageEditorStickerItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F2155E2A940596002DCAE0 /* ImageEditorStickerItem.swift */; };
@@ -3660,7 +3661,6 @@
 		05EA61422CC9437F00B16D4E /* Project-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Project-Debug.xcconfig"; sourceTree = "<group>"; };
 		05EA61432CC943D200B16D4E /* Project-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Project-Release.xcconfig"; sourceTree = "<group>"; };
 		05EA61442CC943DD00B16D4E /* Project.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Project.xcconfig; sourceTree = "<group>"; };
-		05EA61472CC9491400B16D4E /* User.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = User.xcconfig; sourceTree = "<group>"; };
 		05FDBC282CD91B31000C87BC /* ChatListContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListContainerView.swift; sourceTree = "<group>"; };
 		0BADD293DAFC82BF3274F0F6 /* Pods_SignalTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1404D8B2276A353A0068E2F6 /* ChatListViewController+Multiselect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatListViewController+Multiselect.swift"; sourceTree = "<group>"; };
@@ -5421,6 +5421,7 @@
 		B95A765D2B76E93500AA7E97 /* FindByUsernameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindByUsernameViewController.swift; sourceTree = "<group>"; };
 		B95BBAC12BB36025009EFB4A /* ProfileName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileName.swift; sourceTree = "<group>"; };
 		B96D6D782B9F83270039EB99 /* SignalSymbols-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SignalSymbols-Regular.otf"; sourceTree = "<group>"; };
+		B96FEE2E2CDC297500836191 /* User.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = User.xcconfig; sourceTree = "<group>"; };
 		B9754F532C73AD49000000E4 /* ConversationAvatarView+SwiftUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationAvatarView+SwiftUI.swift"; sourceTree = "<group>"; };
 		B982ACFE2BA8FD2A00AD7E81 /* SignalSymbols-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SignalSymbols-Bold.otf"; sourceTree = "<group>"; };
 		B982AD002BA8FD3100AD7E81 /* SignalSymbols-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SignalSymbols-Light.otf"; sourceTree = "<group>"; };
@@ -5439,6 +5440,7 @@
 		B9E322D62CD024A2006DAF3B /* linking-device-dark.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "linking-device-dark.json"; sourceTree = "<group>"; };
 		B9E322D72CD024A2006DAF3B /* linking-device-light.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "linking-device-light.json"; sourceTree = "<group>"; };
 		B9E322E62CD170ED006DAF3B /* SignalList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalList.swift; sourceTree = "<group>"; };
+		B9E322E82CD191CF006DAF3B /* LinkedDevicesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkedDevicesView.swift; sourceTree = "<group>"; };
 		B9EB5ABC1884C002007CBB57 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		B9F2155C2A93C9E8002DCAE0 /* StickerPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerPickerSheet.swift; sourceTree = "<group>"; };
 		B9F2155E2A940596002DCAE0 /* ImageEditorStickerItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorStickerItem.swift; sourceTree = "<group>"; };
@@ -7409,7 +7411,7 @@
 				05EA61422CC9437F00B16D4E /* Project-Debug.xcconfig */,
 				05EA61432CC943D200B16D4E /* Project-Release.xcconfig */,
 				05EA61442CC943DD00B16D4E /* Project.xcconfig */,
-				05EA61472CC9491400B16D4E /* User.xcconfig */,
+				B96FEE2E2CDC297500836191 /* User.xcconfig */,
 			);
 			path = Config;
 			sourceTree = "<group>";
@@ -10647,6 +10649,7 @@
 			children = (
 				505C2ED32997015800C23FB2 /* LinkDeviceViewController.swift */,
 				3437F6392512835200AC1767 /* LinkedDevicesTableViewController.swift */,
+				B9E322E82CD191CF006DAF3B /* LinkedDevicesView.swift */,
 			);
 			path = "Linked Devices";
 			sourceTree = "<group>";
@@ -16474,6 +16477,7 @@
 				D9C30DDB2A20072F009C2184 /* LegacyGroupLearnMoreViewController.swift in Sources */,
 				505C2ED42997015800C23FB2 /* LinkDeviceViewController.swift in Sources */,
 				3437F63A2512835300AC1767 /* LinkedDevicesTableViewController.swift in Sources */,
+				B9E322E92CD191CF006DAF3B /* LinkedDevicesView.swift in Sources */,
 				76C87FE128BE8E2400BD8709 /* LinkPreviewAttachmentViewController.swift in Sources */,
 				507B69122C5044F800F1C6D7 /* LinkPreviewGroupLink.swift in Sources */,
 				4542DF54208D40AC007B4E76 /* LoadingViewController.swift in Sources */,

@@ -345,10 +345,13 @@ class LinkDeviceViewController: OWSViewController {
     }
 
     private func popToLinkedDeviceList(_ completion: (() -> Void)? = nil) {
-        navigationController?.popViewController(animated: true, completion: {
+        navigationController?.popViewController(animated: true)
+        // The method for adding a completion handler to popViewController in
+        // UIViewController+SignalUI doesn't play well with UIHostingController
+        navigationController?.transitionCoordinator?.animate(alongsideTransition: nil) { _ in
             UIViewController.attemptRotationToDeviceOrientation()
             completion?()
-        })
+        }
     }
 
     #if TESTABLE_BUILD
