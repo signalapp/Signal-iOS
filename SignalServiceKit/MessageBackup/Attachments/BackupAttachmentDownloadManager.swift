@@ -182,7 +182,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             Logger.info("Skipping backup attachment downloads while not on wifi")
             return
         }
-        if FeatureFlags.messageBackupFileAlpha {
+        if FeatureFlags.messageBackupRemoteExportAlpha {
             try await listMediaManager.queryListMediaIfNeeded()
         }
         try await taskQueue.loadAndRunTasks()

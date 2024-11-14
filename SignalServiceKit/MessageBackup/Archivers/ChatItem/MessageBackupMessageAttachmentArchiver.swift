@@ -430,7 +430,7 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
     internal static func isFreeTierBackup() -> Bool {
         // TODO: [Backups] need a way to check if we are a free tier user;
         // if so we only use the AttachmentLocator instead of BackupLocator.
-        return false
+        return !FeatureFlags.messageBackupRemoteExportAlpha
     }
 
     // MARK: Archiving
