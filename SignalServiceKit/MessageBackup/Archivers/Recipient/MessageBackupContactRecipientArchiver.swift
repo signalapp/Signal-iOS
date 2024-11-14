@@ -355,16 +355,17 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
         contact.hideStory = isStoryHidden
         contact.visibility = visibility
         contact.registration = registration
-        if let identityKey = identity?.identityKey {
-            contact.identityKey = identityKey
-        }
-        switch identity?.verificationState {
-        case nil, .default, .defaultAcknowledged:
-            contact.identityState = .default
-        case .verified:
-            contact.identityState = .verified
-        case .noLongerVerified:
-            contact.identityState = .unverified
+        if let identity, let identityKey = try? identity.identityKeyObject {
+            // `serialize()`, which includes the keyType prefix.
+            contact.identityKey = Data(identityKey.publicKey.serialize())
+            switch identity.verificationState {
+            case .default, .defaultAcknowledged:
+                contact.identityState = .default
+            case .verified:
+                contact.identityState = .verified
+            case .noLongerVerified:
+                contact.identityState = .unverified
+            }
         }
 
         if let aci {
@@ -517,6 +518,15 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
         }
 
         if contactProto.hasIdentityKey {
+            let identityKey: Data
+            do {
+                identityKey = try IdentityKey(publicKey: PublicKey(contactProto.identityKey))
+                    // 'keyBytes', which drops the keyType prefix
+                    .publicKey.keyBytes.asData
+            } catch let error {
+                return .failure([.restoreFrameError(.invalidProtoData(.invalidContactIdentityKey), recipientProto.recipientId)])
+            }
+
             let verificationState: OWSVerificationState
             switch contactProto.identityState {
             case .default:
@@ -537,7 +547,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
             // with the SignalRecipient and don't need serviceId-based checks.
             let identity = OWSRecipientIdentity(
                 recipientUniqueId: recipient.uniqueId,
-                identityKey: contactProto.identityKey,
+                identityKey: identityKey,
                 isFirstKnownKey: true,
                 createdAt: dateProvider(),
                 verificationState: verificationState

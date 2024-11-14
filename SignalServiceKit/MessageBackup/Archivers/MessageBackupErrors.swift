@@ -487,6 +487,8 @@ extension MessageBackup {
                 /// Could not parse an ``Aes256Key`` profile key. Includes the class
                 /// of the offending proto.
                 case invalidProfileKey(protoClass: Any.Type)
+                /// Could not parse an ``IdentityKey`` from a contact.
+                case invalidContactIdentityKey
                 /// An invalid member (group, distribution list, etc) was specified as a distribution list member.  Includes the offending proto
                 case invalidDistributionListMember(protoClass: Any.Type)
 
@@ -832,6 +834,7 @@ extension MessageBackup {
                         .invalidServiceId,
                         .invalidE164,
                         .invalidProfileKey,
+                        .invalidContactIdentityKey,
                         .invalidDistributionListMember,
                         .recipientMissingDestination,
                         .unknownContactIdentityState,
@@ -963,6 +966,7 @@ extension MessageBackup {
                         .invalidServiceId,
                         .invalidE164,
                         .invalidProfileKey,
+                        .invalidContactIdentityKey,
                         .invalidDistributionListMember,
                         .recipientMissingDestination,
                         .unknownContactIdentityState,
