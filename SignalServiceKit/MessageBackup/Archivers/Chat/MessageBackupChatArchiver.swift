@@ -135,8 +135,6 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         stream: MessageBackupProtoOutputStream,
         context: MessageBackup.ChatArchivingContext
     ) -> ArchiveMultiFrameResult {
-        let chatId = context.assignChatId(to: thread)
-
         guard let threadRowId = thread.sqliteRowId else {
             return .completeFailure(.fatalArchiveError(
                 .fetchedThreadMissingRowId
@@ -145,7 +143,6 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
 
         return archiveThread(
             MessageBackup.ChatThread(threadType: .contact(thread), threadRowId: threadRowId),
-            chatId: chatId,
             recipientId: context.recipientContext.localRecipientId,
             stream: stream,
             context: context
@@ -157,8 +154,6 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         stream: MessageBackupProtoOutputStream,
         context: MessageBackup.ChatArchivingContext
     ) -> ArchiveMultiFrameResult {
-        let chatId = context.assignChatId(to: thread)
-
         let contactServiceId: ServiceId? = thread.contactUUID.flatMap { try? ServiceId.parseFrom(serviceIdString: $0) }
         guard
             let contactAddress = MessageBackup.ContactAddress(
@@ -200,7 +195,6 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
 
         return archiveThread(
             MessageBackup.ChatThread(threadType: .contact(thread), threadRowId: threadRowId),
-            chatId: chatId,
             recipientId: recipientId,
             stream: stream,
             context: context
@@ -212,8 +206,6 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         stream: MessageBackupProtoOutputStream,
         context: MessageBackup.ChatArchivingContext
     ) -> ArchiveMultiFrameResult {
-        let chatId = context.assignChatId(to: thread)
-
         let recipientAddress = MessageBackup.RecipientArchivingContext.Address.group(
             MessageBackup.GroupId(groupModel: thread.groupModel)
         )
@@ -232,7 +224,6 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
 
         return archiveThread(
             MessageBackup.ChatThread(threadType: .groupV2(thread), threadRowId: threadRowId),
-            chatId: chatId,
             recipientId: recipientId,
             stream: stream,
             context: context
@@ -241,7 +232,6 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
 
     private func archiveThread(
         _ thread: MessageBackup.ChatThread,
-        chatId: ChatId,
         recipientId: MessageBackup.RecipientId,
         stream: MessageBackupProtoOutputStream,
         context: MessageBackup.ChatArchivingContext
@@ -273,7 +263,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         }
 
         var chat = BackupProto_Chat()
-        chat.id = chatId.value
+        chat.id = context.assignChatId(to: thread.tsThread).value
         chat.recipientID = recipientId.value
         chat.archived = threadAssociatedData.isArchived
         if let thisThreadPinnedOrder {
@@ -291,7 +281,6 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
 
         let chatStyleResult = chatStyleArchiver.archiveChatStyle(
             thread: thread,
-            chatId: chatId,
             context: context.customChatColorContext
         )
         switch chatStyleResult {

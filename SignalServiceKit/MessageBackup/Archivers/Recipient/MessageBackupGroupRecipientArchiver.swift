@@ -92,7 +92,6 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
         let groupMembership = groupModel.groupMembership
 
         let groupAppId: RecipientAppId = .group(groupId)
-        let recipientId = context.assignRecipientId(to: groupAppId)
 
         let groupMasterKey: Data
         do {
@@ -205,6 +204,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
             objectId: groupAppId,
             frameBuilder: {
                 var recipient = BackupProto_Recipient()
+                let recipientId = context.assignRecipientId(to: groupAppId)
                 recipient.id = recipientId.value
                 recipient.destination = .group(group)
 

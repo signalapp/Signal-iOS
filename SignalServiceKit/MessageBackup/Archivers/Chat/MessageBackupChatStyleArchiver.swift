@@ -198,7 +198,6 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
 
     func archiveChatStyle(
         thread: MessageBackup.ChatThread,
-        chatId: MessageBackup.ChatId,
         context: MessageBackup.CustomChatColorArchivingContext
     ) -> MessageBackup.ArchiveSingleFrameResult<BackupProto_ChatStyle?, MessageBackup.ThreadUniqueId> {
         return _archiveChatStyle(
