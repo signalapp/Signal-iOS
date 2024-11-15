@@ -203,29 +203,36 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             let result: Result<Upload.EncryptedBackupUploadMetadata, Error>
             result = await db.awaitableWriteWithTxCompletion { tx in
                 do {
-                    let outputStream: MessageBackupProtoOutputStream
-                    let metadataProvider: MessageBackup.ProtoStream.EncryptionMetadataProvider
-                    switch self.encryptedStreamProvider.openEncryptedOutputFileStream(
-                        localAci: localIdentifiers.aci,
-                        backupKey: backupKey,
-                        progress: progress,
-                        tx: tx
-                    ) {
-                    case let .success(_outputStream, _metadataProvider):
-                        outputStream = _outputStream
-                        metadataProvider = _metadataProvider
-                    case .unableToOpenFileStream:
-                        throw OWSAssertionError("Unable to open output stream")
+                    return try Bench(
+                        title: "Export encryped backup",
+                        memorySamplerRatio: FeatureFlags.backupsMemorySamplerRatio,
+                        logInProduction: false
+                    ) { memorySampler in
+                        let outputStream: MessageBackupProtoOutputStream
+                        let metadataProvider: MessageBackup.ProtoStream.EncryptionMetadataProvider
+                        switch self.encryptedStreamProvider.openEncryptedOutputFileStream(
+                            localAci: localIdentifiers.aci,
+                            backupKey: backupKey,
+                            progress: progress,
+                            memorySampler: memorySampler,
+                            tx: tx
+                        ) {
+                        case let .success(_outputStream, _metadataProvider):
+                            outputStream = _outputStream
+                            metadataProvider = _metadataProvider
+                        case .unableToOpenFileStream:
+                            throw OWSAssertionError("Unable to open output stream")
+                        }
+
+                        try self._exportBackup(
+                            outputStream: outputStream,
+                            localIdentifiers: localIdentifiers,
+                            tx: tx
+                        )
+
+                        let metadata = try metadataProvider()
+                        return .commit(Result.success(metadata))
                     }
-
-                    try self._exportBackup(
-                        outputStream: outputStream,
-                        localIdentifiers: localIdentifiers,
-                        tx: tx
-                    )
-
-                    let metadata = try metadataProvider()
-                    return .commit(Result.success(metadata))
                 } catch let error {
                     return .rollback(Result.failure(error))
                 }
@@ -251,26 +258,35 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             let result: Result<URL, Error>
             result = await db.awaitableWriteWithTxCompletion { tx in
                 do {
-                    let url = try self.databaseChangeObserver.disable(tx: tx) { tx in
-                        let outputStream: MessageBackupProtoOutputStream
-                        let fileUrl: URL
-                        switch self.plaintextStreamProvider.openPlaintextOutputFileStream(progress: progress) {
-                        case .success(let _outputStream, let _fileUrl):
-                            outputStream = _outputStream
-                            fileUrl = _fileUrl
-                        case .unableToOpenFileStream:
-                            throw OWSAssertionError("Unable to open output file stream!")
+                    return try Bench(
+                        title: "Export plaintext backup",
+                        memorySamplerRatio: FeatureFlags.backupsMemorySamplerRatio,
+                        logInProduction: false
+                    ) { memorySampler in
+                        let url = try self.databaseChangeObserver.disable(tx: tx) { tx in
+                            let outputStream: MessageBackupProtoOutputStream
+                            let fileUrl: URL
+                            switch self.plaintextStreamProvider.openPlaintextOutputFileStream(
+                                progress: progress,
+                                memorySampler: memorySampler
+                            ) {
+                            case .success(let _outputStream, let _fileUrl):
+                                outputStream = _outputStream
+                                fileUrl = _fileUrl
+                            case .unableToOpenFileStream:
+                                throw OWSAssertionError("Unable to open output file stream!")
+                            }
+
+                            try self._exportBackup(
+                                outputStream: outputStream,
+                                localIdentifiers: localIdentifiers,
+                                tx: tx
+                            )
+
+                            return fileUrl
                         }
-
-                        try self._exportBackup(
-                            outputStream: outputStream,
-                            localIdentifiers: localIdentifiers,
-                            tx: tx
-                        )
-
-                        return fileUrl
+                        return .commit(.success(url))
                     }
-                    return .commit(.success(url))
                 } catch let error {
                     return .rollback(.failure(error))
                 }
@@ -517,32 +533,39 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             let result: Result<Void, Error>
             result = await db.awaitableWriteWithTxCompletion { tx in
                 do {
-                    try self.databaseChangeObserver.disable(tx: tx) { tx in
-                        let inputStream: MessageBackupProtoInputStream
-                        switch self.encryptedStreamProvider.openEncryptedInputFileStream(
-                            fileUrl: fileUrl,
-                            localAci: localIdentifiers.aci,
-                            backupKey: backupKey,
-                            progress: progress,
-                            tx: tx
-                        ) {
-                        case .success(let protoStream, _):
-                            inputStream = protoStream
-                        case .fileNotFound:
-                            throw OWSAssertionError("File not found!")
-                        case .unableToOpenFileStream:
-                            throw OWSAssertionError("Unable to open input stream!")
-                        case .hmacValidationFailedOnEncryptedFile:
-                            throw OWSAssertionError("HMAC validation failed on encrypted file!")
-                        }
+                    return try Bench(
+                        title: "Import encrypted backup",
+                        memorySamplerRatio: FeatureFlags.backupsMemorySamplerRatio,
+                        logInProduction: false
+                    ) { memorySampler in
+                        try self.databaseChangeObserver.disable(tx: tx) { tx in
+                            let inputStream: MessageBackupProtoInputStream
+                            switch self.encryptedStreamProvider.openEncryptedInputFileStream(
+                                fileUrl: fileUrl,
+                                localAci: localIdentifiers.aci,
+                                backupKey: backupKey,
+                                progress: progress,
+                                memorySampler: memorySampler,
+                                tx: tx
+                            ) {
+                            case .success(let protoStream, _):
+                                inputStream = protoStream
+                            case .fileNotFound:
+                                throw OWSAssertionError("File not found!")
+                            case .unableToOpenFileStream:
+                                throw OWSAssertionError("Unable to open input stream!")
+                            case .hmacValidationFailedOnEncryptedFile:
+                                throw OWSAssertionError("HMAC validation failed on encrypted file!")
+                            }
 
-                        try self._importBackup(
-                            inputStream: inputStream,
-                            localIdentifiers: localIdentifiers,
-                            tx: tx
-                        )
+                            try self._importBackup(
+                                inputStream: inputStream,
+                                localIdentifiers: localIdentifiers,
+                                tx: tx
+                            )
+                        }
+                        return .commit(.success(()))
                     }
-                    return .commit(.success(()))
                 } catch let error {
                     return .rollback(.failure(error))
                 }
@@ -569,29 +592,36 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             let result: Result<Void, Error>
             result = await db.awaitableWriteWithTxCompletion { tx in
                 do {
-                    try self.databaseChangeObserver.disable(tx: tx) { tx in
-                        let inputStream: MessageBackupProtoInputStream
-                        switch self.plaintextStreamProvider.openPlaintextInputFileStream(
-                            fileUrl: fileUrl,
-                            progress: progress
-                        ) {
-                        case .success(let protoStream, _):
-                            inputStream = protoStream
-                        case .fileNotFound:
-                            throw OWSAssertionError("File not found!")
-                        case .unableToOpenFileStream:
-                            throw OWSAssertionError("Unable to open input stream!")
-                        case .hmacValidationFailedOnEncryptedFile:
-                            throw OWSAssertionError("HMAC validation failed: how did this happen for a plaintext backup?")
-                        }
+                    return try Bench(
+                        title: "Import plaintext backup",
+                        memorySamplerRatio: FeatureFlags.backupsMemorySamplerRatio,
+                        logInProduction: false
+                    ) { memorySampler in
+                        try self.databaseChangeObserver.disable(tx: tx) { tx in
+                            let inputStream: MessageBackupProtoInputStream
+                            switch self.plaintextStreamProvider.openPlaintextInputFileStream(
+                                fileUrl: fileUrl,
+                                progress: progress,
+                                memorySampler: memorySampler
+                            ) {
+                            case .success(let protoStream, _):
+                                inputStream = protoStream
+                            case .fileNotFound:
+                                throw OWSAssertionError("File not found!")
+                            case .unableToOpenFileStream:
+                                throw OWSAssertionError("Unable to open input stream!")
+                            case .hmacValidationFailedOnEncryptedFile:
+                                throw OWSAssertionError("HMAC validation failed: how did this happen for a plaintext backup?")
+                            }
 
-                        try self._importBackup(
-                            inputStream: inputStream,
-                            localIdentifiers: localIdentifiers,
-                            tx: tx
-                        )
+                            try self._importBackup(
+                                inputStream: inputStream,
+                                localIdentifiers: localIdentifiers,
+                                tx: tx
+                            )
+                        }
+                        return .commit(.success(()))
                     }
-                    return .commit(.success(()))
                 } catch let error {
                     return .rollback(.failure(error))
                 }

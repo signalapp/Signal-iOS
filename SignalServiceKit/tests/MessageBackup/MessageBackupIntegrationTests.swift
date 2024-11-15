@@ -394,10 +394,16 @@ class MessageBackupIntegrationTests: XCTestCase {
 
         let progress = try MessageBackupImportProgress.prepare(fileUrl: testCaseFileUrl)
 
+        class FakeMemorySampler: MemorySampler {
+            init() {}
+            func sample() {}
+        }
+
         let stream: MessageBackupProtoInputStream
         switch plaintextStreamProvider.openPlaintextInputFileStream(
             fileUrl: testCaseFileUrl,
-            progress: progress
+            progress: progress,
+            memorySampler: FakeMemorySampler()
         ) {
         case .success(let _stream, _):
             stream = _stream

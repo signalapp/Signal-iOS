@@ -100,14 +100,17 @@ public protocol MemorySampler {
 ///        }
 ///    }
 ///
-public func Bench(title: String,
-                  memorySamplerRatio: Float,
-                  logInProduction: Bool = false,
-                  block: (MemorySampler) throws -> Void) rethrows {
+public func Bench<T>(
+    title: String,
+    memorySamplerRatio: Float,
+    logInProduction: Bool = false,
+    block: (MemorySampler) throws -> T
+) rethrows -> T {
     let memoryBencher = MemoryBencher(title: title, sampleRatio: memorySamplerRatio)
-    try Bench(title: title, logInProduction: logInProduction) {
-        try block(memoryBencher)
+    return try Bench(title: title, logInProduction: logInProduction) {
+        let value = try block(memoryBencher)
         memoryBencher.complete()
+        return value
     }
 }
 

@@ -48,7 +48,8 @@ public protocol MessageBackupPlaintextProtoStreamProvider {
     /// caller owns the returned stream, and is responsible for closing it once
     /// finished.
     func openPlaintextOutputFileStream(
-        progress: MessageBackupExportProgress
+        progress: MessageBackupExportProgress,
+        memorySampler: MemorySampler
     ) -> ProtoStream.OpenOutputStreamResult<URL>
 
     /// Open an input stream to read a plaintext backup from a file on disk. The
@@ -56,7 +57,8 @@ public protocol MessageBackupPlaintextProtoStreamProvider {
     /// it once finished.
     func openPlaintextInputFileStream(
         fileUrl: URL,
-        progress: MessageBackupImportProgress
+        progress: MessageBackupImportProgress,
+        memorySampler: MemorySampler
     ) -> ProtoStream.OpenInputStreamResult
 }
 
@@ -79,6 +81,7 @@ public protocol MessageBackupEncryptedProtoStreamProvider {
         localAci: Aci,
         backupKey: BackupKey,
         progress: MessageBackupExportProgress,
+        memorySampler: MemorySampler,
         tx: DBReadTransaction
     ) -> ProtoStream.OpenOutputStreamResult<ProtoStream.EncryptionMetadataProvider>
 
@@ -90,6 +93,7 @@ public protocol MessageBackupEncryptedProtoStreamProvider {
         localAci: Aci,
         backupKey: BackupKey,
         progress: MessageBackupImportProgress,
+        memorySampler: MemorySampler,
         tx: DBReadTransaction
     ) -> ProtoStream.OpenInputStreamResult
 }
@@ -109,6 +113,7 @@ public class MessageBackupEncryptedProtoStreamProviderImpl: MessageBackupEncrypt
         localAci: Aci,
         backupKey: BackupKey,
         progress: MessageBackupExportProgress,
+        memorySampler: MemorySampler,
         tx: any DBReadTransaction
     ) -> ProtoStream.OpenOutputStreamResult<ProtoStream.EncryptionMetadataProvider> {
         do {
@@ -117,6 +122,7 @@ public class MessageBackupEncryptedProtoStreamProviderImpl: MessageBackupEncrypt
             let outputTrackingTransform = MetadataStreamTransform(calculateDigest: true)
 
             let transforms: [any StreamTransform] = [
+                MemorySamplerStreamTransform(memorySampler: memorySampler),
                 inputTrackingTransform,
                 ChunkedOutputStreamTransform(),
                 try GzipStreamTransform(.compress),
@@ -162,6 +168,7 @@ public class MessageBackupEncryptedProtoStreamProviderImpl: MessageBackupEncrypt
         localAci: Aci,
         backupKey: BackupKey,
         progress: MessageBackupImportProgress,
+        memorySampler: MemorySampler,
         tx: any DBReadTransaction
     ) -> ProtoStream.OpenInputStreamResult {
         guard validateBackupHMAC(localAci: localAci, backupKey: backupKey, fileUrl: fileUrl, tx: tx) else {
@@ -171,6 +178,7 @@ public class MessageBackupEncryptedProtoStreamProviderImpl: MessageBackupEncrypt
         do {
             let messageBackupKey = try backupKey.asMessageBackupKey(for: localAci)
             let transforms: [any StreamTransform] = [
+                MemorySamplerStreamTransform(memorySampler: memorySampler),
                 InputProgressStreamTransform(progress: progress),
                 try HmacStreamTransform(hmacKey: Data(messageBackupKey.hmacKey), operation: .validate),
                 try DecryptingStreamTransform(encryptionKey: Data(messageBackupKey.aesKey)),
@@ -228,9 +236,11 @@ public class MessageBackupPlaintextProtoStreamProviderImpl: MessageBackupPlainte
     }
 
     public func openPlaintextOutputFileStream(
-        progress: MessageBackupExportProgress
+        progress: MessageBackupExportProgress,
+        memorySampler: MemorySampler
     ) -> ProtoStream.OpenOutputStreamResult<URL> {
         let transforms: [any StreamTransform] = [
+            MemorySamplerStreamTransform(memorySampler: memorySampler),
             ChunkedOutputStreamTransform(),
         ]
 
@@ -242,9 +252,11 @@ public class MessageBackupPlaintextProtoStreamProviderImpl: MessageBackupPlainte
 
     public func openPlaintextInputFileStream(
         fileUrl: URL,
-        progress: MessageBackupImportProgress
+        progress: MessageBackupImportProgress,
+        memorySampler: MemorySampler
     ) -> ProtoStream.OpenInputStreamResult {
         let transforms: [any StreamTransform] = [
+            MemorySamplerStreamTransform(memorySampler: memorySampler),
             InputProgressStreamTransform(progress: progress),
             ChunkedInputStreamTransform(),
         ]
@@ -350,6 +362,21 @@ private class InputProgressStreamTransform: StreamTransform {
 
     func transform(data: Data) throws -> Data {
         progress.didReadBytes(byteLength: Int64(data.byteLength))
+        return data
+    }
+}
+
+/// We sample memory after every frame we write, just because that's a convenient hook for sampling.
+private class MemorySamplerStreamTransform: StreamTransform {
+
+    private let memorySampler: MemorySampler
+
+    init(memorySampler: MemorySampler) {
+        self.memorySampler = memorySampler
+    }
+
+    func transform(data: Data) throws -> Data {
+        memorySampler.sample()
         return data
     }
 }
