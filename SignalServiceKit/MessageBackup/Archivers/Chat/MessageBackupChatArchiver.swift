@@ -42,17 +42,20 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
     private typealias ArchiveFrameError = MessageBackup.ArchiveFrameError<MessageBackup.ThreadUniqueId>
 
     private let chatStyleArchiver: MessageBackupChatStyleArchiver
+    private let contactRecipientArchiver: MessageBackupContactRecipientArchiver
     private let dmConfigurationStore: DisappearingMessagesConfigurationStore
     private let pinnedThreadStore: PinnedThreadStoreWrite
     private let threadStore: MessageBackupThreadStore
 
     public init(
         chatStyleArchiver: MessageBackupChatStyleArchiver,
+        contactRecipientArchiver: MessageBackupContactRecipientArchiver,
         dmConfigurationStore: DisappearingMessagesConfigurationStore,
         pinnedThreadStore: PinnedThreadStoreWrite,
         threadStore: MessageBackupThreadStore
     ) {
         self.chatStyleArchiver = chatStyleArchiver
+        self.contactRecipientArchiver = contactRecipientArchiver
         self.dmConfigurationStore = dmConfigurationStore
         self.pinnedThreadStore = pinnedThreadStore
         self.threadStore = threadStore
@@ -158,22 +161,35 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
 
         let contactServiceId: ServiceId? = thread.contactUUID.flatMap { try? ServiceId.parseFrom(serviceIdString: $0) }
         guard
-            let recipientAddress = MessageBackup.ContactAddress(
+            let contactAddress = MessageBackup.ContactAddress(
                 serviceId: contactServiceId,
                 e164: E164(thread.contactPhoneNumber)
-            )?.asArchivingAddress()
+            )
         else {
             return .partialSuccess([.archiveFrameError(
                 .contactThreadMissingAddress,
                 thread.uniqueThreadIdentifier
             )])
         }
+        let recipientAddress = contactAddress.asArchivingAddress()
 
-        guard let recipientId = context.recipientContext[recipientAddress] else {
-            return .partialSuccess([.archiveFrameError(
-                .contactThreadMissingRecipient(recipientAddress),
-                thread.uniqueThreadIdentifier
-            )])
+        let recipientId: MessageBackup.RecipientId
+        if let _recipientId = context.recipientContext[recipientAddress] {
+            recipientId = _recipientId
+        } else {
+            // Try and create a recipient for this orphaned TSContactThread
+            // that has no corresponding SignalRecipient.
+            switch contactRecipientArchiver.archiveContactRecipientForOrphanedContactThread(
+                thread,
+                address: contactAddress,
+                stream: stream,
+                context: context
+            ) {
+            case .success(let _recipientId):
+                recipientId = _recipientId
+            case .failure(let error):
+                return .partialSuccess([error])
+            }
         }
 
         guard let threadRowId = thread.sqliteRowId else {

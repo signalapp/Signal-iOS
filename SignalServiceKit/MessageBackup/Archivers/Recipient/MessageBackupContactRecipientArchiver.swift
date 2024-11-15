@@ -336,6 +336,78 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
         }
     }
 
+    /// It is possible to have a TSContactThread for which we have no SignalRecipient
+    /// or OWSUserProfile. One way to create this is to tap "Call with Signal" from the system
+    /// contacts app, for a number that is not registered on Signal.
+    /// If this happens, when we archive the TSContactThread we need to also archive
+    /// a Contact recipient that we create on-the-fly. This is only used if we were unable
+    /// to find a Recipient for the thread's address; in other words there was not a
+    /// corresponding recipient that we archived earlier.
+    func archiveContactRecipientForOrphanedContactThread(
+        _ contactThread: TSContactThread,
+        address: MessageBackup.ContactAddress,
+        stream: MessageBackupProtoOutputStream,
+        context: MessageBackup.ChatArchivingContext
+    ) -> MessageBackup.ArchiveSingleFrameResult<RecipientId, MessageBackup.ThreadUniqueId> {
+        let existingRecipient = recipientStore.fetchRecipient(
+            for: address,
+            context: context.recipientContext
+        )
+        // If we have an existing recipient, this is an error. It means we
+        // _should_ have found the recipient on the context, but did not.
+        guard existingRecipient == nil else {
+            return .failure(.archiveFrameError(
+                .referencedRecipientIdMissing(address.asArchivingAddress()),
+                .init(thread: contactThread)
+            ))
+        }
+
+        // We don't know if they're registered; if we did there
+        // would be a SignalRecipient.
+        var registration = BackupProto_Contact.NotRegistered()
+        registration.unregisteredTimestamp = 0
+
+        let contactProto = buildContactRecipient(
+            aci: address.aci,
+            pni: address.pni,
+            e164: address.e164,
+            username: nil,
+            isBlocked: blockingManager.blockedAddresses(tx: context.tx)
+                .contains(address.asInteropAddress()),
+            isWhitelisted: profileManager.allWhitelistedAddresses(tx: context.tx)
+                .contains(address.asInteropAddress()),
+            // If there's no recipient, neither can be hidden
+            isStoryHidden: false,
+            visibility: .visible,
+            registration: .notRegistered(registration),
+            userProfile: nil,
+            identity: nil
+        )
+
+        let recipientAddress = address.asArchivingAddress()
+        let recipientId = context.recipientContext.assignRecipientId(to: recipientAddress)
+
+        let maybeError: MessageBackup.ArchiveFrameError<MessageBackup.ThreadUniqueId>?
+        maybeError = Self.writeFrameToStream(
+            stream,
+            objectId: .init(thread: contactThread),
+            frameBuilder: {
+                var recipient = BackupProto_Recipient()
+                recipient.id = recipientId.value
+                recipient.destination = .contact(contactProto)
+
+                var frame = BackupProto_Frame()
+                frame.item = .recipient(recipient)
+                return frame
+            }
+        )
+
+        if let maybeError {
+            return .failure(maybeError)
+        }
+        return .success(recipientId)
+    }
+
     private func buildContactRecipient(
         aci: Aci?,
         pni: Pni?,

@@ -49,9 +49,6 @@ extension MessageBackup {
             /// A contact thread has an invalid or missing address information, causing the
             /// thread to be skipped.
             case contactThreadMissingAddress
-            /// A contact thread does not have a corresponding RecipientId, which means
-            /// there was no corresponding SignalRecipient in the database
-            case contactThreadMissingRecipient(RecipientArchivingContext.Address)
 
             /// Custom chat colors should never have light/dark theme. The UI
             /// disallows it and the proto cannot represent it.
@@ -249,7 +246,6 @@ extension MessageBackup {
                     .fileIOError,
                     .groupMasterKeyError,
                     .contactThreadMissingAddress,
-                    .contactThreadMissingRecipient,
                     .themedCustomChatColor,
                     .unknownWallpaper,
                     .unableToFetchRecipientIdentity,
@@ -358,10 +354,9 @@ extension MessageBackup {
                     .callLinkRestrictionsUnknown,
                     .adHocCallDoesNotHaveCallLinkAsConversationId:
                 return .error
-            case .contactThreadMissingAddress, .contactThreadMissingRecipient:
+            case .contactThreadMissingAddress:
                 // We've seen real-world databases with TSContactThreads that
-                // have no contact identifiers (aci/pni/e64), or they do but
-                // no SignalRecipient exists for them.
+                // have no contact identifiers (aci/pni/e64).
                 // These cause us to drop the TSThread from the backup, but
                 // we can mark these as warnings. If these threads have
                 // any messages in them, those will fail at log level error.

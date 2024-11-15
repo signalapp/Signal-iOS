@@ -5,9 +5,14 @@
 
 public class MessageBackupRecipientStore {
 
+    private let recipientTable: RecipientDatabaseTable
     private let searchableNameIndexer: SearchableNameIndexer
 
-    init(searchableNameIndexer: SearchableNameIndexer) {
+    init(
+        recipientTable: RecipientDatabaseTable,
+        searchableNameIndexer: SearchableNameIndexer
+    ) {
+        self.recipientTable = recipientTable
         self.searchableNameIndexer = searchableNameIndexer
     }
 
@@ -21,6 +26,13 @@ public class MessageBackupRecipientStore {
         while let next = try cursor.next() {
             block(next)
         }
+    }
+
+    func fetchRecipient(
+        for address: MessageBackup.ContactAddress,
+        context: MessageBackup.RecipientArchivingContext
+    ) -> SignalRecipient? {
+        return recipientTable.fetchRecipient(address: address.asInteropAddress(), tx: context.tx)
     }
 
     // MARK: - Restoring

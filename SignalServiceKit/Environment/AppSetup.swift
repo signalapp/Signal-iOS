@@ -1073,6 +1073,23 @@ public class AppSetup {
             threadStore: threadStore,
             tsAccountManager: tsAccountManager
         )
+        let messageBackupContactRecipientArchiver = MessageBackupContactRecipientArchiver(
+            avatarFetcher: messageBackupAvatarFetcher,
+            blockingManager: MessageBackup.Wrappers.BlockingManager(blockingManager),
+            dateProvider: dateProvider,
+            profileManager: MessageBackup.Wrappers.ProfileManager(profileManager),
+            recipientHidingManager: recipientHidingManager,
+            recipientManager: recipientManager,
+            recipientStore: MessageBackupRecipientStore(
+                recipientTable: recipientDatabaseTable,
+                searchableNameIndexer: searchableNameIndexer
+            ),
+            signalServiceAddressCache: signalServiceAddressCache,
+            storyStore: backupStoryStore,
+            threadStore: backupThreadStore,
+            tsAccountManager: tsAccountManager,
+            usernameLookupManager: usernameLookupManager
+        )
 
         let messageBackupManager = MessageBackupManagerImpl(
             accountDataArchiver: MessageBackupAccountDataArchiverImpl(
@@ -1104,6 +1121,7 @@ public class AppSetup {
             ),
             chatArchiver: MessageBackupChatArchiverImpl(
                 chatStyleArchiver: messageBackupChatStyleArchiver,
+                contactRecipientArchiver: messageBackupContactRecipientArchiver,
                 dmConfigurationStore: disappearingMessagesConfigurationStore,
                 pinnedThreadStore: pinnedThreadStore,
                 threadStore: backupThreadStore
@@ -1125,22 +1143,7 @@ public class AppSetup {
                 reactionStore: reactionStore,
                 threadStore: backupThreadStore
             ),
-            contactRecipientArchiver: MessageBackupContactRecipientArchiver(
-                avatarFetcher: messageBackupAvatarFetcher,
-                blockingManager: MessageBackup.Wrappers.BlockingManager(blockingManager),
-                dateProvider: dateProvider,
-                profileManager: MessageBackup.Wrappers.ProfileManager(profileManager),
-                recipientHidingManager: recipientHidingManager,
-                recipientManager: recipientManager,
-                recipientStore: MessageBackupRecipientStore(
-                    searchableNameIndexer: searchableNameIndexer
-                ),
-                signalServiceAddressCache: signalServiceAddressCache,
-                storyStore: backupStoryStore,
-                threadStore: backupThreadStore,
-                tsAccountManager: tsAccountManager,
-                usernameLookupManager: usernameLookupManager
-            ),
+            contactRecipientArchiver: messageBackupContactRecipientArchiver,
             databaseChangeObserver: databaseStorage.databaseChangeObserver,
             dateProvider: dateProvider,
             db: db,
