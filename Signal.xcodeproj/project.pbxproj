@@ -3380,7 +3380,6 @@
 		F9C5CD10289453B300548EEE /* OWSReadReceiptsForLinkedDevicesMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA2D289453B100548EEE /* OWSReadReceiptsForLinkedDevicesMessage.m */; };
 		F9C5CD11289453B300548EEE /* OWSViewOnceMessageReadSyncMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA2E289453B100548EEE /* OWSViewOnceMessageReadSyncMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CD13289453B300548EEE /* SDSError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA32289453B100548EEE /* SDSError.swift */; };
-		F9C5CD14289453B300548EEE /* SDSKeyValueStore+ObjC.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA33289453B100548EEE /* SDSKeyValueStore+ObjC.m */; };
 		F9C5CD15289453B300548EEE /* SDSModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA34289453B100548EEE /* SDSModel.swift */; };
 		F9C5CD17289453B300548EEE /* ThreadFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA37289453B100548EEE /* ThreadFinder.swift */; };
 		F9C5CD18289453B300548EEE /* InteractionFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA38289453B100548EEE /* InteractionFinder.swift */; };
@@ -3395,7 +3394,6 @@
 		F9C5CD22289453B300548EEE /* SDSTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA43289453B100548EEE /* SDSTransaction.swift */; };
 		F9C5CD26289453B300548EEE /* GRDBSchemaMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA47289453B100548EEE /* GRDBSchemaMigrator.swift */; };
 		F9C5CD27289453B300548EEE /* DeepCopy.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA48289453B100548EEE /* DeepCopy.swift */; };
-		F9C5CD28289453B300548EEE /* SDSKeyValueStore+ObjC.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA49289453B100548EEE /* SDSKeyValueStore+ObjC.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CD29289453B300548EEE /* SDSRecordType.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA4A289453B100548EEE /* SDSRecordType.swift */; };
 		F9C5CD2A289453B300548EEE /* SDSKeyValueStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA4B289453B100548EEE /* SDSKeyValueStore.swift */; };
 		F9C5CD2B289453B300548EEE /* SDSDatabaseStorage+Objc.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA4C289453B100548EEE /* SDSDatabaseStorage+Objc.m */; };
@@ -7255,7 +7253,6 @@
 		F9C5CA2D289453B100548EEE /* OWSReadReceiptsForLinkedDevicesMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSReadReceiptsForLinkedDevicesMessage.m; sourceTree = "<group>"; };
 		F9C5CA2E289453B100548EEE /* OWSViewOnceMessageReadSyncMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSViewOnceMessageReadSyncMessage.h; sourceTree = "<group>"; };
 		F9C5CA32289453B100548EEE /* SDSError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDSError.swift; sourceTree = "<group>"; };
-		F9C5CA33289453B100548EEE /* SDSKeyValueStore+ObjC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "SDSKeyValueStore+ObjC.m"; sourceTree = "<group>"; };
 		F9C5CA34289453B100548EEE /* SDSModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDSModel.swift; sourceTree = "<group>"; };
 		F9C5CA37289453B100548EEE /* ThreadFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadFinder.swift; sourceTree = "<group>"; };
 		F9C5CA38289453B100548EEE /* InteractionFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InteractionFinder.swift; sourceTree = "<group>"; };
@@ -7270,7 +7267,6 @@
 		F9C5CA43289453B100548EEE /* SDSTransaction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDSTransaction.swift; sourceTree = "<group>"; };
 		F9C5CA47289453B100548EEE /* GRDBSchemaMigrator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GRDBSchemaMigrator.swift; sourceTree = "<group>"; };
 		F9C5CA48289453B100548EEE /* DeepCopy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeepCopy.swift; sourceTree = "<group>"; };
-		F9C5CA49289453B100548EEE /* SDSKeyValueStore+ObjC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SDSKeyValueStore+ObjC.h"; sourceTree = "<group>"; };
 		F9C5CA4A289453B100548EEE /* SDSRecordType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDSRecordType.swift; sourceTree = "<group>"; };
 		F9C5CA4B289453B100548EEE /* SDSKeyValueStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDSKeyValueStore.swift; sourceTree = "<group>"; };
 		F9C5CA4C289453B100548EEE /* SDSDatabaseStorage+Objc.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "SDSDatabaseStorage+Objc.m"; sourceTree = "<group>"; };
@@ -9570,8 +9566,6 @@
 				6698FC0C297EFE21004EFC30 /* KeyValueStore.swift */,
 				6698FC0E297F03FE004EFC30 /* KeyValueStoreFactory.swift */,
 				6698FC10297F06ED004EFC30 /* SDSKeyValueStore+KeyValueStore.swift */,
-				F9C5CA49289453B100548EEE /* SDSKeyValueStore+ObjC.h */,
-				F9C5CA33289453B100548EEE /* SDSKeyValueStore+ObjC.m */,
 				F9C5CA4B289453B100548EEE /* SDSKeyValueStore.swift */,
 			);
 			path = SDSKeyValueStore;
@@ -14473,7 +14467,6 @@
 				F9C5CD0B289453B300548EEE /* OWSViewedReceiptsForLinkedDevicesMessage.h in Headers */,
 				F9C5CD11289453B300548EEE /* OWSViewOnceMessageReadSyncMessage.h in Headers */,
 				F9C5CD20289453B300548EEE /* SDSDatabaseStorage+Objc.h in Headers */,
-				F9C5CD28289453B300548EEE /* SDSKeyValueStore+ObjC.h in Headers */,
 				F9262C46289462F600063502 /* SignalServiceKit-Prefix.pch in Headers */,
 				F9C5C8A7289451B900548EEE /* SignalServiceKit.h in Headers */,
 				F9C5CD2C289453B300548EEE /* SSKAccessors+SDS.h in Headers */,
@@ -18080,7 +18073,6 @@
 				F9C5CD1B289453B300548EEE /* SDSDeserialization.swift in Sources */,
 				F9C5CD13289453B300548EEE /* SDSError.swift in Sources */,
 				6698FC11297F06ED004EFC30 /* SDSKeyValueStore+KeyValueStore.swift in Sources */,
-				F9C5CD14289453B300548EEE /* SDSKeyValueStore+ObjC.m in Sources */,
 				F9C5CD2A289453B300548EEE /* SDSKeyValueStore.swift in Sources */,
 				F9C5CD15289453B300548EEE /* SDSModel.swift in Sources */,
 				F9C5CD1E289453B300548EEE /* SDSRecord.swift in Sources */,

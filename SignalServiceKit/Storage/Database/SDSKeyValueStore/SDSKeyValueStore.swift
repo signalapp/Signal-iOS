@@ -3,28 +3,18 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import GRDB
 
-// This class can be used to:
-//
-// * Back a preferences class.
-// * To persist simple values in our managers.
-// * Etc.
-@objc
 public class SDSKeyValueStore: NSObject {
 
     static let tableName = "keyvalue"
 
-    // By default, all reads/writes use this collection.
-    // Key-value stores use "collections" to group related keys.
-    @objc
-    public let collection: String
+    private let collection: String
 
     static let collectionColumn = SDSColumnMetadata(columnName: "collection", columnType: .unicodeString, isOptional: false)
     static let keyColumn = SDSColumnMetadata(columnName: "key", columnType: .unicodeString, isOptional: false)
     static let valueColumn = SDSColumnMetadata(columnName: "value", columnType: .blob, isOptional: false)
-    public static let table = SDSTableMetadata(
+    static let table = SDSTableMetadata(
         tableName: SDSKeyValueStore.tableName,
         columns: [
             collectionColumn,
@@ -33,14 +23,12 @@ public class SDSKeyValueStore: NSObject {
         ]
     )
 
-    @objc
     public required init(collection: String) {
         self.collection = collection
 
         super.init()
     }
 
-    @objc
     public class func logCollectionStatistics() {
         Logger.info("SDSKeyValueStore statistics:")
         SSKEnvironment.shared.databaseStorageRef.read { transaction in
@@ -66,12 +54,10 @@ public class SDSKeyValueStore: NSObject {
 
     // MARK: Class Helpers
 
-    @objc
     public class func key(int: Int) -> String {
         return NSNumber(value: int).stringValue
     }
 
-    @objc
     public func hasValue(forKey key: String, transaction: SDSAnyReadTransaction) -> Bool {
         switch transaction.readTransaction {
         case .grdbRead(let grdbTransaction):
@@ -95,12 +81,10 @@ public class SDSKeyValueStore: NSObject {
 
     // MARK: - String
 
-    @objc
     public func getString(_ key: String, transaction: SDSAnyReadTransaction) -> String? {
         return read(key, transaction: transaction)
     }
 
-    @objc
     public func setString(_ value: String?, key: String, transaction: SDSAnyWriteTransaction) {
         guard let value = value else {
             write(nil, forKey: key, transaction: transaction)
@@ -111,7 +95,6 @@ public class SDSKeyValueStore: NSObject {
 
     // MARK: - Date
 
-    @objc
     public func getDate(_ key: String, transaction: SDSAnyReadTransaction) -> Date? {
         // Our legacy methods sometimes stored dates as NSNumber and
         // sometimes as NSDate, so we are permissive when decoding.
@@ -128,7 +111,6 @@ public class SDSKeyValueStore: NSObject {
         return Date(timeIntervalSince1970: epochInterval.doubleValue)
     }
 
-    @objc
     public func setDate(_ value: Date, key: String, transaction: SDSAnyWriteTransaction) {
         let epochInterval = NSNumber(value: value.timeIntervalSince1970)
         setObject(epochInterval, key: key, transaction: transaction)
@@ -143,17 +125,14 @@ public class SDSKeyValueStore: NSObject {
         return number.boolValue
     }
 
-    @objc
     public func getBool(_ key: String, defaultValue: Bool, transaction: SDSAnyReadTransaction) -> Bool {
         return getBool(key, transaction: transaction) ?? defaultValue
     }
 
-    @objc
     public func setBool(_ value: Bool, key: String, transaction: SDSAnyWriteTransaction) {
         write(NSNumber(value: value), forKey: key, transaction: transaction)
     }
 
-    @objc
     public func setBoolIfChanged(_ value: Bool,
                                  defaultValue: Bool,
                                  key: String,
@@ -177,31 +156,26 @@ public class SDSKeyValueStore: NSObject {
     }
 
     // TODO: Handle numerics more generally.
-    @objc
     public func getUInt(_ key: String, defaultValue: UInt, transaction: SDSAnyReadTransaction) -> UInt {
         return getUInt(key, transaction: transaction) ?? defaultValue
     }
 
-    @objc
     public func setUInt(_ value: UInt, key: String, transaction: SDSAnyWriteTransaction) {
         write(NSNumber(value: value), forKey: key, transaction: transaction)
     }
 
     // MARK: - Data
 
-    @objc
     public func getData(_ key: String, transaction: SDSAnyReadTransaction) -> Data? {
         return readData(key, transaction: transaction)
     }
 
-    @objc
     public func setData(_ value: Data?, key: String, transaction: SDSAnyWriteTransaction) {
         writeData(value, forKey: key, transaction: transaction)
     }
 
     // MARK: - Numeric
 
-    @objc
     public func getNSNumber(_ key: String, transaction: SDSAnyReadTransaction) -> NSNumber? {
         let number: NSNumber? = read(key, transaction: transaction)
         return number
@@ -216,12 +190,10 @@ public class SDSKeyValueStore: NSObject {
         return number.intValue
     }
 
-    @objc
     public func getInt(_ key: String, defaultValue: Int, transaction: SDSAnyReadTransaction) -> Int {
         return getInt(key, transaction: transaction) ?? defaultValue
     }
 
-    @objc
     public func setInt(_ value: Int, key: String, transaction: SDSAnyWriteTransaction) {
         setObject(NSNumber(value: value), key: key, transaction: transaction)
     }
@@ -235,12 +207,10 @@ public class SDSKeyValueStore: NSObject {
         return number.int32Value
     }
 
-    @objc
     public func getInt32(_ key: String, defaultValue: Int32, transaction: SDSAnyReadTransaction) -> Int32 {
         return getInt32(key, transaction: transaction) ?? defaultValue
     }
 
-    @objc
     public func setInt32(_ value: Int32, key: String, transaction: SDSAnyWriteTransaction) {
         setObject(NSNumber(value: value), key: key, transaction: transaction)
     }
@@ -254,12 +224,10 @@ public class SDSKeyValueStore: NSObject {
         return number.uint32Value
     }
 
-    @objc
     public func getUInt32(_ key: String, defaultValue: UInt32, transaction: SDSAnyReadTransaction) -> UInt32 {
         return getUInt32(key, transaction: transaction) ?? defaultValue
     }
 
-    @objc
     public func setUInt32(_ value: UInt32, key: String, transaction: SDSAnyWriteTransaction) {
         setObject(NSNumber(value: value), key: key, transaction: transaction)
     }
@@ -273,12 +241,10 @@ public class SDSKeyValueStore: NSObject {
         return number.uint64Value
     }
 
-    @objc
     public func getUInt64(_ key: String, defaultValue: UInt64, transaction: SDSAnyReadTransaction) -> UInt64 {
         return getUInt64(key, transaction: transaction) ?? defaultValue
     }
 
-    @objc
     public func setUInt64(_ value: UInt64, key: String, transaction: SDSAnyWriteTransaction) {
         setObject(NSNumber(value: value), key: key, transaction: transaction)
     }
@@ -292,12 +258,10 @@ public class SDSKeyValueStore: NSObject {
         return number.int64Value
     }
 
-    @objc
     public func getInt64(_ key: String, defaultValue: Int64, transaction: SDSAnyReadTransaction) -> Int64 {
         return getInt64(key, transaction: transaction) ?? defaultValue
     }
 
-    @objc
     public func setInt64(_ value: Int64, key: String, transaction: SDSAnyWriteTransaction) {
         setObject(NSNumber(value: value), key: key, transaction: transaction)
     }
@@ -311,24 +275,20 @@ public class SDSKeyValueStore: NSObject {
         return number.doubleValue
     }
 
-    @objc
     public func getDouble(_ key: String, defaultValue: Double, transaction: SDSAnyReadTransaction) -> Double {
         return getDouble(key, transaction: transaction) ?? defaultValue
     }
 
-    @objc
     public func setDouble(_ value: Double, key: String, transaction: SDSAnyWriteTransaction) {
         setObject(NSNumber(value: value), key: key, transaction: transaction)
     }
 
     // MARK: - Object
 
-    @objc
     public func getObject(forKey key: String, transaction: SDSAnyReadTransaction) -> Any? {
         return read(key, transaction: transaction)
     }
 
-    @objc
     public func setObject(_ anyValue: Any?, key: String, transaction: SDSAnyWriteTransaction) {
         guard let anyValue = anyValue else {
             write(nil, forKey: key, transaction: transaction)
@@ -344,19 +304,16 @@ public class SDSKeyValueStore: NSObject {
 
     // MARK: - 
 
-    @objc
     public func removeValue(forKey key: String, transaction: SDSAnyWriteTransaction) {
         write(nil, forKey: key, transaction: transaction)
     }
 
-    @objc
     public func removeValues(forKeys keys: [String], transaction: SDSAnyWriteTransaction) {
         for key in keys {
             write(nil, forKey: key, transaction: transaction)
         }
     }
 
-    @objc
     public func removeAll(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .grdbWrite(let grdbWrite):
@@ -369,7 +326,6 @@ public class SDSKeyValueStore: NSObject {
         }
     }
 
-    @objc
     public func enumerateKeysAndObjects(transaction: SDSAnyReadTransaction, block: (String, Any, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
         case .grdbRead(let grdbRead):
@@ -390,7 +346,6 @@ public class SDSKeyValueStore: NSObject {
         }
     }
 
-    @objc
     public func enumerateKeys(transaction: SDSAnyReadTransaction, block: (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
         case .grdbRead(let grdbRead):
@@ -404,14 +359,12 @@ public class SDSKeyValueStore: NSObject {
         }
     }
 
-    @objc
     public func allValues(transaction: SDSAnyReadTransaction) -> [Any] {
         return allKeys(transaction: transaction).compactMap { key in
             return self.read(key, transaction: transaction)
         }
     }
 
-    @objc
     public func allDataValues(transaction: SDSAnyReadTransaction) -> [Data] {
         return allKeys(transaction: transaction).compactMap { key in
             return self.getData(key, transaction: transaction)
@@ -447,7 +400,6 @@ public class SDSKeyValueStore: NSObject {
         }
     }
 
-    @objc
     public func allBoolValuesMap(transaction: SDSAnyReadTransaction) -> [String: Bool] {
         let pairs = allPairs(transaction: transaction)
         var result = [String: Bool]()
@@ -474,7 +426,6 @@ public class SDSKeyValueStore: NSObject {
         return result
     }
 
-    @objc
     public func allUIntValuesMap(transaction: SDSAnyReadTransaction) -> [String: UInt] {
         let pairs = allPairs(transaction: transaction)
         var result = [String: UInt]()
@@ -501,7 +452,6 @@ public class SDSKeyValueStore: NSObject {
         return result
     }
 
-    @objc
     public func anyDataValue(transaction: SDSAnyReadTransaction) -> Data? {
         let randomKey = allKeys(transaction: transaction).randomElement()
         guard let randomKey else {
@@ -514,7 +464,6 @@ public class SDSKeyValueStore: NSObject {
         return dataValue
     }
 
-    @objc
     public func allKeys(transaction: SDSAnyReadTransaction) -> [String] {
         switch transaction.readTransaction {
         case .grdbRead(let grdbRead):
@@ -522,7 +471,6 @@ public class SDSKeyValueStore: NSObject {
         }
     }
 
-    @objc
     public func numberOfKeys(transaction: SDSAnyReadTransaction) -> UInt {
         switch transaction.readTransaction {
         case .grdbRead(let grdbRead):
@@ -546,11 +494,6 @@ public class SDSKeyValueStore: NSObject {
                 owsFail("error: \(error)")
             }
         }
-    }
-
-    @objc
-    public var asObjC: SDSKeyValueStoreObjC {
-        return SDSKeyValueStoreObjC(sdsKeyValueStore: self)
     }
 
     // MARK: -

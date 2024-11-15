@@ -17,9 +17,6 @@ class DebugUIProfile: DebugUIPage {
             OWSTableItem(title: "Clear Profile Whitelist") {
                 SSKEnvironment.shared.profileManagerImplRef.clearProfileWhitelist()
             },
-            OWSTableItem(title: "Log Profile Whitelist") {
-                SSKEnvironment.shared.profileManagerImplRef.logProfileWhitelist()
-            },
             OWSTableItem(title: "Log Profile Key") {
                 let localProfileKey = SSKEnvironment.shared.profileManagerImplRef.localProfileKey
                 Logger.info("localProfileKey: \(localProfileKey.keyData.hexadecimalString)")

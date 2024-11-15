@@ -265,25 +265,6 @@ public class OWSProfileManager: NSObject, ProfileManagerProtocol {
         }
     }
 
-    public func logProfileWhitelist() {
-        SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            Logger.error("\(self.whitelistedPhoneNumbersStore.collection): \(self.whitelistedPhoneNumbersStore.numberOfKeys(transaction: transaction))")
-            for key in self.whitelistedPhoneNumbersStore.allKeys(transaction: transaction) {
-                Logger.error("\t profile whitelist user phone number: \(key)")
-            }
-
-            Logger.error("\(self.whitelistedServiceIdsStore.collection): \(self.whitelistedServiceIdsStore.numberOfKeys(transaction: transaction))")
-            for key in self.whitelistedServiceIdsStore.allKeys(transaction: transaction) {
-                Logger.error("\t profile whitelist user service id: \(key)")
-            }
-
-            Logger.error("\(self.whitelistedGroupsStore.collection): \(self.whitelistedGroupsStore.numberOfKeys(transaction: transaction))")
-            for key in self.whitelistedGroupsStore.allKeys(transaction: transaction) {
-                Logger.error("\t profile whitelist group: \(key)")
-            }
-        }
-    }
-
     public func debug_regenerateLocalProfileWithSneakyTransaction() {
         let userProfile = localUserProfile
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
