@@ -80,6 +80,9 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
         guard FeatureFlags.messageBackupFileAlpha else {
             return
         }
+        if MessageBackupMessageAttachmentArchiver.isFreeTierBackup() {
+            return
+        }
         guard let referencedStream = referencedAttachment.asReferencedStream else {
             // We only upload streams
             return
@@ -99,6 +102,9 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
     }
 
     public func backUpAllAttachments() async throws {
+        if MessageBackupMessageAttachmentArchiver.isFreeTierBackup() {
+            return
+        }
         try await taskQueue.loadAndRunTasks()
     }
 
