@@ -423,17 +423,14 @@ final class IndividualCallService: CallServiceStateObserver {
                     return
                 }
 
-                var isUnknownCaller = false
-                if call.individualCall.direction == .incoming {
-                    isUnknownCaller = self.databaseStorage.read { tx in
-                        return self.contactManager.fetchSignalAccount(for: call.individualCall.thread.contactAddress, transaction: tx) == nil
-                    }
-                    if isUnknownCaller {
-                        Logger.warn("Using relay server because remote user is an unknown caller")
-                    }
+                let isSignalConnection = self.databaseStorage.read { tx in
+                    return profileManager.isThread(inProfileWhitelist: call.individualCall.thread, transaction: tx)
+                }
+                if !isSignalConnection {
+                    Logger.warn("Using relay server because remote user is not a Signal Connection")
                 }
 
-                let useTurnOnly = isUnknownCaller || self.preferences.doCallsHideIPAddress
+                let useTurnOnly = !isSignalConnection || self.preferences.doCallsHideIPAddress
 
                 let useLowData = self.callService.shouldUseLowDataWithSneakyTransaction(for: NetworkRoute(localAdapterType: .unknown))
                 Logger.info("Configuring call for \(useLowData ? "low" : "standard") data")
