@@ -432,11 +432,11 @@ public struct Atomic<Value>: Sendable {
     }
 
     public var wrappedValue: Value {
-      get {
-          value.get()
-      }
-      nonmutating set {
-          value.set(newValue)
-      }
+        get {
+            value.get()
+        }
+        nonmutating set {
+            value.set(newValue)
+        }
     }
 }
