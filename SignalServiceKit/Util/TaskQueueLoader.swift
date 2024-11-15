@@ -154,16 +154,36 @@ public actor TaskQueueLoader<Runner: TaskRecordRunner> {
 
     /// WARNING: the runner (and therefore any of its strong references) is strongly
     /// captured by this class and will be retained for its lifetime.
+    internal init(
+        maxConcurrentTasks: UInt,
+        dateProvider: @escaping DateProvider,
+        db: any DB,
+        runner: Runner,
+        sleep: (_ nanoseconds: UInt64) async throws -> Void
+    ) {
+        self.maxConcurrentTasks = maxConcurrentTasks
+        self.dateProvider = dateProvider
+        self.db = db
+        self.runner = runner
+    }
+
+    /// WARNING: the runner (and therefore any of its strong references) is strongly
+    /// captured by this class and will be retained for its lifetime.
     public init(
         maxConcurrentTasks: UInt,
         dateProvider: @escaping DateProvider,
         db: any DB,
         runner: Runner
     ) {
-        self.maxConcurrentTasks = maxConcurrentTasks
-        self.dateProvider = dateProvider
-        self.db = db
-        self.runner = runner
+        self.init(
+            maxConcurrentTasks: maxConcurrentTasks,
+            dateProvider: dateProvider,
+            db: db,
+            runner: runner,
+            sleep: {
+                try await Task.sleep(nanoseconds: $0)
+            }
+        )
     }
 
     private var runningTask: Task<Void, Error>?

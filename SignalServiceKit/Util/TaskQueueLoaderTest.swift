@@ -314,21 +314,35 @@ public class TaskQueueLoaderTest: XCTestCase {
         firstRecord.nextRetryTimestamp = now.addingTimeInterval(0.1).ows_millisecondsSince1970
         let records = [firstRecord] + (1..<10).map(MockTaskRecord.init(id:))
         let runner = MockRunner(store: MockStore(records: records))
+
+        var sleepContinuation: CheckedContinuation<Void, Never>?
+
         let loader = TaskQueueLoader(
             maxConcurrentTasks: 4,
             dateProvider: { Date() },
             db: InMemoryDB(),
-            runner: runner
+            runner: runner,
+            sleep: { nanoseconds in
+                XCTAssertEqual(nanoseconds, 100 * NSEC_PER_MSEC)
+                XCTAssertNil(sleepContinuation)
+                await withCheckedContinuation { continuation in
+                    sleepContinuation = continuation
+                }
+            }
         )
 
+        var completedTaskCount = 0
         runner.taskRunner = { id in
             if id == 0 {
-                // This task doesn't run until after the timeout.
-                XCTAssert(Date().timeIntervalSince(now) >= 0.1)
+                XCTAssertEqual(completedTaskCount, 9)
             } else {
                 // The others should all finish before then because
                 // they should just run and finish instantly.
                 XCTAssert(Date().timeIntervalSince(now) < 0.1)
+                completedTaskCount += 1
+                if completedTaskCount == 9 {
+                    sleepContinuation?.resume()
+                }
             }
             return .success
         }
