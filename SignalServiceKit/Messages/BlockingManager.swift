@@ -541,7 +541,7 @@ extension BlockingManager {
                 // old KVS keys as a hint that we may need to sync. If they don't exist this is
                 // probably a fresh install and we don't need to sync.
                 let hasOldKey = PersistenceKey.Legacy.allCases.contains { key in
-                    Self.keyValueStore.hasValue(forKey: key.rawValue, transaction: readTx)
+                    Self.keyValueStore.hasValue(key.rawValue, transaction: readTx.asV2Read)
                 }
                 return hasOldKey
             }
@@ -628,12 +628,12 @@ extension BlockingManager {
             let databaseChangeToken: UInt64 = Self.keyValueStore.getUInt64(
                 PersistenceKey.changeTokenKey.rawValue,
                 defaultValue: Self.initialChangeToken,
-                transaction: transaction
+                transaction: transaction.asV2Read
             )
 
             if databaseChangeToken != changeToken {
                 func fetchObject<T>(of type: T.Type, key: String, defaultValue: T) -> T {
-                    if let storedObject = Self.keyValueStore.getObject(forKey: key, transaction: transaction) {
+                    if let storedObject = Self.keyValueStore.getObject(forKey: key, transaction: transaction.asV2Read) {
                         owsAssertDebug(storedObject is T)
                         return (storedObject as? T) ?? defaultValue
                     } else {
@@ -643,7 +643,7 @@ extension BlockingManager {
                 changeToken = Self.keyValueStore.getUInt64(
                     PersistenceKey.changeTokenKey.rawValue,
                     defaultValue: Self.initialChangeToken,
-                    transaction: transaction
+                    transaction: transaction.asV2Read
                 )
                 blockedRecipientIds = Set((try? blockedRecipientStore.blockedRecipientIds(tx: transaction.asV2Read)) ?? [])
                 blockedGroupMap = fetchObject(of: [Data: TSGroupModel].self, key: PersistenceKey.blockedGroupMapKey.rawValue, defaultValue: [:])
@@ -661,13 +661,13 @@ extension BlockingManager {
                 let databaseChangeToken = Self.keyValueStore.getUInt64(
                     PersistenceKey.changeTokenKey.rawValue,
                     defaultValue: Self.initialChangeToken,
-                    transaction: transaction
+                    transaction: transaction.asV2Read
                 )
                 owsAssertDebug(databaseChangeToken == changeToken)
 
                 changeToken = databaseChangeToken + 1
-                Self.keyValueStore.setUInt64(changeToken, key: PersistenceKey.changeTokenKey.rawValue, transaction: transaction)
-                Self.keyValueStore.setObject(blockedGroupMap, key: PersistenceKey.blockedGroupMapKey.rawValue, transaction: transaction)
+                Self.keyValueStore.setUInt64(changeToken, key: PersistenceKey.changeTokenKey.rawValue, transaction: transaction.asV2Write)
+                Self.keyValueStore.setObject(blockedGroupMap, key: PersistenceKey.blockedGroupMapKey.rawValue, transaction: transaction.asV2Write)
                 do {
                     let oldBlockedRecipientIds = Set(try blockedRecipientStore.blockedRecipientIds(tx: transaction.asV2Read))
                     let newBlockedRecipientIds = self.blockedRecipientIds
@@ -690,11 +690,11 @@ extension BlockingManager {
         }
 
         static func fetchLastSyncedChangeToken(_ readTx: SDSAnyReadTransaction) -> UInt64? {
-            Self.keyValueStore.getUInt64(PersistenceKey.lastSyncedChangeTokenKey.rawValue, transaction: readTx)
+            Self.keyValueStore.getUInt64(PersistenceKey.lastSyncedChangeTokenKey.rawValue, transaction: readTx.asV2Read)
         }
 
         static func setLastSyncedChangeToken(_ newValue: UInt64, transaction writeTx: SDSAnyWriteTransaction) {
-            Self.keyValueStore.setUInt64(newValue, key: PersistenceKey.lastSyncedChangeTokenKey.rawValue, transaction: writeTx)
+            Self.keyValueStore.setUInt64(newValue, key: PersistenceKey.lastSyncedChangeTokenKey.rawValue, transaction: writeTx.asV2Write)
         }
     }
 }

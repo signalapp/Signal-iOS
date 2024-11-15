@@ -66,8 +66,8 @@ private extension RemoteMegaphoneFetcher {
 
     func shouldSync(transaction: SDSAnyReadTransaction) -> Bool {
         guard
-            let appVersionAtLastFetch = Self.fetcherStore.getString(.appVersionAtLastFetchKey, transaction: transaction),
-            let lastFetchDate = Self.fetcherStore.getDate(.lastFetchDateKey, transaction: transaction)
+            let appVersionAtLastFetch = Self.fetcherStore.getString(.appVersionAtLastFetchKey, transaction: transaction.asV2Read),
+            let lastFetchDate = Self.fetcherStore.getDate(.lastFetchDateKey, transaction: transaction.asV2Read)
         else {
             // If we have never recorded last-fetch data, we should sync.
             return true
@@ -83,13 +83,13 @@ private extension RemoteMegaphoneFetcher {
         Self.fetcherStore.setString(
             AppVersionImpl.shared.currentAppVersion,
             key: .appVersionAtLastFetchKey,
-            transaction: transaction
+            transaction: transaction.asV2Write
         )
 
         Self.fetcherStore.setDate(
             Date(),
             key: .lastFetchDateKey,
-            transaction: transaction
+            transaction: transaction.asV2Write
         )
     }
 }

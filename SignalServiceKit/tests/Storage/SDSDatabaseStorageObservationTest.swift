@@ -64,7 +64,7 @@ class SDSDatabaseStorageObservationTest: SSKBaseTest {
 
         let keyValueStore = SDSKeyValueStore(collection: "test")
         self.write { transaction in
-            keyValueStore.setBool(true, key: "test", transaction: transaction)
+            keyValueStore.setBool(true, key: "test", transaction: transaction.asV2Write)
         }
         waitForRunLoop()
 

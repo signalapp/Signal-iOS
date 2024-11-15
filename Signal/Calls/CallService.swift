@@ -870,7 +870,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     static func setHighDataInterfaces(_ interfaceSet: NetworkInterfaceSet, writeTx: SDSAnyWriteTransaction) {
         Logger.info("Updating preferred low data interfaces: \(interfaceSet.rawValue)")
 
-        keyValueStore.setUInt(interfaceSet.rawValue, key: highDataPreferenceKey, transaction: writeTx)
+        keyValueStore.setUInt(interfaceSet.rawValue, key: highDataPreferenceKey, transaction: writeTx.asV2Write)
         writeTx.addSyncCompletion {
             NotificationCenter.default.postNotificationNameAsync(callServicePreferencesDidChange, object: nil)
         }
@@ -879,7 +879,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     static func highDataNetworkInterfaces(readTx: SDSAnyReadTransaction) -> NetworkInterfaceSet {
         guard let highDataPreference = keyValueStore.getUInt(
                 highDataPreferenceKey,
-                transaction: readTx) else { return .wifiAndCellular }
+                transaction: readTx.asV2Read) else { return .wifiAndCellular }
 
         return NetworkInterfaceSet(rawValue: highDataPreference)
     }

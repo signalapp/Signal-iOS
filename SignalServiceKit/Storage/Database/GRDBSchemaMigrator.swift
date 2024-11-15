@@ -865,7 +865,7 @@ public class GRDBSchemaMigrator: NSObject {
             try transaction.database.drop(table: "model_OWSLinkedDeviceReadReceipt")
 
             let viewOnceStore = SDSKeyValueStore(collection: "viewOnceMessages")
-            viewOnceStore.removeAll(transaction: transaction.asAnyWrite)
+            viewOnceStore.removeAll(transaction: transaction.asAnyWrite.asV2Write)
             return .success(())
         }
 
@@ -3732,7 +3732,7 @@ public class GRDBSchemaMigrator: NSObject {
                 return .success(())
             }
 
-            OWS2FAManager.keyValueStore.setBool(true, key: OWS2FAManager.isRegistrationLockV2EnabledKey, transaction: transaction.asAnyWrite)
+            OWS2FAManager.keyValueStore.setBool(true, key: OWS2FAManager.isRegistrationLockV2EnabledKey, transaction: transaction.asAnyWrite.asV2Write)
             return .success(())
         }
 
@@ -3775,13 +3775,13 @@ public class GRDBSchemaMigrator: NSObject {
             let preferencesKeyValueStore = SDSKeyValueStore(collection: "SignalPreferences")
             let screenSecurityKey = "Screen Security Key"
             guard !preferencesKeyValueStore.hasValue(
-                forKey: screenSecurityKey,
-                transaction: transaction.asAnyRead
+                screenSecurityKey,
+                transaction: transaction.asAnyRead.asV2Read
             ) else {
                 return .success(())
             }
 
-            preferencesKeyValueStore.setBool(true, key: screenSecurityKey, transaction: transaction.asAnyWrite)
+            preferencesKeyValueStore.setBool(true, key: screenSecurityKey, transaction: transaction.asAnyWrite.asV2Write)
             return .success(())
         }
 
@@ -3962,7 +3962,7 @@ public class GRDBSchemaMigrator: NSObject {
             // available in SignalMessaging.Preferences.
             let preferencesKeyValueStore = SDSKeyValueStore(collection: Self.migrationSideEffectsCollectionName)
             let key = Self.avatarRepairAttemptCount
-            preferencesKeyValueStore.setInt(0, key: key, transaction: transaction.asAnyWrite)
+            preferencesKeyValueStore.setInt(0, key: key, transaction: transaction.asAnyWrite.asV2Write)
             return .success(())
         }
 
@@ -3970,8 +3970,8 @@ public class GRDBSchemaMigrator: NSObject {
             // This is a bit of a layering violation, since these tables were previously managed in the app layer.
             // In the long run we'll have a general "unused SDSKeyValueStore cleaner" migration,
             // but for now this should drop 2000 or so rows for free.
-            SDSKeyValueStore(collection: "Emoji+availableStore").removeAll(transaction: transaction.asAnyWrite)
-            SDSKeyValueStore(collection: "Emoji+metadataStore").removeAll(transaction: transaction.asAnyWrite)
+            SDSKeyValueStore(collection: "Emoji+availableStore").removeAll(transaction: transaction.asAnyWrite.asV2Write)
+            SDSKeyValueStore(collection: "Emoji+metadataStore").removeAll(transaction: transaction.asAnyWrite.asV2Write)
             return .success(())
         }
 
@@ -4000,7 +4000,7 @@ public class GRDBSchemaMigrator: NSObject {
         migrator.registerMigration(.dataMigration_deleteOldGroupCapabilities) { transaction in
             let sql = """
                 DELETE FROM \(SDSKeyValueStore.tableName)
-                WHERE \(SDSKeyValueStore.collectionColumn.columnName)
+                WHERE \(SDSKeyValueStore.collectionColumnName)
                 IN ("GroupManager.senderKeyCapability", "GroupManager.announcementOnlyGroupsCapability", "GroupManager.groupsV2MigrationCapability")
             """
             try transaction.database.execute(sql: sql)
@@ -4143,7 +4143,7 @@ public class GRDBSchemaMigrator: NSObject {
             ]
 
             for collection in keyValueCollections {
-                SDSKeyValueStore(collection: collection).removeAll(transaction: transaction.asAnyWrite)
+                SDSKeyValueStore(collection: collection).removeAll(transaction: transaction.asAnyWrite.asV2Write)
             }
 
             return .success(())

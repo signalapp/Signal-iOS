@@ -938,7 +938,7 @@ public class SendPaymentViewController: OWSViewController {
         SSKEnvironment.shared.databaseStorageRef.read { transaction in
             Self.keyValueStore.getBool(Self.wasLastPaymentInFiatKey,
                                        defaultValue: false,
-                                       transaction: transaction)
+                                       transaction: transaction.asV2Read)
         }
     }
 
@@ -946,7 +946,7 @@ public class SendPaymentViewController: OWSViewController {
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
             Self.keyValueStore.setBool(value,
                                        key: Self.wasLastPaymentInFiatKey,
-                                       transaction: transaction)
+                                       transaction: transaction.asV2Write)
         }
     }
 

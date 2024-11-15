@@ -54,7 +54,7 @@ public class OWSMessageDecrypter {
 
         let store = SDSKeyValueStore(collection: "OWSMessageDecrypter+NullMessage")
 
-        let lastNullMessageDate = store.getDate(senderId, transaction: transaction)
+        let lastNullMessageDate = store.getDate(senderId, transaction: transaction.asV2Read)
         let timeSinceNullMessage = abs(lastNullMessageDate?.timeIntervalSinceNow ?? .infinity)
         guard timeSinceNullMessage > RemoteConfig.current.automaticSessionResetAttemptInterval else {
             Logger.warn("Skipping null message after undecryptable message from \(senderId), " +
@@ -63,7 +63,7 @@ public class OWSMessageDecrypter {
         }
 
         Logger.info("Sending null message to reset session after undecryptable message from: \(senderId)")
-        store.setDate(Date(), key: senderId, transaction: transaction)
+        store.setDate(Date(), key: senderId, transaction: transaction.asV2Write)
 
         transaction.addAsyncCompletionOffMain {
             SSKEnvironment.shared.databaseStorageRef.write { transaction in
@@ -94,7 +94,7 @@ public class OWSMessageDecrypter {
     private func trySendReactiveProfileKey(to sourceAci: Aci, tx transaction: SDSAnyWriteTransaction) {
         let store = SDSKeyValueStore(collection: "OWSMessageDecrypter+ReactiveProfileKey")
 
-        let lastProfileKeyMessageDate = store.getDate(sourceAci.serviceIdUppercaseString, transaction: transaction)
+        let lastProfileKeyMessageDate = store.getDate(sourceAci.serviceIdUppercaseString, transaction: transaction.asV2Read)
         let timeSinceProfileKeyMessage = abs(lastProfileKeyMessageDate?.timeIntervalSinceNow ?? .infinity)
         guard timeSinceProfileKeyMessage > RemoteConfig.current.reactiveProfileKeyAttemptInterval else {
             Logger.warn("Skipping reactive profile key for \(sourceAci), last reactive profile key message sent \(lastProfileKeyMessageDate!.ows_millisecondsSince1970).")
@@ -102,7 +102,7 @@ public class OWSMessageDecrypter {
         }
 
         Logger.info("Sending reactive profile key to \(sourceAci)")
-        store.setDate(Date(), key: sourceAci.serviceIdUppercaseString, transaction: transaction)
+        store.setDate(Date(), key: sourceAci.serviceIdUppercaseString, transaction: transaction.asV2Write)
 
         let contactThread = TSContactThread.getOrCreateThread(
             withContactAddress: SignalServiceAddress(sourceAci),

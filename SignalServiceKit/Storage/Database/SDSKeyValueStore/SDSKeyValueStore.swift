@@ -1,45 +1,41 @@
 //
-// Copyright 2019 Signal Messenger, LLC
+// Copyright 2024 Signal Messenger, LLC
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import GRDB
 
-public class SDSKeyValueStore: NSObject {
+public struct SDSKeyValueStore: KeyValueStore {
+    private enum TableMetadata {
+        enum Columns {
+            static let collection = "collection"
+            static let key = "key"
+            static let value = "value"
+        }
 
-    static let tableName = "keyvalue"
+        static let tableName = "keyvalue"
+    }
+
+    static var tableName: String { TableMetadata.tableName }
+    static var collectionColumnName: String { TableMetadata.Columns.collection }
 
     private let collection: String
 
-    static let collectionColumn = SDSColumnMetadata(columnName: "collection", columnType: .unicodeString, isOptional: false)
-    static let keyColumn = SDSColumnMetadata(columnName: "key", columnType: .unicodeString, isOptional: false)
-    static let valueColumn = SDSColumnMetadata(columnName: "value", columnType: .blob, isOptional: false)
-    static let table = SDSTableMetadata(
-        tableName: SDSKeyValueStore.tableName,
-        columns: [
-            collectionColumn,
-            keyColumn,
-            valueColumn
-        ]
-    )
-
-    public required init(collection: String) {
+    public init(collection: String) {
         self.collection = collection
-
-        super.init()
     }
 
-    public class func logCollectionStatistics() {
+    public static func logCollectionStatistics() {
         Logger.info("SDSKeyValueStore statistics:")
         SSKEnvironment.shared.databaseStorageRef.read { transaction in
             do {
                 let sql = """
-                    SELECT \(collectionColumn.columnName), COUNT(*)
-                    FROM \(table.tableName)
-                    GROUP BY \(collectionColumn.columnName)
+                    SELECT \(TableMetadata.Columns.collection), COUNT(*)
+                    FROM \(TableMetadata.tableName)
+                    GROUP BY \(TableMetadata.Columns.collection)
                     ORDER BY COUNT(*) DESC
                     LIMIT 10
-                    """
+                """
                 let cursor = try Row.fetchCursor(transaction.unwrapGrdbRead.database, sql: sql)
                 while let row = try cursor.next() {
                     let collection: String = row[0]
@@ -52,40 +48,36 @@ public class SDSKeyValueStore: NSObject {
         }
     }
 
-    // MARK: Class Helpers
+    // MARK: -
 
-    public class func key(int: Int) -> String {
-        return NSNumber(value: int).stringValue
-    }
-
-    public func hasValue(forKey key: String, transaction: SDSAnyReadTransaction) -> Bool {
-        switch transaction.readTransaction {
-        case .grdbRead(let grdbTransaction):
-            do {
-                let count = try UInt.fetchOne(grdbTransaction.database,
-                                              sql: """
+    public func hasValue(_ key: String, transaction: DBReadTransaction) -> Bool {
+        do {
+            let count = try UInt.fetchOne(
+                transaction.databaseConnection,
+                sql: """
                     SELECT
                     COUNT(*)
-                    FROM \(SDSKeyValueStore.table.tableName)
-                    WHERE \(SDSKeyValueStore.keyColumn.columnName) = ?
-                    AND \(SDSKeyValueStore.collectionColumn.columnName) == ?
+                    FROM \(TableMetadata.tableName)
+                    WHERE \(TableMetadata.Columns.key) = ?
+                    AND \(TableMetadata.Columns.collection) == ?
                     """,
-                                              arguments: [key, collection]) ?? 0
-                return count > 0
-            } catch {
-                owsFailDebug("error: \(error)")
-                return false
-            }
+                arguments: [key, collection]
+            ) ?? 0
+
+            return count > 0
+        } catch {
+            owsFailDebug("error: \(error)")
+            return false
         }
     }
 
     // MARK: - String
 
-    public func getString(_ key: String, transaction: SDSAnyReadTransaction) -> String? {
+    public func getString(_ key: String, transaction: DBReadTransaction) -> String? {
         return read(key, transaction: transaction)
     }
 
-    public func setString(_ value: String?, key: String, transaction: SDSAnyWriteTransaction) {
+    public func setString(_ value: String?, key: String, transaction: DBWriteTransaction) {
         guard let value = value else {
             write(nil, forKey: key, transaction: transaction)
             return
@@ -95,7 +87,7 @@ public class SDSKeyValueStore: NSObject {
 
     // MARK: - Date
 
-    public func getDate(_ key: String, transaction: SDSAnyReadTransaction) -> Date? {
+    public func getDate(_ key: String, transaction: DBReadTransaction) -> Date? {
         // Our legacy methods sometimes stored dates as NSNumber and
         // sometimes as NSDate, so we are permissive when decoding.
         guard let object: NSObject = read(key, transaction: transaction) else {
@@ -111,185 +103,226 @@ public class SDSKeyValueStore: NSObject {
         return Date(timeIntervalSince1970: epochInterval.doubleValue)
     }
 
-    public func setDate(_ value: Date, key: String, transaction: SDSAnyWriteTransaction) {
+    public func setDate(_ value: Date, key: String, transaction: DBWriteTransaction) {
         let epochInterval = NSNumber(value: value.timeIntervalSince1970)
         setObject(epochInterval, key: key, transaction: transaction)
     }
 
     // MARK: - Bool
 
-    public func getBool(_ key: String, transaction: SDSAnyReadTransaction) -> Bool? {
+    public func getBool(_ key: String, transaction: DBReadTransaction) -> Bool? {
         guard let number: NSNumber = read(key, transaction: transaction) else {
             return nil
         }
         return number.boolValue
     }
 
-    public func getBool(_ key: String, defaultValue: Bool, transaction: SDSAnyReadTransaction) -> Bool {
+    public func getBool(_ key: String, defaultValue: Bool, transaction: DBReadTransaction) -> Bool {
         return getBool(key, transaction: transaction) ?? defaultValue
     }
 
-    public func setBool(_ value: Bool, key: String, transaction: SDSAnyWriteTransaction) {
+    public func setBool(_ value: Bool, key: String, transaction: DBWriteTransaction) {
         write(NSNumber(value: value), forKey: key, transaction: transaction)
-    }
-
-    public func setBoolIfChanged(_ value: Bool,
-                                 defaultValue: Bool,
-                                 key: String,
-                                 transaction: SDSAnyWriteTransaction) {
-        let didChange = value != getBool(key,
-                                         defaultValue: defaultValue,
-                                         transaction: transaction)
-        guard didChange else {
-            return
-        }
-        setBool(value, key: key, transaction: transaction)
     }
 
     // MARK: - UInt
 
-    public func getUInt(_ key: String, transaction: SDSAnyReadTransaction) -> UInt? {
+    public func getUInt(_ key: String, transaction: DBReadTransaction) -> UInt? {
         guard let number: NSNumber = read(key, transaction: transaction) else {
             return nil
         }
         return number.uintValue
     }
 
-    // TODO: Handle numerics more generally.
-    public func getUInt(_ key: String, defaultValue: UInt, transaction: SDSAnyReadTransaction) -> UInt {
+    public func getUInt(_ key: String, defaultValue: UInt, transaction: DBReadTransaction) -> UInt {
         return getUInt(key, transaction: transaction) ?? defaultValue
     }
 
-    public func setUInt(_ value: UInt, key: String, transaction: SDSAnyWriteTransaction) {
+    public func setUInt(_ value: UInt, key: String, transaction: DBWriteTransaction) {
         write(NSNumber(value: value), forKey: key, transaction: transaction)
     }
 
     // MARK: - Data
 
-    public func getData(_ key: String, transaction: SDSAnyReadTransaction) -> Data? {
-        return readData(key, transaction: transaction)
+    public func getData(_ key: String, transaction: DBReadTransaction) -> Data? {
+        do {
+            return try Data.fetchOne(
+                transaction.databaseConnection,
+                sql: """
+                    SELECT \(TableMetadata.Columns.value)
+                    FROM \(TableMetadata.tableName)
+                    WHERE
+                        \(TableMetadata.Columns.key) = ?
+                        AND \(TableMetadata.Columns.collection) == ?
+                """,
+                arguments: [key, collection]
+            )
+        } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
+            owsFailDebug("error: \(error)")
+            return nil
+        }
     }
 
-    public func setData(_ value: Data?, key: String, transaction: SDSAnyWriteTransaction) {
-        writeData(value, forKey: key, transaction: transaction)
-    }
+    public func setData(_ data: Data?, key: String, transaction: DBWriteTransaction) {
+        do {
+            let sql: String
+            let arguments: StatementArguments
+            if let data {
+                // See: https://www.sqlite.org/lang_UPSERT.html
+                sql = """
+                    INSERT INTO \(TableMetadata.tableName) (
+                        \(TableMetadata.Columns.key),
+                        \(TableMetadata.Columns.collection),
+                        \(TableMetadata.Columns.value)
+                    ) VALUES (?, ?, ?)
+                    ON CONFLICT (
+                        \(TableMetadata.Columns.key),
+                        \(TableMetadata.Columns.collection)
+                    ) DO UPDATE
+                    SET \(TableMetadata.Columns.value) = ?
+                """
+                arguments = [key, collection, data, data]
+            } else {
+                // Setting to nil is a delete.
+                sql = """
+                    DELETE FROM \(TableMetadata.tableName)
+                    WHERE
+                        \(TableMetadata.Columns.key) == ?
+                        AND \(TableMetadata.Columns.collection) == ?
+                """
+                arguments = [key, collection]
+            }
 
-    // MARK: - Numeric
+            let statement = try transaction.databaseConnection.cachedStatement(sql: sql)
+            try statement.setArguments(arguments)
 
-    public func getNSNumber(_ key: String, transaction: SDSAnyReadTransaction) -> NSNumber? {
-        let number: NSNumber? = read(key, transaction: transaction)
-        return number
+            do {
+                try statement.execute()
+            } catch {
+                DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(
+                    userDefaults: CurrentAppContext().appUserDefaults(),
+                    error: error
+                )
+                throw error
+            }
+        } catch {
+            owsFailDebug("Error: \(error)")
+        }
     }
 
     // MARK: - Int
 
-    public func getInt(_ key: String, transaction: SDSAnyReadTransaction) -> Int? {
+    public func getInt(_ key: String, transaction: DBReadTransaction) -> Int? {
         guard let number: NSNumber = read(key, transaction: transaction) else {
             return nil
         }
         return number.intValue
     }
 
-    public func getInt(_ key: String, defaultValue: Int, transaction: SDSAnyReadTransaction) -> Int {
+    public func getInt(_ key: String, defaultValue: Int, transaction: DBReadTransaction) -> Int {
         return getInt(key, transaction: transaction) ?? defaultValue
     }
 
-    public func setInt(_ value: Int, key: String, transaction: SDSAnyWriteTransaction) {
+    public func setInt(_ value: Int, key: String, transaction: DBWriteTransaction) {
         setObject(NSNumber(value: value), key: key, transaction: transaction)
     }
 
     // MARK: - Int32
 
-    public func getInt32(_ key: String, transaction: SDSAnyReadTransaction) -> Int32? {
+    public func getInt32(_ key: String, transaction: DBReadTransaction) -> Int32? {
         guard let number: NSNumber = read(key, transaction: transaction) else {
             return nil
         }
         return number.int32Value
     }
 
-    public func getInt32(_ key: String, defaultValue: Int32, transaction: SDSAnyReadTransaction) -> Int32 {
+    public func getInt32(_ key: String, defaultValue: Int32, transaction: DBReadTransaction) -> Int32 {
         return getInt32(key, transaction: transaction) ?? defaultValue
     }
 
-    public func setInt32(_ value: Int32, key: String, transaction: SDSAnyWriteTransaction) {
+    public func setInt32(_ value: Int32, key: String, transaction: DBWriteTransaction) {
         setObject(NSNumber(value: value), key: key, transaction: transaction)
     }
 
     // MARK: - UInt32
 
-    public func getUInt32(_ key: String, transaction: SDSAnyReadTransaction) -> UInt32? {
+    public func getUInt32(_ key: String, transaction: DBReadTransaction) -> UInt32? {
         guard let number: NSNumber = read(key, transaction: transaction) else {
             return nil
         }
         return number.uint32Value
     }
 
-    public func getUInt32(_ key: String, defaultValue: UInt32, transaction: SDSAnyReadTransaction) -> UInt32 {
+    public func getUInt32(_ key: String, defaultValue: UInt32, transaction: DBReadTransaction) -> UInt32 {
         return getUInt32(key, transaction: transaction) ?? defaultValue
     }
 
-    public func setUInt32(_ value: UInt32, key: String, transaction: SDSAnyWriteTransaction) {
+    public func setUInt32(_ value: UInt32, key: String, transaction: DBWriteTransaction) {
         setObject(NSNumber(value: value), key: key, transaction: transaction)
     }
 
     // MARK: - UInt64
 
-    public func getUInt64(_ key: String, transaction: SDSAnyReadTransaction) -> UInt64? {
+    public func getUInt64(_ key: String, transaction: DBReadTransaction) -> UInt64? {
         guard let number: NSNumber = read(key, transaction: transaction) else {
             return nil
         }
         return number.uint64Value
     }
 
-    public func getUInt64(_ key: String, defaultValue: UInt64, transaction: SDSAnyReadTransaction) -> UInt64 {
+    public func getUInt64(_ key: String, defaultValue: UInt64, transaction: DBReadTransaction) -> UInt64 {
         return getUInt64(key, transaction: transaction) ?? defaultValue
     }
 
-    public func setUInt64(_ value: UInt64, key: String, transaction: SDSAnyWriteTransaction) {
+    public func setUInt64(_ value: UInt64, key: String, transaction: DBWriteTransaction) {
         setObject(NSNumber(value: value), key: key, transaction: transaction)
     }
 
     // MARK: - Int64
 
-    public func getInt64(_ key: String, transaction: SDSAnyReadTransaction) -> Int64? {
+    public func getInt64(_ key: String, transaction: DBReadTransaction) -> Int64? {
         guard let number: NSNumber = read(key, transaction: transaction) else {
             return nil
         }
         return number.int64Value
     }
 
-    public func getInt64(_ key: String, defaultValue: Int64, transaction: SDSAnyReadTransaction) -> Int64 {
+    public func getInt64(_ key: String, defaultValue: Int64, transaction: DBReadTransaction) -> Int64 {
         return getInt64(key, transaction: transaction) ?? defaultValue
     }
 
-    public func setInt64(_ value: Int64, key: String, transaction: SDSAnyWriteTransaction) {
+    public func setInt64(_ value: Int64, key: String, transaction: DBWriteTransaction) {
         setObject(NSNumber(value: value), key: key, transaction: transaction)
     }
 
     // MARK: - Double
 
-    public func getDouble(_ key: String, transaction: SDSAnyReadTransaction) -> Double? {
+    public func getDouble(_ key: String, transaction: DBReadTransaction) -> Double? {
         guard let number: NSNumber = read(key, transaction: transaction) else {
             return nil
         }
         return number.doubleValue
     }
 
-    public func getDouble(_ key: String, defaultValue: Double, transaction: SDSAnyReadTransaction) -> Double {
+    public func getDouble(_ key: String, defaultValue: Double, transaction: DBReadTransaction) -> Double {
         return getDouble(key, transaction: transaction) ?? defaultValue
     }
 
-    public func setDouble(_ value: Double, key: String, transaction: SDSAnyWriteTransaction) {
+    public func setDouble(_ value: Double, key: String, transaction: DBWriteTransaction) {
         setObject(NSNumber(value: value), key: key, transaction: transaction)
     }
 
     // MARK: - Object
 
-    public func getObject(forKey key: String, transaction: SDSAnyReadTransaction) -> Any? {
+    public func getObject(forKey key: String, transaction: DBReadTransaction) -> Any? {
         return read(key, transaction: transaction)
     }
 
-    public func setObject(_ anyValue: Any?, key: String, transaction: SDSAnyWriteTransaction) {
+    public func setObject(_ anyValue: Any?, key: String, transaction: DBWriteTransaction) {
         guard let anyValue = anyValue else {
             write(nil, forKey: key, transaction: transaction)
             return
@@ -302,157 +335,119 @@ public class SDSKeyValueStore: NSObject {
         write(codingValue, forKey: key, transaction: transaction)
     }
 
-    // MARK: - 
+    // MARK: -
 
-    public func removeValue(forKey key: String, transaction: SDSAnyWriteTransaction) {
+    public func removeValue(forKey key: String, transaction: DBWriteTransaction) {
         write(nil, forKey: key, transaction: transaction)
     }
 
-    public func removeValues(forKeys keys: [String], transaction: SDSAnyWriteTransaction) {
+    public func removeValues(forKeys keys: [String], transaction: DBWriteTransaction) {
         for key in keys {
             write(nil, forKey: key, transaction: transaction)
         }
     }
 
-    public func removeAll(transaction: SDSAnyWriteTransaction) {
-        switch transaction.writeTransaction {
-        case .grdbWrite(let grdbWrite):
-            let sql = """
+    public func removeAll(transaction: DBWriteTransaction) {
+        transaction.databaseConnection.executeAndCacheStatementHandlingErrors(
+            sql: """
                 DELETE
-                FROM \(SDSKeyValueStore.table.tableName)
-                WHERE \(SDSKeyValueStore.collectionColumn.columnName) == ?
-            """
-            grdbWrite.executeAndCacheStatement(sql: sql, arguments: [collection])
-        }
+                FROM \(TableMetadata.tableName)
+                WHERE \(TableMetadata.Columns.collection) == ?
+            """,
+            arguments: [collection]
+        )
     }
 
-    public func enumerateKeysAndObjects(transaction: SDSAnyReadTransaction, block: (String, Any, UnsafeMutablePointer<ObjCBool>) -> Void) {
-        switch transaction.readTransaction {
-        case .grdbRead(let grdbRead):
-            var stop: ObjCBool = false
-            // PERF - we could enumerate with a single query rather than
-            // fetching keys then fetching objects one by one. In practice
-            // the collections that use this are pretty small.
-            for key in allKeys(grdbTransaction: grdbRead) {
-                guard !stop.boolValue else {
-                    return
-                }
-                guard let value: Any = read(key, transaction: transaction) else {
-                    owsFailDebug("value was unexpectedly nil")
-                    continue
-                }
-                block(key, value, &stop)
+    public func enumerateKeysAndObjects(transaction: DBReadTransaction, block: (String, Any, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        var stop: ObjCBool = false
+        // PERF - we could enumerate with a single query rather than
+        // fetching keys then fetching objects one by one. In practice
+        // the collections that use this are pretty small.
+        for key in allKeys(transaction: transaction) {
+            guard !stop.boolValue else {
+                return
             }
-        }
-    }
-
-    public func enumerateKeys(transaction: SDSAnyReadTransaction, block: (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
-        switch transaction.readTransaction {
-        case .grdbRead(let grdbRead):
-            var stop: ObjCBool = false
-            for key in allKeys(grdbTransaction: grdbRead) {
-                guard !stop.boolValue else {
-                    return
-                }
-                block(key, &stop)
+            guard let value: Any = read(key, transaction: transaction) else {
+                owsFailDebug("value was unexpectedly nil")
+                continue
             }
+            block(key, value, &stop)
         }
     }
 
-    public func allValues(transaction: SDSAnyReadTransaction) -> [Any] {
+    public func enumerateKeys(transaction: DBReadTransaction, block: (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        var stop: ObjCBool = false
+        for key in allKeys(transaction: transaction) {
+            guard !stop.boolValue else {
+                return
+            }
+            block(key, &stop)
+        }
+    }
+
+    public func allValues(transaction: DBReadTransaction) -> [Any] {
         return allKeys(transaction: transaction).compactMap { key in
             return self.read(key, transaction: transaction)
         }
     }
 
-    public func allDataValues(transaction: SDSAnyReadTransaction) -> [Data] {
+    public func allDataValues(transaction: DBReadTransaction) -> [Data] {
         return allKeys(transaction: transaction).compactMap { key in
             return self.getData(key, transaction: transaction)
         }
     }
 
+    // MARK: -
+
     private struct PairRecord: Codable, FetchableRecord, PersistableRecord {
-        public let key: String?
-        public let value: Data?
+        let key: String
+        let value: Data
     }
 
-    private func allPairs(transaction: SDSAnyReadTransaction) -> [PairRecord] {
-
-        switch transaction.readTransaction {
-        case .grdbRead(let grdbTransaction):
-
-            let sql = """
-            SELECT
-                \(SDSKeyValueStore.keyColumn.columnName),
-                \(SDSKeyValueStore.valueColumn.columnName)
-            FROM \(SDSKeyValueStore.table.tableName)
-            WHERE \(SDSKeyValueStore.collectionColumn.columnName) == ?
-            """
-
+    public func allUIntValuesMap(transaction: DBReadTransaction) -> [String: UInt] {
+        let allPairs: [PairRecord] = {
             do {
-                return try PairRecord.fetchAll(grdbTransaction.database,
-                                               sql: sql,
-                                               arguments: [collection])
+                let sql = """
+                    SELECT
+                        \(TableMetadata.Columns.key),
+                        \(TableMetadata.Columns.value)
+                    FROM \(TableMetadata.tableName)
+                    WHERE \(TableMetadata.Columns.collection) == ?
+                """
+
+                return try PairRecord.fetchAll(
+                    transaction.databaseConnection,
+                    sql: sql,
+                    arguments: [collection]
+                )
             } catch {
                 owsFailDebug("Error: \(error)")
                 return []
             }
-        }
-    }
+        }()
 
-    public func allBoolValuesMap(transaction: SDSAnyReadTransaction) -> [String: Bool] {
-        let pairs = allPairs(transaction: transaction)
-        var result = [String: Bool]()
-        for pair in pairs {
-            guard let key = pair.key else {
-                owsFailDebug("missing key.")
-                continue
-            }
-            guard let value = pair.value else {
-                owsFailDebug("missing value.")
-                continue
-            }
-            guard let rawObject = parseArchivedValue(value) else {
-                owsFailDebug("Could not parse value.")
-                continue
-            }
-            guard let number: NSNumber = parseValueAs(key: key,
-                                                      rawObject: rawObject) else {
-                                                        owsFailDebug("Invalid value.")
-                                                        continue
-            }
-            result[key] = number.boolValue
-        }
-        return result
-    }
-
-    public func allUIntValuesMap(transaction: SDSAnyReadTransaction) -> [String: UInt] {
-        let pairs = allPairs(transaction: transaction)
         var result = [String: UInt]()
-        for pair in pairs {
-            guard let key = pair.key else {
-                owsFailDebug("missing key.")
-                continue
-            }
-            guard let value = pair.value else {
-                owsFailDebug("missing value.")
-                continue
-            }
-            guard let rawObject = parseArchivedValue(value) else {
+        for pair in allPairs {
+            guard let rawObject = parseArchivedValue(pair.value) else {
                 owsFailDebug("Could not parse value.")
                 continue
             }
-            guard let number: NSNumber = parseValueAs(key: key,
-                                                      rawObject: rawObject) else {
-                                                        owsFailDebug("Invalid value.")
-                                                        continue
+            guard let nsNumber: NSNumber = parseValueAs(
+                key: pair.key,
+                rawObject: rawObject
+            ) else {
+                owsFailDebug("Invalid value.")
+                continue
             }
-            result[key] = number.uintValue
+
+            result[pair.key] = nsNumber.uintValue
         }
         return result
     }
 
-    public func anyDataValue(transaction: SDSAnyReadTransaction) -> Data? {
+    // MARK: -
+
+    public func anyDataValue(transaction: DBReadTransaction) -> Data? {
         let randomKey = allKeys(transaction: transaction).randomElement()
         guard let randomKey else {
             return nil
@@ -464,52 +459,57 @@ public class SDSKeyValueStore: NSObject {
         return dataValue
     }
 
-    public func allKeys(transaction: SDSAnyReadTransaction) -> [String] {
-        switch transaction.readTransaction {
-        case .grdbRead(let grdbRead):
-            return allKeys(grdbTransaction: grdbRead)
+    public func allKeys(transaction: DBReadTransaction) -> [String] {
+        let sql = """
+            SELECT \(TableMetadata.Columns.key)
+            FROM \(TableMetadata.tableName)
+            WHERE \(TableMetadata.Columns.collection) == ?
+        """
+
+        return transaction.databaseConnection.strictRead { database in
+            try String.fetchAll(database, sql: sql, arguments: [collection])
         }
     }
 
-    public func numberOfKeys(transaction: SDSAnyReadTransaction) -> UInt {
-        switch transaction.readTransaction {
-        case .grdbRead(let grdbRead):
+    public func numberOfKeys(transaction: DBReadTransaction) -> UInt {
+        do {
             let sql = """
-            SELECT COUNT(*)
-            FROM \(SDSKeyValueStore.table.tableName)
-            WHERE \(SDSKeyValueStore.collectionColumn.columnName) == ?
+                SELECT COUNT(*)
+                FROM \(TableMetadata.tableName)
+                WHERE \(TableMetadata.Columns.collection) == ?
             """
-            do {
-                guard let numberOfKeys = try UInt.fetchOne(grdbRead.database,
-                                                           sql: sql,
-                                                           arguments: [collection]) else {
-                                                            throw OWSAssertionError("numberOfKeys was unexpectedly nil")
-                }
-                return numberOfKeys
-            } catch {
-                DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                    userDefaults: CurrentAppContext().appUserDefaults(),
-                    error: error
-                )
-                owsFail("error: \(error)")
+
+            guard let numberOfKeys = try UInt.fetchOne(
+                transaction.databaseConnection,
+                sql: sql,
+                arguments: [collection]
+            ) else {
+                throw OWSAssertionError("numberOfKeys was unexpectedly nil")
             }
+            return numberOfKeys
+        } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
+            owsFail("error: \(error)")
         }
     }
 
     // MARK: -
 
     @available(*, deprecated, message: "Did you mean removeValue(forKey:transaction:) or setCodable(optional:key:transaction)?")
-    public func setCodable<T: Encodable>(_ value: T?, key: String, transaction: SDSAnyWriteTransaction) throws {
+    public func setCodable<T: Encodable>(_ value: T?, key: String, transaction: DBWriteTransaction) throws {
         try setCodable(optional: value, key: key, transaction: transaction)
     }
 
-    public func setCodable<T: Encodable>(_ value: T, key: String, transaction: SDSAnyWriteTransaction) throws {
+    public func setCodable<T: Encodable>(_ value: T, key: String, transaction: DBWriteTransaction) throws {
         // The only difference between setCodable(optional:...) and setCodable(_...) is
         // the non-optional variant has a deprecated overload to warn callers of the ambiguity.
         try setCodable(optional: value, key: key, transaction: transaction)
     }
 
-    public func setCodable<T: Encodable>(optional value: T, key: String, transaction: SDSAnyWriteTransaction) throws {
+    public func setCodable<T: Encodable>(optional value: T, key: String, transaction: DBWriteTransaction) throws {
         do {
             let data = try JSONEncoder().encode(value)
             setData(data, key: key, transaction: transaction)
@@ -519,7 +519,7 @@ public class SDSKeyValueStore: NSObject {
         }
     }
 
-    public func getCodableValue<T: Decodable>(forKey key: String, transaction: SDSAnyReadTransaction) throws -> T? {
+    public func getCodableValue<T: Decodable>(forKey key: String, transaction: DBReadTransaction) throws -> T? {
         guard let data = getData(key, transaction: transaction) else {
             return nil
         }
@@ -531,7 +531,7 @@ public class SDSKeyValueStore: NSObject {
         }
     }
 
-    public func allCodableValues<T: Decodable>(transaction: SDSAnyReadTransaction) throws -> [T] {
+    public func allCodableValues<T: Decodable>(transaction: DBReadTransaction) throws -> [T] {
         var result = [T]()
         for data in allDataValues(transaction: transaction) {
             do {
@@ -546,22 +546,19 @@ public class SDSKeyValueStore: NSObject {
 
     // MARK: - Internal Methods
 
-    private func read<T>(_ key: String, transaction: SDSAnyReadTransaction) -> T? {
+    private func read<T>(_ key: String, transaction: DBReadTransaction) -> T? {
         guard let rawObject = readRawObject(key, transaction: transaction) else {
             return nil
         }
         return parseValueAs(key: key, rawObject: rawObject)
     }
 
-    private func readRawObject(_ key: String, transaction: SDSAnyReadTransaction) -> Any? {
-        // GRDB values are serialized to data by this class.
-        switch transaction.readTransaction {
-        case .grdbRead:
-            guard let encoded = readData(key, transaction: transaction) else {
-                return nil
-            }
-            return parseArchivedValue(encoded)
+    private func readRawObject(_ key: String, transaction: DBReadTransaction) -> Any? {
+        guard let encoded = getData(key, transaction: transaction) else {
+            return nil
         }
+
+        return parseArchivedValue(encoded)
     }
 
     private func parseArchivedValue(_ encoded: Data) -> Any? {
@@ -588,109 +585,18 @@ public class SDSKeyValueStore: NSObject {
         return object
     }
 
-    private func readData(_ key: String, transaction: SDSAnyReadTransaction) -> Data? {
-        let collection = self.collection
-
-        switch transaction.readTransaction {
-        case .grdbRead(let grdbTransaction):
-            return SDSKeyValueStore.readData(transaction: grdbTransaction, key: key, collection: collection)
-        }
-    }
-
-    private class func readData(transaction: GRDBReadTransaction, key: String, collection: String) -> Data? {
-        do {
-            return try Data.fetchOne(transaction.database,
-                                     sql: "SELECT \(self.valueColumn.columnName) FROM \(self.table.tableName) WHERE \(self.keyColumn.columnName) = ? AND \(collectionColumn.columnName) == ?",
-                arguments: [key, collection])
-        } catch {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
+    private func write(
+        _ value: NSCoding?,
+        forKey key: String,
+        transaction: DBWriteTransaction
+    ) {
+        let encoded: Data? = value.flatMap {
+            try? NSKeyedArchiver.archivedData(
+                withRootObject: $0,
+                requiringSecureCoding: false
             )
-            owsFailDebug("error: \(error)")
-            return nil
         }
-    }
 
-    // TODO: Codable? NSCoding? Other serialization?
-    private func write(_ value: NSCoding?, forKey key: String, transaction: SDSAnyWriteTransaction) {
-        // GRDB values are serialized to data by this class.
-        switch transaction.writeTransaction {
-        case .grdbWrite:
-            if let value = value {
-                let encoded = try? NSKeyedArchiver.archivedData(withRootObject: value, requiringSecureCoding: false)
-                writeData(encoded, forKey: key, transaction: transaction)
-            } else {
-                writeData(nil, forKey: key, transaction: transaction)
-            }
-        }
-    }
-
-    private func writeData(_ data: Data?, forKey key: String, transaction: SDSAnyWriteTransaction) {
-
-        let collection = self.collection
-
-        switch transaction.writeTransaction {
-        case .grdbWrite(let grdbTransaction):
-            do {
-                try SDSKeyValueStore.write(transaction: grdbTransaction, key: key, collection: collection, encoded: data)
-            } catch {
-                owsFailDebug("error: \(error)")
-            }
-        }
-    }
-
-    private class func write(transaction: GRDBWriteTransaction, key: String, collection: String, encoded: Data?) throws {
-        if let encoded = encoded {
-            // See: https://www.sqlite.org/lang_UPSERT.html
-            let sql = """
-                INSERT INTO \(table.tableName) (
-                    \(keyColumn.columnName),
-                    \(collectionColumn.columnName),
-                    \(valueColumn.columnName)
-                ) VALUES (?, ?, ?)
-                ON CONFLICT (
-                    \(keyColumn.columnName),
-                    \(collectionColumn.columnName)
-                ) DO UPDATE
-                SET \(valueColumn.columnName) = ?
-            """
-            try update(transaction: transaction, sql: sql, arguments: [ key, collection, encoded, encoded ])
-        } else {
-            // Setting to nil is a delete.
-            let sql = "DELETE FROM \(table.tableName) WHERE \(keyColumn.columnName) == ? AND \(collectionColumn.columnName) == ?"
-            try update(transaction: transaction, sql: sql, arguments: [ key, collection ])
-        }
-    }
-
-    private class func update(
-        transaction: GRDBWriteTransaction,
-        sql: String,
-        arguments: StatementArguments
-    ) throws {
-        let statement = try transaction.database.cachedStatement(sql: sql)
-        try statement.setArguments(arguments)
-
-        do {
-            try statement.execute()
-        } catch {
-            DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            throw error
-        }
-    }
-
-    private func allKeys(grdbTransaction: GRDBReadTransaction) -> [String] {
-        let sql = """
-        SELECT \(SDSKeyValueStore.keyColumn.columnName)
-        FROM \(SDSKeyValueStore.table.tableName)
-        WHERE \(SDSKeyValueStore.collectionColumn.columnName) == ?
-        """
-
-        return grdbTransaction.database.strictRead { database in
-            try String.fetchAll(database, sql: sql, arguments: [collection])
-        }
+        setData(encoded, key: key, transaction: transaction)
     }
 }

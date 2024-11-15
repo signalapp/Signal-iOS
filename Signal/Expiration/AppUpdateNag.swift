@@ -170,31 +170,31 @@ class AppUpdateNag {
 
     private var firstHeardOfNewVersionDate: Date? {
         return databaseStorage.read { transaction in
-            return self.keyValueStore.getDate(AppUpdateNag.kFirstHeardOfNewVersionDateKey, transaction: transaction)
+            return self.keyValueStore.getDate(AppUpdateNag.kFirstHeardOfNewVersionDateKey, transaction: transaction.asV2Read)
         }
     }
 
     private func setFirstHeardOfNewVersionDate(_ date: Date) async {
         await databaseStorage.awaitableWrite { transaction in
-            self.keyValueStore.setDate(date, key: AppUpdateNag.kFirstHeardOfNewVersionDateKey, transaction: transaction)
+            self.keyValueStore.setDate(date, key: AppUpdateNag.kFirstHeardOfNewVersionDateKey, transaction: transaction.asV2Write)
         }
     }
 
     private func clearFirstHeardOfNewVersionDate() async {
         await databaseStorage.awaitableWrite { transaction in
-            self.keyValueStore.removeValue(forKey: AppUpdateNag.kFirstHeardOfNewVersionDateKey, transaction: transaction)
+            self.keyValueStore.removeValue(forKey: AppUpdateNag.kFirstHeardOfNewVersionDateKey, transaction: transaction.asV2Write)
         }
     }
 
     private var lastNagDate: Date? {
         return databaseStorage.read { transaction in
-            return self.keyValueStore.getDate(AppUpdateNag.kLastNagDateKey, transaction: transaction)
+            return self.keyValueStore.getDate(AppUpdateNag.kLastNagDateKey, transaction: transaction.asV2Read)
         }
     }
 
     private func setLastNagDate(_ date: Date) async {
         await databaseStorage.awaitableWrite { transaction in
-            self.keyValueStore.setDate(date, key: AppUpdateNag.kLastNagDateKey, transaction: transaction)
+            self.keyValueStore.setDate(date, key: AppUpdateNag.kLastNagDateKey, transaction: transaction.asV2Write)
         }
     }
 }

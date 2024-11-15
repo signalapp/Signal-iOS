@@ -91,8 +91,8 @@ public class TSAttachmentDownloadManager: NSObject {
 
         let (pendingMessageDownloads, pendingStoryMessageDownloads) = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             (
-                Self.pendingMessageDownloads.allUIntValuesMap(transaction: transaction),
-                Self.pendingStoryMessageDownloads.allUIntValuesMap(transaction: transaction)
+                Self.pendingMessageDownloads.allUIntValuesMap(transaction: transaction.asV2Read),
+                Self.pendingStoryMessageDownloads.allUIntValuesMap(transaction: transaction.asV2Read)
             )
         }
 
@@ -134,7 +134,7 @@ public class TSAttachmentDownloadManager: NSObject {
         for (uniqueId, rawDownloadBehavior) in pendingMessages {
             guard let downloadBehavior = TSAttachmentDownloadBehavior(rawValue: rawDownloadBehavior) else {
                 owsFailDebug("Unexpected download behavior \(rawDownloadBehavior)")
-                store.removeValue(forKey: uniqueId, transaction: transaction)
+                store.removeValue(forKey: uniqueId, transaction: transaction.asV2Write)
                 continue
             }
 
@@ -728,7 +728,7 @@ public extension TSAttachmentDownloadManager {
             Self.pendingMessageDownloads.setUInt(
                 downloadBehavior.rawValue,
                 key: messageId,
-                transaction: transaction
+                transaction: transaction.asV2Write
             )
             // Warning: kind of dangerous to return a fulfilled promise here,
             // but without a mayor overhaul its unavoidable.
@@ -737,7 +737,7 @@ public extension TSAttachmentDownloadManager {
             return
         }
 
-        Self.pendingMessageDownloads.removeValue(forKey: messageId, transaction: transaction)
+        Self.pendingMessageDownloads.removeValue(forKey: messageId, transaction: transaction.asV2Write)
 
         // Don't enqueue the attachment downloads until the write
         // transaction is committed or attachmentDownloads might race
@@ -863,7 +863,7 @@ public extension TSAttachmentDownloadManager {
             Self.pendingStoryMessageDownloads.setUInt(
                 downloadBehavior.rawValue,
                 key: storyMessageId,
-                transaction: transaction
+                transaction: transaction.asV2Write
             )
             // Warning: kind of dangerous to return a fulfilled promise here,
             // but without a mayor overhaul its unavoidable.
@@ -872,7 +872,7 @@ public extension TSAttachmentDownloadManager {
             return
         }
 
-        Self.pendingStoryMessageDownloads.removeValue(forKey: storyMessageId, transaction: transaction)
+        Self.pendingStoryMessageDownloads.removeValue(forKey: storyMessageId, transaction: transaction.asV2Write)
 
         // Don't enqueue the attachment downloads until the write
         // transaction is committed or attachmentDownloads might race

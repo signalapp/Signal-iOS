@@ -931,13 +931,13 @@ extension RecipientPickerViewController {
 
     private func shouldShowContactAccessNotAllowedReminderItemWithSneakyTransaction() -> Bool {
         SSKEnvironment.shared.databaseStorageRef.read {
-            Self.keyValueStore.getBool(Self.showNotAllowedReminderKey, defaultValue: true, transaction: $0)
+            Self.keyValueStore.getBool(Self.showNotAllowedReminderKey, defaultValue: true, transaction: $0.asV2Read)
         }
     }
 
     private func hideShowContactAccessNotAllowedReminderItem() {
         SSKEnvironment.shared.databaseStorageRef.write {
-            Self.keyValueStore.setBool(false, key: Self.showNotAllowedReminderKey, transaction: $0)
+            Self.keyValueStore.setBool(false, key: Self.showNotAllowedReminderKey, transaction: $0.asV2Write)
         }
         reloadContent()
     }

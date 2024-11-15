@@ -195,7 +195,7 @@ class BlockingManagerStateTests: SSKBaseTest {
         typealias Key = BlockingManager.State.PersistenceKey
         let storage = BlockingManager.State.keyValueStore
         SSKEnvironment.shared.databaseStorageRef.write {
-            storage.setObject("", key: Key.Legacy.syncedBlockedPhoneNumbersKey.rawValue, transaction: $0)
+            storage.setObject("", key: Key.Legacy.syncedBlockedPhoneNumbersKey.rawValue, transaction: $0.asV2Write)
         }
 
         SSKEnvironment.shared.databaseStorageRef.read {

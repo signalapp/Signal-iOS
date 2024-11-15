@@ -41,7 +41,7 @@ public class AvatarHistoryManager: NSObject {
 
         let allRecords: [[AvatarRecord]] = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             do {
-                return try Self.keyValueStore.allCodableValues(transaction: transaction)
+                return try Self.keyValueStore.allCodableValues(transaction: transaction.asV2Read)
             } catch {
                 owsFailDebug("Failed to decode avatar history for orphan cleanup \(error)")
                 return []
@@ -111,7 +111,7 @@ public class AvatarHistoryManager: NSObject {
         }
 
         do {
-            try Self.keyValueStore.setCodable(records, key: context.key, transaction: transaction)
+            try Self.keyValueStore.setCodable(records, key: context.key, transaction: transaction.asV2Write)
         } catch {
             owsFailDebug("Failed to touch avatar history \(error)")
         }
@@ -139,7 +139,7 @@ public class AvatarHistoryManager: NSObject {
         }
 
         do {
-            try Self.keyValueStore.setCodable(records, key: context.key, transaction: transaction)
+            try Self.keyValueStore.setCodable(records, key: context.key, transaction: transaction.asV2Write)
         } catch {
             owsFailDebug("Failed to touch avatar history \(error)")
         }
@@ -174,7 +174,7 @@ public class AvatarHistoryManager: NSObject {
         let records: [AvatarRecord]?
 
         do {
-            records = try Self.keyValueStore.getCodableValue(forKey: context.key, transaction: transaction)
+            records = try Self.keyValueStore.getCodableValue(forKey: context.key, transaction: transaction.asV2Read)
         } catch {
             owsFailDebug("Failed to load persisted avatar records \(error)")
             records = nil

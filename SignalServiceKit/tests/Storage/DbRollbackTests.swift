@@ -30,46 +30,46 @@ class SDSDatabaseStorageRollbackTest: SSKBaseTest {
 
     func test_writeNoRollback() {
         try? databaseStorage.write { tx in
-            XCTAssertFalse(kvStore.getBool(key, defaultValue: false, transaction: tx))
-            kvStore.setBool(true, key: key, transaction: tx)
+            XCTAssertFalse(kvStore.getBool(key, defaultValue: false, transaction: tx.asV2Read))
+            kvStore.setBool(true, key: key, transaction: tx.asV2Write)
             throw SomeError()
         }
 
         // Even though we threw an error, "normal" writes don't rollback.
         databaseStorage.read { tx in
-            XCTAssertTrue(kvStore.getBool(key, defaultValue: false, transaction: tx))
+            XCTAssertTrue(kvStore.getBool(key, defaultValue: false, transaction: tx.asV2Read))
         }
     }
 
     func test_writeNoRollback_async() async {
         try? await databaseStorage.awaitableWrite { tx in
-            XCTAssertFalse(kvStore.getBool(key, defaultValue: false, transaction: tx))
-            kvStore.setBool(true, key: key, transaction: tx)
+            XCTAssertFalse(kvStore.getBool(key, defaultValue: false, transaction: tx.asV2Read))
+            kvStore.setBool(true, key: key, transaction: tx.asV2Write)
             throw SomeError()
         }
 
         // Even though we threw an error, "normal" writes don't rollback.
         databaseStorage.read { tx in
-            XCTAssertTrue(kvStore.getBool(key, defaultValue: false, transaction: tx))
+            XCTAssertTrue(kvStore.getBool(key, defaultValue: false, transaction: tx.asV2Read))
         }
     }
 
     func test_writeWithTxCompletionRollback() {
         databaseStorage.writeWithTxCompletion { tx in
-            XCTAssertFalse(kvStore.getBool(key, defaultValue: false, transaction: tx))
-            kvStore.setBool(true, key: key, transaction: tx)
+            XCTAssertFalse(kvStore.getBool(key, defaultValue: false, transaction: tx.asV2Write))
+            kvStore.setBool(true, key: key, transaction: tx.asV2Write)
             return .rollback(())
         }
 
         // Should have rolled back.
         databaseStorage.read { tx in
-            XCTAssertFalse(kvStore.getBool(key, defaultValue: false, transaction: tx))
+            XCTAssertFalse(kvStore.getBool(key, defaultValue: false, transaction: tx.asV2Read))
         }
 
         // Run it again but don't roll back this time.
         databaseStorage.writeWithTxCompletion { tx in
             do {
-                kvStore.setBool(true, key: key, transaction: tx)
+                kvStore.setBool(true, key: key, transaction: tx.asV2Write)
                 throw SomeError()
             } catch {
                 return .commit(())
@@ -78,26 +78,26 @@ class SDSDatabaseStorageRollbackTest: SSKBaseTest {
 
         // Should NOT have rolled back.
         databaseStorage.read { tx in
-            XCTAssertTrue(kvStore.getBool(key, defaultValue: false, transaction: tx))
+            XCTAssertTrue(kvStore.getBool(key, defaultValue: false, transaction: tx.asV2Read))
         }
     }
 
     func test_writeWithTxCompletionRollback_async() async {
         await databaseStorage.awaitableWriteWithTxCompletion { tx in
-            XCTAssertFalse(kvStore.getBool(key, defaultValue: false, transaction: tx))
-            kvStore.setBool(true, key: key, transaction: tx)
+            XCTAssertFalse(kvStore.getBool(key, defaultValue: false, transaction: tx.asV2Read))
+            kvStore.setBool(true, key: key, transaction: tx.asV2Write)
             return .rollback(())
         }
 
         // Should have rolled back.
         databaseStorage.read { tx in
-            XCTAssertFalse(kvStore.getBool(key, defaultValue: false, transaction: tx))
+            XCTAssertFalse(kvStore.getBool(key, defaultValue: false, transaction: tx.asV2Read))
         }
 
         // Run it again but don't roll back this time.
         await databaseStorage.awaitableWriteWithTxCompletion { tx in
             do {
-                kvStore.setBool(true, key: key, transaction: tx)
+                kvStore.setBool(true, key: key, transaction: tx.asV2Write)
                 throw SomeError()
             } catch {
                 return .commit(())
@@ -106,7 +106,7 @@ class SDSDatabaseStorageRollbackTest: SSKBaseTest {
 
         // Should NOT have rolled back.
         databaseStorage.read { tx in
-            XCTAssertTrue(kvStore.getBool(key, defaultValue: false, transaction: tx))
+            XCTAssertTrue(kvStore.getBool(key, defaultValue: false, transaction: tx.asV2Read))
         }
     }
 }

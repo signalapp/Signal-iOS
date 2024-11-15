@@ -271,12 +271,12 @@ public class GroupMembershipNameCollisionFinder: NameCollisionFinder {
     private static var keyValueStore = SDSKeyValueStore(collection: "GroupThreadCollisionFinder")
 
     private func recentProfileUpdateSearchStartId(transaction: SDSAnyReadTransaction) -> UInt64? {
-        Self.keyValueStore.getUInt64(groupThread.uniqueId, transaction: transaction)
+        Self.keyValueStore.getUInt64(groupThread.uniqueId, transaction: transaction.asV2Read)
     }
 
     private func setRecentProfileUpdateSearchStartId(newValue: UInt64, transaction: SDSAnyWriteTransaction) {
         let existingValue = recentProfileUpdateSearchStartId(transaction: transaction) ?? 0
-        Self.keyValueStore.setUInt64(max(newValue, existingValue), key: groupThread.uniqueId, transaction: transaction)
+        Self.keyValueStore.setUInt64(max(newValue, existingValue), key: groupThread.uniqueId, transaction: transaction.asV2Write)
     }
 
     private func setRecentProfileUpdateSearchStartIdToMax(transaction: SDSAnyReadTransaction) {

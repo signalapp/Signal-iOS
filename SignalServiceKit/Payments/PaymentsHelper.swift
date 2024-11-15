@@ -5,7 +5,6 @@
 
 import Foundation
 
-@objc
 public protocol PaymentsHelper: AnyObject {
 
     func warmCaches()

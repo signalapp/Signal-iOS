@@ -142,7 +142,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             let syncRequestedAppVersion = {
                 Self.keyValueStore.getString(
                     Constants.syncRequestedAppVersionKey,
-                    transaction: transaction
+                    transaction: transaction.asV2Read
                 )
             }
 
@@ -160,7 +160,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             Self.keyValueStore.setString(
                 currentAppVersion,
                 key: Constants.syncRequestedAppVersionKey,
-                transaction: transaction
+                transaction: transaction.asV2Write
             )
 
             return Promise.when(fulfilled: [
@@ -422,7 +422,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             // main app can send that request the next time in runs.
             if mode == .allSignalAccounts {
                 await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-                    Self.keyValueStore.setString(UUID().uuidString, key: Constants.fullSyncRequestIdKey, transaction: tx)
+                    Self.keyValueStore.setString(UUID().uuidString, key: Constants.fullSyncRequestIdKey, transaction: tx.asV2Write)
                 }
             }
             // If a full sync sync is requested in NSE, ignore it. Opportunistic syncs
@@ -476,7 +476,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
 
         try await SSKEnvironment.shared.messageSenderRef.sendTransientContactSyncAttachment(dataSource: dataSource, thread: thread)
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-            Self.keyValueStore.setData(messageHash, key: Constants.lastContactSyncKey, transaction: tx)
+            Self.keyValueStore.setData(messageHash, key: Constants.lastContactSyncKey, transaction: tx.asV2Write)
             self.clearFullSyncRequestId(ifMatches: result.fullSyncRequestId, tx: tx)
         }
     }
@@ -495,7 +495,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         // Check if there's a pending request from the NSE. Any full sync in the
         // main app can clear this flag, even if it's not started in response to
         // calling syncAllContactsIfFullSyncRequested.
-        let fullSyncRequestId = Self.keyValueStore.getString(Constants.fullSyncRequestIdKey, transaction: tx)
+        let fullSyncRequestId = Self.keyValueStore.getString(Constants.fullSyncRequestIdKey, transaction: tx.asV2Read)
 
         // However, only syncAllContactsIfFullSyncRequested-initiated requests
         // should be skipped if there's no request.
@@ -513,7 +513,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         return BuildContactSyncMessageResult(
             syncFileUrl: syncFileUrl,
             fullSyncRequestId: fullSyncRequestId,
-            previousMessageHash: Self.keyValueStore.getData(Constants.lastContactSyncKey, transaction: tx)
+            previousMessageHash: Self.keyValueStore.getData(Constants.lastContactSyncKey, transaction: tx.asV2Read)
         )
     }
 
@@ -521,13 +521,13 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         guard let requestId else {
             return
         }
-        let storedRequestId = Self.keyValueStore.getString(Constants.fullSyncRequestIdKey, transaction: tx)
+        let storedRequestId = Self.keyValueStore.getString(Constants.fullSyncRequestIdKey, transaction: tx.asV2Read)
         // If the requestId we just finished matches the one in the database, we've
         // fulfilled the contract with the NSE. If the NSE triggers *another* sync
         // while this is outstanding, the match will fail, and we'll kick off
         // another sync at the next opportunity.
         if storedRequestId == requestId {
-            Self.keyValueStore.removeValue(forKey: Constants.fullSyncRequestIdKey, transaction: tx)
+            Self.keyValueStore.removeValue(forKey: Constants.fullSyncRequestIdKey, transaction: tx.asV2Write)
         }
     }
 

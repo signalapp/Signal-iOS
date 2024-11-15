@@ -60,7 +60,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
 
         let shouldUpdate = SSKEnvironment.shared.databaseStorageRef.read { (transaction: SDSAnyReadTransaction) -> Bool in
             // Check if the app version has changed.
-            let lastAppVersion = self.keyValueStore.getString(appVersionKey, transaction: transaction)
+            let lastAppVersion = self.keyValueStore.getString(appVersionKey, transaction: transaction.asV2Read)
             guard lastAppVersion == currentAppVersion else {
                 return true
             }
@@ -74,7 +74,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
             self.updateLastKnownLocalPaymentAddressProtoData(transaction: transaction)
 
-            self.keyValueStore.setString(currentAppVersion, key: appVersionKey, transaction: transaction)
+            self.keyValueStore.setString(currentAppVersion, key: appVersionKey, transaction: transaction.asV2Write)
         }
     }
 

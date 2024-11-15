@@ -30,7 +30,7 @@ public class VoiceMessageInterruptedDraftStore {
     }
 
     private static func directoryPath(threadUniqueId: String, transaction: SDSAnyReadTransaction) -> String? {
-        keyValueStore.getString(threadUniqueId, transaction: transaction)
+        keyValueStore.getString(threadUniqueId, transaction: transaction.asV2Read)
     }
 
     public static func directoryUrl(threadUniqueId: String, transaction: SDSAnyReadTransaction) -> URL? {
@@ -49,11 +49,11 @@ public class VoiceMessageInterruptedDraftStore {
     }
 
     public static func hasDraft(for threadUniqueId: String, transaction: SDSAnyReadTransaction) -> Bool {
-        keyValueStore.getString(threadUniqueId, transaction: transaction) != nil
+        keyValueStore.getString(threadUniqueId, transaction: transaction.asV2Read) != nil
     }
 
     public static func allDraftFilePaths(transaction: SDSAnyReadTransaction) -> Set<String> {
-        return Set(keyValueStore.allKeys(transaction: transaction).compactMap { (threadUniqueId) -> [String]? in
+        return Set(keyValueStore.allKeys(transaction: transaction.asV2Read).compactMap { (threadUniqueId) -> [String]? in
             guard let directoryPath = self.directoryPath(threadUniqueId: threadUniqueId, transaction: transaction) else {
                 return nil
             }
@@ -76,12 +76,12 @@ public class VoiceMessageInterruptedDraftStore {
                 owsFailDebug("Failed to delete voice memo draft")
             }
         }
-        keyValueStore.removeValue(forKey: threadUniqueId, transaction: transaction)
+        keyValueStore.removeValue(forKey: threadUniqueId, transaction: transaction.asV2Write)
     }
 
     public static func saveDraft(audioFileUrl: URL, threadUniqueId: String, transaction: SDSAnyWriteTransaction) -> URL {
         let relativeDirectoryPath = UUID().uuidString
-        keyValueStore.setString(relativeDirectoryPath, key: threadUniqueId, transaction: transaction)
+        keyValueStore.setString(relativeDirectoryPath, key: threadUniqueId, transaction: transaction.asV2Write)
         let directoryUrl = directoryUrl(relativePath: relativeDirectoryPath)
         do {
             OWSFileSystem.ensureDirectoryExists(directoryUrl.path)

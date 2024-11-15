@@ -242,7 +242,7 @@ public class OWSReceiptManager: NSObject {
     }
 
     public static func areReadReceiptsEnabled(transaction: SDSAnyReadTransaction) -> Bool {
-        keyValueStore.getBool(kOwsReceiptManagerAreReadReceiptsEnabled, defaultValue: false, transaction: transaction)
+        keyValueStore.getBool(kOwsReceiptManagerAreReadReceiptsEnabled, defaultValue: false, transaction: transaction.asV2Read)
     }
 
     public func setAreReadReceiptsEnabledWithSneakyTransactionAndSyncConfiguration(_ value: Bool) {
@@ -253,7 +253,7 @@ public class OWSReceiptManager: NSObject {
     }
 
     public func setAreReadReceiptsEnabled(_ value: Bool, transaction: SDSAnyWriteTransaction) {
-        Self.keyValueStore.setBool(value, key: Self.kOwsReceiptManagerAreReadReceiptsEnabled, transaction: transaction)
+        Self.keyValueStore.setBool(value, key: Self.kOwsReceiptManagerAreReadReceiptsEnabled, transaction: transaction.asV2Write)
         areReadReceiptsEnabledCached.set(value)
     }
 }
@@ -265,7 +265,7 @@ extension OWSReceiptManager {
     private func processReceiptsForLinkedDevices(transaction: SDSAnyWriteTransaction) -> Bool {
         let readReceiptsForLinkedDevices: [ReceiptForLinkedDevice]
         do {
-            readReceiptsForLinkedDevices = try Self.toLinkedDevicesReadReceiptMapStore.allCodableValues(transaction: transaction)
+            readReceiptsForLinkedDevices = try Self.toLinkedDevicesReadReceiptMapStore.allCodableValues(transaction: transaction.asV2Read)
         } catch {
             owsFailDebug("Error: \(error).")
             return false
@@ -273,7 +273,7 @@ extension OWSReceiptManager {
 
         let viewedReceiptsForLinkedDevices: [ReceiptForLinkedDevice]
         do {
-            viewedReceiptsForLinkedDevices = try Self.toLinkedDevicesViewedReceiptMapStore.allCodableValues(transaction: transaction)
+            viewedReceiptsForLinkedDevices = try Self.toLinkedDevicesViewedReceiptMapStore.allCodableValues(transaction: transaction.asV2Read)
         } catch {
             owsFailDebug("Error: \(error).")
             return false
@@ -299,7 +299,7 @@ extension OWSReceiptManager {
                 let preparedMessage = PreparedOutgoingMessage.preprepared(transientMessageWithoutAttachments: message)
                 messageSenderJobQueue.add(message: preparedMessage, transaction: transaction)
             }
-            Self.toLinkedDevicesReadReceiptMapStore.removeAll(transaction: transaction)
+            Self.toLinkedDevicesReadReceiptMapStore.removeAll(transaction: transaction.asV2Write)
         }
 
         if !viewedReceiptsForLinkedDevices.isEmpty {
@@ -313,7 +313,7 @@ extension OWSReceiptManager {
                 let preparedMessage = PreparedOutgoingMessage.preprepared(transientMessageWithoutAttachments: message)
                 messageSenderJobQueue.add(message: preparedMessage, transaction: transaction)
             }
-            Self.toLinkedDevicesViewedReceiptMapStore.removeAll(transaction: transaction)
+            Self.toLinkedDevicesViewedReceiptMapStore.removeAll(transaction: transaction.asV2Write)
         }
 
         return true
@@ -351,12 +351,12 @@ extension OWSReceiptManager {
         )
 
         do {
-            if let oldReadReceipt: ReceiptForLinkedDevice = try Self.toLinkedDevicesReadReceiptMapStore.getCodableValue(forKey: threadUniqueId, transaction: transaction),
+            if let oldReadReceipt: ReceiptForLinkedDevice = try Self.toLinkedDevicesReadReceiptMapStore.getCodableValue(forKey: threadUniqueId, transaction: transaction.asV2Read),
                 oldReadReceipt.messageIdTimestamp > newReadReceipt.messageIdTimestamp {
                 // If there's an existing "linked device" read receipt for the same thread with
                 // a newer timestamp, discard this "linked device" read receipt.
             } else {
-                try Self.toLinkedDevicesReadReceiptMapStore.setCodable(newReadReceipt, key: threadUniqueId, transaction: transaction)
+                try Self.toLinkedDevicesReadReceiptMapStore.setCodable(newReadReceipt, key: threadUniqueId, transaction: transaction.asV2Write)
             }
         } catch {
             owsFailDebug("Error: \(error).")
@@ -414,7 +414,7 @@ extension OWSReceiptManager {
         // On the receiving end we keep track of the latest read timestamp per context and should
         // be fine whether we send every read receipt or just the latest; its purely a bandwidth/perf difference.
         do {
-            try Self.toLinkedDevicesReadReceiptMapStore.setCodable(newReadReceipt, key: message.uniqueId, transaction: transaction)
+            try Self.toLinkedDevicesReadReceiptMapStore.setCodable(newReadReceipt, key: message.uniqueId, transaction: transaction.asV2Write)
         } catch {
             owsFailDebug("Error: \(error)")
         }
@@ -481,7 +481,7 @@ extension OWSReceiptManager {
         // once, voice note, etc.), this has no bearing on whether or not you've
         // viewed other messages in the chat.
         do {
-            try Self.toLinkedDevicesViewedReceiptMapStore.setCodable(newViewedReceipt, key: messageUniqueId, transaction: transaction)
+            try Self.toLinkedDevicesViewedReceiptMapStore.setCodable(newViewedReceipt, key: messageUniqueId, transaction: transaction.asV2Write)
         } catch {
             owsFailDebug("Error: \(error)")
         }

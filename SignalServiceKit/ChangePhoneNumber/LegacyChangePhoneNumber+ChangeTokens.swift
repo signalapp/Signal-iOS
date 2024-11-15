@@ -69,7 +69,7 @@ extension LegacyChangePhoneNumber {
             transaction: SDSAnyReadTransaction
         ) -> [String] {
             let legacyChangeIds = Set(keyValueStore.allKeys(
-                transaction: transaction
+                transaction: transaction.asV2Read
             )).subtracting([
                 ChangeTokenKeys.changeTokenPniPendingState
             ])
@@ -86,7 +86,7 @@ extension LegacyChangePhoneNumber {
                 keyValueStore.setString(
                     legacyChangeId,
                     key: legacyChangeId,
-                    transaction: transaction
+                    transaction: transaction.asV2Write
                 )
             }
         }
@@ -99,7 +99,7 @@ extension LegacyChangePhoneNumber {
             for legacyChangeId in changeToken.legacyChangeIds {
                 keyValueStore.removeValue(
                     forKey: legacyChangeId,
-                    transaction: transaction
+                    transaction: transaction.asV2Write
                 )
             }
         }

@@ -107,7 +107,7 @@ class GroupsV2ProfileKeyUpdater {
         }
         let groupId = groupThread.groupModel.groupId
         let key = self.key(for: groupId)
-        self.keyValueStore.setData(groupId, key: key, transaction: transaction)
+        self.keyValueStore.setData(groupId, key: key, transaction: transaction.asV2Write)
     }
 
     public func processProfileKeyUpdates() {
@@ -169,7 +169,7 @@ class GroupsV2ProfileKeyUpdater {
 
             do {
                 let databaseStorage = SSKEnvironment.shared.databaseStorageRef
-                let groupIdKeys = databaseStorage.read(block: self.keyValueStore.allKeys(transaction:))
+                let groupIdKeys = databaseStorage.read(block: { self.keyValueStore.allKeys(transaction: $0.asV2Read) })
                 let taskQueue = ConcurrentTaskQueue(concurrentLimit: 16)
                 try await withThrowingTaskGroup(of: Void.self) { taskGroup in
                     for groupIdKey in groupIdKeys {
@@ -192,7 +192,7 @@ class GroupsV2ProfileKeyUpdater {
 
     private func _tryToUpdateNext(groupIdKey: String) async throws {
         let databaseStorage = SSKEnvironment.shared.databaseStorageRef
-        guard let groupId = databaseStorage.read(block: { tx in keyValueStore.getData(groupIdKey, transaction: tx) }) else {
+        guard let groupId = databaseStorage.read(block: { tx in keyValueStore.getData(groupIdKey, transaction: tx.asV2Read) }) else {
             return
         }
         do {
@@ -231,7 +231,7 @@ class GroupsV2ProfileKeyUpdater {
 
     private func markAsComplete(groupIdKey: String) async {
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
-            self.keyValueStore.removeValue(forKey: groupIdKey, transaction: transaction)
+            self.keyValueStore.removeValue(forKey: groupIdKey, transaction: transaction.asV2Write)
         }
     }
 

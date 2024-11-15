@@ -538,12 +538,12 @@ class GroupCallViewController: UIViewController {
             self.didUserEverSwipeToSpeakerView = Self.keyValueStore.getBool(
                 Self.didUserSwipeToSpeakerViewKey,
                 defaultValue: false,
-                transaction: readTx
+                transaction: readTx.asV2Read
             )
             self.didUserEverSwipeToScreenShare = Self.keyValueStore.getBool(
                 Self.didUserSwipeToScreenShareKey,
                 defaultValue: false,
-                transaction: readTx
+                transaction: readTx.asV2Read
             )
 
             phoneNumberSharingMode = SSKEnvironment.shared.udManagerRef
@@ -978,13 +978,13 @@ class GroupCallViewController: UIViewController {
                 if !isAutoScrollingToScreenShare {
                     didUserEverSwipeToScreenShare = true
                     SSKEnvironment.shared.databaseStorageRef.asyncWrite { writeTx in
-                        Self.keyValueStore.setBool(true, key: Self.didUserSwipeToScreenShareKey, transaction: writeTx)
+                        Self.keyValueStore.setBool(true, key: Self.didUserSwipeToScreenShareKey, transaction: writeTx.asV2Write)
                     }
                 }
             } else {
                 didUserEverSwipeToSpeakerView = true
                 SSKEnvironment.shared.databaseStorageRef.asyncWrite { writeTx in
-                    Self.keyValueStore.setBool(true, key: Self.didUserSwipeToSpeakerViewKey, transaction: writeTx)
+                    Self.keyValueStore.setBool(true, key: Self.didUserSwipeToSpeakerViewKey, transaction: writeTx.asV2Write)
                 }
             }
 

@@ -89,7 +89,7 @@ public class PaymentsReconciliation {
     }
 
     private static func shouldReconcileByDate(transaction: SDSAnyReadTransaction) -> Bool {
-        guard let date = Self.schedulingStore.getDate(Self.successDateKey, transaction: transaction) else {
+        guard let date = Self.schedulingStore.getDate(Self.successDateKey, transaction: transaction.asV2Read) else {
             return true
         }
         let reconciliationInterval = kHourInterval * 1
@@ -114,17 +114,17 @@ public class PaymentsReconciliation {
 
         guard lastKnownBlockCount == Self.schedulingStore.getUInt64(Self.lastKnownBlockCountKey,
                                                                     defaultValue: 0,
-                                                                    transaction: transaction) else {
+                                                                    transaction: transaction.asV2Read) else {
             return true
         }
         guard spentTXOCount == Self.schedulingStore.getUInt(Self.lastKnownSpentTXOCountKey,
                                                             defaultValue: 0,
-                                                            transaction: transaction) else {
+                                                            transaction: transaction.asV2Read) else {
             return true
         }
         guard receivedTXOCount == Self.schedulingStore.getUInt(Self.lastKnownReceivedTXOCountKey,
                                                                defaultValue: 0,
-                                                               transaction: transaction) else {
+                                                               transaction: transaction.asV2Read) else {
             return true
         }
         return false
@@ -154,7 +154,7 @@ public class PaymentsReconciliation {
     }
 
     public func scheduleReconciliationNow(transaction: SDSAnyWriteTransaction) {
-        Self.schedulingStore.removeAll(transaction: transaction)
+        Self.schedulingStore.removeAll(transaction: transaction.asV2Write)
 
         transaction.addAsyncCompletionOffMain {
             self.reconcileIfNecessary()

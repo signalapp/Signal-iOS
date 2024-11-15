@@ -44,7 +44,7 @@ public class OWSPaymentsLock: NSObject {
         return SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return self.keyValueStore.getBool(.isPaymentsLockEnabledKey,
                                               defaultValue: false,
-                                              transaction: transaction)
+                                              transaction: transaction.asV2Read)
         }
     }
 
@@ -61,7 +61,7 @@ public class OWSPaymentsLock: NSObject {
 
         self.keyValueStore.setBool(value,
                                    key: .isPaymentsLockEnabledKey,
-                                   transaction: transaction)
+                                   transaction: transaction.asV2Write)
     }
 
     public func isTimeToShowSuggestion() -> Bool {
@@ -75,7 +75,7 @@ public class OWSPaymentsLock: NSObject {
         let defaultDate = Date.distantPast
         let date = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return self.keyValueStore.getDate(.timeToShowSuggestionKey,
-                                              transaction: transaction) ?? defaultDate
+                                              transaction: transaction.asV2Read) ?? defaultDate
         }
 
         return Date() > date
@@ -93,7 +93,7 @@ public class OWSPaymentsLock: NSObject {
 
         self.keyValueStore.setDate(nextTimeToShowSuggestion,
                                    key: .timeToShowSuggestionKey,
-                                   transaction: transaction)
+                                   transaction: transaction.asV2Write)
     }
 
     // MARK: - Biometry Types

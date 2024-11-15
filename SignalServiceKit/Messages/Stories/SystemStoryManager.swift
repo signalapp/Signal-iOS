@@ -190,14 +190,14 @@ public class SystemStoryManager: NSObject, SystemStoryManagerProtocol {
         groupStoryEducationStore.setBool(
             true,
             key: Constants.kvStoreGroupStoryEducationSheetViewedKey,
-            transaction: tx
+            transaction: tx.asV2Write
         )
     }
 
     // MARK: OnboardingOverlay state
 
     public func isOnboardingOverlayViewed(transaction: SDSAnyReadTransaction) -> Bool {
-        if overlayKvStore.getBool(Constants.kvStoreOnboardingOverlayViewedKey, defaultValue: false, transaction: transaction) {
+        if overlayKvStore.getBool(Constants.kvStoreOnboardingOverlayViewedKey, defaultValue: false, transaction: transaction.asV2Read) {
             return true
         }
 
@@ -211,7 +211,7 @@ public class SystemStoryManager: NSObject, SystemStoryManagerProtocol {
     }
 
     public func setOnboardingOverlayViewed(value: Bool, transaction: SDSAnyWriteTransaction) {
-        overlayKvStore.setBool(value, key: Constants.kvStoreOnboardingOverlayViewedKey, transaction: transaction)
+        overlayKvStore.setBool(value, key: Constants.kvStoreOnboardingOverlayViewedKey, transaction: transaction.asV2Write)
     }
 
     // MARK: Hidden State
@@ -618,14 +618,14 @@ public class SystemStoryManager: NSObject, SystemStoryManagerProtocol {
     // MARK: Onboarding Story Read Status
 
     private func onboardingStoryReadStatus(transaction: SDSAnyReadTransaction) -> Bool {
-        return kvStore.getBool(Constants.kvStoreOnboardingStoryIsReadKey, defaultValue: false, transaction: transaction)
+        return kvStore.getBool(Constants.kvStoreOnboardingStoryIsReadKey, defaultValue: false, transaction: transaction.asV2Read)
     }
 
     private func setOnboardingStoryRead(transaction: SDSAnyWriteTransaction, updateStorageService: Bool) throws {
         guard !onboardingStoryReadStatus(transaction: transaction) else {
             return
         }
-        kvStore.setBool(true, key: Constants.kvStoreOnboardingStoryIsReadKey, transaction: transaction)
+        kvStore.setBool(true, key: Constants.kvStoreOnboardingStoryIsReadKey, transaction: transaction.asV2Write)
         if updateStorageService {
             SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
         }
@@ -648,7 +648,7 @@ public class SystemStoryManager: NSObject, SystemStoryManagerProtocol {
 
     private func onboardingStoryViewStatus(transaction: SDSAnyReadTransaction) -> OnboardingStoryViewStatus {
         guard
-            let rawStatus = kvStore.getData(Constants.kvStoreOnboardingStoryViewStatusKey, transaction: transaction),
+            let rawStatus = kvStore.getData(Constants.kvStoreOnboardingStoryViewStatusKey, transaction: transaction.asV2Read),
             let status = try? JSONDecoder().decode(OnboardingStoryViewStatus.self, from: rawStatus)
         else {
             return OnboardingStoryViewStatus(status: .notViewed, viewedTimestamp: nil)
@@ -660,7 +660,7 @@ public class SystemStoryManager: NSObject, SystemStoryManagerProtocol {
         try kvStore.setData(
             JSONEncoder().encode(OnboardingStoryViewStatus(status: .viewedOnAnotherDevice, viewedTimestamp: nil)),
             key: Constants.kvStoreOnboardingStoryViewStatusKey,
-            transaction: transaction
+            transaction: transaction.asV2Write
         )
         NotificationCenter.default.postNotificationNameAsync(.onboardingStoryStateDidChange, object: nil)
     }
@@ -677,7 +677,7 @@ public class SystemStoryManager: NSObject, SystemStoryManagerProtocol {
         try kvStore.setData(
             JSONEncoder().encode(OnboardingStoryViewStatus(status: .viewedOnThisDevice, viewedTimestamp: timestamp)),
             key: Constants.kvStoreOnboardingStoryViewStatusKey,
-            transaction: transaction
+            transaction: transaction.asV2Write
         )
         if shouldUpdateStorageService {
             SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
@@ -697,7 +697,7 @@ public class SystemStoryManager: NSObject, SystemStoryManagerProtocol {
 
     private func onboardingStoryDownloadStatus(transaction: SDSAnyReadTransaction) -> OnboardingStoryDownloadStatus {
         guard
-            let rawStatus = kvStore.getData(Constants.kvStoreOnboardingStoryDownloadStatusKey, transaction: transaction),
+            let rawStatus = kvStore.getData(Constants.kvStoreOnboardingStoryDownloadStatusKey, transaction: transaction.asV2Read),
             let status = try? JSONDecoder().decode(OnboardingStoryDownloadStatus.self, from: rawStatus)
         else {
             return .requiresDownload
@@ -713,7 +713,7 @@ public class SystemStoryManager: NSObject, SystemStoryManagerProtocol {
         try kvStore.setData(
             JSONEncoder().encode(status),
             key: Constants.kvStoreOnboardingStoryDownloadStatusKey,
-            transaction: transaction
+            transaction: transaction.asV2Write
         )
         DispatchQueue.main.async {
             self.beginObservingOnboardingStoryEventsIfNeeded(downloadStatus: status)
@@ -725,11 +725,11 @@ public class SystemStoryManager: NSObject, SystemStoryManagerProtocol {
 
     public func areSystemStoriesHidden(transaction: SDSAnyReadTransaction) -> Bool {
         // No need to make this serial with the other calls, db transactions cover us.
-        kvStore.getBool(Constants.kvStoreHiddenStateKey, defaultValue: false, transaction: transaction)
+        kvStore.getBool(Constants.kvStoreHiddenStateKey, defaultValue: false, transaction: transaction.asV2Read)
     }
 
     private func setSystemStoryHidden(_ hidden: Bool, transaction: SDSAnyWriteTransaction) {
-        kvStore.setBool(hidden, key: Constants.kvStoreHiddenStateKey, transaction: transaction)
+        kvStore.setBool(hidden, key: Constants.kvStoreHiddenStateKey, transaction: transaction.asV2Write)
         NotificationCenter.default.postNotificationNameAsync(.onboardingStoryStateDidChange, object: nil)
     }
 

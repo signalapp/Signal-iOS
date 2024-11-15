@@ -144,8 +144,8 @@ public class SenderKeyStore {
     }
 
     public func resetSenderKeyStore(transaction writeTx: SDSAnyWriteTransaction) {
-        keyMetadataStore.removeAll(transaction: writeTx)
-        sendingDistributionIdStore.removeAll(transaction: writeTx)
+        keyMetadataStore.removeAll(transaction: writeTx.asV2Write)
+        sendingDistributionIdStore.removeAll(transaction: writeTx.asV2Write)
     }
 
     public func skdmBytesForThread(_ thread: TSThread, tx: SDSAnyWriteTransaction) -> Data? {
@@ -248,7 +248,7 @@ extension SenderKeyStore {
     fileprivate func getKeyMetadata(for keyId: KeyId, readTx: SDSAnyReadTransaction) -> KeyMetadata? {
         let persisted: KeyMetadata?
         do {
-            persisted = try keyMetadataStore.getCodableValue(forKey: keyId, transaction: readTx)
+            persisted = try keyMetadataStore.getCodableValue(forKey: keyId, transaction: readTx.asV2Read)
         } catch {
             owsFailDebug("Failed to deserialize sender key: \(error)")
             persisted = nil
@@ -264,9 +264,9 @@ extension SenderKeyStore {
         do {
             if let metadata = metadata {
                 owsAssertDebug(metadata.keyId == keyId)
-                try keyMetadataStore.setCodable(metadata, key: keyId, transaction: writeTx)
+                try keyMetadataStore.setCodable(metadata, key: keyId, transaction: writeTx.asV2Write)
             } else {
-                keyMetadataStore.removeValue(forKey: keyId, transaction: writeTx)
+                keyMetadataStore.removeValue(forKey: keyId, transaction: writeTx.asV2Write)
             }
         } catch {
             owsFailDebug("Failed to persist sender key: \(error)")
@@ -275,7 +275,7 @@ extension SenderKeyStore {
 
     fileprivate func distributionIdForSendingToThreadId(_ threadId: ThreadUniqueId, readTx: SDSAnyReadTransaction) -> DistributionId? {
         if
-            let persistedString: String = sendingDistributionIdStore.getString(threadId, transaction: readTx),
+            let persistedString: String = sendingDistributionIdStore.getString(threadId, transaction: readTx.asV2Read),
             let persistedUUID = UUID(uuidString: persistedString)
         {
             return persistedUUID
@@ -301,7 +301,7 @@ extension SenderKeyStore {
             return existingId
         } else {
             let distributionId = UUID()
-            sendingDistributionIdStore.setString(distributionId.uuidString, key: threadId, transaction: writeTx)
+            sendingDistributionIdStore.setString(distributionId.uuidString, key: threadId, transaction: writeTx.asV2Write)
             return distributionId
         }
     }
@@ -318,19 +318,19 @@ extension SenderKeyStore {
     // MARK: Migration
 
     static func performKeyIdMigration(transaction writeTx: SDSAnyWriteTransaction) {
-        let oldKeys = keyMetadataStore.allKeys(transaction: writeTx)
+        let oldKeys = keyMetadataStore.allKeys(transaction: writeTx.asV2Write)
 
         oldKeys.forEach { oldKey in
             autoreleasepool {
                 do {
-                    let existingValue: KeyMetadata? = try keyMetadataStore.getCodableValue(forKey: oldKey, transaction: writeTx)
+                    let existingValue: KeyMetadata? = try keyMetadataStore.getCodableValue(forKey: oldKey, transaction: writeTx.asV2Read)
                     if let existingValue = existingValue, existingValue.keyId != oldKey {
-                        try keyMetadataStore.setCodable(existingValue, key: existingValue.keyId, transaction: writeTx)
-                        keyMetadataStore.removeValue(forKey: oldKey, transaction: writeTx)
+                        try keyMetadataStore.setCodable(existingValue, key: existingValue.keyId, transaction: writeTx.asV2Write)
+                        keyMetadataStore.removeValue(forKey: oldKey, transaction: writeTx.asV2Write)
                     }
                 } catch {
                     owsFailDebug("Failed to serialize key metadata: \(error)")
-                    keyMetadataStore.removeValue(forKey: oldKey, transaction: writeTx)
+                    keyMetadataStore.removeValue(forKey: oldKey, transaction: writeTx.asV2Write)
                 }
             }
         }
@@ -359,7 +359,7 @@ extension SenderKeyStore {
         for commonThread in TSGroupThread.groupThreads(with: recipient, transaction: transaction) {
             autoreleasepool {
                 let threadId = commonThread.threadUniqueId
-                let distributionIdString = sendingDistributionIdStore.getString(threadId, transaction: transaction)
+                let distributionIdString = sendingDistributionIdStore.getString(threadId, transaction: transaction.asV2Read)
                 let distributionId = distributionIdString.flatMap { UUID(uuidString: $0) }
                 guard let distributionId = distributionId else { return }
 
@@ -367,7 +367,7 @@ extension SenderKeyStore {
                 let keyId = Self.buildKeyId(authorAci: localAci, distributionId: distributionId)
                 let keyMetadata: KeyMetadata?
                 do {
-                    keyMetadata = try keyMetadataStore.getCodableValue(forKey: keyId, transaction: transaction)
+                    keyMetadata = try keyMetadataStore.getCodableValue(forKey: keyId, transaction: transaction.asV2Read)
                 } catch {
                     owsFailDebug("Failed to deserialize key metadata \(error)")
                     keyMetadata = nil

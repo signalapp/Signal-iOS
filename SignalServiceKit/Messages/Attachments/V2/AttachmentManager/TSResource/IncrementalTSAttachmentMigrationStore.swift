@@ -20,10 +20,10 @@ public class IncrementalTSAttachmentMigrationStore {
     private let kvStore = SDSKeyValueStore(collection: "IncrementalMessageTSAttachmentMigrator")
 
     public func getState(tx: SDSAnyReadTransaction) -> State {
-        return (try? kvStore.getCodableValue(forKey: State.key, transaction: tx)) ?? .unstarted
+        return (try? kvStore.getCodableValue(forKey: State.key, transaction: tx.asV2Read)) ?? .unstarted
     }
 
     public func setState(_ state: State, tx: SDSAnyWriteTransaction) throws {
-        try kvStore.setCodable(state, key: State.key, transaction: tx)
+        try kvStore.setCodable(state, key: State.key, transaction: tx.asV2Write)
     }
 }

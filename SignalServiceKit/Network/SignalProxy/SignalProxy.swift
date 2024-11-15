@@ -37,8 +37,8 @@ public class SignalProxy: NSObject {
         let useProxyToStore = hostToStore == nil ? false : useProxy
         owsAssertDebug(useProxyToStore == useProxy)
 
-        keyValueStore.setString(hostToStore, key: proxyHostKey, transaction: transaction)
-        keyValueStore.setBool(useProxyToStore, key: proxyUseKey, transaction: transaction)
+        keyValueStore.setString(hostToStore, key: proxyHostKey, transaction: transaction.asV2Write)
+        keyValueStore.setBool(useProxyToStore, key: proxyUseKey, transaction: transaction.asV2Write)
 
         transaction.addSyncCompletion {
             self.host = hostToStore
@@ -50,8 +50,8 @@ public class SignalProxy: NSObject {
     public class func warmCaches(appReadiness: AppReadiness) {
         appReadiness.runNowOrWhenAppWillBecomeReady {
             SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                host = keyValueStore.getString(proxyHostKey, transaction: transaction)
-                useProxy = keyValueStore.getBool(proxyUseKey, defaultValue: false, transaction: transaction)
+                host = keyValueStore.getString(proxyHostKey, transaction: transaction.asV2Read)
+                useProxy = keyValueStore.getBool(proxyUseKey, defaultValue: false, transaction: transaction.asV2Read)
             }
 
             NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive), name: .OWSApplicationDidBecomeActive, object: nil)

@@ -66,7 +66,7 @@ public class GroupV2UpdatesImpl {
     private func didUpdateGroupToCurrentRevision(groupId: Data) async {
         let storeKey = groupId.hexadecimalString
         return await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
-            Self.groupRefreshStore.setDate(Date(), key: storeKey, transaction: transaction)
+            Self.groupRefreshStore.setDate(Date(), key: storeKey, transaction: transaction.asV2Write)
         }
     }
 
@@ -99,7 +99,7 @@ public class GroupV2UpdatesImpl {
                 let storeKey = groupThread.groupId.hexadecimalString
                 guard let lastRefreshDate: Date = Self.groupRefreshStore.getDate(
                     storeKey,
-                    transaction: transaction
+                    transaction: transaction.asV2Read
                 ) else {
                     // If we find a group that we have no record of refreshing,
                     // pick that one immediately.

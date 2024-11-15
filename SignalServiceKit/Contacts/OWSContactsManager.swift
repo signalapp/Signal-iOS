@@ -328,7 +328,7 @@ extension OWSContactsManager: ContactManager {
         if
             lowTrustCache === swiftValues.avatarBlurringCache,
             let storeKey = address.serviceId?.serviceIdUppercaseString,
-            swiftValues.skipContactAvatarBlurByServiceIdStore.getBool(storeKey, defaultValue: false, transaction: tx)
+            swiftValues.skipContactAvatarBlurByServiceIdStore.getBool(storeKey, defaultValue: false, transaction: tx.asV2Read)
         {
             lowTrustCache.add(address: address)
             return false
@@ -435,7 +435,7 @@ extension OWSContactsManager: ContactManager {
         if swiftValues.skipGroupAvatarBlurByGroupIdStore.getBool(
             groupThread.groupId.hexadecimalString,
             defaultValue: false,
-            transaction: transaction)
+            transaction: transaction.asV2Read)
         {
             swiftValues.avatarBlurringCache.add(groupThread: groupThread)
             return false
@@ -455,12 +455,12 @@ extension OWSContactsManager: ContactManager {
             return
         }
         let storeKey = serviceId.serviceIdUppercaseString
-        let shouldSkipBlur = swiftValues.skipContactAvatarBlurByServiceIdStore.getBool(storeKey, defaultValue: false, transaction: tx)
+        let shouldSkipBlur = swiftValues.skipContactAvatarBlurByServiceIdStore.getBool(storeKey, defaultValue: false, transaction: tx.asV2Read)
         guard !shouldSkipBlur else {
             owsFailDebug("Value did not change.")
             return
         }
-        swiftValues.skipContactAvatarBlurByServiceIdStore.setBool(true, key: storeKey, transaction: tx)
+        swiftValues.skipContactAvatarBlurByServiceIdStore.setBool(true, key: storeKey, transaction: tx.asV2Write)
         if let contactThread = TSContactThread.getWithContactAddress(address, transaction: tx) {
             SSKEnvironment.shared.databaseStorageRef.touch(thread: contactThread, shouldReindex: false, transaction: tx)
         }
@@ -481,7 +481,7 @@ extension OWSContactsManager: ContactManager {
         guard !swiftValues.skipGroupAvatarBlurByGroupIdStore.getBool(
             groupId.hexadecimalString,
             defaultValue: false,
-            transaction: transaction
+            transaction: transaction.asV2Read
         ) else {
             owsFailDebug("Value did not change.")
             return
@@ -489,7 +489,7 @@ extension OWSContactsManager: ContactManager {
         swiftValues.skipGroupAvatarBlurByGroupIdStore.setBool(
             true,
             key: groupId.hexadecimalString,
-            transaction: transaction
+            transaction: transaction.asV2Write
         )
         SSKEnvironment.shared.databaseStorageRef.touch(thread: groupThread, shouldReindex: false, transaction: transaction)
 
@@ -888,11 +888,11 @@ extension OWSContactsManager: ContactManager {
     }
 
     private func fetchPriorIntersectionPhoneNumbers(tx: SDSAnyReadTransaction) -> Set<String>? {
-        keyValueStore.getObject(forKey: Constants.lastKnownContactPhoneNumbers, transaction: tx) as? Set<String>
+        keyValueStore.getObject(forKey: Constants.lastKnownContactPhoneNumbers, transaction: tx.asV2Read) as? Set<String>
     }
 
     private func setPriorIntersectionPhoneNumbers(_ phoneNumbers: Set<String>, tx: SDSAnyWriteTransaction) {
-        keyValueStore.setObject(phoneNumbers, key: Constants.lastKnownContactPhoneNumbers, transaction: tx)
+        keyValueStore.setObject(phoneNumbers, key: Constants.lastKnownContactPhoneNumbers, transaction: tx.asV2Write)
     }
 
     private enum IntersectionMode {
@@ -908,7 +908,7 @@ extension OWSContactsManager: ContactManager {
         if isUserRequested {
             return .fullIntersection
         }
-        let nextFullIntersectionDate = keyValueStore.getDate(Constants.nextFullIntersectionDate, transaction: tx)
+        let nextFullIntersectionDate = keyValueStore.getDate(Constants.nextFullIntersectionDate, transaction: tx.asV2Read)
         guard let nextFullIntersectionDate, nextFullIntersectionDate.isAfterNow else {
             return .fullIntersection
         }
@@ -1006,11 +1006,11 @@ extension OWSContactsManager: ContactManager {
         intersectedRecipients: some Sequence<SignalRecipient>,
         tx: SDSAnyWriteTransaction
     ) {
-        let didIntersectAtLeastOnce = keyValueStore.getBool(Constants.didIntersectAddressBook, defaultValue: false, transaction: tx)
+        let didIntersectAtLeastOnce = keyValueStore.getBool(Constants.didIntersectAddressBook, defaultValue: false, transaction: tx.asV2Read)
         guard didIntersectAtLeastOnce else {
             // This is the first address book intersection. Don't post notifications,
             // but mark the flag so that we post notifications next time.
-            keyValueStore.setBool(true, key: Constants.didIntersectAddressBook, transaction: tx)
+            keyValueStore.setBool(true, key: Constants.didIntersectAddressBook, transaction: tx.asV2Write)
             return
         }
         guard SSKEnvironment.shared.preferencesRef.shouldNotifyOfNewAccounts(transaction: tx) else {
@@ -1067,7 +1067,7 @@ extension OWSContactsManager: ContactManager {
         case .fullIntersection:
             setPriorIntersectionPhoneNumbers(phoneNumbers, tx: tx)
             let nextFullIntersectionDate = Date(timeIntervalSinceNow: RemoteConfig.current.cdsSyncInterval)
-            keyValueStore.setDate(nextFullIntersectionDate, key: Constants.nextFullIntersectionDate, transaction: tx)
+            keyValueStore.setDate(nextFullIntersectionDate, key: Constants.nextFullIntersectionDate, transaction: tx.asV2Write)
 
         case .deltaIntersection:
             // If a user has a "flaky" address book (perhaps it's a network-linked

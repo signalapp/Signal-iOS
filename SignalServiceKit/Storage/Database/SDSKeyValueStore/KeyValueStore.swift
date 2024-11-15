@@ -42,13 +42,6 @@ public protocol KeyValueStore {
 
     func setBool(_ value: Bool, key: String, transaction: DBWriteTransaction)
 
-    func setBoolIfChanged(
-        _ value: Bool,
-        defaultValue: Bool,
-        key: String,
-        transaction: DBWriteTransaction
-    )
-
     // MARK: - UInt
 
     func getUInt(_ key: String, transaction: DBReadTransaction) -> UInt?
@@ -63,10 +56,6 @@ public protocol KeyValueStore {
     func getData(_ key: String, transaction: DBReadTransaction) -> Data?
 
     func setData(_ value: Data?, key: String, transaction: DBWriteTransaction)
-
-    // MARK: - Numeric
-
-    func getNSNumber(_ key: String, transaction: DBReadTransaction) -> NSNumber?
 
     // MARK: - Int
 
@@ -137,8 +126,6 @@ public protocol KeyValueStore {
     func allValues(transaction: DBReadTransaction) -> [Any]
 
     func allDataValues(transaction: DBReadTransaction) -> [Data]
-
-    func allBoolValuesMap(transaction: DBReadTransaction) -> [String: Bool]
 
     func allUIntValuesMap(transaction: DBReadTransaction) -> [String: UInt]
 

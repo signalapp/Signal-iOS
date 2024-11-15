@@ -262,7 +262,7 @@ private class ContactDiscoveryV2PersistentStateImpl: ContactDiscoveryV2Persisten
 
     func load() -> (token: Data, e164s: Set<E164>)? {
         SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            guard let existingToken = Self.tokenStore.getData(Self.tokenKey, transaction: transaction) else {
+            guard let existingToken = Self.tokenStore.getData(Self.tokenKey, transaction: transaction.asV2Read) else {
                 return nil
             }
             let validatedE164s: Set<E164>
@@ -289,7 +289,7 @@ private class ContactDiscoveryV2PersistentStateImpl: ContactDiscoveryV2Persisten
         try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
             let database = transaction.unwrapGrdbWrite.database
 
-            Self.tokenStore.setData(newToken, key: Self.tokenKey, transaction: transaction)
+            Self.tokenStore.setData(newToken, key: Self.tokenKey, transaction: transaction.asV2Write)
 
             // If we didn't use an old token, clear any local e164s. On the initial
             // request, this should be a no-op. If we're trying to recover from a
@@ -310,7 +310,7 @@ private class ContactDiscoveryV2PersistentStateImpl: ContactDiscoveryV2Persisten
     func reset() async {
         Logger.warn("CDSv2: Resetting token")
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
-            Self.tokenStore.removeValue(forKey: Self.tokenKey, transaction: transaction)
+            Self.tokenStore.removeValue(forKey: Self.tokenKey, transaction: transaction.asV2Write)
         }
     }
 }

@@ -352,7 +352,7 @@ public extension DatabaseRecovery {
 
         static let tablesThatMustBeCopiedFlawlessly: [String] = [
             // The app will be too unpredictable with strange key-value stores.
-            SDSKeyValueStore.table.tableName,
+            SDSKeyValueStore.tableName,
             // If we get a disappearing timer wrong, users might send messages incorrectly.
             DisappearingMessagesConfigurationRecord.databaseTableName,
             // We don't want to get our linked devices wrong.

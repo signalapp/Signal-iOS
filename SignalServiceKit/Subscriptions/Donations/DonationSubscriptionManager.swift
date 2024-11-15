@@ -216,7 +216,7 @@ public class DonationSubscriptionManager: NSObject {
 
     public static func performMigrationToStorageServiceIfNecessary() {
         let hasMigratedToStorageService = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            subscriptionKVS.getBool(hasMigratedToStorageServiceKey, defaultValue: false, transaction: transaction)
+            subscriptionKVS.getBool(hasMigratedToStorageServiceKey, defaultValue: false, transaction: transaction.asV2Read)
         }
 
         guard !hasMigratedToStorageService else { return }
@@ -224,7 +224,7 @@ public class DonationSubscriptionManager: NSObject {
         Logger.info("[Donations] Migrating to storage service")
 
         SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
-            subscriptionKVS.setBool(true, key: hasMigratedToStorageServiceKey, transaction: transaction)
+            subscriptionKVS.setBool(true, key: hasMigratedToStorageServiceKey, transaction: transaction.asV2Write)
 
             let localProfile = SSKEnvironment.shared.profileManagerImplRef.localUserProfile
             let displayBadgesOnProfile = localProfile.badges.allSatisfy { badge in
@@ -859,7 +859,7 @@ public class DonationSubscriptionManager: NSObject {
         var subscriberID: Data?
         var currencyCode: Currency.Code?
         SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            lastKeepAliveHeartbeat = self.subscriptionKVS.getDate(self.lastSubscriptionHeartbeatKey, transaction: transaction)
+            lastKeepAliveHeartbeat = self.subscriptionKVS.getDate(self.lastSubscriptionHeartbeatKey, transaction: transaction.asV2Read)
             lastSubscriptionExpiration = self.lastSubscriptionExpirationDate(transaction: transaction)
             subscriberID = self.getSubscriberID(transaction: transaction)
             currencyCode = self.getSubscriberCurrencyCode(transaction: transaction)
@@ -966,7 +966,7 @@ public class DonationSubscriptionManager: NSObject {
     private static func updateSubscriptionHeartbeatDate() {
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
             // Update keepalive
-            self.subscriptionKVS.setDate(Date(), key: self.lastSubscriptionHeartbeatKey, transaction: transaction)
+            self.subscriptionKVS.setDate(Date(), key: self.lastSubscriptionHeartbeatKey, transaction: transaction.asV2Write)
         }
     }
 
@@ -977,7 +977,7 @@ public class DonationSubscriptionManager: NSObject {
         var lastSubscriptionExpiration: Date?
         var subscriberID: Data?
         SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            lastSubscriptionExpiration = self.subscriptionKVS.getDate(self.lastSubscriptionExpirationKey, transaction: transaction)
+            lastSubscriptionExpiration = self.subscriptionKVS.getDate(self.lastSubscriptionExpirationKey, transaction: transaction.asV2Read)
             subscriberID = self.getSubscriberID(transaction: transaction)
         }
 
@@ -1018,7 +1018,7 @@ extension DonationSubscriptionManager {
     public static func getSubscriberID(transaction: SDSAnyReadTransaction) -> Data? {
         guard let subscriberID = subscriptionKVS.getObject(
             forKey: subscriberIDKey,
-            transaction: transaction
+            transaction: transaction.asV2Read
         ) as? Data else {
             return nil
         }
@@ -1028,13 +1028,13 @@ extension DonationSubscriptionManager {
     public static func setSubscriberID(_ subscriberID: Data?, transaction: SDSAnyWriteTransaction) {
         subscriptionKVS.setObject(subscriberID,
                                   key: subscriberIDKey,
-                                  transaction: transaction)
+                                  transaction: transaction.asV2Write)
     }
 
     public static func getSubscriberCurrencyCode(transaction: SDSAnyReadTransaction) -> String? {
         guard let subscriberCurrencyCode = subscriptionKVS.getObject(
             forKey: subscriberCurrencyCodeKey,
-            transaction: transaction
+            transaction: transaction.asV2Read
         ) as? String else {
             return nil
         }
@@ -1047,16 +1047,16 @@ extension DonationSubscriptionManager {
     ) {
         subscriptionKVS.setObject(currencyCode,
                                   key: subscriberCurrencyCodeKey,
-                                  transaction: transaction)
+                                  transaction: transaction.asV2Write)
     }
 
     public static func userManuallyCancelledSubscription(transaction: SDSAnyReadTransaction) -> Bool {
-        return subscriptionKVS.getBool(userManuallyCancelledSubscriptionKey, transaction: transaction) ?? false
+        return subscriptionKVS.getBool(userManuallyCancelledSubscriptionKey, transaction: transaction.asV2Read) ?? false
     }
 
     public static func setUserManuallyCancelledSubscription(_ value: Bool, updateStorageService: Bool = false, transaction: SDSAnyWriteTransaction) {
         guard value != userManuallyCancelledSubscription(transaction: transaction) else { return }
-        subscriptionKVS.setBool(value, key: userManuallyCancelledSubscriptionKey, transaction: transaction)
+        subscriptionKVS.setBool(value, key: userManuallyCancelledSubscriptionKey, transaction: transaction.asV2Write)
         if updateStorageService {
             SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
         }
@@ -1071,13 +1071,13 @@ extension DonationSubscriptionManager {
     }
 
     public static func displayBadgesOnProfile(transaction: SDSAnyReadTransaction) -> Bool {
-        return subscriptionKVS.getBool(displayBadgesOnProfileKey, transaction: transaction) ?? false
+        return subscriptionKVS.getBool(displayBadgesOnProfileKey, transaction: transaction.asV2Read) ?? false
     }
 
     public static func setDisplayBadgesOnProfile(_ value: Bool, updateStorageService: Bool = false, transaction: SDSAnyWriteTransaction) {
         guard value != displayBadgesOnProfile(transaction: transaction) else { return }
         displayBadgesOnProfileCache.set(value)
-        subscriptionKVS.setBool(value, key: displayBadgesOnProfileKey, transaction: transaction)
+        subscriptionKVS.setBool(value, key: displayBadgesOnProfileKey, transaction: transaction.asV2Write)
         if updateStorageService {
             SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
         }
@@ -1086,33 +1086,33 @@ extension DonationSubscriptionManager {
     // MARK: -
 
     fileprivate static func lastSubscriptionExpirationDate(transaction: SDSAnyReadTransaction) -> Date? {
-        return subscriptionKVS.getDate(lastSubscriptionExpirationKey, transaction: transaction)
+        return subscriptionKVS.getDate(lastSubscriptionExpirationKey, transaction: transaction.asV2Read)
     }
 
     fileprivate static func setLastSubscriptionExpirationDate(_ expirationDate: Date?, transaction: SDSAnyWriteTransaction) {
         guard let expirationDate = expirationDate else {
-            subscriptionKVS.removeValue(forKey: lastSubscriptionExpirationKey, transaction: transaction)
+            subscriptionKVS.removeValue(forKey: lastSubscriptionExpirationKey, transaction: transaction.asV2Write)
             return
         }
 
-        subscriptionKVS.setDate(expirationDate, key: lastSubscriptionExpirationKey, transaction: transaction)
+        subscriptionKVS.setDate(expirationDate, key: lastSubscriptionExpirationKey, transaction: transaction.asV2Write)
     }
 
     fileprivate static func setKnownUserSubscriptionBadgeIDs(badgeIDs: [String], transaction: SDSAnyWriteTransaction) {
-        subscriptionKVS.setObject(badgeIDs, key: knownUserSubscriptionBadgeIDsKey, transaction: transaction)
+        subscriptionKVS.setObject(badgeIDs, key: knownUserSubscriptionBadgeIDsKey, transaction: transaction.asV2Write)
     }
 
     fileprivate static func knownUserSubscriptionBadgeIDs(transaction: SDSAnyReadTransaction) -> [String] {
-        let ids = subscriptionKVS.getObject(forKey: knownUserSubscriptionBadgeIDsKey, transaction: transaction) as? [String]
+        let ids = subscriptionKVS.getObject(forKey: knownUserSubscriptionBadgeIDsKey, transaction: transaction.asV2Read) as? [String]
         return ids ?? []
     }
 
     fileprivate static func setKnownUserBoostBadgeIDs(badgeIDs: [String], transaction: SDSAnyWriteTransaction) {
-        subscriptionKVS.setObject(badgeIDs, key: knownUserBoostBadgeIDsKey, transaction: transaction)
+        subscriptionKVS.setObject(badgeIDs, key: knownUserBoostBadgeIDsKey, transaction: transaction.asV2Write)
     }
 
     fileprivate static func knownUserBoostBadgeIDs(transaction: SDSAnyReadTransaction) -> [String] {
-        guard let ids = subscriptionKVS.getObject(forKey: knownUserBoostBadgeIDsKey, transaction: transaction) as? [String] else {
+        guard let ids = subscriptionKVS.getObject(forKey: knownUserBoostBadgeIDsKey, transaction: transaction.asV2Read) as? [String] else {
             return []
         }
 
@@ -1120,25 +1120,25 @@ extension DonationSubscriptionManager {
     }
 
     fileprivate static func setKnownUserGiftBadgeIDs(badgeIDs: [String], transaction: SDSAnyWriteTransaction) {
-        subscriptionKVS.setObject(badgeIDs, key: knownUserGiftBadgeIDsKey, transaction: transaction)
+        subscriptionKVS.setObject(badgeIDs, key: knownUserGiftBadgeIDsKey, transaction: transaction.asV2Write)
     }
 
     fileprivate static func knownUserGiftBadgeIDs(transaction: SDSAnyReadTransaction) -> [String] {
-        subscriptionKVS.getObject(forKey: knownUserGiftBadgeIDsKey, transaction: transaction) as? [String] ?? []
+        subscriptionKVS.getObject(forKey: knownUserGiftBadgeIDsKey, transaction: transaction.asV2Read) as? [String] ?? []
     }
 
     fileprivate static func setMostRecentlyExpiredBadgeID(badgeID: String?, transaction: SDSAnyWriteTransaction) {
         guard let badgeID = badgeID else {
-            subscriptionKVS.removeValue(forKey: mostRecentlyExpiredBadgeIDKey, transaction: transaction)
+            subscriptionKVS.removeValue(forKey: mostRecentlyExpiredBadgeIDKey, transaction: transaction.asV2Write)
             return
         }
 
-        subscriptionKVS.setString(badgeID, key: mostRecentlyExpiredBadgeIDKey, transaction: transaction)
+        subscriptionKVS.setString(badgeID, key: mostRecentlyExpiredBadgeIDKey, transaction: transaction.asV2Write)
 
     }
 
     public static func mostRecentlyExpiredBadgeID(transaction: SDSAnyReadTransaction) -> String? {
-        subscriptionKVS.getString(mostRecentlyExpiredBadgeIDKey, transaction: transaction)
+        subscriptionKVS.getString(mostRecentlyExpiredBadgeIDKey, transaction: transaction.asV2Read)
     }
 
     public static func clearMostRecentlyExpiredBadgeIDWithSneakyTransaction() {
@@ -1149,9 +1149,9 @@ extension DonationSubscriptionManager {
 
     fileprivate static func setMostRecentlyExpiredGiftBadgeID(badgeID: String?, transaction: SDSAnyWriteTransaction) {
         if let badgeID = badgeID {
-            subscriptionKVS.setString(badgeID, key: mostRecentlyExpiredGiftBadgeIDKey, transaction: transaction)
+            subscriptionKVS.setString(badgeID, key: mostRecentlyExpiredGiftBadgeIDKey, transaction: transaction.asV2Write)
         } else {
-            subscriptionKVS.removeValue(forKey: mostRecentlyExpiredGiftBadgeIDKey, transaction: transaction)
+            subscriptionKVS.removeValue(forKey: mostRecentlyExpiredGiftBadgeIDKey, transaction: transaction.asV2Write)
         }
         transaction.addAsyncCompletionOnMain {
             NotificationCenter.default.post(name: .hasExpiredGiftBadgeDidChangeNotification, object: nil)
@@ -1159,7 +1159,7 @@ extension DonationSubscriptionManager {
     }
 
     public static func mostRecentlyExpiredGiftBadgeID(transaction: SDSAnyReadTransaction) -> String? {
-        subscriptionKVS.getString(mostRecentlyExpiredGiftBadgeIDKey, transaction: transaction)
+        subscriptionKVS.getString(mostRecentlyExpiredGiftBadgeIDKey, transaction: transaction.asV2Read)
     }
 
     public static func clearMostRecentlyExpiredGiftBadgeIDWithSneakyTransaction() {
@@ -1170,22 +1170,22 @@ extension DonationSubscriptionManager {
 
     public static func setShowExpirySheetOnHomeScreenKey(show: Bool, transaction: SDSAnyWriteTransaction) {
         Logger.info("\(show)")
-        subscriptionKVS.setBool(show, key: showExpirySheetOnHomeScreenKey, transaction: transaction)
+        subscriptionKVS.setBool(show, key: showExpirySheetOnHomeScreenKey, transaction: transaction.asV2Write)
     }
 
     public static func showExpirySheetOnHomeScreenKey(transaction: SDSAnyReadTransaction) -> Bool {
-        return subscriptionKVS.getBool(showExpirySheetOnHomeScreenKey, transaction: transaction) ?? false
+        return subscriptionKVS.getBool(showExpirySheetOnHomeScreenKey, transaction: transaction.asV2Read) ?? false
     }
 
     public static func setMostRecentSubscriptionPaymentMethod(
         paymentMethod: DonationPaymentMethod?,
         transaction: SDSAnyWriteTransaction
     ) {
-        subscriptionKVS.setString(paymentMethod?.rawValue, key: mostRecentSubscriptionPaymentMethodKey, transaction: transaction)
+        subscriptionKVS.setString(paymentMethod?.rawValue, key: mostRecentSubscriptionPaymentMethodKey, transaction: transaction.asV2Write)
     }
 
     public static func getMostRecentSubscriptionPaymentMethod(transaction: SDSAnyReadTransaction) -> DonationPaymentMethod? {
-        guard let paymentMethodString = subscriptionKVS.getString(mostRecentSubscriptionPaymentMethodKey, transaction: transaction) else {
+        guard let paymentMethodString = subscriptionKVS.getString(mostRecentSubscriptionPaymentMethodKey, transaction: transaction.asV2Read) else {
             return nil
         }
 

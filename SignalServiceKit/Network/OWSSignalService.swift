@@ -256,7 +256,7 @@ public class OWSSignalService: OWSSignalServiceProtocol {
             return self.keyValueStore.getBool(
                 Constants.isCensorshipCircumventionManuallyActivatedKey,
                 defaultValue: false,
-                transaction: transaction
+                transaction: transaction.asV2Read
             )
         }
     }
@@ -266,7 +266,7 @@ public class OWSSignalService: OWSSignalServiceProtocol {
             self.keyValueStore.setBool(
                 value,
                 key: Constants.isCensorshipCircumventionManuallyActivatedKey,
-                transaction: transaction
+                transaction: transaction.asV2Write
             )
         }
     }
@@ -276,7 +276,7 @@ public class OWSSignalService: OWSSignalServiceProtocol {
             return self.keyValueStore.getBool(
                 Constants.isCensorshipCircumventionManuallyDisabledKey,
                 defaultValue: false,
-                transaction: transaction
+                transaction: transaction.asV2Read
             )
         }
     }
@@ -286,7 +286,7 @@ public class OWSSignalService: OWSSignalServiceProtocol {
             self.keyValueStore.setBool(
                 value,
                 key: Constants.isCensorshipCircumventionManuallyDisabledKey,
-                transaction: transaction
+                transaction: transaction.asV2Write
             )
         }
     }
@@ -295,7 +295,7 @@ public class OWSSignalService: OWSSignalServiceProtocol {
         return SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return self.keyValueStore.getString(
                 Constants.manualCensorshipCircumventionCountryCodeKey,
-                transaction: transaction
+                transaction: transaction.asV2Read
             )
         }
     }
@@ -305,7 +305,7 @@ public class OWSSignalService: OWSSignalServiceProtocol {
             self.keyValueStore.setString(
                 value,
                 key: Constants.manualCensorshipCircumventionCountryCodeKey,
-                transaction: transaction
+                transaction: transaction.asV2Write
             )
         }
     }

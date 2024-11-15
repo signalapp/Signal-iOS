@@ -1278,7 +1278,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
         let shouldShowPrompt = SSKEnvironment.shared.databaseStorageRef.read { tx in
             // If we've shown the prompt recently, don't show it again.
-            let promptCount = keyValueStore.getInt(promptCountKey, defaultValue: 0, transaction: tx)
+            let promptCount = keyValueStore.getInt(promptCountKey, defaultValue: 0, transaction: tx.asV2Read)
             let promptBackoff: TimeInterval = {
                 switch promptCount {
                 case 0:
@@ -1293,7 +1293,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                     return 96*kHourInterval
                 }
             }()
-            let mostRecentDate = keyValueStore.getDate(mostRecentDateKey, transaction: tx)
+            let mostRecentDate = keyValueStore.getDate(mostRecentDateKey, transaction: tx.asV2Read)
             if let mostRecentDate, -mostRecentDate.timeIntervalSinceNow < promptBackoff {
                 return false
             }
@@ -1342,11 +1342,11 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         self.present(actionSheet, animated: true)
 
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-            keyValueStore.setDate(promptDate, key: mostRecentDateKey, transaction: tx)
+            keyValueStore.setDate(promptDate, key: mostRecentDateKey, transaction: tx.asV2Write)
             keyValueStore.setInt(
-                keyValueStore.getInt(promptCountKey, defaultValue: 0, transaction: tx) + 1,
+                keyValueStore.getInt(promptCountKey, defaultValue: 0, transaction: tx.asV2Read) + 1,
                 key: promptCountKey,
-                transaction: tx
+                transaction: tx.asV2Write
             )
         }
     }

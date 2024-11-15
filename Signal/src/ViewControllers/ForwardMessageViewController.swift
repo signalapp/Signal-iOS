@@ -258,12 +258,12 @@ extension ForwardMessageViewController {
 
     private var hasForwardedWithSneakyTransaction: Bool {
         SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            Self.keyValueStore.getBool(Self.hasForwardedKey, defaultValue: false, transaction: transaction)
+            Self.keyValueStore.getBool(Self.hasForwardedKey, defaultValue: false, transaction: transaction.asV2Read)
         }
     }
     private static func markHasForwardedWithSneakyTransaction() {
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            Self.keyValueStore.setBool(true, key: Self.hasForwardedKey, transaction: transaction)
+            Self.keyValueStore.setBool(true, key: Self.hasForwardedKey, transaction: transaction.asV2Write)
         }
     }
 

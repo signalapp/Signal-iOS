@@ -84,7 +84,7 @@ private class BannerHiding {
             try bannerHidingStore.setCodable(
                 stateToWrite,
                 key: Self.hiddenStateKey(forThreadId: threadId),
-                transaction: transaction
+                transaction: transaction.asV2Write
             )
         } catch let error {
             owsFailDebug("Caught error while encoding banner hiding state: \(error)!")
@@ -95,7 +95,7 @@ private class BannerHiding {
         do {
             return try bannerHidingStore.getCodableValue(
                 forKey: Self.hiddenStateKey(forThreadId: threadId),
-                transaction: transaction
+                transaction: transaction.asV2Read
             )
         } catch let error {
             owsFailDebug("Caught error while getting banner hiding state: \(error)!")
@@ -153,7 +153,7 @@ private class PendingMemberRequestsBannerHiding: BannerHiding {
             try bannerHidingStore.setCodable(
                 newPendingMemberRequestState,
                 key: Self.requestingMembersStateKey(forThreadId: threadId),
-                transaction: transaction
+                transaction: transaction.asV2Write
             )
         } catch let error {
             owsFailDebug("Caught error while encoding banner hiding state: \(error)!")
@@ -167,7 +167,7 @@ private class PendingMemberRequestsBannerHiding: BannerHiding {
         do {
             return try bannerHidingStore.getCodableValue(
                 forKey: Self.requestingMembersStateKey(forThreadId: threadId),
-                transaction: transaction
+                transaction: transaction.asV2Read
             )
         } catch let error {
             owsFailDebug("Caught error while getting banner hiding state: \(error)!")

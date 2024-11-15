@@ -226,10 +226,6 @@ public class InMemoryKeyValueStore: KeyValueStore {
         return allValues(transaction: transaction).compactMap { $0 as? Data }
     }
 
-    public func allBoolValuesMap(transaction: SignalServiceKit.DBReadTransaction) -> [String: Bool] {
-        return dict.compactMapValues { $0 as? Bool }
-    }
-
     public func allUIntValuesMap(transaction: SignalServiceKit.DBReadTransaction) -> [String: UInt] {
         return dict.compactMapValues { $0 as? UInt }
     }

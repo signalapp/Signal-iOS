@@ -506,7 +506,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
 
     public func resetLocalData(transaction: DBWriteTransaction) {
         Logger.info("Resetting local storage service data.")
-        StorageServiceOperation.keyValueStore.removeAll(transaction: SDSDB.shimOnlyBridge(transaction))
+        StorageServiceOperation.keyValueStore.removeAll(transaction: transaction)
     }
 
     private func cleanUpUnknownData() {
@@ -1554,7 +1554,7 @@ class StorageServiceOperation {
         var (state, migrationVersion) = SSKEnvironment.shared.databaseStorageRef.read { tx in
             var state = State.current(transaction: tx)
             normalizePendingMutations(in: &state, transaction: tx)
-            return (state, Self.migrationStore.getInt(Self.versionKey, defaultValue: 0, transaction: tx))
+            return (state, Self.migrationStore.getInt(Self.versionKey, defaultValue: 0, transaction: tx.asV2Read))
         }
 
         await self.cleanUpUnknownIdentifiers(in: &state)
@@ -1565,7 +1565,7 @@ class StorageServiceOperation {
         case 0:
             await self.recordPendingMutationsForContactsWithPNIs(in: &state)
             await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-                Self.migrationStore.setInt(1, key: Self.versionKey, transaction: tx)
+                Self.migrationStore.setInt(1, key: Self.versionKey, transaction: tx.asV2Write)
             }
             fallthrough
         default:
@@ -2047,7 +2047,7 @@ class StorageServiceOperation {
         private static let stateKey = "state"
 
         fileprivate static func current(transaction: SDSAnyReadTransaction) -> State {
-            guard let stateData = keyValueStore.getData(stateKey, transaction: transaction) else { return State() }
+            guard let stateData = keyValueStore.getData(stateKey, transaction: transaction.asV2Read) else { return State() }
             guard let current = try? JSONDecoder().decode(State.self, from: stateData) else {
                 owsFailDebug("failed to decode state data")
                 return State()
@@ -2058,7 +2058,7 @@ class StorageServiceOperation {
         fileprivate mutating func save(clearConsecutiveConflicts: Bool = false, transaction: SDSAnyWriteTransaction) {
             if clearConsecutiveConflicts { consecutiveConflicts = 0 }
             guard let stateData = try? JSONEncoder().encode(self) else { return owsFailDebug("failed to encode state data") }
-            keyValueStore.setData(stateData, key: State.stateKey, transaction: transaction)
+            keyValueStore.setData(stateData, key: State.stateKey, transaction: transaction.asV2Write)
         }
 
     }

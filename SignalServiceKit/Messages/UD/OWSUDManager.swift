@@ -229,7 +229,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     private func unidentifiedAccessMode(for serviceId: ServiceId, tx: SDSAnyReadTransaction) -> UnidentifiedAccessMode {
         let existingValue: UnidentifiedAccessMode? = {
-            guard let rawValue = serviceIdAccessStore.getInt(serviceId.serviceIdUppercaseString, transaction: tx) else {
+            guard let rawValue = serviceIdAccessStore.getInt(serviceId.serviceIdUppercaseString, transaction: tx.asV2Read) else {
                 return nil
             }
             return UnidentifiedAccessMode(rawValue: rawValue)
@@ -242,11 +242,11 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         for serviceId: ServiceId,
         tx: SDSAnyWriteTransaction
     ) {
-        serviceIdAccessStore.setInt(mode.rawValue, key: serviceId.serviceIdUppercaseString, transaction: tx)
+        serviceIdAccessStore.setInt(mode.rawValue, key: serviceId.serviceIdUppercaseString, transaction: tx.asV2Write)
     }
 
     public func fetchAllAciUakPairs(tx: SDSAnyReadTransaction) -> [Aci: SMKUDAccessKey] {
-        let acis: [Aci] = serviceIdAccessStore.allKeys(transaction: tx).compactMap { serviceIdString in
+        let acis: [Aci] = serviceIdAccessStore.allKeys(transaction: tx.asV2Read).compactMap { serviceIdString in
             guard let aci = try? ServiceId.parseFrom(serviceIdString: serviceIdString) as? Aci else {
                 return nil
             }
@@ -319,8 +319,8 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     private func senderCertificate(aciOnly: Bool, certificateExpirationPolicy: OWSUDCertificateExpirationPolicy) -> SenderCertificate? {
         let (dateValue, dataValue) = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return (
-                self.keyValueStore.getDate(self.senderCertificateDateKey(aciOnly: aciOnly), transaction: tx),
-                self.keyValueStore.getData(self.senderCertificateKey(aciOnly: aciOnly), transaction: tx)
+                self.keyValueStore.getDate(self.senderCertificateDateKey(aciOnly: aciOnly), transaction: tx.asV2Read),
+                self.keyValueStore.getData(self.senderCertificateKey(aciOnly: aciOnly), transaction: tx.asV2Read)
             )
         }
 
@@ -349,16 +349,16 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     func setSenderCertificate(aciOnly: Bool, certificateData: Data) async {
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-            self.keyValueStore.setDate(Date(), key: self.senderCertificateDateKey(aciOnly: aciOnly), transaction: tx)
-            self.keyValueStore.setData(certificateData, key: self.senderCertificateKey(aciOnly: aciOnly), transaction: tx)
+            self.keyValueStore.setDate(Date(), key: self.senderCertificateDateKey(aciOnly: aciOnly), transaction: tx.asV2Write)
+            self.keyValueStore.setData(certificateData, key: self.senderCertificateKey(aciOnly: aciOnly), transaction: tx.asV2Write)
         }
     }
 
     public func removeSenderCertificates(transaction: SDSAnyWriteTransaction) {
-        keyValueStore.removeValue(forKey: senderCertificateDateKey(aciOnly: true), transaction: transaction)
-        keyValueStore.removeValue(forKey: senderCertificateKey(aciOnly: true), transaction: transaction)
-        keyValueStore.removeValue(forKey: senderCertificateDateKey(aciOnly: false), transaction: transaction)
-        keyValueStore.removeValue(forKey: senderCertificateKey(aciOnly: false), transaction: transaction)
+        keyValueStore.removeValue(forKey: senderCertificateDateKey(aciOnly: true), transaction: transaction.asV2Write)
+        keyValueStore.removeValue(forKey: senderCertificateKey(aciOnly: true), transaction: transaction.asV2Write)
+        keyValueStore.removeValue(forKey: senderCertificateDateKey(aciOnly: false), transaction: transaction.asV2Write)
+        keyValueStore.removeValue(forKey: senderCertificateKey(aciOnly: false), transaction: transaction.asV2Write)
     }
 
     public func removeSenderCertificates(tx: DBWriteTransaction) {
@@ -472,12 +472,12 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     }
 
     public func shouldAllowUnrestrictedAccessLocal(transaction: SDSAnyReadTransaction) -> Bool {
-        return self.keyValueStore.getBool(self.kUDUnrestrictedAccessKey, defaultValue: false, transaction: transaction)
+        return self.keyValueStore.getBool(self.kUDUnrestrictedAccessKey, defaultValue: false, transaction: transaction.asV2Read)
     }
 
     public func setShouldAllowUnrestrictedAccessLocal(_ value: Bool) {
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            self.keyValueStore.setBool(value, key: self.kUDUnrestrictedAccessKey, transaction: transaction)
+            self.keyValueStore.setBool(value, key: self.kUDUnrestrictedAccessKey, transaction: transaction.asV2Write)
         }
 
         // Try to update the account attributes to reflect this change.
@@ -495,7 +495,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     private static var phoneNumberSharingModeKey: String { "phoneNumberSharingMode" }
 
     public func phoneNumberSharingMode(tx: DBReadTransaction) -> PhoneNumberSharingMode? {
-        guard let rawMode = keyValueStore.getInt(Self.phoneNumberSharingModeKey, transaction: SDSDB.shimOnlyBridge(tx)) else {
+        guard let rawMode = keyValueStore.getInt(Self.phoneNumberSharingModeKey, transaction: tx) else {
             return nil
         }
         return PhoneNumberSharingMode(rawValue: rawMode)
@@ -506,7 +506,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         updateStorageServiceAndProfile: Bool,
         tx: SDSAnyWriteTransaction
     ) {
-        keyValueStore.setInt(mode.rawValue, key: Self.phoneNumberSharingModeKey, transaction: tx)
+        keyValueStore.setInt(mode.rawValue, key: Self.phoneNumberSharingModeKey, transaction: tx.asV2Write)
 
         if updateStorageServiceAndProfile {
             tx.addSyncCompletion {

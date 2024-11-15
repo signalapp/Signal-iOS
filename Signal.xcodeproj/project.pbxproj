@@ -1052,7 +1052,6 @@
 		669874E72CCC134600CDD7E9 /* MediaRootBackupKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669874E62CCC133E00CDD7E9 /* MediaRootBackupKeyStore.swift */; };
 		6698FC0D297EFE21004EFC30 /* KeyValueStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC0C297EFE21004EFC30 /* KeyValueStore.swift */; };
 		6698FC0F297F03FE004EFC30 /* KeyValueStoreFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC0E297F03FE004EFC30 /* KeyValueStoreFactory.swift */; };
-		6698FC11297F06ED004EFC30 /* SDSKeyValueStore+KeyValueStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC10297F06ED004EFC30 /* SDSKeyValueStore+KeyValueStore.swift */; };
 		6698FC1A2980AB45004EFC30 /* DependenciesBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC192980AB45004EFC30 /* DependenciesBridge.swift */; };
 		669941A12CC976B500DC99A1 /* LinkAndSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669941A02CC976B000DC99A1 /* LinkAndSyncManager.swift */; };
 		669947BA2A20129000E4DC0C /* SVR2Shims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669947B92A20129000E4DC0C /* SVR2Shims.swift */; };
@@ -4887,7 +4886,6 @@
 		669874E62CCC133E00CDD7E9 /* MediaRootBackupKeyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaRootBackupKeyStore.swift; sourceTree = "<group>"; };
 		6698FC0C297EFE21004EFC30 /* KeyValueStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyValueStore.swift; sourceTree = "<group>"; };
 		6698FC0E297F03FE004EFC30 /* KeyValueStoreFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyValueStoreFactory.swift; sourceTree = "<group>"; };
-		6698FC10297F06ED004EFC30 /* SDSKeyValueStore+KeyValueStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SDSKeyValueStore+KeyValueStore.swift"; sourceTree = "<group>"; };
 		6698FC13297F38BB004EFC30 /* ViewControllerContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerContext.swift; sourceTree = "<group>"; };
 		6698FC192980AB45004EFC30 /* DependenciesBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DependenciesBridge.swift; sourceTree = "<group>"; };
 		669941A02CC976B000DC99A1 /* LinkAndSyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkAndSyncManager.swift; sourceTree = "<group>"; };
@@ -9565,7 +9563,6 @@
 			children = (
 				6698FC0C297EFE21004EFC30 /* KeyValueStore.swift */,
 				6698FC0E297F03FE004EFC30 /* KeyValueStoreFactory.swift */,
-				6698FC10297F06ED004EFC30 /* SDSKeyValueStore+KeyValueStore.swift */,
 				F9C5CA4B289453B100548EEE /* SDSKeyValueStore.swift */,
 			);
 			path = SDSKeyValueStore;
@@ -18072,7 +18069,6 @@
 				6673FF8B297B6FA800F96CFD /* SDSDB.swift in Sources */,
 				F9C5CD1B289453B300548EEE /* SDSDeserialization.swift in Sources */,
 				F9C5CD13289453B300548EEE /* SDSError.swift in Sources */,
-				6698FC11297F06ED004EFC30 /* SDSKeyValueStore+KeyValueStore.swift in Sources */,
 				F9C5CD2A289453B300548EEE /* SDSKeyValueStore.swift in Sources */,
 				F9C5CD15289453B300548EEE /* SDSModel.swift in Sources */,
 				F9C5CD1E289453B300548EEE /* SDSRecord.swift in Sources */,

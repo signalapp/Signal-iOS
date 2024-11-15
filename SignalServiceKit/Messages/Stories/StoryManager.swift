@@ -213,7 +213,7 @@ public class StoryManager: NSObject {
 
     @objc
     public class func hasSetMyStoriesPrivacy(transaction: SDSAnyReadTransaction) -> Bool {
-        return keyValueStore.getBool(hasSetMyStoriesPrivacyKey, defaultValue: false, transaction: transaction)
+        return keyValueStore.getBool(hasSetMyStoriesPrivacyKey, defaultValue: false, transaction: transaction.asV2Read)
     }
 
     @objc
@@ -226,7 +226,7 @@ public class StoryManager: NSObject {
             // Don't trigger account record updates unneccesarily!
             return
         }
-        keyValueStore.setBool(hasSet, key: hasSetMyStoriesPrivacyKey, transaction: transaction)
+        keyValueStore.setBool(hasSet, key: hasSetMyStoriesPrivacyKey, transaction: transaction.asV2Write)
         if shouldUpdateStorageService {
             SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
         }
@@ -355,7 +355,7 @@ extension StoryManager {
     public static var areStoriesEnabled: Bool { areStoriesEnabledCache.get() }
 
     public static func setAreStoriesEnabled(_ areStoriesEnabled: Bool, shouldUpdateStorageService: Bool = true, transaction: SDSAnyWriteTransaction) {
-        keyValueStore.setBool(areStoriesEnabled, key: areStoriesEnabledKey, transaction: transaction)
+        keyValueStore.setBool(areStoriesEnabled, key: areStoriesEnabledKey, transaction: transaction.asV2Write)
         areStoriesEnabledCache.set(areStoriesEnabled)
 
         if shouldUpdateStorageService {
@@ -369,7 +369,7 @@ extension StoryManager {
 
     /// Have stories been enabled by the local user. This never factors in any remote information, like is the feature available to the user.
     public static func areStoriesEnabled(transaction: SDSAnyReadTransaction) -> Bool {
-        keyValueStore.getBool(areStoriesEnabledKey, defaultValue: true, transaction: transaction)
+        keyValueStore.getBool(areStoriesEnabledKey, defaultValue: true, transaction: transaction.asV2Read)
     }
 
     private static func cacheAreStoriesEnabled() {
@@ -416,12 +416,12 @@ extension StoryManager {
     @Atomic public private(set) static var areViewReceiptsEnabled: Bool = false
 
     public static func areViewReceiptsEnabled(transaction: SDSAnyReadTransaction) -> Bool {
-        keyValueStore.getBool(areViewReceiptsEnabledKey, transaction: transaction) ?? OWSReceiptManager.areReadReceiptsEnabled(transaction: transaction)
+        keyValueStore.getBool(areViewReceiptsEnabledKey, transaction: transaction.asV2Read) ?? OWSReceiptManager.areReadReceiptsEnabled(transaction: transaction)
     }
 
     // TODO: should this live on OWSReceiptManager?
     public static func setAreViewReceiptsEnabled(_ enabled: Bool, shouldUpdateStorageService: Bool = true, transaction: SDSAnyWriteTransaction) {
-        keyValueStore.setBool(enabled, key: areViewReceiptsEnabledKey, transaction: transaction)
+        keyValueStore.setBool(enabled, key: areViewReceiptsEnabledKey, transaction: transaction.asV2Write)
         areViewReceiptsEnabled = enabled
 
         if shouldUpdateStorageService {

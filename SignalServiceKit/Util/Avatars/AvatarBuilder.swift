@@ -677,9 +677,9 @@ public class AvatarBuilder: NSObject {
                 let transaction = transaction
             {
                 let contentCacheKey = avatarContent.contentType.cacheKey
-                if contentCacheKey != Self.contactCacheKeys.getString(serviceIdString, transaction: transaction) {
+                if contentCacheKey != Self.contactCacheKeys.getString(serviceIdString, transaction: transaction.asV2Read) {
                     SSKEnvironment.shared.databaseStorageRef.asyncWrite { writeTransaction in
-                        Self.contactCacheKeys.setString(contentCacheKey, key: serviceIdString, transaction: writeTransaction)
+                        Self.contactCacheKeys.setString(contentCacheKey, key: serviceIdString, transaction: writeTransaction.asV2Write)
                     }
                 }
             }
@@ -763,7 +763,7 @@ public class AvatarBuilder: NSObject {
                     // for someone who's updated theirs. (This is the code path where we discover it's been updated!)
                     if
                         let serviceIdString = address.serviceIdUppercaseString,
-                        let cacheKey = Self.contactCacheKeys.getString(serviceIdString, transaction: transaction)
+                        let cacheKey = Self.contactCacheKeys.getString(serviceIdString, transaction: transaction.asV2Read)
                     {
                         return AvatarContentTypes(
                             contentType: .cachedContact(address: address, cacheKey: cacheKey),

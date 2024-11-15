@@ -21,11 +21,11 @@ public class SSKPreferences: NSObject {
 
     // The following two methods are just to make sure we can store and forward in storage service updates
     public static func areLegacyLinkPreviewsEnabled(transaction: SDSAnyReadTransaction) -> Bool {
-        return store.getBool(areLegacyLinkPreviewsEnabledKey, defaultValue: true, transaction: transaction)
+        return store.getBool(areLegacyLinkPreviewsEnabledKey, defaultValue: true, transaction: transaction.asV2Read)
     }
 
     public static func setAreLegacyLinkPreviewsEnabled(_ newValue: Bool, transaction: SDSAnyWriteTransaction) {
-        store.setBool(newValue, key: areLegacyLinkPreviewsEnabledKey, transaction: transaction)
+        store.setBool(newValue, key: areLegacyLinkPreviewsEnabledKey, transaction: transaction.asV2Write)
     }
 
     // MARK: -
@@ -34,12 +34,12 @@ public class SSKPreferences: NSObject {
 
     @objc
     public static func areIntentDonationsEnabled(transaction: SDSAnyReadTransaction) -> Bool {
-        return store.getBool(areIntentDonationsEnabledKey, defaultValue: true, transaction: transaction)
+        return store.getBool(areIntentDonationsEnabledKey, defaultValue: true, transaction: transaction.asV2Read)
     }
 
     @objc
     public static func setAreIntentDonationsEnabled(_ newValue: Bool, transaction: SDSAnyWriteTransaction) {
-        store.setBool(newValue, key: areIntentDonationsEnabledKey, transaction: transaction)
+        store.setBool(newValue, key: areIntentDonationsEnabledKey, transaction: transaction.asV2Write)
     }
 
     // MARK: -
@@ -63,14 +63,14 @@ public class SSKPreferences: NSObject {
         if let value = hasSavedThreadCache {
             return value
         }
-        let value = store.getBool(hasSavedThreadKey, defaultValue: false, transaction: transaction)
+        let value = store.getBool(hasSavedThreadKey, defaultValue: false, transaction: transaction.asV2Read)
         hasSavedThreadCache = value
         return value
     }
 
     @objc
     public func setHasSavedThread(_ newValue: Bool, transaction: SDSAnyWriteTransaction) {
-        store.setBool(newValue, key: hasSavedThreadKey, transaction: transaction)
+        store.setBool(newValue, key: hasSavedThreadKey, transaction: transaction.asV2Write)
         hasSavedThreadCache = newValue
     }
 
@@ -93,19 +93,19 @@ public class SSKPreferences: NSObject {
         if let value = messageRequestInteractionIdEpochCached {
             return value
         }
-        let value = store.getInt(messageRequestInteractionIdEpochKey, transaction: transaction.asAnyRead)
+        let value = store.getInt(messageRequestInteractionIdEpochKey, transaction: transaction.asAnyRead.asV2Read)
         messageRequestInteractionIdEpochCached = value
         return value
     }
 
     public static func setMessageRequestInteractionIdEpoch(_ value: Int?, transaction: GRDBWriteTransaction) {
         guard let value = value else {
-            store.removeValue(forKey: messageRequestInteractionIdEpochKey, transaction: transaction.asAnyWrite)
+            store.removeValue(forKey: messageRequestInteractionIdEpochKey, transaction: transaction.asAnyWrite.asV2Write)
             messageRequestInteractionIdEpochCached = nil
             return
         }
 
-        store.setInt(value, key: messageRequestInteractionIdEpochKey, transaction: transaction.asAnyWrite)
+        store.setInt(value, key: messageRequestInteractionIdEpochKey, transaction: transaction.asAnyWrite.asV2Write)
         messageRequestInteractionIdEpochCached = value
     }
 
@@ -114,11 +114,11 @@ public class SSKPreferences: NSObject {
     private static let includeMutedThreadsInBadgeCount = "includeMutedThreadsInBadgeCount"
 
     public static func includeMutedThreadsInBadgeCount(transaction: SDSAnyReadTransaction) -> Bool {
-        return store.getBool(includeMutedThreadsInBadgeCount, defaultValue: false, transaction: transaction)
+        return store.getBool(includeMutedThreadsInBadgeCount, defaultValue: false, transaction: transaction.asV2Read)
     }
 
     public static func setIncludeMutedThreadsInBadgeCount(_ value: Bool, transaction: SDSAnyWriteTransaction) {
-        store.setBool(value, key: includeMutedThreadsInBadgeCount, transaction: transaction)
+        store.setBool(value, key: includeMutedThreadsInBadgeCount, transaction: transaction.asV2Write)
     }
 
     // MARK: - Profile avatar preference
@@ -131,7 +131,7 @@ public class SSKPreferences: NSObject {
     @objc
     public static func preferContactAvatars(transaction: SDSAnyReadTransaction) -> Bool {
         if let value = preferContactAvatarsCached { return value }
-        let value = store.getBool(preferContactAvatarsKey, defaultValue: false, transaction: transaction)
+        let value = store.getBool(preferContactAvatarsKey, defaultValue: false, transaction: transaction.asV2Read)
         preferContactAvatarsCached = value
         return value
     }
@@ -142,8 +142,8 @@ public class SSKPreferences: NSObject {
         updateStorageService: Bool = true,
         transaction: SDSAnyWriteTransaction) {
 
-        let oldValue = store.getBool(preferContactAvatarsKey, transaction: transaction)
-        store.setBool(value, key: preferContactAvatarsKey, transaction: transaction)
+        let oldValue = store.getBool(preferContactAvatarsKey, transaction: transaction.asV2Read)
+        store.setBool(value, key: preferContactAvatarsKey, transaction: transaction.asV2Write)
         preferContactAvatarsCached = value
 
         if oldValue != value {
@@ -208,11 +208,11 @@ public class SSKPreferences: NSObject {
 
     @objc
     public static func shouldKeepMutedChatsArchived(transaction: SDSAnyReadTransaction) -> Bool {
-        return store.getBool(shouldKeepMutedChatsArchivedKey, defaultValue: false, transaction: transaction)
+        return store.getBool(shouldKeepMutedChatsArchivedKey, defaultValue: false, transaction: transaction.asV2Read)
     }
 
     @objc
     public static func setShouldKeepMutedChatsArchived(_ newValue: Bool, transaction: SDSAnyWriteTransaction) {
-        store.setBool(newValue, key: shouldKeepMutedChatsArchivedKey, transaction: transaction)
+        store.setBool(newValue, key: shouldKeepMutedChatsArchivedKey, transaction: transaction.asV2Write)
     }
 }

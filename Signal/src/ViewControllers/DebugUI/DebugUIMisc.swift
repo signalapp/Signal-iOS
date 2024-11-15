@@ -275,9 +275,9 @@ class DebugUIMisc: NSObject, DebugUIPage {
                     // Set three values at a time.
                     for _ in 0..<kBatchSize / 3 {
                         let value = Randomness.generateRandomBytes(4096)
-                        store.setData(value, key: UUID().uuidString, transaction: transaction)
-                        store.setString(UUID().uuidString, key: UUID().uuidString, transaction: transaction)
-                        store.setBool(Bool.random(), key: UUID().uuidString, transaction: transaction)
+                        store.setData(value, key: UUID().uuidString, transaction: transaction.asV2Write)
+                        store.setString(UUID().uuidString, key: UUID().uuidString, transaction: transaction.asV2Write)
+                        store.setBool(Bool.random(), key: UUID().uuidString, transaction: transaction.asV2Write)
                     }
                 }
             }
@@ -287,7 +287,7 @@ class DebugUIMisc: NSObject, DebugUIPage {
     private static func clearRandomKeyValueStores() {
         let store = randomKeyValueStore()
         SSKEnvironment.shared.databaseStorageRef.write { transcation in
-            store.removeAll(transaction: transcation)
+            store.removeAll(transaction: transcation.asV2Write)
         }
     }
 

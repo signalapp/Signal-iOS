@@ -53,7 +53,7 @@ public class ScreenLock: NSObject {
         return SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return self.keyValueStore.getBool(ScreenLock.OWSScreenLock_Key_IsScreenLockEnabled,
                                               defaultValue: false,
-                                              transaction: transaction)
+                                              transaction: transaction.asV2Read)
         }
     }
 
@@ -63,7 +63,7 @@ public class ScreenLock: NSObject {
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
             self.keyValueStore.setBool(value,
                                        key: ScreenLock.OWSScreenLock_Key_IsScreenLockEnabled,
-                                       transaction: transaction)
+                                       transaction: transaction.asV2Write)
         }
 
         NotificationCenter.default.postNotificationNameAsync(ScreenLock.ScreenLockDidChange, object: nil)
@@ -75,7 +75,7 @@ public class ScreenLock: NSObject {
         return SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return self.keyValueStore.getDouble(ScreenLock.OWSScreenLock_Key_ScreenLockTimeoutSeconds,
                                                 defaultValue: ScreenLock.screenLockTimeoutDefault,
-                                                transaction: transaction)
+                                                transaction: transaction.asV2Read)
         }
     }
 
@@ -85,7 +85,7 @@ public class ScreenLock: NSObject {
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
             self.keyValueStore.setDouble(value,
                                          key: ScreenLock.OWSScreenLock_Key_ScreenLockTimeoutSeconds,
-                                         transaction: transaction)
+                                         transaction: transaction.asV2Write)
         }
 
         NotificationCenter.default.postNotificationNameAsync(ScreenLock.ScreenLockDidChange, object: nil)

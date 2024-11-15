@@ -37,11 +37,11 @@ public class CallMessageRelay {
         // Process all the pending call messages from the NSE in 1 batch.
         // This should almost always be a batch of one.
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            defer { pendingCallMessageStore.removeAll(transaction: transaction) }
+            defer { pendingCallMessageStore.removeAll(transaction: transaction.asV2Write) }
             let pendingPayloads: [Payload]
 
             do {
-                pendingPayloads = try pendingCallMessageStore.allCodableValues(transaction: transaction).sorted {
+                pendingPayloads = try pendingCallMessageStore.allCodableValues(transaction: transaction.asV2Read).sorted {
                     $0.envelope.timestamp < $1.envelope.timestamp
                 }
             } catch {
@@ -93,7 +93,7 @@ public class CallMessageRelay {
             enqueueTimestamp: Date()
         )
 
-        try pendingCallMessageStore.setCodable(payload, key: "\(envelope.timestamp)", transaction: transaction)
+        try pendingCallMessageStore.setCodable(payload, key: "\(envelope.timestamp)", transaction: transaction.asV2Write)
         return CallMessagePushPayload()
     }
 

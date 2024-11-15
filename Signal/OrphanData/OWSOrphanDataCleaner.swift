@@ -95,10 +95,10 @@ enum OWSOrphanDataCleaner {
                 databaseStorage.write { transaction in
                     keyValueStore.setString(AppVersionImpl.shared.currentAppVersion,
                                             key: Constants.lastCleaningVersionKey,
-                                            transaction: transaction)
+                                            transaction: transaction.asV2Write)
                     keyValueStore.setDate(Date(),
                                           key: Constants.lastCleaningDateKey,
-                                          transaction: transaction)
+                                          transaction: transaction.asV2Write)
                 }
 
                 completion?()
@@ -124,7 +124,7 @@ enum OWSOrphanDataCleaner {
 
             let lastCleaningVersion = kvs.getString(
                 Constants.lastCleaningVersionKey,
-                transaction: transaction
+                transaction: transaction.asV2Read
             )
             guard let lastCleaningVersion else {
                 Logger.info("Performing orphan data cleanup because we've never done it")
@@ -137,7 +137,7 @@ enum OWSOrphanDataCleaner {
 
             let lastCleaningDate = kvs.getDate(
                 Constants.lastCleaningDateKey,
-                transaction: transaction
+                transaction: transaction.asV2Read
             )
             guard let lastCleaningDate else {
                 owsFailDebug("We have a \"last cleaned version\". Why don't we have a last cleaned date?")

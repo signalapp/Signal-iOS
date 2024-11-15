@@ -39,7 +39,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
         }
 
         static func dropDeprecatedCredentialsIfNecessary(transaction: SDSAnyWriteTransaction) {
-            deprecatedCredentialStore.removeAll(transaction: transaction)
+            deprecatedCredentialStore.removeAll(transaction: transaction.asV2Write)
         }
 
         static func getValidCredential(
@@ -48,7 +48,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
         ) throws -> ExpiringProfileKeyCredential? {
             guard let credentialData = expiringCredentialStore.getData(
                 storeKey(for: aci),
-                transaction: transaction
+                transaction: transaction.asV2Read
             ) else {
                 return nil
             }
@@ -80,16 +80,16 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
             expiringCredentialStore.setData(
                 credentialData,
                 key: storeKey(for: aci),
-                transaction: transaction
+                transaction: transaction.asV2Write
             )
         }
 
         static func removeValue(for aci: Aci, transaction: SDSAnyWriteTransaction) {
-            expiringCredentialStore.removeValue(forKey: storeKey(for: aci), transaction: transaction)
+            expiringCredentialStore.removeValue(forKey: storeKey(for: aci), transaction: transaction.asV2Write)
         }
 
         static func removeAll(transaction: SDSAnyWriteTransaction) {
-            expiringCredentialStore.removeAll(transaction: transaction)
+            expiringCredentialStore.removeAll(transaction: transaction.asV2Write)
         }
     }
 

@@ -1241,29 +1241,29 @@ private extension SDSKeyValueStore {
     ) {
         // Prepend value to ensure descending order of recency.
         var orderedArray = [value]
-        if let storedValue = getObject(forKey: key, transaction: tx) as? [String] {
+        if let storedValue = getObject(forKey: key, transaction: tx.asV2Read) as? [String] {
             orderedArray += storedValue.filter { $0 != value }
         }
         if let maxCount {
             orderedArray = Array(orderedArray.prefix(maxCount))
         }
-        setObject(orderedArray, key: key, transaction: tx)
+        setObject(orderedArray, key: key, transaction: tx.asV2Write)
     }
 
     func removeFromOrderedUniqueArray(key: String, value: String, tx: SDSAnyWriteTransaction) {
         var orderedArray = [String]()
-        if let storedValue = getObject(forKey: key, transaction: tx) as? [String] {
+        if let storedValue = getObject(forKey: key, transaction: tx.asV2Read) as? [String] {
             guard storedValue.contains(value) else {
                 // No work to do.
                 return
             }
             orderedArray += storedValue.filter { $0 != value }
         }
-        setObject(orderedArray, key: key, transaction: tx)
+        setObject(orderedArray, key: key, transaction: tx.asV2Write)
     }
 
     func orderedUniqueArray(forKey key: String, tx: SDSAnyReadTransaction) -> [String] {
-        guard let object = getObject(forKey: key, transaction: tx) else {
+        guard let object = getObject(forKey: key, transaction: tx.asV2Read) else {
             return []
         }
         guard let orderedArray = object as? [String] else {
