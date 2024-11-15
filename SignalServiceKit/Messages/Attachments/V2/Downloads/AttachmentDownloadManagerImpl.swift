@@ -311,8 +311,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     }
 
     public func cancelDownload(for attachmentId: Attachment.IDType, tx: DBWriteTransaction) {
-        progressStates.cancelledAttachmentIds.insert(attachmentId)
-        progressStates.states[attachmentId] = nil
+        progressStates.markDownloadCancelled(for: attachmentId)
         QueuedAttachmentDownloadRecord.SourceType.allCases.forEach { source in
             try? attachmentDownloadStore.removeAttachmentFromQueue(
                 withId: attachmentId,
@@ -327,7 +326,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     }
 
     public func downloadProgress(for attachmentId: Attachment.IDType, tx: DBReadTransaction) -> CGFloat? {
-        return progressStates.states[attachmentId].map { CGFloat($0) }
+        return progressStates.fractionCompleted(for: attachmentId).map { CGFloat($0) }
     }
 
     // MARK: - Persisted Queue
@@ -1188,17 +1187,36 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         }
     }
 
-    private class ProgressStates {
-        private let lock = UnfairLock()
-        private(set) lazy var states = AtomicDictionary<Attachment.IDType, Double>(lock: lock)
-        private(set) lazy var cancelledAttachmentIds = AtomicSet<Attachment.IDType>(lock: lock)
+    private final class ProgressStates: Sendable {
+        private struct States {
+            var states: [Attachment.IDType: Double] = [:]
+            var cancelledAttachmentIds: Set<Attachment.IDType> = []
+        }
 
-        init() {}
+        private let states = TSMutex(initialState: States())
+
+        func fractionCompleted(for attachmentId: Attachment.IDType) -> Double? {
+            states.withLock { $0.states[attachmentId] }
+        }
+
+        func setFractionCompleted(_ fractionComplete: Double, for attachmentId: Attachment.IDType) {
+            states.withLock { $0.states[attachmentId] = fractionComplete }
+        }
+
+        func markDownloadCancelled(for attachmentId: Attachment.IDType) {
+            states.withLock {
+                $0.states[attachmentId] = nil
+                $0.cancelledAttachmentIds.insert(attachmentId)
+            }
+        }
+
+        func consumeCancellation(of attachmentId: Attachment.IDType) -> Bool {
+            states.withLock { $0.cancelledAttachmentIds.remove(attachmentId) != nil }
+        }
     }
 
     private actor DownloadQueue {
-
-        private nonisolated let progressStates: ProgressStates
+        private let progressStates: ProgressStates
         private nonisolated let signalService: OWSSignalServiceProtocol
 
         init(
@@ -1397,11 +1415,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             progress: Progress,
             attachmentId: Attachment.IDType?
         ) {
-            if let attachmentId, progressStates.cancelledAttachmentIds.contains(attachmentId) {
+            if let attachmentId, progressStates.consumeCancellation(of: attachmentId) {
                 Logger.info("Cancelling download.")
                 // Cancelling will inform the URLSessionTask delegate.
                 task.cancel()
-                progressStates.cancelledAttachmentIds.remove(attachmentId)
                 return
             }
 
@@ -1419,7 +1436,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             case .backup, .transientAttachment:
                 break
             case .attachment(_, let attachmentId):
-                progressStates.states[attachmentId] = fractionCompleted
+                progressStates.setFractionCompleted(fractionCompleted, for: attachmentId)
 
                 NotificationCenter.default.postNotificationNameAsync(
                     AttachmentDownloads.attachmentDownloadProgressNotification,
